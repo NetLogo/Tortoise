@@ -1,0 +1,38 @@
+# common directory names
+scaladoc/
+classes/
+target/
+tmp/
+
+# common filenames
+.DS_Store
+
+# wildcards
+*.tmp
+*_managed/
+*~
+.#*
+\#*
+
+# IntelliJ IDEA
+/.idea
+/.idea_modules
+
+# Eclipse
+.classpath
+.project
+.cache
+.settings
+.worksheet
+
+# other
+/.ensime
+/.ensime_lucene/
+/build/
+/lib/
+/out/
+/docs/
+/resources/system/dict.txt
+/src/main/org/nlogo/agent/ImportLexer.java
+/src/main/org/nlogo/lex/TokenLexer.java
+/resources/Errors_??.properties
