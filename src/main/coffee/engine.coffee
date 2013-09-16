@@ -126,7 +126,6 @@ class Patch
   getNeighbors: -> world.getNeighbors(@pxcor, @pycor) # world.getTopology().getNeighbors(this)
   sprout: (n) ->
     (world.createturtle(@pxcor, @pycor, 5 + 10 * Random.nextInt(14), Random.nextInt(360)) for num in [0...n])
-    return
 
 class World
   # any variables used in the constructor should come
@@ -186,14 +185,13 @@ class World
     _ticks = false
     return
   createturtle: (x, y, color, heading) ->
-    _turtles.push(new Turtle((_nextId++), color, heading, x, y))
-    return
+    t = new Turtle((_nextId++), color, heading, x, y)
+    _turtles.push(t)
+    t
   createorderedturtles: (n) ->
     (@createturtle(0, 0, (num * 10 + 5) % 140, num * (360 / n)) for num in [0...n])
-    return
   createturtles: (n) ->
     (@createturtle(0, 0, 5 + 10 * Random.nextInt(14), Random.nextInt(360)) for num in [0...n])
-    return
   getNeighbors: (pxcor, pycor) -> @topology().getNeighbors(pxcor, pycor)
 
 class Agents
@@ -207,11 +205,18 @@ class Agents
     res = f()
     @_self = oldAgent
     res
-  ask: (agentsOrAgent, f) ->
+  ask: (agentsOrAgent, shuffle, f) ->
     agents = agentsOrAgent
     if (! (typeIsArray agentsOrAgent))
       agents = [agentsOrAgent]
-    (@askAgent(a, f) for a in agents)
+    iter =
+      if (shuffle)
+        new Shufflerator(agents)
+      else
+        new Iterator(agents)
+    while (iter.hasNext())
+      a = iter.next()
+      @askAgent(a, f)
     return
   agentFilter: (agents, f) -> a for a in agents when @askAgent(a, f)
   of: (agents, f) -> @askAgent(a, f) for a in agents
@@ -226,6 +231,38 @@ class Agents
   getPatchVariable:  (n)    -> @_self.getPatchVariable(n)
   setPatchVariable:  (n, v) -> @_self.setPatchVariable(n, v)
 
+class Iterator
+  constructor: (@agents) ->
+  i: 0
+  hasNext: -> @i < @agents.length
+  next: ->
+    result = @agents[@i]
+    @i = @i + 1
+    result
+
+class Shufflerator
+  constructor: (@agents) ->
+    @agents = @agents[..]
+    @fetch()
+  i: 0
+  nextOne: null
+  hasNext: -> @nextOne != null
+  next: ->
+    result = @nextOne
+    @fetch()
+    result
+  fetch: ->
+    if (@i >= @agents.length)
+      @nextOne = null
+    else
+      if (@i < @agents.length - 1)
+        r = @i + Random.nextInt(@agents.length - @i)
+        @nextOne = @agents[r]
+        @agents[r] = @agents[@i]
+      else
+        @nextOne = @agents[@i]
+      @i = @i + 1
+    return
 
 Prims =
   fd: (n) -> AgentSet.self().fd(n)
@@ -283,7 +320,6 @@ Trig =
     StrictMath.sin(StrictMath.toRadians(degrees))
   unsquashedCos: (degrees) ->
     StrictMath.cos(StrictMath.toRadians(degrees))
-
 
 class Torus
   constructor: (@minPxcor, @maxPxcor, @minPycor, @maxPycor) ->
