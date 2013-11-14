@@ -1,7 +1,3 @@
-///
-/// root project
-///
-
 val root = project in file (".") configs(Testing.configs: _*)
 
 scalaVersion := "2.10.3"
@@ -31,7 +27,5 @@ libraryDependencies ++= Seq(
 onLoadMessage := ""
 
 seq(Testing.settings: _*)
-
-seq(Scaladoc.settings: _*)
 
 seq(Coffee.settings: _*)
