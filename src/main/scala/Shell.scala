@@ -18,17 +18,22 @@ object Shell extends workspace.Shell {
     rhino.eval(js)
     System.err.println("Tortoise Shell 1.0")
     for(line <- input.takeWhile(!isQuit(_)))
-      try run(Compiler.compileCommands(line, procedures, program))
-      catch { case e: Exception => println(e) }
+      printingExceptions {
+        run(Compiler.compileCommands(line, procedures, program))
+      }
   }
 
   def run(js: String) {
-    try {
+    printingExceptions {
       val (output, json) = rhino.run(js)
       Seq(output) // , json)
         .filter(_.nonEmpty)
         .foreach(x => println(x.trim))
     }
+  }
+
+  private def printingExceptions(body: => Unit) {
+    try body
     catch { case e: Exception => println(e) }
   }
 
