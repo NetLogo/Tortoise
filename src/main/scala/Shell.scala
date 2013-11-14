@@ -6,15 +6,18 @@ import org.nlogo.{ api, workspace }
 
 object Shell extends workspace.Shell {
 
-  val src = ""
-  val dim = api.WorldDimensions.square(16)
+  object Defaults {
+    val src = ""
+    val dim = api.WorldDimensions.square(16)
+  }
 
   val rhino = new Rhino
 
   def main(argv: Array[String]) {
     workspace.AbstractWorkspace.setHeadlessProperty()
     val (js, program, procedures) =
-      Compiler.compileProcedures(src, dimensions = dim)
+      Compiler.compileProcedures(
+        Defaults.src, dimensions = Defaults.dim)
     rhino.eval(js)
     System.err.println("Tortoise Shell 1.0")
     for(line <- input.takeWhile(!isQuit(_)))
