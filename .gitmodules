@@ -1,3 +1,3 @@
 [submodule "models"]
 	path = models
-	url = git://github.com/NetLogo/models.git
+	url = https://github.com/NetLogo/models.git
