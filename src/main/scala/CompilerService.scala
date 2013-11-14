@@ -45,8 +45,6 @@ object CompilerService {
 
     System.out.println(js)
 
-    System.exit(0)
-
   }
 
 }
