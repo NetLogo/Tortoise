@@ -32,10 +32,6 @@ onLoadMessage := ""
 
 resourceDirectory in Compile := baseDirectory.value / "resources"
 
-scalaSource in Compile := baseDirectory.value / "src" / "main"
-
-scalaSource in Test := baseDirectory.value / "src" / "test"
-
 unmanagedResourceDirectories in Compile += baseDirectory.value / "resources"
 
 seq(Testing.settings: _*)
