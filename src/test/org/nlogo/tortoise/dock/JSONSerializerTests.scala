@@ -7,6 +7,7 @@ import org.nlogo.mirror._, Mirroring._, Mirrorables._
 import org.nlogo.api, api.Version
 import org.scalatest.FunSuite
 import org.scalatest.Matchers
+import org.nlogo.nvm
 import org.nlogo.headless._, lang._
 import org.nlogo.shape.VectorShape
 import org.nlogo.tortoise.json.JSONSerializer
@@ -81,7 +82,8 @@ class JSONSerializerTests extends FixtureSuite with Matchers {
         case (cmd, json) => // prettify:
           (cmd, jsRender(parse(json)))
       }
-
+    // so we don't need ASM, and to save time - ST 11/14/13
+    fixture.workspace.flags = nvm.CompilerFlags(useGenerator = false)
     ModelCreator.open(fixture.workspace, api.WorldDimensions.square(1))
     val (initialState, _) = Mirroring.diffs(Map(), mirrorables)
     commands.foldLeft(initialState) {
