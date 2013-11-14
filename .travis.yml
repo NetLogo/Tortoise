@@ -5,7 +5,7 @@ before_install:
 install:
   - sbt update
 script:
-  - ./tortoise.sh --noclean
+  - ./nightly.sh --noclean
 
 notifications:
   irc:
@@ -13,4 +13,4 @@ notifications:
       - "irc.freenode.org#netlogo"
     skip_join: true
     template:
-      - "\x0313NetLogo\x03/\x0306%{branch}\x03 \x0314%{commit}\x03 %{build_url} %{message}"
+      - "\x0313Tortoise\x03/\x0306%{branch}\x03 \x0314%{commit}\x03 %{build_url} %{message}"
