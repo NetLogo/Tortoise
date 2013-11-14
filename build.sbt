@@ -26,6 +26,6 @@ libraryDependencies ++= Seq(
 
 onLoadMessage := ""
 
-seq(Testing.settings: _*)
+Testing.settings
 
-seq(Coffee.settings: _*)
+Coffee.settings
