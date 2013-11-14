@@ -91,19 +91,19 @@ object Compiler {
       s.args.collect{ case x: ast.ReporterApp =>
         genArg(x) }.mkString(", ")
     s.command match {
-      case _: prim._done             => ""
-      case _: prim.etc._observercode => ""
-      case _: prim.etc._while        => Prims.generateWhile(s)
-      case _: prim.etc._if           => Prims.generateIf(s)
-      case _: prim.etc._ifelse       => Prims.generateIfElse(s)
+      case _: prim._done                 => ""
+      case _: prim.etc._observercode     => ""
+      case _: prim.etc._while            => Prims.generateWhile(s)
+      case _: prim.etc._if               => Prims.generateIf(s)
+      case _: prim.etc._ifelse           => Prims.generateIfElse(s)
       case l: prim._let
         // arg 0 is the name but we don't access it because LetScoper took care of it.
         // arg 1 is the value.
-                                     => s"var ${ident(l.let.name)} = ${arg(1)};"
-      case call: prim._call          => s"${ident(call.procedure.name)}($args)"
-      case _: prim.etc._report       => s"return $args;"
-      case _: prim.etc._stop         => "return"
-      case _: prim._ask              => Prims.generateAsk(s, shuffle = true)
+                                         => s"var ${ident(l.let.name)} = ${arg(1)};"
+      case call: prim._call              => s"${ident(call.procedure.name)}($args)"
+      case _: prim.etc._report           => s"return $args;"
+      case _: prim.etc._stop             => "return"
+      case _: prim._ask                  => Prims.generateAsk(s, shuffle = true)
       case _: prim._createturtles        => Prims.generateCreateTurtles(s, ordered = false)
       case _: prim._createorderedturtles => Prims.generateCreateTurtles(s, ordered = true)
       case _: prim._sprout               => Prims.generateSprout(s)
@@ -116,7 +116,7 @@ object Compiler {
       case h: prim._hatch                => Prims.generateHatch(s, h.breedName)
       case _: prim.etc._hideturtle       => "AgentSet.self().hideTurtle(true);"
       case _: prim.etc._showturtle       => "AgentSet.self().hideTurtle(false);"
-      case Prims.NormalCommand(op)   => s"$op($args)"
+      case Prims.NormalCommand(op)       => s"$op($args)"
       case r: prim._repeat           =>
         s"for(var i = 0; i < ${arg(0)}; i++) { ${genCommandBlock(s.args(1))} }"
       case _: prim._set              =>
