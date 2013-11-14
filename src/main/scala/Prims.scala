@@ -45,6 +45,10 @@ object Prims {
         val agents = arg(1)
         val body = Handlers.reporter(r.args(0))
         s"AgentSet.of($agents, ${Handlers.fun(r.args(0), true)})"
+      case o: prim.etc._all =>
+        val agents = arg(0)
+        val body = Handlers.reporter(r.args(1))
+        s"AgentSet.all($agents, function(){ return $body })"
       case _: prim.etc._islink              => s"(${arg(0)} instanceof Link)"
       case _ =>
         throw new IllegalArgumentException(

@@ -638,6 +638,11 @@ class World
 AgentSet =
   count: (x) -> x.items.length
   any: (x) -> x.items.length > 0
+  all: (x, f) ->
+    for a in x.items
+      if(!@askAgent(a, f))
+        return false
+    true
   _self: 0
   _myself: 0
   self: -> @_self

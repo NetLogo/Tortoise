@@ -221,6 +221,13 @@ class TestAgents extends DockingSuite with SlowTest {
     testCommand("output-print any? turtles")
   }
 
+  test("all") { implicit fixture => import fixture._
+    declare("", WorldDimensions.square(4))
+    testCommand("crt 20 [ setxy random-xcor random-ycor ]")
+    testCommand("output-print all? turtles [ pxcor > 0 ]")
+    testCommand("output-print all? turtles [ pxcor > -10 ]")
+  }
+
   test("dimensions") { implicit fixture => import fixture._
     declare("", WorldDimensions(-1, 2, -3, 4))
     testCommand("output-print min-pxcor")
