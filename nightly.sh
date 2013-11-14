@@ -20,20 +20,12 @@ mkdir -p tmp/nightly
 if [ ${PIPESTATUS[0]} -ne 0 ] ; then echo "*** FAILED: test:compile"; exit 1; fi
 echo "*** done: test:compile"
 
-./sbt 'test-only *.tortoise.*' 2>&1 | tee tmp/nightly/tortoise.txt
-if [ ${PIPESTATUS[0]} -ne 0 ] ; then echo "*** FAILED: test-only tortoise"; exit 1; fi
-echo "*** done: test-only tortoise"
-
-./sbt fast:test 2>&1 | tee tmp/nightly/fast-test.txt
+./sbt 'fast:test' 2>&1 | tee tmp/nightly/fast-test.txt
 if [ ${PIPESTATUS[0]} -ne 0 ] ; then echo "*** FAILED: fast:test"; exit 1; fi
 echo "*** done: fast:test"
 
-./sbt depend 2>&1 | tee tmp/nightly/depend.txt
-if [ ${PIPESTATUS[0]} -ne 0 ] ; then echo "*** FAILED: depend"; exit 1; fi
-echo "*** done: depend"
-
-./sbt scalastyle 2>&1 | tee tmp/nightly/scalastyle.txt
-if [ `wc -l < target/scalastyle-result.xml` -ne 2 ] ; then echo "*** FAILED: scalastyle"; exit 1; fi
-echo "*** done: scalastyle"
+./sbt 'test' 2>&1 | tee tmp/nightly/test.txt
+if [ ${PIPESTATUS[0]} -ne 0 ] ; then echo "*** FAILED: test"; exit 1; fi
+echo "*** done: fast:test"
 
 echo "****** all done!"
