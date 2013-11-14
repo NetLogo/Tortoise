@@ -15,13 +15,14 @@ javacOptions in ThisBuild ++=
 // only log problems plz
 ivyLoggingLevel in ThisBuild := UpdateLogging.Quiet
 
-// this makes script-writing easier
-retrieveManaged in ThisBuild := true
-
 // we're not cross-building for different Scala versions
 crossPaths in ThisBuild := false
 
 nogen in ThisBuild  := { System.setProperty("org.nlogo.noGenerator", "true") }
+
+// temporarily needed for ScalaTest build which hasn't propagated
+// to Maven Central yet - ST 8/14/13
+resolvers += Resolver.sonatypeRepo("releases")
 
 libraryDependencies in ThisBuild ++= Seq(
   "asm" % "asm-all" % "3.3.1",
@@ -29,10 +30,8 @@ libraryDependencies in ThisBuild ++= Seq(
   "org.jmock" % "jmock-legacy" % "2.5.1" % "test",
   "org.jmock" % "jmock-junit4" % "2.5.1" % "test",
   "org.scalacheck" %% "scalacheck" % "1.10.1" % "test",
-  "org.scalatest" %% "scalatest" % "2.0.M5b" % "test"
+  "org.scalatest" %% "scalatest" % "2.0.RC1-SNAP4" % "test"
 )
-
-name := "NetLogo"
 
 artifactName := { (_, _, _) => "NetLogoHeadless.jar" }
 
@@ -74,5 +73,7 @@ seq(Classycle.settings: _*)
 seq(Dump.settings: _*)
 
 seq(ChecksumsAndPreviews.settings: _*)
+
+seq(Scaladoc.settings: _*)
 
 org.scalastyle.sbt.ScalastylePlugin.Settings
