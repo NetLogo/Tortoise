@@ -30,8 +30,3 @@ tmp/
 /.ensime_lucene/
 /node_modules/
 /build/
-/lib/
-/out/
-/docs/
-/resources/system/dict.txt
-/resources/Errors_??.properties
