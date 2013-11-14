@@ -36,7 +36,7 @@ class DockingFixture(name: String) extends Fixture(name) {
       useOptimizer = false, // since the Tortoise compiler sees the unoptimized code
                             //   and some optimizations may affect results ordering
                             //   and/or RNG interaction
-      useGenerator = false  // just to save on compilation time
+      useGenerator = false  // so we don't need ASM. also to save time
     )
 
   def compare(reporter: String) {
