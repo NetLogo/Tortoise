@@ -2,8 +2,7 @@
 
 package org.nlogo.tortoise
 
-import org.nlogo.{ api, compile, nvm, prim, workspace },
-   compile._,
+import org.nlogo.{ api, compile => ast, nvm, prim, workspace },
    nvm.FrontEndInterface.{ ProceduresMap, NoProcedures },
    org.nlogo.shape.{LinkShape, VectorShape}
 
@@ -11,8 +10,7 @@ import collection.JavaConverters._
 
 object Compiler {
 
-  val frontEnd: FrontEndInterface =
-    org.nlogo.compile.front.FrontEnd
+  val frontEnd: ast.FrontEndInterface = ast.front.FrontEnd
 
   // three main entry points. input is NetLogo, result is JavaScript.
 
@@ -47,7 +45,7 @@ object Compiler {
     (js, sp.program, sp.procedures)
   }
 
-  private def compileProcedureDef(pd: ProcedureDefinition): String = {
+  private def compileProcedureDef(pd: ast.ProcedureDefinition): String = {
     val name = ident(pd.procedure.name)
     val body = generateCommands(pd.statements)
     val args = pd.procedure.args.map(ident).mkString(", ")
@@ -82,7 +80,7 @@ object Compiler {
 
   ///
 
-  def generateCommands(cs: Statements): String =
+  def generateCommands(cs: ast.Statements): String =
     cs.map(generateCommand).filter(_.nonEmpty).mkString("\n")
 
   ///
@@ -90,9 +88,11 @@ object Compiler {
   // Scalastyle is right to complain about these gruesomely large match statements,
   // but it isn't worth failing the build over (for the time being) - ST 10/14/13
   // scalastyle:off cyclomatic.complexity
-  def generateCommand(s: Statement): String = {
+  def generateCommand(s: ast.Statement): String = {
     def arg(i: Int) = genArg(s.args(i))
-    def args = s.args.collect{ case x: ReporterApp => genArg(x) }.mkString(", ")
+    def args =
+      s.args.collect{ case x: ast.ReporterApp =>
+        genArg(x) }.mkString(", ")
     s.command match {
       case _: prim._done             => ""
       case _: prim.etc._observercode => ""
@@ -123,7 +123,7 @@ object Compiler {
       case r: prim._repeat           =>
         s"for(var i = 0; i < ${arg(0)}; i++) { ${genCommandBlock(s.args(1))} }"
       case _: prim._set              =>
-        s.args(0).asInstanceOf[ReporterApp].reporter match {
+        s.args(0).asInstanceOf[ast.ReporterApp].reporter match {
           case p: prim._letvariable =>
             s"${ident(p.let.name)} = ${arg(1)};"
           case p: prim._observervariable =>
@@ -153,11 +153,11 @@ object Compiler {
     }
   }
 
-  def generateReporter(r: ReporterApp): String = {
+  def generateReporter(r: ast.ReporterApp): String = {
     def arg(i: Int) = genArg(r.args(i))
     def commaArgs = argsSep(", ")
     def args =
-      r.args.collect{ case x: ReporterApp => genArg(x) }
+      r.args.collect{ case x: ast.ReporterApp => genArg(x) }
     def argsSep(sep: String) =
       args.mkString(sep)
     r.reporter match {
@@ -227,15 +227,15 @@ object Compiler {
   // but I think the resulting code would be confusing and potentially error prone.
   // having different functions for each is more clear.
 
-  def genReporterApp(e: Expression) = e match {
-    case r: ReporterApp => generateReporter(r)
+  def genReporterApp(e: ast.Expression) = e match {
+    case r: ast.ReporterApp => generateReporter(r)
   }
-  def genArg(e: Expression) = genReporterApp(e)
-  def genReporterBlock(e: Expression) = e match {
-    case r: ReporterBlock => Compiler.generateReporter(r.app)
+  def genArg(e: ast.Expression) = genReporterApp(e)
+  def genReporterBlock(e: ast.Expression) = e match {
+    case r: ast.ReporterBlock => Compiler.generateReporter(r.app)
   }
-  def genCommandBlock(e: Expression) = e match {
-    case cb: CommandBlock => Compiler.generateCommands(cb.statements)
+  def genCommandBlock(e: ast.Expression) = e match {
+    case cb: ast.CommandBlock => Compiler.generateCommands(cb.statements)
   }
 }
 
