@@ -30,10 +30,6 @@ libraryDependencies ++= Seq(
 
 onLoadMessage := ""
 
-resourceDirectory in Compile := baseDirectory.value / "resources"
-
-unmanagedResourceDirectories in Compile += baseDirectory.value / "resources"
-
 seq(Testing.settings: _*)
 
 seq(Scaladoc.settings: _*)
