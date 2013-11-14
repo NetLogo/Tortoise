@@ -5,15 +5,14 @@ package org.nlogo.tortoise
 import org.nlogo.{ api, compile, nvm, prim, workspace },
    compile._,
    nvm.FrontEndInterface.{ ProceduresMap, NoProcedures },
-   org.nlogo.util.Femto,
    org.nlogo.shape.{LinkShape, VectorShape}
 
 import collection.JavaConverters._
 
 object Compiler {
 
-  val frontEnd = Femto.get[FrontEndInterface](
-    "org.nlogo.compile.front.FrontEnd")
+  val frontEnd: FrontEndInterface =
+    org.nlogo.compile.front.FrontEnd
 
   // three main entry points. input is NetLogo, result is JavaScript.
 
