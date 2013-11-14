@@ -13,10 +13,10 @@ ivyLoggingLevel := UpdateLogging.Quiet
 crossPaths := false
 
 libraryDependencies ++= Seq(
-  "org.nlogo" % "NetLogoHeadless" % "5.1.0-SNAPSHOT-5c1317f3" from
-    "http://ccl.northwestern.edu/devel/NetLogoHeadless-5c1317f3.jar",
-  "org.nlogo" % "NetLogoHeadlessTests" % "5.1.0-SNAPSHOT-5c1317f3" from
-    "http://ccl.northwestern.edu/devel/NetLogoHeadlessTests-5c1317f3.jar",
+  "org.nlogo" % "NetLogoHeadless" % "5.1.0-SNAPSHOT-671340d" from
+    "http://ccl.northwestern.edu/devel/NetLogoHeadless-671340d.jar",
+  "org.nlogo" % "NetLogoHeadlessTests" % "5.1.0-SNAPSHOT-671340d" from
+    "http://ccl.northwestern.edu/devel/NetLogoHeadlessTests-671340d.jar",
   "org.json4s" %% "json4s-native" % "3.1.0",
   "org.webjars" % "json2" % "20110223",
   "org.scalacheck" %% "scalacheck" % "1.10.1" % "test",
