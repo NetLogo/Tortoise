@@ -199,7 +199,7 @@ class Turtle
         else
           null).filter((o) -> o != null)
     if links.length == 0 then Nobody else links[0]
-    
+
   otherEnd: -> if this == AgentSet.myself().end1 then AgentSet.myself().end2 else AgentSet.myself().end1
   patchRightAndAhead: (angle, amount) ->
     heading = @heading + angle
