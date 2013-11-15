@@ -47,7 +47,7 @@ object Compiler {
 
   private def compileProcedureDef(pd: ast.ProcedureDefinition): String = {
     val name = ident(pd.procedure.name)
-    val body = generateCommands(pd.statements)
+    val body = generate(pd.statements)
     val args = pd.procedure.args.map(ident).mkString(", ")
     s"function $name ($args) {\n$body\n};"
   }
@@ -56,8 +56,6 @@ object Compiler {
   def ident(s: String) =
     s.replaceAll("-", "_")
      .replaceAll("\\?", "_P")
-
-  ///
 
   // How this works:
   // - the header/footer stuff wraps the code in `to` or `to-report`
@@ -74,16 +72,9 @@ object Compiler {
       workspace.Evaluator.getHeader(api.AgentKind.Observer, commands) +
         logo + workspace.Evaluator.getFooter(commands)
     val (defs, _) = frontEnd.frontEnd(wrapped, oldProcedures, program)  // Seq[ProcedureDefinition]
-    if (commands) generateCommands(defs.head.statements)
-    else genArg(defs.head.statements.tail.head.args.head)
+    if (commands) generate(defs.head.statements)
+    else generate(defs.head.statements.tail.head.args.head)
   }
-
-  ///
-
-  def generateCommands(cs: ast.Statements): String =
-    cs.map(Prims.generateCommand).filter(_.nonEmpty).mkString("\n")
-
-  ///
 
   def compileLiteral(x: AnyRef): String = x match {
     case ll: api.LogoList =>
@@ -92,13 +83,17 @@ object Compiler {
       api.Dump.logoObject(x, readable = true, exporting = false)
   }
 
-  def genArg(e: ast.Expression) = e match {
-    case r: ast.ReporterApp =>
-      Prims.generateReporter(r)
-    case r: ast.ReporterBlock =>
-      Prims.generateReporter(r.app)
-    case cb: ast.CommandBlock =>
-      Compiler.generateCommands(cb.statements)
+  def generate(node: ast.AstNode): String = node match {
+    case stmts: ast.Statements =>
+      stmts.map(Prims.generateCommand)
+        .filter(_.nonEmpty)
+        .mkString("\n")
+    case block: ast.ReporterBlock =>
+      generate(block.app)
+    case app: ast.ReporterApp =>
+      Prims.generateReporter(app)
+    case block: ast.CommandBlock =>
+      Compiler.generate(block.statements)
   }
 
 }
