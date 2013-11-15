@@ -96,12 +96,6 @@ object Compiler {
       case _: prim.etc._while            => HardPrims.generateWhile(s)
       case _: prim.etc._if               => HardPrims.generateIf(s)
       case _: prim.etc._ifelse           => HardPrims.generateIfElse(s)
-      case l: prim._let
-        // arg 0 is the name but we don't access it because LetScoper took care of it.
-        // arg 1 is the value.
-                                         => s"var ${ident(l.let.name)} = ${arg(1)};"
-      case call: prim._call              => s"${ident(call.procedure.name)}($args)"
-      case _: prim.etc._report           => s"return $args;"
       case _: prim._ask                  => HardPrims.generateAsk(s, shuffle = true)
       case _: prim._createturtles        => HardPrims.generateCreateTurtles(s, ordered = false)
       case _: prim._createorderedturtles => HardPrims.generateCreateTurtles(s, ordered = true)
@@ -113,6 +107,12 @@ object Compiler {
       case _: prim.etc._createlinkwith   => HardPrims.generateCreateLink(s, "createLinkWith")
       case _: prim.etc._createlinkswith  => HardPrims.generateCreateLink(s, "createLinksWith")
       case h: prim._hatch                => HardPrims.generateHatch(s, h.breedName)
+      case l: prim._let
+        // arg 0 is the name but we don't access it because LetScoper took care of it.
+        // arg 1 is the value.
+                                         => s"var ${ident(l.let.name)} = ${arg(1)};"
+      case call: prim._call              => s"${ident(call.procedure.name)}($args)"
+      case _: prim.etc._report           => s"return $args;"
       case _: prim._repeat           =>
         s"for(var i = 0; i < ${arg(0)}; i++) { ${genCommandBlock(s.args(1))} }"
       case _: prim._set              =>
