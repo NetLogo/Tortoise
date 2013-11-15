@@ -2,9 +2,37 @@
 
 package org.nlogo.tortoise
 
-import org.nlogo.{ compile => ast, nvm, prim }
+import org.nlogo.{ api, compile => ast, nvm, prim }
 
 object HardPrims {
+
+  def generateSet(s: ast.Statement): String = {
+    def arg(i: Int) = Compiler.genArg(s.args(i))
+    s.args(0).asInstanceOf[ast.ReporterApp].reporter match {
+      case p: prim._letvariable =>
+        s"${Compiler.ident(p.let.name)} = ${arg(1)};"
+      case p: prim._observervariable =>
+        s"Globals.setGlobal(${p.vn},${arg(1)})"
+      case bv: prim._breedvariable =>
+        s"""AgentSet.setBreedVariable("${bv.name}",${arg(1)})"""
+      case p: prim._linkvariable =>
+        s"AgentSet.setLinkVariable(${p.vn},${arg(1)})"
+      case p: prim._turtlevariable =>
+        s"AgentSet.setTurtleVariable(${p.vn},${arg(1)})"
+      case p: prim._turtleorlinkvariable if p.varName == "BREED" =>
+        s"AgentSet.setBreed(${arg(1)})"
+      case p: prim._turtleorlinkvariable =>
+        val vn = api.AgentVariables.getImplicitTurtleVariables.indexOf(p.varName)
+        s"AgentSet.setTurtleVariable($vn,${arg(1)})"
+      case p: prim._patchvariable =>
+        s"AgentSet.setPatchVariable(${p.vn},${arg(1)})"
+      case p: prim._procedurevariable =>
+        s"${Compiler.ident(p.name)} = ${arg(1)};"
+      case x =>
+        throw new IllegalArgumentException(
+          "unknown settable: " + x.getClass.getName)
+    }
+  }
 
   def generateWhile(w: ast.Statement): String = {
     val pred = Compiler.genReporterBlock(w.args.head)

@@ -93,6 +93,7 @@ object Compiler {
     s.command match {
       case EasyPrims.SimpleCommand(op)   => op
       case EasyPrims.NormalCommand(op)   => s"$op($args)"
+      case _: prim._set                  => HardPrims.generateSet(s)
       case _: prim.etc._while            => HardPrims.generateWhile(s)
       case _: prim.etc._if               => HardPrims.generateIf(s)
       case _: prim.etc._ifelse           => HardPrims.generateIfElse(s)
@@ -107,39 +108,14 @@ object Compiler {
       case _: prim.etc._createlinkwith   => HardPrims.generateCreateLink(s, "createLinkWith")
       case _: prim.etc._createlinkswith  => HardPrims.generateCreateLink(s, "createLinksWith")
       case h: prim._hatch                => HardPrims.generateHatch(s, h.breedName)
-      case l: prim._let
-        // arg 0 is the name but we don't access it because LetScoper took care of it.
-        // arg 1 is the value.
-                                         => s"var ${ident(l.let.name)} = ${arg(1)};"
       case call: prim._call              => s"${ident(call.procedure.name)}($args)"
       case _: prim.etc._report           => s"return $args;"
-      case _: prim._repeat           =>
+      case l: prim._let                  =>
+        // arg 0 is the name but we don't access it because LetScoper took care of it.
+        // arg 1 is the value.
+        s"var ${ident(l.let.name)} = ${arg(1)};"
+      case _: prim._repeat               =>
         s"for(var i = 0; i < ${arg(0)}; i++) { ${genCommandBlock(s.args(1))} }"
-      case _: prim._set              =>
-        s.args(0).asInstanceOf[ast.ReporterApp].reporter match {
-          case p: prim._letvariable =>
-            s"${ident(p.let.name)} = ${arg(1)};"
-          case p: prim._observervariable =>
-            s"Globals.setGlobal(${p.vn},${arg(1)})"
-          case bv: prim._breedvariable =>
-            s"""AgentSet.setBreedVariable("${bv.name}",${arg(1)})"""
-          case p: prim._linkvariable =>
-            s"AgentSet.setLinkVariable(${p.vn},${arg(1)})"
-          case p: prim._turtlevariable =>
-            s"AgentSet.setTurtleVariable(${p.vn},${arg(1)})"
-          case p: prim._turtleorlinkvariable if p.varName == "BREED" =>
-            s"AgentSet.setBreed(${arg(1)})"
-          case p: prim._turtleorlinkvariable =>
-            val vn = api.AgentVariables.getImplicitTurtleVariables.indexOf(p.varName)
-            s"AgentSet.setTurtleVariable($vn,${arg(1)})"
-          case p: prim._patchvariable =>
-            s"AgentSet.setPatchVariable(${p.vn},${arg(1)})"
-          case p: prim._procedurevariable =>
-            s"${ident(p.name)} = ${arg(1)};"
-          case x =>
-            throw new IllegalArgumentException(
-              "unknown settable: " + x.getClass.getName)
-        }
       case _ =>
         throw new IllegalArgumentException(
           "unknown primitive: " + s.command.getClass.getName)
