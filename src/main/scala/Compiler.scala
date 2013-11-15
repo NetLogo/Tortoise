@@ -93,9 +93,9 @@ object Compiler {
     s.command match {
       case _: prim._done                 => ""
       case _: prim.etc._observercode     => ""
-      case _: prim.etc._while            => Prims.generateWhile(s)
-      case _: prim.etc._if               => Prims.generateIf(s)
-      case _: prim.etc._ifelse           => Prims.generateIfElse(s)
+      case _: prim.etc._while            => HardPrims.generateWhile(s)
+      case _: prim.etc._if               => HardPrims.generateIf(s)
+      case _: prim.etc._ifelse           => HardPrims.generateIfElse(s)
       case l: prim._let
         // arg 0 is the name but we don't access it because LetScoper took care of it.
         // arg 1 is the value.
@@ -103,20 +103,20 @@ object Compiler {
       case call: prim._call              => s"${ident(call.procedure.name)}($args)"
       case _: prim.etc._report           => s"return $args;"
       case _: prim.etc._stop             => "return"
-      case _: prim._ask                  => Prims.generateAsk(s, shuffle = true)
-      case _: prim._createturtles        => Prims.generateCreateTurtles(s, ordered = false)
-      case _: prim._createorderedturtles => Prims.generateCreateTurtles(s, ordered = true)
-      case _: prim._sprout               => Prims.generateSprout(s)
-      case _: prim.etc._createlinkfrom   => Prims.generateCreateLink(s, "createLinkFrom")
-      case _: prim.etc._createlinksfrom  => Prims.generateCreateLink(s, "createLinksFrom")
-      case _: prim.etc._createlinkto     => Prims.generateCreateLink(s, "createLinkTo")
-      case _: prim.etc._createlinksto    => Prims.generateCreateLink(s, "createLinksTo")
-      case _: prim.etc._createlinkwith   => Prims.generateCreateLink(s, "createLinkWith")
-      case _: prim.etc._createlinkswith  => Prims.generateCreateLink(s, "createLinksWith")
-      case h: prim._hatch                => Prims.generateHatch(s, h.breedName)
+      case _: prim._ask                  => HardPrims.generateAsk(s, shuffle = true)
+      case _: prim._createturtles        => HardPrims.generateCreateTurtles(s, ordered = false)
+      case _: prim._createorderedturtles => HardPrims.generateCreateTurtles(s, ordered = true)
+      case _: prim._sprout               => HardPrims.generateSprout(s)
+      case _: prim.etc._createlinkfrom   => HardPrims.generateCreateLink(s, "createLinkFrom")
+      case _: prim.etc._createlinksfrom  => HardPrims.generateCreateLink(s, "createLinksFrom")
+      case _: prim.etc._createlinkto     => HardPrims.generateCreateLink(s, "createLinkTo")
+      case _: prim.etc._createlinksto    => HardPrims.generateCreateLink(s, "createLinksTo")
+      case _: prim.etc._createlinkwith   => HardPrims.generateCreateLink(s, "createLinkWith")
+      case _: prim.etc._createlinkswith  => HardPrims.generateCreateLink(s, "createLinksWith")
+      case h: prim._hatch                => HardPrims.generateHatch(s, h.breedName)
       case _: prim.etc._hideturtle       => "AgentSet.self().hideTurtle(true);"
       case _: prim.etc._showturtle       => "AgentSet.self().hideTurtle(false);"
-      case Prims.NormalCommand(op)       => s"$op($args)"
+      case EasyPrims.NormalCommand(op)   => s"$op($args)"
       case r: prim._repeat           =>
         s"for(var i = 0; i < ${arg(0)}; i++) { ${genCommandBlock(s.args(1))} }"
       case _: prim._set              =>
@@ -168,8 +168,8 @@ object Compiler {
       case lv: prim._letvariable            => ident(lv.let.name)
       case pv: prim._procedurevariable      => ident(pv.name)
       case call: prim._callreport           => s"${ident(call.procedure.name)}($commaArgs)"
-      case Prims.InfixReporter(op)          => s"(${arg(0)} $op ${arg(1)})"
-      case Prims.NormalReporter(op)         => s"$op($commaArgs)"
+      case EasyPrims.InfixReporter(op)      => s"(${arg(0)} $op ${arg(1)})"
+      case EasyPrims.NormalReporter(op)     => s"$op($commaArgs)"
       case _: prim._unaryminus              => s"(- ${arg(0)})"
       case bv: prim._breedvariable          => s"""AgentSet.getBreedVariable("${bv.name}")"""
       case tv: prim._turtlevariable         => s"AgentSet.getTurtleVariable(${tv.vn})"
