@@ -91,6 +91,7 @@ object Compiler {
       s.args.collect{ case x: ast.ReporterApp =>
         genArg(x) }.mkString(", ")
     s.command match {
+      case EasyPrims.NormalCommand(op)   => s"$op($args)"
       case _: prim._done                 => ""
       case _: prim.etc._observercode     => ""
       case _: prim.etc._while            => HardPrims.generateWhile(s)
@@ -116,8 +117,7 @@ object Compiler {
       case h: prim._hatch                => HardPrims.generateHatch(s, h.breedName)
       case _: prim.etc._hideturtle       => "AgentSet.self().hideTurtle(true);"
       case _: prim.etc._showturtle       => "AgentSet.self().hideTurtle(false);"
-      case EasyPrims.NormalCommand(op)   => s"$op($args)"
-      case r: prim._repeat           =>
+      case _: prim._repeat           =>
         s"for(var i = 0; i < ${arg(0)}; i++) { ${genCommandBlock(s.args(1))} }"
       case _: prim._set              =>
         s.args(0).asInstanceOf[ast.ReporterApp].reporter match {
@@ -158,18 +158,18 @@ object Compiler {
     def argsSep(sep: String) =
       args.mkString(sep)
     r.reporter match {
+      case EasyPrims.InfixReporter(op)      => s"(${arg(0)} $op ${arg(1)})"
+      case EasyPrims.NormalReporter(op)     => s"$op($commaArgs)"
       case _: prim._nobody                  => "Nobody"
       case x: prim.etc._isbreed             => s"""${arg(0)}.isBreed("${x.breedName}")"""
       case b: prim.etc._breed               => s"""world.turtlesOfBreed("${b.getBreedName}")"""
       case b: prim.etc._breedsingular       => s"""world.getTurtleOfBreed("${b.breedName}", ${arg(0)})"""
       case b: prim.etc._breedhere           => s"""AgentSet.self().breedHere("${b.getBreedName}")"""
-      case x: prim.etc._turtle              => s"world.getTurtle(${arg(0)})"
+      case _: prim.etc._turtle              => s"world.getTurtle(${arg(0)})"
       case pure: nvm.Pure if r.args.isEmpty => compileLiteral(pure.report(null))
       case lv: prim._letvariable            => ident(lv.let.name)
       case pv: prim._procedurevariable      => ident(pv.name)
       case call: prim._callreport           => s"${ident(call.procedure.name)}($commaArgs)"
-      case EasyPrims.InfixReporter(op)      => s"(${arg(0)} $op ${arg(1)})"
-      case EasyPrims.NormalReporter(op)     => s"$op($commaArgs)"
       case _: prim._unaryminus              => s"(- ${arg(0)})"
       case bv: prim._breedvariable          => s"""AgentSet.getBreedVariable("${bv.name}")"""
       case tv: prim._turtlevariable         => s"AgentSet.getTurtleVariable(${tv.vn})"
@@ -180,21 +180,21 @@ object Compiler {
       case pv: prim._patchvariable          => s"AgentSet.getPatchVariable(${pv.vn})"
       case r: prim._reference               => s"${r.reference.vn}"
       case ov: prim._observervariable       => s"Globals.getGlobal(${ov.vn})"
-      case s: prim._word                    =>
+      case _: prim._word                    =>
         ("\"\"" +: args).map(arg => "Dump(" + arg + ")").mkString("(", " + ", ")")
-      case w: prim._with =>
+      case _: prim._with =>
         val agents = arg(0)
         val filter = genReporterBlock(r.args(1))
         s"AgentSet.agentFilter($agents, function(){ return $filter })"
-      case o: prim._of =>
+      case _: prim._of =>
         val agents = arg(1)
         val body = genReporterBlock(r.args(0))
         s"AgentSet.of($agents, function(){ return $body })"
-      case p: prim.etc._patch               => s"Prims.patch($commaArgs)"
+      case _: prim.etc._patch               => s"Prims.patch($commaArgs)"
       case _: prim.etc._nopatches           => "new Agents([])"
       case _: prim.etc._noturtles           => "new Agents([])"
-      case n: prim._neighbors               => s"Prims.getNeighbors()"
-      case n: prim._neighbors4              => s"Prims.getNeighbors4()"
+      case _: prim._neighbors               => s"Prims.getNeighbors()"
+      case _: prim._neighbors4              => s"Prims.getNeighbors4()"
       case _: prim.etc._minpxcor            => "world.minPxcor"
       case _: prim.etc._minpycor            => "world.minPycor"
       case _: prim.etc._maxpxcor            => "world.maxPxcor"
@@ -215,8 +215,10 @@ object Compiler {
   }
 
   def compileLiteral(x: AnyRef): String = x match {
-    case ll: api.LogoList => ll.map(compileLiteral).mkString("[", ", ", "]")
-    case x                => api.Dump.logoObject(x, readable = true, exporting = false)
+    case ll: api.LogoList =>
+      ll.map(compileLiteral).mkString("[", ", ", "]")
+    case x =>
+      api.Dump.logoObject(x, readable = true, exporting = false)
   }
 
   // these could be merged into one function, genExpression
@@ -224,13 +226,17 @@ object Compiler {
   // having different functions for each is more clear.
 
   def genReporterApp(e: ast.Expression) = e match {
-    case r: ast.ReporterApp => generateReporter(r)
+    case r: ast.ReporterApp =>
+      generateReporter(r)
   }
-  def genArg(e: ast.Expression) = genReporterApp(e)
+  def genArg(e: ast.Expression) =
+    genReporterApp(e)
   def genReporterBlock(e: ast.Expression) = e match {
-    case r: ast.ReporterBlock => Compiler.generateReporter(r.app)
+    case r: ast.ReporterBlock =>
+      Compiler.generateReporter(r.app)
   }
   def genCommandBlock(e: ast.Expression) = e match {
-    case cb: ast.CommandBlock => Compiler.generateCommands(cb.statements)
+    case cb: ast.CommandBlock =>
+      Compiler.generateCommands(cb.statements)
   }
 }
