@@ -9,19 +9,19 @@ object EasyPrims {
   object SimpleReporter {
     def unapply(r: nvm.Reporter): Option[String] =
       PartialFunction.condOpt(r) {
-        case _: prim._nobody       => "Nobody"
-        case _: prim.etc._nopatches           => "new Agents([])"
-        case _: prim.etc._noturtles           => "new Agents([])"
-        case _: prim.etc._minpxcor => "world.minPxcor"
-        case _: prim.etc._minpycor => "world.minPycor"
-        case _: prim.etc._maxpxcor => "world.maxPxcor"
-        case _: prim.etc._maxpycor => "world.maxPycor"
-        case _: prim.etc._linkneighbors       => "AgentSet.linkNeighbors(false, false)"
-        case _: prim.etc._inlinkneighbors     => "AgentSet.linkNeighbors(true, false)"
-        case _: prim.etc._outlinkneighbors    => "AgentSet.linkNeighbors(true, true)"
-        case _: prim.etc._mylinks             => "AgentSet.connectedLinks(false, false)"
-        case _: prim.etc._myinlinks           => "AgentSet.connectedLinks(true, false)"
-        case _: prim.etc._myoutlinks          => "AgentSet.connectedLinks(true, true)"
+        case _: prim._nobody               => "Nobody"
+        case _: prim.etc._nopatches        => "new Agents([])"
+        case _: prim.etc._noturtles        => "new Agents([])"
+        case _: prim.etc._minpxcor         => "world.minPxcor"
+        case _: prim.etc._minpycor         => "world.minPycor"
+        case _: prim.etc._maxpxcor         => "world.maxPxcor"
+        case _: prim.etc._maxpycor         => "world.maxPycor"
+        case _: prim.etc._linkneighbors    => "AgentSet.linkNeighbors(false, false)"
+        case _: prim.etc._inlinkneighbors  => "AgentSet.linkNeighbors(true, false)"
+        case _: prim.etc._outlinkneighbors => "AgentSet.linkNeighbors(true, true)"
+        case _: prim.etc._mylinks          => "AgentSet.connectedLinks(false, false)"
+        case _: prim.etc._myinlinks        => "AgentSet.connectedLinks(true, false)"
+        case _: prim.etc._myoutlinks       => "AgentSet.connectedLinks(true, true)"
       }
   }
 
@@ -121,11 +121,11 @@ object EasyPrims {
   object SimpleCommand {
     def unapply(c: nvm.Command): Option[String] =
       PartialFunction.condOpt(c) {
-        case _: prim._done                 => ""
-        case _: prim.etc._observercode     => ""
-        case _: prim.etc._stop             => "return"
-        case _: prim.etc._hideturtle       => "AgentSet.self().hideTurtle(true);"
-        case _: prim.etc._showturtle       => "AgentSet.self().hideTurtle(false);"
+        case _: prim._done             => ""
+        case _: prim.etc._observercode => ""
+        case _: prim.etc._stop         => "return"
+        case _: prim.etc._hideturtle   => "AgentSet.self().hideTurtle(true);"
+        case _: prim.etc._showturtle   => "AgentSet.self().hideTurtle(false);"
       }
   }
 
