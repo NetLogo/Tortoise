@@ -1,6 +1,6 @@
 // (C) Uri Wilensky. https://github.com/NetLogo/NetLogo
 
-package org.nlogo.tortoise
+package org.nlogo.tortoise.rhino
 
 // ADDING SOMETHING TO THIS OBJECT?
 // WELL, ARE YA, PUNK?

@@ -2,6 +2,7 @@
 
 package org.nlogo.tortoise
 
+import rhino.Rhino
 import org.scalatest.FunSuite
 
 // just basic smoke tests that basic Tortoise engine functionality is there,

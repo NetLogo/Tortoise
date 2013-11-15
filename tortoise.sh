@@ -2,4 +2,4 @@
 
 rlwrap ./sbt \
   -Djline.terminal=jline.UnsupportedTerminal \
-  'run-main org.nlogo.tortoise.Shell'
+  'run-main org.nlogo.tortoise.rhino.Shell'
