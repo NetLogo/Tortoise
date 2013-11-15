@@ -76,13 +76,6 @@ object Compiler {
     else generate(defs.head.statements.tail.head.args.head)
   }
 
-  def compileLiteral(x: AnyRef): String = x match {
-    case ll: api.LogoList =>
-      ll.map(compileLiteral).mkString("[", ", ", "]")
-    case x =>
-      api.Dump.logoObject(x, readable = true, exporting = false)
-  }
-
   def generate(node: ast.AstNode): String = node match {
     case stmts: ast.Statements =>
       stmts.map(Prims.generateCommand)

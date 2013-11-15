@@ -21,7 +21,7 @@ object Prims {
       case b: prim.etc._breed               => s"""world.turtlesOfBreed("${b.getBreedName}")"""
       case b: prim.etc._breedsingular       => s"""world.getTurtleOfBreed("${b.breedName}", ${arg(0)})"""
       case b: prim.etc._breedhere           => s"""AgentSet.self().breedHere("${b.getBreedName}")"""
-      case pure: nvm.Pure if r.args.isEmpty => Compiler.compileLiteral(pure.report(null))
+      case pure: nvm.Pure if r.args.isEmpty => generateLiteral(pure.report(null))
       case lv: prim._letvariable            => Compiler.ident(lv.let.name)
       case pv: prim._procedurevariable      => Compiler.ident(pv.name)
       case call: prim._callreport           => s"${Compiler.ident(call.procedure.name)}($commaArgs)"
@@ -87,6 +87,13 @@ object Prims {
         throw new IllegalArgumentException(
           "unknown primitive: " + s.command.getClass.getName)
     }
+  }
+
+  def generateLiteral(x: AnyRef): String = x match {
+    case ll: api.LogoList =>
+      ll.map(generateLiteral).mkString("[", ", ", "]")
+    case x =>
+      api.Dump.logoObject(x, readable = true, exporting = false)
   }
 
   /// custom generators for particular Commands
