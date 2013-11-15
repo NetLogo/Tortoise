@@ -2,7 +2,7 @@
 
 package org.nlogo.tortoise
 
-import org.nlogo.{ api, compile => ast, nvm, prim, workspace },
+import org.nlogo.{ api, compile => ast, nvm, workspace },
    nvm.FrontEndInterface.{ ProceduresMap, NoProcedures },
    org.nlogo.shape.{LinkShape, VectorShape}
 
@@ -81,92 +81,9 @@ object Compiler {
   ///
 
   def generateCommands(cs: ast.Statements): String =
-    cs.map(generateCommand).filter(_.nonEmpty).mkString("\n")
+    cs.map(Prims.generateCommand).filter(_.nonEmpty).mkString("\n")
 
   ///
-
-  def generateCommand(s: ast.Statement): String = {
-    def arg(i: Int) = genArg(s.args(i))
-    def args =
-      s.args.collect{ case x: ast.ReporterApp =>
-        genArg(x) }.mkString(", ")
-    s.command match {
-      case EasyPrims.SimpleCommand(op)   => op
-      case EasyPrims.NormalCommand(op)   => s"$op($args)"
-      case _: prim._set                  => HardPrims.generateSet(s)
-      case _: prim.etc._while            => HardPrims.generateWhile(s)
-      case _: prim.etc._if               => HardPrims.generateIf(s)
-      case _: prim.etc._ifelse           => HardPrims.generateIfElse(s)
-      case _: prim._ask                  => HardPrims.generateAsk(s, shuffle = true)
-      case _: prim._createturtles        => HardPrims.generateCreateTurtles(s, ordered = false)
-      case _: prim._createorderedturtles => HardPrims.generateCreateTurtles(s, ordered = true)
-      case _: prim._sprout               => HardPrims.generateSprout(s)
-      case _: prim.etc._createlinkfrom   => HardPrims.generateCreateLink(s, "createLinkFrom")
-      case _: prim.etc._createlinksfrom  => HardPrims.generateCreateLink(s, "createLinksFrom")
-      case _: prim.etc._createlinkto     => HardPrims.generateCreateLink(s, "createLinkTo")
-      case _: prim.etc._createlinksto    => HardPrims.generateCreateLink(s, "createLinksTo")
-      case _: prim.etc._createlinkwith   => HardPrims.generateCreateLink(s, "createLinkWith")
-      case _: prim.etc._createlinkswith  => HardPrims.generateCreateLink(s, "createLinksWith")
-      case h: prim._hatch                => HardPrims.generateHatch(s, h.breedName)
-      case call: prim._call              => s"${ident(call.procedure.name)}($args)"
-      case _: prim.etc._report           => s"return $args;"
-      case l: prim._let                  =>
-        // arg 0 is the name but we don't access it because LetScoper took care of it.
-        // arg 1 is the value.
-        s"var ${ident(l.let.name)} = ${arg(1)};"
-      case _: prim._repeat               =>
-        s"for(var i = 0; i < ${arg(0)}; i++) { ${genCommandBlock(s.args(1))} }"
-      case _ =>
-        throw new IllegalArgumentException(
-          "unknown primitive: " + s.command.getClass.getName)
-    }
-  }
-
-  def generateReporter(r: ast.ReporterApp): String = {
-    def arg(i: Int) = genArg(r.args(i))
-    def commaArgs = argsSep(", ")
-    def args =
-      r.args.collect{ case x: ast.ReporterApp => genArg(x) }
-    def argsSep(sep: String) =
-      args.mkString(sep)
-    r.reporter match {
-      case EasyPrims.SimpleReporter(op)     => op
-      case EasyPrims.InfixReporter(op)      => s"(${arg(0)} $op ${arg(1)})"
-      case EasyPrims.NormalReporter(op)     => s"$op($commaArgs)"
-      case x: prim.etc._isbreed             => s"""${arg(0)}.isBreed("${x.breedName}")"""
-      case b: prim.etc._breed               => s"""world.turtlesOfBreed("${b.getBreedName}")"""
-      case b: prim.etc._breedsingular       => s"""world.getTurtleOfBreed("${b.breedName}", ${arg(0)})"""
-      case b: prim.etc._breedhere           => s"""AgentSet.self().breedHere("${b.getBreedName}")"""
-      case pure: nvm.Pure if r.args.isEmpty => compileLiteral(pure.report(null))
-      case lv: prim._letvariable            => ident(lv.let.name)
-      case pv: prim._procedurevariable      => ident(pv.name)
-      case call: prim._callreport           => s"${ident(call.procedure.name)}($commaArgs)"
-      case _: prim._unaryminus              => s"(- ${arg(0)})"
-      case bv: prim._breedvariable          => s"""AgentSet.getBreedVariable("${bv.name}")"""
-      case tv: prim._turtlevariable         => s"AgentSet.getTurtleVariable(${tv.vn})"
-      case tv: prim._linkvariable           => s"AgentSet.getLinkVariable(${tv.vn})"
-      case tv: prim._turtleorlinkvariable   =>
-        val vn = api.AgentVariables.getImplicitTurtleVariables.indexOf(tv.varName)
-        s"AgentSet.getTurtleVariable($vn)"
-      case pv: prim._patchvariable          => s"AgentSet.getPatchVariable(${pv.vn})"
-      case r: prim._reference               => s"${r.reference.vn}"
-      case ov: prim._observervariable       => s"Globals.getGlobal(${ov.vn})"
-      case _: prim._word                    =>
-        ("\"\"" +: args).map(arg => "Dump(" + arg + ")").mkString("(", " + ", ")")
-      case _: prim._with =>
-        val agents = arg(0)
-        val filter = genReporterBlock(r.args(1))
-        s"AgentSet.agentFilter($agents, function(){ return $filter })"
-      case _: prim._of =>
-        val agents = arg(1)
-        val body = genReporterBlock(r.args(0))
-        s"AgentSet.of($agents, function(){ return $body })"
-      case _: prim.etc._islink              => s"(${arg(0)} instanceof Link)"
-      case _ =>
-        throw new IllegalArgumentException(
-          "unknown primitive: " + r.reporter.getClass.getName)
-    }
-  }
 
   def compileLiteral(x: AnyRef): String = x match {
     case ll: api.LogoList =>
@@ -181,13 +98,13 @@ object Compiler {
 
   def genReporterApp(e: ast.Expression) = e match {
     case r: ast.ReporterApp =>
-      generateReporter(r)
+      Prims.generateReporter(r)
   }
   def genArg(e: ast.Expression) =
     genReporterApp(e)
   def genReporterBlock(e: ast.Expression) = e match {
     case r: ast.ReporterBlock =>
-      Compiler.generateReporter(r.app)
+      Prims.generateReporter(r.app)
   }
   def genCommandBlock(e: ast.Expression) = e match {
     case cb: ast.CommandBlock =>
