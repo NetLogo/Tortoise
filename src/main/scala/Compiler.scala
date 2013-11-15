@@ -158,14 +158,13 @@ object Compiler {
     def argsSep(sep: String) =
       args.mkString(sep)
     r.reporter match {
+      case EasyPrims.SimpleReporter(op)     => op
       case EasyPrims.InfixReporter(op)      => s"(${arg(0)} $op ${arg(1)})"
       case EasyPrims.NormalReporter(op)     => s"$op($commaArgs)"
-      case _: prim._nobody                  => "Nobody"
       case x: prim.etc._isbreed             => s"""${arg(0)}.isBreed("${x.breedName}")"""
       case b: prim.etc._breed               => s"""world.turtlesOfBreed("${b.getBreedName}")"""
       case b: prim.etc._breedsingular       => s"""world.getTurtleOfBreed("${b.breedName}", ${arg(0)})"""
       case b: prim.etc._breedhere           => s"""AgentSet.self().breedHere("${b.getBreedName}")"""
-      case _: prim.etc._turtle              => s"world.getTurtle(${arg(0)})"
       case pure: nvm.Pure if r.args.isEmpty => compileLiteral(pure.report(null))
       case lv: prim._letvariable            => ident(lv.let.name)
       case pv: prim._procedurevariable      => ident(pv.name)
@@ -190,23 +189,6 @@ object Compiler {
         val agents = arg(1)
         val body = genReporterBlock(r.args(0))
         s"AgentSet.of($agents, function(){ return $body })"
-      case _: prim.etc._patch               => s"Prims.patch($commaArgs)"
-      case _: prim.etc._nopatches           => "new Agents([])"
-      case _: prim.etc._noturtles           => "new Agents([])"
-      case _: prim._neighbors               => s"Prims.getNeighbors()"
-      case _: prim._neighbors4              => s"Prims.getNeighbors4()"
-      case _: prim.etc._minpxcor            => "world.minPxcor"
-      case _: prim.etc._minpycor            => "world.minPycor"
-      case _: prim.etc._maxpxcor            => "world.maxPxcor"
-      case _: prim.etc._maxpycor            => "world.maxPycor"
-      case _: prim.etc._worldwidth          => "world.width()"
-      case _: prim.etc._worldheight         => "world.height()"
-      case _: prim.etc._linkneighbors       => "AgentSet.linkNeighbors(false, false)"
-      case _: prim.etc._inlinkneighbors     => "AgentSet.linkNeighbors(true, false)"
-      case _: prim.etc._outlinkneighbors    => "AgentSet.linkNeighbors(true, true)"
-      case _: prim.etc._mylinks             => "AgentSet.connectedLinks(false, false)"
-      case _: prim.etc._myinlinks           => "AgentSet.connectedLinks(true, false)"
-      case _: prim.etc._myoutlinks          => "AgentSet.connectedLinks(true, true)"
       case _: prim.etc._islink              => s"(${arg(0)} instanceof Link)"
       case _ =>
         throw new IllegalArgumentException(

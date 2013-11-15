@@ -6,6 +6,25 @@ import org.nlogo.{ nvm, prim }
 
 object EasyPrims {
 
+  object SimpleReporter {
+    def unapply(r: nvm.Reporter): Option[String] =
+      PartialFunction.condOpt(r) {
+        case _: prim._nobody       => "Nobody"
+        case _: prim.etc._nopatches           => "new Agents([])"
+        case _: prim.etc._noturtles           => "new Agents([])"
+        case _: prim.etc._minpxcor => "world.minPxcor"
+        case _: prim.etc._minpycor => "world.minPycor"
+        case _: prim.etc._maxpxcor => "world.maxPxcor"
+        case _: prim.etc._maxpycor => "world.maxPycor"
+        case _: prim.etc._linkneighbors       => "AgentSet.linkNeighbors(false, false)"
+        case _: prim.etc._inlinkneighbors     => "AgentSet.linkNeighbors(true, false)"
+        case _: prim.etc._outlinkneighbors    => "AgentSet.linkNeighbors(true, true)"
+        case _: prim.etc._mylinks             => "AgentSet.connectedLinks(false, false)"
+        case _: prim.etc._myinlinks           => "AgentSet.connectedLinks(true, false)"
+        case _: prim.etc._myoutlinks          => "AgentSet.connectedLinks(true, true)"
+      }
+  }
+
   object InfixReporter {
     def unapply(r: nvm.Reporter): Option[String] =
       PartialFunction.condOpt(r) {
@@ -26,11 +45,16 @@ object EasyPrims {
   object NormalReporter {
     def unapply(r: nvm.Reporter): Option[String] =
       PartialFunction.condOpt(r) {
+        case _: prim.etc._turtle             => "world.getTurtle"
+        case _: prim.etc._patch              => "Prims.patch"
+        case _: prim._neighbors              => "Prims.getNeighbors"
+        case _: prim._neighbors4             => "Prims.getNeighbors4"
+        case _: prim.etc._worldwidth         => "world.width"
+        case _: prim.etc._worldheight        => "world.height"
         case _: prim._equal                  => "Prims.equality"
         case _: prim._notequal               => "!Prims.equality"
         case _: prim.etc._self               => "AgentSet.self"
         case _: prim.etc._myself             => "AgentSet.myself"
-        case _: prim.etc._patch              => "world.getPatchAt"
         case _: prim.etc._turtles            => "world.turtles"
         case _: prim.etc._links              => "world.links"
         case _: prim._patches                => "world.patches"
@@ -82,7 +106,6 @@ object EasyPrims {
         case _: prim.etc._floor              => "StrictMath.floor"
         case _: prim.etc._int                => "Prims._int"
         case _: prim.etc._round              => "StrictMath.round"
-        case _: prim.etc._turtle             => "world.getTurtle"
         case _: prim.etc._link               => "world.getLink"
         case _: prim.etc._linkneighbor       => "AgentSet.isLinkNeighbor(false, false)"
         case _: prim.etc._inlinkneighbor     => "AgentSet.isLinkNeighbor(true, false)"
