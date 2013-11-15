@@ -39,11 +39,11 @@ object Prims {
         ("\"\"" +: args).map(arg => "Dump(" + arg + ")").mkString("(", " + ", ")")
       case _: prim._with =>
         val agents = arg(0)
-        val filter = Compiler.genReporterBlock(r.args(1))
+        val filter = Compiler.genArg(r.args(1))
         s"AgentSet.agentFilter($agents, function(){ return $filter })"
       case _: prim._of =>
         val agents = arg(1)
-        val body = Compiler.genReporterBlock(r.args(0))
+        val body = Compiler.genArg(r.args(0))
         s"AgentSet.of($agents, function(){ return $body })"
       case _: prim.etc._islink              => s"(${arg(0)} instanceof Link)"
       case _ =>
@@ -82,7 +82,7 @@ object Prims {
         // arg 1 is the value.
         s"var ${Compiler.ident(l.let.name)} = ${arg(1)};"
       case _: prim._repeat               =>
-        s"for(var i = 0; i < ${arg(0)}; i++) { ${Compiler.genCommandBlock(s.args(1))} }"
+        s"for(var i = 0; i < ${arg(0)}; i++) { ${Compiler.genArg(s.args(1))} }"
       case _ =>
         throw new IllegalArgumentException(
           "unknown primitive: " + s.command.getClass.getName)
@@ -120,25 +120,25 @@ object Prims {
   }
 
   def generateWhile(w: ast.Statement): String = {
-    val pred = Compiler.genReporterBlock(w.args.head)
-    val body = Compiler.genCommandBlock(w.args.tail.head)
+    val pred = Compiler.genArg(w.args.head)
+    val body = Compiler.genArg(w.args.tail.head)
     s"""while ($pred) {
       |$body
       |}""".stripMargin
   }
 
   def generateIf(s: ast.Statement): String = {
-    val pred = Compiler.genReporterApp(s.args.head)
-    val body = Compiler.genCommandBlock(s.args.tail.head)
+    val pred = Compiler.genArg(s.args.head)
+    val body = Compiler.genArg(s.args.tail.head)
     s"""if ($pred) {
       |$body
       |}""".stripMargin
   }
 
   def generateIfElse(s: ast.Statement): String = {
-    val pred      = Compiler.genReporterApp(s.args.head)
-    val thenBlock = Compiler.genCommandBlock(s.args.tail.head)
-    val elseBlock = Compiler.genCommandBlock(s.args.tail.tail.head)
+    val pred      = Compiler.genArg(s.args.head)
+    val thenBlock = Compiler.genArg(s.args.tail.head)
+    val elseBlock = Compiler.genArg(s.args.tail.tail.head)
     s"""if ($pred) {
       |$thenBlock
       |} else {
@@ -147,25 +147,25 @@ object Prims {
   }
 
   def generateAsk(s: ast.Statement, shuffle: Boolean): String = {
-    val agents = Compiler.genReporterApp(s.args.head)
-    val body   = fun(Compiler.genCommandBlock(s.args.tail.head))
+    val agents = Compiler.genArg(s.args.head)
+    val body   = fun(Compiler.genArg(s.args.tail.head))
     s"AgentSet.ask($agents, $shuffle, $body);"
   }
 
   def generateCreateLink(s: ast.Statement, name: String): String = {
     import org.nlogo.prim._
-    val other = Compiler.genReporterApp(s.args.head)
+    val other = Compiler.genArg(s.args.head)
     // This is so that we don't shuffle unnecessarily.  FD 10/31/2013
     val nonEmptyCommandBlock =
       s.args.tail.head.asInstanceOf[ast.CommandBlock]
         .statements.nonEmpty
-    val body = fun(Compiler.genCommandBlock(s.args.tail.head))
+    val body = fun(Compiler.genArg(s.args.tail.head))
     s"""AgentSet.ask(AgentSet.$name($other), $nonEmptyCommandBlock, $body);"""
   }
 
   def generateCreateTurtles(s: ast.Statement, ordered: Boolean): String = {
     import org.nlogo.prim._
-    val n = Compiler.genReporterApp(s.args.head)
+    val n = Compiler.genArg(s.args.head)
     val name = if (ordered) "createorderedturtles" else "createturtles"
     val breed =
       s.command match {
@@ -173,20 +173,20 @@ object Prims {
         case x: _createorderedturtles => x.breedName
         case x => throw new IllegalArgumentException("How did you get here with class of type " + x.getClass.getName)
       }
-    val body = fun(Compiler.genCommandBlock(s.args.tail.head))
+    val body = fun(Compiler.genArg(s.args.tail.head))
     s"""AgentSet.ask(world.$name($n, "$breed"), true, $body);"""
   }
 
   def generateSprout(s: ast.Statement): String = {
-    val n = Compiler.genReporterApp(s.args.head)
-    val body = fun(Compiler.genCommandBlock(s.args.tail.head))
+    val n = Compiler.genArg(s.args.head)
+    val body = fun(Compiler.genArg(s.args.tail.head))
     val breedName = s.command.asInstanceOf[prim._sprout].breedName
     s"""AgentSet.ask(Prims.sprout($n, "$breedName"), true, $body);"""
   }
 
   def generateHatch(s: ast.Statement, breedName: String): String = {
-    val n = Compiler.genReporterApp(s.args.head)
-    val body = fun(Compiler.genCommandBlock(s.args.tail.head))
+    val n = Compiler.genArg(s.args.head)
+    val body = fun(Compiler.genArg(s.args.tail.head))
     s"""AgentSet.ask(Prims.hatch($n, "$breedName"), true, $body);"""
   }
 

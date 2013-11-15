@@ -92,22 +92,13 @@ object Compiler {
       api.Dump.logoObject(x, readable = true, exporting = false)
   }
 
-  // these could be merged into one function, genExpression
-  // but I think the resulting code would be confusing and potentially error prone.
-  // having different functions for each is more clear.
-
-  def genReporterApp(e: ast.Expression) = e match {
+  def genArg(e: ast.Expression) = e match {
     case r: ast.ReporterApp =>
       Prims.generateReporter(r)
-  }
-  def genArg(e: ast.Expression) =
-    genReporterApp(e)
-  def genReporterBlock(e: ast.Expression) = e match {
     case r: ast.ReporterBlock =>
       Prims.generateReporter(r.app)
-  }
-  def genCommandBlock(e: ast.Expression) = e match {
     case cb: ast.CommandBlock =>
       Compiler.generateCommands(cb.statements)
   }
+
 }
