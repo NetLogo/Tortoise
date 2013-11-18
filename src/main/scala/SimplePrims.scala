@@ -4,7 +4,7 @@ package org.nlogo.tortoise
 
 import org.nlogo.{ nvm, prim }
 
-object EasyPrims {
+object SimplePrims {
 
   object SimpleReporter {
     def unapply(r: nvm.Reporter): Option[String] =

@@ -14,9 +14,9 @@ object Prims {
     def argsSep(sep: String) =
       args.mkString(sep)
     r.reporter match {
-      case EasyPrims.SimpleReporter(op)     => op
-      case EasyPrims.InfixReporter(op)      => s"(${arg(0)} $op ${arg(1)})"
-      case EasyPrims.NormalReporter(op)     => s"$op($commaArgs)"
+      case SimplePrims.SimpleReporter(op)   => op
+      case SimplePrims.InfixReporter(op)    => s"(${arg(0)} $op ${arg(1)})"
+      case SimplePrims.NormalReporter(op)   => s"$op($commaArgs)"
       case x: prim.etc._isbreed             => s"""${arg(0)}.isBreed("${x.breedName}")"""
       case b: prim.etc._breed               => s"""world.turtlesOfBreed("${b.getBreedName}")"""
       case b: prim.etc._breedsingular       => s"""world.getTurtleOfBreed("${b.breedName}", ${arg(0)})"""
@@ -58,8 +58,8 @@ object Prims {
       s.args.collect{ case x: ast.ReporterApp =>
         Compiler.generate(x) }.mkString(", ")
     s.command match {
-      case EasyPrims.SimpleCommand(op)   => op
-      case EasyPrims.NormalCommand(op)   => s"$op($args)"
+      case SimplePrims.SimpleCommand(op) => op
+      case SimplePrims.NormalCommand(op) => s"$op($args)"
       case _: prim._set                  => generateSet(s)
       case _: prim.etc._while            => generateWhile(s)
       case _: prim.etc._if               => generateIf(s)
