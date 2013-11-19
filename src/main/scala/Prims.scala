@@ -40,11 +40,11 @@ object Prims {
       case _: prim._with =>
         val agents = arg(0)
         val filter = Handlers.reporter(r.args(1))
-        s"AgentSet.agentFilter($agents, function() { return $filter })"
+        s"AgentSet.agentFilter($agents, ${Handlers.fun(r.args(1), true)})"
       case _: prim._of =>
         val agents = arg(1)
         val body = Handlers.reporter(r.args(0))
-        s"AgentSet.of($agents, function() { return $body })"
+        s"AgentSet.of($agents, ${Handlers.fun(r.args(0), true)})"
       case _: prim.etc._islink              => s"(${arg(0)} instanceof Link)"
       case _ =>
         throw new IllegalArgumentException(
@@ -76,7 +76,7 @@ object Prims {
       case _: prim.etc._createlinkwith   => generateCreateLink(s, "createLinkWith")
       case _: prim.etc._createlinkswith  => generateCreateLink(s, "createLinksWith")
       case h: prim._hatch                => generateHatch(s, h.breedName)
-      case call: prim._call              => s"${Handlers.ident(call.procedure.name)}($args)"
+      case call: prim._call              => s"${Handlers.ident(call.procedure.name)}($args);"
       case _: prim.etc._report           => s"return $args;"
       case l: prim._let                  =>
         // arg 0 is the name but we don't access it because LetScoper took care of it.
@@ -96,20 +96,20 @@ object Prims {
       case p: prim._letvariable =>
         s"${Handlers.ident(p.let.name)} = ${arg(1)};"
       case p: prim._observervariable =>
-        s"Globals.setGlobal(${p.vn},${arg(1)})"
+        s"Globals.setGlobal(${p.vn},${arg(1)});"
       case bv: prim._breedvariable =>
-        s"""AgentSet.setBreedVariable("${bv.name}",${arg(1)})"""
+        s"""AgentSet.setBreedVariable("${bv.name}",${arg(1)});"""
       case p: prim._linkvariable =>
-        s"AgentSet.setLinkVariable(${p.vn},${arg(1)})"
+        s"AgentSet.setLinkVariable(${p.vn},${arg(1)});"
       case p: prim._turtlevariable =>
-        s"AgentSet.setTurtleVariable(${p.vn},${arg(1)})"
+        s"AgentSet.setTurtleVariable(${p.vn},${arg(1)});"
       case p: prim._turtleorlinkvariable if p.varName == "BREED" =>
-        s"AgentSet.setBreed(${arg(1)})"
+        s"AgentSet.setBreed(${arg(1)});"
       case p: prim._turtleorlinkvariable =>
         val vn = api.AgentVariables.getImplicitTurtleVariables.indexOf(p.varName)
-        s"AgentSet.setTurtleVariable($vn,${arg(1)})"
+        s"AgentSet.setTurtleVariable($vn,${arg(1)});"
       case p: prim._patchvariable =>
-        s"AgentSet.setPatchVariable(${p.vn},${arg(1)})"
+        s"AgentSet.setPatchVariable(${p.vn},${arg(1)});"
       case p: prim._procedurevariable =>
         s"${Handlers.ident(p.name)} = ${arg(1)};"
       case x =>
@@ -122,7 +122,7 @@ object Prims {
     val count = Handlers.reporter(w.args(0))
     val body = Handlers.commands(w.args(1))
     s"""|for(var i = 0; i < $count; i++) {
-        |  $body
+        |${Handlers.indented(body)}
         |}""".stripMargin
   }
 
@@ -130,7 +130,7 @@ object Prims {
     val pred = Handlers.reporter(w.args(0))
     val body = Handlers.commands(w.args(1))
     s"""|while ($pred) {
-        |  $body
+        |${Handlers.indented(body)}
         |}""".stripMargin
   }
 
@@ -138,7 +138,7 @@ object Prims {
     val pred = Handlers.reporter(s.args(0))
     val body = Handlers.commands(s.args(1))
     s"""|if ($pred) {
-        |  $body
+        |${Handlers.indented(body)}
         |}""".stripMargin
   }
 
@@ -147,10 +147,10 @@ object Prims {
     val thenBlock = Handlers.commands(s.args(1))
     val elseBlock = Handlers.commands(s.args(2))
     s"""|if ($pred) {
-        |  $thenBlock
+        |${Handlers.indented(thenBlock)}
         |}
         |else {
-        |  $elseBlock
+        |${Handlers.indented(elseBlock)}
         |}""".stripMargin
   }
 

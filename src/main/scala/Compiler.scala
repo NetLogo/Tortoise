@@ -43,10 +43,11 @@ object Compiler {
         program = api.Program.empty.copy(interfaceGlobals = interfaceGlobals))
     val init = new RuntimeInit(results.program, dimensions,
       turtleShapeList, linkShapeList)
-    val js =
-        init.init +
-        defs.map(compileProcedureDef).mkString("", "\n", "\n") +
-        compileCommands(interfaceGlobalCommands, program = results.program)
+    val main =
+      defs.map(compileProcedureDef).mkString("", "\n", "\n")
+    val interface =
+      compileCommands(interfaceGlobalCommands, program = results.program)
+    val js = init.init + main + interface
     if (results.program.linkBreeds.nonEmpty)
       throw new IllegalArgumentException("unknown language feature: link breeds")
     (js, results.program, results.procedures)
@@ -56,8 +57,9 @@ object Compiler {
     val name = Handlers.ident(pd.procedure.name)
     val body = Handlers.commands(pd.statements)
     val args = pd.procedure.args.map(Handlers.ident).mkString(", ")
-    val indentedBody = body.lines.map("  " + _).mkString("\n")
-    s"function $name ($args) {\n$indentedBody\n};"
+    s"""|function $name($args) {
+        |${Handlers.indented(body)}
+        |}""".stripMargin
   }
 
   // How this works:

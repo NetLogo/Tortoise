@@ -6,8 +6,16 @@ import org.nlogo.{ api, compile => ast }
 
 object Handlers {
 
-  def fun(node: ast.AstNode): String =
-    s"function() { ${commands(node)} }"
+  def fun(node: ast.AstNode, isReporter: Boolean = false): String = {
+    val body =
+      if (isReporter)
+        ("return " + reporter(node))
+      else
+        commands(node)
+    s"""|function() {
+        |${indented(body)}
+        |}""".stripMargin
+  }
 
   // The "abstract" syntax trees we get from the front end aren't totally abstract in that they have
   // CommandBlock wrappers around Statements objects and ReporterBlock wrappers around Reporter
@@ -37,6 +45,9 @@ object Handlers {
     case x =>
       api.Dump.logoObject(x, readable = true, exporting = false)
   }
+
+  def indented(s: String): String =
+    s.lines.map("  " + _).mkString("\n")
 
   // bogus, will need work - ST 9/13/13
   def ident(s: String): String =
