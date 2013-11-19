@@ -20,7 +20,7 @@ class TestEngine extends FunSuite {
   test("empty world") {
     val rhino = new Rhino
     rhino.eval("world = new World(-1, 1, -1, 1)")
-    rhino.eval("world.clearall()")
+    rhino.eval("world.clearAll()")
     assertResult(Double.box(9)) {
       rhino.eval("AgentSet.count(world.patches())")
     }

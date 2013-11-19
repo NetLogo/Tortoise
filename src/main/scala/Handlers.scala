@@ -64,8 +64,13 @@ object Handlers {
     s.lines.map("  " + _).mkString("\n")
 
   // bogus, will need work - ST 9/13/13
-  def ident(s: String): String =
-    s.replaceAll("-", "_")
-     .replaceAll("\\?", "_P")
+  def ident(s: String): String = {
+    def initialUpper(s: String): String =
+      java.lang.Character.toUpperCase(s.head) + s.tail
+    def initialLower(s: String): String =
+      java.lang.Character.toLowerCase(s.head) + s.tail
+    val camel = initialLower(s.toLowerCase.split('-').map(initialUpper).mkString)
+    camel.replaceAll("\\?", "_p")
+  }
 
 }

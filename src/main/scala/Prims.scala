@@ -174,7 +174,7 @@ object Prims {
   def generateCreateTurtles(s: ast.Statement, ordered: Boolean): String = {
     import org.nlogo.prim._
     val n = Handlers.reporter(s.args(0))
-    val name = if (ordered) "createorderedturtles" else "createturtles"
+    val name = if (ordered) "createOrderedTurtles" else "createTurtles"
     val breed =
       s.command match {
         case x: _createturtles => x.breedName
