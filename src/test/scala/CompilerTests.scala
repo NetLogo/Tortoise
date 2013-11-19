@@ -55,21 +55,21 @@ class CompilerTests extends FunSuite {
     import Compiler.{compileCommands => compile}
     val input = "let x 5 output-print x"
     val expected = """|var X = 5;
-                      |Prims.outputprint(X)""".stripMargin
+                      |Prims.outputprint(X);""".stripMargin
     assertResult(expected)(compile(input))
   }
 
   test("commands: ask simple") {
     import Compiler.{compileCommands => compile}
     val input = "ask turtles [fd 1]"
-    val expected = "AgentSet.ask(world.turtles(), true, function(){ Prims.fd(1) });"
+    val expected = "AgentSet.ask(world.turtles(), true, function() { Prims.fd(1); });"
     assertResult(expected)(compile(input))
   }
 
   test("commands: ask patches with variable") {
     import Compiler.{compileCommands => compile}
     val input = "ask patches [output-print pxcor]"
-    val expected = "AgentSet.ask(world.patches(), true, function(){ Prims.outputprint(AgentSet.getPatchVariable(0)) });"
+    val expected = "AgentSet.ask(world.patches(), true, function() { Prims.outputprint(AgentSet.getPatchVariable(0)); });"
     assertResult(expected)(compile(input))
   }
 
@@ -77,8 +77,8 @@ class CompilerTests extends FunSuite {
     import Compiler.{compileCommands => compile}
     val input = "ask patches with [pxcor = 1] [output-print pycor]"
     val expectedAgentFilter =
-      "AgentSet.agentFilter(world.patches(), function(){ return Prims.equality(AgentSet.getPatchVariable(0), 1) })"
-    val expected = s"AgentSet.ask($expectedAgentFilter, true, function(){ Prims.outputprint(AgentSet.getPatchVariable(1)) });"
+      "AgentSet.agentFilter(world.patches(), function() { return Prims.equality(AgentSet.getPatchVariable(0), 1) })"
+    val expected = s"AgentSet.ask($expectedAgentFilter, true, function() { Prims.outputprint(AgentSet.getPatchVariable(1)); });"
     assertResult(expected)(compile(input))
   }
 
@@ -89,7 +89,7 @@ class CompilerTests extends FunSuite {
     val input = "to foo output-print 5 end"
     val expected = """world = new World(0, 0, 0, 0, 12.0, true, true, {}, {}, 0);
                      |function FOO () {
-                     |Prims.outputprint(5)
+                     |  Prims.outputprint(5);
                      |};
                      |""".stripMargin
     assertResult(expected)(compile(input)._1)
@@ -99,12 +99,12 @@ class CompilerTests extends FunSuite {
     import Compiler.{compileProcedures => compile}
     val input = "globals [x y z] to foo-bar? output-print z output-print y output-print x end"
     val expected =
-     """|Globals.init(3)
+     """|Globals.init(3);
         |world = new World(0, 0, 0, 0, 12.0, true, true, {}, {}, 0);
         |function FOO_BAR_P () {
-        |Prims.outputprint(Globals.getGlobal(2))
-        |Prims.outputprint(Globals.getGlobal(1))
-        |Prims.outputprint(Globals.getGlobal(0))
+        |  Prims.outputprint(Globals.getGlobal(2));
+        |  Prims.outputprint(Globals.getGlobal(1));
+        |  Prims.outputprint(Globals.getGlobal(0));
         |};
         |""".stripMargin
     assertResult(expected)(compile(input)._1)
