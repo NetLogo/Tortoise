@@ -96,20 +96,20 @@ object Prims {
       case p: prim._letvariable =>
         s"${Handlers.ident(p.let.name)} = ${arg(1)};"
       case p: prim._observervariable =>
-        s"Globals.setGlobal(${p.vn},${arg(1)});"
+        s"Globals.setGlobal(${p.vn}, ${arg(1)});"
       case bv: prim._breedvariable =>
-        s"""AgentSet.setBreedVariable("${bv.name}",${arg(1)});"""
+        s"""AgentSet.setBreedVariable("${bv.name}", ${arg(1)});"""
       case p: prim._linkvariable =>
-        s"AgentSet.setLinkVariable(${p.vn},${arg(1)});"
+        s"AgentSet.setLinkVariable(${p.vn}, ${arg(1)});"
       case p: prim._turtlevariable =>
-        s"AgentSet.setTurtleVariable(${p.vn},${arg(1)});"
+        s"AgentSet.setTurtleVariable(${p.vn}, ${arg(1)});"
       case p: prim._turtleorlinkvariable if p.varName == "BREED" =>
         s"AgentSet.setBreed(${arg(1)});"
       case p: prim._turtleorlinkvariable =>
         val vn = api.AgentVariables.getImplicitTurtleVariables.indexOf(p.varName)
-        s"AgentSet.setTurtleVariable($vn,${arg(1)});"
+        s"AgentSet.setTurtleVariable($vn, ${arg(1)});"
       case p: prim._patchvariable =>
-        s"AgentSet.setPatchVariable(${p.vn},${arg(1)});"
+        s"AgentSet.setPatchVariable(${p.vn}, ${arg(1)});"
       case p: prim._procedurevariable =>
         s"${Handlers.ident(p.name)} = ${arg(1)};"
       case x =>
