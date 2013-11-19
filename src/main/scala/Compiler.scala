@@ -3,8 +3,7 @@
 package org.nlogo.tortoise
 
 import org.nlogo.{ api, compile => ast, nvm, workspace },
-   nvm.FrontEndInterface.{ ProceduresMap, NoProcedures },
-   org.nlogo.shape.{LinkShape, VectorShape}
+   nvm.FrontEndInterface.{ ProceduresMap, NoProcedures }
 
 import collection.JavaConverters._
 
