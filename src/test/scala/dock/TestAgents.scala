@@ -4,8 +4,9 @@ package org.nlogo.tortoise
 package dock
 
 import org.nlogo.api, api.WorldDimensions
+import org.nlogo.util.SlowTest
 
-class TestAgents extends DockingSuite {
+class TestAgents extends DockingSuite with SlowTest {
 
   test("world dimensions") { implicit fixture => import fixture._
     declare("", WorldDimensions.square(2))

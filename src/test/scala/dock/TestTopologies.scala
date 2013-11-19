@@ -4,8 +4,9 @@ package org.nlogo.tortoise
 package dock
 
 import org.nlogo.api, api.WorldDimensions
+import org.nlogo.util.SlowTest
 
-class TestTopologies extends DockingSuite {
+class TestTopologies extends DockingSuite with SlowTest {
   def testDistance(world: WorldDimensions)(implicit fixture: DockingFixture) : Unit = { import fixture._
     declare("", world)
     testCommand("cro 8")

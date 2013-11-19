@@ -3,7 +3,9 @@
 package org.nlogo.tortoise
 package dock
 
-class TestLinks extends DockingSuite {
+import org.nlogo.util.SlowTest
+
+class TestLinks extends DockingSuite with SlowTest {
   test("Links1") { implicit fixture => import fixture._
     testCommand("crt 2")
     testCommand("ask turtle 0 [ create-link-to turtle 1 ]")
