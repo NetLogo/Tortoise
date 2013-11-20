@@ -3,7 +3,9 @@
 # -e makes the whole thing die with an error if any command does
 # -v lets you see the commands as they happen
 
-git submodule update --init
+if [ ! -f "models/.git" ] ; then
+  git submodule update --init
+fi
 
 if [ "$1" == --clean ] ; then
   git clean -fdX
