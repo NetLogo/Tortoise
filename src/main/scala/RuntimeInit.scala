@@ -7,16 +7,22 @@ import org.nlogo.api
 // RuntimeInit generates JavaScript code that does any initialization that needs to happen
 // before any user code runs, for example creating patches
 
-class RuntimeInit(program: api.Program, dimensions: api.WorldDimensions, turtleShapeList: api.ShapeList, linkShapeList: api.ShapeList) {
+class RuntimeInit(
+  program: api.Program, dimensions: api.WorldDimensions,
+  turtleShapeList: api.ShapeList, linkShapeList: api.ShapeList) {
+
   import scala.collection.JavaConverters._
   import org.nlogo.tortoise.json.JSONSerializer
 
   def init = {
+    def shapeList(shapes: api.ShapeList) =
+      if(shapes.getNames.isEmpty)
+        "{}"
+      else
+        JSONSerializer.serialize(shapes)
+    val turtleShapesJson = shapeList(turtleShapeList)
+    val linkShapesJson = shapeList(linkShapeList)
     import dimensions._
-    var turtleShapesJson = "{}"
-    if(!turtleShapeList.getNames.isEmpty) turtleShapesJson = JSONSerializer.serialize(turtleShapeList)
-    var linkShapesJson = "{}"
-    if(!linkShapeList.getNames.isEmpty) linkShapesJson = JSONSerializer.serialize(linkShapeList)
     globals + turtlesOwn + patchesOwn + breeds +
       s"world = new World($minPxcor, $maxPxcor, $minPycor, $maxPycor, $patchSize, " +
       s"$wrappingAllowedInY, $wrappingAllowedInX, $turtleShapesJson, $linkShapesJson, " +
@@ -47,6 +53,7 @@ class RuntimeInit(program: api.Program, dimensions: api.WorldDimensions, turtleS
     ).mkString("\n")
 
   private def vars(s: Seq[String], initPath: String) =
-    if (s.nonEmpty) s"$initPath.init(${s.size})\n"
+    if (s.nonEmpty) s"$initPath.init(${s.size});\n"
     else ""
+
 }

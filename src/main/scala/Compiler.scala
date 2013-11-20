@@ -3,16 +3,22 @@
 package org.nlogo.tortoise
 
 import org.nlogo.{ api, compile => ast, nvm, workspace },
-   nvm.FrontEndInterface.{ ProceduresMap, NoProcedures },
-   org.nlogo.shape.{LinkShape, VectorShape}
+   nvm.FrontEndInterface.{ ProceduresMap, NoProcedures }
 
 import collection.JavaConverters._
+
+// there are three main entry points here:
+//   compile{Reporter, Commands, Procedures}
+// all three take NetLogo, return JavaScript.
+
+// the dependencies between the classes in this package are as follows:
+// - Compiler calls Handlers
+// - Handlers calls Prims
+// - Prims calls back to Handlers
 
 object Compiler {
 
   val frontEnd: ast.FrontEndInterface = ast.front.FrontEnd
-
-  // three main entry points. input is NetLogo, result is JavaScript.
 
   def compileReporter(logo: String,
     oldProcedures: ProceduresMap = NoProcedures,
@@ -32,30 +38,29 @@ object Compiler {
       turtleShapeList: api.ShapeList = new api.ShapeList(api.AgentKind.Turtle),
       linkShapeList: api.ShapeList = new api.ShapeList(api.AgentKind.Link))
       : (String, api.Program, ProceduresMap) = {
-    // (Seq[ProcedureDefinition], StructureParser.Results)
-    val (defs, sp) =
+    val (defs, results): (Seq[ast.ProcedureDefinition], nvm.StructureResults) =
       frontEnd.frontEnd(logo,
         program = api.Program.empty.copy(interfaceGlobals = interfaceGlobals))
-    val js =
-      new RuntimeInit(sp.program, dimensions, turtleShapeList, linkShapeList).init +
-        defs.map(compileProcedureDef).mkString("", "\n", "\n") +
-        compileCommands(interfaceGlobalCommands, program = sp.program)
-    if (sp.program.linkBreeds.nonEmpty)
+    val init = new RuntimeInit(results.program, dimensions,
+      turtleShapeList, linkShapeList)
+    val main =
+      defs.map(compileProcedureDef).mkString("", "\n", "\n")
+    val interface =
+      compileCommands(interfaceGlobalCommands, program = results.program)
+    val js = init.init + main + interface
+    if (results.program.linkBreeds.nonEmpty)
       throw new IllegalArgumentException("unknown language feature: link breeds")
-    (js, sp.program, sp.procedures)
+    (js, results.program, results.procedures)
   }
 
   private def compileProcedureDef(pd: ast.ProcedureDefinition): String = {
-    val name = ident(pd.procedure.name)
-    val body = generate(pd.statements)
-    val args = pd.procedure.args.map(ident).mkString(", ")
-    s"function $name ($args) {\n$body\n};"
+    val name = Handlers.ident(pd.procedure.name)
+    val body = Handlers.commands(pd.statements)
+    val args = pd.procedure.args.map(Handlers.ident).mkString(", ")
+    s"""|function $name($args) {
+        |${Handlers.indented(body)}
+        |}""".stripMargin
   }
-
-  // bogus, will need work - ST 9/13/13
-  def ident(s: String) =
-    s.replaceAll("-", "_")
-     .replaceAll("\\?", "_P")
 
   // How this works:
   // - the header/footer stuff wraps the code in `to` or `to-report`
@@ -65,28 +70,18 @@ object Compiler {
   //   `__observer-code` command followed by the `report` command, so the
   //   actual reporter is the first (and only) argument to `report`
 
-  def compile(logo: String, commands: Boolean,
+  private def compile(logo: String, commands: Boolean,
       oldProcedures: ProceduresMap = NoProcedures,
       program: api.Program = api.Program.empty()): String = {
     val wrapped =
       workspace.Evaluator.getHeader(api.AgentKind.Observer, commands) +
         logo + workspace.Evaluator.getFooter(commands)
-    val (defs, _) = frontEnd.frontEnd(wrapped, oldProcedures, program)  // Seq[ProcedureDefinition]
-    if (commands) generate(defs.head.statements)
-    else generate(defs.head.statements.tail.head.args.head)
-  }
-
-  def generate(node: ast.AstNode): String = node match {
-    case stmts: ast.Statements =>
-      stmts.map(Prims.generateCommand)
-        .filter(_.nonEmpty)
-        .mkString("\n")
-    case block: ast.ReporterBlock =>
-      generate(block.app)
-    case app: ast.ReporterApp =>
-      Prims.generateReporter(app)
-    case block: ast.CommandBlock =>
-      Compiler.generate(block.statements)
+    val (Seq(procdef: ast.ProcedureDefinition), _) =
+      frontEnd.frontEnd(wrapped, oldProcedures, program)
+    if (commands)
+      Handlers.commands(procdef.statements)
+    else
+      Handlers.reporter(procdef.statements(1).args(0))
   }
 
 }
