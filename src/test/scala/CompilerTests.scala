@@ -49,6 +49,13 @@ class CompilerTests extends FunSuite {
     assertResult(expected)(compile(input))
   }
 
+  test("reporters: keep literal reporter on one line") {
+    import Compiler.{compileReporter => compile}
+    val input = "[0] of turtles"
+    val expected = "AgentSet.of(world.turtles(), function() { return 0 })"
+    assertResult(expected)(compile(input))
+  }
+
   // compileCommands
 
   test("commands: let") {

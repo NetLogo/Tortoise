@@ -2,7 +2,7 @@
 
 package org.nlogo.tortoise
 
-import org.nlogo.{ api, compile => ast }
+import org.nlogo.{ api, compile => ast, nvm }
 
 object Handlers {
 
@@ -12,9 +12,23 @@ object Handlers {
         ("return " + reporter(node))
       else
         commands(node)
-    s"""|function() {
-        |${indented(body)}
-        |}""".stripMargin
+    def isTrivialReporter(node: ast.AstNode): Boolean =
+      node match {
+        case block: ast.ReporterBlock =>
+          isTrivialReporter(block.app)
+        case app: ast.ReporterApp =>
+          app.args.isEmpty && app.reporter.isInstanceOf[nvm.Pure]
+        case _ =>
+          false
+      }
+    if (body.isEmpty)
+      "function() {}"
+    else if (isTrivialReporter(node))
+      s"function() { $body }"
+    else
+      s"""|function() {
+          |${indented(body)}
+          |}""".stripMargin
   }
 
   // The "abstract" syntax trees we get from the front end aren't totally abstract in that they have
