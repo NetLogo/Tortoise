@@ -3,9 +3,10 @@
 # -e makes the whole thing die with an error if any command does
 # -v lets you see the commands as they happen
 
+git submodule update --init
+
 if [ "$1" == --clean ] ; then
   git clean -fdX
-  git submodule update --init
   git submodule foreach git clean -fdX
 fi
 
