@@ -876,7 +876,7 @@ Prims =
     result.push(x)
     result
   butFirst: (xs) -> xs[1..]
-  butLast: (xs) -> xs[0..xs.length - 1]
+  butLast: (xs) -> xs[0...xs.length - 1]
   length: (xs) -> xs.length
   _int: (n) -> if n < 0 then Math.ceil(n) else Math.floor(n)
   max: (xs) -> Math.max(xs...)
