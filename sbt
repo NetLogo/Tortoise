@@ -1,18 +1,6 @@
 #!/bin/bash
 
 CURR_DIR=`dirname $0`
-if [ `uname -s` = Linux ] ; then
-  # use JAVA_HOME from Travis if there is one
-  if [ -z "$TRAVIS" ] ; then
-    export JAVA_HOME=/usr/lib/jvm/java-7-sun
-  fi
-else
-  if [ `uname -s` = Darwin ] ; then
-    export JAVA_HOME=`/usr/libexec/java_home -F -v1.7*`
-  else
-    export JAVA_HOME=/usr
-  fi
-fi
 
 export PATH=$JAVA_HOME/bin:$PATH
 JAVA=$JAVA_HOME/bin/java
