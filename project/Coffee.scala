@@ -1,6 +1,9 @@
 import sbt._
 import Keys._
 
+// keeping this as a .scala rather than .sbt with an eye towards
+// possible eventual plugin-ization - ST 11/22/13
+
 object Coffee {
 
   private val npmCmd = "npm"
