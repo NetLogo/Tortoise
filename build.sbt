@@ -12,11 +12,22 @@ ivyLoggingLevel := UpdateLogging.Quiet
 // we're not cross-building for different Scala versions
 crossPaths := false
 
+val netlogoSha = settingKey[String]("version of NetLogo we depend on")
+
+netlogoSha := "4e3d730"
+
+libraryDependencies ++= {
+  val sha = netlogoSha.value
+  val version = s"5.1.0-SNAPSHOT-$sha"
+  Seq(
+    "org.nlogo" % "NetLogoHeadless" % version from
+      s"http://ccl.northwestern.edu/devel/NetLogoHeadless-$sha.jar",
+    "org.nlogo" % "NetLogoHeadlessTests" % version % "test" from
+      s"http://ccl.northwestern.edu/devel/NetLogoHeadlessTests-$sha.jar"
+  )
+}
+
 libraryDependencies ++= Seq(
-  "org.nlogo" % "NetLogoHeadless" % "5.1.0-SNAPSHOT-4e3d730" from
-    "http://ccl.northwestern.edu/devel/NetLogoHeadless-4e3d730.jar",
-  "org.nlogo" % "NetLogoHeadlessTests" % "5.1.0-SNAPSHOT-4e3d730" % "test" from
-    "http://ccl.northwestern.edu/devel/NetLogoHeadlessTests-4e3d730.jar",
   "org.json4s" %% "json4s-native" % "3.1.0",
   "org.webjars" % "json2" % "20110223",
   "org.scalacheck" %% "scalacheck" % "1.10.1" % "test",
