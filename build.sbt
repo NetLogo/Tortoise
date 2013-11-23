@@ -1,4 +1,4 @@
-val root = project in file (".") configs(Testing.configs: _*)
+val root = project in file (".") configs(FastMediumSlow.configs: _*)
 
 scalaVersion := "2.10.3"
 
@@ -37,6 +37,6 @@ libraryDependencies ++= Seq(
 
 onLoadMessage := ""
 
-Testing.settings
+FastMediumSlow.settings
 
 Coffee.settings

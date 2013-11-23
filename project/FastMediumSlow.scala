@@ -1,7 +1,7 @@
 import sbt._
 import Keys._
 
-object Testing {
+object FastMediumSlow {
 
   val FastTest   = config("fast")   extend(Test)
   val MediumTest = config("medium") extend(Test)
