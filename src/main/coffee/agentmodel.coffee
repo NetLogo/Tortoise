@@ -1,4 +1,4 @@
-### (C) Uri Wilensky. https://github.com/NetLogo/NetLogo
+## (C) Uri Wilensky. https://github.com/NetLogo/NetLogo
 
 class AgentModel
   constructor: ->

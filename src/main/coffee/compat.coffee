@@ -1,4 +1,4 @@
-### (C) Uri Wilensky. https://github.com/NetLogo/NetLogo
+## (C) Uri Wilensky. https://github.com/NetLogo/NetLogo
 
 ##
 ## stuff in this file papers over differences between Rhino, Nashorn,
