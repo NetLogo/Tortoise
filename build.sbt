@@ -15,7 +15,7 @@ crossPaths := false
 libraryDependencies ++= Seq(
   "org.nlogo" % "NetLogoHeadless" % "5.1.0-SNAPSHOT-4e3d730" from
     "http://ccl.northwestern.edu/devel/NetLogoHeadless-4e3d730.jar",
-  "org.nlogo" % "NetLogoHeadlessTests" % "5.1.0-SNAPSHOT-4e3d730" from
+  "org.nlogo" % "NetLogoHeadlessTests" % "5.1.0-SNAPSHOT-4e3d730" % "test" from
     "http://ccl.northwestern.edu/devel/NetLogoHeadlessTests-4e3d730.jar",
   "org.json4s" %% "json4s-native" % "3.1.0",
   "org.webjars" % "json2" % "20110223",
