@@ -218,4 +218,22 @@ class TestTopologies extends DockingSuite with SlowTest {
   test("torus distance move") { implicit fixture => import fixture._
     testFloatingDistanceMove(WorldDimensions.square(5))
   }
+
+  test("box distance move") { implicit fixture => import fixture._
+    testFloatingDistanceMove(new WorldDimensions(-4, 3, -2, 6, 12.0, false, false))
+  }
+
+  def testLayoutSpring(world: WorldDimensions)(implicit fixture: DockingFixture) : Unit = { import fixture._
+    declare("", world)
+    testCommand("crt 10 [ setxy random-xcor random-ycor ]")
+    testCommand("ask turtles [ create-links-with other turtles ]")
+    testCommand("repeat 5 [ layout-spring turtles links .1 .2 .3 ]")
+    testCommand("repeat 5 [ layout-spring turtles with [ ycor > 0 ] links .1 .2 .3 ]")
+    testCommand("repeat 5 [ layout-spring turtles [ my-links ] of turtle 0 .1 .2 .3 ]")
+    testCommand("repeat 5 [ layout-spring turtles with [ ycor > 0 ] [ my-links ] of turtle 0 .1 .2 .3 ]")
+  }
+
+  test("box layout spring") { implicit fixture => import fixture._
+    testLayoutSpring(new WorldDimensions(-4, 3, -2, 6, 12.0, false, false))
+  }
 }

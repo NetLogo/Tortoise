@@ -115,6 +115,7 @@ object SimplePrims {
         case _: prim.etc._linkwith           => "AgentSet.findLinkViaNeighbor(false, false)"
         case _: prim.etc._bothends           => "AgentSet.self().bothEnds"
         case _: prim.etc._otherend           => "AgentSet.self().otherEnd"
+        case _: prim.etc._sqrt               => "StrictMath.sqrt"
       }
   }
 
@@ -155,6 +156,8 @@ object SimplePrims {
         case _: prim.etc._setcurrentplot    => "noop"
         case _: prim.etc._setcurrentplotpen => "noop"
         case _: prim.etc._plot              => "noop"
+        case _: prim.etc._display           => "noop"
+        case _: prim.etc._layoutspring      => "Layouts.layoutSpring"
       }
   }
 
