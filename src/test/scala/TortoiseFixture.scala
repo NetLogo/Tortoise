@@ -33,14 +33,10 @@ class TestCommands extends lang.TestCommands {
     // to be investigated
     "AgentsetBuilding::EmptyPatchSet" -> "???",
     "AgentsetBuilding::PatchSetNestedLists" -> "???",
-    "Agentsets::Agentsets1" -> "???",
-    "Agentsets::Agentsets4" -> "???",
     "Agentsets::AgentSetEquality" -> "???",
     "Agentsets::LinkAgentsetDeadLinks" -> "???",
     "Agentsets::RemoveDuplicates" -> "???",
     "AnyAll::All3" -> "???",
-    "AnyAll::All4" -> "???",
-    "AnyAll::All5" -> "???",
     "Ask::AskRNG" -> "???",
     "Ask::recursion-over-ask" -> "???",
     "Breeds::TestIsBreed" -> "???",
@@ -49,8 +45,6 @@ class TestCommands extends lang.TestCommands {
     "ControlStructures::Foreach2" -> "???",
     "ControlStructures::Run4" -> "???",
     "ControlStructures::Run5" -> "???",
-    "DeadTurtles::DeadTurtles4" -> "???",
-    "DeadTurtles::DeadTurtles8" -> "???",
     "DeadTurtles::DeadTurtles9" -> "???",
     "Diffuse::DiffuseTorus" -> "???",
     "Equality::lists-of-agentsets-can-be-equal" -> "???",
@@ -60,38 +54,13 @@ class TestCommands extends lang.TestCommands {
     "Equality::dead-link-equals-nobody" -> "???",
     "Face::Face1" -> "???",
     "Face::Face2" -> "???",
-    "Face::Face3" -> "???",
-    "Face::Face4" -> "???",
-    "Face::Face5" -> "???",
-    "Face::Face6" -> "???",
     "Face::FaceXY1" -> "???",
     "Face::FaceXY2" -> "???",
-    "Face::FaceXY3" -> "???",
-    "Face::FaceXY4" -> "???",
-    "Face::FaceXY5" -> "???",
-    "Face::FaceXY6" -> "???",
-    "ImportWorld::AllBreeds" -> "???",
-    "InCone::InconeDontAskTurtlesOnYou" -> "???",
-    "InCone::InconeDontAskSomeOtherTurtles" -> "???",
-    "InCone::InconeTestForGridRoot1" -> "???",
-    "InCone::InconeTestForGridRoot2" -> "???",
-    "InCone::Incone360DiffTestForTurtles" -> "???",
-    "InCone::Incone360DiffTestForPatches" -> "???",
-    "InCone::InconeManyTurtlesCounting" -> "???",
-    "InCone::InconeNowrap1" -> "???",
-    "InCone::InconeMultipleWrappings" -> "???",
     "InCone::InConeCornerOrigin3" -> "???",
     "Initialization::InitialEnvironment" -> "???",
     "Interaction::Interaction2" -> "???",
     "Interaction::Interaction3a" -> "???",
-    "Interaction::Interaction4" -> "???",
     "Interaction::Interaction5" -> "???",
-    "Interaction::Interaction6" -> "???",
-    "Interaction::Interaction7" -> "???",
-    "Interaction::Interaction10" -> "???",
-    "Interaction::Interaction11" -> "???",
-    "Interaction::Interaction14" -> "???",
-    "Let::LetWithAsk" -> "???",
     "Let::LetWithWith" -> "???",
     "Let::LetTwiceInDifferentBlocks" -> "???",
     "Let::LetInsideForeach1" -> "???",
@@ -103,13 +72,11 @@ class TestCommands extends lang.TestCommands {
     "Links::Links1" -> "???",
     "Links::Links2" -> "???",
     "Links::LinkWithBadEndPointsReturnsNobody" -> "???",
-    "Links::LinksInitBlock" -> "???",
     "Links::LinkFromToWith1" -> "???",
     "Links::LinkFromToWith2" -> "???",
     "Links::LinkKillsItself1" -> "???",
     "Links::LinkKillsItself2" -> "???",
     "Links::LinkKillsItself3" -> "???",
-    "Links::LinkKillsParents2" -> "???",
     "Links::RemoveFrom" -> "???",
     "Links::RemoveTo" -> "???",
     "Links::RemoveWith" -> "???",
@@ -117,30 +84,18 @@ class TestCommands extends lang.TestCommands {
     "Math::NotEqualBugsIFoundWhileTryingToPlayFrogger" -> "???",
     "Neighbors::Neighbors2Torus" -> "???",
     "OneOf::OneOfDyingTurtles" -> "???",
-    "PatchAhead::PatchAhead1" -> "???",
     "PatchAhead::PatchRightAndAhead" -> "???",
     "PatchAhead::PatchLeftAndAhead" -> "???",
     "PatchAt::PatchAt" -> "???",
-    "RGB::TurtlesRGBColor" -> "???",
-    "RGB::LinksRGBColor" -> "???",
-    "RGB::RGBColorImport" -> "???",
     "Random::Random1" -> "???",
     "Random::Random2" -> "???",
     "Random::Random3" -> "???",
     "Random::RandomFloat1" -> "???",
     "Random::RandomFloat2" -> "???",
     "Random::RandomNOfIsFairForPatches" -> "???",
-    "Random::RandomNOfIsFairForTurtles" -> "???",
-    "Random::RandomNOfIsFairForLinks" -> "???",
-    "Random::RandomNOfIsFairForABreed" -> "???",
-    "Random::RandomNOfIsFairForAnAgentsetConstructedOnTheFly" -> "???",
-    "Random::RandomNOfIsFairForAList" -> "???",
     "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksWith" -> "???",
     "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksTo" -> "???",
     "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksFrom" -> "???",
-    "Repeat::TurtlesRepeat2" -> "???",
-    "Repeat::TurtlesRepeat3" -> "???",
-    "Repeat::TurtlesRepeat4" -> "???",
     "SelfMyself::Myself1" -> "???",
     "Stop::StopFromForeach1" -> "???",
     "Sum::MaxMinMeanSumPatchTurtleBreedVars" -> "???",
@@ -148,18 +103,28 @@ class TestCommands extends lang.TestCommands {
     "Turtles::Turtles1" -> "???",
     "Turtles::Turtles2" -> "???",
     "Turtles::Turtles3" -> "???",
-    "Turtles::Turtles4" -> "???",
     "Turtles::Turtles7" -> "???",
-    "Turtles::EmptySprout" -> "???",
-    "Turtles::EmptyHatch" -> "???",
     "TurtlesHere::TurtlesHere1" -> "???",
     "TurtlesHere::PatchDoesOtherTurtlesHere" -> "???",
     "TurtlesHere::PatchDoesOtherBreedHere" -> "???",
-    "TurtlesOn::TurtlesOn1" -> "???",
     "TypeChecking::SetVariable" -> "???",
     "UpAndDownhill::UpAndDownhill1" -> "???",
-    "UpAndDownhill::Uphill1" -> "???",
     "UpAndDownhill::Uphill3" -> "???",
+    // egregious
+    //   ...
+    // significant
+    "ImportWorld::AllBreeds" -> "'special' agentsets not supported",
+    "Agentsets::Agentsets1" -> "'special' agentsets not supported",
+    "Agentsets::Agentsets4" -> "takes a really long (infinite?) time",
+    "Links::LinksInitBlock" -> "takes a really long (infinite?) time",
+    "Random::RandomNOfIsFairForTurtles" -> "takes a really long (infinite?) time",
+    "Random::RandomNOfIsFairForLinks" -> "takes a really long (infinite?) time",
+    "Random::RandomNOfIsFairForABreed" -> "takes a really long (infinite?) time",
+    "Random::RandomNOfIsFairForAnAgentsetConstructedOnTheFly" -> "takes a really long (infinite?) time",
+    "Random::RandomNOfIsFairForAList" -> "takes a really long (infinite?) time",
+    "Agentsets::AgentsetEquality" -> "'special' agentsets not supported",
+    // obscure
+    //   ...
     // missing feature: command tasks
     "CommandTasks::*ToString3" -> "command tasks are unsupported",
     "CommandTasks::*ToString4" -> "command tasks are unsupported",
@@ -233,7 +198,17 @@ extends AbstractFixture {
   }
 
   override def runCommand(command: Command, mode: TestMode) {
-    def js = Compiler.compileCommands(command.command, procs, program)
+    val wrappedCommand = command.kind match {
+      case api.AgentKind.Observer =>
+        command.command
+      case api.AgentKind.Turtle =>
+        "ask turtles [ " + command.command + "\n]"
+      case api.AgentKind.Patch =>
+        "ask patches [ " + command.command + "\n]"
+      case api.AgentKind.Link =>
+        "ask links [ " + command.command + "\n]"
+    }
+    def js = Compiler.compileCommands(wrappedCommand, procs, program)
     command.result match {
       case Success(_) =>
         try rhino.run(js)
