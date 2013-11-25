@@ -14,7 +14,7 @@ crossPaths := false
 
 val netlogoSha = settingKey[String]("version of NetLogo we depend on")
 
-netlogoSha := "4e3d730"
+netlogoSha := "82d06864"
 
 libraryDependencies ++= {
   val sha = netlogoSha.value
@@ -27,6 +27,16 @@ libraryDependencies ++= {
   )
 }
 
+// NetLogoHeadlessTests depends on reflections; reflections depends on some extra jars.
+// but for some reason we need to explicitly list the transitive dependencies
+libraryDependencies ++= Seq(
+  "org.reflections" % "reflections" % "0.9.9-RC1" % "test",
+  "com.google.code.findbugs" % "jsr305" % "2.0.1" % "test",
+  "com.google.guava" % "guava" % "12.0"           % "test",
+  "org.javassist" % "javassist" % "3.16.1-GA"     % "test",
+  "org.slf4j" % "slf4j-nop" % "1.7.5"             % "test"
+)
+
 libraryDependencies ++= Seq(
   "org.json4s" %% "json4s-native" % "3.1.0",
   "org.webjars" % "json2" % "20110223",
@@ -38,5 +48,7 @@ libraryDependencies ++= Seq(
 onLoadMessage := ""
 
 FastMediumSlow.settings
+
+LanguageTests.settings
 
 Coffee.settings
