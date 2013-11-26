@@ -886,6 +886,7 @@ Prims =
   butLast: (xs) -> xs[0...xs.length - 1]
   length: (xs) -> xs.length
   _int: (n) -> if n < 0 then Math.ceil(n) else Math.floor(n)
+  mod: (a, b) -> ((a % b) + b) % b
   max: (xs) -> Math.max(xs...)
   min: (xs) -> Math.min(xs...)
   mean: (xs) -> @sum(xs) / xs.length

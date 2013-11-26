@@ -32,7 +32,6 @@ object SimplePrims {
         case _: prim._minus              => "-"
         case _: prim.etc._mult           => "*"
         case _: prim.etc._div            => "/"
-        case _: prim.etc._mod            => "%"
         case _: prim._lessthan           => "<"
         case _: prim._greaterthan        => ">"
         case _: prim.etc._greaterorequal => ">="
@@ -116,6 +115,7 @@ object SimplePrims {
         case _: prim.etc._bothends           => "AgentSet.self().bothEnds"
         case _: prim.etc._otherend           => "AgentSet.self().otherEnd"
         case _: prim.etc._sqrt               => "StrictMath.sqrt"
+        case _: prim.etc._mod                => "Prims.mod"
       }
   }
 

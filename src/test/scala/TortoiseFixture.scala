@@ -11,8 +11,6 @@ import org.nlogo.{ api, headless, nvm },
 class TestReporters extends lang.TestReporters {
   val freebies =
     Map(
-      // egregious
-      "Numbers::Mod2" -> "mod doesn't work right on negative numbers",
       // significant
       "Nobody::Nobody1" -> "nobody doesn't print right",
       "Equality::Equal2" -> "int vs. double confuses equality",
