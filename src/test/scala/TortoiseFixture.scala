@@ -12,7 +12,6 @@ class TestReporters extends lang.TestReporters {
   val freebies =
     Map(
       // significant
-      "Nobody::Nobody1" -> "nobody doesn't print right",
       "Equality::Equal2" -> "int vs. double confuses equality",
       // obscure
       "Lists::Sort2" -> "sorting heterogeneous lists doesn't work",
