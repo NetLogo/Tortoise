@@ -889,7 +889,7 @@ Prims =
   max: (xs) -> Math.max(xs...)
   min: (xs) -> Math.min(xs...)
   mean: (xs) -> @sum(xs) / xs.length
-  sum: (xs) -> xs.reduce((a, b) -> a + b)
+  sum: (xs) -> xs.reduce(((a, b) -> a + b), 0)
   sort: (xs) -> xs.sort()
   removeDuplicates: (xs) ->
     result = {}

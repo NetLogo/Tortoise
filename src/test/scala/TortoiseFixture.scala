@@ -12,7 +12,6 @@ class TestReporters extends lang.TestReporters {
   val freebies =
     Map(
       // egregious
-      "Numbers::Sum1" -> "sum doesn't handle empty list",
       "Numbers::Mod2" -> "mod doesn't work right on negative numbers",
       // significant
       "Nobody::Nobody1" -> "nobody doesn't print right",
