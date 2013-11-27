@@ -56,12 +56,7 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
     "Equality::two-dead-links-are-equal" -> "???",
     "Equality::dead-link-equals-nobody" -> "???",
     "InCone::InConeCornerOrigin3" -> "???",
-    "Let::LetOfVarToItself1" -> "???",
-    "Let::LetOfVarToItself2" -> "???",
-    "Let::LetOfVarToItself3" -> "???",
-    "Let::LetOfVarToItselfInsideAsk" -> "???",
     "Links::Links1" -> "???",
-    "Links::Links2" -> "???",
     "Links::LinkCantChangeBreeds" -> "???",
     "Neighbors::Neighbors2Torus" -> "???",
     "OneOf::OneOfDyingTurtles" -> "???",
@@ -71,15 +66,14 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
     "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksTo" -> "???",
     "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksFrom" -> "???",
     "SelfMyself::Myself1" -> "???",
-    "Tie::Tie2Nonrigid" -> "???",
     "Turtles::Turtles2" -> "???",
-    "Turtles::Turtles7" -> "???",
     "TurtlesHere::TurtlesHere1" -> "???",
     "TurtlesHere::PatchDoesOtherTurtlesHere" -> "???",
     "TurtlesHere::PatchDoesOtherBreedHere" -> "???",
     "TypeChecking::SetVariable" -> "???",
     // egregious
-    //   ...
+    "Turtles::Turtles7" -> "colors don't wrap to [0,140)",
+    "Links::Links2" -> "colors don't wrap to [0,140)",
     // significant
     "ImportWorld::AllBreeds" -> "'special' agentsets not supported",
     "Agentsets::Agentsets1" -> "'special' agentsets not supported",
@@ -91,9 +85,13 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
     "Random::RandomNOfIsFairForPatches" -> "TOO SLOW",
     "Random::RandomNOfIsFairForAnAgentsetConstructedOnTheFly" -> "TOO SLOW",
     "Random::RandomNOfIsFairForAList" -> "TOO SLOW",
-    "Agentsets::AgentsetEquality" -> "'special' agentsets not supported"
+    "Agentsets::AgentsetEquality" -> "'special' agentsets not supported",
+    "Tie::Tie2Nonrigid" -> "tie-mode link variable not implemented",
     // obscure
-    //   ...
+    "Let::LetOfVarToItself1" -> "???",
+    "Let::LetOfVarToItself2" -> "???",
+    "Let::LetOfVarToItself3" -> "???",
+    "Let::LetOfVarToItselfInsideAsk" -> "???"
   )
 }
 
