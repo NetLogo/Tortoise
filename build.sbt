@@ -12,10 +12,6 @@ ivyLoggingLevel := UpdateLogging.Quiet
 // we're not cross-building for different Scala versions
 crossPaths := false
 
-// work around https://github.com/sbt/sbt/issues/979 ;
-// remove once we move to 0.13.1-RC4
-trapExit in Global := false
-
 val netlogoSha = settingKey[String]("version of NetLogo we depend on")
 
 netlogoSha := "4e3d730"
