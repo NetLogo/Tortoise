@@ -872,6 +872,18 @@ Prims =
     if(perc < 0)
       perc = 0
     color + perc
+  random: (n) ->
+    truncated =
+      if n >= 0
+        Math.floor(n)
+      else
+        Math.ceil(n)
+    if truncated == 0
+      0
+    else if truncated > 0
+      Random.nextLong(truncated)
+    else
+      -Random.nextLong(-truncated)
   randomFloat: (n) -> n * Random.nextDouble()
   list: (xs...) -> xs
   item: (n, xs) -> xs[n]
