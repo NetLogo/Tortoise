@@ -20,8 +20,11 @@ trait TortoiseFinder extends lang.Finder {
         cancel("TOO SLOW")
       case Some(excuse) =>
         try body(new TortoiseFixture(name))
-        catch { case ex: Exception =>
-          cancel(ex + ": LAME EXCUSE: " + excuse)
+        catch {
+          case _: org.scalatest.exceptions.TestCanceledException =>
+            fail("LAME EXCUSE WASN'T NEEDED: " + excuse)
+          case ex: Exception =>
+            cancel(ex + ": LAME EXCUSE: " + excuse)
         }
         fail("LAME EXCUSE WASN'T NEEDED: " + excuse)
     }
@@ -52,12 +55,7 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
     "Ask::recursion-over-ask" -> "???",
     "Breeds::TestIsBreed" -> "???",
     "ComparingAgents::ComparingPatches" -> "???",
-    "ControlStructures::Foreach1" -> "???",
-    "ControlStructures::Foreach2" -> "???",
-    "ControlStructures::Run4" -> "???",
-    "ControlStructures::Run5" -> "???",
     "DeadTurtles::DeadTurtles9" -> "???",
-    "Diffuse::DiffuseTorus" -> "???",
     "Equality::lists-of-agentsets-can-be-equal" -> "???",
     "Equality::two-dead-turtles-are-equal" -> "???",
     "Equality::dead-turtle-equals-nobody" -> "???",
@@ -73,16 +71,12 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
     "Interaction::Interaction3a" -> "???",
     "Interaction::Interaction5" -> "???",
     "Let::LetWithWith" -> "???",
-    "Let::LetTwiceInDifferentBlocks" -> "???",
-    "Let::LetInsideForeach1" -> "???",
-    "Let::LetAndTemplateVariables" -> "???",
     "Let::LetOfVarToItself1" -> "???",
     "Let::LetOfVarToItself2" -> "???",
     "Let::LetOfVarToItself3" -> "???",
     "Let::LetOfVarToItselfInsideAsk" -> "???",
     "Links::Links1" -> "???",
     "Links::Links2" -> "???",
-    "Links::LinkFromToWith1" -> "???",
     "Links::LinkCantChangeBreeds" -> "???",
     "Math::NotEqualBugsIFoundWhileTryingToPlayFrogger" -> "???",
     "Neighbors::Neighbors2Torus" -> "???",
@@ -100,7 +94,6 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
     "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksTo" -> "???",
     "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksFrom" -> "???",
     "SelfMyself::Myself1" -> "???",
-    "Stop::StopFromForeach1" -> "???",
     "Sum::MaxMinMeanSumPatchTurtleBreedVars" -> "???",
     "Tie::Tie2Nonrigid" -> "???",
     "Turtles::Turtles2" -> "???",
@@ -110,8 +103,6 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
     "TurtlesHere::PatchDoesOtherTurtlesHere" -> "???",
     "TurtlesHere::PatchDoesOtherBreedHere" -> "???",
     "TypeChecking::SetVariable" -> "???",
-    "UpAndDownhill::UpAndDownhill1" -> "???",
-    "UpAndDownhill::Uphill3" -> "???",
     // egregious
     //   ...
     // significant
@@ -124,44 +115,9 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
     "Random::RandomNOfIsFairForABreed" -> "TOO SLOW",
     "Random::RandomNOfIsFairForAnAgentsetConstructedOnTheFly" -> "TOO SLOW",
     "Random::RandomNOfIsFairForAList" -> "TOO SLOW",
-    "Agentsets::AgentsetEquality" -> "'special' agentsets not supported",
+    "Agentsets::AgentsetEquality" -> "'special' agentsets not supported"
     // obscure
     //   ...
-    // missing feature: command tasks
-    "CommandTasks::*ToString3" -> "command tasks are unsupported",
-    "CommandTasks::*ToString4" -> "command tasks are unsupported",
-    "CommandTasks::*ToString5" -> "command tasks are unsupported",
-    "CommandTasks::*ToString6" -> "command tasks are unsupported",
-    "CommandTasks::CallTask" -> "command tasks are unsupported",
-    "CommandTasks::NestedCallTask" -> "command tasks are unsupported",
-    "CommandTasks::CallTaskAgainAndAgain" -> "command tasks are unsupported",
-    "CommandTasks::EasyForeach" -> "command tasks are unsupported",
-    "CommandTasks::HarderForeach" -> "command tasks are unsupported",
-    "CommandTasks::NestedForeach1" -> "command tasks are unsupported",
-    "CommandTasks::NestedForeach2" -> "command tasks are unsupported",
-    "CommandTasks::NestedForeach3" -> "command tasks are unsupported",
-    "CommandTasks::CloseOverUnoptimizedLet" -> "command tasks are unsupported",
-    "CommandTasks::CloseOverOptimizedLet" -> "command tasks are unsupported",
-    "CommandTasks::turtle-executing-command-task" -> "command tasks are unsupported",
-    "CommandTasks::turtle-executing-command-task-2" -> "command tasks are unsupported",
-    "CommandTasks::turtle-executing-command-task-3" -> "command tasks are unsupported",
-    "CommandTasks::patch-executing-command-task" -> "command tasks are unsupported",
-    "CommandTasks::link-executing-command-task" -> "command tasks are unsupported",
-    "CommandTasks::dont-close-over-current-agent" -> "command tasks are unsupported",
-    "CommandTasks::concise-syntax-1" -> "command tasks are unsupported",
-    "CommandTasks::concise-syntax-2" -> "command tasks are unsupported",
-    "CommandTasks::concise-syntax-3" -> "command tasks are unsupported",
-    "CommandTasks::concise-syntax-4" -> "command tasks are unsupported",
-    "CommandTasks::concise-syntax-5" -> "command tasks are unsupported",
-    "CommandTasks::concise-syntax-6" -> "command tasks are unsupported",
-    "CommandTasks::concise-syntax-7" -> "command tasks are unsupported",
-    "CommandTasks::concise-syntax 8" -> "command tasks are unsupported",
-    "CommandTasks::the-killing-task" -> "command tasks are unsupported",
-    "CommandTasks::empty-command-task-1" -> "command tasks are unsupported",
-    "CommandTasks::empty-command-task-2" -> "command tasks are unsupported",
-    "CommandTasks::command-task-body-may-have-different-agent-type" -> "command tasks are unsupported",
-    "CommandTasks::command-task-body-gets-agent-type-check" -> "command tasks are unsupported",
-    "CommandTasks::command-task-closes-over-let-inside-task-of-different-agent" -> "command tasks are unsupported"
   )
 }
 
