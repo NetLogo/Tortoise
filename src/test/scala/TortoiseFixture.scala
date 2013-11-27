@@ -22,7 +22,7 @@ trait TortoiseFinder extends lang.Finder {
         try body(new TortoiseFixture(name))
         catch {
           case _: org.scalatest.exceptions.TestCanceledException =>
-            fail("LAME EXCUSE WASN'T NEEDED: " + excuse)
+            // ignore; we'll hit the fail() below
           case ex: Exception =>
             cancel(ex + ": LAME EXCUSE: " + excuse)
         }
