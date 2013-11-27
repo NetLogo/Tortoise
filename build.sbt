@@ -47,6 +47,8 @@ libraryDependencies ++= Seq(
 
 onLoadMessage := ""
 
+logBuffered in testOnly in Test := false
+
 FastMediumSlow.settings
 
 LanguageTests.settings
