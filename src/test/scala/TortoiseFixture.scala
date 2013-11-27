@@ -8,8 +8,27 @@ import org.nlogo.{ api, headless, nvm },
   org.nlogo.util.Femto,
   org.scalatest.Assertions._
 
-class TestReporters extends lang.TestReporters {
-  val freebies =
+trait TortoiseFinder extends lang.Finder {
+  def freebies: Map[String, String]
+  override def shouldRun(t: LanguageTest, mode: TestMode) =
+    mode == NormalMode && super.shouldRun(t, mode)
+  override def withFixture[T](name: String)(body: AbstractFixture => T): T =
+    freebies.get(name.stripSuffix(" (NormalMode)")) match {
+      case None =>
+        body(new TortoiseFixture(name))
+      case Some("TOO SLOW") =>
+        cancel("TOO SLOW")
+      case Some(excuse) =>
+        try body(new TortoiseFixture(name))
+        catch { case ex: Exception =>
+          cancel(ex + ": LAME EXCUSE: " + excuse)
+        }
+        fail("LAME EXCUSE WASN'T NEEDED: " + excuse)
+    }
+}
+
+class TestReporters extends lang.TestReporters with TortoiseFinder {
+  override val freebies =
     Map(
       // significant
       "Equality::Equal2" -> "int vs. double confuses equality",
@@ -18,14 +37,10 @@ class TestReporters extends lang.TestReporters {
       "Lists::Sort3" -> "sorting heterogeneous lists doesn't work",
       "Lists::Sort5" -> "sorting heterogeneous lists doesn't work"
     )
-  override def shouldRun(t: LanguageTest, mode: TestMode) =
-    mode == NormalMode && super.shouldRun(t, mode)
-  override def withFixture[T](name: String)(body: AbstractFixture => T): T =
-    body(new TortoiseFixture(name, freebies))
 }
 
-class TestCommands extends lang.TestCommands {
-  val freebies = Map[String, String](
+class TestCommands extends lang.TestCommands with TortoiseFinder {
+  override val freebies = Map[String, String](
     // to be investigated
     "AgentsetBuilding::EmptyPatchSet" -> "???",
     "AgentsetBuilding::PatchSetNestedLists" -> "???",
@@ -67,15 +82,7 @@ class TestCommands extends lang.TestCommands {
     "Let::LetOfVarToItselfInsideAsk" -> "???",
     "Links::Links1" -> "???",
     "Links::Links2" -> "???",
-    "Links::LinkWithBadEndPointsReturnsNobody" -> "???",
     "Links::LinkFromToWith1" -> "???",
-    "Links::LinkFromToWith2" -> "???",
-    "Links::LinkKillsItself1" -> "???",
-    "Links::LinkKillsItself2" -> "???",
-    "Links::LinkKillsItself3" -> "???",
-    "Links::RemoveFrom" -> "???",
-    "Links::RemoveTo" -> "???",
-    "Links::RemoveWith" -> "???",
     "Links::LinkCantChangeBreeds" -> "???",
     "Math::NotEqualBugsIFoundWhileTryingToPlayFrogger" -> "???",
     "Neighbors::Neighbors2Torus" -> "???",
@@ -96,7 +103,6 @@ class TestCommands extends lang.TestCommands {
     "Stop::StopFromForeach1" -> "???",
     "Sum::MaxMinMeanSumPatchTurtleBreedVars" -> "???",
     "Tie::Tie2Nonrigid" -> "???",
-    "Turtles::Turtles1" -> "???",
     "Turtles::Turtles2" -> "???",
     "Turtles::Turtles3" -> "???",
     "Turtles::Turtles7" -> "???",
@@ -111,13 +117,13 @@ class TestCommands extends lang.TestCommands {
     // significant
     "ImportWorld::AllBreeds" -> "'special' agentsets not supported",
     "Agentsets::Agentsets1" -> "'special' agentsets not supported",
-    "Agentsets::Agentsets4" -> "takes a really long (infinite?) time",
-    "Links::LinksInitBlock" -> "takes a really long (infinite?) time",
-    "Random::RandomNOfIsFairForTurtles" -> "takes a really long (infinite?) time",
-    "Random::RandomNOfIsFairForLinks" -> "takes a really long (infinite?) time",
-    "Random::RandomNOfIsFairForABreed" -> "takes a really long (infinite?) time",
-    "Random::RandomNOfIsFairForAnAgentsetConstructedOnTheFly" -> "takes a really long (infinite?) time",
-    "Random::RandomNOfIsFairForAList" -> "takes a really long (infinite?) time",
+    "Agentsets::Agentsets4" -> "TOO SLOW",
+    "Links::LinksInitBlock" -> "TOO SLOW",
+    "Random::RandomNOfIsFairForTurtles" -> "TOO SLOW",
+    "Random::RandomNOfIsFairForLinks" -> "TOO SLOW",
+    "Random::RandomNOfIsFairForABreed" -> "TOO SLOW",
+    "Random::RandomNOfIsFairForAnAgentsetConstructedOnTheFly" -> "TOO SLOW",
+    "Random::RandomNOfIsFairForAList" -> "TOO SLOW",
     "Agentsets::AgentsetEquality" -> "'special' agentsets not supported",
     // obscure
     //   ...
@@ -157,17 +163,10 @@ class TestCommands extends lang.TestCommands {
     "CommandTasks::command-task-body-gets-agent-type-check" -> "command tasks are unsupported",
     "CommandTasks::command-task-closes-over-let-inside-task-of-different-agent" -> "command tasks are unsupported"
   )
-  override def shouldRun(t: LanguageTest, mode: TestMode) =
-    mode == NormalMode && super.shouldRun(t, mode)
-  override def withFixture[T](name: String)(body: AbstractFixture => T): T =
-    body(new TortoiseFixture(name, freebies))
 }
 
-class TortoiseFixture(name: String, freebies: Map[String, String])
+class TortoiseFixture(name: String)
 extends AbstractFixture {
-
-  for (excuse <- freebies.get(name.stripSuffix(" (NormalMode)")))
-    cancel("LAME EXCUSE: " + excuse)
 
   override def defaultDimensions = api.WorldDimensions.square(0)
   val rhino = new org.nlogo.tortoise.rhino.Rhino
