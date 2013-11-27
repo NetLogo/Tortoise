@@ -25,8 +25,8 @@ ENCODING=-Dfile.encoding=UTF-8
 HEADLESS=-Djava.awt.headless=true
 BOOT=xsbt.boot.Boot
 
-SBT_LAUNCH=$HOME/.sbt/sbt-launch-0.13.1-RC3.jar
-URL='http://repo.typesafe.com/typesafe/ivy-releases/org.scala-sbt/sbt-launch/0.13.1-RC3/sbt-launch.jar'
+SBT_LAUNCH=$HOME/.sbt/sbt-launch-0.13.1-RC5.jar
+URL='http://repo.typesafe.com/typesafe/ivy-releases/org.scala-sbt/sbt-launch/0.13.1-RC5/sbt-launch.jar'
 
 if [ ! -f $SBT_LAUNCH ] ; then
   echo "downloading" $URL
