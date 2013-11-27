@@ -44,13 +44,9 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
   override val freebies = Map[String, String](
     // to be investigated
     "AgentsetBuilding::EmptyPatchSet" -> "???",
-    "AgentsetBuilding::PatchSetNestedLists" -> "???",
     "Agentsets::AgentSetEquality" -> "???",
     "Agentsets::LinkAgentsetDeadLinks" -> "???",
     "Agentsets::RemoveDuplicates" -> "???",
-    "AnyAll::All3" -> "???",
-    "Ask::AskRNG" -> "???",
-    "Ask::recursion-over-ask" -> "???",
     "Breeds::TestIsBreed" -> "???",
     "ComparingAgents::ComparingPatches" -> "???",
     "DeadTurtles::DeadTurtles9" -> "???",
@@ -59,16 +55,7 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
     "Equality::dead-turtle-equals-nobody" -> "???",
     "Equality::two-dead-links-are-equal" -> "???",
     "Equality::dead-link-equals-nobody" -> "???",
-    "Face::Face1" -> "???",
-    "Face::Face2" -> "???",
-    "Face::FaceXY1" -> "???",
-    "Face::FaceXY2" -> "???",
     "InCone::InConeCornerOrigin3" -> "???",
-    "Initialization::InitialEnvironment" -> "???",
-    "Interaction::Interaction2" -> "???",
-    "Interaction::Interaction3a" -> "???",
-    "Interaction::Interaction5" -> "???",
-    "Let::LetWithWith" -> "???",
     "Let::LetOfVarToItself1" -> "???",
     "Let::LetOfVarToItself2" -> "???",
     "Let::LetOfVarToItself3" -> "???",
@@ -76,26 +63,19 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
     "Links::Links1" -> "???",
     "Links::Links2" -> "???",
     "Links::LinkCantChangeBreeds" -> "???",
-    "Math::NotEqualBugsIFoundWhileTryingToPlayFrogger" -> "???",
     "Neighbors::Neighbors2Torus" -> "???",
     "OneOf::OneOfDyingTurtles" -> "???",
     "PatchAhead::PatchRightAndAhead" -> "???",
     "PatchAhead::PatchLeftAndAhead" -> "???",
-    "PatchAt::PatchAt" -> "???",
     "Random::Random1" -> "???",
     "Random::Random2" -> "???",
     "Random::Random3" -> "???",
-    "Random::RandomFloat1" -> "???",
-    "Random::RandomFloat2" -> "???",
-    "Random::RandomNOfIsFairForPatches" -> "???",
     "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksWith" -> "???",
     "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksTo" -> "???",
     "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksFrom" -> "???",
     "SelfMyself::Myself1" -> "???",
-    "Sum::MaxMinMeanSumPatchTurtleBreedVars" -> "???",
     "Tie::Tie2Nonrigid" -> "???",
     "Turtles::Turtles2" -> "???",
-    "Turtles::Turtles3" -> "???",
     "Turtles::Turtles7" -> "???",
     "TurtlesHere::TurtlesHere1" -> "???",
     "TurtlesHere::PatchDoesOtherTurtlesHere" -> "???",
@@ -111,6 +91,7 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
     "Random::RandomNOfIsFairForTurtles" -> "TOO SLOW",
     "Random::RandomNOfIsFairForLinks" -> "TOO SLOW",
     "Random::RandomNOfIsFairForABreed" -> "TOO SLOW",
+    "Random::RandomNOfIsFairForPatches" -> "TOO SLOW",
     "Random::RandomNOfIsFairForAnAgentsetConstructedOnTheFly" -> "TOO SLOW",
     "Random::RandomNOfIsFairForAList" -> "TOO SLOW",
     "Agentsets::AgentsetEquality" -> "'special' agentsets not supported"
@@ -122,7 +103,7 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
 class TortoiseFixture(name: String)
 extends AbstractFixture {
 
-  override def defaultDimensions = api.WorldDimensions.square(0)
+  override def defaultDimensions = api.WorldDimensions.square(5)
   val rhino = new org.nlogo.tortoise.rhino.Rhino
   var program: api.Program = api.Program.empty
   var procs: ProceduresMap = NoProcedures
