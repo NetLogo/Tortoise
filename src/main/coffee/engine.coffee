@@ -842,7 +842,7 @@ Prims =
     if(a == b)
       true
     else if (typeIsArray(a) && typeIsArray(b))
-      a.length == b.length && a.every (elem, i) -> elem is b[i]
+      a.length == b.length && a.every (elem, i) -> Prims.equality(elem, b[i])
     else
       false
   scaleColor: (color, number, min, max) ->

@@ -33,8 +33,6 @@ trait TortoiseFinder extends lang.Finder {
 class TestReporters extends lang.TestReporters with TortoiseFinder {
   override val freebies =
     Map(
-      // significant
-      "Equality::Equal2" -> "int vs. double confuses equality",
       // obscure
       "Lists::Sort2" -> "sorting heterogeneous lists doesn't work",
       "Lists::Sort3" -> "sorting heterogeneous lists doesn't work",
