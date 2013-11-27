@@ -76,12 +76,13 @@ object Compiler {
     val wrapped =
       workspace.Evaluator.getHeader(api.AgentKind.Observer, commands) +
         logo + workspace.Evaluator.getFooter(commands)
-    val (Seq(procdef: ast.ProcedureDefinition), _) =
-      frontEnd.frontEnd(wrapped, oldProcedures, program)
+    val (defs, _) = frontEnd.frontEnd(wrapped, oldProcedures, program)
+    if (defs.tail.nonEmpty)
+      throw new IllegalArgumentException("unknown language feature: command tasks")
     if (commands)
-      Handlers.commands(procdef.statements)
+      Handlers.commands(defs.head.statements)
     else
-      Handlers.reporter(procdef.statements(1).args(0))
+      Handlers.reporter(defs.head.statements(1).args(0))
   }
 
 }
