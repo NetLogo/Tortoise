@@ -1,3 +1,5 @@
+## (C) Uri Wilensky. https://github.com/NetLogo/NetLogo
+
 turtleBuiltins = ["id", "color", "heading", "xcor", "ycor", "shape", "label", "labelcolor", "breed", "hidden", "size", "pensize", "penmode"]
 patchBuiltins = ["pxcor", "pycor", "pcolor", "plabel", "plabelcolor"]
 linkBuiltins = ["end1", "end2", "lcolor", "llabel", "llabelcolor", "lhidden", "lbreed", "thickness", "lshape", "tiemode", "size", "heading", "midpointx", "midpointy"]
@@ -90,7 +92,7 @@ class Turtle
   constructor: (@color = 0, @heading = 0, xcor = 0, ycor = 0, breed = Breeds.get("TURTLES"), @label = "", @labelcolor = 9.9, @hidden = false, @size = 1.0, @pensize = 1.0, @penmode = "up") ->
     @_xcor = xcor
     @_ycor = ycor
-    @breedvars = {}
+    @breedVars = {}
     @updateBreed(breed)
     @vars = (x for x in TurtlesOwn.vars)
     @getPatchHere().arrive(this)
@@ -99,10 +101,10 @@ class Turtle
     @shape = @breed.shape()
     if(@breed != Breeds.get("TURTLES"))
       for x in @breed.vars
-        if(@breedvars[x] == undefined)
-          @breedvars[x] = 0
+        if(@breedVars[x] == undefined)
+          @breedVars[x] = 0
   xcor: -> @_xcor
-  setxcor: (newX) ->
+  setXcor: (newX) ->
     originPatch = @getPatchHere()
     @_xcor = world.topology().wrapX(newX)
     if originPatch != @getPatchHere()
@@ -110,7 +112,7 @@ class Turtle
       @getPatchHere().arrive(this)
     @refreshLinks()
   ycor: -> @_ycor
-  setycor: (newY) ->
+  setYcor: (newY) ->
     originPatch = @getPatchHere()
     @_ycor = world.topology().wrapY(newY)
     if originPatch != @getPatchHere()
@@ -127,19 +129,19 @@ class Turtle
       @heading = ((@heading % 360) + 360) % 360
     return
   canMove: (amount) -> @patchAhead(amount) != Nobody
-  distancexy: (x, y) -> world.topology().distancexy(@xcor(), @ycor(), x, y)
+  distanceXY: (x, y) -> world.topology().distanceXY(@xcor(), @ycor(), x, y)
   distance: (agent) -> world.topology().distance(@xcor(), @ycor(), agent)
-  facexy: (x, y) ->
+  faceXY: (x, y) ->
     if(x != @xcor() or y != @ycor())
       @heading = world.topology().towards(@xcor(), @ycor(), x, y)
       updated(this, "heading")
   face: (agent) ->
     if(agent instanceof Turtle)
-      @facexy(agent.xcor(), agent.ycor())
+      @faceXY(agent.xcor(), agent.ycor())
     else if (agent instanceof Patch)
-      @facexy(agent.pxcor, agent.pycor)
+      @faceXY(agent.pxcor, agent.pycor)
   inRadius: (agents, radius) ->
-    new Agents(a for a in agents.items when @distance(a) <= radius)
+    world.topology().inRadius(this, @xcor(), @ycor(), agents, radius)
   patchAt: (dx, dy) ->
     @getPatchHere().patchAt(dx, dy)
   turtlesAt: (dx, dy) ->
@@ -233,9 +235,9 @@ class Turtle
     return
   jump: (amount) ->
     if @canMove(amount)
-      @setxcor(world.topology().wrapX(@xcor() + amount * Trig.sin(@heading),
+      @setXcor(world.topology().wrapX(@xcor() + amount * Trig.sin(@heading),
           world.minPxcor - 0.5, world.maxPxcor + 0.5))
-      @setycor(world.topology().wrapY(@ycor() + amount * Trig.cos(@heading),
+      @setYcor(world.topology().wrapY(@ycor() + amount * Trig.cos(@heading),
           world.minPycor - 0.5, world.maxPycor + 0.5))
       updated(this, "xcor", "ycor")
     return
@@ -244,15 +246,15 @@ class Turtle
     @keepHeadingInRange()
     updated(this, "heading")
     return
-  setxy: (x, y) ->
+  setXY: (x, y) ->
     origXcor = @xcor()
     origYcor = @ycor()
     try
-      @setxcor(x)
-      @setycor(y)
+      @setXcor(x)
+      @setYcor(y)
     catch error
-      @setxcor(origXcor)
-      @setycor(origYcor)
+      @setXcor(origXcor)
+      @setYcor(origYcor)
       if error instanceof TopologyInterrupt
         throw new TopologyInterrupt("The point [ #{x} , #{y} ] is outside of the boundaries of the world and wrapping is not permitted in one or both directions.")
       else
@@ -290,9 +292,9 @@ class Turtle
   setTurtleVariable: (n, v) ->
     if (n < turtleBuiltins.length)
       if(n == 3) #xcor
-        @setxcor(v)
+        @setXcor(v)
       else if(n == 4) #ycor
-        @setycor(v)
+        @setYcor(v)
       else
         if (n == 5)  # shape
           v = v.toLowerCase()
@@ -302,8 +304,8 @@ class Turtle
       updated(this, turtleBuiltins[n])
     else
       @vars[n - turtleBuiltins.length] = v
-  getBreedVariable: (n) -> @breedvars[n]
-  setBreedVariable: (n, v) -> @breedvars[n] = v
+  getBreedVariable: (n) -> @breedVars[n]
+  setBreedVariable: (n, v) -> @breedVars[n] = v
   getPatchHere: -> world.getPatchAt(@xcor(), @ycor())
   getPatchVariable: (n)    -> @getPatchHere().getPatchVariable(n)
   setPatchVariable: (n, v) -> @getPatchHere().setPatchVariable(n, v)
@@ -318,13 +320,13 @@ class Turtle
       t = new Turtle(@color, @heading, @xcor(), @ycor(), breed, @label, @labelcolor, @hidden, @size, @pensize, @penmode)
       for v in TurtlesOwn.vars
         t.setTurtleVariable(turtleBuiltins.length + v, @getTurtleVariable(turtleBuiltins.length + v))
-      newTurtles.push(world.createturtle(t))
+      newTurtles.push(world.createTurtle(t))
     new Agents(newTurtles, breed)
-  moveto: (agent) ->
+  moveTo: (agent) ->
     if (agent instanceof Turtle)
-      @setxy(agent.xcor(), agent.ycor())
+      @setXY(agent.xcor(), agent.ycor())
     else if(agent instanceof Patch)
-      @setxy(agent.pxcor, agent.pycor)
+      @setXY(agent.pxcor, agent.pycor)
 
 class Patch
   vars: []
@@ -348,14 +350,14 @@ class Patch
   leave: (t) -> @turtles = @turtles.filter (o) -> o.id != t.id
   arrive: (t) ->
     @turtles.push(t)
-  distancexy: (x, y) -> world.topology().distancexy(@pxcor, @pycor, x, y)
+  distanceXY: (x, y) -> world.topology().distanceXY(@pxcor, @pycor, x, y)
   distance: (agent) -> world.topology().distance(@pxcor, @pycor, agent)
   turtlesHere: -> new Agents(@turtles, Breeds.get("TURTLES"))
   getNeighbors: -> world.getNeighbors(@pxcor, @pycor) # world.getTopology().getNeighbors(this)
   getNeighbors4: -> world.getNeighbors4(@pxcor, @pycor) # world.getTopology().getNeighbors(this)
   sprout: (n, breedName) ->
     breed = if("" == breedName) then Breeds.get("TURTLES") else Breeds.get(breedName)
-    new Agents(world.createturtle(new Turtle(5 + 10 * Random.nextInt(14), Random.nextInt(360), @pxcor, @pycor, breed)) for num in [0...n])
+    new Agents(world.createTurtle(new Turtle(5 + 10 * Random.nextInt(14), Random.nextInt(360), @pxcor, @pycor, breed)) for num in [0...n])
   breedHere: (breedName) ->
     breed = Breeds.get(breedName)
     new Agents(t for t in @turtles when t.breed == breed, breed)
@@ -430,7 +432,7 @@ class Link
   otherEnd: -> if @end1 == AgentSet.myself() then @end2 else @end1
   updateEndRelatedVars: ->
     @heading = world.topology().towards(@end1.xcor(), @end1.ycor(), @end2.xcor(), @end2.ycor())
-    @size = world.topology().distancexy(@end1.xcor(), @end1.ycor(), @end2.xcor(), @end2.ycor())
+    @size = world.topology().distanceXY(@end1.xcor(), @end1.ycor(), @end2.xcor(), @end2.ycor())
     @midpointx = world.topology().midpointx(@end1.xcor(), @end2.xcor())
     @midpointy = world.topology().midpointy(@end1.ycor(), @end2.ycor())
     updated(this, linkBuiltins...)
@@ -539,7 +541,7 @@ class World
       throw new NetLogoException("The tick counter has not been started yet. Use RESET-TICKS.")
     _ticks++
     Updates.push( world: { 0: { ticks: _ticks } } )
-  advancetick: (n) ->
+  tickAdvance: (n) ->
     if(_ticks == -1)
       throw new NetLogoException("The tick counter has not been started yet. Use RESET-TICKS.")
     if(n < 0)
@@ -576,7 +578,7 @@ class World
   patchesAllBlack: (val) ->
     _patchesAllBlack = val
     Updates.push( world: { 0: { patchesAllBlack: _patchesAllBlack }})
-  clearall: ->
+  clearAll: ->
     Globals.clear(@interfaceGlobalCount)
     for t in @turtles().items
       try
@@ -589,12 +591,12 @@ class World
     @patchesAllBlack(true)
     @clearTicks()
     return
-  createturtle: (t) ->
+  createTurtle: (t) ->
     t.id = _nextTurtleId++
     updated(t, turtleBuiltins...)
     _turtles.push(t)
     t
-  createlink: (directed, from, to) ->
+  createLink: (directed, from, to) ->
     if(from.id < to.id or directed)
       end1 = from
       end2 = to
@@ -609,28 +611,28 @@ class World
       l
     else
       Nobody
-  createorderedturtles: (n, breedName) ->
-    new Agents(@createturtle(new Turtle((10 * num + 5) % 140, (360 * num) / n, 0, 0, Breeds.get(breedName))) for num in [0...n])
-  createturtles: (n, breedName) ->
-    new Agents(@createturtle(new Turtle(5 + 10 * Random.nextInt(14), Random.nextInt(360), 0, 0, Breeds.get(breedName))) for num in [0...n])
+  createOrderedTurtles: (n, breedName) ->
+    new Agents(@createTurtle(new Turtle((10 * num + 5) % 140, (360 * num) / n, 0, 0, Breeds.get(breedName))) for num in [0...n])
+  createTurtles: (n, breedName) ->
+    new Agents(@createTurtle(new Turtle(5 + 10 * Random.nextInt(14), Random.nextInt(360), 0, 0, Breeds.get(breedName))) for num in [0...n])
   getNeighbors: (pxcor, pycor) -> @topology().getNeighbors(pxcor, pycor)
   getNeighbors4: (pxcor, pycor) -> @topology().getNeighbors4(pxcor, pycor)
   createDirectedLink: (from, to) ->
     @unbreededLinksAreDirected = true
     Updates.push({ world: { 0: { unbreededLinksAreDirected: true } } })
-    @createlink(true, from, to)
+    @createLink(true, from, to)
   createDirectedLinks: (source, others) ->
     @unbreededLinksAreDirected = true
     Updates.push({ world: { 0: { unbreededLinksAreDirected: true } } })
-    new Agents((@createlink(true, source, t) for t in others.items).filter((o) -> o != Nobody), Breeds.get("LINKS"))
+    new Agents((@createLink(true, source, t) for t in others.items).filter((o) -> o != Nobody), Breeds.get("LINKS"))
   createReverseDirectedLinks: (source, others) ->
     @unbreededLinksAreDirected = true
     Updates.push({ world: { 0: { unbreededLinksAreDirected: true } } })
-    new Agents((@createlink(true, t, source) for t in others.items).filter((o) -> o != Nobody), Breeds.get("LINKS"))
+    new Agents((@createLink(true, t, source) for t in others.items).filter((o) -> o != Nobody), Breeds.get("LINKS"))
   createUndirectedLink: (source, other) ->
-    @createlink(false, source, other)
+    @createLink(false, source, other)
   createUndirectedLinks: (source, others) ->
-    new Agents((@createlink(false, source, t) for t in others.items).filter((o) -> o != Nobody), Breeds.get("LINKS"))
+    new Agents((@createLink(false, source, t) for t in others.items).filter((o) -> o != Nobody), Breeds.get("LINKS"))
   getLink: (fromId, toId) ->
     filteredLinks = (@links().items.filter (l) -> (l.end1.id == fromId && l.end2.id == toId))
     if filteredLinks.length == 0 then Nobody else filteredLinks[0]
@@ -638,6 +640,11 @@ class World
 AgentSet =
   count: (x) -> x.items.length
   any: (x) -> x.items.length > 0
+  all: (x, f) ->
+    for a in x.items
+      if(!@askAgent(a, f))
+        return false
+    true
   _self: 0
   _myself: 0
   self: -> @_self
@@ -820,14 +827,14 @@ Prims =
   bk: (n) -> AgentSet.self().fd(-n)
   right: (n) -> AgentSet.self().right(n)
   left: (n) -> AgentSet.self().right(-n)
-  setxy: (x, y) -> AgentSet.self().setxy(x, y)
+  setXY: (x, y) -> AgentSet.self().setXY(x, y)
   getNeighbors: -> AgentSet.self().getNeighbors()
   getNeighbors4: -> AgentSet.self().getNeighbors4()
   sprout: (n, breedName) -> AgentSet.self().sprout(n, breedName)
   hatch: (n, breedName) -> AgentSet.self().hatch(n, breedName)
   patch: (x, y) -> world.getPatchAt(x, y)
-  randomxcor: -> world.minPxcor - 0.5 + Random.nextDouble() * (world.maxPxcor - world.minPxcor + 1)
-  randomycor: -> world.minPycor - 0.5 + Random.nextDouble() * (world.maxPycor - world.minPycor + 1)
+  randomXcor: -> world.minPxcor - 0.5 + Random.nextDouble() * (world.maxPxcor - world.minPxcor + 1)
+  randomYcor: -> world.minPycor - 0.5 + Random.nextDouble() * (world.maxPycor - world.minPycor + 1)
   shadeOf: (c1, c2) -> Math.floor(c1 / 10) == Math.floor(c2 / 10)
   equality: (a, b) ->
     if(a == undefined || b == undefined)
@@ -865,7 +872,7 @@ Prims =
     if(perc < 0)
       perc = 0
     color + perc
-  randomfloat: (n) -> n * Random.nextDouble()
+  randomFloat: (n) -> n * Random.nextDouble()
   list: (xs...) -> xs
   item: (n, xs) -> xs[n]
   first: (xs) -> xs[0]
@@ -875,8 +882,8 @@ Prims =
     result = xs[..]
     result.push(x)
     result
-  butfirst: (xs) -> xs[1..]
-  butlast: (xs) -> xs[0..xs.length - 1]
+  butFirst: (xs) -> xs[1..]
+  butLast: (xs) -> xs[0...xs.length - 1]
   length: (xs) -> xs.length
   _int: (n) -> if n < 0 then Math.ceil(n) else Math.floor(n)
   max: (xs) -> Math.max(xs...)
@@ -888,9 +895,9 @@ Prims =
     result = {}
     result[xs[key]] = xs[key] for key in [0...xs.length]
     value for key, value of result
-  outputprint: (x) ->
+  outputPrint: (x) ->
     println(Dump(x))
-  patchset: (inputs...) ->
+  patchSet: (inputs...) ->
     # O(n^2) -- should be smarter (use hashing for contains check)
     result = []
     recurse = (inputs) ->
@@ -1003,13 +1010,13 @@ class Topology
     else [@getPatchNorth(pxcor, pycor),     @getPatchEast(pxcor, pycor),
           @getPatchSouth(pxcor, pycor),     @getPatchWest(pxcor, pycor)]
 
-  distancexy: (x1, y1, x2, y2) ->
+  distanceXY: (x1, y1, x2, y2) ->
     StrictMath.sqrt(StrictMath.pow(@shortestX(x1, x2), 2) + StrictMath.pow(@shortestY(y1, y2), 2))
   distance: (x1, y1, agent) ->
     if (agent instanceof Turtle)
-      @distancexy(x1, y1, agent.xcor(), agent.ycor())
+      @distanceXY(x1, y1, agent.xcor(), agent.ycor())
     else if(agent instanceof Patch)
-      @distancexy(x1, y1, agent.pxcor, agent.pycor)
+      @distanceXY(x1, y1, agent.pxcor, agent.pycor)
 
   towards: (x1, y1, x2, y2) ->
     dx = @shortestX(x1, x2)
@@ -1020,8 +1027,38 @@ class Topology
       if dx >= 0 then 90 else 270
     else
       (270 + StrictMath.toDegrees (Math.PI + StrictMath.atan2(-dy, dx))) % 360
-  midpointx: (x1, x2) -> @wrap((x1 + @shortestX(x1, x2) / 2), world.minPxcor - 0.5, world.maxPxcor + 0.5)
-  midpointy: (y1, y2) -> @wrap((y1 + @shortestY(y1, y2) / 2), world.minPycor - 0.5, world.maxPycor + 0.5)
+  midpointx: (x1, x2) -> @wrap((x1 + (x1 + @shortestX(x1, x2))) / 2, world.minPxcor - 0.5, world.maxPxcor + 0.5)
+  midpointy: (y1, y2) -> @wrap((y1 + (y1 + @shortestY(y1, y2))) / 2, world.minPycor - 0.5, world.maxPycor + 0.5)
+
+  inRadius: (origin, x, y, agents, radius) ->
+    result = []
+
+    r = Math.ceil(radius)
+    width = world.width() / 2
+    height = world.height() / 2
+    if(r < width || !world.wrappingAllowedInX)
+      minDX = -r
+      maxDX = r
+    else
+      maxDX = StrictMath.floor(width)
+      minDX = -Math.ceil(width - 1)
+    if(r < height || !world.wrappingAllowedInY)
+      minDY = -r
+      maxDY = r
+    else
+      maxDY = StrictMath.floor(height)
+      minDY = -Math.ceil(height - 1)
+
+    for dy in [minDY..maxDY]
+      for dx in [minDX..maxDX]
+        p = origin.patchAt(dx, dy)
+        if p != Nobody
+          if(@distanceXY(p.pxcor, p.pycor, x, y) <= radius && agents.items.filter((o) -> o == p).length > 0)
+            result.push(p)
+          for t in p.turtlesHere().items
+            if(@distanceXY(t.xcor(), t.ycor(), x, y) <= radius && agents.items.filter((o) -> o == t).length > 0)
+              result.push(t)
+    new Agents(result, agents.breed)
 
 class Torus extends Topology
   constructor: (@minPxcor, @maxPxcor, @minPycor, @maxPycor) ->
@@ -1031,12 +1068,12 @@ class Torus extends Topology
   wrapY: (pos) ->
     @wrap(pos, @minPycor - 0.5, @maxPycor + 0.5)
   shortestX: (x1, x2) ->
-    if(StrictMath.abs(x1 - x2) > (1 + @maxPxcor - @minPxcor) / 2)
+    if(StrictMath.abs(x1 - x2) > world.width() / 2)
       (world.width() - StrictMath.abs(x1 - x2)) * (if x2 > x1 then -1 else 1)
     else
       Math.abs(x1 - x2) * (if x1 > x2 then -1 else 1)
   shortestY: (y1, y2) ->
-    if(StrictMath.abs(y1 - y2) > (1 + @maxPycor - @minPycor) / 2)
+    if(StrictMath.abs(y1 - y2) > world.height() / 2)
       (world.height() - StrictMath.abs(y1 - y2)) * (if y2 > y1 then -1 else 1)
     else
       Math.abs(y1 - y2) * (if y1 > y2 then -1 else 1)
@@ -1331,3 +1368,131 @@ class Box extends Topology
     for y in [0...yy]
       for x in [0...xx]
         world.getPatchAt(x + @minPxcor, y + @minPycor).setPatchVariable(vn, scratch2[x][y])
+
+# Copied pretty much verbatim from Layouts.java
+Layouts =
+  layoutSpring: (nodeSet, linkSet, spr, len, rep) ->
+    nodeCount = nodeSet.items.length
+    if nodeCount == 0
+      return
+
+    ax = []
+    ay = []
+    tMap = []
+    degCount = (0 for i in [0...nodeCount])
+
+    agt = []
+    i = 0
+    for t in AgentSet.shuffle(nodeSet).items
+      agt[i] = t
+      tMap[t.id] = i
+      ax[i] = 0.0
+      ay[i] = 0.0
+      i++
+
+    for link in linkSet.items
+      t1 = link.end1
+      t2 = link.end2
+      if (tMap[t1.id] != undefined)
+        t1Index = tMap[t1.id]
+        degCount[t1Index]++
+      if (tMap[t2.id] != undefined)
+        t2Index = tMap[t2.id]
+        degCount[t2Index]++
+
+    for link in linkSet.items
+      dx = 0
+      dy = 0
+      t1 = link.end1
+      t2 = link.end2
+      t1Index = -1
+      degCount1 = 0
+      if tMap[t1.id] != undefined
+        t1Index = tMap[t1.id]
+        degCount1 = degCount[t1Index]
+      t2Index = -1
+      degCount2 = 0
+      if tMap[t2.id] != undefined
+        t2Index = tMap[t2.id]
+        degCount2 = degCount[t2Index]
+      dist = t1.distance(t2)
+      # links that are connecting high degree nodes should not
+      # be as springy, to help prevent "jittering" behavior
+      div = (degCount1 + degCount2) / 2.0
+      div = Math.max(div, 1.0)
+
+      if dist == 0
+        dx += (spr * len) / div # arbitrary x-dir push-off
+      else
+        f = spr * (dist - len) / div
+        dx = dx + (f * (t2.xcor() - t1.xcor()) / dist)
+        dy = dy + (f * (t2.ycor() - t1.ycor()) / dist)
+      if t1Index != -1
+        ax[t1Index] += dx
+        ay[t1Index] += dy
+      if t2Index != -1
+        ax[t2Index] -= dx
+        ay[t2Index] -= dy
+
+    for i in [0...nodeCount]
+      t1 = agt[i]
+      for j in [(i + 1)...nodeCount]
+        t2 = agt[j]
+        dx = 0.0
+        dy = 0.0
+        div = (degCount[i] + degCount[j]) / 2.0
+        div = Math.max(div, 1.0)
+
+        if (t2.xcor() == t1.xcor() && t2.ycor() == t1.ycor())
+          ang = 360 * Random.nextDouble()
+          dx = -(rep / div * Trig.sin(StrictMath.toRadians(ang)))
+          dy = -(rep / div * Trig.cos(StrictMath.toRadians(ang)))
+        else
+          dist = t1.distance(t2)
+          f = rep / (dist * dist) / div
+          dx = -(f * (t2.xcor() - t1.xcor()) / dist)
+          dy = -(f * (t2.ycor() - t1.ycor()) / dist)
+        ax[i] += dx
+        ay[i] += dy
+        ax[j] -= dx
+        ay[j] -= dy
+
+    # we need to bump some node a small amount, in case all nodes
+    # are stuck on a single line
+    if (nodeCount > 1)
+      perturbAmt = (world.width() + world.height()) / 1.0e10
+      ax[0] += Random.nextDouble() * perturbAmt - perturbAmt / 2.0
+      ay[0] += Random.nextDouble() * perturbAmt - perturbAmt / 2.0
+
+    # try to choose something that's reasonable perceptually --
+    # for temporal aliasing, don't want to jump too far on any given timestep.
+    limit = (world.width() + world.height()) / 50.0
+
+    for i in [0...nodeCount]
+      t = agt[i]
+      fx = ax[i]
+      fy = ay[i]
+
+      if fx > limit
+        fx = limit
+      else if fx < -limit
+        fx = -limit
+
+      if fy > limit
+        fy = limit
+      else if fy < -limit
+        fy = -limit
+
+      newx = t.xcor() + fx
+      newy = t.ycor() + fy
+
+      if newx > world.maxPxcor
+        newx = world.maxPxcor
+      else if newx < world.minPxcor
+        newx = world.minPxcor
+
+      if newy > world.maxPycor
+        newy = world.maxPycor
+      else if newy < world.minPycor
+        newy = world.minPycor
+      t.setXY(newx, newy)

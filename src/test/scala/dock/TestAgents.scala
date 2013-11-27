@@ -4,8 +4,9 @@ package org.nlogo.tortoise
 package dock
 
 import org.nlogo.api, api.WorldDimensions
+import org.nlogo.util.SlowTest
 
-class TestAgents extends DockingSuite {
+class TestAgents extends DockingSuite with SlowTest {
 
   test("world dimensions") { implicit fixture => import fixture._
     declare("", WorldDimensions.square(2))
@@ -68,6 +69,11 @@ class TestAgents extends DockingSuite {
     declare("", WorldDimensions.square(4))
     testCommand("cro 20 ask turtles [rt random 90 left random 90]")
     testCommand("ask turtles [rt random-float 360]")
+  }
+
+  test("turtle motion 8") { implicit fixture => import fixture._
+    declare("", WorldDimensions.square(3))
+    testCommand("crt 50 ask turtles [ repeat 50 [ fd random-float 3.1 / random-float 2.1 ] ]")
   }
 
   test("turtle move-to") { implicit fixture => import fixture._
@@ -213,6 +219,13 @@ class TestAgents extends DockingSuite {
     testCommand("output-print any? turtles")
     testCommand("cro 1")
     testCommand("output-print any? turtles")
+  }
+
+  test("all") { implicit fixture => import fixture._
+    declare("", WorldDimensions.square(4))
+    testCommand("crt 20 [ setxy random-xcor random-ycor ]")
+    testCommand("output-print all? turtles [ pxcor > 0 ]")
+    testCommand("output-print all? turtles [ pxcor > -10 ]")
   }
 
   test("dimensions") { implicit fixture => import fixture._

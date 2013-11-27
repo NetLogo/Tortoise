@@ -1,9 +1,7 @@
 # Tortoise
 
-info at https://github.com/NetLogo/NetLogo/wiki/Tortoise
+info: https://github.com/NetLogo/NetLogo/wiki/Tortoise
 
-## WARNING
+engine/compiler issues: https://github.com/NetLogo/Tortoise/issues
 
-Don't base any work off the commits in this repo yet.
-The contents of this repo may still get rewritten
-using `git rebase` and/or `git filter-branch`.
+web server and client code and issues: https://github.com/NetLogo/Galapagos

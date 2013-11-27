@@ -49,36 +49,78 @@ class CompilerTests extends FunSuite {
     assertResult(expected)(compile(input))
   }
 
+  test("reporters: keep literal reporter on one line") {
+    import Compiler.{compileReporter => compile}
+    val input = "[0] of turtles"
+    val expected = "AgentSet.of(world.turtles(), function() { return 0 })"
+    assertResult(expected)(compile(input))
+  }
+
   // compileCommands
 
   test("commands: let") {
     import Compiler.{compileCommands => compile}
     val input = "let x 5 output-print x"
-    val expected = """|var X = 5;
-                      |Prims.outputprint(X)""".stripMargin
+    val expected = """|var x = 5;
+                      |Prims.outputPrint(x);""".stripMargin
     assertResult(expected)(compile(input))
   }
 
   test("commands: ask simple") {
     import Compiler.{compileCommands => compile}
     val input = "ask turtles [fd 1]"
-    val expected = "AgentSet.ask(world.turtles(), true, function(){ Prims.fd(1) });"
+    val expected =
+      """|AgentSet.ask(world.turtles(), true, function() {
+         |  Prims.fd(1);
+         |});""".stripMargin
     assertResult(expected)(compile(input))
   }
 
   test("commands: ask patches with variable") {
     import Compiler.{compileCommands => compile}
     val input = "ask patches [output-print pxcor]"
-    val expected = "AgentSet.ask(world.patches(), true, function(){ Prims.outputprint(AgentSet.getPatchVariable(0)) });"
+    val expected =
+      """|AgentSet.ask(world.patches(), true, function() {
+         |  Prims.outputPrint(AgentSet.getPatchVariable(0));
+         |});""".stripMargin
     assertResult(expected)(compile(input))
   }
 
   test("commands: with") {
     import Compiler.{compileCommands => compile}
     val input = "ask patches with [pxcor = 1] [output-print pycor]"
-    val expectedAgentFilter =
-      "AgentSet.agentFilter(world.patches(), function(){ return Prims.equality(AgentSet.getPatchVariable(0), 1) })"
-    val expected = s"AgentSet.ask($expectedAgentFilter, true, function(){ Prims.outputprint(AgentSet.getPatchVariable(1)) });"
+    val expected =
+       """|AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
+          |  return Prims.equality(AgentSet.getPatchVariable(0), 1)
+          |}), true, function() {
+          |  Prims.outputPrint(AgentSet.getPatchVariable(1));
+          |});""".stripMargin
+    assertResult(expected)(compile(input))
+  }
+
+  test("indentation 1") {
+    import Compiler.{compileCommands => compile}
+    val input = "ask turtles [ ask patches [ ask turtles [ fd 1 ] ] ]"
+    val expected =
+      """|AgentSet.ask(world.turtles(), true, function() {
+         |  AgentSet.ask(world.patches(), true, function() {
+         |    AgentSet.ask(world.turtles(), true, function() {
+         |      Prims.fd(1);
+         |    });
+         |  });
+         |});""".stripMargin
+    assertResult(expected)(compile(input))
+  }
+
+  test("indentation 2") {
+    import Compiler.{compileCommands => compile}
+    val input = "if any? turtles [ if not any? links [ fd 1 ] ]"
+    val expected =
+      """|if (AgentSet.any(world.turtles())) {
+         |  if (!(AgentSet.any(world.links()))) {
+         |    Prims.fd(1);
+         |  }
+         |}""".stripMargin
     assertResult(expected)(compile(input))
   }
 
@@ -88,9 +130,9 @@ class CompilerTests extends FunSuite {
     import Compiler.{compileProcedures => compile}
     val input = "to foo output-print 5 end"
     val expected = """world = new World(0, 0, 0, 0, 12.0, true, true, {}, {}, 0);
-                     |function FOO () {
-                     |Prims.outputprint(5)
-                     |};
+                     |function foo() {
+                     |  Prims.outputPrint(5);
+                     |}
                      |""".stripMargin
     assertResult(expected)(compile(input)._1)
   }
@@ -99,13 +141,13 @@ class CompilerTests extends FunSuite {
     import Compiler.{compileProcedures => compile}
     val input = "globals [x y z] to foo-bar? output-print z output-print y output-print x end"
     val expected =
-     """|Globals.init(3)
+     """|Globals.init(3);
         |world = new World(0, 0, 0, 0, 12.0, true, true, {}, {}, 0);
-        |function FOO_BAR_P () {
-        |Prims.outputprint(Globals.getGlobal(2))
-        |Prims.outputprint(Globals.getGlobal(1))
-        |Prims.outputprint(Globals.getGlobal(0))
-        |};
+        |function fooBar_p() {
+        |  Prims.outputPrint(Globals.getGlobal(2));
+        |  Prims.outputPrint(Globals.getGlobal(1));
+        |  Prims.outputPrint(Globals.getGlobal(0));
+        |}
         |""".stripMargin
     assertResult(expected)(compile(input)._1)
   }

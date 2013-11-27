@@ -1,3 +1,5 @@
+## (C) Uri Wilensky. https://github.com/NetLogo/NetLogo
+
 ##
 ## stuff in this file papers over differences between Rhino, Nashorn,
 ## and other JS implementations such as Node and the ones in browsers.

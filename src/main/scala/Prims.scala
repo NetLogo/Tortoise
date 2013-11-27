@@ -2,202 +2,204 @@
 
 package org.nlogo.tortoise
 
-import org.nlogo.{ compile, nvm, prim },
-  compile._
+import org.nlogo.{ api, compile => ast, nvm, prim }
 
 object Prims {
 
-  object InfixReporter {
-    def unapply(r: nvm.Reporter): Option[String] =
-      PartialFunction.condOpt(r) {
-        case _: prim.etc._plus           => "+"
-        case _: prim._minus              => "-"
-        case _: prim.etc._mult           => "*"
-        case _: prim.etc._div            => "/"
-        case _: prim.etc._mod            => "%"
-        case _: prim._lessthan           => "<"
-        case _: prim._greaterthan        => ">"
-        case _: prim.etc._greaterorequal => ">="
-        case _: prim.etc._lessorequal    => "<="
-        case _: prim._and                => "&&"
-        case _: prim._or                 => "||"
-      }
+  def reporter(r: ast.ReporterApp): String = {
+    def arg(i: Int) = Handlers.reporter(r.args(i))
+    def commaArgs = argsSep(", ")
+    def args =
+      r.args.collect{ case x: ast.ReporterApp => Handlers.reporter(x) }
+    def argsSep(sep: String) =
+      args.mkString(sep)
+    r.reporter match {
+      case SimplePrims.SimpleReporter(op)   => op
+      case SimplePrims.InfixReporter(op)    => s"(${arg(0)} $op ${arg(1)})"
+      case SimplePrims.NormalReporter(op)   => s"$op($commaArgs)"
+      case x: prim.etc._isbreed             => s"""${arg(0)}.isBreed("${x.breedName}")"""
+      case b: prim.etc._breed               => s"""world.turtlesOfBreed("${b.getBreedName}")"""
+      case b: prim.etc._breedsingular       => s"""world.getTurtleOfBreed("${b.breedName}", ${arg(0)})"""
+      case b: prim.etc._breedhere           => s"""AgentSet.self().breedHere("${b.getBreedName}")"""
+      case pure: nvm.Pure if r.args.isEmpty => Handlers.literal(pure.report(null))
+      case lv: prim._letvariable            => Handlers.ident(lv.let.name)
+      case pv: prim._procedurevariable      => Handlers.ident(pv.name)
+      case call: prim._callreport           => s"${Handlers.ident(call.procedure.name)}($commaArgs)"
+      case _: prim._unaryminus              => s"(- ${arg(0)})"
+      case bv: prim._breedvariable          => s"""AgentSet.getBreedVariable("${bv.name}")"""
+      case tv: prim._turtlevariable         => s"AgentSet.getTurtleVariable(${tv.vn})"
+      case tv: prim._linkvariable           => s"AgentSet.getLinkVariable(${tv.vn})"
+      case tv: prim._turtleorlinkvariable   =>
+        val vn = api.AgentVariables.getImplicitTurtleVariables.indexOf(tv.varName)
+        s"AgentSet.getTurtleVariable($vn)"
+      case pv: prim._patchvariable          => s"AgentSet.getPatchVariable(${pv.vn})"
+      case r: prim._reference               => s"${r.reference.vn}"
+      case ov: prim._observervariable       => s"Globals.getGlobal(${ov.vn})"
+      case _: prim._word                    =>
+        ("\"\"" +: args).map(arg => "Dump(" + arg + ")").mkString("(", " + ", ")")
+      case _: prim._with =>
+        val agents = arg(0)
+        val filter = Handlers.reporter(r.args(1))
+        s"AgentSet.agentFilter($agents, ${Handlers.fun(r.args(1), true)})"
+      case _: prim._of =>
+        val agents = arg(1)
+        val body = Handlers.reporter(r.args(0))
+        s"AgentSet.of($agents, ${Handlers.fun(r.args(0), true)})"
+      case o: prim.etc._all =>
+        val agents = arg(0)
+        val body = Handlers.reporter(r.args(1))
+        s"AgentSet.all($agents, function(){ return $body })"
+      case _: prim.etc._islink              => s"(${arg(0)} instanceof Link)"
+      case _ =>
+        throw new IllegalArgumentException(
+          "unknown primitive: " + r.reporter.getClass.getName)
+    }
   }
 
-  // Scalastyle is right to complain about this gruesomely large match statement,
-  // but it isn't worth failing the build over (for the time being) - ST 10/14/13
-  // scalastyle:off cyclomatic.complexity
-  object NormalReporter {
-    def unapply(r: nvm.Reporter): Option[String] =
-      PartialFunction.condOpt(r) {
-        case _: prim._equal           => "Prims.equality"
-        case _: prim._notequal        => "!Prims.equality"
-        case _: prim.etc._self        => "AgentSet.self"
-        case _: prim.etc._myself      => "AgentSet.myself"
-        case _: prim.etc._patch       => "world.getPatchAt"
-        case _: prim.etc._turtles     => "world.turtles"
-        case _: prim.etc._links       => "world.links"
-        case _: prim._patches         => "world.patches"
-        case _: prim.etc._ticks       => "world.ticks"
-        case _: prim.etc._timer       => "world.timer"
-        case _: prim._count           => "AgentSet.count"
-        case _: prim._any             => "AgentSet.any"
-        case _: prim._random          => "Random.nextLong"
-        case _: prim._list            => "Prims.list"
-        case _: prim.etc._item        => "Prims.item"
-        case _: prim.etc._first       => "Prims.first"
-        case _: prim.etc._last        => "Prims.last"
-        case _: prim.etc._fput        => "Prims.fput"
-        case _: prim.etc._lput        => "Prims.lput"
-        case _: prim.etc._butfirst    => "Prims.butfirst"
-        case _: prim.etc._butlast     => "Prims.butlast"
-        case _: prim.etc._sort        => "Prims.sort"
-        case _: prim.etc._max         => "Prims.max"
-        case _: prim.etc._length      => "Prims.length"
-        case _: prim.etc._min         => "Prims.min"
-        case _: prim.etc._mean        => "Prims.mean"
-        case _: prim._sum             => "Prims.sum"
-        case _: prim.etc._abs         => "StrictMath.abs"
-        case _: prim.etc._randomfloat => "Prims.randomfloat"
-        case _: prim.etc._randomxcor  => "Prims.randomxcor"
-        case _: prim.etc._randomycor  => "Prims.randomycor"
-        case _: prim._oneof           => "AgentSet.oneOf"
-        case _: prim.etc._nof         => "AgentSet.nOf"
-        case _: prim.etc._removeduplicates => "Prims.removeDuplicates"
-        case _: prim.etc._patchset    => "Prims.patchset"
-        case _: prim._not             => "!"
-        case _: prim.etc._distance    => "AgentSet.self().distance"
-        case _: prim.etc._distancexy  => "AgentSet.self().distancexy"
-        case _: prim.etc._inradius    => "AgentSet.self().inRadius"
-        case _: prim._patchat         => "AgentSet.self().patchAt"
-        case _: prim.etc._patchahead  => "AgentSet.self().patchAhead"
-        case _: prim.etc._patchrightandahead  => "AgentSet.self().patchRightAndAhead"
-        case _: prim.etc._patchleftandahead   => "AgentSet.self().patchLeftAndAhead"
-        case _: prim.etc._canmove     => "AgentSet.self().canMove"
-        case _: prim.etc._shadeof     => "Prims.shadeOf"
-        case _: prim.etc._scalecolor  => "Prims.scaleColor"
-        case _: prim.etc._patchhere   => "AgentSet.self().getPatchHere"
-        case _: prim.etc._turtleshere => "AgentSet.self().turtlesHere"
-        case _: prim.etc._turtleson   => "AgentSet.turtlesOn"
-        case _: prim.etc._turtlesat   => "AgentSet.self().turtlesAt"
-        case _: prim._other           => "AgentSet.other"
-        case _: prim.etc._sin         => "Trig.unsquashedSin"
-        case _: prim.etc._cos         => "Trig.unsquashedCos"
-        case _: prim.etc._floor       => "StrictMath.floor"
-        case _: prim.etc._int         => "Prims._int"
-        case _: prim.etc._round       => "StrictMath.round"
-        case _: prim.etc._turtle      => "world.getTurtle"
-        case _: prim.etc._link        => "world.getLink"
-        case _: prim.etc._linkneighbor => "AgentSet.isLinkNeighbor(false, false)"
-        case _: prim.etc._inlinkneighbor => "AgentSet.isLinkNeighbor(true, false)"
-        case _: prim.etc._outlinkneighbor => "AgentSet.isLinkNeighbor(true, true)"
-        case _: prim.etc._inlinkfrom  => "AgentSet.findLinkViaNeighbor(true, false)"
-        case _: prim.etc._outlinkto   => "AgentSet.findLinkViaNeighbor(true, true)"
-        case _: prim.etc._linkwith    => "AgentSet.findLinkViaNeighbor(false, false)"
-        case _: prim.etc._bothends    => "AgentSet.self().bothEnds"
-        case _: prim.etc._otherend    => "AgentSet.self().otherEnd"
-      }
-  }
-  // scalastyle:on cyclomatic.complexity
-
-  object NormalCommand {
-    def unapply(c: nvm.Command): Option[String] =
-      PartialFunction.condOpt(c) {
-        case _: prim.etc._outputprint      => "Prims.outputprint"
-        case _: prim.etc._clearall         => "world.clearall"
-        case _: prim.etc._clearticks       => "world.clearTicks"
-        case _: prim.etc._resizeworld      => "world.resize"
-        case _: prim.etc._resetticks       => "world.resetTicks"
-        case _: prim.etc._resettimer       => "world.resetTimer"
-        case _: prim.etc._tick             => "world.tick"
-        case _: prim.etc._tickadvance      => "world.advancetick"
-        case _: prim.etc._setdefaultshape  => "Breeds.setDefaultShape"
-        case _: prim.etc._moveto           => "AgentSet.self().moveto"
-        case _: prim.etc._face             => "AgentSet.self().face"
-        case _: prim.etc._facexy           => "AgentSet.self().facexy"
-        case _: prim._fd                   => "Prims.fd"
-        case _: prim._bk                   => "Prims.bk"
-        case _: prim.etc._left             => "Prims.left"
-        case _: prim.etc._right            => "Prims.right"
-        case _: prim.etc._setxy            => "Prims.setxy"
-        case _: prim.etc._die              => "AgentSet.die"
-        case _: prim.etc._randomseed       => "Random.setSeed"
-        case _: prim.etc._diffuse          => "world.topology().diffuse"
-        case _: prim.etc._setcurrentplot   => "noop"
-        case _: prim.etc._setcurrentplotpen => "noop"
-        case _: prim.etc._plot             => "noop"
-      }
+  def generateCommand(s: ast.Statement): String = {
+    def arg(i: Int) = Handlers.reporter(s.args(i))
+    def args =
+      s.args.collect{ case x: ast.ReporterApp =>
+        Handlers.reporter(x) }.mkString(", ")
+    s.command match {
+      case SimplePrims.SimpleCommand(op) => if (op.isEmpty) "" else s"$op;"
+      case SimplePrims.NormalCommand(op) => s"$op($args);"
+      case _: prim._set                  => generateSet(s)
+      case _: prim._repeat               => generateRepeat(s)
+      case _: prim.etc._while            => generateWhile(s)
+      case _: prim.etc._if               => generateIf(s)
+      case _: prim.etc._ifelse           => generateIfElse(s)
+      case _: prim._ask                  => generateAsk(s, shuffle = true)
+      case _: prim._createturtles        => generateCreateTurtles(s, ordered = false)
+      case _: prim._createorderedturtles => generateCreateTurtles(s, ordered = true)
+      case _: prim._sprout               => generateSprout(s)
+      case _: prim.etc._createlinkfrom   => generateCreateLink(s, "createLinkFrom")
+      case _: prim.etc._createlinksfrom  => generateCreateLink(s, "createLinksFrom")
+      case _: prim.etc._createlinkto     => generateCreateLink(s, "createLinkTo")
+      case _: prim.etc._createlinksto    => generateCreateLink(s, "createLinksTo")
+      case _: prim.etc._createlinkwith   => generateCreateLink(s, "createLinkWith")
+      case _: prim.etc._createlinkswith  => generateCreateLink(s, "createLinksWith")
+      case h: prim._hatch                => generateHatch(s, h.breedName)
+      case call: prim._call              => s"${Handlers.ident(call.procedure.name)}($args);"
+      case _: prim.etc._report           => s"return $args;"
+      case l: prim._let                  =>
+        // arg 0 is the name but we don't access it because LetScoper took care of it.
+        // arg 1 is the value.
+        s"var ${Handlers.ident(l.let.name)} = ${arg(1)};"
+      case _ =>
+        throw new IllegalArgumentException(
+          "unknown primitive: " + s.command.getClass.getName)
+    }
   }
 
-  def generateWhile(w: Statement): String = {
-    val pred = Compiler.genReporterBlock(w.args.head)
-    val body = Compiler.genCommandBlock(w.args.tail.head)
-    s"""while ($pred) {
-      |$body
-      |}""".stripMargin
+  /// custom generators for particular Commands
+
+  def generateSet(s: ast.Statement): String = {
+    def arg(i: Int) = Handlers.reporter(s.args(i))
+    s.args(0).asInstanceOf[ast.ReporterApp].reporter match {
+      case p: prim._letvariable =>
+        s"${Handlers.ident(p.let.name)} = ${arg(1)};"
+      case p: prim._observervariable =>
+        s"Globals.setGlobal(${p.vn}, ${arg(1)});"
+      case bv: prim._breedvariable =>
+        s"""AgentSet.setBreedVariable("${bv.name}", ${arg(1)});"""
+      case p: prim._linkvariable =>
+        s"AgentSet.setLinkVariable(${p.vn}, ${arg(1)});"
+      case p: prim._turtlevariable =>
+        s"AgentSet.setTurtleVariable(${p.vn}, ${arg(1)});"
+      case p: prim._turtleorlinkvariable if p.varName == "BREED" =>
+        s"AgentSet.setBreed(${arg(1)});"
+      case p: prim._turtleorlinkvariable =>
+        val vn = api.AgentVariables.getImplicitTurtleVariables.indexOf(p.varName)
+        s"AgentSet.setTurtleVariable($vn, ${arg(1)});"
+      case p: prim._patchvariable =>
+        s"AgentSet.setPatchVariable(${p.vn}, ${arg(1)});"
+      case p: prim._procedurevariable =>
+        s"${Handlers.ident(p.name)} = ${arg(1)};"
+      case x =>
+        throw new IllegalArgumentException(
+          "unknown settable: " + x.getClass.getName)
+    }
   }
 
-  def generateIf(s: Statement): String = {
-    val pred = Compiler.genReporterApp(s.args.head)
-    val body = Compiler.genCommandBlock(s.args.tail.head)
-    s"""if ($pred) {
-      |$body
-      |}""".stripMargin
+  def generateRepeat(w: ast.Statement): String = {
+    val count = Handlers.reporter(w.args(0))
+    val body = Handlers.commands(w.args(1))
+    s"""|for(var i = 0; i < $count; i++) {
+        |${Handlers.indented(body)}
+        |}""".stripMargin
   }
 
-  def generateIfElse(s: Statement): String = {
-    val pred      = Compiler.genReporterApp(s.args.head)
-    val thenBlock = Compiler.genCommandBlock(s.args.tail.head)
-    val elseBlock = Compiler.genCommandBlock(s.args.tail.tail.head)
-    s"""if ($pred) {
-      |$thenBlock
-      |} else {
-      |$elseBlock
-      |}""".stripMargin
+  def generateWhile(w: ast.Statement): String = {
+    val pred = Handlers.reporter(w.args(0))
+    val body = Handlers.commands(w.args(1))
+    s"""|while ($pred) {
+        |${Handlers.indented(body)}
+        |}""".stripMargin
   }
 
-  def generateAsk(s: Statement, shuffle: Boolean): String = {
-    val agents = Compiler.genReporterApp(s.args.head)
-    val body   = fun(Compiler.genCommandBlock(s.args.tail.head))
+  def generateIf(s: ast.Statement): String = {
+    val pred = Handlers.reporter(s.args(0))
+    val body = Handlers.commands(s.args(1))
+    s"""|if ($pred) {
+        |${Handlers.indented(body)}
+        |}""".stripMargin
+  }
+
+  def generateIfElse(s: ast.Statement): String = {
+    val pred      = Handlers.reporter(s.args(0))
+    val thenBlock = Handlers.commands(s.args(1))
+    val elseBlock = Handlers.commands(s.args(2))
+    s"""|if ($pred) {
+        |${Handlers.indented(thenBlock)}
+        |}
+        |else {
+        |${Handlers.indented(elseBlock)}
+        |}""".stripMargin
+  }
+
+  def generateAsk(s: ast.Statement, shuffle: Boolean): String = {
+    val agents = Handlers.reporter(s.args(0))
+    val body = Handlers.fun(s.args(1))
     s"AgentSet.ask($agents, $shuffle, $body);"
   }
 
-  def generateCreateLink(s: Statement, name: String): String = {
+  def generateCreateLink(s: ast.Statement, name: String): String = {
     import org.nlogo.prim._
-    val other = Compiler.genReporterApp(s.args.head)
+    val other = Handlers.reporter(s.args(0))
     // This is so that we don't shuffle unnecessarily.  FD 10/31/2013
-    val nonEmptyCommandBlock = s.args.tail.head.asInstanceOf[CommandBlock].statements.size != 0
-    val body = fun(Compiler.genCommandBlock(s.args.tail.head))
+    val nonEmptyCommandBlock =
+      s.args(1).asInstanceOf[ast.CommandBlock]
+        .statements.nonEmpty
+    val body = Handlers.fun(s.args(1))
     s"""AgentSet.ask(AgentSet.$name($other), $nonEmptyCommandBlock, $body);"""
   }
 
-  def generateCreateTurtles(s: Statement, ordered: Boolean): String = {
+  def generateCreateTurtles(s: ast.Statement, ordered: Boolean): String = {
     import org.nlogo.prim._
-    val n = Compiler.genReporterApp(s.args.head)
-    val name = if (ordered) "createorderedturtles" else "createturtles"
+    val n = Handlers.reporter(s.args(0))
+    val name = if (ordered) "createOrderedTurtles" else "createTurtles"
     val breed =
       s.command match {
         case x: _createturtles => x.breedName
         case x: _createorderedturtles => x.breedName
         case x => throw new IllegalArgumentException("How did you get here with class of type " + x.getClass.getName)
       }
-    val body = fun(Compiler.genCommandBlock(s.args.tail.head))
+    val body = Handlers.fun(s.args(1))
     s"""AgentSet.ask(world.$name($n, "$breed"), true, $body);"""
   }
 
-  def generateSprout(s: Statement): String = {
-    val n = Compiler.genReporterApp(s.args.head)
-    val body = fun(Compiler.genCommandBlock(s.args.tail.head))
+  def generateSprout(s: ast.Statement): String = {
+    val n = Handlers.reporter(s.args(0))
+    val body = Handlers.fun(s.args(1))
     val breedName = s.command.asInstanceOf[prim._sprout].breedName
     s"""AgentSet.ask(Prims.sprout($n, "$breedName"), true, $body);"""
   }
 
-  def generateHatch(s: Statement, breedName: String): String = {
-    val n = Compiler.genReporterApp(s.args.head)
-    val body = fun(Compiler.genCommandBlock(s.args.tail.head))
+  def generateHatch(s: ast.Statement, breedName: String): String = {
+    val n = Handlers.reporter(s.args(0))
+    val body = Handlers.fun(s.args(1))
     s"""AgentSet.ask(Prims.hatch($n, "$breedName"), true, $body);"""
   }
-
-  def fun(body: String) = s"function(){ $body }"
 
 }

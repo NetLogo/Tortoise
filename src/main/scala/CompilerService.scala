@@ -6,7 +6,6 @@ import
   scala.io.Source
 
 import
-  org.nlogo.util.Femto,
   org.nlogo.{ api, nvm, workspace },
     api.{ ModelReader, ModelSection, WorldDimensions },
     workspace.WidgetParser
@@ -29,7 +28,7 @@ object CompilerService {
     val nlogo     = modelMap(ModelSection.Code).mkString("\n")
 
     val frontEnd: nvm.FrontEndInterface =
-      Femto.scalaSingleton("org.nlogo.compile.front.FrontEnd")
+      org.nlogo.compile.front.FrontEnd
 
     val (iGlobals, _, _, _, iGlobalCmds) =
       new WidgetParser(new nvm.DefaultParserServices(frontEnd))
@@ -44,8 +43,6 @@ object CompilerService {
     val (js, _, _) = Compiler.compileProcedures(nlogo, iGlobals, iGlobalCmds.toString, dimensions)
 
     System.out.println(js)
-
-    System.exit(0)
 
   }
 

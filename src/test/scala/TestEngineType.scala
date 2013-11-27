@@ -3,6 +3,7 @@
 package org.nlogo.tortoise
 
 import org.scalatest.FunSuite
+import rhino.Rhino
 
 class TestEngineType extends FunSuite {
 

@@ -8,7 +8,8 @@ import
   headless.lang._,
   org.nlogo.util.MersenneTwisterFast,
   org.scalatest.Assertions._,
-  org.nlogo.shape.{LinkShape, VectorShape}
+  org.nlogo.shape.{LinkShape, VectorShape},
+  rhino.Rhino
 
 import collection.JavaConverters._
 

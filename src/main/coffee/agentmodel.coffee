@@ -1,3 +1,5 @@
+## (C) Uri Wilensky. https://github.com/NetLogo/NetLogo
+
 class AgentModel
   constructor: ->
     @turtles = {}
