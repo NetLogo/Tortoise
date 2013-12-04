@@ -22,10 +22,9 @@ object FastMediumSlow {
     !slowFilter(path, name)
 
   private def mediumFilter(path: Classpath, name: String): Boolean =
-    fastFilter(path, name) /* ||
-    no medium tests at present but we could add something like:
-    name == "org.nlogo.headless.lang.TestReporters" ||
-    name == "org.nlogo.headless.lang.TestCommands" */
+    fastFilter(path, name) ||
+    name == "org.nlogo.tortoise.TestReporters" ||
+    name == "org.nlogo.tortoise.TestCommands"
 
   private def slowFilter(path: Classpath, name: String): Boolean = {
     val jars = path.files.map(_.asURL).toArray[java.net.URL]

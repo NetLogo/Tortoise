@@ -68,6 +68,8 @@ class Rhino {
         l.toDouble : java.lang.Double
       case i: java.lang.Integer =>
         i.toDouble : java.lang.Double
+      case x if x eq engine.get("Nobody") =>
+        api.Nobody
       case x =>
         x
     }

@@ -32,7 +32,6 @@ object SimplePrims {
         case _: prim._minus              => "-"
         case _: prim.etc._mult           => "*"
         case _: prim.etc._div            => "/"
-        case _: prim.etc._mod            => "%"
         case _: prim._lessthan           => "<"
         case _: prim._greaterthan        => ">"
         case _: prim.etc._greaterorequal => ">="
@@ -62,7 +61,6 @@ object SimplePrims {
         case _: prim.etc._timer              => "world.timer"
         case _: prim._count                  => "AgentSet.count"
         case _: prim._any                    => "AgentSet.any"
-        case _: prim._random                 => "Random.nextLong"
         case _: prim._list                   => "Prims.list"
         case _: prim.etc._item               => "Prims.item"
         case _: prim.etc._first              => "Prims.first"
@@ -78,6 +76,7 @@ object SimplePrims {
         case _: prim.etc._mean               => "Prims.mean"
         case _: prim._sum                    => "Prims.sum"
         case _: prim.etc._abs                => "StrictMath.abs"
+        case _: prim._random                 => "Prims.random"
         case _: prim.etc._randomfloat        => "Prims.randomFloat"
         case _: prim.etc._randomxcor         => "Prims.randomXcor"
         case _: prim.etc._randomycor         => "Prims.randomYcor"
@@ -116,6 +115,7 @@ object SimplePrims {
         case _: prim.etc._bothends           => "AgentSet.self().bothEnds"
         case _: prim.etc._otherend           => "AgentSet.self().otherEnd"
         case _: prim.etc._sqrt               => "StrictMath.sqrt"
+        case _: prim.etc._mod                => "Prims.mod"
       }
   }
 

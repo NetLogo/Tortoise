@@ -842,7 +842,7 @@ Prims =
     if(a == b)
       true
     else if (typeIsArray(a) && typeIsArray(b))
-      a.length == b.length && a.every (elem, i) -> elem is b[i]
+      a.length == b.length && a.every (elem, i) -> Prims.equality(elem, b[i])
     else
       false
   scaleColor: (color, number, min, max) ->
@@ -872,6 +872,18 @@ Prims =
     if(perc < 0)
       perc = 0
     color + perc
+  random: (n) ->
+    truncated =
+      if n >= 0
+        Math.floor(n)
+      else
+        Math.ceil(n)
+    if truncated == 0
+      0
+    else if truncated > 0
+      Random.nextLong(truncated)
+    else
+      -Random.nextLong(-truncated)
   randomFloat: (n) -> n * Random.nextDouble()
   list: (xs...) -> xs
   item: (n, xs) -> xs[n]
@@ -886,10 +898,11 @@ Prims =
   butLast: (xs) -> xs[0...xs.length - 1]
   length: (xs) -> xs.length
   _int: (n) -> if n < 0 then Math.ceil(n) else Math.floor(n)
+  mod: (a, b) -> ((a % b) + b) % b
   max: (xs) -> Math.max(xs...)
   min: (xs) -> Math.min(xs...)
   mean: (xs) -> @sum(xs) / xs.length
-  sum: (xs) -> xs.reduce((a, b) -> a + b)
+  sum: (xs) -> xs.reduce(((a, b) -> a + b), 0)
   sort: (xs) -> xs.sort()
   removeDuplicates: (xs) ->
     result = {}
