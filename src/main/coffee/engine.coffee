@@ -318,7 +318,7 @@ class Turtle
     newTurtles = []
     for num in [0...n]
       t = new Turtle(@color, @heading, @xcor(), @ycor(), breed, @label, @labelcolor, @hidden, @size, @pensize, @penmode)
-      for v in TurtlesOwn.vars
+      for v in [0..TurtlesOwn.vars.length]
         t.setTurtleVariable(turtleBuiltins.length + v, @getTurtleVariable(turtleBuiltins.length + v))
       newTurtles.push(world.createTurtle(t))
     new Agents(newTurtles, breed)
