@@ -139,4 +139,12 @@ class TestBreeds extends DockingSuite {
     testCommand("ask cats [ output-print life ]")
     testCommand("ask cats [ output-print food ]")
   }
+
+  test("breed equality") { implicit fixture => import fixture._
+    declare("breed [mice mouse]")
+    testCommand("create-mice 3 ask [ breed ] of turtle 0 [ output-print who ]")
+    testCommand("ask turtle 0 [ output-print breed = turtles ]")
+    testCommand("create-mice 3 crt 2 ask turtle 0 [ output-print breed = turtles ]")
+    testCommand("crt 3 ask turtle 0 [ set color red ] ask turtle 0 [ output-print breed = turtles with [ color != red ]]")
+  }
 }

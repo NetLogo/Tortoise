@@ -50,7 +50,6 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
     "Breeds::TestIsBreed" -> "???",
     "ComparingAgents::ComparingPatches" -> "???",
     "DeadTurtles::DeadTurtles9" -> "???",
-    "Equality::lists-of-agentsets-can-be-equal" -> "???",
     "Equality::two-dead-turtles-are-equal" -> "???",
     "Equality::dead-turtle-equals-nobody" -> "???",
     "Equality::two-dead-links-are-equal" -> "???",
@@ -66,7 +65,6 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
     "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksTo" -> "???",
     "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksFrom" -> "???",
     "SelfMyself::Myself1" -> "???",
-    "Turtles::Turtles2" -> "???",
     "TurtlesHere::TurtlesHere1" -> "???",
     "TurtlesHere::PatchDoesOtherTurtlesHere" -> "???",
     "TurtlesHere::PatchDoesOtherBreedHere" -> "???",
@@ -76,7 +74,6 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
     "Links::Links2" -> "colors don't wrap to [0,140)",
     // significant
     "ImportWorld::AllBreeds" -> "'special' agentsets not supported",
-    "Agentsets::Agentsets1" -> "'special' agentsets not supported",
     "Agentsets::Agentsets4" -> "TOO SLOW",
     "Links::LinksInitBlock" -> "TOO SLOW",
     "Random::RandomNOfIsFairForTurtles" -> "TOO SLOW",

@@ -424,4 +424,11 @@ class TestAgents extends DockingSuite with SlowTest {
     testCommand("ask patches [ ask other turtles [ output-print self ] ]")
   }
 
+  test("agentset equality") { implicit fixture => import fixture._
+    compare("turtles = turtles")
+    testCommand("crt 3")
+    compare("turtles = turtles with [ who > 0 ]")
+    testCommand("output-print turtles = turtles with [ who > -1 ]")
+    compare("turtles with [ who > 0 ] = turtles with [ who > 0 ]")
+  }
 }
