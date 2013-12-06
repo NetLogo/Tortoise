@@ -82,7 +82,7 @@ object Compiler {
     if (commands)
       Handlers.commands(defs.head.statements)
     else
-      Handlers.reporter(defs.head.statements(1).args(0))
+      Handlers.reporter(defs.head.statements.stmts(1).args(0))
   }
 
 }

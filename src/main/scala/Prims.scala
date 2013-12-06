@@ -170,7 +170,7 @@ object Prims {
     // This is so that we don't shuffle unnecessarily.  FD 10/31/2013
     val nonEmptyCommandBlock =
       s.args(1).asInstanceOf[ast.CommandBlock]
-        .statements.nonEmpty
+        .statements.stmts.nonEmpty
     val body = Handlers.fun(s.args(1))
     s"""AgentSet.ask(AgentSet.$name($other), $nonEmptyCommandBlock, $body);"""
   }

@@ -41,7 +41,7 @@ object Handlers {
       case block: ast.CommandBlock =>
         commands(block.statements)
       case statements: ast.Statements =>
-        statements.map(Prims.generateCommand)
+        statements.stmts.map(Prims.generateCommand)
           .filter(_.nonEmpty)
           .mkString("\n")
     }
