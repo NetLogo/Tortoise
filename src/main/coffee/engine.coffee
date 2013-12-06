@@ -285,6 +285,8 @@ class Turtle
         @xcor()
       else if(n == 4) #ycor
         @ycor()
+      else if(n == 8) #breed
+        world.turtlesOfBreed(@breed.name)
       else
         this[turtleBuiltins[n]]
     else
@@ -842,7 +844,9 @@ Prims =
     if(a == b)
       true
     else if (typeIsArray(a) && typeIsArray(b))
-      a.length == b.length && a.every (elem, i) -> Prims.equality(elem, b[i])
+      a.length == b.length && a.every((elem, i) -> Prims.equality(elem, b[i]))
+    else if (a instanceof Agents && b instanceof Agents)
+      a.items.length == b.items.length && a.items.every((elem) -> (elem in b.items))
     else
       false
   scaleColor: (color, number, min, max) ->
