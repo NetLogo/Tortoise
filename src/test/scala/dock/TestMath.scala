@@ -56,4 +56,12 @@ class TestMath extends DockingSuite {
     compare("int (g / 2)")
   }
 
+  test("precision") { implicit fixture => import fixture._
+    compare("precision 12122.4321 2")
+    compare("precision 12122.4321 0")
+    compare("precision 12122.4321 -2")
+    for(_ <- 1 to 20)
+      compare("precision (random-float 10.2312 * random-float 23124.25 / random-float 3.24) (random 10 - 5)")
+  }
+
 }

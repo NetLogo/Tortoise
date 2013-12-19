@@ -946,6 +946,14 @@ Prims =
   min: (xs) -> Math.min(xs...)
   mean: (xs) -> @sum(xs) / xs.length
   sum: (xs) -> xs.reduce(((a, b) -> a + b), 0)
+  precision: (n, places) ->
+    multiplier = Math.pow(10, places)
+    result = Math.floor(n * multiplier + .5) / multiplier
+    if places > 0
+      result
+    else
+      Math.round(result)
+
   sort: (xs) -> xs.sort()
   removeDuplicates: (xs) ->
     result = {}

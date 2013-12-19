@@ -105,6 +105,7 @@ object SimplePrims {
         case _: prim.etc._floor              => "StrictMath.floor"
         case _: prim.etc._int                => "Prims._int"
         case _: prim.etc._round              => "StrictMath.round"
+        case _: prim.etc._precision          => "Prims.precision"
         case _: prim.etc._link               => "world.getLink"
         case _: prim.etc._linkneighbor       => "AgentSet.isLinkNeighbor(false, false)"
         case _: prim.etc._inlinkneighbor     => "AgentSet.isLinkNeighbor(true, false)"
