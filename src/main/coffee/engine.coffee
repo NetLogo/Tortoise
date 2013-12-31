@@ -458,7 +458,6 @@ class World
             minPycor: @minPycor,
             maxPxcor: @maxPxcor,
             maxPycor: @maxPycor,
-            nbInterfaceGlobals: @interfaceGlobalCount,
             linkBreeds: "XXX IMPLEMENT ME",
             linkShapeList: linkShapeList,
             patchSize: @patchSize,
@@ -470,6 +469,12 @@ class World
             unbreededLinksAreDirected: false
             wrappingAllowedInX: @wrappingAllowedInX,
             wrappingAllowedInY: @wrappingAllowedInY
+          }
+        },
+        observer: {
+          0: {
+            perspective: 0,
+            targetAgent: null
           }
         }
       })
