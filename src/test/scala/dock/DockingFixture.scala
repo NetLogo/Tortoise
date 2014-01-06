@@ -28,7 +28,7 @@ class DockingFixture(name: String) extends Fixture(name) {
 
   val rhino = new Rhino
   def mirrorables: Iterable[mirror.Mirrorable] =
-    mirror.Mirrorables.allMirrorables(workspace.world, Seq())
+    mirror.Mirrorables.allMirrorables(workspace.world)
   var state: mirror.Mirroring.State = Map()
   var opened = false
 

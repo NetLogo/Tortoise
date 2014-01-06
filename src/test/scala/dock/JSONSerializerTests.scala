@@ -17,7 +17,7 @@ import collection.JavaConverters._
 class JSONSerializerTests extends FixtureSuite with Matchers {
 
   def mirrorables(implicit fixture: Fixture): Iterable[Mirrorable] =
-    Mirrorables.allMirrorables(fixture.workspace.world, Seq())
+    Mirrorables.allMirrorables(fixture.workspace.world)
 
   test("JSONSerializer basic commands") { implicit fixture =>
     val commands = Seq(
