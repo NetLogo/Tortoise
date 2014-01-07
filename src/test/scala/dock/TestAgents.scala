@@ -431,4 +431,21 @@ class TestAgents extends DockingSuite with SlowTest {
     testCommand("output-print turtles = turtles with [ who > -1 ]")
     compare("turtles with [ who > 0 ] = turtles with [ who > 0 ]")
   }
+
+  test("watch") { implicit fixture => import fixture._
+    declare("", api.WorldDimensions.square(5))
+    testCommand("crt 3")
+    testCommand("ask turtles [ fd 1 ]")
+    testCommand("watch turtle 0")
+    testCommand("ask turtles [ rt 10 fd 2 ]")
+    testCommand("watch turtle 1")
+    testCommand("ask turtles [ rt 10 fd 2 ]")
+    testCommand("reset-perspective")
+    testCommand("ask turtle 0 [ watch-me ]")
+    testCommand("ask turtles [ watch-me ]")
+    testCommand("reset-perspective")
+    testCommand("watch patch 0 0")
+    testCommand("reset-perspective")
+    testCommand("ask patch 0 1 [ watch-me ]")
+  }
 }

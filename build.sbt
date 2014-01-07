@@ -14,7 +14,7 @@ crossPaths := false
 
 val netlogoSha = settingKey[String]("version of NetLogo we depend on")
 
-netlogoSha := "637dae0"
+netlogoSha := "606f2d1"
 
 libraryDependencies ++= {
   val sha = netlogoSha.value

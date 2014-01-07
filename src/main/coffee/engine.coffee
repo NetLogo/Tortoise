@@ -325,6 +325,8 @@ class Turtle
       @setXY(agent.xcor(), agent.ycor())
     else if(agent instanceof Patch)
       @setXY(agent.pxcor, agent.pycor)
+  watchme: ->
+    world.watch(this)
 
 class Patch
   vars: []
@@ -368,6 +370,8 @@ class Patch
       return world.getPatchAt(newX, newY)
     catch error
       if error instanceof TopologyInterrupt then Nobody else throw error
+  watchme: ->
+    world.watch(this)
 
 Links =
   compare: (a, b) ->
@@ -447,6 +451,8 @@ class World
   _timer = Date.now()
   _patchesAllBlack = true
   constructor: (@minPxcor, @maxPxcor, @minPycor, @maxPycor, @patchSize, @wrappingAllowedInY, @wrappingAllowedInX, turtleShapeList, linkShapeList, @interfaceGlobalCount) ->
+    @perspective = 0
+    @targetAgent = null
     collectUpdates()
     Updates.push(
       {
@@ -458,7 +464,6 @@ class World
             minPycor: @minPycor,
             maxPxcor: @maxPxcor,
             maxPycor: @maxPycor,
-            nbInterfaceGlobals: @interfaceGlobalCount,
             linkBreeds: "XXX IMPLEMENT ME",
             linkShapeList: linkShapeList,
             patchSize: @patchSize,
@@ -473,6 +478,7 @@ class World
           }
         }
       })
+    @updatePerspective()
     @resize(@minPxcor, @maxPxcor, @minPycor, @maxPycor)
   createPatches: ->
     nested =
@@ -632,6 +638,24 @@ class World
   getLink: (fromId, toId) ->
     filteredLinks = (@links().items.filter (l) -> (l.end1.id == fromId && l.end2.id == toId))
     if filteredLinks.length == 0 then Nobody else filteredLinks[0]
+  updatePerspective: ->
+    Updates.push({ observer: { 0: { perspective: @perspective, targetAgent: @targetAgent } } })
+  watch: (agent) ->
+    @perspective = 3
+    agentKind = 0
+    agentId = -1
+    if(agent instanceof Turtle)
+      agentKind = 1
+      agentId = agent.id
+    else if(agent instanceof Patch)
+      agentKind = 2
+      agentId = agent.id
+    @targetAgent = [agentKind, agentId]
+    @updatePerspective()
+  resetPerspective: ->
+    @perspective = 0
+    @targetAgent = null
+    @updatePerspective()
 
 AgentSet =
   count: (x) -> x.items.length

@@ -4,7 +4,6 @@ package org.nlogo.tortoise.json
 
 import org.json4s._
 import org.json4s.native.JsonMethods._
-import org.json4s.JsonDSL._
 
 import
   org.nlogo.{ api, mirror, shape },
@@ -40,7 +39,7 @@ object JSONSerializer {
     def deaths: Seq[(Kind, JField)] =
       for {
         Death(AgentKey(kind, id)) <- update.deaths if kind != Patch
-      } yield kind -> JField(id.toString, JObject(JField("WHO", -1)))
+      } yield kind -> JField(id.toString, JObject(JField("WHO", JInt(-1))))
 
     val fieldsByKind: Map[Kind, Seq[JField]] =
       (births ++ changes ++ deaths)
@@ -51,7 +50,8 @@ object JSONSerializer {
       "turtles" -> Turtle,
       "patches" -> Patch,
       "world" -> World,
-      "links" -> Link
+      "links" -> Link,
+      "observer" -> Observer
     )
 
     val objectsByKey: Seq[(String, JObject)] =
@@ -73,24 +73,26 @@ object JSONSerializer {
         JInt(d.intValue)
       else
         JDouble(d.doubleValue)
-    case i: java.lang.Integer => JInt(i.intValue)
-    case i: java.lang.Long    => JInt(i.intValue)
-    case b: java.lang.Boolean => JBool(b)
-    case s: java.lang.String  => JString(s)
-    case s: ShapeList         => JObject((s.getShapes.asScala map (shape => shape.getName -> shape.toJsonObj)).toList)
-    case s: Shape             => s.toJsonObj
-    case l: LogoList          => JArray((l.toVector map toJValue).toList)
-    case x                    => JString("XXX IMPLEMENT ME") // JString(v.toString)
+    case i: java.lang.Integer    => JInt(i.intValue)
+    case i: java.lang.Long       => JInt(i.intValue)
+    case b: java.lang.Boolean    => JBool(b)
+    case s: java.lang.String     => JString(s)
+    case s: ShapeList            => JObject((s.getShapes.asScala map (shape => shape.getName -> shape.toJsonObj)).toList)
+    case s: Shape                => s.toJsonObj
+    case l: LogoList             => JArray((l.toVector map toJValue).toList)
+    case (x: AnyRef, y: AnyRef)  => JArray(List(toJValue(x), toJValue(y)))
+    case Some(x: AnyRef)         => toJValue(x)
+    case None                    => JNull
+    case x                       => JString("XXX IMPLEMENT ME") // JString(v.toString)
   }
 
-  import MirrorableWorld.WorldVar
   def getImplicitVariables(kind: Kind): Seq[String] =
     kind match {
       case Turtle => AgentVariables.getImplicitTurtleVariables
       case Patch  => AgentVariables.getImplicitPatchVariables
       case Link   => AgentVariables.getImplicitLinkVariables ++ Array("SIZE", "HEADING", "MIDPOINTX", "MIDPOINTY")
-      case World  => 0 until WorldVar.maxId map (WorldVar.apply(_).toString)
-      case _      => Seq() // TODO: raise exception instead?
+      // Note that all cases can be replaced by _. However, we don't deal with linethickness yet, need to address that.
+      case _      => 0 until kind.Variables.maxId map (kind.Variables.apply(_).toString)
     }
 
 }

@@ -37,7 +37,8 @@ class AgentModel
         l = @links[linkId]
         l ?= @links[linkId] = {}
         mergeObjectInto(varUpdates, l)
-    mergeObjectInto(modelUpdate.observer, @observer)
+    if(modelUpdate.observer && modelUpdate.observer[0])
+      mergeObjectInto(modelUpdate.observer[0], @observer)
     if(modelUpdate.world && modelUpdate.world[0])
       mergeObjectInto(modelUpdate.world[0], @world)
     anyUpdates

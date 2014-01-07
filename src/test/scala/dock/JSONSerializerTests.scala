@@ -17,67 +17,89 @@ import collection.JavaConverters._
 class JSONSerializerTests extends FixtureSuite with Matchers {
 
   def mirrorables(implicit fixture: Fixture): Iterable[Mirrorable] =
-    Mirrorables.allMirrorables(fixture.workspace.world, Seq())
+    Mirrorables.allMirrorables(fixture.workspace.world)
 
   test("JSONSerializer basic commands") { implicit fixture =>
     val commands = Seq(
       "cro 1" ->
         """|{
-           |  "turtles":{
-           |    "0":{
-           |      "WHO":0,
-           |      "COLOR":5,
-           |      "HEADING":0,
-           |      "XCOR":0,
-           |      "YCOR":0,
-           |      "SHAPE":"default",
-           |      "LABEL":"",
-           |      "LABEL-COLOR":9.9,
-           |      "BREED":"TURTLES",
-           |      "HIDDEN?":false,
-           |      "SIZE":1,
-           |      "PEN-SIZE":1,
-           |      "PEN-MODE":"up"
-           |    }
-           |  },
-           |  "patches":{
-           |
-           |  }
-           |  "world": {
-           |  }
-           |  "links": {
-           |  }
-           |}""".stripMargin,
+          |  "turtles":{
+          |    "0":{
+          |      "WHO":0,
+          |      "COLOR":5,
+          |      "HEADING":0,
+          |      "XCOR":0,
+          |      "YCOR":0,
+          |      "SHAPE":"default",
+          |      "LABEL":"",
+          |      "LABEL-COLOR":9.9,
+          |      "BREED":"TURTLES",
+          |      "HIDDEN?":false,
+          |      "SIZE":1,
+          |      "PEN-SIZE":1,
+          |      "PEN-MODE":"up"
+          |    }
+          |  },
+          |  "patches":{
+          |
+          |  }
+          |  "world": {
+          |  }
+          |  "links": {
+          |  }
+          |  "observer": {
+          |  }
+          |}""".stripMargin,
       "ask turtles [ fd 1 ]" ->
         """|{
-           |  "turtles":{
-           |    "0":{
-           |      "YCOR":1
-           |    }
-           |  },
-           |  "patches":{
-           |
-           |  }
-           |  "world": {
-           |  }
-           |  "links": {
-           |  }
-           |}""".stripMargin,
+          |  "turtles":{
+          |    "0":{
+          |      "YCOR":1
+          |    }
+          |  },
+          |  "patches":{
+          |
+          |  }
+          |  "world": {
+          |  }
+          |  "links": {
+          |  }
+          |  "observer": {
+          |  }
+          |}""".stripMargin,
+      "watch turtle 0" ->
+        """|{
+          |  "turtles":{
+          |  },
+          |  "patches":{
+          |
+          |  }
+          |  "world": {
+          |  }
+          |  "links": {
+          |  }
+          |  "observer": {
+          |    "0":{"targetAgent":[1,0],"perspective":3}
+          |  }
+          |}""".stripMargin,
       "ask turtles [ die ]" ->
         """|{
-           |  "turtles":{
-           |    "0":{
-           |      "WHO":-1
-           |    }
-           |  },
-           |  "patches":{
-           |
-           |  }
-           |  "world": {
-           |  }
-           |  "links": {
-           |  }
-           |}""".stripMargin)
+          |  "turtles":{
+          |    "0":{
+          |      "WHO":-1
+          |    }
+          |  },
+          |  "patches":{
+          |
+          |  }
+          |  "world": {
+          |  }
+          |  "links": {
+          |  }
+          |  "observer": {
+          |    "0":{"targetAgent":[1,-1]}
+          |  }
+          |}""".stripMargin)
       .map {
         case (cmd, json) => // prettify:
           (cmd, jsRender(parse(json)))

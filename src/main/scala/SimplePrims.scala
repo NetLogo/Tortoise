@@ -157,6 +157,9 @@ object SimplePrims {
         case _: prim.etc._setcurrentplotpen => "noop"
         case _: prim.etc._plot              => "noop"
         case _: prim.etc._display           => "noop"
+        case _: prim.etc._watch             => "world.watch"
+        case _: prim.etc._watchme           => "AgentSet.self().watchme"
+        case _: prim.etc._resetperspective  => "world.resetPerspective"
         case _: prim.etc._layoutspring      => "Layouts.layoutSpring"
       }
   }
