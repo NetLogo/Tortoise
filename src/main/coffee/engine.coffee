@@ -89,6 +89,7 @@ class Turtle
   vars: []
   _xcor: 0
   _ycor: 0
+  _links: []
   constructor: (@color = 0, @heading = 0, xcor = 0, ycor = 0, breed = Breeds.get("TURTLES"), @label = "", @labelcolor = 9.9, @hidden = false, @size = 1.0, @pensize = 1.0, @penmode = "up") ->
     @_xcor = xcor
     @_ycor = ycor
@@ -161,9 +162,10 @@ class Turtle
         else
           null).filter((o) -> o != null), Breeds.get("LINKS"))
   refreshLinks: ->
-    l.updateEndRelatedVars() for l in (@connectedLinks(true, true).items)
-    l.updateEndRelatedVars() for l in (@connectedLinks(true, false).items)
-    l.updateEndRelatedVars() for l in (@connectedLinks(false, false).items)
+    if @_links.length > 0
+      l.updateEndRelatedVars() for l in (@connectedLinks(true, true).items)
+      l.updateEndRelatedVars() for l in (@connectedLinks(true, false).items)
+      l.updateEndRelatedVars() for l in (@connectedLinks(false, false).items)
   linkNeighbors: (directed, isSource) ->
     me = this
     if directed
@@ -328,6 +330,9 @@ class Turtle
   watchme: ->
     world.watch(this)
 
+  _removeLink: (l) ->
+    @_links.splice(@_links.indexOf(l))
+
 class Patch
   vars: []
   constructor: (@id, @pxcor, @pycor, @pcolor = 0.0, @plabel = "", @plabelcolor = 9.9) ->
@@ -406,6 +411,8 @@ class Link
   ycor: ->
   constructor: (@id, @directed, @end1, @end2) ->
     @breed = Breeds.get("LINKS")
+    @end1._links.push(this)
+    @end2._links.push(this)
     @updateEndRelatedVars()
   getLinkVariable: (n) ->
     if (n < linkBuiltins.length)
@@ -420,6 +427,8 @@ class Link
       @vars[n - linkBuiltins.length] = v
   die: ->
     if (@id != -1)
+      @end1._removeLink(this)
+      @end2._removeLink(this)
       world.removeLink(@id)
       died(this)
       @id = -1
