@@ -1,5 +1,19 @@
 val root = project in file (".") configs(FastMediumSlow.configs: _*)
 
+// Keep this up here so things get published to the correct places
+bintraySettings
+
+name := "Tortoise"
+
+organization := "org.nlogo"
+
+licenses += ("GPL-2.0", url("http://opensource.org/licenses/GPL-2.0"))
+
+// Used by the publish-versioned plugin
+isSnapshot := true
+
+version := "0.1"
+
 scalaVersion := "2.10.3"
 
 scalacOptions ++=
@@ -12,20 +26,9 @@ ivyLoggingLevel := UpdateLogging.Quiet
 // we're not cross-building for different Scala versions
 crossPaths := false
 
-val netlogoSha = settingKey[String]("version of NetLogo we depend on")
+val nlDependencyVersion = "5.1.0-e5b375c"
 
-netlogoSha := "606f2d1"
-
-libraryDependencies ++= {
-  val sha = netlogoSha.value
-  val version = s"5.1.0-SNAPSHOT-$sha"
-  Seq(
-    "org.nlogo" % "NetLogoHeadless" % version from
-      s"http://ccl.northwestern.edu/devel/NetLogoHeadless-$sha.jar",
-    "org.nlogo" % "NetLogoHeadlessTests" % version % "test" from
-      s"http://ccl.northwestern.edu/devel/NetLogoHeadlessTests-$sha.jar"
-  )
-}
+resolvers += bintray.Opts.resolver.repo("netlogo", "NetLogoHeadless")
 
 // NetLogoHeadlessTests depends on reflections; reflections depends on some extra jars.
 // but for some reason we need to explicitly list the transitive dependencies
@@ -38,14 +41,21 @@ libraryDependencies ++= Seq(
 )
 
 libraryDependencies ++= Seq(
+  "org.nlogo" % "netlogoheadless" % nlDependencyVersion,
   "org.json4s" %% "json4s-native" % "3.1.0",
   "org.webjars" % "json2" % "20110223",
   "org.scalacheck" %% "scalacheck" % "1.10.1" % "test",
   "org.scalatest" %% "scalatest" % "2.0" % "test",
-  "org.skyscreamer" % "jsonassert" % "1.1.0" % "test"
+  "org.skyscreamer" % "jsonassert" % "1.1.0" % "test",
+  // Bring is headless test code/framework for our tests
+  "org.nlogo" % "netlogoheadless" % nlDependencyVersion % "test" classifier "tests"
 )
 
 onLoadMessage := ""
+
+bintray.Keys.repository in bintray.Keys.bintray := "Tortoise"
+
+bintray.Keys.bintrayOrganization in bintray.Keys.bintray := Some("netlogo")
 
 logBuffered in testOnly in Test := false
 
@@ -54,3 +64,5 @@ FastMediumSlow.settings
 LanguageTests.settings
 
 Coffee.settings
+
+PublishVersioned.settings
