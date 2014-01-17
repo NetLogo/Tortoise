@@ -21,74 +21,80 @@ collectUpdates = ->
       [turtles: {}, patches: {}]
     else
       Updates
-  Updates = []
+  Updates = [{turtles: {}, patches: {}, links: {}, observer: {}, world: {}}]
   result
 
 # gross hack - ST 1/25/13
 died = (agent) ->
   update = patches: {}, turtles: {}, links: {}
   if agent instanceof Turtle
-    update.turtles[agent.id] = WHO: -1
+    Updates[0].turtles[agent.id] = WHO: -1
   else if agent instanceof Link
-    update.links[agent.id] = WHO: -1
-  Updates.push(update)
+    Updates[0].links[agent.id] = WHO: -1
   return
 
 noop = (vars...) ->
 
 updated = (obj, vars...) ->
+  update = Updates[0]
+  if obj instanceof Turtle
+    agents = update.turtles
+  else if obj instanceof Patch
+    agents = update.patches
+  else if obj instanceof Link
+    agents = update.links
+  agentUpdate = agents[obj.id] or {}
+
+# Receiving updates for a turtle that's about to die means the turtle was
+# reborn, so we revive it in the update - BH 1/13/2014
+  if agentUpdate['WHO'] < 0
+    delete agentUpdate['WHO']
+
   # is there some less simpleminded way we could build this? surely there
   # must be. my CoffeeScript fu is stoppable - ST 1/24/13
-  change = {}
+  # Possible strategy. For variables with -, just replace it with a _ instead
+  # of concatenating the words. For variables with a ?, replace it with _p or
+  # something. For variables that need some kind of accessor, make the variable
+  # that has the NetLogo name refer to the same thing that the NetLogo variable
+  # does and make a different variable that refers to the thing you want in js.
+  # For example, turtle.breed should refer to the breed name and 
+  # turtle._breed should point to the actual breed object.
+  # BH 1/13/2014
   for v in vars
     if (v == "plabelcolor")
-      change["PLABEL-COLOR"] = obj[v]
+      agentUpdate["PLABEL-COLOR"] = obj[v]
     else if (v == "breed")
-      change["BREED"] = obj[v].name
+      agentUpdate["BREED"] = obj[v].name
     else if (v == "labelcolor")
-      change["LABEL-COLOR"] = obj[v]
+      agentUpdate["LABEL-COLOR"] = obj[v]
     else if (v == "pensize")
-      change["PEN-SIZE"] = obj[v]
+      agentUpdate["PEN-SIZE"] = obj[v]
     else if (v == "penmode")
-      change["PEN-MODE"] = obj[v]
+      agentUpdate["PEN-MODE"] = obj[v]
     else if (v == "hidden")
-      change["HIDDEN?"] = obj[v]
+      agentUpdate["HIDDEN?"] = obj[v]
     else if (v == "tiemode")
-      change["TIE-MODE"] = obj[v]
+      agentUpdate["TIE-MODE"] = obj[v]
     else if (v == "id" and !(obj instanceof Link))
-      change["WHO"] = obj[v]
+      agentUpdate["WHO"] = obj[v]
     else if (v == "end1")
-      change["END1"] = obj[v].id
+      agentUpdate["END1"] = obj[v].id
     else if (v == "end2")
-      change["END2"] = obj[v].id
+      agentUpdate["END2"] = obj[v].id
     else if (v == "xcor")
-      change["XCOR"] = obj.xcor()
+      agentUpdate["XCOR"] = obj.xcor()
     else if (v == "ycor")
-      change["YCOR"] = obj.ycor()
+      agentUpdate["YCOR"] = obj.ycor()
     else
-      change[v.toUpperCase()] = obj[v]
-  oneUpdate = {}
-  oneUpdate[obj.id] = change
-  update = {}
-  if (obj instanceof Turtle)
-    update.turtles = oneUpdate
-    update.links = {}
-    update.patches = {}
-  else if(obj instanceof Patch)
-    update.turtles = {}
-    update.links = {}
-    update.patches = oneUpdate
-  else if(obj instanceof Link)
-    update.turtles = {}
-    update.patches = {}
-    update.links = oneUpdate
-  Updates.push(update)
+      agentUpdate[v.toUpperCase()] = obj[v]
+  agents[obj.id] = agentUpdate
   return
 
 class Turtle
   vars: []
   _xcor: 0
   _ycor: 0
+  _links: []
   constructor: (@color = 0, @heading = 0, xcor = 0, ycor = 0, breed = Breeds.get("TURTLES"), @label = "", @labelcolor = 9.9, @hidden = false, @size = 1.0, @pensize = 1.0, @penmode = "up") ->
     @_xcor = xcor
     @_ycor = ycor
@@ -161,9 +167,10 @@ class Turtle
         else
           null).filter((o) -> o != null), Breeds.get("LINKS"))
   refreshLinks: ->
-    l.updateEndRelatedVars() for l in (@connectedLinks(true, true).items)
-    l.updateEndRelatedVars() for l in (@connectedLinks(true, false).items)
-    l.updateEndRelatedVars() for l in (@connectedLinks(false, false).items)
+    if @_links.length > 0
+      l.updateEndRelatedVars() for l in (@connectedLinks(true, true).items)
+      l.updateEndRelatedVars() for l in (@connectedLinks(true, false).items)
+      l.updateEndRelatedVars() for l in (@connectedLinks(false, false).items)
   linkNeighbors: (directed, isSource) ->
     me = this
     if directed
@@ -328,6 +335,9 @@ class Turtle
   watchme: ->
     world.watch(this)
 
+  _removeLink: (l) ->
+    @_links.splice(@_links.indexOf(l))
+
 class Patch
   vars: []
   constructor: (@id, @pxcor, @pycor, @pcolor = 0.0, @plabel = "", @plabelcolor = 9.9) ->
@@ -406,6 +416,8 @@ class Link
   ycor: ->
   constructor: (@id, @directed, @end1, @end2) ->
     @breed = Breeds.get("LINKS")
+    @end1._links.push(this)
+    @end2._links.push(this)
     @updateEndRelatedVars()
   getLinkVariable: (n) ->
     if (n < linkBuiltins.length)
@@ -420,6 +432,8 @@ class Link
       @vars[n - linkBuiltins.length] = v
   die: ->
     if (@id != -1)
+      @end1._removeLink(this)
+      @end2._removeLink(this)
       world.removeLink(@id)
       died(this)
       @id = -1
