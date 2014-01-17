@@ -1011,11 +1011,14 @@ class Breed
   vars: []
 
 Breeds = {
-  breeds: [new Breed("TURTLES", "turtle", "default"), new Breed("LINKS", "link", "default")]
+  breeds: {
+    TURTLES: new Breed("TURTLES", "turtle", "default"),
+    LINKS: new Breed("LINKS", "link", "default")
+  }
   add: (name, singular) ->
-    @breeds.push(new Breed(name, singular))
+    @breeds[name] = new Breed(name, singular)
   get: (name) ->
-    (@breeds.filter (b) -> b.name == name)[0]
+    @breeds[name]
   setDefaultShape: (agents, shape) ->
     agents.breed._shape = shape.toLowerCase()
 }
