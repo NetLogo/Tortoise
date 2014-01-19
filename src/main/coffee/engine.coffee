@@ -357,7 +357,7 @@ class Patch
       updated(this, patchBuiltins[n])
     else
       @vars[n - patchBuiltins.length] = v
-  leave: (t) -> @turtles = @turtles.filter (o) -> o.id != t.id
+  leave: (t) -> @turtles.splice(@turtles.indexOf(t, 0), 1)
   arrive: (t) ->
     @turtles.push(t)
   distanceXY: (x, y) -> world.topology().distanceXY(@pxcor, @pycor, x, y)
