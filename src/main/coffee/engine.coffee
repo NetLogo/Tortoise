@@ -230,24 +230,21 @@ class Turtle
     @patchRightAndAhead(0, amount)
   fd: (amount) ->
     if amount > 0
-      while amount >= 1 and @canMove(1)
-        @jump(1)
+      while amount >= 1 and @jump(1)
         amount -= 1
-      if amount > 0 and @canMove(amount)
-        @jump(amount)
+      @jump(amount)
     else if amount < 0
-      while amount <= -1 and @canMove(-1)
-        @jump(-1)
+      while amount <= -1 and @jump(-1)
         amount += 1
-      if amount < 0 and @canMove(amount)
-        @jump(amount)
+      @jump(amount)
     return
   jump: (amount) ->
     if @canMove(amount)
       @setXcor(world.topology().wrapX(@xcor() + amount * Trig.sin(@heading)))
       @setYcor(world.topology().wrapY(@ycor() + amount * Trig.cos(@heading)))
       updated(this, "xcor", "ycor")
-    return
+      return true
+    return false
   right: (amount) ->
     @heading += amount
     @keepHeadingInRange()
