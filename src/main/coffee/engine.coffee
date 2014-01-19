@@ -61,32 +61,33 @@ updated = (obj, vars...) ->
   # turtle._breed should point to the actual breed object.
   # BH 1/13/2014
   for v in vars
-    if (v == "plabelcolor")
-      agentUpdate["PLABEL-COLOR"] = obj[v]
-    else if (v == "breed")
-      agentUpdate["BREED"] = obj[v].name
-    else if (v == "labelcolor")
-      agentUpdate["LABEL-COLOR"] = obj[v]
-    else if (v == "pensize")
-      agentUpdate["PEN-SIZE"] = obj[v]
-    else if (v == "penmode")
-      agentUpdate["PEN-MODE"] = obj[v]
-    else if (v == "hidden")
-      agentUpdate["HIDDEN?"] = obj[v]
-    else if (v == "tiemode")
-      agentUpdate["TIE-MODE"] = obj[v]
-    else if (v == "id" and !(obj instanceof Link))
-      agentUpdate["WHO"] = obj[v]
-    else if (v == "end1")
-      agentUpdate["END1"] = obj[v].id
-    else if (v == "end2")
-      agentUpdate["END2"] = obj[v].id
-    else if (v == "xcor")
-      agentUpdate["XCOR"] = obj.xcor()
-    else if (v == "ycor")
-      agentUpdate["YCOR"] = obj.ycor()
-    else
-      agentUpdate[v.toUpperCase()] = obj[v]
+    switch v
+      when "xcor"
+        agentUpdate["XCOR"] = obj.xcor()
+      when "ycor"
+        agentUpdate["YCOR"] = obj.ycor()
+      when "id"
+        agentUpdate[if obj instanceof Link then "ID" else "WHO"] = obj[v]
+      when "plabelcolor"
+        agentUpdate["PLABEL-COLOR"] = obj[v]
+      when "breed"
+        agentUpdate["BREED"] = obj[v].name
+      when "labelcolor"
+        agentUpdate["LABEL-COLOR"] = obj[v]
+      when "pensize"
+        agentUpdate["PEN-SIZE"] = obj[v]
+      when "penmode"
+        agentUpdate["PEN-MODE"] = obj[v]
+      when "hidden"
+        agentUpdate["HIDDEN?"] = obj[v]
+      when "tiemode"
+        agentUpdate["TIE-MODE"] = obj[v]
+      when "end1"
+        agentUpdate["END1"] = obj[v].id
+      when "end2"
+        agentUpdate["END2"] = obj[v].id
+      else
+        agentUpdate[v.toUpperCase()] = obj[v]
   agents[obj.id] = agentUpdate
   return
 
