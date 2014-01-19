@@ -73,7 +73,6 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
     "Turtles::Turtles7" -> "colors don't wrap to [0,140)",
     "Links::Links2" -> "colors don't wrap to [0,140)",
     // significant
-    "ImportWorld::AllBreeds" -> "'special' agentsets not supported",
     "Agentsets::Agentsets4" -> "TOO SLOW",
     "Links::LinksInitBlock" -> "TOO SLOW",
     "Random::RandomNOfIsFairForTurtles" -> "TOO SLOW",

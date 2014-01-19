@@ -147,4 +147,13 @@ class TestBreeds extends DockingSuite {
     testCommand("create-mice 3 crt 2 ask turtle 0 [ output-print breed = turtles ]")
     testCommand("crt 3 ask turtle 0 [ set color red ] ask turtle 0 [ output-print breed = turtles with [ color != red ]]")
   }
+
+  test("breed storage") {implicit fixture => import fixture._
+    declare("""| breed [ foos foo ]
+               | globals [ bar ]""".stripMargin)
+    testCommand("create-foos 20")
+    testCommand("set bar foos")
+    testCommand("ask foos with [ who > 10 ] [ die ]")
+    testCommand("output-print count bar")
+  }
 }
