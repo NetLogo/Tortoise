@@ -240,8 +240,8 @@ class Turtle
     return
   jump: (amount) ->
     if @canMove(amount)
-      @setXcor(world.topology().wrapX(@xcor() + amount * Trig.sin(@heading)))
-      @setYcor(world.topology().wrapY(@ycor() + amount * Trig.cos(@heading)))
+      @setXcor(@xcor() + amount * Trig.sin(@heading))
+      @setYcor(@ycor() + amount * Trig.cos(@heading))
       updated(this, "xcor", "ycor")
       return true
     return false
