@@ -61,32 +61,33 @@ updated = (obj, vars...) ->
   # turtle._breed should point to the actual breed object.
   # BH 1/13/2014
   for v in vars
-    if (v == "plabelcolor")
-      agentUpdate["PLABEL-COLOR"] = obj[v]
-    else if (v == "breed")
-      agentUpdate["BREED"] = obj[v].name
-    else if (v == "labelcolor")
-      agentUpdate["LABEL-COLOR"] = obj[v]
-    else if (v == "pensize")
-      agentUpdate["PEN-SIZE"] = obj[v]
-    else if (v == "penmode")
-      agentUpdate["PEN-MODE"] = obj[v]
-    else if (v == "hidden")
-      agentUpdate["HIDDEN?"] = obj[v]
-    else if (v == "tiemode")
-      agentUpdate["TIE-MODE"] = obj[v]
-    else if (v == "id" and !(obj instanceof Link))
-      agentUpdate["WHO"] = obj[v]
-    else if (v == "end1")
-      agentUpdate["END1"] = obj[v].id
-    else if (v == "end2")
-      agentUpdate["END2"] = obj[v].id
-    else if (v == "xcor")
-      agentUpdate["XCOR"] = obj.xcor()
-    else if (v == "ycor")
-      agentUpdate["YCOR"] = obj.ycor()
-    else
-      agentUpdate[v.toUpperCase()] = obj[v]
+    switch v
+      when "xcor"
+        agentUpdate["XCOR"] = obj.xcor()
+      when "ycor"
+        agentUpdate["YCOR"] = obj.ycor()
+      when "id"
+        agentUpdate[if obj instanceof Link then "ID" else "WHO"] = obj[v]
+      when "plabelcolor"
+        agentUpdate["PLABEL-COLOR"] = obj[v]
+      when "breed"
+        agentUpdate["BREED"] = obj[v].name
+      when "labelcolor"
+        agentUpdate["LABEL-COLOR"] = obj[v]
+      when "pensize"
+        agentUpdate["PEN-SIZE"] = obj[v]
+      when "penmode"
+        agentUpdate["PEN-MODE"] = obj[v]
+      when "hidden"
+        agentUpdate["HIDDEN?"] = obj[v]
+      when "tiemode"
+        agentUpdate["TIE-MODE"] = obj[v]
+      when "end1"
+        agentUpdate["END1"] = obj[v].id
+      when "end2"
+        agentUpdate["END2"] = obj[v].id
+      else
+        agentUpdate[v.toUpperCase()] = obj[v]
   agents[obj.id] = agentUpdate
   return
 
@@ -103,7 +104,10 @@ class Turtle
     @vars = (x for x in TurtlesOwn.vars)
     @getPatchHere().arrive(this)
   updateBreed: (breed) ->
+    if @breed
+      @breed.remove(@)
     @breed = breed
+    breed.add(@)
     @shape = @breed.shape()
     if(@breed != Breeds.get("TURTLES"))
       for x in @breed.vars
@@ -226,24 +230,21 @@ class Turtle
     @patchRightAndAhead(0, amount)
   fd: (amount) ->
     if amount > 0
-      while amount >= 1 and @canMove(1)
-        @jump(1)
+      while amount >= 1 and @jump(1)
         amount -= 1
-      if amount > 0 and @canMove(amount)
-        @jump(amount)
+      @jump(amount)
     else if amount < 0
-      while amount <= -1 and @canMove(-1)
-        @jump(-1)
+      while amount <= -1 and @jump(-1)
         amount += 1
-      if amount < 0 and @canMove(amount)
-        @jump(amount)
+      @jump(amount)
     return
   jump: (amount) ->
     if @canMove(amount)
-      @setXcor(world.topology().wrapX(@xcor() + amount * Trig.sin(@heading)))
-      @setYcor(world.topology().wrapY(@ycor() + amount * Trig.cos(@heading)))
+      @setXcor(@xcor() + amount * Trig.sin(@heading))
+      @setYcor(@ycor() + amount * Trig.cos(@heading))
       updated(this, "xcor", "ycor")
-    return
+      return true
+    return false
   right: (amount) ->
     @heading += amount
     @keepHeadingInRange()
@@ -271,6 +272,7 @@ class Turtle
   isBreed: (breedName) ->
     @breed.name == breedName
   die: ->
+    @breed.remove(@)
     if (@id != -1)
       world.removeTurtle(@id)
       died(this)
@@ -357,7 +359,7 @@ class Patch
       updated(this, patchBuiltins[n])
     else
       @vars[n - patchBuiltins.length] = v
-  leave: (t) -> @turtles = @turtles.filter (o) -> o.id != t.id
+  leave: (t) -> @turtles.splice(@turtles.indexOf(t, 0), 1)
   arrive: (t) ->
     @turtles.push(t)
   distanceXY: (x, y) -> world.topology().distanceXY(@pxcor, @pycor, x, y)
@@ -416,6 +418,7 @@ class Link
   ycor: ->
   constructor: (@id, @directed, @end1, @end2) ->
     @breed = Breeds.get("LINKS")
+    @breed.add(@)
     @end1._links.push(this)
     @end2._links.push(this)
     @updateEndRelatedVars()
@@ -431,6 +434,7 @@ class Link
     else
       @vars[n - linkBuiltins.length] = v
   die: ->
+    @breed.remove(@)
     if (@id != -1)
       @end1._removeLink(this)
       @end2._removeLink(this)
@@ -458,6 +462,7 @@ class World
   _nextLinkId = 0
   _nextTurtleId = 0
   _turtles = []
+  _turtlesById = {}
   _patches = []
   _links = []
   _topology = null
@@ -509,7 +514,8 @@ class World
   turtles: () -> new Agents(_turtles, Breeds.get("TURTLES"))
   turtlesOfBreed: (breedName) ->
     breed = Breeds.get(breedName)
-    new Agents((_turtles.filter (t) -> t.breed == breed ), breed)
+    #new Agents((_turtles.filter (t) -> t.breed == breed ), breed)
+    new Agents(breed.members, breed)
   patches: -> new Agents(_patches)
   resetTimer: ->
     _timer = Date.now()
@@ -522,6 +528,7 @@ class World
   resize: (minPxcor, maxPxcor, minPycor, maxPycor) ->
     if(minPxcor > 0 || maxPxcor < 0 || minPycor > 0 || maxPycor < 0)
       throw new NetLogoException("You must include the point (0, 0) in the world.")
+    @clearAll()
     @minPxcor = minPxcor
     @maxPxcor = maxPxcor
     @minPycor = minPycor
@@ -534,11 +541,6 @@ class World
       _topology = new HorzCylinder(@minPxcor, @maxPxcor, @minPycor, @maxPycor)
     else
       _topology = new Box(@minPxcor, @maxPxcor, @minPycor, @maxPycor)
-    for t in @turtles().items
-      try
-        t.die()
-      catch error
-        throw error if !(error instanceof DeathInterrupt)
     @createPatches()
     Updates.push(
       world: {
@@ -576,12 +578,10 @@ class World
   getPatchAt: (x, y) ->
     index  = (@maxPycor - StrictMath.round(y)) * @width() + (StrictMath.round(x) - @minPxcor)
     return _patches[index]
-  getTurtle: (id) ->
-    filteredTurtles = (@turtles().items.filter (t) -> t.id == id)
-    if filteredTurtles.length == 0 then Nobody else filteredTurtles[0]
+  getTurtle: (id) -> _turtlesById[id] or Nobody
   getTurtleOfBreed: (breedName, id) ->
-    filteredTurtles = (@turtlesOfBreed(breedName).items.filter (t) -> t.id == id)
-    if filteredTurtles.length == 0 then Nobody else filteredTurtles[0]
+    turtle = @getTurtle(id)
+    if turtle.breed.name == breedName then turtle else Nobody
   removeLink: (id) ->
     _links = @links().items.filter (l) -> l.id != id
     if _links.length == 0
@@ -589,14 +589,19 @@ class World
       Updates.push({ world: { 0: { unbreededLinksAreDirected: false } } })
     return
   removeTurtle: (id) ->
-    _turtles = @turtles().items.filter (t) -> t.id != id
-    return
+    turtle = _turtlesById[id]
+    _turtles.splice(_turtles.indexOf(turtle), 1)
+    delete _turtlesById[id]
   patchesAllBlack: (val) ->
     _patchesAllBlack = val
     Updates.push( world: { 0: { patchesAllBlack: _patchesAllBlack }})
   clearAll: ->
     Globals.clear(@interfaceGlobalCount)
-    for t in @turtles().items
+    # We iterate through a copy of the array since it will be modified during
+    # iteration.
+    # A more efficient (but less readable) way of doing this is to iterate
+    # backwards through the array.
+    for t in @turtles().items[..]
       try
         t.die()
       catch error
@@ -611,6 +616,7 @@ class World
     t.id = _nextTurtleId++
     updated(t, turtleBuiltins...)
     _turtles.push(t)
+    _turtlesById[t.id] = t
     t
   createLink: (directed, from, to) ->
     if(from.id < to.id or directed)
@@ -825,7 +831,8 @@ class Agents
 
 class Iterator
   constructor: (@agents) ->
-  i: 0
+    @agents = @agents[..]
+    @i = 0
   hasNext: -> @i < @agents.length
   next: ->
     result = @agents[@i]
@@ -1006,16 +1013,26 @@ Trig =
     StrictMath.cos(StrictMath.toRadians(degrees))
 
 class Breed
-  constructor: (@name, @singular, @_shape = false) ->
+  constructor: (@name, @singular, @_shape = false, @members = []) ->
   shape: () -> if @_shape then @_shape else Breeds.get("TURTLES")._shape
   vars: []
+  add: (agent) ->
+    for a, i in @members
+      if a.id > agent.id
+        break
+    @members.splice(i, 0, agent)
+  remove: (agent) ->
+    @members.splice(@members.indexOf(agent), 1)
 
 Breeds = {
-  breeds: [new Breed("TURTLES", "turtle", "default"), new Breed("LINKS", "link", "default")]
+  breeds: {
+    TURTLES: new Breed("TURTLES", "turtle", "default"),
+    LINKS: new Breed("LINKS", "link", "default")
+  }
   add: (name, singular) ->
-    @breeds.push(new Breed(name, singular))
+    @breeds[name] = new Breed(name, singular)
   get: (name) ->
-    (@breeds.filter (b) -> b.name == name)[0]
+    @breeds[name]
   setDefaultShape: (agents, shape) ->
     agents.breed._shape = shape.toLowerCase()
 }
