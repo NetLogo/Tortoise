@@ -125,9 +125,9 @@ object Prims {
   def generateRepeat(w: ast.Statement): String = {
     val count = Handlers.reporter(w.args(0))
     val body = Handlers.commands(w.args(1))
-    s"""|for(var i = 0; i < $count; i++) {
+    s"""|Prims.repeat($count, function () {
         |${Handlers.indented(body)}
-        |}""".stripMargin
+        |});""".stripMargin
   }
 
   def generateWhile(w: ast.Statement): String = {

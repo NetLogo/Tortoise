@@ -145,4 +145,9 @@ class TestBasics extends DockingSuite {
     testCommand("cro 5")
     testCommand("""if one-of turtles = nobody [ output-print "TEST" ]""")
   }
+
+  test("repeat") { implicit fixture => import fixture._
+    testCommand("let i 0 let foo 0 repeat 20 [ set i i + 1 set foo foo + 1 ] output-print (list i foo)")
+    testCommand("let i 0 repeat 5 [ repeat 5 [ set i i + 1 ] ] output-print i")
+  }
 }
