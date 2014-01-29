@@ -149,5 +149,7 @@ class TestBasics extends DockingSuite {
   test("repeat") { implicit fixture => import fixture._
     testCommand("let i 0 let foo 0 repeat 20 [ set i i + 1 set foo foo + 1 ] output-print (list i foo)")
     testCommand("let i 0 repeat 5 [ repeat 5 [ set i i + 1 ] ] output-print i")
+    // The intention of the following is to make sure the number of iterations is only evaluated twice
+    testCommand("let i 0 repeat random 20 [ set i i + 1 ] output-print i")
   }
 }
