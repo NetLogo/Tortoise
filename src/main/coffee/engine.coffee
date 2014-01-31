@@ -976,6 +976,10 @@ Prims =
               result.push(agent)
     recurse(inputs)
     new Agents(result)
+  repeat: (n, fn) ->
+    for i in [0...n]
+      fn()
+    return
 
 Globals =
   vars: []
