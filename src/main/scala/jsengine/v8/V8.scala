@@ -42,7 +42,7 @@ class V8 {
 
   }
 
-  implicit class Str2IS(str: String) {
+  private implicit class Str2IS(str: String) {
     def toIS: InputStream = new ByteArrayInputStream(str.getBytes(UTF_8))
   }
 
