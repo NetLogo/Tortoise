@@ -17,7 +17,7 @@ version := "0.1"
 scalaVersion := "2.10.4"
 
 scalacOptions ++=
-  "-deprecation -unchecked -feature -Xcheckinit -encoding us-ascii -target:jvm-1.7 -Xlint -Xfatal-warnings"
+  "-deprecation -unchecked -feature -Xcheckinit -encoding us-ascii -target:jvm-1.7 -Xlint -Xfatal-warnings -language:_"
   .split(" ").toSeq
 
 resourceDirectory in Test := baseDirectory.value / "resources" / "test"
@@ -46,6 +46,7 @@ libraryDependencies ++= Seq(
 
 libraryDependencies ++= Seq(
   "org.nlogo" % "netlogoheadless" % nlDependencyVersion,
+  "org.scalaz" %% "scalaz-core" % "7.0.5",
   "org.json4s" %% "json4s-native" % "3.1.0",
   "org.webjars" % "lodash" % "2.4.1-3",
   "org.webjars" % "mori" % "0.2.6",
