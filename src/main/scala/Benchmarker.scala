@@ -24,7 +24,7 @@ object Benchmarker extends App {
   // that is due to those tests not running the standard benchmarking commands (`ca benchmark result`) --JAB (2/4/14)
   private val benchmarkModels = Seq("BZ Benchmark")
 
-  private val engineToEvalMap = Seq(Nashorn, V8).map(engine => engine.name -> engine.freshEval _).toMap
+  private val engineToEvalMap = Seq(Nashorn, V8).map(engine => engine -> engine.freshEval _).toMap
 
 
 // See comments in 'benchmark.sbt' --JAB (2/3/14)
@@ -65,8 +65,8 @@ object Benchmarker extends App {
   gatherBenchmarks(new File(dir, "models")) map {
     case Benchmark(name, results) =>
       results map {
-        case Result(engineName, times) =>
-          val str = s"""$name ($engineName):
+        case Result(engineName, engineVersion, times) =>
+          val str = s"""$name ($engineName $engineVersion):
                        |--Average: ${round(times.sum / times.size, 3)} seconds
                        |--Min:     ${times.min} seconds
                        |--Max:     ${times.max} seconds
@@ -104,7 +104,7 @@ object Benchmarker extends App {
 
         val results =
           engineToEvalMap.toSeq map {
-            case (name, f) => Result(name, 1 to 3 map { _ => f(js).toDouble })
+            case (engine, f) => Result(engine.name, engine.version, 1 to 3 map { _ => f(js).toDouble })
           }
 
         Benchmark(name, results)
@@ -121,7 +121,7 @@ object Benchmarker extends App {
     else
       throw new IllegalArgumentException("Invalid number of places")
 
-  private case class Result(engineName: String, times: Seq[Double])
+  private case class Result(engineName: String, engineVersion: String, times: Seq[Double])
   private case class Benchmark(name: String, results: Seq[Result])
 
 }
