@@ -13,7 +13,7 @@ import
 
 object Benchmarker extends App {
 
-  import JSEngine._
+  import jsengine.JSEngine._
 
   // The following benchmarks can be compiled but do not run here: Ants Benchmark; Bureaucrats Benchmark
   // The reason for this is that they cause both Nashorn and V8 to run out of memory when they are run.

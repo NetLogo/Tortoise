@@ -1,7 +1,7 @@
-package org.nlogo.tortoise
+package org.nlogo.tortoise.jsengine
 
 import
-  jsengine.nashorn.{ Nashorn => NNashorn },
+  nashorn.{ Nashorn => NNashorn },
   v8.{ V8 => NV8 }
 
 

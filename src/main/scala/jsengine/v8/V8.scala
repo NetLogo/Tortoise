@@ -1,4 +1,5 @@
-package org.nlogo.tortoise.v8
+package org.nlogo.tortoise.jsengine
+package v8
 
 import
   java.{ io, nio },
@@ -48,5 +49,5 @@ class V8 {
 }
 
 object V8 {
-  private lazy val depsStr = org.nlogo.tortoise.jsengine.jsLibs map Resource.asString mkString ";"
+  private lazy val depsStr = jsLibs map Resource.asString mkString ";"
 }
