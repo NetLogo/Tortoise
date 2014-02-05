@@ -17,7 +17,7 @@ version := "0.1"
 scalaVersion := "2.10.4"
 
 scalacOptions ++=
-  "-deprecation -unchecked -feature -Xcheckinit -encoding us-ascii -target:jvm-1.7 -Xlint -Xfatal-warnings"
+  "-deprecation -unchecked -feature -Xcheckinit -encoding us-ascii -target:jvm-1.7 -Xlint -Xfatal-warnings -language:_"
   .split(" ").toSeq
 
 resourceDirectory in Test := baseDirectory.value / "resources" / "test"

@@ -29,3 +29,4 @@ tmp/
 /.ensime_lucene/
 /node_modules/
 /build/
+/engine-benchmarks.txt
