@@ -15,14 +15,14 @@ import
 
 class V8 {
 
-  private val ValidVersionRegex = """v\d[\d.]*""".r
+  private val ValidVersionRegex = """(v\d[\d.]*)""".r
 
-  Try(Process(Seq("node", "--version")).lines.toList.last).flatMap {
-    case x @ ValidVersionRegex() => Try(x)
-    case x                       => Try(throw new Exception(s"'$x' is not a proper version number"))
-  }.recover {
+  val versionNumber = Try(Process(Seq("node", "--version")).lines.toList.last).flatMap {
+    case ValidVersionRegex(x) => Try(s"Node.js $x")
+    case x                    => Try(throw new Exception(s"'$x' is not a proper version number"))
+  }.transform(Try(_), {
     case ex: Exception => Try(throw new Exception("Node.js does not appear to be installed correctly on this machine.", ex))
-  }.get
+  }).get
 
   private val process = Process(Seq("node", "-p"))
 
