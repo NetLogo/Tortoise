@@ -1,0 +1,11 @@
+Things that are lousy about this branch:
+
+Mid:
+-Lack of modularization (RequireJS)
+-Agentsets don't handle dead agents correctly.  JVM NetLogo has `DeadSkippingIterator` for this.  Tortoise just continues to act as if the dead agents are valid, unless they're a part of a breed agentset.  Check out being able to observe object changes in ECAMScript 6.
+-The way that I lumped patches in with breeds doesn't work correctly.  Namely, patches don't actually have breeds, so it just ends up being `undefined`, which isn't really right
+-Engine variables should be referenced by name, rather than number
+
+Low:
+-`./sbt benchmark` does the same thing as `./sbt run`
+-Lousy interfaces with SpiderMonkey and V8

@@ -1,5 +1,6 @@
 ## (C) Uri Wilensky. https://github.com/NetLogo/NetLogo
 
+#@# Widespread sucking.  Prepare to be replaced by the overlord.
 class AgentModel
   constructor: ->
     @turtles = {}

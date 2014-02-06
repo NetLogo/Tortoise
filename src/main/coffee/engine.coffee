@@ -1,5 +1,16 @@
 ## (C) Uri Wilensky. https://github.com/NetLogo/NetLogo
 
+#@# Value wrappers: ID, NLColor, XCor, YCor, PenMode
+#@# Englishify this junk!
+#@# Fatten up those arrows!
+#@# Abolish postfix control flow (e.g. `3 if true`)
+#@# Loops on numerical ranges should be Lodasherized
+#@# Apply type signature to all methods
+#@# Kill "amount" and "a" and "t" as varnames
+#@# I hate `array[..]`.  It clones, but cryptically
+#@# Names of private members should be preceded with underscores
+
+#@# Links inherit `turtleBuiltins`, and `linkBuiltins` contain a bunch of crazy placeholder variables that don't actually mean anything --JAB (2/6/14)
 turtleBuiltins = ["id", "color", "heading", "xcor", "ycor", "shape", "label", "labelcolor", "breed", "hidden", "size", "pensize", "penmode"]
 patchBuiltins = ["pxcor", "pycor", "pcolor", "plabel", "plabelcolor"]
 linkBuiltins = ["end1", "end2", "lcolor", "llabel", "llabelcolor", "lhidden", "lbreed", "thickness", "lshape", "tiemode"]
@@ -29,8 +40,8 @@ Comparator = {
   NOT_EQUALS: {}
 
   EQUALS:       { toInt: 0 }
-  GREATER_THAN: { toInt: 1 }
-  LESS_THAN:    { toInt: -1 }
+  GREATER_THAN: { toInt: 1 }  #@# Should inherit from `NOT_EQUALS`
+  LESS_THAN:    { toInt: -1 } #@# Should inherit from `NOT_EQUALS`
 
   numericCompare: (x, y) ->
     if x < y
@@ -42,6 +53,7 @@ Comparator = {
 
 }
 
+#@# Replace with Lodash's equivalents
 Utilities = {
   isArray:    (x) -> Array.isArray(x)
   isBoolean:  (x) -> typeof(x) is "boolean"
@@ -81,6 +93,7 @@ collectUpdates = ->
   result
 
 # gross hack - ST 1/25/13
+#@# Rename to "seppuku", polymorphize properly!
 died = (agent) ->
   if agent instanceof Turtle
     Updates[0].turtles[agent.id] = WHO: -1
@@ -90,6 +103,9 @@ died = (agent) ->
 
 noop = (vars...) ->
 
+#@# Make an `Update` class that always has turtles, links, and patches
+#@# Vassal: { id: ID, companion: { trackedKeys: Set }, registerUpdate: Array[String -> Value] }
+#@# Overlord: { updates: Array[Update], flushUpdates: Unit, collectUpdates: Array[Update] }
 updated = (obj, vars...) ->
   update = Updates[0]
   if obj instanceof Turtle
@@ -115,7 +131,7 @@ updated = (obj, vars...) ->
   # For example, turtle.breed should refer to the breed name and
   # turtle._breed should point to the actual breed object.
   # BH 1/13/2014
-  for v in vars
+  for v in vars #@# Create a mapper from engine names to view names
     switch v
       when "xcor"
         agentUpdate["XCOR"] = obj.xcor()
@@ -156,17 +172,18 @@ Call = (fn, args...) ->
     if not (e instanceof StopInterrupt)
       throw e
 
+#@# Extends: `Agent`, `Vassal`, `CanTalkToPatches`
 class Turtle
-  vars: []
+  vars: [] #@# You are the bane of your own existence
   _xcor: 0
   _ycor: 0
   _links: []
   constructor: (@color = 0, @heading = 0, xcor = 0, ycor = 0, breed = Breeds.get("TURTLES"), @label = "", @labelcolor = 9.9, @hidden = false, @size = 1.0, @pensize = 1.0, @penmode = "up") ->
     @_xcor = xcor
     @_ycor = ycor
-    @breedVars = {}
+    @breedVars = {} #@# Can be outside the constructor
     @updateBreed(breed)
-    @vars = (x for x in TurtlesOwn.vars)
+    @vars = (x for x in TurtlesOwn.vars) #@# Can be outside the constructor
     @getPatchHere().arrive(this)
   updateBreed: (breed) ->
     if @breed
@@ -177,7 +194,7 @@ class Turtle
     if(@breed != Breeds.get("TURTLES"))
       Breeds.get("TURTLES").add(this)
       for x in @breed.vars
-        if(@breedVars[x] == undefined)
+        if(@breedVars[x] == undefined) #@# Simplify
           @breedVars[x] = 0
   xcor: -> @_xcor
   setXcor: (newX) ->
@@ -199,9 +216,9 @@ class Turtle
     @updateBreed(breed)
     updated(this, "breed")
     updated(this, "shape")
-  toString: -> "(" + @breed.singular + " " + @id + ")"
+  toString: -> "(" + @breed.singular + " " + @id + ")" #@# Interpolate
   keepHeadingInRange: ->
-    if (@heading < 0 || @heading >= 360)
+    if (@heading < 0 || @heading >= 360) #@# Rewrite comparison with fun comparator syntax
       @heading = ((@heading % 360) + 360) % 360
     return
   canMove: (amount) -> @patchAhead(amount) != Nobody
@@ -234,13 +251,13 @@ class Turtle
   turtlesAt: (dx, dy) ->
     @patchAt(dx, dy).turtlesHere()
   connectedLinks: (directed, isSource) ->
-    me = this
+    me = this #@# Wath?
     if directed
-      new Agents(world.links().items.map((l) ->
+      new Agents(world.links().items.map((l) -> #@# Could this code be noisier?
         if (l.directed and l.end1 == me and isSource) or (l.directed and l.end2 == me and !isSource)
           l
         else
-          null).filter((o) -> o != null), Breeds.get("LINKS"), AgentKind.Link)
+          null).filter((o) -> o != null), Breeds.get("LINKS"), AgentKind.Link) #@# I bet this comparison is wrong somehow...
     else
       new Agents(world.links().items.map((l) ->
         if (!l.directed and l.end1 == me) or (!l.directed and l.end2 == me)
@@ -249,13 +266,13 @@ class Turtle
           null).filter((o) -> o != null), Breeds.get("LINKS"), AgentKind.Link)
   refreshLinks: ->
     if @_links.length > 0
-      l.updateEndRelatedVars() for l in (@connectedLinks(true, true).items)
+      l.updateEndRelatedVars() for l in (@connectedLinks(true, true).items) #@# Srsly?
       l.updateEndRelatedVars() for l in (@connectedLinks(true, false).items)
       l.updateEndRelatedVars() for l in (@connectedLinks(false, false).items)
   linkNeighbors: (directed, isSource) ->
-    me = this
+    me = this #@# WTF, stop!
     if directed
-      new Agents(world.links().items.map((l) ->
+      new Agents(world.links().items.map((l) -> #@# Noisy, noisy nonsense
         if l.directed and l.end1 == me and isSource
           l.end2
         else if l.directed and l.end2 == me and !isSource
@@ -270,13 +287,13 @@ class Turtle
           l.end1
         else
           null).filter((o) -> o != null), Breeds.get("TURTLES"), AgentKind.Turtle)
-  isLinkNeighbor: (directed, isSource, other) ->
-    @linkNeighbors(directed, isSource).items.filter((o) -> o == other).length > 0
-  findLinkViaNeighbor: (directed, isSource, other) ->
-    me = this
-    links = []
+  isLinkNeighbor: (directed, isSource, other) -> #@# Other WHAT?
+    @linkNeighbors(directed, isSource).items.filter((o) -> o == other).length > 0 #@# `_(derp).some(f)`
+  findLinkViaNeighbor: (directed, isSource, other) -> #@# Other WHAT?
+    me = this #@# No.
+    links = [] #@# Bad
     if directed
-      links = world.links().items.map((l) ->
+      links = world.links().items.map((l) -> #@# Noisy
         if ((l.directed and l.end1 == me and l.end2 == other and isSource) or (l.directed and l.end1 == other and l.end2 == me and !isSource))
           l
         else
@@ -288,17 +305,17 @@ class Turtle
           l
         else
           null).filter((o) -> o != null)
-    if links.length == 0 then Nobody else links[0]
+    if links.length == 0 then Nobody else links[0] #@# Code above is, thus, lame
 
   otherEnd: -> if this == AgentSet.myself().end1 then AgentSet.myself().end2 else AgentSet.myself().end1
   patchRightAndAhead: (angle, amount) ->
-    heading = @heading + angle
-    if (heading < 0 || heading >= 360)
+    heading = @heading + angle #@# Mutation is for bad people
+    if (heading < 0 || heading >= 360) #@# Use cool comparator style
       heading = ((heading % 360) + 360) % 360
     try
       newX = world.topology().wrapX(@xcor() + amount * Trig.sin(heading))
       newY = world.topology().wrapY(@ycor() + amount * Trig.cos(heading))
-      return world.getPatchAt(newX, newY)
+      return world.getPatchAt(newX, newY) #@# Unnecessary `return`
     catch error
       if error instanceof TopologyInterrupt then Nobody else throw error
   patchLeftAndAhead: (angle, amount) ->
@@ -307,7 +324,7 @@ class Turtle
     @patchRightAndAhead(0, amount)
   fd: (amount) ->
     if amount > 0
-      while amount >= 1 and @jump(1)
+      while amount >= 1 and @jump(1) #@# Possible point of improvement
         amount -= 1
       @jump(amount)
     else if amount < 0
@@ -321,7 +338,7 @@ class Turtle
       @setYcor(@ycor() + amount * Trig.cos(@heading))
       updated(this, "xcor", "ycor")
       return true
-    return false
+    return false #@# Orly?
   dx: ->
     Trig.sin(@heading)
   dy: ->
@@ -329,7 +346,7 @@ class Turtle
   right: (amount) ->
     @heading += amount
     @keepHeadingInRange()
-    updated(this, "heading")
+    updated(this, "heading") #@# Why do all of these function calls manage updates for themselves?  Why am I dreaming of an `Updater` monad?
     return
   setXY: (x, y) ->
     origXcor = @xcor()
@@ -346,7 +363,7 @@ class Turtle
         throw error
     updated(this, "xcor", "ycor")
     return
-  hideTurtle: (flag) ->
+  hideTurtle: (flag) -> #@# Varname
     @hidden = flag
     updated(this, "hidden")
     return
@@ -365,19 +382,19 @@ class Turtle
       @id = -1
       @getPatchHere().leave(this)
     throw new DeathInterrupt("Call only from inside an askAgent block")
-  getTurtleVariable: (n) ->
+  getTurtleVariable: (n) -> #@# Obviously, we're awful people and this can be improved
     if (n < turtleBuiltins.length)
       if(n == 3) #xcor
         @xcor()
       else if(n == 4) #ycor
         @ycor()
       else if(n == 8) #breed
-        world.turtlesOfBreed(@breed.name)
+        world.turtlesOfBreed(@breed.name) #@# Seems weird that I should need to do this...?
       else
         this[turtleBuiltins[n]]
     else
       @vars[n - turtleBuiltins.length]
-  setTurtleVariable: (n, v) ->
+  setTurtleVariable: (n, v) -> #@# Here we go again!
     if (n < turtleBuiltins.length)
       if n is 1 # color
         this[turtleBuiltins[n]] = ColorModel.wrapColor(v)
@@ -405,21 +422,21 @@ class Turtle
   breedHere: (breedName) -> @getPatchHere().breedHere(breedName)
   hatch: (n, breedName) ->
     breed = if breedName then Breeds.get(breedName) else @breed
-    newTurtles = []
+    newTurtles = [] #@# Functional style or GTFO
     if n > 0
-      for num in [0...n]
-        t = new Turtle(@color, @heading, @xcor(), @ycor(), breed, @label, @labelcolor, @hidden, @size, @pensize, @penmode)
+      for num in [0...n] #@# Nice unused variable; Lodash it!
+        t = new Turtle(@color, @heading, @xcor(), @ycor(), breed, @label, @labelcolor, @hidden, @size, @pensize, @penmode) #@# Sounds like we ought have some cloning system
         for v in [0..TurtlesOwn.vars.length]
           t.setTurtleVariable(turtleBuiltins.length + v, @getTurtleVariable(turtleBuiltins.length + v))
         newTurtles.push(world.createTurtle(t))
     new Agents(newTurtles, breed, AgentKind.Turtle)
   moveTo: (agent) ->
-    if (agent instanceof Turtle)
+    if (agent instanceof Turtle) #@# Checks for `Turtle`ism or `Patch`ism (etc.) should be on some `Agent` object
       @setXY(agent.xcor(), agent.ycor())
     else if(agent instanceof Patch)
       @setXY(agent.pxcor, agent.pycor)
   watchme: ->
-    world.watch(this)
+    world.watch(this) #@# Nice try; use `@`
 
   penDown: ->
     @penmode = "down"
@@ -431,7 +448,7 @@ class Turtle
     return
 
   _removeLink: (l) ->
-    @_links.splice(@_links.indexOf(l))
+    @_links.splice(@_links.indexOf(l)) #@# Surely there's a more-coherent way to write this
 
   compare: (x) ->
     if x instanceof Turtle
@@ -440,12 +457,14 @@ class Turtle
       Comparator.NOT_EQUALS
 
 
+#@# CanTalkToPatches: { getPatchVariable(Int): Any, setPatchVariable(Int, Any): Unit }
+#@# Extends `CanTalkToPatches`, `Agent`, `Vassal`
 class Patch
   vars: []
   constructor: (@id, @pxcor, @pycor, @pcolor = 0.0, @plabel = "", @plabelcolor = 9.9) ->
-    @vars = (x for x in PatchesOwn.vars)
+    @vars = (x for x in PatchesOwn.vars) #@# Why put either of these two things in the constructor?
     @turtles = []
-  toString: -> "(patch " + @pxcor + " " + @pycor + ")"
+  toString: -> "(patch " + @pxcor + " " + @pycor + ")" #@# Interpolate
   getPatchVariable: (n) ->
     if (n < patchBuiltins.length)
       this[patchBuiltins[n]]
@@ -471,36 +490,36 @@ class Patch
       updated(this, patchBuiltins[n])
     else
       @vars[n - patchBuiltins.length] = v
-  leave: (t) -> @turtles.splice(@turtles.indexOf(t, 0), 1)
-  arrive: (t) ->
+  leave: (t) -> @turtles.splice(@turtles.indexOf(t, 0), 1) #@# WTF is `t`?
+  arrive: (t) -> #@# WTF is `t`?
     @turtles.push(t)
   distanceXY: (x, y) -> world.topology().distanceXY(@pxcor, @pycor, x, y)
   towardsXY: (x, y) -> world.topology().towards(@pxcor, @pycor, x, y)
   distance: (agent) -> world.topology().distance(@pxcor, @pycor, agent)
-  turtlesHere: -> new Agents(@turtles[..], Breeds.get("TURTLES"), AgentKind.Turtle)
-  getNeighbors: -> world.getNeighbors(@pxcor, @pycor) # world.getTopology().getNeighbors(this)
+  turtlesHere: -> new Agents(@turtles[..], Breeds.get("TURTLES"), AgentKind.Turtle) #@# What do the two dots even mean here...?
+  getNeighbors: -> world.getNeighbors(@pxcor, @pycor) # world.getTopology().getNeighbors(this) #@# I _love_ commented-out code!
   getNeighbors4: -> world.getNeighbors4(@pxcor, @pycor) # world.getTopology().getNeighbors(this)
   sprout: (n, breedName) ->
-    breed = if("" == breedName) then Breeds.get("TURTLES") else Breeds.get(breedName)
+    breed = if("" == breedName) then Breeds.get("TURTLES") else Breeds.get(breedName) #@# This conditional is begging for a bug
     newTurtles = []
     if n > 0
       for num in [0...n]
-        newTurtles.push(world.createTurtle(new Turtle(5 + 10 * Random.nextInt(14), Random.nextInt(360), @pxcor, @pycor, breed)))
+        newTurtles.push(world.createTurtle(new Turtle(5 + 10 * Random.nextInt(14), Random.nextInt(360), @pxcor, @pycor, breed))) #@# Moar clarity, plox
     new Agents(newTurtles, breed, AgentKind.Turtle)
   breedHere: (breedName) ->
     breed = Breeds.get(breedName)
-    new Agents(t for t in @turtles when t.breed == breed, breed, AgentKind.Turtle)
+    new Agents(t for t in @turtles when t.breed == breed, breed, AgentKind.Turtle) #@# Just use Lodash, you jackalope
   turtlesAt: (dx, dy) ->
     @patchAt(dx, dy).turtlesHere()
   patchAt: (dx, dy) ->
     try
       newX = world.topology().wrapX(@pxcor + dx)
       newY = world.topology().wrapY(@pycor + dy)
-      return world.getPatchAt(newX, newY)
+      return world.getPatchAt(newX, newY) #@# Unnecessary `return`
     catch error
       if error instanceof TopologyInterrupt then Nobody else throw error
   watchme: ->
-    world.watch(this)
+    world.watch(this) #@# `@`
 
   inRadius: (agents, radius) ->
     world.topology().inRadius(this, @pxcor, @pycor, agents, radius)
@@ -510,7 +529,7 @@ class Patch
 
 
 Links =
-  compare: (a, b) ->
+  compare: (a, b) -> #@# Heinous
     if (a == b)
       0
     else if a.id is -1 and b.id is -1
@@ -541,7 +560,7 @@ class Link
   shape: "default"
   thickness: 0
   tiemode: "none"
-  xcor: ->
+  xcor: -> #@# WHAT?! x2
   ycor: ->
   constructor: (@id, @directed, @end1, @end2) ->
     @breed = Breeds.get("LINKS")
@@ -592,9 +611,9 @@ class Link
     @midpointx = world.topology().midpointx(@end1.xcor(), @end2.xcor())
     @midpointy = world.topology().midpointy(@end1.ycor(), @end2.ycor())
     updated(this, linkExtras...)
-  toString: -> "(" + @breed.singular + " " + @end1.id + " " + @end2.id + ")"
+  toString: -> "(" + @breed.singular + " " + @end1.id + " " + @end2.id + ")" #@# Interpolate
 
-  compare: (x) ->
+  compare: (x) -> #@# Unify with `Links.compare`
     switch Links.compare(this, x)
       when -1 then Comparator.LESS_THAN
       when  0 then Comparator.EQUALS
@@ -635,8 +654,8 @@ class World
   constructor: (@minPxcor, @maxPxcor, @minPycor, @maxPycor, @patchSize, @wrappingAllowedInX, @wrappingAllowedInY, turtleShapeList, linkShapeList, @interfaceGlobalCount) ->
     Breeds.reset()
     AgentSet.reset()
-    @perspective = 0
-    @targetAgent = null
+    @perspective = 0 #@# Out of constructor
+    @targetAgent = null #@# Out of constructor
     collectUpdates()
     Updates.push(
       {
@@ -666,16 +685,16 @@ class World
     @resize(@minPxcor, @maxPxcor, @minPycor, @maxPycor)
   createPatches: ->
     nested =
-      for y in [@maxPycor..@minPycor]
+      for y in [@maxPycor..@minPycor] #@# Just build the damn matrix
         for x in [@minPxcor..@maxPxcor]
           new Patch((@width() * (@maxPycor - y)) + x - @minPxcor, x, y)
     # http://stackoverflow.com/questions/4631525/concatenating-an-array-of-arrays-in-coffeescript
-    @_patches = [].concat nested...
+    @_patches = [].concat nested... #@# I don't know what this mean, nor what that comment above is, so it's automatically awful
     for p in @_patches
       updated(p, "pxcor", "pycor", "pcolor", "plabel", "plabelcolor")
   topology: -> @_topology
   links: () ->
-    new Agents(@_links.toArray(), Breeds.get("LINKS"), AgentKind.Link)
+    new Agents(@_links.toArray(), Breeds.get("LINKS"), AgentKind.Link) #@# How about we just provide `LinkSet`, `PatchSet`, and `TurtleSet` as shorthand with intelligent defaults?
   turtles: () -> new Agents(@_turtles, Breeds.get("TURTLES"), AgentKind.Turtle)
   turtlesOfBreed: (breedName) ->
     breed = Breeds.get(breedName)
@@ -685,7 +704,7 @@ class World
     @_timer = Date.now()
   resetTicks: ->
     @_ticks = 0
-    Updates.push( world: { 0: { ticks: @_ticks } } )
+    Updates.push( world: { 0: { ticks: @_ticks } } ) #@# The fact that `Updates.push` is ever done manually seems fundamentally wrong to me
   clearTicks: ->
     @_ticks = -1
     Updates.push( world: { 0: { ticks: @_ticks } } )
@@ -704,7 +723,7 @@ class World
     @minPycor = minPycor
     @maxPycor = maxPycor
     if(@wrappingAllowedInX && @wrappingAllowedInY)
-      @_topology = new Torus(@minPxcor, @maxPxcor, @minPycor, @maxPycor)
+      @_topology = new Torus(@minPxcor, @maxPxcor, @minPycor, @maxPycor) #@# FP a-go-go
     else if(@wrappingAllowedInX)
       @_topology = new VertCylinder(@minPxcor, @maxPxcor, @minPycor, @maxPycor)
     else if(@wrappingAllowedInY)
@@ -765,11 +784,11 @@ class World
       @unbreededLinksAreDirected = false
       Updates.push({ world: { 0: { unbreededLinksAreDirected: false } } })
     return
-  removeTurtle: (id) ->
+  removeTurtle: (id) -> #@# Having two different collections of turtles to manage seems avoidable
     turtle = @_turtlesById[id]
     @_turtles.splice(@_turtles.indexOf(turtle), 1)
     delete @_turtlesById[id]
-  patchesAllBlack: (val) ->
+  patchesAllBlack: (val) -> #@# Varname
     @_patchesAllBlack = val
     Updates.push( world: { 0: { patchesAllBlack: @_patchesAllBlack }})
   patchesWithLabels: (val) ->
@@ -789,6 +808,7 @@ class World
     # iteration.
     # A more efficient (but less readable) way of doing this is to iterate
     # backwards through the array.
+    #@# I don't know what you're blathering about, but if it needs this comment, it can probably be written better
     for t in @turtles().items[..]
       try
         t.die()
@@ -797,7 +817,7 @@ class World
     @_nextTurtleId = 0
     return
   clearPatches: ->
-    for p in @patches().items
+    for p in @patches().items #@# Oh, yeah?
       p.setPatchVariable(2, 0)   # 2 = pcolor
       p.setPatchVariable(3, "")    # 3 = plabel
       p.setPatchVariable(4, 9.9)   # 4 = plabel-color
@@ -807,34 +827,38 @@ class World
     @patchesWithLabels(0)
     return
   createTurtle: (t) ->
-    t.id = @_nextTurtleId++
+    t.id = @_nextTurtleId++ #@# Why are we managing IDs at this level of the code?
     updated(t, turtleBuiltins...)
     @_turtles.push(t)
     @_turtlesById[t.id] = t
     t
+  ###
+  #@# We shouldn't be looking up links in the tree everytime we create a link; JVM NL uses 2 `LinkedHashMap[Turtle, Buffer[Link]]`s (to, from) --JAB (2/7/14)
+  #@# The return of `Nobody` followed by clients `filter`ing against it screams "flatMap!" --JAB (2/7/14)
+  ###
   createLink: (directed, from, to) ->
-    if(from.id < to.id or directed)
+    if(from.id < to.id or directed) #@# FP FTW
       end1 = from
       end2 = to
     else
       end1 = to
       end2 = from
     if Nobody == @getLink(end1.id, end2.id)
-      l = new Link(@_nextLinkId++, directed, end1, end2)
+      l = new Link(@_nextLinkId++, directed, end1, end2) #@# Managing IDs for yourself!
       updated(l, linkBuiltins...)
       updated(l, linkExtras...)
-      updated(l, turtleBuiltins.slice(1)...)
+      updated(l, turtleBuiltins.slice(1)...) #@# See, this update nonsense is awful
       @_links.insert(l)
       l
     else
       Nobody
-  createOrderedTurtles: (n, breedName) ->
+  createOrderedTurtles: (n, breedName) -> #@# Clarity is a good thing
     newTurtles = []
     if n > 0
       for num in [0...n]
         newTurtles.push(@createTurtle(new Turtle((10 * num + 5) % 140, (360 * num) / n, 0, 0, Breeds.get(breedName))))
     new Agents(newTurtles, Breeds.get(breedName), AgentKind.Turtle)
-  createTurtles: (n, breedName) ->
+  createTurtles: (n, breedName) -> #@# Clarity is still good
     newTurtles = []
     if n > 0
       for num in [0...n]
@@ -846,17 +870,17 @@ class World
     @unbreededLinksAreDirected = true
     Updates.push({ world: { 0: { unbreededLinksAreDirected: true } } })
     @createLink(true, from, to)
-  createDirectedLinks: (source, others) ->
+  createDirectedLinks: (source, others) -> #@# Clarity
     @unbreededLinksAreDirected = true
     Updates.push({ world: { 0: { unbreededLinksAreDirected: true } } })
     new Agents((@createLink(true, source, t) for t in others.items).filter((o) -> o != Nobody), Breeds.get("LINKS"), AgentKind.Link)
-  createReverseDirectedLinks: (source, others) ->
+  createReverseDirectedLinks: (source, others) -> #@# Clarity
     @unbreededLinksAreDirected = true
     Updates.push({ world: { 0: { unbreededLinksAreDirected: true } } })
     new Agents((@createLink(true, t, source) for t in others.items).filter((o) -> o != Nobody), Breeds.get("LINKS"), AgentKind.Link)
   createUndirectedLink: (source, other) ->
     @createLink(false, source, other)
-  createUndirectedLinks: (source, others) ->
+  createUndirectedLinks: (source, others) -> #@# Clarity
     new Agents((@createLink(false, source, t) for t in others.items).filter((o) -> o != Nobody), Breeds.get("LINKS"), AgentKind.Link)
   getLink: (fromId, toId) ->
     link = @_links.find((l) -> l.end1.id is fromId and l.end2.id is toId)
@@ -887,66 +911,70 @@ class World
 # arbitrary/confusing.  May we should put *everything* in Prims, and
 # Agents can be private.  Prims could/would/should be the
 # compiler/runtime interface.  Dunno what's best.
+#@# End this fence-riding nonsense ASAP
 
+#@# Should be unified with `Agents`
 AgentSet =
   count: (x) -> x.items.length
   any: (x) -> x.items.length > 0
   all: (x, f) ->
-    for a in x.items
+    for a in x.items #@# Lodash
       if(!@askAgent(a, f))
         return false
     true
-  _self: 0
-  _myself: 0
+  _self: 0 #@# Lame
+  _myself: 0 #@# Lame, only used by a tiny subset of this class
   reset: ->
     @_self = 0
     @_myself = 0
   self: -> @_self
-  myself: -> if @_myself != 0 then @_myself else throw new NetLogoException("There is no agent for MYSELF to refer to.")
-  askAgent: (a, f) ->
-    oldMyself = @_myself
+  myself: -> if @_myself != 0 then @_myself else throw new NetLogoException("There is no agent for MYSELF to refer to.") #@# I wouldn't be surprised if this is entirely avoidable
+  askAgent: (a, f) -> #@# Varnames
+    oldMyself = @_myself #@# All of this contextual swapping can be handled more clearly
     oldAgent = @_self
     @_myself = @_self
     @_self = a
     try
-      res = f()
+      res = f() #@# FP
     catch error
       throw error if!(error instanceof DeathInterrupt or error instanceof StopInterrupt)
     @_self = oldAgent
     @_myself = oldMyself
     res
   ask: (agentsOrAgent, shuffle, f) ->
-    if(agentsOrAgent.items)
+    if(agentsOrAgent.items) #@# FP
       agents = agentsOrAgent.items
     else
       agents = [agentsOrAgent]
     iter =
-      if (shuffle)
+      if (shuffle) #@# Fix yo' varnames, son!
         new Shufflerator(agents)
       else
         new Iterator(agents)
-    while (iter.hasNext())
+    while (iter.hasNext()) #@# Srsly?  Is this Java 1.4?
       a = iter.next()
       @askAgent(a, f)
     # If an asker indirectly commits suicide, the exception should propagate.  FD 11/1/2013
-    if(@_self.id && @_self.id == -1)
+    if(@_self.id && @_self.id == -1) #@# Improve
       throw new DeathInterrupt
     return
   # can't call it `with`, that's taken in JavaScript. so is `filter` - ST 2/19/14
+  #@# Above comment seems bogus.  Since when can you not do something in JavaScript?
   agentFilter: (agents, f) -> new Agents(a for a in agents.items when @askAgent(a, f), agents.breed, agents.kind)
   # min/MaxOneOf are copy/pasted from each other.  hard to say whether
   # DRY-ing them would be worth the possible performance impact. - ST 3/17/14
+  #@# I concur; generalize this!
   maxOneOf: (agents, f) ->
    winningValue = -Number.MAX_VALUE
    winners = []
-   for a in agents.items
+   for a in agents.items #@# I'm not sure how, but surely this can be Lodash-ified
      result = @askAgent(a, f)
      if result >= winningValue
        if result > winningValue
          winningValue = result
          winners = []
        winners.push(a)
-   if winners.length == 0
+   if winners.length == 0 #@# Nice try
      Nobody
    else
      winners[Random.nextInt(winners.length)]
@@ -964,15 +992,15 @@ AgentSet =
      Nobody
    else
      winners[Random.nextInt(winners.length)]
-  of: (agentsOrAgent, f) ->
-    isagentset = agentsOrAgent.items
+  of: (agentsOrAgent, f) -> #@# This is nonsense; same with `ask`.  If you're giving me something, _you_ get it into the right type first, not me!
+    isagentset = agentsOrAgent.items #@# Existential check!  Come on!
     if(isagentset)
       agents = agentsOrAgent.items
     else
       agents = [agentsOrAgent]
     result = []
     iter = new Shufflerator(agents)
-    while (iter.hasNext())
+    while (iter.hasNext()) #@# FP.  Also, move out of the 1990s.
       a = iter.next()
       result.push(@askAgent(a, f))
     if isagentset
@@ -980,17 +1008,17 @@ AgentSet =
     else
       result[0]
   oneOf: (agentsOrList) ->
-    isagentset = agentsOrList.items
+    isagentset = agentsOrList.items #@# Stop this nonsense
     if(isagentset)
       l = agentsOrList.items
     else
       l = agentsOrList
-    if l.length == 0 then Nobody else l[Random.nextInt(l.length)]
+    if l.length == 0 then Nobody else l[Random.nextInt(l.length)] #@# Sadness continues
   nOf: (resultSize, agentsOrList) ->
-    items = agentsOrList.items
+    items = agentsOrList.items #@# Existential
     if(!items)
       throw new Error("n-of not implemented on lists yet")
-    new Agents(
+    new Agents( #@# Oh, FFS
       switch resultSize
         when 0
           []
@@ -999,7 +1027,7 @@ AgentSet =
         when 2
           index1 = Random.nextInt(items.length)
           index2 = Random.nextInt(items.length - 1)
-          [index1, index2] =
+          [index1, index2] = #@# Why, why, why?
             if index2 >= index1
               [index1, index2 + 1]
             else
@@ -1009,7 +1037,7 @@ AgentSet =
           i = 0
           j = 0
           result = []
-          while j < resultSize
+          while j < resultSize #@# Lodash it!  And why not just use the general case?
             if Random.nextInt(items.length - i) < resultSize - j
               result.push(items[i])
               j += 1
@@ -1017,20 +1045,20 @@ AgentSet =
           result
     , agentsOrList.breed, agentsOrList.kind)
   turtlesOn: (agentsOrAgent) ->
-    if(agentsOrAgent.items)
+    if(agentsOrAgent.items) #@# FP
       agents = agentsOrAgent.items
     else
       agents = [agentsOrAgent]
-    turtles = [].concat (agent.turtlesHere().items for agent in agents)...
+    turtles = [].concat (agent.turtlesHere().items for agent in agents)... #@# I don't know what's going on here, so it's probably wrong
     new Agents(turtles, Breeds.get("TURTLES"), AgentKind.Turtle)
   die: -> @_self.die()
   connectedLinks: (directed, isSource) -> @_self.connectedLinks(directed, isSource)
   linkNeighbors: (directed, isSource) -> @_self.linkNeighbors(directed, isSource)
   isLinkNeighbor: (directed, isSource) ->
-    t = @_self
+    t = @_self #@# Why bother...?
     ((other) -> t.isLinkNeighbor(directed, isSource, other))
   findLinkViaNeighbor: (directed, isSource) ->
-    t = @_self
+    t = @_self #@# Why bother...?
     ((other) -> t.findLinkViaNeighbor(directed, isSource, other))
   getTurtleVariable: (n)    -> @_self.getTurtleVariable(n)
   setTurtleVariable: (n, v) -> @_self.setTurtleVariable(n, v)
@@ -1049,29 +1077,31 @@ AgentSet =
   createLinksWith: (others) -> world.createUndirectedLinks(@_self, @shuffle(others))
   other: (agentSet) ->
     self = @_self
-    filteredAgents = (agentSet.items.filter((o) -> o != self))
+    filteredAgents = (agentSet.items.filter((o) -> o != self)) #@# Unnecessary parens everywhere!
     new Agents(filteredAgents, agentSet.breed, agentSet.kind)
   shuffle: (agents) ->
     result = []
     iter = new Shufflerator(agents.items)
-    while (iter.hasNext())
+    while (iter.hasNext()) #@# 1990 rears its ugly head again
       result.push(iter.next())
     new Agents(result, agents.breed, agents.kind)
 
+#@# I hate this class's name and insist that it changes, hopefully getting rolled in with `AgentSet`
 class Agents
   constructor: (@items, @breed, @kind) ->
   toString: ->
     "(agentset, #{@items.length} #{@breed.name.toLowerCase()})"
   sort: ->
-    if(@items.length == 0)
+    if(@items.length == 0) #@# Lodash
       @items
-    else if @kind is AgentKind.Turtle or @kind is AgentKind.Patch
+    else if @kind is AgentKind.Turtle or @kind is AgentKind.Patch #@# Unify
       @items[..].sort((x, y) -> x.compare(y).toInt)
     else if @kind is AgentKind.Link
       @items[..].sort(Links.compare)
     else
       throw new Error("We don't know how to sort your kind here!")
 
+#@# Why you so puny?  Why you exist?
 class Iterator
   constructor: (@agents) ->
     @agents = @agents[..]
@@ -1082,6 +1112,7 @@ class Iterator
     @i = @i + 1
     result
 
+#@# Lame
 class Shufflerator
   constructor: (@agents) ->
     @agents = @agents[..]
@@ -1103,9 +1134,10 @@ class Shufflerator
         @agents[r] = @agents[@i]
       else
         @nextOne = @agents[@i]
-      @i = @i + 1
+      @i = @i + 1 #@# It's called "@i++"
     return
 
+#@# No more code golf
 Prims =
   fd: (n) -> AgentSet.self().fd(n)
   bk: (n) -> AgentSet.self().fd(-n)
@@ -1113,7 +1145,7 @@ Prims =
   right: (n) -> AgentSet.self().right(n)
   left: (n) -> AgentSet.self().right(-n)
   setXY: (x, y) -> AgentSet.self().setXY(x, y)
-  empty: (l) -> l.length == 0
+  empty: (l) -> l.length == 0 #@# Seems wrong
   getNeighbors: -> AgentSet.self().getNeighbors()
   getNeighbors4: -> AgentSet.self().getNeighbors4()
   sprout: (n, breedName) -> AgentSet.self().sprout(n, breedName)
@@ -1121,41 +1153,41 @@ Prims =
   patch: (x, y) -> world.getPatchAt(x, y)
   randomXcor: -> world.minPxcor - 0.5 + Random.nextDouble() * (world.maxPxcor - world.minPxcor + 1)
   randomYcor: -> world.minPycor - 0.5 + Random.nextDouble() * (world.maxPycor - world.minPycor + 1)
-  shadeOf: (c1, c2) -> Math.floor(c1 / 10) == Math.floor(c2 / 10)
+  shadeOf: (c1, c2) -> Math.floor(c1 / 10) == Math.floor(c2 / 10) #@# Varnames
   isBreed: (breedName, x) -> if x.isBreed? and x.id != -1 then x.isBreed(breedName) else false
-  equality: (a, b) ->
+  equality: (a, b) -> #@# This is a cesspool for performance problems
     if a is undefined or b is undefined
       throw new Error("Checking equality on undefined is an invalid condition")
 
     (a is b) or ( # This code has been purposely rewritten into a crude, optimized form --JAB (3/19/14)
       if typeIsArray(a) and typeIsArray(b)
         a.length == b.length && a.every((elem, i) -> Prims.equality(elem, b[i]))
-      else if (a instanceof Agents && b instanceof Agents)
+      else if (a instanceof Agents && b instanceof Agents) #@# Could be sped up to O(n) (from O(n^2)) by zipping the two arrays
         a.items.length is b.items.length and a.kind is b.kind and a.items.every((elem) -> (elem in b.items))
       else
         (a instanceof Agents and a.breed is b) or (b instanceof Agents and b.breed is a) or
           (a is Nobody and b.id is -1) or (b is Nobody and a.id is -1) or ((a instanceof Turtle or a instanceof Link) and a.compare(b) is Comparator.EQUALS)
     )
 
-  lt: (a, b) ->
+  lt: (a, b) -> #@# Bad, bad Jason
     if (Utilities.isString(a) and Utilities.isString(b)) or (Utilities.isNumber(a) and Utilities.isNumber(b))
       a < b
-    else if typeof(a) is typeof(b) and a.compare? and b.compare?
+    else if typeof(a) is typeof(b) and a.compare? and b.compare? #@# Use a class
       a.compare(b) is Comparator.LESS_THAN
     else
       throw new Exception("Invalid operands to `lt`")
 
-  gt: (a, b) ->
+  gt: (a, b) -> #@# Jason is still bad
     if (Utilities.isString(a) and Utilities.isString(b)) or (Utilities.isNumber(a) and Utilities.isNumber(b))
       a > b
-    else if typeof(a) is typeof(b) and a.compare? and b.compare?
+    else if typeof(a) is typeof(b) and a.compare? and b.compare? #@# Use a class
       a.compare(b) is Comparator.GREATER_THAN
     else
       throw new Exception("Invalid operands to `gt`")
 
   lte: (a, b) -> @lt(a, b) or @equality(a, b)
   gte: (a, b) -> @gt(a, b) or @equality(a, b)
-  scaleColor: (color, number, min, max) ->
+  scaleColor: (color, number, min, max) -> #@# I don't know WTF this is, so it has to be wrong
     color = Math.floor(color / 10) * 10
     perc = 0.0
     if(min > max)
@@ -1199,35 +1231,35 @@ Prims =
   item: (n, xs) -> xs[n]
   first: (xs) -> xs[0]
   last: (xs) -> xs[xs.length - 1]
-  fput: (x, xs) -> [x].concat(xs)
-  lput: (x, xs) ->
+  fput: (x, xs) -> [x].concat(xs) #@# Lodash, son
+  lput: (x, xs) -> #@# Lodash, son
     result = xs[..]
     result.push(x)
     result
-  butFirst: (xs) -> xs[1..]
-  butLast: (xs) -> xs[0...xs.length - 1]
-  length: (xs) -> xs.length
-  _int: (n) -> if n < 0 then Math.ceil(n) else Math.floor(n)
-  mod: (a, b) -> ((a % b) + b) % b
-  max: (xs) -> Math.max(xs...)
-  min: (xs) -> Math.min(xs...)
-  mean: (xs) -> @sum(xs) / xs.length
-  sum: (xs) -> xs.reduce(((a, b) -> a + b), 0)
+  butFirst: (xs) -> xs[1..] #@# Lodash
+  butLast: (xs) -> xs[0...xs.length - 1] #@# Lodash
+  length: (xs) -> xs.length #@# Lodash
+  _int: (n) -> if n < 0 then Math.ceil(n) else Math.floor(n) #@# WTF is this?
+  mod: (a, b) -> ((a % b) + b) % b #@# WTF?
+  max: (xs) -> Math.max(xs...) #@# Check Lodash on this
+  min: (xs) -> Math.min(xs...) #@# Check Lodash
+  mean: (xs) -> @sum(xs) / xs.length #@# Check Lodash
+  sum: (xs) -> xs.reduce(((a, b) -> a + b), 0) #@# Check Lodash
   precision: (n, places) ->
     multiplier = Math.pow(10, places)
     result = Math.floor(n * multiplier + .5) / multiplier
     if places > 0
       result
     else
-      Math.round(result)
-  reverse: (xs) ->
+      Math.round(result) #@# Huh?
+  reverse: (xs) -> #@# Lodash
     if typeIsArray(xs)
       xs[..].reverse()
     else if typeof(xs) == "string"
       xs.split("").reverse().join("")
     else
       throw new NetLogoException("can only reverse lists and strings")
-  sort: (xs) ->
+  sort: (xs) -> #@# Seems greatly improvable
     if typeIsArray(xs)
       wrappedItems = _(xs)
       if wrappedItems.isEmpty()
@@ -1246,7 +1278,7 @@ Prims =
       xs.sort()
     else
       throw new NetLogoException("can only sort lists and agentsets")
-  removeDuplicates: (xs) ->
+  removeDuplicates: (xs) -> #@# Good use of data structures and actually trying could get this into reasonable time complexity
     if xs.length < 2
       xs
     else
@@ -1256,7 +1288,7 @@ Prims =
   outputPrint: (x) ->
     println(Dump(x))
   patchSet: (inputs...) ->
-    # O(n^2) -- should be smarter (use hashing for contains check)
+    #@# O(n^2) -- should be smarter (use hashing for contains check)
     result = []
     recurse = (inputs) ->
       for input in inputs
@@ -1269,9 +1301,9 @@ Prims =
             if (!(agent in result))
               result.push(agent)
     recurse(inputs)
-    new Agents(result, undefined, AgentKind.Patch)
+    new Agents(result, undefined, AgentKind.Patch) #@# A great example of why we should have a `PatchSet`
   repeat: (n, fn) ->
-    for i in [0...n]
+    for i in [0...n] #@# Unused variable, which is lame
       fn()
     return
   # not a real implementation, always just runs body - ST 4/22/14
@@ -1389,7 +1421,7 @@ Prims =
           result.push(t)
     new Agents(result, breed, AgentKind.Turtle)
 
-Tasks =
+Tasks = #@# This makes me uncomfortable
   commandTask: (fn) ->
     fn.isReporter = false
     fn
@@ -1400,16 +1432,17 @@ Tasks =
     typeof(x) == "function" and x.isReporter
   isCommandTask: (x) ->
     typeof(x) == "function" and not x.isReporter
-  map: (fn, lists...) ->
+  map: (fn, lists...) -> #@# Don't understand
     for i in [0...lists[0].length]
       fn(lists.map((list) -> list[i])...)
-  nValues: (n, fn) ->
+  nValues: (n, fn) -> #@# Lodash
     fn(i) for i in [0...n]
-  forEach: (fn, lists...) ->
+  forEach: (fn, lists...) -> #@# Don't understand
     for i in [0...lists[0].length]
       fn(lists.map((list) -> list[i])...)
     return
 
+#@# Attach it to an `Observer` object
 Globals =
   vars: []
   # compiler generates call to init, which just
@@ -1422,10 +1455,12 @@ Globals =
   getGlobal: (n) -> @vars[n]
   setGlobal: (n, v) -> @vars[n] = v
 
+#@# Evil
 TurtlesOwn =
   vars: []
   init: (n) -> @vars = (0 for x in [0...n])
 
+#@# Heinous
 PatchesOwn =
   vars: []
   init: (n) -> @vars = (0 for x in [0...n])
@@ -1438,14 +1473,14 @@ LinksOwn =
 # about lists and reporter tasks
 Dump = (x) ->
   if (typeIsArray(x))
-    "[" + (Dump(x2) for x2 in x).join(" ") + "]"
-  else if (typeof(x) == "function")
+    "[" + (Dump(x2) for x2 in x).join(" ") + "]" #@# Interpolate
+  else if (typeof(x) == "function") #@# I hate this
     if (x.isReporter)
       "(reporter task)"
     else
       "(command task)"
   else
-    "" + x
+    "" + x #@# `toString`
 
 Trig =
   squash: (x) ->
@@ -1453,7 +1488,7 @@ Trig =
       0
     else
       x
-  sin: (degrees) ->
+  sin: (degrees) -> #@# Simplifify x4
     @squash(StrictMath.sin(StrictMath.toRadians(degrees)))
   cos: (degrees) ->
     @squash(StrictMath.cos(StrictMath.toRadians(degrees)))
@@ -1462,22 +1497,22 @@ Trig =
   unsquashedCos: (degrees) ->
     StrictMath.cos(StrictMath.toRadians(degrees))
   atan: (d1, d2) ->
-    throw new NetLogoException("Runtime error: atan is undefined when both inputs are zero.") if (d1 == 0 && d2 == 0)
-    if (d1 == 0)
+    throw new NetLogoException("Runtime error: atan is undefined when both inputs are zero.") if (d1 == 0 && d2 == 0) #@# Hatred
+    if (d1 == 0) #@# Intensified hatred
       if (d2 > 0) then 0 else 180
     else if (d2 == 0)
       if (d1 > 0) then 90 else 270
-    else (StrictMath.toDegrees(StrictMath.atan2(d1, d2)) + 360) % 360
+    else (StrictMath.toDegrees(StrictMath.atan2(d1, d2)) + 360) % 360 #@# Lame style
 
 class Breed
-  constructor: (@name, @singular, @_shape = false, @members = []) ->
-  shape: () -> if @_shape then @_shape else Breeds.get("TURTLES")._shape
+  constructor: (@name, @singular, @_shape = false, @members = []) -> #@# How come the default is `false`, but `Breeds.defaultBreeds` passes in `"default"`?
+  shape: () -> if @_shape then @_shape else Breeds.get("TURTLES")._shape #@# Turtles, patches, and links should be easily accessed on `Breeds`
   vars: []
   add: (agent) ->
-    for a, i in @members
+    for a, i in @members #@# Lame, unused variable
       if a.id > agent.id
-        break
-    @members.splice(i, 0, agent)
+        break #@# `break` means that your code is probably wrong
+    @members.splice(i, 0, agent) #@# WTF does this mean?  You're all insane.  The proper solution is probably Lodash
   remove: (agent) ->
     @members.splice(@members.indexOf(agent), 1)
 
@@ -1494,7 +1529,7 @@ Breeds = {
   get: (name) ->
     @breeds[name.toUpperCase()]
   setDefaultShape: (agents, shape) ->
-    agents.breed._shape = shape.toLowerCase()
+    agents.breed._shape = shape.toLowerCase() #@# Oh, yeah?  You just go and modify the private member?  Pretty cool!
 }
 class Topology
   # based on agent.Topology.wrap()
@@ -1502,7 +1537,7 @@ class Topology
     if (pos >= max)
       (min + ((pos - max) % (max - min)))
     else if (pos < min)
-      result = max - ((min - pos) % (max - min))
+      result = max - ((min - pos) % (max - min)) #@# FP
       if (result < max)
         result
       else
@@ -1510,10 +1545,10 @@ class Topology
     else
       pos
 
-  getNeighbors: (pxcor, pycor) ->
+  getNeighbors: (pxcor, pycor) -> #@# The line's too full of nonsense
     new Agents((patch for patch in @_getNeighbors(pxcor, pycor) when patch != false), undefined, AgentKind.Patch)
 
-  _getNeighbors: (pxcor, pycor) ->
+  _getNeighbors: (pxcor, pycor) -> #@# Was I able to fix this in the ScalaJS version?
     if (pxcor == @maxPxcor && pxcor == @minPxcor)
       if (pycor == @maxPycor && pycor == @minPycor)
         []
@@ -1527,10 +1562,10 @@ class Topology
        @getPatchNorthEast(pxcor, pycor), @getPatchSouthEast(pxcor, pycor),
        @getPatchSouthWest(pxcor, pycor), @getPatchNorthWest(pxcor, pycor)]
 
-  getNeighbors4: (pxcor, pycor) ->
+  getNeighbors4: (pxcor, pycor) -> #@# Line too full
     new Agents((patch for patch in @_getNeighbors4(pxcor, pycor) when patch != false), undefined, AgentKind.Patch)
 
-  _getNeighbors4: (pxcor, pycor) ->
+  _getNeighbors4: (pxcor, pycor) -> #@# Any improvement in ScalaJS version?
     if (pxcor == @maxPxcor && pxcor == @minPxcor)
       if (pycor == @maxPycor && pycor == @minPycor)
         []
@@ -1542,9 +1577,9 @@ class Topology
       [@getPatchNorth(pxcor, pycor), @getPatchEast(pxcor, pycor),
        @getPatchSouth(pxcor, pycor), @getPatchWest(pxcor, pycor)]
 
-  distanceXY: (x1, y1, x2, y2) ->
+  distanceXY: (x1, y1, x2, y2) -> #@# Long line
     StrictMath.sqrt(StrictMath.pow(@shortestX(x1, x2), 2) + StrictMath.pow(@shortestY(y1, y2), 2))
-  distance: (x1, y1, agent) ->
+  distance: (x1, y1, agent) -> #@# If you're polymorphizing, you ought to just do it properly in the OO way
     if (agent instanceof Turtle)
       @distanceXY(x1, y1, agent.xcor(), agent.ycor())
     else if(agent instanceof Patch)
@@ -1553,14 +1588,14 @@ class Topology
   towards: (x1, y1, x2, y2) ->
     dx = @shortestX(x1, x2)
     dy = @shortestY(y1, y2)
-    if dx == 0
+    if dx == 0 #@# Code of anger
       if dy >= 0 then 0 else 180
     else if dy == 0
       if dx >= 0 then 90 else 270
     else
-      (270 + StrictMath.toDegrees (Math.PI + StrictMath.atan2(-dy, dx))) % 360
-  midpointx: (x1, x2) -> @wrap((x1 + (x1 + @shortestX(x1, x2))) / 2, world.minPxcor - 0.5, world.maxPxcor + 0.5)
-  midpointy: (y1, y2) -> @wrap((y1 + (y1 + @shortestY(y1, y2))) / 2, world.minPycor - 0.5, world.maxPycor + 0.5)
+      (270 + StrictMath.toDegrees (Math.PI + StrictMath.atan2(-dy, dx))) % 360 #@# Long line
+  midpointx: (x1, x2) -> @wrap((x1 + (x1 + @shortestX(x1, x2))) / 2, world.minPxcor - 0.5, world.maxPxcor + 0.5) #@# What does this mean?  I don't know!
+  midpointy: (y1, y2) -> @wrap((y1 + (y1 + @shortestY(y1, y2))) / 2, world.minPycor - 0.5, world.maxPycor + 0.5) #@# What does this mean?  I don't know!
 
   inRadius: (origin, x, y, agents, radius) ->
     result = []
@@ -1568,7 +1603,7 @@ class Topology
     r = Math.ceil(radius)
     width = world.width() / 2
     height = world.height() / 2
-    if(r < width || !world.wrappingAllowedInX)
+    if(r < width || !world.wrappingAllowedInX) #@# FP
       minDX = -r
       maxDX = r
     else
@@ -1581,10 +1616,10 @@ class Topology
       maxDY = StrictMath.floor(height)
       minDY = -Math.ceil(height - 1)
 
-    for dy in [minDY..maxDY]
+    for dy in [minDY..maxDY] #@# 'Tis crap
       for dx in [minDX..maxDX]
         p = origin.patchAt(dx, dy)
-        if p != Nobody
+        if p != Nobody #@# Feels `Option.map(f).getOrElse`-ish
           if(@distanceXY(p.pxcor, p.pycor, x, y) <= radius && agents.items.filter((o) -> o == p).length > 0)
             result.push(p)
           for t in p.turtlesHere().items
@@ -1592,6 +1627,7 @@ class Topology
               result.push(t)
     new Agents(result, agents.breed, agents.kind)
 
+#@# Redundancy with other topologies...
 class Torus extends Topology
   constructor: (@minPxcor, @maxPxcor, @minPycor, @maxPycor) ->
 
@@ -1599,20 +1635,20 @@ class Torus extends Topology
     @wrap(pos, @minPxcor - 0.5, @maxPxcor + 0.5)
   wrapY: (pos) ->
     @wrap(pos, @minPycor - 0.5, @maxPycor + 0.5)
-  shortestX: (x1, x2) ->
+  shortestX: (x1, x2) -> #@# Seems improvable
     if(StrictMath.abs(x1 - x2) > world.width() / 2)
       (world.width() - StrictMath.abs(x1 - x2)) * (if x2 > x1 then -1 else 1)
     else
       Math.abs(x1 - x2) * (if x1 > x2 then -1 else 1)
-  shortestY: (y1, y2) ->
+  shortestY: (y1, y2) -> #@# Seems improvable
     if(StrictMath.abs(y1 - y2) > world.height() / 2)
       (world.height() - StrictMath.abs(y1 - y2)) * (if y2 > y1 then -1 else 1)
     else
       Math.abs(y1 - y2) * (if y1 > y2 then -1 else 1)
-  diffuse: (vn, amount) ->
-    scratch = for x in [0...world.width()]
-      []
-    for patch in world.patches().items
+  diffuse: (vn, amount) -> #@# Varname
+    scratch = for x in [0...world.width()] #@# Unused var
+      [] #@# Weird style
+    for patch in world.patches().items #@# Two loops over the same thing.  Yeah!
       scratch[patch.pxcor - @minPxcor][patch.pycor - @minPycor] = patch.getPatchVariable(vn)
     for patch in world.patches().items
       pxcor = patch.pxcor
@@ -1623,9 +1659,10 @@ class Torus extends Topology
          @getPatchNorthWest(pxcor, pycor), @getPatchSouth(pxcor, pycor),
          @getPatchNorth(pxcor, pycor), @getPatchSouthEast(pxcor, pycor),
          @getPatchEast(pxcor, pycor), @getPatchNorthEast(pxcor, pycor)]
-      diffusalSum = (scratch[n.pxcor - @minPxcor][n.pycor - @minPycor] for n in diffusallyOrderedNeighbors).reduce((a, b) -> a + b)
+      diffusalSum = (scratch[n.pxcor - @minPxcor][n.pycor - @minPycor] for n in diffusallyOrderedNeighbors).reduce((a, b) -> a + b) #@# Weird
       patch.setPatchVariable(vn, patch.getPatchVariable(vn) * (1.0 - amount) + (diffusalSum / 8) * amount)
 
+  #@# I think I tried to fix all this in the ScalaJS version.  Did I succeed?  (I doubt it)
   getPatchNorth: (pxcor, pycor) ->
     if (pycor == @maxPycor)
       world.getPatchAt(pxcor, @minPycor)
@@ -1698,7 +1735,7 @@ class Torus extends Topology
 class VertCylinder extends Topology
   constructor: (@minPxcor, @maxPxcor, @minPycor, @maxPycor) ->
 
-  shortestX: (x1, x2) ->
+  shortestX: (x1, x2) -> #@# Some lameness
     if(StrictMath.abs(x1 - x2) > (1 + @maxPxcor - @minPxcor) / 2)
       (world.width() - StrictMath.abs(x1 - x2)) * (if x2 > x1 then -1 else 1)
     else
@@ -1707,7 +1744,7 @@ class VertCylinder extends Topology
   wrapX: (pos) ->
     @wrap(pos, @minPxcor - 0.5, @maxPxcor + 0.5)
   wrapY: (pos) ->
-    if(pos >= @maxPycor + 0.5 || pos <= @minPycor - 0.5)
+    if(pos >= @maxPycor + 0.5 || pos <= @minPycor - 0.5) #@# Use fun comparator syntax
       throw new TopologyInterrupt ("Cannot move turtle beyond the world's edge.")
     else pos
   getPatchNorth: (pxcor, pycor) -> (pycor != @maxPycor) && world.getPatchAt(pxcor, pycor + 1)
@@ -1755,7 +1792,7 @@ class VertCylinder extends Topology
       world.getPatchAt(@minPxcor, pycor + 1)
     else
       world.getPatchAt(pxcor + 1, pycor + 1)
-  diffuse: (vn, amount) ->
+  diffuse: (vn, amount) -> #@# Holy guacamole!
     yy = world.height()
     xx = world.width()
     scratch = for x in [0...xx]
@@ -1798,14 +1835,14 @@ class VertCylinder extends Topology
 class HorzCylinder extends Topology
   constructor: (@minPxcor, @maxPxcor, @minPycor, @maxPycor) ->
 
-  shortestX: (x1, x2) -> Math.abs(x1 - x2) * (if x1 > x2 then -1 else 1)
-  shortestY: (y1, y2) ->
+  shortestX: (x1, x2) -> Math.abs(x1 - x2) * (if x1 > x2 then -1 else 1) #@# Weird
+  shortestY: (y1, y2) -> #@# Weird
     if(StrictMath.abs(y1 - y2) > (1 + @maxPycor - @minPycor) / 2)
       (world.height() - Math.abs(y1 - y2)) * (if y2 > y1 then -1 else 1)
     else
       Math.abs(y1 - y2) * (if y1 > y2 then -1 else 1)
   wrapX: (pos) ->
-    if(pos >= @maxPxcor + 0.5 || pos <= @minPxcor - 0.5)
+    if(pos >= @maxPxcor + 0.5 || pos <= @minPxcor - 0.5) #@# Fun comparator syntax
       throw new TopologyInterrupt ("Cannot move turtle beyond the world's edge.")
     else pos
   wrapY: (pos) ->
@@ -1854,7 +1891,7 @@ class HorzCylinder extends Topology
       world.getPatchAt(pxcor + 1, @minPycor)
     else
       world.getPatchAt(pxcor + 1, pycor + 1)
-  diffuse: (vn, amount) ->
+  diffuse: (vn, amount) -> #@# Dat guacamole
     yy = world.height()
     xx = world.width()
     scratch = for x in [0...xx]
@@ -1897,9 +1934,10 @@ class HorzCylinder extends Topology
 class Box extends Topology
   constructor: (@minPxcor, @maxPxcor, @minPycor, @maxPycor) ->
 
+  #@# Weird x2
   shortestX: (x1, x2) -> Math.abs(x1 - x2) * (if x1 > x2 then -1 else 1)
   shortestY: (y1, y2) -> Math.abs(y1 - y2) * (if y1 > y2 then -1 else 1)
-  wrapX: (pos) ->
+  wrapX: (pos) -> #@# Fun comparator syntax x2
     if(pos >= @maxPxcor + 0.5 || pos <= @minPxcor - 0.5)
       throw new TopologyInterrupt ("Cannot move turtle beyond the worlds edge.")
     else pos
@@ -1918,7 +1956,7 @@ class Box extends Topology
   getPatchSouthEast: (pxcor, pycor) -> (pycor != @minPycor) && (pxcor != @maxPxcor) && world.getPatchAt(pxcor + 1, pycor - 1)
   getPatchNorthEast: (pxcor, pycor) -> (pycor != @maxPycor) && (pxcor != @maxPxcor) && world.getPatchAt(pxcor + 1, pycor + 1)
 
-  diffuse: (vn, amount) ->
+  diffuse: (vn, amount) -> #@# Guacy moley
     yy = world.height()
     xx = world.width()
     scratch = for x in [0...xx]
@@ -1997,48 +2035,49 @@ class Box extends Topology
 
 # Copied pretty much verbatim from Layouts.java
 Layouts =
+  #@# Okay, so... in what universe is it alright for a single function to be 120 lines long?
   layoutSpring: (nodeSet, linkSet, spr, len, rep) ->
     nodeCount = nodeSet.items.length
-    if nodeCount == 0
+    if nodeCount == 0 #@# Bad
       return
 
     ax = []
     ay = []
     tMap = []
-    degCount = (0 for i in [0...nodeCount])
+    degCount = (0 for i in [0...nodeCount]) #@# Unused var
 
     agt = []
     i = 0
-    for t in AgentSet.shuffle(nodeSet).items
+    for t in AgentSet.shuffle(nodeSet).items #@# Lodash
       agt[i] = t
       tMap[t.id] = i
       ax[i] = 0.0
       ay[i] = 0.0
       i++
 
-    for link in linkSet.items
+    for link in linkSet.items #@# Lodash
       t1 = link.end1
       t2 = link.end2
-      if (tMap[t1.id] != undefined)
+      if (tMap[t1.id] != undefined) #@# Lame x2
         t1Index = tMap[t1.id]
         degCount[t1Index]++
       if (tMap[t2.id] != undefined)
         t2Index = tMap[t2.id]
         degCount[t2Index]++
 
-    for link in linkSet.items
+    for link in linkSet.items #@# Lodash
       dx = 0
       dy = 0
       t1 = link.end1
       t2 = link.end2
       t1Index = -1
       degCount1 = 0
-      if tMap[t1.id] != undefined
+      if tMap[t1.id] != undefined #@# Lame
         t1Index = tMap[t1.id]
         degCount1 = degCount[t1Index]
       t2Index = -1
       degCount2 = 0
-      if tMap[t2.id] != undefined
+      if tMap[t2.id] != undefined #@# Lame
         t2Index = tMap[t2.id]
         degCount2 = degCount[t2Index]
       dist = t1.distance(t2)
@@ -2056,11 +2095,11 @@ Layouts =
       if t1Index != -1
         ax[t1Index] += dx
         ay[t1Index] += dy
-      if t2Index != -1
+      if t2Index != -1 #@# Surely all of this control flow can be FPified
         ax[t2Index] -= dx
         ay[t2Index] -= dy
 
-    for i in [0...nodeCount]
+    for i in [0...nodeCount] #@# Lodash
       t1 = agt[i]
       for j in [(i + 1)...nodeCount]
         t2 = agt[j]
