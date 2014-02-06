@@ -19,6 +19,7 @@ unless println?
     println = java.lang.System.out.println
 
 # surprisingly difficult to ask if something is an array or not
+#@# DIE!
 typeIsArray = (value) ->
   value and
   typeof value is 'object' and
@@ -42,6 +43,7 @@ unless Random?
   Random.setSeed = (seed) -> return # No-op!
 
 # For divergences between Nashorn and browsers, clone and extend!
+#@# Just make this a function that calls Lodash's `cloneDeep`
 Cloner =
   clone: (obj) ->
     return obj if obj is null or typeof (obj) isnt "object"
@@ -61,6 +63,7 @@ unless StrictMath?
 # used to work around Nashorn bug where JSON.parse on objects with
 # integer keys sometimes invents nonexistent entries with null values;
 # see http://bugs.java.com/bugdatabase/view_bug.do?bug_id=8038119
+#@# Just make it a function...
 Denuller =
   denull: (x) ->
     if typeIsArray(x)
