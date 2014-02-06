@@ -2,6 +2,7 @@ package org.nlogo.tortoise.jsengine
 
 import
   nashorn.{ Nashorn => NNashorn },
+  spidermonkey.{ SpiderMonkey => NSpiderMonkey },
   v8.{ V8 => NV8 }
 
 
@@ -33,8 +34,18 @@ object JSEngine {
     override def eval(js: String): String = engine.eval(js).toString
   }
 
+  implicit class SpiderMonkeyEngine(override val engine: NSpiderMonkey) extends JSEngine {
+    override type T = NSpiderMonkey
+    override def eval(js: String): String = engine.eval(js).toString
+  }
+
   object Nashorn extends JSEngineCompanion[NashornEngine] {
     override def cleanSlate = new NNashorn
+    override def version    = cleanSlate.engine.versionNumber
+  }
+
+  object SpiderMonkey extends JSEngineCompanion[SpiderMonkeyEngine] {
+    override def cleanSlate = new NSpiderMonkey
     override def version    = cleanSlate.engine.versionNumber
   }
 

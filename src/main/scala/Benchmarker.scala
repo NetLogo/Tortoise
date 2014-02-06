@@ -21,7 +21,7 @@ object Benchmarker extends App {
   // that is due to those tests not running the standard benchmarking commands (`ca benchmark result`) --JAB (2/4/14)
   private val benchmarkModels = Seq("BZ Benchmark")
 
-  private val engineToEvalMap = Seq(Nashorn, V8).map(engine => engine -> engine.freshEval _).toMap
+  private val engineToEvalMap = Seq(Nashorn, SpiderMonkey, V8).map(engine => engine -> engine.freshEval _).toMap
 
 
 // See comments in 'benchmark.sbt' --JAB (2/3/14)
