@@ -869,6 +869,7 @@ Prims =
   right: (n) -> AgentSet.self().right(n)
   left: (n) -> AgentSet.self().right(-n)
   setXY: (x, y) -> AgentSet.self().setXY(x, y)
+  empty: (l) -> l.length == 0
   getNeighbors: -> AgentSet.self().getNeighbors()
   getNeighbors4: -> AgentSet.self().getNeighbors4()
   sprout: (n, breedName) -> AgentSet.self().sprout(n, breedName)
