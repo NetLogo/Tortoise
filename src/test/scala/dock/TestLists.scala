@@ -54,4 +54,14 @@ class TestLists extends DockingSuite {
     compare("[] = [1 2]")
     compare("sort [3 2] = [2 3]")
   }
+
+  test("empty") { implicit fixture => import fixture._
+    compare("empty? [1 2 3]")
+    compare("empty? []")
+    compare("empty? \"\"")
+    compare("empty? \"hello\"")
+    testCommand("crt 10")
+    compare("empty? [ who ] of turtles")
+    compare("empty? [ who ] of turtles with [ who > 20 ]")
+  }
 }

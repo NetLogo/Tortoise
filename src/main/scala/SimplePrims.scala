@@ -117,6 +117,7 @@ object SimplePrims {
         case _: prim.etc._otherend           => "AgentSet.self().otherEnd"
         case _: prim.etc._sqrt               => "StrictMath.sqrt"
         case _: prim.etc._mod                => "Prims.mod"
+        case _: prim.etc._empty              => "Prims.empty"
       }
   }
 
