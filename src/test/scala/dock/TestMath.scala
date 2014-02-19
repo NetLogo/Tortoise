@@ -17,6 +17,13 @@ class TestMath extends DockingSuite {
       compare(s"cos $theta")
   }
 
+  test("atan") { implicit fixture => import fixture._
+    for(i <- -5 to 5 by 1)
+      for(j <- -5 to 5 by 1)
+        compare(s"atan $i $j")
+    testCommand("output-print atan 0 0")
+  }
+
   test("unary minus") { implicit fixture => import fixture._
     declare("globals [g]")
     testCommand("set g 5")

@@ -1023,6 +1023,13 @@ Trig =
     StrictMath.sin(StrictMath.toRadians(degrees))
   unsquashedCos: (degrees) ->
     StrictMath.cos(StrictMath.toRadians(degrees))
+  atan: (d1, d2) ->
+    throw new NetLogoException("Runtime error: atan is undefined when both inputs are zero.") if (d1 == 0 && d2 == 0)
+    if (d1 == 0)
+      if (d2 > 0) then 0 else 180
+    else if (d2 == 0)
+      if (d1 > 0) then 90 else 270
+    else (StrictMath.toDegrees(StrictMath.atan2(d1, d2)) + 360) % 360
 
 class Breed
   constructor: (@name, @singular, @_shape = false, @members = []) ->

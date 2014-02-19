@@ -102,6 +102,7 @@ object SimplePrims {
         case _: prim._other                  => "AgentSet.other"
         case _: prim.etc._sin                => "Trig.unsquashedSin"
         case _: prim.etc._cos                => "Trig.unsquashedCos"
+        case _: prim.etc._atan               => "Trig.atan"
         case _: prim.etc._floor              => "StrictMath.floor"
         case _: prim.etc._int                => "Prims._int"
         case _: prim.etc._round              => "StrictMath.round"
