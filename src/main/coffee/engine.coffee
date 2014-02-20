@@ -718,6 +718,7 @@ AgentSet =
     if(@_self.id && @_self.id == -1)
       throw new DeathInterrupt
     return
+  # can't call it `with`, that's taken in JavaScript. so is `filter` - ST 2/19/14
   agentFilter: (agents, f) -> new Agents(a for a in agents.items when @askAgent(a, f))
   of: (agentsOrAgent, f) ->
     isagentset = agentsOrAgent.items
