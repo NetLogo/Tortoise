@@ -90,7 +90,7 @@ class CompilerTests extends FunSuite {
     import Compiler.{compileCommands => compile}
     val input = "ask patches with [pxcor = 1] [output-print pycor]"
     val expected =
-       """|AgentSet.ask(AgentSet.with(world.patches(), function() {
+       """|AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
           |  return Prims.equality(AgentSet.getPatchVariable(0), 1)
           |}), true, function() {
           |  Prims.outputPrint(AgentSet.getPatchVariable(1));
