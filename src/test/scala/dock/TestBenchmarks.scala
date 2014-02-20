@@ -27,4 +27,14 @@ class TestBenchmarks extends DockingSuite with SlowTest {
     testCommand("setup")
     testCommand("repeat 5 [ go ]")
   }
+
+  test("heatbugs") { implicit fixture => import fixture._
+    open("models/test/benchmarks/Heatbugs Benchmark.nlogo")
+    testCommand(
+      "resize-world 0 19 0 19 " +
+      "set bug-count 15")
+    testCommand("setup")
+    testCommand("repeat 10 [ go ]")
+  }
+
 }
