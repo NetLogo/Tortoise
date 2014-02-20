@@ -61,8 +61,6 @@ logBuffered in testOnly in Test := false
 
 FastMediumSlow.settings
 
-LanguageTests.settings
-
 Coffee.settings
 
 PublishVersioned.settings
