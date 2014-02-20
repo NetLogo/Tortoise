@@ -718,7 +718,7 @@ AgentSet =
     if(@_self.id && @_self.id == -1)
       throw new DeathInterrupt
     return
-  agentFilter: (agents, f) -> new Agents(a for a in agents.items when @askAgent(a, f))
+  with: (agents, f) -> new Agents(a for a in agents.items when @askAgent(a, f))
   of: (agentsOrAgent, f) ->
     isagentset = agentsOrAgent.items
     if(isagentset)

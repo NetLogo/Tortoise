@@ -40,7 +40,7 @@ object Prims {
       case _: prim._with =>
         val agents = arg(0)
         val filter = Handlers.reporter(r.args(1))
-        s"AgentSet.agentFilter($agents, ${Handlers.fun(r.args(1), true)})"
+        s"AgentSet.with($agents, ${Handlers.fun(r.args(1), true)})"
       case _: prim._of =>
         val agents = arg(1)
         val body = Handlers.reporter(r.args(0))
