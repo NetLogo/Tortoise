@@ -996,11 +996,11 @@ Globals =
 
 TurtlesOwn =
   vars: []
-  init: (n) -> @vars = (0 for x in [0..n-1])
+  init: (n) -> @vars = (0 for x in [0...n])
 
 PatchesOwn =
   vars: []
-  init: (n) -> @vars = (0 for x in [0..n-1])
+  init: (n) -> @vars = (0 for x in [0...n])
 
 # like api.Dump. will need more cases. for now at least knows
 # about lists.
