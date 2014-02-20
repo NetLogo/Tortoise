@@ -2,6 +2,9 @@
 //   test-only org.nlogo.tortoise.TestReporters
 // and `tr Lists Strings` is short for
 //   test-only org.nlogo.tortoise.TestReporters -- -n "Lists Strings"
+// where -n tells ScalaTest to look for the given Tag names.
+// you can run individual tests too with e.g.:
+//   tr Numbers::Sqrt1 Numbers::Sqrt2
 
 val tr = inputKey[Unit]("org.nlogo.tortoise.TestReporters")
 val tc = inputKey[Unit]("org.nlogo.tortoise.TestCommands")
