@@ -3,13 +3,13 @@
 package org.nlogo.tortoise
 
 import org.scalatest.FunSuite
-import rhino.{ Rhino => MRhino }
+import rhino.Rhino
 
 class TestEngineType extends FunSuite {
 
   test("engine name") {
     assertResult("Mozilla Rhino") {
-      (new MRhino).engine.getFactory.getEngineName
+      (new Rhino).engine.getFactory.getEngineName
     }
   }
 
