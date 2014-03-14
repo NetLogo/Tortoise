@@ -20,6 +20,8 @@ scalacOptions ++=
   "-deprecation -unchecked -feature -Xcheckinit -encoding us-ascii -target:jvm-1.7 -Xlint -Xfatal-warnings"
   .split(" ").toSeq
 
+resourceDirectory in Test := baseDirectory.value / "resources" / "test"
+
 // show test failures again at end, after all tests complete.
 // T gives truncated stack traces; change to G if you need full.
 testOptions in Test += Tests.Argument("-oT")
