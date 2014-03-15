@@ -132,9 +132,7 @@ class TestBasics extends DockingSuite {
     testCommand("resize-world -2 2 -2 2")
     testCommand("resize-world -1 1 -1 1")
     testCommand("resize-world -5 5 -5 5")
-    testCommand("resize-world -20 20 -20 20")
-    testCommand("resize-world -25 25 -25 25")
-    testCommand("resize-world 25 -25 25 -25")
+    testCommand("resize-world 5 -5 5 -5")
     testCommand("resize-world 1 3 1 3")
     testCommand("resize-world 0 2 0 -2")
   }
