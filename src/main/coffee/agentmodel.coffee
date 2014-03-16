@@ -15,7 +15,10 @@ class AgentModel
 
   update: (modelUpdate) -> # boolean
     anyUpdates = false
-    for turtleId, varUpdates of modelUpdate.turtles
+    # the three 'when varUpdates' checks below only seem to be
+    # necessary on Nashorn, which apparently has trouble iterating
+    # over objects where the keys are numbers - ST 3/16/14
+    for turtleId, varUpdates of modelUpdate.turtles when varUpdates
       anyUpdates = true
       if varUpdates == null || varUpdates['WHO'] == -1  # old and new death formats
         delete @turtles[turtleId]
@@ -24,12 +27,12 @@ class AgentModel
         if not t?
           t = @turtles[turtleId] = {}
         mergeObjectInto(varUpdates, t)
-    for patchId, varUpdates of modelUpdate.patches
+    for patchId, varUpdates of modelUpdate.patches when varUpdates
       anyUpdates = true
       p = @patches[patchId]
       p ?= @patches[patchId] = {}
       mergeObjectInto(varUpdates, p)
-    for linkId, varUpdates of modelUpdate.links
+    for linkId, varUpdates of modelUpdate.links when varUpdates
       anyUpdates = true
       if varUpdates == null || varUpdates['WHO'] == -1
         delete @links[linkId]

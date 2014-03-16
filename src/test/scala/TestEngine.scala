@@ -26,4 +26,13 @@ class TestEngine extends FunSuite {
     }
   }
 
+  test("JSON parsing isn't borked for integer keys") {
+    val rhino = new Rhino
+    val test = """[{"0":{"X":0},"2":{"X":0}}]"""
+    val escaped = test.replaceAll("\"", "\\\\\"")
+    assertResult(test) {
+      rhino.eval(s"""JSON.stringify(Denuller.denull(JSON.parse("$escaped")))""")
+    }
+  }
+
 }

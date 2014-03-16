@@ -57,3 +57,20 @@ unless StrictMath?
   # For functions that are not "close enough," or that don't exist in the browser, manually define them here!
   StrictMath.toRadians = (degrees) -> degrees * Math.PI / 180
   StrictMath.toDegrees = (radians) -> radians * 180 / Math.PI
+
+# used to work around Nashorn bug where JSON.parse on objects with
+# integer keys sometimes invents nonexistent entries with null values
+Denuller =
+  denull: (x) ->
+    if typeIsArray(x)
+      @denull(y) for y in x
+    else if x is null
+      x
+    else if typeof(x) is "object"
+      result = {}
+      for key, value of x
+        if isNaN(key) or value != null
+          result[key] = @denull(value)
+      result
+    else
+      x
