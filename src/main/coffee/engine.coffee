@@ -957,9 +957,13 @@ Prims =
 
   sort: (xs) -> xs.sort()
   removeDuplicates: (xs) ->
-    result = {}
-    result[xs[key]] = xs[key] for key in [0...xs.length]
-    value for key, value of result
+    result = []
+    seen = {}
+    for x in xs
+      if not seen[x]?
+        seen[x] = x
+        result.push(x)
+    result
   outputPrint: (x) ->
     println(Dump(x))
   patchSet: (inputs...) ->
