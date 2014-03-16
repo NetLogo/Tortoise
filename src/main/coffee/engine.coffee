@@ -26,7 +26,6 @@ collectUpdates = ->
 
 # gross hack - ST 1/25/13
 died = (agent) ->
-  update = patches: {}, turtles: {}, links: {}
   if agent instanceof Turtle
     Updates[0].turtles[agent.id] = WHO: -1
   else if agent instanceof Link
@@ -45,8 +44,8 @@ updated = (obj, vars...) ->
     agents = update.links
   agentUpdate = agents[obj.id] or {}
 
-# Receiving updates for a turtle that's about to die means the turtle was
-# reborn, so we revive it in the update - BH 1/13/2014
+  # Receiving updates for a turtle that's about to die means the turtle was
+  # reborn, so we revive it in the update - BH 1/13/2014
   if agentUpdate['WHO'] < 0
     delete agentUpdate['WHO']
 
@@ -57,7 +56,7 @@ updated = (obj, vars...) ->
   # something. For variables that need some kind of accessor, make the variable
   # that has the NetLogo name refer to the same thing that the NetLogo variable
   # does and make a different variable that refers to the thing you want in js.
-  # For example, turtle.breed should refer to the breed name and 
+  # For example, turtle.breed should refer to the breed name and
   # turtle._breed should point to the actual breed object.
   # BH 1/13/2014
   for v in vars

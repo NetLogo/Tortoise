@@ -53,7 +53,7 @@ libraryDependencies ++= Seq(
   "org.scalacheck" %% "scalacheck" % "1.11.3" % "test",
   "org.scalatest" %% "scalatest" % "2.1.0" % "test",
   "org.skyscreamer" % "jsonassert" % "1.1.0" % "test",
-  // Bring is headless test code/framework for our tests
+  // Bring in headless test code/framework for our tests
   "org.nlogo" % "netlogoheadless" % nlDependencyVersion % "test" classifier "tests"
 )
 

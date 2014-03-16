@@ -7,6 +7,7 @@
 ## on Rhino/Nashorn, the goal is precisely bit-for-bit identical
 ## results as JVM NetLogo.  elsewhere, "close enough" is close enough
 ##
+
 # from: http://coffeescriptcookbook.com/chapters/arrays/filtering-arrays
 # this works with the coffee command, but is absent in Rhino.
 unless Array::filter
@@ -41,14 +42,13 @@ unless Random?
   Random.nextDouble = -> Math.random()
 
 # For divergences between Rhino and browsers, clone and extend!
-Cloner = {
+Cloner =
   clone: (obj) ->
     return obj if obj is null or typeof (obj) isnt "object"
     temp = new obj.constructor()
     for key in Object.getOwnPropertyNames(obj)
       temp[key] = @clone(obj[key])
     temp
-}
 
 # on Rhino, we use the JVM StrictMath stuff so results are identical
 # with regular NetLogo. in browser, be satisfied with "close enough"
