@@ -6,20 +6,22 @@ import org.nlogo.{ api, headless, nvm },
   nvm.FrontEndInterface.{ ProceduresMap, NoProcedures },
   headless.lang, lang._,
   org.nlogo.util.Femto,
-  org.scalatest.Assertions._
+  org.scalatest.Assertions._,
+  org.nlogo.tortoise.rhino.Rhino
 
 trait TortoiseFinder extends lang.Finder {
+  val rhino = new Rhino
   def freebies: Map[String, String]
   override def shouldRun(t: LanguageTest, mode: TestMode) =
     mode == NormalMode && super.shouldRun(t, mode)
   override def withFixture[T](name: String)(body: AbstractFixture => T): T =
     freebies.get(name.stripSuffix(" (NormalMode)")) match {
       case None =>
-        body(new TortoiseFixture(name))
+        body(new TortoiseFixture(name, rhino))
       case Some("TOO SLOW") =>
         cancel("TOO SLOW")
       case Some(excuse) =>
-        try body(new TortoiseFixture(name))
+        try body(new TortoiseFixture(name, rhino))
         catch {
           case _: org.scalatest.exceptions.TestCanceledException =>
             // ignore; we'll hit the fail() below
@@ -93,11 +95,10 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
   )
 }
 
-class TortoiseFixture(name: String)
+class TortoiseFixture(name: String, rhino: Rhino)
 extends AbstractFixture {
 
   override def defaultDimensions = api.WorldDimensions.square(5)
-  val rhino = new org.nlogo.tortoise.rhino.Rhino
   var program: api.Program = api.Program.empty
   var procs: ProceduresMap = NoProcedures
 

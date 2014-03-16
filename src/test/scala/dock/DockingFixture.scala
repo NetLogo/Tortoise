@@ -16,17 +16,17 @@ import collection.JavaConverters._
 import json.JSONSerializer
 
 trait DockingSuite extends org.scalatest.fixture.FunSuite {
+  val rhino = new Rhino
   type FixtureParam = DockingFixture
   override def withFixture(test: OneArgTest) = {
-    val fixture = new DockingFixture(test.name)
+    val fixture = new DockingFixture(test.name, rhino)
     try withFixture(test.toNoArgTest(fixture))
     finally fixture.workspace.dispose()
   }
 }
 
-class DockingFixture(name: String) extends Fixture(name) {
+class DockingFixture(name: String, rhino: Rhino) extends Fixture(name) {
 
-  val rhino = new Rhino
   def mirrorables: Iterable[mirror.Mirrorable] =
     mirror.Mirrorables.allMirrorables(workspace.world)
   var state: mirror.Mirroring.State = Map()
