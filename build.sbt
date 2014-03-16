@@ -32,7 +32,7 @@ ivyLoggingLevel := UpdateLogging.Quiet
 // we're not cross-building for different Scala versions
 crossPaths := false
 
-val nlDependencyVersion = "5.1.0-e5b375c"
+val nlDependencyVersion = "5.1.0-36088e5"
 
 resolvers += bintray.Opts.resolver.repo("netlogo", "NetLogoHeadless")
 

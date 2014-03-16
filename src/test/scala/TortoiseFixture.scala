@@ -49,7 +49,7 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
     "Agentsets::RemoveDuplicates" -> "???",
     "Breeds::TestIsBreed" -> "???",
     "ComparingAgents::ComparingPatches" -> "???",
-    "DeadTurtles::DeadTurtles9" -> "???",
+    "Death::DeadTurtles9" -> "???",
     "Equality::two-dead-turtles-are-equal" -> "???",
     "Equality::dead-turtle-equals-nobody" -> "???",
     "Equality::two-dead-links-are-equal" -> "???",
@@ -73,6 +73,8 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
     "Turtles::Turtles7" -> "colors don't wrap to [0,140)",
     "Links::Links2" -> "colors don't wrap to [0,140)",
     // significant
+    "Death::DeadTurtles10" -> "converting agent to string lacks dead check",
+    "Death::DeadLinks1" -> "converting agent to string lacks dead check",
     "Agentsets::Agentsets4" -> "TOO SLOW",
     "Links::LinksInitBlock" -> "TOO SLOW",
     "Random::RandomNOfIsFairForTurtles" -> "TOO SLOW",
