@@ -133,8 +133,8 @@ class DockingFixture(name: String) extends Fixture(name) {
       //println(expectedJson)
       //println(actualJson)
       assertResult(expectedOutput)(actualOutput)
-      rhino.eval("expectedUpdates = " + expectedJson)
-      rhino.eval("actualUpdates = " + actualJson)
+      rhino.eval(s"""expectedUpdates = JSON.parse("${expectedJson.replaceAll("\"", "\\\\\"")}")""")
+      rhino.eval(s"""actualUpdates   = JSON.parse("${actualJson.replaceAll("\"", "\\\\\"")}")""")
       rhino.eval("expectedModel.updates(expectedUpdates)")
       rhino.eval("actualModel.updates(actualUpdates)")
       val expectedModel = rhino.eval("JSON.stringify(expectedModel)").asInstanceOf[String]
