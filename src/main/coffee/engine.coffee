@@ -724,6 +724,8 @@ AgentSet =
     return
   # can't call it `with`, that's taken in JavaScript. so is `filter` - ST 2/19/14
   agentFilter: (agents, f) -> new Agents(a for a in agents.items when @askAgent(a, f))
+  # min/MaxOneOf are copy/pasted from each other.  hard to say whether
+  # DRY-ing them would be worth the possible performance impact. - ST 3/17/14
   maxOneOf: (agents, f) ->
    winningValue = -Number.MAX_VALUE
    winners = []
