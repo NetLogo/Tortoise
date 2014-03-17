@@ -210,6 +210,24 @@ class TestVantsModel extends DockingSuite with SlowTest {
   }
 }
 
+class TestVirusModel extends DockingSuite with SlowTest {
+  test("Virus") { implicit fixture => import fixture._
+    open("models/Sample Models/Biology/Virus.nlogo")
+    testCommand("setup")
+    for (_ <- 1 to 50)
+      testCommand("go")
+  }
+}
+
+class TestFollowerModel extends DockingSuite with SlowTest {
+  test("Follower") { implicit fixture => import fixture._
+    open("models/Sample Models/Art/Follower.nlogo")
+    testCommand("setup")
+    for (_ <- 1 to 25)
+      testCommand("go")
+  }
+}
+
 class TestLinkLatticeModel extends DockingSuite with SlowTest {
   test("Link Lattice Example") { implicit fixture => import fixture._
     open("models/Code Examples/Link Lattice Example.nlogo")
