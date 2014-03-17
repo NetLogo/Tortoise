@@ -515,7 +515,6 @@ class World
   turtles: () -> new Agents(_turtles, Breeds.get("TURTLES"))
   turtlesOfBreed: (breedName) ->
     breed = Breeds.get(breedName)
-    #new Agents((_turtles.filter (t) -> t.breed == breed ), breed)
     new Agents(breed.members, breed)
   patches: -> new Agents(_patches)
   resetTimer: ->
@@ -678,6 +677,11 @@ class World
     @targetAgent = null
     @updatePerspective()
 
+# Some things are in AgentSet, others in Prims.  The distinction seems
+# arbitrary/confusing.  May we should put *everything* in Prims, and
+# Agents can be private.  Prims could/would/should be the
+# compiler/runtime interface.  Dunno what's best.
+
 AgentSet =
   count: (x) -> x.items.length
   any: (x) -> x.items.length > 0
@@ -718,7 +722,7 @@ AgentSet =
     while (iter.hasNext())
       a = iter.next()
       @askAgent(a, f)
-    # If an asker indirectly commits suicide, the exception should propogate.  FD 11/1/2013
+    # If an asker indirectly commits suicide, the exception should propagate.  FD 11/1/2013
     if(@_self.id && @_self.id == -1)
       throw new DeathInterrupt
     return
@@ -776,10 +780,6 @@ AgentSet =
             i += 1
           result
     )
-  # I'm putting some things in Agents, and some in Prims
-  # I did that on purpose to show how arbitrary/confusing this seems.
-  # May we should put *everything* in Prims, and Agents can be private.
-  # Prims could/would/should be the compiler/runtime interface.
   turtlesOn: (agentsOrAgent) ->
     if(agentsOrAgent.items)
       agents = agentsOrAgent.items
