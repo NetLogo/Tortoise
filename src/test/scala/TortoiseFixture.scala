@@ -75,6 +75,7 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
     "Turtles::Turtles7" -> "colors don't wrap to [0,140)",
     "Links::Links2" -> "colors don't wrap to [0,140)",
     // significant
+    "Interaction::Interaction3b" -> "correct answer requires optimizer to be on",
     "Death::DeadTurtles10" -> "converting agent to string lacks dead check",
     "Death::DeadLinks1" -> "converting agent to string lacks dead check",
     "Agentsets::Agentsets4" -> "TOO SLOW",
