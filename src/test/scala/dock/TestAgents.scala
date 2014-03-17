@@ -348,11 +348,10 @@ class TestAgents extends DockingSuite with SlowTest {
     testCommand("""crt 1 [ set shape "TURTLE" output-print shape ]""")
   }
 
-  // TODO currently failing, haven't figured out why yet - ST 9/20/13
-  // test("turtle creation + procedure call") { implicit fixture => import fixture._
-  //   declare("to foo cro 2 end")
-  //   testCommand("foo")
-  // }
+  test("turtle creation + procedure call") { implicit fixture => import fixture._
+    declare("to foo cro 2 end")
+    testCommand("foo")
+  }
 
   test("patch-set construction") { implicit fixture => import fixture._
     declare("globals [p]", WorldDimensions.square(2))
