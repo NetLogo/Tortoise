@@ -2,7 +2,7 @@
 
 package org.nlogo.tortoise
 
-import rhino.{ Rhino => MRhino }
+import rhino.Rhino
 import org.scalatest.FunSuite
 
 // just basic smoke tests that basic Tortoise engine functionality is there,
@@ -12,13 +12,13 @@ class TestEngine extends FunSuite {
 
   test("can eval a number literal") {
     assertResult(Double.box(2)) {
-      val rhino = new MRhino
+      val rhino = new Rhino
       rhino.eval("2.0")
     }
   }
 
   test("empty world") {
-    val rhino = new MRhino
+    val rhino = new Rhino
     rhino.eval("world = new World(-1, 1, -1, 1)")
     rhino.eval("world.clearAll()")
     assertResult(Double.box(9)) {

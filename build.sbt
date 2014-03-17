@@ -20,13 +20,19 @@ scalacOptions ++=
   "-deprecation -unchecked -feature -Xcheckinit -encoding us-ascii -target:jvm-1.7 -Xlint -Xfatal-warnings"
   .split(" ").toSeq
 
+resourceDirectory in Test := baseDirectory.value / "resources" / "test"
+
+// show test failures again at end, after all tests complete.
+// T gives truncated stack traces; change to G if you need full.
+testOptions in Test += Tests.Argument("-oT")
+
 // only log problems plz
 ivyLoggingLevel := UpdateLogging.Quiet
 
 // we're not cross-building for different Scala versions
 crossPaths := false
 
-val nlDependencyVersion = "5.1.0-e5b375c"
+val nlDependencyVersion = "5.1.0-36088e5"
 
 resolvers += bintray.Opts.resolver.repo("netlogo", "NetLogoHeadless")
 
@@ -44,10 +50,10 @@ libraryDependencies ++= Seq(
   "org.nlogo" % "netlogoheadless" % nlDependencyVersion,
   "org.json4s" %% "json4s-native" % "3.1.0",
   "org.webjars" % "json2" % "20110223",
-  "org.scalacheck" %% "scalacheck" % "1.10.1" % "test",
-  "org.scalatest" %% "scalatest" % "2.0" % "test",
+  "org.scalacheck" %% "scalacheck" % "1.11.3" % "test",
+  "org.scalatest" %% "scalatest" % "2.1.0" % "test",
   "org.skyscreamer" % "jsonassert" % "1.1.0" % "test",
-  // Bring is headless test code/framework for our tests
+  // Bring in headless test code/framework for our tests
   "org.nlogo" % "netlogoheadless" % nlDependencyVersion % "test" classifier "tests"
 )
 
@@ -60,8 +66,6 @@ bintray.Keys.bintrayOrganization in bintray.Keys.bintray := Some("netlogo")
 logBuffered in testOnly in Test := false
 
 FastMediumSlow.settings
-
-LanguageTests.settings
 
 Coffee.settings
 

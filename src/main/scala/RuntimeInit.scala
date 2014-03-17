@@ -23,10 +23,11 @@ class RuntimeInit(
     val turtleShapesJson = shapeList(turtleShapeList)
     val linkShapesJson = shapeList(linkShapeList)
     import dimensions._
-    globals + turtlesOwn + patchesOwn + breeds +
+    globals + turtlesOwn + patchesOwn +
       s"world = new World($minPxcor, $maxPxcor, $minPycor, $maxPycor, $patchSize, " +
       s"$wrappingAllowedInY, $wrappingAllowedInX, $turtleShapesJson, $linkShapesJson, " +
-      s"${program.interfaceGlobals.size});\n"
+      s"${program.interfaceGlobals.size});\n" +
+      breeds
   }
 
   // if there are any globals,

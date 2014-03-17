@@ -26,7 +26,6 @@ collectUpdates = ->
 
 # gross hack - ST 1/25/13
 died = (agent) ->
-  update = patches: {}, turtles: {}, links: {}
   if agent instanceof Turtle
     Updates[0].turtles[agent.id] = WHO: -1
   else if agent instanceof Link
@@ -45,8 +44,8 @@ updated = (obj, vars...) ->
     agents = update.links
   agentUpdate = agents[obj.id] or {}
 
-# Receiving updates for a turtle that's about to die means the turtle was
-# reborn, so we revive it in the update - BH 1/13/2014
+  # Receiving updates for a turtle that's about to die means the turtle was
+  # reborn, so we revive it in the update - BH 1/13/2014
   if agentUpdate['WHO'] < 0
     delete agentUpdate['WHO']
 
@@ -57,7 +56,7 @@ updated = (obj, vars...) ->
   # something. For variables that need some kind of accessor, make the variable
   # that has the NetLogo name refer to the same thing that the NetLogo variable
   # does and make a different variable that refers to the thing you want in js.
-  # For example, turtle.breed should refer to the breed name and 
+  # For example, turtle.breed should refer to the breed name and
   # turtle._breed should point to the actual breed object.
   # BH 1/13/2014
   for v in vars
@@ -470,6 +469,8 @@ class World
   _timer = Date.now()
   _patchesAllBlack = true
   constructor: (@minPxcor, @maxPxcor, @minPycor, @maxPycor, @patchSize, @wrappingAllowedInY, @wrappingAllowedInX, turtleShapeList, linkShapeList, @interfaceGlobalCount) ->
+    Breeds.reset()
+    AgentSet.reset()
     @perspective = 0
     @targetAgent = null
     collectUpdates()
@@ -687,6 +688,9 @@ AgentSet =
     true
   _self: 0
   _myself: 0
+  reset: ->
+    @_self = 0
+    @_myself = 0
   self: -> @_self
   myself: -> if @_myself != 0 then @_myself else throw new NetLogoException("There is no agent for MYSELF to refer to.")
   askAgent: (a, f) ->
@@ -986,9 +990,13 @@ Prims =
 
   sort: (xs) -> xs.sort()
   removeDuplicates: (xs) ->
-    result = {}
-    result[xs[key]] = xs[key] for key in [0...xs.length]
-    value for key, value of result
+    result = []
+    seen = {}
+    for x in xs
+      if not seen[x]?
+        seen[x] = x
+        result.push(x)
+    result
   outputPrint: (x) ->
     println(Dump(x))
   patchSet: (inputs...) ->
@@ -1074,10 +1082,12 @@ class Breed
     @members.splice(@members.indexOf(agent), 1)
 
 Breeds = {
-  breeds: {
+  defaultBreeds: -> {
     TURTLES: new Breed("TURTLES", "turtle", "default"),
     LINKS: new Breed("LINKS", "link", "default")
   }
+  breeds: {}
+  reset: -> @breeds = @defaultBreeds()
   add: (name, singular) ->
     @breeds[name] = new Breed(name, singular)
   get: (name) ->
