@@ -469,6 +469,8 @@ class World
   _timer = Date.now()
   _patchesAllBlack = true
   constructor: (@minPxcor, @maxPxcor, @minPycor, @maxPycor, @patchSize, @wrappingAllowedInY, @wrappingAllowedInX, turtleShapeList, linkShapeList, @interfaceGlobalCount) ->
+    Breeds.reset()
+    AgentSet.reset()
     @perspective = 0
     @targetAgent = null
     collectUpdates()
@@ -686,6 +688,9 @@ AgentSet =
     true
   _self: 0
   _myself: 0
+  reset: ->
+    @_self = 0
+    @_myself = 0
   self: -> @_self
   myself: -> if @_myself != 0 then @_myself else throw new NetLogoException("There is no agent for MYSELF to refer to.")
   askAgent: (a, f) ->
@@ -1049,10 +1054,12 @@ class Breed
     @members.splice(@members.indexOf(agent), 1)
 
 Breeds = {
-  breeds: {
+  defaultBreeds: -> {
     TURTLES: new Breed("TURTLES", "turtle", "default"),
     LINKS: new Breed("LINKS", "link", "default")
   }
+  breeds: {}
+  reset: -> @breeds = @defaultBreeds()
   add: (name, singular) ->
     @breeds[name] = new Breed(name, singular)
   get: (name) ->
