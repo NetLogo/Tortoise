@@ -8,7 +8,7 @@ import org.nlogo.util.SlowTest
 
 class TestTopologies extends DockingSuite with SlowTest {
 
-  val default = WorldDimensions(-8, 9, -10, 11, 12.0)
+  val default = WorldDimensions(-8, 9, -10, 11)
 
   def inAllTopologies(name: String, decls: String = "", baseDim: WorldDimensions = default)(fn: DockingFixture => Unit) {
     case class Topo(name: String, wrapX: Boolean, wrapY: Boolean) {
