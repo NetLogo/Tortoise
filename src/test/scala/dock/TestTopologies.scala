@@ -136,7 +136,7 @@ class TestTopologies extends DockingSuite with SlowTest {
 
   test("box layout spring") {
     implicit fixture => import fixture._
-    declare("", box)
+    declare("", default.copy(wrappingAllowedInX = false, wrappingAllowedInY = false))
     testCommand("crt 10 [ setxy random-xcor random-ycor ]")
     testCommand("ask turtles [ create-links-with other turtles ]")
     testCommand("repeat 5 [ layout-spring turtles links .1 .2 .3 ]")
