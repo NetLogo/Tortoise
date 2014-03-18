@@ -7,13 +7,30 @@ import org.nlogo.api, api.WorldDimensions
 import org.nlogo.util.SlowTest
 
 class TestTopologies extends DockingSuite with SlowTest {
-  def torus : WorldDimensions = new WorldDimensions(-8, 9, -10, 11, 12.0, true, true)
-  def vertcyl : WorldDimensions = new WorldDimensions(-8, 9, -10, 11, 12.0, false, true)
-  def horzcyl : WorldDimensions = new WorldDimensions(-8, 9, -10, 11, 12.0, true, false)
-  def box : WorldDimensions = new WorldDimensions(-8, 9, -10, 11, 12.0, false, false)
 
-  def testDistance(world: WorldDimensions)(implicit fixture: DockingFixture) : Unit = { import fixture._
-    declare("", world)
+  val default = WorldDimensions(-8, 9, -10, 11, 12.0)
+
+  def inAllTopologies(name: String, decls: String = "", baseDim: WorldDimensions = default)(fn: DockingFixture => Unit) {
+    case class Topo(name: String, wrapX: Boolean, wrapY: Boolean) {
+      val dim = baseDim.copy(wrappingAllowedInX = wrapX, wrappingAllowedInY = wrapY)
+    }
+    val topos = Seq(
+      Topo("torus", true, true),
+      Topo("vertcyl", true, false),
+      Topo("horzcyl", false, true),
+      Topo("box", false, false)
+    )
+    for(topo <- topos)
+      test(s"$name in ${topo.name}") { fixture =>
+        fixture.declare(decls, topo.dim)
+        fn(fixture)
+      }
+  }
+
+  ///
+
+  inAllTopologies("distance") {
+    implicit fixture => import fixture._
     testCommand("cro 8")
     testCommand("ask turtles [ fd 5 ]")
     testCommand("ask turtles [ output-print distance turtle 0 ]")
@@ -25,13 +42,9 @@ class TestTopologies extends DockingSuite with SlowTest {
     testCommand("ask turtles [ output-print distance patch 0 0 ]")
     testCommand("ask patches [ output-print distance turtle 0 ]")
   }
-  test("torus distance") { implicit fixture => import fixture._ ; testDistance(torus) }
-  test("box distance") { implicit fixture => import fixture._ ; testDistance(box) }
-  test("vertcyl distance") { implicit fixture => import fixture._ ; testDistance(vertcyl) }
-  test("horzcyl distance") { implicit fixture => import fixture._ ; testDistance(horzcyl) }
 
-  def testDistancexy(world: WorldDimensions)(implicit fixture: DockingFixture) : Unit = { import fixture._
-    declare("", world)
+  inAllTopologies("distancexy") {
+    implicit fixture => import fixture._
     testCommand("cro 8")
     testCommand("ask turtles [ fd 1 ]")
     testCommand("ask turtles [ output-print distancexy 1.2 2.3 ]")
@@ -39,38 +52,26 @@ class TestTopologies extends DockingSuite with SlowTest {
     testCommand("ask turtles [ fd 5 ]")
     testCommand("ask turtles [ output-print distancexy -2.2 -5.3 ]")
   }
-  test("torus distancexy") { implicit fixture => import fixture._ ; testDistancexy(torus) }
-  test("box distancexy") { implicit fixture => import fixture._ ; testDistancexy(box) }
-  test("vertcyl distancexy") { implicit fixture => import fixture._ ; testDistancexy(vertcyl) }
-  test("horzcyl distancexy") { implicit fixture => import fixture._ ; testDistancexy(horzcyl) }
 
-  def testSetxyWraps(world: WorldDimensions)(implicit fixture: DockingFixture) : Unit = { import fixture._
-    declare("", world)
+  inAllTopologies("setxy wraps") {
+    implicit fixture => import fixture._
     testCommand("crt 20")
-    for(i <- 0 to 19)
+    for (i <- 0 to 19)
       testCommand(s"ask turtle $i [ setxy (random 30 - 15) (random 30 - 15) ]")
-    for(i <- 0 to 19)
+    for (i <- 0 to 19)
       testCommand(s"ask turtle $i [ set xcor (random 30 - 15) ]")
-    for(i <- 0 to 19)
+    for (i <- 0 to 19)
       testCommand(s"ask turtle $i [ set xcor random 30 - 15 ]")
   }
-  test("torus setxy wraps") { implicit fixture => import fixture._ ; testSetxyWraps(torus) }
-  test("box setxy wraps") { implicit fixture => import fixture._ ; testSetxyWraps(box) }
-  test("vertcyl setxy wraps") { implicit fixture => import fixture._ ; testSetxyWraps(vertcyl) }
-  test("horzcyl setxy wraps") { implicit fixture => import fixture._ ; testSetxyWraps(horzcyl) }
 
-  def testEdgeWrapping(world: WorldDimensions)(implicit fixture: DockingFixture) : Unit = { import fixture._
-    declare("", world)
+  inAllTopologies("edge wrapping") {
+    implicit fixture => import fixture._
     testCommand("cro 20")
     testCommand("ask turtles [ fd 14 ]")
   }
-  test("torus edge wrapping") { implicit fixture => import fixture._ ; testEdgeWrapping(torus) }
-  test("box edge wrapping") { implicit fixture => import fixture._ ; testEdgeWrapping(box) }
-  test("vertcyl edge wrapping") { implicit fixture => import fixture._ ; testEdgeWrapping(vertcyl) }
-  test("horzcyl edge wrapping") { implicit fixture => import fixture._ ; testEdgeWrapping(horzcyl) }
 
-  def testDiffuse(world: WorldDimensions)(implicit fixture: DockingFixture) : Unit = { import fixture._
-    declare("patches-own [ chemical ]", world)
+  inAllTopologies("diffuse", decls = "patches-own [chemical]") {
+    implicit fixture => import fixture._
     testCommand("ask patches [ set chemical (random 168) / ((random 24) + 1) ]")
     compare("[ chemical ] of patches")
     testCommand("diffuse chemical 0.6")
@@ -82,42 +83,29 @@ class TestTopologies extends DockingSuite with SlowTest {
     testCommand("diffuse chemical .99")
     compare("[ chemical ] of patches")
   }
-  test("torus diffuse") { implicit fixture => import fixture._ ; testDiffuse(torus) }
-  test("box diffuse") { implicit fixture => import fixture._ ; testDiffuse(box) }
-  test("vertcyl diffuse") { implicit fixture => import fixture._ ; testDiffuse(vertcyl) }
-  test("horzcyl diffuse") { implicit fixture => import fixture._ ; testDiffuse(horzcyl) }
 
-  def testNeighbors(world: WorldDimensions)(implicit fixture: DockingFixture) : Unit = { import fixture._
-    declare("", world)
+  inAllTopologies("neighbors") {
+    implicit fixture => import fixture._
     testCommand("""ask patches [ ask neighbors [ output-print self ]]""")
     testCommand("""ask patches [ ask neighbors4 [ output-print self ]]""")
     testCommand("ask patches [ sprout 1 ]")
     testCommand("""ask turtles [ ask neighbors4 [ output-print self ]]""")
   }
-  test("torus neighbors") { implicit fixture => import fixture._ ; testNeighbors(torus) }
-  test("box neighbors") { implicit fixture => import fixture._ ; testNeighbors(box) }
-  test("vertcyl neighbors") { implicit fixture => import fixture._ ; testNeighbors(vertcyl) }
-  test("horzcyl neighbors") { implicit fixture => import fixture._ ; testNeighbors(horzcyl) }
 
-  def testFace(world: WorldDimensions)(implicit fixture: DockingFixture) : Unit = { import fixture._
-    declare("", world)
+  inAllTopologies("face", baseDim = WorldDimensions.square(4)) {
+    implicit fixture => import fixture._
     testCommand("ask patches [ sprout 1 ]")
-    for(i <- 1 to 80)
+    for (i <- 1 to 80)
       testCommand(s"ask turtles [ face turtle $i ]")
-    for(x <- -4 to 4)
-      for(y <- -4 to 4)
+    for (x <- -4 to 4)
+      for (y <- -4 to 4)
         testCommand(s"ask turtles [ face patch $x $y ]")
-    for(_ <- 0 to 10)
+    for (_ <- 0 to 10)
       testCommand("ask turtles [ facexy ((random 8) / ((random 8) + 1) - 4) ((random 8) / ((random 8) + 1) - 4) ]")
   }
 
-  test("torus face") { implicit fixture => import fixture._ ; testFace(WorldDimensions.square(4)) }
-  test("box face") { implicit fixture => import fixture._ ; testFace(new WorldDimensions(-4, 4, -4, 4, 12.0, false, false)) }
-  test("vertcyl face") { implicit fixture => import fixture._ ; testFace(new WorldDimensions(-4, 4, -4, 4, 12.0, false, true)) }
-  test("horzcyl face") { implicit fixture => import fixture._ ; testFace(new WorldDimensions(-4, 4, -4, 4, 12.0, true, false)) }
-
-  def testLinkWraps(world: WorldDimensions)(implicit fixture: DockingFixture) : Unit = { import fixture._
-    declare("", world)
+  inAllTopologies("link wraps", baseDim = WorldDimensions.square(4)) {
+    implicit fixture => import fixture._
     testCommand("ask patch 3 0 [ sprout 1 ]")
     testCommand("ask patch -3 0 [ sprout 1 ]")
     testCommand("ask patch 0 -3 [ sprout 1 ]")
@@ -127,40 +115,28 @@ class TestTopologies extends DockingSuite with SlowTest {
     testCommand("ask turtles [ set xcor xcor - 1 ]")
   }
 
-  test("torus link wraps") { implicit fixture => import fixture._ ; testLinkWraps(WorldDimensions.square(4)) }
-  test("box link wraps") { implicit fixture => import fixture._ ; testLinkWraps(new WorldDimensions(-4, 4, -4, 4, 12.0, false, false)) }
-  test("vertcyl link wraps") { implicit fixture => import fixture._ ; testLinkWraps(new WorldDimensions(-4, 4, -4, 4, 12.0, false, true)) }
-  test("horzcyl link wraps") { implicit fixture => import fixture._ ; testLinkWraps(new WorldDimensions(-4, 4, -4, 4, 12.0, true, false)) }
-
-  def testInRadius(world: WorldDimensions)(implicit fixture: DockingFixture) : Unit = { import fixture._
-    declare("", world)
+  inAllTopologies("in-radius", baseDim = WorldDimensions(-4, 3, -2, 6)) {
+    implicit fixture => import fixture._
     testCommand("crt 50 [ setxy random-xcor random-ycor ]")
     testCommand("ask turtles [ output-print [ who ] of turtles in-radius random 10 ]")
     testCommand("ask turtles [ output-print [ who ] of turtles in-radius random-float 17.3934 ]")
   }
 
-  test("torusinradius") { implicit fixture => import fixture._ ; testInRadius(WorldDimensions.square(3)) }
-  test("box in radius") { implicit fixture => import fixture._ ; testInRadius(new WorldDimensions(-4, 3, -2, 6, 12.0, false, false)) }
-  test("vertcyl in radius") { implicit fixture => import fixture._ ; testInRadius(new WorldDimensions(-4, 3, -2, 6, 12.0, false, true)) }
-  test("horzcyl in radius") { implicit fixture => import fixture._ ; testInRadius(new WorldDimensions(-4, 3, -2, 6, 12.0, true, false)) }
-
-  def testFloatingDistanceMove(world: WorldDimensions)(implicit fixture: DockingFixture) : Unit = { import fixture._
-    declare("", world)
+  inAllTopologies("distance move") {
+    implicit fixture => import fixture._
     testCommand("crt 50 [ setxy random-xcor random-ycor ]")
     testCommand("ask turtles [ create-link-with one-of other turtles ]")
-    for(_ <- 1 to 5) {
+    for (_ <- 1 to 5) {
       testCommand("ask turtles [ face one-of other turtles ]")
       testCommand("ask turtles [ fd 0.1 * distance one-of other turtles ]")
     }
   }
 
-  test("torus distance move") { implicit fixture => import fixture._ ; testFloatingDistanceMove(torus) }
-  test("box distance move") { implicit fixture => import fixture._ ; testFloatingDistanceMove(box) }
-  test("vertcyl distance move") { implicit fixture => import fixture._ ; testFloatingDistanceMove(vertcyl) }
-  test("horzcyl distance move") { implicit fixture => import fixture._ ; testFloatingDistanceMove(horzcyl) }
+  ///
 
-  def testLayoutSpring(world: WorldDimensions)(implicit fixture: DockingFixture) : Unit = { import fixture._
-    declare("", world)
+  test("box layout spring") {
+    implicit fixture => import fixture._
+    declare("", box)
     testCommand("crt 10 [ setxy random-xcor random-ycor ]")
     testCommand("ask turtles [ create-links-with other turtles ]")
     testCommand("repeat 5 [ layout-spring turtles links .1 .2 .3 ]")
@@ -169,5 +145,4 @@ class TestTopologies extends DockingSuite with SlowTest {
     testCommand("repeat 5 [ layout-spring turtles with [ ycor > 0 ] [ my-links ] of turtle 0 .1 .2 .3 ]")
   }
 
-  test("box layout spring") { implicit fixture => import fixture._ ; testLayoutSpring(box) }
 }
