@@ -17,7 +17,7 @@ class TestBreeds extends DockingSuite {
     testCommand("output-print count turtles")
   }
 
-  test("is breed") { implicit fixture => import fixture._
+  test("is breed", org.scalatest.Tag("foo")) { implicit fixture => import fixture._
     declare("""| breed [mice mouse]
                | breed [frogs frog]
                | globals [glob1]""".stripMargin)
