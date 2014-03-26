@@ -14,13 +14,13 @@ unless Array::filter
   Array::filter = (callback) ->
     element for element in this when callback(element)
 
-# Rhino has "println" already, Nashorn needs to borrow it from
-# System.out, V8 and browsers have "console.log". get it somehow!
+# Rhino has "println" already, Nashorn calls it "print",
+# V8 and browsers have "console.log". get it somehow!
 unless println?
   if console?
     println = console.log
   unless println?
-    println = java.lang.System.out.println
+    println = print
 
 # surprisingly difficult to ask if something is an array or not
 typeIsArray = (value) ->

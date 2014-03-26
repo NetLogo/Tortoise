@@ -105,12 +105,12 @@ class DockingFixture(name: String, rhino: Rhino) extends Fixture(name) {
       try {
         (false, runJS(compiledJS))
       } catch {
-        case e: Exception =>
+        case e: javax.script.ScriptException =>
           e.getCause match {
-            case inner: sun.org.mozilla.javascript.internal.JavaScriptException =>
-              inner.getValue match {
-                case obj: sun.org.mozilla.javascript.internal.NativeObject =>
-                  (true, (obj.get("message"), ""))
+            case inner: jdk.nashorn.internal.runtime.ECMAException =>
+              inner.thrown match {
+                case obj: jdk.nashorn.internal.runtime.ScriptObject =>
+                  (true, (obj.get("message").toString, ""))
                 case _ =>
                   if (!exceptionOccurredInHeadless)
                     e.printStackTrace()

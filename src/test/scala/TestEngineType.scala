@@ -8,7 +8,7 @@ import rhino.Rhino
 class TestEngineType extends FunSuite {
 
   test("engine name") {
-    assertResult("Mozilla Rhino") {
+    assertResult("Oracle Nashorn") {
       (new Rhino).engine.getFactory.getEngineName
     }
   }
