@@ -49,7 +49,6 @@ libraryDependencies ++= Seq(
 libraryDependencies ++= Seq(
   "org.nlogo" % "netlogoheadless" % nlDependencyVersion,
   "org.json4s" %% "json4s-native" % "3.1.0",
-  "org.webjars" % "json2" % "20110223",
   "org.scalacheck" %% "scalacheck" % "1.11.3" % "test",
   "org.scalatest" %% "scalatest" % "2.1.1" % "test",
   "org.skyscreamer" % "jsonassert" % "1.1.0" % "test",

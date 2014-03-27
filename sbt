@@ -4,11 +4,11 @@ CURR_DIR=`dirname $0`
 if [ `uname -s` = Linux ] ; then
   # use JAVA_HOME from Travis if there is one
   if [ -z "$TRAVIS" ] ; then
-    export JAVA_HOME=/usr/lib/jvm/java-7-sun
+    export JAVA_HOME=/usr/lib/jvm/java-8-sun
   fi
 else
   if [ `uname -s` = Darwin ] ; then
-    export JAVA_HOME=`/usr/libexec/java_home -F -v1.7*`
+    export JAVA_HOME=`/usr/libexec/java_home -F -v1.8*`
   else
     export JAVA_HOME=/usr
   fi
@@ -20,7 +20,7 @@ JAVA=$JAVA_HOME/bin/java
 # Most of these settings are fine for everyone
 XSS=-Xss2m
 XMX=-Xmx2048m
-XX=-XX:MaxPermSize=512m
+XX=
 ENCODING=-Dfile.encoding=UTF-8
 HEADLESS=-Djava.awt.headless=true
 BOOT=xsbt.boot.Boot
