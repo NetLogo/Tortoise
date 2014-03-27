@@ -1,6 +1,6 @@
 // (C) Uri Wilensky. https://github.com/NetLogo/NetLogo
 
-package org.nlogo.tortoise.rhino
+package org.nlogo.tortoise.nashorn
 
 import
   org.nlogo.api,
@@ -13,7 +13,7 @@ import java.io.{ PrintWriter, StringWriter }
 // collects all the lines of output and JSON updates generated.  The latter runs a compiled reporter
 // and returns a single result value.
 
-class Rhino {
+class Nashorn {
 
   // at some point we'll need to have separate instances instead of a singleton - ST 1/18/13
   // the (null) became necessary when we upgraded to sbt 0.13. I don't understand why.
@@ -46,15 +46,15 @@ class Rhino {
   }
 
   def eval(script: String): AnyRef =
-    fromRhino(engine.eval(script))
+    fromNashorn(engine.eval(script))
 
-  // translate from Rhino values to NetLogo values
-  def fromRhino(x: AnyRef): AnyRef =
+  // translate from Nashorn values to NetLogo values
+  def fromNashorn(x: AnyRef): AnyRef =
     x match {
       case a: jdk.nashorn.api.scripting.ScriptObjectMirror if a.isArray =>
         api.LogoList.fromIterator(
           Iterator.from(0)
-            .map(x => fromRhino(a.get(x)))
+            .map(x => fromNashorn(a.get(x)))
             .take(a.get("length").asInstanceOf[Number].intValue))
       // this should probably reject unknown types instead of passing them through.
       // known types: java.lang.Double, java.lang.Boolean, String

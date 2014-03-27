@@ -9,23 +9,23 @@ import
   org.nlogo.util.MersenneTwisterFast,
   org.scalatest.Assertions._,
   org.nlogo.shape.{LinkShape, VectorShape},
-  rhino.Rhino
+  nashorn.Nashorn
 
 import collection.JavaConverters._
 
 import json.JSONSerializer
 
 trait DockingSuite extends org.scalatest.fixture.FunSuite {
-  val rhino = new Rhino
+  val nashorn = new Nashorn
   type FixtureParam = DockingFixture
   override def withFixture(test: OneArgTest) = {
-    val fixture = new DockingFixture(test.name, rhino)
+    val fixture = new DockingFixture(test.name, nashorn)
     try withFixture(test.toNoArgTest(fixture))
     finally fixture.workspace.dispose()
   }
 }
 
-class DockingFixture(name: String, rhino: Rhino) extends Fixture(name) {
+class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
 
   def mirrorables: Iterable[mirror.Mirrorable] =
     mirror.Mirrorables.allMirrorables(workspace.world)
@@ -133,19 +133,19 @@ class DockingFixture(name: String, rhino: Rhino) extends Fixture(name) {
       //println(expectedJson)
       //println(actualJson)
       assertResult(expectedOutput)(actualOutput)
-      rhino.eval(s"""expectedUpdates = Denuller.denull(JSON.parse("${expectedJson.replaceAll("\"", "\\\\\"")}"))""")
-      rhino.eval(s"""actualUpdates   = Denuller.denull(JSON.parse("${actualJson.replaceAll("\"", "\\\\\"")}"))""")
-      rhino.eval("expectedModel.updates(expectedUpdates)")
-      rhino.eval("actualModel.updates(actualUpdates)")
-      val expectedModel = rhino.eval("JSON.stringify(expectedModel)").asInstanceOf[String]
-      val actualModel = rhino.eval("JSON.stringify(actualModel)").asInstanceOf[String]
+      nashorn.eval(s"""expectedUpdates = Denuller.denull(JSON.parse("${expectedJson.replaceAll("\"", "\\\\\"")}"))""")
+      nashorn.eval(s"""actualUpdates   = Denuller.denull(JSON.parse("${actualJson.replaceAll("\"", "\\\\\"")}"))""")
+      nashorn.eval("expectedModel.updates(expectedUpdates)")
+      nashorn.eval("actualModel.updates(actualUpdates)")
+      val expectedModel = nashorn.eval("JSON.stringify(expectedModel)").asInstanceOf[String]
+      val actualModel = nashorn.eval("JSON.stringify(actualModel)").asInstanceOf[String]
       // println(" exp upt = " + expectedJson)
       // println(" act upt = " + actualJson)
       // println("expected = " + expectedModel)
       // println("  actual = " + actualModel)
       org.skyscreamer.jsonassert.JSONAssert.assertEquals(
         expectedModel, actualModel, true)  // strict = true
-      assert(workspace.world.mainRNG.save == rhino.eval("Random.save()"),
+      assert(workspace.world.mainRNG.save == nashorn.eval("Random.save()"),
         "divergent RNG state")
     }
     // println()
@@ -187,8 +187,8 @@ class DockingFixture(name: String, rhino: Rhino) extends Fixture(name) {
     val (js, _, _) = Compiler.compileProcedures(logo, interfaceGlobals, interfaceGlobalCommands, dimensions, turtleShapeList, linkShapeList)
     evalJS(js)
     state = Map()
-    rhino.eval("expectedModel = new AgentModel")
-    rhino.eval("actualModel = new AgentModel")
+    nashorn.eval("expectedModel = new AgentModel")
+    nashorn.eval("actualModel = new AgentModel")
     opened = true
     runCommand(Command("clear-all random-seed 0"))
   }
@@ -198,12 +198,12 @@ class DockingFixture(name: String, rhino: Rhino) extends Fixture(name) {
   // TODO: what is the difference between eval and run?
   def evalJS(javascript: String) = {
     //println(javascript)
-    rhino.eval(javascript)
+    nashorn.eval(javascript)
   }
 
   def runJS(javascript: String): (String, String) = {
     //println(javascript)
-    rhino.run(javascript)
+    nashorn.run(javascript)
   }
 
 }

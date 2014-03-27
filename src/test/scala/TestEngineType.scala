@@ -3,13 +3,13 @@
 package org.nlogo.tortoise
 
 import org.scalatest.FunSuite
-import rhino.Rhino
+import nashorn.Nashorn
 
 class TestEngineType extends FunSuite {
 
   test("engine name") {
     assertResult("Oracle Nashorn") {
-      (new Rhino).engine.getFactory.getEngineName
+      (new Nashorn).engine.getFactory.getEngineName
     }
   }
 

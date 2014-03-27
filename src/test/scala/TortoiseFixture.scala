@@ -7,21 +7,21 @@ import org.nlogo.{ api, headless, nvm },
   headless.lang, lang._,
   org.nlogo.util.Femto,
   org.scalatest.Assertions._,
-  org.nlogo.tortoise.rhino.Rhino
+  org.nlogo.tortoise.nashorn.Nashorn
 
 trait TortoiseFinder extends lang.Finder {
-  val rhino = new Rhino
+  val nashorn = new Nashorn
   def freebies: Map[String, String]
   override def shouldRun(t: LanguageTest, mode: TestMode) =
     mode == NormalMode && super.shouldRun(t, mode)
   override def withFixture[T](name: String)(body: AbstractFixture => T): T =
     freebies.get(name.stripSuffix(" (NormalMode)")) match {
       case None =>
-        body(new TortoiseFixture(name, rhino))
+        body(new TortoiseFixture(name, nashorn))
       case Some("TOO SLOW") =>
         cancel("TOO SLOW")
       case Some(excuse) =>
-        try body(new TortoiseFixture(name, rhino))
+        try body(new TortoiseFixture(name, nashorn))
         catch {
           case _: org.scalatest.exceptions.TestCanceledException =>
             // ignore; we'll hit the fail() below
@@ -103,7 +103,7 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
   )
 }
 
-class TortoiseFixture(name: String, rhino: Rhino)
+class TortoiseFixture(name: String, nashorn: Nashorn)
 extends AbstractFixture {
 
   override def defaultDimensions = api.WorldDimensions.square(5)
@@ -116,11 +116,11 @@ extends AbstractFixture {
       catch catcher
     program = p
     procs = m
-    rhino.eval(js)
+    nashorn.eval(js)
   }
 
   override def readFromString(literal: String): AnyRef =
-    try rhino.eval(Compiler.compileReporter(literal))
+    try nashorn.eval(Compiler.compileReporter(literal))
     catch catcher
 
   override def open(path: String) = ???
@@ -143,7 +143,7 @@ extends AbstractFixture {
     def js = Compiler.compileCommands(wrappedCommand, procs, program)
     command.result match {
       case Success(_) =>
-        try rhino.run(js)
+        try nashorn.run(js)
         catch catcher
       case CompileError(msg) =>
         expectCompileError(js, msg)
@@ -168,7 +168,7 @@ extends AbstractFixture {
     reporter.result match {
       case Success(expectedResult) =>
         val actualResult =
-          try rhino.eval(js)
+          try nashorn.eval(js)
           catch catcher
         checkResult(mode, reporter.reporter, expectedResult, actualResult)
       case CompileError(msg) =>

@@ -1,21 +1,15 @@
 ## (C) Uri Wilensky. https://github.com/NetLogo/NetLogo
 
 ##
-## stuff in this file papers over differences between Rhino, Nashorn,
-## and other JS implementations such as Node and the ones in browsers.
+## stuff in this file papers over differences between Nashorn and
+## other JS implementations such as Node and the ones in browsers.
 ##
-## on Rhino/Nashorn, the goal is precisely bit-for-bit identical
-## results as JVM NetLogo.  elsewhere, "close enough" is close enough
+## on Nashorn, the goal is precisely bit-for-bit identical results
+## as JVM NetLogo.  elsewhere, "close enough" is close enough
 ##
 
-# from: http://coffeescriptcookbook.com/chapters/arrays/filtering-arrays
-# this works with the coffee command, but is absent in Rhino.
-unless Array::filter
-  Array::filter = (callback) ->
-    element for element in this when callback(element)
-
-# Rhino has "println" already, Nashorn calls it "print",
-# V8 and browsers have "console.log". get it somehow!
+# Nashorn calls it "print", V8 and browsers have "console.log".
+# get it somehow!
 unless println?
   if console?
     println = console.log
@@ -31,7 +25,7 @@ typeIsArray = (value) ->
   typeof value.splice is 'function' and
   not ( value.propertyIsEnumerable 'length' )
 
-# on Rhino, we provide this via MersenneTwisterFast.  in the browser,
+# on Nashorn, we provide this via MersenneTwisterFast.  in the browser,
 # we delegate to Math.random(), for speed.  we could swap in a JS
 # implementation of the Mersenne Twister (code for it is googlable),
 # but I fear (though have not measured) the performance impact
@@ -41,7 +35,7 @@ unless Random?
   Random.nextLong = Random.nextInt
   Random.nextDouble = -> Math.random()
 
-# For divergences between Rhino and browsers, clone and extend!
+# For divergences between Nashorn and browsers, clone and extend!
 Cloner =
   clone: (obj) ->
     return obj if obj is null or typeof (obj) isnt "object"
@@ -50,7 +44,7 @@ Cloner =
       temp[key] = @clone(obj[key])
     temp
 
-# on Rhino, we use the JVM StrictMath stuff so results are identical
+# on Nashorn, we use the JVM StrictMath stuff so results are identical
 # with regular NetLogo. in browser, be satisfied with "close enough"
 unless StrictMath?
   StrictMath = Cloner.clone(Math)

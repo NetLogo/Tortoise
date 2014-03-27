@@ -67,7 +67,7 @@ class TestSandpileModel extends DockingSuite with SlowTest {
   test("sandpile random") { implicit fixture => import fixture._
     open("models/test/tortoise/Sandpile.nlogo")
     testCommand("setup-random")
-    // this takes a while on Rhino, but it probably isn't a good test unless we run the
+    // this takes a while on Nashorn, but it probably isn't a good test unless we run the
     // model for long enough for good avalanches to get going - ST 10/10/13
     for (_ <- 1 to 100)
       testCommand("go")
@@ -142,7 +142,7 @@ class TestClimateModel extends DockingSuite with SlowTest {
       testCommand("remove-CO2")
     }
     testCommand("remove-cloud")
-    // unfortunately this takes quite a while on Rhino, but it isn't a good test unless we run the
+    // unfortunately this takes quite a while on Nashorn, but it isn't a good test unless we run the
     // model for long enough for the turtles to start interacting with each other and with the world
     // boundaries - ST 10/10/13
     for (_ <- 1 to 4)
