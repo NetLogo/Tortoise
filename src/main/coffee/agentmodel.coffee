@@ -17,7 +17,10 @@ class AgentModel
     anyUpdates = false
     # the three 'when varUpdates' checks below only seem to be
     # necessary on Nashorn, which apparently has trouble iterating
-    # over objects where the keys are numbers - ST 3/16/14
+    # over objects where the keys are numbers. once Oracle ships
+    # the fix for http://bugs.java.com/bugdatabase/view_bug.do?bug_id=8038119
+    # we should re-test and see if this got fixed as well, or
+    # whether we need to file a second bug report at bugs.java.com - ST 3/16/14
     for turtleId, varUpdates of modelUpdate.turtles when varUpdates
       anyUpdates = true
       if varUpdates == null || varUpdates['WHO'] == -1  # old and new death formats
