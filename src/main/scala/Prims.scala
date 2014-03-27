@@ -45,6 +45,14 @@ object Prims {
         val agents = arg(1)
         val body = Handlers.reporter(r.args(0))
         s"AgentSet.of($agents, ${Handlers.fun(r.args(0), true)})"
+      case _: prim.etc._maxoneof =>
+        val agents = arg(0)
+        val metric = Handlers.reporter(r.args(1))
+        s"AgentSet.maxOneOf($agents, ${Handlers.fun(r.args(1), true)})"
+      case _: prim.etc._minoneof =>
+        val agents = arg(0)
+        val metric = Handlers.reporter(r.args(1))
+        s"AgentSet.minOneOf($agents, ${Handlers.fun(r.args(1), true)})"
       case o: prim.etc._all =>
         val agents = arg(0)
         val body = Handlers.reporter(r.args(1))

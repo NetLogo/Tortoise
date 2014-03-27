@@ -414,6 +414,17 @@ class TestAgents extends DockingSuite with SlowTest {
     testCommand("ask n-of 5 turtles [ die ]")
   }
 
+  test("min/max-one-of") { implicit fixture => import fixture._
+    testCommand("crt 10")
+    compare("[who] of min-one-of turtles [who * who]")
+    compare("[who] of max-one-of turtles [who * who]")
+    // RNG draws must match when breaking ties
+    for(_ <- 0 until 10) {
+      compare("[who] of min-one-of turtles [xcor]")
+      compare("[who] of max-one-of turtles [xcor]")
+    }
+  }
+
   test("other") { implicit fixture => import fixture._
     declare("", api.WorldDimensions.square(2))
     testCommand("crt 10")
