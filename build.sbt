@@ -14,7 +14,7 @@ isSnapshot := true
 
 version := "0.1"
 
-scalaVersion := "2.10.4"
+scalaVersion := "2.11.0-RC3"
 
 scalacOptions ++=
   "-deprecation -unchecked -feature -Xcheckinit -encoding us-ascii -target:jvm-1.7 -Xlint -Xfatal-warnings"
@@ -32,7 +32,7 @@ ivyLoggingLevel := UpdateLogging.Quiet
 // we're not cross-building for different Scala versions
 crossPaths := false
 
-val nlDependencyVersion = "5.1.0-1f30afb"
+val nlDependencyVersion = "5.1.0-a7d4af0"
 
 resolvers += bintray.Opts.resolver.repo("netlogo", "NetLogoHeadless")
 
@@ -46,12 +46,16 @@ libraryDependencies ++= Seq(
   "org.slf4j" % "slf4j-nop" % "1.7.5"             % "test"
 )
 
+// for the json4s snapshot. shouldn't be merged onto master;
+// we don't want to depend on any snapshots there - ST 3/27/14
+resolvers += Resolver.sonatypeRepo("snapshots")
+
 libraryDependencies ++= Seq(
   "org.nlogo" % "netlogoheadless" % nlDependencyVersion,
-  "org.json4s" %% "json4s-native" % "3.1.0",
+  "org.json4s" %% "json4s-native" % "3.2.9-SNAPSHOT",
   "org.webjars" % "json2" % "20110223",
   "org.scalacheck" %% "scalacheck" % "1.11.3" % "test",
-  "org.scalatest" %% "scalatest" % "2.1.1" % "test",
+  "org.scalatest" %% "scalatest" % "2.1.2" % "test",
   "org.skyscreamer" % "jsonassert" % "1.1.0" % "test",
   // Bring in headless test code/framework for our tests
   "org.nlogo" % "netlogoheadless" % nlDependencyVersion % "test" classifier "tests"
