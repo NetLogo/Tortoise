@@ -29,6 +29,6 @@ echo "*** done: fast:test"
 
 ./sbt 'test' 2>&1 | tee tmp/nightly/test.txt
 if [ ${PIPESTATUS[0]} -ne 0 ] ; then echo "*** FAILED: test"; exit 1; fi
-echo "*** done: fast:test"
+echo "*** done: test"
 
 echo "****** all done!"
