@@ -69,3 +69,5 @@ FastMediumSlow.settings
 Coffee.settings
 
 PublishVersioned.settings
+
+Depend.settings
