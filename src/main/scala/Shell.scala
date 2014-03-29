@@ -1,9 +1,9 @@
 // (C) Uri Wilensky. https://github.com/NetLogo/NetLogo
 
 package org.nlogo.tortoise
-package nashorn
 
-import org.nlogo.{ api, workspace }
+import org.nlogo.{ api, workspace },
+  nashorn.Nashorn
 
 object Shell extends workspace.Shell {
 
