@@ -7,26 +7,32 @@ import org.nlogo.{ api, headless, nvm },
   headless.lang, lang._,
   org.nlogo.util.Femto,
   org.scalatest.Assertions._,
+  org.scalatest.exceptions.TestPendingException,
   org.nlogo.tortoise.nashorn.Nashorn
 
 trait TortoiseFinder extends lang.Finder {
   val nashorn = new Nashorn
   def freebies: Map[String, String]
+  def notImplemented(s: String) = {
+    info(s)
+    throw new TestPendingException
+  }
   override def shouldRun(t: LanguageTest, mode: TestMode) =
     mode == NormalMode && super.shouldRun(t, mode)
   override def withFixture[T](name: String)(body: AbstractFixture => T): T =
     freebies.get(name.stripSuffix(" (NormalMode)")) match {
       case None =>
-        body(new TortoiseFixture(name, nashorn))
+        body(new TortoiseFixture(name, nashorn, notImplemented _))
       case Some("TOO SLOW") =>
-        cancel("TOO SLOW")
+        notImplemented("TOO SLOW")
       case Some(excuse) =>
-        try body(new TortoiseFixture(name, nashorn))
+        try
+          body(new TortoiseFixture(name, nashorn, notImplemented _))
         catch {
-          case _: org.scalatest.exceptions.TestCanceledException =>
+          case _: TestPendingException =>
             // ignore; we'll hit the fail() below
           case ex: Exception =>
-            cancel(ex + ": LAME EXCUSE: " + excuse)
+            notImplemented(ex + ": LAME EXCUSE: " + excuse)
         }
         fail("LAME EXCUSE WASN'T NEEDED: " + excuse)
     }
@@ -103,7 +109,7 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
   )
 }
 
-class TortoiseFixture(name: String, nashorn: Nashorn)
+class TortoiseFixture(name: String, nashorn: Nashorn, notImplemented: String => Nothing)
 extends AbstractFixture {
 
   override def defaultDimensions = api.WorldDimensions.square(5)
@@ -148,7 +154,7 @@ extends AbstractFixture {
       case CompileError(msg) =>
         expectCompileError(js, msg)
       case r =>
-        cancel("unknown result type: " + r.getClass.getSimpleName)
+        notImplemented("unknown result type: " + r.getClass.getSimpleName)
     }
   }
 
@@ -174,21 +180,21 @@ extends AbstractFixture {
       case CompileError(msg) =>
         expectCompileError(js, msg)
       case r =>
-        cancel("unknown result type: " + r.getClass.getSimpleName)
+        notImplemented("unknown result type: " + r.getClass.getSimpleName)
     }
   }
 
   // kludginess ahead - ST 8/28/13
 
-  val cancelers = Seq(
+  val notImplementedMessages = Seq(
     "unknown primitive: ",
     "unknown settable: ",
     "unknown language feature: ")
 
   val catcher: PartialFunction[Throwable, Nothing] = {
     case ex: IllegalArgumentException
-          if cancelers.exists(ex.getMessage.startsWith) =>
-        cancel(ex.getMessage)
+          if notImplementedMessages.exists(ex.getMessage.startsWith) =>
+        notImplemented(ex.getMessage)
   }
 
 }
