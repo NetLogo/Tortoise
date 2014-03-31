@@ -182,8 +182,8 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
 
   def declareHelper(logo: String, interfaceGlobals: Seq[String] = Seq(), interfaceGlobalCommands: String = "",
       dimensions: api.WorldDimensions = defaultDimensions,
-      turtleShapeList: api.ShapeList = new api.ShapeList(api.AgentKind.Turtle, VectorShape.parseShapes(api.ModelReader.defaultShapes.toArray, api.Version.version).asScala),
-      linkShapeList: api.ShapeList = new api.ShapeList(api.AgentKind.Link, LinkShape.parseShapes(api.ModelReader.defaultLinkShapes.toArray, api.Version.version).asScala)) {
+      turtleShapeList: api.ShapeList = CompilerService.defaultTurtleShapes,
+      linkShapeList: api.ShapeList = CompilerService.defaultLinkShapes) {
     val (js, _, _) = Compiler.compileProcedures(logo, interfaceGlobals, interfaceGlobalCommands, dimensions, turtleShapeList, linkShapeList)
     evalJS(js)
     state = Map()
