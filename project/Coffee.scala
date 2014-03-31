@@ -11,7 +11,7 @@ object Coffee {
   val version = "1.6.3"
 
   lazy val settings = Seq(
-    resourceGenerators in Compile <+= coffee,
+    resourceGenerators in Compile += coffee.taskValue,
     watchSources <++= coffeeSources
   )
 
