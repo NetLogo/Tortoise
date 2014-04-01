@@ -77,8 +77,6 @@ object Compiler {
       workspace.Evaluator.getHeader(api.AgentKind.Observer, commands) +
         logo + workspace.Evaluator.getFooter(commands)
     val (defs, _) = frontEnd.frontEnd(wrapped, oldProcedures, program)
-    if (defs.tail.nonEmpty)
-      throw new IllegalArgumentException("unknown language feature: command tasks")
     if (commands)
       Handlers.commands(defs.head.statements)
     else

@@ -1021,6 +1021,27 @@ Prims =
       fn()
     return
 
+Tasks =
+  commandTask: (fn) ->
+    fn.isReporter = false
+    fn
+  reporterTask: (fn) ->
+    fn.isReporter = true
+    fn
+  isReporterTask: (x) ->
+    typeof(x) == "function" and x.isReporter
+  isCommandTask: (x) ->
+    typeof(x) == "function" and not x.isReporter
+  map: (fn, lists...) ->
+    for i in [0...lists[0].length]
+      fn(lists.map((list) -> list[i])...)
+  nValues: (n, fn) ->
+    fn(i) for i in [0...n]
+  forEach: (fn, lists...) ->
+    for i in [0...lists[0].length]
+      fn(lists.map((list) -> list[i])...)
+    return
+
 Globals =
   vars: []
   # compiler generates call to init, which just
@@ -1042,10 +1063,15 @@ PatchesOwn =
   init: (n) -> @vars = (0 for x in [0...n])
 
 # like api.Dump. will need more cases. for now at least knows
-# about lists.
+# about lists and reporter tasks
 Dump = (x) ->
   if (typeIsArray(x))
     "[" + (Dump(x2) for x2 in x).join(" ") + "]"
+  else if (typeof(x) == "function")
+    if (x.isReporter)
+      "(reporter task)"
+    else
+      "(command task)"
   else
     "" + x
 
