@@ -9,7 +9,8 @@ Breeds.get("HEATS").vars =[""];
 Breeds.add("CO2S", "co2");
 Breeds.get("CO2S").vars =[""];
 Breeds.add("CLOUDS", "cloud");
-Breeds.get("CLOUDS").vars =["CLOUD-SPEED", "CLOUD-ID"];function setup() {
+Breeds.get("CLOUDS").vars =["CLOUD-SPEED", "CLOUD-ID"];
+function setup() {
   world.clearAll();
   Breeds.setDefaultShape(world.turtlesOfBreed("RAYS"), "ray");
   Breeds.setDefaultShape(world.turtlesOfBreed("IRS"), "ray");

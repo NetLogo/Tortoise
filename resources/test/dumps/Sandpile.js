@@ -1,6 +1,7 @@
 Globals.init(11);
 PatchesOwn.init(3);
 world = new World(-50, 50, -50, 50, 4.0, false, false, {"default":{"rotate":true,"elements":[{"xcors":[150,40,150,260],"ycors":[5,250,205,250],"type":"polygon","color":"rgba(141, 141, 141, 1.0)","filled":true,"marked":true}]}}, {"default":{}}, 3);
+
 function setup(initial, random_p) {
   world.clearAll();
   Globals.setGlobal(9, 105);

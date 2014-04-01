@@ -1,6 +1,7 @@
 Globals.init(3);
 PatchesOwn.init(1);
 world = new World(0, 99, 0, 99, 3.0, false, false, {"default":{"rotate":true,"elements":[{"xcors":[150,40,150,260],"ycors":[5,250,205,250],"type":"polygon","color":"rgba(141, 141, 141, 1.0)","filled":true,"marked":true}]}}, {"default":{}}, 1);
+
 function benchmark() {
   Random.setSeed(0);
   world.resetTimer();

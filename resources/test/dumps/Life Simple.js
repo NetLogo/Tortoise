@@ -1,5 +1,6 @@
 PatchesOwn.init(2);
 world = new World(-5, 5, -5, 5, 25.0, true, true, {"default":{"rotate":true,"elements":[{"xcors":[150,40,150,260],"ycors":[5,250,205,250],"type":"polygon","color":"rgba(141, 141, 141, 1.0)","filled":true,"marked":true}]}}, {"default":{}}, 0);
+
 function setup() {
   world.clearAll();
   AgentSet.ask(world.patches(), true, function() {

@@ -3,7 +3,8 @@ world = new World(-25, 25, -25, 25, 10.0, true, true, {"default":{"rotate":true,
 Breeds.add("WATERS", "water");
 Breeds.get("WATERS").vars =[""];
 Breeds.add("OILS", "oil");
-Breeds.get("OILS").vars =[""];function setup() {
+Breeds.get("OILS").vars =[""];
+function setup() {
   world.clearAll();
   Globals.setGlobal(6, 2);
   Globals.setGlobal(7, 4);
