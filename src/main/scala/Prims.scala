@@ -104,7 +104,7 @@ object Prims {
       case _: prim.etc._createlinkswith  => generateCreateLink(s, "createLinksWith")
       case h: prim._hatch                => generateHatch(s, h.breedName)
       case call: prim._call              => s"${Handlers.ident(call.procedure.name)}($commaArgs);"
-      case _: prim.etc._report           => s"return ${arg(0)}"
+      case _: prim.etc._report           => s"return ${arg(0)};"
       case _: prim.etc._ignore           => s"${arg(0)};"
       case l: prim._let                  =>
         // arg 0 is the name but we don't access it because LetScoper took care of it.
