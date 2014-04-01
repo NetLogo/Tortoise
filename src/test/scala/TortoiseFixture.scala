@@ -7,26 +7,32 @@ import org.nlogo.{ api, headless, nvm },
   headless.lang, lang._,
   org.nlogo.util.Femto,
   org.scalatest.Assertions._,
-  org.nlogo.tortoise.rhino.Rhino
+  org.scalatest.exceptions.TestPendingException,
+  org.nlogo.tortoise.nashorn.Nashorn
 
 trait TortoiseFinder extends lang.Finder {
-  val rhino = new Rhino
+  val nashorn = new Nashorn
   def freebies: Map[String, String]
+  def notImplemented(s: String) = {
+    info(s)
+    throw new TestPendingException
+  }
   override def shouldRun(t: LanguageTest, mode: TestMode) =
     mode == NormalMode && super.shouldRun(t, mode)
   override def withFixture[T](name: String)(body: AbstractFixture => T): T =
     freebies.get(name.stripSuffix(" (NormalMode)")) match {
       case None =>
-        body(new TortoiseFixture(name, rhino))
+        body(new TortoiseFixture(name, nashorn, notImplemented _))
       case Some("TOO SLOW") =>
-        cancel("TOO SLOW")
+        notImplemented("TOO SLOW")
       case Some(excuse) =>
-        try body(new TortoiseFixture(name, rhino))
+        try
+          body(new TortoiseFixture(name, nashorn, notImplemented _))
         catch {
-          case _: org.scalatest.exceptions.TestCanceledException =>
+          case _: TestPendingException =>
             // ignore; we'll hit the fail() below
           case ex: Exception =>
-            cancel(ex + ": LAME EXCUSE: " + excuse)
+            notImplemented(ex + ": LAME EXCUSE: " + excuse)
         }
         fail("LAME EXCUSE WASN'T NEEDED: " + excuse)
     }
@@ -38,7 +44,11 @@ class TestReporters extends lang.TestReporters with TortoiseFinder {
       // obscure
       "Lists::Sort2" -> "sorting heterogeneous lists doesn't work",
       "Lists::Sort3" -> "sorting heterogeneous lists doesn't work",
-      "Lists::Sort5" -> "sorting heterogeneous lists doesn't work"
+      "Lists::Sort5" -> "sorting heterogeneous lists doesn't work",
+      // perhaps never to be supported
+      "RunResult::RunResult1" -> "run/runresult on strings not supported",
+      "RunResult::RunResult2" -> "run/runresult on strings not supported",
+      "RunResult::RunResult3" -> "run/runresult on strings not supported"
     )
 }
 
@@ -57,6 +67,8 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
     "Equality::two-dead-links-are-equal" -> "???",
     "Equality::dead-link-equals-nobody" -> "???",
     "InCone::InConeCornerOrigin3" -> "???",
+    "Interaction::Interaction2" -> "???",
+    "Interaction::Interaction3a" -> "???",
     "Links::Links1" -> "???",
     "Links::LinkCantChangeBreeds" -> "???",
     "Neighbors::Neighbors2Torus" -> "???",
@@ -72,6 +84,12 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
     "TurtlesHere::PatchDoesOtherBreedHere" -> "???",
     "TypeChecking::SetVariable" -> "???",
     // egregious
+    "Sort::SortingListsOfAgents" -> "sorting agents isn't supported",
+    "CommandTasks::foreach-plus-recursion" -> "sorting agents isn't supported",
+    "CommandTasks::concise-syntax 8" -> "sorting agents isn't supported",
+    "UpAndDownhill::UpAndDownhill1" -> "sorting agents isn't supported",
+    "UpAndDownhill::Uphill3" -> "sorting agents isn't supported",
+    "Diffuse::DiffuseTorus" -> "sorting agents isn't supported",
     "Turtles::Turtles7" -> "colors don't wrap to [0,140)",
     "Links::Links2" -> "colors don't wrap to [0,140)",
     // significant
@@ -84,6 +102,7 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
     "TurtlesHere::TurtlesHereInVariable" -> "correct answer requires empty init block optimization",
     "Death::DeadTurtles10" -> "converting agent to string lacks dead check",
     "Death::DeadLinks1" -> "converting agent to string lacks dead check",
+    "Random::Random3" -> "`random` doesn't handle fractional parts correctly",
     "Agentsets::Agentsets4" -> "TOO SLOW",
     "Links::LinksInitBlock" -> "TOO SLOW",
     "Random::RandomNOfIsFairForTurtles" -> "TOO SLOW",
@@ -94,15 +113,44 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
     "Random::RandomNOfIsFairForAList" -> "TOO SLOW",
     "Agentsets::AgentsetEquality" -> "'special' agentsets not supported",
     "Tie::Tie2Nonrigid" -> "tie-mode link variable not implemented",
+    "CommandTasks::command-task-body-gets-agent-type-check" -> "agent type checking not supported",
+    // significant (task-related)
+    "Errors::task-variable-not-in-task" -> "???",
+    "ReporterTasks::CloseOverLocal1" -> "???",
+    "CommandTasks::*ToString3" -> "command task string representation doesn't match",
+    "CommandTasks::*ToString4" -> "command task string representation doesn't match",
+    "CommandTasks::*ToString5" -> "command task string representation doesn't match",
+    "CommandTasks::*ToString6" -> "command task string representation doesn't match",
+    "Stop::ReportFromForeach" -> "no early exit from foreach",
+    "Stop::ReportFromForeach2" -> "no early exit from foreach",
+    "Stop::ReportFromForeach3" -> "no early exit from foreach",
+    "Stop::StopFromForeach2" -> "no early exit from foreach",
+    "Stop::StopFromForeach3" -> "no early exit from foreach",
+    "Stop::StopInsideRunOfCommandTask" -> "no early exit from command task",
     // obscure
+    "ResizeWorld::ResizeWorldDoesntRestartWhoNumbering" -> "???",
     "Let::LetOfVarToItself1" -> "???",
     "Let::LetOfVarToItself2" -> "???",
     "Let::LetOfVarToItself3" -> "???",
-    "Let::LetOfVarToItselfInsideAsk" -> "???"
+    "Let::LetOfVarToItselfInsideAsk" -> "???",
+    // perhaps never to be supported
+    "ControlStructures::Run8" -> "run/runresult on strings not supported",
+    "Run::LuisIzquierdoRun1" -> "run/runresult on strings not supported",
+    "Run::LuisIzquierdoRun2" -> "run/runresult on strings not supported",
+    "Run::LuisIzquierdoRunResult1" -> "run/runresult on strings not supported",
+    "Run::LuisIzquierdoRunResult2" -> "run/runresult on strings not supported",
+    "Run::run-evaluate-string-input-only-once" -> "run/runresult on strings not supported",
+    "ControlStructures::Run1" -> "run/runresult on strings not supported",
+    "ControlStructures::Run2" -> "run/runresult on strings not supported",
+    "ControlStructures::Run3" -> "run/runresult on strings not supported",
+    "ControlStructures::Run4" -> "run/runresult on strings not supported",
+    "ControlStructures::Run5" -> "run/runresult on strings not supported",
+    "ControlStructures::Run6" -> "run/runresult on strings not supported",
+    "ControlStructures::Run7" -> "run/runresult on strings not supported"
   )
 }
 
-class TortoiseFixture(name: String, rhino: Rhino)
+class TortoiseFixture(name: String, nashorn: Nashorn, notImplemented: String => Nothing)
 extends AbstractFixture {
 
   override def defaultDimensions = api.WorldDimensions.square(5)
@@ -115,11 +163,11 @@ extends AbstractFixture {
       catch catcher
     program = p
     procs = m
-    rhino.eval(js)
+    nashorn.eval(js)
   }
 
   override def readFromString(literal: String): AnyRef =
-    try rhino.eval(Compiler.compileReporter(literal))
+    try nashorn.eval(Compiler.compileReporter(literal))
     catch catcher
 
   override def open(path: String) = ???
@@ -142,12 +190,12 @@ extends AbstractFixture {
     def js = Compiler.compileCommands(wrappedCommand, procs, program)
     command.result match {
       case Success(_) =>
-        try rhino.run(js)
+        try nashorn.run(js)
         catch catcher
       case CompileError(msg) =>
         expectCompileError(js, msg)
       case r =>
-        cancel("unknown result type: " + r.getClass.getSimpleName)
+        notImplemented("unknown result type: " + r.getClass.getSimpleName)
     }
   }
 
@@ -167,27 +215,27 @@ extends AbstractFixture {
     reporter.result match {
       case Success(expectedResult) =>
         val actualResult =
-          try rhino.eval(js)
+          try nashorn.eval(js)
           catch catcher
         checkResult(mode, reporter.reporter, expectedResult, actualResult)
       case CompileError(msg) =>
         expectCompileError(js, msg)
       case r =>
-        cancel("unknown result type: " + r.getClass.getSimpleName)
+        notImplemented("unknown result type: " + r.getClass.getSimpleName)
     }
   }
 
   // kludginess ahead - ST 8/28/13
 
-  val cancelers = Seq(
+  val notImplementedMessages = Seq(
     "unknown primitive: ",
     "unknown settable: ",
     "unknown language feature: ")
 
   val catcher: PartialFunction[Throwable, Nothing] = {
     case ex: IllegalArgumentException
-          if cancelers.exists(ex.getMessage.startsWith) =>
-        cancel(ex.getMessage)
+          if notImplementedMessages.exists(ex.getMessage.startsWith) =>
+        notImplemented(ex.getMessage)
   }
 
 }

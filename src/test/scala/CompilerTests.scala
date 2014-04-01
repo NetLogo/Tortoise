@@ -56,6 +56,24 @@ class CompilerTests extends FunSuite {
     assertResult(expected)(compile(input))
   }
 
+  test("reporters: map") {
+    import Compiler.{compileReporter => compile}
+    val input = "map [? * 2] [3 4]"
+    val expected = """|Tasks.map(Tasks.reporterTask(function() {
+                      |  return (arguments[0] * 2)
+                      |}), [3, 4])""".stripMargin
+    assertResult(expected)(compile(input))
+  }
+
+  test("reporters: runresult") {
+    import Compiler.{compileReporter => compile}
+    val input = "(runresult task [?1 * ?2] 3 4)"
+    val expected = """|(Tasks.reporterTask(function() {
+                      |  return (arguments[0] * arguments[1])
+                      |}))(3, 4)""".stripMargin
+    assertResult(expected)(compile(input))
+  }
+
   // compileCommands
 
   test("commands: let") {

@@ -58,6 +58,19 @@ object Prims {
         val body = Handlers.reporter(r.args(1))
         s"AgentSet.all($agents, function(){ return $body })"
       case _: prim.etc._islink              => s"(${arg(0)} instanceof Link)"
+      case _: prim.etc._ifelsevalue         => s"${arg(0)} ? ${arg(1)} : ${arg(2)}"
+      case _: prim.etc._reduce              => s"${arg(1)}.reduce(${arg(0)})"
+      case _: prim.etc._filter              => s"${arg(1)}.filter(${arg(0)})"
+      case _: prim.etc._nvalues             => s"Tasks.nValues(${arg(0)}, ${arg(1)})"
+      case tv: prim._taskvariable           => s"arguments[${tv.varNumber - 1}]"
+      case _: prim._task                    => arg(0)
+      case _: prim._reportertask =>
+        s"Tasks.reporterTask(${Handlers.fun(r.args(0), isReporter = true)})"
+      case _: prim._commandtask =>
+        s"Tasks.commandTask(${Handlers.fun(r.args(0), isReporter = false)})"
+      case rr: prim.etc._runresult =>
+        val taskInputs = args.tail.mkString(", ")
+        s"(${arg(0)})($taskInputs)"
       case _ =>
         throw new IllegalArgumentException(
           "unknown primitive: " + r.reporter.getClass.getName)
@@ -66,12 +79,14 @@ object Prims {
 
   def generateCommand(s: ast.Statement): String = {
     def arg(i: Int) = Handlers.reporter(s.args(i))
+    def commaArgs = argsSep(", ")
     def args =
-      s.args.collect{ case x: ast.ReporterApp =>
-        Handlers.reporter(x) }.mkString(", ")
+      s.args.collect{ case x: ast.ReporterApp => Handlers.reporter(x) }
+    def argsSep(sep: String) =
+      args.mkString(sep)
     s.command match {
       case SimplePrims.SimpleCommand(op) => if (op.isEmpty) "" else s"$op;"
-      case SimplePrims.NormalCommand(op) => s"$op($args);"
+      case SimplePrims.NormalCommand(op) => s"$op($commaArgs);"
       case _: prim._set                  => generateSet(s)
       case _: prim._repeat               => generateRepeat(s)
       case _: prim.etc._while            => generateWhile(s)
@@ -88,12 +103,19 @@ object Prims {
       case _: prim.etc._createlinkwith   => generateCreateLink(s, "createLinkWith")
       case _: prim.etc._createlinkswith  => generateCreateLink(s, "createLinksWith")
       case h: prim._hatch                => generateHatch(s, h.breedName)
-      case call: prim._call              => s"${Handlers.ident(call.procedure.name)}($args);"
-      case _: prim.etc._report           => s"return $args;"
+      case call: prim._call              => s"${Handlers.ident(call.procedure.name)}($commaArgs);"
+      case _: prim.etc._report           => s"return ${arg(0)}"
+      case _: prim.etc._ignore           => s"${arg(0)};"
       case l: prim._let                  =>
         // arg 0 is the name but we don't access it because LetScoper took care of it.
         // arg 1 is the value.
         s"var ${Handlers.ident(l.let.name)} = ${arg(1)};"
+      case _: prim.etc._run =>
+        val taskInputs = args.tail.mkString(", ")
+        s"(${arg(0)})($taskInputs);"
+      case _: prim.etc._foreach =>
+        val lists = args.init.mkString(", ")
+        s"Tasks.forEach(${arg(s.args.size - 1)}, $lists);"
       case _ =>
         throw new IllegalArgumentException(
           "unknown primitive: " + s.command.getClass.getName)

@@ -32,7 +32,7 @@ ivyLoggingLevel := UpdateLogging.Quiet
 // we're not cross-building for different Scala versions
 crossPaths := false
 
-val nlDependencyVersion = "5.1.0-a7d4af0"
+val nlDependencyVersion = "5.1.0-f4d08b5"
 
 resolvers += bintray.Opts.resolver.repo("netlogo", "NetLogoHeadless")
 
@@ -53,7 +53,6 @@ resolvers += Resolver.sonatypeRepo("snapshots")
 libraryDependencies ++= Seq(
   "org.nlogo" % "netlogoheadless" % nlDependencyVersion,
   "org.json4s" %% "json4s-native" % "3.2.9-SNAPSHOT",
-  "org.webjars" % "json2" % "20110223",
   "org.scalacheck" %% "scalacheck" % "1.11.3" % "test",
   "org.scalatest" %% "scalatest" % "2.1.2" % "test",
   "org.skyscreamer" % "jsonassert" % "1.1.0" % "test",
@@ -74,3 +73,5 @@ FastMediumSlow.settings
 Coffee.settings
 
 PublishVersioned.settings
+
+Depend.settings

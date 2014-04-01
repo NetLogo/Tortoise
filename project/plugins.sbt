@@ -1,5 +1,9 @@
 scalacOptions += "-deprecation"
 
+libraryDependencies +=
+  "classycle" % "classycle" % "1.4.1" from
+    "http://ccl.northwestern.edu/devel/classycle-1.4.1.jar"
+
 addSbtPlugin("org.ensime" % "ensime-sbt-cmd" % "0.1.2")
 
 resolvers += Resolver.url(

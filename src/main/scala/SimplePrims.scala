@@ -75,6 +75,7 @@ object SimplePrims {
         case _: prim.etc._min                => "Prims.min"
         case _: prim.etc._mean               => "Prims.mean"
         case _: prim._sum                    => "Prims.sum"
+        case _: prim.etc._map                => "Tasks.map"
         case _: prim.etc._abs                => "StrictMath.abs"
         case _: prim._random                 => "Prims.random"
         case _: prim.etc._randomfloat        => "Prims.randomFloat"
@@ -119,6 +120,8 @@ object SimplePrims {
         case _: prim.etc._sqrt               => "StrictMath.sqrt"
         case _: prim.etc._mod                => "Prims.mod"
         case _: prim.etc._empty              => "Prims.empty"
+        case _: prim.etc._isreportertask     => "Tasks.isReporterTask"
+        case _: prim.etc._iscommandtask      => "Tasks.isCommandTask"
       }
   }
 
