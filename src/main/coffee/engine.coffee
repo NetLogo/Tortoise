@@ -140,6 +140,11 @@ class Turtle
   canMove: (amount) -> @patchAhead(amount) != Nobody
   distanceXY: (x, y) -> world.topology().distanceXY(@xcor(), @ycor(), x, y)
   distance: (agent) -> world.topology().distance(@xcor(), @ycor(), agent)
+  towards: (agent) ->
+    if(agent instanceof Turtle)
+      world.topology().towards(@xcor(), @ycor(), agent.xcor(), agent.ycor())
+    else if (agent instanceof Patch)
+      world.topology().towards(@xcor(), @ycor(), agent.pxcor, agent.pycor)
   faceXY: (x, y) ->
     if(x != @xcor() or y != @ycor())
       @heading = world.topology().towards(@xcor(), @ycor(), x, y)
@@ -901,6 +906,7 @@ class Shufflerator
 Prims =
   fd: (n) -> AgentSet.self().fd(n)
   bk: (n) -> AgentSet.self().fd(-n)
+  jump: (n) -> AgentSet.self().jump(n)
   right: (n) -> AgentSet.self().right(n)
   left: (n) -> AgentSet.self().right(-n)
   setXY: (x, y) -> AgentSet.self().setXY(x, y)
