@@ -979,7 +979,7 @@ class Agents
   sort: ->
     if(@items.length == 0)
       @items
-    else if @kind is AgentKind.Turtle
+    else if @kind is AgentKind.Turtle or @kind is AgentKind.Patch
       @items[..].sort((x, y) -> x.compare(y).toInt)
     else if @kind is AgentKind.Link
       @items[..].sort(Links.compare)
