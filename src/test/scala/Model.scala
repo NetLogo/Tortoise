@@ -182,6 +182,10 @@ object Model {
         "resize-world 0 19 0 19 " +
         "set bug-count 15",
       repetitions = 10
+    ),
+    Model(
+      path = "models/test/benchmarks/GasLabCirc Benchmark.nlogo",
+      repetitions = 50
     )
   )
 }

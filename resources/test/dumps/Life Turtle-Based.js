@@ -4,7 +4,8 @@ world = new World(-35, 35, -35, 35, 7.0, true, true, {"default":{"rotate":true,"
 Breeds.add("CELLS", "cell");
 Breeds.get("CELLS").vars =[""];
 Breeds.add("BABIES", "baby");
-Breeds.get("BABIES").vars =[""];function setupBlank() {
+Breeds.get("BABIES").vars =[""];
+function setupBlank() {
   world.clearAll();
   Breeds.setDefaultShape(world.turtlesOfBreed("CELLS"), "circle");
   Breeds.setDefaultShape(world.turtlesOfBreed("BABIES"), "dot");

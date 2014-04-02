@@ -3,7 +3,8 @@ world = new World(-125, 125, -125, 125, 2.0, false, false, {"default":{"rotate":
 Breeds.add("FIRES", "fire");
 Breeds.get("FIRES").vars =[""];
 Breeds.add("EMBERS", "ember");
-Breeds.get("EMBERS").vars =[""];function setup() {
+Breeds.get("EMBERS").vars =[""];
+function setup() {
   world.clearAll();
   Breeds.setDefaultShape(world.turtles(), "square");
   AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {

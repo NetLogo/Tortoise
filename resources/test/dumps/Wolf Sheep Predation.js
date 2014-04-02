@@ -5,7 +5,8 @@ world = new World(-25, 25, -25, 25, 9.0, true, true, {"default":{"rotate":true,"
 Breeds.add("SHEEP", "a-sheep");
 Breeds.get("SHEEP").vars =[""];
 Breeds.add("WOLVES", "wolf");
-Breeds.get("WOLVES").vars =[""];function setup() {
+Breeds.get("WOLVES").vars =[""];
+function setup() {
   world.clearAll();
   AgentSet.ask(world.patches(), true, function() {
     AgentSet.setPatchVariable(2, 55);
