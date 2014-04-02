@@ -71,6 +71,7 @@ object SimplePrims {
         case _: prim.etc._butfirst           => "Prims.butFirst"
         case _: prim.etc._butlast            => "Prims.butLast"
         case _: prim.etc._sort               => "Prims.sort"
+        case _: prim.etc._reverse            => "Prims.reverse"
         case _: prim.etc._max                => "Prims.max"
         case _: prim.etc._length             => "Prims.length"
         case _: prim.etc._min                => "Prims.min"

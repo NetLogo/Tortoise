@@ -433,7 +433,7 @@ class Patch
     @turtles.push(t)
   distanceXY: (x, y) -> world.topology().distanceXY(@pxcor, @pycor, x, y)
   distance: (agent) -> world.topology().distance(@pxcor, @pycor, agent)
-  turtlesHere: -> new Agents(@turtles.slice(0), Breeds.get("TURTLES"), AgentKind.Turtle)
+  turtlesHere: -> new Agents(@turtles[..], Breeds.get("TURTLES"), AgentKind.Turtle)
   getNeighbors: -> world.getNeighbors(@pxcor, @pycor) # world.getTopology().getNeighbors(this)
   getNeighbors4: -> world.getNeighbors4(@pxcor, @pycor) # world.getTopology().getNeighbors(this)
   sprout: (n, breedName) ->
@@ -980,9 +980,9 @@ class Agents
     if(@items.length == 0)
       @items
     else if @kind is AgentKind.Turtle
-      @items.sort((x, y) -> x.compare(y).toInt)
+      @items[..].sort((x, y) -> x.compare(y).toInt)
     else if @kind is AgentKind.Link
-      @items.sort(Links.compare)
+      @items[..].sort(Links.compare)
     else
       throw new Error("We don't know how to sort your kind here!")
 
@@ -1134,8 +1134,20 @@ Prims =
       result
     else
       Math.round(result)
-
-  sort: (xs) -> xs.sort()
+  reverse: (xs) ->
+    if typeIsArray(xs)
+      xs[..].reverse()
+    else if typeof(xs) == "string"
+      xs.split("").reverse().join("")
+    else
+      throw new NetLogoException("can only reverse lists and strings")
+  sort: (xs) ->
+    if typeIsArray(xs)
+      xs[..].sort()
+    else if xs instanceof Agents
+      xs.sort()
+    else
+      throw new NetLogoException("can only sort lists and agentsets")
   removeDuplicates: (xs) ->
     if xs.length < 2
       xs
