@@ -1134,7 +1134,13 @@ Prims =
       result
     else
       Math.round(result)
-
+  reverse: (xs) ->
+    if typeIsArray(xs)
+      xs[..].reverse()
+    else if typeof(xs) == "string"
+      xs.split("").reverse().join("")
+    else
+      throw new NetLogoException("can only reverse lists and strings")
   sort: (xs) ->
     if typeIsArray(xs)
       xs[..].sort()
