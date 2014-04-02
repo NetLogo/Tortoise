@@ -23,13 +23,17 @@ mkdir -p tmp/nightly
 if [ ${PIPESTATUS[0]} -ne 0 ] ; then echo "*** FAILED: test:compile"; exit 1; fi
 echo "*** done: test:compile"
 
-./sbt 'fast:test' 2>&1 | tee tmp/nightly/fast-test.txt
+./sbt fast:test 2>&1 | tee tmp/nightly/fast-test.txt
 if [ ${PIPESTATUS[0]} -ne 0 ] ; then echo "*** FAILED: fast:test"; exit 1; fi
 echo "*** done: fast:test"
 
-./sbt 'test' 2>&1 | tee tmp/nightly/test.txt
-if [ ${PIPESTATUS[0]} -ne 0 ] ; then echo "*** FAILED: test"; exit 1; fi
-echo "*** done: test"
+# turning off logBuffered for the slow tests keeps us from going 10
+# minutes without producing any output.  the tests from different
+# suites get scrambled together in the output, but oh well. - ST 4/1/14
+
+./sbt 'set logBuffered in test := false' slow:test 2>&1 | tee tmp/nightly/slow-test.txt
+if [ ${PIPESTATUS[0]} -ne 0 ] ; then echo "*** FAILED: slow:test"; exit 1; fi
+echo "*** done: slow:test"
 
 ./sbt depend 2>&1 | tee tmp/nightly/depend.txt
 if [ ${PIPESTATUS[0]} -ne 0 ] ; then echo "*** FAILED: depend"; exit 1; fi

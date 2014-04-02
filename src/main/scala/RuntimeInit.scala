@@ -27,7 +27,7 @@ class RuntimeInit(
       s"world = new World($minPxcor, $maxPxcor, $minPycor, $maxPycor, $patchSize, " +
       s"$wrappingAllowedInY, $wrappingAllowedInX, $turtleShapesJson, $linkShapesJson, " +
       s"${program.interfaceGlobals.size});\n" +
-      breeds
+      breeds + "\n"
   }
 
   // if there are any globals,

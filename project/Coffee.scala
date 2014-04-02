@@ -8,7 +8,7 @@ object Coffee {
 
   private val npmCmd = "npm"
 
-  val version = "1.6.3"
+  val version = "1.7.1"
 
   lazy val settings = Seq(
     resourceGenerators in Compile += coffee.taskValue,

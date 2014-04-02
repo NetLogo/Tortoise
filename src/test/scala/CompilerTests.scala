@@ -56,6 +56,24 @@ class CompilerTests extends FunSuite {
     assertResult(expected)(compile(input))
   }
 
+  test("reporters: map") {
+    import Compiler.{compileReporter => compile}
+    val input = "map [? * 2] [3 4]"
+    val expected = """|Tasks.map(Tasks.reporterTask(function() {
+                      |  return (arguments[0] * 2)
+                      |}), [3, 4])""".stripMargin
+    assertResult(expected)(compile(input))
+  }
+
+  test("reporters: runresult") {
+    import Compiler.{compileReporter => compile}
+    val input = "(runresult task [?1 * ?2] 3 4)"
+    val expected = """|(Tasks.reporterTask(function() {
+                      |  return (arguments[0] * arguments[1])
+                      |}))(3, 4)""".stripMargin
+    assertResult(expected)(compile(input))
+  }
+
   // compileCommands
 
   test("commands: let") {
@@ -129,11 +147,12 @@ class CompilerTests extends FunSuite {
   test("command procedure") {
     import Compiler.{compileProcedures => compile}
     val input = "to foo output-print 5 end"
-    val expected = """world = new World(0, 0, 0, 0, 12.0, true, true, {}, {}, 0);
-                     |function foo() {
-                     |  Prims.outputPrint(5);
-                     |}
-                     |""".stripMargin
+    val expected = """|world = new World(0, 0, 0, 0, 12.0, true, true, {}, {}, 0);
+                      |
+                      |function foo() {
+                      |  Prims.outputPrint(5);
+                      |}
+                      |""".stripMargin
     assertResult(expected)(compile(input)._1)
   }
 
@@ -143,6 +162,7 @@ class CompilerTests extends FunSuite {
     val expected =
      """|Globals.init(3);
         |world = new World(0, 0, 0, 0, 12.0, true, true, {}, {}, 0);
+        |
         |function fooBar_p() {
         |  Prims.outputPrint(Globals.getGlobal(2));
         |  Prims.outputPrint(Globals.getGlobal(1));

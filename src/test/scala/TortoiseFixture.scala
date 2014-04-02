@@ -23,7 +23,7 @@ trait TortoiseFinder extends lang.Finder {
     freebies.get(name.stripSuffix(" (NormalMode)")) match {
       case None =>
         body(new TortoiseFixture(name, nashorn, notImplemented _))
-      case Some("TOO SLOW") =>
+      case Some(x) if x.contains("TOO SLOW") =>
         notImplemented("TOO SLOW")
       case Some(excuse) =>
         try
@@ -39,73 +39,93 @@ trait TortoiseFinder extends lang.Finder {
 }
 
 class TestReporters extends lang.TestReporters with TortoiseFinder {
-  override val freebies =
-    Map(
+  override val freebies = Map[String, String](
       // obscure
       "Lists::Sort2" -> "sorting heterogeneous lists doesn't work",
       "Lists::Sort3" -> "sorting heterogeneous lists doesn't work",
-      "Lists::Sort5" -> "sorting heterogeneous lists doesn't work"
+      "Lists::Sort5" -> "sorting heterogeneous lists doesn't work",
+      // perhaps never to be supported
+      "RunResult::RunResult1" -> "run/runresult on strings not supported",
+      "RunResult::RunResult2" -> "run/runresult on strings not supported",
+      "RunResult::RunResult3" -> "run/runresult on strings not supported"
     )
 }
 
 class TestCommands extends lang.TestCommands with TortoiseFinder {
   override val freebies = Map[String, String](
     // to be investigated
-    "AgentsetBuilding::EmptyPatchSet" -> "???",
-    "Agentsets::AgentSetEquality" -> "???",
-    "Agentsets::LinkAgentsetDeadLinks" -> "???",
-    "Agentsets::RemoveDuplicates" -> "???",
-    "Breeds::TestIsBreed" -> "???",
-    "ComparingAgents::ComparingPatches" -> "???",
-    "Death::DeadTurtles9" -> "???",
-    "Equality::two-dead-turtles-are-equal" -> "???",
-    "Equality::dead-turtle-equals-nobody" -> "???",
-    "Equality::two-dead-links-are-equal" -> "???",
-    "Equality::dead-link-equals-nobody" -> "???",
-    "InCone::InConeCornerOrigin3" -> "???",
-    "Links::Links1" -> "???",
-    "Links::LinkCantChangeBreeds" -> "???",
-    "Neighbors::Neighbors2Torus" -> "???",
-    "OneOf::OneOfDyingTurtles" -> "???",
-    "PatchAhead::PatchRightAndAhead" -> "???",
-    "PatchAhead::PatchLeftAndAhead" -> "???",
+    "Interaction::Interaction2"                                               -> "???",
     "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksWith" -> "???",
-    "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksTo" -> "???",
+    "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksTo"   -> "???",
     "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksFrom" -> "???",
-    "SelfMyself::Myself1" -> "???",
-    "TurtlesHere::TurtlesHere1" -> "???",
-    "TurtlesHere::PatchDoesOtherTurtlesHere" -> "???",
-    "TurtlesHere::PatchDoesOtherBreedHere" -> "???",
-    "TypeChecking::SetVariable" -> "???",
-    // egregious
-    "Turtles::Turtles7" -> "colors don't wrap to [0,140)",
-    "Links::Links2" -> "colors don't wrap to [0,140)",
-    // significant
-    "Interaction::Interaction3b1" -> "correct answer requires empty init block optimization",
-    "Interaction::Interaction3b2" -> "correct answer requires empty init block optimization",
+    "ResizeWorld::ResizeWorldDoesntRestartWhoNumbering"                       -> "???",
+    "Errors::task-variable-not-in-task"                                       -> "???",
+    "ReporterTasks::CloseOverLocal1"                                          -> "???",
+    // significant (dubious excuse)
+    "Sort::SortingListsOfAgents"           -> "sorting agents isn't supported",
+    "UpAndDownhill::UpAndDownhill1"        -> "sorting agents isn't supported",
+    "UpAndDownhill::Uphill3"               -> "sorting agents isn't supported",
+    "Diffuse::DiffuseTorus"                -> "sorting agents isn't supported",
+    "CommandTasks::foreach-plus-recursion" -> "sorting agents isn't supported",
+    // significant (early exit)
+    "Stop::ReportFromForeach"          -> "no early exit from foreach",
+    "Stop::ReportFromForeach2"         -> "no early exit from foreach",
+    "Stop::ReportFromForeach3"         -> "no early exit from foreach",
+    "Stop::StopFromForeach2"           -> "no early exit from foreach",
+    "Stop::StopFromForeach3"           -> "no early exit from foreach",
+    "Stop::StopInsideRunOfCommandTask" -> "no early exit from command task",
+    // significant (string representation)
+    "CommandTasks::*ToString3" -> "command task string representation doesn't match",
+    "CommandTasks::*ToString4" -> "command task string representation doesn't match",
+    "CommandTasks::*ToString5" -> "command task string representation doesn't match",
+    "CommandTasks::*ToString6" -> "command task string representation doesn't match",
+    // significant (misc.)
+    "Random::Random3" -> "`random` doesn't handle fractional parts correctly",
+    "CommandTasks::command-task-body-gets-agent-type-check" -> "agent type checking not supported",
+    // should be handled in rewrite
+    "Agentsets::AgentSetEquality"      -> "Dead agents in agentsets are handled incorrectly",
+    "Agentsets::LinkAgentsetDeadLinks" -> "Dead agents in agentsets are handled incorrectly",
+    "Death::DeadTurtles9"              -> "Dead agents in agentsets are handled incorrectly",
+    "Death::DeadTurtles10"             -> "Dead agents in agentsets are handled incorrectly",
+    "Death::DeadLinks1"                -> "Dead agents in agentsets are handled incorrectly",
+    "OneOf::OneOfDyingTurtles"         -> "Dead agents in agentsets are handled incorrectly",
+    "Interaction::Interaction3b1"         -> "correct answer requires empty init block optimization",
+    "Interaction::Interaction3b2"         -> "correct answer requires empty init block optimization",
     "TurtlesHere::TurtlesHereCheckOrder1" -> "correct answer requires empty init block optimization",
     "TurtlesHere::TurtlesHereCheckOrder2" -> "correct answer requires empty init block optimization",
     "TurtlesHere::TurtlesHereCheckOrder3" -> "correct answer requires empty init block optimization",
     "TurtlesHere::TurtlesHereCheckOrder4" -> "correct answer requires empty init block optimization",
-    "TurtlesHere::TurtlesHereInVariable" -> "correct answer requires empty init block optimization",
-    "Death::DeadTurtles10" -> "converting agent to string lacks dead check",
-    "Death::DeadLinks1" -> "converting agent to string lacks dead check",
-    "Agentsets::Agentsets4" -> "TOO SLOW",
-    "Links::LinksInitBlock" -> "TOO SLOW",
-    "Random::RandomNOfIsFairForTurtles" -> "TOO SLOW",
-    "Random::RandomNOfIsFairForLinks" -> "TOO SLOW",
-    "Random::RandomNOfIsFairForABreed" -> "TOO SLOW",
-    "Random::RandomNOfIsFairForPatches" -> "TOO SLOW",
+    "Agentsets::Agentsets4" -> "TOO SLOW (because creating links requires looking up existing links)",
+    "Links::LinksInitBlock" -> "TOO SLOW (because creating links requires looking up existing links)",
+    // significant; uncertain how to solve (`RandomNOfIsFair<X>`s could possibly be solved by making it faster to write agent variables, but maybe not)
+    "Random::RandomNOfIsFairForTurtles"                       -> "TOO SLOW",
+    "Random::RandomNOfIsFairForLinks"                         -> "TOO SLOW",
+    "Random::RandomNOfIsFairForABreed"                        -> "TOO SLOW",
+    "Random::RandomNOfIsFairForAList"                         -> "TOO SLOW",
+    "Random::RandomNOfIsFairForPatches"                       -> "TOO SLOW",
     "Random::RandomNOfIsFairForAnAgentsetConstructedOnTheFly" -> "TOO SLOW",
-    "Random::RandomNOfIsFairForAList" -> "TOO SLOW",
-    "Agentsets::AgentsetEquality" -> "'special' agentsets not supported",
-    "Tie::Tie2Nonrigid" -> "tie-mode link variable not implemented",
-    // obscure
-    "ResizeWorld::ResizeWorldDoesntRestartWhoNumbering" -> "???",
-    "Let::LetOfVarToItself1" -> "???",
-    "Let::LetOfVarToItself2" -> "???",
-    "Let::LetOfVarToItself3" -> "???",
-    "Let::LetOfVarToItselfInsideAsk" -> "???"
+    // requires features
+    "Tie::Tie2Nonrigid" -> "tie-mode link variable not implemented; ties not implemented at all",
+    // perhaps never to be supported
+    "ControlStructures::Run8"                  -> "run/runresult on strings not supported",
+    "Run::LuisIzquierdoRun1"                   -> "run/runresult on strings not supported",
+    "Run::LuisIzquierdoRun2"                   -> "run/runresult on strings not supported",
+    "Run::LuisIzquierdoRunResult1"             -> "run/runresult on strings not supported",
+    "Run::LuisIzquierdoRunResult2"             -> "run/runresult on strings not supported",
+    "Run::run-evaluate-string-input-only-once" -> "run/runresult on strings not supported",
+    "ControlStructures::Run1"                  -> "run/runresult on strings not supported",
+    "ControlStructures::Run2"                  -> "run/runresult on strings not supported",
+    "ControlStructures::Run3"                  -> "run/runresult on strings not supported",
+    "ControlStructures::Run4"                  -> "run/runresult on strings not supported",
+    "ControlStructures::Run5"                  -> "run/runresult on strings not supported",
+    "ControlStructures::Run6"                  -> "run/runresult on strings not supported",
+    "ControlStructures::Run7"                  -> "run/runresult on strings not supported",
+    // needs compiler changes
+    "TypeChecking::SetVariable"      -> "Necessary check must be moved up into the front-end of the compiler",
+    "Let::LetOfVarToItself1"         -> "Necessary check must be moved up into the front-end of the compiler",
+    "Let::LetOfVarToItself2"         -> "Necessary check must be moved up into the front-end of the compiler",
+    "Let::LetOfVarToItself3"         -> "Necessary check must be moved up into the front-end of the compiler",
+    "Let::LetOfVarToItselfInsideAsk" -> "Necessary check must be moved up into the front-end of the compiler"
   )
 }
 
