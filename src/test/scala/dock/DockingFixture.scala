@@ -157,13 +157,28 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
   override def open(path: String) {
     require(!opened)
     super.open(path)
+  }
+
+  def open(path: String, dimensions: Option[(Int, Int, Int, Int)]) {
+    open(path)
     val sections = api.ModelReader.parseModel(api.FileIO.file2String(path))
     val code = sections(api.ModelSection.Code).mkString("\n")
     val (interfaceGlobals, _, _, _, interfaceGlobalCommands) =
       new org.nlogo.workspace.WidgetParser(workspace)
         .parseWidgets(sections(api.ModelSection.Interface))
+    val originalDimensions = workspace.world.getDimensions
+    val finalDimensions = dimensions match {
+      case None => originalDimensions
+      case Some((minx, maxx, miny, maxy)) =>
+        val newDimensions =
+          originalDimensions.copy(
+            minPxcor = minx, maxPxcor = maxx,
+            minPycor = miny, maxPycor = maxy)
+        workspace.setDimensions(newDimensions)
+        newDimensions
+    }
     declareHelper(code, interfaceGlobals, interfaceGlobalCommands.toString,
-      workspace.world.getDimensions, workspace.world.turtleShapeList, workspace.world.linkShapeList)
+      finalDimensions, workspace.world.turtleShapeList, workspace.world.linkShapeList)
   }
 
   override def open(model: headless.ModelCreator.Model) {
