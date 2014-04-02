@@ -39,20 +39,20 @@ function setupPatches() {
   });
 }
 function setupNest() {
-  AgentSet.setPatchVariable(7, (AgentSet.self().distanceXY(0, 0) < 5));
+  AgentSet.setPatchVariable(7, Prims.lt(AgentSet.self().distanceXY(0, 0), 5));
   AgentSet.setPatchVariable(8, (200 - AgentSet.self().distanceXY(0, 0)));
 }
 function setupFood() {
-  if ((AgentSet.self().distanceXY((0.6 * world.maxPxcor), 0) < 5)) {
+  if (Prims.lt(AgentSet.self().distanceXY((0.6 * world.maxPxcor), 0), 5)) {
     AgentSet.setPatchVariable(9, 1);
   }
-  if ((AgentSet.self().distanceXY((-0.6 * world.maxPxcor), (-0.6 * world.maxPycor)) < 5)) {
+  if (Prims.lt(AgentSet.self().distanceXY((-0.6 * world.maxPxcor), (-0.6 * world.maxPycor)), 5)) {
     AgentSet.setPatchVariable(9, 2);
   }
-  if ((AgentSet.self().distanceXY((-0.8 * world.maxPxcor), (0.8 * world.maxPycor)) < 5)) {
+  if (Prims.lt(AgentSet.self().distanceXY((-0.8 * world.maxPxcor), (0.8 * world.maxPycor)), 5)) {
     AgentSet.setPatchVariable(9, 3);
   }
-  if ((AgentSet.getPatchVariable(9) > 0)) {
+  if (Prims.gt(AgentSet.getPatchVariable(9), 0)) {
     AgentSet.setPatchVariable(6, (1 + Prims.random(2)));
   }
 }
@@ -61,7 +61,7 @@ function updateDisplay() {
     AgentSet.setPatchVariable(2, 115);
   }
   else {
-    if ((AgentSet.getPatchVariable(6) > 0)) {
+    if (Prims.gt(AgentSet.getPatchVariable(6), 0)) {
       if (Prims.equality(AgentSet.getPatchVariable(9), 1)) {
         AgentSet.setPatchVariable(2, 85);
       }
@@ -89,7 +89,7 @@ function go() {
   doPlotting();
 }
 function goTurtles() {
-  if ((AgentSet.getTurtleVariable(0) < world.ticks())) {
+  if (Prims.lt(AgentSet.getTurtleVariable(0), world.ticks())) {
     if (AgentSet.getTurtleVariable(13)) {
       AgentSet.setTurtleVariable(1, (25 + 1));
       returnToNest();
@@ -113,7 +113,7 @@ function returnToNest() {
   else {
     AgentSet.setPatchVariable(5, (AgentSet.getPatchVariable(5) + AgentSet.getTurtleVariable(14)));
     AgentSet.setTurtleVariable(14, (AgentSet.getTurtleVariable(14) - 1.5));
-    if ((AgentSet.getTurtleVariable(14) < 1)) {
+    if (Prims.lt(AgentSet.getTurtleVariable(14), 1)) {
       AgentSet.setTurtleVariable(14, 1);
     }
     uphillNestScent();
@@ -122,18 +122,18 @@ function returnToNest() {
   }
 }
 function lookForFood() {
-  if ((AgentSet.getPatchVariable(6) > 0)) {
+  if (Prims.gt(AgentSet.getPatchVariable(6), 0)) {
     AgentSet.setTurtleVariable(13, true);
     AgentSet.setPatchVariable(6, (AgentSet.getPatchVariable(6) - 1));
     AgentSet.setTurtleVariable(14, 60);
     Prims.right(180);
     return;
   }
-  if ((AgentSet.getPatchVariable(5) > 2)) {
+  if (Prims.gt(AgentSet.getPatchVariable(5), 2)) {
     Prims.fd(1);
   }
   else {
-    if ((AgentSet.getPatchVariable(5) < 0.05)) {
+    if (Prims.lt(AgentSet.getPatchVariable(5), 0.05)) {
       wiggle();
       Prims.fd(1);
     }
@@ -150,8 +150,8 @@ function uphillChemical() {
   });
   var scentRight = chemicalScent(45);
   var scentLeft = chemicalScent(-45);
-  if (((scentRight > scentAhead) || (scentLeft > scentAhead))) {
-    if ((scentRight > scentLeft)) {
+  if ((Prims.gt(scentRight, scentAhead) || Prims.gt(scentLeft, scentAhead))) {
+    if (Prims.gt(scentRight, scentLeft)) {
       Prims.right(45);
     }
     else {
@@ -166,8 +166,8 @@ function uphillNestScent() {
   });
   var scentRight = getNestScent(45);
   var scentLeft = getNestScent(-45);
-  if (((scentRight > scentAhead) || (scentLeft > scentAhead))) {
-    if ((scentRight > scentLeft)) {
+  if ((Prims.gt(scentRight, scentAhead) || Prims.gt(scentLeft, scentAhead))) {
+    if (Prims.gt(scentRight, scentLeft)) {
       Prims.right(45);
     }
     else {

@@ -25,7 +25,7 @@ function go() {
   AgentSet.ask(world.turtles(), true, function() {
     move();
     incrementClock();
-    if (((AgentSet.getTurtleVariable(13) > AgentSet.getTurtleVariable(16)) && (AgentSet.getTurtleVariable(13) >= AgentSet.getTurtleVariable(14)))) {
+    if ((Prims.gt(AgentSet.getTurtleVariable(13), AgentSet.getTurtleVariable(16)) && Prims.gte(AgentSet.getTurtleVariable(13), AgentSet.getTurtleVariable(14)))) {
       look();
     }
   });
@@ -35,7 +35,7 @@ function go() {
   world.tick();
 }
 function recolor() {
-  if ((AgentSet.getTurtleVariable(13) < AgentSet.getTurtleVariable(14))) {
+  if (Prims.lt(AgentSet.getTurtleVariable(13), AgentSet.getTurtleVariable(14))) {
     AgentSet.self().hideTurtle(false);;
     AgentSet.setTurtleVariable(1, 45);
   }
@@ -60,9 +60,9 @@ function incrementClock() {
   }
 }
 function look() {
-  if ((AgentSet.count(AgentSet.agentFilter(AgentSet.self().inRadius(world.turtles(), 1), function() {
+  if (Prims.gte(AgentSet.count(AgentSet.agentFilter(AgentSet.self().inRadius(world.turtles(), 1), function() {
     return Prims.equality(AgentSet.getTurtleVariable(1), 45)
-  })) >= Globals.getGlobal(3))) {
+  })), Globals.getGlobal(3))) {
     AgentSet.setTurtleVariable(13, AgentSet.getTurtleVariable(15));
   }
 }

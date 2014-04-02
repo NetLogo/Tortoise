@@ -36,7 +36,7 @@ function findPartner() {
   });
 }
 function resizeNodes() {
-  if (AgentSet.all(world.turtles(), function(){ return (AgentSet.getTurtleVariable(10) <= 1) })) {
+  if (AgentSet.all(world.turtles(), function(){ return Prims.lte(AgentSet.getTurtleVariable(10), 1) })) {
     AgentSet.ask(world.turtles(), true, function() {
       AgentSet.setTurtleVariable(10, StrictMath.sqrt(AgentSet.count(AgentSet.linkNeighbors(false, false))));
     });
@@ -70,10 +70,10 @@ function layout() {
   });
 }
 function limitMagnitude(number, limit) {
-  if ((number > limit)) {
+  if (Prims.gt(number, limit)) {
     return limit;
   }
-  if ((number < (- limit))) {
+  if (Prims.lt(number, (- limit))) {
     return (- limit);
   }
   return number;

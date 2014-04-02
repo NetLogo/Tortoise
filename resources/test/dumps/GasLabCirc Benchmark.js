@@ -72,7 +72,7 @@ function go() {
   collideWinners();
   world.tickAdvance(Globals.getGlobal(5));
   if (Globals.getGlobal(13)) {
-    if (((world.ticks() - Globals.getGlobal(12)) > Globals.getGlobal(14))) {
+    if (Prims.gt((world.ticks() - Globals.getGlobal(12)), Globals.getGlobal(14))) {
       noop();
       Globals.setGlobal(12, world.ticks());
     }
@@ -105,10 +105,10 @@ function checkForParticleCollision() {
     var vSquared = ((dvx * dvx) + (dvy * dvy));
     var d1 = (StrictMath.pow(pv, 2) - ((4 * vSquared) * pSquared));
     var timeToCollision = -1;
-    if ((d1 >= 0)) {
+    if (Prims.gte(d1, 0)) {
       timeToCollision = (((- pv) - StrictMath.sqrt(d1)) / (2 * vSquared));
     }
-    if ((timeToCollision > 0)) {
+    if (Prims.gt(timeToCollision, 0)) {
       var collidingPair = Prims.list((timeToCollision + world.ticks()), AgentSet.self(), AgentSet.myself());
       Globals.setGlobal(7, Prims.fput(collidingPair, Globals.getGlobal(7)));
     }
@@ -136,7 +136,7 @@ function checkForWallCollision() {
   else {
     tPlaneXpos = 0;
   }
-  if ((tPlaneXpos > 0)) {
+  if (Prims.gt(tPlaneXpos, 0)) {
     assignCollidingWall(tPlaneXpos, "plane-xpos");
   }
   var tPlaneXneg = 0;
@@ -146,7 +146,7 @@ function checkForWallCollision() {
   else {
     tPlaneXneg = 0;
   }
-  if ((tPlaneXneg > 0)) {
+  if (Prims.gt(tPlaneXneg, 0)) {
     assignCollidingWall(tPlaneXneg, "plane-xneg");
   }
   var tPlaneYpos = 0;
@@ -156,7 +156,7 @@ function checkForWallCollision() {
   else {
     tPlaneYpos = 0;
   }
-  if ((tPlaneYpos > 0)) {
+  if (Prims.gt(tPlaneYpos, 0)) {
     assignCollidingWall(tPlaneYpos, "plane-ypos");
   }
   var tPlaneYneg = 0;
@@ -166,7 +166,7 @@ function checkForWallCollision() {
   else {
     tPlaneYneg = 0;
   }
-  if ((tPlaneYneg > 0)) {
+  if (Prims.gt(tPlaneYneg, 0)) {
     assignCollidingWall(tPlaneYneg, "plane-yneg");
   }
 }
@@ -186,13 +186,13 @@ function sortCollisions() {
   }
   var winner = Prims.first(Globals.getGlobal(7));
   Tasks.forEach(Tasks.commandTask(function() {
-    if ((Prims.first(arguments[0]) < Prims.first(winner))) {
+    if (Prims.lt(Prims.first(arguments[0]), Prims.first(winner))) {
       winner = arguments[0];
     }
   }), Globals.getGlobal(7));
   var dt = Prims.item(0, winner);
-  if ((dt > 0)) {
-    if (((dt - world.ticks()) <= 1)) {
+  if (Prims.gt(dt, 0)) {
+    if (Prims.lte((dt - world.ticks()), 1)) {
       Globals.setGlobal(5, (dt - world.ticks()));
       Globals.setGlobal(9, Prims.item(1, winner));
       Globals.setGlobal(10, Prims.item(2, winner));
@@ -270,11 +270,11 @@ function recolor() {
 }
 function recolorBanded() {
   var avgSpeed = 1;
-  if ((AgentSet.getBreedVariable("SPEED") < (0.5 * avgSpeed))) {
+  if (Prims.lt(AgentSet.getBreedVariable("SPEED"), (0.5 * avgSpeed))) {
     AgentSet.setTurtleVariable(1, 105);
   }
   else {
-    if ((AgentSet.getBreedVariable("SPEED") > (1.5 * avgSpeed))) {
+    if (Prims.gt(AgentSet.getBreedVariable("SPEED"), (1.5 * avgSpeed))) {
       AgentSet.setTurtleVariable(1, 15);
     }
     else {
@@ -284,7 +284,7 @@ function recolorBanded() {
 }
 function recolorShaded() {
   var avgSpeed = 1;
-  if ((AgentSet.getBreedVariable("SPEED") < (3 * avgSpeed))) {
+  if (Prims.lt(AgentSet.getBreedVariable("SPEED"), (3 * avgSpeed))) {
     AgentSet.setTurtleVariable(1, ((95 - 3.001) + ((8 * AgentSet.getBreedVariable("SPEED")) / (3 * avgSpeed))));
   }
   else {
@@ -296,7 +296,7 @@ function recolorNone() {
 }
 function makeBox() {
   AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
-    return ((Prims.equality(StrictMath.abs(AgentSet.getPatchVariable(0)), Globals.getGlobal(6)) && (StrictMath.abs(AgentSet.getPatchVariable(1)) <= Globals.getGlobal(6))) || (Prims.equality(StrictMath.abs(AgentSet.getPatchVariable(1)), Globals.getGlobal(6)) && (StrictMath.abs(AgentSet.getPatchVariable(0)) <= Globals.getGlobal(6))))
+    return ((Prims.equality(StrictMath.abs(AgentSet.getPatchVariable(0)), Globals.getGlobal(6)) && Prims.lte(StrictMath.abs(AgentSet.getPatchVariable(1)), Globals.getGlobal(6))) || (Prims.equality(StrictMath.abs(AgentSet.getPatchVariable(1)), Globals.getGlobal(6)) && Prims.lte(StrictMath.abs(AgentSet.getPatchVariable(0)), Globals.getGlobal(6))))
   }), true, function() {
     AgentSet.setPatchVariable(2, 45);
   });
@@ -324,7 +324,7 @@ function arrange(particleSet) {
 }
 function overlapping_p() {
   return AgentSet.any(AgentSet.other(AgentSet.agentFilter(AgentSet.self().inRadius(world.turtlesOfBreed("PARTICLES"), ((AgentSet.getTurtleVariable(10) + Globals.getGlobal(1)) / 2)), function() {
-    return (AgentSet.self().distance(AgentSet.myself()) < ((AgentSet.getTurtleVariable(10) + AgentSet.of(AgentSet.myself(), function() {
+    return Prims.lt(AgentSet.self().distance(AgentSet.myself()), ((AgentSet.getTurtleVariable(10) + AgentSet.of(AgentSet.myself(), function() {
       return AgentSet.getTurtleVariable(10)
     })) / 2))
   })));
@@ -344,12 +344,12 @@ function testTimeReversal(n) {
   AgentSet.ask(world.turtlesOfBreed("PARTICLES"), true, function() {
     noop();
   });
-  while ((world.ticks() < n)) {
+  while (Prims.lt(world.ticks(), n)) {
     go();
   }
   var oldClock = world.ticks();
   reverseTime();
-  while ((world.ticks() < (2 * oldClock))) {
+  while (Prims.lt(world.ticks(), (2 * oldClock))) {
     go();
   }
   AgentSet.ask(world.turtlesOfBreed("PARTICLES"), true, function() {

@@ -66,13 +66,13 @@ function go() {
 }
 function stabilize(animate_p) {
   var activePatches = AgentSet.agentFilter(world.patches(), function() {
-    return (AgentSet.getPatchVariable(5) > 3)
+    return Prims.gt(AgentSet.getPatchVariable(5), 3)
   });
   var iters = 0;
-  var avalanchePatches = new Agents([]);
+  var avalanchePatches = new Agents([], Breeds.get('PATCHES'), AgentKind.Patch);
   while (AgentSet.any(activePatches)) {
     var overloadedPatches = AgentSet.agentFilter(activePatches, function() {
-      return (AgentSet.getPatchVariable(5) > 3)
+      return Prims.gt(AgentSet.getPatchVariable(5), 3)
     });
     if (AgentSet.any(overloadedPatches)) {
       iters = (iters + 1);

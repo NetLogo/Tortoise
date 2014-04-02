@@ -5,7 +5,7 @@ world = new World(-12, 12, -12, 12, 18.0, true, true, {"default":{"rotate":true,
 function setup() {
   world.clearAll();
   AgentSet.ask(world.patches(), true, function() {
-    if ((Prims.random(100) < Globals.getGlobal(1))) {
+    if (Prims.lt(Prims.random(100), Globals.getGlobal(1))) {
       AgentSet.setPatchVariable(2, 45);
     }
   });
@@ -19,7 +19,7 @@ function setup() {
 }
 function go() {
   AgentSet.ask(world.turtles(), true, function() {
-    if ((AgentSet.getTurtleVariable(14) > 0)) {
+    if (Prims.gt(AgentSet.getTurtleVariable(14), 0)) {
       AgentSet.setTurtleVariable(14, (AgentSet.getTurtleVariable(14) - 1));
     }
     else {

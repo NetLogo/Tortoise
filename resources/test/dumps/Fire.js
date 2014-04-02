@@ -8,7 +8,7 @@ function setup() {
   world.clearAll();
   Breeds.setDefaultShape(world.turtles(), "square");
   AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
-    return (Prims.randomFloat(100) < Globals.getGlobal(0))
+    return Prims.lt(Prims.randomFloat(100), Globals.getGlobal(0))
   }), true, function() {
     AgentSet.setPatchVariable(2, 55);
   });
@@ -48,7 +48,7 @@ function ignite() {
 function fadeEmbers() {
   AgentSet.ask(world.turtlesOfBreed("EMBERS"), true, function() {
     AgentSet.setTurtleVariable(1, (AgentSet.getTurtleVariable(1) - 0.3));
-    if ((AgentSet.getTurtleVariable(1) < (15 - 3.5))) {
+    if (Prims.lt(AgentSet.getTurtleVariable(1), (15 - 3.5))) {
       AgentSet.setPatchVariable(2, AgentSet.getTurtleVariable(1));
       AgentSet.die();
     }
