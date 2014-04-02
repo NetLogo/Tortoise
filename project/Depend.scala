@@ -99,11 +99,13 @@ check absenceOfPackageCycles > 1 in org.nlogo.tortoise.*
 
 [json4s] = org.json4s.*
 
+[webjars] = org.webjars.WebJarAssetLocator
+
 [nashorn] = javax.script.* jdk.nashorn.api.scripting.*
 
 [testing] = org.scalatest.* org.scalautils.* org.scalacheck.* org.jmock.* org.hamcrest.*
 
-[libs] = [stdlib-j] [stdlib-s] [headless-AWT] [json4s] [nashorn] [testing]
+[libs] = [stdlib-j] [stdlib-s] [headless-AWT] [json4s] [webjars] [nashorn] [testing]
 """)
     }
 
