@@ -10,8 +10,9 @@ object SimplePrims {
     def unapply(r: nvm.Reporter): Option[String] =
       PartialFunction.condOpt(r) {
         case _: prim._nobody               => "Nobody"
-        case _: prim.etc._nopatches        => "new Agents([])"
-        case _: prim.etc._noturtles        => "new Agents([])"
+        case _: prim.etc._nopatches        => "new Agents([], Breeds.get('PATCHES'), AgentKind.Patch)"
+        case _: prim.etc._noturtles        => "new Agents([], Breeds.get('TURTLES'), AgentKind.Turtle)"
+        case _: prim.etc._nolinks          => "new Agents([], Breeds.get('LINKS'),   AgentKind.Link)"
         case _: prim.etc._minpxcor         => "world.minPxcor"
         case _: prim.etc._minpycor         => "world.minPycor"
         case _: prim.etc._maxpxcor         => "world.maxPxcor"
@@ -32,10 +33,6 @@ object SimplePrims {
         case _: prim._minus              => "-"
         case _: prim.etc._mult           => "*"
         case _: prim.etc._div            => "/"
-        case _: prim._lessthan           => "<"
-        case _: prim._greaterthan        => ">"
-        case _: prim.etc._greaterorequal => ">="
-        case _: prim.etc._lessorequal    => "<="
         case _: prim._and                => "&&"
         case _: prim._or                 => "||"
       }
@@ -44,6 +41,10 @@ object SimplePrims {
   object NormalReporter {
     def unapply(r: nvm.Reporter): Option[String] =
       PartialFunction.condOpt(r) {
+        case _: prim._lessthan               => "Prims.lt"
+        case _: prim._greaterthan            => "Prims.gt"
+        case _: prim.etc._greaterorequal     => "Prims.gte"
+        case _: prim.etc._lessorequal        => "Prims.lte"
         case _: prim.etc._turtle             => "world.getTurtle"
         case _: prim.etc._patch              => "Prims.patch"
         case _: prim._neighbors              => "Prims.getNeighbors"

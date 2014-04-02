@@ -23,7 +23,10 @@ class Nashorn {
       .getEngineByName("nashorn")
       .ensuring(_ != null, "JavaScript engine unavailable")
 
+  val versionNumber: String = engine.getFactory.getEngineVersion
+
   val libs = Seq(
+    "/js/mori.min.js", "/js/lodash.js",
     // the original CoffeeScript for these are in src/main/coffee. sbt compiles
     // them to JavaScript for us.
     "/js/compat.js", "/js/engine.js", "/js/agentmodel.js")
