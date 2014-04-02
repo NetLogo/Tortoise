@@ -54,16 +54,9 @@ class TestReporters extends lang.TestReporters with TortoiseFinder {
 class TestCommands extends lang.TestCommands with TortoiseFinder {
   override val freebies = Map[String, String](
     // to be investigated
-    "Interaction::Interaction2"                         -> "???",
     "ResizeWorld::ResizeWorldDoesntRestartWhoNumbering" -> "???",
     "Errors::task-variable-not-in-task"                 -> "???",
     "ReporterTasks::CloseOverLocal1"                    -> "???",
-    // significant (dubious excuse)
-    "Sort::SortingListsOfAgents"           -> "sorting agents isn't supported",
-    "UpAndDownhill::UpAndDownhill1"        -> "sorting agents isn't supported",
-    "UpAndDownhill::Uphill3"               -> "sorting agents isn't supported",
-    "Diffuse::DiffuseTorus"                -> "sorting agents isn't supported",
-    "CommandTasks::foreach-plus-recursion" -> "sorting agents isn't supported",
     // significant (early exit)
     "Stop::ReportFromForeach"          -> "no early exit from foreach",
     "Stop::ReportFromForeach2"         -> "no early exit from foreach",

@@ -1143,7 +1143,19 @@ Prims =
       throw new NetLogoException("can only reverse lists and strings")
   sort: (xs) ->
     if typeIsArray(xs)
-      xs[..].sort()
+      wrappedItems = _(xs)
+      if wrappedItems.isEmpty()
+        xs
+      else if wrappedItems.all((x) -> Utilities.isNumber(x))
+        xs[..].sort((x, y) -> Comparator.numericCompare(x, y).toInt)
+      else if wrappedItems.all((x) -> Utilities.isString(x))
+        xs[..].sort()
+      else if wrappedItems.all((x) -> x instanceof Turtle) or wrappedItems.all((x) -> x instanceof Patch)
+        xs[..].sort((x, y) -> x.compare(y).toInt)
+      else if wrappedItems.all((x) -> x instanceof Link)
+        xs[..].sort(Links.compare)
+      else
+        throw new Error("We don't know how to sort your kind here!")
     else if xs instanceof Agents
       xs.sort()
     else
