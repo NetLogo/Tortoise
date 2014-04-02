@@ -174,6 +174,12 @@ object Model {
     Model(
       path = "models/test/benchmarks/GasLabCirc Benchmark.nlogo",
       repetitions = 50
+    ),
+    Model(
+      path = "models/test/benchmarks/CA1D Benchmark.nlogo",
+      dimensions = Some((-9, 9, -4, 4)),
+      setup = "setup-random",
+      repetitions = 20
     )
   )
 }
