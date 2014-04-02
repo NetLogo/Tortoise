@@ -24,7 +24,8 @@ object CompilerService {
         case Array(nlogoPath) => io.Source.fromFile(nlogoPath)
         case _                => io.Source.fromInputStream(System.in)
       }
-    println(compile(input.mkString))
+    try println(compile(input.mkString))
+    finally input.close()
   }
 
   import collection.JavaConverters._
