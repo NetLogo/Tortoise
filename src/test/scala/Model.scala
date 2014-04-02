@@ -139,7 +139,7 @@ object Model {
       metrics = Seq("[size] of turtles")
     ),
     Model(
-      path = "models/test/tortoise/Vants.nlogo",
+      path = "models/Sample Models/Computer Science/Vants.nlogo",
       repetitions = 1,
       go =
         "repeat 10 [ go-forward ] " +
