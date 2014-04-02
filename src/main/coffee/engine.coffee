@@ -1135,7 +1135,13 @@ Prims =
     else
       Math.round(result)
 
-  sort: (xs) -> xs.sort()
+  sort: (xs) ->
+    if typeIsArray(xs)
+      xs[..].sort()
+    else if xs instanceof Agents
+      xs.sort()
+    else
+      throw new NetLogoException("can only sort lists and agentsets")
   removeDuplicates: (xs) ->
     if xs.length < 2
       xs
