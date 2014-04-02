@@ -714,6 +714,13 @@ class World
     Updates.push( world: { 0: { patchesAllBlack: @_patchesAllBlack }})
   clearAll: ->
     Globals.clear(@interfaceGlobalCount)
+    @clearTurtles()
+    @createPatches()
+    @_nextLinkId = 0
+    @patchesAllBlack(true)
+    @clearTicks()
+    return
+  clearTurtles: ->
     # We iterate through a copy of the array since it will be modified during
     # iteration.
     # A more efficient (but less readable) way of doing this is to iterate
@@ -723,11 +730,16 @@ class World
         t.die()
       catch error
         throw error if !(error instanceof DeathInterrupt)
-    @createPatches()
     @_nextTurtleId = 0
-    @_nextLinkId = 0
+    return
+  clearPatches: ->
+    for p in @patches().items
+      p.setPatchVariable(2, 0)   # 2 = pcolor
+      p.setPatchVariable(3, "")    # 3 = plabel
+      p.setPatchVariable(4, 9.9)   # 4 = plabel-color
+      for i in [patchBuiltins.size...p.vars.length]
+        p.setPatchVariable(i, 0)
     @patchesAllBlack(true)
-    @clearTicks()
     return
   createTurtle: (t) ->
     t.id = @_nextTurtleId++
