@@ -53,6 +53,8 @@ resolvers += Resolver.sonatypeRepo("snapshots")
 libraryDependencies ++= Seq(
   "org.nlogo" % "netlogoheadless" % nlDependencyVersion,
   "org.json4s" %% "json4s-native" % "3.2.9-SNAPSHOT",
+  "org.webjars" % "lodash" % "2.4.1-3",
+  "org.webjars" % "mori" % "f38f11a-bizzle" from "http://ccl.northwestern.edu/devel/mori-f38f11a-bizzle.jar",
   "org.scalacheck" %% "scalacheck" % "1.11.3" % "test",
   "org.scalatest" %% "scalatest" % "2.1.2" % "test",
   "org.skyscreamer" % "jsonassert" % "1.1.0" % "test",

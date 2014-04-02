@@ -11,10 +11,12 @@
 # Nashorn calls it "print", V8 and browsers have "console.log".
 # get it somehow!
 unless println?
-  if console?
+  if console? # V8
     println = console.log
-  unless println?
+  else if print? # SpiderMonkey
     println = print
+  unless println? # Nashorn
+    println = java.lang.System.out.println
 
 # surprisingly difficult to ask if something is an array or not
 typeIsArray = (value) ->
@@ -25,6 +27,9 @@ typeIsArray = (value) ->
   typeof value.splice is 'function' and
   not ( value.propertyIsEnumerable 'length' )
 
+unless mori? # For Node/V8, where Mori needs to be loaded by the module system --JAB (4/1/14)
+  mori = require('./target/classes/js/mori.min.js')
+
 # on Nashorn, we provide this via MersenneTwisterFast.  in the browser,
 # we delegate to Math.random(), for speed.  we could swap in a JS
 # implementation of the Mersenne Twister (code for it is googlable),
@@ -34,6 +39,7 @@ unless Random?
   Random.nextInt = (limit) -> Math.floor(Math.random() * limit)
   Random.nextLong = Random.nextInt
   Random.nextDouble = -> Math.random()
+  Random.setSeed = (seed) -> return # No-op!
 
 # For divergences between Nashorn and browsers, clone and extend!
 Cloner =

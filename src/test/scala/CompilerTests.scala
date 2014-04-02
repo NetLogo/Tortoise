@@ -147,11 +147,12 @@ class CompilerTests extends FunSuite {
   test("command procedure") {
     import Compiler.{compileProcedures => compile}
     val input = "to foo output-print 5 end"
-    val expected = """world = new World(0, 0, 0, 0, 12.0, true, true, {}, {}, 0);
-                     |function foo() {
-                     |  Prims.outputPrint(5);
-                     |}
-                     |""".stripMargin
+    val expected = """|world = new World(0, 0, 0, 0, 12.0, true, true, {}, {}, 0);
+                      |
+                      |function foo() {
+                      |  Prims.outputPrint(5);
+                      |}
+                      |""".stripMargin
     assertResult(expected)(compile(input)._1)
   }
 
@@ -161,6 +162,7 @@ class CompilerTests extends FunSuite {
     val expected =
      """|Globals.init(3);
         |world = new World(0, 0, 0, 0, 12.0, true, true, {}, {}, 0);
+        |
         |function fooBar_p() {
         |  Prims.outputPrint(Globals.getGlobal(2));
         |  Prims.outputPrint(Globals.getGlobal(1));

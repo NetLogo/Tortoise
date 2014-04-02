@@ -10,8 +10,9 @@ object SimplePrims {
     def unapply(r: nvm.Reporter): Option[String] =
       PartialFunction.condOpt(r) {
         case _: prim._nobody               => "Nobody"
-        case _: prim.etc._nopatches        => "new Agents([])"
-        case _: prim.etc._noturtles        => "new Agents([])"
+        case _: prim.etc._nopatches        => "new Agents([], Breeds.get('PATCHES'), AgentKind.Patch)"
+        case _: prim.etc._noturtles        => "new Agents([], Breeds.get('TURTLES'), AgentKind.Turtle)"
+        case _: prim.etc._nolinks          => "new Agents([], Breeds.get('LINKS'),   AgentKind.Link)"
         case _: prim.etc._minpxcor         => "world.minPxcor"
         case _: prim.etc._minpycor         => "world.minPycor"
         case _: prim.etc._maxpxcor         => "world.maxPxcor"
@@ -32,10 +33,6 @@ object SimplePrims {
         case _: prim._minus              => "-"
         case _: prim.etc._mult           => "*"
         case _: prim.etc._div            => "/"
-        case _: prim._lessthan           => "<"
-        case _: prim._greaterthan        => ">"
-        case _: prim.etc._greaterorequal => ">="
-        case _: prim.etc._lessorequal    => "<="
         case _: prim._and                => "&&"
         case _: prim._or                 => "||"
       }
@@ -44,6 +41,10 @@ object SimplePrims {
   object NormalReporter {
     def unapply(r: nvm.Reporter): Option[String] =
       PartialFunction.condOpt(r) {
+        case _: prim._lessthan               => "Prims.lt"
+        case _: prim._greaterthan            => "Prims.gt"
+        case _: prim.etc._greaterorequal     => "Prims.gte"
+        case _: prim.etc._lessorequal        => "Prims.lte"
         case _: prim.etc._turtle             => "world.getTurtle"
         case _: prim.etc._patch              => "Prims.patch"
         case _: prim._neighbors              => "Prims.getNeighbors"
@@ -77,6 +78,7 @@ object SimplePrims {
         case _: prim._sum                    => "Prims.sum"
         case _: prim.etc._map                => "Tasks.map"
         case _: prim.etc._abs                => "StrictMath.abs"
+        case _: prim.etc._pow                => "StrictMath.pow"
         case _: prim._random                 => "Prims.random"
         case _: prim.etc._randomfloat        => "Prims.randomFloat"
         case _: prim.etc._randomxcor         => "Prims.randomXcor"
@@ -89,6 +91,7 @@ object SimplePrims {
         case _: prim.etc._distance           => "AgentSet.self().distance"
         case _: prim.etc._distancexy         => "AgentSet.self().distanceXY"
         case _: prim.etc._inradius           => "AgentSet.self().inRadius"
+        case _: prim.etc._towards            => "AgentSet.self().towards"
         case _: prim._patchat                => "AgentSet.self().patchAt"
         case _: prim.etc._patchahead         => "AgentSet.self().patchAhead"
         case _: prim.etc._patchrightandahead => "AgentSet.self().patchRightAndAhead"
@@ -105,6 +108,7 @@ object SimplePrims {
         case _: prim.etc._cos                => "Trig.unsquashedCos"
         case _: prim.etc._atan               => "Trig.atan"
         case _: prim.etc._floor              => "StrictMath.floor"
+        case _: prim.etc._ceil               => "StrictMath.ceil"
         case _: prim.etc._int                => "Prims._int"
         case _: prim.etc._round              => "StrictMath.round"
         case _: prim.etc._precision          => "Prims.precision"
@@ -153,6 +157,7 @@ object SimplePrims {
         case _: prim.etc._facexy            => "AgentSet.self().faceXY"
         case _: prim._fd                    => "Prims.fd"
         case _: prim._bk                    => "Prims.bk"
+        case _: prim._jump                  => "Prims.jump"
         case _: prim.etc._left              => "Prims.left"
         case _: prim.etc._right             => "Prims.right"
         case _: prim.etc._setxy             => "Prims.setXY"
@@ -163,6 +168,7 @@ object SimplePrims {
         case _: prim.etc._setcurrentplotpen => "noop"
         case _: prim.etc._plot              => "noop"
         case _: prim.etc._display           => "noop"
+        case _: prim.etc._stamp             => "noop"
         case _: prim.etc._watch             => "world.watch"
         case _: prim.etc._watchme           => "AgentSet.self().watchme"
         case _: prim.etc._resetperspective  => "world.resetPerspective"

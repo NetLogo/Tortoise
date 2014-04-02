@@ -15,6 +15,53 @@ Nobody = {
   toString: -> "nobody"
 }
 
+AgentKind = {
+  Observer: {}
+  Turtle: {}
+  Patch: {}
+  Link: {}
+}
+
+Comparator = {
+
+  NOT_EQUALS: {}
+
+  EQUALS:       { toInt: 0 }
+  GREATER_THAN: { toInt: 1 }
+  LESS_THAN:    { toInt: -1 }
+
+  numericCompare: (x, y) ->
+    if x < y
+      @LESS_THAN
+    else if x > y
+      @GREATER_THAN
+    else
+      @EQUALS
+
+}
+
+Utilities = {
+  isArray:    (x) -> Array.isArray(x)
+  isBoolean:  (x) -> typeof(x) is "boolean"
+  isFunction: (x) -> typeof(x) is "function"
+  isNumber:   (x) -> typeof(x) is "number"
+  isObject:   (x) -> typeof(x) is "object"
+  isString:   (x) -> typeof(x) is "string"
+}
+
+ColorModel = {
+  COLOR_MAX: 140
+  wrapColor: (c) ->
+    if typeIsArray(c)
+      c
+    else
+      modColor = c % @COLOR_MAX
+      if modColor >= 0
+        modColor
+      else
+        @COLOR_MAX + modColor
+}
+
 collectUpdates = ->
   result =
     if (Updates.length == 0)
@@ -85,6 +132,10 @@ updated = (obj, vars...) ->
         agentUpdate["END1"] = obj[v].id
       when "end2"
         agentUpdate["END2"] = obj[v].id
+      when "label"
+        agentUpdate["LABEL"] = obj[v].toString()
+      when "plabel"
+        agentUpdate["PLABEL"] = obj[v].toString()
       else
         agentUpdate[v.toUpperCase()] = obj[v]
   agents[obj.id] = agentUpdate
@@ -109,6 +160,7 @@ class Turtle
     breed.add(@)
     @shape = @breed.shape()
     if(@breed != Breeds.get("TURTLES"))
+      Breeds.get("TURTLES").add(this)
       for x in @breed.vars
         if(@breedVars[x] == undefined)
           @breedVars[x] = 0
@@ -140,6 +192,11 @@ class Turtle
   canMove: (amount) -> @patchAhead(amount) != Nobody
   distanceXY: (x, y) -> world.topology().distanceXY(@xcor(), @ycor(), x, y)
   distance: (agent) -> world.topology().distance(@xcor(), @ycor(), agent)
+  towards: (agent) ->
+    if(agent instanceof Turtle)
+      world.topology().towards(@xcor(), @ycor(), agent.xcor(), agent.ycor())
+    else if (agent instanceof Patch)
+      world.topology().towards(@xcor(), @ycor(), agent.pxcor, agent.pycor)
   faceXY: (x, y) ->
     if(x != @xcor() or y != @ycor())
       @heading = world.topology().towards(@xcor(), @ycor(), x, y)
@@ -162,13 +219,13 @@ class Turtle
         if (l.directed and l.end1 == me and isSource) or (l.directed and l.end2 == me and !isSource)
           l
         else
-          null).filter((o) -> o != null), Breeds.get("LINKS"))
+          null).filter((o) -> o != null), Breeds.get("LINKS"), AgentKind.Link)
     else
       new Agents(world.links().items.map((l) ->
         if (!l.directed and l.end1 == me) or (!l.directed and l.end2 == me)
           l
         else
-          null).filter((o) -> o != null), Breeds.get("LINKS"))
+          null).filter((o) -> o != null), Breeds.get("LINKS"), AgentKind.Link)
   refreshLinks: ->
     if @_links.length > 0
       l.updateEndRelatedVars() for l in (@connectedLinks(true, true).items)
@@ -183,7 +240,7 @@ class Turtle
         else if l.directed and l.end2 == me and !isSource
           l.end1
         else
-          null).filter((o) -> o != null), Breeds.get("TURTLES"))
+          null).filter((o) -> o != null), Breeds.get("TURTLES"), AgentKind.Turtle)
     else
       new Agents(world.links().items.map((l) ->
         if !l.directed and l.end1 == me
@@ -191,7 +248,7 @@ class Turtle
         else if !l.directed and l.end2 == me
           l.end1
         else
-          null).filter((o) -> o != null), Breeds.get("TURTLES"))
+          null).filter((o) -> o != null), Breeds.get("TURTLES"), AgentKind.Turtle)
   isLinkNeighbor: (directed, isSource, other) ->
     @linkNeighbors(directed, isSource).items.filter((o) -> o == other).length > 0
   findLinkViaNeighbor: (directed, isSource, other) ->
@@ -269,7 +326,7 @@ class Turtle
     updated(this, "hidden")
     return
   isBreed: (breedName) ->
-    @breed.name == breedName
+    @breed.name.toUpperCase() == breedName.toUpperCase()
   die: ->
     @breed.remove(@)
     if (@id != -1)
@@ -297,7 +354,9 @@ class Turtle
       @vars[n - turtleBuiltins.length]
   setTurtleVariable: (n, v) ->
     if (n < turtleBuiltins.length)
-      if(n == 3) #xcor
+      if n is 1 # color
+        this[turtleBuiltins[n]] = ColorModel.wrapColor(v)
+      else if(n == 3) #xcor
         @setXcor(v)
       else if(n == 4) #ycor
         @setYcor(v)
@@ -327,7 +386,7 @@ class Turtle
       for v in [0..TurtlesOwn.vars.length]
         t.setTurtleVariable(turtleBuiltins.length + v, @getTurtleVariable(turtleBuiltins.length + v))
       newTurtles.push(world.createTurtle(t))
-    new Agents(newTurtles, breed)
+    new Agents(newTurtles, breed, AgentKind.Turtle)
   moveTo: (agent) ->
     if (agent instanceof Turtle)
       @setXY(agent.xcor(), agent.ycor())
@@ -338,6 +397,13 @@ class Turtle
 
   _removeLink: (l) ->
     @_links.splice(@_links.indexOf(l))
+
+  compare: (x) ->
+    if x instanceof Turtle
+      Comparator.numericCompare(@id, x.id)
+    else
+      Comparator.NOT_EQUALS
+
 
 class Patch
   vars: []
@@ -352,9 +418,13 @@ class Patch
       @vars[n - patchBuiltins.length]
   setPatchVariable: (n, v) ->
     if (n < patchBuiltins.length)
-      this[patchBuiltins[n]] = v
-      if(patchBuiltins[n] == "pcolor" && v != 0)
-        world.patchesAllBlack(false)
+      if patchBuiltins[n] is "pcolor"
+        newV = ColorModel.wrapColor(v)
+        if newV != 0
+          world.patchesAllBlack(false)
+        this[patchBuiltins[n]] = newV
+      else
+        this[patchBuiltins[n]] = v
       updated(this, patchBuiltins[n])
     else
       @vars[n - patchBuiltins.length] = v
@@ -363,15 +433,15 @@ class Patch
     @turtles.push(t)
   distanceXY: (x, y) -> world.topology().distanceXY(@pxcor, @pycor, x, y)
   distance: (agent) -> world.topology().distance(@pxcor, @pycor, agent)
-  turtlesHere: -> new Agents(@turtles, Breeds.get("TURTLES"))
+  turtlesHere: -> new Agents(@turtles.slice(0), Breeds.get("TURTLES"), AgentKind.Turtle)
   getNeighbors: -> world.getNeighbors(@pxcor, @pycor) # world.getTopology().getNeighbors(this)
   getNeighbors4: -> world.getNeighbors4(@pxcor, @pycor) # world.getTopology().getNeighbors(this)
   sprout: (n, breedName) ->
     breed = if("" == breedName) then Breeds.get("TURTLES") else Breeds.get(breedName)
-    new Agents(world.createTurtle(new Turtle(5 + 10 * Random.nextInt(14), Random.nextInt(360), @pxcor, @pycor, breed)) for num in [0...n])
+    new Agents(world.createTurtle(new Turtle(5 + 10 * Random.nextInt(14), Random.nextInt(360), @pxcor, @pycor, breed)) for num in [0...n], breed, AgentKind.Turtle)
   breedHere: (breedName) ->
     breed = Breeds.get(breedName)
-    new Agents(t for t in @turtles when t.breed == breed, breed)
+    new Agents(t for t in @turtles when t.breed == breed, breed, AgentKind.Turtle)
   turtlesAt: (dx, dy) ->
     @patchAt(dx, dy).turtlesHere()
   patchAt: (dx, dy) ->
@@ -384,9 +454,18 @@ class Patch
   watchme: ->
     world.watch(this)
 
+  inRadius: (agents, radius) ->
+    world.topology().inRadius(this, @pxcor, @pycor, agents, radius)
+
+  compare: (x) ->
+    Comparator.numericCompare(@id, x.id)
+
+
 Links =
   compare: (a, b) ->
     if (a == b)
+      0
+    else if a.id is -1 and b.id is -1
       0
     else if(a.end1.id < b.end1.id)
       -1
@@ -428,7 +507,12 @@ class Link
       @vars[n - linkBuiltins.length]
   setLinkVariable: (n, v) ->
     if (n < linkBuiltins.length)
-      this[linkBuiltins[n]] = v
+      newV =
+        if linkBuiltins[n] is "lcolor"
+          ColorModel.wrapColor(v)
+        else
+          v
+      this[linkBuiltins[n]] = newV
       updated(this, linkBuiltins[n])
     else
       @vars[n - linkBuiltins.length] = v
@@ -443,9 +527,14 @@ class Link
     throw new DeathInterrupt("Call only from inside an askAgent block")
   getTurtleVariable: (n) -> this[turtleBuiltins[n]]
   setTurtleVariable: (n, v) ->
-    this[turtleBuiltins[n]] = v
+    newV =
+      if turtleBuiltins[n] is "color"
+        ColorModel.wrapColor(v)
+      else
+        v
+    this[turtleBuiltins[n]] = newV
     updated(this, turtleBuiltins[n])
-  bothEnds: -> new Agents([@end1, @end2], Breeds.get("TURTLES"))
+  bothEnds: -> new Agents([@end1, @end2], Breeds.get("TURTLES"), AgentKind.Turtle)
   otherEnd: -> if @end1 == AgentSet.myself() then @end2 else @end1
   updateEndRelatedVars: ->
     @heading = world.topology().towards(@end1.xcor(), @end1.ycor(), @end2.xcor(), @end2.ycor())
@@ -455,19 +544,43 @@ class Link
     updated(this, linkBuiltins...)
   toString: -> "(" + @breed.singular + " " + @end1.id + " " + @end2.id + ")"
 
+  compare: (x) ->
+    switch Links.compare(this, x)
+      when -1 then Comparator.LESS_THAN
+      when  0 then Comparator.EQUALS
+      when  1 then Comparator.GREATER_THAN
+      else throw new Exception("Boom")
+
+
+class WorldLinks
+
+  _links: mori.sorted_set_by(Links.compare)
+
+  # Side-effecting ops
+  insert: (l)    -> @_links = mori.conj(@_links, l); this
+  remove: (link) -> @_links = mori.disj(@_links, link); this
+
+  # Pure ops
+  find:   (pred) -> mori.first(mori.filter(pred, @_links)) # Mori's `filter` is lazy, so it's all cool --JAB (3/26/14)
+  isEmpty:       -> mori.is_empty(@_links)
+  toArray:       -> mori.clj_to_js(@_links)
+
+
 class World
+
   # any variables used in the constructor should come
   # before the constructor, else they get overwritten after it.
-  _nextLinkId = 0
-  _nextTurtleId = 0
-  _turtles = []
-  _turtlesById = {}
-  _patches = []
-  _links = []
-  _topology = null
-  _ticks = -1
-  _timer = Date.now()
-  _patchesAllBlack = true
+  _nextLinkId: 0
+  _nextTurtleId: 0
+  _turtles: []
+  _turtlesById: {}
+  _patches: []
+  _links: new WorldLinks()
+  _topology: null
+  _ticks: -1
+  _timer: Date.now()
+  _patchesAllBlack: true
+
   constructor: (@minPxcor, @maxPxcor, @minPycor, @maxPycor, @patchSize, @wrappingAllowedInY, @wrappingAllowedInX, turtleShapeList, linkShapeList, @interfaceGlobalCount) ->
     Breeds.reset()
     AgentSet.reset()
@@ -487,9 +600,9 @@ class World
             linkBreeds: "XXX IMPLEMENT ME",
             linkShapeList: linkShapeList,
             patchSize: @patchSize,
-            patchesAllBlack: _patchesAllBlack,
+            patchesAllBlack: @_patchesAllBlack,
             patchesWithLabels: 0,
-            ticks: _ticks,
+            ticks: @_ticks,
             turtleBreeds: "XXX IMPLEMENT ME",
             turtleShapeList: turtleShapeList,
             unbreededLinksAreDirected: false
@@ -506,25 +619,25 @@ class World
         for x in [@minPxcor..@maxPxcor]
           new Patch((@width() * (@maxPycor - y)) + x - @minPxcor, x, y)
     # http://stackoverflow.com/questions/4631525/concatenating-an-array-of-arrays-in-coffeescript
-    _patches = [].concat nested...
-    for p in _patches
+    @_patches = [].concat nested...
+    for p in @_patches
       updated(p, "pxcor", "pycor", "pcolor", "plabel", "plabelcolor")
-  topology: -> _topology
+  topology: -> @_topology
   links: () ->
-    new Agents(_links.sort(Links.compare))
-  turtles: () -> new Agents(_turtles, Breeds.get("TURTLES"))
+    new Agents(@_links.toArray(), Breeds.get("LINKS"), AgentKind.Link)
+  turtles: () -> new Agents(@_turtles, Breeds.get("TURTLES"), AgentKind.Turtle)
   turtlesOfBreed: (breedName) ->
     breed = Breeds.get(breedName)
-    new Agents(breed.members, breed)
-  patches: -> new Agents(_patches)
+    new Agents(breed.members, breed, AgentKind.Turtle)
+  patches: -> new Agents(@_patches, Breeds.get("PATCHES"), AgentKind.Patch)
   resetTimer: ->
-    _timer = Date.now()
+    @_timer = Date.now()
   resetTicks: ->
-    _ticks = 0
-    Updates.push( world: { 0: { ticks: _ticks } } )
+    @_ticks = 0
+    Updates.push( world: { 0: { ticks: @_ticks } } )
   clearTicks: ->
-    _ticks = -1
-    Updates.push( world: { 0: { ticks: _ticks } } )
+    @_ticks = -1
+    Updates.push( world: { 0: { ticks: @_ticks } } )
   resize: (minPxcor, maxPxcor, minPycor, maxPycor) ->
     if(minPxcor > 0 || maxPxcor < 0 || minPycor > 0 || maxPycor < 0)
       throw new NetLogoException("You must include the point (0, 0) in the world.")
@@ -534,13 +647,13 @@ class World
     @minPycor = minPycor
     @maxPycor = maxPycor
     if(@wrappingAllowedInX && @wrappingAllowedInY)
-      _topology = new Torus(@minPxcor, @maxPxcor, @minPycor, @maxPycor)
+      @_topology = new Torus(@minPxcor, @maxPxcor, @minPycor, @maxPycor)
     else if(@wrappingAllowedInX)
-      _topology = new VertCylinder(@minPxcor, @maxPxcor, @minPycor, @maxPycor)
+      @_topology = new VertCylinder(@minPxcor, @maxPxcor, @minPycor, @maxPycor)
     else if(@wrappingAllowedInY)
-      _topology = new HorzCylinder(@minPxcor, @maxPxcor, @minPycor, @maxPycor)
+      @_topology = new HorzCylinder(@minPxcor, @maxPxcor, @minPycor, @maxPycor)
     else
-      _topology = new Box(@minPxcor, @maxPxcor, @minPycor, @maxPycor)
+      @_topology = new Box(@minPxcor, @maxPxcor, @minPycor, @maxPycor)
     @createPatches()
     Updates.push(
       world: {
@@ -554,47 +667,51 @@ class World
         }
       }
     )
+    return
   tick: ->
-    if(_ticks == -1)
+    if(@_ticks == -1)
       throw new NetLogoException("The tick counter has not been started yet. Use RESET-TICKS.")
-    _ticks++
-    Updates.push( world: { 0: { ticks: _ticks } } )
+    @_ticks++
+    Updates.push( world: { 0: { ticks: @_ticks } } )
   tickAdvance: (n) ->
-    if(_ticks == -1)
+    if(@_ticks == -1)
       throw new NetLogoException("The tick counter has not been started yet. Use RESET-TICKS.")
     if(n < 0)
       throw new NetLogoException("Cannot advance the tick counter by a negative amount.")
-    _ticks += n
-    Updates.push( world: { 0: { ticks: _ticks } } )
+    @_ticks += n
+    Updates.push( world: { 0: { ticks: @_ticks } } )
   timer: ->
-    (Date.now() - _timer) / 1000
+    (Date.now() - @_timer) / 1000
   ticks: ->
-    if(_ticks == -1)
+    if(@_ticks == -1)
       throw new NetLogoException("The tick counter has not been started yet. Use RESET-TICKS.")
-    _ticks
+    @_ticks
   # TODO: this needs to support all topologies
   width: () -> 1 + @maxPxcor - @minPxcor
   height: () -> 1 + @maxPycor - @minPycor
   getPatchAt: (x, y) ->
-    index  = (@maxPycor - StrictMath.round(y)) * @width() + (StrictMath.round(x) - @minPxcor)
-    return _patches[index]
-  getTurtle: (id) -> _turtlesById[id] or Nobody
+    trueX  = (x - @minPxcor) % @width()  + @minPxcor # Handle negative coordinates and wrapping
+    trueY  = (y - @minPycor) % @height() + @minPycor
+    index  = (@maxPycor - StrictMath.round(trueY)) * @width() + (StrictMath.round(trueX) - @minPxcor)
+    @_patches[index]
+  getTurtle: (id) -> @_turtlesById[id] or Nobody
   getTurtleOfBreed: (breedName, id) ->
     turtle = @getTurtle(id)
-    if turtle.breed.name == breedName then turtle else Nobody
+    if turtle.breed.name.toUpperCase() == breedName.toUpperCase() then turtle else Nobody
   removeLink: (id) ->
-    _links = @links().items.filter (l) -> l.id != id
-    if _links.length == 0
+    link = @_links.find((l) -> l.id is id)
+    @_links = @_links.remove(link)
+    if @_links.isEmpty()
       @unbreededLinksAreDirected = false
       Updates.push({ world: { 0: { unbreededLinksAreDirected: false } } })
     return
   removeTurtle: (id) ->
-    turtle = _turtlesById[id]
-    _turtles.splice(_turtles.indexOf(turtle), 1)
-    delete _turtlesById[id]
+    turtle = @_turtlesById[id]
+    @_turtles.splice(@_turtles.indexOf(turtle), 1)
+    delete @_turtlesById[id]
   patchesAllBlack: (val) ->
-    _patchesAllBlack = val
-    Updates.push( world: { 0: { patchesAllBlack: _patchesAllBlack }})
+    @_patchesAllBlack = val
+    Updates.push( world: { 0: { patchesAllBlack: @_patchesAllBlack }})
   clearAll: ->
     Globals.clear(@interfaceGlobalCount)
     # We iterate through a copy of the array since it will be modified during
@@ -607,16 +724,16 @@ class World
       catch error
         throw error if !(error instanceof DeathInterrupt)
     @createPatches()
-    _nextTurtleId = 0
-    _nextLinkId = 0
+    @_nextTurtleId = 0
+    @_nextLinkId = 0
     @patchesAllBlack(true)
     @clearTicks()
     return
   createTurtle: (t) ->
-    t.id = _nextTurtleId++
+    t.id = @_nextTurtleId++
     updated(t, turtleBuiltins...)
-    _turtles.push(t)
-    _turtlesById[t.id] = t
+    @_turtles.push(t)
+    @_turtlesById[t.id] = t
     t
   createLink: (directed, from, to) ->
     if(from.id < to.id or directed)
@@ -626,17 +743,17 @@ class World
       end1 = to
       end2 = from
     if Nobody == @getLink(end1.id, end2.id)
-      l = new Link(_nextLinkId++, directed, end1, end2)
+      l = new Link(@_nextLinkId++, directed, end1, end2)
       updated(l, linkBuiltins...)
       updated(l, turtleBuiltins.slice(1)...)
-      _links.push(l)
+      @_links.insert(l)
       l
     else
       Nobody
   createOrderedTurtles: (n, breedName) ->
-    new Agents(@createTurtle(new Turtle((10 * num + 5) % 140, (360 * num) / n, 0, 0, Breeds.get(breedName))) for num in [0...n])
+    new Agents(@createTurtle(new Turtle((10 * num + 5) % 140, (360 * num) / n, 0, 0, Breeds.get(breedName))) for num in [0...n], Breeds.get(breedName), AgentKind.Turtle)
   createTurtles: (n, breedName) ->
-    new Agents(@createTurtle(new Turtle(5 + 10 * Random.nextInt(14), Random.nextInt(360), 0, 0, Breeds.get(breedName))) for num in [0...n])
+    new Agents(@createTurtle(new Turtle(5 + 10 * Random.nextInt(14), Random.nextInt(360), 0, 0, Breeds.get(breedName))) for num in [0...n], Breeds.get(breedName), AgentKind.Turtle)
   getNeighbors: (pxcor, pycor) -> @topology().getNeighbors(pxcor, pycor)
   getNeighbors4: (pxcor, pycor) -> @topology().getNeighbors4(pxcor, pycor)
   createDirectedLink: (from, to) ->
@@ -646,18 +763,21 @@ class World
   createDirectedLinks: (source, others) ->
     @unbreededLinksAreDirected = true
     Updates.push({ world: { 0: { unbreededLinksAreDirected: true } } })
-    new Agents((@createLink(true, source, t) for t in others.items).filter((o) -> o != Nobody), Breeds.get("LINKS"))
+    new Agents((@createLink(true, source, t) for t in others.items).filter((o) -> o != Nobody), Breeds.get("LINKS"), AgentKind.Link)
   createReverseDirectedLinks: (source, others) ->
     @unbreededLinksAreDirected = true
     Updates.push({ world: { 0: { unbreededLinksAreDirected: true } } })
-    new Agents((@createLink(true, t, source) for t in others.items).filter((o) -> o != Nobody), Breeds.get("LINKS"))
+    new Agents((@createLink(true, t, source) for t in others.items).filter((o) -> o != Nobody), Breeds.get("LINKS"), AgentKind.Link)
   createUndirectedLink: (source, other) ->
     @createLink(false, source, other)
   createUndirectedLinks: (source, others) ->
-    new Agents((@createLink(false, source, t) for t in others.items).filter((o) -> o != Nobody), Breeds.get("LINKS"))
+    new Agents((@createLink(false, source, t) for t in others.items).filter((o) -> o != Nobody), Breeds.get("LINKS"), AgentKind.Link)
   getLink: (fromId, toId) ->
-    filteredLinks = (@links().items.filter (l) -> (l.end1.id == fromId && l.end2.id == toId))
-    if filteredLinks.length == 0 then Nobody else filteredLinks[0]
+    link = @_links.find((l) -> l.end1.id is fromId and l.end2.id is toId)
+    if link?
+      link
+    else
+      Nobody
   updatePerspective: ->
     Updates.push({ observer: { 0: { perspective: @perspective, targetAgent: @targetAgent } } })
   watch: (agent) ->
@@ -727,7 +847,7 @@ AgentSet =
       throw new DeathInterrupt
     return
   # can't call it `with`, that's taken in JavaScript. so is `filter` - ST 2/19/14
-  agentFilter: (agents, f) -> new Agents(a for a in agents.items when @askAgent(a, f))
+  agentFilter: (agents, f) -> new Agents(a for a in agents.items when @askAgent(a, f), agents.breed, agents.kind)
   # min/MaxOneOf are copy/pasted from each other.  hard to say whether
   # DRY-ing them would be worth the possible performance impact. - ST 3/17/14
   maxOneOf: (agents, f) ->
@@ -809,14 +929,14 @@ AgentSet =
               j += 1
             i += 1
           result
-    )
+    , agentsOrList.breed, agentsOrList.kind)
   turtlesOn: (agentsOrAgent) ->
     if(agentsOrAgent.items)
       agents = agentsOrAgent.items
     else
       agents = [agentsOrAgent]
     turtles = [].concat (agent.turtlesHere().items for agent in agents)...
-    new Agents(turtles, agentsOrAgent.breed)
+    new Agents(turtles, agentsOrAgent.breed, agentsOrAgent.kind)
   die: -> @_self.die()
   connectedLinks: (directed, isSource) -> @_self.connectedLinks(directed, isSource)
   linkNeighbors: (directed, isSource) -> @_self.linkNeighbors(directed, isSource)
@@ -844,22 +964,24 @@ AgentSet =
   other: (agentSet) ->
     self = @_self
     filteredAgents = (agentSet.items.filter((o) -> o != self))
-    new Agents(filteredAgents, agentSet.breed)
+    new Agents(filteredAgents, agentSet.breed, agentSet.kind)
   shuffle: (agents) ->
     result = []
     iter = new Shufflerator(agents.items)
     while (iter.hasNext())
       result.push(iter.next())
-    new Agents(result, agents.breed)
+    new Agents(result, agents.breed, agents.kind)
 
 class Agents
-  constructor: (@items, @breed) ->
+  constructor: (@items, @breed, @kind) ->
   toString: ->
     "(" + @items.length + " " + @breed.name + ")"
   sort: ->
     if(@items.length == 0)
       @items
-    else if(@items[0] instanceof Link)
+    else if @kind is AgentKind.Turtle
+      @items.sort((x, y) -> x.compare(y).toInt)
+    else if @kind is AgentKind.Link
       @items.sort(Links.compare)
     else
       throw new Error("We don't know how to sort your kind here!")
@@ -901,6 +1023,7 @@ class Shufflerator
 Prims =
   fd: (n) -> AgentSet.self().fd(n)
   bk: (n) -> AgentSet.self().fd(-n)
+  jump: (n) -> AgentSet.self().jump(n)
   right: (n) -> AgentSet.self().right(n)
   left: (n) -> AgentSet.self().right(-n)
   setXY: (x, y) -> AgentSet.self().setXY(x, y)
@@ -913,17 +1036,39 @@ Prims =
   randomXcor: -> world.minPxcor - 0.5 + Random.nextDouble() * (world.maxPxcor - world.minPxcor + 1)
   randomYcor: -> world.minPycor - 0.5 + Random.nextDouble() * (world.maxPycor - world.minPycor + 1)
   shadeOf: (c1, c2) -> Math.floor(c1 / 10) == Math.floor(c2 / 10)
+  isBreed: (breedName, x) -> if x.isBreed? and x.id != -1 then x.isBreed(breedName) else false
   equality: (a, b) ->
-    if(a == undefined || b == undefined)
+    if a is undefined or b is undefined
       throw new Error("Checking equality on undefined is an invalid condition")
-    if(a == b)
-      true
-    else if (typeIsArray(a) && typeIsArray(b))
-      a.length == b.length && a.every((elem, i) -> Prims.equality(elem, b[i]))
-    else if (a instanceof Agents && b instanceof Agents)
-      a.items.length == b.items.length && a.items.every((elem) -> (elem in b.items))
+
+    (a is b) or ( # This code has been purposely rewritten into a crude, optimized form --JAB (3/19/14)
+      if typeIsArray(a) and typeIsArray(b)
+        a.length == b.length && a.every((elem, i) -> Prims.equality(elem, b[i]))
+      else if (a instanceof Agents && b instanceof Agents)
+        a.items.length is b.items.length and a.kind is b.kind and a.items.every((elem) -> (elem in b.items))
+      else
+        (a instanceof Agents and a.breed is b) or (b instanceof Agents and b.breed is a) or
+          (a is Nobody and b.id is -1) or (b is Nobody and a.id is -1) or ((a instanceof Turtle or a instanceof Link) and a.compare(b) is Comparator.EQUALS)
+    )
+
+  lt: (a, b) ->
+    if (Utilities.isString(a) and Utilities.isString(b)) or (Utilities.isNumber(a) and Utilities.isNumber(b))
+      a < b
+    else if typeof(a) is typeof(b) and a.compare? and b.compare?
+      a.compare(b) is Comparator.LESS_THAN
     else
-      false
+      throw new Exception("Invalid operands to `lt`")
+
+  gt: (a, b) ->
+    if (Utilities.isString(a) and Utilities.isString(b)) or (Utilities.isNumber(a) and Utilities.isNumber(b))
+      a > b
+    else if typeof(a) is typeof(b) and a.compare? and b.compare?
+      a.compare(b) is Comparator.GREATER_THAN
+    else
+      throw new Exception("Invalid operands to `gt`")
+
+  lte: (a, b) -> @lt(a, b) or @equality(a, b)
+  gte: (a, b) -> @gt(a, b) or @equality(a, b)
   scaleColor: (color, number, min, max) ->
     color = Math.floor(color / 10) * 10
     perc = 0.0
@@ -992,13 +1137,12 @@ Prims =
 
   sort: (xs) -> xs.sort()
   removeDuplicates: (xs) ->
-    result = []
-    seen = {}
-    for x in xs
-      if not seen[x]?
-        seen[x] = x
-        result.push(x)
-    result
+    if xs.length < 2
+      xs
+    else
+      xs.filter(
+        (elem, pos) -> not _(xs.slice(0, pos)).some((x) -> Prims.equality(x, elem))
+      )
   outputPrint: (x) ->
     println(Dump(x))
   patchSet: (inputs...) ->
@@ -1010,12 +1154,12 @@ Prims =
           recurse(input)
         else if (input instanceof Patch)
           result.push(input)
-        else
+        else if input != Nobody
           for agent in input.items
             if (!(agent in result))
               result.push(agent)
     recurse(inputs)
-    new Agents(result)
+    new Agents(result, undefined, AgentKind.Patch)
   repeat: (n, fn) ->
     for i in [0...n]
       fn()
@@ -1117,9 +1261,10 @@ Breeds = {
   breeds: {}
   reset: -> @breeds = @defaultBreeds()
   add: (name, singular) ->
-    @breeds[name] = new Breed(name, singular)
+    upperName = name.toUpperCase()
+    @breeds[upperName] = new Breed(upperName, singular.toLowerCase())
   get: (name) ->
-    @breeds[name]
+    @breeds[name.toUpperCase()]
   setDefaultShape: (agents, shape) ->
     agents.breed._shape = shape.toLowerCase()
 }
@@ -1138,30 +1283,36 @@ class Topology
       pos
 
   getNeighbors: (pxcor, pycor) ->
-    new Agents((patch for patch in @_getNeighbors(pxcor, pycor) when patch != false))
+    new Agents((patch for patch in @_getNeighbors(pxcor, pycor) when patch != false), undefined, AgentKind.Patch)
 
   _getNeighbors: (pxcor, pycor) ->
     if (pxcor == @maxPxcor && pxcor == @minPxcor)
-      if (pycor == @maxPycor && pycor == @minPycor) []
-      else [@getPatchNorth(pxcor, pycor), @getPatchSouth(pxcor, pycor)]
+      if (pycor == @maxPycor && pycor == @minPycor)
+        []
+      else
+        [@getPatchNorth(pxcor, pycor), @getPatchSouth(pxcor, pycor)]
     else if (pycor == @maxPycor && pycor == @minPycor)
       [@getPatchEast(pxcor, pycor), @getPatchWest(pxcor, pycor)]
-    else [@getPatchNorth(pxcor, pycor),     @getPatchEast(pxcor, pycor),
-          @getPatchSouth(pxcor, pycor),     @getPatchWest(pxcor, pycor),
-          @getPatchNorthEast(pxcor, pycor), @getPatchSouthEast(pxcor, pycor),
-          @getPatchSouthWest(pxcor, pycor), @getPatchNorthWest(pxcor, pycor)]
+    else
+      [@getPatchNorth(pxcor, pycor),     @getPatchEast(pxcor, pycor),
+       @getPatchSouth(pxcor, pycor),     @getPatchWest(pxcor, pycor),
+       @getPatchNorthEast(pxcor, pycor), @getPatchSouthEast(pxcor, pycor),
+       @getPatchSouthWest(pxcor, pycor), @getPatchNorthWest(pxcor, pycor)]
 
   getNeighbors4: (pxcor, pycor) ->
-    new Agents((patch for patch in @_getNeighbors4(pxcor, pycor) when patch != false))
+    new Agents((patch for patch in @_getNeighbors4(pxcor, pycor) when patch != false), undefined, AgentKind.Patch)
 
   _getNeighbors4: (pxcor, pycor) ->
     if (pxcor == @maxPxcor && pxcor == @minPxcor)
-      if (pycor == @maxPycor && pycor == @minPycor) []
-      else [@getPatchNorth(pxcor, pycor), @getPatchSouth(pxcor, pycor)]
+      if (pycor == @maxPycor && pycor == @minPycor)
+        []
+      else
+        [@getPatchNorth(pxcor, pycor), @getPatchSouth(pxcor, pycor)]
     else if (pycor == @maxPycor && pycor == @minPycor)
       [@getPatchEast(pxcor, pycor), @getPatchWest(pxcor, pycor)]
-    else [@getPatchNorth(pxcor, pycor),     @getPatchEast(pxcor, pycor),
-          @getPatchSouth(pxcor, pycor),     @getPatchWest(pxcor, pycor)]
+    else
+      [@getPatchNorth(pxcor, pycor), @getPatchEast(pxcor, pycor),
+       @getPatchSouth(pxcor, pycor), @getPatchWest(pxcor, pycor)]
 
   distanceXY: (x1, y1, x2, y2) ->
     StrictMath.sqrt(StrictMath.pow(@shortestX(x1, x2), 2) + StrictMath.pow(@shortestY(y1, y2), 2))
@@ -1211,7 +1362,7 @@ class Topology
           for t in p.turtlesHere().items
             if(@distanceXY(t.xcor(), t.ycor(), x, y) <= radius && agents.items.filter((o) -> o == t).length > 0)
               result.push(t)
-    new Agents(result, agents.breed)
+    new Agents(result, agents.breed, agents.kind)
 
 class Torus extends Topology
   constructor: (@minPxcor, @maxPxcor, @minPycor, @maxPycor) ->

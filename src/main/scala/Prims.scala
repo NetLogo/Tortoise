@@ -17,7 +17,7 @@ object Prims {
       case SimplePrims.SimpleReporter(op)   => op
       case SimplePrims.InfixReporter(op)    => s"(${arg(0)} $op ${arg(1)})"
       case SimplePrims.NormalReporter(op)   => s"$op($commaArgs)"
-      case x: prim.etc._isbreed             => s"""${arg(0)}.isBreed("${x.breedName}")"""
+      case x: prim.etc._isbreed             => s"""Prims.isBreed("${x.breedName}", ${arg(0)})"""
       case b: prim.etc._breed               => s"""world.turtlesOfBreed("${b.getBreedName}")"""
       case b: prim.etc._breedsingular       => s"""world.getTurtleOfBreed("${b.breedName}", ${arg(0)})"""
       case b: prim.etc._breedhere           => s"""AgentSet.self().breedHere("${b.getBreedName}")"""
@@ -58,6 +58,7 @@ object Prims {
         val body = Handlers.reporter(r.args(1))
         s"AgentSet.all($agents, function(){ return $body })"
       case _: prim.etc._islink              => s"(${arg(0)} instanceof Link)"
+      case _: prim.etc._isturtle            => s"(${arg(0)} instanceof Turtle)"
       case _: prim.etc._ifelsevalue         => s"${arg(0)} ? ${arg(1)} : ${arg(2)}"
       case _: prim.etc._reduce              => s"${arg(1)}.reduce(${arg(0)})"
       case _: prim.etc._filter              => s"${arg(1)}.filter(${arg(0)})"
@@ -104,7 +105,7 @@ object Prims {
       case _: prim.etc._createlinkswith  => generateCreateLink(s, "createLinksWith")
       case h: prim._hatch                => generateHatch(s, h.breedName)
       case call: prim._call              => s"${Handlers.ident(call.procedure.name)}($commaArgs);"
-      case _: prim.etc._report           => s"return ${arg(0)}"
+      case _: prim.etc._report           => s"return ${arg(0)};"
       case _: prim.etc._ignore           => s"${arg(0)};"
       case l: prim._let                  =>
         // arg 0 is the name but we don't access it because LetScoper took care of it.
