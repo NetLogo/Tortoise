@@ -12,7 +12,7 @@ object Coffee {
 
   lazy val settings = Seq(
     resourceGenerators in Compile += coffee.taskValue,
-    watchSources <++= coffeeSources
+    watchSources ++= coffeeSources.value
   )
 
   lazy val coffeeSourceDir = Def.setting[File] {

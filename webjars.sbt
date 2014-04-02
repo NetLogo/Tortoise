@@ -20,7 +20,7 @@ lazy val extractJS = Def.task[Seq[File]] {
   extractFiles(jarFileToFilenamesMap, outDir)
 }
 
-resourceGenerators in Compile <+= extractJS
+resourceGenerators in Compile += extractJS.taskValue
 
 def extractFiles(jarFileToFilenamesMap: Map[JarFile, Seq[String]], outDir: File): Seq[File] = {
   jarFileToFilenamesMap.flatMap {
