@@ -17,3 +17,18 @@ SortNonDestructive
   O> set g [5 4 3 2 1]
   sort g => [1 2 3 4 5]
   g => [5 4 3 2 1]
+
+# I added this to the NetLogo repo too, so the next time we bump the
+# NetLogo version, this can be removed - ST 4/2/14
+SortNonDestructiveOnAgentsets
+  globals [g]
+  O> crt 100
+  O> foreach reverse sort turtles [ ask ? [ move-to patch 1 0 ] ]
+  O> random-seed 3
+  [who] of one-of turtles => 93
+  O> set g [turtles-here] of patch 1 0
+  O> random-seed 3
+  [who] of one-of g => 6
+  length sort g => 100
+  O> random-seed 3
+  [who] of one-of g => 6

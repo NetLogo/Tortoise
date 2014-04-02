@@ -980,9 +980,9 @@ class Agents
     if(@items.length == 0)
       @items
     else if @kind is AgentKind.Turtle
-      @items.sort((x, y) -> x.compare(y).toInt)
+      @items[..].sort((x, y) -> x.compare(y).toInt)
     else if @kind is AgentKind.Link
-      @items.sort(Links.compare)
+      @items[..].sort(Links.compare)
     else
       throw new Error("We don't know how to sort your kind here!")
 
