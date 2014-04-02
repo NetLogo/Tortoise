@@ -49,14 +49,14 @@ function step() {
   }
   else {
     var target = findTarget();
-    if ((!Prims.equality(AgentSet.self().getPatchHere(), target) || (Globals.getGlobal(3) > Prims.random(100)))) {
+    if ((!Prims.equality(AgentSet.self().getPatchHere(), target) || Prims.gt(Globals.getGlobal(3), Prims.random(100)))) {
       bugMove(target);
     }
     AgentSet.setPatchVariable(5, (AgentSet.getPatchVariable(5) + AgentSet.getTurtleVariable(14)));
   }
 }
 function findTarget() {
-  if ((AgentSet.getPatchVariable(5) < AgentSet.getTurtleVariable(13))) {
+  if (Prims.lt(AgentSet.getPatchVariable(5), AgentSet.getTurtleVariable(13))) {
     return AgentSet.maxOneOf(Prims.getNeighbors(), function() {
       return AgentSet.getPatchVariable(5)
     });
@@ -73,7 +73,7 @@ function bugMove(target) {
     AgentSet.self().moveTo(target);
     return;
   }
-  while ((tries <= 9)) {
+  while (Prims.lte(tries, 9)) {
     tries = (tries + 1);
     target = AgentSet.oneOf(Prims.getNeighbors());
     if (!(AgentSet.any(AgentSet.turtlesOn(target)))) {

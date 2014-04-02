@@ -22,7 +22,7 @@ function go() {
   AgentSet.ask(AgentSet.agentFilter(world.turtles(), function() {
     return Prims.equality(AgentSet.getTurtleVariable(1), 55)
   }), true, function() {
-    if ((world.ticks() > 100)) {
+    if (Prims.gt(world.ticks(), 100)) {
       AgentSet.setTurtleVariable(14, (Globals.getGlobal(2) * Trig.unsquashedSin((Globals.getGlobal(1) * world.ticks()))));
     }
     else {

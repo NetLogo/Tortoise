@@ -55,7 +55,7 @@ function go() {
   world.tick();
 }
 function updateGlobalVariables() {
-  if ((AgentSet.count(world.turtles()) > 0)) {
+  if (Prims.gt(AgentSet.count(world.turtles()), 0)) {
     Globals.setGlobal(4, ((AgentSet.count(AgentSet.agentFilter(world.turtles(), function() {
       return AgentSet.getTurtleVariable(13)
     })) / AgentSet.count(world.turtles())) * 100));
@@ -70,7 +70,7 @@ function getOlder() {
     if (AgentSet.getTurtleVariable(13)) {
       AgentSet.setTurtleVariable(15, (AgentSet.getTurtleVariable(15) + 1));
     }
-    if ((AgentSet.getTurtleVariable(16) > Globals.getGlobal(6))) {
+    if (Prims.gt(AgentSet.getTurtleVariable(16), Globals.getGlobal(6))) {
       AgentSet.die();
     }
   });
@@ -89,7 +89,7 @@ function infect() {
     AgentSet.ask(AgentSet.other(AgentSet.agentFilter(AgentSet.self().turtlesHere(), function() {
       return !(AgentSet.getTurtleVariable(14))
     })), true, function() {
-      if ((Prims.randomFloat(100) < Globals.getGlobal(2))) {
+      if (Prims.lt(Prims.randomFloat(100), Globals.getGlobal(2))) {
         getSick();
       }
     });
@@ -99,8 +99,8 @@ function recover() {
   AgentSet.ask(AgentSet.agentFilter(world.turtles(), function() {
     return AgentSet.getTurtleVariable(13)
   }), true, function() {
-    if ((Prims.random(AgentSet.getTurtleVariable(15)) > (Globals.getGlobal(6) * (Globals.getGlobal(0) / 100)))) {
-      if ((Prims.randomFloat(100) < Globals.getGlobal(1))) {
+    if (Prims.gt(Prims.random(AgentSet.getTurtleVariable(15)), (Globals.getGlobal(6) * (Globals.getGlobal(0) / 100)))) {
+      if (Prims.lt(Prims.randomFloat(100), Globals.getGlobal(1))) {
         becomeImmune();
       }
       else {
@@ -113,7 +113,7 @@ function reproduce() {
   AgentSet.ask(AgentSet.agentFilter(world.turtles(), function() {
     return !(AgentSet.getTurtleVariable(13))
   }), true, function() {
-    if (((AgentSet.count(world.turtles()) < Globals.getGlobal(8)) && (Prims.random(Globals.getGlobal(6)) < Globals.getGlobal(7)))) {
+    if ((Prims.lt(AgentSet.count(world.turtles()), Globals.getGlobal(8)) && Prims.lt(Prims.random(Globals.getGlobal(6)), Globals.getGlobal(7)))) {
       AgentSet.ask(Prims.hatch(1, ""), true, function() {
         AgentSet.setTurtleVariable(16, 1);
         Prims.left(45);

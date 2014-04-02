@@ -17,10 +17,10 @@ function go() {
     })));
   });
   AgentSet.ask(world.patches(), true, function() {
-    if ((AgentSet.getPatchVariable(6) > 5)) {
+    if (Prims.gt(AgentSet.getPatchVariable(6), 5)) {
       AgentSet.setPatchVariable(5, 1);
     }
-    if ((AgentSet.getPatchVariable(6) < 3)) {
+    if (Prims.lt(AgentSet.getPatchVariable(6), 3)) {
       AgentSet.setPatchVariable(5, 0);
     }
     if (Prims.equality(AgentSet.getPatchVariable(6), 4)) {

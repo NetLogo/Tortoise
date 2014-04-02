@@ -16,7 +16,7 @@ function setup() {
 }
 function go() {
   AgentSet.ask(world.turtles(), true, function() {
-    if ((AgentSet.getPatchVariable(5) > Globals.getGlobal(1))) {
+    if (Prims.gt(AgentSet.getPatchVariable(5), Globals.getGlobal(1))) {
       turnTowardChemical();
     }
     Prims.right(((Prims.randomFloat(Globals.getGlobal(3)) - Prims.randomFloat(Globals.getGlobal(3))) + Globals.getGlobal(4)));
@@ -40,11 +40,11 @@ function turnTowardChemical() {
   var myleft = AgentSet.of(AgentSet.self().patchLeftAndAhead(Globals.getGlobal(2), 1), function() {
     return AgentSet.getPatchVariable(5)
   });
-  if (((myright >= ahead) && (myright >= myleft))) {
+  if ((Prims.gte(myright, ahead) && Prims.gte(myright, myleft))) {
     Prims.right(Globals.getGlobal(2));
   }
   else {
-    if ((myleft >= ahead)) {
+    if (Prims.gte(myleft, ahead)) {
       Prims.left(Globals.getGlobal(2));
     }
   }

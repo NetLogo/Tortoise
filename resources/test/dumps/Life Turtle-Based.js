@@ -17,7 +17,7 @@ function setupBlank() {
 function setupRandom() {
   setupBlank();
   AgentSet.ask(world.patches(), true, function() {
-    if ((Prims.randomFloat(100) < Globals.getGlobal(0))) {
+    if (Prims.lt(Prims.randomFloat(100), Globals.getGlobal(0))) {
       AgentSet.ask(Prims.sprout(1, "BABIES"), true, function() {});
     }
   });

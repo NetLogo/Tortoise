@@ -25,13 +25,13 @@ function setupWorld() {
   Globals.setGlobal(2, (world.maxPycor - 5));
   Globals.setGlobal(3, 0);
   AgentSet.ask(world.patches(), true, function() {
-    if ((AgentSet.getPatchVariable(1) > Globals.getGlobal(2))) {
+    if (Prims.gt(AgentSet.getPatchVariable(1), Globals.getGlobal(2))) {
       AgentSet.setPatchVariable(2, Prims.scaleColor(9.9, AgentSet.getPatchVariable(1), 22, 15));
     }
-    if (((AgentSet.getPatchVariable(1) <= Globals.getGlobal(2)) && (AgentSet.getPatchVariable(1) > Globals.getGlobal(3)))) {
+    if ((Prims.lte(AgentSet.getPatchVariable(1), Globals.getGlobal(2)) && Prims.gt(AgentSet.getPatchVariable(1), Globals.getGlobal(3)))) {
       AgentSet.setPatchVariable(2, Prims.scaleColor(105, AgentSet.getPatchVariable(1), -20, 20));
     }
-    if ((AgentSet.getPatchVariable(1) < Globals.getGlobal(3))) {
+    if (Prims.lt(AgentSet.getPatchVariable(1), Globals.getGlobal(3))) {
       AgentSet.setPatchVariable(2, (15 + 3));
     }
     if (Prims.equality(AgentSet.getPatchVariable(1), Globals.getGlobal(3))) {
@@ -101,7 +101,7 @@ function runSunshine() {
   encounterEarth();
 }
 function createSunshine() {
-  if (((10 * Globals.getGlobal(0)) > Prims.random(50))) {
+  if (Prims.gt((10 * Globals.getGlobal(0)), Prims.random(50))) {
     AgentSet.ask(world.createTurtles(1, "RAYS"), true, function() {
       AgentSet.setTurtleVariable(2, 160);
       AgentSet.setTurtleVariable(1, 45);
@@ -118,9 +118,9 @@ function reflectRaysFromClouds() {
 }
 function encounterEarth() {
   AgentSet.ask(AgentSet.agentFilter(world.turtlesOfBreed("RAYS"), function() {
-    return (AgentSet.getTurtleVariable(4) <= Globals.getGlobal(3))
+    return Prims.lte(AgentSet.getTurtleVariable(4), Globals.getGlobal(3))
   }), true, function() {
-    if (((100 * Globals.getGlobal(1)) > Prims.random(100))) {
+    if (Prims.gt((100 * Globals.getGlobal(1)), Prims.random(100))) {
       AgentSet.setTurtleVariable(2, (180 - AgentSet.getTurtleVariable(2)));
     }
     else {
@@ -140,8 +140,8 @@ function runHeat() {
     else {
       AgentSet.setTurtleVariable(2, (180 - AgentSet.getTurtleVariable(2)));
     }
-    if ((AgentSet.getTurtleVariable(4) >= Globals.getGlobal(3))) {
-      if ((((Globals.getGlobal(4) > (20 + Prims.random(40))) && (AgentSet.getTurtleVariable(3) > 0)) && (AgentSet.getTurtleVariable(3) < (world.maxPxcor - 8)))) {
+    if (Prims.gte(AgentSet.getTurtleVariable(4), Globals.getGlobal(3))) {
+      if (((Prims.gt(Globals.getGlobal(4), (20 + Prims.random(40))) && Prims.gt(AgentSet.getTurtleVariable(3), 0)) && Prims.lt(AgentSet.getTurtleVariable(3), (world.maxPxcor - 8)))) {
         AgentSet.setBreed(world.turtlesOfBreed("IRS"));
         AgentSet.setTurtleVariable(2, 20);
         AgentSet.setTurtleVariable(1, 125);
@@ -158,7 +158,7 @@ function runIr() {
       AgentSet.die();
     }
     Prims.fd(0.3);
-    if ((AgentSet.getTurtleVariable(4) <= Globals.getGlobal(3))) {
+    if (Prims.lte(AgentSet.getTurtleVariable(4), Globals.getGlobal(3))) {
       AgentSet.setBreed(world.turtlesOfBreed("HEATS"));
       Prims.right(Prims.random(45));
       Prims.left(Prims.random(45));

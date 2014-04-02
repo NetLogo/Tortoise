@@ -15,7 +15,7 @@ function setup() {
 }
 function goForward() {
   var n = 0;
-  while ((n < AgentSet.count(world.turtles()))) {
+  while (Prims.lt(n, AgentSet.count(world.turtles()))) {
     AgentSet.ask(world.getTurtle(n), true, function() {
       Prims.fd(1);
       turn();
@@ -26,7 +26,7 @@ function goForward() {
 }
 function goReverse() {
   var n = AgentSet.count(world.turtles());
-  while ((n > 0)) {
+  while (Prims.gt(n, 0)) {
     n = (n - 1);
     AgentSet.ask(world.getTurtle(n), true, function() {
       turn();

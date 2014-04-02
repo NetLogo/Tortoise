@@ -86,7 +86,7 @@ function eatGrass() {
   }
 }
 function reproduceSheep() {
-  if ((Prims.randomFloat(100) < Globals.getGlobal(2))) {
+  if (Prims.lt(Prims.randomFloat(100), Globals.getGlobal(2))) {
     AgentSet.setTurtleVariable(13, (AgentSet.getTurtleVariable(13) / 2));
     AgentSet.ask(Prims.hatch(1, ""), true, function() {
       Prims.right(Prims.randomFloat(360));
@@ -95,7 +95,7 @@ function reproduceSheep() {
   }
 }
 function reproduceWolves() {
-  if ((Prims.randomFloat(100) < Globals.getGlobal(5))) {
+  if (Prims.lt(Prims.randomFloat(100), Globals.getGlobal(5))) {
     AgentSet.setTurtleVariable(13, (AgentSet.getTurtleVariable(13) / 2));
     AgentSet.ask(Prims.hatch(1, ""), true, function() {
       Prims.right(Prims.randomFloat(360));
@@ -113,13 +113,13 @@ function catchSheep() {
   }
 }
 function death() {
-  if ((AgentSet.getTurtleVariable(13) < 0)) {
+  if (Prims.lt(AgentSet.getTurtleVariable(13), 0)) {
     AgentSet.die();
   }
 }
 function growGrass() {
   if (Prims.equality(AgentSet.getPatchVariable(2), 35)) {
-    if ((AgentSet.getPatchVariable(5) <= 0)) {
+    if (Prims.lte(AgentSet.getPatchVariable(5), 0)) {
       AgentSet.setPatchVariable(2, 55);
       AgentSet.setPatchVariable(5, Globals.getGlobal(7));
     }

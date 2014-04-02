@@ -35,7 +35,7 @@ function findNewState() {
   }
   else {
     var a = AgentSet.count(AgentSet.agentFilter(Prims.getNeighbors(), function() {
-      return ((AgentSet.getPatchVariable(5) > 0) && (AgentSet.getPatchVariable(5) < Globals.getGlobal(0)))
+      return (Prims.gt(AgentSet.getPatchVariable(5), 0) && Prims.lt(AgentSet.getPatchVariable(5), Globals.getGlobal(0)))
     }));
     var b = AgentSet.count(AgentSet.agentFilter(Prims.getNeighbors(), function() {
       return Prims.equality(AgentSet.getPatchVariable(5), Globals.getGlobal(0))
@@ -49,7 +49,7 @@ function findNewState() {
       })));
       AgentSet.setPatchVariable(6, (Prims._int((s / ((a + b) + 1))) + Globals.getGlobal(3)));
     }
-    if ((AgentSet.getPatchVariable(6) > Globals.getGlobal(0))) {
+    if (Prims.gt(AgentSet.getPatchVariable(6), Globals.getGlobal(0))) {
       AgentSet.setPatchVariable(6, Globals.getGlobal(0));
     }
   }
