@@ -5,7 +5,7 @@ package org.nlogo.tortoise
 import org.nlogo.{ core, api, headless, nvm },
   nvm.FrontEndInterface.{ ProceduresMap, NoProcedures },
   headless.lang, lang._,
-  org.nlogo.util.Femto,
+  org.nlogo.api.Femto,
   org.scalatest.Assertions._,
   org.scalatest.exceptions.TestPendingException,
   org.nlogo.tortoise.nashorn.Nashorn

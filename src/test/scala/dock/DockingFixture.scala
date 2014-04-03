@@ -6,7 +6,7 @@ package dock
 import
   org.nlogo.{ core, api, headless, mirror, nvm },
   headless.lang._,
-  org.nlogo.util.MersenneTwisterFast,
+  api.MersenneTwisterFast,
   org.scalatest.Assertions._,
   org.nlogo.shape.{LinkShape, VectorShape},
   nashorn.Nashorn
