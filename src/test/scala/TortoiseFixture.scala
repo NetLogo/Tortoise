@@ -53,8 +53,6 @@ class TestReporters extends lang.TestReporters with TortoiseFinder {
 
 class TestCommands extends lang.TestCommands with TortoiseFinder {
   override val freebies = Map[String, String](
-    // to be investigated
-    "ResizeWorld::ResizeWorldDoesntRestartWhoNumbering" -> "???",
     // significant (early exit)
     "Stop::ReportFromForeach2"         -> "no early exit from foreach",
     "Stop::ReportFromForeach3"         -> "no early exit from foreach",
