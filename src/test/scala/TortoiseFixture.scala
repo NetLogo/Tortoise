@@ -55,7 +55,6 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
   override val freebies = Map[String, String](
     // to be investigated
     "ResizeWorld::ResizeWorldDoesntRestartWhoNumbering" -> "???",
-    "ReporterTasks::CloseOverLocal1"                    -> "???",
     // significant (early exit)
     "Stop::ReportFromForeach2"         -> "no early exit from foreach",
     "Stop::ReportFromForeach3"         -> "no early exit from foreach",
@@ -113,6 +112,7 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
     "Run::LuisIzquierdoRunResult2"             -> "run/runresult on strings not supported",
     "Run::run-evaluate-string-input-only-once" -> "run/runresult on strings not supported",
     // needs compiler changes
+    "ReporterTasks::CloseOverLocal1" -> "Creates a function named 'const', which is a reserved keyword in JavaScript",
     "Errors::task-variable-not-in-task" -> "Necessary check must be moved up into the front-end of the compiler",
     "Let::LetOfVarToItself1"            -> "Necessary check must be moved up into the front-end of the compiler",
     "Let::LetOfVarToItself2"            -> "Necessary check must be moved up into the front-end of the compiler",
