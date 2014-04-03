@@ -180,6 +180,12 @@ object Model {
       dimensions = Some((-9, 9, -4, 4)),
       setup = "setup-random",
       repetitions = 20
+    ),
+    Model(
+      path = "models/Code Examples/State Machine Example.nlogo",
+      dimensions = Some((-19, 19, -19, 19)),
+      setup = "set number 100  setup",
+      repetitions = 100
     )
   )
 }
