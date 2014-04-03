@@ -57,9 +57,9 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
     "ResizeWorld::ResizeWorldDoesntRestartWhoNumbering" -> "???",
     "ReporterTasks::CloseOverLocal1"                    -> "???",
     // significant (early exit)
-    "Stop::ReportFromForeach"          -> "no early exit from foreach",
     "Stop::ReportFromForeach2"         -> "no early exit from foreach",
     "Stop::ReportFromForeach3"         -> "no early exit from foreach",
+    "Stop::ReportFromForeach"          -> "no early exit from foreach",
     "Stop::StopFromForeach2"           -> "no early exit from foreach",
     "Stop::StopFromForeach3"           -> "no early exit from foreach",
     "Stop::StopInsideRunOfCommandTask" -> "no early exit from command task",
@@ -69,20 +69,20 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
     "CommandTasks::*ToString5" -> "command task string representation doesn't match",
     "CommandTasks::*ToString6" -> "command task string representation doesn't match",
     // significant (misc.)
-    "Random::Random3" -> "`random` doesn't handle fractional parts correctly",
     "CommandTasks::command-task-body-gets-agent-type-check" -> "agent type checking not supported",
+    "Random::Random3" -> "`random` doesn't handle fractional parts correctly",
     // should be handled in rewrite
     "Agentsets::AgentSetEquality"      -> "Dead agents in agentsets are handled incorrectly",
     "Agentsets::LinkAgentsetDeadLinks" -> "Dead agents in agentsets are handled incorrectly",
-    "Death::DeadTurtles9"              -> "Dead agents in agentsets are handled incorrectly",
-    "Death::DeadTurtles10"             -> "Dead agents in agentsets are handled incorrectly",
     "Death::DeadLinks1"                -> "Dead agents in agentsets are handled incorrectly",
+    "Death::DeadTurtles10"             -> "Dead agents in agentsets are handled incorrectly",
+    "Death::DeadTurtles9"              -> "Dead agents in agentsets are handled incorrectly",
     "OneOf::OneOfDyingTurtles"         -> "Dead agents in agentsets are handled incorrectly",
     "Interaction::Interaction3b1"                                             -> "correct answer requires empty init block optimization",
     "Interaction::Interaction3b2"                                             -> "correct answer requires empty init block optimization",
-    "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksWith" -> "correct answer requires empty init block optimization",
-    "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksTo"   -> "correct answer requires empty init block optimization",
     "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksFrom" -> "correct answer requires empty init block optimization",
+    "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksTo"   -> "correct answer requires empty init block optimization",
+    "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksWith" -> "correct answer requires empty init block optimization",
     "TurtlesHere::TurtlesHereCheckOrder1"                                     -> "correct answer requires empty init block optimization",
     "TurtlesHere::TurtlesHereCheckOrder2"                                     -> "correct answer requires empty init block optimization",
     "TurtlesHere::TurtlesHereCheckOrder3"                                     -> "correct answer requires empty init block optimization",
@@ -90,20 +90,15 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
     "Agentsets::Agentsets4" -> "TOO SLOW (because creating links requires looking up existing links)",
     "Links::LinksInitBlock" -> "TOO SLOW (because creating links requires looking up existing links)",
     // significant; uncertain how to solve (`RandomNOfIsFair<X>`s could possibly be solved by making it faster to write agent variables, but maybe not)
-    "Random::RandomNOfIsFairForTurtles"                       -> "TOO SLOW",
-    "Random::RandomNOfIsFairForLinks"                         -> "TOO SLOW",
     "Random::RandomNOfIsFairForABreed"                        -> "TOO SLOW",
     "Random::RandomNOfIsFairForAList"                         -> "TOO SLOW",
-    "Random::RandomNOfIsFairForPatches"                       -> "TOO SLOW",
     "Random::RandomNOfIsFairForAnAgentsetConstructedOnTheFly" -> "TOO SLOW",
+    "Random::RandomNOfIsFairForLinks"                         -> "TOO SLOW",
+    "Random::RandomNOfIsFairForPatches"                       -> "TOO SLOW",
+    "Random::RandomNOfIsFairForTurtles"                       -> "TOO SLOW",
     // requires features
     "Tie::Tie2Nonrigid" -> "tie-mode link variable not implemented; ties not implemented at all",
     // perhaps never to be supported
-    "Run::LuisIzquierdoRun1"                   -> "run/runresult on strings not supported",
-    "Run::LuisIzquierdoRun2"                   -> "run/runresult on strings not supported",
-    "Run::LuisIzquierdoRunResult1"             -> "run/runresult on strings not supported",
-    "Run::LuisIzquierdoRunResult2"             -> "run/runresult on strings not supported",
-    "Run::run-evaluate-string-input-only-once" -> "run/runresult on strings not supported",
     "ControlStructures::Run1"                  -> "run/runresult on strings not supported",
     "ControlStructures::Run2"                  -> "run/runresult on strings not supported",
     "ControlStructures::Run3"                  -> "run/runresult on strings not supported",
@@ -112,13 +107,18 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
     "ControlStructures::Run6"                  -> "run/runresult on strings not supported",
     "ControlStructures::Run7"                  -> "run/runresult on strings not supported",
     "ControlStructures::Run8"                  -> "run/runresult on strings not supported",
+    "Run::LuisIzquierdoRun1"                   -> "run/runresult on strings not supported",
+    "Run::LuisIzquierdoRun2"                   -> "run/runresult on strings not supported",
+    "Run::LuisIzquierdoRunResult1"             -> "run/runresult on strings not supported",
+    "Run::LuisIzquierdoRunResult2"             -> "run/runresult on strings not supported",
+    "Run::run-evaluate-string-input-only-once" -> "run/runresult on strings not supported",
     // needs compiler changes
-    "TypeChecking::SetVariable"         -> "Necessary check must be moved up into the front-end of the compiler",
+    "Errors::task-variable-not-in-task" -> "Necessary check must be moved up into the front-end of the compiler",
     "Let::LetOfVarToItself1"            -> "Necessary check must be moved up into the front-end of the compiler",
     "Let::LetOfVarToItself2"            -> "Necessary check must be moved up into the front-end of the compiler",
     "Let::LetOfVarToItself3"            -> "Necessary check must be moved up into the front-end of the compiler",
     "Let::LetOfVarToItselfInsideAsk"    -> "Necessary check must be moved up into the front-end of the compiler",
-    "Errors::task-variable-not-in-task" -> "Necessary check must be moved up into the front-end of the compiler"
+    "TypeChecking::SetVariable"         -> "Necessary check must be moved up into the front-end of the compiler"
   )
 }
 
