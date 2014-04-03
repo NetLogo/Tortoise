@@ -2,7 +2,7 @@
 
 package org.nlogo.tortoise
 
-import org.nlogo.{ api, compile => ast, nvm, workspace },
+import org.nlogo.{ core, api, compile => ast, nvm, workspace },
    nvm.FrontEndInterface.{ ProceduresMap, NoProcedures }
 
 import collection.JavaConverters._
@@ -34,9 +34,9 @@ object Compiler {
       logo: String,
       interfaceGlobals: Seq[String] = Seq(),
       interfaceGlobalCommands: String = "",
-      dimensions: api.WorldDimensions = api.WorldDimensions.square(0),
-      turtleShapeList: api.ShapeList = new api.ShapeList(api.AgentKind.Turtle),
-      linkShapeList: api.ShapeList = new api.ShapeList(api.AgentKind.Link))
+      dimensions: core.WorldDimensions = core.WorldDimensions.square(0),
+      turtleShapeList: api.ShapeList = new api.ShapeList(core.AgentKind.Turtle),
+      linkShapeList: api.ShapeList = new api.ShapeList(core.AgentKind.Link))
       : (String, api.Program, ProceduresMap) = {
     val (defs, results): (Seq[ast.ProcedureDefinition], nvm.StructureResults) =
       frontEnd.frontEnd(logo,
@@ -74,7 +74,7 @@ object Compiler {
       oldProcedures: ProceduresMap = NoProcedures,
       program: api.Program = api.Program.empty()): String = {
     val wrapped =
-      workspace.Evaluator.getHeader(api.AgentKind.Observer, commands) +
+      workspace.Evaluator.getHeader(core.AgentKind.Observer, commands) +
         logo + workspace.Evaluator.getFooter(commands)
     val (defs, _) = frontEnd.frontEnd(wrapped, oldProcedures, program)
     if (commands)

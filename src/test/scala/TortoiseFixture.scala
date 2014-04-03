@@ -2,7 +2,7 @@
 
 package org.nlogo.tortoise
 
-import org.nlogo.{ api, headless, nvm },
+import org.nlogo.{ core, api, headless, nvm },
   nvm.FrontEndInterface.{ ProceduresMap, NoProcedures },
   headless.lang, lang._,
   org.nlogo.util.Femto,
@@ -125,11 +125,11 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
 class TortoiseFixture(name: String, nashorn: Nashorn, notImplemented: String => Nothing)
 extends AbstractFixture {
 
-  override def defaultDimensions = api.WorldDimensions.square(5)
+  override def defaultDimensions = core.WorldDimensions.square(5)
   var program: api.Program = api.Program.empty
   var procs: ProceduresMap = NoProcedures
 
-  override def declare(source: String, dimensions: api.WorldDimensions) {
+  override def declare(source: String, dimensions: core.WorldDimensions) {
     val (js, p, m) =
       try Compiler.compileProcedures(source, dimensions = dimensions)
       catch catcher
@@ -150,13 +150,13 @@ extends AbstractFixture {
 
   override def runCommand(command: Command, mode: TestMode) {
     val wrappedCommand = command.kind match {
-      case api.AgentKind.Observer =>
+      case core.AgentKind.Observer =>
         command.command
-      case api.AgentKind.Turtle =>
+      case core.AgentKind.Turtle =>
         "ask turtles [ " + command.command + "\n]"
-      case api.AgentKind.Patch =>
+      case core.AgentKind.Patch =>
         "ask patches [ " + command.command + "\n]"
-      case api.AgentKind.Link =>
+      case core.AgentKind.Link =>
         "ask links [ " + command.command + "\n]"
     }
     def js = Compiler.compileCommands(wrappedCommand, procs, program)

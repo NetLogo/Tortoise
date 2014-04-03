@@ -9,8 +9,9 @@ package org.nlogo.tortoise
 //     ./sbt 'run-main org.nlogo.tortoise.CompilerService'
 
 import
-  org.nlogo.{ api, nvm, shape, workspace },
-    api.{ ModelReader, ModelSection, WorldDimensions },
+  org.nlogo.{ core, api, nvm, shape, workspace },
+    core.WorldDimensions,
+    api.{ ModelReader, ModelSection },
     workspace.WidgetParser
 
 // This and app/models/local/NetLogoCompiler.scala over in the Galapagos repo have very similar
@@ -30,10 +31,10 @@ object CompilerService {
 
   import collection.JavaConverters._
   def parseTurtleShapes(strings: Array[String]): api.ShapeList =
-    new api.ShapeList(api.AgentKind.Turtle,
+    new api.ShapeList(core.AgentKind.Turtle,
       shape.VectorShape.parseShapes(strings, api.Version.version).asScala)
   def parseLinkShapes(strings: Array[String]): api.ShapeList =
-    new api.ShapeList(api.AgentKind.Link,
+    new api.ShapeList(core.AgentKind.Link,
       shape.LinkShape.parseShapes(strings, api.Version.version).asScala)
 
   val defaultTurtleShapes = parseTurtleShapes(api.ModelReader.defaultShapes.toArray)

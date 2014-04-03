@@ -3,7 +3,7 @@
 package org.nlogo.tortoise
 package dock
 
-import org.nlogo.api, api.WorldDimensions
+import org.nlogo.core.WorldDimensions
 import org.nlogo.util.SlowTest
 
 class TestTopologies extends DockingSuite with SlowTest {

@@ -58,7 +58,8 @@ object Depend {
     val packageDefs = Map(
       "" -> Nil,
       "util" -> Nil,
-      "api" -> List("util"),
+      "core" -> Nil,
+      "api" -> List("core", "util"),
       "nvm" -> List("agent"),
       "mirror" -> List("shape"),
       "shape" -> List("api"),

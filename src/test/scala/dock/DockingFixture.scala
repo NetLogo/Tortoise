@@ -4,7 +4,7 @@ package org.nlogo.tortoise
 package dock
 
 import
-  org.nlogo.{ api, headless, mirror, nvm },
+  org.nlogo.{ core, api, headless, mirror, nvm },
   headless.lang._,
   org.nlogo.util.MersenneTwisterFast,
   org.scalatest.Assertions._,
@@ -152,7 +152,7 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
   }
 
   // use single-patch world by default to keep generated JSON to a minimum
-  override val defaultDimensions = api.WorldDimensions.square(0)
+  override val defaultDimensions = core.WorldDimensions.square(0)
 
   override def open(path: String) {
     require(!opened)
@@ -189,14 +189,14 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
       dimensions = model.dimensions)
   }
 
-  override def declare(logo: String, dimensions: api.WorldDimensions = defaultDimensions) {
+  override def declare(logo: String, dimensions: core.WorldDimensions = defaultDimensions) {
     require(!opened)
     super.declare(logo, dimensions = dimensions)
     declareHelper(logo, dimensions = dimensions)
   }
 
   def declareHelper(logo: String, interfaceGlobals: Seq[String] = Seq(), interfaceGlobalCommands: String = "",
-      dimensions: api.WorldDimensions = defaultDimensions,
+      dimensions: core.WorldDimensions = defaultDimensions,
       turtleShapeList: api.ShapeList = CompilerService.defaultTurtleShapes,
       linkShapeList: api.ShapeList = CompilerService.defaultLinkShapes) {
     val (js, _, _) = Compiler.compileProcedures(logo, interfaceGlobals, interfaceGlobalCommands, dimensions, turtleShapeList, linkShapeList)
