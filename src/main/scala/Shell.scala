@@ -3,7 +3,7 @@
 package org.nlogo.tortoise
 
 import org.nlogo.{ core, workspace },
-  nashorn.Nashorn
+  jsengine.nashorn.Nashorn
 
 object Shell extends workspace.Shell {
 
