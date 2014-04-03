@@ -8,7 +8,7 @@ import org.nlogo.{ api, core, headless, nvm },
   headless.lang, lang._,
   org.scalatest.Assertions._,
   org.scalatest.exceptions.TestPendingException,
-  org.nlogo.tortoise.nashorn.Nashorn
+  org.nlogo.tortoise.jsengine.nashorn.Nashorn
 
 trait TortoiseFinder extends lang.Finder {
   val nashorn = new Nashorn

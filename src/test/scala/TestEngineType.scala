@@ -3,7 +3,7 @@
 package org.nlogo.tortoise
 
 import org.scalatest.FunSuite
-import nashorn.Nashorn
+import jsengine.nashorn.Nashorn
 
 class TestEngineType extends FunSuite {
 

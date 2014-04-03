@@ -10,7 +10,7 @@ import
   api.MersenneTwisterFast,
   org.scalatest.Assertions._,
   org.nlogo.shape.{LinkShape, VectorShape},
-  nashorn.Nashorn
+  jsengine.nashorn.Nashorn
 
 import collection.JavaConverters._
 

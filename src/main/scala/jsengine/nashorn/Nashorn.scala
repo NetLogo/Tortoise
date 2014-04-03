@@ -1,6 +1,7 @@
 // (C) Uri Wilensky. https://github.com/NetLogo/NetLogo
 
-package org.nlogo.tortoise.nashorn
+package org.nlogo.tortoise.jsengine
+package nashorn
 
 import org.nlogo.api, api.MersenneTwisterFast
 import org.nlogo.core.Resource
