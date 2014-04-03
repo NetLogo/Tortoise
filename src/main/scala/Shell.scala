@@ -2,14 +2,14 @@
 
 package org.nlogo.tortoise
 
-import org.nlogo.{ api, workspace },
+import org.nlogo.{ core, workspace },
   nashorn.Nashorn
 
 object Shell extends workspace.Shell {
 
   object Defaults {
     val src = ""
-    val dim = api.WorldDimensions.square(16)
+    val dim = core.WorldDimensions.square(16)
   }
 
   val nashorn = new Nashorn

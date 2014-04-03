@@ -3,7 +3,7 @@
 package org.nlogo.tortoise
 package dock
 
-import org.nlogo.api, api.WorldDimensions
+import org.nlogo.core.WorldDimensions
 
 class TestBreeds extends DockingSuite {
   test("create breeds") { implicit fixture => import fixture._
