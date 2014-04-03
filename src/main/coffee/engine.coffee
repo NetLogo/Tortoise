@@ -641,9 +641,15 @@ class World
     @_ticks = -1
     Updates.push( world: { 0: { ticks: @_ticks } } )
   resize: (minPxcor, maxPxcor, minPycor, maxPycor) ->
+
     if(minPxcor > 0 || maxPxcor < 0 || minPycor > 0 || maxPycor < 0)
       throw new NetLogoException("You must include the point (0, 0) in the world.")
-    @clearAll()
+
+    # For some reason, JVM NetLogo doesn't restart `who` ordering after `resize-world`; even the test for this is existentially confused. --JAB (4/3/14)
+    oldNextTId = @_nextTurtleId
+    @clearTurtles()
+    @_nextTurtleId = oldNextTId
+
     @minPxcor = minPxcor
     @maxPxcor = maxPxcor
     @minPycor = minPycor
@@ -657,6 +663,7 @@ class World
     else
       @_topology = new Box(@minPxcor, @maxPxcor, @minPycor, @maxPycor)
     @createPatches()
+    @patchesAllBlack(true)
     Updates.push(
       world: {
         0: {
@@ -670,6 +677,7 @@ class World
       }
     )
     return
+
   tick: ->
     if(@_ticks == -1)
       throw new NetLogoException("The tick counter has not been started yet. Use RESET-TICKS.")

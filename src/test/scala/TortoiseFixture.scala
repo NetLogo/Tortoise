@@ -54,7 +54,6 @@ class TestReporters extends lang.TestReporters with TortoiseFinder {
 class TestCommands extends lang.TestCommands with TortoiseFinder {
   override val freebies = Map[String, String](
     // to be investigated
-    "ResizeWorld::ResizeWorldDoesntRestartWhoNumbering" -> "???",
     "Errors::task-variable-not-in-task"                 -> "???",
     "ReporterTasks::CloseOverLocal1"                    -> "???",
     // significant (early exit)
