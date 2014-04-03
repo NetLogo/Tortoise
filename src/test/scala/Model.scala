@@ -47,26 +47,28 @@ object Model {
     ),
     Model(
       path = "models/Sample Models/Chemistry & Physics/Heat/Boiling.nlogo",
+      dimensions = Some((-15, 15, -15, 15)),
       repetitions = 5
     ),
     Model(
       path = "models/Sample Models/Chemistry & Physics/Waves/Rope.nlogo",
-      repetitions = 10
+      dimensions = Some((0, 40, -20, 20)),
+      repetitions = 20
     ),
     Model(
       path = "models/test/tortoise/Sandpile.nlogo",
       variation = "random",
-      setup = "setup-random",
-      // this takes a while on Nashorn, but it probably isn't a good test unless we run the
-      // model for long enough for good avalanches to get going - ST 10/10/13
+      dimensions = Some((-15, 15, -15, 15)),
+      setup = """setup-random  set drop-location "center"""",
       repetitions = 100,
       metrics = Seq("total", "sizes", "lifetimes")
     ),
     Model(
       path = "models/test/tortoise/Sandpile.nlogo",
       variation = "uniform",
-      setup = "setup-uniform 0",
-      repetitions = 10,
+      dimensions = Some((-15, 15, -15, 15)),
+      setup = """setup-uniform 0  set drop-location "center"""",
+      repetitions = 100,
       metrics = Seq("total", "sizes", "lifetimes")
     ),
     Model(
@@ -77,7 +79,8 @@ object Model {
     ),
     Model(
       path = "models/Sample Models/Earth Science/Fire.nlogo",
-      repetitions = 10
+      dimensions = Some((-19, 19, -19, 19)),
+      repetitions = 20
     ),
     Model(
       path = "models/test/tortoise/Life Simple.nlogo",
@@ -107,8 +110,8 @@ object Model {
     Model(
       path = "models/Sample Models/Biology/Membrane Formation.nlogo",
       dimensions = Some((-10, 10, -10, 10)),
-      setup = "set num-lipids 50 set num-water 150  setup",
-      repetitions = 15
+      setup = "set num-lipids 40 set num-water 100  setup",
+      repetitions = 10
     ),
     Model(
       path = "models/Sample Models/Biology/Slime.nlogo",
@@ -130,6 +133,7 @@ object Model {
     ),
     Model(
       path = "models/Sample Models/Computer Science/Vants.nlogo",
+      dimensions = Some((-25, 25, -25, 25)),
       repetitions = 1,
       go =
         "repeat 10 [ go-forward ] " +
@@ -137,10 +141,12 @@ object Model {
     ),
     Model(
       path = "models/Sample Models/Biology/Virus.nlogo",
-      repetitions = 50
+      repetitions = 40
     ),
     Model(
       path = "models/Sample Models/Art/Follower.nlogo",
+      dimensions = Some((-15, 15, -15, 15)),
+      setup = "set population 500  setup",
       repetitions = 25
     ),
     Model(
@@ -152,14 +158,16 @@ object Model {
     ),
     Model(
       path = "models/test/benchmarks/Ants Benchmark.nlogo",
-      repetitions = 2,
+      dimensions = Some((-20, 20, -20, 20)),
+      repetitions = 3,
       go =
         "repeat 10 [ go ] " +
         "ask turtle 0 [ move-to one-of patches with [shade-of? pcolor blue] ]"
     ),
     Model(
       path = "models/test/benchmarks/Bureaucrats Benchmark.nlogo",
-      repetitions = 50
+      dimensions = Some((0, 29, 0, 29)),
+      repetitions = 200
     ),
     Model(
       path = "models/test/benchmarks/BZ Benchmark.nlogo",
@@ -173,6 +181,8 @@ object Model {
     ),
     Model(
       path = "models/test/benchmarks/GasLabCirc Benchmark.nlogo",
+      dimensions = Some((-20, 20, -20, 20)),
+      setup = "set number 50  setup",
       repetitions = 50
     ),
     Model(
