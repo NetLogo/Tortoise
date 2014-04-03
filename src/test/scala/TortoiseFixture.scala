@@ -55,7 +55,6 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
   override val freebies = Map[String, String](
     // to be investigated
     "ResizeWorld::ResizeWorldDoesntRestartWhoNumbering" -> "???",
-    "Errors::task-variable-not-in-task"                 -> "???",
     "ReporterTasks::CloseOverLocal1"                    -> "???",
     // significant (early exit)
     "Stop::ReportFromForeach"          -> "no early exit from foreach",
@@ -114,11 +113,12 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
     "ControlStructures::Run7"                  -> "run/runresult on strings not supported",
     "ControlStructures::Run8"                  -> "run/runresult on strings not supported",
     // needs compiler changes
-    "TypeChecking::SetVariable"      -> "Necessary check must be moved up into the front-end of the compiler",
-    "Let::LetOfVarToItself1"         -> "Necessary check must be moved up into the front-end of the compiler",
-    "Let::LetOfVarToItself2"         -> "Necessary check must be moved up into the front-end of the compiler",
-    "Let::LetOfVarToItself3"         -> "Necessary check must be moved up into the front-end of the compiler",
-    "Let::LetOfVarToItselfInsideAsk" -> "Necessary check must be moved up into the front-end of the compiler"
+    "TypeChecking::SetVariable"         -> "Necessary check must be moved up into the front-end of the compiler",
+    "Let::LetOfVarToItself1"            -> "Necessary check must be moved up into the front-end of the compiler",
+    "Let::LetOfVarToItself2"            -> "Necessary check must be moved up into the front-end of the compiler",
+    "Let::LetOfVarToItself3"            -> "Necessary check must be moved up into the front-end of the compiler",
+    "Let::LetOfVarToItselfInsideAsk"    -> "Necessary check must be moved up into the front-end of the compiler",
+    "Errors::task-variable-not-in-task" -> "Necessary check must be moved up into the front-end of the compiler"
   )
 }
 
