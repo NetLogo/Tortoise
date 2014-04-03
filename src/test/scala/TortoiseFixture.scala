@@ -54,19 +54,9 @@ class TestReporters extends lang.TestReporters with TortoiseFinder {
 class TestCommands extends lang.TestCommands with TortoiseFinder {
   override val freebies = Map[String, String](
     // to be investigated
-    "Interaction::Interaction2"                                               -> "???",
-    "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksWith" -> "???",
-    "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksTo"   -> "???",
-    "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksFrom" -> "???",
-    "ResizeWorld::ResizeWorldDoesntRestartWhoNumbering"                       -> "???",
-    "Errors::task-variable-not-in-task"                                       -> "???",
-    "ReporterTasks::CloseOverLocal1"                                          -> "???",
-    // significant (dubious excuse)
-    "Sort::SortingListsOfAgents"           -> "sorting agents isn't supported",
-    "UpAndDownhill::UpAndDownhill1"        -> "sorting agents isn't supported",
-    "UpAndDownhill::Uphill3"               -> "sorting agents isn't supported",
-    "Diffuse::DiffuseTorus"                -> "sorting agents isn't supported",
-    "CommandTasks::foreach-plus-recursion" -> "sorting agents isn't supported",
+    "ResizeWorld::ResizeWorldDoesntRestartWhoNumbering" -> "???",
+    "Errors::task-variable-not-in-task"                 -> "???",
+    "ReporterTasks::CloseOverLocal1"                    -> "???",
     // significant (early exit)
     "Stop::ReportFromForeach"          -> "no early exit from foreach",
     "Stop::ReportFromForeach2"         -> "no early exit from foreach",
@@ -89,12 +79,15 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
     "Death::DeadTurtles10"             -> "Dead agents in agentsets are handled incorrectly",
     "Death::DeadLinks1"                -> "Dead agents in agentsets are handled incorrectly",
     "OneOf::OneOfDyingTurtles"         -> "Dead agents in agentsets are handled incorrectly",
-    "Interaction::Interaction3b1"         -> "correct answer requires empty init block optimization",
-    "Interaction::Interaction3b2"         -> "correct answer requires empty init block optimization",
-    "TurtlesHere::TurtlesHereCheckOrder1" -> "correct answer requires empty init block optimization",
-    "TurtlesHere::TurtlesHereCheckOrder2" -> "correct answer requires empty init block optimization",
-    "TurtlesHere::TurtlesHereCheckOrder3" -> "correct answer requires empty init block optimization",
-    "TurtlesHere::TurtlesHereCheckOrder4" -> "correct answer requires empty init block optimization",
+    "Interaction::Interaction3b1"                                             -> "correct answer requires empty init block optimization",
+    "Interaction::Interaction3b2"                                             -> "correct answer requires empty init block optimization",
+    "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksWith" -> "correct answer requires empty init block optimization",
+    "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksTo"   -> "correct answer requires empty init block optimization",
+    "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksFrom" -> "correct answer requires empty init block optimization",
+    "TurtlesHere::TurtlesHereCheckOrder1"                                     -> "correct answer requires empty init block optimization",
+    "TurtlesHere::TurtlesHereCheckOrder2"                                     -> "correct answer requires empty init block optimization",
+    "TurtlesHere::TurtlesHereCheckOrder3"                                     -> "correct answer requires empty init block optimization",
+    "TurtlesHere::TurtlesHereCheckOrder4"                                     -> "correct answer requires empty init block optimization",
     "Agentsets::Agentsets4" -> "TOO SLOW (because creating links requires looking up existing links)",
     "Links::LinksInitBlock" -> "TOO SLOW (because creating links requires looking up existing links)",
     // significant; uncertain how to solve (`RandomNOfIsFair<X>`s could possibly be solved by making it faster to write agent variables, but maybe not)
@@ -107,7 +100,6 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
     // requires features
     "Tie::Tie2Nonrigid" -> "tie-mode link variable not implemented; ties not implemented at all",
     // perhaps never to be supported
-    "ControlStructures::Run8"                  -> "run/runresult on strings not supported",
     "Run::LuisIzquierdoRun1"                   -> "run/runresult on strings not supported",
     "Run::LuisIzquierdoRun2"                   -> "run/runresult on strings not supported",
     "Run::LuisIzquierdoRunResult1"             -> "run/runresult on strings not supported",
@@ -120,6 +112,7 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
     "ControlStructures::Run5"                  -> "run/runresult on strings not supported",
     "ControlStructures::Run6"                  -> "run/runresult on strings not supported",
     "ControlStructures::Run7"                  -> "run/runresult on strings not supported",
+    "ControlStructures::Run8"                  -> "run/runresult on strings not supported",
     // needs compiler changes
     "TypeChecking::SetVariable"      -> "Necessary check must be moved up into the front-end of the compiler",
     "Let::LetOfVarToItself1"         -> "Necessary check must be moved up into the front-end of the compiler",

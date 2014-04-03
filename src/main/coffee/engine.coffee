@@ -714,6 +714,13 @@ class World
     Updates.push( world: { 0: { patchesAllBlack: @_patchesAllBlack }})
   clearAll: ->
     Globals.clear(@interfaceGlobalCount)
+    @clearTurtles()
+    @createPatches()
+    @_nextLinkId = 0
+    @patchesAllBlack(true)
+    @clearTicks()
+    return
+  clearTurtles: ->
     # We iterate through a copy of the array since it will be modified during
     # iteration.
     # A more efficient (but less readable) way of doing this is to iterate
@@ -723,11 +730,16 @@ class World
         t.die()
       catch error
         throw error if !(error instanceof DeathInterrupt)
-    @createPatches()
     @_nextTurtleId = 0
-    @_nextLinkId = 0
+    return
+  clearPatches: ->
+    for p in @patches().items
+      p.setPatchVariable(2, 0)   # 2 = pcolor
+      p.setPatchVariable(3, "")    # 3 = plabel
+      p.setPatchVariable(4, 9.9)   # 4 = plabel-color
+      for i in [patchBuiltins.size...p.vars.length]
+        p.setPatchVariable(i, 0)
     @patchesAllBlack(true)
-    @clearTicks()
     return
   createTurtle: (t) ->
     t.id = @_nextTurtleId++
@@ -979,7 +991,7 @@ class Agents
   sort: ->
     if(@items.length == 0)
       @items
-    else if @kind is AgentKind.Turtle
+    else if @kind is AgentKind.Turtle or @kind is AgentKind.Patch
       @items[..].sort((x, y) -> x.compare(y).toInt)
     else if @kind is AgentKind.Link
       @items[..].sort(Links.compare)
@@ -1143,7 +1155,19 @@ Prims =
       throw new NetLogoException("can only reverse lists and strings")
   sort: (xs) ->
     if typeIsArray(xs)
-      xs[..].sort()
+      wrappedItems = _(xs)
+      if wrappedItems.isEmpty()
+        xs
+      else if wrappedItems.all((x) -> Utilities.isNumber(x))
+        xs[..].sort((x, y) -> Comparator.numericCompare(x, y).toInt)
+      else if wrappedItems.all((x) -> Utilities.isString(x))
+        xs[..].sort()
+      else if wrappedItems.all((x) -> x instanceof Turtle) or wrappedItems.all((x) -> x instanceof Patch)
+        xs[..].sort((x, y) -> x.compare(y).toInt)
+      else if wrappedItems.all((x) -> x instanceof Link)
+        xs[..].sort(Links.compare)
+      else
+        throw new Error("We don't know how to sort your kind here!")
     else if xs instanceof Agents
       xs.sort()
     else

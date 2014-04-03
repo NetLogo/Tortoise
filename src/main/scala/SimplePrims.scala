@@ -146,6 +146,8 @@ object SimplePrims {
       PartialFunction.condOpt(c) {
         case _: prim.etc._outputprint       => "Prims.outputPrint"
         case _: prim.etc._clearall          => "world.clearAll"
+        case _: prim.etc._clearpatches      => "world.clearPatches"
+        case _: prim.etc._clearturtles      => "world.clearTurtles"
         case _: prim.etc._clearticks        => "world.clearTicks"
         case _: prim.etc._resizeworld       => "world.resize"
         case _: prim.etc._resetticks        => "world.resetTicks"
