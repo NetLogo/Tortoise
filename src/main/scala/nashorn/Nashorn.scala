@@ -25,8 +25,11 @@ class Nashorn {
 
   val versionNumber: String = engine.getFactory.getEngineVersion
 
+  val locator = new org.webjars.WebJarAssetLocator
   val libs = Seq(
-    "/js/mori.min.js", "/js/lodash.js",
+    // from webjars
+    "/" + locator.getFullPath("lodash.js"),
+    "/" + locator.getFullPath("mori.min.js"),
     // the original CoffeeScript for these are in src/main/coffee. sbt compiles
     // them to JavaScript for us.
     "/js/compat.js", "/js/engine.js", "/js/agentmodel.js")
