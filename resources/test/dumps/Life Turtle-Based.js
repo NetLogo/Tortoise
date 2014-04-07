@@ -6,58 +6,66 @@ Breeds.get("CELLS").vars =[""];
 Breeds.add("BABIES", "baby");
 Breeds.get("BABIES").vars =[""];
 function setupBlank() {
-  world.clearAll();
-  Breeds.setDefaultShape(world.turtlesOfBreed("CELLS"), "circle");
-  Breeds.setDefaultShape(world.turtlesOfBreed("BABIES"), "dot");
-  AgentSet.ask(world.patches(), true, function() {
-    AgentSet.setPatchVariable(5, 0);
+  return Procedures.stoppably(function() {
+    world.clearAll();
+    Breeds.setDefaultShape(world.turtlesOfBreed("CELLS"), "circle");
+    Breeds.setDefaultShape(world.turtlesOfBreed("BABIES"), "dot");
+    AgentSet.ask(world.patches(), true, function() {
+      AgentSet.setPatchVariable(5, 0);
+    });
+    world.resetTicks();
   });
-  world.resetTicks();
 }
 function setupRandom() {
-  setupBlank();
-  AgentSet.ask(world.patches(), true, function() {
-    if (Prims.lt(Prims.randomFloat(100), Globals.getGlobal(0))) {
-      AgentSet.ask(Prims.sprout(1, "BABIES"), true, function() {});
-    }
+  return Procedures.stoppably(function() {
+    setupBlank();
+    AgentSet.ask(world.patches(), true, function() {
+      if (Prims.lt(Prims.randomFloat(100), Globals.getGlobal(0))) {
+        AgentSet.ask(Prims.sprout(1, "BABIES"), true, function() {});
+      }
+    });
+    go();
+    world.resetTicks();
   });
-  go();
-  world.resetTicks();
 }
 function birth() {
-  AgentSet.ask(Prims.sprout(1, "BABIES"), true, function() {
-    AgentSet.setTurtleVariable(1, (65 + 1));
+  return Procedures.stoppably(function() {
+    AgentSet.ask(Prims.sprout(1, "BABIES"), true, function() {
+      AgentSet.setTurtleVariable(1, (65 + 1));
+    });
   });
 }
 function go() {
-  AgentSet.ask(AgentSet.agentFilter(world.turtlesOfBreed("CELLS"), function() {
-    return Prims.equality(AgentSet.getTurtleVariable(1), 5)
-  }), true, function() {
-    AgentSet.die();
-  });
-  AgentSet.ask(world.turtlesOfBreed("BABIES"), true, function() {
-    AgentSet.setBreed(world.turtlesOfBreed("CELLS"));
-    AgentSet.setTurtleVariable(1, 9.9);
-  });
-  AgentSet.ask(world.turtlesOfBreed("CELLS"), true, function() {
-    AgentSet.ask(Prims.getNeighbors(), true, function() {
-      AgentSet.setPatchVariable(5, (AgentSet.getPatchVariable(5) + 1));
+  return Procedures.stoppably(function() {
+    AgentSet.ask(AgentSet.agentFilter(world.turtlesOfBreed("CELLS"), function() {
+      return Prims.equality(AgentSet.getTurtleVariable(1), 5)
+    }), true, function() {
+      AgentSet.die();
     });
-  });
-  AgentSet.ask(world.turtlesOfBreed("CELLS"), true, function() {
-    if ((Prims.equality(AgentSet.getPatchVariable(5), 2) || Prims.equality(AgentSet.getPatchVariable(5), 3))) {
+    AgentSet.ask(world.turtlesOfBreed("BABIES"), true, function() {
+      AgentSet.setBreed(world.turtlesOfBreed("CELLS"));
       AgentSet.setTurtleVariable(1, 9.9);
-    }
-    else {
-      AgentSet.setTurtleVariable(1, 5);
-    }
+    });
+    AgentSet.ask(world.turtlesOfBreed("CELLS"), true, function() {
+      AgentSet.ask(Prims.getNeighbors(), true, function() {
+        AgentSet.setPatchVariable(5, (AgentSet.getPatchVariable(5) + 1));
+      });
+    });
+    AgentSet.ask(world.turtlesOfBreed("CELLS"), true, function() {
+      if ((Prims.equality(AgentSet.getPatchVariable(5), 2) || Prims.equality(AgentSet.getPatchVariable(5), 3))) {
+        AgentSet.setTurtleVariable(1, 9.9);
+      }
+      else {
+        AgentSet.setTurtleVariable(1, 5);
+      }
+    });
+    AgentSet.ask(world.patches(), true, function() {
+      if ((!(AgentSet.any(AgentSet.self().breedHere("CELLS"))) && Prims.equality(AgentSet.getPatchVariable(5), 3))) {
+        birth();
+      }
+      AgentSet.setPatchVariable(5, 0);
+    });
+    world.tick();
   });
-  AgentSet.ask(world.patches(), true, function() {
-    if ((!(AgentSet.any(AgentSet.self().breedHere("CELLS"))) && Prims.equality(AgentSet.getPatchVariable(5), 3))) {
-      birth();
-    }
-    AgentSet.setPatchVariable(5, 0);
-  });
-  world.tick();
 }
-Globals.setGlobal(0, 35);
+Procedures.stoppably(function() {Globals.setGlobal(0, 35);})

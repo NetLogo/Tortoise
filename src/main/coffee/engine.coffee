@@ -8,8 +8,9 @@ linkBuiltins = ["end1", "end2", "lcolor", "llabel", "llabelcolor", "lhidden", "l
 
 class NetLogoException
   constructor: (@message) ->
-class DeathInterrupt extends NetLogoException
+class DeathInterrupt    extends NetLogoException
 class TopologyInterrupt extends NetLogoException
+class StopInterrupt     extends NetLogoException
 
 Updates = []
 
@@ -49,6 +50,13 @@ Utilities = {
   isNumber:   (x) -> typeof(x) is "number"
   isObject:   (x) -> typeof(x) is "object"
   isString:   (x) -> typeof(x) is "string"
+}
+
+Procedures = {
+  stoppably: (thunk) ->
+    try thunk()
+    catch e
+      if not (e instanceof StopInterrupt) then throw e
 }
 
 ColorModel = {
@@ -844,10 +852,11 @@ AgentSet =
     oldAgent = @_self
     @_myself = @_self
     @_self = a
-    try
-      res = f()
-    catch error
-      throw error if!(error instanceof DeathInterrupt)
+    res = Procedures.stoppably(->
+      try f()
+      catch error
+        throw error if!(error instanceof DeathInterrupt)
+    )
     @_self = oldAgent
     @_myself = oldMyself
     res

@@ -58,7 +58,9 @@ object Compiler {
     val body = Handlers.commands(pd.statements)
     val args = pd.procedure.args.map(Handlers.ident).mkString(", ")
     s"""|function $name($args) {
-        |${Handlers.indented(body)}
+        |  return Procedures.stoppably(function() {
+        |${Handlers.indented(body, 2)}
+        |  });
         |}""".stripMargin
   }
 
@@ -73,14 +75,23 @@ object Compiler {
   private def compile(logo: String, commands: Boolean,
       oldProcedures: ProceduresMap = NoProcedures,
       program: api.Program = api.Program.empty()): String = {
+
     val wrapped =
       workspace.Evaluator.getHeader(core.AgentKind.Observer, commands) +
         logo + workspace.Evaluator.getFooter(commands)
     val (defs, _) = frontEnd.frontEnd(wrapped, oldProcedures, program)
-    if (commands)
-      Handlers.commands(defs.head.statements)
+
+    val (body, jsFuncGenerator) =
+      if (commands)
+        (Handlers.commands(defs.head.statements), (body: String) => s"function() {$body}")
+      else
+        (Handlers.reporter(defs.head.statements.stmts(1).args(0)), (body: String) => s"function() { return $body; }")
+
+    if (body.trim.nonEmpty)
+      s"Procedures.stoppably(${jsFuncGenerator(body)})"
     else
-      Handlers.reporter(defs.head.statements.stmts(1).args(0))
+      body
+
   }
 
 }

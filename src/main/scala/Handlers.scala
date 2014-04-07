@@ -60,8 +60,8 @@ object Handlers {
       api.Dump.logoObject(x, readable = true, exporting = false)
   }
 
-  def indented(s: String): String =
-    s.lines.map("  " + _).mkString("\n")
+  def indented(s: String, times: Int = 1): String =
+    s.lines.map("  " * times + _).mkString("\n")
 
   // bogus, will need work - ST 9/13/13
   def ident(s: String): String = {
