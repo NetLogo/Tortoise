@@ -7,143 +7,163 @@ Breeds.get("SHEEP").vars =[""];
 Breeds.add("WOLVES", "wolf");
 Breeds.get("WOLVES").vars =[""];
 function setup() {
-  world.clearAll();
-  AgentSet.ask(world.patches(), true, function() {
-    AgentSet.setPatchVariable(2, 55);
-  });
-  if (Globals.getGlobal(6)) {
+  return Procedures.stoppably(function() {
+    world.clearAll();
     AgentSet.ask(world.patches(), true, function() {
-      AgentSet.setPatchVariable(2, AgentSet.oneOf([55, 35]));
-      if (Prims.equality(AgentSet.getPatchVariable(2), 55)) {
+      AgentSet.setPatchVariable(2, 55);
+    });
+    if (Globals.getGlobal(6)) {
+      AgentSet.ask(world.patches(), true, function() {
+        AgentSet.setPatchVariable(2, AgentSet.oneOf([55, 35]));
+        if (Prims.equality(AgentSet.getPatchVariable(2), 55)) {
+          AgentSet.setPatchVariable(5, Globals.getGlobal(7));
+        }
+        else {
+          AgentSet.setPatchVariable(5, Prims.random(Globals.getGlobal(7)));
+        }
+      });
+    }
+    Breeds.setDefaultShape(world.turtlesOfBreed("SHEEP"), "sheep");
+    AgentSet.ask(world.createTurtles(Globals.getGlobal(0), "SHEEP"), true, function() {
+      AgentSet.setTurtleVariable(1, 9.9);
+      AgentSet.setTurtleVariable(10, 1.5);
+      AgentSet.setTurtleVariable(7, (105 - 2));
+      AgentSet.setTurtleVariable(13, Prims.random((2 * Globals.getGlobal(1))));
+      Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
+    });
+    Breeds.setDefaultShape(world.turtlesOfBreed("WOLVES"), "wolf");
+    AgentSet.ask(world.createTurtles(Globals.getGlobal(3), "WOLVES"), true, function() {
+      AgentSet.setTurtleVariable(1, 0);
+      AgentSet.setTurtleVariable(10, 2);
+      AgentSet.setTurtleVariable(13, Prims.random((2 * Globals.getGlobal(4))));
+      Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
+    });
+    displayLabels();
+    Globals.setGlobal(9, AgentSet.count(AgentSet.agentFilter(world.patches(), function() {
+      return Prims.equality(AgentSet.getPatchVariable(2), 55)
+    })));
+    world.resetTicks();
+  });
+}
+function go() {
+  return Procedures.stoppably(function() {
+    if (!(AgentSet.any(world.turtles()))) {
+      throw new StopInterrupt;
+    }
+    AgentSet.ask(world.turtlesOfBreed("SHEEP"), true, function() {
+      move();
+      if (Globals.getGlobal(6)) {
+        AgentSet.setTurtleVariable(13, (AgentSet.getTurtleVariable(13) - 1));
+        eatGrass();
+      }
+      death();
+      reproduceSheep();
+    });
+    AgentSet.ask(world.turtlesOfBreed("WOLVES"), true, function() {
+      move();
+      AgentSet.setTurtleVariable(13, (AgentSet.getTurtleVariable(13) - 1));
+      catchSheep();
+      death();
+      reproduceWolves();
+    });
+    if (Globals.getGlobal(6)) {
+      AgentSet.ask(world.patches(), true, function() {
+        growGrass();
+      });
+    }
+    Globals.setGlobal(9, AgentSet.count(AgentSet.agentFilter(world.patches(), function() {
+      return Prims.equality(AgentSet.getPatchVariable(2), 55)
+    })));
+    world.tick();
+    displayLabels();
+  });
+}
+function move() {
+  return Procedures.stoppably(function() {
+    Prims.right(Prims.random(50));
+    Prims.left(Prims.random(50));
+    Prims.fd(1);
+  });
+}
+function eatGrass() {
+  return Procedures.stoppably(function() {
+    if (Prims.equality(AgentSet.getPatchVariable(2), 55)) {
+      AgentSet.setPatchVariable(2, 35);
+      AgentSet.setTurtleVariable(13, (AgentSet.getTurtleVariable(13) + Globals.getGlobal(1)));
+    }
+  });
+}
+function reproduceSheep() {
+  return Procedures.stoppably(function() {
+    if (Prims.lt(Prims.randomFloat(100), Globals.getGlobal(2))) {
+      AgentSet.setTurtleVariable(13, (AgentSet.getTurtleVariable(13) / 2));
+      AgentSet.ask(Prims.hatch(1, ""), true, function() {
+        Prims.right(Prims.randomFloat(360));
+        Prims.fd(1);
+      });
+    }
+  });
+}
+function reproduceWolves() {
+  return Procedures.stoppably(function() {
+    if (Prims.lt(Prims.randomFloat(100), Globals.getGlobal(5))) {
+      AgentSet.setTurtleVariable(13, (AgentSet.getTurtleVariable(13) / 2));
+      AgentSet.ask(Prims.hatch(1, ""), true, function() {
+        Prims.right(Prims.randomFloat(360));
+        Prims.fd(1);
+      });
+    }
+  });
+}
+function catchSheep() {
+  return Procedures.stoppably(function() {
+    var prey = AgentSet.oneOf(AgentSet.self().breedHere("SHEEP"));
+    if (!Prims.equality(prey, Nobody)) {
+      AgentSet.ask(prey, true, function() {
+        AgentSet.die();
+      });
+      AgentSet.setTurtleVariable(13, (AgentSet.getTurtleVariable(13) + Globals.getGlobal(4)));
+    }
+  });
+}
+function death() {
+  return Procedures.stoppably(function() {
+    if (Prims.lt(AgentSet.getTurtleVariable(13), 0)) {
+      AgentSet.die();
+    }
+  });
+}
+function growGrass() {
+  return Procedures.stoppably(function() {
+    if (Prims.equality(AgentSet.getPatchVariable(2), 35)) {
+      if (Prims.lte(AgentSet.getPatchVariable(5), 0)) {
+        AgentSet.setPatchVariable(2, 55);
         AgentSet.setPatchVariable(5, Globals.getGlobal(7));
       }
       else {
-        AgentSet.setPatchVariable(5, Prims.random(Globals.getGlobal(7)));
+        AgentSet.setPatchVariable(5, (AgentSet.getPatchVariable(5) - 1));
       }
-    });
-  }
-  Breeds.setDefaultShape(world.turtlesOfBreed("SHEEP"), "sheep");
-  AgentSet.ask(world.createTurtles(Globals.getGlobal(0), "SHEEP"), true, function() {
-    AgentSet.setTurtleVariable(1, 9.9);
-    AgentSet.setTurtleVariable(10, 1.5);
-    AgentSet.setTurtleVariable(7, (105 - 2));
-    AgentSet.setTurtleVariable(13, Prims.random((2 * Globals.getGlobal(1))));
-    Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
-  });
-  Breeds.setDefaultShape(world.turtlesOfBreed("WOLVES"), "wolf");
-  AgentSet.ask(world.createTurtles(Globals.getGlobal(3), "WOLVES"), true, function() {
-    AgentSet.setTurtleVariable(1, 0);
-    AgentSet.setTurtleVariable(10, 2);
-    AgentSet.setTurtleVariable(13, Prims.random((2 * Globals.getGlobal(4))));
-    Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
-  });
-  displayLabels();
-  Globals.setGlobal(9, AgentSet.count(AgentSet.agentFilter(world.patches(), function() {
-    return Prims.equality(AgentSet.getPatchVariable(2), 55)
-  })));
-  world.resetTicks();
-}
-function go() {
-  if (!(AgentSet.any(world.turtles()))) {
-    return;
-  }
-  AgentSet.ask(world.turtlesOfBreed("SHEEP"), true, function() {
-    move();
-    if (Globals.getGlobal(6)) {
-      AgentSet.setTurtleVariable(13, (AgentSet.getTurtleVariable(13) - 1));
-      eatGrass();
     }
-    death();
-    reproduceSheep();
   });
-  AgentSet.ask(world.turtlesOfBreed("WOLVES"), true, function() {
-    move();
-    AgentSet.setTurtleVariable(13, (AgentSet.getTurtleVariable(13) - 1));
-    catchSheep();
-    death();
-    reproduceWolves();
-  });
-  if (Globals.getGlobal(6)) {
-    AgentSet.ask(world.patches(), true, function() {
-      growGrass();
-    });
-  }
-  Globals.setGlobal(9, AgentSet.count(AgentSet.agentFilter(world.patches(), function() {
-    return Prims.equality(AgentSet.getPatchVariable(2), 55)
-  })));
-  world.tick();
-  displayLabels();
-}
-function move() {
-  Prims.right(Prims.random(50));
-  Prims.left(Prims.random(50));
-  Prims.fd(1);
-}
-function eatGrass() {
-  if (Prims.equality(AgentSet.getPatchVariable(2), 55)) {
-    AgentSet.setPatchVariable(2, 35);
-    AgentSet.setTurtleVariable(13, (AgentSet.getTurtleVariable(13) + Globals.getGlobal(1)));
-  }
-}
-function reproduceSheep() {
-  if (Prims.lt(Prims.randomFloat(100), Globals.getGlobal(2))) {
-    AgentSet.setTurtleVariable(13, (AgentSet.getTurtleVariable(13) / 2));
-    AgentSet.ask(Prims.hatch(1, ""), true, function() {
-      Prims.right(Prims.randomFloat(360));
-      Prims.fd(1);
-    });
-  }
-}
-function reproduceWolves() {
-  if (Prims.lt(Prims.randomFloat(100), Globals.getGlobal(5))) {
-    AgentSet.setTurtleVariable(13, (AgentSet.getTurtleVariable(13) / 2));
-    AgentSet.ask(Prims.hatch(1, ""), true, function() {
-      Prims.right(Prims.randomFloat(360));
-      Prims.fd(1);
-    });
-  }
-}
-function catchSheep() {
-  var prey = AgentSet.oneOf(AgentSet.self().breedHere("SHEEP"));
-  if (!Prims.equality(prey, Nobody)) {
-    AgentSet.ask(prey, true, function() {
-      AgentSet.die();
-    });
-    AgentSet.setTurtleVariable(13, (AgentSet.getTurtleVariable(13) + Globals.getGlobal(4)));
-  }
-}
-function death() {
-  if (Prims.lt(AgentSet.getTurtleVariable(13), 0)) {
-    AgentSet.die();
-  }
-}
-function growGrass() {
-  if (Prims.equality(AgentSet.getPatchVariable(2), 35)) {
-    if (Prims.lte(AgentSet.getPatchVariable(5), 0)) {
-      AgentSet.setPatchVariable(2, 55);
-      AgentSet.setPatchVariable(5, Globals.getGlobal(7));
-    }
-    else {
-      AgentSet.setPatchVariable(5, (AgentSet.getPatchVariable(5) - 1));
-    }
-  }
 }
 function displayLabels() {
-  AgentSet.ask(world.turtles(), true, function() {
-    AgentSet.setTurtleVariable(6, "");
-  });
-  if (Globals.getGlobal(8)) {
-    AgentSet.ask(world.turtlesOfBreed("WOLVES"), true, function() {
-      AgentSet.setTurtleVariable(6, StrictMath.round(AgentSet.getTurtleVariable(13)));
+  return Procedures.stoppably(function() {
+    AgentSet.ask(world.turtles(), true, function() {
+      AgentSet.setTurtleVariable(6, "");
     });
-    if (Globals.getGlobal(6)) {
-      AgentSet.ask(world.turtlesOfBreed("SHEEP"), true, function() {
+    if (Globals.getGlobal(8)) {
+      AgentSet.ask(world.turtlesOfBreed("WOLVES"), true, function() {
         AgentSet.setTurtleVariable(6, StrictMath.round(AgentSet.getTurtleVariable(13)));
       });
+      if (Globals.getGlobal(6)) {
+        AgentSet.ask(world.turtlesOfBreed("SHEEP"), true, function() {
+          AgentSet.setTurtleVariable(6, StrictMath.round(AgentSet.getTurtleVariable(13)));
+        });
+      }
     }
-  }
+  });
 }
-Globals.setGlobal(0, 100);
+Procedures.stoppably(function() {Globals.setGlobal(0, 100);
 Globals.setGlobal(1, 4);
 Globals.setGlobal(2, 4);
 Globals.setGlobal(3, 50);
@@ -151,4 +171,4 @@ Globals.setGlobal(4, 20);
 Globals.setGlobal(5, 5);
 Globals.setGlobal(6, false);
 Globals.setGlobal(7, 30);
-Globals.setGlobal(8, false);
+Globals.setGlobal(8, false);})

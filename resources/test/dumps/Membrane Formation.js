@@ -5,72 +5,82 @@ Breeds.get("WATERS").vars =[""];
 Breeds.add("OILS", "oil");
 Breeds.get("OILS").vars =[""];
 function setup() {
-  world.clearAll();
-  Globals.setGlobal(6, 2);
-  Globals.setGlobal(7, 4);
-  Globals.setGlobal(8, 1.3);
-  Breeds.setDefaultShape(world.turtles(), "circle");
-  AgentSet.ask(world.createTurtles((Globals.getGlobal(0) + Globals.getGlobal(1)), "WATERS"), true, function() {
-    Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
-    AgentSet.setTurtleVariable(1, 105);
-  });
-  AgentSet.ask(world.createTurtles(Globals.getGlobal(1), "OILS"), true, function() {
-    var partner = AgentSet.oneOf(AgentSet.agentFilter(world.turtlesOfBreed("WATERS"), function() {
-      return !(AgentSet.any(AgentSet.connectedLinks(false, false)))
-    }));
-    AgentSet.self().moveTo(partner);
-    Prims.fd(Globals.getGlobal(6));
-    AgentSet.ask(AgentSet.createLinkWith(partner), false, function() {});
-    AgentSet.setTurtleVariable(1, 25);
-    AgentSet.ask(partner, true, function() {
-      AgentSet.setTurtleVariable(1, 115);
+  return Procedures.stoppably(function() {
+    world.clearAll();
+    Globals.setGlobal(6, 2);
+    Globals.setGlobal(7, 4);
+    Globals.setGlobal(8, 1.3);
+    Breeds.setDefaultShape(world.turtles(), "circle");
+    AgentSet.ask(world.createTurtles((Globals.getGlobal(0) + Globals.getGlobal(1)), "WATERS"), true, function() {
+      Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
+      AgentSet.setTurtleVariable(1, 105);
     });
+    AgentSet.ask(world.createTurtles(Globals.getGlobal(1), "OILS"), true, function() {
+      var partner = AgentSet.oneOf(AgentSet.agentFilter(world.turtlesOfBreed("WATERS"), function() {
+        return !(AgentSet.any(AgentSet.connectedLinks(false, false)))
+      }));
+      AgentSet.self().moveTo(partner);
+      Prims.fd(Globals.getGlobal(6));
+      AgentSet.ask(AgentSet.createLinkWith(partner), false, function() {});
+      AgentSet.setTurtleVariable(1, 25);
+      AgentSet.ask(partner, true, function() {
+        AgentSet.setTurtleVariable(1, 115);
+      });
+    });
+    world.resetTicks();
   });
-  world.resetTicks();
 }
 function go() {
-  AgentSet.ask(world.turtles(), true, function() {
-    interactWithNeighbor();
-    repelTooCloseNeighbor();
-    interactWithPartner();
+  return Procedures.stoppably(function() {
+    AgentSet.ask(world.turtles(), true, function() {
+      interactWithNeighbor();
+      repelTooCloseNeighbor();
+      interactWithPartner();
+    });
+    world.tick();
   });
-  world.tick();
 }
 function interactWithNeighbor() {
-  var near = AgentSet.oneOf(AgentSet.other(AgentSet.agentFilter(AgentSet.self().inRadius(world.turtles(), Globals.getGlobal(7)), function() {
-    return !(AgentSet.isLinkNeighbor(false, false)(AgentSet.myself()))
-  })));
-  if (!Prims.equality(near, Nobody)) {
-    AgentSet.self().face(near);
-    if (Prims.equality(AgentSet.of(near, function() {
-      return AgentSet.getTurtleVariable(8)
-    }), AgentSet.getTurtleVariable(8))) {
-      Prims.fd(Globals.getGlobal(2));
+  return Procedures.stoppably(function() {
+    var near = AgentSet.oneOf(AgentSet.other(AgentSet.agentFilter(AgentSet.self().inRadius(world.turtles(), Globals.getGlobal(7)), function() {
+      return !(AgentSet.isLinkNeighbor(false, false)(AgentSet.myself()))
+    })));
+    if (!Prims.equality(near, Nobody)) {
+      AgentSet.self().face(near);
+      if (Prims.equality(AgentSet.of(near, function() {
+        return AgentSet.getTurtleVariable(8)
+      }), AgentSet.getTurtleVariable(8))) {
+        Prims.fd(Globals.getGlobal(2));
+      }
+      else {
+        Prims.fd(Globals.getGlobal(3));
+      }
     }
-    else {
-      Prims.fd(Globals.getGlobal(3));
-    }
-  }
+  });
 }
 function repelTooCloseNeighbor() {
-  var tooNear = AgentSet.oneOf(AgentSet.other(AgentSet.self().inRadius(world.turtles(), Globals.getGlobal(8))));
-  if (!Prims.equality(tooNear, Nobody)) {
-    AgentSet.self().face(tooNear);
-    Prims.fd(Globals.getGlobal(4));
-  }
+  return Procedures.stoppably(function() {
+    var tooNear = AgentSet.oneOf(AgentSet.other(AgentSet.self().inRadius(world.turtles(), Globals.getGlobal(8))));
+    if (!Prims.equality(tooNear, Nobody)) {
+      AgentSet.self().face(tooNear);
+      Prims.fd(Globals.getGlobal(4));
+    }
+  });
 }
 function interactWithPartner() {
-  var partner = AgentSet.oneOf(AgentSet.linkNeighbors(false, false));
-  if (!Prims.equality(partner, Nobody)) {
-    AgentSet.self().face(partner);
-    Prims.fd((AgentSet.self().distance(partner) - Globals.getGlobal(6)));
-  }
-  Prims.left(Prims.random(360));
-  Prims.fd(Globals.getGlobal(5));
+  return Procedures.stoppably(function() {
+    var partner = AgentSet.oneOf(AgentSet.linkNeighbors(false, false));
+    if (!Prims.equality(partner, Nobody)) {
+      AgentSet.self().face(partner);
+      Prims.fd((AgentSet.self().distance(partner) - Globals.getGlobal(6)));
+    }
+    Prims.left(Prims.random(360));
+    Prims.fd(Globals.getGlobal(5));
+  });
 }
-Globals.setGlobal(0, 750);
+Procedures.stoppably(function() {Globals.setGlobal(0, 750);
 Globals.setGlobal(1, 250);
 Globals.setGlobal(2, 0.2);
 Globals.setGlobal(3, -0.7);
 Globals.setGlobal(4, -0.3);
-Globals.setGlobal(5, 0.1);
+Globals.setGlobal(5, 0.1);})

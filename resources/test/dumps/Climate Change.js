@@ -11,191 +11,221 @@ Breeds.get("CO2S").vars =[""];
 Breeds.add("CLOUDS", "cloud");
 Breeds.get("CLOUDS").vars =["CLOUD-SPEED", "CLOUD-ID"];
 function setup() {
-  world.clearAll();
-  Breeds.setDefaultShape(world.turtlesOfBreed("RAYS"), "ray");
-  Breeds.setDefaultShape(world.turtlesOfBreed("IRS"), "ray");
-  Breeds.setDefaultShape(world.turtlesOfBreed("CLOUDS"), "cloud");
-  Breeds.setDefaultShape(world.turtlesOfBreed("HEATS"), "dot");
-  Breeds.setDefaultShape(world.turtlesOfBreed("CO2S"), "CO2-molecule");
-  setupWorld();
-  Globals.setGlobal(4, 12);
-  world.resetTicks();
+  return Procedures.stoppably(function() {
+    world.clearAll();
+    Breeds.setDefaultShape(world.turtlesOfBreed("RAYS"), "ray");
+    Breeds.setDefaultShape(world.turtlesOfBreed("IRS"), "ray");
+    Breeds.setDefaultShape(world.turtlesOfBreed("CLOUDS"), "cloud");
+    Breeds.setDefaultShape(world.turtlesOfBreed("HEATS"), "dot");
+    Breeds.setDefaultShape(world.turtlesOfBreed("CO2S"), "CO2-molecule");
+    setupWorld();
+    Globals.setGlobal(4, 12);
+    world.resetTicks();
+  });
 }
 function setupWorld() {
-  Globals.setGlobal(2, (world.maxPycor - 5));
-  Globals.setGlobal(3, 0);
-  AgentSet.ask(world.patches(), true, function() {
-    if (Prims.gt(AgentSet.getPatchVariable(1), Globals.getGlobal(2))) {
-      AgentSet.setPatchVariable(2, Prims.scaleColor(9.9, AgentSet.getPatchVariable(1), 22, 15));
-    }
-    if ((Prims.lte(AgentSet.getPatchVariable(1), Globals.getGlobal(2)) && Prims.gt(AgentSet.getPatchVariable(1), Globals.getGlobal(3)))) {
-      AgentSet.setPatchVariable(2, Prims.scaleColor(105, AgentSet.getPatchVariable(1), -20, 20));
-    }
-    if (Prims.lt(AgentSet.getPatchVariable(1), Globals.getGlobal(3))) {
-      AgentSet.setPatchVariable(2, (15 + 3));
-    }
-    if (Prims.equality(AgentSet.getPatchVariable(1), Globals.getGlobal(3))) {
-      updateAlbedo();
-    }
+  return Procedures.stoppably(function() {
+    Globals.setGlobal(2, (world.maxPycor - 5));
+    Globals.setGlobal(3, 0);
+    AgentSet.ask(world.patches(), true, function() {
+      if (Prims.gt(AgentSet.getPatchVariable(1), Globals.getGlobal(2))) {
+        AgentSet.setPatchVariable(2, Prims.scaleColor(9.9, AgentSet.getPatchVariable(1), 22, 15));
+      }
+      if ((Prims.lte(AgentSet.getPatchVariable(1), Globals.getGlobal(2)) && Prims.gt(AgentSet.getPatchVariable(1), Globals.getGlobal(3)))) {
+        AgentSet.setPatchVariable(2, Prims.scaleColor(105, AgentSet.getPatchVariable(1), -20, 20));
+      }
+      if (Prims.lt(AgentSet.getPatchVariable(1), Globals.getGlobal(3))) {
+        AgentSet.setPatchVariable(2, (15 + 3));
+      }
+      if (Prims.equality(AgentSet.getPatchVariable(1), Globals.getGlobal(3))) {
+        updateAlbedo();
+      }
+    });
   });
 }
 function go() {
-  AgentSet.ask(world.turtlesOfBreed("CLOUDS"), true, function() {
-    Prims.fd(AgentSet.getBreedVariable("CLOUD-SPEED"));
+  return Procedures.stoppably(function() {
+    AgentSet.ask(world.turtlesOfBreed("CLOUDS"), true, function() {
+      Prims.fd(AgentSet.getBreedVariable("CLOUD-SPEED"));
+    });
+    runSunshine();
+    AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
+      return Prims.equality(AgentSet.getPatchVariable(1), Globals.getGlobal(3))
+    }), true, function() {
+      updateAlbedo();
+    });
+    runHeat();
+    runIr();
+    runCo2();
+    world.tick();
   });
-  runSunshine();
-  AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
-    return Prims.equality(AgentSet.getPatchVariable(1), Globals.getGlobal(3))
-  }), true, function() {
-    updateAlbedo();
-  });
-  runHeat();
-  runIr();
-  runCo2();
-  world.tick();
 }
 function updateAlbedo() {
-  AgentSet.setPatchVariable(2, Prims.scaleColor(55, Globals.getGlobal(1), 0, 1));
+  return Procedures.stoppably(function() {
+    AgentSet.setPatchVariable(2, Prims.scaleColor(55, Globals.getGlobal(1), 0, 1));
+  });
 }
 function addCloud() {
-  var skyHeight = (Globals.getGlobal(2) - Globals.getGlobal(3));
-  var y = ((Globals.getGlobal(3) + Prims.randomFloat((skyHeight - 4))) + 2);
-  var speed = (Prims.randomFloat(0.1) + 0.01);
-  var x = Prims.randomXcor();
-  var id = 0;
-  if (AgentSet.any(world.turtlesOfBreed("CLOUDS"))) {
-    id = (Prims.max(AgentSet.of(world.turtlesOfBreed("CLOUDS"), function() {
-      return AgentSet.getBreedVariable("CLOUD-ID")
-    })) + 1);
-  }
-  AgentSet.ask(world.createTurtles((3 + Prims.random(20)), "CLOUDS"), true, function() {
-    AgentSet.setBreedVariable("CLOUD-SPEED", speed);
-    AgentSet.setBreedVariable("CLOUD-ID", id);
-    Prims.setXY(((x + Prims.random(9)) - 4), (((y + 2.5) + Prims.randomFloat(2)) - Prims.randomFloat(2)));
-    AgentSet.setTurtleVariable(1, 9.9);
-    AgentSet.setTurtleVariable(10, (2 + Prims.random(2)));
-    AgentSet.setTurtleVariable(2, 90);
+  return Procedures.stoppably(function() {
+    var skyHeight = (Globals.getGlobal(2) - Globals.getGlobal(3));
+    var y = ((Globals.getGlobal(3) + Prims.randomFloat((skyHeight - 4))) + 2);
+    var speed = (Prims.randomFloat(0.1) + 0.01);
+    var x = Prims.randomXcor();
+    var id = 0;
+    if (AgentSet.any(world.turtlesOfBreed("CLOUDS"))) {
+      id = (Prims.max(AgentSet.of(world.turtlesOfBreed("CLOUDS"), function() {
+        return AgentSet.getBreedVariable("CLOUD-ID")
+      })) + 1);
+    }
+    AgentSet.ask(world.createTurtles((3 + Prims.random(20)), "CLOUDS"), true, function() {
+      AgentSet.setBreedVariable("CLOUD-SPEED", speed);
+      AgentSet.setBreedVariable("CLOUD-ID", id);
+      Prims.setXY(((x + Prims.random(9)) - 4), (((y + 2.5) + Prims.randomFloat(2)) - Prims.randomFloat(2)));
+      AgentSet.setTurtleVariable(1, 9.9);
+      AgentSet.setTurtleVariable(10, (2 + Prims.random(2)));
+      AgentSet.setTurtleVariable(2, 90);
+    });
   });
 }
 function removeCloud() {
-  if (AgentSet.any(world.turtlesOfBreed("CLOUDS"))) {
-    var doomedId = AgentSet.oneOf(Prims.removeDuplicates(AgentSet.of(world.turtlesOfBreed("CLOUDS"), function() {
-      return AgentSet.getBreedVariable("CLOUD-ID")
-    })));
-    AgentSet.ask(AgentSet.agentFilter(world.turtlesOfBreed("CLOUDS"), function() {
-      return Prims.equality(AgentSet.getBreedVariable("CLOUD-ID"), doomedId)
-    }), true, function() {
-      AgentSet.die();
-    });
-  }
-}
-function runSunshine() {
-  AgentSet.ask(world.turtlesOfBreed("RAYS"), true, function() {
-    if (!(AgentSet.self().canMove(0.3))) {
-      AgentSet.die();
-    }
-    Prims.fd(0.3);
-  });
-  createSunshine();
-  reflectRaysFromClouds();
-  encounterEarth();
-}
-function createSunshine() {
-  if (Prims.gt((10 * Globals.getGlobal(0)), Prims.random(50))) {
-    AgentSet.ask(world.createTurtles(1, "RAYS"), true, function() {
-      AgentSet.setTurtleVariable(2, 160);
-      AgentSet.setTurtleVariable(1, 45);
-      Prims.setXY((Prims.random(10) + world.minPxcor), world.maxPycor);
-    });
-  }
-}
-function reflectRaysFromClouds() {
-  AgentSet.ask(AgentSet.agentFilter(world.turtlesOfBreed("RAYS"), function() {
-    return AgentSet.any(AgentSet.self().breedHere("CLOUDS"))
-  }), true, function() {
-    AgentSet.setTurtleVariable(2, (180 - AgentSet.getTurtleVariable(2)));
-  });
-}
-function encounterEarth() {
-  AgentSet.ask(AgentSet.agentFilter(world.turtlesOfBreed("RAYS"), function() {
-    return Prims.lte(AgentSet.getTurtleVariable(4), Globals.getGlobal(3))
-  }), true, function() {
-    if (Prims.gt((100 * Globals.getGlobal(1)), Prims.random(100))) {
-      AgentSet.setTurtleVariable(2, (180 - AgentSet.getTurtleVariable(2)));
-    }
-    else {
-      Prims.right((Prims.random(45) - Prims.random(45)));
-      AgentSet.setTurtleVariable(1, ((15 - 2) + Prims.random(4)));
-      AgentSet.setBreed(world.turtlesOfBreed("HEATS"));
-    }
-  });
-}
-function runHeat() {
-  Globals.setGlobal(4, ((0.99 * Globals.getGlobal(4)) + (0.01 * (12 + (0.1 * AgentSet.count(world.turtlesOfBreed("HEATS")))))));
-  AgentSet.ask(world.turtlesOfBreed("HEATS"), true, function() {
-    var dist = (0.5 * Prims.randomFloat(1));
-    if (AgentSet.self().canMove(dist)) {
-      Prims.fd(dist);
-    }
-    else {
-      AgentSet.setTurtleVariable(2, (180 - AgentSet.getTurtleVariable(2)));
-    }
-    if (Prims.gte(AgentSet.getTurtleVariable(4), Globals.getGlobal(3))) {
-      if (((Prims.gt(Globals.getGlobal(4), (20 + Prims.random(40))) && Prims.gt(AgentSet.getTurtleVariable(3), 0)) && Prims.lt(AgentSet.getTurtleVariable(3), (world.maxPxcor - 8)))) {
-        AgentSet.setBreed(world.turtlesOfBreed("IRS"));
-        AgentSet.setTurtleVariable(2, 20);
-        AgentSet.setTurtleVariable(1, 125);
-      }
-      else {
-        AgentSet.setTurtleVariable(2, (100 + Prims.random(160)));
-      }
-    }
-  });
-}
-function runIr() {
-  AgentSet.ask(world.turtlesOfBreed("IRS"), true, function() {
-    if (!(AgentSet.self().canMove(0.3))) {
-      AgentSet.die();
-    }
-    Prims.fd(0.3);
-    if (Prims.lte(AgentSet.getTurtleVariable(4), Globals.getGlobal(3))) {
-      AgentSet.setBreed(world.turtlesOfBreed("HEATS"));
-      Prims.right(Prims.random(45));
-      Prims.left(Prims.random(45));
-      AgentSet.setTurtleVariable(1, ((15 - 2) + Prims.random(4)));
-    }
-    if (AgentSet.any(AgentSet.self().breedHere("CO2S"))) {
-      AgentSet.setTurtleVariable(2, (180 - AgentSet.getTurtleVariable(2)));
-    }
-  });
-}
-function addCo2() {
-  var skyHeight = (Globals.getGlobal(2) - Globals.getGlobal(3));
-  AgentSet.ask(world.createTurtles(25, "CO2S"), true, function() {
-    AgentSet.setTurtleVariable(1, 55);
-    Prims.setXY(Prims.randomXcor(), (Globals.getGlobal(3) + Prims.randomFloat(skyHeight)));
-  });
-}
-function removeCo2() {
-  Prims.repeat(25, function () {
-    if (AgentSet.any(world.turtlesOfBreed("CO2S"))) {
-      AgentSet.ask(AgentSet.oneOf(world.turtlesOfBreed("CO2S")), true, function() {
+  return Procedures.stoppably(function() {
+    if (AgentSet.any(world.turtlesOfBreed("CLOUDS"))) {
+      var doomedId = AgentSet.oneOf(Prims.removeDuplicates(AgentSet.of(world.turtlesOfBreed("CLOUDS"), function() {
+        return AgentSet.getBreedVariable("CLOUD-ID")
+      })));
+      AgentSet.ask(AgentSet.agentFilter(world.turtlesOfBreed("CLOUDS"), function() {
+        return Prims.equality(AgentSet.getBreedVariable("CLOUD-ID"), doomedId)
+      }), true, function() {
         AgentSet.die();
       });
     }
   });
 }
-function runCo2() {
-  AgentSet.ask(world.turtlesOfBreed("CO2S"), true, function() {
-    Prims.right((Prims.random(51) - 25));
-    var dist = (0.05 + Prims.randomFloat(0.1));
-    if (AgentSet.of(AgentSet.self().patchAhead(dist), function() {
-      return !(Prims.shadeOf(105, AgentSet.getPatchVariable(2)))
-    })) {
-      AgentSet.setTurtleVariable(2, (180 - AgentSet.getTurtleVariable(2)));
-    }
-    Prims.fd(dist);
+function runSunshine() {
+  return Procedures.stoppably(function() {
+    AgentSet.ask(world.turtlesOfBreed("RAYS"), true, function() {
+      if (!(AgentSet.self().canMove(0.3))) {
+        AgentSet.die();
+      }
+      Prims.fd(0.3);
+    });
+    createSunshine();
+    reflectRaysFromClouds();
+    encounterEarth();
   });
 }
-Globals.setGlobal(0, 1);
-Globals.setGlobal(1, 0.6);
+function createSunshine() {
+  return Procedures.stoppably(function() {
+    if (Prims.gt((10 * Globals.getGlobal(0)), Prims.random(50))) {
+      AgentSet.ask(world.createTurtles(1, "RAYS"), true, function() {
+        AgentSet.setTurtleVariable(2, 160);
+        AgentSet.setTurtleVariable(1, 45);
+        Prims.setXY((Prims.random(10) + world.minPxcor), world.maxPycor);
+      });
+    }
+  });
+}
+function reflectRaysFromClouds() {
+  return Procedures.stoppably(function() {
+    AgentSet.ask(AgentSet.agentFilter(world.turtlesOfBreed("RAYS"), function() {
+      return AgentSet.any(AgentSet.self().breedHere("CLOUDS"))
+    }), true, function() {
+      AgentSet.setTurtleVariable(2, (180 - AgentSet.getTurtleVariable(2)));
+    });
+  });
+}
+function encounterEarth() {
+  return Procedures.stoppably(function() {
+    AgentSet.ask(AgentSet.agentFilter(world.turtlesOfBreed("RAYS"), function() {
+      return Prims.lte(AgentSet.getTurtleVariable(4), Globals.getGlobal(3))
+    }), true, function() {
+      if (Prims.gt((100 * Globals.getGlobal(1)), Prims.random(100))) {
+        AgentSet.setTurtleVariable(2, (180 - AgentSet.getTurtleVariable(2)));
+      }
+      else {
+        Prims.right((Prims.random(45) - Prims.random(45)));
+        AgentSet.setTurtleVariable(1, ((15 - 2) + Prims.random(4)));
+        AgentSet.setBreed(world.turtlesOfBreed("HEATS"));
+      }
+    });
+  });
+}
+function runHeat() {
+  return Procedures.stoppably(function() {
+    Globals.setGlobal(4, ((0.99 * Globals.getGlobal(4)) + (0.01 * (12 + (0.1 * AgentSet.count(world.turtlesOfBreed("HEATS")))))));
+    AgentSet.ask(world.turtlesOfBreed("HEATS"), true, function() {
+      var dist = (0.5 * Prims.randomFloat(1));
+      if (AgentSet.self().canMove(dist)) {
+        Prims.fd(dist);
+      }
+      else {
+        AgentSet.setTurtleVariable(2, (180 - AgentSet.getTurtleVariable(2)));
+      }
+      if (Prims.gte(AgentSet.getTurtleVariable(4), Globals.getGlobal(3))) {
+        if (((Prims.gt(Globals.getGlobal(4), (20 + Prims.random(40))) && Prims.gt(AgentSet.getTurtleVariable(3), 0)) && Prims.lt(AgentSet.getTurtleVariable(3), (world.maxPxcor - 8)))) {
+          AgentSet.setBreed(world.turtlesOfBreed("IRS"));
+          AgentSet.setTurtleVariable(2, 20);
+          AgentSet.setTurtleVariable(1, 125);
+        }
+        else {
+          AgentSet.setTurtleVariable(2, (100 + Prims.random(160)));
+        }
+      }
+    });
+  });
+}
+function runIr() {
+  return Procedures.stoppably(function() {
+    AgentSet.ask(world.turtlesOfBreed("IRS"), true, function() {
+      if (!(AgentSet.self().canMove(0.3))) {
+        AgentSet.die();
+      }
+      Prims.fd(0.3);
+      if (Prims.lte(AgentSet.getTurtleVariable(4), Globals.getGlobal(3))) {
+        AgentSet.setBreed(world.turtlesOfBreed("HEATS"));
+        Prims.right(Prims.random(45));
+        Prims.left(Prims.random(45));
+        AgentSet.setTurtleVariable(1, ((15 - 2) + Prims.random(4)));
+      }
+      if (AgentSet.any(AgentSet.self().breedHere("CO2S"))) {
+        AgentSet.setTurtleVariable(2, (180 - AgentSet.getTurtleVariable(2)));
+      }
+    });
+  });
+}
+function addCo2() {
+  return Procedures.stoppably(function() {
+    var skyHeight = (Globals.getGlobal(2) - Globals.getGlobal(3));
+    AgentSet.ask(world.createTurtles(25, "CO2S"), true, function() {
+      AgentSet.setTurtleVariable(1, 55);
+      Prims.setXY(Prims.randomXcor(), (Globals.getGlobal(3) + Prims.randomFloat(skyHeight)));
+    });
+  });
+}
+function removeCo2() {
+  return Procedures.stoppably(function() {
+    Prims.repeat(25, function () {
+      if (AgentSet.any(world.turtlesOfBreed("CO2S"))) {
+        AgentSet.ask(AgentSet.oneOf(world.turtlesOfBreed("CO2S")), true, function() {
+          AgentSet.die();
+        });
+      }
+    });
+  });
+}
+function runCo2() {
+  return Procedures.stoppably(function() {
+    AgentSet.ask(world.turtlesOfBreed("CO2S"), true, function() {
+      Prims.right((Prims.random(51) - 25));
+      var dist = (0.05 + Prims.randomFloat(0.1));
+      if (AgentSet.of(AgentSet.self().patchAhead(dist), function() {
+        return !(Prims.shadeOf(105, AgentSet.getPatchVariable(2)))
+      })) {
+        AgentSet.setTurtleVariable(2, (180 - AgentSet.getTurtleVariable(2)));
+      }
+      Prims.fd(dist);
+    });
+  });
+}
+Procedures.stoppably(function() {Globals.setGlobal(0, 1);
+Globals.setGlobal(1, 0.6);})
