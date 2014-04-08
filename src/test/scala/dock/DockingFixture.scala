@@ -4,9 +4,9 @@ package org.nlogo.tortoise
 package dock
 
 import
-  org.nlogo.{ api, headless, mirror, nvm },
+  org.nlogo.{ core, api, headless, mirror, nvm },
   headless.lang._,
-  org.nlogo.util.MersenneTwisterFast,
+  api.MersenneTwisterFast,
   org.scalatest.Assertions._,
   org.nlogo.shape.{LinkShape, VectorShape},
   nashorn.Nashorn
@@ -152,18 +152,33 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
   }
 
   // use single-patch world by default to keep generated JSON to a minimum
-  override val defaultDimensions = api.WorldDimensions.square(0)
+  override val defaultDimensions = core.WorldDimensions.square(0)
 
   override def open(path: String) {
     require(!opened)
     super.open(path)
+  }
+
+  def open(path: String, dimensions: Option[(Int, Int, Int, Int)]) {
+    open(path)
     val sections = api.ModelReader.parseModel(api.FileIO.file2String(path))
     val code = sections(api.ModelSection.Code).mkString("\n")
     val (interfaceGlobals, _, _, _, interfaceGlobalCommands) =
       new org.nlogo.workspace.WidgetParser(workspace)
         .parseWidgets(sections(api.ModelSection.Interface))
+    val originalDimensions = workspace.world.getDimensions
+    val finalDimensions = dimensions match {
+      case None => originalDimensions
+      case Some((minx, maxx, miny, maxy)) =>
+        val newDimensions =
+          originalDimensions.copy(
+            minPxcor = minx, maxPxcor = maxx,
+            minPycor = miny, maxPycor = maxy)
+        workspace.setDimensions(newDimensions)
+        newDimensions
+    }
     declareHelper(code, interfaceGlobals, interfaceGlobalCommands.toString,
-      workspace.world.getDimensions, workspace.world.turtleShapeList, workspace.world.linkShapeList)
+      finalDimensions, workspace.world.turtleShapeList, workspace.world.linkShapeList)
   }
 
   override def open(model: headless.ModelCreator.Model) {
@@ -174,14 +189,14 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
       dimensions = model.dimensions)
   }
 
-  override def declare(logo: String, dimensions: api.WorldDimensions = defaultDimensions) {
+  override def declare(logo: String, dimensions: core.WorldDimensions = defaultDimensions) {
     require(!opened)
     super.declare(logo, dimensions = dimensions)
     declareHelper(logo, dimensions = dimensions)
   }
 
   def declareHelper(logo: String, interfaceGlobals: Seq[String] = Seq(), interfaceGlobalCommands: String = "",
-      dimensions: api.WorldDimensions = defaultDimensions,
+      dimensions: core.WorldDimensions = defaultDimensions,
       turtleShapeList: api.ShapeList = CompilerService.defaultTurtleShapes,
       linkShapeList: api.ShapeList = CompilerService.defaultLinkShapes) {
     val (js, _, _) = Compiler.compileProcedures(logo, interfaceGlobals, interfaceGlobalCommands, dimensions, turtleShapeList, linkShapeList)

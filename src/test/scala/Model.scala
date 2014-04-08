@@ -5,6 +5,7 @@ package org.nlogo.tortoise
 case class Model(
     path: String,
     variation: String = "",
+    dimensions: Option[(Int, Int, Int, Int)] = None,
     setup: String = "setup",
     go: String = "go",
     repetitions: Int,
@@ -22,10 +23,8 @@ object Model {
   val models = Seq[Model](
     Model(
       path = "models/Sample Models/Biology/Fireflies.nlogo",
-      setup =
-        "resize-world -10 10 -10 10 " +
-        "set number 150 " +
-        "setup",
+      dimensions = Some((-10, 10, -10, 10)),
+      setup = "set number 150  setup",
       repetitions = 20
     ),
     Model(
@@ -48,39 +47,40 @@ object Model {
     ),
     Model(
       path = "models/Sample Models/Chemistry & Physics/Heat/Boiling.nlogo",
+      dimensions = Some((-15, 15, -15, 15)),
       repetitions = 5
     ),
     Model(
       path = "models/Sample Models/Chemistry & Physics/Waves/Rope.nlogo",
-      repetitions = 10
+      dimensions = Some((0, 40, -20, 20)),
+      repetitions = 20
     ),
     Model(
       path = "models/test/tortoise/Sandpile.nlogo",
       variation = "random",
-      setup = "setup-random",
-      // this takes a while on Nashorn, but it probably isn't a good test unless we run the
-      // model for long enough for good avalanches to get going - ST 10/10/13
+      dimensions = Some((-15, 15, -15, 15)),
+      setup = """setup-random  set drop-location "center"""",
       repetitions = 100,
       metrics = Seq("total", "sizes", "lifetimes")
     ),
     Model(
       path = "models/test/tortoise/Sandpile.nlogo",
       variation = "uniform",
-      setup = "setup-uniform 0",
-      repetitions = 10,
+      dimensions = Some((-15, 15, -15, 15)),
+      setup = """setup-uniform 0  set drop-location "center"""",
+      repetitions = 100,
       metrics = Seq("total", "sizes", "lifetimes")
     ),
     Model(
       path = "models/Sample Models/Chemistry & Physics/Diffusion Limited Aggregation/DLA Simple.nlogo",
-      setup =
-        "resize-world -20 20 -20 20 " +
-        "setup " +
-        "set num-particles 100",
+      dimensions = Some((-20, 20, -20, 20)),
+      setup = "setup   set num-particles 100",
       repetitions = 25
     ),
     Model(
       path = "models/Sample Models/Earth Science/Fire.nlogo",
-      repetitions = 10
+      dimensions = Some((-19, 19, -19, 19)),
+      repetitions = 20
     ),
     Model(
       path = "models/test/tortoise/Life Simple.nlogo",
@@ -88,9 +88,8 @@ object Model {
     ),
     Model(
       path = "models/test/tortoise/Life Turtle-Based.nlogo",
-      setup =
-        "resize-world -10 10 -10 10 " +
-        "setup-random",
+      dimensions = Some((-10, 10, -10, 10)),
+      setup = "setup-random",
       repetitions = 10
     ),
     Model(
@@ -110,36 +109,31 @@ object Model {
     ),
     Model(
       path = "models/Sample Models/Biology/Membrane Formation.nlogo",
-      setup =
-        "resize-world -10 10 -10 10 " +
-        "set num-lipids 50 set num-water 150 " +
-        "setup",
-      repetitions = 15
+      dimensions = Some((-10, 10, -10, 10)),
+      setup = "set num-lipids 40 set num-water 100  setup",
+      repetitions = 10
     ),
     Model(
       path = "models/Sample Models/Biology/Slime.nlogo",
-      setup =
-        "resize-world -10 10 -10 10 " +
-        "set population 30 " +
-        "setup",
+      dimensions = Some((-10, 10, -10, 10)),
+      setup = "set population 30  setup",
       repetitions = 10
     ),
     Model(
       path = "models/Sample Models/Social Science/Voting.nlogo",
-      setup = "resize-world -10 10 -10 10  setup",
+      dimensions = Some((-10, 10, -10, 10)),
       repetitions = 10
     ),
     Model(
       path = "models/Sample Models/Networks/Preferential Attachment.nlogo",
-      setup =
-        "resize-world -10 10 -10 10 " +
-        "setup",
+      dimensions = Some((-10, 10, -10, 10)),
       repetitions = 20,
       go = "go  resize-nodes",
       metrics = Seq("[size] of turtles")
     ),
     Model(
-      path = "models/test/tortoise/Vants.nlogo",
+      path = "models/Sample Models/Computer Science/Vants.nlogo",
+      dimensions = Some((-25, 25, -25, 25)),
       repetitions = 1,
       go =
         "repeat 10 [ go-forward ] " +
@@ -147,45 +141,61 @@ object Model {
     ),
     Model(
       path = "models/Sample Models/Biology/Virus.nlogo",
-      repetitions = 50
+      repetitions = 40
     ),
     Model(
       path = "models/Sample Models/Art/Follower.nlogo",
+      dimensions = Some((-15, 15, -15, 15)),
+      setup = "set population 500  setup",
       repetitions = 25
     ),
     Model(
       path = "models/Code Examples/Link Lattice Example.nlogo",
-      setup = "resize-world -6 6 -6 6  setup-square",
+      dimensions = Some((-6, 6, -6, 6)),
+      setup = "setup-square",
       repetitions = 1,
       go = "setup-hex"
     ),
     Model(
       path = "models/test/benchmarks/Ants Benchmark.nlogo",
-      setup = "setup",
-      repetitions = 2,
+      dimensions = Some((-20, 20, -20, 20)),
+      repetitions = 3,
       go =
         "repeat 10 [ go ] " +
         "ask turtle 0 [ move-to one-of patches with [shade-of? pcolor blue] ]"
     ),
     Model(
       path = "models/test/benchmarks/Bureaucrats Benchmark.nlogo",
-      repetitions = 50
+      dimensions = Some((0, 29, 0, 29)),
+      repetitions = 200
     ),
     Model(
       path = "models/test/benchmarks/BZ Benchmark.nlogo",
-      setup = "resize-world -20 20 -20 20  setup",
+      dimensions = Some((-20, 20, -20, 20)),
       repetitions = 5
     ),
     Model(
       path = "models/test/benchmarks/Heatbugs Benchmark.nlogo",
-      setup =
-        "resize-world 0 19 0 19 " +
-        "set bug-count 15",
+      dimensions = Some((0, 19, 0, 19)),
       repetitions = 10
     ),
     Model(
       path = "models/test/benchmarks/GasLabCirc Benchmark.nlogo",
+      dimensions = Some((-20, 20, -20, 20)),
+      setup = "set number 50  setup",
       repetitions = 50
+    ),
+    Model(
+      path = "models/test/benchmarks/CA1D Benchmark.nlogo",
+      dimensions = Some((-9, 9, -4, 4)),
+      setup = "setup-random",
+      repetitions = 20
+    ),
+    Model(
+      path = "models/Code Examples/State Machine Example.nlogo",
+      dimensions = Some((-19, 19, -19, 19)),
+      setup = "set number 100  setup",
+      repetitions = 100
     )
   )
 }

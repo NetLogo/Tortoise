@@ -1,24 +1,21 @@
-Globals.init(11);
+Globals.init(13);
 PatchesOwn.init(3);
 world = new World(-50, 50, -50, 50, 4.0, false, false, {"default":{"rotate":true,"elements":[{"xcors":[150,40,150,260],"ycors":[5,250,205,250],"type":"polygon","color":"rgba(141, 141, 141, 1.0)","filled":true,"marked":true}]}}, {"default":{}}, 3);
 
-function setup(initial, random_p) {
+function setup(setupTask) {
   world.clearAll();
-  Globals.setGlobal(9, 105);
-  Globals.setGlobal(10, 15);
+  Globals.setGlobal(10, 105);
+  Globals.setGlobal(11, 15);
+  Globals.setGlobal(12, 55);
+  Globals.setGlobal(9, Nobody);
   AgentSet.ask(world.patches(), true, function() {
-    if (random_p) {
-      AgentSet.setPatchVariable(5, Prims.random(initial));
-    }
-    else {
-      AgentSet.setPatchVariable(5, initial);
-    }
+    AgentSet.setPatchVariable(5, (setupTask)());
     AgentSet.setPatchVariable(6, []);
-    AgentSet.setPatchVariable(7, Globals.getGlobal(9));
+    AgentSet.setPatchVariable(7, Globals.getGlobal(10));
   });
-  var ignore = stabilize(false);
+  var ignore = Call(stabilize, false);
   AgentSet.ask(world.patches(), true, function() {
-    recolor();
+    Call(recolor);
   });
   Globals.setGlobal(3, Prims.sum(AgentSet.of(world.patches(), function() {
     return AgentSet.getPatchVariable(5)
@@ -28,22 +25,26 @@ function setup(initial, random_p) {
   world.resetTicks();
 }
 function setupUniform(initial) {
-  setup(initial, false);
+  Call(setup, Tasks.reporterTask(function() {
+    return initial
+  }));
 }
 function setupRandom() {
-  setup(4, true);
+  Call(setup, Tasks.reporterTask(function() {
+    return Prims.random(4)
+  }));
 }
 function recolor() {
   AgentSet.setPatchVariable(2, Prims.scaleColor(AgentSet.getPatchVariable(7), AgentSet.getPatchVariable(5), 0, 4));
 }
 function go() {
-  var drop = dropPatch();
+  var drop = Call(dropPatch);
   if (!Prims.equality(drop, Nobody)) {
     AgentSet.ask(drop, true, function() {
-      updateN(1);
-      recolor();
+      Call(updateN, 1);
+      Call(recolor);
     });
-    var results = stabilize(Globals.getGlobal(0));
+    var results = Call(stabilize, Globals.getGlobal(0));
     var avalanchePatches = Prims.first(results);
     var lifetime = Prims.last(results);
     if (AgentSet.any(avalanchePatches)) {
@@ -51,18 +52,22 @@ function go() {
       Globals.setGlobal(7, Prims.lput(lifetime, Globals.getGlobal(7)));
     }
     AgentSet.ask(avalanchePatches, true, function() {
-      recolor();
+      Call(recolor);
       AgentSet.ask(Prims.getNeighbors4(), true, function() {
-        recolor();
+        Call(recolor);
       });
     });
+    noop();
     AgentSet.ask(avalanchePatches, true, function() {
-      AgentSet.setPatchVariable(7, Globals.getGlobal(9));
-      recolor();
+      AgentSet.setPatchVariable(7, Globals.getGlobal(10));
+      Call(recolor);
     });
     Globals.setGlobal(4, Globals.getGlobal(3));
     world.tick();
   }
+}
+function explore() {
+
 }
 function stabilize(animate_p) {
   var activePatches = AgentSet.agentFilter(world.patches(), function() {
@@ -78,20 +83,20 @@ function stabilize(animate_p) {
       iters = (iters + 1);
     }
     AgentSet.ask(overloadedPatches, true, function() {
-      AgentSet.setPatchVariable(7, Globals.getGlobal(10));
-      updateN(-4);
+      AgentSet.setPatchVariable(7, Globals.getGlobal(11));
+      Call(updateN, -4);
       if (animate_p) {
-        recolor();
+        Call(recolor);
       }
       AgentSet.ask(Prims.getNeighbors4(), true, function() {
-        updateN(1);
+        Call(updateN, 1);
         if (animate_p) {
-          recolor();
+          Call(recolor);
         }
       });
     });
     if (animate_p) {
-    
+      noop();
     }
     avalanchePatches = Prims.patchSet(avalanchePatches, overloadedPatches);
     activePatches = Prims.patchSet(AgentSet.of(overloadedPatches, function() {
@@ -117,9 +122,9 @@ function pushN() {
   AgentSet.setPatchVariable(6, Prims.fput(AgentSet.getPatchVariable(5), AgentSet.getPatchVariable(6)));
 }
 function popN() {
-  updateN((Prims.first(AgentSet.getPatchVariable(6)) - AgentSet.getPatchVariable(5)));
+  Call(updateN, (Prims.first(AgentSet.getPatchVariable(6)) - AgentSet.getPatchVariable(5)));
   AgentSet.setPatchVariable(6, Prims.butLast(AgentSet.getPatchVariable(6)));
 }
 Globals.setGlobal(0, false);
-Globals.setGlobal(1, "center");
+Globals.setGlobal(1, "random");
 Globals.setGlobal(2, 0);

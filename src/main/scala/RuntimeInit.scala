@@ -2,13 +2,13 @@
 
 package org.nlogo.tortoise
 
-import org.nlogo.api
+import org.nlogo.{ core, api }
 
 // RuntimeInit generates JavaScript code that does any initialization that needs to happen
 // before any user code runs, for example creating patches
 
 class RuntimeInit(
-  program: api.Program, dimensions: api.WorldDimensions,
+  program: api.Program, dimensions: core.WorldDimensions,
   turtleShapeList: api.ShapeList, linkShapeList: api.ShapeList) {
 
   import scala.collection.JavaConverters._

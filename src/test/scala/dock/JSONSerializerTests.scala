@@ -4,7 +4,7 @@ import org.json4s.JsonDSL.string2jvalue
 import org.json4s.native.JsonMethods.{ compact, pretty, parse, render => jsRender }
 import org.json4s.string2JsonInput
 import org.nlogo.mirror._, Mirroring._, Mirrorables._
-import org.nlogo.api, api.Version
+import org.nlogo.{ core, api }, api.Version
 import org.scalatest.FunSuite
 import org.scalatest.Matchers
 import org.nlogo.nvm
@@ -106,7 +106,7 @@ class JSONSerializerTests extends FixtureSuite with Matchers {
       }
     // so we don't need ASM, and to save time - ST 11/14/13
     fixture.workspace.flags = nvm.CompilerFlags(useGenerator = false)
-    ModelCreator.open(fixture.workspace, api.WorldDimensions.square(1))
+    ModelCreator.open(fixture.workspace, core.WorldDimensions.square(1))
     val (initialState, _) = Mirroring.diffs(Map(), mirrorables)
     commands.foldLeft(initialState) {
       case (previousState, (cmd, expectedJSON)) =>
@@ -121,7 +121,7 @@ class JSONSerializerTests extends FixtureSuite with Matchers {
 
   test("JSONSerializer shapes") { implicit fixture =>
     val shapeList = new api.ShapeList(
-      api.AgentKind.Turtle,
+      core.AgentKind.Turtle,
       VectorShape.parseShapes(api.ModelReader.defaultShapes.toArray, api.Version.version).asScala
     )
 

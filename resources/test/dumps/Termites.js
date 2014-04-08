@@ -23,8 +23,8 @@ function go() {
       AgentSet.setTurtleVariable(14, (AgentSet.getTurtleVariable(14) - 1));
     }
     else {
-      action();
-      wiggle();
+      Call(action);
+      Call(wiggle);
     }
     Prims.fd(1);
   });
@@ -36,18 +36,18 @@ function wiggle() {
 }
 function action() {
   if (Prims.equality(AgentSet.getTurtleVariable(13), 1)) {
-    searchForChip();
+    Call(searchForChip);
   }
   else {
     if (Prims.equality(AgentSet.getTurtleVariable(13), 2)) {
-      findNewPile();
+      Call(findNewPile);
     }
     else {
       if (Prims.equality(AgentSet.getTurtleVariable(13), 3)) {
-        putDownChip();
+        Call(putDownChip);
       }
       else {
-        getAway();
+        Call(getAway);
       }
     }
   }
