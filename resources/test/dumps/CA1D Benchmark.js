@@ -9,10 +9,10 @@ function startup() {
 }
 function benchmark() {
   Random.setSeed(4378);
-  setupRandom();
+  Call(setupRandom);
   world.resetTimer();
   Prims.repeat((10 * world.height()), function () {
-    go();
+    Call(go);
   });
   Globals.setGlobal(17, world.timer());
 }
@@ -20,12 +20,12 @@ function setupGeneral() {
   world.clearPatches();
   world.clearTurtles();
   Globals.setGlobal(13, world.maxPycor);
-  refreshRules();
+  Call(refreshRules);
   Globals.setGlobal(16, false);
   Globals.setGlobal(15, false);
 }
 function singleCell() {
-  setupGeneral();
+  Call(setupGeneral);
   AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
     return Prims.equality(AgentSet.getPatchVariable(1), Globals.getGlobal(13))
   }), true, function() {
@@ -39,19 +39,19 @@ function singleCell() {
   world.resetTicks();
 }
 function setupRandom() {
-  setupGeneral();
+  Call(setupGeneral);
   AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
     return Prims.equality(AgentSet.getPatchVariable(1), Globals.getGlobal(13))
   }), true, function() {
     AgentSet.setPatchVariable(5, Prims.lt(Prims.random(100), Globals.getGlobal(11)));
-    colorPatch();
+    Call(colorPatch);
   });
   world.resetTicks();
 }
 function setupContinue() {
   var on_pList = [];
   if (!(Globals.getGlobal(16))) {
-    return;
+    throw new StopInterrupt;
   }
   on_pList = Tasks.map(Tasks.reporterTask(function() {
     return AgentSet.of(arguments[0], function() {
@@ -60,38 +60,38 @@ function setupContinue() {
   }), Prims.sort(AgentSet.agentFilter(world.patches(), function() {
     return Prims.equality(AgentSet.getPatchVariable(1), Globals.getGlobal(13))
   })));
-  setupGeneral();
+  Call(setupGeneral);
   AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
     return Prims.equality(AgentSet.getPatchVariable(1), Globals.getGlobal(13))
   }), true, function() {
     AgentSet.setPatchVariable(5, Prims.item((AgentSet.getPatchVariable(0) + world.maxPxcor), on_pList));
-    colorPatch();
+    Call(colorPatch);
   });
   Globals.setGlobal(16, true);
 }
 function go() {
   if (Globals.getGlobal(15)) {
-    return;
+    throw new StopInterrupt;
   }
   if (Prims.equality(Globals.getGlobal(13), world.minPycor)) {
     if (Globals.getGlobal(12)) {
       noop();
-      setupContinue();
+      Call(setupContinue);
     }
     else {
-      return;
+      throw new StopInterrupt;
     }
   }
   AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
     return Prims.equality(AgentSet.getPatchVariable(1), Globals.getGlobal(13))
   }), true, function() {
-    doRule();
+    Call(doRule);
   });
   Globals.setGlobal(13, (Globals.getGlobal(13) - 1));
   AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
     return Prims.equality(AgentSet.getPatchVariable(1), Globals.getGlobal(13))
   }), true, function() {
-    colorPatch();
+    Call(colorPatch);
   });
   Globals.setGlobal(16, true);
   world.tick();
@@ -121,29 +121,29 @@ function bindigit(number, powerOfTwo) {
     return Prims.mod(StrictMath.floor(number), 2);
   }
   else {
-    return bindigit((StrictMath.floor(number) / 2), (powerOfTwo - 1));
+    return Call(bindigit, (StrictMath.floor(number) / 2), (powerOfTwo - 1));
   }
 }
 function refreshRules() {
   if (Prims.equality(Globals.getGlobal(10), Globals.getGlobal(14))) {
-    if (!Prims.equality(Globals.getGlobal(10), calculateRule())) {
-      Globals.setGlobal(10, calculateRule());
+    if (!Prims.equality(Globals.getGlobal(10), Call(calculateRule))) {
+      Globals.setGlobal(10, Call(calculateRule));
     }
   }
   else {
-    extrapolateSwitches();
+    Call(extrapolateSwitches);
   }
   Globals.setGlobal(14, Globals.getGlobal(10));
 }
 function extrapolateSwitches() {
-  Globals.setGlobal(0, Prims.equality(bindigit(Globals.getGlobal(10), 0), 1));
-  Globals.setGlobal(1, Prims.equality(bindigit(Globals.getGlobal(10), 1), 1));
-  Globals.setGlobal(2, Prims.equality(bindigit(Globals.getGlobal(10), 2), 1));
-  Globals.setGlobal(3, Prims.equality(bindigit(Globals.getGlobal(10), 3), 1));
-  Globals.setGlobal(4, Prims.equality(bindigit(Globals.getGlobal(10), 4), 1));
-  Globals.setGlobal(5, Prims.equality(bindigit(Globals.getGlobal(10), 5), 1));
-  Globals.setGlobal(6, Prims.equality(bindigit(Globals.getGlobal(10), 6), 1));
-  Globals.setGlobal(7, Prims.equality(bindigit(Globals.getGlobal(10), 7), 1));
+  Globals.setGlobal(0, Prims.equality(Call(bindigit, Globals.getGlobal(10), 0), 1));
+  Globals.setGlobal(1, Prims.equality(Call(bindigit, Globals.getGlobal(10), 1), 1));
+  Globals.setGlobal(2, Prims.equality(Call(bindigit, Globals.getGlobal(10), 2), 1));
+  Globals.setGlobal(3, Prims.equality(Call(bindigit, Globals.getGlobal(10), 3), 1));
+  Globals.setGlobal(4, Prims.equality(Call(bindigit, Globals.getGlobal(10), 4), 1));
+  Globals.setGlobal(5, Prims.equality(Call(bindigit, Globals.getGlobal(10), 5), 1));
+  Globals.setGlobal(6, Prims.equality(Call(bindigit, Globals.getGlobal(10), 6), 1));
+  Globals.setGlobal(7, Prims.equality(Call(bindigit, Globals.getGlobal(10), 7), 1));
 }
 function calculateRule() {
   var rresult = 0;
@@ -174,8 +174,8 @@ function calculateRule() {
   return rresult;
 }
 function showRules() {
-  setupGeneral();
-  var rules = listRules();
+  Call(setupGeneral);
+  var rules = Call(listRules);
   AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
     return Prims.gt(AgentSet.getPatchVariable(1), (world.maxPycor - 5))
   }), true, function() {
@@ -187,16 +187,16 @@ function showRules() {
     AgentSet.ask(Prims.sprout(1, ""), true, function() {
       AgentSet.setTurtleVariable(2, 270);
       Prims.fd(18);
-      printBlock(Prims.item(0, Prims.item(AgentSet.getTurtleVariable(0), rules)));
+      Call(printBlock, Prims.item(0, Prims.item(AgentSet.getTurtleVariable(0), rules)));
       Prims.fd(2);
-      printBlock(Prims.item(1, Prims.item(AgentSet.getTurtleVariable(0), rules)));
+      Call(printBlock, Prims.item(1, Prims.item(AgentSet.getTurtleVariable(0), rules)));
       Prims.fd(2);
-      printBlock(Prims.item(2, Prims.item(AgentSet.getTurtleVariable(0), rules)));
+      Call(printBlock, Prims.item(2, Prims.item(AgentSet.getTurtleVariable(0), rules)));
       Prims.bk(2);
       AgentSet.setTurtleVariable(2, 180);
       Prims.fd(2);
       AgentSet.setTurtleVariable(2, 90);
-      printBlock(Prims.item(3, Prims.item(AgentSet.getTurtleVariable(0), rules)));
+      Call(printBlock, Prims.item(3, Prims.item(AgentSet.getTurtleVariable(0), rules)));
       AgentSet.die();
     });
   });

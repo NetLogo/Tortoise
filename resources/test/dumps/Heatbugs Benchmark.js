@@ -5,10 +5,10 @@ world = new World(-50, 50, -50, 50, 5.0, true, true, {"default":{"rotate":true,"
 
 function benchmark() {
   Random.setSeed(362);
-  setup();
+  Call(setup);
   world.resetTimer();
   Prims.repeat(1000, function () {
-    go();
+    Call(go);
   });
   Globals.setGlobal(8, world.timer());
 }
@@ -27,13 +27,13 @@ function setup() {
 }
 function go() {
   if (!(AgentSet.any(world.turtles()))) {
-    return;
+    throw new StopInterrupt;
   }
   world.topology().diffuse(5, Globals.getGlobal(2));
   AgentSet.ask(world.turtles(), true, function() {
-    step();
+    Call(step);
   });
-  recolorPatches();
+  Call(recolorPatches);
   world.tick();
 }
 function recolorPatches() {
@@ -48,9 +48,9 @@ function step() {
     AgentSet.setPatchVariable(5, (AgentSet.getPatchVariable(5) + AgentSet.getTurtleVariable(14)));
   }
   else {
-    var target = findTarget();
+    var target = Call(findTarget);
     if ((!Prims.equality(AgentSet.self().getPatchHere(), target) || Prims.gt(Globals.getGlobal(3), Prims.random(100)))) {
-      bugMove(target);
+      Call(bugMove, target);
     }
     AgentSet.setPatchVariable(5, (AgentSet.getPatchVariable(5) + AgentSet.getTurtleVariable(14)));
   }
@@ -71,14 +71,14 @@ function bugMove(target) {
   var tries = 0;
   if (!(AgentSet.any(AgentSet.turtlesOn(target)))) {
     AgentSet.self().moveTo(target);
-    return;
+    throw new StopInterrupt;
   }
   while (Prims.lte(tries, 9)) {
     tries = (tries + 1);
     target = AgentSet.oneOf(Prims.getNeighbors());
     if (!(AgentSet.any(AgentSet.turtlesOn(target)))) {
       AgentSet.self().moveTo(target);
-      return;
+      throw new StopInterrupt;
     }
   }
 }

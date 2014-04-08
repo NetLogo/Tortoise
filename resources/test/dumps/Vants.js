@@ -17,7 +17,7 @@ function goForward() {
   Tasks.forEach(Tasks.commandTask(function() {
     AgentSet.ask(arguments[0], true, function() {
       Prims.fd(1);
-      turn();
+      Call(turn);
     });
   }), Prims.sort(world.turtles()));
   world.tick();
@@ -25,7 +25,7 @@ function goForward() {
 function goReverse() {
   Tasks.forEach(Tasks.commandTask(function() {
     AgentSet.ask(arguments[0], true, function() {
-      turn();
+      Call(turn);
       Prims.bk(1);
     });
   }), Prims.reverse(Prims.sort(world.turtles())));

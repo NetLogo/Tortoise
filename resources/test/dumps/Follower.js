@@ -15,11 +15,11 @@ function setup() {
 function go() {
   AgentSet.ask(world.turtles(), true, function() {
     if (Prims.equality(AgentSet.getTurtleVariable(13), Nobody)) {
-      attachTurtle();
+      Call(attachTurtle);
     }
   });
   AgentSet.ask(world.turtles(), true, function() {
-    turnTurtle();
+    Call(turnTurtle);
   });
   AgentSet.ask(world.turtles(), true, function() {
     Prims.fd(1);
@@ -39,7 +39,7 @@ function attachTurtle() {
     return Prims.equality(AgentSet.getTurtleVariable(14), Nobody)
   }));
   if (Prims.equality(candidate, Nobody)) {
-    return;
+    throw new StopInterrupt;
   }
   AgentSet.ask(candidate, true, function() {
     AgentSet.setTurtleVariable(14, AgentSet.myself());

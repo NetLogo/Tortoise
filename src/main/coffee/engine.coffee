@@ -8,8 +8,9 @@ linkBuiltins = ["end1", "end2", "lcolor", "llabel", "llabelcolor", "lhidden", "l
 
 class NetLogoException
   constructor: (@message) ->
-class DeathInterrupt extends NetLogoException
+class DeathInterrupt    extends NetLogoException
 class TopologyInterrupt extends NetLogoException
+class StopInterrupt     extends NetLogoException
 
 Updates = []
 
@@ -142,6 +143,12 @@ updated = (obj, vars...) ->
         agentUpdate[v.toUpperCase()] = obj[v]
   agents[obj.id] = agentUpdate
   return
+
+Call = (fn, args...) ->
+  try fn(args...)
+  catch e
+    if not (e instanceof StopInterrupt)
+      throw e
 
 class Turtle
   vars: []
@@ -847,7 +854,7 @@ AgentSet =
     try
       res = f()
     catch error
-      throw error if!(error instanceof DeathInterrupt)
+      throw error if!(error instanceof DeathInterrupt or error instanceof StopInterrupt)
     @_self = oldAgent
     @_myself = oldMyself
     res

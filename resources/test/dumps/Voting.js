@@ -6,7 +6,7 @@ function setup() {
   world.clearAll();
   AgentSet.ask(world.patches(), true, function() {
     AgentSet.setPatchVariable(5, Prims.random(2));
-    recolorPatch();
+    Call(recolorPatch);
   });
   world.resetTicks();
 }
@@ -44,7 +44,7 @@ function go() {
         AgentSet.setPatchVariable(5, 0);
       }
     }
-    recolorPatch();
+    Call(recolorPatch);
   });
   world.tick();
 }

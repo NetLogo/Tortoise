@@ -30,9 +30,9 @@ function setup() {
 }
 function go() {
   AgentSet.ask(world.turtles(), true, function() {
-    interactWithNeighbor();
-    repelTooCloseNeighbor();
-    interactWithPartner();
+    Call(interactWithNeighbor);
+    Call(repelTooCloseNeighbor);
+    Call(interactWithPartner);
   });
   world.tick();
 }

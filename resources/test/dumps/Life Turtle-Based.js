@@ -15,13 +15,13 @@ function setupBlank() {
   world.resetTicks();
 }
 function setupRandom() {
-  setupBlank();
+  Call(setupBlank);
   AgentSet.ask(world.patches(), true, function() {
     if (Prims.lt(Prims.randomFloat(100), Globals.getGlobal(0))) {
       AgentSet.ask(Prims.sprout(1, "BABIES"), true, function() {});
     }
   });
-  go();
+  Call(go);
   world.resetTicks();
 }
 function birth() {
@@ -54,7 +54,7 @@ function go() {
   });
   AgentSet.ask(world.patches(), true, function() {
     if ((!(AgentSet.any(AgentSet.self().breedHere("CELLS"))) && Prims.equality(AgentSet.getPatchVariable(5), 3))) {
-      birth();
+      Call(birth);
     }
     AgentSet.setPatchVariable(5, 0);
   });

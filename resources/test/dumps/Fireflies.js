@@ -17,20 +17,20 @@ function setup() {
       AgentSet.setTurtleVariable(16, (AgentSet.getTurtleVariable(14) + 1));
     }
     AgentSet.setTurtleVariable(10, 2);
-    recolor();
+    Call(recolor);
   });
   world.resetTicks();
 }
 function go() {
   AgentSet.ask(world.turtles(), true, function() {
-    move();
-    incrementClock();
+    Call(move);
+    Call(incrementClock);
     if ((Prims.gt(AgentSet.getTurtleVariable(13), AgentSet.getTurtleVariable(16)) && Prims.gte(AgentSet.getTurtleVariable(13), AgentSet.getTurtleVariable(14)))) {
-      look();
+      Call(look);
     }
   });
   AgentSet.ask(world.turtles(), true, function() {
-    recolor();
+    Call(recolor);
   });
   world.tick();
 }

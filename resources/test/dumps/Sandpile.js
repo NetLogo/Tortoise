@@ -13,9 +13,9 @@ function setup(setupTask) {
     AgentSet.setPatchVariable(6, []);
     AgentSet.setPatchVariable(7, Globals.getGlobal(10));
   });
-  var ignore = stabilize(false);
+  var ignore = Call(stabilize, false);
   AgentSet.ask(world.patches(), true, function() {
-    recolor();
+    Call(recolor);
   });
   Globals.setGlobal(3, Prims.sum(AgentSet.of(world.patches(), function() {
     return AgentSet.getPatchVariable(5)
@@ -25,12 +25,12 @@ function setup(setupTask) {
   world.resetTicks();
 }
 function setupUniform(initial) {
-  setup(Tasks.reporterTask(function() {
+  Call(setup, Tasks.reporterTask(function() {
     return initial
   }));
 }
 function setupRandom() {
-  setup(Tasks.reporterTask(function() {
+  Call(setup, Tasks.reporterTask(function() {
     return Prims.random(4)
   }));
 }
@@ -38,13 +38,13 @@ function recolor() {
   AgentSet.setPatchVariable(2, Prims.scaleColor(AgentSet.getPatchVariable(7), AgentSet.getPatchVariable(5), 0, 4));
 }
 function go() {
-  var drop = dropPatch();
+  var drop = Call(dropPatch);
   if (!Prims.equality(drop, Nobody)) {
     AgentSet.ask(drop, true, function() {
-      updateN(1);
-      recolor();
+      Call(updateN, 1);
+      Call(recolor);
     });
-    var results = stabilize(Globals.getGlobal(0));
+    var results = Call(stabilize, Globals.getGlobal(0));
     var avalanchePatches = Prims.first(results);
     var lifetime = Prims.last(results);
     if (AgentSet.any(avalanchePatches)) {
@@ -52,15 +52,15 @@ function go() {
       Globals.setGlobal(7, Prims.lput(lifetime, Globals.getGlobal(7)));
     }
     AgentSet.ask(avalanchePatches, true, function() {
-      recolor();
+      Call(recolor);
       AgentSet.ask(Prims.getNeighbors4(), true, function() {
-        recolor();
+        Call(recolor);
       });
     });
     noop();
     AgentSet.ask(avalanchePatches, true, function() {
       AgentSet.setPatchVariable(7, Globals.getGlobal(10));
-      recolor();
+      Call(recolor);
     });
     Globals.setGlobal(4, Globals.getGlobal(3));
     world.tick();
@@ -84,14 +84,14 @@ function stabilize(animate_p) {
     }
     AgentSet.ask(overloadedPatches, true, function() {
       AgentSet.setPatchVariable(7, Globals.getGlobal(11));
-      updateN(-4);
+      Call(updateN, -4);
       if (animate_p) {
-        recolor();
+        Call(recolor);
       }
       AgentSet.ask(Prims.getNeighbors4(), true, function() {
-        updateN(1);
+        Call(updateN, 1);
         if (animate_p) {
-          recolor();
+          Call(recolor);
         }
       });
     });
@@ -122,7 +122,7 @@ function pushN() {
   AgentSet.setPatchVariable(6, Prims.fput(AgentSet.getPatchVariable(5), AgentSet.getPatchVariable(6)));
 }
 function popN() {
-  updateN((Prims.first(AgentSet.getPatchVariable(6)) - AgentSet.getPatchVariable(5)));
+  Call(updateN, (Prims.first(AgentSet.getPatchVariable(6)) - AgentSet.getPatchVariable(5)));
   AgentSet.setPatchVariable(6, Prims.butLast(AgentSet.getPatchVariable(6)));
 }
 Globals.setGlobal(0, false);

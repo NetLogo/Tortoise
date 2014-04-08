@@ -54,12 +54,7 @@ class TestReporters extends lang.TestReporters with TortoiseFinder {
 class TestCommands extends lang.TestCommands with TortoiseFinder {
   override val freebies = Map[String, String](
     // significant (early exit)
-    "Stop::ReportFromForeach2"         -> "no early exit from foreach",
-    "Stop::ReportFromForeach3"         -> "no early exit from foreach",
-    "Stop::ReportFromForeach"          -> "no early exit from foreach",
-    "Stop::StopFromForeach2"           -> "no early exit from foreach",
-    "Stop::StopFromForeach3"           -> "no early exit from foreach",
-    "Stop::StopInsideRunOfCommandTask" -> "no early exit from command task",
+    "Stop::ReportFromForeach" -> "no non-local exit from foreach",
     // significant (string representation)
     "CommandTasks::*ToString3" -> "command task string representation doesn't match",
     "CommandTasks::*ToString4" -> "command task string representation doesn't match",

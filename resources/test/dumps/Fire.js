@@ -15,7 +15,7 @@ function setup() {
   AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
     return Prims.equality(AgentSet.getPatchVariable(0), world.minPxcor)
   }), true, function() {
-    ignite();
+    Call(ignite);
   });
   Globals.setGlobal(1, AgentSet.count(AgentSet.agentFilter(world.patches(), function() {
     return Prims.equality(AgentSet.getPatchVariable(2), 55)
@@ -25,17 +25,17 @@ function setup() {
 }
 function go() {
   if (!(AgentSet.any(world.turtles()))) {
-    return;
+    throw new StopInterrupt;
   }
   AgentSet.ask(world.turtlesOfBreed("FIRES"), true, function() {
     AgentSet.ask(AgentSet.agentFilter(Prims.getNeighbors4(), function() {
       return Prims.equality(AgentSet.getPatchVariable(2), 55)
     }), true, function() {
-      ignite();
+      Call(ignite);
     });
     AgentSet.setBreed(world.turtlesOfBreed("EMBERS"));
   });
-  fadeEmbers();
+  Call(fadeEmbers);
   world.tick();
 }
 function ignite() {

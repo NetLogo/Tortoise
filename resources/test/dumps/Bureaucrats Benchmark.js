@@ -5,9 +5,9 @@ world = new World(0, 99, 0, 99, 3.0, false, false, {"default":{"rotate":true,"el
 function benchmark() {
   Random.setSeed(0);
   world.resetTimer();
-  setup();
+  Call(setup);
   Prims.repeat(5000, function () {
-    go();
+    Call(go);
   });
   Globals.setGlobal(2, world.timer());
 }
@@ -15,7 +15,7 @@ function setup() {
   world.clearAll();
   AgentSet.ask(world.patches(), true, function() {
     AgentSet.setPatchVariable(5, 2);
-    colorize();
+    Call(colorize);
   });
   Globals.setGlobal(1, (2 * AgentSet.count(world.patches())));
   world.resetTicks();
@@ -25,7 +25,7 @@ function go() {
   AgentSet.ask(activePatches, true, function() {
     AgentSet.setPatchVariable(5, (AgentSet.getPatchVariable(5) + 1));
     Globals.setGlobal(1, (Globals.getGlobal(1) + 1));
-    colorize();
+    Call(colorize);
   });
   while (AgentSet.any(activePatches)) {
     var overloadedPatches = AgentSet.agentFilter(activePatches, function() {
@@ -34,11 +34,11 @@ function go() {
     AgentSet.ask(overloadedPatches, true, function() {
       AgentSet.setPatchVariable(5, (AgentSet.getPatchVariable(5) - 4));
       Globals.setGlobal(1, (Globals.getGlobal(1) - 4));
-      colorize();
+      Call(colorize);
       AgentSet.ask(Prims.getNeighbors4(), true, function() {
         AgentSet.setPatchVariable(5, (AgentSet.getPatchVariable(5) + 1));
         Globals.setGlobal(1, (Globals.getGlobal(1) + 1));
-        colorize();
+        Call(colorize);
       });
     });
     activePatches = Prims.patchSet(AgentSet.of(overloadedPatches, function() {
