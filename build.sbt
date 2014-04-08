@@ -14,7 +14,7 @@ isSnapshot := true
 
 version := "0.1"
 
-scalaVersion := "2.11.0-RC3"
+scalaVersion := "2.11.0-RC4"
 
 scalacOptions ++=
   "-deprecation -unchecked -feature -Xcheckinit -encoding us-ascii -target:jvm-1.7 -Xlint -Xfatal-warnings"
@@ -32,7 +32,7 @@ ivyLoggingLevel := UpdateLogging.Quiet
 // we're not cross-building for different Scala versions
 crossPaths := false
 
-val nlDependencyVersion = "5.1.0-dddfd75"
+val nlDependencyVersion = "5.2.0-dddfd75"
 
 resolvers += bintray.Opts.resolver.repo("netlogo", "NetLogoHeadless")
 
@@ -51,7 +51,8 @@ resolvers += Resolver.sonatypeRepo("snapshots")
 
 libraryDependencies ++= Seq(
   "org.nlogo" % "netlogoheadless" % nlDependencyVersion,
-  "org.json4s" %% "json4s-native" % "3.2.9-SNAPSHOT",
+  "org.json4s" % "json4s-native_2.11.0-RC3" % "3.2.9-SNAPSHOT"
+    excludeAll(ExclusionRule(organization = "org.scala-lang.modules")),
   "org.slf4j" % "slf4j-nop" % "1.7.5",  // for webjars-locator
   "org.webjars" % "webjars-locator" % "0.13",
   "org.webjars" % "lodash" % "2.4.1-3",
