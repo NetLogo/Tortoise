@@ -1,13 +1,16 @@
 ## (C) Uri Wilensky. https://github.com/NetLogo/NetLogo
 
+# anything beginning with "_(" is a call to lodash
+
 turtleBuiltins = ["id", "color", "heading", "xcor", "ycor", "shape", "label", "labelcolor", "breed", "hidden", "size", "pensize", "penmode"]
 patchBuiltins = ["pxcor", "pycor", "pcolor", "plabel", "plabelcolor"]
 linkBuiltins = ["end1", "end2", "lcolor", "llabel", "llabelcolor", "lhidden", "lbreed", "thickness", "lshape", "tiemode", "size", "heading", "midpointx", "midpointy"]
 
 class NetLogoException
   constructor: (@message) ->
-class DeathInterrupt extends NetLogoException
+class DeathInterrupt    extends NetLogoException
 class TopologyInterrupt extends NetLogoException
+class StopInterrupt     extends NetLogoException
 
 Updates = []
 
@@ -140,6 +143,12 @@ updated = (obj, vars...) ->
         agentUpdate[v.toUpperCase()] = obj[v]
   agents[obj.id] = agentUpdate
   return
+
+Call = (fn, args...) ->
+  try fn(args...)
+  catch e
+    if not (e instanceof StopInterrupt)
+      throw e
 
 class Turtle
   vars: []
@@ -433,7 +442,7 @@ class Patch
     @turtles.push(t)
   distanceXY: (x, y) -> world.topology().distanceXY(@pxcor, @pycor, x, y)
   distance: (agent) -> world.topology().distance(@pxcor, @pycor, agent)
-  turtlesHere: -> new Agents(@turtles.slice(0), Breeds.get("TURTLES"), AgentKind.Turtle)
+  turtlesHere: -> new Agents(@turtles[..], Breeds.get("TURTLES"), AgentKind.Turtle)
   getNeighbors: -> world.getNeighbors(@pxcor, @pycor) # world.getTopology().getNeighbors(this)
   getNeighbors4: -> world.getNeighbors4(@pxcor, @pycor) # world.getTopology().getNeighbors(this)
   sprout: (n, breedName) ->
@@ -639,9 +648,15 @@ class World
     @_ticks = -1
     Updates.push( world: { 0: { ticks: @_ticks } } )
   resize: (minPxcor, maxPxcor, minPycor, maxPycor) ->
+
     if(minPxcor > 0 || maxPxcor < 0 || minPycor > 0 || maxPycor < 0)
       throw new NetLogoException("You must include the point (0, 0) in the world.")
-    @clearAll()
+
+    # For some reason, JVM NetLogo doesn't restart `who` ordering after `resize-world`; even the test for this is existentially confused. --JAB (4/3/14)
+    oldNextTId = @_nextTurtleId
+    @clearTurtles()
+    @_nextTurtleId = oldNextTId
+
     @minPxcor = minPxcor
     @maxPxcor = maxPxcor
     @minPycor = minPycor
@@ -655,6 +670,7 @@ class World
     else
       @_topology = new Box(@minPxcor, @maxPxcor, @minPycor, @maxPycor)
     @createPatches()
+    @patchesAllBlack(true)
     Updates.push(
       world: {
         0: {
@@ -668,6 +684,7 @@ class World
       }
     )
     return
+
   tick: ->
     if(@_ticks == -1)
       throw new NetLogoException("The tick counter has not been started yet. Use RESET-TICKS.")
@@ -714,6 +731,13 @@ class World
     Updates.push( world: { 0: { patchesAllBlack: @_patchesAllBlack }})
   clearAll: ->
     Globals.clear(@interfaceGlobalCount)
+    @clearTurtles()
+    @createPatches()
+    @_nextLinkId = 0
+    @patchesAllBlack(true)
+    @clearTicks()
+    return
+  clearTurtles: ->
     # We iterate through a copy of the array since it will be modified during
     # iteration.
     # A more efficient (but less readable) way of doing this is to iterate
@@ -723,11 +747,16 @@ class World
         t.die()
       catch error
         throw error if !(error instanceof DeathInterrupt)
-    @createPatches()
     @_nextTurtleId = 0
-    @_nextLinkId = 0
+    return
+  clearPatches: ->
+    for p in @patches().items
+      p.setPatchVariable(2, 0)   # 2 = pcolor
+      p.setPatchVariable(3, "")    # 3 = plabel
+      p.setPatchVariable(4, 9.9)   # 4 = plabel-color
+      for i in [patchBuiltins.size...p.vars.length]
+        p.setPatchVariable(i, 0)
     @patchesAllBlack(true)
-    @clearTicks()
     return
   createTurtle: (t) ->
     t.id = @_nextTurtleId++
@@ -825,7 +854,7 @@ AgentSet =
     try
       res = f()
     catch error
-      throw error if!(error instanceof DeathInterrupt)
+      throw error if!(error instanceof DeathInterrupt or error instanceof StopInterrupt)
     @_self = oldAgent
     @_myself = oldMyself
     res
@@ -979,10 +1008,10 @@ class Agents
   sort: ->
     if(@items.length == 0)
       @items
-    else if @kind is AgentKind.Turtle
-      @items.sort((x, y) -> x.compare(y).toInt)
+    else if @kind is AgentKind.Turtle or @kind is AgentKind.Patch
+      @items[..].sort((x, y) -> x.compare(y).toInt)
     else if @kind is AgentKind.Link
-      @items.sort(Links.compare)
+      @items[..].sort(Links.compare)
     else
       throw new Error("We don't know how to sort your kind here!")
 
@@ -1134,8 +1163,32 @@ Prims =
       result
     else
       Math.round(result)
-
-  sort: (xs) -> xs.sort()
+  reverse: (xs) ->
+    if typeIsArray(xs)
+      xs[..].reverse()
+    else if typeof(xs) == "string"
+      xs.split("").reverse().join("")
+    else
+      throw new NetLogoException("can only reverse lists and strings")
+  sort: (xs) ->
+    if typeIsArray(xs)
+      wrappedItems = _(xs)
+      if wrappedItems.isEmpty()
+        xs
+      else if wrappedItems.all((x) -> Utilities.isNumber(x))
+        xs[..].sort((x, y) -> Comparator.numericCompare(x, y).toInt)
+      else if wrappedItems.all((x) -> Utilities.isString(x))
+        xs[..].sort()
+      else if wrappedItems.all((x) -> x instanceof Turtle) or wrappedItems.all((x) -> x instanceof Patch)
+        xs[..].sort((x, y) -> x.compare(y).toInt)
+      else if wrappedItems.all((x) -> x instanceof Link)
+        xs[..].sort(Links.compare)
+      else
+        throw new Error("We don't know how to sort your kind here!")
+    else if xs instanceof Agents
+      xs.sort()
+    else
+      throw new NetLogoException("can only sort lists and agentsets")
   removeDuplicates: (xs) ->
     if xs.length < 2
       xs

@@ -4,18 +4,18 @@ world = new World(-45, 45, -45, 45, 5.0, false, false, {"default":{"rotate":true
 function setup() {
   world.clearAll();
   Breeds.setDefaultShape(world.turtles(), "circle");
-  makeNode(Nobody);
-  makeNode(world.getTurtle(0));
+  Call(makeNode, Nobody);
+  Call(makeNode, world.getTurtle(0));
   world.resetTicks();
 }
 function go() {
   AgentSet.ask(world.links(), true, function() {
     AgentSet.setTurtleVariable(1, 5);
   });
-  makeNode(findPartner());
+  Call(makeNode, Call(findPartner));
   world.tick();
   if (Globals.getGlobal(1)) {
-    layout();
+    Call(layout);
   }
 }
 function makeNode(oldNode) {
@@ -63,8 +63,8 @@ function layout() {
   })) + Prims.min(AgentSet.of(world.turtles(), function() {
     return AgentSet.getTurtleVariable(4)
   })));
-  xOffset = limitMagnitude(xOffset, 0.1);
-  yOffset = limitMagnitude(yOffset, 0.1);
+  xOffset = Call(limitMagnitude, xOffset, 0.1);
+  yOffset = Call(limitMagnitude, yOffset, 0.1);
   AgentSet.ask(world.turtles(), true, function() {
     Prims.setXY((AgentSet.getTurtleVariable(3) - (xOffset / 2)), (AgentSet.getTurtleVariable(4) - (yOffset / 2)));
   });

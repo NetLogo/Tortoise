@@ -4,22 +4,22 @@ world = new World(-5, 5, -5, 5, 25.0, true, true, {"default":{"rotate":true,"ele
 function setup() {
   world.clearAll();
   AgentSet.ask(world.patches(), true, function() {
-    cellDeath();
+    Call(cellDeath);
   });
   AgentSet.ask(Prims.patch(0, 0), true, function() {
-    cellBirth();
+    Call(cellBirth);
   });
   AgentSet.ask(Prims.patch(-1, 0), true, function() {
-    cellBirth();
+    Call(cellBirth);
   });
   AgentSet.ask(Prims.patch(0, -1), true, function() {
-    cellBirth();
+    Call(cellBirth);
   });
   AgentSet.ask(Prims.patch(0, 1), true, function() {
-    cellBirth();
+    Call(cellBirth);
   });
   AgentSet.ask(Prims.patch(1, 1), true, function() {
-    cellBirth();
+    Call(cellBirth);
   });
   world.resetTicks();
 }
@@ -39,11 +39,11 @@ function go() {
   });
   AgentSet.ask(world.patches(), true, function() {
     if (Prims.equality(AgentSet.getPatchVariable(6), 3)) {
-      cellBirth();
+      Call(cellBirth);
     }
     else {
       if (!Prims.equality(AgentSet.getPatchVariable(6), 2)) {
-        cellDeath();
+        Call(cellDeath);
       }
     }
   });

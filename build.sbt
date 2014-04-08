@@ -32,7 +32,7 @@ ivyLoggingLevel := UpdateLogging.Quiet
 // we're not cross-building for different Scala versions
 crossPaths := false
 
-val nlDependencyVersion = "5.1.0-5208d76"
+val nlDependencyVersion = "5.1.0-b5f847f"
 
 resolvers += bintray.Opts.resolver.repo("netlogo", "NetLogoHeadless")
 
@@ -42,13 +42,14 @@ libraryDependencies ++= Seq(
   "org.reflections" % "reflections" % "0.9.9-RC1" % "test",
   "com.google.code.findbugs" % "jsr305" % "2.0.1" % "test",
   "com.google.guava" % "guava" % "12.0"           % "test",
-  "org.javassist" % "javassist" % "3.16.1-GA"     % "test",
-  "org.slf4j" % "slf4j-nop" % "1.7.5"             % "test"
+  "org.javassist" % "javassist" % "3.16.1-GA"     % "test"
 )
 
 libraryDependencies ++= Seq(
   "org.nlogo" % "netlogoheadless" % nlDependencyVersion,
   "org.json4s" %% "json4s-native" % "3.1.0",
+  "org.slf4j" % "slf4j-nop" % "1.7.5",  // for webjars-locator
+  "org.webjars" % "webjars-locator" % "0.13",
   "org.webjars" % "lodash" % "2.4.1-3",
   "org.webjars" % "mori" % "f38f11a-bizzle" from "http://ccl.northwestern.edu/devel/mori-f38f11a-bizzle.jar",
   "org.scalacheck" %% "scalacheck" % "1.11.3" % "test",

@@ -17,7 +17,7 @@ function setup() {
   Breeds.setDefaultShape(world.turtlesOfBreed("CLOUDS"), "cloud");
   Breeds.setDefaultShape(world.turtlesOfBreed("HEATS"), "dot");
   Breeds.setDefaultShape(world.turtlesOfBreed("CO2S"), "CO2-molecule");
-  setupWorld();
+  Call(setupWorld);
   Globals.setGlobal(4, 12);
   world.resetTicks();
 }
@@ -35,7 +35,7 @@ function setupWorld() {
       AgentSet.setPatchVariable(2, (15 + 3));
     }
     if (Prims.equality(AgentSet.getPatchVariable(1), Globals.getGlobal(3))) {
-      updateAlbedo();
+      Call(updateAlbedo);
     }
   });
 }
@@ -43,15 +43,15 @@ function go() {
   AgentSet.ask(world.turtlesOfBreed("CLOUDS"), true, function() {
     Prims.fd(AgentSet.getBreedVariable("CLOUD-SPEED"));
   });
-  runSunshine();
+  Call(runSunshine);
   AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
     return Prims.equality(AgentSet.getPatchVariable(1), Globals.getGlobal(3))
   }), true, function() {
-    updateAlbedo();
+    Call(updateAlbedo);
   });
-  runHeat();
-  runIr();
-  runCo2();
+  Call(runHeat);
+  Call(runIr);
+  Call(runCo2);
   world.tick();
 }
 function updateAlbedo() {
@@ -96,9 +96,9 @@ function runSunshine() {
     }
     Prims.fd(0.3);
   });
-  createSunshine();
-  reflectRaysFromClouds();
-  encounterEarth();
+  Call(createSunshine);
+  Call(reflectRaysFromClouds);
+  Call(encounterEarth);
 }
 function createSunshine() {
   if (Prims.gt((10 * Globals.getGlobal(0)), Prims.random(50))) {

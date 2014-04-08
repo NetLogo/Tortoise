@@ -17,7 +17,7 @@ function setup() {
 function go() {
   AgentSet.ask(world.turtles(), true, function() {
     if (Prims.gt(AgentSet.getPatchVariable(5), Globals.getGlobal(1))) {
-      turnTowardChemical();
+      Call(turnTowardChemical);
     }
     Prims.right(((Prims.randomFloat(Globals.getGlobal(3)) - Prims.randomFloat(Globals.getGlobal(3))) + Globals.getGlobal(4)));
     Prims.fd(1);

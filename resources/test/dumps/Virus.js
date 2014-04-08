@@ -4,9 +4,9 @@ world = new World(-17, 17, -17, 17, 13.0, true, true, {"default":{"rotate":true,
 
 function setup() {
   world.clearAll();
-  setupConstants();
-  setupTurtles();
-  updateGlobalVariables();
+  Call(setupConstants);
+  Call(setupTurtles);
+  Call(updateGlobalVariables);
   world.resetTicks();
 }
 function setupTurtles() {
@@ -17,10 +17,10 @@ function setupTurtles() {
     AgentSet.setTurtleVariable(15, 0);
     AgentSet.setTurtleVariable(14, false);
     AgentSet.setTurtleVariable(10, 1.5);
-    getHealthy();
+    Call(getHealthy);
   });
   AgentSet.ask(AgentSet.nOf(10, world.turtles()), true, function() {
-    getSick();
+    Call(getSick);
   });
 }
 function getSick() {
@@ -46,12 +46,12 @@ function setupConstants() {
   Globals.setGlobal(7, 4);
 }
 function go() {
-  getOlder();
-  move();
-  infect();
-  recover();
-  reproduce();
-  updateGlobalVariables();
+  Call(getOlder);
+  Call(move);
+  Call(infect);
+  Call(recover);
+  Call(reproduce);
+  Call(updateGlobalVariables);
   world.tick();
 }
 function updateGlobalVariables() {
@@ -90,7 +90,7 @@ function infect() {
       return !(AgentSet.getTurtleVariable(14))
     })), true, function() {
       if (Prims.lt(Prims.randomFloat(100), Globals.getGlobal(2))) {
-        getSick();
+        Call(getSick);
       }
     });
   });
@@ -101,7 +101,7 @@ function recover() {
   }), true, function() {
     if (Prims.gt(Prims.random(AgentSet.getTurtleVariable(15)), (Globals.getGlobal(6) * (Globals.getGlobal(0) / 100)))) {
       if (Prims.lt(Prims.randomFloat(100), Globals.getGlobal(1))) {
-        becomeImmune();
+        Call(becomeImmune);
       }
       else {
         AgentSet.die();
@@ -118,7 +118,7 @@ function reproduce() {
         AgentSet.setTurtleVariable(16, 1);
         Prims.left(45);
         Prims.fd(1);
-        getHealthy();
+        Call(getHealthy);
       });
     }
   });

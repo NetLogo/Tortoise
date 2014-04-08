@@ -71,6 +71,7 @@ object SimplePrims {
         case _: prim.etc._butfirst           => "Prims.butFirst"
         case _: prim.etc._butlast            => "Prims.butLast"
         case _: prim.etc._sort               => "Prims.sort"
+        case _: prim.etc._reverse            => "Prims.reverse"
         case _: prim.etc._max                => "Prims.max"
         case _: prim.etc._length             => "Prims.length"
         case _: prim.etc._min                => "Prims.min"
@@ -134,7 +135,7 @@ object SimplePrims {
       PartialFunction.condOpt(c) {
         case _: prim._done             => ""
         case _: prim.etc._observercode => ""
-        case _: prim.etc._stop         => "return"
+        case _: prim.etc._stop         => "throw new StopInterrupt"
         case _: prim.etc._hideturtle   => "AgentSet.self().hideTurtle(true);"
         case _: prim.etc._showturtle   => "AgentSet.self().hideTurtle(false);"
       }
@@ -145,6 +146,8 @@ object SimplePrims {
       PartialFunction.condOpt(c) {
         case _: prim.etc._outputprint       => "Prims.outputPrint"
         case _: prim.etc._clearall          => "world.clearAll"
+        case _: prim.etc._clearpatches      => "world.clearPatches"
+        case _: prim.etc._clearturtles      => "world.clearTurtles"
         case _: prim.etc._clearticks        => "world.clearTicks"
         case _: prim.etc._resizeworld       => "world.resize"
         case _: prim.etc._resetticks        => "world.resetTicks"

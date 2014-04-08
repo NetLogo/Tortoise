@@ -3,7 +3,7 @@
 package org.nlogo.tortoise
 package dock
 
-import org.nlogo.api, api.WorldDimensions
+import org.nlogo.core.WorldDimensions
 import org.nlogo.util.SlowTest
 
 class TestAgents extends DockingSuite with SlowTest {
@@ -397,13 +397,13 @@ class TestAgents extends DockingSuite with SlowTest {
   }
 
   test("in-radius") { implicit fixture => import fixture._
-    declare("", api.WorldDimensions.square(5))
+    declare("", WorldDimensions.square(5))
     testCommand("crt 50 [ setxy random-xcor random-ycor ]")
     testCommand("ask turtles [ let s count turtles in-radius 2 ]")
   }
 
   test("n-of patches") { implicit fixture => import fixture._
-    declare("", api.WorldDimensions.square(5))
+    declare("", WorldDimensions.square(5))
     testCommand("ask n-of 15 patches [ output-print (list pxcor pycor) ]")
   }
 
@@ -426,7 +426,7 @@ class TestAgents extends DockingSuite with SlowTest {
   }
 
   test("other") { implicit fixture => import fixture._
-    declare("", api.WorldDimensions.square(2))
+    declare("", WorldDimensions.square(2))
     testCommand("crt 10")
     testCommand("ask turtle 0 [ ask other turtles [ output-print self ] ]")
     testCommand("ask turtles [ ask other turtles-here [ output-print self ] ]")
@@ -443,7 +443,7 @@ class TestAgents extends DockingSuite with SlowTest {
   }
 
   test("watch") { implicit fixture => import fixture._
-    declare("", api.WorldDimensions.square(5))
+    declare("", WorldDimensions.square(5))
     testCommand("crt 3")
     testCommand("ask turtles [ fd 1 ]")
     testCommand("watch turtle 0")

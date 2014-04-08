@@ -5,9 +5,9 @@ world = new World(-150, 150, -150, 150, 1.0, true, true, {"default":{"rotate":tr
 function benchmark() {
   Random.setSeed(5454);
   world.resetTimer();
-  setup();
+  Call(setup);
   Prims.repeat(20, function () {
-    go();
+    Call(go);
   });
   Globals.setGlobal(4, world.timer());
 }
@@ -21,7 +21,7 @@ function setup() {
 }
 function go() {
   AgentSet.ask(world.patches(), true, function() {
-    findNewState();
+    Call(findNewState);
   });
   AgentSet.ask(world.patches(), true, function() {
     AgentSet.setPatchVariable(5, AgentSet.getPatchVariable(6));

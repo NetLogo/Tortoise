@@ -6,16 +6,16 @@ world = new World(-50, 50, -50, 50, 5.0, false, false, {"default":{"rotate":true
 function setup() {
   world.clearAll();
   world.resetTicks();
-  setupTurtles();
-  setupPatches();
-  doPlotting();
+  Call(setupTurtles);
+  Call(setupPatches);
+  Call(doPlotting);
 }
 function benchmark() {
   Random.setSeed(337);
   world.resetTimer();
-  setup();
+  Call(setup);
   Prims.repeat(800, function () {
-    go();
+    Call(go);
   });
   Globals.setGlobal(4, world.timer());
 }
@@ -33,9 +33,9 @@ function setupPatches() {
     AgentSet.setPatchVariable(5, 0);
     AgentSet.setPatchVariable(6, 0);
     AgentSet.setPatchVariable(9, -1);
-    setupNest();
-    setupFood();
-    updateDisplay();
+    Call(setupNest);
+    Call(setupFood);
+    Call(updateDisplay);
   });
 }
 function setupNest() {
@@ -79,30 +79,30 @@ function updateDisplay() {
 }
 function go() {
   AgentSet.ask(world.turtles(), true, function() {
-    goTurtles();
+    Call(goTurtles);
   });
   world.topology().diffuse(5, (Globals.getGlobal(0) / 100));
   AgentSet.ask(world.patches(), true, function() {
-    goPatches();
+    Call(goPatches);
   });
   world.tick();
-  doPlotting();
+  Call(doPlotting);
 }
 function goTurtles() {
   if (Prims.lt(AgentSet.getTurtleVariable(0), world.ticks())) {
     if (AgentSet.getTurtleVariable(13)) {
       AgentSet.setTurtleVariable(1, (25 + 1));
-      returnToNest();
+      Call(returnToNest);
     }
     else {
       AgentSet.setTurtleVariable(1, 15);
-      lookForFood();
+      Call(lookForFood);
     }
   }
 }
 function goPatches() {
   AgentSet.setPatchVariable(5, ((AgentSet.getPatchVariable(5) * (100 - Globals.getGlobal(1))) / 100));
-  updateDisplay();
+  Call(updateDisplay);
 }
 function returnToNest() {
   if (AgentSet.getPatchVariable(7)) {
@@ -116,8 +116,8 @@ function returnToNest() {
     if (Prims.lt(AgentSet.getTurtleVariable(14), 1)) {
       AgentSet.setTurtleVariable(14, 1);
     }
-    uphillNestScent();
-    wiggle();
+    Call(uphillNestScent);
+    Call(wiggle);
     Prims.fd(1);
   }
 }
@@ -127,29 +127,29 @@ function lookForFood() {
     AgentSet.setPatchVariable(6, (AgentSet.getPatchVariable(6) - 1));
     AgentSet.setTurtleVariable(14, 60);
     Prims.right(180);
-    return;
+    throw new StopInterrupt;
   }
   if (Prims.gt(AgentSet.getPatchVariable(5), 2)) {
     Prims.fd(1);
   }
   else {
     if (Prims.lt(AgentSet.getPatchVariable(5), 0.05)) {
-      wiggle();
+      Call(wiggle);
       Prims.fd(1);
     }
     else {
-      uphillChemical();
+      Call(uphillChemical);
       Prims.fd(1);
     }
   }
 }
 function uphillChemical() {
-  wiggle();
+  Call(wiggle);
   var scentAhead = AgentSet.of(AgentSet.self().patchAhead(1), function() {
     return AgentSet.getPatchVariable(5)
   });
-  var scentRight = chemicalScent(45);
-  var scentLeft = chemicalScent(-45);
+  var scentRight = Call(chemicalScent, 45);
+  var scentLeft = Call(chemicalScent, -45);
   if ((Prims.gt(scentRight, scentAhead) || Prims.gt(scentLeft, scentAhead))) {
     if (Prims.gt(scentRight, scentLeft)) {
       Prims.right(45);
@@ -160,12 +160,12 @@ function uphillChemical() {
   }
 }
 function uphillNestScent() {
-  wiggle();
+  Call(wiggle);
   var scentAhead = AgentSet.of(AgentSet.self().patchAhead(1), function() {
     return AgentSet.getPatchVariable(8)
   });
-  var scentRight = getNestScent(45);
-  var scentLeft = getNestScent(-45);
+  var scentRight = Call(getNestScent, 45);
+  var scentLeft = Call(getNestScent, -45);
   if ((Prims.gt(scentRight, scentAhead) || Prims.gt(scentLeft, scentAhead))) {
     if (Prims.gt(scentRight, scentLeft)) {
       Prims.right(45);
@@ -201,7 +201,7 @@ function chemicalScent(angle) {
 }
 function doPlotting() {
   if (!(Globals.getGlobal(2))) {
-    return;
+    throw new StopInterrupt;
   }
   noop("Food in each pile");
   noop("food-in-pile1");

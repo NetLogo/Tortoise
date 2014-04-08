@@ -24,7 +24,9 @@ object Prims {
       case pure: nvm.Pure if r.args.isEmpty => Handlers.literal(pure.report(null))
       case lv: prim._letvariable            => Handlers.ident(lv.let.name)
       case pv: prim._procedurevariable      => Handlers.ident(pv.name)
-      case call: prim._callreport           => s"${Handlers.ident(call.procedure.name)}($commaArgs)"
+      case call: prim._callreport           =>
+        (Handlers.ident(call.procedure.name) +: args)
+          .mkString("Call(", ", ", ")")
       case _: prim._unaryminus              => s"(- ${arg(0)})"
       case bv: prim._breedvariable          => s"""AgentSet.getBreedVariable("${bv.name}")"""
       case tv: prim._turtlevariable         => s"AgentSet.getTurtleVariable(${tv.vn})"
@@ -104,7 +106,9 @@ object Prims {
       case _: prim.etc._createlinkwith   => generateCreateLink(s, "createLinkWith")
       case _: prim.etc._createlinkswith  => generateCreateLink(s, "createLinksWith")
       case h: prim._hatch                => generateHatch(s, h.breedName)
-      case call: prim._call              => s"${Handlers.ident(call.procedure.name)}($commaArgs);"
+      case call: prim._call              =>
+        (Handlers.ident(call.procedure.name) +: args)
+          .mkString("Call(", ", ", ");")
       case _: prim.etc._report           => s"return ${arg(0)};"
       case _: prim.etc._ignore           => s"${arg(0)};"
       case l: prim._let                  =>

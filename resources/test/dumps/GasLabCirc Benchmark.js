@@ -5,10 +5,10 @@ Breeds.get("PARTICLES").vars =["SPEED", "MASS"];
 function benchmark() {
   Random.setSeed(12345);
   world.resetTimer();
-  setup();
+  Call(setup);
   Globals.setGlobal(13, false);
   Prims.repeat(3500, function () {
-    go();
+    Call(go);
   });
   Globals.setGlobal(4, world.timer());
 }
@@ -19,23 +19,23 @@ function setup() {
   Globals.setGlobal(13, true);
   Globals.setGlobal(14, 0.2);
   Globals.setGlobal(6, (world.maxPxcor - 1));
-  makeBox();
-  makeParticles();
+  Call(makeBox);
+  Call(makeParticles);
   Globals.setGlobal(5, (1 / StrictMath.ceil(Prims.max(AgentSet.of(world.turtlesOfBreed("PARTICLES"), function() {
     return AgentSet.getBreedVariable("SPEED")
   })))));
   Globals.setGlobal(11, Globals.getGlobal(5));
   Globals.setGlobal(9, Nobody);
   Globals.setGlobal(10, Nobody);
-  rebuildCollisionList();
+  Call(rebuildCollisionList);
 }
 function rebuildCollisionList() {
   Globals.setGlobal(7, []);
   AgentSet.ask(world.turtlesOfBreed("PARTICLES"), true, function() {
-    checkForWallCollision();
+    Call(checkForWallCollision);
   });
   AgentSet.ask(world.turtlesOfBreed("PARTICLES"), true, function() {
-    checkForParticleCollision();
+    Call(checkForParticleCollision);
   });
 }
 function go() {
@@ -44,10 +44,10 @@ function go() {
       return (((!Prims.equality(Prims.item(1, arguments[0]), Globals.getGlobal(9)) && !Prims.equality(Prims.item(2, arguments[0]), Globals.getGlobal(9))) && !Prims.equality(Prims.item(1, arguments[0]), Globals.getGlobal(10))) && !Prims.equality(Prims.item(2, arguments[0]), Globals.getGlobal(10)))
     })));
     AgentSet.ask(Globals.getGlobal(10), true, function() {
-      checkForWallCollision();
+      Call(checkForWallCollision);
     });
     AgentSet.ask(Globals.getGlobal(10), true, function() {
-      checkForParticleCollision();
+      Call(checkForParticleCollision);
     });
   }
   else {
@@ -57,19 +57,19 @@ function go() {
   }
   if (!Prims.equality(Globals.getGlobal(9), Nobody)) {
     AgentSet.ask(Globals.getGlobal(9), true, function() {
-      checkForWallCollision();
+      Call(checkForWallCollision);
     });
   }
   if (!Prims.equality(Globals.getGlobal(9), Nobody)) {
     AgentSet.ask(Globals.getGlobal(9), true, function() {
-      checkForParticleCollision();
+      Call(checkForParticleCollision);
     });
   }
-  sortCollisions();
+  Call(sortCollisions);
   AgentSet.ask(world.turtlesOfBreed("PARTICLES"), true, function() {
     Prims.jump((AgentSet.getBreedVariable("SPEED") * Globals.getGlobal(5)));
   });
-  collideWinners();
+  Call(collideWinners);
   world.tickAdvance(Globals.getGlobal(5));
   if (Globals.getGlobal(13)) {
     if (Prims.gt((world.ticks() - Globals.getGlobal(12)), Globals.getGlobal(14))) {
@@ -88,13 +88,13 @@ function checkForParticleCollision() {
   var myX = AgentSet.getTurtleVariable(3);
   var myY = AgentSet.getTurtleVariable(4);
   var myParticleSize = AgentSet.getTurtleVariable(10);
-  var myXSpeed = (AgentSet.getBreedVariable("SPEED") * convertHeadingX(AgentSet.getTurtleVariable(2)));
-  var myYSpeed = (AgentSet.getBreedVariable("SPEED") * convertHeadingY(AgentSet.getTurtleVariable(2)));
+  var myXSpeed = (AgentSet.getBreedVariable("SPEED") * Call(convertHeadingX, AgentSet.getTurtleVariable(2)));
+  var myYSpeed = (AgentSet.getBreedVariable("SPEED") * Call(convertHeadingY, AgentSet.getTurtleVariable(2)));
   AgentSet.ask(AgentSet.other(world.turtlesOfBreed("PARTICLES")), true, function() {
     var dpx = (AgentSet.getTurtleVariable(3) - myX);
     var dpy = (AgentSet.getTurtleVariable(4) - myY);
-    var xSpeed = (AgentSet.getBreedVariable("SPEED") * convertHeadingX(AgentSet.getTurtleVariable(2)));
-    var ySpeed = (AgentSet.getBreedVariable("SPEED") * convertHeadingY(AgentSet.getTurtleVariable(2)));
+    var xSpeed = (AgentSet.getBreedVariable("SPEED") * Call(convertHeadingX, AgentSet.getTurtleVariable(2)));
+    var ySpeed = (AgentSet.getBreedVariable("SPEED") * Call(convertHeadingY, AgentSet.getTurtleVariable(2)));
     var dvx = (xSpeed - myXSpeed);
     var dvy = (ySpeed - myYSpeed);
     var sumR = ((myParticleSize / 2) + (AgentSet.of(AgentSet.self(), function() {
@@ -115,8 +115,8 @@ function checkForParticleCollision() {
   });
 }
 function checkForWallCollision() {
-  var xSpeed = (AgentSet.getBreedVariable("SPEED") * convertHeadingX(AgentSet.getTurtleVariable(2)));
-  var ySpeed = (AgentSet.getBreedVariable("SPEED") * convertHeadingY(AgentSet.getTurtleVariable(2)));
+  var xSpeed = (AgentSet.getBreedVariable("SPEED") * Call(convertHeadingX, AgentSet.getTurtleVariable(2)));
+  var ySpeed = (AgentSet.getBreedVariable("SPEED") * Call(convertHeadingY, AgentSet.getTurtleVariable(2)));
   var xposPlane = (Globals.getGlobal(6) - 0.5);
   var xnegPlane = ((- Globals.getGlobal(6)) + 0.5);
   var yposPlane = (Globals.getGlobal(6) - 0.5);
@@ -137,7 +137,7 @@ function checkForWallCollision() {
     tPlaneXpos = 0;
   }
   if (Prims.gt(tPlaneXpos, 0)) {
-    assignCollidingWall(tPlaneXpos, "plane-xpos");
+    Call(assignCollidingWall, tPlaneXpos, "plane-xpos");
   }
   var tPlaneXneg = 0;
   if (!Prims.equality(xSpeed, 0)) {
@@ -147,7 +147,7 @@ function checkForWallCollision() {
     tPlaneXneg = 0;
   }
   if (Prims.gt(tPlaneXneg, 0)) {
-    assignCollidingWall(tPlaneXneg, "plane-xneg");
+    Call(assignCollidingWall, tPlaneXneg, "plane-xneg");
   }
   var tPlaneYpos = 0;
   if (!Prims.equality(ySpeed, 0)) {
@@ -157,7 +157,7 @@ function checkForWallCollision() {
     tPlaneYpos = 0;
   }
   if (Prims.gt(tPlaneYpos, 0)) {
-    assignCollidingWall(tPlaneYpos, "plane-ypos");
+    Call(assignCollidingWall, tPlaneYpos, "plane-ypos");
   }
   var tPlaneYneg = 0;
   if (!Prims.equality(ySpeed, 0)) {
@@ -167,7 +167,7 @@ function checkForWallCollision() {
     tPlaneYneg = 0;
   }
   if (Prims.gt(tPlaneYneg, 0)) {
-    assignCollidingWall(tPlaneYneg, "plane-yneg");
+    Call(assignCollidingWall, tPlaneYneg, "plane-yneg");
   }
 }
 function assignCollidingWall(timeToCollision, wall) {
@@ -182,7 +182,7 @@ function sortCollisions() {
   Globals.setGlobal(10, Nobody);
   Globals.setGlobal(5, Globals.getGlobal(11));
   if (Prims.equality(Globals.getGlobal(7), [])) {
-    return;
+    throw new StopInterrupt;
   }
   var winner = Prims.first(Globals.getGlobal(7));
   Tasks.forEach(Tasks.commandTask(function() {
@@ -204,22 +204,22 @@ function sortCollisions() {
 }
 function collideWinners() {
   if (Prims.equality(Globals.getGlobal(9), Nobody)) {
-    return;
+    throw new StopInterrupt;
   }
   if ((Prims.equality(Globals.getGlobal(10), "plane-xpos") || Prims.equality(Globals.getGlobal(10), "plane-xneg"))) {
     AgentSet.ask(Globals.getGlobal(9), true, function() {
       AgentSet.setTurtleVariable(2, (- AgentSet.getTurtleVariable(2)));
     });
-    return;
+    throw new StopInterrupt;
   }
   if ((Prims.equality(Globals.getGlobal(10), "plane-ypos") || Prims.equality(Globals.getGlobal(10), "plane-yneg"))) {
     AgentSet.ask(Globals.getGlobal(9), true, function() {
       AgentSet.setTurtleVariable(2, (180 - AgentSet.getTurtleVariable(2)));
     });
-    return;
+    throw new StopInterrupt;
   }
   AgentSet.ask(Globals.getGlobal(9), true, function() {
-    collideWith(Globals.getGlobal(10));
+    Call(collideWith, Globals.getGlobal(10));
   });
 }
 function collideWith(otherParticle) {
@@ -252,20 +252,20 @@ function collideWith(otherParticle) {
       AgentSet.setTurtleVariable(2, (theta - Trig.atan(v2l, v2t)));
     });
   }
-  recolor();
+  Call(recolor);
   AgentSet.ask(otherParticle, true, function() {
-    recolor();
+    Call(recolor);
   });
 }
 function recolor() {
   if (Prims.equality(Globals.getGlobal(2), "red-green-blue")) {
-    recolorBanded();
+    Call(recolorBanded);
   }
   if (Prims.equality(Globals.getGlobal(2), "blue shades")) {
-    recolorShaded();
+    Call(recolorShaded);
   }
   if (Prims.equality(Globals.getGlobal(2), "one color")) {
-    recolorNone();
+    Call(recolorNone);
   }
 }
 function recolorBanded() {
@@ -306,20 +306,20 @@ function makeParticles() {
     AgentSet.setBreedVariable("SPEED", 1);
     AgentSet.setTurtleVariable(10, (Globals.getGlobal(3) + Prims.randomFloat((Globals.getGlobal(1) - Globals.getGlobal(3)))));
     AgentSet.setBreedVariable("MASS", (AgentSet.getTurtleVariable(10) * AgentSet.getTurtleVariable(10)));
-    recolor();
+    Call(recolor);
     AgentSet.setTurtleVariable(2, Prims.randomFloat(360));
   });
-  arrange(world.turtlesOfBreed("PARTICLES"));
+  Call(arrange, world.turtlesOfBreed("PARTICLES"));
 }
 function arrange(particleSet) {
   if (!(AgentSet.any(particleSet))) {
-    return;
+    throw new StopInterrupt;
   }
   AgentSet.ask(particleSet, true, function() {
-    randomPosition();
+    Call(randomPosition);
   });
-  arrange(AgentSet.agentFilter(particleSet, function() {
-    return overlapping_p()
+  Call(arrange, AgentSet.agentFilter(particleSet, function() {
+    return Call(overlapping_p)
   }));
 }
 function overlapping_p() {
@@ -336,21 +336,21 @@ function reverseTime() {
   AgentSet.ask(world.turtlesOfBreed("PARTICLES"), true, function() {
     Prims.right(180);
   });
-  rebuildCollisionList();
-  collideWinners();
+  Call(rebuildCollisionList);
+  Call(collideWinners);
 }
 function testTimeReversal(n) {
-  setup();
+  Call(setup);
   AgentSet.ask(world.turtlesOfBreed("PARTICLES"), true, function() {
     noop();
   });
   while (Prims.lt(world.ticks(), n)) {
-    go();
+    Call(go);
   }
   var oldClock = world.ticks();
-  reverseTime();
+  Call(reverseTime);
   while (Prims.lt(world.ticks(), (2 * oldClock))) {
-    go();
+    Call(go);
   }
   AgentSet.ask(world.turtlesOfBreed("PARTICLES"), true, function() {
     AgentSet.setTurtleVariable(1, 9.9);

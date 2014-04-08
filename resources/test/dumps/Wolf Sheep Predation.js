@@ -37,7 +37,7 @@ function setup() {
     AgentSet.setTurtleVariable(13, Prims.random((2 * Globals.getGlobal(4))));
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
   });
-  displayLabels();
+  Call(displayLabels);
   Globals.setGlobal(9, AgentSet.count(AgentSet.agentFilter(world.patches(), function() {
     return Prims.equality(AgentSet.getPatchVariable(2), 55)
   })));
@@ -45,34 +45,34 @@ function setup() {
 }
 function go() {
   if (!(AgentSet.any(world.turtles()))) {
-    return;
+    throw new StopInterrupt;
   }
   AgentSet.ask(world.turtlesOfBreed("SHEEP"), true, function() {
-    move();
+    Call(move);
     if (Globals.getGlobal(6)) {
       AgentSet.setTurtleVariable(13, (AgentSet.getTurtleVariable(13) - 1));
-      eatGrass();
+      Call(eatGrass);
     }
-    death();
-    reproduceSheep();
+    Call(death);
+    Call(reproduceSheep);
   });
   AgentSet.ask(world.turtlesOfBreed("WOLVES"), true, function() {
-    move();
+    Call(move);
     AgentSet.setTurtleVariable(13, (AgentSet.getTurtleVariable(13) - 1));
-    catchSheep();
-    death();
-    reproduceWolves();
+    Call(catchSheep);
+    Call(death);
+    Call(reproduceWolves);
   });
   if (Globals.getGlobal(6)) {
     AgentSet.ask(world.patches(), true, function() {
-      growGrass();
+      Call(growGrass);
     });
   }
   Globals.setGlobal(9, AgentSet.count(AgentSet.agentFilter(world.patches(), function() {
     return Prims.equality(AgentSet.getPatchVariable(2), 55)
   })));
   world.tick();
-  displayLabels();
+  Call(displayLabels);
 }
 function move() {
   Prims.right(Prims.random(50));
