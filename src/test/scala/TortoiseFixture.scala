@@ -97,7 +97,7 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
     "Let::LetOfVarToItself2"            -> "Necessary check must be moved up into the front-end of the compiler",
     "Let::LetOfVarToItself3"            -> "Necessary check must be moved up into the front-end of the compiler",
     "Let::LetOfVarToItselfInsideAsk"    -> "Necessary check must be moved up into the front-end of the compiler",
-    "TypeChecking::SetVariable"         -> "Necessary check must be moved up into the front-end of the compiler"
+    "TypeChecking::SetVariable"         -> "Necessary check must be moved up into the front-end of the compiler",
     // perhaps never to be supported
     "ControlStructures::Run1"                  -> "run/runresult on strings not supported",
     "ControlStructures::Run2"                  -> "run/runresult on strings not supported",
@@ -111,7 +111,7 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
     "Run::LuisIzquierdoRun2"                   -> "run/runresult on strings not supported",
     "Run::LuisIzquierdoRunResult1"             -> "run/runresult on strings not supported",
     "Run::LuisIzquierdoRunResult2"             -> "run/runresult on strings not supported",
-    "Run::run-evaluate-string-input-only-once" -> "run/runresult on strings not supported",
+    "Run::run-evaluate-string-input-only-once" -> "run/runresult on strings not supported"
   )
 }
 
