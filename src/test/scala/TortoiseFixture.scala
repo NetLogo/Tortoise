@@ -53,8 +53,6 @@ class TestReporters extends lang.TestReporters with TortoiseFinder {
 
 class TestCommands extends lang.TestCommands with TortoiseFinder {
   override val freebies = Map[String, String](
-    // significant (misc.)
-    "CommandTasks::command-task-body-gets-agent-type-check" -> "agent type checking not supported",
     // should be handled in rewrite
     "Agentsets::AgentSetEquality"      -> "Dead agents in agentsets are handled incorrectly",
     "Agentsets::LinkAgentsetDeadLinks" -> "Dead agents in agentsets are handled incorrectly",
@@ -91,12 +89,13 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
     "CommandTasks::*ToString6" -> "command task string representation doesn't match",
     // needs 'headless' compiler changes
     "ReporterTasks::CloseOverLocal1" -> "Creates a function named 'const', which is a reserved keyword in JavaScript",
-    "Errors::task-variable-not-in-task" -> "Necessary check must be moved up into the front-end of the compiler",
-    "Let::LetOfVarToItself1"            -> "Necessary check must be moved up into the front-end of the compiler",
-    "Let::LetOfVarToItself2"            -> "Necessary check must be moved up into the front-end of the compiler",
-    "Let::LetOfVarToItself3"            -> "Necessary check must be moved up into the front-end of the compiler",
-    "Let::LetOfVarToItselfInsideAsk"    -> "Necessary check must be moved up into the front-end of the compiler",
-    "TypeChecking::SetVariable"         -> "Necessary check must be moved up into the front-end of the compiler",
+    "CommandTasks::command-task-body-gets-agent-type-check" -> "Necessary check must be moved up into the front-end of the compiler",
+    "Errors::task-variable-not-in-task"                     -> "Necessary check must be moved up into the front-end of the compiler",
+    "Let::LetOfVarToItself1"                                -> "Necessary check must be moved up into the front-end of the compiler",
+    "Let::LetOfVarToItself2"                                -> "Necessary check must be moved up into the front-end of the compiler",
+    "Let::LetOfVarToItself3"                                -> "Necessary check must be moved up into the front-end of the compiler",
+    "Let::LetOfVarToItselfInsideAsk"                        -> "Necessary check must be moved up into the front-end of the compiler",
+    "TypeChecking::SetVariable"                             -> "Necessary check must be moved up into the front-end of the compiler",
     // perhaps never to be supported
     "ControlStructures::Run1"                  -> "run/runresult on strings not supported",
     "ControlStructures::Run2"                  -> "run/runresult on strings not supported",
