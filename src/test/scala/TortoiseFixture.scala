@@ -55,7 +55,6 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
   override val freebies = Map[String, String](
     // significant (misc.)
     "CommandTasks::command-task-body-gets-agent-type-check" -> "agent type checking not supported",
-    "Random::Random3" -> "`random` doesn't handle fractional parts correctly",
     // should be handled in rewrite
     "Agentsets::AgentSetEquality"      -> "Dead agents in agentsets are handled incorrectly",
     "Agentsets::LinkAgentsetDeadLinks" -> "Dead agents in agentsets are handled incorrectly",

@@ -1128,9 +1128,9 @@ Prims =
   random: (n) ->
     truncated =
       if n >= 0
-        Math.floor(n)
-      else
         Math.ceil(n)
+      else
+        Math.floor(n)
     if truncated == 0
       0
     else if truncated > 0
