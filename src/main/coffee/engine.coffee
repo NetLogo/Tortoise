@@ -965,7 +965,7 @@ AgentSet =
     else
       agents = [agentsOrAgent]
     turtles = [].concat (agent.turtlesHere().items for agent in agents)...
-    new Agents(turtles, agentsOrAgent.breed, agentsOrAgent.kind)
+    new Agents(turtles, Breeds.get("TURTLES"), AgentKind.Turtle)
   die: -> @_self.die()
   connectedLinks: (directed, isSource) -> @_self.connectedLinks(directed, isSource)
   linkNeighbors: (directed, isSource) -> @_self.linkNeighbors(directed, isSource)
