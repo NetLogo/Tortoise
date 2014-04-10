@@ -1004,7 +1004,7 @@ AgentSet =
 class Agents
   constructor: (@items, @breed, @kind) ->
   toString: ->
-    "(" + @items.length + " " + @breed.name + ")"
+    "(agentset, #{@items.length} #{@breed.name.toLowerCase()})"
   sort: ->
     if(@items.length == 0)
       @items
