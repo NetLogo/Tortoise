@@ -11,8 +11,8 @@ object Coffee {
   val version = "1.7.1"
 
   lazy val settings = Seq(
-    resourceGenerators in Compile <+= coffee,
-    watchSources <++= coffeeSources
+    resourceGenerators in Compile += coffee.taskValue,
+    watchSources ++= coffeeSources.value
   )
 
   lazy val coffeeSourceDir = Def.setting[File] {
