@@ -6,6 +6,7 @@ package dock
 import
   org.nlogo.{ core, api, headless, mirror, nvm },
   headless.lang._,
+  core.Model,
   api.MersenneTwisterFast,
   org.scalatest.Assertions._,
   org.nlogo.shape.{LinkShape, VectorShape},
@@ -51,7 +52,7 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
   }
 
   override def runReporter(reporter: Reporter, mode: TestMode) {
-    if (!opened) declare("")
+    if (!opened) declare(Model())
     val compiledJS = Compiler.compileReporter(
       reporter.reporter, workspace.procedures, workspace.world.program)
     reporter.result match {
@@ -80,7 +81,7 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
   }
 
   override def runCommand(command: Command, mode: TestMode) {
-    if (!opened) declare("")
+    if (!opened) declare(Model())
     import command.{ command => logo }
     // println(s"logo = $logo")
     workspace.clearOutput()
@@ -152,7 +153,7 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
   }
 
   // use single-patch world by default to keep generated JSON to a minimum
-  override val defaultDimensions = core.WorldDimensions.square(0)
+  override val defaultView = core.View.square(0)
 
   override def open(path: String) {
     require(!opened)
@@ -160,46 +161,35 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
   }
 
   def open(path: String, dimensions: Option[(Int, Int, Int, Int)]) {
-    open(path)
-    val sections = api.ModelReader.parseModel(api.FileIO.file2String(path))
-    val code = sections(api.ModelSection.Code).mkString("\n")
-    val (interfaceGlobals, _, _, _, interfaceGlobalCommands) =
-      new org.nlogo.workspace.WidgetParser(workspace)
-        .parseWidgets(sections(api.ModelSection.Interface))
-    val originalDimensions = workspace.world.getDimensions
-    val finalDimensions = dimensions match {
-      case None => originalDimensions
+    require(!opened)
+    super.open(path)
+    val model = api.model.ModelReader.parseModel(api.FileIO.file2String(path), Some(workspace))
+
+    val finalModel = dimensions match {
+      case None => model
       case Some((minx, maxx, miny, maxy)) =>
-        val newDimensions =
-          originalDimensions.copy(
-            minPxcor = minx, maxPxcor = maxx,
-            minPycor = miny, maxPycor = maxy)
-        workspace.setDimensions(newDimensions)
-        newDimensions
+        model.copy(widgets = model.widgets.updated(model.widgets.indexOf(model.view),
+          model.view.copy(minPxcor = minx, maxPxcor = maxx, minPycor = miny, maxPycor = maxy)))
     }
-    declareHelper(code, interfaceGlobals, interfaceGlobalCommands.toString,
-      finalDimensions, workspace.world.turtleShapeList, workspace.world.linkShapeList)
+    workspace.setDimensions(finalModel.view.dimensions)
+
+    declareHelper(finalModel)
   }
 
-  override def open(model: headless.ModelCreator.Model) {
+  override def open(model: Model) {
     require(!opened)
     super.open(model)
-    declareHelper(model.code,
-      interfaceGlobals = workspace.world.program.interfaceGlobals,
-      dimensions = model.dimensions)
+    declareHelper(model)
   }
 
-  override def declare(logo: String, dimensions: core.WorldDimensions = defaultDimensions) {
+  override def declare(model: Model) {
     require(!opened)
-    super.declare(logo, dimensions = dimensions)
-    declareHelper(logo, dimensions = dimensions)
+    super.declare(model)
+    declareHelper(model)
   }
 
-  def declareHelper(logo: String, interfaceGlobals: Seq[String] = Seq(), interfaceGlobalCommands: String = "",
-      dimensions: core.WorldDimensions = defaultDimensions,
-      turtleShapeList: api.ShapeList = CompilerService.defaultTurtleShapes,
-      linkShapeList: api.ShapeList = CompilerService.defaultLinkShapes) {
-    val (js, _, _) = Compiler.compileProcedures(logo, interfaceGlobals, interfaceGlobalCommands, dimensions, turtleShapeList, linkShapeList)
+  def declareHelper(model: Model) {
+    val (js, _, _) = Compiler.compileProcedures(model)
     evalJS(js)
     state = Map()
     nashorn.eval("expectedModel = new AgentModel")

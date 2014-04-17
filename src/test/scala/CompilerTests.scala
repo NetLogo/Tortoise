@@ -3,7 +3,7 @@
 package org.nlogo.tortoise
 
 import org.scalatest.FunSuite
-import org.nlogo.api
+import org.nlogo.core
 
 // Mostly we test the compiler by running the results. But at least, occasionally we're interested
 // in *exactly* what the JavaScript output looks like.
@@ -153,7 +153,7 @@ class CompilerTests extends FunSuite {
                       |  Prims.outputPrint(5);
                       |}
                       |""".stripMargin
-    assertResult(expected)(compile(input)._1)
+    assertResult(expected)(compile(core.Model(code = input, turtleShapes = Nil, linkShapes = Nil))._1)
   }
 
   test("globals: accessed by number") {
@@ -169,7 +169,7 @@ class CompilerTests extends FunSuite {
         |  Prims.outputPrint(Globals.getGlobal(0));
         |}
         |""".stripMargin
-    assertResult(expected)(compile(input)._1)
+    assertResult(expected)(compile(core.Model(code = input, turtleShapes = Nil, linkShapes = Nil))._1)
   }
 
 }
