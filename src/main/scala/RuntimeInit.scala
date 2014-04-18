@@ -24,7 +24,7 @@ class RuntimeInit(program: api.Program, model: core.Model) {
     import view._
     globals + turtlesOwn + patchesOwn +
       s"world = new World($minPxcor, $maxPxcor, $minPycor, $maxPycor, $patchSize, " +
-      s"$wrappingAllowedInY, $wrappingAllowedInX, $turtleShapesJson, $linkShapesJson, " +
+      s"$wrappingAllowedInX, $wrappingAllowedInY, $turtleShapesJson, $linkShapesJson, " +
       s"${program.interfaceGlobals.size});\n" +
       breeds + "\n"
   }

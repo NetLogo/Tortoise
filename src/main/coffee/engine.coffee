@@ -590,7 +590,7 @@ class World
   _timer: Date.now()
   _patchesAllBlack: true
 
-  constructor: (@minPxcor, @maxPxcor, @minPycor, @maxPycor, @patchSize, @wrappingAllowedInY, @wrappingAllowedInX, turtleShapeList, linkShapeList, @interfaceGlobalCount) ->
+  constructor: (@minPxcor, @maxPxcor, @minPycor, @maxPycor, @patchSize, @wrappingAllowedInX, @wrappingAllowedInY, turtleShapeList, linkShapeList, @interfaceGlobalCount) ->
     Breeds.reset()
     AgentSet.reset()
     @perspective = 0
