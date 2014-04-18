@@ -116,13 +116,14 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
 class TortoiseFixture(name: String, nashorn: Nashorn, notImplemented: String => Nothing)
 extends AbstractFixture {
 
-  override def defaultDimensions = core.WorldDimensions.square(5)
   var program: api.Program = api.Program.empty
   var procs: ProceduresMap = NoProcedures
 
-  override def declare(source: String, dimensions: core.WorldDimensions) {
+  override def defaultView: core.View = core.View.square(5)
+
+  override def declare(model: core.Model) {
     val (js, p, m) =
-      try Compiler.compileProcedures(source, dimensions = dimensions)
+      try Compiler.compileProcedures(model)
       catch catcher
     program = p
     procs = m
@@ -135,8 +136,8 @@ extends AbstractFixture {
 
   override def open(path: String) = ???
 
-  override def open(model: headless.ModelCreator.Model) {
-    declare(model.code)
+  override def open(model: core.Model) {
+    declare(model)
   }
 
   override def runCommand(command: Command, mode: TestMode) {

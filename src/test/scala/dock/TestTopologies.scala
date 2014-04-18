@@ -3,16 +3,16 @@
 package org.nlogo.tortoise
 package dock
 
-import org.nlogo.core.WorldDimensions
+import org.nlogo.core.{ Model, View }
 import org.nlogo.util.SlowTest
 
 class TestTopologies extends DockingSuite with SlowTest {
 
-  val default = WorldDimensions(-8, 9, -10, 11)
+  val default = View(minPxcor = -8, maxPxcor = 9, minPycor = -10, maxPycor = 11)
 
-  def inAllTopologies(name: String, decls: String = "", baseDim: WorldDimensions = default)(fn: DockingFixture => Unit) {
+  def inAllTopologies(name: String, decls: String = "", baseView: View = default)(fn: DockingFixture => Unit) {
     case class Topo(name: String, wrapX: Boolean, wrapY: Boolean) {
-      val dim = baseDim.copy(wrappingAllowedInX = wrapX, wrappingAllowedInY = wrapY)
+      val view = baseView.copy(wrappingAllowedInX = wrapX, wrappingAllowedInY = wrapY)
     }
     val topos = Seq(
       Topo("torus", true, true),
@@ -22,7 +22,7 @@ class TestTopologies extends DockingSuite with SlowTest {
     )
     for(topo <- topos)
       test(s"$name in ${topo.name}") { fixture =>
-        fixture.declare(decls, topo.dim)
+        fixture.declare(Model(code = decls, widgets = List(topo.view)))
         fn(fixture)
       }
   }
@@ -92,7 +92,7 @@ class TestTopologies extends DockingSuite with SlowTest {
     testCommand("""ask turtles [ ask neighbors4 [ output-print self ]]""")
   }
 
-  inAllTopologies("face", baseDim = WorldDimensions.square(4)) {
+  inAllTopologies("face", baseView = View.square(4)) {
     implicit fixture => import fixture._
     testCommand("ask patches [ sprout 1 ]")
     for (i <- 1 to 80)
@@ -104,7 +104,7 @@ class TestTopologies extends DockingSuite with SlowTest {
       testCommand("ask turtles [ facexy ((random 8) / ((random 8) + 1) - 4) ((random 8) / ((random 8) + 1) - 4) ]")
   }
 
-  inAllTopologies("link wraps", baseDim = WorldDimensions.square(4)) {
+  inAllTopologies("link wraps", baseView = View.square(4)) {
     implicit fixture => import fixture._
     testCommand("ask patch 3 0 [ sprout 1 ]")
     testCommand("ask patch -3 0 [ sprout 1 ]")
@@ -115,7 +115,7 @@ class TestTopologies extends DockingSuite with SlowTest {
     testCommand("ask turtles [ set xcor xcor - 1 ]")
   }
 
-  inAllTopologies("in-radius", baseDim = WorldDimensions(-4, 3, -2, 6)) {
+  inAllTopologies("in-radius", baseView = View(minPxcor = -4, maxPxcor = 3, minPycor = -2, maxPycor = 6)) {
     implicit fixture => import fixture._
     testCommand("crt 50 [ setxy random-xcor random-ycor ]")
     testCommand("ask turtles [ output-print [ who ] of turtles in-radius random 10 ]")
@@ -136,7 +136,7 @@ class TestTopologies extends DockingSuite with SlowTest {
 
   test("box layout spring") {
     implicit fixture => import fixture._
-    declare("", default.copy(wrappingAllowedInX = false, wrappingAllowedInY = false))
+    declare(Model(widgets = List(default.copy(wrappingAllowedInX = false, wrappingAllowedInY = false))))
     testCommand("crt 10 [ setxy random-xcor random-ycor ]")
     testCommand("ask turtles [ create-links-with other turtles ]")
     testCommand("repeat 5 [ layout-spring turtles links .1 .2 .3 ]")
