@@ -442,6 +442,9 @@ class Patch
         if newV != 0
           world.patchesAllBlack(false)
         this[patchBuiltins[n]] = newV
+      else if patchBuiltins[n] is "plabel"
+        world.patchesWithLabels(1)
+        this[patchBuiltins[n]] = v
       else
         this[patchBuiltins[n]] = v
       updated(this, patchBuiltins[n])
@@ -603,6 +606,7 @@ class World
   _ticks: -1
   _timer: Date.now()
   _patchesAllBlack: true
+  _patchesWithLabels: 0
 
   constructor: (@minPxcor, @maxPxcor, @minPycor, @maxPycor, @patchSize, @wrappingAllowedInX, @wrappingAllowedInY, turtleShapeList, linkShapeList, @interfaceGlobalCount) ->
     Breeds.reset()
@@ -624,7 +628,7 @@ class World
             linkShapeList: linkShapeList,
             patchSize: @patchSize,
             patchesAllBlack: @_patchesAllBlack,
-            patchesWithLabels: 0,
+            patchesWithLabels: @_patchesWithLabels
             ticks: @_ticks,
             turtleBreeds: "XXX IMPLEMENT ME",
             turtleShapeList: turtleShapeList,
@@ -685,6 +689,7 @@ class World
       @_topology = new Box(@minPxcor, @maxPxcor, @minPycor, @maxPycor)
     @createPatches()
     @patchesAllBlack(true)
+    @patchesWithLabels(0)
     Updates.push(
       world: {
         0: {
@@ -743,12 +748,16 @@ class World
   patchesAllBlack: (val) ->
     @_patchesAllBlack = val
     Updates.push( world: { 0: { patchesAllBlack: @_patchesAllBlack }})
+  patchesWithLabels: (val) ->
+    @_patchesWithLabels = val
+    Updates.push( world: { 0: { patchesWithLabels: @_patchesWithLabels }})
   clearAll: ->
     Globals.clear(@interfaceGlobalCount)
     @clearTurtles()
     @createPatches()
     @_nextLinkId = 0
     @patchesAllBlack(true)
+    @patchesWithLabels(0)
     @clearTicks()
     return
   clearTurtles: ->
@@ -771,6 +780,7 @@ class World
       for i in [patchBuiltins.size...p.vars.length]
         p.setPatchVariable(i, 0)
     @patchesAllBlack(true)
+    @patchesWithLabels(0)
     return
   createTurtle: (t) ->
     t.id = @_nextTurtleId++
