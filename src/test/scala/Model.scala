@@ -196,6 +196,37 @@ object Model {
       dimensions = Some((-19, 19, -19, 19)),
       setup = "set number 100  setup",
       repetitions = 100
+    ),
+    Model(
+      path = "models/Code Examples/Box Drawing Example.nlogo",
+      setup = "set edge 2",
+      go = "setup-corner",
+      repetitions = 1
+    ),
+    Model(
+      path = "models/Sample Models/Biology/AIDS.nlogo",
+      repetitions = 100
+    ),
+    Model(
+      path = "models/Sample Models/Earth Science/Erosion.nlogo",
+      dimensions = Some((-12, 12, -12, 12)),
+      repetitions = 100
+    ),
+    Model(
+      path = "models/Sample Models/Social Science/Segregation.nlogo",
+      repetitions = 10
+    ),
+    Model(
+      path = "models/Sample Models/Social Science/Wealth Distribution.nlogo",
+      repetitions = 30
+    ),
+    Model(
+      path = "models/Sample Models/Social Science/Traffic Basic.nlogo",
+      repetitions = 50
+    ),
+    Model(
+      path = "models/Sample Models/Biology/Flocking.nlogo",
+      repetitions = 50
     )
   )
 }
