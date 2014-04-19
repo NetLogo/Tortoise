@@ -141,6 +141,9 @@ object SimplePrims {
         case _: prim.etc._sublist            => "Prims.sublist"
         case _: prim._sentence               => "Prims.sentence"
         case _: prim.etc._substring          => "Prims.substring"
+        case _: prim.etc._mousedown          => "false"
+        case _: prim.etc._mousexcor          => "0"
+        case _: prim.etc._mouseycor          => "0"
       }
   }
 
@@ -184,6 +187,7 @@ object SimplePrims {
         case _: prim.etc._setcurrentplot    => "noop"
         case _: prim.etc._setcurrentplotpen => "noop"
         case _: prim.etc._plot              => "noop"
+        case _: prim.etc._clearallplots     => "noop"
         case _: prim.etc._display           => "noop"
         case _: prim.etc._stamp             => "noop"
         case _: prim.etc._usermessage       => "noop"
