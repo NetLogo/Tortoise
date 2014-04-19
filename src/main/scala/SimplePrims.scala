@@ -128,10 +128,19 @@ object SimplePrims {
         case _: prim.etc._empty              => "Prims.empty"
         case _: prim.etc._isreportertask     => "Tasks.isReporterTask"
         case _: prim.etc._iscommandtask      => "Tasks.isCommandTask"
+        case _: prim.etc._isstring           => "Utilities.isString"
         case _: prim.etc._dx                 => "AgentSet.self().dx"
         case _: prim.etc._dy                 => "AgentSet.self().dy"
         case _: prim.etc._subtractheadings   => "Prims.subtractHeadings"
         case _: prim.etc._boom               => "Prims.boom"
+        case _: prim.etc._member             => "Prims.member"
+        case _: prim.etc._position           => "Prims.position"
+        case _: prim.etc._remove             => "Prims.remove"
+        case _: prim.etc._removeitem         => "Prims.removeItem"
+        case _: prim.etc._replaceitem        => "Prims.replaceItem"
+        case _: prim.etc._sublist            => "Prims.sublist"
+        case _: prim._sentence               => "Prims.sentence"
+        case _: prim.etc._substring          => "Prims.substring"
       }
   }
 

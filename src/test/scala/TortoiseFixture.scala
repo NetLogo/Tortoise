@@ -74,6 +74,11 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
     "TurtlesHere::TurtlesHereCheckOrder4"                                     -> "correct answer requires empty init block optimization",
     "Agentsets::Agentsets4" -> "TOO SLOW (because creating links requires looking up existing links)",
     "Links::LinksInitBlock" -> "TOO SLOW (because creating links requires looking up existing links)",
+    // significant
+    "Member::Member1" -> "member on agentsets not supported yet",
+    "Member::Member2" -> "member on agentsets not supported yet",
+    "Member::Member3" -> "member on agentsets not supported yet",
+    "Member::Member4" -> "member on agentsets not supported yet",
     // significant; uncertain how to solve (`RandomNOfIsFair<X>`s could possibly be solved by making it faster to write agent variables, but maybe not)
     "Random::RandomNOfIsFairForABreed"                        -> "TOO SLOW",
     "Random::RandomNOfIsFairForAList"                         -> "TOO SLOW",

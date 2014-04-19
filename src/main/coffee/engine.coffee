@@ -1253,6 +1253,61 @@ Prims =
       diff + 360
   boom: ->
     throw new NetLogoException("boom!")
+  member: (x, xs) ->
+    if typeIsArray(xs)
+      for y in xs
+        if @equality(x, y)
+          return true
+      false
+    else
+      xs.indexOf(x) != -1
+  position: (x, xs) ->
+    if typeIsArray(xs)
+      for y, i in xs
+        if @equality(x, y)
+          return i
+      false
+    else
+      result = xs.indexOf(x)
+      if result is -1
+        false
+      else
+        result
+  remove: (x, xs) ->
+    if typeIsArray(xs)
+      result = []
+      for y in xs
+        if not @equality(x, y)
+          result.push(y)
+      result
+    else
+      xs.replaceAll(x, "")
+  removeItem: (n, xs) ->
+    if typeIsArray(xs)
+      xs = xs[..]
+      xs[n..n] = []
+      xs
+    else
+      xs.slice(0, n) + xs.slice(n + 1, xs.length)
+  replaceItem: (n, xs, x) ->
+    if typeIsArray(xs)
+      xs = xs[..]
+      xs[n] = x
+      xs
+    else
+      xs.slice(0, n) + x + xs.slice(n + 1, xs.length)
+  sublist: (xs, n1, n2) ->
+    xs[n1...n2]
+  substring: (xs, n1, n2) ->
+    xs.substr(n1, n2 - n1)
+  sentence: (xs...) ->
+    result = []
+    for x in xs
+      if typeIsArray(x)
+        result.push(x...)
+      else
+        result.push(x)
+    result
 
 Tasks =
   commandTask: (fn) ->
