@@ -3,7 +3,7 @@
 package org.nlogo.tortoise.nashorn
 
 import org.nlogo.api, api.MersenneTwisterFast
-import org.nlogo.core.Resource 
+import org.nlogo.core.Resource
 import java.io.{ PrintWriter, StringWriter }
 
 // There are two main entry points here: run() and eval().  The former runs compiled commands and
