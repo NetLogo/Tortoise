@@ -315,6 +315,10 @@ class Turtle
       updated(this, "xcor", "ycor")
       return true
     return false
+  dx: ->
+    Trig.sin(@heading)
+  dy: ->
+    Trig.cos(@heading)
   right: (amount) ->
     @heading += amount
     @keepHeadingInRange()
@@ -1222,6 +1226,18 @@ Prims =
     for i in [0...n]
       fn()
     return
+  subtractHeadings: (h1, h2) ->
+    if h1 < 0 || h1 >= 360
+      h1 = (h1 % 360 + 360) % 360
+    if h2 < 0 || h2 >= 360
+      h2 = (h2 % 360 + 360) % 360
+    diff = h1 - h2
+    if diff > -180 && diff <= 180
+      diff
+    else if diff > 0
+      diff - 360
+    else
+      diff + 360
 
 Tasks =
   commandTask: (fn) ->
