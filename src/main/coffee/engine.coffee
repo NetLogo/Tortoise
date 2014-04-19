@@ -1251,6 +1251,8 @@ Prims =
       diff - 360
     else
       diff + 360
+  boom: ->
+    throw new NetLogoException("boom!")
 
 Tasks =
   commandTask: (fn) ->

@@ -130,6 +130,7 @@ object SimplePrims {
         case _: prim.etc._dx                 => "AgentSet.self().dx"
         case _: prim.etc._dy                 => "AgentSet.self().dy"
         case _: prim.etc._subtractheadings   => "Prims.subtractHeadings"
+        case _: prim.etc._boom               => "Prims.boom"
       }
   }
 
