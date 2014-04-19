@@ -399,11 +399,12 @@ class Turtle
   hatch: (n, breedName) ->
     breed = if breedName then Breeds.get(breedName) else @breed
     newTurtles = []
-    for num in [0...n]
-      t = new Turtle(@color, @heading, @xcor(), @ycor(), breed, @label, @labelcolor, @hidden, @size, @pensize, @penmode)
-      for v in [0..TurtlesOwn.vars.length]
-        t.setTurtleVariable(turtleBuiltins.length + v, @getTurtleVariable(turtleBuiltins.length + v))
-      newTurtles.push(world.createTurtle(t))
+    if n > 0
+      for num in [0...n]
+        t = new Turtle(@color, @heading, @xcor(), @ycor(), breed, @label, @labelcolor, @hidden, @size, @pensize, @penmode)
+        for v in [0..TurtlesOwn.vars.length]
+          t.setTurtleVariable(turtleBuiltins.length + v, @getTurtleVariable(turtleBuiltins.length + v))
+        newTurtles.push(world.createTurtle(t))
     new Agents(newTurtles, breed, AgentKind.Turtle)
   moveTo: (agent) ->
     if (agent instanceof Turtle)
@@ -456,7 +457,11 @@ class Patch
   getNeighbors4: -> world.getNeighbors4(@pxcor, @pycor) # world.getTopology().getNeighbors(this)
   sprout: (n, breedName) ->
     breed = if("" == breedName) then Breeds.get("TURTLES") else Breeds.get(breedName)
-    new Agents(world.createTurtle(new Turtle(5 + 10 * Random.nextInt(14), Random.nextInt(360), @pxcor, @pycor, breed)) for num in [0...n], breed, AgentKind.Turtle)
+    newTurtles = []
+    if n > 0
+      for num in [0...n]
+        newTurtles.push(world.createTurtle(new Turtle(5 + 10 * Random.nextInt(14), Random.nextInt(360), @pxcor, @pycor, breed)))
+    new Agents(newTurtles, breed, AgentKind.Turtle)
   breedHere: (breedName) ->
     breed = Breeds.get(breedName)
     new Agents(t for t in @turtles when t.breed == breed, breed, AgentKind.Turtle)
@@ -789,9 +794,17 @@ class World
     else
       Nobody
   createOrderedTurtles: (n, breedName) ->
-    new Agents(@createTurtle(new Turtle((10 * num + 5) % 140, (360 * num) / n, 0, 0, Breeds.get(breedName))) for num in [0...n], Breeds.get(breedName), AgentKind.Turtle)
+    newTurtles = []
+    if n > 0
+      for num in [0...n]
+        newTurtles.push(@createTurtle(new Turtle((10 * num + 5) % 140, (360 * num) / n, 0, 0, Breeds.get(breedName))))
+    new Agents(newTurtles, Breeds.get(breedName), AgentKind.Turtle)
   createTurtles: (n, breedName) ->
-    new Agents(@createTurtle(new Turtle(5 + 10 * Random.nextInt(14), Random.nextInt(360), 0, 0, Breeds.get(breedName))) for num in [0...n], Breeds.get(breedName), AgentKind.Turtle)
+    newTurtles = []
+    if n > 0
+      for num in [0...n]
+        newTurtles.push(@createTurtle(new Turtle(5 + 10 * Random.nextInt(14), Random.nextInt(360), 0, 0, Breeds.get(breedName))))
+    new Agents(newTurtles, Breeds.get(breedName), AgentKind.Turtle)
   getNeighbors: (pxcor, pycor) -> @topology().getNeighbors(pxcor, pycor)
   getNeighbors4: (pxcor, pycor) -> @topology().getNeighbors4(pxcor, pycor)
   createDirectedLink: (from, to) ->
