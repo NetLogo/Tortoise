@@ -70,7 +70,9 @@ object Handlers {
     def initialLower(s: String): String =
       java.lang.Character.toLowerCase(s.head) + s.tail
     val camel = initialLower(s.toLowerCase.split('-').map(initialUpper).mkString)
-    camel.replaceAll("\\?", "_p")
+    camel
+      .replaceAll("\\?", "_p")
+      .replaceAll("%", "_percent_")
   }
 
 }
