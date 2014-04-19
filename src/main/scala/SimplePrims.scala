@@ -35,6 +35,7 @@ object SimplePrims {
         case _: prim.etc._div            => "/"
         case _: prim._and                => "&&"
         case _: prim._or                 => "||"
+        case _: prim.etc._xor            => "!="
       }
   }
 
