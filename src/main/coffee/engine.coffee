@@ -218,9 +218,14 @@ class Turtle
   inRadius: (agents, radius) ->
     world.topology().inRadius(this, @xcor(), @ycor(), agents, radius)
   patchAt: (dx, dy) ->
-    @getPatchHere().patchAt(dx, dy)
+    try
+      world.getPatchAt(
+        world.topology().wrapX(@xcor() + dx),
+        world.topology().wrapY(@ycor() + dy))
+    catch error
+      if error instanceof TopologyInterrupt then Nobody else throw error
   turtlesAt: (dx, dy) ->
-    @getPatchHere().turtlesAt(dx, dy)
+    @patchAt(dx, dy).turtlesHere()
   connectedLinks: (directed, isSource) ->
     me = this
     if directed
