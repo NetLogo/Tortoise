@@ -144,6 +144,9 @@ object SimplePrims {
         case _: prim.etc._mousedown          => "false"
         case _: prim.etc._mousexcor          => "0"
         case _: prim.etc._mouseycor          => "0"
+        case _: prim.etc._exp                => "StrictMath.exp"
+        case _: prim.etc._variance           => "Prims.variance"
+        case _: prim.etc._basecolors         => "ColorModel.baseColors"
       }
   }
 

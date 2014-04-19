@@ -54,6 +54,9 @@ Utilities = {
 
 ColorModel = {
   COLOR_MAX: 140
+  baseColors: ->
+    for i in [0..13]
+      i * 10 + 5
   wrapColor: (c) ->
     if typeIsArray(c)
       c
@@ -1318,6 +1321,23 @@ Prims =
       else
         result.push(x)
     result
+  variance: (xs) ->
+    sum = 0
+    count = xs.length
+    for x in xs
+      if Utilities.isNumber(x)
+        sum += x
+      else
+        --count
+    if count < 2
+      throw new NetLogoException(
+        "Can't find the variance of a list without at least two numbers")
+    mean = sum / count
+    squareOfDifference = 0
+    for x in xs
+      if Utilities.isNumber(x)
+        squareOfDifference += StrictMath.pow(x - mean, 2)
+    squareOfDifference / (count - 1)
 
 Tasks =
   commandTask: (fn) ->
