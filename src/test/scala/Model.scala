@@ -227,6 +227,38 @@ object Model {
     Model(
       path = "models/Sample Models/Biology/Flocking.nlogo",
       repetitions = 50
+    ),
+    Model(
+      path = "models/Sample Models/Social Science/Traffic Grid.nlogo",
+      repetitions = 30
+    ),
+    Model(
+      setup = "set cycle-pollution? true  setup",
+      path = "models/Sample Models/Biology/Evolution/Peppered Moths.nlogo",
+      repetitions = 25
+    ),
+    Model(
+      path = "models/Sample Models/Biology/Fur.nlogo",
+      dimensions = Some((-10, 10, -10, 10)),
+      repetitions = 6
+    ),
+    Model(
+      path = "models/Sample Models/Chemistry & Physics/Ising.nlogo",
+      dimensions = Some((-10, 10, -10, 10)),
+      setup = "setup 0",
+      repetitions = 150
+    ),
+    Model(
+      path = "models/Sample Models/Biology/Evolution/Genetic Drift/GenDrift P global.nlogo",
+      repetitions = 20
+    ),
+    Model(
+      path = "models/Sample Models/Biology/Evolution/Genetic Drift/GenDrift P local.nlogo",
+      repetitions = 20
+    ),
+    Model(
+      path = "models/Sample Models/Biology/Evolution/Genetic Drift/GenDrift T reproduce.nlogo",
+      repetitions = 20
     )
   )
 }
