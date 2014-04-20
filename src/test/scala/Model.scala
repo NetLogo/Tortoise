@@ -29,15 +29,15 @@ object Model {
     ),
     Model(
       path = "models/Sample Models/Biology/Wolf Sheep Predation.nlogo",
-      variation = "no grass",
+      variation = "no grass, no labels",
       setup = "set grass? true  setup",
       repetitions = 10,
       metrics = Seq("count wolves", "count sheep", "grass")
     ),
     Model(
       path = "models/Sample Models/Biology/Wolf Sheep Predation.nlogo",
-      variation = "with grass",
-      setup = "set grass? true  setup",
+      variation = "grass, labels",
+      setup = "set grass? true  set show-energy? true  setup",
       repetitions = 10,
       metrics = Seq("count wolves", "count sheep", "grass")
     ),
