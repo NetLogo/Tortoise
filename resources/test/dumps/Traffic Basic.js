@@ -63,7 +63,7 @@ function go() {
 }
 function slowDownCar(carAhead) {
   AgentSet.setTurtleVariable(13, (AgentSet.of(carAhead, function() {
-    return AgentSet.getTurtleVariable(13)
+    return AgentSet.getTurtleVariable(13);
   }) - Globals.getGlobal(1)));
 }
 function speedUpCar() {

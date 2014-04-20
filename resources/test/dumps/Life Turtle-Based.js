@@ -31,7 +31,7 @@ function birth() {
 }
 function go() {
   AgentSet.ask(AgentSet.agentFilter(world.turtlesOfBreed("CELLS"), function() {
-    return Prims.equality(AgentSet.getTurtleVariable(1), 5)
+    return Prims.equality(AgentSet.getTurtleVariable(1), 5);
   }), true, function() {
     AgentSet.die();
   });

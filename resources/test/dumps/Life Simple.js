@@ -34,7 +34,7 @@ function cellDeath() {
 function go() {
   AgentSet.ask(world.patches(), true, function() {
     AgentSet.setPatchVariable(6, AgentSet.count(AgentSet.agentFilter(Prims.getNeighbors(), function() {
-      return AgentSet.getPatchVariable(5)
+      return AgentSet.getPatchVariable(5);
     })));
   });
   AgentSet.ask(world.patches(), true, function() {

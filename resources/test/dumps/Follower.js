@@ -36,7 +36,7 @@ function attachTurtle() {
     yd = (- yd);
   }
   var candidate = AgentSet.oneOf(AgentSet.agentFilter(AgentSet.self().turtlesAt(xd, yd), function() {
-    return Prims.equality(AgentSet.getTurtleVariable(14), Nobody)
+    return Prims.equality(AgentSet.getTurtleVariable(14), Nobody);
   }));
   if (Prims.equality(candidate, Nobody)) {
     throw new StopInterrupt;

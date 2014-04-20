@@ -13,13 +13,13 @@ function setup() {
 }
 function go() {
   if (Prims.equality(Prims.variance(AgentSet.of(world.patches(), function() {
-    return AgentSet.getPatchVariable(2)
+    return AgentSet.getPatchVariable(2);
   })), 0)) {
     throw new StopInterrupt;
   }
   AgentSet.ask(world.patches(), true, function() {
     AgentSet.setPatchVariable(2, AgentSet.of(AgentSet.oneOf(Prims.getNeighbors()), function() {
-      return AgentSet.getPatchVariable(2)
+      return AgentSet.getPatchVariable(2);
     }));
   });
   world.tick();

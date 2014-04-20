@@ -21,7 +21,7 @@ function setupPatches() {
   });
   Prims.repeat(5, function () {
     AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
-      return !Prims.equality(AgentSet.getPatchVariable(6), 0)
+      return !Prims.equality(AgentSet.getPatchVariable(6), 0);
     }), true, function() {
       AgentSet.setPatchVariable(5, AgentSet.getPatchVariable(6));
     });
@@ -59,7 +59,7 @@ function setInitialTurtleVars() {
 }
 function recolorTurtles() {
   var maxWealth = Prims.max(AgentSet.of(world.turtles(), function() {
-    return AgentSet.getTurtleVariable(14)
+    return AgentSet.getTurtleVariable(14);
   }));
   AgentSet.ask(world.turtles(), true, function() {
     if (Prims.lte(AgentSet.getTurtleVariable(14), (maxWealth / 3))) {
@@ -118,7 +118,7 @@ function grainAhead() {
   var howFar = 1;
   Prims.repeat(AgentSet.getTurtleVariable(17), function () {
     total = (total + AgentSet.of(AgentSet.self().patchAhead(howFar), function() {
-      return AgentSet.getPatchVariable(5)
+      return AgentSet.getPatchVariable(5);
     }));
     howFar = (howFar + 1);
   });
@@ -152,7 +152,7 @@ function moveEatAgeDie() {
 }
 function updateLorenzAndGini() {
   var sortedWealths = Prims.sort(AgentSet.of(world.turtles(), function() {
-    return AgentSet.getTurtleVariable(14)
+    return AgentSet.getTurtleVariable(14);
   }));
   var totalWealth = Prims.sum(sortedWealths);
   var wealthSumSoFar = 0;

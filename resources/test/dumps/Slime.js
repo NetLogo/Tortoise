@@ -32,13 +32,13 @@ function go() {
 }
 function turnTowardChemical() {
   var ahead = AgentSet.of(AgentSet.self().patchAhead(1), function() {
-    return AgentSet.getPatchVariable(5)
+    return AgentSet.getPatchVariable(5);
   });
   var myright = AgentSet.of(AgentSet.self().patchRightAndAhead(Globals.getGlobal(2), 1), function() {
-    return AgentSet.getPatchVariable(5)
+    return AgentSet.getPatchVariable(5);
   });
   var myleft = AgentSet.of(AgentSet.self().patchLeftAndAhead(Globals.getGlobal(2), 1), function() {
-    return AgentSet.getPatchVariable(5)
+    return AgentSet.getPatchVariable(5);
   });
   if ((Prims.gte(myright, ahead) && Prims.gte(myright, myleft))) {
     Prims.right(Globals.getGlobal(2));

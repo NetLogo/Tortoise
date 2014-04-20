@@ -19,6 +19,6 @@ function go() {
 }
 function averageHeat() {
   return Prims.mean(AgentSet.of(world.patches(), function() {
-    return AgentSet.getPatchVariable(5)
+    return AgentSet.getPatchVariable(5);
   }));
 }

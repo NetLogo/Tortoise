@@ -140,11 +140,11 @@ function move() {
 }
 function couple() {
   var potentialPartner = AgentSet.oneOf(AgentSet.agentFilter(AgentSet.self().turtlesAt(-1, 0), function() {
-    return (!(AgentSet.getTurtleVariable(16)) && Prims.equality(AgentSet.getTurtleVariable(5), "person lefty"))
+    return (!(AgentSet.getTurtleVariable(16)) && Prims.equality(AgentSet.getTurtleVariable(5), "person lefty"));
   }));
   if (!Prims.equality(potentialPartner, Nobody)) {
     if (Prims.lt(Prims.randomFloat(10), AgentSet.of(potentialPartner, function() {
-      return AgentSet.getTurtleVariable(19)
+      return AgentSet.getTurtleVariable(19);
     }))) {
       AgentSet.setTurtleVariable(22, potentialPartner);
       AgentSet.setTurtleVariable(16, true);
@@ -168,9 +168,9 @@ function couple() {
 function uncouple() {
   if ((AgentSet.getTurtleVariable(16) && Prims.equality(AgentSet.getTurtleVariable(5), "person righty"))) {
     if ((Prims.gt(AgentSet.getTurtleVariable(17), AgentSet.getTurtleVariable(18)) || Prims.gt(AgentSet.of(AgentSet.getTurtleVariable(22), function() {
-      return AgentSet.getTurtleVariable(17)
+      return AgentSet.getTurtleVariable(17);
     }), AgentSet.of(AgentSet.getTurtleVariable(22), function() {
-      return AgentSet.getTurtleVariable(18)
+      return AgentSet.getTurtleVariable(18);
     })))) {
       AgentSet.setTurtleVariable(16, false);
       AgentSet.setTurtleVariable(17, 0);
@@ -194,7 +194,7 @@ function uncouple() {
 function infect() {
   if (((AgentSet.getTurtleVariable(16) && AgentSet.getTurtleVariable(13)) && !(AgentSet.getTurtleVariable(14)))) {
     if ((Prims.gt(Prims.randomFloat(11), AgentSet.getTurtleVariable(20)) || Prims.gt(Prims.randomFloat(11), AgentSet.of(AgentSet.getTurtleVariable(22), function() {
-      return AgentSet.getTurtleVariable(20)
+      return AgentSet.getTurtleVariable(20);
     })))) {
       if (Prims.lt(Prims.randomFloat(100), Globals.getGlobal(5))) {
         AgentSet.ask(AgentSet.getTurtleVariable(22), true, function() {
@@ -219,7 +219,7 @@ function test() {
 function _percent_infected() {
   if (AgentSet.any(world.turtles())) {
     return ((AgentSet.count(AgentSet.agentFilter(world.turtles(), function() {
-      return AgentSet.getTurtleVariable(13)
+      return AgentSet.getTurtleVariable(13);
     })) / AgentSet.count(world.turtles())) * 100);
   }
   else {

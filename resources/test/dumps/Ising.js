@@ -14,7 +14,7 @@ function setup(initialMagnetization) {
     Call(recolor);
   });
   Globals.setGlobal(2, Prims.sum(AgentSet.of(world.patches(), function() {
-    return AgentSet.getPatchVariable(5)
+    return AgentSet.getPatchVariable(5);
   })));
   world.resetTicks();
 }
@@ -26,7 +26,7 @@ function go() {
 }
 function update() {
   var ediff = ((2 * AgentSet.getPatchVariable(5)) * Prims.sum(AgentSet.of(Prims.getNeighbors4(), function() {
-    return AgentSet.getPatchVariable(5)
+    return AgentSet.getPatchVariable(5);
   })));
   if ((Prims.lte(ediff, 0) || (Prims.gt(Globals.getGlobal(0), 0) && Prims.lt(Prims.randomFloat(1), StrictMath.exp(((- ediff) / Globals.getGlobal(0))))))) {
     AgentSet.setPatchVariable(5, (- AgentSet.getPatchVariable(5)));

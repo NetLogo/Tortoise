@@ -14,7 +14,7 @@ object Handlers {
         ""
     val body = taskHeader +
       (if (isReporter)
-         ("return " + reporter(node))
+         ("return " + reporter(node) + ";")
        else
          commands(node))
     def isTrivialReporter(node: ast.AstNode): Boolean =

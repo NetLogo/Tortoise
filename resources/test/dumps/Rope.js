@@ -20,7 +20,7 @@ function setup() {
 }
 function go() {
   AgentSet.ask(AgentSet.agentFilter(world.turtles(), function() {
-    return Prims.equality(AgentSet.getTurtleVariable(1), 55)
+    return Prims.equality(AgentSet.getTurtleVariable(1), 55);
   }), true, function() {
     if (Prims.gt(world.ticks(), 100)) {
       AgentSet.setTurtleVariable(14, (Globals.getGlobal(2) * Trig.unsquashedSin((Globals.getGlobal(1) * world.ticks()))));
@@ -37,17 +37,17 @@ function go() {
     }
   });
   AgentSet.ask(AgentSet.agentFilter(world.turtles(), function() {
-    return Prims.equality(AgentSet.getTurtleVariable(1), 15)
+    return Prims.equality(AgentSet.getTurtleVariable(1), 15);
   }), true, function() {
     AgentSet.setTurtleVariable(13, (AgentSet.getTurtleVariable(13) + ((AgentSet.of(world.getTurtle((AgentSet.getTurtleVariable(0) - 1)), function() {
-      return AgentSet.getTurtleVariable(14)
+      return AgentSet.getTurtleVariable(14);
     }) - AgentSet.getTurtleVariable(14)) + (AgentSet.of(world.getTurtle((AgentSet.getTurtleVariable(0) + 1)), function() {
-      return AgentSet.getTurtleVariable(14)
+      return AgentSet.getTurtleVariable(14);
     }) - AgentSet.getTurtleVariable(14)))));
     AgentSet.setTurtleVariable(13, (((1000 - Globals.getGlobal(0)) / 1000) * AgentSet.getTurtleVariable(13)));
   });
   AgentSet.ask(AgentSet.agentFilter(world.turtles(), function() {
-    return Prims.equality(AgentSet.getTurtleVariable(1), 15)
+    return Prims.equality(AgentSet.getTurtleVariable(1), 15);
   }), true, function() {
     AgentSet.setTurtleVariable(14, (AgentSet.getTurtleVariable(14) + AgentSet.getTurtleVariable(13)));
     if (!Prims.equality(AgentSet.self().patchAt(0, (AgentSet.getTurtleVariable(14) - AgentSet.getTurtleVariable(4))), Nobody)) {

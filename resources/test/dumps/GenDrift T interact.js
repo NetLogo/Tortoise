@@ -13,7 +13,7 @@ function setup() {
 }
 function go() {
   if (Prims.equality(Prims.variance(AgentSet.of(world.turtles(), function() {
-    return AgentSet.getTurtleVariable(1)
+    return AgentSet.getTurtleVariable(1);
   })), 0)) {
     throw new StopInterrupt;
   }
@@ -21,7 +21,7 @@ function go() {
     Prims.right((Prims.random(50) - Prims.random(50)));
     Call(meet);
     if (Prims.equality(AgentSet.of(AgentSet.self().patchAhead(0.5), function() {
-      return AgentSet.getPatchVariable(2)
+      return AgentSet.getPatchVariable(2);
     }), 0)) {
       Prims.fd(0.5);
     }
@@ -36,7 +36,7 @@ function meet() {
   var candidate = AgentSet.oneOf(AgentSet.self().turtlesAt(1, 0));
   if (!Prims.equality(candidate, Nobody)) {
     AgentSet.setTurtleVariable(1, AgentSet.of(candidate, function() {
-      return AgentSet.getTurtleVariable(1)
+      return AgentSet.getTurtleVariable(1);
     }));
   }
 }
@@ -45,7 +45,7 @@ function findTopSpecies() {
   Tasks.forEach(Tasks.commandTask(function() {
     var taskArguments = arguments;
     var howMany = AgentSet.count(AgentSet.agentFilter(world.turtles(), function() {
-      return Prims.equality(AgentSet.getTurtleVariable(1), taskArguments[0])
+      return Prims.equality(AgentSet.getTurtleVariable(1), taskArguments[0]);
     }));
     if (Prims.gt(howMany, winningAmount)) {
       winningAmount = howMany;
@@ -56,7 +56,7 @@ function findTopSpecies() {
 function placeWall() {
   if (false()) {
     AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
-      return (Prims.equality(StrictMath.abs(AgentSet.getPatchVariable(1)), world.maxPycor) || Prims.equality(AgentSet.getPatchVariable(1), StrictMath.round(0())))
+      return (Prims.equality(StrictMath.abs(AgentSet.getPatchVariable(1)), world.maxPycor) || Prims.equality(AgentSet.getPatchVariable(1), StrictMath.round(0())));
     }), true, function() {
       AgentSet.setPatchVariable(2, 9.9);
       AgentSet.ask(AgentSet.self().turtlesHere(), true, function() {
@@ -69,7 +69,7 @@ function placeWall() {
 function removeWall() {
   if (false()) {
     AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
-      return Prims.equality(AgentSet.getPatchVariable(1), StrictMath.round(0()))
+      return Prims.equality(AgentSet.getPatchVariable(1), StrictMath.round(0()));
     }), true, function() {
       AgentSet.setPatchVariable(2, 0);
     });

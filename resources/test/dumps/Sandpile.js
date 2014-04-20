@@ -18,7 +18,7 @@ function setup(setupTask) {
     Call(recolor);
   });
   Globals.setGlobal(3, Prims.sum(AgentSet.of(world.patches(), function() {
-    return AgentSet.getPatchVariable(5)
+    return AgentSet.getPatchVariable(5);
   })));
   Globals.setGlobal(5, []);
   Globals.setGlobal(7, []);
@@ -27,13 +27,13 @@ function setup(setupTask) {
 function setupUniform(initial) {
   Call(setup, Tasks.reporterTask(function() {
     var taskArguments = arguments;
-    return initial
+    return initial;
   }));
 }
 function setupRandom() {
   Call(setup, Tasks.reporterTask(function() {
     var taskArguments = arguments;
-    return Prims.random(4)
+    return Prims.random(4);
   }));
 }
 function recolor() {
@@ -73,13 +73,13 @@ function explore() {
 }
 function stabilize(animate_p) {
   var activePatches = AgentSet.agentFilter(world.patches(), function() {
-    return Prims.gt(AgentSet.getPatchVariable(5), 3)
+    return Prims.gt(AgentSet.getPatchVariable(5), 3);
   });
   var iters = 0;
   var avalanchePatches = new Agents([], Breeds.get('PATCHES'), AgentKind.Patch);
   while (AgentSet.any(activePatches)) {
     var overloadedPatches = AgentSet.agentFilter(activePatches, function() {
-      return Prims.gt(AgentSet.getPatchVariable(5), 3)
+      return Prims.gt(AgentSet.getPatchVariable(5), 3);
     });
     if (AgentSet.any(overloadedPatches)) {
       iters = (iters + 1);
@@ -102,7 +102,7 @@ function stabilize(animate_p) {
     }
     avalanchePatches = Prims.patchSet(avalanchePatches, overloadedPatches);
     activePatches = Prims.patchSet(AgentSet.of(overloadedPatches, function() {
-      return Prims.getNeighbors4()
+      return Prims.getNeighbors4();
     }));
   }
   return Prims.list(avalanchePatches, iters);

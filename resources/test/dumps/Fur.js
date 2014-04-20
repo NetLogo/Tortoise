@@ -9,7 +9,7 @@ function setup() {
     AgentSet.setPatchVariable(7, Call(ellipseRing, Globals.getGlobal(4), Globals.getGlobal(5), Globals.getGlobal(2), Globals.getGlobal(3)));
   });
   if (AgentSet.any(AgentSet.agentFilter(world.patches(), function() {
-    return Prims.equality(AgentSet.count(AgentSet.getPatchVariable(7)), 0)
+    return Prims.equality(AgentSet.count(AgentSet.getPatchVariable(7)), 0);
   }))) {
     noop((Dump("") + Dump("It doesn't make sense that 'outer' is equal to or smaller than 'inner.' ") + Dump(" Please reset the sliders and press Setup again.")));
     throw new StopInterrupt;
@@ -41,10 +41,10 @@ function go() {
 }
 function pickNewColor() {
   var activator = AgentSet.count(AgentSet.agentFilter(AgentSet.getPatchVariable(6), function() {
-    return Prims.equality(AgentSet.getPatchVariable(2), 9.9)
+    return Prims.equality(AgentSet.getPatchVariable(2), 9.9);
   }));
   var inhibitor = AgentSet.count(AgentSet.agentFilter(AgentSet.getPatchVariable(7), function() {
-    return Prims.equality(AgentSet.getPatchVariable(2), 9.9)
+    return Prims.equality(AgentSet.getPatchVariable(2), 9.9);
   }));
   var difference = (activator - (Globals.getGlobal(1) * inhibitor));
   if (Prims.gt(difference, 0)) {
@@ -58,22 +58,22 @@ function pickNewColor() {
 }
 function ellipseIn(xRadius, yRadius) {
   return AgentSet.agentFilter(AgentSet.self().inRadius(world.patches(), Prims.max(Prims.list(xRadius, yRadius))), function() {
-    return Prims.gte(1, ((StrictMath.pow(Call(xdistance, AgentSet.myself()), 2) / StrictMath.pow(xRadius, 2)) + (StrictMath.pow(Call(ydistance, AgentSet.myself()), 2) / StrictMath.pow(yRadius, 2))))
+    return Prims.gte(1, ((StrictMath.pow(Call(xdistance, AgentSet.myself()), 2) / StrictMath.pow(xRadius, 2)) + (StrictMath.pow(Call(ydistance, AgentSet.myself()), 2) / StrictMath.pow(yRadius, 2))));
   });
 }
 function ellipseRing(outxRadius, outyRadius, inxRadius, inyRadius) {
   return AgentSet.agentFilter(AgentSet.self().inRadius(world.patches(), Prims.max(Prims.list(outxRadius, outyRadius))), function() {
-    return (Prims.gte(1, ((StrictMath.pow(Call(xdistance, AgentSet.myself()), 2) / StrictMath.pow(outxRadius, 2)) + (StrictMath.pow(Call(ydistance, AgentSet.myself()), 2) / StrictMath.pow(outyRadius, 2)))) && Prims.lt(1, ((StrictMath.pow(Call(xdistance, AgentSet.myself()), 2) / StrictMath.pow(inxRadius, 2)) + (StrictMath.pow(Call(ydistance, AgentSet.myself()), 2) / StrictMath.pow(inyRadius, 2)))))
+    return (Prims.gte(1, ((StrictMath.pow(Call(xdistance, AgentSet.myself()), 2) / StrictMath.pow(outxRadius, 2)) + (StrictMath.pow(Call(ydistance, AgentSet.myself()), 2) / StrictMath.pow(outyRadius, 2)))) && Prims.lt(1, ((StrictMath.pow(Call(xdistance, AgentSet.myself()), 2) / StrictMath.pow(inxRadius, 2)) + (StrictMath.pow(Call(ydistance, AgentSet.myself()), 2) / StrictMath.pow(inyRadius, 2)))));
   });
 }
 function xdistance(otherPatch) {
   return AgentSet.self().distanceXY(AgentSet.of(otherPatch, function() {
-    return AgentSet.getPatchVariable(0)
+    return AgentSet.getPatchVariable(0);
   }), AgentSet.getPatchVariable(1));
 }
 function ydistance(otherPatch) {
   return AgentSet.self().distanceXY(AgentSet.getPatchVariable(0), AgentSet.of(otherPatch, function() {
-    return AgentSet.getPatchVariable(1)
+    return AgentSet.getPatchVariable(1);
   }));
 }
 Globals.setGlobal(0, 50);

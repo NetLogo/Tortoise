@@ -35,17 +35,17 @@ function findNewState() {
   }
   else {
     var a = AgentSet.count(AgentSet.agentFilter(Prims.getNeighbors(), function() {
-      return (Prims.gt(AgentSet.getPatchVariable(5), 0) && Prims.lt(AgentSet.getPatchVariable(5), Globals.getGlobal(0)))
+      return (Prims.gt(AgentSet.getPatchVariable(5), 0) && Prims.lt(AgentSet.getPatchVariable(5), Globals.getGlobal(0)));
     }));
     var b = AgentSet.count(AgentSet.agentFilter(Prims.getNeighbors(), function() {
-      return Prims.equality(AgentSet.getPatchVariable(5), Globals.getGlobal(0))
+      return Prims.equality(AgentSet.getPatchVariable(5), Globals.getGlobal(0));
     }));
     if (Prims.equality(AgentSet.getPatchVariable(5), 0)) {
       AgentSet.setPatchVariable(6, (Prims._int((a / Globals.getGlobal(1))) + Prims._int((b / Globals.getGlobal(2)))));
     }
     else {
       var s = (AgentSet.getPatchVariable(5) + Prims.sum(AgentSet.of(Prims.getNeighbors(), function() {
-        return AgentSet.getPatchVariable(5)
+        return AgentSet.getPatchVariable(5);
       })));
       AgentSet.setPatchVariable(6, (Prims._int((s / ((a + b) + 1))) + Globals.getGlobal(3)));
     }

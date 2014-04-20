@@ -19,7 +19,7 @@ function go() {
     Prims.left(Prims.random(Globals.getGlobal(0)));
     Prims.fd(1);
     if (AgentSet.any(AgentSet.agentFilter(Prims.getNeighbors(), function() {
-      return Prims.equality(AgentSet.getPatchVariable(2), 55)
+      return Prims.equality(AgentSet.getPatchVariable(2), 55);
     }))) {
       AgentSet.setPatchVariable(2, 55);
       AgentSet.die();

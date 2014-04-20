@@ -41,12 +41,12 @@ function findFlockmates() {
 }
 function findNearestNeighbor() {
   AgentSet.setTurtleVariable(14, AgentSet.minOneOf(AgentSet.getTurtleVariable(13), function() {
-    return AgentSet.self().distance(AgentSet.myself())
+    return AgentSet.self().distance(AgentSet.myself());
   }));
 }
 function separate() {
   Call(turnAway, AgentSet.of(AgentSet.getTurtleVariable(14), function() {
-    return AgentSet.getTurtleVariable(2)
+    return AgentSet.getTurtleVariable(2);
   }), Globals.getGlobal(3));
 }
 function align() {
@@ -54,10 +54,10 @@ function align() {
 }
 function averageFlockmateHeading() {
   var xComponent = Prims.sum(AgentSet.of(AgentSet.getTurtleVariable(13), function() {
-    return AgentSet.self().dx()
+    return AgentSet.self().dx();
   }));
   var yComponent = Prims.sum(AgentSet.of(AgentSet.getTurtleVariable(13), function() {
-    return AgentSet.self().dy()
+    return AgentSet.self().dy();
   }));
   if ((Prims.equality(xComponent, 0) && Prims.equality(yComponent, 0))) {
     return AgentSet.getTurtleVariable(2);
@@ -71,10 +71,10 @@ function cohere() {
 }
 function averageHeadingTowardsFlockmates() {
   var xComponent = Prims.mean(AgentSet.of(AgentSet.getTurtleVariable(13), function() {
-    return Trig.unsquashedSin((AgentSet.self().towards(AgentSet.myself()) + 180))
+    return Trig.unsquashedSin((AgentSet.self().towards(AgentSet.myself()) + 180));
   }));
   var yComponent = Prims.mean(AgentSet.of(AgentSet.getTurtleVariable(13), function() {
-    return Trig.unsquashedCos((AgentSet.self().towards(AgentSet.myself()) + 180))
+    return Trig.unsquashedCos((AgentSet.self().towards(AgentSet.myself()) + 180));
   }));
   if ((Prims.equality(xComponent, 0) && Prims.equality(yComponent, 0))) {
     return AgentSet.getTurtleVariable(2);

@@ -13,7 +13,7 @@ function setup() {
 function go() {
   AgentSet.ask(world.patches(), true, function() {
     AgentSet.setPatchVariable(6, Prims.sum(AgentSet.of(Prims.getNeighbors(), function() {
-      return AgentSet.getPatchVariable(5)
+      return AgentSet.getPatchVariable(5);
     })));
   });
   AgentSet.ask(world.patches(), true, function() {

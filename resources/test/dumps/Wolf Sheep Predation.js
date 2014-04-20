@@ -39,7 +39,7 @@ function setup() {
   });
   Call(displayLabels);
   Globals.setGlobal(9, AgentSet.count(AgentSet.agentFilter(world.patches(), function() {
-    return Prims.equality(AgentSet.getPatchVariable(2), 55)
+    return Prims.equality(AgentSet.getPatchVariable(2), 55);
   })));
   world.resetTicks();
 }
@@ -69,7 +69,7 @@ function go() {
     });
   }
   Globals.setGlobal(9, AgentSet.count(AgentSet.agentFilter(world.patches(), function() {
-    return Prims.equality(AgentSet.getPatchVariable(2), 55)
+    return Prims.equality(AgentSet.getPatchVariable(2), 55);
   })));
   world.tick();
   Call(displayLabels);

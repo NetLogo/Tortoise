@@ -32,7 +32,7 @@ function makeNode(oldNode) {
 }
 function findPartner() {
   return AgentSet.of(AgentSet.oneOf(world.links()), function() {
-    return AgentSet.oneOf(AgentSet.self().bothEnds())
+    return AgentSet.oneOf(AgentSet.self().bothEnds());
   });
 }
 function resizeNodes() {
@@ -54,14 +54,14 @@ function layout() {
     noop();
   });
   var xOffset = (Prims.max(AgentSet.of(world.turtles(), function() {
-    return AgentSet.getTurtleVariable(3)
+    return AgentSet.getTurtleVariable(3);
   })) + Prims.min(AgentSet.of(world.turtles(), function() {
-    return AgentSet.getTurtleVariable(3)
+    return AgentSet.getTurtleVariable(3);
   })));
   var yOffset = (Prims.max(AgentSet.of(world.turtles(), function() {
-    return AgentSet.getTurtleVariable(4)
+    return AgentSet.getTurtleVariable(4);
   })) + Prims.min(AgentSet.of(world.turtles(), function() {
-    return AgentSet.getTurtleVariable(4)
+    return AgentSet.getTurtleVariable(4);
   })));
   xOffset = Call(limitMagnitude, xOffset, 0.1);
   yOffset = Call(limitMagnitude, yOffset, 0.1);

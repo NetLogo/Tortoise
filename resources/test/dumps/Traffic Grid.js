@@ -43,10 +43,10 @@ function setupPatches() {
     AgentSet.setPatchVariable(2, (35 + 3));
   });
   Globals.setGlobal(15, AgentSet.agentFilter(world.patches(), function() {
-    return (Prims.equality(StrictMath.floor(Prims.mod(((AgentSet.getPatchVariable(0) + world.maxPxcor) - StrictMath.floor((Globals.getGlobal(8) - 1))), Globals.getGlobal(8))), 0) || Prims.equality(StrictMath.floor(Prims.mod((AgentSet.getPatchVariable(1) + world.maxPycor), Globals.getGlobal(9))), 0))
+    return (Prims.equality(StrictMath.floor(Prims.mod(((AgentSet.getPatchVariable(0) + world.maxPxcor) - StrictMath.floor((Globals.getGlobal(8) - 1))), Globals.getGlobal(8))), 0) || Prims.equality(StrictMath.floor(Prims.mod((AgentSet.getPatchVariable(1) + world.maxPycor), Globals.getGlobal(9))), 0));
   }));
   Globals.setGlobal(14, AgentSet.agentFilter(Globals.getGlobal(15), function() {
-    return (Prims.equality(StrictMath.floor(Prims.mod(((AgentSet.getPatchVariable(0) + world.maxPxcor) - StrictMath.floor((Globals.getGlobal(8) - 1))), Globals.getGlobal(8))), 0) && Prims.equality(StrictMath.floor(Prims.mod((AgentSet.getPatchVariable(1) + world.maxPycor), Globals.getGlobal(9))), 0))
+    return (Prims.equality(StrictMath.floor(Prims.mod(((AgentSet.getPatchVariable(0) + world.maxPxcor) - StrictMath.floor((Globals.getGlobal(8) - 1))), Globals.getGlobal(8))), 0) && Prims.equality(StrictMath.floor(Prims.mod((AgentSet.getPatchVariable(1) + world.maxPycor), Globals.getGlobal(9))), 0));
   }));
   AgentSet.ask(Globals.getGlobal(15), true, function() {
     AgentSet.setPatchVariable(2, 9.9);
@@ -93,7 +93,7 @@ function setupCars() {
 }
 function putOnEmptyRoad() {
   AgentSet.self().moveTo(AgentSet.oneOf(AgentSet.agentFilter(Globals.getGlobal(15), function() {
-    return !(AgentSet.any(AgentSet.turtlesOn(AgentSet.self())))
+    return !(AgentSet.any(AgentSet.turtlesOn(AgentSet.self())));
   })));
 }
 function go() {
@@ -114,7 +114,7 @@ function chooseCurrent() {
     var xMouse = 0();
     var yMouse = 0();
     if (AgentSet.of(Prims.patch(xMouse, yMouse), function() {
-      return AgentSet.getPatchVariable(5)
+      return AgentSet.getPatchVariable(5);
     })) {
       Call(updateCurrent);
       Call(unlabelCurrent);
@@ -127,10 +127,10 @@ function chooseCurrent() {
 function makeCurrent(light) {
   Globals.setGlobal(13, light);
   Globals.setGlobal(6, AgentSet.of(Globals.getGlobal(13), function() {
-    return AgentSet.getPatchVariable(9)
+    return AgentSet.getPatchVariable(9);
   }));
   Globals.setGlobal(7, AgentSet.of(Globals.getGlobal(13), function() {
-    return AgentSet.getPatchVariable(10)
+    return AgentSet.getPatchVariable(10);
   }));
 }
 function updateCurrent() {
@@ -156,7 +156,7 @@ function unlabelCurrent() {
 }
 function setSignals() {
   AgentSet.ask(AgentSet.agentFilter(Globals.getGlobal(14), function() {
-    return (AgentSet.getPatchVariable(10) && Prims.equality(Globals.getGlobal(11), StrictMath.floor(((AgentSet.getPatchVariable(9) * Globals.getGlobal(5)) / 100))))
+    return (AgentSet.getPatchVariable(10) && Prims.equality(Globals.getGlobal(11), StrictMath.floor(((AgentSet.getPatchVariable(9) * Globals.getGlobal(5)) / 100))));
   }), true, function() {
     AgentSet.setPatchVariable(6, !(AgentSet.getPatchVariable(6)));
     Call(setSignalColors);
@@ -208,14 +208,14 @@ function setSpeed(deltaX, deltaY) {
   if (AgentSet.any(turtlesAhead)) {
     if (AgentSet.any(AgentSet.agentFilter(turtlesAhead, function() {
       return !Prims.equality(AgentSet.getTurtleVariable(14), AgentSet.of(AgentSet.myself(), function() {
-        return AgentSet.getTurtleVariable(14)
-      }))
+        return AgentSet.getTurtleVariable(14);
+      }));
     }))) {
       AgentSet.setTurtleVariable(13, 0);
     }
     else {
       AgentSet.setTurtleVariable(13, AgentSet.of(AgentSet.oneOf(turtlesAhead), function() {
-        return AgentSet.getTurtleVariable(13)
+        return AgentSet.getTurtleVariable(13);
       }));
       Call(slowDown);
     }

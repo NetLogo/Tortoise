@@ -101,10 +101,10 @@ function mothsPickShape() {
 }
 function updateMonitors() {
   Globals.setGlobal(5, AgentSet.count(AgentSet.agentFilter(world.turtlesOfBreed("MOTHS"), function() {
-    return Prims.gte(AgentSet.getTurtleVariable(1), 7)
+    return Prims.gte(AgentSet.getTurtleVariable(1), 7);
   })));
   Globals.setGlobal(7, AgentSet.count(AgentSet.agentFilter(world.turtlesOfBreed("MOTHS"), function() {
-    return Prims.lte(AgentSet.getTurtleVariable(1), 3)
+    return Prims.lte(AgentSet.getTurtleVariable(1), 3);
   })));
   Globals.setGlobal(6, (AgentSet.count(world.turtlesOfBreed("MOTHS")) - (Globals.getGlobal(5) + Globals.getGlobal(7))));
 }

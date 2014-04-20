@@ -16,7 +16,7 @@ function setup() {
   });
   AgentSet.ask(world.createTurtles(Globals.getGlobal(1), "OILS"), true, function() {
     var partner = AgentSet.oneOf(AgentSet.agentFilter(world.turtlesOfBreed("WATERS"), function() {
-      return !(AgentSet.any(AgentSet.connectedLinks(false, false)))
+      return !(AgentSet.any(AgentSet.connectedLinks(false, false)));
     }));
     AgentSet.self().moveTo(partner);
     Prims.fd(Globals.getGlobal(6));
@@ -38,12 +38,12 @@ function go() {
 }
 function interactWithNeighbor() {
   var near = AgentSet.oneOf(AgentSet.other(AgentSet.agentFilter(AgentSet.self().inRadius(world.turtles(), Globals.getGlobal(7)), function() {
-    return !(AgentSet.isLinkNeighbor(false, false)(AgentSet.myself()))
+    return !(AgentSet.isLinkNeighbor(false, false)(AgentSet.myself()));
   })));
   if (!Prims.equality(near, Nobody)) {
     AgentSet.self().face(near);
     if (Prims.equality(AgentSet.of(near, function() {
-      return AgentSet.getTurtleVariable(8)
+      return AgentSet.getTurtleVariable(8);
     }), AgentSet.getTurtleVariable(8))) {
       Prims.fd(Globals.getGlobal(2));
     }

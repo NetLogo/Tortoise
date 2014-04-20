@@ -29,7 +29,7 @@ function go() {
 }
 function moveUnhappyTurtles() {
   AgentSet.ask(AgentSet.agentFilter(world.turtles(), function() {
-    return !(AgentSet.getTurtleVariable(13))
+    return !(AgentSet.getTurtleVariable(13));
   }), true, function() {
     Call(findNewSpot);
   });
@@ -50,13 +50,13 @@ function updateTurtles() {
   AgentSet.ask(world.turtles(), true, function() {
     AgentSet.setTurtleVariable(14, AgentSet.count(AgentSet.agentFilter(AgentSet.turtlesOn(Prims.getNeighbors()), function() {
       return Prims.equality(AgentSet.getTurtleVariable(1), AgentSet.of(AgentSet.myself(), function() {
-        return AgentSet.getTurtleVariable(1)
-      }))
+        return AgentSet.getTurtleVariable(1);
+      }));
     })));
     AgentSet.setTurtleVariable(15, AgentSet.count(AgentSet.agentFilter(AgentSet.turtlesOn(Prims.getNeighbors()), function() {
       return !Prims.equality(AgentSet.getTurtleVariable(1), AgentSet.of(AgentSet.myself(), function() {
-        return AgentSet.getTurtleVariable(1)
-      }))
+        return AgentSet.getTurtleVariable(1);
+      }));
     })));
     AgentSet.setTurtleVariable(16, (AgentSet.getTurtleVariable(14) + AgentSet.getTurtleVariable(15)));
     AgentSet.setTurtleVariable(13, Prims.gte(AgentSet.getTurtleVariable(14), ((Globals.getGlobal(1) * AgentSet.getTurtleVariable(16)) / 100)));
@@ -64,14 +64,14 @@ function updateTurtles() {
 }
 function updateGlobals() {
   var similarNeighbors = Prims.sum(AgentSet.of(world.turtles(), function() {
-    return AgentSet.getTurtleVariable(14)
+    return AgentSet.getTurtleVariable(14);
   }));
   var totalNeighbors = Prims.sum(AgentSet.of(world.turtles(), function() {
-    return AgentSet.getTurtleVariable(16)
+    return AgentSet.getTurtleVariable(16);
   }));
   Globals.setGlobal(2, ((similarNeighbors / totalNeighbors) * 100));
   Globals.setGlobal(3, ((AgentSet.count(AgentSet.agentFilter(world.turtles(), function() {
-    return !(AgentSet.getTurtleVariable(13))
+    return !(AgentSet.getTurtleVariable(13));
   })) / AgentSet.count(world.turtles())) * 100));
 }
 Globals.setGlobal(0, 2000);

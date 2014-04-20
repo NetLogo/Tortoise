@@ -14,7 +14,7 @@ function setup() {
 }
 function go() {
   if (Prims.equality(Prims.variance(AgentSet.of(world.turtles(), function() {
-    return AgentSet.getTurtleVariable(1)
+    return AgentSet.getTurtleVariable(1);
   })), 0)) {
     throw new StopInterrupt;
   }

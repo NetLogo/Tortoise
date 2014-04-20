@@ -29,7 +29,7 @@ function go() {
   });
   while (AgentSet.any(activePatches)) {
     var overloadedPatches = AgentSet.agentFilter(activePatches, function() {
-      return Prims.gt(AgentSet.getPatchVariable(5), 3)
+      return Prims.gt(AgentSet.getPatchVariable(5), 3);
     });
     AgentSet.ask(overloadedPatches, true, function() {
       AgentSet.setPatchVariable(5, (AgentSet.getPatchVariable(5) - 4));
@@ -42,7 +42,7 @@ function go() {
       });
     });
     activePatches = Prims.patchSet(AgentSet.of(overloadedPatches, function() {
-      return Prims.getNeighbors4()
+      return Prims.getNeighbors4();
     }));
   }
   world.tick();

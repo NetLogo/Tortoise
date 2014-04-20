@@ -14,7 +14,7 @@ function setup() {
 function go() {
   AgentSet.ask(world.patches(), true, function() {
     AgentSet.setPatchVariable(2, AgentSet.of(AgentSet.oneOf(world.patches()), function() {
-      return AgentSet.getPatchVariable(2)
+      return AgentSet.getPatchVariable(2);
     }));
   });
   world.tick();

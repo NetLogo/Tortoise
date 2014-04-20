@@ -26,16 +26,16 @@ function setup() {
     });
   }
   AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
-    return !Prims.equality(AgentSet.count(Prims.getNeighbors()), 8)
+    return !Prims.equality(AgentSet.count(Prims.getNeighbors()), 8);
   }), true, function() {
     AgentSet.setPatchVariable(7, true);
     AgentSet.setPatchVariable(5, -10000000);
   });
   Globals.setGlobal(6, AgentSet.agentFilter(world.patches(), function() {
-    return AgentSet.getPatchVariable(7)
+    return AgentSet.getPatchVariable(7);
   }));
   Globals.setGlobal(7, AgentSet.agentFilter(world.patches(), function() {
-    return !(AgentSet.getPatchVariable(7))
+    return !(AgentSet.getPatchVariable(7));
   }));
   AgentSet.ask(Globals.getGlobal(7), true, function() {
     Call(recolor);
@@ -84,20 +84,20 @@ function go() {
 }
 function flow() {
   var target = AgentSet.minOneOf(Prims.getNeighbors(), function() {
-    return (AgentSet.getPatchVariable(5) + AgentSet.getPatchVariable(6))
+    return (AgentSet.getPatchVariable(5) + AgentSet.getPatchVariable(6));
   });
   var amount = Prims.min(Prims.list(AgentSet.getPatchVariable(6), (0.5 * (((AgentSet.getPatchVariable(5) + AgentSet.getPatchVariable(6)) - AgentSet.of(target, function() {
-    return AgentSet.getPatchVariable(5)
+    return AgentSet.getPatchVariable(5);
   })) - AgentSet.of(target, function() {
-    return AgentSet.getPatchVariable(6)
+    return AgentSet.getPatchVariable(6);
   })))));
   if (Prims.gt(amount, 0)) {
     var erosion = (amount * (1 - Globals.getGlobal(3)));
     AgentSet.setPatchVariable(5, (AgentSet.getPatchVariable(5) - erosion));
     amount = Prims.min(Prims.list(AgentSet.getPatchVariable(6), (0.5 * (((AgentSet.getPatchVariable(5) + AgentSet.getPatchVariable(6)) - AgentSet.of(target, function() {
-      return AgentSet.getPatchVariable(5)
+      return AgentSet.getPatchVariable(5);
     })) - AgentSet.of(target, function() {
-      return AgentSet.getPatchVariable(6)
+      return AgentSet.getPatchVariable(6);
     })))));
     AgentSet.setPatchVariable(6, (AgentSet.getPatchVariable(6) - amount));
     AgentSet.ask(target, true, function() {
