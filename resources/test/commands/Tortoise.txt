@@ -9,3 +9,16 @@
 
 Smoke
   2 + 2 => 4
+
+# these next two added to NetLogo repo in 25f9bd8 and 037aa4b
+# so can be removed here once we've upgraded our NL dependency - ST 4/19/14
+
+allow-command-task-variable-access-inside-reporter-block
+  globals [glob1]
+  O> crt 10
+  O> foreach [7] [ set glob1 first [who] of turtles with [who = ?] ]
+  glob1 => 7
+
+allow-reporter-task-variable-access-inside-reporter-block
+  O> crt 10
+  map [[who] of turtles with [who = ?]] [7] => [[7]]

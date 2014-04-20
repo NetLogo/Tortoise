@@ -41,7 +41,8 @@ function rebuildCollisionList() {
 function go() {
   if ((Globals.getGlobal(10) instanceof Turtle)) {
     Globals.setGlobal(7, Globals.getGlobal(7).filter(Tasks.reporterTask(function() {
-      return (((!Prims.equality(Prims.item(1, arguments[0]), Globals.getGlobal(9)) && !Prims.equality(Prims.item(2, arguments[0]), Globals.getGlobal(9))) && !Prims.equality(Prims.item(1, arguments[0]), Globals.getGlobal(10))) && !Prims.equality(Prims.item(2, arguments[0]), Globals.getGlobal(10)))
+      var taskArguments = arguments;
+      return (((!Prims.equality(Prims.item(1, taskArguments[0]), Globals.getGlobal(9)) && !Prims.equality(Prims.item(2, taskArguments[0]), Globals.getGlobal(9))) && !Prims.equality(Prims.item(1, taskArguments[0]), Globals.getGlobal(10))) && !Prims.equality(Prims.item(2, taskArguments[0]), Globals.getGlobal(10)))
     })));
     AgentSet.ask(Globals.getGlobal(10), true, function() {
       Call(checkForWallCollision);
@@ -52,7 +53,8 @@ function go() {
   }
   else {
     Globals.setGlobal(7, Globals.getGlobal(7).filter(Tasks.reporterTask(function() {
-      return (!Prims.equality(Prims.item(1, arguments[0]), Globals.getGlobal(9)) && !Prims.equality(Prims.item(2, arguments[0]), Globals.getGlobal(9)))
+      var taskArguments = arguments;
+      return (!Prims.equality(Prims.item(1, taskArguments[0]), Globals.getGlobal(9)) && !Prims.equality(Prims.item(2, taskArguments[0]), Globals.getGlobal(9)))
     })));
   }
   if (!Prims.equality(Globals.getGlobal(9), Nobody)) {
@@ -176,7 +178,8 @@ function assignCollidingWall(timeToCollision, wall) {
 }
 function sortCollisions() {
   Globals.setGlobal(7, Globals.getGlobal(7).filter(Tasks.reporterTask(function() {
-    return (!Prims.equality(Prims.item(1, arguments[0]), Globals.getGlobal(9)) || !Prims.equality(Prims.item(2, arguments[0]), Globals.getGlobal(10)))
+    var taskArguments = arguments;
+    return (!Prims.equality(Prims.item(1, taskArguments[0]), Globals.getGlobal(9)) || !Prims.equality(Prims.item(2, taskArguments[0]), Globals.getGlobal(10)))
   })));
   Globals.setGlobal(9, Nobody);
   Globals.setGlobal(10, Nobody);
@@ -186,8 +189,9 @@ function sortCollisions() {
   }
   var winner = Prims.first(Globals.getGlobal(7));
   Tasks.forEach(Tasks.commandTask(function() {
-    if (Prims.lt(Prims.first(arguments[0]), Prims.first(winner))) {
-      winner = arguments[0];
+    var taskArguments = arguments;
+    if (Prims.lt(Prims.first(taskArguments[0]), Prims.first(winner))) {
+      winner = taskArguments[0];
     }
   }), Globals.getGlobal(7));
   var dt = Prims.item(0, winner);

@@ -54,7 +54,8 @@ function setupContinue() {
     throw new StopInterrupt;
   }
   on_pList = Tasks.map(Tasks.reporterTask(function() {
-    return AgentSet.of(arguments[0], function() {
+    var taskArguments = arguments;
+    return AgentSet.of(taskArguments[0], function() {
       return AgentSet.getPatchVariable(5)
     })
   }), Prims.sort(AgentSet.agentFilter(world.patches(), function() {

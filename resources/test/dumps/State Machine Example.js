@@ -14,6 +14,7 @@ function setup() {
     AgentSet.setTurtleVariable(1, 9.9);
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
     AgentSet.setTurtleVariable(13, Tasks.commandTask(function() {
+      var taskArguments = arguments;
       Call(searchForChip);
     }));
     AgentSet.setTurtleVariable(10, 5);
@@ -43,6 +44,7 @@ function searchForChip() {
     AgentSet.setTurtleVariable(1, 25);
     AgentSet.setTurtleVariable(14, 20);
     AgentSet.setTurtleVariable(13, Tasks.commandTask(function() {
+      var taskArguments = arguments;
       Call(findNewPile);
     }));
   }
@@ -50,6 +52,7 @@ function searchForChip() {
 function findNewPile() {
   if (Prims.equality(AgentSet.getPatchVariable(2), 45)) {
     AgentSet.setTurtleVariable(13, Tasks.commandTask(function() {
+      var taskArguments = arguments;
       Call(putDownChip);
     }));
   }
@@ -60,6 +63,7 @@ function putDownChip() {
     AgentSet.setTurtleVariable(1, 9.9);
     AgentSet.setTurtleVariable(14, 20);
     AgentSet.setTurtleVariable(13, Tasks.commandTask(function() {
+      var taskArguments = arguments;
       Call(getAway);
     }));
   }
@@ -67,6 +71,7 @@ function putDownChip() {
 function getAway() {
   if (Prims.equality(AgentSet.getPatchVariable(2), 0)) {
     AgentSet.setTurtleVariable(13, Tasks.commandTask(function() {
+      var taskArguments = arguments;
       Call(searchForChip);
     }));
   }

@@ -26,11 +26,13 @@ function setup(setupTask) {
 }
 function setupUniform(initial) {
   Call(setup, Tasks.reporterTask(function() {
+    var taskArguments = arguments;
     return initial
   }));
 }
 function setupRandom() {
   Call(setup, Tasks.reporterTask(function() {
+    var taskArguments = arguments;
     return Prims.random(4)
   }));
 }

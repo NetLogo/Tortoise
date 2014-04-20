@@ -65,12 +65,12 @@ object Prims {
       case _: prim.etc._reduce              => s"${arg(1)}.reduce(${arg(0)})"
       case _: prim.etc._filter              => s"${arg(1)}.filter(${arg(0)})"
       case _: prim.etc._nvalues             => s"Tasks.nValues(${arg(0)}, ${arg(1)})"
-      case tv: prim._taskvariable           => s"arguments[${tv.varNumber - 1}]"
+      case tv: prim._taskvariable           => s"taskArguments[${tv.varNumber - 1}]"
       case _: prim._task                    => arg(0)
       case _: prim._reportertask =>
-        s"Tasks.reporterTask(${Handlers.fun(r.args(0), isReporter = true)})"
+        s"Tasks.reporterTask(${Handlers.fun(r.args(0), isReporter = true, isTask = true)})"
       case _: prim._commandtask =>
-        s"Tasks.commandTask(${Handlers.fun(r.args(0), isReporter = false)})"
+        s"Tasks.commandTask(${Handlers.fun(r.args(0), isReporter = false, isTask = true)})"
       case rr: prim.etc._runresult =>
         val taskInputs = args.tail.mkString(", ")
         s"(${arg(0)})($taskInputs)"

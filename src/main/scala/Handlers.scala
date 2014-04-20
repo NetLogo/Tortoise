@@ -6,12 +6,17 @@ import org.nlogo.{ api, compile => ast, nvm }
 
 object Handlers {
 
-  def fun(node: ast.AstNode, isReporter: Boolean = false): String = {
-    val body =
-      if (isReporter)
-        ("return " + reporter(node))
+  def fun(node: ast.AstNode, isReporter: Boolean = false, isTask: Boolean = false): String = {
+    val taskHeader =
+      if (isTask)
+        "var taskArguments = arguments;\n"
       else
-        commands(node)
+        ""
+    val body = taskHeader +
+      (if (isReporter)
+         ("return " + reporter(node))
+       else
+         commands(node))
     def isTrivialReporter(node: ast.AstNode): Boolean =
       node match {
         case block: ast.ReporterBlock =>
