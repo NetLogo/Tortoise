@@ -257,6 +257,10 @@ object Model {
       repetitions = 20
     ),
     Model(
+      path = "models/Sample Models/Biology/Evolution/Genetic Drift/GenDrift T interact.nlogo",
+      repetitions = 20
+    ),
+    Model(
       path = "models/Sample Models/Biology/Evolution/Genetic Drift/GenDrift T reproduce.nlogo",
       repetitions = 20
     )
