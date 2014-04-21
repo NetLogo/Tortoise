@@ -183,7 +183,7 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
       # iteration.
       # A more efficient (but less readable) way of doing this is to iterate
       # backwards through the array.
-      #@# I don't know what you're blathering about, but if it needs this comment, it can probably be written better
+      #@# I don't know what this is blathering about, but if it needs this comment, it can probably be written better
       for t in @turtles().items[..]
         try
           t.die()
