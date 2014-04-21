@@ -9,6 +9,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/breed', 'engine/builtins', 
     _xcor: 0
     _ycor: 0
     _links: []
+    #@# Should guard against improperly-named breeds, including empty-string breed names
     constructor: (@world, @color = 0, @heading = 0, xcor = 0, ycor = 0, breed = Breed.Companion.get("TURTLES"), @label = "", @labelcolor = 9.9, @hidden = false, @size = 1.0, @pensize = 1.0, @penmode = "up") ->
       @_xcor = xcor
       @_ycor = ycor
@@ -16,7 +17,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/breed', 'engine/builtins', 
       @updateBreed(breed)
       @vars = (x for x in @world.turtlesOwn.vars) #@# Can be outside the constructor
       @getPatchHere().arrive(this)
-    updateBreed: (breed) ->
+    updateBreed: (breed) -> #@# This code is lunacy
       if @breed
         @breed.remove(@)
       @breed = breed
