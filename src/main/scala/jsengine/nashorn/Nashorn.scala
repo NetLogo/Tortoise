@@ -23,6 +23,12 @@ class Nashorn {
 
   val versionNumber: String = engine.getFactory.getEngineVersion
 
+  // make a random number generator available
+  engine.put("Random", new MersenneTwisterFast)
+
+  // ensure exact matching results
+  engine.put("StrictMath", Strict)
+
   val libs = Seq(
     "/js/mori.js", "/js/lodash.js", "/js/require.js",
     // the original CoffeeScript for these are in src/main/coffee. sbt compiles
@@ -30,12 +36,6 @@ class Nashorn {
     "/js/tortoise-engine.js")
   for (lib <- libs)
     engine.eval(Resource.asString(lib))
-
-  // make a random number generator available
-  engine.put("Random", new MersenneTwisterFast)
-
-  // ensure exact matching results
-  engine.put("StrictMath", Strict)
 
   // returns anything that got output-printed along the way, and any JSON
   // generated too
