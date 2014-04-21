@@ -1,10 +1,10 @@
 #@# No more code golf
 define(['integration/random', 'integration/typeisarray', 'engine/agents', 'engine/agentkind', 'engine/comparator'
-      , 'engine/dump', 'engine/exception', 'engine/link', 'engine/nobody', 'engine/patch', 'engine/turtle'
-      , 'engine/utilities']
+      , 'engine/dump', 'engine/exception', 'engine/link', 'engine/nobody', 'engine/patch', 'integration/printer'
+      , 'engine/turtle', 'engine/utilities']
      , ( Random,               typeIsArray,               Agents,          AgentKind,          Comparator
-      ,  Dump,          Exception,          Link,          Nobody,          Patch,          Turtle
-      ,  Utilities) ->
+      ,  Dump,          Exception,          Link,          Nobody,          Patch,          Printer
+      ,  Turtle,          Utilities) ->
 
   class Prims
 
@@ -157,7 +157,7 @@ define(['integration/random', 'integration/typeisarray', 'engine/agents', 'engin
           (elem, pos) -> not _(xs.slice(0, pos)).some((x) -> @equality(x, elem))
         )
     outputPrint: (x) ->
-      println(Dump(x))
+      Printer(Dump(x))
     patchSet: (inputs...) ->
       #@# O(n^2) -- should be smarter (use hashing for contains check)
       result = []

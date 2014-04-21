@@ -1,10 +1,10 @@
 # Nashorn calls it "print", V8 and browsers have "console.log".
 # get it somehow!
 define(->
-  if println?
+  if console? # V8
+    console.log.bind(console) # If the console context doesn't get bound, the function fails on use --JAB (4/21/14)
+  else if println?
     println
-  else if console? #8
-    console.log
   else if print? # SpiderMonkey
     print
   else # Nashorn #@# Redundant
