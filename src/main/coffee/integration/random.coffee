@@ -6,7 +6,7 @@ define(->
   if Random?
     Random
   else
-    obj = {}
+    obj = {} #@# Just declare the object literal...
     obj.nextInt = (limit) -> Math.floor(Math.random() * limit)
     obj.nextLong = obj.nextInt
     obj.nextDouble = -> Math.random()

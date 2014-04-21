@@ -284,7 +284,7 @@ define(['integration/random', 'integration/typeisarray', 'engine/agents', 'engin
           t.getPatchHere() for t in what.items
         else
           throw new Exception.NetLogoException("unknown: " + typeof(what)) #@# Interpolate
-      result = []
+      result = [] #@# I hate this
       for p in patches
         for t in p.turtles
           if t.breed is breed
