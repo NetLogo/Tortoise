@@ -50,6 +50,7 @@ libraryDependencies ++= Seq(
   "org.json4s" %% "json4s-native" % "3.1.0",
   "org.webjars" % "lodash" % "2.4.1-3",
   "org.webjars" % "mori" % "0.2.6",
+  "org.webjars" % "requirejs" % "2.1.11-1",
   "org.scalacheck" %% "scalacheck" % "1.11.3" % "test",
   "org.scalatest" %% "scalatest" % "2.1.1" % "test",
   "org.skyscreamer" % "jsonassert" % "1.1.0" % "test",

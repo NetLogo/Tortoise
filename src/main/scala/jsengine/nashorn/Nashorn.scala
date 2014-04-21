@@ -24,10 +24,10 @@ class Nashorn {
   val versionNumber: String = engine.getFactory.getEngineVersion
 
   val libs = Seq(
-    "/js/mori.js", "/js/lodash.js",
+    "/js/mori.js", "/js/lodash.js", "/js/require.js",
     // the original CoffeeScript for these are in src/main/coffee. sbt compiles
     // them to JavaScript for us.
-    "/js/compat.js", "/js/engine.js", "/js/agentmodel.js")
+    "/js/tortoise-engine.js")
   for (lib <- libs)
     engine.eval(Resource.asString(lib))
 

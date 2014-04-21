@@ -10,7 +10,7 @@ lazy val listDeps  = Def.task[Seq[File]] {
 }
 
 lazy val extractJS = Def.task[Seq[File]] {
-  val jarToFilenamesMap     = Map("lodash" -> Seq("lodash.js"), "mori" -> Seq("mori.js"))
+  val jarToFilenamesMap     = Map("lodash" -> Seq("lodash.js"), "mori" -> Seq("mori.js"), "requirejs" -> Seq("require.js"))
   val jars                  = listDeps.value
   val outDir                = (resourceManaged in Compile).value / "js"
   IO.createDirectory(outDir)
