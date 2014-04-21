@@ -1,8 +1,8 @@
 #@# Extends: `Agent`, `Vassal`, `CanTalkToPatches`
 define(['engine/agentkind', 'engine/agents', 'engine/breed', 'engine/builtins', 'engine/colormodel', 'engine/comparator'
-      , 'engine/died', 'engine/exception', 'engine/nobody', 'engine/patch', 'engine/trig']
-     , ( AgentKind,          Agents,          Breed,          Builtins,          ColorModel,  Comparator
-      ,  died,          Exception,          Nobody,          Patch,          Trig) ->
+      , 'engine/exception', 'engine/nobody', 'engine/patch', 'engine/trig']
+     , ( AgentKind,          Agents,          Breed,          Builtins,          ColorModel,          Comparator
+      ,  Exception,          Nobody,          Patch,          Trig) ->
 
   class Turtle
     vars: [] #@# You are the bane of your own existence
@@ -205,7 +205,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/breed', 'engine/builtins', 
       @breed.remove(@)
       if (@id != -1)
         @world.removeTurtle(@id)
-        died(this)
+        @seppuku()
         for l in @world.links().items
           try
             l.die() if (l.end1.id == @id or l.end2.id == @id)
@@ -287,5 +287,8 @@ define(['engine/agentkind', 'engine/agents', 'engine/breed', 'engine/builtins', 
         Comparator.numericCompare(@id, x.id)
       else
         Comparator.NOT_EQUALS
+
+    seppuku: ->
+      @world.updater.update("turtles", @id, { WHO: -1 }) #@# If you're awful and you know it, clap your hands!
 
 )

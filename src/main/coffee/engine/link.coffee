@@ -1,7 +1,7 @@
 define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/breed', 'engine/colormodel'
-      , 'engine/comparator', 'engine/died', 'engine/exception']
+      , 'engine/comparator', 'engine/exception']
      , ( AgentKind,          Agents,          Builtins,          Breed,          ColorModel
-      ,  Comparator,          died,          Exception) ->
+      ,  Comparator,          Exception) ->
 
   class Link
     vars: []
@@ -43,7 +43,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/breed', 
         @end1._removeLink(this)
         @end2._removeLink(this)
         @world.removeLink(@id)
-        died(this)
+        @seppuku()
         @id = -1
       throw new Exception.DeathInterrupt("Call only from inside an askAgent block")
     getTurtleVariable: (n) -> this[Builtins.turtleBuiltins[n]]
@@ -71,6 +71,9 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/breed', 
         when  0 then Comparator.EQUALS
         when  1 then Comparator.GREATER_THAN
         else throw new Exception("Boom") #@# Bad
+
+    seppuku: ->
+      @world.updater.update("links", @id, { WHO: -1 }) #@# If you're awful and you know it, clap your hands!
 
   LinkCompanion =
     compare: (a, b) -> #@# Heinous
