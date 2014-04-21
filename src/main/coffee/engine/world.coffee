@@ -196,14 +196,14 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
         p.setPatchVariable(2, 0)   # 2 = pcolor
         p.setPatchVariable(3, "")    # 3 = plabel
         p.setPatchVariable(4, 9.9)   # 4 = plabel-color
-        for i in [patchBuiltins.size...p.vars.length]
+        for i in [Builtins.patchBuiltins.size...p.vars.length]
           p.setPatchVariable(i, 0)
       @patchesAllBlack(true)
       @patchesWithLabels(0)
       return
     createTurtle: (t) ->
       t.id = @_nextTurtleId++ #@# Why are we managing IDs at this level of the code?
-      @updater.updated(t, turtleBuiltins...)
+      @updater.updated(t, Builtins.turtleBuiltins...)
       @_turtles.push(t)
       @_turtlesById[t.id] = t
       t
@@ -220,9 +220,9 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
         end2 = from
       if Nobody == @getLink(end1.id, end2.id)
         l = new Link(@_nextLinkId++, directed, end1, end2, this) #@# Managing IDs for yourself!
-        @updater.updated(l, linkBuiltins...)
+        @updater.updated(l, Builtins.linkBuiltins...)
         @updater.updated(l, Builtins.linkExtras...)
-        @updater.updated(l, turtleBuiltins.slice(1)...) #@# See, this update nonsense is awful
+        @updater.updated(l, Builtins.turtleBuiltins.slice(1)...) #@# See, this update nonsense is awful
         @_links.insert(l)
         l
       else
