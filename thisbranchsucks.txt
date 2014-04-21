@@ -1,5 +1,18 @@
 Things that are lousy about this branch:
 
+High:
+-CoffeeScript compiled in SBT
+-Value wrappers: ID, NLColor, XCor, YCor, PenMode
+-Englishify this junk!
+-Fatten up those arrows!
+-Abolish postfix control flow (e.g. `3 if true`)
+-Loops on numerical ranges should be Lodasherized
+-Apply type signature to all methods
+-Kill "amount" and "a" and "t" as varnames
+-I hate `array[..]`.  It clones, but cryptically
+-Names of private members should be preceded with underscores
+-Clean up import ordering and 'integration' vs. 'engine' nonsense
+
 Mid:
 -Lack of modularization (RequireJS)
 -Agentsets don't handle dead agents correctly.  JVM NetLogo has `DeadSkippingIterator` for this.  Tortoise just continues to act as if the dead agents are valid, unless they're a part of a breed agentset.  Check out being able to observe object changes in ECAMScript 6.

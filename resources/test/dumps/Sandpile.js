@@ -1,7 +1,30 @@
 Globals.init(13);
 PatchesOwn.init(3);
-world = new World(-50, 50, -50, 50, 4.0, false, false, {"default":{"rotate":true,"elements":[{"xcors":[150,40,150,260],"ycors":[5,250,205,250],"type":"polygon","color":"rgba(141, 141, 141, 1.0)","filled":true,"marked":true}]}}, {"default":{}}, 3);
+var workspace     = require('engine/workspace')(-50, 50, -50, 50, 4.0, false, false, {"default":{"rotate":true,"elements":[{"xcors":[150,40,150,260],"ycors":[5,250,205,250],"type":"polygon","color":"rgba(141, 141, 141, 1.0)","filled":true,"marked":true}]}}, {"default":{}}, 3);
+var AgentSet      = workspace.agentSet;
+var LayoutManager = workspace.layoutManager;
+var Prims         = workspace.prims;
+var Updater       = workspace.updater;
+var world         = workspace.world;
+var Globals       = world.globals;
+var TurtlesOwn    = world.turtlesOwn;
+var PatchesOwn    = world.patchesOwn;
+var LinksOwn      = world.linksOwn;
 
+var Agents     = require('engine/agents');
+var Call       = require('engine/call');
+var ColorModel = require('engine/colormodel');
+var Dump       = require('engine/dump');
+var Nobody     = require('engine/nobody');
+var Tasks      = require('engine/tasks');
+var Trig       = require('engine/trig');
+
+var AgentModel     = require('integration/agentmodel');
+var Denuller       = require('integration/denuller');
+var notImplemented = require('integration/notimplemented');
+var StrictMath     = require('integration/strictmath');
+var typeIsArray    = require('integration/typeisarray');
+      
 function setup(setupTask) {
   world.clearAll();
   Globals.setGlobal(10, 105);

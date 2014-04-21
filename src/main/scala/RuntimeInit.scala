@@ -22,10 +22,36 @@ class RuntimeInit(program: api.Program, model: core.Model) {
     val linkShapesJson = shapeList(CompilerService.parseLinkShapes(model.linkShapes.toArray))
     val view = model.view
     import view._
-    globals + turtlesOwn + patchesOwn + linksOwn +
-      s"world = new World($minPxcor, $maxPxcor, $minPycor, $maxPycor, $patchSize, " +
+    val workspaceArgs = s"$minPxcor, $maxPxcor, $minPycor, $maxPycor, $patchSize, " +
       s"$wrappingAllowedInX, $wrappingAllowedInY, $turtleShapesJson, $linkShapesJson, " +
-      s"${program.interfaceGlobals.size});\n" +
+      s"${program.interfaceGlobals.size}"
+
+    globals + turtlesOwn + patchesOwn + linksOwn +
+     s"""var workspace     = require('engine/workspace')($workspaceArgs);
+        |var AgentSet      = workspace.agentSet;
+        |var LayoutManager = workspace.layoutManager;
+        |var Prims         = workspace.prims;
+        |var Updater       = workspace.updater;
+        |var world         = workspace.world;
+        |var Globals       = world.globals;
+        |var TurtlesOwn    = world.turtlesOwn;
+        |var PatchesOwn    = world.patchesOwn;
+        |var LinksOwn      = world.linksOwn;
+        |
+        |var Agents     = require('engine/agents');
+        |var Call       = require('engine/call');
+        |var ColorModel = require('engine/colormodel');
+        |var Dump       = require('engine/dump');
+        |var Nobody     = require('engine/nobody');
+        |var Tasks      = require('engine/tasks');
+        |var Trig       = require('engine/trig');
+        |
+        |var AgentModel     = require('integration/agentmodel');
+        |var Denuller       = require('integration/denuller');
+        |var notImplemented = require('integration/notimplemented');
+        |var StrictMath     = require('integration/strictmath');
+        |var typeIsArray    = require('integration/typeisarray');
+      """.stripMargin +
       breeds + "\n"
   }
 

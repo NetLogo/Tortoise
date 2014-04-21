@@ -214,7 +214,7 @@ object SimplePrims {
         case _: prim.etc._watch             => "world.watch"
         case _: prim.etc._watchme           => "AgentSet.self().watchme"
         case _: prim.etc._resetperspective  => "world.resetPerspective"
-        case _: prim.etc._layoutspring      => "Layouts.layoutSpring"
+        case _: prim.etc._layoutspring      => "LayoutManager.layoutSpring"
       }
   }
 

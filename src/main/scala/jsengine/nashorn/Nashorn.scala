@@ -43,7 +43,7 @@ class Nashorn {
     val sw = new StringWriter
     engine.getContext.setWriter(new PrintWriter(sw))
     engine.eval(s"(function () {\n $script \n }).call(this);")
-    (sw.toString, engine.eval("JSON.stringify(collectUpdates())").toString)
+    (sw.toString, engine.eval("JSON.stringify(Updater.collectUpdates())").toString)
   }
 
   def eval(script: String): AnyRef =
