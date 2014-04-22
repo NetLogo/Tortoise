@@ -192,6 +192,14 @@ object Model {
       repetitions = 50
     ),
     Model(
+      path = "models/test/benchmarks/GasLabNew Benchmark.nlogo",
+      repetitions = 25
+    ),
+    Model(
+      path = "models/Sample Models/Chemistry & Physics/GasLab/GasLab Free Gas.nlogo",
+      repetitions = 25
+    ),
+    Model(
       path = "models/test/benchmarks/CA1D Benchmark.nlogo",
       dimensions = Some((-9, 9, -4, 4)),
       setup = "setup-random",
