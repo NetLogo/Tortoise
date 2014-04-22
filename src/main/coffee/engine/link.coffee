@@ -1,7 +1,7 @@
-define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/breed', 'engine/colormodel'
-      , 'engine/comparator', 'engine/exception']
-     , ( AgentKind,          Agents,          Builtins,          Breed,          ColorModel
-      ,  Comparator,          Exception) ->
+define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormodel', 'engine/comparator'
+      , 'engine/exception']
+     , ( AgentKind,          Agents,          Builtins,          ColorModel,          Comparator
+      ,  Exception) ->
 
   class Link
     vars: []
@@ -15,7 +15,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/breed', 
     xcor: -> #@# WHAT?! x2
     ycor: ->
     constructor: (@id, @directed, @end1, @end2, @world) ->
-      @breed = Breed.Companion.get("LINKS")
+      @breed = @world.breedManager.get("LINKS")
       @breed.add(@)
       @end1._links.push(this)
       @end2._links.push(this)
@@ -55,7 +55,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/breed', 
           v
       this[Builtins.turtleBuiltins[n]] = newV
       @world.updater.updated(this, Builtins.turtleBuiltins[n])
-    bothEnds: -> new Agents([@end1, @end2], Breed.Companion.get("TURTLES"), AgentKind.Turtle)
+    bothEnds: -> new Agents([@end1, @end2], @world.breedManager.get("TURTLES"), AgentKind.Turtle)
     otherEnd: -> if @end1 == AgentSet.myself() then @end2 else @end1
     updateEndRelatedVars: ->
       @heading = @world.topology().towards(@end1.xcor(), @end1.ycor(), @end2.xcor(), @end2.ycor())
@@ -91,9 +91,9 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/breed', 
         1
       else if(a.breed == b.breed)
         0
-      else if(a.breed == Breed.Companion.get("LINKS"))
+      else if(a.breed == @world.breedManager.get("LINKS"))
         -1
-      else if(b.breed == Breed.Companion.get("LINKS"))
+      else if(b.breed == @world.breedManager.get("LINKS"))
         1
       else
         throw new Error("We have yet to implement link breed comparison") #@# Bad error class

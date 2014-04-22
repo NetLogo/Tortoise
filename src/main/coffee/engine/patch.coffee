@@ -1,9 +1,9 @@
 #@# CanTalkToPatches: { getPatchVariable(Int): Any, setPatchVariable(Int, Any): Unit }
 #@# Extends `CanTalkToPatches`, `Agent`, `Vassal`
-define(['engine/agentkind', 'engine/agents', 'engine/breed', 'engine/builtins', 'engine/colormodel'
-      , 'engine/comparator', 'engine/exception', 'engine/nobody', 'engine/turtle', 'integration/random']
-     , ( AgentKind,          Agents,          Breed,          Builtins,          ColorModel
-      ,  Comparator,          Exception,          Nobody,          Turtle,          Random) ->
+define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormodel', 'engine/comparator'
+      , 'engine/exception', 'engine/nobody', 'engine/turtle', 'integration/random']
+     , ( AgentKind,          Agents,          Builtins,          ColorModel,          Comparator
+      ,  Exception,          Nobody,          Turtle,          Random) ->
 
   class Patch
     vars: []
@@ -42,18 +42,18 @@ define(['engine/agentkind', 'engine/agents', 'engine/breed', 'engine/builtins', 
     distanceXY: (x, y) -> @world.topology().distanceXY(@pxcor, @pycor, x, y)
     towardsXY: (x, y) -> @world.topology().towards(@pxcor, @pycor, x, y)
     distance: (agent) -> @world.topology().distance(@pxcor, @pycor, agent)
-    turtlesHere: -> new Agents(@turtles[..], Breed.Companion.get("TURTLES"), AgentKind.Turtle) #@# What do the two dots even mean here...?
+    turtlesHere: -> new Agents(@turtles[..], @world.breedManager.get("TURTLES"), AgentKind.Turtle) #@# What do the two dots even mean here...?
     getNeighbors: -> @world.getNeighbors(@pxcor, @pycor) # @world.getTopology().getNeighbors(this) #@# I _love_ commented-out code!
     getNeighbors4: -> @world.getNeighbors4(@pxcor, @pycor) # @world.getTopology().getNeighbors(this)
     sprout: (n, breedName) ->
-      breed = if("" == breedName) then Breed.Companion.get("TURTLES") else Breed.Companion.get(breedName) #@# This conditional is begging for a bug
+      breed = if("" == breedName) then @world.breedManager.get("TURTLES") else @world.breedManager.get(breedName) #@# This conditional is begging for a bug
       newTurtles = [] # I'm getting mad...
       if n > 0
         for num in [0...n]
-          newTurtles.push(world.createTurtle(new Turtle(5 + 10 * Random.nextInt(14), Random.nextInt(360), @pxcor, @pycor, breed))) #@# Moar clarity, plox
+          newTurtles.push(@world.createTurtle(new Turtle(5 + 10 * Random.nextInt(14), Random.nextInt(360), @pxcor, @pycor, breed))) #@# Moar clarity, plox
       new Agents(newTurtles, breed, AgentKind.Turtle)
     breedHere: (breedName) ->
-      breed = Breed.Companion.get(breedName)
+      breed = @world.breedManager.get(breedName)
       new Agents(t for t in @turtles when t.breed == breed, breed, AgentKind.Turtle) #@# Just use Lodash, you jackalope
     turtlesAt: (dx, dy) ->
       @patchAt(dx, dy).turtlesHere()

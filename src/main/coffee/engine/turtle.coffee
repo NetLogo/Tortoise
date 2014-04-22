@@ -1,7 +1,7 @@
 #@# Extends: `Agent`, `Vassal`, `CanTalkToPatches`
-define(['engine/agentkind', 'engine/agents', 'engine/breed', 'engine/builtins', 'engine/colormodel', 'engine/comparator'
+define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormodel', 'engine/comparator'
       , 'engine/exception', 'engine/nobody', 'engine/patch', 'engine/trig']
-     , ( AgentKind,          Agents,          Breed,          Builtins,          ColorModel,          Comparator
+     , ( AgentKind,          Agents,          Builtins,          ColorModel,          Comparator
       ,  Exception,          Nobody,          Patch,          Trig) ->
 
   class Turtle
@@ -10,7 +10,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/breed', 'engine/builtins', 
     _ycor: 0
     _links: []
     #@# Should guard against improperly-named breeds, including empty-string breed names
-    constructor: (@world, @color = 0, @heading = 0, xcor = 0, ycor = 0, breed = Breed.Companion.get("TURTLES"), @label = "", @labelcolor = 9.9, @hidden = false, @size = 1.0, @pensize = 1.0, @penmode = "up") ->
+    constructor: (@world, @color = 0, @heading = 0, xcor = 0, ycor = 0, breed = @world.breedManager.get("TURTLES"), @label = "", @labelcolor = 9.9, @hidden = false, @size = 1.0, @pensize = 1.0, @penmode = "up") ->
       @_xcor = xcor
       @_ycor = ycor
       @breedVars = {} #@# Can be outside the constructor
@@ -23,8 +23,8 @@ define(['engine/agentkind', 'engine/agents', 'engine/breed', 'engine/builtins', 
       @breed = breed
       breed.add(@)
       @shape = @breed.shape()
-      if(@breed != Breed.Companion.get("TURTLES"))
-        Breed.Companion.get("TURTLES").add(this)
+      if(@breed != @world.breedManager.get("TURTLES"))
+        @world.breedManager.get("TURTLES").add(this)
         for x in @breed.vars
           if(@breedVars[x] == undefined) #@# Simplify
             @breedVars[x] = 0
@@ -89,13 +89,13 @@ define(['engine/agentkind', 'engine/agents', 'engine/breed', 'engine/builtins', 
           if (l.directed and l.end1 == me and isSource) or (l.directed and l.end2 == me and !isSource)
             l
           else
-            null).filter((o) -> o != null), Breed.Companion.get("LINKS"), AgentKind.Link) #@# I bet this comparison is wrong somehow...
+            null).filter((o) -> o != null), @world.breedManager.get("LINKS"), AgentKind.Link) #@# I bet this comparison is wrong somehow...
       else
         new Agents(@world.links().items.map((l) ->
           if (!l.directed and l.end1 == me) or (!l.directed and l.end2 == me)
             l
           else
-            null).filter((o) -> o != null), Breed.Companion.get("LINKS"), AgentKind.Link)
+            null).filter((o) -> o != null), @world.breedManager.get("LINKS"), AgentKind.Link)
     refreshLinks: ->
       if @_links.length > 0
         l.updateEndRelatedVars() for l in (@connectedLinks(true, true).items) #@# Srsly?
@@ -110,7 +110,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/breed', 'engine/builtins', 
           else if l.directed and l.end2 == me and !isSource
             l.end1
           else
-            null).filter((o) -> o != null), Breed.Companion.get("TURTLES"), AgentKind.Turtle)
+            null).filter((o) -> o != null), @world.breedManager.get("TURTLES"), AgentKind.Turtle)
       else
         new Agents(@world.links().items.map((l) ->
           if !l.directed and l.end1 == me
@@ -118,7 +118,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/breed', 'engine/builtins', 
           else if !l.directed and l.end2 == me
             l.end1
           else
-            null).filter((o) -> o != null), Breed.Companion.get("TURTLES"), AgentKind.Turtle)
+            null).filter((o) -> o != null), @world.breedManager.get("TURTLES"), AgentKind.Turtle)
     isLinkNeighbor: (directed, isSource, other) -> #@# Other WHAT?
       @linkNeighbors(directed, isSource).items.filter((o) -> o == other).length > 0 #@# `_(derp).some(f)`
     findLinkViaNeighbor: (directed, isSource, other) -> #@# Other WHAT?
@@ -253,7 +253,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/breed', 'engine/builtins', 
     turtlesHere: -> @getPatchHere().turtlesHere()
     breedHere: (breedName) -> @getPatchHere().breedHere(breedName)
     hatch: (n, breedName) ->
-      breed = if breedName then Breed.Companion.get(breedName) else @breed #@# Existential check?
+      breed = if breedName then @world.breedManager.get(breedName) else @breed #@# Existential check?
       newTurtles = [] #@# Functional style or GTFO
       if n > 0
         for num in [0...n] #@# Nice unused variable; Lodash it!

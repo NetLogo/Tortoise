@@ -272,7 +272,7 @@ define(['integration/random', 'integration/typeisarray', 'engine/agents', 'engin
           squareOfDifference += StrictMath.pow(x - mean, 2)
       squareOfDifference / (count - 1)
     breedOn: (breedName, what) -> #@# Wat?
-      breed = Breed.Companion.get(breedName)
+      breed = @world.breedManager.get(breedName)
       patches =
         if what instanceof Patch
           [what]
@@ -291,6 +291,12 @@ define(['integration/random', 'integration/typeisarray', 'engine/agents', 'engin
             result.push(t)
       new Agents(result, breed, AgentKind.Turtle)
 
-
+    turtlesOn: (agentsOrAgent) ->
+      if(agentsOrAgent.items) #@# FP
+        agents = agentsOrAgent.items
+      else
+        agents = [agentsOrAgent]
+      turtles = [].concat (agent.turtlesHere().items for agent in agents)... #@# I don't know what's going on here, so it's probably wrong
+      new Agents(turtles, @world.breedManager.get("TURTLES"), AgentKind.Turtle)
 
 )

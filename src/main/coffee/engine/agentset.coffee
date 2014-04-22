@@ -4,10 +4,10 @@
 # compiler/runtime interface.  Dunno what's best.
 #@# End this fence-riding nonsense ASAP; I think it makes sense to have one of these that depends on the workspace/world (for the few prims that directly do), and then one that doesn't
 #@# Should be unified with `Agents`
-define(['engine/agentkind', 'engine/agents', 'engine/breed', 'engine/exception', 'engine/iterator', 'engine/nobody'
-      , 'integration/random', 'engine/shufflerator']
-     , ( AgentKind,          Agents,          Breed,          Exception,          Iterator,          Nobody
-      ,  Random,               Shufflerator) ->
+define(['engine/agents', 'engine/exception', 'engine/iterator', 'engine/nobody', 'integration/random'
+      , 'engine/shufflerator']
+     , ( Agents,          Exception,          Iterator,          Nobody,          Random
+      ,  Shufflerator) ->
 
   class AgentSet
 
@@ -140,13 +140,6 @@ define(['engine/agentkind', 'engine/agents', 'engine/breed', 'engine/exception',
               i += 1
             result
       , agentsOrList.breed, agentsOrList.kind)
-    turtlesOn: (agentsOrAgent) ->
-      if(agentsOrAgent.items) #@# FP
-        agents = agentsOrAgent.items
-      else
-        agents = [agentsOrAgent]
-      turtles = [].concat (agent.turtlesHere().items for agent in agents)... #@# I don't know what's going on here, so it's probably wrong
-      new Agents(turtles, Breed.Companion.get("TURTLES"), AgentKind.Turtle)
     die: -> @_self.die()
     connectedLinks: (directed, isSource) -> @_self.connectedLinks(directed, isSource)
     linkNeighbors: (directed, isSource) -> @_self.linkNeighbors(directed, isSource)

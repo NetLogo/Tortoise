@@ -44,6 +44,7 @@ class RuntimeInit(program: Program, model: Model) {
     globals + turtlesOwn + patchesOwn + linksOwn +
      s"""var workspace     = require('engine/workspace')($workspaceArgs);
         |var AgentSet      = workspace.agentSet;
+        |var BreedManager  = workspace.breedManager;
         |var LayoutManager = workspace.layoutManager;
         |var Prims         = workspace.prims;
         |var Updater       = workspace.updater;
@@ -91,8 +92,8 @@ class RuntimeInit(program: Program, model: Model) {
   def breeds =
     program.breeds.values.map(
       b =>
-        s"""Breeds.add("${b.name}", "${b.singular.toLowerCase}");\n""" +
-          s"""Breeds.get("${b.name}").vars =""" +
+        s"""BreedManager.add("${b.name}", "${b.singular.toLowerCase}");\n""" +
+          s"""BreedManager.get("${b.name}").vars =""" +
           b.owns.mkString("[\"", "\", \"", "\"]") +
           ";"
     ).mkString("\n")

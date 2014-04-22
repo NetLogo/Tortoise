@@ -1,9 +1,9 @@
-define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'engine/agents', 'engine/breed'
-      , 'engine/builtins', 'engine/exception', 'engine/nobody', 'engine/patch', 'engine/turtle', 'engine/worldlinks'
+define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'engine/agents', 'engine/builtins'
+      , 'engine/exception', 'engine/nobody', 'engine/patch', 'engine/turtle', 'engine/worldlinks'
       , 'engine/topology/box', 'engine/topology/horizcylinder', 'engine/topology/torus'
       , 'engine/topology/vertcylinder']
-     , ( Random,               StrictMath,               AgentKind,          Agents,          Breed
-      ,  Builtins,          Exception,          Nobody,          Patch,          Turtle,          WorldLinks
+     , ( Random,               StrictMath,               AgentKind,          Agents,          Builtins
+      ,  Exception,          Nobody,          Patch,          Turtle,          WorldLinks
       ,  Box,                   HorizCylinder,                   Torus
       ,  VertCylinder) ->
 
@@ -24,10 +24,10 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
     _patchesWithLabels: 0
 
     #@# I'm aware that some of this stuff ought to not live on `World`
-    constructor: (@globals, @patchesOwn, @turtlesOwn, @linksOwn, @agentSet, @updater, @minPxcor, @maxPxcor, @minPycor, @maxPycor
-                , @patchSize, @wrappingAllowedInX, @wrappingAllowedInY, turtleShapeList, linkShapeList
-                , @interfaceGlobalCount) ->
-      Breed.Companion.reset()
+    constructor: (@globals, @patchesOwn, @turtlesOwn, @linksOwn, @agentSet, @updater, @breedManager, @minPxcor, @maxPxcor
+                , @minPycor, @maxPycor, @patchSize, @wrappingAllowedInX, @wrappingAllowedInY, turtleShapeList
+                , linkShapeList, @interfaceGlobalCount) ->
+      @breedManager.reset()
       @agentSet.reset()
       @perspective = 0 #@# Out of constructor
       @targetAgent = null #@# Out of constructor
@@ -69,12 +69,12 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
         @updater.updated(p, "pxcor", "pycor", "pcolor", "plabel", "plabelcolor")
     topology: -> @_topology
     links: () ->
-      new Agents(@_links.toArray(), Breed.Companion.get("LINKS"), AgentKind.Link) #@# How about we just provide `LinkSet`, `PatchSet`, and `TurtleSet` as shorthand with intelligent defaults?
-    turtles: () -> new Agents(@_turtles, Breed.Companion.get("TURTLES"), AgentKind.Turtle)
+      new Agents(@_links.toArray(), @breedManager.get("LINKS"), AgentKind.Link) #@# How about we just provide `LinkSet`, `PatchSet`, and `TurtleSet` as shorthand with intelligent defaults?
+    turtles: () -> new Agents(@_turtles, @breedManager.get("TURTLES"), AgentKind.Turtle)
     turtlesOfBreed: (breedName) ->
-      breed = Breed.Companion.get(breedName)
+      breed = @breedManager.get(breedName)
       new Agents(breed.members, breed, AgentKind.Turtle)
-    patches: -> new Agents(@_patches, Breed.Companion.get("PATCHES"), AgentKind.Patch)
+    patches: -> new Agents(@_patches, @breedManager.get("PATCHES"), AgentKind.Patch)
     resetTimer: ->
       @_timer = Date.now()
     resetTicks: ->
@@ -231,14 +231,14 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
       newTurtles = [] #@# Anger, FP
       if n > 0
         for num in [0...n]
-          newTurtles.push(@createTurtle(new Turtle((10 * num + 5) % 140, (360 * num) / n, 0, 0, Breed.Companion.get(breedName))))
-      new Agents(newTurtles, Breed.Companion.get(breedName), AgentKind.Turtle)
+          newTurtles.push(@createTurtle(new Turtle((10 * num + 5) % 140, (360 * num) / n, 0, 0, @breedManager.get(breedName))))
+      new Agents(newTurtles, @breedManager.get(breedName), AgentKind.Turtle)
     createTurtles: (n, breedName) -> #@# Clarity is still good
       newTurtles = [] #@# Bad, FP
       if n > 0
         for num in [0...n]
-          newTurtles.push(@createTurtle(new Turtle(5 + 10 * Random.nextInt(14), Random.nextInt(360), 0, 0, Breed.Companion.get(breedName))))
-      new Agents(newTurtles, Breed.Companion.get(breedName), AgentKind.Turtle)
+          newTurtles.push(@createTurtle(new Turtle(5 + 10 * Random.nextInt(14), Random.nextInt(360), 0, 0, @breedManager.get(breedName))))
+      new Agents(newTurtles, @breedManager.get(breedName), AgentKind.Turtle)
     getNeighbors: (pxcor, pycor) -> @topology().getNeighbors(pxcor, pycor)
     getNeighbors4: (pxcor, pycor) -> @topology().getNeighbors4(pxcor, pycor)
     createDirectedLink: (from, to) ->
@@ -248,15 +248,15 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
     createDirectedLinks: (source, others) -> #@# Clarity
       @unbreededLinksAreDirected = true
       @updater.push({ world: { 0: { unbreededLinksAreDirected: true } } })
-      new Agents((@createLink(true, source, t) for t in others.items).filter((o) -> o != Nobody), Breed.Companion.get("LINKS"), AgentKind.Link)
+      new Agents((@createLink(true, source, t) for t in others.items).filter((o) -> o != Nobody), @breedManager.get("LINKS"), AgentKind.Link)
     createReverseDirectedLinks: (source, others) -> #@# Clarity
       @unbreededLinksAreDirected = true
       @updater.push({ world: { 0: { unbreededLinksAreDirected: true } } })
-      new Agents((@createLink(true, t, source) for t in others.items).filter((o) -> o != Nobody), Breed.Companion.get("LINKS"), AgentKind.Link)
+      new Agents((@createLink(true, t, source) for t in others.items).filter((o) -> o != Nobody), @breedManager.get("LINKS"), AgentKind.Link)
     createUndirectedLink: (source, other) ->
       @createLink(false, source, other)
     createUndirectedLinks: (source, others) -> #@# Clarity
-      new Agents((@createLink(false, source, t) for t in others.items).filter((o) -> o != Nobody), Breed.Companion.get("LINKS"), AgentKind.Link)
+      new Agents((@createLink(false, source, t) for t in others.items).filter((o) -> o != Nobody), @breedManager.get("LINKS"), AgentKind.Link)
     getLink: (fromId, toId) ->
       link = @_links.find((l) -> l.end1.id is fromId and l.end2.id is toId)
       if link?
