@@ -16,7 +16,6 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
     _turtles: []
     _turtlesById: {}
     _patches: []
-    _links: new WorldLinks()
     _topology: null
     _ticks: -1
     _timer: Date.now()
@@ -56,6 +55,7 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
             }
           }
         })
+      @_links = new WorldLinks(@linkCompare)
       @updatePerspective()
       @resize(@minPxcor, @maxPxcor, @minPycor, @maxPycor)
     createPatches: ->
@@ -219,7 +219,7 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
         end1 = to
         end2 = from
       if Nobody == @getLink(end1.id, end2.id)
-        l = new Link.Class(@_nextLinkId++, directed, end1, end2, this) #@# Managing IDs for yourself!
+        l = new Link(@_nextLinkId++, directed, end1, end2, this) #@# Managing IDs for yourself!
         @updater.updated(l, Builtins.linkBuiltins...)
         @updater.updated(l, Builtins.linkExtras...)
         @updater.updated(l, Builtins.turtleBuiltins.slice(1)...) #@# See, this update nonsense is awful
@@ -281,5 +281,27 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
       @perspective = 0
       @targetAgent = null
       @updatePerspective()
+
+    linkCompare: (a, b) => #@# Heinous
+      if (a == b)
+        0
+      else if a.id is -1 and b.id is -1
+        0
+      else if(a.end1.id < b.end1.id)
+        -1
+      else if(a.end1.id > b.end1.id)
+        1
+      else if(a.end2.id < b.end2.id)
+        -1
+      else if(a.end2.id > b.end2.id)
+        1
+      else if(a.breed == b.breed)
+        0
+      else if(a.breed == @breedManager.get("LINKS"))
+        -1
+      else if(b.breed == @breedManager.get("LINKS"))
+        1
+      else
+        throw new Error("We have yet to implement link breed comparison") #@# Bad error class
 
 )

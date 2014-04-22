@@ -1,8 +1,9 @@
-define(['integration/mori', 'engine/link'], (Mori, Link) ->
+define(['integration/mori'], (Mori) ->
 
   class WorldLinks
 
-    _links: Mori.sorted_set_by(Link.Companion.compare)
+    constructor: (@_compareFunc) ->
+      @_links = Mori.sorted_set_by(@_compareFunc)
 
     # Side-effecting ops
     insert: (l)    -> @_links = Mori.conj(@_links, l); this

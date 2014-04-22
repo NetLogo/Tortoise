@@ -29,7 +29,7 @@ define(['engine/turtle', 'engine/patch', 'engine/link']
         agents = update.turtles
       else if obj instanceof Patch
         agents = update.patches
-      else if obj instanceof Link.Class
+      else if obj instanceof Link
         agents = update.links
       agentUpdate = agents[obj.id] or {}
 
@@ -55,7 +55,7 @@ define(['engine/turtle', 'engine/patch', 'engine/link']
           when "ycor"
             agentUpdate["YCOR"] = obj.ycor()
           when "id"
-            agentUpdate[if obj instanceof Link.Class then "ID" else "WHO"] = obj[v]
+            agentUpdate[if obj instanceof Link then "ID" else "WHO"] = obj[v]
           when "plabelcolor"
             agentUpdate["PLABEL-COLOR"] = obj[v]
           when "breed"

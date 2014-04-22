@@ -10,7 +10,7 @@ define(['engine/agentkind', 'engine/link'], (AgentKind, Link) ->
       else if @kind is AgentKind.Turtle or @kind is AgentKind.Patch #@# Unify
         @items[..].sort((x, y) -> x.compare(y).toInt)
       else if @kind is AgentKind.Link
-        @items[..].sort(Link.Companion.compare)
+        @items[..].sort((x, y) -> x.world.linkCompare(x, y)) #@# Kind of obfuscated
       else
         throw new Error("We don't know how to sort your kind here!") #@# I'm a bad dude
 )

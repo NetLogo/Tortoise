@@ -37,7 +37,7 @@ define(['integration/random', 'integration/typeisarray', 'engine/agents', 'engin
           a.items.length is b.items.length and a.kind is b.kind and a.items.every((elem) -> (elem in b.items)) #@# Wrong!
         else
           (a instanceof Agents and a.breed is b) or (b instanceof Agents and b.breed is a) or
-            (a is Nobody and b.id is -1) or (b is Nobody and a.id is -1) or ((a instanceof Turtle or a instanceof Link.Class) and a.compare(b) is Comparator.EQUALS)
+            (a is Nobody and b.id is -1) or (b is Nobody and a.id is -1) or ((a instanceof Turtle or a instanceof Link) and a.compare(b) is Comparator.EQUALS)
       )
 
     lt: (a, b) -> #@# Bad, bad Jason
@@ -141,8 +141,8 @@ define(['integration/random', 'integration/typeisarray', 'engine/agents', 'engin
           xs[..].sort()
         else if wrappedItems.all((x) -> x instanceof Turtle) or wrappedItems.all((x) -> x instanceof Patch)
           xs[..].sort((x, y) -> x.compare(y).toInt)
-        else if wrappedItems.all((x) -> x instanceof Link.Class)
-          xs[..].sort(Link.Companion.compare)
+        else if wrappedItems.all((x) -> x instanceof Link)
+          xs[..].sort(@world.linkCompare)
         else
           throw new Error("We don't know how to sort your kind here!") #@# Nerp
       else if xs instanceof Agents
