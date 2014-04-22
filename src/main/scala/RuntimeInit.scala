@@ -41,7 +41,6 @@ class RuntimeInit(program: Program, model: Model) {
       s"$wrappingAllowedInX, $wrappingAllowedInY, $turtleShapesJson, $linkShapesJson, " +
       s"${program.interfaceGlobals.size}"
 
-    globals + turtlesOwn + patchesOwn + linksOwn +
      s"""var workspace     = require('engine/workspace')($workspaceArgs);
         |var AgentSet      = workspace.agentSet;
         |var BreedManager  = workspace.breedManager;
@@ -73,8 +72,8 @@ class RuntimeInit(program: Program, model: Model) {
         |var notImplemented = require('integration/notimplemented');
         |var StrictMath     = require('integration/strictmath');
         |var typeIsArray    = require('integration/typeisarray');
-      """.stripMargin +
-      breeds + "\n"
+        |
+        |$globals$turtlesOwn$patchesOwn$linksOwn$breeds""".stripMargin
   }
 
   // if there are any globals,

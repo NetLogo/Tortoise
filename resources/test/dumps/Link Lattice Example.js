@@ -2,6 +2,7 @@ var workspace     = require('engine/workspace')(0, 25, 0, 25, 20.0, true, true, 
 var AgentSet      = workspace.agentSet;
 var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
+var LinkPrims     = workspace.linkPrims;
 var Prims         = workspace.prims;
 var Updater       = workspace.updater;
 var world         = workspace.world;
@@ -16,6 +17,7 @@ var Call       = require('engine/call');
 var ColorModel = require('engine/colormodel');
 var Dump       = require('engine/dump');
 var Exception  = require('engine/exception');
+var Link       = require('engine/link');
 var Nobody     = require('engine/nobody');
 var noop       = require('engine/noop');
 var Tasks      = require('engine/tasks');
@@ -27,14 +29,14 @@ var Denuller       = require('integration/denuller');
 var notImplemented = require('integration/notimplemented');
 var StrictMath     = require('integration/strictmath');
 var typeIsArray    = require('integration/typeisarray');
-      
+
 function setupSquare() {
   world.clearAll();
   AgentSet.ask(world.patches(), true, function() {
     AgentSet.ask(Prims.sprout(1, ""), true, function() {});
   });
   AgentSet.ask(world.turtles(), true, function() {
-    AgentSet.ask(AgentSet.createLinksWith(Prims.turtlesOn(Prims.getNeighbors4())), false, function() {});
+    AgentSet.ask(LinkPrims.createLinksWith(Prims.turtlesOn(Prims.getNeighbors4())), false, function() {});
   });
 }
 function setupHex() {
@@ -43,11 +45,11 @@ function setupHex() {
     AgentSet.ask(Prims.sprout(1, ""), true, function() {});
   });
   AgentSet.ask(world.turtles(), true, function() {
-    AgentSet.ask(AgentSet.createLinksWith(AgentSet.self().turtlesAt(0, 1)), false, function() {});
-    AgentSet.ask(AgentSet.createLinksWith(AgentSet.self().turtlesAt(1, 0)), false, function() {});
+    AgentSet.ask(LinkPrims.createLinksWith(AgentSet.self().turtlesAt(0, 1)), false, function() {});
+    AgentSet.ask(LinkPrims.createLinksWith(AgentSet.self().turtlesAt(1, 0)), false, function() {});
     if (Prims.equality(Prims.mod(AgentSet.getPatchVariable(0), 2), 0)) {
-      AgentSet.ask(AgentSet.createLinksWith(AgentSet.self().turtlesAt(1, -1)), false, function() {});
-      AgentSet.ask(AgentSet.createLinksWith(AgentSet.self().turtlesAt(-1, -1)), false, function() {});
+      AgentSet.ask(LinkPrims.createLinksWith(AgentSet.self().turtlesAt(1, -1)), false, function() {});
+      AgentSet.ask(LinkPrims.createLinksWith(AgentSet.self().turtlesAt(-1, -1)), false, function() {});
       AgentSet.setTurtleVariable(4, (AgentSet.getTurtleVariable(4) - 0.5));
     }
   });
