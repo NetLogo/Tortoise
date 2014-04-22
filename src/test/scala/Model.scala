@@ -22,10 +22,6 @@ object Model {
   // in no particular order
   val models = Seq[Model](
     Model(
-      path = "models/test/tortoise/Life Simple.nlogo",
-      repetitions = 30
-    ),
-    Model(
       path = "models/Sample Models/Biology/Fireflies.nlogo",
       dimensions = Some((-10, 10, -10, 10)),
       setup = "set number 150  setup",
