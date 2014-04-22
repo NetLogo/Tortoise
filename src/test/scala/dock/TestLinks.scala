@@ -475,4 +475,11 @@ class TestLinks extends DockingSuite with SlowTest {
     compare("sort [who] of [in-link-neighbors ] of turtle 1")
     compare("sort [who] of [out-link-neighbors ] of turtle 1")
   }
+
+  test("links-own") { implicit fixture => import fixture._
+    declare("links-own [foo]")
+    testCommand("crt 2 [ create-links-with other turtles ]")
+    testCommand("ask links [ set foo 99 ]")
+  }
+
 }

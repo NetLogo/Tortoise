@@ -4,7 +4,8 @@
 
 turtleBuiltins = ["id", "color", "heading", "xcor", "ycor", "shape", "label", "labelcolor", "breed", "hidden", "size", "pensize", "penmode"]
 patchBuiltins = ["pxcor", "pycor", "pcolor", "plabel", "plabelcolor"]
-linkBuiltins = ["end1", "end2", "lcolor", "llabel", "llabelcolor", "lhidden", "lbreed", "thickness", "lshape", "tiemode", "size", "heading", "midpointx", "midpointy"]
+linkBuiltins = ["end1", "end2", "lcolor", "llabel", "llabelcolor", "lhidden", "lbreed", "thickness", "lshape", "tiemode"]
+linkExtras = ["size", "heading", "midpointx", "midpointy"]
 
 class NetLogoException
   constructor: (@message) ->
@@ -530,6 +531,7 @@ Links =
       throw new Error("We have yet to implement link breed comparison")
 
 class Link
+  vars: []
   color: 5
   label: ""
   labelcolor: 9.9
@@ -545,6 +547,7 @@ class Link
     @end1._links.push(this)
     @end2._links.push(this)
     @updateEndRelatedVars()
+    @vars = (x for x in LinksOwn.vars)
   getLinkVariable: (n) ->
     if (n < linkBuiltins.length)
       this[linkBuiltins[n]]
@@ -586,7 +589,7 @@ class Link
     @size = world.topology().distanceXY(@end1.xcor(), @end1.ycor(), @end2.xcor(), @end2.ycor())
     @midpointx = world.topology().midpointx(@end1.xcor(), @end2.xcor())
     @midpointy = world.topology().midpointy(@end1.ycor(), @end2.ycor())
-    updated(this, linkBuiltins...)
+    updated(this, linkExtras...)
   toString: -> "(" + @breed.singular + " " + @end1.id + " " + @end2.id + ")"
 
   compare: (x) ->
@@ -817,6 +820,7 @@ class World
     if Nobody == @getLink(end1.id, end2.id)
       l = new Link(@_nextLinkId++, directed, end1, end2)
       updated(l, linkBuiltins...)
+      updated(l, linkExtras...)
       updated(l, turtleBuiltins.slice(1)...)
       @_links.insert(l)
       l
@@ -1398,6 +1402,10 @@ TurtlesOwn =
   init: (n) -> @vars = (0 for x in [0...n])
 
 PatchesOwn =
+  vars: []
+  init: (n) -> @vars = (0 for x in [0...n])
+
+LinksOwn =
   vars: []
   init: (n) -> @vars = (0 for x in [0...n])
 

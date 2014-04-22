@@ -22,7 +22,7 @@ class RuntimeInit(program: api.Program, model: core.Model) {
     val linkShapesJson = shapeList(CompilerService.parseLinkShapes(model.linkShapes.toArray))
     val view = model.view
     import view._
-    globals + turtlesOwn + patchesOwn +
+    globals + turtlesOwn + patchesOwn + linksOwn +
       s"world = new World($minPxcor, $maxPxcor, $minPycor, $maxPycor, $patchSize, " +
       s"$wrappingAllowedInX, $wrappingAllowedInY, $turtleShapesJson, $linkShapesJson, " +
       s"${program.interfaceGlobals.size});\n" +
@@ -39,10 +39,14 @@ class RuntimeInit(program: api.Program, model: core.Model) {
     api.AgentVariables.getImplicitTurtleVariables.size
   val patchBuiltinCount =
     api.AgentVariables.getImplicitPatchVariables.size
+  val linkBuiltinCount =
+    api.AgentVariables.getImplicitLinkVariables.size
   def turtlesOwn =
     vars(program.turtlesOwn.drop(turtleBuiltinCount), "TurtlesOwn")
   def patchesOwn =
     vars(program.patchesOwn.drop(patchBuiltinCount), "PatchesOwn")
+  def linksOwn =
+    vars(program.linksOwn.drop(linkBuiltinCount), "LinksOwn")
   def breeds =
     program.breeds.values.map(
       b =>
