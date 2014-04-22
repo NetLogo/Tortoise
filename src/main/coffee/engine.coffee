@@ -418,6 +418,15 @@ class Turtle
   watchme: ->
     world.watch(this)
 
+  penDown: ->
+    @penmode = "down"
+    updated(this, "penmode")
+    return
+  penUp: ->
+    @penmode = "up"
+    updated(this, "penmode")
+    return
+
   _removeLink: (l) ->
     @_links.splice(@_links.indexOf(l))
 
