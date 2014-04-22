@@ -1,8 +1,8 @@
 #@# Extends: `Agent`, `Vassal`, `CanTalkToPatches`
 define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormodel', 'engine/comparator'
-      , 'engine/exception', 'engine/nobody', 'engine/patch', 'engine/trig']
+      , 'engine/exception', 'engine/nobody', 'engine/trig']
      , ( AgentKind,          Agents,          Builtins,          ColorModel,          Comparator
-      ,  Exception,          Nobody,          Patch,          Trig) ->
+      ,  Exception,          Nobody,          Trig) ->
 
   class Turtle
     vars: [] #@# You are the bane of your own existence
@@ -57,20 +57,17 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
     distanceXY: (x, y) -> @world.topology().distanceXY(@xcor(), @ycor(), x, y)
     distance: (agent) -> @world.topology().distance(@xcor(), @ycor(), agent)
     towardsXY: (x, y) -> @world.topology().towards(@xcor(), @ycor(), x, y)
+    getCoords: -> [@xcor(), @ycor()]
     towards: (agent) -> #@# Unify, man!
-      if(agent instanceof Turtle)
-        @world.topology().towards(@xcor(), @ycor(), agent.xcor(), agent.ycor())
-      else if (agent instanceof Patch)
-        @world.topology().towards(@xcor(), @ycor(), agent.pxcor, agent.pycor)
+      [x, y] = agent.getCoords()
+      @world.topology().towards(@xcor(), @ycor(), x, y)
     faceXY: (x, y) ->
       if(x != @xcor() or y != @ycor())
         @heading = @world.topology().towards(@xcor(), @ycor(), x, y)
         @world.updater.updated(this, "heading")
     face: (agent) ->
-      if(agent instanceof Turtle)
-        @faceXY(agent.xcor(), agent.ycor())
-      else if (agent instanceof Patch)
-        @faceXY(agent.pxcor, agent.pycor)
+      [x, y] = agent.getCoords()
+      @faceXY(x, y)
     inRadius: (agents, radius) ->
       @world.topology().inRadius(this, @xcor(), @ycor(), agents, radius)
     patchAt: (dx, dy) -> #@# Make not silly
@@ -263,10 +260,8 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
           newTurtles.push(@world.createTurtle(t))
         new Agents(newTurtles, breed, AgentKind.Turtle)
     moveTo: (agent) ->
-      if (agent instanceof Turtle) #@# Checks for `Turtle`ism or `Patch`ism (etc.) should be on some `Agent` object
-        @setXY(agent.xcor(), agent.ycor())
-      else if(agent instanceof Patch)
-        @setXY(agent.pxcor, agent.pycor)
+      [x, y] = agent.getCoords()
+      @setXY(x, y)
     watchme: ->
       @world.watch(this) #@# Nice try; use `@`
 
