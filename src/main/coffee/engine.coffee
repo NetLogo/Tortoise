@@ -1367,6 +1367,25 @@ Prims =
       if Utilities.isNumber(x)
         squareOfDifference += StrictMath.pow(x - mean, 2)
     squareOfDifference / (count - 1)
+  breedOn: (breedName, what) ->
+    breed = Breeds.get(breedName)
+    patches =
+      if what instanceof Patch
+        [what]
+      else if what instanceof Turtle
+        [what.getPatchHere()]
+      else if what.items and what.kind is AgentKind.Patch
+        what.items
+      else if what.items and what.kind is AgentKind.Turtle
+        t.getPatchHere() for t in what.items
+      else
+        throw new NetLogoException("unknown: " + typeof(what))
+    result = []
+    for p in patches
+      for t in p.turtles
+        if t.breed is breed
+          result.push(t)
+    new Agents(result, breed, AgentKind.Turtle)
 
 Tasks =
   commandTask: (fn) ->

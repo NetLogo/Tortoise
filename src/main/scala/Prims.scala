@@ -21,6 +21,7 @@ object Prims {
       case b: prim.etc._breed               => s"""world.turtlesOfBreed("${b.getBreedName}")"""
       case b: prim.etc._breedsingular       => s"""world.getTurtleOfBreed("${b.breedName}", ${arg(0)})"""
       case b: prim.etc._breedhere           => s"""AgentSet.self().breedHere("${b.getBreedName}")"""
+      case b: prim.etc._breedon             => s"""Prims.breedOn("${b.getBreedName}", ${arg(0)})"""
       case pure: nvm.Pure if r.args.isEmpty => Handlers.literal(pure.report(null))
       case lv: prim._letvariable            => Handlers.ident(lv.let.name)
       case pv: prim._procedurevariable      => Handlers.ident(pv.name)
