@@ -31,6 +31,7 @@ class RuntimeInit(program: api.Program, model: core.Model) {
         |var AgentSet      = workspace.agentSet;
         |var BreedManager  = workspace.breedManager;
         |var LayoutManager = workspace.layoutManager;
+        |var LinkPrims     = workspace.linkPrims;
         |var Prims         = workspace.prims;
         |var Updater       = workspace.updater;
         |var world         = workspace.world;

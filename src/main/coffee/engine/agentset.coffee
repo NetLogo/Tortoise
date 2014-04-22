@@ -23,7 +23,7 @@ define(['engine/agents', 'engine/exception', 'engine/iterator', 'engine/nobody',
     reset: ->
       @_self = 0
       @_myself = 0
-    self: -> @_self
+    self: => @_self
     myself: -> if @_myself != 0 then @_myself else throw new Exception.NetLogoException("There is no agent for MYSELF to refer to.") #@# I wouldn't be surprised if this is entirely avoidable
     askAgent: (a, f) -> #@# Varnames
       oldMyself = @_myself #@# All of this contextual swapping can be handled more clearly
