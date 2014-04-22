@@ -39,6 +39,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
     leave: (t) -> @turtles.splice(@turtles.indexOf(t, 0), 1) #@# WTF is `t`?
     arrive: (t) -> #@# WTF is `t`?
       @turtles.push(t)
+    getCoords: -> [@pxcor, @pycor]
     distanceXY: (x, y) -> @world.topology().distanceXY(@pxcor, @pycor, x, y)
     towardsXY: (x, y) -> @world.topology().towards(@pxcor, @pycor, x, y)
     distance: (agent) -> @world.topology().distance(@pxcor, @pycor, agent)
