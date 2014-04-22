@@ -19,8 +19,71 @@ case class Model(
 }
 
 object Model {
-  // in no particular order
+  // benchmarks, then Code Examples, then Sample Models
   val models = Seq[Model](
+    Model(
+      path = "models/test/benchmarks/Ants Benchmark.nlogo",
+      dimensions = Some((-20, 20, -20, 20)),
+      repetitions = 3,
+      go =
+        "repeat 10 [ go ] " +
+        "ask turtle 0 [ move-to one-of patches with [shade-of? pcolor blue] ]"
+    ),
+    Model(
+      path = "models/test/benchmarks/Bureaucrats Benchmark.nlogo",
+      dimensions = Some((0, 29, 0, 29)),
+      repetitions = 200
+    ),
+    Model(
+      path = "models/test/benchmarks/BZ Benchmark.nlogo",
+      dimensions = Some((-20, 20, -20, 20)),
+      repetitions = 5
+    ),
+    Model(
+      path = "models/test/benchmarks/Heatbugs Benchmark.nlogo",
+      dimensions = Some((0, 19, 0, 19)),
+      repetitions = 10
+    ),
+    Model(
+      path = "models/test/benchmarks/GasLabCirc Benchmark.nlogo",
+      dimensions = Some((-20, 20, -20, 20)),
+      setup = "set number 50  setup",
+      repetitions = 50
+    ),
+    Model(
+      path = "models/test/benchmarks/GasLabNew Benchmark.nlogo",
+      repetitions = 25
+    ),
+    Model(
+      path = "models/test/benchmarks/CA1D Benchmark.nlogo",
+      dimensions = Some((-9, 9, -4, 4)),
+      setup = "setup-random",
+      repetitions = 20
+    ),
+    Model(
+      path = "models/test/benchmarks/GridWalk Benchmark.nlogo",
+      dimensions = Some((-10, 10, -10, 10)),
+      repetitions = 20
+    ),
+    Model(
+      path = "models/Code Examples/Link Lattice Example.nlogo",
+      dimensions = Some((-6, 6, -6, 6)),
+      setup = "setup-square",
+      repetitions = 1,
+      go = "setup-hex"
+    ),
+    Model(
+      path = "models/Code Examples/State Machine Example.nlogo",
+      dimensions = Some((-19, 19, -19, 19)),
+      setup = "set number 100  setup",
+      repetitions = 100
+    ),
+    Model(
+      path = "models/Code Examples/Box Drawing Example.nlogo",
+      setup = "set edge 2",
+      go = "setup-corner",
+      repetitions = 1
+    ),
     Model(
       path = "models/Sample Models/Biology/Fireflies.nlogo",
       dimensions = Some((-10, 10, -10, 10)),
@@ -148,66 +211,8 @@ object Model {
       repetitions = 25
     ),
     Model(
-      path = "models/Code Examples/Link Lattice Example.nlogo",
-      dimensions = Some((-6, 6, -6, 6)),
-      setup = "setup-square",
-      repetitions = 1,
-      go = "setup-hex"
-    ),
-    Model(
-      path = "models/test/benchmarks/Ants Benchmark.nlogo",
-      dimensions = Some((-20, 20, -20, 20)),
-      repetitions = 3,
-      go =
-        "repeat 10 [ go ] " +
-        "ask turtle 0 [ move-to one-of patches with [shade-of? pcolor blue] ]"
-    ),
-    Model(
-      path = "models/test/benchmarks/Bureaucrats Benchmark.nlogo",
-      dimensions = Some((0, 29, 0, 29)),
-      repetitions = 200
-    ),
-    Model(
-      path = "models/test/benchmarks/BZ Benchmark.nlogo",
-      dimensions = Some((-20, 20, -20, 20)),
-      repetitions = 5
-    ),
-    Model(
-      path = "models/test/benchmarks/Heatbugs Benchmark.nlogo",
-      dimensions = Some((0, 19, 0, 19)),
-      repetitions = 10
-    ),
-    Model(
-      path = "models/test/benchmarks/GasLabCirc Benchmark.nlogo",
-      dimensions = Some((-20, 20, -20, 20)),
-      setup = "set number 50  setup",
-      repetitions = 50
-    ),
-    Model(
-      path = "models/test/benchmarks/GasLabNew Benchmark.nlogo",
-      repetitions = 25
-    ),
-    Model(
       path = "models/Sample Models/Chemistry & Physics/GasLab/GasLab Free Gas.nlogo",
       repetitions = 25
-    ),
-    Model(
-      path = "models/test/benchmarks/CA1D Benchmark.nlogo",
-      dimensions = Some((-9, 9, -4, 4)),
-      setup = "setup-random",
-      repetitions = 20
-    ),
-    Model(
-      path = "models/Code Examples/State Machine Example.nlogo",
-      dimensions = Some((-19, 19, -19, 19)),
-      setup = "set number 100  setup",
-      repetitions = 100
-    ),
-    Model(
-      path = "models/Code Examples/Box Drawing Example.nlogo",
-      setup = "set edge 2",
-      go = "setup-corner",
-      repetitions = 1
     ),
     Model(
       path = "models/Sample Models/Biology/AIDS.nlogo",
@@ -278,11 +283,6 @@ object Model {
     Model(
       path = "models/Sample Models/Social Science/Party.nlogo",
       repetitions = 25
-    ),
-    Model(
-      path = "models/test/benchmarks/GridWalk Benchmark.nlogo",
-      dimensions = Some((-10, 10, -10, 10)),
-      repetitions = 20
     ),
     Model(
       path = "models/Sample Models/Mathematics/Mousetraps.nlogo",
