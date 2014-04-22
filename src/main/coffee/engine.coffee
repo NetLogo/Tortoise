@@ -1277,8 +1277,13 @@ Prims =
         if @equality(x, y)
           return true
       false
-    else
+    else if Utilities.isString(x)
       xs.indexOf(x) != -1
+    else  # agentset
+      for a in xs.items
+        if x == a
+          return true
+      false
   position: (x, xs) ->
     if typeIsArray(xs)
       for y, i in xs
