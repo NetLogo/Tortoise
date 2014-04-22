@@ -1,9 +1,9 @@
 define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'engine/agents', 'engine/builtins'
-      , 'engine/exception', 'engine/nobody', 'engine/patch', 'engine/turtle', 'engine/worldlinks'
+      , 'engine/exception', 'engine/link', 'engine/nobody', 'engine/patch', 'engine/turtle', 'engine/worldlinks'
       , 'engine/topology/box', 'engine/topology/horizcylinder', 'engine/topology/torus'
       , 'engine/topology/vertcylinder']
      , ( Random,               StrictMath,               AgentKind,          Agents,          Builtins
-      ,  Exception,          Nobody,          Patch,          Turtle,          WorldLinks
+      ,  Exception,          Link,          Nobody,          Patch,          Turtle,          WorldLinks
       ,  Box,                   HorizCylinder,                   Torus
       ,  VertCylinder) ->
 
@@ -219,7 +219,7 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
         end1 = to
         end2 = from
       if Nobody == @getLink(end1.id, end2.id)
-        l = new Link(@_nextLinkId++, directed, end1, end2, this) #@# Managing IDs for yourself!
+        l = new Link.Class(@_nextLinkId++, directed, end1, end2, this) #@# Managing IDs for yourself!
         @updater.updated(l, Builtins.linkBuiltins...)
         @updater.updated(l, Builtins.linkExtras...)
         @updater.updated(l, Builtins.turtleBuiltins.slice(1)...) #@# See, this update nonsense is awful

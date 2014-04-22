@@ -45,6 +45,7 @@ class RuntimeInit(program: api.Program, model: core.Model) {
         |var ColorModel = require('engine/colormodel');
         |var Dump       = require('engine/dump');
         |var Exception  = require('engine/exception');
+        |var Link       = require('engine/link');
         |var Nobody     = require('engine/nobody');
         |var noop       = require('engine/noop');
         |var Tasks      = require('engine/tasks');
