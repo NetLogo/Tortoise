@@ -1,5 +1,8 @@
 Things that are lousy about this branch:
 
+Highest:
+-Failing test suites: TestModelDumps, TestTopologies, TestEngine, TestModels, CompilerTests, TestAgents
+
 High:
 -CoffeeScript compiled in SBT
 -Value wrappers: ID, NLColor, XCor, YCor, PenMode
