@@ -50,7 +50,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
       newTurtles = [] # I'm getting mad...
       if n > 0
         for num in [0...n]
-          newTurtles.push(@world.createTurtle(new Turtle(5 + 10 * Random.nextInt(14), Random.nextInt(360), @pxcor, @pycor, breed))) #@# Moar clarity, plox
+          newTurtles.push(@world.createTurtle(new Turtle(5 + 10 * Random.nextInt(14), Random.nextInt(360), @pxcor, @pycor, breed))) #@# Moar clarity, plox; and why do patches know how to create turtles?!
       new Agents(newTurtles, breed, AgentKind.Turtle)
     breedHere: (breedName) ->
       breed = @world.breedManager.get(breedName)
