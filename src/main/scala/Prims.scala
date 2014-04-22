@@ -217,7 +217,7 @@ object Prims {
       s.args(1).asInstanceOf[ast.CommandBlock]
         .statements.stmts.nonEmpty
     val body = Handlers.fun(s.args(1))
-    s"""AgentSet.ask(AgentSet.$name($other), $nonEmptyCommandBlock, $body);"""
+    s"""AgentSet.ask(LinkPrims.$name($other), $nonEmptyCommandBlock, $body);"""
   }
 
   def generateCreateTurtles(s: ast.Statement, ordered: Boolean): String = {
