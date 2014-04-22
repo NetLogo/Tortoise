@@ -204,6 +204,7 @@ class Turtle
   canMove: (amount) -> @patchAhead(amount) != Nobody
   distanceXY: (x, y) -> world.topology().distanceXY(@xcor(), @ycor(), x, y)
   distance: (agent) -> world.topology().distance(@xcor(), @ycor(), agent)
+  towardsXY: (x, y) -> world.topology().towards(@xcor(), @ycor(), x, y)
   towards: (agent) ->
     if(agent instanceof Turtle)
       world.topology().towards(@xcor(), @ycor(), agent.xcor(), agent.ycor())
@@ -462,6 +463,7 @@ class Patch
   arrive: (t) ->
     @turtles.push(t)
   distanceXY: (x, y) -> world.topology().distanceXY(@pxcor, @pycor, x, y)
+  towardsXY: (x, y) -> world.topology().towards(@pxcor, @pycor, x, y)
   distance: (agent) -> world.topology().distance(@pxcor, @pycor, agent)
   turtlesHere: -> new Agents(@turtles[..], Breeds.get("TURTLES"), AgentKind.Turtle)
   getNeighbors: -> world.getNeighbors(@pxcor, @pycor) # world.getTopology().getNeighbors(this)

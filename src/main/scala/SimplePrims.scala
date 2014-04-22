@@ -94,6 +94,7 @@ object SimplePrims {
         case _: prim.etc._distancexy         => "AgentSet.self().distanceXY"
         case _: prim.etc._inradius           => "AgentSet.self().inRadius"
         case _: prim.etc._towards            => "AgentSet.self().towards"
+        case _: prim.etc._towardsxy          => "AgentSet.self().towardsXY"
         case _: prim._patchat                => "AgentSet.self().patchAt"
         case _: prim.etc._patchahead         => "AgentSet.self().patchAhead"
         case _: prim.etc._patchrightandahead => "AgentSet.self().patchRightAndAhead"
