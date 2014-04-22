@@ -190,6 +190,7 @@ object SimplePrims {
         case _: prim.etc._setcurrentplot    => "noop"
         case _: prim.etc._setcurrentplotpen => "noop"
         case _: prim.etc._plot              => "noop"
+        case _: prim.etc._histogram         => "noop"
         case _: prim.etc._clearallplots     => "noop"
         case _: prim.etc._display           => "noop"
         case _: prim.etc._stamp             => "noop"
