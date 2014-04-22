@@ -66,7 +66,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
     toString: -> "(" + @breed.singular + " " + @end1.id + " " + @end2.id + ")" #@# Interpolate
 
     compare: (x) -> #@# Unify with `Links.compare`
-      switch LinkCompanion.compare(this, x)
+      switch @world.linkCompare(this, x)
         when -1 then Comparator.LESS_THAN
         when  0 then Comparator.EQUALS
         when  1 then Comparator.GREATER_THAN
@@ -74,34 +74,5 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
 
     seppuku: ->
       @world.updater.update("links", @id, { WHO: -1 }) #@# If you're awful and you know it, clap your hands!
-
-  LinkCompanion =
-    compare: (a, b) -> #@# Heinous
-      if (a == b)
-        0
-      else if a.id is -1 and b.id is -1
-        0
-      else if(a.end1.id < b.end1.id)
-        -1
-      else if(a.end1.id > b.end1.id)
-        1
-      else if(a.end2.id < b.end2.id)
-        -1
-      else if(a.end2.id > b.end2.id)
-        1
-      else if(a.breed == b.breed)
-        0
-      else if(a.breed == @world.breedManager.get("LINKS"))
-        -1
-      else if(b.breed == @world.breedManager.get("LINKS"))
-        1
-      else
-        throw new Error("We have yet to implement link breed comparison") #@# Bad error class
-
-  # Cyclic dep --JAB (4/16/14)
-  {
-    Class     : Link
-    Companion : LinkCompanion
-  }
 
 )

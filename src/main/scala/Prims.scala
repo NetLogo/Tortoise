@@ -63,7 +63,7 @@ object Prims {
         val agents = arg(0)
         val body = Handlers.reporter(r.args(1))
         s"AgentSet.all($agents, function(){ return $body })"
-      case _: prim.etc._islink              => s"(${arg(0)} instanceof Link.Class)"
+      case _: prim.etc._islink              => s"(${arg(0)} instanceof Link)"
       case _: prim.etc._isturtle            => s"(${arg(0)} instanceof Turtle)"
       case _: prim.etc._ifelsevalue         => s"${arg(0)} ? ${arg(1)} : ${arg(2)}"
       case _: prim.etc._reduce              => s"${arg(1)}.reduce(${arg(0)})"
