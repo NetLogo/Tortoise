@@ -2,6 +2,7 @@ Globals.init(3);
 PatchesOwn.init(1);
 var workspace     = require('engine/workspace')(0, 99, 0, 99, 3.0, false, false, {"default":{"rotate":true,"elements":[{"xcors":[150,40,150,260],"ycors":[5,250,205,250],"type":"polygon","color":"rgba(141, 141, 141, 1.0)","filled":true,"marked":true}]}}, {"default":{}}, 1);
 var AgentSet      = workspace.agentSet;
+var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var Prims         = workspace.prims;
 var Updater       = workspace.updater;
@@ -11,18 +12,21 @@ var TurtlesOwn    = world.turtlesOwn;
 var PatchesOwn    = world.patchesOwn;
 var LinksOwn      = world.linksOwn;
 
+var AgentKind  = require('engine/agentkind');
 var Agents     = require('engine/agents');
 var Call       = require('engine/call');
 var ColorModel = require('engine/colormodel');
 var Dump       = require('engine/dump');
+var Exception  = require('engine/exception');
 var Nobody     = require('engine/nobody');
+var noop       = require('engine/noop');
 var Tasks      = require('engine/tasks');
 var Trig       = require('engine/trig');
+var Turtle     = require('engine/turtle');
 
 var AgentModel     = require('integration/agentmodel');
 var Denuller       = require('integration/denuller');
 var notImplemented = require('integration/notimplemented');
-var println        = require('integration/println');
 var StrictMath     = require('integration/strictmath');
 var typeIsArray    = require('integration/typeisarray');
       

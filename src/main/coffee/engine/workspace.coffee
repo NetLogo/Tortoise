@@ -1,9 +1,9 @@
 define(['engine/agentset', 'engine/breedmanager', 'engine/globals', 'engine/layoutmanager', 'engine/linkprims'
       , 'engine/linksown', 'engine/patchesown', 'engine/prims', 'engine/turtlesown', 'engine/updater', 'engine/world'
-      , 'engine/call', 'engine/tasks'] #@# `Call` and `Tasks` shouldn't be loaded like this
+      , 'engine/call', 'engine/noop', 'engine/tasks'] #@# `Call`, `noop', and `Tasks` shouldn't be loaded like this; only doing it to appease Require elsewhere
      , ( AgentSet,          BreedManager,          Globals,          LayoutManager,          LinkPrims
       ,  LinksOwn,          PatchesOwn,          Prims,          TurtlesOwn,          Updater,          World
-      ,  [],            []) ->
+      ,  [],            [],            []) ->
 
   () -> # World args; see constructor for `World` --JAB (4/17/14)
 

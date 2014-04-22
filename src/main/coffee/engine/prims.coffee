@@ -148,7 +148,7 @@ define(['integration/random', 'integration/typeisarray', 'engine/agents', 'engin
       else if xs instanceof Agents
         xs.sort()
       else
-        throw new NetLogoException("can only sort lists and agentsets")
+        throw new Exception.NetLogoException("can only sort lists and agentsets")
     removeDuplicates: (xs) -> #@# Good use of data structures and actually trying could get this into reasonable time complexity
       if xs.length < 2
         xs

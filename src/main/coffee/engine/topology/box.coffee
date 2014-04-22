@@ -10,11 +10,11 @@ define(['engine/exception', 'engine/topology/topology'], (Exception, Topology) -
     shortestY: (y1, y2) -> Math.abs(y1 - y2) * (if y1 > y2 then -1 else 1)
     wrapX: (pos) -> #@# Fun comparator syntax x2
       if(pos >= @maxPxcor + 0.5 || pos <= @minPxcor - 0.5)
-        throw new TopologyInterrupt ("Cannot move turtle beyond the worlds edge.")
+        throw new Exception.TopologyInterrupt ("Cannot move turtle beyond the worlds edge.")
       else pos
     wrapY: (pos) ->
       if(pos >= @maxPycor + 0.5 || pos <= @minPycor - 0.5)
-        throw new TopologyInterrupt ("Cannot move turtle beyond the worlds edge.")
+        throw new Exception.TopologyInterrupt ("Cannot move turtle beyond the worlds edge.")
       else pos
 
     getPatchNorth: (pxcor, pycor) -> (pycor != @maxPycor) && @getPatchAt(pxcor, pycor + 1)
