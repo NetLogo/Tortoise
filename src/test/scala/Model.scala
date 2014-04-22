@@ -292,6 +292,10 @@ object Model {
     Model(
       path = "models/Sample Models/Mathematics/Probability/ProbLab/Random Basic.nlogo",
       repetitions = 10
+    ),
+    Model(
+      path = "models/Sample Models/Mathematics/Rugby.nlogo",
+      repetitions = 10
     )
   )
 }
