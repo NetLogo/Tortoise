@@ -1,8 +1,8 @@
 define(->
 
   class Breed
-    constructor: (@name, @singular, @_shape = false, @members = []) -> #@# How come the default is `false`, but `Breeds.defaultBreeds` passes in `"default"`?
-    shape: () -> if @_shape then @_shape else BreedCompanion.get("TURTLES")._shape #@# Turtles, patches, and links should be easily accessed on `Breeds`
+    constructor: (@name, @singular, @manager, @_shape = false, @members = []) -> #@# How come the default is `false`, but `BreedManager.defaultBreeds` passes in `"default"`?
+    shape: () -> if @_shape then @_shape else @manager.get("TURTLES")._shape #@# Turtles, patches, and links should be easily accessed on `BreedManager`
     vars: []
     add: (agent) ->
       for a, i in @members #@# Lame, unused variable
