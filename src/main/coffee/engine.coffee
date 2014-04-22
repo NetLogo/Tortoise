@@ -446,8 +446,13 @@ class Patch
           world.patchesAllBlack(false)
         this[patchBuiltins[n]] = newV
       else if patchBuiltins[n] is "plabel"
-        world.patchesWithLabels(1)
-        this[patchBuiltins[n]] = v
+        if v is ""
+          if this.plabel isnt ""
+            world.patchesWithLabels(world._patchesWithLabels - 1)
+        else
+          if this.plabel is ""
+            world.patchesWithLabels(world._patchesWithLabels + 1)
+        this.plabel = v
       else
         this[patchBuiltins[n]] = v
       updated(this, patchBuiltins[n])
