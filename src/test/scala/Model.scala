@@ -93,6 +93,12 @@ object Model {
       repetitions = 10
     ),
     Model(
+      path = "models/Sample Models/Computer Science/Cellular Automata/Life.nlogo",
+      dimensions = Some((-15, 15, -15, 15)),
+      setup = "setup-random",
+      repetitions = 20
+    ),
+    Model(
       path = "models/Sample Models/Earth Science/Climate Change.nlogo",
       setup =
         "setup add-cloud add-cloud " +
@@ -272,6 +278,11 @@ object Model {
     Model(
       path = "models/Sample Models/Social Science/Party.nlogo",
       repetitions = 25
+    ),
+    Model(
+      path = "models/test/benchmarks/GridWalk Benchmark.nlogo",
+      dimensions = Some((-10, 10, -10, 10)),
+      repetitions = 20
     )
   )
 }
