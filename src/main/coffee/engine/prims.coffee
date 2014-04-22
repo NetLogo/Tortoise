@@ -154,7 +154,7 @@ define(['integration/random', 'integration/typeisarray', 'engine/agents', 'engin
         xs
       else
         xs.filter(
-          (elem, pos) -> not _(xs.slice(0, pos)).some((x) -> @equality(x, elem))
+          (elem, pos) => not _(xs.slice(0, pos)).some((x) => @equality(x, elem))
         )
     outputPrint: (x) ->
       Printer(Dump(x))
