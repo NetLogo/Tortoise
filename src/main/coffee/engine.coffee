@@ -1272,6 +1272,10 @@ Prims =
     for i in [0...n]
       fn()
     return
+  # not a real implementation, always just runs body - ST 4/22/14
+  every: (time, fn) ->
+    fn()
+    return
   subtractHeadings: (h1, h2) ->
     if h1 < 0 || h1 >= 360
       h1 = (h1 % 360 + 360) % 360

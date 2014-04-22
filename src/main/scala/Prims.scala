@@ -106,6 +106,7 @@ object Prims {
       case _: prim.etc._createlinksto    => generateCreateLink(s, "createLinksTo")
       case _: prim.etc._createlinkwith   => generateCreateLink(s, "createLinkWith")
       case _: prim.etc._createlinkswith  => generateCreateLink(s, "createLinksWith")
+      case _: prim.etc._every            => generateEvery(s)
       case h: prim._hatch                => generateHatch(s, h.breedName)
       case call: prim._call              =>
         (Handlers.ident(call.procedure.name) +: args)
@@ -243,6 +244,14 @@ object Prims {
     val n = Handlers.reporter(s.args(0))
     val body = Handlers.fun(s.args(1))
     s"""AgentSet.ask(Prims.hatch($n, "$breedName"), true, $body);"""
+  }
+
+  def generateEvery(w: ast.Statement): String = {
+    val time = Handlers.reporter(w.args(0))
+    val body = Handlers.commands(w.args(1))
+    s"""|Prims.every($time, function () {
+        |${Handlers.indented(body)}
+        |});""".stripMargin
   }
 
 }
