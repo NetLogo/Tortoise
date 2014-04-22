@@ -74,7 +74,7 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
     turtlesOfBreed: (breedName) ->
       breed = @breedManager.get(breedName)
       new Agents(breed.members, breed, AgentKind.Turtle)
-    patches: -> new Agents(@_patches, @breedManager.get("PATCHES"), AgentKind.Patch)
+    patches: => new Agents(@_patches, @breedManager.get("PATCHES"), AgentKind.Patch)
     resetTimer: ->
       @_timer = Date.now()
     resetTicks: ->
@@ -143,7 +143,7 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
     # TODO: this needs to support all topologies
     width: () -> 1 + @maxPxcor - @minPxcor #@# Defer to topology x2
     height: () -> 1 + @maxPycor - @minPycor
-    getPatchAt: (x, y) ->
+    getPatchAt: (x, y) =>
       trueX  = (x - @minPxcor) % @width()  + @minPxcor # Handle negative coordinates and wrapping
       trueY  = (y - @minPycor) % @height() + @minPycor
       index  = (@maxPycor - StrictMath.round(trueY)) * @width() + (StrictMath.round(trueX) - @minPxcor)
