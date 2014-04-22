@@ -34,7 +34,7 @@ define(['integration/random', 'integration/typeisarray', 'engine/agents', 'engin
         if typeIsArray(a) and typeIsArray(b)
           a.length == b.length && a.every((elem, i) -> @equality(elem, b[i]))
         else if (a instanceof Agents && b instanceof Agents) #@# Could be sped up to O(n) (from O(n^2)) by zipping the two arrays
-          a.items.length is b.items.length and a.kind is b.kind and a.items.every((elem) -> (elem in b.items))
+          a.items.length is b.items.length and a.kind is b.kind and a.items.every((elem) -> (elem in b.items)) #@# Wrong!
         else
           (a instanceof Agents and a.breed is b) or (b instanceof Agents and b.breed is a) or
             (a is Nobody and b.id is -1) or (b is Nobody and a.id is -1) or ((a instanceof Turtle or a instanceof Link.Class) and a.compare(b) is Comparator.EQUALS)
