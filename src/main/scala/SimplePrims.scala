@@ -161,7 +161,7 @@ object SimplePrims {
       PartialFunction.condOpt(c) {
         case _: prim._done             => ""
         case _: prim.etc._observercode => ""
-        case _: prim.etc._stop         => "throw new StopInterrupt"
+        case _: prim.etc._stop         => "throw new Exception.StopInterrupt"
         case _: prim.etc._hideturtle   => "AgentSet.self().hideTurtle(true);"
         case _: prim.etc._showturtle   => "AgentSet.self().hideTurtle(false);"
       }

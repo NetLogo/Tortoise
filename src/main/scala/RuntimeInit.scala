@@ -39,13 +39,17 @@ class RuntimeInit(program: api.Program, model: core.Model) {
         |var PatchesOwn    = world.patchesOwn;
         |var LinksOwn      = world.linksOwn;
         |
+        |var AgentKind  = require('engine/agentkind');
         |var Agents     = require('engine/agents');
         |var Call       = require('engine/call');
         |var ColorModel = require('engine/colormodel');
         |var Dump       = require('engine/dump');
+        |var Exception  = require('engine/exception');
         |var Nobody     = require('engine/nobody');
+        |var noop       = require('engine/noop');
         |var Tasks      = require('engine/tasks');
         |var Trig       = require('engine/trig');
+        |var Turtle     = require('engine/turtle');
         |
         |var AgentModel     = require('integration/agentmodel');
         |var Denuller       = require('integration/denuller');
