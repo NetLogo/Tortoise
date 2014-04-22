@@ -147,6 +147,7 @@ object SimplePrims {
         case _: prim._sentence               => "Prims.sentence"
         case _: prim.etc._substring          => "Prims.substring"
         case _: prim.etc._mousedown          => "false"
+        case _: prim.etc._mouseinside        => "false"
         case _: prim.etc._mousexcor          => "0"
         case _: prim.etc._mouseycor          => "0"
         case _: prim.etc._exp                => "StrictMath.exp"
