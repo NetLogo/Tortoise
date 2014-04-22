@@ -91,6 +91,7 @@ object Prims {
       case SimplePrims.SimpleCommand(op) => if (op.isEmpty) "" else s"$op;"
       case SimplePrims.NormalCommand(op) => s"$op($commaArgs);"
       case _: prim._set                  => generateSet(s)
+      case _: prim.etc._loop             => generateLoop(s)
       case _: prim._repeat               => generateRepeat(s)
       case _: prim.etc._while            => generateWhile(s)
       case _: prim.etc._if               => generateIf(s)
@@ -155,6 +156,13 @@ object Prims {
         throw new IllegalArgumentException(
           "unknown settable: " + x.getClass.getName)
     }
+  }
+
+  def generateLoop(w: ast.Statement): String = {
+    val body = Handlers.commands(w.args(0))
+    s"""|while (true) {
+        |${Handlers.indented(body)}
+        |};""".stripMargin
   }
 
   def generateRepeat(w: ast.Statement): String = {
