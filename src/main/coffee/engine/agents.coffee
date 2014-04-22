@@ -1,5 +1,5 @@
 #@# I hate this class's name and insist that it changes, hopefully getting rolled in with `AgentSet`
-define(['engine/agentkind', 'engine/link'], (AgentKind, Link) ->
+define(['engine/agentkind'], (AgentKind) ->
   class Agents
     constructor: (@items, @breed, @kind) ->
     toString: ->
