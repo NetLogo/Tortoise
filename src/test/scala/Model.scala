@@ -283,6 +283,15 @@ object Model {
       path = "models/test/benchmarks/GridWalk Benchmark.nlogo",
       dimensions = Some((-10, 10, -10, 10)),
       repetitions = 20
+    ),
+    Model(
+      path = "models/Sample Models/Mathematics/Mousetraps.nlogo",
+      dimensions = Some((-20, 20, -20, 20)),
+      repetitions = 20
+    ),
+    Model(
+      path = "models/Sample Models/Mathematics/Probability/ProbLab/Random Basic.nlogo",
+      repetitions = 10
     )
   )
 }
