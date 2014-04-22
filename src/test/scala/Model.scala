@@ -22,6 +22,10 @@ object Model {
   // in no particular order
   val models = Seq[Model](
     Model(
+      path = "models/test/tortoise/Life Simple.nlogo",
+      repetitions = 30
+    ),
+    Model(
       path = "models/Sample Models/Biology/Fireflies.nlogo",
       dimensions = Some((-10, 10, -10, 10)),
       setup = "set number 150  setup",
@@ -42,10 +46,6 @@ object Model {
       metrics = Seq("count wolves", "count sheep", "grass")
     ),
     Model(
-      path = "models/test/tortoise/Termites.nlogo",
-      repetitions = 20
-    ),
-    Model(
       path = "models/Sample Models/Chemistry & Physics/Heat/Boiling.nlogo",
       dimensions = Some((-15, 15, -15, 15)),
       repetitions = 5
@@ -56,7 +56,7 @@ object Model {
       repetitions = 20
     ),
     Model(
-      path = "models/test/tortoise/Sandpile.nlogo",
+      path = "models/Sample Models/Chemistry & Physics/Sandpile.nlogo",
       variation = "random",
       dimensions = Some((-15, 15, -15, 15)),
       setup = """setup-random  set drop-location "center"""",
@@ -64,7 +64,7 @@ object Model {
       metrics = Seq("total", "sizes", "lifetimes")
     ),
     Model(
-      path = "models/test/tortoise/Sandpile.nlogo",
+      path = "models/Sample Models/Chemistry & Physics/Sandpile.nlogo",
       variation = "uniform",
       dimensions = Some((-15, 15, -15, 15)),
       setup = """setup-uniform 0  set drop-location "center"""",
@@ -83,17 +83,13 @@ object Model {
       repetitions = 20
     ),
     Model(
-      path = "models/test/tortoise/Life Simple.nlogo",
-      repetitions = 30
-    ),
-    Model(
-      path = "models/test/tortoise/Life Turtle-Based.nlogo",
-      dimensions = Some((-10, 10, -10, 10)),
-      setup = "setup-random",
-      repetitions = 10
-    ),
-    Model(
       path = "models/Sample Models/Computer Science/Cellular Automata/Life.nlogo",
+      dimensions = Some((-15, 15, -15, 15)),
+      setup = "setup-random",
+      repetitions = 20
+    ),
+    Model(
+      path = "models/Sample Models/Computer Science/Cellular Automata/Life Turtle-Based.nlogo",
       dimensions = Some((-15, 15, -15, 15)),
       setup = "setup-random",
       repetitions = 20

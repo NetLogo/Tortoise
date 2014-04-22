@@ -69,7 +69,39 @@ function go() {
   }
 }
 function explore() {
-
+  if (false()) {
+    var p = Prims.patch(0(), 0());
+    Globals.setGlobal(9, p);
+    AgentSet.ask(world.patches(), true, function() {
+      Call(pushN);
+    });
+    AgentSet.ask(Globals.getGlobal(9), true, function() {
+      Call(updateN, 1);
+    });
+    var results = Call(stabilize, false);
+    AgentSet.ask(world.patches(), true, function() {
+      Call(popN);
+    });
+    AgentSet.ask(world.patches(), true, function() {
+      AgentSet.setPatchVariable(7, Globals.getGlobal(10));
+      Call(recolor);
+    });
+    var avalanchePatches = Prims.first(results);
+    AgentSet.ask(avalanchePatches, true, function() {
+      AgentSet.setPatchVariable(7, Globals.getGlobal(12));
+      Call(recolor);
+    });
+    noop();
+  }
+  else {
+    if (!Prims.equality(Globals.getGlobal(9), Nobody)) {
+      Globals.setGlobal(9, Nobody);
+      AgentSet.ask(world.patches(), true, function() {
+        AgentSet.setPatchVariable(7, Globals.getGlobal(10));
+        Call(recolor);
+      });
+    }
+  }
 }
 function stabilize(animate_p) {
   var activePatches = AgentSet.agentFilter(world.patches(), function() {
@@ -117,6 +149,11 @@ function dropPatch() {
   }
   if (Prims.equality(Globals.getGlobal(1), "random")) {
     return AgentSet.oneOf(world.patches());
+  }
+  if ((Prims.equality(Globals.getGlobal(1), "mouse-click") && false())) {
+    Prims.every(0.3, function () {
+      return Prims.patch(0(), 0());
+    });
   }
   return Nobody;
 }
