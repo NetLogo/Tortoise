@@ -268,6 +268,10 @@ object Model {
       path = "models/Sample Models/Social Science/Ethnocentrism.nlogo",
       setup = "setup-full",
       repetitions = 25
+    ),
+    Model(
+      path = "models/Sample Models/Social Science/Party.nlogo",
+      repetitions = 25
     )
   )
 }
