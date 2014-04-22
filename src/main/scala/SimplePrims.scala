@@ -23,6 +23,10 @@ object SimplePrims {
         case _: prim.etc._mylinks          => "AgentSet.connectedLinks(false, false)"
         case _: prim.etc._myinlinks        => "AgentSet.connectedLinks(true, false)"
         case _: prim.etc._myoutlinks       => "AgentSet.connectedLinks(true, true)"
+        case _: prim.etc._plotxmin         => "0"
+        case _: prim.etc._plotxmax         => "0"
+        case _: prim.etc._plotymin         => "0"
+        case _: prim.etc._plotymax         => "0"
       }
   }
 
@@ -191,8 +195,16 @@ object SimplePrims {
         case _: prim.etc._setcurrentplot    => "noop"
         case _: prim.etc._setcurrentplotpen => "noop"
         case _: prim.etc._plot              => "noop"
+        case _: prim.etc._plotxy            => "noop"
         case _: prim.etc._histogram         => "noop"
+        case _: prim.etc._setplotxrange     => "noop"
+        case _: prim.etc._setplotyrange     => "noop"
+        case _: prim.etc._sethistogramnumbars => "noop"
         case _: prim.etc._clearallplots     => "noop"
+        case _: prim.etc._plotpenreset      => "noop"
+        case _: prim.etc._plotpendown       => "noop"
+        case _: prim.etc._plotpenup         => "noop"
+        case _: prim.etc._updateplots       => "noop"
         case _: prim.etc._display           => "noop"
         case _: prim.etc._stamp             => "noop"
         case _: prim.etc._usermessage       => "noop"
