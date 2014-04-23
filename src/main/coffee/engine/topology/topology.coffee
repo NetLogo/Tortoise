@@ -81,13 +81,13 @@ define(['engine/agentkind', 'engine/agents',  'engine/nobody', 'integration/stri
       r = Math.ceil(radius)
       width = @width / 2
       height = @height / 2
-      if(r < width || @wrapInX) #@# FP
+      if(r < width || not @_wrapInX) #@# FP
         minDX = -r
         maxDX = r
       else
         maxDX = StrictMath.floor(width)
         minDX = -Math.ceil(width - 1)
-      if(r < height || @wrapInY)
+      if(r < height || not @_wrapInY)
         minDY = -r
         maxDY = r
       else
