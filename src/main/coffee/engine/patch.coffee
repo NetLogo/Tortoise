@@ -33,7 +33,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
           this.plabel = v
         else
           this[Builtins.patchBuiltins[n]] = v
-          @world.updater.updated(this, Builtins.patchBuiltins[n])
+        @world.updater.updated(this, Builtins.patchBuiltins[n])
       else
         @vars[n - Builtins.patchBuiltins.length] = v
     leave: (t) -> @turtles.splice(@turtles.indexOf(t, 0), 1) #@# WTF is `t`?
