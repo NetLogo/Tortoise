@@ -102,7 +102,7 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
       else if(@wrappingAllowedInX)
         @_topology = new VertCylinder(@minPxcor, @maxPxcor, @minPycor, @maxPycor, @patches, @getPatchAt)
       else if(@wrappingAllowedInY)
-        @_topology = new HorzCylinder(@minPxcor, @maxPxcor, @minPycor, @maxPycor, @patches, @getPatchAt)
+        @_topology = new HorizCylinder(@minPxcor, @maxPxcor, @minPycor, @maxPycor, @patches, @getPatchAt)
       else
         @_topology = new Box(@minPxcor, @maxPxcor, @minPycor, @maxPycor, @patches, @getPatchAt)
       @createPatches()
