@@ -70,6 +70,7 @@ class RuntimeInit(program: Program, model: Model) {
         |var AgentModel     = require('integration/agentmodel');
         |var Denuller       = require('integration/denuller');
         |var notImplemented = require('integration/notimplemented');
+        |var Random         = require('integration/random');
         |var StrictMath     = require('integration/strictmath');
         |var typeIsArray    = require('integration/typeisarray');
         |
