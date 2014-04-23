@@ -1,7 +1,7 @@
 Things that are lousy about this branch:
 
 Highest:
--Failing test suites: TestModelDumps, TestTopologies, TestModels, CompilerTests, TestAgents
+-Failing test suites: TestModelDumps, TestTopologies, TestModels, TestAgents
 
 High:
 -CoffeeScript compiled in SBT
