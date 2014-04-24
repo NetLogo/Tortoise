@@ -12,6 +12,7 @@ High:
 -I hate `array[..]`.  It clones, but cryptically
 -Names of private members should be preceded with underscores
 -Clean up import ordering and 'integration' vs. 'engine' nonsense
+-"CC Uri" notices
 
 Mid:
 -Lack of modularization (RequireJS)
