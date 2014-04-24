@@ -1,10 +1,10 @@
 #@# No more code golf
 define(['integration/random', 'integration/typeisarray', 'engine/agents', 'engine/agentkind', 'engine/comparator'
       , 'engine/dump', 'engine/exception', 'engine/link', 'engine/nobody', 'engine/patch', 'integration/printer'
-      , 'engine/turtle', 'engine/utilities']
+      , 'engine/turtle', 'engine/utilities', 'integration/lodash']
      , ( Random,               typeIsArray,               Agents,          AgentKind,          Comparator
       ,  Dump,          Exception,          Link,          Nobody,          Patch,          Printer
-      ,  Turtle,          Utilities) ->
+      ,  Turtle,          Utilities,          _) ->
 
   class Prims
 

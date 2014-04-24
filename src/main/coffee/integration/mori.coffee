@@ -4,5 +4,5 @@ define(->
   if mori?
     mori
   else
-    require('../../mori.js')
+    require_node('mori') # Yay, Node hackery! --JAB (4/24/14)
 )
