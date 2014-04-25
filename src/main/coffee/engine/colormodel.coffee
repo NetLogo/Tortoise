@@ -1,4 +1,4 @@
-define(-> {
+define(['integration/typeisarray'], (typeIsArray) -> {
   COLOR_MAX: 140
   baseColors: ->
     for i in [0..13]
