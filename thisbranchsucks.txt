@@ -21,5 +21,6 @@ Mid:
 -Engine variables should be referenced by name, rather than number
 
 Low:
+-Random number generation often seems to take a lot of a model's time.  Would it be crazy to run the random generator within a web worker and constantly keep a pre-computed queue of 100 or 1000 or so numbers?
 -`./sbt benchmark` does the same thing as `./sbt run`
 -Lousy interfaces with SpiderMonkey and V8

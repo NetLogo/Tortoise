@@ -23,7 +23,7 @@ define(['engine/turtle', 'engine/patch', 'engine/link']
     push: (obj) ->
       @Updates.push(obj)
 
-    updated: (obj, vars...) ->
+    updated: (obj, vars...) -> #@# Polymorphize correctly
       update = @Updates[0]
       if obj instanceof Turtle
         agents = update.turtles
