@@ -31,7 +31,7 @@ define(['integration/random', 'integration/typeisarray', 'engine/agents', 'engin
         throw new Error("Checking equality on undefined is an invalid condition") #@# Bad, bad Bizzle
 
       (a is b) or ( # This code has been purposely rewritten into a crude, optimized form --JAB (3/19/14)
-        if typeIsArray(a) and typeIsArray(b)
+        if typeIsArray(a) and typeIsArray(b) #@# Lodash
           a.length == b.length && a.every((elem, i) => @equality(elem, b[i]))
         else if (a instanceof Agents && b instanceof Agents) #@# Could be sped up to O(n) (from O(n^2)) by zipping the two arrays
           a.items.length is b.items.length and a.kind is b.kind and a.items.every((elem) -> (elem in b.items)) #@# Wrong!

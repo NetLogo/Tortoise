@@ -23,7 +23,7 @@ define(['engine/agentkind', 'engine/agents',  'engine/nobody', 'integration/stri
       else
         pos
 
-    getNeighbors: (pxcor, pycor) -> #@# The line's too full of nonsense
+    getNeighbors: (pxcor, pycor) -> #@# The line's too full of nonsense, and should memoize
       new Agents((patch for patch in @_getNeighbors(pxcor, pycor) when patch != false), undefined, AgentKind.Patch)
 
     _getNeighbors: (pxcor, pycor) -> #@# Was I able to fix this in the ScalaJS version?
