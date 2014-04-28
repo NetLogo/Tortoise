@@ -26,7 +26,7 @@ class Nashorn {
   val libs = Seq(
     // from webjars
     "/" + locator.getFullPath("lodash.js"),
-    "/" + locator.getFullPath("mori.min.js"),
+    "/" + locator.getFullPath("mori.js"),
     // the original CoffeeScript for these are in src/main/coffee. sbt compiles
     // them to JavaScript for us.
     "/js/compat.js", "/js/engine.js", "/js/agentmodel.js")
