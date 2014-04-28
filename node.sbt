@@ -10,7 +10,7 @@ npm := {
 lazy val npmInstall = taskKey[Seq[File]]("Runs `npm install` from within SBT")
 
 npmInstall := {
-  if (nodeDeps.value exists (_.olderThan(packageJson.value)))
+  if (nodeDeps.value.isEmpty || (nodeDeps.value exists (_.olderThan(packageJson.value))))
     Process(Seq("npm", "install")).!(streams.value.log)
   nodeDeps.value
 }
@@ -41,7 +41,11 @@ lazy val packageJson = Def.task[File] {
 }
 
 lazy val nodeDeps = Def.task[Seq[File]] {
-  listFilesRecursively(baseDirectory.value / "node_modules")
+  val nodeModules = baseDirectory.value / "node_modules"
+  if (nodeModules.exists)
+    listFilesRecursively(nodeModules)
+  else
+    Seq()
 }
 
 lazy val coffeeSources = Def.task[Seq[File]] {
