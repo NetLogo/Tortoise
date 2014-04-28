@@ -5,6 +5,20 @@ npm := {
   Process("npm" +: args).!(streams.value.log)
 }
 
+
+
+lazy val npmInstall = taskKey[Seq[File]]("Runs `npm install` from within SBT")
+
+npmInstall := {
+  if (nodeDeps.value exists (_.olderThan(packageJson.value)))
+    Process(Seq("npm", "install")).!(streams.value.log)
+  nodeDeps.value
+}
+
+watchSources += packageJson.value
+
+
+
 lazy val grunt = taskKey[Seq[File]]("Runs `grunt` from within SBT")
 
 grunt := {
@@ -14,9 +28,21 @@ grunt := {
   Seq() // Wrong, but it works how I want it to...
 }
 
+grunt <<= grunt.dependsOn(npmInstall)
+
 resourceGenerators in Compile <+= grunt
 
 watchSources ++= coffeeSources.value
+
+
+
+lazy val packageJson = Def.task[File] {
+  baseDirectory.value / "package.json"
+}
+
+lazy val nodeDeps = Def.task[Seq[File]] {
+  listFilesRecursively(baseDirectory.value / "node_modules")
+}
 
 lazy val coffeeSources = Def.task[Seq[File]] {
   listFilesRecursively(baseDirectory.value / "src" / "main" / "coffee")
