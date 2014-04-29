@@ -1,4 +1,3 @@
-#@# I hate this class's name and insist that it changes, hopefully getting rolled in with `AgentSet`
 define(['engine/agentkind'], (AgentKind) ->
   class Agents
     constructor: (@items, @breed, @kind) ->
@@ -12,5 +11,5 @@ define(['engine/agentkind'], (AgentKind) ->
       else if @kind is AgentKind.Link
         @items[..].sort((x, y) -> x.world.linkCompare(x, y)) #@# Kind of obfuscated
       else
-        throw new Error("We don't know how to sort your kind here!") #@# I'm a bad dude
+        throw new Error("We don't know how to sort your kind here!")
 )
