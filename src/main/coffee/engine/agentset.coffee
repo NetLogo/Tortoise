@@ -1,7 +1,9 @@
-# Some things are in AgentSet, others in Prims.  The distinction seems
-# arbitrary/confusing.  May we should put *everything* in Prims, and
-# Agents can be private.  Prims could/would/should be the
-# compiler/runtime interface.  Dunno what's best.
+###
+Some things are in AgentSet, others in Prims.  The distinction seems
+arbitrary/confusing.  May we should put *everything* in Prims, and
+Agents can be private.  Prims could/would/should be the
+compiler/runtime interface.  Dunno what's best. --ST
+###
 #@# End this fence-riding nonsense ASAP; I think it makes sense to have one of these that depends on the workspace/world (for the few prims that directly do), and then one that doesn't
 #@# Should be unified with `Agents`
 define(['engine/agents', 'engine/exception', 'engine/iterator', 'engine/nobody', 'integration/random'

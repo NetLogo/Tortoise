@@ -1,4 +1,3 @@
-# For divergences between Nashorn and browsers, clone and extend!
 #@# Just make this a function that calls Lodash's `cloneDeep`
 define(-> {
   clone: (obj) ->

@@ -2,9 +2,7 @@
 define(->
   class Globals
     vars: []
-    # compiler generates call to init, which just
-    # tells the runtime how many globals there are.
-    # they are all initialized to 0
+    # Tells runtime how many globals to reserve space for and initialize to `0` --JAB (4/29/14)
     init: (n) -> @vars = (0 for x in [0...n])
     clear: (n) ->
       @vars[i] = 0 for i in [n...@vars.length]

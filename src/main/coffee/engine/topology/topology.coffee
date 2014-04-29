@@ -10,7 +10,6 @@ define(['engine/agentkind', 'engine/agents',  'engine/nobody', 'integration/stri
     constructor: (@minPxcor, @maxPxcor, @minPycor, @maxPycor, @getPatches, @getPatchAt) ->
       @height = 1 + @maxPycor - @minPycor
       @width  = 1 + @maxPxcor - @minPxcor
-    # based on agent.Topology.wrap()
     wrap: (pos, min, max) ->
       if pos >= max
         (min + ((pos - max) % (max - min)))

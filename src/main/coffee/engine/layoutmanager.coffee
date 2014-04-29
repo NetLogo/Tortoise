@@ -1,4 +1,4 @@
-# Copied pretty much verbatim from Layouts.java
+# Copied pretty much verbatim from Layouts.java --FD
 define(['integration/random', 'integration/strictmath', 'engine/agentset', 'engine/trig'], (Random, StrictMath, AgentSet, Trig) ->
 
   class LayoutManager
@@ -52,12 +52,12 @@ define(['integration/random', 'integration/strictmath', 'engine/agentset', 'engi
           degCount2 = degCount[t2Index]
         dist = t1.distance(t2)
         # links that are connecting high degree nodes should not
-        # be as springy, to help prevent "jittering" behavior
+        # be as springy, to help prevent "jittering" behavior -FD
         div = (degCount1 + degCount2) / 2.0
         div = Math.max(div, 1.0)
 
         if dist is 0
-          dx += (spr * len) / div # arbitrary x-dir push-off
+          dx += (spr * len) / div # arbitrary x-dir push-off --FD
         else
           f = spr * (dist - len) / div
           dx = dx + (f * (t2.xcor() - t1.xcor()) / dist)
@@ -93,14 +93,14 @@ define(['integration/random', 'integration/strictmath', 'engine/agentset', 'engi
           ay[j] -= dy
 
       # we need to bump some node a small amount, in case all nodes
-      # are stuck on a single line
+      # are stuck on a single line --FD
       if nodeCount > 1
         perturbAmt = (@world.width() + @world.height()) / 1.0e10
         ax[0] += Random.nextDouble() * perturbAmt - perturbAmt / 2.0
         ay[0] += Random.nextDouble() * perturbAmt - perturbAmt / 2.0
 
       # try to choose something that's reasonable perceptually --
-      # for temporal aliasing, don't want to jump too far on any given timestep.
+      # for temporal aliasing, don't want to jump too far on any given timestep. --FD
       limit = (@world.width() + @world.height()) / 50.0
 
       for i in [0...nodeCount]
