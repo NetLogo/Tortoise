@@ -1,6 +1,6 @@
 define(['integration/strictmath', 'engine/exception', 'engine/topology/topology'], (StrictMath, Exception, Topology) ->
 
-  class HorzCylinder extends Topology
+  class HorizCylinder extends Topology
 
     _wrapInX: false
     _wrapInY: true
