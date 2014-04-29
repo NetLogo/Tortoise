@@ -64,12 +64,12 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
           for x in [@minPxcor..@maxPxcor]
             new Patch((@width() * (@maxPycor - y)) + x - @minPxcor, x, y, this)
       # http://stackoverflow.com/questions/4631525/concatenating-an-array-of-arrays-in-coffeescript
-      @_patches = [].concat nested... #@# I don't know what this mean, nor what that comment above is, so it's automatically awful
+      @_patches = [].concat nested... #@# I don't know what this means, nor what that comment above is, so it's automatically awful
       for p in @_patches
         @updater.updated(p, "pxcor", "pycor", "pcolor", "plabel", "plabelcolor")
     topology: -> @_topology
     links: () ->
-      new Agents(@_links.toArray(), @breedManager.get("LINKS"), AgentKind.Link) #@# How about we just provide `LinkSet`, `PatchSet`, and `TurtleSet` as shorthand with intelligent defaults?
+      new Agents(@_links.toArray(), @breedManager.get("LINKS"), AgentKind.Link)
     turtles: () -> new Agents(@_turtles, @breedManager.get("TURTLES"), AgentKind.Turtle)
     turtlesOfBreed: (breedName) ->
       breed = @breedManager.get(breedName)

@@ -1,18 +1,42 @@
 Things that are lousy about this branch:
 
-High:
--CoffeeScript compiled in SBT
--Value wrappers: ID, NLColor, XCor, YCor, PenMode
+Very High:
+-Lodashification
+--Loops on numerical ranges should be Lodasherized
+--Uses of `length`
+-Do away with uses of `Error`/`Exception` and use proper exception classes
 -Englishify this junk!
 -Fatten up those arrows!
 -Abolish postfix control flow (e.g. `3 if true`)
--Loops on numerical ranges should be Lodasherized
--Apply type signature to all methods
 -Kill "amount" and "a" and "t" as varnames
 -I hate `array[..]`.  It clones, but cryptically
 -Names of private members should be preceded with underscores
+-Fun comparator syntax
+-String interpolation
+-`Cloner` is lame
+-Exceptions should have their own package
+-Uses of `undefined` should cause caution (and existential checks should be done right)
+-`Prims` vs. `AgentSet` nonsense sucks
+-Commented-out code should die
+-`World` should not manually manage turtle IDs
+
+High:
+-FPification
+-`Breed and `BreedManager` are wonky
+-`Shufflerator` is lame
+-Replace `AgentModel` with an `Overlord` and overhaul the code
+--Things should stop managing their own updates
+-`Agents` should not be named as such, and should (hopefully) roll in with `AgentSet`
+-Polymorphism patrol and general abolition of `instanceof`
+-Value wrappers: ID, NLColor, XCor, YCor, PenMode
+-`LinkSet`, `PatchSet`, `TurtleSet` as smart, easy set classes
+-Apply type signature to all methods
+--`Unit` functions should end in `return`
 -Clean up import ordering and 'integration' vs. 'engine' nonsense
 -"CC Uri" notices
+-`Iterator` is puny and questionable in its existence, and its interface sucks
+-`<x>sOwn` objects
+-Code is `Tasks` is confusing
 
 Mid:
 -Agentsets don't handle dead agents correctly.  JVM NetLogo has `DeadSkippingIterator` for this.  Tortoise just continues to act as if the dead agents are valid, unless they're a part of a breed agentset.  Check out being able to observe object changes in ECAMScript 6.
@@ -20,6 +44,7 @@ Mid:
 -Engine variables should be referenced by name, rather than number
 
 Low:
+-Optimizations
 -Random number generation often seems to take a lot of a model's time.  Would it be crazy to run the random generator within a web worker and constantly keep a pre-computed queue of 100 or 1000 or so numbers?
 -`./sbt benchmark` does the same thing as `./sbt run`
 -Lousy interfaces with SpiderMonkey and V8

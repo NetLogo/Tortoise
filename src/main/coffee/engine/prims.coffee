@@ -110,7 +110,7 @@ define(['integration/random', 'integration/typeisarray', 'engine/agents', 'engin
     butFirst: (xs) -> xs[1..] #@# Lodash
     butLast: (xs) -> xs[0...xs.length - 1] #@# Lodash
     length: (xs) -> xs.length #@# Lodash
-    _int: (n) -> if n < 0 then Math.ceil(n) else Math.floor(n) #@# WTF is this?
+    _int: (n) -> if n < 0 then Math.ceil(n) else Math.floor(n) #@# WTF is this?  Wouldn't `n|0` suffice?
     mod: (a, b) -> ((a % b) + b) % b #@# WTF?
     max: (xs) -> Math.max(xs...) #@# Check Lodash on this
     min: (xs) -> Math.min(xs...) #@# Check Lodash

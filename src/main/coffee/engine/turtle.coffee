@@ -117,7 +117,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
           else
             null).filter((o) -> o != null), @world.breedManager.get("TURTLES"), AgentKind.Turtle)
     isLinkNeighbor: (directed, isSource, other) -> #@# Other WHAT?
-      @linkNeighbors(directed, isSource).items.filter((o) -> o == other).length > 0 #@# `_(derp).some(f)`
+      @linkNeighbors(directed, isSource).items.filter((o) -> o == other).length > 0 #@# `_(derp).some(f)` (Lodash)
     findLinkViaNeighbor: (directed, isSource, other) -> #@# Other WHAT?
       me = this #@# No.
       links = [] #@# Bad
@@ -138,7 +138,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
 
     otherEnd: -> if this == @world.agentSet.myself().end1 then @world.agentSet.myself().end2 else @world.agentSet.myself().end1
     patchRightAndAhead: (angle, amount) ->
-      heading = @heading + angle #@# Mutation is for bad people
+      heading = @heading + angle #@# Mutation is for bad people (FP)
       if (heading < 0 || heading >= 360) #@# Use cool comparator style
         heading = ((heading % 360) + 360) % 360
       try
@@ -251,7 +251,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
     breedHere: (breedName) -> @getPatchHere().breedHere(breedName)
     hatch: (n, breedName) ->
       breed = if breedName then @world.breedManager.get(breedName) else @breed #@# Existential check?
-      newTurtles = [] #@# Functional style or GTFO
+      newTurtles = [] #@# Functional style or GTFO (FP)
       if n > 0
         for num in [0...n] #@# Nice unused variable; Lodash it!
           t = new Turtle(@world, @color, @heading, @xcor(), @ycor(), breed, @label, @labelcolor, @hidden, @size, @pensize, @penmode) #@# Sounds like we ought have some cloning system
@@ -263,7 +263,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
       [x, y] = agent.getCoords()
       @setXY(x, y)
     watchme: ->
-      @world.watch(this) #@# Nice try; use `@`
+      @world.watch(this)
 
     penDown: -> #@# For shame!
       @penmode = "down"
