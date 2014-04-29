@@ -1,11 +1,13 @@
 Things that are lousy about this branch:
 
 Very High:
+-Remove unnecessary parens (particularly in conditionals/control flow)
+-Rename `HorzCylinder`
 -Commented-out code should die
 -`Cloner` is lame
 -Fun comparator syntax
 -String interpolation
--Uses of `undefined` should cause caution (and existential checks should be done right)
+-Uses of `undefined` and `null` should cause caution (and existential checks should be done right)
 -Abolish postfix control flow (e.g. `3 if true`)
 -Kill "amount" and "a" and "t" as varnames
 -I hate `array[..]`.  It clones, but cryptically
