@@ -24,7 +24,7 @@ define(->
       # whether we need to file a second bug report at bugs.java.com - ST 3/16/14
       for turtleId, varUpdates of modelUpdate.turtles when varUpdates
         anyUpdates = true
-        if varUpdates == null || varUpdates['WHO'] == -1  # old and new death formats
+        if varUpdates is null or varUpdates['WHO'] is -1  # old and new death formats
           delete @turtles[turtleId]
         else
           t = @turtles[turtleId]
@@ -38,15 +38,15 @@ define(->
         mergeObjectInto(varUpdates, p)
       for linkId, varUpdates of modelUpdate.links when varUpdates
         anyUpdates = true
-        if varUpdates == null || varUpdates['WHO'] == -1
+        if varUpdates is null or varUpdates['WHO'] is -1
           delete @links[linkId]
         else
           l = @links[linkId]
           l ?= @links[linkId] = {}
           mergeObjectInto(varUpdates, l)
-      if(modelUpdate.observer && modelUpdate.observer[0])
+      if(modelUpdate.observer and modelUpdate.observer[0])
         mergeObjectInto(modelUpdate.observer[0], @observer)
-      if(modelUpdate.world && modelUpdate.world[0])
+      if(modelUpdate.world and modelUpdate.world[0])
         mergeObjectInto(modelUpdate.world[0], @world)
       anyUpdates
 

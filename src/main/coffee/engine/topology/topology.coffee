@@ -24,15 +24,15 @@ define(['engine/agentkind', 'engine/agents',  'engine/nobody', 'integration/stri
         pos
 
     getNeighbors: (pxcor, pycor) -> #@# The line's too full of nonsense, and should memoize
-      new Agents((patch for patch in @_getNeighbors(pxcor, pycor) when patch != false), undefined, AgentKind.Patch)
+      new Agents((patch for patch in @_getNeighbors(pxcor, pycor) when patch isnt false), undefined, AgentKind.Patch)
 
     _getNeighbors: (pxcor, pycor) -> #@# Was I able to fix this in the ScalaJS version?
-      if (pxcor == @maxPxcor && pxcor == @minPxcor) #@# How can you just go and reference properties of yourself that you don't require?
-        if (pycor == @maxPycor && pycor == @minPycor)
+      if pxcor is @maxPxcor and pxcor is @minPxcor #@# How can you just go and reference properties of yourself that you don't require?
+        if pycor is @maxPycor and pycor is @minPycor
           []
         else
           [@getPatchNorth(pxcor, pycor), @getPatchSouth(pxcor, pycor)]
-      else if (pycor == @maxPycor && pycor == @minPycor)
+      else if pycor is @maxPycor and pycor is @minPycor
         [@getPatchEast(pxcor, pycor), @getPatchWest(pxcor, pycor)]
       else
         [@getPatchNorth(pxcor, pycor),     @getPatchEast(pxcor, pycor),
@@ -41,15 +41,15 @@ define(['engine/agentkind', 'engine/agents',  'engine/nobody', 'integration/stri
          @getPatchSouthWest(pxcor, pycor), @getPatchNorthWest(pxcor, pycor)]
 
     getNeighbors4: (pxcor, pycor) -> #@# Line too full
-      new Agents((patch for patch in @_getNeighbors4(pxcor, pycor) when patch != false), undefined, AgentKind.Patch)
+      new Agents((patch for patch in @_getNeighbors4(pxcor, pycor) when patch isnt false), undefined, AgentKind.Patch)
 
     _getNeighbors4: (pxcor, pycor) -> #@# Any improvement in ScalaJS version?
-      if (pxcor == @maxPxcor && pxcor == @minPxcor)
-        if (pycor == @maxPycor && pycor == @minPycor)
+      if pxcor is @maxPxcor and pxcor is @minPxcor
+        if pycor is @maxPycor and pycor is @minPycor
           []
         else
           [@getPatchNorth(pxcor, pycor), @getPatchSouth(pxcor, pycor)]
-      else if (pycor == @maxPycor && pycor == @minPycor)
+      else if pycor is @maxPycor and pycor is @minPycor
         [@getPatchEast(pxcor, pycor), @getPatchWest(pxcor, pycor)]
       else
         [@getPatchNorth(pxcor, pycor), @getPatchEast(pxcor, pycor),
@@ -66,9 +66,9 @@ define(['engine/agentkind', 'engine/agents',  'engine/nobody', 'integration/stri
     towards: (x1, y1, x2, y2) ->
       dx = @shortestX(x1, x2)
       dy = @shortestY(y1, y2)
-      if dx == 0 #@# Code of anger
+      if dx is 0 #@# Code of anger
         if dy >= 0 then 0 else 180
-      else if dy == 0
+      else if dy is 0
         if dx >= 0 then 90 else 270
       else
         (270 + StrictMath.toDegrees (Math.PI + StrictMath.atan2(-dy, dx))) % 360 #@# Long line
@@ -81,13 +81,13 @@ define(['engine/agentkind', 'engine/agents',  'engine/nobody', 'integration/stri
       r = Math.ceil(radius)
       width = @width / 2
       height = @height / 2
-      if(r < width || not @_wrapInX) #@# FP
+      if r < width or not @_wrapInX #@# FP
         minDX = -r
         maxDX = r
       else
         maxDX = StrictMath.floor(width)
         minDX = -Math.ceil(width - 1)
-      if(r < height || not @_wrapInY)
+      if r < height or not @_wrapInY
         minDY = -r
         maxDY = r
       else
@@ -97,11 +97,11 @@ define(['engine/agentkind', 'engine/agents',  'engine/nobody', 'integration/stri
       for dy in [minDY..maxDY] #@# 'Tis crap
         for dx in [minDX..maxDX]
           p = origin.patchAt(dx, dy)
-          if p != Nobody #@# Feels `Option.map(f).getOrElse`-ish
-            if(@distanceXY(p.pxcor, p.pycor, x, y) <= radius && agents.items.filter((o) -> o == p).length > 0)
+          if p isnt Nobody #@# Feels `Option.map(f).getOrElse`-ish
+            if(@distanceXY(p.pxcor, p.pycor, x, y) <= radius and agents.items.filter((o) -> o is p).length > 0)
               result.push(p)
             for t in p.turtlesHere().items
-              if(@distanceXY(t.xcor(), t.ycor(), x, y) <= radius && agents.items.filter((o) -> o == t).length > 0)
+              if(@distanceXY(t.xcor(), t.ycor(), x, y) <= radius and agents.items.filter((o) -> o is t).length > 0)
                 result.push(t)
       new Agents(result, agents.breed, agents.kind)
 

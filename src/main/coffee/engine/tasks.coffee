@@ -7,9 +7,9 @@ define(-> {
     fn.isReporter = true
     fn
   isReporterTask: (x) ->
-    typeof(x) == "function" and x.isReporter
+    typeof(x) is "function" and x.isReporter
   isCommandTask: (x) ->
-    typeof(x) == "function" and not x.isReporter
+    typeof(x) is "function" and not x.isReporter
   map: (fn, lists...) -> #@# Don't understand
     for i in [0...lists[0].length]
       fn(lists.map((list) -> list[i])...)

@@ -8,7 +8,7 @@ define(['integration/random', 'integration/strictmath', 'engine/agentset', 'engi
     #@# Okay, so... in what universe is it alright for a single function to be 120 lines long?
     layoutSpring: (nodeSet, linkSet, spr, len, rep) ->
       nodeCount = nodeSet.items.length
-      if nodeCount == 0 #@# Bad
+      if nodeCount is 0 #@# Bad
         return
 
       ax = []
@@ -28,10 +28,10 @@ define(['integration/random', 'integration/strictmath', 'engine/agentset', 'engi
       for link in linkSet.items #@# Lodash
         t1 = link.end1
         t2 = link.end2
-        if (tMap[t1.id] != undefined) #@# Lame x2
+        if tMap[t1.id] isnt undefined #@# Lame x2
           t1Index = tMap[t1.id]
           degCount[t1Index]++
-        if (tMap[t2.id] != undefined)
+        if tMap[t2.id] isnt undefined
           t2Index = tMap[t2.id]
           degCount[t2Index]++
 
@@ -42,12 +42,12 @@ define(['integration/random', 'integration/strictmath', 'engine/agentset', 'engi
         t2 = link.end2
         t1Index = -1
         degCount1 = 0
-        if tMap[t1.id] != undefined #@# Lame
+        if tMap[t1.id] isnt undefined #@# Lame
           t1Index = tMap[t1.id]
           degCount1 = degCount[t1Index]
         t2Index = -1
         degCount2 = 0
-        if tMap[t2.id] != undefined #@# Lame
+        if tMap[t2.id] isnt undefined #@# Lame
           t2Index = tMap[t2.id]
           degCount2 = degCount[t2Index]
         dist = t1.distance(t2)
@@ -56,16 +56,16 @@ define(['integration/random', 'integration/strictmath', 'engine/agentset', 'engi
         div = (degCount1 + degCount2) / 2.0
         div = Math.max(div, 1.0)
 
-        if dist == 0
+        if dist is 0
           dx += (spr * len) / div # arbitrary x-dir push-off
         else
           f = spr * (dist - len) / div
           dx = dx + (f * (t2.xcor() - t1.xcor()) / dist)
           dy = dy + (f * (t2.ycor() - t1.ycor()) / dist)
-        if t1Index != -1
+        if t1Index isnt -1
           ax[t1Index] += dx
           ay[t1Index] += dy
-        if t2Index != -1 #@# Surely all of this control flow can be FPified
+        if t2Index isnt -1 #@# Surely all of this control flow can be FPified
           ax[t2Index] -= dx
           ay[t2Index] -= dy
 
@@ -78,7 +78,7 @@ define(['integration/random', 'integration/strictmath', 'engine/agentset', 'engi
           div = (degCount[i] + degCount[j]) / 2.0
           div = Math.max(div, 1.0)
 
-          if (t2.xcor() == t1.xcor() && t2.ycor() == t1.ycor())
+          if t2.xcor() is t1.xcor() and t2.ycor() is t1.ycor()
             ang = 360 * Random.nextDouble()
             dx = -(rep / div * Trig.sin(StrictMath.toRadians(ang)))
             dy = -(rep / div * Trig.cos(StrictMath.toRadians(ang)))

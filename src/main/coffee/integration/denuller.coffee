@@ -11,7 +11,7 @@ define(['integration/typeisarray'], (typeIsArray) -> {
     else if typeof(x) is "object"
       result = {}
       for key, value of x
-        if isNaN(key) or value != null
+        if isNaN(key) or value isnt null
           result[key] = @denull(value)
       result
     else

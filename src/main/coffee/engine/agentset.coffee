@@ -15,7 +15,7 @@ define(['engine/agents', 'engine/exception', 'engine/iterator', 'engine/nobody',
     any: (x) -> x.items.length > 0
     all: (x, f) ->
       for a in x.items #@# Lodash
-        if(!@askAgent(a, f))
+        if not @askAgent(a, f)
           return false
       true
     _self: 0 #@# Lame
@@ -24,7 +24,7 @@ define(['engine/agents', 'engine/exception', 'engine/iterator', 'engine/nobody',
       @_self = 0
       @_myself = 0
     self: => @_self
-    myself: -> if @_myself != 0 then @_myself else throw new Exception.NetLogoException("There is no agent for MYSELF to refer to.") #@# I wouldn't be surprised if this is entirely avoidable
+    myself: -> if @_myself isnt 0 then @_myself else throw new Exception.NetLogoException("There is no agent for MYSELF to refer to.") #@# I wouldn't be surprised if this is entirely avoidable
     askAgent: (a, f) -> #@# Varnames
       oldMyself = @_myself #@# All of this contextual swapping can be handled more clearly
       oldAgent = @_self
@@ -33,7 +33,7 @@ define(['engine/agents', 'engine/exception', 'engine/iterator', 'engine/nobody',
       try
         res = f() #@# FP
       catch error
-        throw error if!(error instanceof Exception.DeathInterrupt or error instanceof Exception.StopInterrupt)
+        throw error if not (error instanceof Exception.DeathInterrupt or error instanceof Exception.StopInterrupt)
       @_self = oldAgent
       @_myself = oldMyself
       res
@@ -51,7 +51,7 @@ define(['engine/agents', 'engine/exception', 'engine/iterator', 'engine/nobody',
         a = iter.next()
         @askAgent(a, f)
       # If an asker indirectly commits suicide, the exception should propagate.  FD 11/1/2013
-      if(@_self.id && @_self.id == -1) #@# Improve
+      if @_self.id and @_self.id is -1 #@# Improve (existential)
         throw new Exception.DeathInterrupt
       return
     # can't call it `with`, that's taken in JavaScript. so is `filter` - ST 2/19/14
@@ -70,7 +70,7 @@ define(['engine/agents', 'engine/exception', 'engine/iterator', 'engine/nobody',
            winningValue = result
            winners = []
          winners.push(a)
-     if winners.length == 0 #@# Nice try
+     if winners.length is 0 #@# Nice try
        Nobody
      else
        winners[Random.nextInt(winners.length)]
@@ -84,7 +84,7 @@ define(['engine/agents', 'engine/exception', 'engine/iterator', 'engine/nobody',
            winningValue = result
            winners = []
          winners.push(a)
-     if winners.length == 0
+     if winners.length is 0
        Nobody
      else
        winners[Random.nextInt(winners.length)]
@@ -109,10 +109,10 @@ define(['engine/agents', 'engine/exception', 'engine/iterator', 'engine/nobody',
         l = agentsOrList.items
       else
         l = agentsOrList
-      if l.length == 0 then Nobody else l[Random.nextInt(l.length)] #@# Sadness continues
+      if l.length is 0 then Nobody else l[Random.nextInt(l.length)] #@# Sadness continues
     nOf: (resultSize, agentsOrList) ->
       items = agentsOrList.items #@# Existential
-      if(!items)
+      if not items #@# How does this even make sense?
         throw new Error("n-of not implemented on lists yet")
       new Agents( #@# Oh, FFS
         switch resultSize
@@ -160,7 +160,7 @@ define(['engine/agents', 'engine/exception', 'engine/iterator', 'engine/nobody',
     setPatchVariable:  (n, v) -> @_self.setPatchVariable(n, v)
     other: (agentSet) ->
       self = @_self
-      filteredAgents = (agentSet.items.filter((o) -> o != self)) #@# Unnecessary parens everywhere!
+      filteredAgents = agentSet.items.filter((o) -> o isnt self)
       new Agents(filteredAgents, agentSet.breed, agentSet.kind)
     shuffle: (agents) ->
       result = []

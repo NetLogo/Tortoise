@@ -85,7 +85,7 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
       @updater.push( world: { 0: { ticks: @_ticks } } )
     resize: (minPxcor, maxPxcor, minPycor, maxPycor) ->
 
-      if(minPxcor > 0 || maxPxcor < 0 || minPycor > 0 || maxPycor < 0)
+      if(minPxcor > 0 or maxPxcor < 0 or minPycor > 0 or maxPycor < 0)
         throw new Exception.NetLogoException("You must include the point (0, 0) in the world.")
 
       # For some reason, JVM NetLogo doesn't restart `who` ordering after `resize-world`; even the test for this is existentially confused. --JAB (4/3/14)
@@ -97,7 +97,7 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
       @maxPxcor = maxPxcor
       @minPycor = minPycor
       @maxPycor = maxPycor
-      if(@wrappingAllowedInX && @wrappingAllowedInY) #@# `Topology.Companion` should know how to generate a topology from these values; what does `World` care?
+      if @wrappingAllowedInX and @wrappingAllowedInY #@# `Topology.Companion` should know how to generate a topology from these values; what does `World` care?
         @_topology = new Torus(@minPxcor, @maxPxcor, @minPycor, @maxPycor, @patches, @getPatchAt) #@# FP a-go-go
       else if(@wrappingAllowedInX)
         @_topology = new VertCylinder(@minPxcor, @maxPxcor, @minPycor, @maxPycor, @patches, @getPatchAt)
@@ -123,12 +123,12 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
       return
 
     tick: ->
-      if(@_ticks == -1)
+      if @_ticks is -1
         throw new Exception.NetLogoException("The tick counter has not been started yet. Use RESET-TICKS.") #@# Bad men x4
       @_ticks++
       @updater.push( world: { 0: { ticks: @_ticks } } )
     tickAdvance: (n) ->
-      if(@_ticks == -1)
+      if @_ticks is -1
         throw new Exception.NetLogoException("The tick counter has not been started yet. Use RESET-TICKS.")
       if(n < 0)
         throw new Exception.NetLogoException("Cannot advance the tick counter by a negative amount.")
@@ -137,7 +137,7 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
     timer: ->
       (Date.now() - @_timer) / 1000
     ticks: ->
-      if(@_ticks == -1)
+      if @_ticks is -1
         throw new Exception.NetLogoException("The tick counter has not been started yet. Use RESET-TICKS.")
       @_ticks
     # TODO: this needs to support all topologies
@@ -151,7 +151,7 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
     getTurtle: (id) -> @_turtlesById[id] or Nobody
     getTurtleOfBreed: (breedName, id) ->
       turtle = @getTurtle(id)
-      if turtle.breed.name.toUpperCase() == breedName.toUpperCase() then turtle else Nobody
+      if turtle.breed.name.toUpperCase() is breedName.toUpperCase() then turtle else Nobody
     removeLink: (id) ->
       link = @_links.find((l) -> l.id is id)
       @_links = @_links.remove(link)
@@ -188,7 +188,7 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
         try
           t.die()
         catch error
-          throw error if !(error instanceof Exception.DeathInterrupt)
+          throw error if not (error instanceof Exception.DeathInterrupt)
       @_nextTurtleId = 0
       return
     clearPatches: ->
@@ -218,7 +218,7 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
       else
         end1 = to
         end2 = from
-      if Nobody == @getLink(end1.id, end2.id)
+      if @getLink(end1.id, end2.id) is Nobody
         l = new Link(@_nextLinkId++, directed, end1, end2, this) #@# Managing IDs for yourself!
         @updater.updated(l, Builtins.linkBuiltins...)
         @updater.updated(l, Builtins.linkExtras...)
@@ -248,15 +248,15 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
     createDirectedLinks: (source, others) -> #@# Clarity
       @unbreededLinksAreDirected = true
       @updater.push({ world: { 0: { unbreededLinksAreDirected: true } } })
-      new Agents((@createLink(true, source, t) for t in others.items).filter((o) -> o != Nobody), @breedManager.get("LINKS"), AgentKind.Link)
+      new Agents((@createLink(true, source, t) for t in others.items).filter((o) -> o isnt Nobody), @breedManager.get("LINKS"), AgentKind.Link)
     createReverseDirectedLinks: (source, others) -> #@# Clarity
       @unbreededLinksAreDirected = true
       @updater.push({ world: { 0: { unbreededLinksAreDirected: true } } })
-      new Agents((@createLink(true, t, source) for t in others.items).filter((o) -> o != Nobody), @breedManager.get("LINKS"), AgentKind.Link)
+      new Agents((@createLink(true, t, source) for t in others.items).filter((o) -> o isnt Nobody), @breedManager.get("LINKS"), AgentKind.Link)
     createUndirectedLink: (source, other) ->
       @createLink(false, source, other)
     createUndirectedLinks: (source, others) -> #@# Clarity
-      new Agents((@createLink(false, source, t) for t in others.items).filter((o) -> o != Nobody), @breedManager.get("LINKS"), AgentKind.Link)
+      new Agents((@createLink(false, source, t) for t in others.items).filter((o) -> o isnt Nobody), @breedManager.get("LINKS"), AgentKind.Link)
     getLink: (fromId, toId) ->
       link = @_links.find((l) -> l.end1.id is fromId and l.end2.id is toId)
       if link?
@@ -283,7 +283,7 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
       @updatePerspective()
 
     linkCompare: (a, b) => #@# Heinous
-      if (a == b)
+      if a is b
         0
       else if a.id is -1 and b.id is -1
         0
@@ -295,11 +295,11 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
         -1
       else if(a.end2.id > b.end2.id)
         1
-      else if(a.breed == b.breed)
+      else if a.breed is b.breed
         0
-      else if(a.breed == @breedManager.get("LINKS"))
+      else if a.breed is @breedManager.get("LINKS")
         -1
-      else if(b.breed == @breedManager.get("LINKS"))
+      else if b.breed is @breedManager.get("LINKS")
         1
       else
         throw new Error("We have yet to implement link breed comparison") #@# Bad error class

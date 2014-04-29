@@ -1,7 +1,6 @@
 Things that are lousy about this branch:
 
 Very High:
--Englishify this junk!
 -Commented-out code should die
 -`Cloner` is lame
 -Fun comparator syntax
