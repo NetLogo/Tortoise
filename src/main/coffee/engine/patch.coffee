@@ -20,7 +20,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
       if (n < Builtins.patchBuiltins.length)
         if Builtins.patchBuiltins[n] is "pcolor"
           newV = ColorModel.wrapColor(v)
-          if newV != 0
+          if newV isnt 0
             @world.patchesAllBlack(false)
           this[Builtins.patchBuiltins[n]] = newV
         else if Builtins.patchBuiltins[n] is "plabel"
@@ -47,15 +47,15 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
     getNeighbors: -> @world.getNeighbors(@pxcor, @pycor) # @world.getTopology().getNeighbors(this) #@# I _love_ commented-out code!
     getNeighbors4: -> @world.getNeighbors4(@pxcor, @pycor) # @world.getTopology().getNeighbors(this)
     sprout: (n, breedName) ->
-      breed = if("" == breedName) then @world.breedManager.get("TURTLES") else @world.breedManager.get(breedName) #@# This conditional is begging for a bug
+      breed = if "" is breedName then @world.breedManager.get("TURTLES") else @world.breedManager.get(breedName) #@# This conditional is begging for a bug
       newTurtles = [] # I'm getting mad...
       if n > 0
         for num in [0...n]
-          newTurtles.push(@world.createTurtle(new Turtle(5 + 10 * Random.nextInt(14), Random.nextInt(360), @pxcor, @pycor, breed))) #@# Moar clarity, plox; and why do patches know how to create turtles?!
+          newTurtles.push(@world.createTurtle(new Turtle(@world, 5 + 10 * Random.nextInt(14), Random.nextInt(360), @pxcor, @pycor, breed))) #@# Moar clarity, plox; and why do patches know how to create turtles?!
       new Agents(newTurtles, breed, AgentKind.Turtle)
     breedHere: (breedName) ->
       breed = @world.breedManager.get(breedName)
-      new Agents(t for t in @turtles when t.breed == breed, breed, AgentKind.Turtle) #@# Just use Lodash, you jackalope
+      new Agents(t for t in @turtles when t.breed is breed, breed, AgentKind.Turtle) #@# Just use Lodash, you jackalope
     turtlesAt: (dx, dy) ->
       @patchAt(dx, dy).turtlesHere()
     patchAt: (dx, dy) ->

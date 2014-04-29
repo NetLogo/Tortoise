@@ -4,7 +4,7 @@ define(['engine/agentkind'], (AgentKind) ->
     toString: ->
       "(agentset, #{@items.length} #{@breed.name.toLowerCase()})"
     sort: ->
-      if(@items.length == 0) #@# Lodash
+      if @items.length is 0 #@# Lodash
         @items
       else if @kind is AgentKind.Turtle or @kind is AgentKind.Patch #@# Unify
         @items[..].sort((x, y) -> x.compare(y).toInt)

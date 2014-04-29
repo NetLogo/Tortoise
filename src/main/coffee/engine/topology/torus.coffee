@@ -39,70 +39,70 @@ define(['integration/strictmath', 'engine/topology/topology'], (StrictMath, Topo
 
     #@# I think I tried to fix all this in the ScalaJS version.  Did I succeed?  (I doubt it)
     getPatchNorth: (pxcor, pycor) ->
-      if (pycor == @maxPycor)
+      if pycor is @maxPycor
         @getPatchAt(pxcor, @minPycor)
       else
         @getPatchAt(pxcor, pycor + 1)
 
     getPatchSouth: (pxcor, pycor) ->
-      if (pycor == @minPycor)
+      if pycor is @minPycor
         @getPatchAt(pxcor, @maxPycor)
       else
         @getPatchAt(pxcor, pycor - 1)
 
     getPatchEast: (pxcor, pycor) ->
-      if (pxcor == @maxPxcor)
+      if pxcor is @maxPxcor
         @getPatchAt(@minPxcor, pycor)
       else
         @getPatchAt(pxcor + 1, pycor)
 
     getPatchWest: (pxcor, pycor) ->
-      if (pxcor == @minPxcor)
+      if pxcor is @minPxcor
         @getPatchAt(@maxPxcor, pycor)
       else
         @getPatchAt(pxcor - 1, pycor)
 
     getPatchNorthWest: (pxcor, pycor) ->
-      if (pycor == @maxPycor)
-        if (pxcor == @minPxcor)
+      if pycor is @maxPycor
+        if pxcor is @minPxcor
           @getPatchAt(@maxPxcor, @minPycor)
         else
           @getPatchAt(pxcor - 1, @minPycor)
 
-      else if (pxcor == @minPxcor)
+      else if pxcor is @minPxcor
         @getPatchAt(@maxPxcor, pycor + 1)
       else
         @getPatchAt(pxcor - 1, pycor + 1)
 
     getPatchSouthWest: (pxcor, pycor) ->
-      if (pycor == @minPycor)
-        if (pxcor == @minPxcor)
+      if pycor is @minPycor
+        if pxcor is @minPxcor
           @getPatchAt(@maxPxcor, @maxPycor)
         else
           @getPatchAt(pxcor - 1, @maxPycor)
-      else if (pxcor == @minPxcor)
+      else if pxcor is @minPxcor
         @getPatchAt(@maxPxcor, pycor - 1)
       else
         @getPatchAt(pxcor - 1, pycor - 1)
 
     getPatchSouthEast: (pxcor, pycor) ->
-      if (pycor == @minPycor)
-        if (pxcor == @maxPxcor)
+      if pycor is @minPycor
+        if pxcor is @maxPxcor
           @getPatchAt(@minPxcor, @maxPycor)
         else
           @getPatchAt(pxcor + 1, @maxPycor)
-      else if (pxcor == @maxPxcor)
+      else if pxcor is @maxPxcor
         @getPatchAt(@minPxcor, pycor - 1)
       else
         @getPatchAt(pxcor + 1, pycor - 1)
 
     getPatchNorthEast: (pxcor, pycor) ->
-      if (pycor == @maxPycor)
-        if (pxcor == @maxPxcor)
+      if pycor is @maxPycor
+        if pxcor is @maxPxcor
           @getPatchAt(@minPxcor, @minPycor)
         else
           @getPatchAt(pxcor + 1, @minPycor)
-      else if (pxcor == @maxPxcor)
+      else if pxcor is @maxPxcor
         @getPatchAt(@minPxcor, pycor + 1)
       else
         @getPatchAt(pxcor + 1, pycor + 1)

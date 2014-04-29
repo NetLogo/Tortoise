@@ -12,52 +12,52 @@ define(['integration/strictmath', 'engine/exception', 'engine/topology/topology'
       else
         Math.abs(y1 - y2) * (if y1 > y2 then -1 else 1)
     wrapX: (pos) ->
-      if(pos >= @maxPxcor + 0.5 || pos <= @minPxcor - 0.5) #@# Fun comparator syntax
+      if pos >= @maxPxcor + 0.5 or pos <= @minPxcor - 0.5 #@# Fun comparator syntax
         throw new Exception.TopologyInterrupt ("Cannot move turtle beyond the world's edge.")
       else pos
     wrapY: (pos) ->
       @wrap(pos, @minPycor - 0.5, @maxPycor + 0.5)
-    getPatchEast: (pxcor, pycor) -> (pxcor != @maxPxcor) && @getPatchAt(pxcor + 1, pycor)
-    getPatchWest: (pxcor, pycor) -> (pxcor != @minPxcor) && @getPatchAt(pxcor - 1, pycor)
+    getPatchEast: (pxcor, pycor) -> (pxcor isnt @maxPxcor) and @getPatchAt(pxcor + 1, pycor)
+    getPatchWest: (pxcor, pycor) -> (pxcor isnt @minPxcor) and @getPatchAt(pxcor - 1, pycor)
     getPatchNorth: (pxcor, pycor) ->
-      if (pycor == @maxPycor)
+      if pycor is @maxPycor
         @getPatchAt(pxcor, @minPycor)
       else
         @getPatchAt(pxcor, pycor + 1)
     getPatchSouth: (pxcor, pycor) ->
-      if (pycor == @minPycor)
+      if pycor is @minPycor
         @getPatchAt(pxcor, @maxPycor)
       else
         @getPatchAt(pxcor, pycor - 1)
 
     getPatchNorthWest: (pxcor, pycor) ->
-      if (pxcor == @minPxcor)
+      if pxcor is @minPxcor
         false
-      else if (pycor == @maxPycor)
+      else if pycor is @maxPycor
         @getPatchAt(pxcor - 1, @minPycor)
       else
         @getPatchAt(pxcor - 1, pycor + 1)
 
     getPatchSouthWest: (pxcor, pycor) ->
-      if (pxcor == @minPxcor)
+      if pxcor is @minPxcor
         false
-      else if (pycor == @minPycor)
+      else if pycor is @minPycor
         @getPatchAt(pxcor - 1, @maxPycor)
       else
         @getPatchAt(pxcor - 1, pycor - 1)
 
     getPatchSouthEast: (pxcor, pycor) ->
-      if (pxcor == @maxPxcor)
+      if pxcor is @maxPxcor
         false
-      else if (pycor == @minPycor)
+      else if pycor is @minPycor
         @getPatchAt(pxcor + 1, @maxPycor)
       else
         @getPatchAt(pxcor + 1, pycor - 1)
 
     getPatchNorthEast: (pxcor, pycor) ->
-      if (pxcor == @maxPxcor)
+      if pxcor is @maxPxcor
         false
-      else if (pycor == @maxPycor)
+      else if pycor is @maxPycor
         @getPatchAt(pxcor + 1, @minPycor)
       else
         @getPatchAt(pxcor + 1, pycor + 1)
@@ -73,7 +73,7 @@ define(['integration/strictmath', 'engine/exception', 'engine/topology/topology'
       for y in [yy...(yy * 2)]
         for x in [xx...(xx * 2)]
           diffuseVal = (scratch[x - xx][y - yy] / 8) * amount
-          if (x > xx && x < (xx * 2) - 1)
+          if x > xx and x < (xx * 2) - 1
             scratch2[(x    ) - xx][(y    ) - yy] += scratch[x - xx][y - yy] - (8 * diffuseVal)
             scratch2[(x - 1) % xx][(y - 1) % yy] += diffuseVal
             scratch2[(x - 1) % xx][(y    ) % yy] += diffuseVal
@@ -83,7 +83,7 @@ define(['integration/strictmath', 'engine/exception', 'engine/topology/topology'
             scratch2[(x + 1) % xx][(y - 1) % yy] += diffuseVal
             scratch2[(x + 1) % xx][(y    ) % yy] += diffuseVal
             scratch2[(x + 1) % xx][(y + 1) % yy] += diffuseVal
-          else if (x == xx)
+          else if x is xx
             scratch2[(x    ) - xx][(y    ) - yy] += scratch[x - xx][y - yy] - (5 * diffuseVal)
             scratch2[(x    ) % xx][(y + 1) % yy] += diffuseVal
             scratch2[(x    ) % xx][(y - 1) % yy] += diffuseVal

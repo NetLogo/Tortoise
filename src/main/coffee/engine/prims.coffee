@@ -16,7 +16,7 @@ define(['integration/random', 'integration/typeisarray', 'engine/agents', 'engin
     right: (n) -> @world.agentSet.self().right(n)
     left: (n) -> @world.agentSet.self().right(-n)
     setXY: (x, y) -> @world.agentSet.self().setXY(x, y)
-    empty: (l) -> l.length == 0 #@# Seems wrong
+    empty: (l) -> l.length is 0 #@# Seems wrong
     getNeighbors: -> @world.agentSet.self().getNeighbors()
     getNeighbors4: -> @world.agentSet.self().getNeighbors4()
     sprout: (n, breedName) -> @world.agentSet.self().sprout(n, breedName)
@@ -24,16 +24,16 @@ define(['integration/random', 'integration/typeisarray', 'engine/agents', 'engin
     patch: (x, y) -> @world.getPatchAt(x, y)
     randomXcor: -> @world.minPxcor - 0.5 + Random.nextDouble() * (@world.maxPxcor - @world.minPxcor + 1)
     randomYcor: -> @world.minPycor - 0.5 + Random.nextDouble() * (@world.maxPycor - @world.minPycor + 1)
-    shadeOf: (c1, c2) -> Math.floor(c1 / 10) == Math.floor(c2 / 10) #@# Varnames
-    isBreed: (breedName, x) -> if x.isBreed? and x.id != -1 then x.isBreed(breedName) else false
+    shadeOf: (c1, c2) -> Math.floor(c1 / 10) is Math.floor(c2 / 10) #@# Varnames
+    isBreed: (breedName, x) -> if x.isBreed? and x.id isnt -1 then x.isBreed(breedName) else false
     equality: (a, b) -> #@# This is a cesspool for performance problems
       if a is undefined or b is undefined
         throw new Error("Checking equality on undefined is an invalid condition") #@# Bad, bad Bizzle
 
       (a is b) or ( # This code has been purposely rewritten into a crude, optimized form --JAB (3/19/14)
         if typeIsArray(a) and typeIsArray(b) #@# Lodash
-          a.length == b.length && a.every((elem, i) => @equality(elem, b[i]))
-        else if (a instanceof Agents && b instanceof Agents) #@# Could be sped up to O(n) (from O(n^2)) by zipping the two arrays
+          a.length is b.length and a.every((elem, i) => @equality(elem, b[i]))
+        else if (a instanceof Agents and b instanceof Agents) #@# Could be sped up to O(n) (from O(n^2)) by zipping the two arrays
           a.items.length is b.items.length and a.kind is b.kind and a.items.every((elem) -> (elem in b.items)) #@# Wrong!
         else
           (a instanceof Agents and a.breed is b) or (b instanceof Agents and b.breed is a) or
@@ -91,7 +91,7 @@ define(['integration/random', 'integration/typeisarray', 'engine/agents', 'engin
           Math.ceil(n)
         else
           Math.floor(n)
-      if truncated == 0
+      if truncated is 0
         0
       else if truncated > 0
         Random.nextLong(truncated)
@@ -126,7 +126,7 @@ define(['integration/random', 'integration/typeisarray', 'engine/agents', 'engin
     reverse: (xs) -> #@# Lodash
       if typeIsArray(xs)
         xs[..].reverse()
-      else if typeof(xs) == "string"
+      else if typeof(xs) is "string"
         xs.split("").reverse().join("")
       else
         throw new Exception.NetLogoException("can only reverse lists and strings")
@@ -167,9 +167,9 @@ define(['integration/random', 'integration/typeisarray', 'engine/agents', 'engin
             recurse(input)
           else if (input instanceof Patch)
             result.push(input)
-          else if input != Nobody
+          else if input isnt Nobody
             for agent in input.items
-              if (!(agent in result))
+              if not (agent in result)
                 result.push(agent)
       recurse(inputs)
       new Agents(result, undefined, AgentKind.Patch) #@# A great example of why we should have a `PatchSet`

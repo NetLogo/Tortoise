@@ -23,16 +23,16 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
       @breed = breed
       breed.add(@)
       @shape = @breed.shape()
-      if(@breed != @world.breedManager.get("TURTLES"))
+      if @breed isnt @world.breedManager.get("TURTLES")
         @world.breedManager.get("TURTLES").add(this)
         for x in @breed.vars
-          if(@breedVars[x] == undefined) #@# Simplify
+          if(@breedVars[x] is undefined) #@# Simplify
             @breedVars[x] = 0
     xcor: -> @_xcor
     setXcor: (newX) ->
       originPatch = @getPatchHere()
       @_xcor = @world.topology().wrapX(newX)
-      if originPatch != @getPatchHere()
+      if originPatch isnt @getPatchHere()
         originPatch.leave(this)
         @getPatchHere().arrive(this)
       @refreshLinks()
@@ -40,7 +40,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
     setYcor: (newY) ->
       originPatch = @getPatchHere()
       @_ycor = @world.topology().wrapY(newY)
-      if originPatch != @getPatchHere()
+      if originPatch isnt @getPatchHere()
         originPatch.leave(this)
         @getPatchHere().arrive(this)
       @refreshLinks()
@@ -50,10 +50,10 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
       @world.updater.updated(this, "shape")
     toString: -> "(" + @breed.singular + " " + @id + ")" #@# Interpolate
     keepHeadingInRange: ->
-      if (@heading < 0 || @heading >= 360) #@# Rewrite comparison with fun comparator syntax
+      if @heading < 0 or @heading >= 360 #@# Rewrite comparison with fun comparator syntax
         @heading = ((@heading % 360) + 360) % 360
       return
-    canMove: (amount) -> @patchAhead(amount) != Nobody
+    canMove: (amount) -> @patchAhead(amount) isnt Nobody
     distanceXY: (x, y) -> @world.topology().distanceXY(@xcor(), @ycor(), x, y)
     distance: (agent) -> @world.topology().distance(@xcor(), @ycor(), agent)
     towardsXY: (x, y) -> @world.topology().towards(@xcor(), @ycor(), x, y)
@@ -62,7 +62,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
       [x, y] = agent.getCoords()
       @world.topology().towards(@xcor(), @ycor(), x, y)
     faceXY: (x, y) ->
-      if(x != @xcor() or y != @ycor())
+      if(x isnt @xcor() or y isnt @ycor())
         @heading = @world.topology().towards(@xcor(), @ycor(), x, y)
         @world.updater.updated(this, "heading")
     face: (agent) ->
@@ -83,16 +83,16 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
       me = this #@# Wath?
       if directed
         new Agents(@world.links().items.map((l) -> #@# Could this code be noisier?
-          if (l.directed and l.end1 == me and isSource) or (l.directed and l.end2 == me and !isSource)
+          if (l.directed and l.end1 is me and isSource) or (l.directed and l.end2 is me and not isSource)
             l
           else
-            null).filter((o) -> o != null), @world.breedManager.get("LINKS"), AgentKind.Link) #@# I bet this comparison is wrong somehow...
+            null).filter((o) -> o isnt null), @world.breedManager.get("LINKS"), AgentKind.Link) #@# I bet this comparison is wrong somehow...
       else
         new Agents(@world.links().items.map((l) ->
-          if (!l.directed and l.end1 == me) or (!l.directed and l.end2 == me)
+          if (not l.directed and l.end1 is me) or (not l.directed and l.end2 is me)
             l
           else
-            null).filter((o) -> o != null), @world.breedManager.get("LINKS"), AgentKind.Link)
+            null).filter((o) -> o isnt null), @world.breedManager.get("LINKS"), AgentKind.Link)
     refreshLinks: ->
       if @_links.length > 0
         l.updateEndRelatedVars() for l in (@connectedLinks(true, true).items) #@# Srsly?
@@ -102,44 +102,44 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
       me = this #@# WTF, stop!
       if directed
         new Agents(@world.links().items.map((l) -> #@# Noisy, noisy nonsense
-          if l.directed and l.end1 == me and isSource
+          if l.directed and l.end1 is me and isSource
             l.end2
-          else if l.directed and l.end2 == me and !isSource
+          else if l.directed and l.end2 is me and not isSource
             l.end1
           else
-            null).filter((o) -> o != null), @world.breedManager.get("TURTLES"), AgentKind.Turtle)
+            null).filter((o) -> o isnt null), @world.breedManager.get("TURTLES"), AgentKind.Turtle)
       else
         new Agents(@world.links().items.map((l) ->
-          if !l.directed and l.end1 == me
+          if not l.directed and l.end1 is me
             l.end2
-          else if !l.directed and l.end2 == me
+          else if not l.directed and l.end2 is me
             l.end1
           else
-            null).filter((o) -> o != null), @world.breedManager.get("TURTLES"), AgentKind.Turtle)
+            null).filter((o) -> o isnt null), @world.breedManager.get("TURTLES"), AgentKind.Turtle)
     isLinkNeighbor: (directed, isSource, other) -> #@# Other WHAT?
-      @linkNeighbors(directed, isSource).items.filter((o) -> o == other).length > 0 #@# `_(derp).some(f)` (Lodash)
+      @linkNeighbors(directed, isSource).items.filter((o) -> o is other).length > 0 #@# `_(derp).some(f)` (Lodash)
     findLinkViaNeighbor: (directed, isSource, other) -> #@# Other WHAT?
       me = this #@# No.
       links = [] #@# Bad
       if directed
         links = @world.links().items.map((l) -> #@# Noisy
-          if ((l.directed and l.end1 == me and l.end2 == other and isSource) or (l.directed and l.end1 == other and l.end2 == me and !isSource))
+          if ((l.directed and l.end1 is me and l.end2 is other and isSource) or (l.directed and l.end1 is other and l.end2 is me and not isSource))
             l
           else
-            null).filter((o) -> o != null)
+            null).filter((o) -> o isnt null)
       else
         throw new Exception.NetLogoException("LINKS is a directed breed.") if @world.unbreededLinksAreDirected
         links = @world.links().items.map((l) ->
-          if ((!l.directed and l.end1 == me and l.end2 == other) or (!l.directed and l.end2 == me and l.end1 == other))
+          if ((not l.directed and l.end1 is me and l.end2 is other) or (not l.directed and l.end2 is me and l.end1 is other))
             l
           else
-            null).filter((o) -> o != null)
-      if links.length == 0 then Nobody else links[0] #@# Code above is, thus, lame
+            null).filter((o) -> o isnt null)
+      if links.length is 0 then Nobody else links[0] #@# Code above is, thus, lame; `length is 0` is antipattern
 
-    otherEnd: -> if this == @world.agentSet.myself().end1 then @world.agentSet.myself().end2 else @world.agentSet.myself().end1
+    otherEnd: -> if this is @world.agentSet.myself().end1 then @world.agentSet.myself().end2 else @world.agentSet.myself().end1
     patchRightAndAhead: (angle, amount) ->
       heading = @heading + angle #@# Mutation is for bad people (FP)
-      if (heading < 0 || heading >= 360) #@# Use cool comparator style
+      if heading < 0 or heading >= 360 #@# Use cool comparator style
         heading = ((heading % 360) + 360) % 360
       try
         newX = @world.topology().wrapX(@xcor() + amount * Trig.sin(heading))
@@ -197,27 +197,27 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
       @world.updater.updated(this, "hidden")
       return
     isBreed: (breedName) ->
-      @breed.name.toUpperCase() == breedName.toUpperCase()
+      @breed.name.toUpperCase() is breedName.toUpperCase()
     die: ->
       @breed.remove(@)
-      if (@id != -1)
+      if @id isnt -1
         @world.removeTurtle(@id)
         @seppuku()
         for l in @world.links().items
           try
-            l.die() if (l.end1.id == @id or l.end2.id == @id)
+            l.die() if l.end1.id is @id or l.end2.id is @id
           catch error
-            throw error if !(error instanceof Exception.DeathInterrupt)
+            throw error if not (error instanceof Exception.DeathInterrupt)
         @id = -1
         @getPatchHere().leave(this)
       throw new Exception.DeathInterrupt("Call only from inside an askAgent block")
     getTurtleVariable: (n) -> #@# Obviously, we're awful people and this can be improved
-      if (n < Builtins.turtleBuiltins.length)
-        if(n == 3) #xcor
+      if n < Builtins.turtleBuiltins.length
+        if n is 3 #xcor
           @xcor()
-        else if(n == 4) #ycor
+        else if n is 4 #ycor
           @ycor()
-        else if(n == 8) #breed
+        else if n is 8 #breed
           @world.turtlesOfBreed(@breed.name) #@# Seems weird that I should need to do this...?
         else
           this[Builtins.turtleBuiltins[n]]
@@ -227,15 +227,15 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
       if (n < Builtins.turtleBuiltins.length)
         if n is 1 # color
           this[Builtins.turtleBuiltins[n]] = ColorModel.wrapColor(v)
-        else if(n == 3) #xcor
+        else if n is 3 #xcor
           @setXcor(v)
-        else if(n == 4) #ycor
+        else if n is 4 #ycor
           @setYcor(v)
         else
-          if (n == 5)  # shape
+          if n is 5  # shape
             v = v.toLowerCase()
           this[Builtins.turtleBuiltins[n]] = v
-          if (n == 2)  # heading
+          if n is 2  # heading
             @keepHeadingInRange()
         @world.updater.updated(this, Builtins.turtleBuiltins[n])
       else

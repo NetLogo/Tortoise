@@ -39,7 +39,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
         @vars[n - Builtins.linkBuiltins.length] = v
     die: ->
       @breed.remove(@)
-      if (@id != -1)
+      if @id isnt -1
         @end1._removeLink(this)
         @end2._removeLink(this)
         @world.removeLink(@id)
@@ -56,7 +56,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
       this[Builtins.turtleBuiltins[n]] = newV
       @world.updater.updated(this, Builtins.turtleBuiltins[n])
     bothEnds: -> new Agents([@end1, @end2], @world.breedManager.get("TURTLES"), AgentKind.Turtle)
-    otherEnd: -> if @end1 == AgentSet.myself() then @end2 else @end1
+    otherEnd: -> if @end1 is AgentSet.myself() then @end2 else @end1
     updateEndRelatedVars: ->
       @heading = @world.topology().towards(@end1.xcor(), @end1.ycor(), @end2.xcor(), @end2.ycor())
       @size = @world.topology().distanceXY(@end1.xcor(), @end1.ycor(), @end2.xcor(), @end2.ycor())
