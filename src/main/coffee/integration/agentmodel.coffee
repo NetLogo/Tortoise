@@ -44,9 +44,9 @@ define(->
           l = @links[linkId]
           l ?= @links[linkId] = {}
           mergeObjectInto(varUpdates, l)
-      if(modelUpdate.observer and modelUpdate.observer[0])
+      if modelUpdate.observer and modelUpdate.observer[0] #@# Wath?  (Existential)
         mergeObjectInto(modelUpdate.observer[0], @observer)
-      if(modelUpdate.world and modelUpdate.world[0])
+      if modelUpdate.world and modelUpdate.world[0]
         mergeObjectInto(modelUpdate.world[0], @world)
       anyUpdates
 

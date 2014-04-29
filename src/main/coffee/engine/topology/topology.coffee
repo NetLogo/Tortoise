@@ -12,11 +12,11 @@ define(['engine/agentkind', 'engine/agents',  'engine/nobody', 'integration/stri
       @width  = 1 + @maxPxcor - @minPxcor
     # based on agent.Topology.wrap()
     wrap: (pos, min, max) ->
-      if (pos >= max)
+      if pos >= max
         (min + ((pos - max) % (max - min)))
-      else if (pos < min)
+      else if pos < min
         result = max - ((min - pos) % (max - min)) #@# FP
-        if (result < max)
+        if result < max
           result
         else
           min
@@ -58,9 +58,9 @@ define(['engine/agentkind', 'engine/agents',  'engine/nobody', 'integration/stri
     distanceXY: (x1, y1, x2, y2) -> #@# Long line
       StrictMath.sqrt(StrictMath.pow(@shortestX(x1, x2), 2) + StrictMath.pow(@shortestY(y1, y2), 2))
     distance: (x1, y1, agent) -> #@# If you're polymorphizing, you ought to just do it properly in the OO way
-      if (agent instanceof Turtle)
+      if agent instanceof Turtle
         @distanceXY(x1, y1, agent.xcor(), agent.ycor())
-      else if(agent instanceof Patch)
+      else if agent instanceof Patch
         @distanceXY(x1, y1, agent.pxcor, agent.pycor)
 
     towards: (x1, y1, x2, y2) ->
@@ -98,10 +98,10 @@ define(['engine/agentkind', 'engine/agents',  'engine/nobody', 'integration/stri
         for dx in [minDX..maxDX]
           p = origin.patchAt(dx, dy)
           if p isnt Nobody #@# Feels `Option.map(f).getOrElse`-ish
-            if(@distanceXY(p.pxcor, p.pycor, x, y) <= radius and agents.items.filter((o) -> o is p).length > 0)
+            if @distanceXY(p.pxcor, p.pycor, x, y) <= radius and agents.items.filter((o) -> o is p).length > 0
               result.push(p)
             for t in p.turtlesHere().items
-              if(@distanceXY(t.xcor(), t.ycor(), x, y) <= radius and agents.items.filter((o) -> o is t).length > 0)
+              if @distanceXY(t.xcor(), t.ycor(), x, y) <= radius and agents.items.filter((o) -> o is t).length > 0
                 result.push(t)
       new Agents(result, agents.breed, agents.kind)
 

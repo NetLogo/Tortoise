@@ -10,7 +10,7 @@ define(['engine/turtle', 'engine/patch', 'engine/link']
 
     collectUpdates: ->
       result =
-        if (@Updates.length is 0) #@# `isEmpty`?
+        if @Updates.length is 0 #@# `isEmpty`?
           [turtles: {}, patches: {}]
         else
           @Updates

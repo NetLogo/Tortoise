@@ -12,10 +12,10 @@ define(['integration/random'], (Random) ->
       @fetch()
       result
     fetch: ->
-      if (@i >= @agents.length)
+      if @i >= @agents.length
         @nextOne = null
       else
-        if (@i < @agents.length - 1)
+        if @i < @agents.length - 1
           r = @i + Random.nextInt(@agents.length - @i)
           @nextOne = @agents[r]
           @agents[r] = @agents[@i]

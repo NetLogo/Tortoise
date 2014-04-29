@@ -26,7 +26,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
       if @breed isnt @world.breedManager.get("TURTLES")
         @world.breedManager.get("TURTLES").add(this)
         for x in @breed.vars
-          if(@breedVars[x] is undefined) #@# Simplify
+          if @breedVars[x] is undefined #@# Simplify
             @breedVars[x] = 0
     xcor: -> @_xcor
     setXcor: (newX) ->
@@ -62,7 +62,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
       [x, y] = agent.getCoords()
       @world.topology().towards(@xcor(), @ycor(), x, y)
     faceXY: (x, y) ->
-      if(x isnt @xcor() or y isnt @ycor())
+      if x isnt @xcor() or y isnt @ycor()
         @heading = @world.topology().towards(@xcor(), @ycor(), x, y)
         @world.updater.updated(this, "heading")
     face: (agent) ->
@@ -123,14 +123,14 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
       links = [] #@# Bad
       if directed
         links = @world.links().items.map((l) -> #@# Noisy
-          if ((l.directed and l.end1 is me and l.end2 is other and isSource) or (l.directed and l.end1 is other and l.end2 is me and not isSource))
+          if (l.directed and l.end1 is me and l.end2 is other and isSource) or (l.directed and l.end1 is other and l.end2 is me and not isSource)
             l
           else
             null).filter((o) -> o isnt null)
       else
         throw new Exception.NetLogoException("LINKS is a directed breed.") if @world.unbreededLinksAreDirected
         links = @world.links().items.map((l) ->
-          if ((not l.directed and l.end1 is me and l.end2 is other) or (not l.directed and l.end2 is me and l.end1 is other))
+          if (not l.directed and l.end1 is me and l.end2 is other) or (not l.directed and l.end2 is me and l.end1 is other)
             l
           else
             null).filter((o) -> o isnt null)
@@ -224,7 +224,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
       else
         @vars[n - Builtins.turtleBuiltins.length]
     setTurtleVariable: (n, v) -> #@# Here we go again!
-      if (n < Builtins.turtleBuiltins.length)
+      if n < Builtins.turtleBuiltins.length
         if n is 1 # color
           this[Builtins.turtleBuiltins[n]] = ColorModel.wrapColor(v)
         else if n is 3 #xcor

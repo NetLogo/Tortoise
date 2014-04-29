@@ -85,7 +85,7 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
       @updater.push( world: { 0: { ticks: @_ticks } } )
     resize: (minPxcor, maxPxcor, minPycor, maxPycor) ->
 
-      if(minPxcor > 0 or maxPxcor < 0 or minPycor > 0 or maxPycor < 0)
+      if minPxcor > 0 or maxPxcor < 0 or minPycor > 0 or maxPycor < 0
         throw new Exception.NetLogoException("You must include the point (0, 0) in the world.")
 
       # For some reason, JVM NetLogo doesn't restart `who` ordering after `resize-world`; even the test for this is existentially confused. --JAB (4/3/14)
@@ -99,9 +99,9 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
       @maxPycor = maxPycor
       if @wrappingAllowedInX and @wrappingAllowedInY #@# `Topology.Companion` should know how to generate a topology from these values; what does `World` care?
         @_topology = new Torus(@minPxcor, @maxPxcor, @minPycor, @maxPycor, @patches, @getPatchAt) #@# FP a-go-go
-      else if(@wrappingAllowedInX)
+      else if @wrappingAllowedInX
         @_topology = new VertCylinder(@minPxcor, @maxPxcor, @minPycor, @maxPycor, @patches, @getPatchAt)
-      else if(@wrappingAllowedInY)
+      else if @wrappingAllowedInY
         @_topology = new HorizCylinder(@minPxcor, @maxPxcor, @minPycor, @maxPycor, @patches, @getPatchAt)
       else
         @_topology = new Box(@minPxcor, @maxPxcor, @minPycor, @maxPycor, @patches, @getPatchAt)
@@ -130,7 +130,7 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
     tickAdvance: (n) ->
       if @_ticks is -1
         throw new Exception.NetLogoException("The tick counter has not been started yet. Use RESET-TICKS.")
-      if(n < 0)
+      if n < 0
         throw new Exception.NetLogoException("Cannot advance the tick counter by a negative amount.")
       @_ticks += n
       @updater.push( world: { 0: { ticks: @_ticks } } )
@@ -212,7 +212,7 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
     #@# The return of `Nobody` followed by clients `filter`ing against it screams "flatMap!" --JAB (2/7/14)
     ###
     createLink: (directed, from, to) ->
-      if(from.id < to.id or directed) #@# FP FTW
+      if from.id < to.id or directed #@# FP FTW
         end1 = from
         end2 = to
       else
@@ -269,10 +269,10 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
       @perspective = 3
       agentKind = 0
       agentId = -1
-      if(agent instanceof Turtle)
+      if agent instanceof Turtle
         agentKind = 1
         agentId = agent.id
-      else if(agent instanceof Patch)
+      else if agent instanceof Patch
         agentKind = 2
         agentId = agent.id
       @targetAgent = [agentKind, agentId]
@@ -287,13 +287,13 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
         0
       else if a.id is -1 and b.id is -1
         0
-      else if(a.end1.id < b.end1.id)
+      else if a.end1.id < b.end1.id
         -1
-      else if(a.end1.id > b.end1.id)
+      else if a.end1.id > b.end1.id
         1
-      else if(a.end2.id < b.end2.id)
+      else if a.end2.id < b.end2.id
         -1
-      else if(a.end2.id > b.end2.id)
+      else if a.end2.id > b.end2.id
         1
       else if a.breed is b.breed
         0

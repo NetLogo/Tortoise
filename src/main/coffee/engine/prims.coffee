@@ -33,7 +33,7 @@ define(['integration/random', 'integration/typeisarray', 'engine/agents', 'engin
       (a is b) or ( # This code has been purposely rewritten into a crude, optimized form --JAB (3/19/14)
         if typeIsArray(a) and typeIsArray(b) #@# Lodash
           a.length is b.length and a.every((elem, i) => @equality(elem, b[i]))
-        else if (a instanceof Agents and b instanceof Agents) #@# Could be sped up to O(n) (from O(n^2)) by zipping the two arrays
+        else if a instanceof Agents and b instanceof Agents #@# Could be sped up to O(n) (from O(n^2)) by zipping the two arrays
           a.items.length is b.items.length and a.kind is b.kind and a.items.every((elem) -> (elem in b.items)) #@# Wrong!
         else
           (a instanceof Agents and a.breed is b) or (b instanceof Agents and b.breed is a) or
@@ -61,28 +61,28 @@ define(['integration/random', 'integration/typeisarray', 'engine/agents', 'engin
     scaleColor: (color, number, min, max) -> #@# I don't know WTF this is, so it has to be wrong
       color = Math.floor(color / 10) * 10
       perc = 0.0
-      if(min > max)
-        if(number < max)
+      if min > max
+        if number < max
           perc = 1.0
-        else if (number > min)
+        else if number > min
           perc = 0.0
         else
           tempval = min - number
           tempmax = min - max
           perc = tempval / tempmax
       else
-        if(number > max)
+        if number > max
           perc = 1.0
-        else if (number < min)
+        else if number < min
           perc = 0.0
         else
           tempval = number - min
           tempmax = max - min
           perc = tempval / tempmax
       perc *= 10
-      if(perc >= 9.9999)
+      if perc >= 9.9999
         perc = 9.9999
-      if(perc < 0)
+      if perc < 0
         perc = 0
       color + perc
     random: (n) ->
@@ -163,9 +163,9 @@ define(['integration/random', 'integration/typeisarray', 'engine/agents', 'engin
       result = []
       recurse = (inputs) ->
         for input in inputs
-          if (typeIsArray(input))
+          if typeIsArray(input)
             recurse(input)
-          else if (input instanceof Patch)
+          else if input instanceof Patch
             result.push(input)
           else if input isnt Nobody
             for agent in input.items
@@ -292,7 +292,7 @@ define(['integration/random', 'integration/typeisarray', 'engine/agents', 'engin
       new Agents(result, breed, AgentKind.Turtle)
 
     turtlesOn: (agentsOrAgent) ->
-      if(agentsOrAgent.items) #@# FP
+      if agentsOrAgent.items #@# FP
         agents = agentsOrAgent.items
       else
         agents = [agentsOrAgent]

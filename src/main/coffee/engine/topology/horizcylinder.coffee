@@ -7,7 +7,7 @@ define(['integration/strictmath', 'engine/exception', 'engine/topology/topology'
 
     shortestX: (x1, x2) -> Math.abs(x1 - x2) * (if x1 > x2 then -1 else 1) #@# Weird
     shortestY: (y1, y2) -> #@# Weird
-      if(StrictMath.abs(y1 - y2) > (1 + @maxPycor - @minPycor) / 2)
+      if StrictMath.abs(y1 - y2) > (1 + @maxPycor - @minPycor) / 2
         (@height - Math.abs(y1 - y2)) * (if y2 > y1 then -1 else 1)
       else
         Math.abs(y1 - y2) * (if y1 > y2 then -1 else 1)
