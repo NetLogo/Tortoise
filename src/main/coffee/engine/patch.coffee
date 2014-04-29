@@ -44,8 +44,8 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
     towardsXY: (x, y) -> @world.topology().towards(@pxcor, @pycor, x, y)
     distance: (agent) -> @world.topology().distance(@pxcor, @pycor, agent)
     turtlesHere: -> new Agents(@turtles[..], @world.breedManager.get("TURTLES"), AgentKind.Turtle) #@# What do the two dots even mean here...?
-    getNeighbors: -> @world.getNeighbors(@pxcor, @pycor) # @world.getTopology().getNeighbors(this) #@# I _love_ commented-out code!
-    getNeighbors4: -> @world.getNeighbors4(@pxcor, @pycor) # @world.getTopology().getNeighbors(this)
+    getNeighbors: -> @world.getNeighbors(@pxcor, @pycor)
+    getNeighbors4: -> @world.getNeighbors4(@pxcor, @pycor)
     sprout: (n, breedName) ->
       breed = if "" is breedName then @world.breedManager.get("TURTLES") else @world.breedManager.get(breedName) #@# This conditional is begging for a bug
       newTurtles = [] # I'm getting mad...
