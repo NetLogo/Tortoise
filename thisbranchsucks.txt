@@ -1,24 +1,24 @@
 Things that are lousy about this branch:
 
 Very High:
--Lodashification
---Loops on numerical ranges should be Lodasherized
---Uses of `length`
--Do away with uses of `Error`/`Exception` and use proper exception classes
 -Englishify this junk!
--Fatten up those arrows!
+-Commented-out code should die
+-`Cloner` is lame
+-Fun comparator syntax
+-String interpolation
+-Uses of `undefined` should cause caution (and existential checks should be done right)
 -Abolish postfix control flow (e.g. `3 if true`)
 -Kill "amount" and "a" and "t" as varnames
 -I hate `array[..]`.  It clones, but cryptically
--Names of private members should be preceded with underscores
--Fun comparator syntax
--String interpolation
--`Cloner` is lame
 -Exceptions should have their own package
--Uses of `undefined` should cause caution (and existential checks should be done right)
--`Prims` vs. `AgentSet` nonsense sucks
--Commented-out code should die
+-Do away with uses of `Error`/`Exception` and use proper exception classes
+-Names of private members should be preceded with underscores
+-Lodashification
+--Loops on numerical ranges should be Lodasherized
+--Uses of `length`
 -`World` should not manually manage turtle IDs
+-Fatten up those arrows!
+-`Prims` vs. `AgentSet` nonsense sucks
 
 High:
 -FPification
