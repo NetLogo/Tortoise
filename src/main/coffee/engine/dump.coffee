@@ -1,5 +1,3 @@
-# like api.Dump. will need more cases. for now at least knows
-# about lists and reporter tasks
 define(['integration/typeisarray'], (typeIsArray) ->
 
   # Needs a name here since it's recursive --JAB (4/16/14)

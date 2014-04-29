@@ -1,7 +1,5 @@
-# on Nashorn, we use the JVM StrictMath stuff so results are identical
-# with regular NetLogo. in browser, be satisfied with "close enough"
 define(['integration/cloner'], (Cloner) ->
-  if StrictMath?
+  if StrictMath? # Nashorn
     StrictMath
   else
     obj = Cloner.clone(Math)

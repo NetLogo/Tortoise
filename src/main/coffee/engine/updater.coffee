@@ -38,16 +38,18 @@ define(['engine/turtle', 'engine/patch', 'engine/link']
       if agentUpdate['WHO'] < 0
         delete agentUpdate['WHO']
 
-      # is there some less simpleminded way we could build this? surely there
-      # must be. my CoffeeScript fu is stoppable - ST 1/24/13
-      # Possible strategy. For variables with -, just replace it with a _ instead
-      # of concatenating the words. For variables with a ?, replace it with _p or
-      # something. For variables that need some kind of accessor, make the variable
-      # that has the NetLogo name refer to the same thing that the NetLogo variable
-      # does and make a different variable that refers to the thing you want in js.
-      # For example, turtle.breed should refer to the breed name and
-      # turtle._breed should point to the actual breed object.
-      # BH 1/13/2014
+      ###
+      is there some less simpleminded way we could build this? surely there
+      must be. my CoffeeScript fu is stoppable - ST 1/24/13
+      Possible strategy. For variables with -, just replace it with a _ instead
+      of concatenating the words. For variables with a ?, replace it with _p or
+      something. For variables that need some kind of accessor, make the variable
+      that has the NetLogo name refer to the same thing that the NetLogo variable
+      does and make a different variable that refers to the thing you want in js.
+      For example, turtle.breed should refer to the breed name and
+      turtle._breed should point to the actual breed object.
+      BH 1/13/2014
+      ###
       for v in vars #@# Create a mapper from engine names to view names
         switch v
           when "xcor"

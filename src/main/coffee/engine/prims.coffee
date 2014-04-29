@@ -26,7 +26,7 @@ define(['integration/random', 'integration/typeisarray', 'engine/agents', 'engin
     randomYcor: -> @world.minPycor - 0.5 + Random.nextDouble() * (@world.maxPycor - @world.minPycor + 1)
     shadeOf: (c1, c2) -> Math.floor(c1 / 10) is Math.floor(c2 / 10) #@# Varnames
     isBreed: (breedName, x) -> if x.isBreed? and x.id isnt -1 then x.isBreed(breedName) else false
-    equality: (a, b) -> #@# This is a cesspool for performance problems
+    equality: (a, b) ->
       if a is undefined or b is undefined
         throw new Error("Checking equality on undefined is an invalid condition") #@# Bad, bad Bizzle
 

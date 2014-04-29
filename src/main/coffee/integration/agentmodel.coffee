@@ -14,7 +14,7 @@ define(->
         @update(u)
       return
 
-    update: (modelUpdate) -> # boolean
+    update: (modelUpdate) -> # boolean #@# Lousy comment
       anyUpdates = false
       # the three 'when varUpdates' checks below only seem to be
       # necessary on Nashorn, which apparently has trouble iterating

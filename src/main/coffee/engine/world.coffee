@@ -9,8 +9,6 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
 
   class World
 
-    # any variables used in the constructor should come
-    # before the constructor, else they get overwritten after it.
     _nextLinkId: 0
     _nextTurtleId: 0
     _turtles: []
@@ -140,7 +138,6 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
       if @_ticks is -1
         throw new Exception.NetLogoException("The tick counter has not been started yet. Use RESET-TICKS.")
       @_ticks
-    # TODO: this needs to support all topologies
     width: () -> 1 + @maxPxcor - @minPxcor #@# Defer to topology x2
     height: () -> 1 + @maxPycor - @minPycor
     getPatchAt: (x, y) =>
