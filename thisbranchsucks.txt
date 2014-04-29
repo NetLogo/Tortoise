@@ -1,7 +1,6 @@
 Things that are lousy about this branch:
 
 Very High:
--Remove unnecessary parens (particularly in conditionals/control flow)
 -Rename `HorzCylinder`
 -Commented-out code should die
 -`Cloner` is lame

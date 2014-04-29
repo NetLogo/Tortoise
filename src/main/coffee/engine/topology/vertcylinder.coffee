@@ -6,7 +6,7 @@ define(['integration/strictmath', 'engine/exception', 'engine/topology/topology'
     _wrapInY: false
 
     shortestX: (x1, x2) -> #@# Some lameness
-      if(StrictMath.abs(x1 - x2) > (1 + @maxPxcor - @minPxcor) / 2)
+      if StrictMath.abs(x1 - x2) > (1 + @maxPxcor - @minPxcor) / 2
         (@width - StrictMath.abs(x1 - x2)) * (if x2 > x1 then -1 else 1)
       else
         Math.abs(x1 - x2) * (if x1 > x2 then -1 else 1)

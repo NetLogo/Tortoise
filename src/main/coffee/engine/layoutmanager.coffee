@@ -94,7 +94,7 @@ define(['integration/random', 'integration/strictmath', 'engine/agentset', 'engi
 
       # we need to bump some node a small amount, in case all nodes
       # are stuck on a single line
-      if (nodeCount > 1)
+      if nodeCount > 1
         perturbAmt = (@world.width() + @world.height()) / 1.0e10
         ax[0] += Random.nextDouble() * perturbAmt - perturbAmt / 2.0
         ay[0] += Random.nextDouble() * perturbAmt - perturbAmt / 2.0

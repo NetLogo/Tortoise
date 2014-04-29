@@ -22,12 +22,12 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
       @updateEndRelatedVars()
       @vars = (x for x in @world.linksOwn.vars)
     getLinkVariable: (n) ->
-      if (n < Builtins.linkBuiltins.length)
+      if n < Builtins.linkBuiltins.length
         this[Builtins.linkBuiltins[n]]
       else
         @vars[n - Builtins.linkBuiltins.length]
     setLinkVariable: (n, v) ->
-      if (n < Builtins.linkBuiltins.length)
+      if n < Builtins.linkBuiltins.length
         newV =
           if Builtins.linkBuiltins[n] is "lcolor"
             ColorModel.wrapColor(v)

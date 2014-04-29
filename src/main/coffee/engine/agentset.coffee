@@ -38,16 +38,16 @@ define(['engine/agents', 'engine/exception', 'engine/iterator', 'engine/nobody',
       @_myself = oldMyself
       res
     ask: (agentsOrAgent, shuffle, f) ->
-      if(agentsOrAgent.items) #@# FP
+      if agentsOrAgent.items #@# FP
         agents = agentsOrAgent.items
       else
         agents = [agentsOrAgent]
       iter =
-        if (shuffle) #@# Fix yo' varnames, son!
+        if shuffle #@# Fix yo' varnames, son!
           new Shufflerator(agents)
         else
           new Iterator(agents)
-      while (iter.hasNext()) #@# Srsly?  Is this Java 1.4?
+      while iter.hasNext() #@# Srsly?  Is this Java 1.4?
         a = iter.next()
         @askAgent(a, f)
       # If an asker indirectly commits suicide, the exception should propagate.  FD 11/1/2013
@@ -90,13 +90,13 @@ define(['engine/agents', 'engine/exception', 'engine/iterator', 'engine/nobody',
        winners[Random.nextInt(winners.length)]
     of: (agentsOrAgent, f) -> #@# This is nonsense; same with `ask`.  If you're giving me something, _you_ get it into the right type first, not me!
       isagentset = agentsOrAgent.items #@# Existential check!  Come on!
-      if(isagentset)
+      if isagentset
         agents = agentsOrAgent.items
       else
         agents = [agentsOrAgent]
       result = []
       iter = new Shufflerator(agents)
-      while (iter.hasNext()) #@# FP.  Also, move out of the 1990s.
+      while iter.hasNext() #@# FP.  Also, move out of the 1990s.
         a = iter.next()
         result.push(@askAgent(a, f))
       if isagentset
@@ -105,7 +105,7 @@ define(['engine/agents', 'engine/exception', 'engine/iterator', 'engine/nobody',
         result[0]
     oneOf: (agentsOrList) ->
       isagentset = agentsOrList.items #@# Stop this nonsense
-      if(isagentset)
+      if isagentset
         l = agentsOrList.items
       else
         l = agentsOrList
@@ -165,7 +165,7 @@ define(['engine/agents', 'engine/exception', 'engine/iterator', 'engine/nobody',
     shuffle: (agents) ->
       result = []
       iter = new Shufflerator(agents.items)
-      while (iter.hasNext()) #@# 1990 rears its ugly head again
+      while iter.hasNext() #@# 1990 rears its ugly head again
         result.push(iter.next())
       new Agents(result, agents.breed, agents.kind)
 

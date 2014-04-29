@@ -1,6 +1,6 @@
 define(['integration/strictmath', 'engine/exception'], (StrictMath, Exception) -> {
   squash: (x) ->
-    if (StrictMath.abs(x) < 3.2e-15)
+    if StrictMath.abs(x) < 3.2e-15
       0
     else
       x

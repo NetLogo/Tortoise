@@ -12,12 +12,12 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
       @turtles = [] #@# Why put this in the constructor?
     toString: -> "(patch " + @pxcor + " " + @pycor + ")" #@# Interpolate
     getPatchVariable: (n) ->
-      if (n < Builtins.patchBuiltins.length)
+      if n < Builtins.patchBuiltins.length
         this[Builtins.patchBuiltins[n]]
       else
         @vars[n - Builtins.patchBuiltins.length]
     setPatchVariable: (n, v) ->
-      if (n < Builtins.patchBuiltins.length)
+      if n < Builtins.patchBuiltins.length
         if Builtins.patchBuiltins[n] is "pcolor"
           newV = ColorModel.wrapColor(v)
           if newV isnt 0

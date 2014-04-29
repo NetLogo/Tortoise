@@ -11,12 +11,12 @@ define(['integration/strictmath', 'engine/topology/topology'], (StrictMath, Topo
     wrapY: (pos) ->
       @wrap(pos, @minPycor - 0.5, @maxPycor + 0.5)
     shortestX: (x1, x2) -> #@# Seems improvable
-      if(StrictMath.abs(x1 - x2) > @width / 2)
+      if StrictMath.abs(x1 - x2) > @width / 2
         (@width - StrictMath.abs(x1 - x2)) * (if x2 > x1 then -1 else 1)
       else
         Math.abs(x1 - x2) * (if x1 > x2 then -1 else 1)
     shortestY: (y1, y2) -> #@# Seems improvable
-      if(StrictMath.abs(y1 - y2) > @height / 2)
+      if StrictMath.abs(y1 - y2) > @height / 2
         (@height - StrictMath.abs(y1 - y2)) * (if y2 > y1 then -1 else 1)
       else
         Math.abs(y1 - y2) * (if y1 > y2 then -1 else 1)
