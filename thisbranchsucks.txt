@@ -1,8 +1,9 @@
 Things that are lousy about this branch:
 
 Very High:
--Uses of `undefined` and `null` should cause caution (and existential checks should be done right)
+-Kill `typeIsArray`
 -Abolish postfix control flow (e.g. `3 if true`)
+-Uses of `undefined` and `null` should cause caution (and existential checks should be done right)
 -Kill "amount" and "a" and "t" as varnames
 -I hate `array[..]`.  It clones, but cryptically
 -Exceptions should have their own package
