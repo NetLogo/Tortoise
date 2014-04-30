@@ -73,7 +73,6 @@ class RuntimeInit(program: Program, model: Model) {
         |var notImplemented = require('integration/notimplemented');
         |var Random         = require('integration/random');
         |var StrictMath     = require('integration/strictmath');
-        |var typeIsArray    = require('integration/typeisarray');
         |
         |$globals$turtlesOwn$patchesOwn$linksOwn$breeds""".stripMargin
   }

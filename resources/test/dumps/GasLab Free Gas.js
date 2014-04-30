@@ -30,7 +30,6 @@ var Denuller       = require('integration/denuller');
 var notImplemented = require('integration/notimplemented');
 var Random         = require('integration/random');
 var StrictMath     = require('integration/strictmath');
-var typeIsArray    = require('integration/typeisarray');
 
 Globals.init(17);
 BreedManager.add("PARTICLES", "particle");
