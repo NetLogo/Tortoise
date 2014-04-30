@@ -67,6 +67,7 @@ class RuntimeInit(program: Program, model: Model) {
         |var Trig       = require('engine/trig');
         |var Turtle     = require('engine/turtle');
         |
+        |var _              = require('ingration/lodash');
         |var AgentModel     = require('integration/agentmodel');
         |var Denuller       = require('integration/denuller');
         |var notImplemented = require('integration/notimplemented');
