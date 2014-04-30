@@ -1,5 +1,7 @@
-define(['engine/agentkind', 'engine/agents',  'engine/nobody', 'integration/strictmath', 'engine/turtle', 'engine/patch']
-     , ( AgentKind,          Agents,           Nobody,          StrictMath,               Turtle,          Patch) ->
+define(['engine/agentkind', 'engine/agents',  'engine/nobody', 'integration/strictmath', 'engine/turtle'
+      , 'engine/patch', 'integration/lodash']
+     , ( AgentKind,          Agents,           Nobody,          StrictMath,               Turtle
+      ,  Patch,          _) ->
 
   class Topology
 
@@ -22,8 +24,9 @@ define(['engine/agentkind', 'engine/agents',  'engine/nobody', 'integration/stri
       else
         pos
 
-    getNeighbors: (pxcor, pycor) -> #@# The line's too full of nonsense, and should memoize
-      new Agents((patch for patch in @_getNeighbors(pxcor, pycor) when patch isnt false), undefined, AgentKind.Patch)
+    getNeighbors: (pxcor, pycor) -> #@# This should memoize
+      patches = _(@_getNeighbors(pxcor, pycor)).filter((p) -> p isnt false).value()
+      new Agents(patches, undefined, AgentKind.Patch)
 
     _getNeighbors: (pxcor, pycor) -> #@# Was I able to fix this in the ScalaJS version?
       if pxcor is @maxPxcor and pxcor is @minPxcor #@# How can you just go and reference properties of yourself that you don't require?
@@ -39,8 +42,9 @@ define(['engine/agentkind', 'engine/agents',  'engine/nobody', 'integration/stri
          @getPatchNorthEast(pxcor, pycor), @getPatchSouthEast(pxcor, pycor),
          @getPatchSouthWest(pxcor, pycor), @getPatchNorthWest(pxcor, pycor)]
 
-    getNeighbors4: (pxcor, pycor) -> #@# Line too full
-      new Agents((patch for patch in @_getNeighbors4(pxcor, pycor) when patch isnt false), undefined, AgentKind.Patch)
+    getNeighbors4: (pxcor, pycor) ->
+      patches = _(@_getNeighbors4(pxcor, pycor)).filter((p) -> p isnt false).value()
+      new Agents(patches, undefined, AgentKind.Patch)
 
     _getNeighbors4: (pxcor, pycor) -> #@# Any improvement in ScalaJS version?
       if pxcor is @maxPxcor and pxcor is @minPxcor

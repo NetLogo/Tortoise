@@ -296,7 +296,7 @@ define(['integration/random', 'engine/agents', 'engine/agentkind', 'engine/compa
         agents = agentsOrAgent.items
       else
         agents = [agentsOrAgent]
-      turtles = [].concat (agent.turtlesHere().items for agent in agents)... #@# I don't know what's going on here, so it's probably wrong
+      turtles = _(agents).map((x) -> x.turtlesHere().items).flatten().value()
       new Agents(turtles, @world.breedManager.get("TURTLES"), AgentKind.Turtle)
 
 )

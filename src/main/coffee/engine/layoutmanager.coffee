@@ -1,5 +1,6 @@
 # Copied pretty much verbatim from Layouts.java --FD
-define(['integration/random', 'integration/strictmath', 'engine/agentset', 'engine/trig'], (Random, StrictMath, AgentSet, Trig) ->
+define(['integration/lodash', 'integration/random', 'integration/strictmath', 'engine/agentset', 'engine/trig']
+     , ( _,                    Random,               StrictMath,               AgentSet,          Trig) ->
 
   class LayoutManager
 
@@ -14,7 +15,7 @@ define(['integration/random', 'integration/strictmath', 'engine/agentset', 'engi
       ax = []
       ay = []
       tMap = []
-      degCount = (0 for i in [0...nodeCount]) #@# Unused var
+      degCount = _(0).range(nodeCount).map(-> 0).value()
 
       agt = []
       i = 0

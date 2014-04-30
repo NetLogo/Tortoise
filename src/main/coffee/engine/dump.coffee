@@ -4,7 +4,7 @@ define(['integration/lodash'], (_) ->
   Dump =
     (x) ->
       if _(x).isArray()
-        itemStr = (Dump(x2) for x2 in x).join(" ")
+        itemStr = _(x).map(Dump).value().join(" ")
         "[#{itemStr}]"
       else if typeof(x) is "function" #@# I hate this; Lodash it
         if x.isReporter

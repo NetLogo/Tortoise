@@ -1,4 +1,4 @@
-define(['integration/strictmath', 'engine/topology/topology'], (StrictMath, Topology) ->
+define(['integration/lodash', 'integration/strictmath', 'engine/topology/topology'], (_, StrictMath, Topology) ->
 
   #@# Redundancy with other topologies...
   class Torus extends Topology
@@ -29,12 +29,12 @@ define(['integration/strictmath', 'engine/topology/topology'], (StrictMath, Topo
         pxcor = patch.pxcor
         pycor = patch.pycor
         # We have to order the neighbors exactly how Torus.java:diffuse does them so we don't get floating discrepancies.  FD 10/19/2013
-        diffusallyOrderedNeighbors =
+        orderedNeighbors =
           [@getPatchSouthWest(pxcor, pycor), @getPatchWest(pxcor, pycor),
            @getPatchNorthWest(pxcor, pycor), @getPatchSouth(pxcor, pycor),
            @getPatchNorth(pxcor, pycor), @getPatchSouthEast(pxcor, pycor),
            @getPatchEast(pxcor, pycor), @getPatchNorthEast(pxcor, pycor)]
-        diffusalSum = (scratch[n.pxcor - @minPxcor][n.pycor - @minPycor] for n in diffusallyOrderedNeighbors).reduce((a, b) -> a + b) #@# Weird
+        diffusalSum = _(orderedNeighbors).map((nb) => scratch[nb.pxcor - @minPxcor][nb.pycor - @minPycor]).reduce((acc, x) -> acc + x)
         patch.setPatchVariable(vn, patch.getPatchVariable(vn) * (1.0 - amount) + (diffusalSum / 8) * amount)
 
     #@# I think I tried to fix all this in the ScalaJS version.  Did I succeed?  (I doubt it)

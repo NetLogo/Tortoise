@@ -1,5 +1,5 @@
 #@# This makes me uncomfortable
-define(-> {
+define(['integration/lodash'], (_) -> {
   commandTask: (fn) ->
     fn.isReporter = false
     fn
@@ -13,8 +13,8 @@ define(-> {
   map: (fn, lists...) -> #@# Don't understand
     for i in [0...lists[0].length]
       fn(lists.map((list) -> list[i])...)
-  nValues: (n, fn) -> #@# Lodash
-    fn(i) for i in [0...n]
+  nValues: (n, fn) ->
+    _(0).range(n).map(fn).value()
   forEach: (fn, lists...) -> #@# Don't understand
     for i in [0...lists[0].length]
       fn(lists.map((list) -> list[i])...)

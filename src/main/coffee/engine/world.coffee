@@ -1,11 +1,11 @@
 define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'engine/agents', 'engine/builtins'
       , 'engine/exception', 'engine/link', 'engine/nobody', 'engine/patch', 'engine/turtle', 'engine/worldlinks'
       , 'engine/topology/box', 'engine/topology/horizcylinder', 'engine/topology/torus'
-      , 'engine/topology/vertcylinder']
+      , 'engine/topology/vertcylinder', 'integration/lodash']
      , ( Random,               StrictMath,               AgentKind,          Agents,          Builtins
       ,  Exception,          Link,          Nobody,          Patch,          Turtle,          WorldLinks
       ,  Box,                   HorizCylinder,                   Torus
-      ,  VertCylinder) ->
+      ,  VertCylinder,                   _) ->
 
   class World
 
@@ -225,17 +225,11 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
       else
         Nobody
     createOrderedTurtles: (n, breedName) -> #@# Clarity is a good thing
-      newTurtles = [] #@# Anger, FP
-      if n > 0
-        for num in [0...n]
-          newTurtles.push(@createTurtle(new Turtle((10 * num + 5) % 140, (360 * num) / n, 0, 0, @breedManager.get(breedName))))
-      new Agents(newTurtles, @breedManager.get(breedName), AgentKind.Turtle)
+      turtles = _(0).range(n).map((num) => @createTurtle(new Turtle(this, (10 * num + 5) % 140, (360 * num) / n, 0, 0, @breedManager.get(breedName)))).value()
+      new Agents(turtles, @breedManager.get(breedName), AgentKind.Turtle)
     createTurtles: (n, breedName) -> #@# Clarity is still good
-      newTurtles = [] #@# Bad, FP
-      if n > 0
-        for num in [0...n]
-          newTurtles.push(@createTurtle(new Turtle(5 + 10 * Random.nextInt(14), Random.nextInt(360), 0, 0, @breedManager.get(breedName))))
-      new Agents(newTurtles, @breedManager.get(breedName), AgentKind.Turtle)
+      turtles = _(0).range(n).map(=> @createTurtle(new Turtle(this, 5 + 10 * Random.nextInt(14), Random.nextInt(360), 0, 0, @breedManager.get(breedName)))).value()
+      new Agents(turtles, @breedManager.get(breedName), AgentKind.Turtle)
     getNeighbors: (pxcor, pycor) -> @topology().getNeighbors(pxcor, pycor)
     getNeighbors4: (pxcor, pycor) -> @topology().getNeighbors4(pxcor, pycor)
     createDirectedLink: (from, to) ->
@@ -245,15 +239,18 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
     createDirectedLinks: (source, others) -> #@# Clarity
       @unbreededLinksAreDirected = true
       @updater.push({ world: { 0: { unbreededLinksAreDirected: true } } })
-      new Agents((@createLink(true, source, t) for t in others.items).filter((o) -> o isnt Nobody), @breedManager.get("LINKS"), AgentKind.Link)
+      links = _(others.items).map((t) => @createLink(true, source, t)).filter((o) -> o isnt Nobody).value()
+      new Agents(links, @breedManager.get("LINKS"), AgentKind.Link)
     createReverseDirectedLinks: (source, others) -> #@# Clarity
       @unbreededLinksAreDirected = true
       @updater.push({ world: { 0: { unbreededLinksAreDirected: true } } })
-      new Agents((@createLink(true, t, source) for t in others.items).filter((o) -> o isnt Nobody), @breedManager.get("LINKS"), AgentKind.Link)
+      links = _(others.items).map((t) => @createLink(true, t, source)).filter((o) -> o isnt Nobody).value()
+      new Agents(links, @breedManager.get("LINKS"), AgentKind.Link)
     createUndirectedLink: (source, other) ->
       @createLink(false, source, other)
     createUndirectedLinks: (source, others) -> #@# Clarity
-      new Agents((@createLink(false, source, t) for t in others.items).filter((o) -> o isnt Nobody), @breedManager.get("LINKS"), AgentKind.Link)
+      links = _(others.items).map((t) => @createLink(false, source, t)).filter((o) -> o isnt Nobody).value()
+      new Agents(links, @breedManager.get("LINKS"), AgentKind.Link)
     getLink: (fromId, toId) ->
       link = @_links.find((l) -> l.end1.id is fromId and l.end2.id is toId)
       if link?

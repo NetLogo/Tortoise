@@ -1,14 +1,14 @@
 #@# CanTalkToPatches: { getPatchVariable(Int): Any, setPatchVariable(Int, Any): Unit }
 #@# Extends `CanTalkToPatches`, `Agent`, `Vassal`
 define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormodel', 'engine/comparator'
-      , 'engine/exception', 'engine/nobody', 'engine/turtle', 'integration/random']
+      , 'engine/exception', 'engine/nobody', 'engine/turtle', 'integration/random', 'integration/lodash']
      , ( AgentKind,          Agents,          Builtins,          ColorModel,          Comparator
-      ,  Exception,          Nobody,          Turtle,          Random) ->
+      ,  Exception,          Nobody,          Turtle,          Random,               _) ->
 
   class Patch
     vars: []
     constructor: (@id, @pxcor, @pycor, @world, @pcolor = 0.0, @plabel = "", @plabelcolor = 9.9) ->
-      @vars = (x for x in @world.patchesOwn.vars)
+      @vars = _(@world.patchesOwn.vars).cloneDeep()
       @turtles = [] #@# Why put this in the constructor?
     toString: -> "(patch #{@pxcor} #{@pycor})"
     getPatchVariable: (n) ->
@@ -47,15 +47,13 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
     getNeighbors: -> @world.getNeighbors(@pxcor, @pycor)
     getNeighbors4: -> @world.getNeighbors4(@pxcor, @pycor)
     sprout: (n, breedName) ->
-      breed = if "" is breedName then @world.breedManager.get("TURTLES") else @world.breedManager.get(breedName) #@# This conditional is begging for a bug
-      newTurtles = [] # I'm getting mad...
-      if n > 0
-        for num in [0...n]
-          newTurtles.push(@world.createTurtle(new Turtle(@world, 5 + 10 * Random.nextInt(14), Random.nextInt(360), @pxcor, @pycor, breed))) #@# Moar clarity, plox; and why do patches know how to create turtles?!
-      new Agents(newTurtles, breed, AgentKind.Turtle)
+      breed   = if "" is breedName then @world.breedManager.get("TURTLES") else @world.breedManager.get(breedName) #@# This conditional is begging for a bug
+      turtles = _(0).range(n).map(=> @world.createTurtle(new Turtle(@world, 5 + 10 * Random.nextInt(14), Random.nextInt(360), @pxcor, @pycor, breed))).value() #@# Moar clarity, plox; and why do patches know how to create turtles?!
+      new Agents(turtles, breed, AgentKind.Turtle)
     breedHere: (breedName) ->
-      breed = @world.breedManager.get(breedName)
-      new Agents(t for t in @turtles when t.breed is breed, breed, AgentKind.Turtle) #@# Just use Lodash, you jackalope
+      breed   = @world.breedManager.get(breedName)
+      turtles = _(@turtles).filter((t) -> t.breed is breed).value()
+      new Agents(turtles, breed, AgentKind.Turtle)
     turtlesAt: (dx, dy) ->
       @patchAt(dx, dy).turtlesHere()
     patchAt: (dx, dy) ->

@@ -1,8 +1,8 @@
 #@# Extends: `Agent`, `Vassal`, `CanTalkToPatches`
 define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormodel', 'engine/comparator'
-      , 'engine/exception', 'engine/nobody', 'engine/trig']
+      , 'engine/exception', 'engine/nobody', 'engine/trig', 'integration/lodash']
      , ( AgentKind,          Agents,          Builtins,          ColorModel,          Comparator
-      ,  Exception,          Nobody,          Trig) ->
+      ,  Exception,          Nobody,          Trig,          _) ->
 
   class Turtle
     vars: [] #@# You are the bane of your own existence
@@ -15,7 +15,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
       @_ycor = ycor
       @breedVars = {} #@# Can be outside the constructor
       @updateBreed(breed)
-      @vars = (x for x in @world.turtlesOwn.vars) #@# Can be outside the constructor
+      @vars = _(@world.turtlesOwn.vars).cloneDeep() #@# Can be outside the constructor
       @getPatchHere().arrive(this)
     updateBreed: (breed) -> #@# This code is lunacy
       if @breed
@@ -94,10 +94,16 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
           else
             null).filter((o) -> o isnt null), @world.breedManager.get("LINKS"), AgentKind.Link)
     refreshLinks: ->
-      if @_links.length > 0
-        l.updateEndRelatedVars() for l in (@connectedLinks(true, true).items) #@# Srsly?
-        l.updateEndRelatedVars() for l in (@connectedLinks(true, false).items)
-        l.updateEndRelatedVars() for l in (@connectedLinks(false, false).items)
+      if not _(@_links).isEmpty()
+        linkTypes = [[true, true], [true, false], [false, false]]
+        _(linkTypes).map(
+          (t) =>
+            [directed, isSource] = t
+            @connectedLinks(directed, isSource).items
+        ).flatten().forEach(
+          (l) -> l.updateEndRelatedVars()
+        )
+      return
     linkNeighbors: (directed, isSource) ->
       me = this #@# WTF, stop!
       if directed
@@ -127,8 +133,9 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
             l
           else
             null).filter((o) -> o isnt null)
+      else if @world.unbreededLinksAreDirected
+        throw new Exception.NetLogoException("LINKS is a directed breed.")
       else
-        throw new Exception.NetLogoException("LINKS is a directed breed.") if @world.unbreededLinksAreDirected
         links = @world.links().items.map((l) ->
           if (not l.directed and l.end1 is me and l.end2 is other) or (not l.directed and l.end2 is me and l.end1 is other)
             l
@@ -204,10 +211,11 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
         @world.removeTurtle(@id)
         @seppuku()
         for l in @world.links().items
-          try
-            l.die() if l.end1.id is @id or l.end2.id is @id
-          catch error
-            throw error if not (error instanceof Exception.DeathInterrupt)
+          if l.end1.id is @id or l.end2.id is @id
+            try
+              l.die()
+            catch error
+              throw error if not (error instanceof Exception.DeathInterrupt)
         @id = -1
         @getPatchHere().leave(this)
       throw new Exception.DeathInterrupt("Call only from inside an askAgent block")
