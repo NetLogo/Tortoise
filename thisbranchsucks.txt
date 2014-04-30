@@ -1,7 +1,6 @@
 Things that are lousy about this branch:
 
 Very High:
--`Cloner` is lame
 -Fun comparator syntax
 -String interpolation
 -Uses of `undefined` and `null` should cause caution (and existential checks should be done right)
