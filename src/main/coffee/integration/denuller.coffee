@@ -17,7 +17,7 @@ define(['integration/lodash'], (_) ->
               acc[key] = denull(value)
             acc
 
-        _(x).transform(transformFunc, {})
+        _(x).transform(transformFunc, {}).value()
 
       else
         x
