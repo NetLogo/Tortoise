@@ -14,9 +14,12 @@ define(['integration/strictmath', 'engine/exception', 'engine/topology/topology'
     wrapX: (pos) ->
       @wrap(pos, @minPxcor - 0.5, @maxPxcor + 0.5)
     wrapY: (pos) ->
-      if pos >= @maxPycor + 0.5 or pos <= @minPycor - 0.5 #@# Use fun comparator syntax
+      minY = @minPycor - 0.5
+      maxY = @maxPycor + 0.5
+      if minY < pos < maxY
+        pos
+      else
         throw new Exception.TopologyInterrupt ("Cannot move turtle beyond the world's edge.")
-      else pos
     getPatchNorth: (pxcor, pycor) -> (pycor isnt @maxPycor) and @getPatchAt(pxcor, pycor + 1)
     getPatchSouth: (pxcor, pycor) -> (pycor isnt @minPycor) and @getPatchAt(pxcor, pycor - 1)
     getPatchEast: (pxcor, pycor) ->
@@ -74,7 +77,7 @@ define(['integration/strictmath', 'engine/exception', 'engine/topology/topology'
       for y in [yy...(yy * 2)]
         for x in [xx...(xx * 2)]
           diffuseVal = (scratch[x - xx][y - yy] / 8) * amount
-          if y > yy and y < (yy * 2) - 1
+          if yy < y < (yy * 2) - 1
             scratch2[(x    ) - xx][(y    ) - yy] += scratch[x - xx][y - yy] - (8 * diffuseVal)
             scratch2[(x - 1) % xx][(y - 1) % yy] += diffuseVal
             scratch2[(x - 1) % xx][(y    ) % yy] += diffuseVal

@@ -83,7 +83,7 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
       @updater.push( world: { 0: { ticks: @_ticks } } )
     resize: (minPxcor, maxPxcor, minPycor, maxPycor) ->
 
-      if minPxcor > 0 or maxPxcor < 0 or minPycor > 0 or maxPycor < 0
+      if not (minPxcor <= 0 <= maxPxcor and minPycor <= 0 <= maxPycor)
         throw new Exception.NetLogoException("You must include the point (0, 0) in the world.")
 
       # For some reason, JVM NetLogo doesn't restart `who` ordering after `resize-world`; even the test for this is existentially confused. --JAB (4/3/14)

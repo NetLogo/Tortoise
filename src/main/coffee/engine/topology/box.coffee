@@ -8,16 +8,20 @@ define(['engine/exception', 'engine/topology/topology'], (Exception, Topology) -
     #@# Weird x2
     shortestX: (x1, x2) -> Math.abs(x1 - x2) * (if x1 > x2 then -1 else 1)
     shortestY: (y1, y2) -> Math.abs(y1 - y2) * (if y1 > y2 then -1 else 1)
-    wrapX: (pos) -> #@# Fun comparator syntax x2
-      if pos >= @maxPxcor + 0.5 or pos <= @minPxcor - 0.5
-        throw new Exception.TopologyInterrupt ("Cannot move turtle beyond the worlds edge.")
-      else
+    wrapX: (pos) ->
+      minX = @minPxcor - 0.5
+      maxX = @maxPxcor + 0.5
+      if minX < pos < maxX
         pos
+      else # Amusingly, Headless throws a similarly inconsistent and grammatically incorrect error message --JAB (4/29/14)
+        throw new Exception.TopologyInterrupt ("Cannot move turtle beyond the worlds edge.")
     wrapY: (pos) ->
-      if pos >= @maxPycor + 0.5 or pos <= @minPycor - 0.5
-        throw new Exception.TopologyInterrupt ("Cannot move turtle beyond the worlds edge.")
-      else
+      minY = @minPycor - 0.5
+      maxY = @maxPycor + 0.5
+      if minY < pos < maxY
         pos
+      else # Amusingly, Headless throws a similarly inconsistent and grammatically incorrect error message --JAB (4/29/14)
+        throw new Exception.TopologyInterrupt ("Cannot move turtle beyond the worlds edge.")
 
     getPatchNorth: (pxcor, pycor) -> (pycor isnt @maxPycor) and @getPatchAt(pxcor, pycor + 1)
     getPatchSouth: (pxcor, pycor) -> (pycor isnt @minPycor) and @getPatchAt(pxcor, pycor - 1)
@@ -41,7 +45,7 @@ define(['engine/exception', 'engine/topology/topology'], (Exception, Topology) -
       for y in [0...yy]
         for x in [0...xx]
           diffuseVal = (scratch[x][y] / 8) * amount
-          if y > 0 and y < yy - 1 and x > 0 and x < xx - 1
+          if 0 < y < yy - 1 and 0 < x < xx - 1
             scratch2[x    ][y    ] += scratch[x][y] - (8 * diffuseVal)
             scratch2[x - 1][y - 1] += diffuseVal
             scratch2[x - 1][y    ] += diffuseVal
@@ -51,7 +55,7 @@ define(['engine/exception', 'engine/topology/topology'], (Exception, Topology) -
             scratch2[x + 1][y - 1] += diffuseVal
             scratch2[x + 1][y    ] += diffuseVal
             scratch2[x + 1][y + 1] += diffuseVal
-          else if y > 0 and y < yy - 1
+          else if 0 < y < yy - 1
             if x is 0
               scratch2[x    ][y    ] += scratch[x][y] - (5 * diffuseVal)
               scratch2[x    ][y + 1] += diffuseVal
@@ -66,7 +70,7 @@ define(['engine/exception', 'engine/topology/topology'], (Exception, Topology) -
               scratch2[x - 1][y - 1] += diffuseVal
               scratch2[x - 1][y    ] += diffuseVal
               scratch2[x - 1][y + 1] += diffuseVal
-          else if x > 0 and x < xx - 1
+          else if 0 < x < xx - 1
             if y is 0
               scratch2[x    ][y    ] += scratch[x][y] - (5 * diffuseVal)
               scratch2[x - 1][y    ] += diffuseVal

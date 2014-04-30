@@ -49,8 +49,8 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
       @world.updater.updated(this, "breed")
       @world.updater.updated(this, "shape")
     toString: -> "(" + @breed.singular + " " + @id + ")" #@# Interpolate
-    keepHeadingInRange: ->
-      if @heading < 0 or @heading >= 360 #@# Rewrite comparison with fun comparator syntax
+    keepHeadingInRange: -> #@# Since this code is duplicated in `Turtle.patchRightAndAhead`, it should take a value and return a normalized one
+      if not (0 <= @heading < 360)
         @heading = ((@heading % 360) + 360) % 360
       return
     canMove: (amount) -> @patchAhead(amount) isnt Nobody
@@ -139,7 +139,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
     otherEnd: -> if this is @world.agentSet.myself().end1 then @world.agentSet.myself().end2 else @world.agentSet.myself().end1
     patchRightAndAhead: (angle, amount) ->
       heading = @heading + angle #@# Mutation is for bad people (FP)
-      if heading < 0 or heading >= 360 #@# Use cool comparator style
+      if not (0 <= heading < 360)
         heading = ((heading % 360) + 360) % 360
       try
         newX = @world.topology().wrapX(@xcor() + amount * Trig.sin(heading))
