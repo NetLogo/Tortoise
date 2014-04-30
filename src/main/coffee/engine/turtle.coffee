@@ -48,7 +48,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
       @updateBreed(breed)
       @world.updater.updated(this, "breed")
       @world.updater.updated(this, "shape")
-    toString: -> "(" + @breed.singular + " " + @id + ")" #@# Interpolate
+    toString: -> "(#{@breed.singular} #{@id})"
     keepHeadingInRange: -> #@# Since this code is duplicated in `Turtle.patchRightAndAhead`, it should take a value and return a normalized one
       if not (0 <= @heading < 360)
         @heading = ((@heading % 360) + 360) % 360

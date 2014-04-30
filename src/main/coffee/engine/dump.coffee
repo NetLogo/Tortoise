@@ -4,7 +4,8 @@ define(['integration/typeisarray'], (typeIsArray) ->
   Dump =
     (x) ->
       if typeIsArray(x)
-        "[" + (Dump(x2) for x2 in x).join(" ") + "]" #@# Interpolate
+        itemStr = (Dump(x2) for x2 in x).join(" ")
+        "[#{itemStr}]"
       else if typeof(x) is "function" #@# I hate this; Lodash it
         if x.isReporter
           "(reporter task)"

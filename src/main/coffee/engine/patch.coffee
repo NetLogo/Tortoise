@@ -10,7 +10,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
     constructor: (@id, @pxcor, @pycor, @world, @pcolor = 0.0, @plabel = "", @plabelcolor = 9.9) ->
       @vars = (x for x in @world.patchesOwn.vars)
       @turtles = [] #@# Why put this in the constructor?
-    toString: -> "(patch " + @pxcor + " " + @pycor + ")" #@# Interpolate
+    toString: -> "(patch #{@pxcor} #{@pycor})"
     getPatchVariable: (n) ->
       if n < Builtins.patchBuiltins.length
         this[Builtins.patchBuiltins[n]]

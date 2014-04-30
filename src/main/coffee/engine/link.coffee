@@ -63,7 +63,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
       @midpointx = @world.topology().midpointx(@end1.xcor(), @end2.xcor())
       @midpointy = @world.topology().midpointy(@end1.ycor(), @end2.ycor())
       @world.updater.updated(this, Builtins.linkExtras...)
-    toString: -> "(" + @breed.singular + " " + @end1.id + " " + @end2.id + ")" #@# Interpolate
+    toString: -> "(#{@breed.singular} #{@end1.id} #{@end2.id})"
 
     compare: (x) -> #@# Unify with `Links.compare`
       switch @world.linkCompare(this, x)

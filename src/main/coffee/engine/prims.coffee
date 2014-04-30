@@ -283,7 +283,7 @@ define(['integration/random', 'integration/typeisarray', 'engine/agents', 'engin
         else if what.items and what.kind is AgentKind.Turtle
           t.getPatchHere() for t in what.items
         else
-          throw new Exception.NetLogoException("unknown: " + typeof(what)) #@# Interpolate
+          throw new Exception.NetLogoException("`breed-on` unsupported for class '#{typeof(what)}'")
       result = [] #@# I hate this
       for p in patches
         for t in p.turtles
