@@ -1,9 +1,13 @@
-#@# Just make this a function that calls Lodash's `cloneDeep`
-define(-> {
-  clone: (obj) ->
-    return obj if obj is null or typeof (obj) isnt "object"
-    temp = new obj.constructor()
-    for key in Object.getOwnPropertyNames(obj)
-      temp[key] = @clone(obj[key])
-    temp
-})
+define(['integration/lodash'], (_) ->
+  # (T) => T
+  cloneFunc = # Stored into a variable for the sake of recursion --JAB (4/29/14)
+    (obj) ->
+      if _(obj).isObject() and not _(obj).isFunction()
+        properties    = Object.getOwnPropertyNames(obj)
+        entryCopyFunc = (acc, x) -> acc[x] = cloneFunc(obj[x]); acc
+        basicClone    = new obj.constructor()
+        _(properties).reduce(entryCopyFunc, basicClone)
+      else
+        obj
+  cloneFunc
+)
