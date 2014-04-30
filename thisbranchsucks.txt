@@ -1,7 +1,6 @@
 Things that are lousy about this branch:
 
 Very High:
--Do away with `Utilities`
 -Uses of `undefined` and `null` should cause caution (and existential checks should be done right)
 -Abolish postfix control flow (e.g. `3 if true`)
 -Kill "amount" and "a" and "t" as varnames

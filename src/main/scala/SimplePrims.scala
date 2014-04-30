@@ -137,7 +137,6 @@ object SimplePrims {
         case _: prim.etc._empty              => "Prims.empty"
         case _: prim.etc._isreportertask     => "Tasks.isReporterTask"
         case _: prim.etc._iscommandtask      => "Tasks.isCommandTask"
-        case _: prim.etc._isstring           => "Utilities.isString"
         case _: prim.etc._dx                 => "AgentSet.self().dx"
         case _: prim.etc._dy                 => "AgentSet.self().dy"
         case _: prim.etc._subtractheadings   => "Prims.subtractHeadings"
