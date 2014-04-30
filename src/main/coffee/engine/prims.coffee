@@ -1,10 +1,10 @@
 #@# No more code golf
-define(['integration/random', 'integration/typeisarray', 'engine/agents', 'engine/agentkind', 'engine/comparator'
-      , 'engine/dump', 'engine/exception', 'engine/link', 'engine/nobody', 'engine/patch', 'integration/printer'
-      , 'engine/turtle', 'integration/lodash', 'engine/typechecker']
-     , ( Random,               typeIsArray,               Agents,          AgentKind,          Comparator
-      ,  Dump,          Exception,          Link,          Nobody,          Patch,          Printer
-      ,  Turtle,          _,                    Type) ->
+define(['integration/random', 'engine/agents', 'engine/agentkind', 'engine/comparator', 'engine/dump'
+      , 'engine/exception', 'engine/link', 'engine/nobody', 'engine/patch', 'integration/printer', 'engine/turtle'
+      , 'integration/lodash', 'engine/typechecker']
+     , ( Random,               Agents,          AgentKind,          Comparator,          Dump
+      ,  Exception,          Link,          Nobody,          Patch,          Printer,               Turtle
+      ,  _,                    Type) ->
 
   class Prims
 
@@ -31,7 +31,7 @@ define(['integration/random', 'integration/typeisarray', 'engine/agents', 'engin
         throw new Error("Checking equality on undefined is an invalid condition") #@# Bad, bad Bizzle
 
       (a is b) or ( # This code has been purposely rewritten into a crude, optimized form --JAB (3/19/14)
-        if typeIsArray(a) and typeIsArray(b) #@# Lodash
+        if _(a).isArray() and _(b).isArray()
           a.length is b.length and a.every((elem, i) => @equality(elem, b[i]))
         else if a instanceof Agents and b instanceof Agents #@# Could be sped up to O(n) (from O(n^2)) by zipping the two arrays
           a.items.length is b.items.length and a.kind is b.kind and a.items.every((elem) -> (elem in b.items)) #@# Wrong!
@@ -124,14 +124,14 @@ define(['integration/random', 'integration/typeisarray', 'engine/agents', 'engin
       else
         Math.round(result) #@# Huh?
     reverse: (xs) -> #@# Lodash
-      if typeIsArray(xs)
+      if _(xs).isArray()
         xs[..].reverse()
       else if typeof(xs) is "string"
         xs.split("").reverse().join("")
       else
         throw new Exception.NetLogoException("can only reverse lists and strings")
     sort: (xs) -> #@# Seems greatly improvable
-      if typeIsArray(xs)
+      if _(xs).isArray()
         wrappedItems = _(xs)
         if wrappedItems.isEmpty()
           xs
@@ -163,7 +163,7 @@ define(['integration/random', 'integration/typeisarray', 'engine/agents', 'engin
       result = []
       recurse = (inputs) ->
         for input in inputs
-          if typeIsArray(input)
+          if _(input).isArray()
             recurse(input)
           else if input instanceof Patch
             result.push(input)
@@ -196,7 +196,7 @@ define(['integration/random', 'integration/typeisarray', 'engine/agents', 'engin
     boom: ->
       throw new Exception.NetLogoException("boom!")
     member: (x, xs) -> #@# Lodash
-      if typeIsArray(xs)
+      if _(xs).isArray()
         for y in xs
           if @equality(x, y)
             return true
@@ -209,7 +209,7 @@ define(['integration/random', 'integration/typeisarray', 'engine/agents', 'engin
             return true
         false
     position: (x, xs) -> #@# Lodash
-      if typeIsArray(xs)
+      if _(xs).isArray()
         for y, i in xs
           if @equality(x, y)
             return i
@@ -221,7 +221,7 @@ define(['integration/random', 'integration/typeisarray', 'engine/agents', 'engin
         else
           result
     remove: (x, xs) -> #@# Lodash
-      if typeIsArray(xs)
+      if _(xs).isArray()
         result = []
         for y in xs
           if not @equality(x, y)
@@ -230,14 +230,14 @@ define(['integration/random', 'integration/typeisarray', 'engine/agents', 'engin
       else
         xs.replaceAll(x, "")
     removeItem: (n, xs) -> #@# Lodash
-      if typeIsArray(xs)
+      if _(xs).isArray()
         xs = xs[..]
         xs[n..n] = []
         xs
       else
         xs.slice(0, n) + xs.slice(n + 1, xs.length)
     replaceItem: (n, xs, x) -> #@# Lodash
-      if typeIsArray(xs)
+      if _(xs).isArray()
         xs = xs[..]
         xs[n] = x
         xs
@@ -250,7 +250,7 @@ define(['integration/random', 'integration/typeisarray', 'engine/agents', 'engin
     sentence: (xs...) ->
       result = [] #@# Pushing is for poppers of pills
       for x in xs
-        if typeIsArray(x)
+        if _(x).isArray()
           result.push(x...)
         else
           result.push(x)
