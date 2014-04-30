@@ -1,4 +1,3 @@
-#@# Replace with Lodash's equivalents
 define(-> {
   isArray:    (x) -> Array.isArray(x)
   isBoolean:  (x) -> typeof(x) is "boolean"
