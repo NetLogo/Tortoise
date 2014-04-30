@@ -22,23 +22,23 @@ define(->
       # the fix for http://bugs.java.com/bugdatabase/view_bug.do?bug_id=8038119
       # we should re-test and see if this got fixed as well, or
       # whether we need to file a second bug report at bugs.java.com - ST 3/16/14
-      for turtleId, varUpdates of modelUpdate.turtles when varUpdates
+      for turtleId, varUpdates of modelUpdate.turtles when varUpdates #@# Existential
         anyUpdates = true
-        if varUpdates is null or varUpdates['WHO'] is -1  # old and new death formats
+        if varUpdates is null or varUpdates['WHO'] is -1  # old and new death formats #@# Given the filter, how could it be `null`?
           delete @turtles[turtleId]
         else
           t = @turtles[turtleId]
           if not t?
             t = @turtles[turtleId] = {}
           mergeObjectInto(varUpdates, t)
-      for patchId, varUpdates of modelUpdate.patches when varUpdates
+      for patchId, varUpdates of modelUpdate.patches when varUpdates #@# Existential
         anyUpdates = true
         p = @patches[patchId]
         p ?= @patches[patchId] = {}
         mergeObjectInto(varUpdates, p)
-      for linkId, varUpdates of modelUpdate.links when varUpdates
+      for linkId, varUpdates of modelUpdate.links when varUpdates #@# Existential
         anyUpdates = true
-        if varUpdates is null or varUpdates['WHO'] is -1
+        if varUpdates is null or varUpdates['WHO'] is -1 #@# Given the filter...
           delete @links[linkId]
         else
           l = @links[linkId]
