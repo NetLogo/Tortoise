@@ -1,7 +1,6 @@
 Things that are lousy about this branch:
 
 Very High:
--Fun comparator syntax
 -String interpolation
 -Do away with `Utilities`
 -Uses of `undefined` and `null` should cause caution (and existential checks should be done right)

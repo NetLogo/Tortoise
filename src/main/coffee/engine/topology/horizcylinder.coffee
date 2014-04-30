@@ -11,10 +11,13 @@ define(['integration/strictmath', 'engine/exception', 'engine/topology/topology'
         (@height - Math.abs(y1 - y2)) * (if y2 > y1 then -1 else 1)
       else
         Math.abs(y1 - y2) * (if y1 > y2 then -1 else 1)
-    wrapX: (pos) ->
-      if pos >= @maxPxcor + 0.5 or pos <= @minPxcor - 0.5 #@# Fun comparator syntax
+    wrapX: (pos) -> #@# Couldn't `Topology` have a `wrapXRestrictive` and `wrapXLenient` it could share between topologies, or something?
+      minX = @minPxcor - 0.5
+      maxX = @maxPxcor + 0.5
+      if minX < pos < maxX
+        pos
+      else
         throw new Exception.TopologyInterrupt ("Cannot move turtle beyond the world's edge.")
-      else pos
     wrapY: (pos) ->
       @wrap(pos, @minPycor - 0.5, @maxPycor + 0.5)
     getPatchEast: (pxcor, pycor) -> (pxcor isnt @maxPxcor) and @getPatchAt(pxcor + 1, pycor)
@@ -73,7 +76,7 @@ define(['integration/strictmath', 'engine/exception', 'engine/topology/topology'
       for y in [yy...(yy * 2)]
         for x in [xx...(xx * 2)]
           diffuseVal = (scratch[x - xx][y - yy] / 8) * amount
-          if x > xx and x < (xx * 2) - 1
+          if xx < x < (xx * 2) - 1
             scratch2[(x    ) - xx][(y    ) - yy] += scratch[x - xx][y - yy] - (8 * diffuseVal)
             scratch2[(x - 1) % xx][(y - 1) % yy] += diffuseVal
             scratch2[(x - 1) % xx][(y    ) % yy] += diffuseVal
