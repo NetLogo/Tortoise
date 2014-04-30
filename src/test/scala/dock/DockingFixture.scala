@@ -134,8 +134,8 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
       //println(expectedJson)
       //println(actualJson)
       assertResult(expectedOutput)(actualOutput)
-      nashorn.eval(s"""expectedUpdates = Denuller.denull(JSON.parse("${expectedJson.replaceAll("\"", "\\\\\"")}"))""")
-      nashorn.eval(s"""actualUpdates   = Denuller.denull(JSON.parse("${actualJson.replaceAll("\"", "\\\\\"")}"))""")
+      nashorn.eval(s"""expectedUpdates = Denuller(JSON.parse("${expectedJson.replaceAll("\"", "\\\\\"")}"))""")
+      nashorn.eval(s"""actualUpdates   = Denuller(JSON.parse("${actualJson.replaceAll("\"", "\\\\\"")}"))""")
       nashorn.eval("expectedModel.updates(expectedUpdates)")
       nashorn.eval("actualModel.updates(actualUpdates)")
       val expectedModel = nashorn.eval("JSON.stringify(expectedModel)").asInstanceOf[String]

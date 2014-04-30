@@ -34,7 +34,7 @@ class TestEngine extends FunSuite {
     val escaped = test.replaceAll("\"", "\\\\\"")
     nashorn.eval("var Denuller = require('integration/denuller');")
     assertResult(test) {
-      nashorn.eval(s"""JSON.stringify(Denuller.denull(JSON.parse("$escaped")))""")
+      nashorn.eval(s"""JSON.stringify(Denuller(JSON.parse("$escaped")))""")
     }
   }
 
