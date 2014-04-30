@@ -58,7 +58,9 @@ define(['engine/agents', 'engine/exception', 'engine/iterator', 'engine/nobody',
       return
     # can't call it `with`, that's taken in JavaScript. so is `filter` - ST 2/19/14
     #@# Above comment seems bogus.  Since when can you not do something in JavaScript?
-    agentFilter: (agents, f) -> new Agents(a for a in agents.items when @askAgent(a, f), agents.breed, agents.kind)
+    agentFilter: (agents, f) ->
+      newItems = _(agents.items).filter((x) => @askAgent(x, f)).value()
+      new Agents(newItems, agents.breed, agents.kind)
     # min/MaxOneOf are copy/pasted from each other.  hard to say whether
     # DRY-ing them would be worth the possible performance impact. - ST 3/17/14
     #@# I concur; generalize this!

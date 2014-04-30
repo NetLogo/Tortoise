@@ -13,8 +13,9 @@ define(['integration/strictmath', 'engine/exception'], (StrictMath, Exception) -
   unsquashedCos: (degrees) ->
     StrictMath.cos(StrictMath.toRadians(degrees))
   atan: (d1, d2) ->
-    throw new Exception.NetLogoException("Runtime error: atan is undefined when both inputs are zero.") if d1 is 0 and d2 is 0 #@# Hatred
-    if d1 is 0 #@# Intensified hatred
+    if d1 is 0 and d2 is 0
+      throw new Exception.NetLogoException("Runtime error: atan is undefined when both inputs are zero.")
+    else if d1 is 0
       if d2 > 0 then 0 else 180
     else if d2 is 0
       if d1 > 0 then 90 else 270

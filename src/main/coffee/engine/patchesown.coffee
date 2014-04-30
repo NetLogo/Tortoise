@@ -1,6 +1,8 @@
 #@# Heinous
-define(->
+define(['integration/lodash'], (_) ->
   class PatchesOwn
     vars: []
-    init: (n) -> @vars = (0 for x in [0...n])
+    init: (n) ->
+      @vars = _(0).range(n).map(-> 0).value()
+      return
 )
