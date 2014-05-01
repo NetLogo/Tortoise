@@ -14,6 +14,9 @@ import
 import
   scalaz.NonEmptyList
 
+import
+  org.nlogo.tortoise.jsengine.JSEngineCompanion
+
 object Benchmarker extends App {
 
   import jsengine.JSEngine._
@@ -26,10 +29,9 @@ object Benchmarker extends App {
 
   private val engineToEvalMap = Seq(Nashorn, SpiderMonkey, V8).map(engine => engine -> engine.freshEval _).toMap
 
+  val (dirStr, models, numIterations, enginesAndEvals) = processArgs(args)
 
-// See comments in 'benchmark.sbt' --JAB (2/3/14)
-//  val dir       = new File(args(0))
-  val dir       = new File(".")
+  val dir       = new File(dirStr)
   val benchFile = new File(dir, "engine-benchmarks.txt")
   val append    = (str: String) => {
     val writer = new PrintWriter(new FileWriter(benchFile, true))
@@ -81,7 +83,7 @@ object Benchmarker extends App {
 
   private def gatherBenchmarks(modelsDir: File): Seq[Benchmark] = {
 
-    val modelNameFilePairs = benchmarkModels map (model => (model, pathOfModel(modelsDir, model)))
+    val modelNameFilePairs = models map (model => (model, pathOfModel(modelsDir, model)))
 
     modelNameFilePairs map {
       case (name, file) =>
@@ -103,8 +105,8 @@ object Benchmarker extends App {
         val js = jsV valueOr { case NonEmptyList(head) => throw head }
 
         val results =
-          engineToEvalMap.toSeq map {
-            case (engine, f) => Result(engine.name, engine.version, 1 to 3 map { _ => f(js).toDouble })
+          enginesAndEvals.toSeq map {
+            case (engine, f) => Result(engine.name, engine.version, 1 to numIterations map { _ => f(js).toDouble })
           }
 
         Benchmark(name, results)
@@ -120,6 +122,42 @@ object Benchmarker extends App {
       BigDecimal(num).setScale(places, BigDecimal.RoundingMode.HALF_UP).toDouble
     else
       throw new IllegalArgumentException("Invalid number of places")
+
+  private def processArgs(args: Seq[String]): (String, Seq[String], Int, Map[JSEngineCompanion, (String) => String]) = {
+
+    def buildArgPairings(as: Seq[String], pairs: Map[String, Seq[String]] = Map()): Map[String, Seq[String]] = {
+      val delimFunc = (s: String) => !s.startsWith("--")
+      val cleansed  = as.dropWhile(delimFunc)
+      if (cleansed.nonEmpty) {
+        val (marker, xs) = (cleansed.head, cleansed.tail.takeWhile(delimFunc))
+        buildArgPairings(cleansed.tail.dropWhile(delimFunc), pairs + (marker -> xs))
+      }
+      else
+        pairs
+    }
+
+    val dirStr :: others = args.toList
+
+    val engineLookup = (companion: JSEngineCompanion) => engineToEvalMap filter { case (k, _) => k == companion }
+
+    val (models, iters, engines) =
+      if (others.contains("--quick"))
+        (Seq("BZ Benchmark"), 1, engineLookup(V8))
+      else {
+        val pairings = buildArgPairings(others)
+        val iters    = pairings.get("--count") orElse pairings.get("--iters") orElse pairings.get("--num") map (_.head.toInt) getOrElse 3
+        val engines  = pairings.get("--engine") map (seq => seq map (_.toLowerCase) flatMap {
+          case "node" | "v8" | "google" | "chrome"     => engineLookup(V8)
+          case "mozilla" | "firefox" | "spidermonkey"  => engineLookup(SpiderMonkey)
+          case "java" | "oracle" | "rhino" | "nashorn" => engineLookup(Nashorn)
+          case _                                       => Map[JSEngineCompanion, (String) => String]()
+        }) map (_.distinct.toMap) getOrElse engineToEvalMap
+        (benchmarkModels, iters, engines)
+      }
+
+    (dirStr, models, iters, engines)
+
+  }
 
   private case class Result(engineName: String, engineVersion: String, times: Seq[Double])
   private case class Benchmark(name: String, results: Seq[Result])
