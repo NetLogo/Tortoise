@@ -23,8 +23,8 @@ var noop       = require('engine/noop');
 var Tasks      = require('engine/tasks');
 var Trig       = require('engine/trig');
 var Turtle     = require('engine/turtle');
+var Type       = require('engine/typechecker');
 
-var _              = require('ingration/lodash');
 var AgentModel     = require('integration/agentmodel');
 var Denuller       = require('integration/denuller');
 var notImplemented = require('integration/notimplemented');
