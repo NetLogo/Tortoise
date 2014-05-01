@@ -1,10 +1,10 @@
 #@# No more code golf
 define(['integration/random', 'integration/typeisarray', 'engine/agents', 'engine/agentkind', 'engine/comparator'
       , 'engine/dump', 'engine/exception', 'engine/link', 'engine/nobody', 'engine/patch', 'integration/printer'
-      , 'engine/turtle', 'integration/lodash']
+      , 'engine/turtle', 'integration/lodash', 'engine/typechecker']
      , ( Random,               typeIsArray,               Agents,          AgentKind,          Comparator
       ,  Dump,          Exception,          Link,          Nobody,          Patch,          Printer
-      ,  Turtle,          _) ->
+      ,  Turtle,          _,                    Type) ->
 
   class Prims
 
@@ -41,7 +41,7 @@ define(['integration/random', 'integration/typeisarray', 'engine/agents', 'engin
       )
 
     lt: (a, b) ->
-      if (_(a).isString() and _(b).isString()) or (_(a).isNumber() and _(b).isNumber())
+      if (Type(a).isString() and Type(b).isString()) or (Type(a).isNumber() and Type(b).isNumber())
         a < b
       else if typeof(a) is typeof(b) and a.compare? and b.compare? #@# Use a class
         a.compare(b) is Comparator.LESS_THAN
@@ -49,7 +49,7 @@ define(['integration/random', 'integration/typeisarray', 'engine/agents', 'engin
         throw new Exception("Invalid operands to `lt`") #@# Nerp
 
     gt: (a, b) ->
-      if (_(a).isString() and _(b).isString()) or (_(a).isNumber() and _(b).isNumber())
+      if (Type(a).isString() and Type(b).isString()) or (Type(a).isNumber() and Type(b).isNumber())
         a > b
       else if typeof(a) is typeof(b) and a.compare? and b.compare? #@# Use a class
         a.compare(b) is Comparator.GREATER_THAN
@@ -135,9 +135,9 @@ define(['integration/random', 'integration/typeisarray', 'engine/agents', 'engin
         wrappedItems = _(xs)
         if wrappedItems.isEmpty()
           xs
-        else if wrappedItems.all((x) -> _(x).isNumber())
+        else if wrappedItems.all((x) -> Type(x).isNumber())
           xs[..].sort((x, y) -> Comparator.numericCompare(x, y).toInt)
-        else if wrappedItems.all((x) -> _(x).isString())
+        else if wrappedItems.all((x) -> Type(x).isString())
           xs[..].sort()
         else if wrappedItems.all((x) -> x instanceof Turtle) or wrappedItems.all((x) -> x instanceof Patch)
           xs[..].sort((x, y) -> x.compare(y).toInt)
@@ -201,7 +201,7 @@ define(['integration/random', 'integration/typeisarray', 'engine/agents', 'engin
           if @equality(x, y)
             return true
         false
-      else if _(x).isString()
+      else if Type(x).isString()
         xs.indexOf(x) != -1
       else  # agentset
         for a in xs.items
@@ -259,7 +259,7 @@ define(['integration/random', 'integration/typeisarray', 'engine/agents', 'engin
       sum = 0
       count = xs.length
       for x in xs
-        if _(x).isNumber()
+        if Type(x).isNumber()
           sum += x
         else
           --count
@@ -268,7 +268,7 @@ define(['integration/random', 'integration/typeisarray', 'engine/agents', 'engin
       mean = sum / count
       squareOfDifference = 0
       for x in xs
-        if _(x).isNumber()
+        if Type(x).isNumber()
           squareOfDifference += StrictMath.pow(x - mean, 2)
       squareOfDifference / (count - 1)
     breedOn: (breedName, what) -> #@# Wat?
