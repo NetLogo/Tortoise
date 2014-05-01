@@ -1,8 +1,6 @@
-lazy val benchmark = taskKey[Unit]("Run the benchmarks")
+lazy val benchmark = inputKey[Unit]("Run the benchmarks")
 
-benchmark := (run in Compile).toTask("").value
-
-mainClass in (Compile, benchmark) := Option("org.nlogo.tortoise.Benchmarker")
+benchmark := (runMain in Compile).fullInput(" org.nlogo.tortoise.Benchmarker").evaluated
 
 // Screw you, SBT!  The code below doesn't work, at least in part related to
 // https://github.com/sbt/sbt/issues/1090 --JAB (2/3/14)
