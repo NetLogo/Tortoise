@@ -31,7 +31,7 @@ define(['integration/random', 'engine/agents', 'engine/agentkind', 'engine/compa
         throw new Error("Checking equality on undefined is an invalid condition") #@# Bad, bad Bizzle
 
       (a is b) or ( # This code has been purposely rewritten into a crude, optimized form --JAB (3/19/14)
-        if _(a).isArray() and _(b).isArray()
+        if Type(a).isArray() and Type(b).isArray()
           a.length is b.length and a.every((elem, i) => @equality(elem, b[i]))
         else if a instanceof Agents and b instanceof Agents #@# Could be sped up to O(n) (from O(n^2)) by zipping the two arrays
           a.items.length is b.items.length and a.kind is b.kind and a.items.every((elem) -> (elem in b.items)) #@# Wrong!
@@ -124,14 +124,14 @@ define(['integration/random', 'engine/agents', 'engine/agentkind', 'engine/compa
       else
         Math.round(result) #@# Huh?
     reverse: (xs) -> #@# Lodash
-      if _(xs).isArray()
+      if Type(xs).isArray()
         xs[..].reverse()
       else if typeof(xs) is "string"
         xs.split("").reverse().join("")
       else
         throw new Exception.NetLogoException("can only reverse lists and strings")
     sort: (xs) -> #@# Seems greatly improvable
-      if _(xs).isArray()
+      if Type(xs).isArray()
         wrappedItems = _(xs)
         if wrappedItems.isEmpty()
           xs
@@ -163,7 +163,7 @@ define(['integration/random', 'engine/agents', 'engine/agentkind', 'engine/compa
       result = []
       recurse = (inputs) ->
         for input in inputs
-          if _(input).isArray()
+          if Type(input).isArray()
             recurse(input)
           else if input instanceof Patch
             result.push(input)
@@ -196,7 +196,7 @@ define(['integration/random', 'engine/agents', 'engine/agentkind', 'engine/compa
     boom: ->
       throw new Exception.NetLogoException("boom!")
     member: (x, xs) -> #@# Lodash
-      if _(xs).isArray()
+      if Type(xs).isArray()
         for y in xs
           if @equality(x, y)
             return true
@@ -209,7 +209,7 @@ define(['integration/random', 'engine/agents', 'engine/agentkind', 'engine/compa
             return true
         false
     position: (x, xs) -> #@# Lodash
-      if _(xs).isArray()
+      if Type(xs).isArray()
         for y, i in xs
           if @equality(x, y)
             return i
@@ -221,7 +221,7 @@ define(['integration/random', 'engine/agents', 'engine/agentkind', 'engine/compa
         else
           result
     remove: (x, xs) -> #@# Lodash
-      if _(xs).isArray()
+      if Type(xs).isArray()
         result = []
         for y in xs
           if not @equality(x, y)
@@ -230,14 +230,14 @@ define(['integration/random', 'engine/agents', 'engine/agentkind', 'engine/compa
       else
         xs.replaceAll(x, "")
     removeItem: (n, xs) -> #@# Lodash
-      if _(xs).isArray()
+      if Type(xs).isArray()
         xs = xs[..]
         xs[n..n] = []
         xs
       else
         xs.slice(0, n) + xs.slice(n + 1, xs.length)
     replaceItem: (n, xs, x) -> #@# Lodash
-      if _(xs).isArray()
+      if Type(xs).isArray()
         xs = xs[..]
         xs[n] = x
         xs
@@ -250,7 +250,7 @@ define(['integration/random', 'engine/agents', 'engine/agentkind', 'engine/compa
     sentence: (xs...) ->
       result = [] #@# Pushing is for poppers of pills
       for x in xs
-        if _(x).isArray()
+        if Type(x).isArray()
           result.push(x...)
         else
           result.push(x)
