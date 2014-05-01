@@ -7,9 +7,9 @@ compiler/runtime interface.  Dunno what's best. --ST
 #@# End this fence-riding nonsense ASAP; I think it makes sense to have one of these that depends on the workspace/world (for the few prims that directly do), and then one that doesn't
 #@# Should be unified with `Agents`
 define(['engine/agents', 'engine/exception', 'engine/iterator', 'engine/nobody', 'integration/random'
-      , 'engine/shufflerator']
+      , 'engine/shufflerator', 'integration/lodash']
      , ( Agents,          Exception,          Iterator,          Nobody,          Random
-      ,  Shufflerator) ->
+      ,  Shufflerator,          _) ->
 
   class AgentSet
 
