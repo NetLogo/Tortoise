@@ -38,7 +38,7 @@ object CompilerService {
   def compile(contents: String): String = {
 
     val frontEnd: nvm.FrontEndInterface = org.nlogo.compile.front.FrontEnd
-    val model = ModelReader.parseModel(contents, Some(new nvm.DefaultParserServices(frontEnd)))
+    val model = ModelReader.parseModel(contents, new nvm.DefaultParserServices(frontEnd))
     val (js, _, _) = Compiler.compileProcedures(model)
     js
   }
