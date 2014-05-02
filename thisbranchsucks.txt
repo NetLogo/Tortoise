@@ -14,6 +14,7 @@ Very High:
 -`World` should not manually manage turtle IDs
 -Fatten up those arrows!
 -`Prims` vs. `AgentSet` nonsense sucks
+-Fix bug with `Updates[0]` being mutating and `Updater.push` is being used
 
 High:
 -FPification
