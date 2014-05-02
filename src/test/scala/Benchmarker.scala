@@ -59,8 +59,11 @@ object Benchmarker extends App {
     s"$sha$dirtyStr"
   }
 
-  append(s"""Time:    $timeStr
-            |Version: $versionStr
+  append(s"""Time:       $timeStr
+            |Version:    $versionStr
+            |Models:     ${models.mkString(", ")}
+            |Iterations: $numIterations
+            |Engines:    ${enginesAndEvals.map(_._1.getClass.getSimpleName.init).mkString(", ")}
             |
             |""".stripMargin)
 
