@@ -26,7 +26,7 @@ object Benchmarker extends App {
 
   private val engineToEvalMap = Seq(Nashorn, SpiderMonkey, V8).map(engine => engine -> engine.freshEval _).toMap
 
-  val (dirStr, models, numIterations, enginesAndEvals) = processArgs(args)
+  val (dirStr, models, numIterations, enginesAndEvals, comment) = processArgs(args)
 
   val dir       = new File(dirStr)
   val benchFile = new File(dir, "engine-benchmarks.txt")
@@ -56,11 +56,14 @@ object Benchmarker extends App {
     s"$sha$dirtyStr"
   }
 
+  val commentStr = if (comment.nonEmpty) s"Comment:    $comment" else ""
+
   append(s"""Time:       $timeStr
             |Version:    $versionStr
             |Models:     ${models.mkString(", ")}
             |Iterations: $numIterations
             |Engines:    ${enginesAndEvals.map(_._1.getClass.getSimpleName.init).mkString(", ")}
+            |$commentStr
             |
             |""".stripMargin)
 
@@ -125,7 +128,7 @@ object Benchmarker extends App {
     else
       throw new IllegalArgumentException("Invalid number of places")
 
-  private def processArgs(args: Seq[String]): (String, Seq[String], Int, Map[JSEngineCompanion, (String) => String]) = {
+  private def processArgs(args: Seq[String]): (String, Seq[String], Int, Map[JSEngineCompanion, (String) => String], String) = {
 
     def buildArgPairings(as: Seq[String], pairs: Map[String, Seq[String]] = Map()): Map[String, Seq[String]] = {
       val delimFunc = (s: String) => !s.startsWith("--")
@@ -142,11 +145,14 @@ object Benchmarker extends App {
 
     val engineLookup = (companion: JSEngineCompanion) => engineToEvalMap filter { case (k, _) => k == companion }
 
+    val pairings = buildArgPairings(others)
+
+    val comments = pairings.get("--comment") orElse pairings.get("--comments") map (_.head) getOrElse ""
+
     val (models, iters, engines) =
       if (others.contains("--quick"))
         (Seq("BZ Benchmark"), 1, engineLookup(V8))
       else {
-        val pairings = buildArgPairings(others)
         val iters    = pairings.get("--count") orElse pairings.get("--iters") orElse pairings.get("--num") map (_.head.toInt) getOrElse 3
         val engines  = pairings.get("--engine") map (seq => seq map (_.toLowerCase) flatMap {
           case "node" | "v8" | "google" | "chrome"     => engineLookup(V8)
@@ -157,7 +163,7 @@ object Benchmarker extends App {
         (benchmarkModels, iters, engines)
       }
 
-    (dirStr, models, iters, engines)
+    (dirStr, models, iters, engines, comments)
 
   }
 
