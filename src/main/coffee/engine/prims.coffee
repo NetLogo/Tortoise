@@ -125,7 +125,7 @@ define(['integration/random', 'engine/agents', 'engine/agentkind', 'engine/compa
         Math.round(result) #@# Huh?
     reverse: (xs) -> #@# Lodash
       if Type(xs).isArray()
-        xs[..].reverse()
+        _(xs).clone().reverse()
       else if typeof(xs) is "string"
         xs.split("").reverse().join("")
       else
@@ -133,16 +133,17 @@ define(['integration/random', 'engine/agents', 'engine/agentkind', 'engine/compa
     sort: (xs) -> #@# Seems greatly improvable
       if Type(xs).isArray()
         wrappedItems = _(xs)
+        clone        = wrappedItems.clone()
         if wrappedItems.isEmpty()
           xs
         else if wrappedItems.all((x) -> Type(x).isNumber())
-          xs[..].sort((x, y) -> Comparator.numericCompare(x, y).toInt)
+          clone.sort((x, y) -> Comparator.numericCompare(x, y).toInt)
         else if wrappedItems.all((x) -> Type(x).isString())
-          xs[..].sort()
+          clone.sort()
         else if wrappedItems.all((x) -> x instanceof Turtle) or wrappedItems.all((x) -> x instanceof Patch)
-          xs[..].sort((x, y) -> x.compare(y).toInt)
+          clone.sort((x, y) -> x.compare(y).toInt)
         else if wrappedItems.all((x) -> x instanceof Link)
-          xs[..].sort(@world.linkCompare)
+          clone.sort(@world.linkCompare)
         else
           throw new Error("We don't know how to sort your kind here!") #@# Nerp
       else if xs instanceof Agents

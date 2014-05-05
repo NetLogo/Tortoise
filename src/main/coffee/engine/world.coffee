@@ -181,7 +181,8 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
       # A more efficient (but less readable) way of doing this is to iterate
       # backwards through the array.
       #@# I don't know what this is blathering about, but if it needs this comment, it can probably be written better
-      for t in @turtles().items[..]
+      #@# Copying the array doesn't really accomplish anything, because it's not a deep copy and we're mutating the innards of the array
+      for t in _(@turtles().items).clone()
         try
           t.die()
         catch error

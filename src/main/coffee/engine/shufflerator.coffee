@@ -1,8 +1,8 @@
 #@# Lame
-define(['integration/random'], (Random) ->
+define(['integration/lodash', 'integration/random'], (_, Random) ->
   class Shufflerator #@# Maybe use my `Iterator` implementation, or maybe Mori has one?
     constructor: (@agents) ->
-      @agents = @agents[..]
+      @agents = _(@agents).clone()
       @fetch()
     i: 0
     nextOne: null
