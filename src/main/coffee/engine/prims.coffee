@@ -107,8 +107,8 @@ define(['integration/random', 'engine/agents', 'engine/agentkind', 'engine/compa
       result = xs[..]
       result.push(x)
       result
-    butFirst: (xs) -> xs[1..] #@# Lodash
-    butLast: (xs) -> xs[0...xs.length - 1] #@# Lodash
+    butFirst: (xs) -> xs[1..] # Lodashing this stuff is no good, since it doesn't handle strings correctly.  Could use Underscore.string... --JAB (5/5/14)
+    butLast: (xs) -> xs[0...xs.length - 1]
     length: (xs) -> xs.length #@# Lodash
     _int: (n) -> if n < 0 then Math.ceil(n) else Math.floor(n) #@# WTF is this?  Wouldn't `n|0` suffice?
     mod: (a, b) -> ((a % b) + b) % b #@# WTF?

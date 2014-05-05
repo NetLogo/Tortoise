@@ -70,7 +70,7 @@ define(['integration/lodash', 'integration/random', 'integration/strictmath', 'e
           ax[t2Index] -= dx
           ay[t2Index] -= dy
 
-      for i in [0...nodeCount] #@# Lodash
+      for i in [0...nodeCount]
         t1 = agt[i]
         for j in [(i + 1)...nodeCount]
           t2 = agt[j]
