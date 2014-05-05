@@ -19,9 +19,9 @@ define(['integration/lodash', 'integration/random', 'integration/strictmath', 'e
 
       agt = []
       i = 0
-      for t in @world.agentSet.shuffle(nodeSet).items #@# Lodash
-        agt[i] = t
-        tMap[t.id] = i
+      for turtle in @world.agentSet.shuffle(nodeSet).items #@# Lodash
+        agt[i] = turtle
+        tMap[turtle.id] = i
         ax[i] = 0.0
         ay[i] = 0.0
         i++
@@ -105,7 +105,7 @@ define(['integration/lodash', 'integration/random', 'integration/strictmath', 'e
       limit = (@world.width() + @world.height()) / 50.0
 
       for i in [0...nodeCount]
-        t = agt[i]
+        turtle = agt[i]
         fx = ax[i]
         fy = ay[i]
 
@@ -119,8 +119,8 @@ define(['integration/lodash', 'integration/random', 'integration/strictmath', 'e
         else if fy < -limit
           fy = -limit
 
-        newx = t.xcor() + fx
-        newy = t.ycor() + fy
+        newx = turtle.xcor() + fx
+        newy = turtle.ycor() + fy
 
         if newx > @world.maxPxcor
           newx = @world.maxPxcor
@@ -131,6 +131,6 @@ define(['integration/lodash', 'integration/random', 'integration/strictmath', 'e
           newy = @world.maxPycor
         else if newy < @world.minPycor
           newy = @world.minPycor
-        t.setXY(newx, newy)
+        turtle.setXY(newx, newy)
 
 )

@@ -27,23 +27,23 @@ define(->
         if varUpdates is null or varUpdates['WHO'] is -1  # old and new death formats #@# Given the filter, how could it be `null`?
           delete @turtles[turtleId]
         else
-          t = @turtles[turtleId]
-          if not t?
-            t = @turtles[turtleId] = {}
-          mergeObjectInto(varUpdates, t)
+          turtle = @turtles[turtleId]
+          if not turtle
+            turtle = @turtles[turtleId] = {}
+          mergeObjectInto(varUpdates, turtle)
       for patchId, varUpdates of modelUpdate.patches when varUpdates #@# Existential
         anyUpdates = true
-        p = @patches[patchId]
-        p ?= @patches[patchId] = {}
-        mergeObjectInto(varUpdates, p)
+        patch = @patches[patchId]
+        patch ?= @patches[patchId] = {}
+        mergeObjectInto(varUpdates, patch)
       for linkId, varUpdates of modelUpdate.links when varUpdates #@# Existential
         anyUpdates = true
         if varUpdates is null or varUpdates['WHO'] is -1 #@# Given the filter...
           delete @links[linkId]
         else
-          l = @links[linkId]
-          l ?= @links[linkId] = {}
-          mergeObjectInto(varUpdates, l)
+          link = @links[linkId]
+          link ?= @links[linkId] = {} #@# Nice crypticism
+          mergeObjectInto(varUpdates, link)
       if modelUpdate.observer and modelUpdate.observer[0] #@# Wath?  (Existential)
         mergeObjectInto(modelUpdate.observer[0], @observer)
       if modelUpdate.world and modelUpdate.world[0]

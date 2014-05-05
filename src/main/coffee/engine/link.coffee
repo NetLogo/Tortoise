@@ -26,17 +26,17 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
         this[Builtins.linkBuiltins[n]]
       else
         @vars[n - Builtins.linkBuiltins.length]
-    setLinkVariable: (n, v) ->
+    setLinkVariable: (n, value) ->
       if n < Builtins.linkBuiltins.length
-        newV =
+        newValue =
           if Builtins.linkBuiltins[n] is "lcolor"
-            ColorModel.wrapColor(v)
+            ColorModel.wrapColor(value)
           else
-            v
-        this[Builtins.linkBuiltins[n]] = newV
+            value
+        this[Builtins.linkBuiltins[n]] = newValue
         @world.updater.updated(this, Builtins.linkBuiltins[n])
       else
-        @vars[n - Builtins.linkBuiltins.length] = v
+        @vars[n - Builtins.linkBuiltins.length] = value
     die: ->
       @breed.remove(@)
       if @id isnt -1
@@ -47,13 +47,13 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
         @id = -1
       throw new Exception.DeathInterrupt("Call only from inside an askAgent block")
     getTurtleVariable: (n) -> this[Builtins.turtleBuiltins[n]]
-    setTurtleVariable: (n, v) ->
-      newV =
+    setTurtleVariable: (n, value) ->
+      newValue =
         if Builtins.turtleBuiltins[n] is "color"
-          ColorModel.wrapColor(v)
+          ColorModel.wrapColor(value)
         else
-          v
-      this[Builtins.turtleBuiltins[n]] = newV
+          value
+      this[Builtins.turtleBuiltins[n]] = newValue
       @world.updater.updated(this, Builtins.turtleBuiltins[n])
     bothEnds: -> new Agents([@end1, @end2], @world.breedManager.get("TURTLES"), AgentKind.Turtle)
     otherEnd: -> if @end1 is AgentSet.myself() then @end2 else @end1

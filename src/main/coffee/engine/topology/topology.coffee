@@ -25,7 +25,7 @@ define(['engine/agentkind', 'engine/agents',  'engine/nobody', 'integration/stri
         pos
 
     getNeighbors: (pxcor, pycor) -> #@# This should memoize
-      patches = _(@_getNeighbors(pxcor, pycor)).filter((p) -> p isnt false).value()
+      patches = _(@_getNeighbors(pxcor, pycor)).filter((patch) -> patch isnt false).value()
       new Agents(patches, undefined, AgentKind.Patch)
 
     _getNeighbors: (pxcor, pycor) -> #@# Was I able to fix this in the ScalaJS version?
@@ -43,7 +43,7 @@ define(['engine/agentkind', 'engine/agents',  'engine/nobody', 'integration/stri
          @getPatchSouthWest(pxcor, pycor), @getPatchNorthWest(pxcor, pycor)]
 
     getNeighbors4: (pxcor, pycor) ->
-      patches = _(@_getNeighbors4(pxcor, pycor)).filter((p) -> p isnt false).value()
+      patches = _(@_getNeighbors4(pxcor, pycor)).filter((patch) -> patch isnt false).value() #@# This code is awkward
       new Agents(patches, undefined, AgentKind.Patch)
 
     _getNeighbors4: (pxcor, pycor) -> #@# Any improvement in ScalaJS version?
@@ -81,31 +81,31 @@ define(['engine/agentkind', 'engine/agents',  'engine/nobody', 'integration/stri
     inRadius: (origin, x, y, agents, radius) ->
       result = []
 
-      r = Math.ceil(radius)
+      roundedRadius = Math.ceil(radius)
       width = @width / 2
       height = @height / 2
-      if r < width or not @_wrapInX #@# FP
-        minDX = -r
-        maxDX = r
+      if roundedRadius < width or not @_wrapInX #@# FP
+        minDX = -roundedRadius
+        maxDX = roundedRadius
       else
         maxDX = StrictMath.floor(width)
         minDX = -Math.ceil(width - 1)
-      if r < height or not @_wrapInY
-        minDY = -r
-        maxDY = r
+      if roundedRadius < height or not @_wrapInY
+        minDY = -roundedRadius
+        maxDY = roundedRadius
       else
         maxDY = StrictMath.floor(height)
         minDY = -Math.ceil(height - 1)
 
       for dy in [minDY..maxDY] #@# 'Tis crap
         for dx in [minDX..maxDX]
-          p = origin.patchAt(dx, dy)
-          if p isnt Nobody #@# Feels `Option.map(f).getOrElse`-ish
-            if @distanceXY(p.pxcor, p.pycor, x, y) <= radius and agents.items.filter((o) -> o is p).length > 0
-              result.push(p)
-            for t in p.turtlesHere().items
-              if @distanceXY(t.xcor(), t.ycor(), x, y) <= radius and agents.items.filter((o) -> o is t).length > 0
-                result.push(t)
+          patch = origin.patchAt(dx, dy)
+          if patch isnt Nobody #@# Feels `Option.map(f).getOrElse`-ish
+            if @distanceXY(patch.pxcor, patch.pycor, x, y) <= radius and agents.items.filter((agent) -> agent is patch).length > 0
+              result.push(patch)
+            for turtle in patch.turtlesHere().items
+              if @distanceXY(turtle.xcor(), turtle.ycor(), x, y) <= radius and agents.items.filter((agent) -> agent is turtle).length > 0
+                result.push(turtle)
       new Agents(result, agents.breed, agents.kind)
 
 )

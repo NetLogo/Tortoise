@@ -16,7 +16,7 @@ define(['integration/random', 'engine/agents', 'engine/agentkind', 'engine/compa
     right: (n) -> @world.agentSet.self().right(n)
     left: (n) -> @world.agentSet.self().right(-n)
     setXY: (x, y) -> @world.agentSet.self().setXY(x, y)
-    empty: (l) -> l.length is 0 #@# Seems wrong
+    empty: (xs) -> xs.length is 0 #@# Seems wrong
     getNeighbors: -> @world.agentSet.self().getNeighbors()
     getNeighbors4: -> @world.agentSet.self().getNeighbors4()
     sprout: (n, breedName) -> @world.agentSet.self().sprout(n, breedName)
@@ -297,7 +297,7 @@ define(['integration/random', 'engine/agents', 'engine/agentkind', 'engine/compa
         agents = agentsOrAgent.items
       else
         agents = [agentsOrAgent]
-      turtles = _(agents).map((x) -> x.turtlesHere().items).flatten().value()
+      turtles = _(agents).map((agent) -> agent.turtlesHere().items).flatten().value()
       new Agents(turtles, @world.breedManager.get("TURTLES"), AgentKind.Turtle)
 
 )

@@ -13,11 +13,11 @@ define(['engine/agents', 'engine/exception', 'engine/iterator', 'engine/nobody',
 
   class AgentSet
 
-    count: (x) -> x.items.length
-    any: (x) -> x.items.length > 0
-    all: (x, f) ->
-      for a in x.items #@# Lodash
-        if not @askAgent(a, f)
+    count: (xs) -> xs.items.length
+    any: (xs) -> xs.items.length > 0
+    all: (xs, f) ->
+      for agent in xs.items #@# Lodash
+        if not @askAgent(agent, f)
           return false
       true
     _self: 0 #@# Lame
@@ -27,11 +27,11 @@ define(['engine/agents', 'engine/exception', 'engine/iterator', 'engine/nobody',
       @_myself = 0
     self: => @_self
     myself: -> if @_myself isnt 0 then @_myself else throw new Exception.NetLogoException("There is no agent for MYSELF to refer to.") #@# I wouldn't be surprised if this is entirely avoidable
-    askAgent: (a, f) -> #@# Varnames
+    askAgent: (agent, f) -> #@# Varnames
       oldMyself = @_myself #@# All of this contextual swapping can be handled more clearly
       oldAgent = @_self
       @_myself = @_self
-      @_self = a
+      @_self = agent
       try
         res = f() #@# FP
       catch error
@@ -50,8 +50,8 @@ define(['engine/agents', 'engine/exception', 'engine/iterator', 'engine/nobody',
         else
           new Iterator(agents)
       while iter.hasNext() #@# Srsly?  Is this Java 1.4?
-        a = iter.next()
-        @askAgent(a, f)
+        agent = iter.next()
+        @askAgent(agent, f)
       # If an asker indirectly commits suicide, the exception should propagate.  FD 11/1/2013
       if @_self.id and @_self.id is -1 #@# Improve (existential)
         throw new Exception.DeathInterrupt
@@ -59,7 +59,7 @@ define(['engine/agents', 'engine/exception', 'engine/iterator', 'engine/nobody',
     # can't call it `with`, that's taken in JavaScript. so is `filter` - ST 2/19/14
     #@# Above comment seems bogus.  Since when can you not do something in JavaScript?
     agentFilter: (agents, f) ->
-      newItems = _(agents.items).filter((x) => @askAgent(x, f)).value()
+      newItems = _(agents.items).filter((agent) => @askAgent(agent, f)).value()
       new Agents(newItems, agents.breed, agents.kind)
     # min/MaxOneOf are copy/pasted from each other.  hard to say whether
     # DRY-ing them would be worth the possible performance impact. - ST 3/17/14
@@ -67,13 +67,13 @@ define(['engine/agents', 'engine/exception', 'engine/iterator', 'engine/nobody',
     maxOneOf: (agents, f) ->
      winningValue = -Number.MAX_VALUE
      winners = []
-     for a in agents.items #@# I'm not sure how, but surely this can be Lodash-ified
-       result = @askAgent(a, f)
+     for agent in agents.items #@# I'm not sure how, but surely this can be Lodash-ified
+       result = @askAgent(agent, f)
        if result >= winningValue
          if result > winningValue
            winningValue = result
            winners = []
-         winners.push(a)
+         winners.push(agent)
      if winners.length is 0 #@# Nice try
        Nobody
      else
@@ -81,13 +81,13 @@ define(['engine/agents', 'engine/exception', 'engine/iterator', 'engine/nobody',
     minOneOf: (agents, f) ->
      winningValue = Number.MAX_VALUE
      winners = []
-     for a in agents.items
-       result = @askAgent(a, f)
+     for agent in agents.items
+       result = @askAgent(agent, f)
        if result <= winningValue
          if result < winningValue
            winningValue = result
            winners = []
-         winners.push(a)
+         winners.push(agent)
      if winners.length is 0
        Nobody
      else
@@ -101,8 +101,8 @@ define(['engine/agents', 'engine/exception', 'engine/iterator', 'engine/nobody',
       result = []
       iter = new Shufflerator(agents)
       while iter.hasNext() #@# FP.  Also, move out of the 1990s.
-        a = iter.next()
-        result.push(@askAgent(a, f))
+        agent = iter.next()
+        result.push(@askAgent(agent, f))
       if isagentset
         result
       else
@@ -110,10 +110,10 @@ define(['engine/agents', 'engine/exception', 'engine/iterator', 'engine/nobody',
     oneOf: (agentsOrList) ->
       isagentset = agentsOrList.items #@# Stop this nonsense
       if isagentset
-        l = agentsOrList.items
+        list = agentsOrList.items
       else
-        l = agentsOrList
-      if l.length is 0 then Nobody else l[Random.nextInt(l.length)] #@# Sadness continues
+        list = agentsOrList
+      if list.length is 0 then Nobody else list[Random.nextInt(list.length)] #@# Sadness continues
     nOf: (resultSize, agentsOrList) ->
       items = agentsOrList.items #@# Existential
       if not items #@# How does this even make sense?
@@ -148,23 +148,21 @@ define(['engine/agents', 'engine/exception', 'engine/iterator', 'engine/nobody',
     connectedLinks: (directed, isSource) -> @_self.connectedLinks(directed, isSource)
     linkNeighbors: (directed, isSource) -> @_self.linkNeighbors(directed, isSource)
     isLinkNeighbor: (directed, isSource) ->
-      t = @_self #@# Why bother...?
-      ((other) -> t.isLinkNeighbor(directed, isSource, other))
+      ((other) => @_self.isLinkNeighbor(directed, isSource, other))
     findLinkViaNeighbor: (directed, isSource) ->
-      t = @_self #@# Why bother...?
-      ((other) -> t.findLinkViaNeighbor(directed, isSource, other))
+      ((other) => @_self.findLinkViaNeighbor(directed, isSource, other))
     getTurtleVariable: (n)    -> @_self.getTurtleVariable(n)
-    setTurtleVariable: (n, v) -> @_self.setTurtleVariable(n, v)
+    setTurtleVariable: (n, value) -> @_self.setTurtleVariable(n, value)
     getLinkVariable: (n)    -> @_self.getLinkVariable(n)
-    setLinkVariable: (n, v) -> @_self.setLinkVariable(n, v)
+    setLinkVariable: (n, value) -> @_self.setLinkVariable(n, value)
     getBreedVariable: (n)    -> @_self.getBreedVariable(n)
-    setBreedVariable: (n, v) -> @_self.setBreedVariable(n, v)
+    setBreedVariable: (n, value) -> @_self.setBreedVariable(n, value)
     setBreed: (agentSet) -> @_self.setBreed(agentSet.breed)
     getPatchVariable:  (n)    -> @_self.getPatchVariable(n)
-    setPatchVariable:  (n, v) -> @_self.setPatchVariable(n, v)
+    setPatchVariable:  (n, value) -> @_self.setPatchVariable(n, value)
     other: (agentSet) ->
       self = @_self
-      filteredAgents = agentSet.items.filter((o) -> o isnt self)
+      filteredAgents = agentSet.items.filter((agent) -> agent isnt self)
       new Agents(filteredAgents, agentSet.breed, agentSet.kind)
     shuffle: (agents) ->
       result = []
