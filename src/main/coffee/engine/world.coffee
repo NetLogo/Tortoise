@@ -182,7 +182,7 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
       # backwards through the array.
       #@# I don't know what this is blathering about, but if it needs this comment, it can probably be written better
       #@# Copying the array doesn't really accomplish anything, because it's not a deep copy and we're mutating the innards of the array
-      for turtle in _(@turtles().items).clone()
+      for turtle in @turtles().items[..]
         try
           turtle.die()
         catch error

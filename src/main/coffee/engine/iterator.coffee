@@ -1,7 +1,7 @@
-define(['integration/lodash'], (_) ->
+define(->
   class Iterator
     constructor: (@agents) ->
-      @agents = _(@agents).clone()
+      @agents = @agents[..]
       @i = 0
     hasNext: -> @i < @agents.length
     next: ->
