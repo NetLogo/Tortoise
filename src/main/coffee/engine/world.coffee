@@ -58,9 +58,9 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
       @resize(@minPxcor, @maxPxcor, @minPycor, @maxPycor)
     createPatches: ->
       nested =
-        for y in [@maxPycor..@minPycor] #@# Just build the damn matrix
+        for y in [@maxPycor..@minPycor]
           for x in [@minPxcor..@maxPxcor]
-            new Patch((@width() * (@maxPycor - y)) + x - @minPxcor, x, y, this)
+            new Patch((@width() * (@maxPycor - y)) + x - @minPxcor, x, y, this) #@# ID should not be generated inline
       # http://stackoverflow.com/questions/4631525/concatenating-an-array-of-arrays-in-coffeescript
       @_patches = [].concat nested... #@# I don't know what this means, nor what that comment above is, so it's automatically awful
       for p in @_patches
@@ -193,7 +193,7 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
         p.setPatchVariable(2, 0)   # 2 = pcolor
         p.setPatchVariable(3, "")    # 3 = plabel
         p.setPatchVariable(4, 9.9)   # 4 = plabel-color
-        for i in [Builtins.patchBuiltins.size...p.vars.length]
+        for i in [Builtins.patchBuiltins.size...p.vars.length] #@# ABSTRACT IT!
           p.setPatchVariable(i, 0)
       @patchesAllBlack(true)
       @patchesWithLabels(0)
