@@ -297,6 +297,6 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
       else if b.breed is @breedManager.get("LINKS")
         1
       else
-        throw new Error("We have yet to implement link breed comparison") #@# Bad error class
+        throw new Exception.NetLogoException("We have yet to implement link breed comparison")
 
 )

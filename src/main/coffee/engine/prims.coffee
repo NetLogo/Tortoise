@@ -38,7 +38,7 @@ define(['integration/random', 'engine/agents', 'engine/agentkind', 'engine/compa
               (a is Nobody and b.id is -1) or (b is Nobody and a.id is -1) or ((a instanceof Turtle or a instanceof Link) and a.compare(b) is Comparator.EQUALS)
         )
       else
-        throw new Error("Checking equality on undefined is an invalid condition") #@# Bad, bad Bizzle
+        throw new Exception.NetLogoException("Checking equality on undefined is an invalid condition")
 
 
     lt: (a, b) ->
@@ -47,7 +47,7 @@ define(['integration/random', 'engine/agents', 'engine/agentkind', 'engine/compa
       else if typeof(a) is typeof(b) and a.compare? and b.compare? #@# Use a class
         a.compare(b) is Comparator.LESS_THAN
       else
-        throw new Exception("Invalid operands to `lt`") #@# Nerp
+        throw new Exception.NetLogoException("Invalid operands to `lt`")
 
     gt: (a, b) ->
       if (Type(a).isString() and Type(b).isString()) or (Type(a).isNumber() and Type(b).isNumber())
@@ -55,7 +55,7 @@ define(['integration/random', 'engine/agents', 'engine/agentkind', 'engine/compa
       else if typeof(a) is typeof(b) and a.compare? and b.compare? #@# Use a class
         a.compare(b) is Comparator.GREATER_THAN
       else
-        throw new Exception("Invalid operands to `gt`") #@# Nerp
+        throw new Exception.NetLogoException("Invalid operands to `gt`")
 
     lte: (a, b) -> @lt(a, b) or @equality(a, b)
     gte: (a, b) -> @gt(a, b) or @equality(a, b)
@@ -145,7 +145,7 @@ define(['integration/random', 'engine/agents', 'engine/agentkind', 'engine/compa
         else if wrappedItems.all((x) -> x instanceof Link)
           xs[..].sort(@world.linkCompare)
         else
-          throw new Error("We don't know how to sort your kind here!") #@# Nerp
+          throw new Exception.NetLogoException("We don't know how to sort your kind here!")
       else if xs instanceof Agents
         xs.sort()
       else

@@ -1,4 +1,4 @@
-define(['engine/agentkind'], (AgentKind) ->
+define(['engine/agentkind', 'engine/exception'], (AgentKind, Exception) ->
   class Agents
     constructor: (@items, @breed, @kind) ->
     toString: ->
@@ -11,5 +11,5 @@ define(['engine/agentkind'], (AgentKind) ->
       else if @kind is AgentKind.Link
         @items[..].sort((x, y) -> x.world.linkCompare(x, y)) #@# Kind of obfuscated
       else
-        throw new Error("We don't know how to sort your kind here!")
+        throw new Exception.NetLogoException("We don't know how to sort your kind here!")
 )
