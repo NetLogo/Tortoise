@@ -1,7 +1,6 @@
 Things that are lousy about this branch:
 
 Very High:
--Exceptions should have their own package
 -Do away with uses of `Error`/`Exception` and use proper exception classes
 -Names of private members should be preceded with underscores
 -Lodashification
