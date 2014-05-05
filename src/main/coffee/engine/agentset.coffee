@@ -117,7 +117,7 @@ define(['engine/agents', 'engine/exception', 'engine/iterator', 'engine/nobody',
     nOf: (resultSize, agentsOrList) ->
       items = agentsOrList.items
       if not items? #@# How does this even make sense?
-        throw new Error("n-of not implemented on lists yet") #@# Bad exception class
+        throw new Exception.NetLogoException("n-of not implemented on lists yet")
       new Agents( #@# Oh, FFS
         switch resultSize
           when 0

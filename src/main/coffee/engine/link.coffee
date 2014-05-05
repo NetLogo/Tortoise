@@ -70,7 +70,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
         when -1 then Comparator.LESS_THAN
         when  0 then Comparator.EQUALS
         when  1 then Comparator.GREATER_THAN
-        else throw new Exception("Boom") #@# Bad
+        else throw new Exception.NetLogoException("Comparison should only yield an integer within the interval [-1,1]")
 
     seppuku: ->
       @world.updater.update("links", @id, { WHO: -1 }) #@# If you're awful and you know it, clap your hands!
