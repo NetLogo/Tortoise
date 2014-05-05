@@ -6,7 +6,7 @@ define(['integration/mori'], (Mori) ->
       @_links = Mori.sorted_set_by(@_compareFunc)
 
     # Side-effecting ops
-    insert: (l)    -> @_links = Mori.conj(@_links, l); this
+    insert: (link) -> @_links = Mori.conj(@_links, link); this
     remove: (link) -> @_links = Mori.disj(@_links, link); this
 
     # Pure ops

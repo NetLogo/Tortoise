@@ -53,7 +53,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
       if not (0 <= @heading < 360)
         @heading = ((@heading % 360) + 360) % 360
       return
-    canMove: (amount) -> @patchAhead(amount) isnt Nobody
+    canMove: (distance) -> @patchAhead(distance) isnt Nobody
     distanceXY: (x, y) -> @world.topology().distanceXY(@xcor(), @ycor(), x, y)
     distance: (agent) -> @world.topology().distance(@xcor(), @ycor(), agent)
     towardsXY: (x, y) -> @world.topology().towards(@xcor(), @ycor(), x, y)
@@ -82,96 +82,96 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
     connectedLinks: (directed, isSource) ->
       me = this #@# Wath?
       if directed
-        new Agents(@world.links().items.map((l) -> #@# Could this code be noisier?
-          if (l.directed and l.end1 is me and isSource) or (l.directed and l.end2 is me and not isSource)
-            l
+        new Agents(@world.links().items.map((link) -> #@# Could this code be noisier?
+          if (link.directed and link.end1 is me and isSource) or (link.directed and link.end2 is me and not isSource)
+            link
           else
-            null).filter((o) -> o isnt null), @world.breedManager.get("LINKS"), AgentKind.Link) #@# I bet this comparison is wrong somehow...
+            null).filter((link) -> link isnt null), @world.breedManager.get("LINKS"), AgentKind.Link) #@# I bet this comparison is wrong somehow...
       else
-        new Agents(@world.links().items.map((l) ->
-          if (not l.directed and l.end1 is me) or (not l.directed and l.end2 is me)
-            l
+        new Agents(@world.links().items.map((link) ->
+          if (not link.directed and link.end1 is me) or (not link.directed and link.end2 is me)
+            link
           else
-            null).filter((o) -> o isnt null), @world.breedManager.get("LINKS"), AgentKind.Link)
+            null).filter((link) -> link isnt null), @world.breedManager.get("LINKS"), AgentKind.Link)
     refreshLinks: ->
       if not _(@_links).isEmpty()
         linkTypes = [[true, true], [true, false], [false, false]]
         _(linkTypes).map(
-          (t) =>
-            [directed, isSource] = t
+          (typePair) =>
+            [directed, isSource] = typePair
             @connectedLinks(directed, isSource).items
         ).flatten().forEach(
-          (l) -> l.updateEndRelatedVars()
+          (link) -> link.updateEndRelatedVars()
         )
       return
     linkNeighbors: (directed, isSource) ->
       me = this #@# WTF, stop!
       if directed
-        new Agents(@world.links().items.map((l) -> #@# Noisy, noisy nonsense
-          if l.directed and l.end1 is me and isSource
-            l.end2
-          else if l.directed and l.end2 is me and not isSource
-            l.end1
+        new Agents(@world.links().items.map((link) -> #@# Noisy, noisy nonsense
+          if link.directed and link.end1 is me and isSource
+            link.end2
+          else if link.directed and link.end2 is me and not isSource
+            link.end1
           else
-            null).filter((o) -> o isnt null), @world.breedManager.get("TURTLES"), AgentKind.Turtle)
+            null).filter((link) -> link isnt null), @world.breedManager.get("TURTLES"), AgentKind.Turtle)
       else
-        new Agents(@world.links().items.map((l) ->
-          if not l.directed and l.end1 is me
-            l.end2
-          else if not l.directed and l.end2 is me
-            l.end1
+        new Agents(@world.links().items.map((link) ->
+          if not link.directed and link.end1 is me
+            link.end2
+          else if not link.directed and link.end2 is me
+            link.end1
           else
-            null).filter((o) -> o isnt null), @world.breedManager.get("TURTLES"), AgentKind.Turtle)
+            null).filter((link) -> link isnt null), @world.breedManager.get("TURTLES"), AgentKind.Turtle)
     isLinkNeighbor: (directed, isSource, other) -> #@# Other WHAT?
-      @linkNeighbors(directed, isSource).items.filter((o) -> o is other).length > 0 #@# `_(derp).some(f)` (Lodash)
+      @linkNeighbors(directed, isSource).items.filter((neighbor) -> neighbor is other).length > 0 #@# `_(derp).some(f)` (Lodash)
     findLinkViaNeighbor: (directed, isSource, other) -> #@# Other WHAT?
       me = this #@# No.
       links = [] #@# Bad
       if directed
-        links = @world.links().items.map((l) -> #@# Noisy
-          if (l.directed and l.end1 is me and l.end2 is other and isSource) or (l.directed and l.end1 is other and l.end2 is me and not isSource)
-            l
+        links = @world.links().items.map((link) -> #@# Noisy
+          if (link.directed and link.end1 is me and link.end2 is other and isSource) or (link.directed and link.end1 is other and link.end2 is me and not isSource)
+            link
           else
-            null).filter((o) -> o isnt null)
+            null).filter((link) -> link isnt null)
       else if @world.unbreededLinksAreDirected
         throw new Exception.NetLogoException("LINKS is a directed breed.")
       else
-        links = @world.links().items.map((l) ->
-          if (not l.directed and l.end1 is me and l.end2 is other) or (not l.directed and l.end2 is me and l.end1 is other)
-            l
+        links = @world.links().items.map((link) ->
+          if (not link.directed and link.end1 is me and link.end2 is other) or (not link.directed and link.end2 is me and link.end1 is other)
+            link
           else
-            null).filter((o) -> o isnt null)
+            null).filter((link) -> link isnt null)
       if links.length is 0 then Nobody else links[0] #@# Code above is, thus, lame; `length is 0` is antipattern
 
     otherEnd: -> if this is @world.agentSet.myself().end1 then @world.agentSet.myself().end2 else @world.agentSet.myself().end1
-    patchRightAndAhead: (angle, amount) ->
+    patchRightAndAhead: (angle, distance) ->
       heading = @heading + angle #@# Mutation is for bad people (FP)
       if not (0 <= heading < 360)
         heading = ((heading % 360) + 360) % 360
       try
-        newX = @world.topology().wrapX(@xcor() + amount * Trig.sin(heading))
-        newY = @world.topology().wrapY(@ycor() + amount * Trig.cos(heading))
+        newX = @world.topology().wrapX(@xcor() + distance * Trig.sin(heading))
+        newY = @world.topology().wrapY(@ycor() + distance * Trig.cos(heading))
         return @world.getPatchAt(newX, newY) #@# Unnecessary `return`
       catch error
         if error instanceof Exception.TopologyInterrupt then Nobody else throw error
-    patchLeftAndAhead: (angle, amount) ->
-      @patchRightAndAhead(-angle, amount)
-    patchAhead: (amount) ->
-      @patchRightAndAhead(0, amount)
-    fd: (amount) ->
-      if amount > 0
-        while amount >= 1 and @jump(1) #@# Possible point of improvement
-          amount -= 1
-        @jump(amount)
-      else if amount < 0
-        while amount <= -1 and @jump(-1)
-          amount += 1
-        @jump(amount)
+    patchLeftAndAhead: (angle, distance) ->
+      @patchRightAndAhead(-angle, distance)
+    patchAhead: (distance) ->
+      @patchRightAndAhead(0, distance)
+    fd: (distance) ->
+      if distance > 0
+        while distance >= 1 and @jump(1) #@# Possible point of improvement
+          distance -= 1
+        @jump(distance)
+      else if distance < 0
+        while distance <= -1 and @jump(-1)
+          distance += 1
+        @jump(distance)
       return
-    jump: (amount) ->
-      if @canMove(amount)
-        @setXcor(@xcor() + amount * Trig.sin(@heading))
-        @setYcor(@ycor() + amount * Trig.cos(@heading))
+    jump: (distance) ->
+      if @canMove(distance)
+        @setXcor(@xcor() + distance * Trig.sin(@heading))
+        @setYcor(@ycor() + distance * Trig.cos(@heading))
         @world.updater.updated(this, "xcor", "ycor")
         return true
       return false #@# Orly?
@@ -179,8 +179,8 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
       Trig.sin(@heading)
     dy: ->
       Trig.cos(@heading)
-    right: (amount) ->
-      @heading += amount
+    right: (angle) ->
+      @heading += angle
       @keepHeadingInRange()
       @world.updater.updated(this, "heading") #@# Why do all of these function calls manage updates for themselves?  Why am I dreaming of an `@world.updater. monad?
       return
@@ -210,10 +210,10 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
       if @id isnt -1
         @world.removeTurtle(@id)
         @seppuku()
-        for l in @world.links().items
-          if l.end1.id is @id or l.end2.id is @id
+        for link in @world.links().items
+          if link.end1.id is @id or link.end2.id is @id
             try
-              l.die()
+              link.die()
             catch error
               throw error if not (error instanceof Exception.DeathInterrupt)
         @id = -1
@@ -231,28 +231,28 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
           this[Builtins.turtleBuiltins[n]]
       else
         @vars[n - Builtins.turtleBuiltins.length]
-    setTurtleVariable: (n, v) -> #@# Here we go again!
+    setTurtleVariable: (n, value) -> #@# Here we go again!
       if n < Builtins.turtleBuiltins.length
         if n is 1 # color
-          this[Builtins.turtleBuiltins[n]] = ColorModel.wrapColor(v)
+          this[Builtins.turtleBuiltins[n]] = ColorModel.wrapColor(value)
         else if n is 3 #xcor
-          @setXcor(v)
+          @setXcor(value)
         else if n is 4 #ycor
-          @setYcor(v)
+          @setYcor(value)
         else
           if n is 5  # shape
-            v = v.toLowerCase()
-          this[Builtins.turtleBuiltins[n]] = v
+            value = value.toLowerCase()
+          this[Builtins.turtleBuiltins[n]] = value
           if n is 2  # heading
             @keepHeadingInRange()
         @world.updater.updated(this, Builtins.turtleBuiltins[n])
       else
-        @vars[n - Builtins.turtleBuiltins.length] = v
+        @vars[n - Builtins.turtleBuiltins.length] = value
     getBreedVariable: (n) -> @breedVars[n]
-    setBreedVariable: (n, v) -> @breedVars[n] = v
+    setBreedVariable: (n, value) -> @breedVars[n] = value
     getPatchHere: -> @world.getPatchAt(@xcor(), @ycor())
     getPatchVariable: (n)    -> @getPatchHere().getPatchVariable(n)
-    setPatchVariable: (n, v) -> @getPatchHere().setPatchVariable(n, v)
+    setPatchVariable: (n, value) -> @getPatchHere().setPatchVariable(n, value)
     getNeighbors: -> @getPatchHere().getNeighbors()
     getNeighbors4: -> @getPatchHere().getNeighbors4()
     turtlesHere: -> @getPatchHere().turtlesHere()
@@ -264,12 +264,12 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
 
     # () => Turtle
     _makeTurtleCopy: (breed) =>
-      t = new Turtle(@world, @color, @heading, @xcor(), @ycor(), breed, @label, @labelcolor, @hidden, @size, @pensize, @penmode) #@# Sounds like we ought have some cloning system, of which this function is a first step
-      _(0).range(TurtlesOwn.vars.length).forEach((v) =>
-        t.setTurtleVariable(Builtins.turtleBuiltins.length + v, @getTurtleVariable(Builtins.turtleBuiltins.length + v))
+      turtle = new Turtle(@world, @color, @heading, @xcor(), @ycor(), breed, @label, @labelcolor, @hidden, @size, @pensize, @penmode) #@# Sounds like we ought have some cloning system, of which this function is a first step
+      _(0).range(TurtlesOwn.vars.length).forEach((n) =>
+        turtle.setTurtleVariable(Builtins.turtleBuiltins.length + n, @getTurtleVariable(Builtins.turtleBuiltins.length + n))
         return
       )
-      @world.createTurtle(t)
+      @world.createTurtle(turtle)
 
     moveTo: (agent) ->
       [x, y] = agent.getCoords()
@@ -286,8 +286,8 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
       @world.updater.updated(this, "penmode")
       return
 
-    _removeLink: (l) ->
-      @_links.splice(@_links.indexOf(l)) #@# Surely there's a more-coherent way to write this
+    _removeLink: (link) ->
+      @_links.splice(@_links.indexOf(link)) #@# Surely there's a more-coherent way to write this
 
     compare: (x) ->
       if x instanceof Turtle

@@ -3,11 +3,11 @@ define(['integration/lodash'], (_) -> {
   baseColors: ->
     for i in [0..13]
       i * 10 + 5
-  wrapColor: (c) ->
-    if _(c).isArray()
-      c
+  wrapColor: (color) ->
+    if _(color).isArray()
+      color
     else
-      modColor = c % @COLOR_MAX
+      modColor = color % @COLOR_MAX
       if modColor >= 0
         modColor
       else

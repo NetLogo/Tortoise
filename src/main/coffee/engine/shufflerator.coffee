@@ -16,9 +16,9 @@ define(['integration/lodash', 'integration/random'], (_, Random) ->
         @nextOne = null
       else
         if @i < @agents.length - 1
-          r = @i + Random.nextInt(@agents.length - @i)
-          @nextOne = @agents[r]
-          @agents[r] = @agents[@i]
+          randNum = @i + Random.nextInt(@agents.length - @i)
+          @nextOne = @agents[randNum]
+          @agents[randNum] = @agents[@i]
         else
           @nextOne = @agents[@i]
         @i = @i + 1 #@# It's called "@i++"

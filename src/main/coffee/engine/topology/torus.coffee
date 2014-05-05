@@ -20,7 +20,7 @@ define(['integration/lodash', 'integration/strictmath', 'engine/topology/topolog
         (@height - StrictMath.abs(y1 - y2)) * (if y2 > y1 then -1 else 1)
       else
         Math.abs(y1 - y2) * (if y1 > y2 then -1 else 1)
-    diffuse: (vn, amount) -> #@# Varname
+    diffuse: (vn, coefficient) -> #@# Varname
       scratch = for x in [0...@width] #@# Unused var
         [] #@# Weird style
       for patch in @getPatches().items #@# Two loops over the same thing.  Yeah!
@@ -35,7 +35,7 @@ define(['integration/lodash', 'integration/strictmath', 'engine/topology/topolog
            @getPatchNorth(pxcor, pycor), @getPatchSouthEast(pxcor, pycor),
            @getPatchEast(pxcor, pycor), @getPatchNorthEast(pxcor, pycor)]
         diffusalSum = _(orderedNeighbors).map((nb) => scratch[nb.pxcor - @minPxcor][nb.pycor - @minPycor]).reduce((acc, x) -> acc + x)
-        patch.setPatchVariable(vn, patch.getPatchVariable(vn) * (1.0 - amount) + (diffusalSum / 8) * amount)
+        patch.setPatchVariable(vn, patch.getPatchVariable(vn) * (1.0 - coefficient) + (diffusalSum / 8) * coefficient)
 
     #@# I think I tried to fix all this in the ScalaJS version.  Did I succeed?  (I doubt it)
     getPatchNorth: (pxcor, pycor) ->

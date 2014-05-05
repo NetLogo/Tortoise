@@ -63,8 +63,8 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
             new Patch((@width() * (@maxPycor - y)) + x - @minPxcor, x, y, this) #@# ID should not be generated inline
       # http://stackoverflow.com/questions/4631525/concatenating-an-array-of-arrays-in-coffeescript
       @_patches = [].concat nested... #@# I don't know what this means, nor what that comment above is, so it's automatically awful
-      for p in @_patches
-        @updater.updated(p, "pxcor", "pycor", "pcolor", "plabel", "plabelcolor")
+      for patch in @_patches
+        @updater.updated(patch, "pxcor", "pycor", "pcolor", "plabel", "plabelcolor")
     topology: -> @_topology
     links: () ->
       new Agents(@_links.toArray(), @breedManager.get("LINKS"), AgentKind.Link)
@@ -150,7 +150,7 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
       turtle = @getTurtle(id)
       if turtle.breed.name.toUpperCase() is breedName.toUpperCase() then turtle else Nobody
     removeLink: (id) ->
-      link = @_links.find((l) -> l.id is id)
+      link = @_links.find((link) -> link.id is id)
       @_links = @_links.remove(link)
       if @_links.isEmpty()
         @unbreededLinksAreDirected = false
@@ -182,29 +182,29 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
       # backwards through the array.
       #@# I don't know what this is blathering about, but if it needs this comment, it can probably be written better
       #@# Copying the array doesn't really accomplish anything, because it's not a deep copy and we're mutating the innards of the array
-      for t in _(@turtles().items).clone()
+      for turtle in _(@turtles().items).clone()
         try
-          t.die()
+          turtle.die()
         catch error
           throw error if not (error instanceof Exception.DeathInterrupt)
       @_nextTurtleId = 0
       return
     clearPatches: ->
-      for p in @patches().items #@# Oh, yeah?
-        p.setPatchVariable(2, 0)   # 2 = pcolor
-        p.setPatchVariable(3, "")    # 3 = plabel
-        p.setPatchVariable(4, 9.9)   # 4 = plabel-color
-        for i in [Builtins.patchBuiltins.size...p.vars.length] #@# ABSTRACT IT!
-          p.setPatchVariable(i, 0)
+      for patch in @patches().items #@# Oh, yeah?
+        patch.setPatchVariable(2, 0)   # 2 = pcolor
+        patch.setPatchVariable(3, "")    # 3 = plabel
+        patch.setPatchVariable(4, 9.9)   # 4 = plabel-color
+        for i in [Builtins.patchBuiltins.size...patch.vars.length] #@# ABSTRACT IT!
+          patch.setPatchVariable(i, 0)
       @patchesAllBlack(true)
       @patchesWithLabels(0)
       return
-    createTurtle: (t) ->
-      t.id = @_nextTurtleId++ #@# Why are we managing IDs at this level of the code?
-      @updater.updated(t, Builtins.turtleBuiltins...)
-      @_turtles.push(t)
-      @_turtlesById[t.id] = t
-      t
+    createTurtle: (turtle) ->
+      turtle.id = @_nextTurtleId++ #@# Why are we managing IDs at this level of the code?
+      @updater.updated(turtle, Builtins.turtleBuiltins...)
+      @_turtles.push(turtle)
+      @_turtlesById[turtle.id] = turtle
+      turtle
     ###
     #@# We shouldn't be looking up links in the tree everytime we create a link; JVM NL uses 2 `LinkedHashMap[Turtle, Buffer[Link]]`s (to, from) --JAB (2/7/14)
     #@# The return of `Nobody` followed by clients `filter`ing against it screams "flatMap!" --JAB (2/7/14)
@@ -217,12 +217,12 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
         end1 = to
         end2 = from
       if @getLink(end1.id, end2.id) is Nobody
-        l = new Link(@_nextLinkId++, directed, end1, end2, this) #@# Managing IDs for yourself!
-        @updater.updated(l, Builtins.linkBuiltins...)
-        @updater.updated(l, Builtins.linkExtras...)
-        @updater.updated(l, Builtins.turtleBuiltins.slice(1)...) #@# See, this update nonsense is awful
-        @_links.insert(l)
-        l
+        link = new Link(@_nextLinkId++, directed, end1, end2, this) #@# Managing IDs for yourself!
+        @updater.updated(link, Builtins.linkBuiltins...)
+        @updater.updated(link, Builtins.linkExtras...)
+        @updater.updated(link, Builtins.turtleBuiltins.slice(1)...) #@# See, this update nonsense is awful
+        @_links.insert(link)
+        link
       else
         Nobody
     createOrderedTurtles: (n, breedName) -> #@# Clarity is a good thing
@@ -240,20 +240,20 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
     createDirectedLinks: (source, others) -> #@# Clarity
       @unbreededLinksAreDirected = true
       @updater.push({ world: { 0: { unbreededLinksAreDirected: true } } })
-      links = _(others.items).map((t) => @createLink(true, source, t)).filter((o) -> o isnt Nobody).value()
+      links = _(others.items).map((turtle) => @createLink(true, source, turtle)).filter((other) -> other isnt Nobody).value()
       new Agents(links, @breedManager.get("LINKS"), AgentKind.Link)
     createReverseDirectedLinks: (source, others) -> #@# Clarity
       @unbreededLinksAreDirected = true
       @updater.push({ world: { 0: { unbreededLinksAreDirected: true } } })
-      links = _(others.items).map((t) => @createLink(true, t, source)).filter((o) -> o isnt Nobody).value()
+      links = _(others.items).map((turtle) => @createLink(true, turtle, source)).filter((other) -> other isnt Nobody).value()
       new Agents(links, @breedManager.get("LINKS"), AgentKind.Link)
     createUndirectedLink: (source, other) ->
       @createLink(false, source, other)
     createUndirectedLinks: (source, others) -> #@# Clarity
-      links = _(others.items).map((t) => @createLink(false, source, t)).filter((o) -> o isnt Nobody).value()
+      links = _(others.items).map((turtle) => @createLink(false, source, turtle)).filter((other) -> other isnt Nobody).value()
       new Agents(links, @breedManager.get("LINKS"), AgentKind.Link)
     getLink: (fromId, toId) ->
-      link = @_links.find((l) -> l.end1.id is fromId and l.end2.id is toId)
+      link = @_links.find((link) -> link.end1.id is fromId and link.end2.id is toId)
       if link?
         link
       else

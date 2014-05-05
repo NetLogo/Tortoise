@@ -33,7 +33,7 @@ define(['engine/exception', 'engine/topology/topology'], (Exception, Topology) -
     getPatchSouthEast: (pxcor, pycor) -> (pycor isnt @minPycor) and (pxcor isnt @maxPxcor) and @getPatchAt(pxcor + 1, pycor - 1)
     getPatchNorthEast: (pxcor, pycor) -> (pycor isnt @maxPycor) and (pxcor isnt @maxPxcor) and @getPatchAt(pxcor + 1, pycor + 1)
 
-    diffuse: (vn, amount) -> #@# Guacy moley
+    diffuse: (vn, coefficient) -> #@# Guacy moley
       yy = @height
       xx = @width
       scratch = for x in [0...xx]
@@ -44,7 +44,7 @@ define(['engine/exception', 'engine/topology/topology'], (Exception, Topology) -
           0
       for y in [0...yy]
         for x in [0...xx]
-          diffuseVal = (scratch[x][y] / 8) * amount
+          diffuseVal = (scratch[x][y] / 8) * coefficient
           if 0 < y < yy - 1 and 0 < x < xx - 1
             scratch2[x    ][y    ] += scratch[x][y] - (8 * diffuseVal)
             scratch2[x - 1][y - 1] += diffuseVal

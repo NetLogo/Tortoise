@@ -16,29 +16,29 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
         this[Builtins.patchBuiltins[n]]
       else
         @vars[n - Builtins.patchBuiltins.length]
-    setPatchVariable: (n, v) ->
+    setPatchVariable: (n, value) ->
       if n < Builtins.patchBuiltins.length
         if Builtins.patchBuiltins[n] is "pcolor"
-          newV = ColorModel.wrapColor(v)
-          if newV isnt 0
+          newValue = ColorModel.wrapColor(value)
+          if newValue isnt 0
             @world.patchesAllBlack(false)
-          this[Builtins.patchBuiltins[n]] = newV
+          this[Builtins.patchBuiltins[n]] = newValue
         else if Builtins.patchBuiltins[n] is "plabel"
-          if v is "" #@# Lodash, weird code
+          if value is "" #@# Lodash, weird code
             if this.plabel isnt ""
               world.patchesWithLabels(world._patchesWithLabels - 1)
           else
             if this.plabel is ""
               world.patchesWithLabels(world._patchesWithLabels + 1)
-          this.plabel = v
+          this.plabel = value
         else
-          this[Builtins.patchBuiltins[n]] = v
+          this[Builtins.patchBuiltins[n]] = value
         @world.updater.updated(this, Builtins.patchBuiltins[n])
       else
-        @vars[n - Builtins.patchBuiltins.length] = v
-    leave: (t) -> @turtles.splice(@turtles.indexOf(t, 0), 1) #@# WTF is `t`?
-    arrive: (t) -> #@# WTF is `t`?
-      @turtles.push(t)
+        @vars[n - Builtins.patchBuiltins.length] = value
+    leave: (turtle) -> @turtles.splice(@turtles.indexOf(turtle, 0), 1) #@# These functions are named strangely (`patch.arrive(turtle0)` doesn't make a lot of sense to me as an English-speaker)
+    arrive: (turtle) ->
+      @turtles.push(turtle)
     getCoords: -> [@pxcor, @pycor]
     distanceXY: (x, y) -> @world.topology().distanceXY(@pxcor, @pycor, x, y)
     towardsXY: (x, y) -> @world.topology().towards(@pxcor, @pycor, x, y)
@@ -52,7 +52,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
       new Agents(turtles, breed, AgentKind.Turtle)
     breedHere: (breedName) ->
       breed   = @world.breedManager.get(breedName)
-      turtles = _(@turtles).filter((t) -> t.breed is breed).value()
+      turtles = _(@turtles).filter((turtle) -> turtle.breed is breed).value()
       new Agents(turtles, breed, AgentKind.Turtle)
     turtlesAt: (dx, dy) ->
       @patchAt(dx, dy).turtlesHere()

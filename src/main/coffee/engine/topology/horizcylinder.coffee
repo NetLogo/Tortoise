@@ -64,7 +64,7 @@ define(['integration/strictmath', 'engine/exception', 'engine/topology/topology'
         @getPatchAt(pxcor + 1, @minPycor)
       else
         @getPatchAt(pxcor + 1, pycor + 1)
-    diffuse: (vn, amount) -> #@# Dat guacamole
+    diffuse: (vn, coefficient) -> #@# Dat guacamole
       yy = @height
       xx = @width
       scratch = for x in [0...xx]
@@ -75,7 +75,7 @@ define(['integration/strictmath', 'engine/exception', 'engine/topology/topology'
           0
       for y in [yy...(yy * 2)]
         for x in [xx...(xx * 2)]
-          diffuseVal = (scratch[x - xx][y - yy] / 8) * amount
+          diffuseVal = (scratch[x - xx][y - yy] / 8) * coefficient
           if xx < x < (xx * 2) - 1
             scratch2[(x    ) - xx][(y    ) - yy] += scratch[x - xx][y - yy] - (8 * diffuseVal)
             scratch2[(x - 1) % xx][(y - 1) % yy] += diffuseVal
