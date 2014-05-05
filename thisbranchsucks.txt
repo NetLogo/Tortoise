@@ -1,14 +1,13 @@
 Things that are lousy about this branch:
 
 Very High:
--Names of private members should be preceded with underscores
+-Fatten up those arrows!
+-Fix bug with `Updates[0]` being mutating and `Updater.push` is being used
+-`World` should not manually manage turtle IDs
 -Lodashification
 --Loops on numerical ranges should be Lodasherized
 --Uses of `length`
--`World` should not manually manage turtle IDs
--Fatten up those arrows!
 -`Prims` vs. `AgentSet` nonsense sucks
--Fix bug with `Updates[0]` being mutating and `Updater.push` is being used
 
 High:
 -FPification
@@ -18,17 +17,18 @@ High:
 --Things should stop managing their own updates
 -`Agents` should not be named as such, and should (hopefully) roll in with `AgentSet`
 -Polymorphism patrol and general abolition of `instanceof`
--Value wrappers: ID, NLColor, XCor, YCor, PenMode
 -`LinkSet`, `PatchSet`, `TurtleSet` as smart, easy set classes
--Apply type signature to all methods
---`Unit` functions should end in `return`
 -Clean up import ordering and 'integration' vs. 'engine' nonsense
 -"CC Uri" notices
 -`Iterator` is puny and questionable in its existence, and its interface sucks
 -`<x>sOwn` objects
--Code is `Tasks` is confusing
+-Code in `Tasks` is confusing
 
 Mid:
+-Names of private members should be preceded with underscores
+-Apply type signatures to all methods
+--`Unit` functions should end in `return`
+-Value wrappers: ID, NLColor, XCor, YCor, PenMode
 -Agentsets don't handle dead agents correctly.  JVM NetLogo has `DeadSkippingIterator` for this.  Tortoise just continues to act as if the dead agents are valid, unless they're a part of a breed agentset.  Check out being able to observe object changes in ECAMScript 6.
 -The way that I lumped patches in with breeds doesn't work correctly.  Namely, patches don't actually have breeds, so it just ends up being `undefined`, which isn't really right
 -Engine variables should be referenced by name, rather than number
@@ -36,5 +36,4 @@ Mid:
 Low:
 -Optimizations
 -Random number generation often seems to take a lot of a model's time.  Would it be crazy to run the random generator within a web worker and constantly keep a pre-computed queue of 100 or 1000 or so numbers?
--`./sbt benchmark` does the same thing as `./sbt run`
 -Lousy interfaces with SpiderMonkey and V8
