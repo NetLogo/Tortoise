@@ -43,7 +43,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
     distanceXY: (x, y) -> @world.topology().distanceXY(@pxcor, @pycor, x, y)
     towardsXY: (x, y) -> @world.topology().towards(@pxcor, @pycor, x, y)
     distance: (agent) -> @world.topology().distance(@pxcor, @pycor, agent)
-    turtlesHere: -> new Agents(_(@turtles).clone(), @world.breedManager.get("TURTLES"), AgentKind.Turtle)
+    turtlesHere: -> new Agents(@turtles[..], @world.breedManager.get("TURTLES"), AgentKind.Turtle) #@# What do the two dots even mean here...?
     getNeighbors: -> @world.getNeighbors(@pxcor, @pycor)
     getNeighbors4: -> @world.getNeighbors4(@pxcor, @pycor)
     sprout: (n, breedName) ->
