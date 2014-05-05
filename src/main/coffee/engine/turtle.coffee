@@ -258,15 +258,19 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
     turtlesHere: -> @getPatchHere().turtlesHere()
     breedHere: (breedName) -> @getPatchHere().breedHere(breedName)
     hatch: (n, breedName) ->
-      breed = if breedName then @world.breedManager.get(breedName) else @breed #@# Existential check?
-      newTurtles = [] #@# Functional style or GTFO (FP)
-      if n > 0
-        for num in [0...n] #@# Nice unused variable; Lodash it!
-          t = new Turtle(@world, @color, @heading, @xcor(), @ycor(), breed, @label, @labelcolor, @hidden, @size, @pensize, @penmode) #@# Sounds like we ought have some cloning system
-          for v in [0..TurtlesOwn.vars.length]
-            t.setTurtleVariable(Builtins.turtleBuiltins.length + v, @getTurtleVariable(Builtins.turtleBuiltins.length + v))
-          newTurtles.push(@world.createTurtle(t))
-        new Agents(newTurtles, breed, AgentKind.Turtle)
+      breed      = if breedName then @world.breedManager.get(breedName) else @breed #@# Existential check?  Why is this even a thing?
+      newTurtles = _(0).range(n).map(=> @_makeTurtleCopy(breed)).value()
+      new Agents(newTurtles, breed, AgentKind.Turtle)
+
+    # () => Turtle
+    _makeTurtleCopy: (breed) =>
+      t = new Turtle(@world, @color, @heading, @xcor(), @ycor(), breed, @label, @labelcolor, @hidden, @size, @pensize, @penmode) #@# Sounds like we ought have some cloning system, of which this function is a first step
+      _(0).range(TurtlesOwn.vars.length).forEach((v) =>
+        t.setTurtleVariable(Builtins.turtleBuiltins.length + v, @getTurtleVariable(Builtins.turtleBuiltins.length + v))
+        return
+      )
+      @world.createTurtle(t)
+
     moveTo: (agent) ->
       [x, y] = agent.getCoords()
       @setXY(x, y)
