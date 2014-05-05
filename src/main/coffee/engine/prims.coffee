@@ -27,18 +27,19 @@ define(['integration/random', 'engine/agents', 'engine/agentkind', 'engine/compa
     shadeOf: (c1, c2) -> Math.floor(c1 / 10) is Math.floor(c2 / 10) #@# Varnames
     isBreed: (breedName, x) -> if x.isBreed? and x.id isnt -1 then x.isBreed(breedName) else false
     equality: (a, b) ->
-      if a is undefined or b is undefined
+      if a? and b?
+        (a is b) or ( # This code has been purposely rewritten into a crude, optimized form --JAB (3/19/14)
+          if Type(a).isArray() and Type(b).isArray()
+            a.length is b.length and a.every((elem, i) => @equality(elem, b[i]))
+          else if a instanceof Agents and b instanceof Agents #@# Could be sped up to O(n) (from O(n^2)) by zipping the two arrays
+            a.items.length is b.items.length and a.kind is b.kind and a.items.every((elem) -> (elem in b.items)) #@# Wrong!
+          else
+            (a instanceof Agents and a.breed is b) or (b instanceof Agents and b.breed is a) or
+              (a is Nobody and b.id is -1) or (b is Nobody and a.id is -1) or ((a instanceof Turtle or a instanceof Link) and a.compare(b) is Comparator.EQUALS)
+        )
+      else
         throw new Error("Checking equality on undefined is an invalid condition") #@# Bad, bad Bizzle
 
-      (a is b) or ( # This code has been purposely rewritten into a crude, optimized form --JAB (3/19/14)
-        if Type(a).isArray() and Type(b).isArray()
-          a.length is b.length and a.every((elem, i) => @equality(elem, b[i]))
-        else if a instanceof Agents and b instanceof Agents #@# Could be sped up to O(n) (from O(n^2)) by zipping the two arrays
-          a.items.length is b.items.length and a.kind is b.kind and a.items.every((elem) -> (elem in b.items)) #@# Wrong!
-        else
-          (a instanceof Agents and a.breed is b) or (b instanceof Agents and b.breed is a) or
-            (a is Nobody and b.id is -1) or (b is Nobody and a.id is -1) or ((a instanceof Turtle or a instanceof Link) and a.compare(b) is Comparator.EQUALS)
-      )
 
     lt: (a, b) ->
       if (Type(a).isString() and Type(b).isString()) or (Type(a).isNumber() and Type(b).isNumber())

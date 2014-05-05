@@ -53,7 +53,7 @@ define(['engine/agents', 'engine/exception', 'engine/iterator', 'engine/nobody',
         agent = iter.next()
         @askAgent(agent, f)
       # If an asker indirectly commits suicide, the exception should propagate.  FD 11/1/2013
-      if @_self.id and @_self.id is -1 #@# Improve (existential)
+      if @_self.id is -1
         throw new Exception.DeathInterrupt
       return
     # can't call it `with`, that's taken in JavaScript. so is `filter` - ST 2/19/14
@@ -93,8 +93,8 @@ define(['engine/agents', 'engine/exception', 'engine/iterator', 'engine/nobody',
      else
        winners[Random.nextInt(winners.length)]
     of: (agentsOrAgent, f) -> #@# This is nonsense; same with `ask`.  If you're giving me something, _you_ get it into the right type first, not me!
-      isagentset = agentsOrAgent.items #@# Existential check!  Come on!
-      if isagentset
+      isagentset = agentsOrAgent.items #@# *sigh*
+      if isagentset?
         agents = agentsOrAgent.items
       else
         agents = [agentsOrAgent]
@@ -115,9 +115,9 @@ define(['engine/agents', 'engine/exception', 'engine/iterator', 'engine/nobody',
         list = agentsOrList
       if list.length is 0 then Nobody else list[Random.nextInt(list.length)] #@# Sadness continues
     nOf: (resultSize, agentsOrList) ->
-      items = agentsOrList.items #@# Existential
-      if not items #@# How does this even make sense?
-        throw new Error("n-of not implemented on lists yet")
+      items = agentsOrList.items
+      if not items? #@# How does this even make sense?
+        throw new Error("n-of not implemented on lists yet") #@# Bad exception class
       new Agents( #@# Oh, FFS
         switch resultSize
           when 0

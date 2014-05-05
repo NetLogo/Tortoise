@@ -26,7 +26,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
       if @breed isnt @world.breedManager.get("TURTLES")
         @world.breedManager.get("TURTLES").add(this)
         for x in @breed.vars
-          if @breedVars[x] is undefined #@# Simplify
+          if not @breedVars[x]?
             @breedVars[x] = 0
     xcor: -> @_xcor
     setXcor: (newX) ->
@@ -79,20 +79,14 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
         if error instanceof Exception.TopologyInterrupt then Nobody else throw error
     turtlesAt: (dx, dy) ->
       @getPatchHere().turtlesAt(dx, dy)
-    connectedLinks: (directed, isSource) ->
-      me = this #@# Wath?
-      if directed
-        new Agents(@world.links().items.map((link) -> #@# Could this code be noisier?
-          if (link.directed and link.end1 is me and isSource) or (link.directed and link.end2 is me and not isSource)
-            link
-          else
-            null).filter((link) -> link isnt null), @world.breedManager.get("LINKS"), AgentKind.Link) #@# I bet this comparison is wrong somehow...
-      else
-        new Agents(@world.links().items.map((link) ->
-          if (not link.directed and link.end1 is me) or (not link.directed and link.end2 is me)
-            link
-          else
-            null).filter((link) -> link isnt null), @world.breedManager.get("LINKS"), AgentKind.Link)
+    connectedLinks: (isDirected, isSource) ->
+      filterFunc =
+        if isDirected #@# Conditional is unnecessary, really
+          (link) => (link.directed and link.end1 is this and isSource) or (link.directed and link.end2 is this and not isSource)
+        else
+          (link) => (not link.directed and link.end1 is this) or (not link.directed and link.end2 is this)
+      connected = @world.links().items.filter(filterFunc)
+      new Agents(connected, @world.breedManager.get("LINKS"), AgentKind.Link)
     refreshLinks: ->
       if not _(@_links).isEmpty()
         linkTypes = [[true, true], [true, false], [false, false]]
@@ -104,44 +98,44 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
           (link) -> link.updateEndRelatedVars()
         )
       return
-    linkNeighbors: (directed, isSource) ->
-      me = this #@# WTF, stop!
-      if directed
-        new Agents(@world.links().items.map((link) -> #@# Noisy, noisy nonsense
-          if link.directed and link.end1 is me and isSource
-            link.end2
-          else if link.directed and link.end2 is me and not isSource
-            link.end1
-          else
-            null).filter((link) -> link isnt null), @world.breedManager.get("TURTLES"), AgentKind.Turtle)
-      else
-        new Agents(@world.links().items.map((link) ->
-          if not link.directed and link.end1 is me
-            link.end2
-          else if not link.directed and link.end2 is me
-            link.end1
-          else
-            null).filter((link) -> link isnt null), @world.breedManager.get("TURTLES"), AgentKind.Turtle)
+    linkNeighbors: (isDirected, isSource) ->
+      reductionFunc =
+        if isDirected
+          (acc, link) =>
+            if link.directed and link.end1 is this and isSource
+              acc.push(link.end2)
+            else if link.directed and link.end2 is this and not isSource
+              acc.push(link.end1)
+            acc
+        else
+          (acc, link) =>
+            if not link.directed and link.end1 is this
+              acc.push(link.end2)
+            else if not link.directed and link.end2 is this
+              acc.push(link.end1)
+            acc
+
+      turtles = world.links().items.reduce(reductionFunc, [])
+
+      new Agents(turtles, @world.breedManager.get("TURTLES"), AgentKind.Turtle)
+
     isLinkNeighbor: (directed, isSource, other) -> #@# Other WHAT?
       @linkNeighbors(directed, isSource).items.filter((neighbor) -> neighbor is other).length > 0 #@# `_(derp).some(f)` (Lodash)
-    findLinkViaNeighbor: (directed, isSource, other) -> #@# Other WHAT?
-      me = this #@# No.
-      links = [] #@# Bad
-      if directed
-        links = @world.links().items.map((link) -> #@# Noisy
-          if (link.directed and link.end1 is me and link.end2 is other and isSource) or (link.directed and link.end1 is other and link.end2 is me and not isSource)
-            link
-          else
-            null).filter((link) -> link isnt null)
-      else if @world.unbreededLinksAreDirected
-        throw new Exception.NetLogoException("LINKS is a directed breed.")
+    findLinkViaNeighbor: (isDirected, isSource, other) -> #@# Other WHAT?
+      findFunc =
+        if isDirected
+          (link) => (link.directed and link.end1 is this and link.end2 is other and isSource) or (link.directed and link.end1 is other and link.end2 is this and not isSource)
+        else if not isDirected and not @world.unbreededLinksAreDirected
+          (link) => (not link.directed and link.end1 is this and link.end2 is other) or (not link.directed and link.end2 is this and link.end1 is other)
+        else
+          throw new Exception.NetLogoException("LINKS is a directed breed.")
+
+      link = _(@world.links().items).find(findFunc)
+
+      if link?
+        link
       else
-        links = @world.links().items.map((link) ->
-          if (not link.directed and link.end1 is me and link.end2 is other) or (not link.directed and link.end2 is me and link.end1 is other)
-            link
-          else
-            null).filter((link) -> link isnt null)
-      if links.length is 0 then Nobody else links[0] #@# Code above is, thus, lame; `length is 0` is antipattern
+        Nobody
 
     otherEnd: -> if this is @world.agentSet.myself().end1 then @world.agentSet.myself().end2 else @world.agentSet.myself().end1
     patchRightAndAhead: (angle, distance) ->
@@ -258,7 +252,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
     turtlesHere: -> @getPatchHere().turtlesHere()
     breedHere: (breedName) -> @getPatchHere().breedHere(breedName)
     hatch: (n, breedName) ->
-      breed      = if breedName then @world.breedManager.get(breedName) else @breed #@# Existential check?  Why is this even a thing?
+      breed      = if breedName? and not _(breedName).isEmpty() then @world.breedManager.get(breedName) else @breed #@# Why is this even a thing?
       newTurtles = _(0).range(n).map(=> @_makeTurtleCopy(breed)).value()
       new Agents(newTurtles, breed, AgentKind.Turtle)
 

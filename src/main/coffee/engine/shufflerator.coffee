@@ -6,7 +6,7 @@ define(['integration/lodash', 'integration/random'], (_, Random) ->
       @fetch()
     i: 0
     nextOne: null
-    hasNext: -> @nextOne isnt null
+    hasNext: -> @nextOne?
     next: ->
       result = @nextOne
       @fetch()
