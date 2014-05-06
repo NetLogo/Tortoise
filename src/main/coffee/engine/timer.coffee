@@ -2,6 +2,7 @@ define(->
 
   class Timer
 
+    # Number
     _startTime: undefined
 
     # () => Timer
