@@ -50,7 +50,7 @@ BreedManager.get("CLOUDS").vars =["CLOUD-SPEED", "CLOUD-ID"];function setup() {
   BreedManager.setDefaultShape(world.turtlesOfBreed("CO2S"), "CO2-molecule");
   Call(setupWorld);
   Globals.setGlobal(4, 12);
-  world.resetTicks();
+  world.ticker.reset();
 }
 function setupWorld() {
   Globals.setGlobal(2, (world.maxPycor - 5));
@@ -83,7 +83,7 @@ function go() {
   Call(runHeat);
   Call(runIr);
   Call(runCo2);
-  world.tick();
+  world.ticker.tick();
 }
 function updateAlbedo() {
   AgentSet.setPatchVariable(2, Prims.scaleColor(55, Globals.getGlobal(1), 0, 1));

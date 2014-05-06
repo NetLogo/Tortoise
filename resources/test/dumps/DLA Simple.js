@@ -42,7 +42,7 @@ function setup() {
     AgentSet.setTurtleVariable(10, 1.5);
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
   });
-  world.resetTicks();
+  world.ticker.reset();
 }
 function go() {
   AgentSet.ask(world.turtles(), true, function() {
@@ -56,7 +56,7 @@ function go() {
       AgentSet.die();
     }
   });
-  world.tick();
+  world.ticker.tick();
 }
 Globals.setGlobal(0, 60);
 Globals.setGlobal(1, 2500);

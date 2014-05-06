@@ -72,7 +72,7 @@ BreedManager.get("WOLVES").vars =[""];function setup() {
   Globals.setGlobal(9, AgentSet.count(AgentSet.agentFilter(world.patches(), function() {
     return Prims.equality(AgentSet.getPatchVariable(2), 55);
   })));
-  world.resetTicks();
+  world.ticker.reset();
 }
 function go() {
   if (!(AgentSet.any(world.turtles()))) {
@@ -102,7 +102,7 @@ function go() {
   Globals.setGlobal(9, AgentSet.count(AgentSet.agentFilter(world.patches(), function() {
     return Prims.equality(AgentSet.getPatchVariable(2), 55);
   })));
-  world.tick();
+  world.ticker.tick();
   Call(displayLabels);
 }
 function move() {

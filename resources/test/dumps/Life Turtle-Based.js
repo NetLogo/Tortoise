@@ -43,7 +43,7 @@ BreedManager.get("BABIES").vars =[""];function setupBlank() {
   AgentSet.ask(world.patches(), true, function() {
     AgentSet.setPatchVariable(5, 0);
   });
-  world.resetTicks();
+  world.ticker.reset();
 }
 function setupRandom() {
   Call(setupBlank);
@@ -53,7 +53,7 @@ function setupRandom() {
     }
   });
   Call(go);
-  world.resetTicks();
+  world.ticker.reset();
 }
 function birth() {
   AgentSet.ask(Prims.sprout(1, "BABIES"), true, function() {
@@ -89,7 +89,7 @@ function go() {
     }
     AgentSet.setPatchVariable(5, 0);
   });
-  world.tick();
+  world.ticker.tick();
 }
 function drawCells() {
   var erasing_p = AgentSet.any(Prims.breedOn("CELLS", Prims.patch(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)())));

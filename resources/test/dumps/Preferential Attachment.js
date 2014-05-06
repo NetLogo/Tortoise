@@ -37,14 +37,14 @@ function setup() {
   BreedManager.setDefaultShape(world.turtles(), "circle");
   Call(makeNode, Nobody);
   Call(makeNode, world.getTurtle(0));
-  world.resetTicks();
+  world.ticker.reset();
 }
 function go() {
   AgentSet.ask(world.links(), true, function() {
     AgentSet.setTurtleVariable(1, 5);
   });
   Call(makeNode, Call(findPartner));
-  world.tick();
+  world.ticker.tick();
   if (Globals.getGlobal(1)) {
     Call(layout);
   }

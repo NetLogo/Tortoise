@@ -42,7 +42,7 @@ function setup() {
     AgentSet.setTurtleVariable(1, 15);
     AgentSet.setTurtleVariable(10, 6);
   });
-  world.resetTicks();
+  world.ticker.reset();
 }
 function goForward() {
   Tasks.forEach(Tasks.commandTask(function() {
@@ -52,7 +52,7 @@ function goForward() {
       Call(turn);
     });
   }), Prims.sort(world.turtles()));
-  world.tick();
+  world.ticker.tick();
 }
 function goReverse() {
   Tasks.forEach(Tasks.commandTask(function() {
@@ -62,7 +62,7 @@ function goReverse() {
       Prims.bk(1);
     });
   }), Prims.reverse(Prims.sort(world.turtles())));
-  world.tick();
+  world.ticker.tick();
 }
 function turn() {
   if (Prims.equality(AgentSet.getPatchVariable(2), 9.9)) {

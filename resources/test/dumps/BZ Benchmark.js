@@ -44,7 +44,7 @@ function benchmark() {
 }
 function setup() {
   world.clearAll();
-  world.resetTicks();
+  world.ticker.reset();
   AgentSet.ask(world.patches(), true, function() {
     AgentSet.setPatchVariable(5, Prims.random((Globals.getGlobal(0) + 1)));
     AgentSet.setPatchVariable(2, Prims.scaleColor(15, AgentSet.getPatchVariable(5), 0, Globals.getGlobal(0)));
@@ -58,7 +58,7 @@ function go() {
     AgentSet.setPatchVariable(5, AgentSet.getPatchVariable(6));
     AgentSet.setPatchVariable(2, Prims.scaleColor(15, AgentSet.getPatchVariable(5), 0, Globals.getGlobal(0)));
   });
-  world.tick();
+  world.ticker.tick();
 }
 function findNewState() {
   if (Prims.equality(AgentSet.getPatchVariable(5), Globals.getGlobal(0))) {

@@ -53,7 +53,7 @@ function setup(setupTask) {
   })));
   Globals.setGlobal(5, []);
   Globals.setGlobal(7, []);
-  world.resetTicks();
+  world.ticker.reset();
 }
 function setupUniform(initial) {
   Call(setup, Tasks.reporterTask(function() {
@@ -96,7 +96,7 @@ function go() {
       Call(recolor);
     });
     Globals.setGlobal(4, Globals.getGlobal(3));
-    world.tick();
+    world.ticker.tick();
   }
 }
 function explore() {
