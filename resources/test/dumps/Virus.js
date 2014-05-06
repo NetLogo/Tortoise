@@ -38,7 +38,7 @@ function setup() {
   Call(setupConstants);
   Call(setupTurtles);
   Call(updateGlobalVariables);
-  world.resetTicks();
+  world.ticker.reset();
 }
 function setupTurtles() {
   BreedManager.setDefaultShape(world.turtles(), "person");
@@ -83,7 +83,7 @@ function go() {
   Call(recover);
   Call(reproduce);
   Call(updateGlobalVariables);
-  world.tick();
+  world.ticker.tick();
 }
 function updateGlobalVariables() {
   if (Prims.gt(AgentSet.count(world.turtles()), 0)) {

@@ -39,7 +39,7 @@ function setup() {
     AgentSet.setPatchVariable(5, Prims.random(2));
     Call(recolorPatch);
   });
-  world.resetTicks();
+  world.ticker.reset();
 }
 function go() {
   AgentSet.ask(world.patches(), true, function() {
@@ -77,7 +77,7 @@ function go() {
     }
     Call(recolorPatch);
   });
-  world.tick();
+  world.ticker.tick();
 }
 function recolorPatch() {
   if (Prims.equality(AgentSet.getPatchVariable(5), 0)) {

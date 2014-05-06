@@ -50,7 +50,7 @@ function setup() {
     }));
     AgentSet.setTurtleVariable(10, 5);
   });
-  world.resetTicks();
+  world.ticker.reset();
 }
 function go() {
   AgentSet.ask(world.turtles(), true, function() {
@@ -63,7 +63,7 @@ function go() {
     }
     Prims.fd(1);
   });
-  world.tick();
+  world.ticker.tick();
 }
 function wiggle() {
   Prims.right(Prims.random(50));

@@ -49,7 +49,7 @@ function setup() {
     Call(colorize);
   });
   Globals.setGlobal(1, (2 * AgentSet.count(world.patches())));
-  world.resetTicks();
+  world.ticker.reset();
 }
 function go() {
   var activePatches = Prims.patchSet(AgentSet.oneOf(world.patches()));
@@ -76,7 +76,7 @@ function go() {
       return Prims.getNeighbors4();
     }));
   }
-  world.tick();
+  world.ticker.tick();
 }
 function colorize() {
   if (Prims.lte(AgentSet.getPatchVariable(5), 3)) {

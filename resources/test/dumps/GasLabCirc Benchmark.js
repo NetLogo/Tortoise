@@ -45,7 +45,7 @@ BreedManager.get("PARTICLES").vars =["SPEED", "MASS"];function benchmark() {
 }
 function setup() {
   world.clearAll();
-  world.resetTicks();
+  world.ticker.reset();
   BreedManager.setDefaultShape(world.turtlesOfBreed("PARTICLES"), "circle");
   Globals.setGlobal(13, true);
   Globals.setGlobal(14, 0.2);
@@ -103,11 +103,11 @@ function go() {
     Prims.jump((AgentSet.getBreedVariable("SPEED") * Globals.getGlobal(5)));
   });
   Call(collideWinners);
-  world.tickAdvance(Globals.getGlobal(5));
+  world.ticker.tickAdvance(Globals.getGlobal(5));
   if (Globals.getGlobal(13)) {
-    if (Prims.gt((world.ticks() - Globals.getGlobal(12)), Globals.getGlobal(14))) {
+    if (Prims.gt((world.ticker.tickCount() - Globals.getGlobal(12)), Globals.getGlobal(14))) {
       notImplemented('display', undefined)();
-      Globals.setGlobal(12, world.ticks());
+      Globals.setGlobal(12, world.ticker.tickCount());
     }
   }
 }
@@ -142,7 +142,7 @@ function checkForParticleCollision() {
       timeToCollision = (((- pv) - StrictMath.sqrt(d1)) / (2 * vSquared));
     }
     if (Prims.gt(timeToCollision, 0)) {
-      var collidingPair = Prims.list((timeToCollision + world.ticks()), AgentSet.self(), AgentSet.myself());
+      var collidingPair = Prims.list((timeToCollision + world.ticker.tickCount()), AgentSet.self(), AgentSet.myself());
       Globals.setGlobal(7, Prims.fput(collidingPair, Globals.getGlobal(7)));
     }
   });
@@ -204,7 +204,7 @@ function checkForWallCollision() {
   }
 }
 function assignCollidingWall(timeToCollision, wall) {
-  var collidingPair = Prims.list((timeToCollision + world.ticks()), AgentSet.self(), wall);
+  var collidingPair = Prims.list((timeToCollision + world.ticker.tickCount()), AgentSet.self(), wall);
   Globals.setGlobal(7, Prims.fput(collidingPair, Globals.getGlobal(7)));
 }
 function sortCollisions() {
@@ -227,8 +227,8 @@ function sortCollisions() {
   }), Globals.getGlobal(7));
   var dt = Prims.item(0, winner);
   if (Prims.gt(dt, 0)) {
-    if (Prims.lte((dt - world.ticks()), 1)) {
-      Globals.setGlobal(5, (dt - world.ticks()));
+    if (Prims.lte((dt - world.ticker.tickCount()), 1)) {
+      Globals.setGlobal(5, (dt - world.ticker.tickCount()));
       Globals.setGlobal(9, Prims.item(1, winner));
       Globals.setGlobal(10, Prims.item(2, winner));
     }
@@ -379,12 +379,12 @@ function testTimeReversal(n) {
   AgentSet.ask(world.turtlesOfBreed("PARTICLES"), true, function() {
     notImplemented('stamp', undefined)();
   });
-  while (Prims.lt(world.ticks(), n)) {
+  while (Prims.lt(world.ticker.tickCount(), n)) {
     Call(go);
   }
-  var oldClock = world.ticks();
+  var oldClock = world.ticker.tickCount();
   Call(reverseTime);
-  while (Prims.lt(world.ticks(), (2 * oldClock))) {
+  while (Prims.lt(world.ticker.tickCount(), (2 * oldClock))) {
     Call(go);
   }
   AgentSet.ask(world.turtlesOfBreed("PARTICLES"), true, function() {

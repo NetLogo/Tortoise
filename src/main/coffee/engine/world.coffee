@@ -1,11 +1,11 @@
 define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'engine/agents', 'engine/builtins'
-      , 'engine/exception', 'engine/link', 'engine/nobody', 'engine/observer', 'engine/patch', 'engine/turtle'
-      , 'engine/worldlinks', 'engine/topology/box', 'engine/topology/horizcylinder', 'engine/topology/torus'
-      , 'engine/topology/vertcylinder', 'integration/lodash']
+      , 'engine/exception', 'engine/link', 'engine/nobody', 'engine/observer', 'engine/patch', 'engine/ticker'
+      , 'engine/turtle', 'engine/worldlinks', 'engine/topology/box', 'engine/topology/horizcylinder'
+      , 'engine/topology/torus', 'engine/topology/vertcylinder', 'integration/lodash']
      , ( Random,               StrictMath,               AgentKind,          Agents,          Builtins
-      ,  Exception,          Link,          Nobody,          Observer,          Patch,          Turtle
-      ,  WorldLinks,          Box,                   HorizCylinder,                   Torus
-      ,  VertCylinder,                   _) ->
+      ,  Exception,          Link,          Nobody,          Observer,          Patch,          Ticker
+      ,  Turtle,          WorldLinks,          Box,                   HorizCylinder
+      ,  Torus,                   VertCylinder,                   _) ->
 
   class World
 
@@ -17,7 +17,6 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
     _turtlesById: {}
     _patches: []
     _topology: null
-    _ticks: -1
     _patchesAllBlack: true
     _patchesWithLabels: 0
 
@@ -40,7 +39,7 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
         patchSize: @patchSize,
         patchesAllBlack: @_patchesAllBlack,
         patchesWithLabels: @_patchesWithLabels,
-        ticks: @_ticks,
+        ticks: -1,
         turtleBreeds: "XXX IMPLEMENT ME",
         turtleShapeList: turtleShapeList,
         unbreededLinksAreDirected: false
@@ -49,6 +48,7 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
       })
       @_links = new WorldLinks(@linkCompare)
       @observer = new Observer(updater)
+      @ticker   = new Ticker(updater, @id)
       @resize(@minPxcor, @maxPxcor, @minPycor, @maxPycor)
     createPatches: ->
       nested =
@@ -67,12 +67,6 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
       breed = @breedManager.get(breedName)
       new Agents(breed.members, breed, AgentKind.Turtle)
     patches: => new Agents(@_patches, @breedManager.get("PATCHES"), AgentKind.Patch)
-    resetTicks: ->
-      @_ticks = 0
-      @updater.updated(this, "ticks")
-    clearTicks: ->
-      @_ticks = -1
-      @updater.updated(this, "ticks")
     resize: (minPxcor, maxPxcor, minPycor, maxPycor) ->
 
       if not (minPxcor <= 0 <= maxPxcor and minPycor <= 0 <= maxPycor)
@@ -101,22 +95,6 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
       @updater.updated(this, "width", "height", "minPxcor", "minPycor", "maxPxcor", "maxPycor")
       return
 
-    tick: ->
-      if @_ticks is -1
-        throw new Exception.NetLogoException("The tick counter has not been started yet. Use RESET-TICKS.") #@# Bad men x4
-      @_ticks++
-      @updater.updated(this, "ticks")
-    tickAdvance: (n) ->
-      if @_ticks is -1
-        throw new Exception.NetLogoException("The tick counter has not been started yet. Use RESET-TICKS.")
-      if n < 0
-        throw new Exception.NetLogoException("Cannot advance the tick counter by a negative amount.")
-      @_ticks += n
-      @updater.updated(this, "ticks")
-    ticks: ->
-      if @_ticks is -1
-        throw new Exception.NetLogoException("The tick counter has not been started yet. Use RESET-TICKS.")
-      @_ticks
     width: () -> 1 + @maxPxcor - @minPxcor #@# Defer to topology x2
     height: () -> 1 + @maxPycor - @minPycor
     getPatchAt: (x, y) =>
@@ -152,7 +130,7 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
       @_nextLinkId = 0
       @patchesAllBlack(true)
       @patchesWithLabels(0)
-      @clearTicks()
+      @ticker.clear()
       return
     clearTurtles: ->
       # We iterate through a copy of the array since it will be modified during

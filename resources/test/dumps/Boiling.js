@@ -38,7 +38,7 @@ function setup() {
     AgentSet.setPatchVariable(5, Prims.random(212));
     AgentSet.setPatchVariable(2, Prims.scaleColor(15, AgentSet.getPatchVariable(5), 0, 212));
   });
-  world.resetTicks();
+  world.ticker.reset();
 }
 function go() {
   world.topology().diffuse(5, 1);
@@ -46,7 +46,7 @@ function go() {
     AgentSet.setPatchVariable(5, Prims.mod((AgentSet.getPatchVariable(5) + 5), 212));
     AgentSet.setPatchVariable(2, Prims.scaleColor(15, AgentSet.getPatchVariable(5), 0, 212));
   });
-  world.tick();
+  world.ticker.tick();
 }
 function averageHeat() {
   return Prims.mean(AgentSet.of(world.patches(), function() {

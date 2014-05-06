@@ -21,7 +21,7 @@ function setup() {
   AgentSet.ask(Prims.patch(1, 1), true, function() {
     Call(cellBirth);
   });
-  world.resetTicks();
+  world.ticker.reset();
 }
 function cellBirth() {
   AgentSet.setPatchVariable(5, true);
@@ -47,5 +47,5 @@ function go() {
       }
     }
   });
-  world.tick();
+  world.ticker.tick();
 }

@@ -57,7 +57,7 @@ BreedManager.get("OILS").vars =[""];function setup() {
       AgentSet.setTurtleVariable(1, 115);
     });
   });
-  world.resetTicks();
+  world.ticker.reset();
 }
 function go() {
   AgentSet.ask(world.turtles(), true, function() {
@@ -65,7 +65,7 @@ function go() {
     Call(repelTooCloseNeighbor);
     Call(interactWithPartner);
   });
-  world.tick();
+  world.ticker.tick();
 }
 function interactWithNeighbor() {
   var near = AgentSet.oneOf(AgentSet.other(AgentSet.agentFilter(AgentSet.self().inRadius(world.turtles(), Globals.getGlobal(7)), function() {

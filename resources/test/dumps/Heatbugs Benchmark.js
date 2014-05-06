@@ -45,7 +45,7 @@ function benchmark() {
 }
 function setup() {
   world.clearAll();
-  world.resetTicks();
+  world.ticker.reset();
   AgentSet.ask(AgentSet.nOf(Globals.getGlobal(0), world.patches()), true, function() {
     AgentSet.ask(Prims.sprout(1, ""), true, function() {
       AgentSet.setTurtleVariable(1, 65);
@@ -65,7 +65,7 @@ function go() {
     Call(step);
   });
   Call(recolorPatches);
-  world.tick();
+  world.ticker.tick();
 }
 function recolorPatches() {
   AgentSet.ask(world.patches(), true, function() {

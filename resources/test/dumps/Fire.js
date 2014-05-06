@@ -52,7 +52,7 @@ BreedManager.get("EMBERS").vars =[""];function setup() {
     return Prims.equality(AgentSet.getPatchVariable(2), 55);
   })));
   Globals.setGlobal(2, 0);
-  world.resetTicks();
+  world.ticker.reset();
 }
 function go() {
   if (!(AgentSet.any(world.turtles()))) {
@@ -67,7 +67,7 @@ function go() {
     AgentSet.setBreed(world.turtlesOfBreed("EMBERS"));
   });
   Call(fadeEmbers);
-  world.tick();
+  world.ticker.tick();
 }
 function ignite() {
   AgentSet.ask(Prims.sprout(1, "FIRES"), true, function() {

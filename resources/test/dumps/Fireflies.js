@@ -50,7 +50,7 @@ function setup() {
     AgentSet.setTurtleVariable(10, 2);
     Call(recolor);
   });
-  world.resetTicks();
+  world.ticker.reset();
 }
 function go() {
   AgentSet.ask(world.turtles(), true, function() {
@@ -63,7 +63,7 @@ function go() {
   AgentSet.ask(world.turtles(), true, function() {
     Call(recolor);
   });
-  world.tick();
+  world.ticker.tick();
 }
 function recolor() {
   if (Prims.lt(AgentSet.getTurtleVariable(13), AgentSet.getTurtleVariable(14))) {

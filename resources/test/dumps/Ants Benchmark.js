@@ -36,7 +36,7 @@ TurtlesOwn.init(2);
 PatchesOwn.init(5);
 function setup() {
   world.clearAll();
-  world.resetTicks();
+  world.ticker.reset();
   Call(setupTurtles);
   Call(setupPatches);
   Call(doPlotting);
@@ -116,11 +116,11 @@ function go() {
   AgentSet.ask(world.patches(), true, function() {
     Call(goPatches);
   });
-  world.tick();
+  world.ticker.tick();
   Call(doPlotting);
 }
 function goTurtles() {
-  if (Prims.lt(AgentSet.getTurtleVariable(0), world.ticks())) {
+  if (Prims.lt(AgentSet.getTurtleVariable(0), world.ticker.tickCount())) {
     if (AgentSet.getTurtleVariable(13)) {
       AgentSet.setTurtleVariable(1, (25 + 1));
       Call(returnToNest);

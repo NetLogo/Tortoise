@@ -47,17 +47,17 @@ function setup() {
       AgentSet.setTurtleVariable(1, 55);
     }
   });
-  world.resetTicks();
+  world.ticker.reset();
 }
 function go() {
   AgentSet.ask(AgentSet.agentFilter(world.turtles(), function() {
     return Prims.equality(AgentSet.getTurtleVariable(1), 55);
   }), true, function() {
-    if (Prims.gt(world.ticks(), 100)) {
-      AgentSet.setTurtleVariable(14, (Globals.getGlobal(2) * Trig.unsquashedSin((Globals.getGlobal(1) * world.ticks()))));
+    if (Prims.gt(world.ticker.tickCount(), 100)) {
+      AgentSet.setTurtleVariable(14, (Globals.getGlobal(2) * Trig.unsquashedSin((Globals.getGlobal(1) * world.ticker.tickCount()))));
     }
     else {
-      AgentSet.setTurtleVariable(14, (((world.ticks() / 100) * Globals.getGlobal(2)) * Trig.unsquashedSin((Globals.getGlobal(1) * world.ticks()))));
+      AgentSet.setTurtleVariable(14, (((world.ticker.tickCount() / 100) * Globals.getGlobal(2)) * Trig.unsquashedSin((Globals.getGlobal(1) * world.ticker.tickCount()))));
     }
     if (!Prims.equality(AgentSet.self().patchAt(0, (AgentSet.getTurtleVariable(14) - AgentSet.getTurtleVariable(4))), Nobody)) {
       AgentSet.setTurtleVariable(4, AgentSet.getTurtleVariable(14));
@@ -89,7 +89,7 @@ function go() {
       AgentSet.self().hideTurtle(true);;
     }
   });
-  world.tick();
+  world.ticker.tick();
 }
 Globals.setGlobal(0, 24);
 Globals.setGlobal(1, 10);

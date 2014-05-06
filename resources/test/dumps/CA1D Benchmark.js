@@ -67,7 +67,7 @@ function singleCell() {
     AgentSet.setPatchVariable(2, Globals.getGlobal(8));
     AgentSet.setPatchVariable(5, true);
   });
-  world.resetTicks();
+  world.ticker.reset();
 }
 function setupRandom() {
   Call(setupGeneral);
@@ -77,7 +77,7 @@ function setupRandom() {
     AgentSet.setPatchVariable(5, Prims.lt(Prims.random(100), Globals.getGlobal(11)));
     Call(colorPatch);
   });
-  world.resetTicks();
+  world.ticker.reset();
 }
 function setupContinue() {
   var on_pList = [];
@@ -126,7 +126,7 @@ function go() {
     Call(colorPatch);
   });
   Globals.setGlobal(16, true);
-  world.tick();
+  world.ticker.tick();
 }
 function doRule() {
   var leftOn_p = AgentSet.of(AgentSet.self().patchAt(-1, 0), function() {

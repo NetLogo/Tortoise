@@ -43,7 +43,7 @@ function setup() {
   AgentSet.ask(world.patches(), true, function() {
     AgentSet.setPatchVariable(5, 0);
   });
-  world.resetTicks();
+  world.ticker.reset();
 }
 function go() {
   AgentSet.ask(world.turtles(), true, function() {
@@ -59,7 +59,7 @@ function go() {
     AgentSet.setPatchVariable(5, (AgentSet.getPatchVariable(5) * 0.9));
     AgentSet.setPatchVariable(2, Prims.scaleColor(55, AgentSet.getPatchVariable(5), 0.1, 3));
   });
-  world.tick();
+  world.ticker.tick();
 }
 function turnTowardChemical() {
   var ahead = AgentSet.of(AgentSet.self().patchAhead(1), function() {
