@@ -257,7 +257,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
       new Agents(newTurtles, breed, AgentKind.Turtle)
 
     # () => Turtle
-    _makeTurtleCopy: (breed) =>
+    _makeTurtleCopy: (breed) ->
       turtle = new Turtle(@world, @color, @heading, @xcor(), @ycor(), breed, @label, @labelcolor, @hidden, @size, @pensize, @penmode) #@# Sounds like we ought have some cloning system, of which this function is a first step
       _(0).range(TurtlesOwn.vars.length).forEach((n) =>
         turtle.setTurtleVariable(Builtins.turtleBuiltins.length + n, @getTurtleVariable(Builtins.turtleBuiltins.length + n))
