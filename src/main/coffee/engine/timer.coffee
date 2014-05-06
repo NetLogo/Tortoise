@@ -2,7 +2,7 @@ define(->
 
   class Timer
 
-    _startTime: null
+    _startTime: undefined
 
     # () => Timer
     constructor: ->
