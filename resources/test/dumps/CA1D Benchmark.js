@@ -41,11 +41,11 @@ function startup() {
 function benchmark() {
   Random.setSeed(4378);
   Call(setupRandom);
-  world.resetTimer();
+  workspace.timer.reset();
   Prims.repeat((10 * world.height()), function () {
     Call(go);
   });
-  Globals.setGlobal(17, world.timer());
+  Globals.setGlobal(17, workspace.timer.elapsed());
 }
 function setupGeneral() {
   world.clearPatches();

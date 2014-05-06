@@ -35,13 +35,13 @@ Globals.init(15);
 BreedManager.add("PARTICLES", "particle");
 BreedManager.get("PARTICLES").vars =["SPEED", "MASS"];function benchmark() {
   Random.setSeed(12345);
-  world.resetTimer();
+  workspace.timer.reset();
   Call(setup);
   Globals.setGlobal(13, false);
   Prims.repeat(3500, function () {
     Call(go);
   });
-  Globals.setGlobal(4, world.timer());
+  Globals.setGlobal(4, workspace.timer.elapsed());
 }
 function setup() {
   world.clearAll();

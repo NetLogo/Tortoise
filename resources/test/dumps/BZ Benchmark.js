@@ -35,12 +35,12 @@ Globals.init(5);
 PatchesOwn.init(2);
 function benchmark() {
   Random.setSeed(5454);
-  world.resetTimer();
+  workspace.timer.reset();
   Call(setup);
   Prims.repeat(20, function () {
     Call(go);
   });
-  Globals.setGlobal(4, world.timer());
+  Globals.setGlobal(4, workspace.timer.elapsed());
 }
 function setup() {
   world.clearAll();

@@ -37,11 +37,11 @@ PatchesOwn.init(1);
 function benchmark() {
   Random.setSeed(362);
   Call(setup);
-  world.resetTimer();
+  workspace.timer.reset();
   Prims.repeat(1000, function () {
     Call(go);
   });
-  Globals.setGlobal(8, world.timer());
+  Globals.setGlobal(8, workspace.timer.elapsed());
 }
 function setup() {
   world.clearAll();

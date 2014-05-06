@@ -43,12 +43,12 @@ function setup() {
 }
 function benchmark() {
   Random.setSeed(337);
-  world.resetTimer();
+  workspace.timer.reset();
   Call(setup);
   Prims.repeat(800, function () {
     Call(go);
   });
-  Globals.setGlobal(4, world.timer());
+  Globals.setGlobal(4, workspace.timer.elapsed());
 }
 function setupTurtles() {
   BreedManager.setDefaultShape(world.turtles(), "bug");
