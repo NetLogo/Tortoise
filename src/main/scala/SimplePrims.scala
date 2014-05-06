@@ -210,9 +210,9 @@ object SimplePrims {
         case _: prim.etc._display           => "notImplemented('display', undefined)"
         case _: prim.etc._stamp             => "notImplemented('stamp', undefined)"
         case _: prim.etc._usermessage       => "notImplemented('user-message', undefined)"
-        case _: prim.etc._watch             => "world.watch"
+        case _: prim.etc._watch             => "world.observer.watch"
         case _: prim.etc._watchme           => "AgentSet.self().watchme"
-        case _: prim.etc._resetperspective  => "world.resetPerspective"
+        case _: prim.etc._resetperspective  => "world.observer.resetPerspective"
         case _: prim.etc._layoutspring      => "LayoutManager.layoutSpring"
       }
   }

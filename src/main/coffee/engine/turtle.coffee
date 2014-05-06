@@ -269,7 +269,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
       [x, y] = agent.getCoords()
       @setXY(x, y)
     watchme: ->
-      @world.watch(this)
+      @world.observer.watch(this)
 
     penDown: -> #@# For shame!
       @penmode = "down"
