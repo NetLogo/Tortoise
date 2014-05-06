@@ -64,7 +64,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
       catch error
         if error instanceof Exception.TopologyInterrupt then Nobody else throw error
     watchme: ->
-      @world.watch(this)
+      @world.observer.watch(this)
 
     inRadius: (agents, radius) ->
       @world.topology().inRadius(this, @pxcor, @pycor, agents, radius)

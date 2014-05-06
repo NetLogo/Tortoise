@@ -1,10 +1,10 @@
 define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'engine/agents', 'engine/builtins'
-      , 'engine/exception', 'engine/link', 'engine/nobody', 'engine/patch', 'engine/turtle', 'engine/worldlinks'
-      , 'engine/topology/box', 'engine/topology/horizcylinder', 'engine/topology/torus'
+      , 'engine/exception', 'engine/link', 'engine/nobody', 'engine/observer', 'engine/patch', 'engine/turtle'
+      , 'engine/worldlinks', 'engine/topology/box', 'engine/topology/horizcylinder', 'engine/topology/torus'
       , 'engine/topology/vertcylinder', 'integration/lodash']
      , ( Random,               StrictMath,               AgentKind,          Agents,          Builtins
-      ,  Exception,          Link,          Nobody,          Patch,          Turtle,          WorldLinks
-      ,  Box,                   HorizCylinder,                   Torus
+      ,  Exception,          Link,          Nobody,          Observer,          Patch,          Turtle
+      ,  WorldLinks,          Box,                   HorizCylinder,                   Torus
       ,  VertCylinder,                   _) ->
 
   class World
@@ -26,8 +26,6 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
                 , linkShapeList, @interfaceGlobalCount) ->
       @breedManager.reset()
       @agentSet.reset()
-      @perspective = 0 #@# Out of constructor
-      @targetAgent = null #@# Out of constructor
       @updater.collectUpdates()
       @updater.push(
         {
@@ -54,7 +52,7 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
           }
         })
       @_links = new WorldLinks(@linkCompare)
-      @updatePerspective()
+      @observer = new Observer(updater)
       @resize(@minPxcor, @maxPxcor, @minPycor, @maxPycor)
     createPatches: ->
       nested =
@@ -258,24 +256,6 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
         link
       else
         Nobody
-    updatePerspective: ->
-      @updater.push({ observer: { 0: { perspective: @perspective, targetAgent: @targetAgent } } })
-    watch: (agent) ->
-      @perspective = 3
-      agentKind = 0
-      agentId = -1
-      if agent instanceof Turtle
-        agentKind = 1
-        agentId = agent.id
-      else if agent instanceof Patch
-        agentKind = 2
-        agentId = agent.id
-      @targetAgent = [agentKind, agentId]
-      @updatePerspective()
-    resetPerspective: ->
-      @perspective = 0
-      @targetAgent = null
-      @updatePerspective()
 
     linkCompare: (a, b) => #@# Heinous
       if a is b
