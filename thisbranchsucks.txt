@@ -1,7 +1,6 @@
 Things that are lousy about this branch:
 
 Very High:
--Fatten up those arrows!
 -Fix bug with `Updates[0]` being mutating and `Updater.push` is being used
 -`World` should not manually manage turtle IDs
 -Lodashification
