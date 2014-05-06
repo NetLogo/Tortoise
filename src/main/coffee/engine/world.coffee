@@ -9,6 +9,8 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
 
   class World
 
+    id: 0
+
     _nextLinkId: 0
     _nextTurtleId: 0
     _turtles: []
@@ -27,30 +29,25 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
       @breedManager.reset()
       @agentSet.reset()
       @updater.collectUpdates()
-      @updater.push(
-        {
-          world: {
-            0: {
-              worldWidth: Math.abs(@minPxcor - @maxPxcor) + 1,
-              worldHeight: Math.abs(@minPycor - @maxPycor) + 1,
-              minPxcor: @minPxcor,
-              minPycor: @minPycor,
-              maxPxcor: @maxPxcor,
-              maxPycor: @maxPycor,
-              linkBreeds: "XXX IMPLEMENT ME",
-              linkShapeList: linkShapeList,
-              patchSize: @patchSize,
-              patchesAllBlack: @_patchesAllBlack,
-              patchesWithLabels: @_patchesWithLabels,
-              ticks: @_ticks,
-              turtleBreeds: "XXX IMPLEMENT ME",
-              turtleShapeList: turtleShapeList,
-              unbreededLinksAreDirected: false
-              wrappingAllowedInX: @wrappingAllowedInX,
-              wrappingAllowedInY: @wrappingAllowedInY
-            }
-          }
-        })
+      @updater.update("world", 0, {
+        worldWidth: Math.abs(@minPxcor - @maxPxcor) + 1,
+        worldHeight: Math.abs(@minPycor - @maxPycor) + 1,
+        minPxcor: @minPxcor,
+        minPycor: @minPycor,
+        maxPxcor: @maxPxcor,
+        maxPycor: @maxPycor,
+        linkBreeds: "XXX IMPLEMENT ME",
+        linkShapeList: linkShapeList,
+        patchSize: @patchSize,
+        patchesAllBlack: @_patchesAllBlack,
+        patchesWithLabels: @_patchesWithLabels,
+        ticks: @_ticks,
+        turtleBreeds: "XXX IMPLEMENT ME",
+        turtleShapeList: turtleShapeList,
+        unbreededLinksAreDirected: false
+        wrappingAllowedInX: @wrappingAllowedInX,
+        wrappingAllowedInY: @wrappingAllowedInY
+      })
       @_links = new WorldLinks(@linkCompare)
       @observer = new Observer(updater)
       @resize(@minPxcor, @maxPxcor, @minPycor, @maxPycor)
@@ -75,10 +72,10 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
       @_timer = Date.now()
     resetTicks: ->
       @_ticks = 0
-      @updater.push( world: { 0: { ticks: @_ticks } } ) #@# The fact that `@updater.push` is ever done manually seems fundamentally wrong to me
+      @updater.updated(this, "ticks")
     clearTicks: ->
       @_ticks = -1
-      @updater.push( world: { 0: { ticks: @_ticks } } )
+      @updater.updated(this, "ticks")
     resize: (minPxcor, maxPxcor, minPycor, maxPycor) ->
 
       if not (minPxcor <= 0 <= maxPxcor and minPycor <= 0 <= maxPycor)
@@ -104,32 +101,21 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
       @createPatches()
       @patchesAllBlack(true)
       @patchesWithLabels(0)
-      @updater.push(
-        world: {
-          0: {
-            worldWidth: Math.abs(@minPxcor - @maxPxcor) + 1,
-            worldHeight: Math.abs(@minPycor - @maxPycor) + 1,
-            minPxcor: @minPxcor,
-            minPycor: @minPycor,
-            maxPxcor: @maxPxcor,
-            maxPycor: @maxPycor
-          }
-        }
-      )
+      @updater.updated(this, "width", "height", "minPxcor", "minPycor", "maxPxcor", "maxPycor")
       return
 
     tick: ->
       if @_ticks is -1
         throw new Exception.NetLogoException("The tick counter has not been started yet. Use RESET-TICKS.") #@# Bad men x4
       @_ticks++
-      @updater.push( world: { 0: { ticks: @_ticks } } )
+      @updater.updated(this, "ticks")
     tickAdvance: (n) ->
       if @_ticks is -1
         throw new Exception.NetLogoException("The tick counter has not been started yet. Use RESET-TICKS.")
       if n < 0
         throw new Exception.NetLogoException("Cannot advance the tick counter by a negative amount.")
       @_ticks += n
-      @updater.push( world: { 0: { ticks: @_ticks } } )
+      @updater.updated(this, "ticks")
     timer: ->
       (Date.now() - @_timer) / 1000
     ticks: ->
@@ -152,7 +138,7 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
       @_links = @_links.remove(link)
       if @_links.isEmpty()
         @unbreededLinksAreDirected = false
-        @updater.push({ world: { 0: { unbreededLinksAreDirected: false } } })
+        @updater.updated(this, "unbreededLinksAreDirected")
       return
     removeTurtle: (id) -> #@# Having two different collections of turtles to manage seems avoidable
       turtle = @_turtlesById[id]
@@ -160,10 +146,10 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
       delete @_turtlesById[id]
     patchesAllBlack: (val) -> #@# Varname
       @_patchesAllBlack = val
-      @updater.push( world: { 0: { patchesAllBlack: @_patchesAllBlack }})
+      @updater.updated(this, "patchesAllBlack")
     patchesWithLabels: (val) ->
       @_patchesWithLabels = val
-      @updater.push( world: { 0: { patchesWithLabels: @_patchesWithLabels }})
+      @updater.updated(this, "patchesWithLabels")
     clearAll: ->
       @globals.clear(@interfaceGlobalCount)
       @clearTurtles()
@@ -233,16 +219,16 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
     getNeighbors4: (pxcor, pycor) -> @topology().getNeighbors4(pxcor, pycor)
     createDirectedLink: (from, to) ->
       @unbreededLinksAreDirected = true
-      @updater.push({ world: { 0: { unbreededLinksAreDirected: true } } })
+      @updater.updated(this, "unbreededLinksAreDirected")
       @createLink(true, from, to)
     createDirectedLinks: (source, others) -> #@# Clarity
       @unbreededLinksAreDirected = true
-      @updater.push({ world: { 0: { unbreededLinksAreDirected: true } } })
+      @updater.updated(this, "unbreededLinksAreDirected")
       links = _(others.items).map((turtle) => @createLink(true, source, turtle)).filter((other) -> other isnt Nobody).value()
       new Agents(links, @breedManager.get("LINKS"), AgentKind.Link)
     createReverseDirectedLinks: (source, others) -> #@# Clarity
       @unbreededLinksAreDirected = true
-      @updater.push({ world: { 0: { unbreededLinksAreDirected: true } } })
+      @updater.updated(this, "unbreededLinksAreDirected")
       links = _(others.items).map((turtle) => @createLink(true, turtle, source)).filter((other) -> other isnt Nobody).value()
       new Agents(links, @breedManager.get("LINKS"), AgentKind.Link)
     createUndirectedLink: (source, other) ->

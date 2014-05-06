@@ -2,6 +2,8 @@ define(['engine/patch', 'engine/turtle'], (Patch, Turtle) ->
 
   class Observer
 
+    id: 0
+
     _perspective: 0
     _targetAgent: null
 
@@ -31,7 +33,7 @@ define(['engine/patch', 'engine/turtle'], (Patch, Turtle) ->
 
     # () => Unit
     _updatePerspective: ->
-      @_updater.push({ observer: { 0: { perspective: @_perspective, targetAgent: @_targetAgent } } })
+      @_updater.updated(this, "perspective", "targetAgent")
       return
 
 )

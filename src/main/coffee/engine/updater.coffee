@@ -1,12 +1,12 @@
 #@# Make an `Update` class that always has turtles, links, and patches
 #@# Vassal: { id: ID, companion: { trackedKeys: Set }, registerUpdate: Array[String -> Value] }
 #@# Overlord: { updates: Array[Update], flushUpdates: Unit, collectUpdates: Array[Update] }
-define(['engine/turtle', 'engine/patch', 'engine/link']
-     , ( Turtle,          Patch,          Link) ->
+define(['engine/exception', 'engine/link', 'engine/observer', 'engine/patch', 'engine/turtle', 'engine/world']
+     , ( Exception,          Link,          Observer,          Patch,          Turtle,          World) ->
 
   class Updater
 
-    Updates: [] #@# Privatize
+    Updates: [{turtles: {}, patches: {}, links: {}, observer: {}, world: {}}] #@# Privatize
 
     collectUpdates: ->
       result =
@@ -20,23 +20,29 @@ define(['engine/turtle', 'engine/patch', 'engine/link']
     update: (agentType, id, newAgent) ->
       @Updates[0][agentType][id] = newAgent
 
-    push: (obj) ->
-      @Updates.push(obj)
-
     updated: (obj, vars...) -> #@# Polymorphize correctly
       update = @Updates[0]
-      if obj instanceof Turtle
-        agents = update.turtles
-      else if obj instanceof Patch
-        agents = update.patches
-      else if obj instanceof Link
-        agents = update.links
-      agentUpdate = agents[obj.id] or {}
+
+      entry =
+        if obj instanceof Turtle
+          update.turtles
+        else if obj instanceof Patch
+          update.patches
+        else if obj instanceof Link
+          update.links
+        else if obj instanceof World
+          update.world
+        else if obj instanceof Observer
+          update.observer
+        else
+          throw new Exception.NetLogoException("Unrecognized update type")
+
+      entryUpdate = entry[obj.id] or {}
 
       # Receiving updates for a turtle that's about to die means the turtle was
       # reborn, so we revive it in the update - BH 1/13/2014
-      if agentUpdate['WHO'] < 0
-        delete agentUpdate['WHO']
+      if entryUpdate['WHO'] < 0
+        delete entryUpdate['WHO']
 
       ###
       is there some less simpleminded way we could build this? surely there
@@ -50,39 +56,60 @@ define(['engine/turtle', 'engine/patch', 'engine/link']
       turtle._breed should point to the actual breed object.
       BH 1/13/2014
       ###
-      for v in vars #@# Create a mapper from engine names to view names
+      for v in vars #@# Create a mapper from engine names to view names; that aside, this thing is absolutely ridiculous
         switch v
           when "xcor"
-            agentUpdate["XCOR"] = obj.xcor()
+            entryUpdate["XCOR"] = obj.xcor()
           when "ycor"
-            agentUpdate["YCOR"] = obj.ycor()
+            entryUpdate["YCOR"] = obj.ycor()
           when "id"
-            agentUpdate[if obj instanceof Link then "ID" else "WHO"] = obj[v]
+            entryUpdate[if obj instanceof Link then "ID" else "WHO"] = obj[v]
           when "plabelcolor"
-            agentUpdate["PLABEL-COLOR"] = obj[v]
+            entryUpdate["PLABEL-COLOR"] = obj[v]
           when "breed"
-            agentUpdate["BREED"] = obj[v].name
+            entryUpdate["BREED"] = obj[v].name
           when "labelcolor"
-            agentUpdate["LABEL-COLOR"] = obj[v]
+            entryUpdate["LABEL-COLOR"] = obj[v]
           when "pensize"
-            agentUpdate["PEN-SIZE"] = obj[v]
+            entryUpdate["PEN-SIZE"] = obj[v]
           when "penmode"
-            agentUpdate["PEN-MODE"] = obj[v]
+            entryUpdate["PEN-MODE"] = obj[v]
           when "hidden"
-            agentUpdate["HIDDEN?"] = obj[v]
+            entryUpdate["HIDDEN?"] = obj[v]
           when "tiemode"
-            agentUpdate["TIE-MODE"] = obj[v]
+            entryUpdate["TIE-MODE"] = obj[v]
           when "end1"
-            agentUpdate["END1"] = obj[v].id
+            entryUpdate["END1"] = obj[v].id
           when "end2"
-            agentUpdate["END2"] = obj[v].id
+            entryUpdate["END2"] = obj[v].id
           when "label"
-            agentUpdate["LABEL"] = obj[v].toString()
+            entryUpdate["LABEL"] = obj[v].toString()
           when "plabel"
-            agentUpdate["PLABEL"] = obj[v].toString()
+            entryUpdate["PLABEL"] = obj[v].toString()
+          # `World` start
+          when "ticks"
+            entryUpdate["ticks"] = obj._ticks
+          when "patchesAllBlack"
+            entryUpdate["patchesAllBlack"] = obj._patchesAllBlack
+          when "patchesWithLabels"
+            entryUpdate["patchesWithLabels"] = obj._patchesWithLabels
+          when "unbreededLinksAreDirected"
+            entryUpdate["unbreededLinksAreDirected"] = obj.unbreededLinksAreDirected
+          when "width"
+            entryUpdate["worldWidth"] = obj.width()
+          when "height"
+            entryUpdate["worldHeight"] = obj.height()
+          # `World` end / `Observer` start
+          when "perspective"
+            entryUpdate["perspective"] = obj._perspective
+          when "targetAgent"
+            entryUpdate["targetAgent"] = obj._targetAgent
+          # `Observer` end
           else
-            agentUpdate[v.toUpperCase()] = obj[v]
-      agents[obj.id] = agentUpdate
+            entryUpdate[v.toUpperCase()] = obj[v]
+
+      entry[obj.id] = entryUpdate
+
       return
 
 )
