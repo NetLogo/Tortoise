@@ -1,9 +1,9 @@
 define(['engine/agentset', 'engine/breedmanager', 'engine/globals', 'engine/layoutmanager', 'engine/linkprims'
-      , 'engine/linksown', 'engine/patchesown', 'engine/prims', 'engine/turtlesown', 'engine/updater', 'engine/world'
-      , 'engine/call', 'engine/noop', 'engine/tasks'] #@# `Call`, `noop', and `Tasks` shouldn't be loaded like this; only doing it to appease Require elsewhere
+      , 'engine/linksown', 'engine/patchesown', 'engine/prims', 'engine/timer', 'engine/turtlesown', 'engine/updater'
+      , 'engine/world', 'engine/call', 'engine/noop', 'engine/tasks'] #@# `Call`, `noop', and `Tasks` shouldn't be loaded like this; only doing it to appease Require elsewhere
      , ( AgentSet,          BreedManager,          Globals,          LayoutManager,          LinkPrims
-      ,  LinksOwn,          PatchesOwn,          Prims,          TurtlesOwn,          Updater,          World
-      ,  [],            [],            []) ->
+      ,  LinksOwn,          PatchesOwn,          Prims,          Timer,          TurtlesOwn,          Updater
+      ,  World,          [],            [],            []) ->
 
   () -> # World args; see constructor for `World` --JAB (4/17/14)
 
@@ -11,6 +11,7 @@ define(['engine/agentset', 'engine/breedmanager', 'engine/globals', 'engine/layo
 
     agentSet     = new AgentSet
     breedManager = new BreedManager
+    timer        = new Timer
     updater      = new Updater
 
     world         = new World(new Globals, new PatchesOwn, new TurtlesOwn, new LinksOwn, agentSet, updater, breedManager, worldArgs...)
@@ -24,6 +25,7 @@ define(['engine/agentset', 'engine/breedmanager', 'engine/globals', 'engine/layo
       layoutManager : layoutManager
       linkPrims     : linkPrims
       prims         : prims
+      timer         : timer
       updater       : updater
       world         : world
     }

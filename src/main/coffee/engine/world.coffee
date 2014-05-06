@@ -18,7 +18,6 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
     _patches: []
     _topology: null
     _ticks: -1
-    _timer: Date.now()
     _patchesAllBlack: true
     _patchesWithLabels: 0
 
@@ -68,8 +67,6 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
       breed = @breedManager.get(breedName)
       new Agents(breed.members, breed, AgentKind.Turtle)
     patches: => new Agents(@_patches, @breedManager.get("PATCHES"), AgentKind.Patch)
-    resetTimer: ->
-      @_timer = Date.now()
     resetTicks: ->
       @_ticks = 0
       @updater.updated(this, "ticks")
@@ -116,8 +113,6 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
         throw new Exception.NetLogoException("Cannot advance the tick counter by a negative amount.")
       @_ticks += n
       @updater.updated(this, "ticks")
-    timer: ->
-      (Date.now() - @_timer) / 1000
     ticks: ->
       if @_ticks is -1
         throw new Exception.NetLogoException("The tick counter has not been started yet. Use RESET-TICKS.")
