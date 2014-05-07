@@ -4,8 +4,8 @@ define(['engine/patch', 'engine/turtle'], (Patch, Turtle) ->
 
     id: 0
 
-    _perspective: 0
-    _targetAgent: null
+    _perspective: undefined
+    _targetAgent: undefined
 
     # (Updater) => Observer
     constructor: (@_updater) ->

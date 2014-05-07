@@ -10,15 +10,18 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
   class World
 
     id: 0
+    observer: undefined
+    ticker:   undefined
 
-    _nextLinkId: 0
-    _nextTurtleId: 0
-    _turtles: []
-    _turtlesById: {}
-    _patches: []
-    _topology: null
-    _patchesAllBlack: true
-    _patchesWithLabels: 0
+    _links:             undefined
+    _nextLinkId:        undefined
+    _nextTurtleId:      undefined
+    _patches:           undefined
+    _patchesAllBlack:   undefined
+    _patchesWithLabels: undefined
+    _topology:          undefined
+    _turtles:           undefined
+    _turtlesById:       undefined
 
     #@# I'm aware that some of this stuff ought to not live on `World`
     constructor: (@globals, @patchesOwn, @turtlesOwn, @linksOwn, @agentSet, @updater, @breedManager, @minPxcor, @maxPxcor
@@ -46,10 +49,22 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
         wrappingAllowedInX: @wrappingAllowedInX,
         wrappingAllowedInY: @wrappingAllowedInY
       })
-      @_links = new WorldLinks(@linkCompare)
+
       @observer = new Observer(updater)
       @ticker   = new Ticker(updater, @id)
+
+      @_links           = new WorldLinks(@linkCompare)
+      @_nextLinkId      = 0
+      @_nextTurtleId    = 0
+      @_patches         = []
+      @_patchesAllBlack = true
+      @_topology        = null
+      @_turtles         = []
+      @_turtlesById     = {}
+
       @resize(@minPxcor, @maxPxcor, @minPycor, @maxPycor)
+
+
     createPatches: ->
       nested =
         for y in [@maxPycor..@minPycor]
