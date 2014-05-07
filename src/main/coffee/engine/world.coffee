@@ -69,7 +69,8 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
       nested =
         for y in [@maxPycor..@minPycor]
           for x in [@minPxcor..@maxPxcor]
-            new Patch((@width() * (@maxPycor - y)) + x - @minPxcor, x, y, this) #@# ID should not be generated inline
+            id = (@width() * (@maxPycor - y)) + x - @minPxcor
+            new Patch(id, x, y, this)
       # http://stackoverflow.com/questions/4631525/concatenating-an-array-of-arrays-in-coffeescript
       @_patches = [].concat nested... #@# I don't know what this means, nor what that comment above is, so it's automatically awful
       for patch in @_patches
