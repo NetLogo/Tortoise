@@ -163,7 +163,7 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
   def open(path: String, dimensions: Option[(Int, Int, Int, Int)]) {
     require(!opened)
     super.open(path)
-    val model = api.model.ModelReader.parseModel(api.FileIO.file2String(path), Some(workspace))
+    val model = api.model.ModelReader.parseModel(api.FileIO.file2String(path), workspace)
 
     val finalModel = dimensions match {
       case None => model
