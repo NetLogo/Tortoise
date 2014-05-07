@@ -12,5 +12,5 @@ define(['engine/breed'], (Breed) -> #@# This is the only place where `Breed` is 
     get: (name) ->
       @breeds[name.toUpperCase()]
     setDefaultShape: (agents, shape) ->
-      agents.breed._shape = shape.toLowerCase() #@# Oh, yeah?  You just go and modify the private member?  Pretty cool!
+      agents.getBreed()._shape = shape.toLowerCase() #@# Oh, yeah?  You just go and modify the private member?  Pretty cool!
 )

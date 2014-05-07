@@ -23,9 +23,12 @@ define(['integration/lodash', 'integration/strictmath', 'engine/topology/topolog
     diffuse: (vn, coefficient) -> #@# Varname
       scratch = for x in [0...@width] #@# Unused var
         [] #@# Weird style
-      for patch in @getPatches().items #@# Two loops over the same thing.  Yeah!
+
+      @getPatches().forEach((patch) => #@# Oh, mutation, thou art a cruel, deceptive bitch.  Thou cannst maketh two-eth separate-eth loops over the same thing-eth seem sane
         scratch[patch.pxcor - @minPxcor][patch.pycor - @minPycor] = patch.getPatchVariable(vn)
-      for patch in @getPatches().items
+      )
+
+      @getPatches().forEach((patch) =>
         pxcor = patch.pxcor
         pycor = patch.pycor
         # We have to order the neighbors exactly how Torus.java:diffuse does them so we don't get floating discrepancies.  FD 10/19/2013
@@ -36,6 +39,7 @@ define(['integration/lodash', 'integration/strictmath', 'engine/topology/topolog
            @getPatchEast(pxcor, pycor), @getPatchNorthEast(pxcor, pycor)]
         diffusalSum = _(orderedNeighbors).map((nb) => scratch[nb.pxcor - @minPxcor][nb.pycor - @minPycor]).reduce((acc, x) -> acc + x)
         patch.setPatchVariable(vn, patch.getPatchVariable(vn) * (1.0 - coefficient) + (diffusalSum / 8) * coefficient)
+      )
 
     #@# I think I tried to fix all this in the ScalaJS version.  Did I succeed?  (I doubt it)
     getPatchNorth: (pxcor, pycor) ->

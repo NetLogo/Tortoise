@@ -8,8 +8,8 @@ define(['integration/lodash', 'integration/random', 'integration/strictmath', 'e
 
     #@# Okay, so... in what universe is it alright for a single function to be 120 lines long?
     layoutSpring: (nodeSet, linkSet, spr, len, rep) ->
-      nodeCount = nodeSet.items.length
-      if nodeCount is 0 #@# Bad
+      nodeCount = nodeSet.size()
+      if nodeSet.isEmpty()
         return
 
       ax = []
@@ -19,14 +19,14 @@ define(['integration/lodash', 'integration/random', 'integration/strictmath', 'e
 
       agt = []
       i = 0
-      for turtle in @world.agentSet.shuffle(nodeSet).items #@# Lodash
+      for turtle in @world.agentSet.shuffle(nodeSet).toArray() #@# Lodash
         agt[i] = turtle
         tMap[turtle.id] = i
         ax[i] = 0.0
         ay[i] = 0.0
         i++
 
-      for link in linkSet.items #@# Lodash
+      for link in linkSet.toArray() #@# Lodash
         t1 = link.end1
         t2 = link.end2
         if tMap[t1.id] isnt undefined #@# Lame x2
@@ -36,7 +36,7 @@ define(['integration/lodash', 'integration/random', 'integration/strictmath', 'e
           t2Index = tMap[t2.id]
           degCount[t2Index]++
 
-      for link in linkSet.items #@# Lodash
+      for link in linkSet.toArray() #@# Lodash
         dx = 0
         dy = 0
         t1 = link.end1

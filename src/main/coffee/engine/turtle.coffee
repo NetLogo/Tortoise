@@ -86,15 +86,14 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
           (link) => (link.directed and link.end1 is this and isSource) or (link.directed and link.end2 is this and not isSource)
         else
           (link) => (not link.directed and link.end1 is this) or (not link.directed and link.end2 is this)
-      connected = @world.links().items.filter(filterFunc)
-      new Agents(connected, @world.breedManager.get("LINKS"), AgentKind.Link)
+      @world.links().filter(filterFunc)
     refreshLinks: ->
       if not _(@_links).isEmpty()
         linkTypes = [[true, true], [true, false], [false, false]]
         _(linkTypes).map(
           (typePair) =>
             [directed, isSource] = typePair
-            @connectedLinks(directed, isSource).items
+            @connectedLinks(directed, isSource).toArray()
         ).flatten().forEach(
           (link) -> link.updateEndRelatedVars()
         )
@@ -116,12 +115,12 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
               acc.push(link.end1)
             acc
 
-      turtles = world.links().items.reduce(reductionFunc, [])
+      turtles = world.links().toArray().reduce(reductionFunc, [])
 
       new Agents(turtles, @world.breedManager.get("TURTLES"), AgentKind.Turtle)
 
     isLinkNeighbor: (directed, isSource, other) -> #@# Other WHAT?
-      @linkNeighbors(directed, isSource).items.filter((neighbor) -> neighbor is other).length > 0 #@# `_(derp).some(f)` (Lodash)
+      @linkNeighbors(directed, isSource).filter((neighbor) -> neighbor is other).nonEmpty() #@# `_(derp).some(f)` (Lodash)
     findLinkViaNeighbor: (isDirected, isSource, other) -> #@# Other WHAT?
       findFunc =
         if isDirected
@@ -131,7 +130,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
         else
           throw new Exception.NetLogoException("LINKS is a directed breed.")
 
-      link = _(@world.links().items).find(findFunc)
+      link = @world.links().find(findFunc)
 
       if link?
         link
@@ -205,12 +204,13 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
       if @id isnt -1
         @world.removeTurtle(@id)
         @seppuku()
-        for link in @world.links().items
+        @world.links().forEach((link) =>
           if link.end1.id is @id or link.end2.id is @id
             try
               link.die()
             catch error
               throw error if not (error instanceof Exception.DeathInterrupt)
+        )
         @id = -1
         @getPatchHere().leave(this)
       throw new Exception.DeathInterrupt("Call only from inside an askAgent block")
