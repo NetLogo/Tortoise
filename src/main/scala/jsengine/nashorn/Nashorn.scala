@@ -29,12 +29,7 @@ class Nashorn {
   // ensure exact matching results
   engine.put("StrictMath", Strict)
 
-  val libs = Seq(
-    "/js/mori.js", "/js/lodash.js", "/js/require.js",
-    // the original CoffeeScript for these are in src/main/coffee. sbt compiles
-    // them to JavaScript for us.
-    "/js/tortoise-engine.js")
-  for (lib <- libs)
+  for (lib <- jsLibs)
     engine.eval(Resource.asString(lib))
 
   // returns anything that got output-printed along the way, and any JSON
