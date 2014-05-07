@@ -48,6 +48,8 @@ libraryDependencies ++= Seq(
   "org.nlogo" % "netlogoheadless" % nlDependencyVersion,
   "org.scalaz" %% "scalaz-core" % "7.0.5",
   "org.json4s" %% "json4s-native" % "3.1.0",
+  "org.slf4j" % "slf4j-nop" % "1.7.5", // for webjars-locator
+  "org.webjars" % "webjars-locator" % "0.13",
   "org.webjars" % "lodash" % "2.4.1-3",
   "org.webjars" % "mori" % "0.2.6",
   "org.webjars" % "requirejs" % "2.1.11-1",
