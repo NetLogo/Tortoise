@@ -153,21 +153,22 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
       # A more efficient (but less readable) way of doing this is to iterate
       # backwards through the array.
       #@# I don't know what this is blathering about, but if it needs this comment, it can probably be written better
-      #@# Copying the array doesn't really accomplish anything, because it's not a deep copy and we're mutating the innards of the array
-      for turtle in @turtles().items[..]
+      @turtles().forEach((turtle) ->
         try
           turtle.die()
         catch error
           throw error if not (error instanceof Exception.DeathInterrupt)
+      )
       @_nextTurtleId = 0
       return
     clearPatches: ->
-      for patch in @patches().items #@# Oh, yeah?
+      @patches().forEach((patch) -> #@# Oh, yeah?
         patch.setPatchVariable(2, 0)   # 2 = pcolor
         patch.setPatchVariable(3, "")    # 3 = plabel
         patch.setPatchVariable(4, 9.9)   # 4 = plabel-color
         for i in [Builtins.patchBuiltins.size...patch.vars.length] #@# ABSTRACT IT!
           patch.setPatchVariable(i, 0)
+      )
       @patchesAllBlack(true)
       @patchesWithLabels(0)
       return
@@ -212,17 +213,17 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
     createDirectedLinks: (source, others) -> #@# Clarity
       @unbreededLinksAreDirected = true
       @updater.updated(this, "unbreededLinksAreDirected")
-      links = _(others.items).map((turtle) => @createLink(true, source, turtle)).filter((other) -> other isnt Nobody).value()
+      links = _(others.toArray()).map((turtle) => @createLink(true, source, turtle)).filter((other) -> other isnt Nobody).value()
       new Agents(links, @breedManager.get("LINKS"), AgentKind.Link)
     createReverseDirectedLinks: (source, others) -> #@# Clarity
       @unbreededLinksAreDirected = true
       @updater.updated(this, "unbreededLinksAreDirected")
-      links = _(others.items).map((turtle) => @createLink(true, turtle, source)).filter((other) -> other isnt Nobody).value()
+      links = _(others.toArray()).map((turtle) => @createLink(true, turtle, source)).filter((other) -> other isnt Nobody).value()
       new Agents(links, @breedManager.get("LINKS"), AgentKind.Link)
     createUndirectedLink: (source, other) ->
       @createLink(false, source, other)
     createUndirectedLinks: (source, others) -> #@# Clarity
-      links = _(others.items).map((turtle) => @createLink(false, source, turtle)).filter((other) -> other isnt Nobody).value()
+      links = _(others.toArray()).map((turtle) => @createLink(false, source, turtle)).filter((other) -> other isnt Nobody).value()
       new Agents(links, @breedManager.get("LINKS"), AgentKind.Link)
     getLink: (fromId, toId) ->
       link = @_links.find((link) -> link.end1.id is fromId and link.end2.id is toId)

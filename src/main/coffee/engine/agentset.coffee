@@ -13,13 +13,9 @@ define(['engine/agents', 'engine/exception', 'engine/iterator', 'engine/nobody',
 
   class AgentSet
 
-    count: (xs) -> xs.items.length
-    any: (xs) -> xs.items.length > 0
-    all: (xs, f) ->
-      for agent in xs.items #@# Lodash
-        if not @askAgent(agent, f)
-          return false
-      true
+    count: (xs) -> xs.size()
+    any: (xs) -> xs.nonEmpty()
+    all: (xs, f) -> xs.every((agent) => @askAgent(agent, f))
     _self: 0 #@# Lame
     _myself: 0 #@# Lame, only used by a tiny subset of this class
     reset: ->
@@ -40,10 +36,11 @@ define(['engine/agents', 'engine/exception', 'engine/iterator', 'engine/nobody',
       @_myself = oldMyself
       res
     ask: (agentsOrAgent, shuffle, f) ->
-      if agentsOrAgent.items #@# FP
-        agents = agentsOrAgent.items
-      else
-        agents = [agentsOrAgent]
+      agents =
+        if agentsOrAgent instanceof Agents
+          agentsOrAgent.toArray()
+        else
+          [agentsOrAgent]
       iter =
         if shuffle #@# Fix yo' varnames, son!
           new Shufflerator(agents)
@@ -59,65 +56,64 @@ define(['engine/agents', 'engine/exception', 'engine/iterator', 'engine/nobody',
     # can't call it `with`, that's taken in JavaScript. so is `filter` - ST 2/19/14
     #@# Above comment seems bogus.  Since when can you not do something in JavaScript?
     agentFilter: (agents, f) ->
-      newItems = _(agents.items).filter((agent) => @askAgent(agent, f)).value()
-      new Agents(newItems, agents.breed, agents.kind)
+      agents.filter((agent) => @askAgent(agent, f))
     # min/MaxOneOf are copy/pasted from each other.  hard to say whether
     # DRY-ing them would be worth the possible performance impact. - ST 3/17/14
     #@# I concur; generalize this!
     maxOneOf: (agents, f) ->
-     winningValue = -Number.MAX_VALUE
-     winners = []
-     for agent in agents.items #@# I'm not sure how, but surely this can be Lodash-ified
-       result = @askAgent(agent, f)
-       if result >= winningValue
-         if result > winningValue
-           winningValue = result
-           winners = []
-         winners.push(agent)
-     if winners.length is 0 #@# Nice try
-       Nobody
-     else
-       winners[Random.nextInt(winners.length)]
-    minOneOf: (agents, f) ->
-     winningValue = Number.MAX_VALUE
-     winners = []
-     for agent in agents.items
-       result = @askAgent(agent, f)
-       if result <= winningValue
-         if result < winningValue
-           winningValue = result
-           winners = []
-         winners.push(agent)
-     if winners.length is 0
-       Nobody
-     else
-       winners[Random.nextInt(winners.length)]
-    of: (agentsOrAgent, f) -> #@# This is nonsense; same with `ask`.  If you're giving me something, _you_ get it into the right type first, not me!
-      isagentset = agentsOrAgent.items #@# *sigh*
-      if isagentset?
-        agents = agentsOrAgent.items
+      winningValue = -Number.MAX_VALUE
+      winners = []
+      for agent in agents.toArray() #@# Hurr, `reduce`, hurr
+        result = @askAgent(agent, f)
+        if result >= winningValue
+          if result > winningValue
+            winningValue = result
+            winners = []
+          winners.push(agent)
+      if winners.length is 0 #@# Nice try
+        Nobody
       else
-        agents = [agentsOrAgent]
+        winners[Random.nextInt(winners.length)]
+    minOneOf: (agents, f) ->
+      winningValue = Number.MAX_VALUE
+      winners = []
+      for agent in agents.toArray()
+        result = @askAgent(agent, f)
+        if result <= winningValue
+          if result < winningValue
+            winningValue = result
+            winners = []
+          winners.push(agent)
+      if winners.length is 0
+        Nobody
+      else
+        winners[Random.nextInt(winners.length)]
+    of: (agentsOrAgent, f) -> #@# This is nonsense; same with `ask`.  If you're giving me something, _you_ get it into the right type first, not me!
+      agents =
+        if agentsOrAgent instanceof Agents
+          agentsOrAgent.toArray()
+        else
+          [agentsOrAgent]
       result = []
       iter = new Shufflerator(agents)
       while iter.hasNext() #@# FP.  Also, move out of the 1990s.
         agent = iter.next()
         result.push(@askAgent(agent, f))
-      if isagentset
+      if agentsOrAgent instanceof Agents #@# Awful to be doing this twice here...
         result
       else
         result[0]
     oneOf: (agentsOrList) ->
-      isagentset = agentsOrList.items #@# Stop this nonsense
-      if isagentset
-        list = agentsOrList.items
-      else
-        list = agentsOrList
-      if list.length is 0 then Nobody else list[Random.nextInt(list.length)] #@# Sadness continues
+      arr =
+        if agentsOrList instanceof Agents #@# Stop this nonsense.  This code gives me such anxiety...
+          agentsOrList.toArray()
+        else
+          agentsOrList
+      if arr.length is 0 then Nobody else arr[Random.nextInt(arr.length)] #@# Sadness continues
     nOf: (resultSize, agentsOrList) ->
-      items = agentsOrList.items
-      if not items? #@# How does this even make sense?
+      if not (agentsOrList instanceof Agents) #@# How does this even make sense?
         throw new Exception.NetLogoException("n-of not implemented on lists yet")
+      items = agentsOrList.toArray()
       new Agents( #@# Oh, FFS
         switch resultSize
           when 0
@@ -143,7 +139,7 @@ define(['engine/agents', 'engine/exception', 'engine/iterator', 'engine/nobody',
                 j += 1
               i += 1
             result
-      , agentsOrList.breed, agentsOrList.kind)
+      , agentsOrList.getBreed(), agentsOrList.getKind())
     die: -> @_self.die()
     connectedLinks: (directed, isSource) -> @_self.connectedLinks(directed, isSource)
     linkNeighbors: (directed, isSource) -> @_self.linkNeighbors(directed, isSource)
@@ -157,18 +153,16 @@ define(['engine/agents', 'engine/exception', 'engine/iterator', 'engine/nobody',
     setLinkVariable: (n, value) -> @_self.setLinkVariable(n, value)
     getBreedVariable: (n)    -> @_self.getBreedVariable(n)
     setBreedVariable: (n, value) -> @_self.setBreedVariable(n, value)
-    setBreed: (agentSet) -> @_self.setBreed(agentSet.breed)
+    setBreed: (agentSet) -> @_self.setBreed(agentSet.getBreed())
     getPatchVariable:  (n)    -> @_self.getPatchVariable(n)
     setPatchVariable:  (n, value) -> @_self.setPatchVariable(n, value)
     other: (agentSet) ->
-      self = @_self
-      filteredAgents = agentSet.items.filter((agent) -> agent isnt self)
-      new Agents(filteredAgents, agentSet.breed, agentSet.kind)
+      agentSet.filter((agent) => agent isnt @_self)
     shuffle: (agents) ->
       result = []
-      iter = new Shufflerator(agents.items)
+      iter = new Shufflerator(agents.toArray())
       while iter.hasNext() #@# 1990 rears its ugly head again
         result.push(iter.next())
-      new Agents(result, agents.breed, agents.kind)
+      new Agents(result, agents.getBreed(), agents.getKind())
 
 )

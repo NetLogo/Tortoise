@@ -101,11 +101,12 @@ define(['engine/agentkind', 'engine/agents',  'engine/nobody', 'integration/stri
         for dx in [minDX..maxDX]
           patch = origin.patchAt(dx, dy)
           if patch isnt Nobody #@# Feels `Option.map(f).getOrElse`-ish
-            if @distanceXY(patch.pxcor, patch.pycor, x, y) <= radius and agents.items.filter((agent) -> agent is patch).length > 0
+            if @distanceXY(patch.pxcor, patch.pycor, x, y) <= radius and agents.filter((agent) -> agent is patch).nonEmpty()
               result.push(patch)
-            for turtle in patch.turtlesHere().items
-              if @distanceXY(turtle.xcor(), turtle.ycor(), x, y) <= radius and agents.items.filter((agent) -> agent is turtle).length > 0
+            patch.turtlesHere().forEach((turtle) =>
+              if @distanceXY(turtle.xcor(), turtle.ycor(), x, y) <= radius and agents.filter((agent) -> agent is turtle).nonEmpty()
                 result.push(turtle)
-      new Agents(result, agents.breed, agents.kind)
+            )
+      new Agents(result, agents.getBreed(), agents.getKind())
 
 )
