@@ -1,10 +1,10 @@
 define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'engine/agents', 'engine/builtins'
-      , 'engine/exception', 'engine/link', 'engine/nobody', 'engine/observer', 'engine/patch', 'engine/ticker'
-      , 'engine/turtle', 'engine/worldlinks', 'engine/topology/box', 'engine/topology/horizcylinder'
+      , 'engine/exception', 'engine/idmanager', 'engine/link', 'engine/nobody', 'engine/observer', 'engine/patch'
+      , 'engine/ticker', 'engine/turtle', 'engine/worldlinks', 'engine/topology/box', 'engine/topology/horizcylinder'
       , 'engine/topology/torus', 'engine/topology/vertcylinder', 'integration/lodash']
      , ( Random,               StrictMath,               AgentKind,          Agents,          Builtins
-      ,  Exception,          Link,          Nobody,          Observer,          Patch,          Ticker
-      ,  Turtle,          WorldLinks,          Box,                   HorizCylinder
+      ,  Exception,          IDManager,          Link,          Nobody,          Observer,          Patch
+      ,  Ticker,          Turtle,          WorldLinks,          Box,                   HorizCylinder
       ,  Torus,                   VertCylinder,                   _) ->
 
   class World
@@ -14,8 +14,8 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
     ticker:   undefined
 
     _links:             undefined
-    _nextLinkId:        undefined
-    _nextTurtleId:      undefined
+    _linkIDManager:     undefined
+    _turtleIDManager:   undefined
     _patches:           undefined
     _patchesAllBlack:   undefined
     _patchesWithLabels: undefined
@@ -54,8 +54,8 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
       @ticker   = new Ticker(updater, @id)
 
       @_links           = new WorldLinks(@linkCompare)
-      @_nextLinkId      = 0
-      @_nextTurtleId    = 0
+      @_linkIDManager   = new IDManager #@# The fact that `World` even talks to ID managers (rather than a container for the type of agent) seems undesirable to me
+      @_turtleIDManager = new IDManager
       @_patches         = []
       @_patchesAllBlack = true
       @_topology        = null
@@ -88,9 +88,7 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
         throw new Exception.NetLogoException("You must include the point (0, 0) in the world.")
 
       # For some reason, JVM NetLogo doesn't restart `who` ordering after `resize-world`; even the test for this is existentially confused. --JAB (4/3/14)
-      oldNextTId = @_nextTurtleId
-      @clearTurtles()
-      @_nextTurtleId = oldNextTId
+      @_turtleIDManager.suspendDuring(() => @clearTurtles())
 
       @minPxcor = minPxcor
       @maxPxcor = maxPxcor
@@ -142,7 +140,7 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
       @globals.clear(@interfaceGlobalCount)
       @clearTurtles()
       @createPatches()
-      @_nextLinkId = 0
+      @_linkIDManager.reset()
       @patchesAllBlack(true)
       @patchesWithLabels(0)
       @ticker.clear()
@@ -159,7 +157,7 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
         catch error
           throw error if not (error instanceof Exception.DeathInterrupt)
       )
-      @_nextTurtleId = 0
+      @_turtleIDManager.reset()
       return
     clearPatches: ->
       @patches().forEach((patch) -> #@# Oh, yeah?
@@ -173,7 +171,7 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
       @patchesWithLabels(0)
       return
     createTurtle: (turtle) ->
-      turtle.id = @_nextTurtleId++ #@# Why are we managing IDs at this level of the code?
+      turtle.id = @_turtleIDManager.next()
       @updater.updated(turtle, Builtins.turtleBuiltins...)
       @_turtles.push(turtle)
       @_turtlesById[turtle.id] = turtle
@@ -190,7 +188,7 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
         end1 = to
         end2 = from
       if @getLink(end1.id, end2.id) is Nobody
-        link = new Link(@_nextLinkId++, directed, end1, end2, this) #@# Managing IDs for yourself!
+        link = new Link(@_linkIDManager.next(), directed, end1, end2, this)
         @updater.updated(link, Builtins.linkBuiltins...)
         @updater.updated(link, Builtins.linkExtras...)
         @updater.updated(link, Builtins.turtleBuiltins.slice(1)...) #@# See, this update nonsense is awful
