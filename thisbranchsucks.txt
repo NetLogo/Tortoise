@@ -1,7 +1,6 @@
 Things that are lousy about this branch:
 
 Very High:
--`World` should not manually manage turtle IDs
 -Lodashification
 --Loops on numerical ranges should be Lodasherized
 --Uses of `length`
