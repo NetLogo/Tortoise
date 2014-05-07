@@ -5,14 +5,15 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
       ,  Exception,          Nobody,          Trig,          _) ->
 
   class Turtle
-    vars: [] #@# You are the bane of your own existence
-    _xcor: 0
-    _ycor: 0
-    _links: []
+    vars:   undefined #@# You are the bane of your own existence
+    _xcor:  undefined
+    _ycor:  undefined
+    _links: undefined
     #@# Should guard against improperly-named breeds, including empty-string breed names
     constructor: (@world, @color = 0, @heading = 0, xcor = 0, ycor = 0, breed = @world.breedManager.get("TURTLES"), @label = "", @labelcolor = 9.9, @hidden = false, @size = 1.0, @pensize = 1.0, @penmode = "up") ->
-      @_xcor = xcor
-      @_ycor = ycor
+      @_xcor  = xcor
+      @_ycor  = ycor
+      @_links = []
       @breedVars = {} #@# Can be outside the constructor
       @updateBreed(breed)
       @vars = _(@world.turtlesOwn.vars).cloneDeep() #@# Can be outside the constructor

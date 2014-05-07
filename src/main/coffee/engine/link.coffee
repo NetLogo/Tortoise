@@ -4,23 +4,35 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
       ,  Exception) ->
 
   class Link
-    vars: []
-    color: 5
-    label: ""
-    labelcolor: 9.9
-    hidden: false
-    shape: "default"
-    thickness: 0
-    tiemode: "none"
+
+    breed:      undefined
+    color:      undefined
+    hidden:     undefined
+    labelcolor: undefined
+    label:      undefined
+    shape:      undefined
+    thickness:  undefined
+    tiemode:    undefined
+    vars:       undefined
+
     xcor: -> #@# WHAT?! x2
     ycor: ->
     constructor: (@id, @directed, @end1, @end2, @world) ->
-      @breed = @world.breedManager.get("LINKS")
-      @breed.add(@)
+      @breed      = @world.breedManager.get("LINKS")
+      @color      = 5
+      @hidden     = false
+      @label      = ""
+      @labelcolor = 9.9
+      @shape      = "default"
+      @thickness  = 0
+      @tiemode    = "none"
+
+      @breed.add(@) #@# No.
       @end1._links.push(this)
       @end2._links.push(this)
       @updateEndRelatedVars()
       @vars = (x for x in @world.linksOwn.vars)
+
     getLinkVariable: (n) ->
       if n < Builtins.linkBuiltins.length
         this[Builtins.linkBuiltins[n]]

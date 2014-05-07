@@ -6,7 +6,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
       ,  Exception,          Nobody,          Turtle,          Random,               _) ->
 
   class Patch
-    vars: []
+    vars: undefined
     constructor: (@id, @pxcor, @pycor, @world, @pcolor = 0.0, @plabel = "", @plabelcolor = 9.9) ->
       @vars = _(@world.patchesOwn.vars).cloneDeep()
       @turtles = [] #@# Why put this in the constructor?
