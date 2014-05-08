@@ -36,12 +36,14 @@ define(['engine/exception', 'engine/topology/topology'], (Exception, Topology) -
     diffuse: (vn, coefficient) -> #@# Guacy moley
       yy = @height
       xx = @width
-      scratch = for x in [0...xx]
-        for y in [0...yy]
-          @getPatchAt(x + @minPxcor, y + @minPycor).getPatchVariable(vn)
-      scratch2 = for x in [0...xx]
-        for y in [0...yy]
-          0
+      scratch =
+        for x in [0...xx]
+          for y in [0...yy]
+            @getPatchAt(x + @minPxcor, y + @minPycor).getPatchVariable(vn)
+      scratch2 =
+        for [0...xx]
+          for [0...yy]
+            0
       for y in [0...yy]
         for x in [0...xx]
           diffuseVal = (scratch[x][y] / 8) * coefficient
