@@ -11,18 +11,19 @@ var TurtlesOwn    = world.turtlesOwn;
 var PatchesOwn    = world.patchesOwn;
 var LinksOwn      = world.linksOwn;
 
-var AgentKind  = require('engine/agentkind');
-var Agents     = require('engine/agents');
 var Call       = require('engine/call');
 var ColorModel = require('engine/colormodel');
 var Dump       = require('engine/dump');
 var Exception  = require('engine/exception');
 var Link       = require('engine/link');
+var LinkSet    = require('engine/linkset');
 var Nobody     = require('engine/nobody');
 var noop       = require('engine/noop');
+var PatchSet   = require('engine/patchset');
 var Tasks      = require('engine/tasks');
 var Trig       = require('engine/trig');
 var Turtle     = require('engine/turtle');
+var TurtleSet  = require('engine/turtleset');
 var Type       = require('engine/typechecker');
 
 var AgentModel     = require('integration/agentmodel');
@@ -48,7 +49,7 @@ function setup() {
   else {
     Call(restart);
   }
-  world.resetTicks();
+  world.ticker.reset();
 }
 function restart() {
   AgentSet.ask(world.patches(), true, function() {
@@ -59,7 +60,7 @@ function restart() {
       AgentSet.setPatchVariable(2, 0);
     }
   });
-  world.resetTicks();
+  world.ticker.reset();
 }
 function go() {
   AgentSet.ask(world.patches(), true, function() {
@@ -68,7 +69,7 @@ function go() {
   AgentSet.ask(world.patches(), true, function() {
     AgentSet.setPatchVariable(2, AgentSet.getPatchVariable(5));
   });
-  world.tick();
+  world.ticker.tick();
 }
 function pickNewColor() {
   var activator = AgentSet.count(AgentSet.agentFilter(AgentSet.getPatchVariable(6), function() {

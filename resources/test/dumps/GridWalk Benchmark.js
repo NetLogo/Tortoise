@@ -11,18 +11,19 @@ var TurtlesOwn    = world.turtlesOwn;
 var PatchesOwn    = world.patchesOwn;
 var LinksOwn      = world.linksOwn;
 
-var AgentKind  = require('engine/agentkind');
-var Agents     = require('engine/agents');
 var Call       = require('engine/call');
 var ColorModel = require('engine/colormodel');
 var Dump       = require('engine/dump');
 var Exception  = require('engine/exception');
 var Link       = require('engine/link');
+var LinkSet    = require('engine/linkset');
 var Nobody     = require('engine/nobody');
 var noop       = require('engine/noop');
+var PatchSet   = require('engine/patchset');
 var Tasks      = require('engine/tasks');
 var Trig       = require('engine/trig');
 var Turtle     = require('engine/turtle');
+var TurtleSet  = require('engine/turtleset');
 var Type       = require('engine/typechecker');
 
 var AgentModel     = require('integration/agentmodel');
@@ -35,15 +36,15 @@ Globals.init(1);
 function benchmark() {
   Random.setSeed(362);
   Call(setup);
-  world.resetTimer();
+  workspace.timer.reset();
   Prims.repeat(20000, function () {
     Call(go);
   });
-  Globals.setGlobal(0, world.timer());
+  Globals.setGlobal(0, workspace.timer.elapsed());
 }
 function setup() {
   world.clearAll();
-  world.resetTicks();
+  world.ticker.reset();
   AgentSet.ask(world.createOrderedTurtles(1000, ""), true, function() {
     AgentSet.self().moveTo(AgentSet.oneOf(world.patches()));
     AgentSet.self().face(AgentSet.oneOf(Prims.getNeighbors4()));
@@ -54,5 +55,5 @@ function go() {
     AgentSet.self().face(AgentSet.oneOf(Prims.getNeighbors4()));
     Prims.fd(1);
   });
-  world.tick();
+  world.ticker.tick();
 }

@@ -1,9 +1,9 @@
 #@# CanTalkToPatches: { getPatchVariable(Int): Any, setPatchVariable(Int, Any): Unit }
 #@# Extends `CanTalkToPatches`, `Agent`, `Vassal`
-define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormodel', 'engine/comparator'
-      , 'engine/exception', 'engine/nobody', 'engine/turtle', 'integration/random', 'integration/lodash']
-     , ( AgentKind,          Agents,          Builtins,          ColorModel,          Comparator
-      ,  Exception,          Nobody,          Turtle,          Random,               _) ->
+define(['integration/lodash', 'integration/random', 'engine/builtins', 'engine/colormodel', 'engine/comparator'
+      , 'engine/exception', 'engine/nobody', 'engine/turtle', 'engine/turtleset']
+     , ( _,                    Random,               Builtins,          ColorModel,          Comparator
+      ,  Exception,          Nobody,          Turtle,          TurtleSet) ->
 
   class Patch
     vars: undefined
@@ -43,17 +43,17 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
     distanceXY: (x, y) -> @world.topology().distanceXY(@pxcor, @pycor, x, y)
     towardsXY: (x, y) -> @world.topology().towards(@pxcor, @pycor, x, y)
     distance: (agent) -> @world.topology().distance(@pxcor, @pycor, agent)
-    turtlesHere: -> new Agents(@turtles[..], @world.breedManager.turtles(), AgentKind.Turtle) #@# What do the two dots even mean here...?
+    turtlesHere: -> new TurtleSet(@turtles[..])
     getNeighbors: -> @world.getNeighbors(@pxcor, @pycor)
     getNeighbors4: -> @world.getNeighbors4(@pxcor, @pycor)
     sprout: (n, breedName) ->
       breed   = if "" is breedName then @world.breedManager.turtles() else @world.breedManager.get(breedName) #@# This conditional is begging for a bug
       turtles = _(0).range(n).map(=> @world.createTurtle(new Turtle(@world, 5 + 10 * Random.nextInt(14), Random.nextInt(360), @pxcor, @pycor, breed))).value() #@# Moar clarity, plox; and why do patches know how to create turtles?!
-      new Agents(turtles, breed, AgentKind.Turtle)
+      new TurtleSet(turtles, breed)
     breedHere: (breedName) ->
       breed   = @world.breedManager.get(breedName)
       turtles = _(@turtles).filter((turtle) -> turtle.breed is breed).value()
-      new Agents(turtles, breed, AgentKind.Turtle)
+      new TurtleSet(turtles, breed)
     turtlesAt: (dx, dy) ->
       @patchAt(dx, dy).turtlesHere()
     patchAt: (dx, dy) ->

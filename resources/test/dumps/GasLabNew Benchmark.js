@@ -11,18 +11,19 @@ var TurtlesOwn    = world.turtlesOwn;
 var PatchesOwn    = world.patchesOwn;
 var LinksOwn      = world.linksOwn;
 
-var AgentKind  = require('engine/agentkind');
-var Agents     = require('engine/agents');
 var Call       = require('engine/call');
 var ColorModel = require('engine/colormodel');
 var Dump       = require('engine/dump');
 var Exception  = require('engine/exception');
 var Link       = require('engine/link');
+var LinkSet    = require('engine/linkset');
 var Nobody     = require('engine/nobody');
 var noop       = require('engine/noop');
+var PatchSet   = require('engine/patchset');
 var Tasks      = require('engine/tasks');
 var Trig       = require('engine/trig');
 var Turtle     = require('engine/turtle');
+var TurtleSet  = require('engine/turtleset');
 var Type       = require('engine/typechecker');
 
 var AgentModel     = require('integration/agentmodel');
@@ -39,16 +40,16 @@ BreedManager.get("FLASHES").vars =["BIRTHDAY"];
 BreedManager.add("CLOCKERS", "clocker");
 BreedManager.get("CLOCKERS").vars =[""];function benchmark() {
   Random.setSeed(361);
-  world.resetTimer();
+  workspace.timer.reset();
   Call(setup);
   Prims.repeat(17000, function () {
     Call(go);
   });
-  Globals.setGlobal(5, world.timer());
+  Globals.setGlobal(5, workspace.timer.elapsed());
 }
 function setup() {
   world.clearAll();
-  world.resetTicks();
+  world.ticker.reset();
   BreedManager.setDefaultShape(world.turtlesOfBreed("PARTICLES"), "circle");
   Globals.setGlobal(21, false);
   Globals.setGlobal(7, (world.maxPxcor - 1));
@@ -101,9 +102,9 @@ function go() {
       Globals.setGlobal(21, true);
     });
   }
-  var oldClock = world.ticks();
-  world.tickAdvance(Globals.getGlobal(6));
-  if (Prims.gt(StrictMath.floor(world.ticks()), StrictMath.floor((world.ticks() - Globals.getGlobal(6))))) {
+  var oldClock = world.ticker.tickCount();
+  world.ticker.tickAdvance(Globals.getGlobal(6));
+  if (Prims.gt(StrictMath.floor(world.ticker.tickCount()), StrictMath.floor((world.ticker.tickCount() - Globals.getGlobal(6))))) {
     if (AgentSet.any(world.turtlesOfBreed("PARTICLES"))) {
       Globals.setGlobal(11, Prims.mean(AgentSet.of(world.turtlesOfBreed("PARTICLES"), function() {
         return AgentSet.getBreedVariable("WALL-HITS");
@@ -124,10 +125,10 @@ function go() {
   }
   Call(calculateTickLength);
   AgentSet.ask(world.turtlesOfBreed("CLOCKERS"), true, function() {
-    AgentSet.setTurtleVariable(2, (world.ticks() * 360));
+    AgentSet.setTurtleVariable(2, (world.ticker.tickCount() * 360));
   });
   AgentSet.ask(AgentSet.agentFilter(world.turtlesOfBreed("FLASHES"), function() {
-    return Prims.gt((world.ticks() - AgentSet.getBreedVariable("BIRTHDAY")), 0.4);
+    return Prims.gt((world.ticker.tickCount() - AgentSet.getBreedVariable("BIRTHDAY")), 0.4);
   }), true, function() {
     AgentSet.setPatchVariable(2, 45);
     AgentSet.die();
@@ -191,7 +192,7 @@ function bounce() {
   AgentSet.ask(Prims.patch(newPx, newPy), true, function() {
     AgentSet.ask(Prims.sprout(1, "FLASHES"), true, function() {
       AgentSet.self().hideTurtle(true);;
-      AgentSet.setBreedVariable("BIRTHDAY", world.ticks());
+      AgentSet.setBreedVariable("BIRTHDAY", world.ticker.tickCount());
       AgentSet.setPatchVariable(2, (45 - 3));
     });
   });
@@ -347,7 +348,7 @@ function setupHistograms() {
 function doPlotting() {
   notImplemented('set-current-plot', undefined)("Pressure vs. Time");
   if (Prims.gt(Prims.length(Globals.getGlobal(9)), 0)) {
-    notImplemented('plotxy', undefined)(world.ticks(), Prims.mean(Call(lastN, 3, Globals.getGlobal(9))));
+    notImplemented('plotxy', undefined)(world.ticker.tickCount(), Prims.mean(Call(lastN, 3, Globals.getGlobal(9))));
   }
   notImplemented('set-current-plot', undefined)("Speed Counts");
   notImplemented('set-current-plot-pen', undefined)("fast");
@@ -356,9 +357,9 @@ function doPlotting() {
   notImplemented('plot', undefined)(Globals.getGlobal(19));
   notImplemented('set-current-plot-pen', undefined)("slow");
   notImplemented('plot', undefined)(Globals.getGlobal(20));
-  if (Prims.gt(world.ticks(), 1)) {
+  if (Prims.gt(world.ticker.tickCount(), 1)) {
     notImplemented('set-current-plot', undefined)("Wall Hits per Particle");
-    notImplemented('plotxy', undefined)(world.ticks(), Globals.getGlobal(11));
+    notImplemented('plotxy', undefined)(world.ticker.tickCount(), Globals.getGlobal(11));
   }
   Call(plotHistograms);
 }

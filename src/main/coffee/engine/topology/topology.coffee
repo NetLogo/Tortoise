@@ -1,7 +1,7 @@
-define(['engine/agentkind', 'engine/agents',  'engine/nobody', 'integration/strictmath', 'engine/turtle'
-      , 'engine/patch', 'integration/lodash']
-     , ( AgentKind,          Agents,           Nobody,          StrictMath,               Turtle
-      ,  Patch,          _) ->
+define(['integration/lodash', 'integration/strictmath', 'engine/nobody', 'engine/patch', 'engine/patchset'
+      , 'engine/turtle']
+     , ( _,                    StrictMath,               Nobody,          Patch,          PatchSet
+      ,  Turtle) ->
 
   class Topology
 
@@ -26,7 +26,7 @@ define(['engine/agentkind', 'engine/agents',  'engine/nobody', 'integration/stri
 
     getNeighbors: (pxcor, pycor) -> #@# This should memoize
       patches = _(@_getNeighbors(pxcor, pycor)).filter((patch) -> patch isnt false).value()
-      new Agents(patches, undefined, AgentKind.Patch)
+      new PatchSet(patches)
 
     _getNeighbors: (pxcor, pycor) -> #@# Was I able to fix this in the ScalaJS version?
       if pxcor is @maxPxcor and pxcor is @minPxcor #@# How can you just go and reference properties of yourself that you don't require?
@@ -44,7 +44,7 @@ define(['engine/agentkind', 'engine/agents',  'engine/nobody', 'integration/stri
 
     getNeighbors4: (pxcor, pycor) ->
       patches = _(@_getNeighbors4(pxcor, pycor)).filter((patch) -> patch isnt false).value() #@# This code is awkward
-      new Agents(patches, undefined, AgentKind.Patch)
+      new PatchSet(patches)
 
     _getNeighbors4: (pxcor, pycor) -> #@# Any improvement in ScalaJS version?
       if pxcor is @maxPxcor and pxcor is @minPxcor
@@ -107,6 +107,6 @@ define(['engine/agentkind', 'engine/agents',  'engine/nobody', 'integration/stri
               if @distanceXY(turtle.xcor(), turtle.ycor(), x, y) <= radius and agents.filter((agent) -> agent is turtle).nonEmpty()
                 result.push(turtle)
             )
-      new Agents(result, agents.getBreed(), agents.getKind())
+      agents.replaceAgents(result)
 
 )

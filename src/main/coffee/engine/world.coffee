@@ -1,11 +1,11 @@
-define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'engine/agents', 'engine/builtins'
-      , 'engine/exception', 'engine/idmanager', 'engine/link', 'engine/nobody', 'engine/observer', 'engine/patch'
-      , 'engine/ticker', 'engine/turtle', 'engine/worldlinks', 'engine/topology/box', 'engine/topology/horizcylinder'
-      , 'engine/topology/torus', 'engine/topology/vertcylinder', 'integration/lodash']
-     , ( Random,               StrictMath,               AgentKind,          Agents,          Builtins
-      ,  Exception,          IDManager,          Link,          Nobody,          Observer,          Patch
-      ,  Ticker,          Turtle,          WorldLinks,          Box,                   HorizCylinder
-      ,  Torus,                   VertCylinder,                   _) ->
+define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engine/exception', 'engine/idmanager'
+      , 'engine/link', 'engine/linkset', 'engine/nobody', 'engine/observer', 'engine/patch', 'engine/patchset'
+      , 'engine/ticker', 'engine/turtle', 'engine/turtleset', 'engine/worldlinks', 'engine/topology/box'
+      , 'engine/topology/horizcylinder', 'engine/topology/torus', 'engine/topology/vertcylinder', 'integration/lodash']
+     , ( Random,               StrictMath,               Builtins,          Exception,          IDManager
+      ,  Link,          LinkSet,          Nobody,          Observer,          Patch,          PatchSet
+      ,  Ticker,          Turtle,          TurtleSet,          WorldLinks,          Box
+      ,  HorizCylinder,                   Torus,                   VertCylinder,                   _) ->
 
   class World
 
@@ -77,12 +77,12 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
         @updater.updated(patch, "pxcor", "pycor", "pcolor", "plabel", "plabelcolor")
     topology: -> @_topology
     links: () ->
-      new Agents(@_links.toArray(), @breedManager.links(), AgentKind.Link)
-    turtles: () -> new Agents(@_turtles, @breedManager.turtles(), AgentKind.Turtle)
+      new LinkSet(@_links.toArray())
+    turtles: () -> new TurtleSet(@_turtles)
     turtlesOfBreed: (breedName) ->
       breed = @breedManager.get(breedName)
-      new Agents(breed.members, breed, AgentKind.Turtle)
-    patches: => new Agents(@_patches, @breedManager.get("PATCHES"), AgentKind.Patch)
+      new TurtleSet(breed.members, breedName)
+    patches: => new PatchSet(@_patches)
     resize: (minPxcor, maxPxcor, minPycor, maxPycor) ->
 
       if not (minPxcor <= 0 <= maxPxcor and minPycor <= 0 <= maxPycor)
@@ -199,10 +199,10 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
         Nobody
     createOrderedTurtles: (n, breedName) -> #@# Clarity is a good thing
       turtles = _(0).range(n).map((num) => @createTurtle(new Turtle(this, (10 * num + 5) % 140, (360 * num) / n, 0, 0, @breedManager.get(breedName)))).value()
-      new Agents(turtles, @breedManager.get(breedName), AgentKind.Turtle)
+      new TurtleSet(turtles, @breedManager.get(breedName))
     createTurtles: (n, breedName) -> #@# Clarity is still good
       turtles = _(0).range(n).map(=> @createTurtle(new Turtle(this, 5 + 10 * Random.nextInt(14), Random.nextInt(360), 0, 0, @breedManager.get(breedName)))).value()
-      new Agents(turtles, @breedManager.get(breedName), AgentKind.Turtle)
+      new TurtleSet(turtles, @breedManager.get(breedName))
     getNeighbors: (pxcor, pycor) -> @topology().getNeighbors(pxcor, pycor)
     getNeighbors4: (pxcor, pycor) -> @topology().getNeighbors4(pxcor, pycor)
     createDirectedLink: (from, to) ->
@@ -213,17 +213,17 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
       @unbreededLinksAreDirected = true
       @updater.updated(this, "unbreededLinksAreDirected")
       links = _(others.toArray()).map((turtle) => @createLink(true, source, turtle)).filter((other) -> other isnt Nobody).value()
-      new Agents(links, @breedManager.links(), AgentKind.Link)
+      new LinkSet(links)
     createReverseDirectedLinks: (source, others) -> #@# Clarity
       @unbreededLinksAreDirected = true
       @updater.updated(this, "unbreededLinksAreDirected")
       links = _(others.toArray()).map((turtle) => @createLink(true, turtle, source)).filter((other) -> other isnt Nobody).value()
-      new Agents(links, @breedManager.links(), AgentKind.Link)
+      new LinkSet(links)
     createUndirectedLink: (source, other) ->
       @createLink(false, source, other)
     createUndirectedLinks: (source, others) -> #@# Clarity
       links = _(others.toArray()).map((turtle) => @createLink(false, source, turtle)).filter((other) -> other isnt Nobody).value()
-      new Agents(links, @breedManager.links(), AgentKind.Link)
+      new LinkSet(links)
     getLink: (fromId, toId) ->
       link = @_links.find((link) -> link.end1.id is fromId and link.end2.id is toId)
       if link?

@@ -11,18 +11,19 @@ var TurtlesOwn    = world.turtlesOwn;
 var PatchesOwn    = world.patchesOwn;
 var LinksOwn      = world.linksOwn;
 
-var AgentKind  = require('engine/agentkind');
-var Agents     = require('engine/agents');
 var Call       = require('engine/call');
 var ColorModel = require('engine/colormodel');
 var Dump       = require('engine/dump');
 var Exception  = require('engine/exception');
 var Link       = require('engine/link');
+var LinkSet    = require('engine/linkset');
 var Nobody     = require('engine/nobody');
 var noop       = require('engine/noop');
+var PatchSet   = require('engine/patchset');
 var Tasks      = require('engine/tasks');
 var Trig       = require('engine/trig');
 var Turtle     = require('engine/turtle');
+var TurtleSet  = require('engine/turtleset');
 var Type       = require('engine/typechecker');
 
 var AgentModel     = require('integration/agentmodel');
@@ -36,7 +37,7 @@ TurtlesOwn.init(3);
 function setupEmpty() {
   world.clearAll();
   Call(initializeVariables);
-  world.resetTicks();
+  world.ticker.reset();
 }
 function setupFull() {
   world.clearAll();
@@ -44,7 +45,7 @@ function setupFull() {
   AgentSet.ask(world.patches(), true, function() {
     Call(createTurtle);
   });
-  world.resetTicks();
+  world.ticker.reset();
 }
 function initializeVariables() {
   Globals.setGlobal(11, 0);
@@ -104,7 +105,7 @@ function go() {
   });
   Call(death);
   Call(updateStats);
-  world.tick();
+  world.ticker.tick();
 }
 function immigrate() {
   var emptyPatches = AgentSet.agentFilter(world.patches(), function() {

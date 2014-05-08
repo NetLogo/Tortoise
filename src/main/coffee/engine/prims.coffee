@@ -1,10 +1,10 @@
 #@# No more code golf
-define(['integration/random', 'engine/agents', 'engine/agentkind', 'engine/comparator', 'engine/dump'
-      , 'engine/exception', 'engine/link', 'engine/nobody', 'engine/patch', 'integration/printer', 'engine/turtle'
-      , 'integration/lodash', 'engine/typechecker']
-     , ( Random,               Agents,          AgentKind,          Comparator,          Dump
-      ,  Exception,          Link,          Nobody,          Patch,          Printer,               Turtle
-      ,  _,                    Type) ->
+define(['integration/lodash', 'integration/printer', 'integration/random', 'engine/abstractagents', 'engine/comparator'
+      , 'engine/dump', 'engine/exception', 'engine/link', 'engine/nobody', 'engine/patch', 'engine/patchset'
+      , 'engine/turtle', 'engine/turtleset', 'engine/typechecker']
+     , ( _,                    Printer,               Random,               AbstractAgents,          Comparator
+      ,  Dump,          Exception,          Link,          Nobody,          Patch,          PatchSet
+      ,  Turtle,          TurtleSet,          Type) ->
 
   class Prims
 
@@ -31,10 +31,10 @@ define(['integration/random', 'engine/agents', 'engine/agentkind', 'engine/compa
         (a is b) or ( # This code has been purposely rewritten into a crude, optimized form --JAB (3/19/14)
           if Type(a).isArray() and Type(b).isArray()
             a.length is b.length and a.every((elem, i) => @equality(elem, b[i]))
-          else if a instanceof Agents and b instanceof Agents #@# Could be sped up to O(n) (from O(n^2)) by zipping the two arrays
-            a.size() is b.size() and a.getKind() is b.getKind() and a.toArray().every((elem) -> (elem in b.toArray())) #@# Wrong!
+          else if a instanceof AbstractAgents and b instanceof AbstractAgents #@# Could be sped up to O(n) (from O(n^2)) by zipping the two arrays
+            a.size() is b.size() and Object.getPrototypeOf(a) is Object.getPrototypeOf(b) and a.toArray().every((elem) -> (elem in b.toArray())) #@# Wrong!
           else
-            (a instanceof Agents and a.getBreed() is b) or (b instanceof Agents and b.getBreed() is a) or
+            (a instanceof AbstractAgents and a.getBreedName? and a.getBreedName() is b.name) or (b instanceof AbstractAgents and b.getBreedName? and b.getBreedName() is a.name) or
               (a is Nobody and b.id is -1) or (b is Nobody and a.id is -1) or ((a instanceof Turtle or a instanceof Link) and a.compare(b) is Comparator.EQUALS)
         )
       else
@@ -146,7 +146,7 @@ define(['integration/random', 'engine/agents', 'engine/agentkind', 'engine/compa
           xs[..].sort(@world.linkCompare)
         else
           throw new Exception.NetLogoException("We don't know how to sort your kind here!")
-      else if xs instanceof Agents
+      else if xs instanceof AbstractAgents
         xs.sort()
       else
         throw new Exception.NetLogoException("can only sort lists and agentsets")
@@ -171,7 +171,7 @@ define(['integration/random', 'engine/agents', 'engine/agentkind', 'engine/compa
           else if input isnt Nobody
             input.forEach((agent) -> if not (agent in result) then result.push(agent))
       recurse(inputs)
-      new Agents(result, undefined, AgentKind.Patch) #@# A great example of why we should have a `PatchSet`
+      new PatchSet(result)
     repeat: (n, fn) ->
       for i in [0...n] #@# Unused variable, which is lame
         fn()
@@ -274,10 +274,10 @@ define(['integration/random', 'engine/agents', 'engine/agentkind', 'engine/compa
           [what]
         else if what instanceof Turtle
           [what.getPatchHere()]
-        else if what instanceof Agents and what.getKind() is AgentKind.Patch
+        else if what instanceof PatchSet
           what.toArray()
-        else if what instanceof Agents and what.getKind() is AgentKind.Turtle
-          t.getPatchHere() for t in what.toArray()
+        else if what instanceof TurtleSet
+          _(what.toArray()).map((t) -> t.getPatchHere())
         else
           throw new Exception.NetLogoException("`breed-on` unsupported for class '#{typeof(what)}'")
       result = [] #@# I hate this
@@ -285,15 +285,15 @@ define(['integration/random', 'engine/agents', 'engine/agentkind', 'engine/compa
         for t in p.turtles
           if t.breed is breed
             result.push(t)
-      new Agents(result, breed, AgentKind.Turtle)
+      new TurtleSet(result, breed.name)
 
     turtlesOn: (agentsOrAgent) -> #@# Lunacy
       agents =
-        if agentsOrAgent instanceof Agents
+        if agentsOrAgent instanceof AbstractAgents
           agentsOrAgent.toArray()
         else
           [agentsOrAgent]
       turtles = _(agents).map((agent) -> agent.turtlesHere().toArray()).flatten().value()
-      new Agents(turtles, @world.breedManager.turtles(), AgentKind.Turtle)
+      new TurtleSet(turtles)
 
 )

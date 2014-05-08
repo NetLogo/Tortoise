@@ -11,18 +11,19 @@ var TurtlesOwn    = world.turtlesOwn;
 var PatchesOwn    = world.patchesOwn;
 var LinksOwn      = world.linksOwn;
 
-var AgentKind  = require('engine/agentkind');
-var Agents     = require('engine/agents');
 var Call       = require('engine/call');
 var ColorModel = require('engine/colormodel');
 var Dump       = require('engine/dump');
 var Exception  = require('engine/exception');
 var Link       = require('engine/link');
+var LinkSet    = require('engine/linkset');
 var Nobody     = require('engine/nobody');
 var noop       = require('engine/noop');
+var PatchSet   = require('engine/patchset');
 var Tasks      = require('engine/tasks');
 var Trig       = require('engine/trig');
 var Turtle     = require('engine/turtle');
+var TurtleSet  = require('engine/turtleset');
 var Type       = require('engine/typechecker');
 
 var AgentModel     = require('integration/agentmodel');
@@ -41,7 +42,7 @@ BreedManager.get("PARTICLES").vars =["SPEED", "MASS", "ENERGY", "LAST-COLLISION"
   Call(updateVariables);
   Globals.setGlobal(7, Globals.getGlobal(9));
   Globals.setGlobal(8, Globals.getGlobal(10));
-  world.resetTicks();
+  world.ticker.reset();
 }
 function go() {
   AgentSet.ask(world.turtlesOfBreed("PARTICLES"), true, function() {
@@ -62,8 +63,8 @@ function go() {
       AgentSet.self().penUp();
     });
   }
-  world.tickAdvance(Globals.getGlobal(5));
-  if (Prims.gt(StrictMath.floor(world.ticks()), StrictMath.floor((world.ticks() - Globals.getGlobal(5))))) {
+  world.ticker.tickAdvance(Globals.getGlobal(5));
+  if (Prims.gt(StrictMath.floor(world.ticker.tickCount()), StrictMath.floor((world.ticker.tickCount() - Globals.getGlobal(5))))) {
     Call(updateVariables);
     notImplemented('update-plots', undefined)();
   }

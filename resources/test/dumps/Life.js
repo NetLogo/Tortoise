@@ -11,18 +11,19 @@ var TurtlesOwn    = world.turtlesOwn;
 var PatchesOwn    = world.patchesOwn;
 var LinksOwn      = world.linksOwn;
 
-var AgentKind  = require('engine/agentkind');
-var Agents     = require('engine/agents');
 var Call       = require('engine/call');
 var ColorModel = require('engine/colormodel');
 var Dump       = require('engine/dump');
 var Exception  = require('engine/exception');
 var Link       = require('engine/link');
+var LinkSet    = require('engine/linkset');
 var Nobody     = require('engine/nobody');
 var noop       = require('engine/noop');
+var PatchSet   = require('engine/patchset');
 var Tasks      = require('engine/tasks');
 var Trig       = require('engine/trig');
 var Turtle     = require('engine/turtle');
+var TurtleSet  = require('engine/turtleset');
 var Type       = require('engine/typechecker');
 
 var AgentModel     = require('integration/agentmodel');
@@ -38,7 +39,7 @@ function setupBlank() {
   AgentSet.ask(world.patches(), true, function() {
     Call(cellDeath);
   });
-  world.resetTicks();
+  world.ticker.reset();
 }
 function setupRandom() {
   world.clearAll();
@@ -50,7 +51,7 @@ function setupRandom() {
       Call(cellDeath);
     }
   });
-  world.resetTicks();
+  world.ticker.reset();
 }
 function cellBirth() {
   AgentSet.setPatchVariable(5, true);
@@ -76,7 +77,7 @@ function go() {
       }
     }
   });
-  world.tick();
+  world.ticker.tick();
 }
 function drawCells() {
   var erasing_p = AgentSet.of(Prims.patch(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)()), function() {
