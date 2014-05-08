@@ -21,8 +21,7 @@ define(['integration/lodash', 'integration/strictmath', 'engine/topology/topolog
       else
         Math.abs(y1 - y2) * (if y1 > y2 then -1 else 1)
     diffuse: (vn, coefficient) -> #@# Varname
-      scratch = for x in [0...@width] #@# Unused var
-        [] #@# Weird style
+      scratch = _(0).range(@width).map(-> []).value()
 
       @getPatches().forEach((patch) => #@# Oh, mutation, thou art a cruel, deceptive bitch.  Thou cannst maketh two-eth separate-eth loops over the same thing-eth seem sane
         scratch[patch.pxcor - @minPxcor][patch.pycor - @minPycor] = patch.getPatchVariable(vn)

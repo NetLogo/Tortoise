@@ -173,7 +173,7 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'engi
       recurse(inputs)
       new PatchSet(result)
     repeat: (n, fn) ->
-      for i in [0...n] #@# Unused variable, which is lame
+      for [0...n]
         fn()
       return
     #@# not a real implementation, always just runs body - ST 4/22/14

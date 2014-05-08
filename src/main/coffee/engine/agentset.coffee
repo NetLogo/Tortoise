@@ -126,12 +126,12 @@ define(['engine/abstractagents', 'engine/exception', 'engine/iterator', 'engine/
           when 2
             index1 = Random.nextInt(items.length)
             index2 = Random.nextInt(items.length - 1)
-            [index1, index2] = #@# Why, why, why?
+            [newIndex1, newIndex2] =
               if index2 >= index1
                 [index1, index2 + 1]
               else
                 [index2, index1]
-            [items[index1], items[index2]]
+            [items[newIndex1], items[newIndex2]]
           else
             i = 0
             j = 0
