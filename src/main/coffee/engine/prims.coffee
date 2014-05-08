@@ -16,7 +16,7 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'engi
     right: (n) -> @world.agentSet.self().right(n)
     left: (n) -> @world.agentSet.self().right(-n)
     setXY: (x, y) -> @world.agentSet.self().setXY(x, y)
-    empty: (xs) -> xs.length is 0 #@# Seems wrong
+    empty: (xs) -> xs.length is 0
     getNeighbors: -> @world.agentSet.self().getNeighbors()
     getNeighbors4: -> @world.agentSet.self().getNeighbors4()
     sprout: (n, breedName) -> @world.agentSet.self().sprout(n, breedName)
@@ -110,13 +110,13 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'engi
       result
     butFirst: (xs) -> xs[1..] # Lodashing this stuff is no good, since it doesn't handle strings correctly.  Could use Underscore.string... --JAB (5/5/14)
     butLast: (xs) -> xs[0...xs.length - 1]
-    length: (xs) -> xs.length #@# Lodash
+    length: (xs) -> xs.length
     _int: (n) -> if n < 0 then Math.ceil(n) else Math.floor(n) #@# WTF is this?  Wouldn't `n|0` suffice?
     mod: (a, b) -> ((a % b) + b) % b #@# WTF?
-    max: (xs) -> Math.max(xs...) #@# Check Lodash on this
-    min: (xs) -> Math.min(xs...) #@# Check Lodash
-    mean: (xs) -> @sum(xs) / xs.length #@# Check Lodash
-    sum: (xs) -> xs.reduce(((a, b) -> a + b), 0) #@# Check Lodash
+    max: (xs) -> Math.max(xs...)
+    min: (xs) -> Math.min(xs...)
+    mean: (xs) -> @sum(xs) / xs.length
+    sum: (xs) -> xs.reduce(((a, b) -> a + b), 0)
     precision: (n, places) ->
       multiplier = Math.pow(10, places)
       result = Math.floor(n * multiplier + .5) / multiplier
