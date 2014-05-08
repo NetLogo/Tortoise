@@ -10,9 +10,9 @@ object SimplePrims {
     def unapply(r: nvm.Reporter): Option[String] =
       PartialFunction.condOpt(r) {
         case _: prim._nobody               => "Nobody"
-        case _: prim.etc._nopatches        => "new Agents([], BreedManager.get('PATCHES'), AgentKind.Patch)"
-        case _: prim.etc._noturtles        => "new Agents([], BreedManager.turtles(), AgentKind.Turtle)"
-        case _: prim.etc._nolinks          => "new Agents([], BreedManager.links(),   AgentKind.Link)"
+        case _: prim.etc._nopatches        => "new PatchSet([])"
+        case _: prim.etc._noturtles        => "new TurtleSet([])"
+        case _: prim.etc._nolinks          => "new LinkSet([])"
         case _: prim.etc._minpxcor         => "world.minPxcor"
         case _: prim.etc._minpycor         => "world.minPycor"
         case _: prim.etc._maxpxcor         => "world.maxPxcor"

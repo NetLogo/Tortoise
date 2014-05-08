@@ -1,7 +1,5 @@
-define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormodel', 'engine/comparator'
-      , 'engine/exception']
-     , ( AgentKind,          Agents,          Builtins,          ColorModel,          Comparator
-      ,  Exception) ->
+define(['engine/builtins', 'engine/colormodel', 'engine/comparator', 'engine/exception', 'engine/turtleset']
+     , ( Builtins,          ColorModel,          Comparator,          Exception,          TurtleSet) ->
 
   class Link
 
@@ -67,7 +65,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
           value
       this[Builtins.turtleBuiltins[n]] = newValue
       @world.updater.updated(this, Builtins.turtleBuiltins[n])
-    bothEnds: -> new Agents([@end1, @end2], @world.breedManager.turtles(), AgentKind.Turtle)
+    bothEnds: -> new TurtleSet([@end1, @end2])
     otherEnd: -> if @end1 is AgentSet.myself() then @end2 else @end1
     updateEndRelatedVars: ->
       @heading = @world.topology().towards(@end1.xcor(), @end1.ycor(), @end2.xcor(), @end2.ycor())

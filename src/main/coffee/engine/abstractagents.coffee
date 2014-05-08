@@ -1,23 +1,12 @@
 #@# We won't need to call `toArray` each time in our own functions when this learns how to iterate over dead agents...
+# Never instantiate this class directly --JAB (5/7/14)
 define(['integration/lodash'], (_) ->
 
-  # (Array[U], Agents[V]) => Agents[U]
-  createNew = (newAgentArr, agents) ->
-    new Agents(newAgentArr, agents.getBreed(), agents.getKind())
-
   # Type Parameter: T <: Agent - The type of agents within `_agents`
-  class Agents
+  class AbstractAgents
 
-    # (Array[T], Breed)
-    constructor: (@_agents, @_breed, @_kind) ->
-
-    # () => Breed
-    getBreed: ->
-      @_breed
-
-    # () => AgentKind
-    getKind: ->
-      @_kind
+    # (Array[T]) => AbstractAgents[T]
+    constructor: (@_agents) ->
 
     # () => Number
     size: ->
@@ -42,7 +31,7 @@ define(['integration/lodash'], (_) ->
     every: (pred) ->
       _(@toArray()).every(pred)
 
-    # ((T) => Boolean) => Agents[T]
+    # ((T) => Boolean) => AbstractAgents[T]
     filter: (pred) ->
       @_generateFrom(_(@toArray()).filter(pred).value(), this)
 
@@ -66,11 +55,16 @@ define(['integration/lodash'], (_) ->
     toArray: ->
       @_agents[..]
 
+    # (Array[U]) => AbstractAgents[U]
+    replaceAgents: (agents) ->
+      @_generateFrom(agents, this)
+
     # () => String
     toString: ->
-      "(agentset, #{@size()} #{@_breed.name.toLowerCase()})"
+      throw new Error("Not implemented - `AbstractAgents.toString`")
 
     # (Array[U], Agents[V]) => Agents[U]
-    _generateFrom: createNew
+    _generateFrom: ->
+      throw new Error("Not implemented - `AbstractAgents._generateFrom`")
 
 )

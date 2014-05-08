@@ -11,18 +11,19 @@ var TurtlesOwn    = world.turtlesOwn;
 var PatchesOwn    = world.patchesOwn;
 var LinksOwn      = world.linksOwn;
 
-var AgentKind  = require('engine/agentkind');
-var Agents     = require('engine/agents');
 var Call       = require('engine/call');
 var ColorModel = require('engine/colormodel');
 var Dump       = require('engine/dump');
 var Exception  = require('engine/exception');
 var Link       = require('engine/link');
+var LinkSet    = require('engine/linkset');
 var Nobody     = require('engine/nobody');
 var noop       = require('engine/noop');
+var PatchSet   = require('engine/patchset');
 var Tasks      = require('engine/tasks');
 var Trig       = require('engine/trig');
 var Turtle     = require('engine/turtle');
+var TurtleSet  = require('engine/turtleset');
 var Type       = require('engine/typechecker');
 
 var AgentModel     = require('integration/agentmodel');
@@ -53,7 +54,7 @@ function setup() {
   AgentSet.ask(world.turtles(), true, function() {
     Call(spreadOutVertically);
   });
-  world.resetTicks();
+  world.ticker.reset();
 }
 function go() {
   if (AgentSet.all(world.turtles(), function(){ return AgentSet.getTurtleVariable(13) })) {
@@ -75,7 +76,7 @@ function go() {
     AgentSet.setTurtleVariable(14, AgentSet.self().getPatchHere());
     Call(spreadOutVertically);
   });
-  world.tick();
+  world.ticker.tick();
 }
 function updateHappiness() {
   var total = AgentSet.count(AgentSet.self().turtlesHere());

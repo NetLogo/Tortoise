@@ -5,10 +5,10 @@ Agents can be private.  Prims could/would/should be the
 compiler/runtime interface.  Dunno what's best. --ST
 ###
 #@# End this fence-riding nonsense ASAP; I think it makes sense to have one of these that depends on the workspace/world (for the few prims that directly do), and then one that doesn't
-#@# Should be unified with `Agents`
-define(['engine/agents', 'engine/exception', 'engine/iterator', 'engine/nobody', 'integration/random'
+#@# Should be unified with `AbstractAgents`
+define(['engine/abstractagents', 'engine/exception', 'engine/iterator', 'engine/nobody', 'integration/random'
       , 'engine/shufflerator', 'integration/lodash']
-     , ( Agents,          Exception,          Iterator,          Nobody,          Random
+     , ( AbstractAgents,          Exception,          Iterator,          Nobody,          Random
       ,  Shufflerator,          _) ->
 
   class AgentSet
@@ -37,7 +37,7 @@ define(['engine/agents', 'engine/exception', 'engine/iterator', 'engine/nobody',
       res
     ask: (agentsOrAgent, shuffle, f) ->
       agents =
-        if agentsOrAgent instanceof Agents
+        if agentsOrAgent instanceof AbstractAgents
           agentsOrAgent.toArray()
         else
           [agentsOrAgent]
@@ -90,7 +90,7 @@ define(['engine/agents', 'engine/exception', 'engine/iterator', 'engine/nobody',
         winners[Random.nextInt(winners.length)]
     of: (agentsOrAgent, f) -> #@# This is nonsense; same with `ask`.  If you're giving me something, _you_ get it into the right type first, not me!
       agents =
-        if agentsOrAgent instanceof Agents
+        if agentsOrAgent instanceof AbstractAgents
           agentsOrAgent.toArray()
         else
           [agentsOrAgent]
@@ -99,22 +99,22 @@ define(['engine/agents', 'engine/exception', 'engine/iterator', 'engine/nobody',
       while iter.hasNext() #@# FP.  Also, move out of the 1990s.
         agent = iter.next()
         result.push(@askAgent(agent, f))
-      if agentsOrAgent instanceof Agents #@# Awful to be doing this twice here...
+      if agentsOrAgent instanceof AbstractAgents #@# Awful to be doing this twice here...
         result
       else
         result[0]
     oneOf: (agentsOrList) ->
       arr =
-        if agentsOrList instanceof Agents #@# Stop this nonsense.  This code gives me such anxiety...
+        if agentsOrList instanceof AbstractAgents #@# Stop this nonsense.  This code gives me such anxiety...
           agentsOrList.toArray()
         else
           agentsOrList
       if arr.length is 0 then Nobody else arr[Random.nextInt(arr.length)] #@# Sadness continues
     nOf: (resultSize, agentsOrList) ->
-      if not (agentsOrList instanceof Agents) #@# How does this even make sense?
+      if not (agentsOrList instanceof AbstractAgents) #@# How does this even make sense?
         throw new Exception.NetLogoException("n-of not implemented on lists yet")
       items = agentsOrList.toArray()
-      new Agents( #@# Oh, FFS
+      agentsOrList.replaceAgents( #@# Oh, FFS
         switch resultSize
           when 0
             []
@@ -139,7 +139,7 @@ define(['engine/agents', 'engine/exception', 'engine/iterator', 'engine/nobody',
                 j += 1
               i += 1
             result
-      , agentsOrList.getBreed(), agentsOrList.getKind())
+      )
     die: -> @_self.die()
     connectedLinks: (directed, isSource) -> @_self.connectedLinks(directed, isSource)
     linkNeighbors: (directed, isSource) -> @_self.linkNeighbors(directed, isSource)
@@ -153,7 +153,7 @@ define(['engine/agents', 'engine/exception', 'engine/iterator', 'engine/nobody',
     setLinkVariable: (n, value) -> @_self.setLinkVariable(n, value)
     getBreedVariable: (n)    -> @_self.getBreedVariable(n)
     setBreedVariable: (n, value) -> @_self.setBreedVariable(n, value)
-    setBreed: (agentSet) -> @_self.setBreed(agentSet.getBreed())
+    setBreed: (agentSet) -> @_self.setBreed(agentSet.getBreedName())
     getPatchVariable:  (n)    -> @_self.getPatchVariable(n)
     setPatchVariable:  (n, value) -> @_self.setPatchVariable(n, value)
     other: (agentSet) ->
@@ -163,6 +163,5 @@ define(['engine/agents', 'engine/exception', 'engine/iterator', 'engine/nobody',
       iter = new Shufflerator(agents.toArray())
       while iter.hasNext() #@# 1990 rears its ugly head again
         result.push(iter.next())
-      new Agents(result, agents.getBreed(), agents.getKind())
-
+      agents.replaceAgents(result)
 )

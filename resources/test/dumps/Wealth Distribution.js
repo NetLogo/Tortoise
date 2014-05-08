@@ -11,18 +11,19 @@ var TurtlesOwn    = world.turtlesOwn;
 var PatchesOwn    = world.patchesOwn;
 var LinksOwn      = world.linksOwn;
 
-var AgentKind  = require('engine/agentkind');
-var Agents     = require('engine/agents');
 var Call       = require('engine/call');
 var ColorModel = require('engine/colormodel');
 var Dump       = require('engine/dump');
 var Exception  = require('engine/exception');
 var Link       = require('engine/link');
+var LinkSet    = require('engine/linkset');
 var Nobody     = require('engine/nobody');
 var noop       = require('engine/noop');
+var PatchSet   = require('engine/patchset');
 var Tasks      = require('engine/tasks');
 var Trig       = require('engine/trig');
 var Turtle     = require('engine/turtle');
+var TurtleSet  = require('engine/turtleset');
 var Type       = require('engine/typechecker');
 
 var AgentModel     = require('integration/agentmodel');
@@ -40,7 +41,7 @@ function setup() {
   Call(setupPatches);
   Call(setupTurtles);
   Call(updateLorenzAndGini);
-  world.resetTicks();
+  world.ticker.reset();
 }
 function setupPatches() {
   AgentSet.ask(world.patches(), true, function() {
@@ -115,13 +116,13 @@ function go() {
     Call(moveEatAgeDie);
   });
   Call(recolorTurtles);
-  if (Prims.equality(Prims.mod(world.ticks(), Globals.getGlobal(1)), 0)) {
+  if (Prims.equality(Prims.mod(world.ticker.tickCount(), Globals.getGlobal(1)), 0)) {
     AgentSet.ask(world.patches(), true, function() {
       Call(growGrain);
     });
   }
   Call(updateLorenzAndGini);
-  world.tick();
+  world.ticker.tick();
 }
 function turnTowardsGrain() {
   AgentSet.setTurtleVariable(2, 0);

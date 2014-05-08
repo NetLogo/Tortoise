@@ -14,7 +14,6 @@ High:
 --Things should stop managing their own updates
 -`Agents` should not be named as such, and should (hopefully) roll in with `AgentSet`
 -Polymorphism patrol and general abolition of `instanceof`
--`LinkSet`, `PatchSet`, `TurtleSet` as smart, easy set classes
 -Clean up import ordering and 'integration' vs. 'engine' nonsense
 -"CC Uri" notices
 -`Iterator` is puny and questionable in its existence, and its interface sucks

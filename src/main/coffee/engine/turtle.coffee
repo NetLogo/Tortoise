@@ -1,8 +1,8 @@
 #@# Extends: `Agent`, `Vassal`, `CanTalkToPatches`
-define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormodel', 'engine/comparator'
-      , 'engine/exception', 'engine/nobody', 'engine/trig', 'integration/lodash']
-     , ( AgentKind,          Agents,          Builtins,          ColorModel,          Comparator
-      ,  Exception,          Nobody,          Trig,          _) ->
+define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/comparator', 'engine/exception'
+      , 'engine/nobody', 'engine/turtleset', 'engine/trig']
+     , ( _,                    Builtins,          ColorModel,          Comparator,          Exception
+      ,  Nobody,          TurtleSet,          Trig) ->
 
   class Turtle
     vars:   undefined #@# You are the bane of your own existence
@@ -46,7 +46,12 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
         @getPatchHere().arrive(this)
       @refreshLinks()
     setBreed: (breed) ->
-      @updateBreed(breed)
+      trueBreed =
+        if _(breed).isString()
+          @world.breedManager.get(breed)
+        else
+          breed
+      @updateBreed(trueBreed)
       @world.updater.updated(this, "breed")
       @world.updater.updated(this, "shape")
     toString: -> "(#{@breed.singular} #{@id})"
@@ -116,8 +121,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
             acc
 
       turtles = world.links().toArray().reduce(reductionFunc, [])
-
-      new Agents(turtles, @world.breedManager.turtles(), AgentKind.Turtle)
+      new TurtleSet(turtles)
 
     isLinkNeighbor: (directed, isSource, other) -> #@# Other WHAT?
       @linkNeighbors(directed, isSource).filter((neighbor) -> neighbor is other).nonEmpty() #@# `_(derp).some(f)` (Lodash)
@@ -255,7 +259,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
     hatch: (n, breedName) ->
       breed      = if breedName? and not _(breedName).isEmpty() then @world.breedManager.get(breedName) else @breed #@# Why is this even a thing?
       newTurtles = _(0).range(n).map(=> @_makeTurtleCopy(breed)).value()
-      new Agents(newTurtles, breed, AgentKind.Turtle)
+      new TurtleSet(newTurtles, breed)
 
     # () => Turtle
     _makeTurtleCopy: (breed) ->
