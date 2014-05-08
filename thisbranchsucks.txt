@@ -1,9 +1,6 @@
 Things that are lousy about this branch:
 
 Very High:
--Lodashification
---Loops on numerical ranges should be Lodasherized
---Uses of `length`
 -`Prims` vs. `AgentSet` nonsense sucks
 
 High:

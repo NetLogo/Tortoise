@@ -23,7 +23,7 @@ define(['engine/abstractagents', 'engine/exception', 'engine/iterator', 'engine/
       @_myself = 0
     self: => @_self
     myself: -> if @_myself isnt 0 then @_myself else throw new Exception.NetLogoException("There is no agent for MYSELF to refer to.") #@# I wouldn't be surprised if this is entirely avoidable
-    askAgent: (agent, f) -> #@# Varnames
+    askAgent: (agent, f) ->
       oldMyself = @_myself #@# All of this contextual swapping can be handled more clearly
       oldAgent = @_self
       @_myself = @_self
@@ -70,7 +70,7 @@ define(['engine/abstractagents', 'engine/exception', 'engine/iterator', 'engine/
             winningValue = result
             winners = []
           winners.push(agent)
-      if winners.length is 0 #@# Nice try
+      if winners.length is 0
         Nobody
       else
         winners[Random.nextInt(winners.length)]
@@ -109,7 +109,10 @@ define(['engine/abstractagents', 'engine/exception', 'engine/iterator', 'engine/
           agentsOrList.toArray()
         else
           agentsOrList
-      if arr.length is 0 then Nobody else arr[Random.nextInt(arr.length)] #@# Sadness continues
+      if arr.length is 0
+        Nobody
+      else
+        arr[Random.nextInt(arr.length)]
     nOf: (resultSize, agentsOrList) ->
       if not (agentsOrList instanceof AbstractAgents) #@# How does this even make sense?
         throw new Exception.NetLogoException("n-of not implemented on lists yet")
