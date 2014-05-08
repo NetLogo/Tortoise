@@ -294,6 +294,6 @@ define(['integration/random', 'engine/agents', 'engine/agentkind', 'engine/compa
         else
           [agentsOrAgent]
       turtles = _(agents).map((agent) -> agent.turtlesHere().toArray()).flatten().value()
-      new Agents(turtles, @world.breedManager.get("TURTLES"), AgentKind.Turtle)
+      new Agents(turtles, @world.breedManager.turtles(), AgentKind.Turtle)
 
 )
