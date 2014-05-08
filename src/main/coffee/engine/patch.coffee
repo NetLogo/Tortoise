@@ -43,11 +43,11 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
     distanceXY: (x, y) -> @world.topology().distanceXY(@pxcor, @pycor, x, y)
     towardsXY: (x, y) -> @world.topology().towards(@pxcor, @pycor, x, y)
     distance: (agent) -> @world.topology().distance(@pxcor, @pycor, agent)
-    turtlesHere: -> new Agents(@turtles[..], @world.breedManager.get("TURTLES"), AgentKind.Turtle) #@# What do the two dots even mean here...?
+    turtlesHere: -> new Agents(@turtles[..], @world.breedManager.turtles(), AgentKind.Turtle) #@# What do the two dots even mean here...?
     getNeighbors: -> @world.getNeighbors(@pxcor, @pycor)
     getNeighbors4: -> @world.getNeighbors4(@pxcor, @pycor)
     sprout: (n, breedName) ->
-      breed   = if "" is breedName then @world.breedManager.get("TURTLES") else @world.breedManager.get(breedName) #@# This conditional is begging for a bug
+      breed   = if "" is breedName then @world.breedManager.turtles() else @world.breedManager.get(breedName) #@# This conditional is begging for a bug
       turtles = _(0).range(n).map(=> @world.createTurtle(new Turtle(@world, 5 + 10 * Random.nextInt(14), Random.nextInt(360), @pxcor, @pycor, breed))).value() #@# Moar clarity, plox; and why do patches know how to create turtles?!
       new Agents(turtles, breed, AgentKind.Turtle)
     breedHere: (breedName) ->

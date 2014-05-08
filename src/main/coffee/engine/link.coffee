@@ -18,7 +18,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
     xcor: -> #@# WHAT?! x2
     ycor: ->
     constructor: (@id, @directed, @end1, @end2, @world) ->
-      @breed      = @world.breedManager.get("LINKS")
+      @breed      = @world.breedManager.links()
       @color      = 5
       @hidden     = false
       @label      = ""
@@ -67,7 +67,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
           value
       this[Builtins.turtleBuiltins[n]] = newValue
       @world.updater.updated(this, Builtins.turtleBuiltins[n])
-    bothEnds: -> new Agents([@end1, @end2], @world.breedManager.get("TURTLES"), AgentKind.Turtle)
+    bothEnds: -> new Agents([@end1, @end2], @world.breedManager.turtles(), AgentKind.Turtle)
     otherEnd: -> if @end1 is AgentSet.myself() then @end2 else @end1
     updateEndRelatedVars: ->
       @heading = @world.topology().towards(@end1.xcor(), @end1.ycor(), @end2.xcor(), @end2.ycor())

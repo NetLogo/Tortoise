@@ -10,7 +10,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
     _ycor:  undefined
     _links: undefined
     #@# Should guard against improperly-named breeds, including empty-string breed names
-    constructor: (@world, @color = 0, @heading = 0, xcor = 0, ycor = 0, breed = @world.breedManager.get("TURTLES"), @label = "", @labelcolor = 9.9, @hidden = false, @size = 1.0, @pensize = 1.0, @penmode = "up") ->
+    constructor: (@world, @color = 0, @heading = 0, xcor = 0, ycor = 0, breed = @world.breedManager.turtles(), @label = "", @labelcolor = 9.9, @hidden = false, @size = 1.0, @pensize = 1.0, @penmode = "up") ->
       @_xcor  = xcor
       @_ycor  = ycor
       @_links = []
@@ -24,8 +24,8 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
       @breed = breed
       breed.add(@)
       @shape = @breed.shape()
-      if @breed isnt @world.breedManager.get("TURTLES")
-        @world.breedManager.get("TURTLES").add(this)
+      if @breed isnt @world.breedManager.turtles()
+        @world.breedManager.turtles().add(this)
         for x in @breed.vars
           if not @breedVars[x]?
             @breedVars[x] = 0
@@ -117,7 +117,7 @@ define(['engine/agentkind', 'engine/agents', 'engine/builtins', 'engine/colormod
 
       turtles = world.links().toArray().reduce(reductionFunc, [])
 
-      new Agents(turtles, @world.breedManager.get("TURTLES"), AgentKind.Turtle)
+      new Agents(turtles, @world.breedManager.turtles(), AgentKind.Turtle)
 
     isLinkNeighbor: (directed, isSource, other) -> #@# Other WHAT?
       @linkNeighbors(directed, isSource).filter((neighbor) -> neighbor is other).nonEmpty() #@# `_(derp).some(f)` (Lodash)

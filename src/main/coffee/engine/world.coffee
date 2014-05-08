@@ -77,8 +77,8 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
         @updater.updated(patch, "pxcor", "pycor", "pcolor", "plabel", "plabelcolor")
     topology: -> @_topology
     links: () ->
-      new Agents(@_links.toArray(), @breedManager.get("LINKS"), AgentKind.Link)
-    turtles: () -> new Agents(@_turtles, @breedManager.get("TURTLES"), AgentKind.Turtle)
+      new Agents(@_links.toArray(), @breedManager.links(), AgentKind.Link)
+    turtles: () -> new Agents(@_turtles, @breedManager.turtles(), AgentKind.Turtle)
     turtlesOfBreed: (breedName) ->
       breed = @breedManager.get(breedName)
       new Agents(breed.members, breed, AgentKind.Turtle)
@@ -213,17 +213,17 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
       @unbreededLinksAreDirected = true
       @updater.updated(this, "unbreededLinksAreDirected")
       links = _(others.toArray()).map((turtle) => @createLink(true, source, turtle)).filter((other) -> other isnt Nobody).value()
-      new Agents(links, @breedManager.get("LINKS"), AgentKind.Link)
+      new Agents(links, @breedManager.links(), AgentKind.Link)
     createReverseDirectedLinks: (source, others) -> #@# Clarity
       @unbreededLinksAreDirected = true
       @updater.updated(this, "unbreededLinksAreDirected")
       links = _(others.toArray()).map((turtle) => @createLink(true, turtle, source)).filter((other) -> other isnt Nobody).value()
-      new Agents(links, @breedManager.get("LINKS"), AgentKind.Link)
+      new Agents(links, @breedManager.links(), AgentKind.Link)
     createUndirectedLink: (source, other) ->
       @createLink(false, source, other)
     createUndirectedLinks: (source, others) -> #@# Clarity
       links = _(others.toArray()).map((turtle) => @createLink(false, source, turtle)).filter((other) -> other isnt Nobody).value()
-      new Agents(links, @breedManager.get("LINKS"), AgentKind.Link)
+      new Agents(links, @breedManager.links(), AgentKind.Link)
     getLink: (fromId, toId) ->
       link = @_links.find((link) -> link.end1.id is fromId and link.end2.id is toId)
       if link?
@@ -246,9 +246,9 @@ define(['integration/random', 'integration/strictmath', 'engine/agentkind', 'eng
         1
       else if a.breed is b.breed
         0
-      else if a.breed is @breedManager.get("LINKS")
+      else if a.breed is @breedManager.links()
         -1
-      else if b.breed is @breedManager.get("LINKS")
+      else if b.breed is @breedManager.links()
         1
       else
         throw new Exception.NetLogoException("We have yet to implement link breed comparison")
