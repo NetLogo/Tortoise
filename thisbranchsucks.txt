@@ -2,6 +2,7 @@ Things that are lousy about this branch:
 
 Very High:
 -`Prims` vs. `AgentSet` nonsense sucks
+-`Agents` should not be named as such, and should (hopefully) roll in with `AgentSet`
 
 High:
 -FPification
@@ -9,7 +10,6 @@ High:
 -`Shufflerator` is lame
 -Replace `AgentModel` with an `Overlord` and overhaul the code
 --Things should stop managing their own updates
--`Agents` should not be named as such, and should (hopefully) roll in with `AgentSet`
 -Polymorphism patrol and general abolition of `instanceof`
 -Clean up import ordering and 'integration' vs. 'engine' nonsense
 -"CC Uri" notices
