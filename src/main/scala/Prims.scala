@@ -148,7 +148,7 @@ object Prims {
       case p: prim._turtlevariable =>
         s"AgentSet.setTurtleVariable(${p.vn}, ${arg(1)});"
       case p: prim._turtleorlinkvariable if p.varName == "BREED" =>
-        s"AgentSet.setBreed(${arg(1)});"
+        s"AgentSet.setBreed(${arg(1)});" // #@# I'm pretty sure this is dead wrong. --JAB (5/8/14)
       case p: prim._turtleorlinkvariable =>
         val vn = api.AgentVariables.getImplicitTurtleVariables.indexOf(p.varName)
         s"AgentSet.setTurtleVariable($vn, ${arg(1)});"
