@@ -23,7 +23,6 @@ Mid:
 --`Unit` functions should end in `return`
 -Value wrappers: ID, NLColor, XCor, YCor, PenMode
 -Agentsets don't handle dead agents correctly.  JVM NetLogo has `DeadSkippingIterator` for this.  Tortoise just continues to act as if the dead agents are valid, unless they're a part of a breed agentset.  Check out being able to observe object changes in ECAMScript 6.
--The way that I lumped patches in with breeds doesn't work correctly.  Namely, patches don't actually have breeds, so it just ends up being `undefined`, which isn't really right
 -Engine variables should be referenced by name, rather than number
 
 Low:
