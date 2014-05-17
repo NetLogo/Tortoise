@@ -53,9 +53,6 @@ class TestReporters extends lang.TestReporters with TortoiseFinder {
 
 class TestCommands extends lang.TestCommands with TortoiseFinder {
   override val freebies = Map[String, String](
-    // egregious
-    "CommandTasks::allow-task-variable-access-inside-reporter-block" -> "fix is in e6247d2fc1882ef69220178834ce2f892b8cefd8 on flocking-aids-etc branch",
-    "ReporterTasks::allow-reporter-task-variable-access-inside-reporter-block" -> "fix is in e6247d2fc1882ef69220178834ce2f892b8cefd8 on flocking-aids-etc branch",
     // should be handled in rewrite
     "Agentsets::AgentSetEquality"      -> "Dead agents in agentsets are handled incorrectly",
     "Agentsets::LinkAgentsetDeadLinks" -> "Dead agents in agentsets are handled incorrectly",
