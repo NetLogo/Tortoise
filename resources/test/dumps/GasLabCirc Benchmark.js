@@ -75,7 +75,7 @@ function go() {
   world.tickAdvance(Globals.getGlobal(5));
   if (Globals.getGlobal(13)) {
     if (Prims.gt((world.ticks() - Globals.getGlobal(12)), Globals.getGlobal(14))) {
-      noop();
+      notImplemented('display', undefined)();
       Globals.setGlobal(12, world.ticks());
     }
   }
@@ -346,7 +346,7 @@ function reverseTime() {
 function testTimeReversal(n) {
   Call(setup);
   AgentSet.ask(world.turtlesOfBreed("PARTICLES"), true, function() {
-    noop();
+    notImplemented('stamp', undefined)();
   });
   while (Prims.lt(world.ticks(), n)) {
     Call(go);

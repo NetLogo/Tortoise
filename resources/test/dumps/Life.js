@@ -48,11 +48,11 @@ function go() {
   world.tick();
 }
 function drawCells() {
-  var erasing_p = AgentSet.of(Prims.patch(notImplemented('mouse-xcor', 0), notImplemented('mouse-ycor', 0)), function() {
+  var erasing_p = AgentSet.of(Prims.patch(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)()), function() {
     return AgentSet.getPatchVariable(5);
   });
   while (notImplemented('mouse-down?', false)) {
-    AgentSet.ask(Prims.patch(notImplemented('mouse-xcor', 0), notImplemented('mouse-ycor', 0)), true, function() {
+    AgentSet.ask(Prims.patch(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)()), true, function() {
       if (erasing_p) {
         Call(cellDeath);
       }
@@ -60,7 +60,7 @@ function drawCells() {
         Call(cellBirth);
       }
     });
-    noop();
+    notImplemented('display', undefined)();
   }
 }
 Globals.setGlobal(0, 35);

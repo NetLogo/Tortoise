@@ -203,17 +203,17 @@ function doPlotting() {
   if (!(Globals.getGlobal(2))) {
     throw new StopInterrupt;
   }
-  noop("Food in each pile");
-  noop("food-in-pile1");
-  noop(AgentSet.count(AgentSet.agentFilter(world.patches(), function() {
+  notImplemented('set-current-plot', undefined)("Food in each pile");
+  notImplemented('set-current-plot-pen', undefined)("food-in-pile1");
+  notImplemented('plot', undefined)(AgentSet.count(AgentSet.agentFilter(world.patches(), function() {
     return Prims.equality(AgentSet.getPatchVariable(2), 85);
   })));
-  noop("food-in-pile2");
-  noop(AgentSet.count(AgentSet.agentFilter(world.patches(), function() {
+  notImplemented('set-current-plot-pen', undefined)("food-in-pile2");
+  notImplemented('plot', undefined)(AgentSet.count(AgentSet.agentFilter(world.patches(), function() {
     return Prims.equality(AgentSet.getPatchVariable(2), 95);
   })));
-  noop("food-in-pile3");
-  noop(AgentSet.count(AgentSet.agentFilter(world.patches(), function() {
+  notImplemented('set-current-plot-pen', undefined)("food-in-pile3");
+  notImplemented('plot', undefined)(AgentSet.count(AgentSet.agentFilter(world.patches(), function() {
     return Prims.equality(AgentSet.getPatchVariable(2), 105);
   })));
 }

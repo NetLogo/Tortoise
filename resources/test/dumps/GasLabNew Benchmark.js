@@ -101,7 +101,7 @@ function go() {
     AgentSet.setPatchVariable(2, 45);
     AgentSet.die();
   });
-  noop();
+  notImplemented('display', undefined)();
 }
 function calculateTickLength() {
   if (AgentSet.any(AgentSet.agentFilter(world.turtlesOfBreed("PARTICLES"), function() {
@@ -286,102 +286,102 @@ function randomPosition() {
   AgentSet.setTurtleVariable(2, Prims.randomFloat(360));
 }
 function setupPlotz() {
-  noop("Speed Counts");
-  noop(0, StrictMath.ceil((Globals.getGlobal(0) / 6)));
+  notImplemented('set-current-plot', undefined)("Speed Counts");
+  notImplemented('set-plot-y-range', undefined)(0, StrictMath.ceil((Globals.getGlobal(0) / 6)));
 }
 function setupHistograms() {
-  noop("Speed Histogram");
-  noop(0, (Globals.getGlobal(3) * 2));
-  noop(0, StrictMath.ceil((Globals.getGlobal(0) / 6)));
-  noop("medium");
-  noop(40);
-  noop("slow");
-  noop(40);
-  noop("fast");
-  noop(40);
-  noop("init-avg-speed");
+  notImplemented('set-current-plot', undefined)("Speed Histogram");
+  notImplemented('set-plot-x-range', undefined)(0, (Globals.getGlobal(3) * 2));
+  notImplemented('set-plot-y-range', undefined)(0, StrictMath.ceil((Globals.getGlobal(0) / 6)));
+  notImplemented('set-current-plot-pen', undefined)("medium");
+  notImplemented('set-histrogram-num-bars', undefined)(40);
+  notImplemented('set-current-plot-pen', undefined)("slow");
+  notImplemented('set-histrogram-num-bars', undefined)(40);
+  notImplemented('set-current-plot-pen', undefined)("fast");
+  notImplemented('set-histrogram-num-bars', undefined)(40);
+  notImplemented('set-current-plot-pen', undefined)("init-avg-speed");
   Call(drawVertLine, Globals.getGlobal(14));
-  noop("Energy Histogram");
-  noop(0, (((0.5 * (Globals.getGlobal(3) * 2)) * (Globals.getGlobal(3) * 2)) * Globals.getGlobal(4)));
-  noop(0, StrictMath.ceil((Globals.getGlobal(0) / 6)));
-  noop("medium");
-  noop(40);
-  noop("slow");
-  noop(40);
-  noop("fast");
-  noop(40);
-  noop("init-avg-energy");
+  notImplemented('set-current-plot', undefined)("Energy Histogram");
+  notImplemented('set-plot-x-range', undefined)(0, (((0.5 * (Globals.getGlobal(3) * 2)) * (Globals.getGlobal(3) * 2)) * Globals.getGlobal(4)));
+  notImplemented('set-plot-y-range', undefined)(0, StrictMath.ceil((Globals.getGlobal(0) / 6)));
+  notImplemented('set-current-plot-pen', undefined)("medium");
+  notImplemented('set-histrogram-num-bars', undefined)(40);
+  notImplemented('set-current-plot-pen', undefined)("slow");
+  notImplemented('set-histrogram-num-bars', undefined)(40);
+  notImplemented('set-current-plot-pen', undefined)("fast");
+  notImplemented('set-histrogram-num-bars', undefined)(40);
+  notImplemented('set-current-plot-pen', undefined)("init-avg-energy");
   Call(drawVertLine, Globals.getGlobal(15));
 }
 function doPlotting() {
-  noop("Pressure vs. Time");
+  notImplemented('set-current-plot', undefined)("Pressure vs. Time");
   if (Prims.gt(Prims.length(Globals.getGlobal(9)), 0)) {
-    noop(world.ticks(), Prims.mean(Call(lastN, 3, Globals.getGlobal(9))));
+    notImplemented('plotxy', undefined)(world.ticks(), Prims.mean(Call(lastN, 3, Globals.getGlobal(9))));
   }
-  noop("Speed Counts");
-  noop("fast");
-  noop(Globals.getGlobal(18));
-  noop("medium");
-  noop(Globals.getGlobal(19));
-  noop("slow");
-  noop(Globals.getGlobal(20));
+  notImplemented('set-current-plot', undefined)("Speed Counts");
+  notImplemented('set-current-plot-pen', undefined)("fast");
+  notImplemented('plot', undefined)(Globals.getGlobal(18));
+  notImplemented('set-current-plot-pen', undefined)("medium");
+  notImplemented('plot', undefined)(Globals.getGlobal(19));
+  notImplemented('set-current-plot-pen', undefined)("slow");
+  notImplemented('plot', undefined)(Globals.getGlobal(20));
   if (Prims.gt(world.ticks(), 1)) {
-    noop("Wall Hits per Particle");
-    noop(world.ticks(), Globals.getGlobal(11));
+    notImplemented('set-current-plot', undefined)("Wall Hits per Particle");
+    notImplemented('plotxy', undefined)(world.ticks(), Globals.getGlobal(11));
   }
   Call(plotHistograms);
 }
 function plotHistograms() {
-  noop("Energy histogram");
-  noop("fast");
-  noop(AgentSet.of(AgentSet.agentFilter(world.turtlesOfBreed("PARTICLES"), function() {
+  notImplemented('set-current-plot', undefined)("Energy histogram");
+  notImplemented('set-current-plot-pen', undefined)("fast");
+  notImplemented('histogram', undefined)(AgentSet.of(AgentSet.agentFilter(world.turtlesOfBreed("PARTICLES"), function() {
     return Prims.equality(AgentSet.getTurtleVariable(1), 15);
   }), function() {
     return AgentSet.getBreedVariable("ENERGY");
   }));
-  noop("medium");
-  noop(AgentSet.of(AgentSet.agentFilter(world.turtlesOfBreed("PARTICLES"), function() {
+  notImplemented('set-current-plot-pen', undefined)("medium");
+  notImplemented('histogram', undefined)(AgentSet.of(AgentSet.agentFilter(world.turtlesOfBreed("PARTICLES"), function() {
     return Prims.equality(AgentSet.getTurtleVariable(1), 55);
   }), function() {
     return AgentSet.getBreedVariable("ENERGY");
   }));
-  noop("slow");
-  noop(AgentSet.of(AgentSet.agentFilter(world.turtlesOfBreed("PARTICLES"), function() {
+  notImplemented('set-current-plot-pen', undefined)("slow");
+  notImplemented('histogram', undefined)(AgentSet.of(AgentSet.agentFilter(world.turtlesOfBreed("PARTICLES"), function() {
     return Prims.equality(AgentSet.getTurtleVariable(1), 105);
   }), function() {
     return AgentSet.getBreedVariable("ENERGY");
   }));
-  noop("avg-energy");
-  noop();
+  notImplemented('set-current-plot-pen', undefined)("avg-energy");
+  notImplemented('plot-pen-reset', undefined)();
   Call(drawVertLine, Globals.getGlobal(17));
-  noop("Speed histogram");
-  noop("fast");
-  noop(AgentSet.of(AgentSet.agentFilter(world.turtlesOfBreed("PARTICLES"), function() {
+  notImplemented('set-current-plot', undefined)("Speed histogram");
+  notImplemented('set-current-plot-pen', undefined)("fast");
+  notImplemented('histogram', undefined)(AgentSet.of(AgentSet.agentFilter(world.turtlesOfBreed("PARTICLES"), function() {
     return Prims.equality(AgentSet.getTurtleVariable(1), 15);
   }), function() {
     return AgentSet.getBreedVariable("SPEED");
   }));
-  noop("medium");
-  noop(AgentSet.of(AgentSet.agentFilter(world.turtlesOfBreed("PARTICLES"), function() {
+  notImplemented('set-current-plot-pen', undefined)("medium");
+  notImplemented('histogram', undefined)(AgentSet.of(AgentSet.agentFilter(world.turtlesOfBreed("PARTICLES"), function() {
     return Prims.equality(AgentSet.getTurtleVariable(1), 55);
   }), function() {
     return AgentSet.getBreedVariable("SPEED");
   }));
-  noop("slow");
-  noop(AgentSet.of(AgentSet.agentFilter(world.turtlesOfBreed("PARTICLES"), function() {
+  notImplemented('set-current-plot-pen', undefined)("slow");
+  notImplemented('histogram', undefined)(AgentSet.of(AgentSet.agentFilter(world.turtlesOfBreed("PARTICLES"), function() {
     return Prims.equality(AgentSet.getTurtleVariable(1), 105);
   }), function() {
     return AgentSet.getBreedVariable("SPEED");
   }));
-  noop("avg-speed");
-  noop();
+  notImplemented('set-current-plot-pen', undefined)("avg-speed");
+  notImplemented('plot-pen-reset', undefined)();
   Call(drawVertLine, Globals.getGlobal(16));
 }
 function drawVertLine(xval) {
-  noop(xval, notImplemented('plot-y-min', 0));
-  noop();
-  noop(xval, notImplemented('plot-y-max', 0));
-  noop();
+  notImplemented('plotxy', undefined)(xval, notImplemented('plot-y-min', 0)());
+  notImplemented('plot-pen-down', undefined)();
+  notImplemented('plotxy', undefined)(xval, notImplemented('plot-y-max', 0)());
+  notImplemented('plot-pen-up', undefined)();
 }
 function lastN(n, theList) {
   if (Prims.gte(n, Prims.length(theList))) {

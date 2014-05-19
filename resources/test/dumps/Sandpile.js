@@ -59,7 +59,7 @@ function go() {
         Call(recolor);
       });
     });
-    noop();
+    notImplemented('display', undefined)();
     AgentSet.ask(avalanchePatches, true, function() {
       AgentSet.setPatchVariable(7, Globals.getGlobal(10));
       Call(recolor);
@@ -70,7 +70,7 @@ function go() {
 }
 function explore() {
   if (notImplemented('mouse-inside?', false)) {
-    var p = Prims.patch(notImplemented('mouse-xcor', 0), notImplemented('mouse-ycor', 0));
+    var p = Prims.patch(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)());
     Globals.setGlobal(9, p);
     AgentSet.ask(world.patches(), true, function() {
       Call(pushN);
@@ -91,7 +91,7 @@ function explore() {
       AgentSet.setPatchVariable(7, Globals.getGlobal(12));
       Call(recolor);
     });
-    noop();
+    notImplemented('display', undefined)();
   }
   else {
     if (!Prims.equality(Globals.getGlobal(9), Nobody)) {
@@ -130,7 +130,7 @@ function stabilize(animate_p) {
       });
     });
     if (animate_p) {
-      noop();
+      notImplemented('display', undefined)();
     }
     avalanchePatches = Prims.patchSet(avalanchePatches, overloadedPatches);
     activePatches = Prims.patchSet(AgentSet.of(overloadedPatches, function() {
@@ -152,7 +152,7 @@ function dropPatch() {
   }
   if ((Prims.equality(Globals.getGlobal(1), "mouse-click") && notImplemented('mouse-down?', false))) {
     Prims.every(0.3, function () {
-      return Prims.patch(notImplemented('mouse-xcor', 0), notImplemented('mouse-ycor', 0));
+      return Prims.patch(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)());
     });
   }
   return Nobody;

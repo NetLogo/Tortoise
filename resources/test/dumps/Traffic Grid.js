@@ -11,7 +11,7 @@ function setup() {
   Call(labelCurrent);
   Breeds.setDefaultShape(world.turtles(), "car");
   if (Prims.gt(Globals.getGlobal(3), AgentSet.count(Globals.getGlobal(15)))) {
-    noop((Dump("") + Dump("There are too many cars for the amount of ") + Dump("road.  Either increase the amount of roads ") + Dump("by increasing the GRID-SIZE-X or ") + Dump("GRID-SIZE-Y sliders, or decrease the ") + Dump("number of cars by lowering the NUMBER slider.\n") + Dump("The setup has stopped.")));
+    notImplemented('user-message', undefined)((Dump("") + Dump("There are too many cars for the amount of ") + Dump("road.  Either increase the amount of roads ") + Dump("by increasing the GRID-SIZE-X or ") + Dump("GRID-SIZE-Y sliders, or decrease the ") + Dump("number of cars by lowering the NUMBER slider.\n") + Dump("The setup has stopped.")));
     throw new StopInterrupt;
   }
   AgentSet.ask(world.createTurtles(Globals.getGlobal(3), ""), true, function() {
@@ -111,8 +111,8 @@ function go() {
 }
 function chooseCurrent() {
   if (notImplemented('mouse-down?', false)) {
-    var xMouse = notImplemented('mouse-xcor', 0);
-    var yMouse = notImplemented('mouse-ycor', 0);
+    var xMouse = notImplemented('mouse-xcor', 0)();
+    var yMouse = notImplemented('mouse-ycor', 0)();
     if (AgentSet.of(Prims.patch(xMouse, yMouse), function() {
       return AgentSet.getPatchVariable(5);
     })) {

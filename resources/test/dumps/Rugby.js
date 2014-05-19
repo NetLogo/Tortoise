@@ -54,7 +54,7 @@ function go() {
     AgentSet.ask(world.turtles(), true, function() {
       Call(move);
     });
-    noop();
+    notImplemented('display', undefined)();
   }
   Globals.setGlobal(11, (Globals.getGlobal(11) + AgentSet.count(Globals.getGlobal(9))));
   Globals.setGlobal(12, Prims.sum(AgentSet.of(Globals.getGlobal(9), function() {

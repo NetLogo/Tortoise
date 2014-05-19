@@ -19,7 +19,7 @@ function go() {
     AgentSet.ask(world.turtles(), true, function() {
       Prims.fd(0.2);
     });
-    noop();
+    notImplemented('display', undefined)();
   });
   world.tick();
 }

@@ -3,7 +3,7 @@ world = new World(-17, 17, -17, 17, 12.0, true, true, {"default":{"rotate":true,
 
 function setup() {
   world.clearTurtles();
-  noop();
+  notImplemented('clear-all-plots', undefined)();
   AgentSet.ask(world.createTurtles(Globals.getGlobal(1), ""), true, function() {
     AgentSet.setTurtleVariable(1, Prims.item(Prims.random(Globals.getGlobal(0)), [5, 15, 25, 35, 45, 55, 65, 85, 95, 125]));
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
@@ -56,24 +56,24 @@ function findTopSpecies() {
 function placeWall() {
   if (notImplemented('mouse-down?', false)) {
     AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
-      return (Prims.equality(StrictMath.abs(AgentSet.getPatchVariable(1)), world.maxPycor) || Prims.equality(AgentSet.getPatchVariable(1), StrictMath.round(notImplemented('mouse-ycor', 0))));
+      return (Prims.equality(StrictMath.abs(AgentSet.getPatchVariable(1)), world.maxPycor) || Prims.equality(AgentSet.getPatchVariable(1), StrictMath.round(notImplemented('mouse-ycor', 0)())));
     }), true, function() {
       AgentSet.setPatchVariable(2, 9.9);
       AgentSet.ask(AgentSet.self().turtlesHere(), true, function() {
         Call(moveOffWall);
       });
     });
-    noop();
+    notImplemented('display', undefined)();
   }
 }
 function removeWall() {
   if (notImplemented('mouse-down?', false)) {
     AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
-      return Prims.equality(AgentSet.getPatchVariable(1), StrictMath.round(notImplemented('mouse-ycor', 0)));
+      return Prims.equality(AgentSet.getPatchVariable(1), StrictMath.round(notImplemented('mouse-ycor', 0)()));
     }), true, function() {
       AgentSet.setPatchVariable(2, 0);
     });
-    noop();
+    notImplemented('display', undefined)();
   }
 }
 function removeAllWalls() {

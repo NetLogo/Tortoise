@@ -80,7 +80,7 @@ function sendMessengerToItsColumn() {
     AgentSet.self().face(it);
     while (Prims.gt(AgentSet.self().distance(it), 3)) {
       Prims.fd(1);
-      noop();
+      notImplemented('display', undefined)();
     }
     AgentSet.die();
   });

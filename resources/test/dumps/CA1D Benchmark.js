@@ -76,7 +76,7 @@ function go() {
   }
   if (Prims.equality(Globals.getGlobal(13), world.minPycor)) {
     if (Globals.getGlobal(12)) {
-      noop();
+      notImplemented('display', undefined)();
       Call(setupContinue);
     }
     else {

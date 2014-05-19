@@ -11,7 +11,7 @@ function setup() {
   if (AgentSet.any(AgentSet.agentFilter(world.patches(), function() {
     return Prims.equality(AgentSet.count(AgentSet.getPatchVariable(7)), 0);
   }))) {
-    noop((Dump("") + Dump("It doesn't make sense that 'outer' is equal to or smaller than 'inner.' ") + Dump(" Please reset the sliders and press Setup again.")));
+    notImplemented('user-message', undefined)((Dump("") + Dump("It doesn't make sense that 'outer' is equal to or smaller than 'inner.' ") + Dump(" Please reset the sliders and press Setup again.")));
     throw new StopInterrupt;
   }
   else {

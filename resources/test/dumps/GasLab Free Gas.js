@@ -34,10 +34,10 @@ function go() {
   world.tickAdvance(Globals.getGlobal(5));
   if (Prims.gt(StrictMath.floor(world.ticks()), StrictMath.floor((world.ticks() - Globals.getGlobal(5))))) {
     Call(updateVariables);
-    noop();
+    notImplemented('update-plots', undefined)();
   }
   Call(calculateTickDelta);
-  noop();
+  notImplemented('display', undefined)();
 }
 function updateVariables() {
   Globals.setGlobal(12, AgentSet.count(AgentSet.agentFilter(world.turtlesOfBreed("PARTICLES"), function() {
@@ -169,10 +169,10 @@ function lastN(n, theList) {
   }
 }
 function drawVertLine(xval) {
-  noop(xval, notImplemented('plot-y-min', 0));
-  noop();
-  noop(xval, notImplemented('plot-y-max', 0));
-  noop();
+  notImplemented('plotxy', undefined)(xval, notImplemented('plot-y-min', 0)());
+  notImplemented('plot-pen-down', undefined)();
+  notImplemented('plotxy', undefined)(xval, notImplemented('plot-y-max', 0)());
+  notImplemented('plot-pen-up', undefined)();
 }
 Globals.setGlobal(0, 100);
 Globals.setGlobal(1, true);

@@ -63,7 +63,7 @@ function leaveIfUnhappy() {
   }
 }
 function findNewGroups() {
-  noop();
+  notImplemented('display', undefined)();
   var malcontents = AgentSet.agentFilter(world.turtles(), function() {
     return !(Prims.member(AgentSet.self().getPatchHere(), Globals.getGlobal(3)));
   });

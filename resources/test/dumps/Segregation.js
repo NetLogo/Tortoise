@@ -5,7 +5,7 @@ world = new World(-25, 25, -25, 25, 7.0, true, true, {"default":{"rotate":true,"
 function setup() {
   world.clearAll();
   if (Prims.gt(Globals.getGlobal(0), AgentSet.count(world.patches()))) {
-    noop((Dump("") + Dump("This pond only has room for ") + Dump(AgentSet.count(world.patches())) + Dump(" turtles.")));
+    notImplemented('user-message', undefined)((Dump("") + Dump("This pond only has room for ") + Dump(AgentSet.count(world.patches())) + Dump(" turtles.")));
     throw new StopInterrupt;
   }
   AgentSet.ask(AgentSet.nOf(Globals.getGlobal(0), world.patches()), true, function() {

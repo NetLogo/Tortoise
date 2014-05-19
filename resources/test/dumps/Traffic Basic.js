@@ -18,7 +18,7 @@ function setupRoad() {
 }
 function setupCars() {
   if (Prims.gt(Globals.getGlobal(0), world.width())) {
-    noop((Dump("") + Dump("There are too many cars for the amount of road.  Please decrease the NUMBER-OF-CARS slider to below ") + Dump((world.width() + 1)) + Dump(" and press the SETUP button again.  The setup has stopped.")));
+    notImplemented('user-message', undefined)((Dump("") + Dump("There are too many cars for the amount of road.  Please decrease the NUMBER-OF-CARS slider to below ") + Dump((world.width() + 1)) + Dump(" and press the SETUP button again.  The setup has stopped.")));
     throw new StopInterrupt;
   }
   Breeds.setDefaultShape(world.turtles(), "car");

@@ -141,7 +141,7 @@ function colorCollaborations() {
 function layout() {
   Prims.repeat(12, function () {
     Layouts.layoutSpring(world.turtles(), world.links(), 0.18, 0.01, 1.2);
-    noop();
+    notImplemented('display', undefined)();
   });
 }
 function findAllComponents() {

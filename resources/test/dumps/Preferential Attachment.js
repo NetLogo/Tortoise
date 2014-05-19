@@ -51,7 +51,7 @@ function layout() {
   Prims.repeat(3, function () {
     var factor = StrictMath.sqrt(AgentSet.count(world.turtles()));
     Layouts.layoutSpring(world.turtles(), world.links(), (1 / factor), (7 / factor), (1 / factor));
-    noop();
+    notImplemented('display', undefined)();
   });
   var xOffset = (Prims.max(AgentSet.of(world.turtles(), function() {
     return AgentSet.getTurtleVariable(3);
