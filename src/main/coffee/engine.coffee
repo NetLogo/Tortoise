@@ -53,6 +53,10 @@ Utilities = {
   isString:   (x) -> typeof(x) is "string"
 }
 
+notImplemented = (name, defaultValue = {}) ->
+  if console? and console.warn? then console.warn("The `#{name}` primitive has not yet been implemented.")
+  defaultValue
+
 ColorModel = {
   COLOR_MAX: 140
   baseColors: ->

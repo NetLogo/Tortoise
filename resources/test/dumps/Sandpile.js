@@ -69,8 +69,8 @@ function go() {
   }
 }
 function explore() {
-  if (false()) {
-    var p = Prims.patch(0(), 0());
+  if (notImplemented('mouse-inside?', false)) {
+    var p = Prims.patch(notImplemented('mouse-xcor', 0), notImplemented('mouse-ycor', 0));
     Globals.setGlobal(9, p);
     AgentSet.ask(world.patches(), true, function() {
       Call(pushN);
@@ -150,9 +150,9 @@ function dropPatch() {
   if (Prims.equality(Globals.getGlobal(1), "random")) {
     return AgentSet.oneOf(world.patches());
   }
-  if ((Prims.equality(Globals.getGlobal(1), "mouse-click") && false())) {
+  if ((Prims.equality(Globals.getGlobal(1), "mouse-click") && notImplemented('mouse-down?', false))) {
     Prims.every(0.3, function () {
-      return Prims.patch(0(), 0());
+      return Prims.patch(notImplemented('mouse-xcor', 0), notImplemented('mouse-ycor', 0));
     });
   }
   return Nobody;

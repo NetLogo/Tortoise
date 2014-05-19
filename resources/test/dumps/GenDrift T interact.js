@@ -54,9 +54,9 @@ function findTopSpecies() {
   Globals.setGlobal(2, ((100 * winningAmount) / AgentSet.count(world.turtles())));
 }
 function placeWall() {
-  if (false()) {
+  if (notImplemented('mouse-down?', false)) {
     AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
-      return (Prims.equality(StrictMath.abs(AgentSet.getPatchVariable(1)), world.maxPycor) || Prims.equality(AgentSet.getPatchVariable(1), StrictMath.round(0())));
+      return (Prims.equality(StrictMath.abs(AgentSet.getPatchVariable(1)), world.maxPycor) || Prims.equality(AgentSet.getPatchVariable(1), StrictMath.round(notImplemented('mouse-ycor', 0))));
     }), true, function() {
       AgentSet.setPatchVariable(2, 9.9);
       AgentSet.ask(AgentSet.self().turtlesHere(), true, function() {
@@ -67,9 +67,9 @@ function placeWall() {
   }
 }
 function removeWall() {
-  if (false()) {
+  if (notImplemented('mouse-down?', false)) {
     AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
-      return Prims.equality(AgentSet.getPatchVariable(1), StrictMath.round(0()));
+      return Prims.equality(AgentSet.getPatchVariable(1), StrictMath.round(notImplemented('mouse-ycor', 0)));
     }), true, function() {
       AgentSet.setPatchVariable(2, 0);
     });

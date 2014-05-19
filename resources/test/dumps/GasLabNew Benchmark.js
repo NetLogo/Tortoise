@@ -378,9 +378,9 @@ function plotHistograms() {
   Call(drawVertLine, Globals.getGlobal(16));
 }
 function drawVertLine(xval) {
-  noop(xval, 0);
+  noop(xval, notImplemented('plot-y-min', 0));
   noop();
-  noop(xval, 0);
+  noop(xval, notImplemented('plot-y-max', 0));
   noop();
 }
 function lastN(n, theList) {
