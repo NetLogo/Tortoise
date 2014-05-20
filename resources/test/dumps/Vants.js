@@ -15,7 +15,8 @@ function setup() {
 }
 function goForward() {
   Tasks.forEach(Tasks.commandTask(function() {
-    AgentSet.ask(arguments[0], true, function() {
+    var taskArguments = arguments;
+    AgentSet.ask(taskArguments[0], true, function() {
       Prims.fd(1);
       Call(turn);
     });
@@ -24,7 +25,8 @@ function goForward() {
 }
 function goReverse() {
   Tasks.forEach(Tasks.commandTask(function() {
-    AgentSet.ask(arguments[0], true, function() {
+    var taskArguments = arguments;
+    AgentSet.ask(taskArguments[0], true, function() {
       Call(turn);
       Prims.bk(1);
     });

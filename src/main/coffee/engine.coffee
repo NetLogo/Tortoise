@@ -4,7 +4,8 @@
 
 turtleBuiltins = ["id", "color", "heading", "xcor", "ycor", "shape", "label", "labelcolor", "breed", "hidden", "size", "pensize", "penmode"]
 patchBuiltins = ["pxcor", "pycor", "pcolor", "plabel", "plabelcolor"]
-linkBuiltins = ["end1", "end2", "lcolor", "llabel", "llabelcolor", "lhidden", "lbreed", "thickness", "lshape", "tiemode", "size", "heading", "midpointx", "midpointy"]
+linkBuiltins = ["end1", "end2", "lcolor", "llabel", "llabelcolor", "lhidden", "lbreed", "thickness", "lshape", "tiemode"]
+linkExtras = ["size", "heading", "midpointx", "midpointy"]
 
 class NetLogoException
   constructor: (@message) ->
@@ -52,8 +53,15 @@ Utilities = {
   isString:   (x) -> typeof(x) is "string"
 }
 
+notImplemented = (name, defaultValue = {}) ->
+  if console? and console.warn? then console.warn("The `#{name}` primitive has not yet been implemented.")
+  -> defaultValue
+
 ColorModel = {
   COLOR_MAX: 140
+  baseColors: ->
+    for i in [0..13]
+      i * 10 + 5
   wrapColor: (c) ->
     if typeIsArray(c)
       c
@@ -201,6 +209,7 @@ class Turtle
   canMove: (amount) -> @patchAhead(amount) != Nobody
   distanceXY: (x, y) -> world.topology().distanceXY(@xcor(), @ycor(), x, y)
   distance: (agent) -> world.topology().distance(@xcor(), @ycor(), agent)
+  towardsXY: (x, y) -> world.topology().towards(@xcor(), @ycor(), x, y)
   towards: (agent) ->
     if(agent instanceof Turtle)
       world.topology().towards(@xcor(), @ycor(), agent.xcor(), agent.ycor())
@@ -218,9 +227,14 @@ class Turtle
   inRadius: (agents, radius) ->
     world.topology().inRadius(this, @xcor(), @ycor(), agents, radius)
   patchAt: (dx, dy) ->
-    @getPatchHere().patchAt(dx, dy)
+    try
+      world.getPatchAt(
+        world.topology().wrapX(@xcor() + dx),
+        world.topology().wrapY(@ycor() + dy))
+    catch error
+      if error instanceof TopologyInterrupt then Nobody else throw error
   turtlesAt: (dx, dy) ->
-    @getPatchHere().turtlesAt(dx, dy)
+    @patchAt(dx, dy).turtlesHere()
   connectedLinks: (directed, isSource) ->
     me = this
     if directed
@@ -310,6 +324,10 @@ class Turtle
       updated(this, "xcor", "ycor")
       return true
     return false
+  dx: ->
+    Trig.sin(@heading)
+  dy: ->
+    Trig.cos(@heading)
   right: (amount) ->
     @heading += amount
     @keepHeadingInRange()
@@ -390,11 +408,12 @@ class Turtle
   hatch: (n, breedName) ->
     breed = if breedName then Breeds.get(breedName) else @breed
     newTurtles = []
-    for num in [0...n]
-      t = new Turtle(@color, @heading, @xcor(), @ycor(), breed, @label, @labelcolor, @hidden, @size, @pensize, @penmode)
-      for v in [0..TurtlesOwn.vars.length]
-        t.setTurtleVariable(turtleBuiltins.length + v, @getTurtleVariable(turtleBuiltins.length + v))
-      newTurtles.push(world.createTurtle(t))
+    if n > 0
+      for num in [0...n]
+        t = new Turtle(@color, @heading, @xcor(), @ycor(), breed, @label, @labelcolor, @hidden, @size, @pensize, @penmode)
+        for v in [0..TurtlesOwn.vars.length]
+          t.setTurtleVariable(turtleBuiltins.length + v, @getTurtleVariable(turtleBuiltins.length + v))
+        newTurtles.push(world.createTurtle(t))
     new Agents(newTurtles, breed, AgentKind.Turtle)
   moveTo: (agent) ->
     if (agent instanceof Turtle)
@@ -403,6 +422,15 @@ class Turtle
       @setXY(agent.pxcor, agent.pycor)
   watchme: ->
     world.watch(this)
+
+  penDown: ->
+    @penmode = "down"
+    updated(this, "penmode")
+    return
+  penUp: ->
+    @penmode = "up"
+    updated(this, "penmode")
+    return
 
   _removeLink: (l) ->
     @_links.splice(@_links.indexOf(l))
@@ -432,6 +460,14 @@ class Patch
         if newV != 0
           world.patchesAllBlack(false)
         this[patchBuiltins[n]] = newV
+      else if patchBuiltins[n] is "plabel"
+        if v is ""
+          if this.plabel isnt ""
+            world.patchesWithLabels(world._patchesWithLabels - 1)
+        else
+          if this.plabel is ""
+            world.patchesWithLabels(world._patchesWithLabels + 1)
+        this.plabel = v
       else
         this[patchBuiltins[n]] = v
       updated(this, patchBuiltins[n])
@@ -441,13 +477,18 @@ class Patch
   arrive: (t) ->
     @turtles.push(t)
   distanceXY: (x, y) -> world.topology().distanceXY(@pxcor, @pycor, x, y)
+  towardsXY: (x, y) -> world.topology().towards(@pxcor, @pycor, x, y)
   distance: (agent) -> world.topology().distance(@pxcor, @pycor, agent)
   turtlesHere: -> new Agents(@turtles[..], Breeds.get("TURTLES"), AgentKind.Turtle)
   getNeighbors: -> world.getNeighbors(@pxcor, @pycor) # world.getTopology().getNeighbors(this)
   getNeighbors4: -> world.getNeighbors4(@pxcor, @pycor) # world.getTopology().getNeighbors(this)
   sprout: (n, breedName) ->
     breed = if("" == breedName) then Breeds.get("TURTLES") else Breeds.get(breedName)
-    new Agents(world.createTurtle(new Turtle(5 + 10 * Random.nextInt(14), Random.nextInt(360), @pxcor, @pycor, breed)) for num in [0...n], breed, AgentKind.Turtle)
+    newTurtles = []
+    if n > 0
+      for num in [0...n]
+        newTurtles.push(world.createTurtle(new Turtle(5 + 10 * Random.nextInt(14), Random.nextInt(360), @pxcor, @pycor, breed)))
+    new Agents(newTurtles, breed, AgentKind.Turtle)
   breedHere: (breedName) ->
     breed = Breeds.get(breedName)
     new Agents(t for t in @turtles when t.breed == breed, breed, AgentKind.Turtle)
@@ -494,6 +535,7 @@ Links =
       throw new Error("We have yet to implement link breed comparison")
 
 class Link
+  vars: []
   color: 5
   label: ""
   labelcolor: 9.9
@@ -509,6 +551,7 @@ class Link
     @end1._links.push(this)
     @end2._links.push(this)
     @updateEndRelatedVars()
+    @vars = (x for x in LinksOwn.vars)
   getLinkVariable: (n) ->
     if (n < linkBuiltins.length)
       this[linkBuiltins[n]]
@@ -550,7 +593,7 @@ class Link
     @size = world.topology().distanceXY(@end1.xcor(), @end1.ycor(), @end2.xcor(), @end2.ycor())
     @midpointx = world.topology().midpointx(@end1.xcor(), @end2.xcor())
     @midpointy = world.topology().midpointy(@end1.ycor(), @end2.ycor())
-    updated(this, linkBuiltins...)
+    updated(this, linkExtras...)
   toString: -> "(" + @breed.singular + " " + @end1.id + " " + @end2.id + ")"
 
   compare: (x) ->
@@ -589,6 +632,7 @@ class World
   _ticks: -1
   _timer: Date.now()
   _patchesAllBlack: true
+  _patchesWithLabels: 0
 
   constructor: (@minPxcor, @maxPxcor, @minPycor, @maxPycor, @patchSize, @wrappingAllowedInX, @wrappingAllowedInY, turtleShapeList, linkShapeList, @interfaceGlobalCount) ->
     Breeds.reset()
@@ -610,7 +654,7 @@ class World
             linkShapeList: linkShapeList,
             patchSize: @patchSize,
             patchesAllBlack: @_patchesAllBlack,
-            patchesWithLabels: 0,
+            patchesWithLabels: @_patchesWithLabels
             ticks: @_ticks,
             turtleBreeds: "XXX IMPLEMENT ME",
             turtleShapeList: turtleShapeList,
@@ -671,6 +715,7 @@ class World
       @_topology = new Box(@minPxcor, @maxPxcor, @minPycor, @maxPycor)
     @createPatches()
     @patchesAllBlack(true)
+    @patchesWithLabels(0)
     Updates.push(
       world: {
         0: {
@@ -729,12 +774,16 @@ class World
   patchesAllBlack: (val) ->
     @_patchesAllBlack = val
     Updates.push( world: { 0: { patchesAllBlack: @_patchesAllBlack }})
+  patchesWithLabels: (val) ->
+    @_patchesWithLabels = val
+    Updates.push( world: { 0: { patchesWithLabels: @_patchesWithLabels }})
   clearAll: ->
     Globals.clear(@interfaceGlobalCount)
     @clearTurtles()
     @createPatches()
     @_nextLinkId = 0
     @patchesAllBlack(true)
+    @patchesWithLabels(0)
     @clearTicks()
     return
   clearTurtles: ->
@@ -757,6 +806,7 @@ class World
       for i in [patchBuiltins.size...p.vars.length]
         p.setPatchVariable(i, 0)
     @patchesAllBlack(true)
+    @patchesWithLabels(0)
     return
   createTurtle: (t) ->
     t.id = @_nextTurtleId++
@@ -774,15 +824,24 @@ class World
     if Nobody == @getLink(end1.id, end2.id)
       l = new Link(@_nextLinkId++, directed, end1, end2)
       updated(l, linkBuiltins...)
+      updated(l, linkExtras...)
       updated(l, turtleBuiltins.slice(1)...)
       @_links.insert(l)
       l
     else
       Nobody
   createOrderedTurtles: (n, breedName) ->
-    new Agents(@createTurtle(new Turtle((10 * num + 5) % 140, (360 * num) / n, 0, 0, Breeds.get(breedName))) for num in [0...n], Breeds.get(breedName), AgentKind.Turtle)
+    newTurtles = []
+    if n > 0
+      for num in [0...n]
+        newTurtles.push(@createTurtle(new Turtle((10 * num + 5) % 140, (360 * num) / n, 0, 0, Breeds.get(breedName))))
+    new Agents(newTurtles, Breeds.get(breedName), AgentKind.Turtle)
   createTurtles: (n, breedName) ->
-    new Agents(@createTurtle(new Turtle(5 + 10 * Random.nextInt(14), Random.nextInt(360), 0, 0, Breeds.get(breedName))) for num in [0...n], Breeds.get(breedName), AgentKind.Turtle)
+    newTurtles = []
+    if n > 0
+      for num in [0...n]
+        newTurtles.push(@createTurtle(new Turtle(5 + 10 * Random.nextInt(14), Random.nextInt(360), 0, 0, Breeds.get(breedName))))
+    new Agents(newTurtles, Breeds.get(breedName), AgentKind.Turtle)
   getNeighbors: (pxcor, pycor) -> @topology().getNeighbors(pxcor, pycor)
   getNeighbors4: (pxcor, pycor) -> @topology().getNeighbors4(pxcor, pycor)
   createDirectedLink: (from, to) ->
@@ -1217,6 +1276,120 @@ Prims =
     for i in [0...n]
       fn()
     return
+  # not a real implementation, always just runs body - ST 4/22/14
+  every: (time, fn) ->
+    fn()
+    return
+  subtractHeadings: (h1, h2) ->
+    if h1 < 0 || h1 >= 360
+      h1 = (h1 % 360 + 360) % 360
+    if h2 < 0 || h2 >= 360
+      h2 = (h2 % 360 + 360) % 360
+    diff = h1 - h2
+    if diff > -180 && diff <= 180
+      diff
+    else if diff > 0
+      diff - 360
+    else
+      diff + 360
+  boom: ->
+    throw new NetLogoException("boom!")
+  member: (x, xs) ->
+    if typeIsArray(xs)
+      for y in xs
+        if @equality(x, y)
+          return true
+      false
+    else if Utilities.isString(x)
+      xs.indexOf(x) != -1
+    else  # agentset
+      for a in xs.items
+        if x == a
+          return true
+      false
+  position: (x, xs) ->
+    if typeIsArray(xs)
+      for y, i in xs
+        if @equality(x, y)
+          return i
+      false
+    else
+      result = xs.indexOf(x)
+      if result is -1
+        false
+      else
+        result
+  remove: (x, xs) ->
+    if typeIsArray(xs)
+      result = []
+      for y in xs
+        if not @equality(x, y)
+          result.push(y)
+      result
+    else
+      xs.replaceAll(x, "")
+  removeItem: (n, xs) ->
+    if typeIsArray(xs)
+      xs = xs[..]
+      xs[n..n] = []
+      xs
+    else
+      xs.slice(0, n) + xs.slice(n + 1, xs.length)
+  replaceItem: (n, xs, x) ->
+    if typeIsArray(xs)
+      xs = xs[..]
+      xs[n] = x
+      xs
+    else
+      xs.slice(0, n) + x + xs.slice(n + 1, xs.length)
+  sublist: (xs, n1, n2) ->
+    xs[n1...n2]
+  substring: (xs, n1, n2) ->
+    xs.substr(n1, n2 - n1)
+  sentence: (xs...) ->
+    result = []
+    for x in xs
+      if typeIsArray(x)
+        result.push(x...)
+      else
+        result.push(x)
+    result
+  variance: (xs) ->
+    sum = 0
+    count = xs.length
+    for x in xs
+      if Utilities.isNumber(x)
+        sum += x
+      else
+        --count
+    if count < 2
+      throw new NetLogoException(
+        "Can't find the variance of a list without at least two numbers")
+    mean = sum / count
+    squareOfDifference = 0
+    for x in xs
+      if Utilities.isNumber(x)
+        squareOfDifference += StrictMath.pow(x - mean, 2)
+    squareOfDifference / (count - 1)
+  breedOn: (breedName, what) ->
+    breed = Breeds.get(breedName)
+    patches =
+      if what instanceof Patch
+        [what]
+      else if what instanceof Turtle
+        [what.getPatchHere()]
+      else if what.items and what.kind is AgentKind.Patch
+        what.items
+      else if what.items and what.kind is AgentKind.Turtle
+        t.getPatchHere() for t in what.items
+      else
+        throw new NetLogoException("unknown: " + typeof(what))
+    result = []
+    for p in patches
+      for t in p.turtles
+        if t.breed is breed
+          result.push(t)
+    new Agents(result, breed, AgentKind.Turtle)
 
 Tasks =
   commandTask: (fn) ->
@@ -1256,6 +1429,10 @@ TurtlesOwn =
   init: (n) -> @vars = (0 for x in [0...n])
 
 PatchesOwn =
+  vars: []
+  init: (n) -> @vars = (0 for x in [0...n])
+
+LinksOwn =
   vars: []
   init: (n) -> @vars = (0 for x in [0...n])
 

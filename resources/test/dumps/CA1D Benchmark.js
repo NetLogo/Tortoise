@@ -27,7 +27,7 @@ function setupGeneral() {
 function singleCell() {
   Call(setupGeneral);
   AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
-    return Prims.equality(AgentSet.getPatchVariable(1), Globals.getGlobal(13))
+    return Prims.equality(AgentSet.getPatchVariable(1), Globals.getGlobal(13));
   }), true, function() {
     AgentSet.setPatchVariable(5, false);
     AgentSet.setPatchVariable(2, Globals.getGlobal(9));
@@ -41,7 +41,7 @@ function singleCell() {
 function setupRandom() {
   Call(setupGeneral);
   AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
-    return Prims.equality(AgentSet.getPatchVariable(1), Globals.getGlobal(13))
+    return Prims.equality(AgentSet.getPatchVariable(1), Globals.getGlobal(13));
   }), true, function() {
     AgentSet.setPatchVariable(5, Prims.lt(Prims.random(100), Globals.getGlobal(11)));
     Call(colorPatch);
@@ -54,15 +54,16 @@ function setupContinue() {
     throw new StopInterrupt;
   }
   on_pList = Tasks.map(Tasks.reporterTask(function() {
-    return AgentSet.of(arguments[0], function() {
-      return AgentSet.getPatchVariable(5)
-    })
+    var taskArguments = arguments;
+    return AgentSet.of(taskArguments[0], function() {
+      return AgentSet.getPatchVariable(5);
+    });
   }), Prims.sort(AgentSet.agentFilter(world.patches(), function() {
-    return Prims.equality(AgentSet.getPatchVariable(1), Globals.getGlobal(13))
+    return Prims.equality(AgentSet.getPatchVariable(1), Globals.getGlobal(13));
   })));
   Call(setupGeneral);
   AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
-    return Prims.equality(AgentSet.getPatchVariable(1), Globals.getGlobal(13))
+    return Prims.equality(AgentSet.getPatchVariable(1), Globals.getGlobal(13));
   }), true, function() {
     AgentSet.setPatchVariable(5, Prims.item((AgentSet.getPatchVariable(0) + world.maxPxcor), on_pList));
     Call(colorPatch);
@@ -75,7 +76,7 @@ function go() {
   }
   if (Prims.equality(Globals.getGlobal(13), world.minPycor)) {
     if (Globals.getGlobal(12)) {
-      noop();
+      notImplemented('display', undefined)();
       Call(setupContinue);
     }
     else {
@@ -83,13 +84,13 @@ function go() {
     }
   }
   AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
-    return Prims.equality(AgentSet.getPatchVariable(1), Globals.getGlobal(13))
+    return Prims.equality(AgentSet.getPatchVariable(1), Globals.getGlobal(13));
   }), true, function() {
     Call(doRule);
   });
   Globals.setGlobal(13, (Globals.getGlobal(13) - 1));
   AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
-    return Prims.equality(AgentSet.getPatchVariable(1), Globals.getGlobal(13))
+    return Prims.equality(AgentSet.getPatchVariable(1), Globals.getGlobal(13));
   }), true, function() {
     Call(colorPatch);
   });
@@ -98,10 +99,10 @@ function go() {
 }
 function doRule() {
   var leftOn_p = AgentSet.of(AgentSet.self().patchAt(-1, 0), function() {
-    return AgentSet.getPatchVariable(5)
+    return AgentSet.getPatchVariable(5);
   });
   var rightOn_p = AgentSet.of(AgentSet.self().patchAt(1, 0), function() {
-    return AgentSet.getPatchVariable(5)
+    return AgentSet.getPatchVariable(5);
   });
   var newValue = ((((((((((Globals.getGlobal(7) && leftOn_p) && AgentSet.getPatchVariable(5)) && rightOn_p) || (((Globals.getGlobal(6) && leftOn_p) && AgentSet.getPatchVariable(5)) && !(rightOn_p))) || (((Globals.getGlobal(5) && leftOn_p) && !(AgentSet.getPatchVariable(5))) && rightOn_p)) || (((Globals.getGlobal(4) && leftOn_p) && !(AgentSet.getPatchVariable(5))) && !(rightOn_p))) || (((Globals.getGlobal(3) && !(leftOn_p)) && AgentSet.getPatchVariable(5)) && rightOn_p)) || (((Globals.getGlobal(2) && !(leftOn_p)) && AgentSet.getPatchVariable(5)) && !(rightOn_p))) || (((Globals.getGlobal(1) && !(leftOn_p)) && !(AgentSet.getPatchVariable(5))) && rightOn_p)) || (((Globals.getGlobal(0) && !(leftOn_p)) && !(AgentSet.getPatchVariable(5))) && !(rightOn_p)));
   AgentSet.ask(AgentSet.self().patchAt(0, -1), true, function() {
@@ -177,12 +178,12 @@ function showRules() {
   Call(setupGeneral);
   var rules = Call(listRules);
   AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
-    return Prims.gt(AgentSet.getPatchVariable(1), (world.maxPycor - 5))
+    return Prims.gt(AgentSet.getPatchVariable(1), (world.maxPycor - 5));
   }), true, function() {
     AgentSet.setPatchVariable(2, 5);
   });
   AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
-    return (Prims.equality(AgentSet.getPatchVariable(1), world.maxPycor) && Prims.equality(Prims.mod((AgentSet.getPatchVariable(0) + 1), StrictMath.floor((world.width() / 8))), 0))
+    return (Prims.equality(AgentSet.getPatchVariable(1), world.maxPycor) && Prims.equality(Prims.mod((AgentSet.getPatchVariable(0) + 1), StrictMath.floor((world.width() / 8))), 0));
   }), true, function() {
     AgentSet.ask(Prims.sprout(1, ""), true, function() {
       AgentSet.setTurtleVariable(2, 270);

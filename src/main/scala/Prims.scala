@@ -21,6 +21,7 @@ object Prims {
       case b: prim.etc._breed               => s"""world.turtlesOfBreed("${b.getBreedName}")"""
       case b: prim.etc._breedsingular       => s"""world.getTurtleOfBreed("${b.breedName}", ${arg(0)})"""
       case b: prim.etc._breedhere           => s"""AgentSet.self().breedHere("${b.getBreedName}")"""
+      case b: prim.etc._breedon             => s"""Prims.breedOn("${b.getBreedName}", ${arg(0)})"""
       case pure: nvm.Pure if r.args.isEmpty => Handlers.literal(pure.report(null))
       case lv: prim._letvariable            => Handlers.ident(lv.let.name)
       case pv: prim._procedurevariable      => Handlers.ident(pv.name)
@@ -65,12 +66,12 @@ object Prims {
       case _: prim.etc._reduce              => s"${arg(1)}.reduce(${arg(0)})"
       case _: prim.etc._filter              => s"${arg(1)}.filter(${arg(0)})"
       case _: prim.etc._nvalues             => s"Tasks.nValues(${arg(0)}, ${arg(1)})"
-      case tv: prim._taskvariable           => s"arguments[${tv.varNumber - 1}]"
+      case tv: prim._taskvariable           => s"taskArguments[${tv.varNumber - 1}]"
       case _: prim._task                    => arg(0)
       case _: prim._reportertask =>
-        s"Tasks.reporterTask(${Handlers.fun(r.args(0), isReporter = true)})"
+        s"Tasks.reporterTask(${Handlers.fun(r.args(0), isReporter = true, isTask = true)})"
       case _: prim._commandtask =>
-        s"Tasks.commandTask(${Handlers.fun(r.args(0), isReporter = false)})"
+        s"Tasks.commandTask(${Handlers.fun(r.args(0), isReporter = false, isTask = true)})"
       case rr: prim.etc._runresult =>
         val taskInputs = args.tail.mkString(", ")
         s"(${arg(0)})($taskInputs)"
@@ -91,6 +92,7 @@ object Prims {
       case SimplePrims.SimpleCommand(op) => if (op.isEmpty) "" else s"$op;"
       case SimplePrims.NormalCommand(op) => s"$op($commaArgs);"
       case _: prim._set                  => generateSet(s)
+      case _: prim.etc._loop             => generateLoop(s)
       case _: prim._repeat               => generateRepeat(s)
       case _: prim.etc._while            => generateWhile(s)
       case _: prim.etc._if               => generateIf(s)
@@ -105,6 +107,7 @@ object Prims {
       case _: prim.etc._createlinksto    => generateCreateLink(s, "createLinksTo")
       case _: prim.etc._createlinkwith   => generateCreateLink(s, "createLinkWith")
       case _: prim.etc._createlinkswith  => generateCreateLink(s, "createLinksWith")
+      case _: prim.etc._every            => generateEvery(s)
       case h: prim._hatch                => generateHatch(s, h.breedName)
       case call: prim._call              =>
         (Handlers.ident(call.procedure.name) +: args)
@@ -155,6 +158,13 @@ object Prims {
         throw new IllegalArgumentException(
           "unknown settable: " + x.getClass.getName)
     }
+  }
+
+  def generateLoop(w: ast.Statement): String = {
+    val body = Handlers.commands(w.args(0))
+    s"""|while (true) {
+        |${Handlers.indented(body)}
+        |};""".stripMargin
   }
 
   def generateRepeat(w: ast.Statement): String = {
@@ -235,6 +245,14 @@ object Prims {
     val n = Handlers.reporter(s.args(0))
     val body = Handlers.fun(s.args(1))
     s"""AgentSet.ask(Prims.hatch($n, "$breedName"), true, $body);"""
+  }
+
+  def generateEvery(w: ast.Statement): String = {
+    val time = Handlers.reporter(w.args(0))
+    val body = Handlers.commands(w.args(1))
+    s"""|Prims.every($time, function () {
+        |${Handlers.indented(body)}
+        |});""".stripMargin
   }
 
 }

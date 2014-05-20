@@ -18,7 +18,7 @@ function setup(setupTask) {
     Call(recolor);
   });
   Globals.setGlobal(3, Prims.sum(AgentSet.of(world.patches(), function() {
-    return AgentSet.getPatchVariable(5)
+    return AgentSet.getPatchVariable(5);
   })));
   Globals.setGlobal(5, []);
   Globals.setGlobal(7, []);
@@ -26,12 +26,14 @@ function setup(setupTask) {
 }
 function setupUniform(initial) {
   Call(setup, Tasks.reporterTask(function() {
-    return initial
+    var taskArguments = arguments;
+    return initial;
   }));
 }
 function setupRandom() {
   Call(setup, Tasks.reporterTask(function() {
-    return Prims.random(4)
+    var taskArguments = arguments;
+    return Prims.random(4);
   }));
 }
 function recolor() {
@@ -57,7 +59,7 @@ function go() {
         Call(recolor);
       });
     });
-    noop();
+    notImplemented('display', undefined)();
     AgentSet.ask(avalanchePatches, true, function() {
       AgentSet.setPatchVariable(7, Globals.getGlobal(10));
       Call(recolor);
@@ -67,17 +69,49 @@ function go() {
   }
 }
 function explore() {
-
+  if (notImplemented('mouse-inside?', false)) {
+    var p = Prims.patch(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)());
+    Globals.setGlobal(9, p);
+    AgentSet.ask(world.patches(), true, function() {
+      Call(pushN);
+    });
+    AgentSet.ask(Globals.getGlobal(9), true, function() {
+      Call(updateN, 1);
+    });
+    var results = Call(stabilize, false);
+    AgentSet.ask(world.patches(), true, function() {
+      Call(popN);
+    });
+    AgentSet.ask(world.patches(), true, function() {
+      AgentSet.setPatchVariable(7, Globals.getGlobal(10));
+      Call(recolor);
+    });
+    var avalanchePatches = Prims.first(results);
+    AgentSet.ask(avalanchePatches, true, function() {
+      AgentSet.setPatchVariable(7, Globals.getGlobal(12));
+      Call(recolor);
+    });
+    notImplemented('display', undefined)();
+  }
+  else {
+    if (!Prims.equality(Globals.getGlobal(9), Nobody)) {
+      Globals.setGlobal(9, Nobody);
+      AgentSet.ask(world.patches(), true, function() {
+        AgentSet.setPatchVariable(7, Globals.getGlobal(10));
+        Call(recolor);
+      });
+    }
+  }
 }
 function stabilize(animate_p) {
   var activePatches = AgentSet.agentFilter(world.patches(), function() {
-    return Prims.gt(AgentSet.getPatchVariable(5), 3)
+    return Prims.gt(AgentSet.getPatchVariable(5), 3);
   });
   var iters = 0;
   var avalanchePatches = new Agents([], Breeds.get('PATCHES'), AgentKind.Patch);
   while (AgentSet.any(activePatches)) {
     var overloadedPatches = AgentSet.agentFilter(activePatches, function() {
-      return Prims.gt(AgentSet.getPatchVariable(5), 3)
+      return Prims.gt(AgentSet.getPatchVariable(5), 3);
     });
     if (AgentSet.any(overloadedPatches)) {
       iters = (iters + 1);
@@ -96,11 +130,11 @@ function stabilize(animate_p) {
       });
     });
     if (animate_p) {
-      noop();
+      notImplemented('display', undefined)();
     }
     avalanchePatches = Prims.patchSet(avalanchePatches, overloadedPatches);
     activePatches = Prims.patchSet(AgentSet.of(overloadedPatches, function() {
-      return Prims.getNeighbors4()
+      return Prims.getNeighbors4();
     }));
   }
   return Prims.list(avalanchePatches, iters);
@@ -115,6 +149,11 @@ function dropPatch() {
   }
   if (Prims.equality(Globals.getGlobal(1), "random")) {
     return AgentSet.oneOf(world.patches());
+  }
+  if ((Prims.equality(Globals.getGlobal(1), "mouse-click") && notImplemented('mouse-down?', false))) {
+    Prims.every(0.3, function () {
+      return Prims.patch(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)());
+    });
   }
   return Nobody;
 }

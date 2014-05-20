@@ -8,17 +8,17 @@ function setup() {
   world.clearAll();
   Breeds.setDefaultShape(world.turtles(), "square");
   AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
-    return Prims.lt(Prims.randomFloat(100), Globals.getGlobal(0))
+    return Prims.lt(Prims.randomFloat(100), Globals.getGlobal(0));
   }), true, function() {
     AgentSet.setPatchVariable(2, 55);
   });
   AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
-    return Prims.equality(AgentSet.getPatchVariable(0), world.minPxcor)
+    return Prims.equality(AgentSet.getPatchVariable(0), world.minPxcor);
   }), true, function() {
     Call(ignite);
   });
   Globals.setGlobal(1, AgentSet.count(AgentSet.agentFilter(world.patches(), function() {
-    return Prims.equality(AgentSet.getPatchVariable(2), 55)
+    return Prims.equality(AgentSet.getPatchVariable(2), 55);
   })));
   Globals.setGlobal(2, 0);
   world.resetTicks();
@@ -29,7 +29,7 @@ function go() {
   }
   AgentSet.ask(world.turtlesOfBreed("FIRES"), true, function() {
     AgentSet.ask(AgentSet.agentFilter(Prims.getNeighbors4(), function() {
-      return Prims.equality(AgentSet.getPatchVariable(2), 55)
+      return Prims.equality(AgentSet.getPatchVariable(2), 55);
     }), true, function() {
       Call(ignite);
     });

@@ -52,7 +52,7 @@ class CompilerTests extends FunSuite {
   test("reporters: keep literal reporter on one line") {
     import Compiler.{compileReporter => compile}
     val input = "[0] of turtles"
-    val expected = "AgentSet.of(world.turtles(), function() { return 0 })"
+    val expected = "AgentSet.of(world.turtles(), function() { return 0; })"
     assertResult(expected)(compile(input))
   }
 
@@ -60,7 +60,8 @@ class CompilerTests extends FunSuite {
     import Compiler.{compileReporter => compile}
     val input = "map [? * 2] [3 4]"
     val expected = """|Tasks.map(Tasks.reporterTask(function() {
-                      |  return (arguments[0] * 2)
+                      |  var taskArguments = arguments;
+                      |  return (taskArguments[0] * 2);
                       |}), [3, 4])""".stripMargin
     assertResult(expected)(compile(input))
   }
@@ -69,7 +70,8 @@ class CompilerTests extends FunSuite {
     import Compiler.{compileReporter => compile}
     val input = "(runresult task [?1 * ?2] 3 4)"
     val expected = """|(Tasks.reporterTask(function() {
-                      |  return (arguments[0] * arguments[1])
+                      |  var taskArguments = arguments;
+                      |  return (taskArguments[0] * taskArguments[1]);
                       |}))(3, 4)""".stripMargin
     assertResult(expected)(compile(input))
   }
@@ -109,10 +111,23 @@ class CompilerTests extends FunSuite {
     val input = "ask patches with [pxcor = 1] [output-print pycor]"
     val expected =
        """|AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
-          |  return Prims.equality(AgentSet.getPatchVariable(0), 1)
+          |  return Prims.equality(AgentSet.getPatchVariable(0), 1);
           |}), true, function() {
           |  Prims.outputPrint(AgentSet.getPatchVariable(1));
           |});""".stripMargin
+    assertResult(expected)(compile(input))
+  }
+
+  test("commands: foreach + with") {
+    import Compiler.{compileCommands => compile}
+    val input = "foreach [0] [ __ignore turtles with [who = ?] ]"
+    val expected =
+       """|Tasks.forEach(Tasks.commandTask(function() {
+          |  var taskArguments = arguments;
+          |  AgentSet.agentFilter(world.turtles(), function() {
+          |    return Prims.equality(AgentSet.getTurtleVariable(0), taskArguments[0]);
+          |  });
+          |}), [0]);""".stripMargin
     assertResult(expected)(compile(input))
   }
 

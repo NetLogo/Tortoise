@@ -21,5 +21,6 @@ object Strict {
   def ceil(x: Double) = StrictMath.ceil(x)
   def sqrt(x: Double) = StrictMath.sqrt(x)
   def pow(x: Double, y: Double) = StrictMath.pow(x, y)
+  def exp(x: Double) = StrictMath.exp(x)
   def toDegrees(x: Double) = StrictMath.toDegrees(x)
 }

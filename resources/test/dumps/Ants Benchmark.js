@@ -146,7 +146,7 @@ function lookForFood() {
 function uphillChemical() {
   Call(wiggle);
   var scentAhead = AgentSet.of(AgentSet.self().patchAhead(1), function() {
-    return AgentSet.getPatchVariable(5)
+    return AgentSet.getPatchVariable(5);
   });
   var scentRight = Call(chemicalScent, 45);
   var scentLeft = Call(chemicalScent, -45);
@@ -162,7 +162,7 @@ function uphillChemical() {
 function uphillNestScent() {
   Call(wiggle);
   var scentAhead = AgentSet.of(AgentSet.self().patchAhead(1), function() {
-    return AgentSet.getPatchVariable(8)
+    return AgentSet.getPatchVariable(8);
   });
   var scentRight = Call(getNestScent, 45);
   var scentLeft = Call(getNestScent, -45);
@@ -185,7 +185,7 @@ function getNestScent(angle) {
   var p = AgentSet.self().patchRightAndAhead(angle, 1);
   if (!Prims.equality(p, Nobody)) {
     return AgentSet.of(p, function() {
-      return AgentSet.getPatchVariable(8)
+      return AgentSet.getPatchVariable(8);
     });
   }
   return 0;
@@ -194,7 +194,7 @@ function chemicalScent(angle) {
   var p = AgentSet.self().patchRightAndAhead(angle, 1);
   if (!Prims.equality(p, Nobody)) {
     return AgentSet.of(p, function() {
-      return AgentSet.getPatchVariable(5)
+      return AgentSet.getPatchVariable(5);
     });
   }
   return 0;
@@ -203,18 +203,18 @@ function doPlotting() {
   if (!(Globals.getGlobal(2))) {
     throw new StopInterrupt;
   }
-  noop("Food in each pile");
-  noop("food-in-pile1");
-  noop(AgentSet.count(AgentSet.agentFilter(world.patches(), function() {
-    return Prims.equality(AgentSet.getPatchVariable(2), 85)
+  notImplemented('set-current-plot', undefined)("Food in each pile");
+  notImplemented('set-current-plot-pen', undefined)("food-in-pile1");
+  notImplemented('plot', undefined)(AgentSet.count(AgentSet.agentFilter(world.patches(), function() {
+    return Prims.equality(AgentSet.getPatchVariable(2), 85);
   })));
-  noop("food-in-pile2");
-  noop(AgentSet.count(AgentSet.agentFilter(world.patches(), function() {
-    return Prims.equality(AgentSet.getPatchVariable(2), 95)
+  notImplemented('set-current-plot-pen', undefined)("food-in-pile2");
+  notImplemented('plot', undefined)(AgentSet.count(AgentSet.agentFilter(world.patches(), function() {
+    return Prims.equality(AgentSet.getPatchVariable(2), 95);
   })));
-  noop("food-in-pile3");
-  noop(AgentSet.count(AgentSet.agentFilter(world.patches(), function() {
-    return Prims.equality(AgentSet.getPatchVariable(2), 105)
+  notImplemented('set-current-plot-pen', undefined)("food-in-pile3");
+  notImplemented('plot', undefined)(AgentSet.count(AgentSet.agentFilter(world.patches(), function() {
+    return Prims.equality(AgentSet.getPatchVariable(2), 105);
   })));
 }
 Globals.setGlobal(0, 53);

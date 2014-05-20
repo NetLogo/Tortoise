@@ -57,10 +57,10 @@ function go() {
 function updateGlobalVariables() {
   if (Prims.gt(AgentSet.count(world.turtles()), 0)) {
     Globals.setGlobal(4, ((AgentSet.count(AgentSet.agentFilter(world.turtles(), function() {
-      return AgentSet.getTurtleVariable(13)
+      return AgentSet.getTurtleVariable(13);
     })) / AgentSet.count(world.turtles())) * 100));
     Globals.setGlobal(5, ((AgentSet.count(AgentSet.agentFilter(world.turtles(), function() {
-      return AgentSet.getTurtleVariable(14)
+      return AgentSet.getTurtleVariable(14);
     })) / AgentSet.count(world.turtles())) * 100));
   }
 }
@@ -84,10 +84,10 @@ function move() {
 }
 function infect() {
   AgentSet.ask(AgentSet.agentFilter(world.turtles(), function() {
-    return AgentSet.getTurtleVariable(13)
+    return AgentSet.getTurtleVariable(13);
   }), true, function() {
     AgentSet.ask(AgentSet.other(AgentSet.agentFilter(AgentSet.self().turtlesHere(), function() {
-      return !(AgentSet.getTurtleVariable(14))
+      return !(AgentSet.getTurtleVariable(14));
     })), true, function() {
       if (Prims.lt(Prims.randomFloat(100), Globals.getGlobal(2))) {
         Call(getSick);
@@ -97,7 +97,7 @@ function infect() {
 }
 function recover() {
   AgentSet.ask(AgentSet.agentFilter(world.turtles(), function() {
-    return AgentSet.getTurtleVariable(13)
+    return AgentSet.getTurtleVariable(13);
   }), true, function() {
     if (Prims.gt(Prims.random(AgentSet.getTurtleVariable(15)), (Globals.getGlobal(6) * (Globals.getGlobal(0) / 100)))) {
       if (Prims.lt(Prims.randomFloat(100), Globals.getGlobal(1))) {
@@ -111,7 +111,7 @@ function recover() {
 }
 function reproduce() {
   AgentSet.ask(AgentSet.agentFilter(world.turtles(), function() {
-    return !(AgentSet.getTurtleVariable(13))
+    return !(AgentSet.getTurtleVariable(13));
   }), true, function() {
     if ((Prims.lt(AgentSet.count(world.turtles()), Globals.getGlobal(8)) && Prims.lt(Prims.random(Globals.getGlobal(6)), Globals.getGlobal(7)))) {
       AgentSet.ask(Prims.hatch(1, ""), true, function() {

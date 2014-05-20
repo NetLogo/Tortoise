@@ -58,12 +58,12 @@ function step() {
 function findTarget() {
   if (Prims.lt(AgentSet.getPatchVariable(5), AgentSet.getTurtleVariable(13))) {
     return AgentSet.maxOneOf(Prims.getNeighbors(), function() {
-      return AgentSet.getPatchVariable(5)
+      return AgentSet.getPatchVariable(5);
     });
   }
   else {
     return AgentSet.minOneOf(Prims.getNeighbors(), function() {
-      return AgentSet.getPatchVariable(5)
+      return AgentSet.getPatchVariable(5);
     });
   }
 }

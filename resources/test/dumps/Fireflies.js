@@ -61,7 +61,7 @@ function incrementClock() {
 }
 function look() {
   if (Prims.gte(AgentSet.count(AgentSet.agentFilter(AgentSet.self().inRadius(world.turtles(), 1), function() {
-    return Prims.equality(AgentSet.getTurtleVariable(1), 45)
+    return Prims.equality(AgentSet.getTurtleVariable(1), 45);
   })), Globals.getGlobal(3))) {
     AgentSet.setTurtleVariable(13, AgentSet.getTurtleVariable(15));
   }
