@@ -53,16 +53,9 @@ class TestReporters extends lang.TestReporters with TortoiseFinder {
 
 class TestCommands extends lang.TestCommands with TortoiseFinder {
   override val freebies = Map[String, String](
-    // significant (early exit)
-    "Stop::ReportFromForeach" -> "no non-local exit from foreach",
-    // significant (string representation)
-    "CommandTasks::*ToString3" -> "command task string representation doesn't match",
-    "CommandTasks::*ToString4" -> "command task string representation doesn't match",
-    "CommandTasks::*ToString5" -> "command task string representation doesn't match",
-    "CommandTasks::*ToString6" -> "command task string representation doesn't match",
-    // significant (misc.)
-    "CommandTasks::command-task-body-gets-agent-type-check" -> "agent type checking not supported",
-    "Random::Random3" -> "`random` doesn't handle fractional parts correctly",
+    // egregious
+    "CommandTasks::allow-task-variable-access-inside-reporter-block" -> "fix is in e6247d2fc1882ef69220178834ce2f892b8cefd8 on flocking-aids-etc branch",
+    "ReporterTasks::allow-reporter-task-variable-access-inside-reporter-block" -> "fix is in e6247d2fc1882ef69220178834ce2f892b8cefd8 on flocking-aids-etc branch",
     // should be handled in rewrite
     "Agentsets::AgentSetEquality"      -> "Dead agents in agentsets are handled incorrectly",
     "Agentsets::LinkAgentsetDeadLinks" -> "Dead agents in agentsets are handled incorrectly",
@@ -90,6 +83,22 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
     "Random::RandomNOfIsFairForTurtles"                       -> "TOO SLOW",
     // requires features
     "Tie::Tie2Nonrigid" -> "tie-mode link variable not implemented; ties not implemented at all",
+    // requires handling of non-local exit (see in JVM NetLogo: `NonLocalExit`, `_report`, `_foreach`, `_run`)
+    "Stop::ReportFromForeach" -> "no non-local exit from foreach",
+    // requires Tortoise compiler changes
+    "CommandTasks::*ToString3" -> "command task string representation doesn't match",
+    "CommandTasks::*ToString4" -> "command task string representation doesn't match",
+    "CommandTasks::*ToString5" -> "command task string representation doesn't match",
+    "CommandTasks::*ToString6" -> "command task string representation doesn't match",
+    // needs 'headless' compiler changes
+    "ReporterTasks::CloseOverLocal1" -> "Creates a function named 'const', which is a reserved keyword in JavaScript",
+    "CommandTasks::command-task-body-gets-agent-type-check" -> "Necessary check must be moved up into the front-end of the compiler",
+    "Errors::task-variable-not-in-task"                     -> "Necessary check must be moved up into the front-end of the compiler",
+    "Let::LetOfVarToItself1"                                -> "Necessary check must be moved up into the front-end of the compiler",
+    "Let::LetOfVarToItself2"                                -> "Necessary check must be moved up into the front-end of the compiler",
+    "Let::LetOfVarToItself3"                                -> "Necessary check must be moved up into the front-end of the compiler",
+    "Let::LetOfVarToItselfInsideAsk"                        -> "Necessary check must be moved up into the front-end of the compiler",
+    "TypeChecking::SetVariable"                             -> "Necessary check must be moved up into the front-end of the compiler",
     // perhaps never to be supported
     "ControlStructures::Run1"                  -> "run/runresult on strings not supported",
     "ControlStructures::Run2"                  -> "run/runresult on strings not supported",
@@ -103,28 +112,21 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
     "Run::LuisIzquierdoRun2"                   -> "run/runresult on strings not supported",
     "Run::LuisIzquierdoRunResult1"             -> "run/runresult on strings not supported",
     "Run::LuisIzquierdoRunResult2"             -> "run/runresult on strings not supported",
-    "Run::run-evaluate-string-input-only-once" -> "run/runresult on strings not supported",
-    // needs compiler changes
-    "ReporterTasks::CloseOverLocal1" -> "Creates a function named 'const', which is a reserved keyword in JavaScript",
-    "Errors::task-variable-not-in-task" -> "Necessary check must be moved up into the front-end of the compiler",
-    "Let::LetOfVarToItself1"            -> "Necessary check must be moved up into the front-end of the compiler",
-    "Let::LetOfVarToItself2"            -> "Necessary check must be moved up into the front-end of the compiler",
-    "Let::LetOfVarToItself3"            -> "Necessary check must be moved up into the front-end of the compiler",
-    "Let::LetOfVarToItselfInsideAsk"    -> "Necessary check must be moved up into the front-end of the compiler",
-    "TypeChecking::SetVariable"         -> "Necessary check must be moved up into the front-end of the compiler"
+    "Run::run-evaluate-string-input-only-once" -> "run/runresult on strings not supported"
   )
 }
 
 class TortoiseFixture(name: String, nashorn: Nashorn, notImplemented: String => Nothing)
 extends AbstractFixture {
 
-  override def defaultDimensions = core.WorldDimensions.square(5)
   var program: api.Program = api.Program.empty
   var procs: ProceduresMap = NoProcedures
 
-  override def declare(source: String, dimensions: core.WorldDimensions) {
+  override def defaultView: core.View = core.View.square(5)
+
+  override def declare(model: core.Model) {
     val (js, p, m) =
-      try Compiler.compileProcedures(source, dimensions = dimensions)
+      try Compiler.compileProcedures(model)
       catch catcher
     program = p
     procs = m
@@ -137,8 +139,8 @@ extends AbstractFixture {
 
   override def open(path: String) = ???
 
-  override def open(model: headless.ModelCreator.Model) {
-    declare(model.code)
+  override def open(model: core.Model) {
+    declare(model)
   }
 
   override def runCommand(command: Command, mode: TestMode) {

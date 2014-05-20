@@ -7,9 +7,7 @@ import org.nlogo.{ core, api }
 // RuntimeInit generates JavaScript code that does any initialization that needs to happen
 // before any user code runs, for example creating patches
 
-class RuntimeInit(
-  program: api.Program, dimensions: core.WorldDimensions,
-  turtleShapeList: api.ShapeList, linkShapeList: api.ShapeList) {
+class RuntimeInit(program: api.Program, model: core.Model) {
 
   import scala.collection.JavaConverters._
   import org.nlogo.tortoise.json.JSONSerializer
@@ -20,12 +18,13 @@ class RuntimeInit(
         "{}"
       else
         JSONSerializer.serialize(shapes)
-    val turtleShapesJson = shapeList(turtleShapeList)
-    val linkShapesJson = shapeList(linkShapeList)
-    import dimensions._
+    val turtleShapesJson = shapeList(CompilerService.parseTurtleShapes(model.turtleShapes.toArray))
+    val linkShapesJson = shapeList(CompilerService.parseLinkShapes(model.linkShapes.toArray))
+    val view = model.view
+    import view._
     globals + turtlesOwn + patchesOwn +
       s"world = new World($minPxcor, $maxPxcor, $minPycor, $maxPycor, $patchSize, " +
-      s"$wrappingAllowedInY, $wrappingAllowedInX, $turtleShapesJson, $linkShapesJson, " +
+      s"$wrappingAllowedInX, $wrappingAllowedInY, $turtleShapesJson, $linkShapesJson, " +
       s"${program.interfaceGlobals.size});\n" +
       breeds + "\n"
   }

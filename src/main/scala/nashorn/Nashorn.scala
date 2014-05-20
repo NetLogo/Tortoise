@@ -2,9 +2,8 @@
 
 package org.nlogo.tortoise.nashorn
 
-import
-  org.nlogo.api,
-    api.{ MersenneTwisterFast, Resource }
+import org.nlogo.api, api.MersenneTwisterFast
+import org.nlogo.core.Resource 
 import java.io.{ PrintWriter, StringWriter }
 
 // There are two main entry points here: run() and eval().  The former runs compiled commands and
@@ -27,12 +26,12 @@ class Nashorn {
   val libs = Seq(
     // from webjars
     "/" + locator.getFullPath("lodash.js"),
-    "/" + locator.getFullPath("mori.min.js"),
+    "/" + locator.getFullPath("mori.js"),
     // the original CoffeeScript for these are in src/main/coffee. sbt compiles
     // them to JavaScript for us.
     "/js/compat.js", "/js/engine.js", "/js/agentmodel.js")
   for (lib <- libs)
-    engine.eval(Resource.getResourceAsString(lib))
+    engine.eval(Resource.asString(lib))
 
   // make a random number generator available
   engine.put("Random", new MersenneTwisterFast)

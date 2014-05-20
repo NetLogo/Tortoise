@@ -7,18 +7,13 @@ import org.nlogo.{ core, workspace },
 
 object Shell extends workspace.Shell {
 
-  object Defaults {
-    val src = ""
-    val dim = core.WorldDimensions.square(16)
-  }
+  val defaultModel = core.Model(code = "", widgets = List(core.View.square(16)))
 
   val nashorn = new Nashorn
 
   def main(argv: Array[String]) {
     workspace.AbstractWorkspace.setHeadlessProperty()
-    val (js, program, procedures) =
-      Compiler.compileProcedures(
-        Defaults.src, dimensions = Defaults.dim)
+    val (js, program, procedures) = Compiler.compileProcedures(defaultModel)
     nashorn.eval(js)
     System.err.println("Tortoise Shell 1.0")
     for(line <- input.takeWhile(!isQuit(_)))

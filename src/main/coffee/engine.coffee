@@ -590,7 +590,7 @@ class World
   _timer: Date.now()
   _patchesAllBlack: true
 
-  constructor: (@minPxcor, @maxPxcor, @minPycor, @maxPycor, @patchSize, @wrappingAllowedInY, @wrappingAllowedInX, turtleShapeList, linkShapeList, @interfaceGlobalCount) ->
+  constructor: (@minPxcor, @maxPxcor, @minPycor, @maxPycor, @patchSize, @wrappingAllowedInX, @wrappingAllowedInY, turtleShapeList, linkShapeList, @interfaceGlobalCount) ->
     Breeds.reset()
     AgentSet.reset()
     @perspective = 0
@@ -965,7 +965,7 @@ AgentSet =
     else
       agents = [agentsOrAgent]
     turtles = [].concat (agent.turtlesHere().items for agent in agents)...
-    new Agents(turtles, agentsOrAgent.breed, agentsOrAgent.kind)
+    new Agents(turtles, Breeds.get("TURTLES"), AgentKind.Turtle)
   die: -> @_self.die()
   connectedLinks: (directed, isSource) -> @_self.connectedLinks(directed, isSource)
   linkNeighbors: (directed, isSource) -> @_self.linkNeighbors(directed, isSource)
@@ -1004,7 +1004,7 @@ AgentSet =
 class Agents
   constructor: (@items, @breed, @kind) ->
   toString: ->
-    "(" + @items.length + " " + @breed.name + ")"
+    "(agentset, #{@items.length} #{@breed.name.toLowerCase()})"
   sort: ->
     if(@items.length == 0)
       @items
@@ -1128,9 +1128,9 @@ Prims =
   random: (n) ->
     truncated =
       if n >= 0
-        Math.floor(n)
-      else
         Math.ceil(n)
+      else
+        Math.floor(n)
     if truncated == 0
       0
     else if truncated > 0

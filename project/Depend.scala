@@ -60,6 +60,7 @@ object Depend {
       "util" -> Nil,
       "core" -> Nil,
       "api" -> List("core", "util"),
+      "api/model" -> List("api"),
       "nvm" -> List("agent"),
       "mirror" -> List("shape"),
       "shape" -> List("api"),
@@ -71,7 +72,7 @@ object Depend {
       "workspace" -> List("nvm"),
       "headless" -> List("workspace"),
       "headless/lang" -> List("headless"),
-      "tortoise" -> List("tortoise/json", "tortoise/nashorn", "workspace", "compile/front", "prim/etc", "headless/lang"),
+      "tortoise" -> List("tortoise/json", "tortoise/nashorn", "workspace", "compile/front", "prim/etc", "headless/lang", "api/model"),
       "tortoise/nashorn" -> List("workspace"),
       "tortoise/json" -> List("mirror")
     )

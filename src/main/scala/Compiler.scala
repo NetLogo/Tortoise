@@ -30,23 +30,16 @@ object Compiler {
     program: api.Program = api.Program.empty()): String =
     compile(logo, commands = true, oldProcedures, program)
 
-  def compileProcedures(
-      logo: String,
-      interfaceGlobals: Seq[String] = Seq(),
-      interfaceGlobalCommands: String = "",
-      dimensions: core.WorldDimensions = core.WorldDimensions.square(0),
-      turtleShapeList: api.ShapeList = new api.ShapeList(core.AgentKind.Turtle),
-      linkShapeList: api.ShapeList = new api.ShapeList(core.AgentKind.Link))
-      : (String, api.Program, ProceduresMap) = {
+  def compileProcedures(code: String): (String, api.Program, ProceduresMap) = compileProcedures(core.Model(code = code))
+  def compileProcedures(model: core.Model) : (String, api.Program, ProceduresMap) = {
     val (defs, results): (Seq[ast.ProcedureDefinition], nvm.StructureResults) =
-      frontEnd.frontEnd(logo,
-        program = api.Program.empty.copy(interfaceGlobals = interfaceGlobals))
-    val init = new RuntimeInit(results.program, dimensions,
-      turtleShapeList, linkShapeList)
+      frontEnd.frontEnd(model.code,
+        program = api.Program.empty.copy(interfaceGlobals = model.interfaceGlobals))
+    val init = new RuntimeInit(results.program, model)
     val main =
       defs.map(compileProcedureDef).mkString("", "\n", "\n")
     val interface =
-      compileCommands(interfaceGlobalCommands, program = results.program)
+      compileCommands(model.interfaceGlobalCommands.mkString("\n"), program = results.program)
     val js = init.init + main + interface
     if (results.program.linkBreeds.nonEmpty)
       throw new IllegalArgumentException("unknown language feature: link breeds")

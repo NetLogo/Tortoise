@@ -3,7 +3,7 @@
 package org.nlogo.tortoise
 package dock
 
-import org.nlogo.core.WorldDimensions
+import org.nlogo.core.{ Model, View }
 
 class TestMath extends DockingSuite {
 
@@ -45,8 +45,7 @@ class TestMath extends DockingSuite {
   }
 
   test("sum") { implicit fixture => import fixture._
-    declare("to-report compute report sum [pycor] of neighbors end",
-      WorldDimensions.square(1))
+    declare(Model(code = "to-report compute report sum [pycor] of neighbors end", widgets = List(View.square(1))))
     // first make sure just doing the computation doesn't make the RNG diverge
     testCommand("ask patches [ let s compute ]")
     // might as well check the result too

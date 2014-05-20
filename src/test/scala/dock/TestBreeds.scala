@@ -3,7 +3,7 @@
 package org.nlogo.tortoise
 package dock
 
-import org.nlogo.core.WorldDimensions
+import org.nlogo.core.{ Model, View }
 
 class TestBreeds extends DockingSuite {
   test("create breeds") { implicit fixture => import fixture._
@@ -78,8 +78,9 @@ class TestBreeds extends DockingSuite {
   }
 
   test("breed here") { implicit fixture => import fixture._
-    declare("""| breed [mice mouse]
-               | breed [frogs frog]""".stripMargin, WorldDimensions.square(1))
+    declare(Model(code = """| breed [mice mouse]
+                            | breed [frogs frog]""".stripMargin,
+                  widgets = List(View.square(1))))
     testCommand("create-frogs 40")
     testCommand("create-mice 40")
     compare("count mice")

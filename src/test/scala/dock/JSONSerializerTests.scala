@@ -105,8 +105,8 @@ class JSONSerializerTests extends FixtureSuite with Matchers {
           (cmd, jsRender(parse(json)))
       }
     // so we don't need ASM, and to save time - ST 11/14/13
+    fixture.workspace.openModel(core.Model(widgets = List(core.View.square(5))))
     fixture.workspace.flags = nvm.CompilerFlags(useGenerator = false)
-    ModelCreator.open(fixture.workspace, core.WorldDimensions.square(1))
     val (initialState, _) = Mirroring.diffs(Map(), mirrorables)
     commands.foldLeft(initialState) {
       case (previousState, (cmd, expectedJSON)) =>
@@ -122,7 +122,7 @@ class JSONSerializerTests extends FixtureSuite with Matchers {
   test("JSONSerializer shapes") { implicit fixture =>
     val shapeList = new api.ShapeList(
       core.AgentKind.Turtle,
-      VectorShape.parseShapes(api.ModelReader.defaultShapes.toArray, api.Version.version).asScala
+      VectorShape.parseShapes(core.Model.defaultShapes.toArray, api.Version.version).asScala
     )
 
     val shapes = Seq(

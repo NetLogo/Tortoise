@@ -14,7 +14,7 @@ isSnapshot := true
 
 version := "0.1"
 
-scalaVersion := "2.11.0-RC4"
+scalaVersion := "2.11.1"
 
 scalacOptions ++=
   "-deprecation -unchecked -feature -Xcheckinit -encoding us-ascii -target:jvm-1.7 -Xlint -Xfatal-warnings"
@@ -32,7 +32,7 @@ ivyLoggingLevel := UpdateLogging.Quiet
 // we're not cross-building for different Scala versions
 crossPaths := false
 
-val nlDependencyVersion = "5.2.0-dddfd75"
+val nlDependencyVersion = "5.2.0-9b38de6"
 
 resolvers += bintray.Opts.resolver.repo("netlogo", "NetLogoHeadless")
 
@@ -45,18 +45,13 @@ libraryDependencies ++= Seq(
   "org.javassist" % "javassist" % "3.16.1-GA"     % "test"
 )
 
-// for the json4s snapshot. shouldn't be merged onto master;
-// we don't want to depend on any snapshots there - ST 3/27/14
-resolvers += Resolver.sonatypeRepo("snapshots")
-
 libraryDependencies ++= Seq(
   "org.nlogo" % "netlogoheadless" % nlDependencyVersion,
-  "org.json4s" % "json4s-native_2.11.0-RC3" % "3.2.9-SNAPSHOT"
-    excludeAll(ExclusionRule(organization = "org.scala-lang.modules")),
+  "org.json4s" %% "json4s-native" % "3.2.10",
   "org.slf4j" % "slf4j-nop" % "1.7.5",  // for webjars-locator
   "org.webjars" % "webjars-locator" % "0.13",
   "org.webjars" % "lodash" % "2.4.1-3",
-  "org.webjars" % "mori" % "f38f11a-bizzle" from "http://ccl.northwestern.edu/devel/mori-f38f11a-bizzle.jar",
+  "org.webjars" % "mori" % "0.2.6",
   "org.scalacheck" %% "scalacheck" % "1.11.3" % "test",
   "org.scalatest" %% "scalatest" % "2.1.3" % "test",
   "org.skyscreamer" % "jsonassert" % "1.1.0" % "test",

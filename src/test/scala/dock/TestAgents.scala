@@ -3,18 +3,18 @@
 package org.nlogo.tortoise
 package dock
 
-import org.nlogo.core.WorldDimensions
 import org.nlogo.util.SlowTest
+import org.nlogo.core.{ Model, View}
 
 class TestAgents extends DockingSuite with SlowTest {
 
   test("world dimensions") { implicit fixture => import fixture._
-    declare("", WorldDimensions.square(2))
+    declare(Model(widgets = List(View.square(2))))
     compare("count patches")
   }
 
   test("world dimensions 2") { implicit fixture => import fixture._
-    declare("", WorldDimensions(-3, 4, -5, 6))
+    declare(Model(widgets = List(View(minPxcor = -3, maxPxcor = 4, minPycor = -5, maxPycor = 6))))
     compare("(list min-pxcor max-pxcor min-pycor max-pycor)")
     compare("(list world-width world-height)")
   }
@@ -56,28 +56,28 @@ class TestAgents extends DockingSuite with SlowTest {
   }
 
   test("turtle motion 1") { implicit fixture => import fixture._
-    declare("", WorldDimensions.square(1))
+    declare(Model(widgets = List(View.square(1))))
     testCommand("cro 4 ask turtles [fd 1] ask turtles [output-print xcor output-print ycor]")
   }
 
   test("turtle motion 2") { implicit fixture => import fixture._
-    declare("", WorldDimensions.square(1))
+    declare(Model(widgets = List(View.square(1))))
     testCommand("cro 8 ask turtles [fd 1] ask turtles [output-print xcor output-print ycor]")
   }
 
   test("turtle motion 3") { implicit fixture => import fixture._
-    declare("", WorldDimensions.square(4))
+    declare(Model(widgets = List(View.square(4))))
     testCommand("cro 20 ask turtles [rt random 90 left random 90]")
     testCommand("ask turtles [rt random-float 360]")
   }
 
   test("turtle motion 8") { implicit fixture => import fixture._
-    declare("", WorldDimensions.square(3))
+    declare(Model(widgets = List(View.square(3))))
     testCommand("crt 50 ask turtles [ repeat 50 [ fd random-float 3.1 / random-float 2.1 ] ]")
   }
 
   test("turtle move-to") { implicit fixture => import fixture._
-    declare("", WorldDimensions.square(4))
+    declare(Model(widgets = List(View.square(4))))
     testCommand("create-turtles 20 ask turtles [ fd random 4 ]")
     testCommand("ask turtles [ move-to turtle random 20 ]")
     testCommand("ask turtles [ move-to patch (random 7 - 3) (random 7 - 3) ]")
@@ -130,18 +130,18 @@ class TestAgents extends DockingSuite with SlowTest {
   }
 
   test("patch order") { implicit fixture => import fixture._
-    declare("", WorldDimensions.square(5))
+    declare(Model(widgets = List(View.square(5))))
     testCommand("""ask patches [ output-print self ]""")
   }
 
   test("turtles get patch variables") { implicit fixture => import fixture._
-    declare("", WorldDimensions.square(5))
+    declare(Model(widgets = List(View.square(5))))
     testCommand("cro 5 ask turtles [ fd 1 ]")
     testCommand("""ask turtles [ output-print self ]""")
   }
 
   test("turtles set patch variables") { implicit fixture => import fixture._
-    declare("", WorldDimensions.square(5))
+    declare(Model(widgets = List(View.square(5))))
     testCommand("cro 5 ask turtles [ fd 1 set pcolor blue ]")
     testCommand("ask turtles [output-print color]")
     testCommand("ask turtles [output-print pcolor]")
@@ -149,46 +149,46 @@ class TestAgents extends DockingSuite with SlowTest {
   }
 
   test("with 1") { implicit fixture => import fixture._
-    declare("", WorldDimensions.square(5))
+    declare(Model(widgets = List(View.square(5))))
     testCommand("ask patches with [true] [output-print pycor]")
   }
 
   test("with 1b") { implicit fixture => import fixture._
-    declare("", WorldDimensions.square(5))
+    declare(Model(widgets = List(View.square(5))))
     testCommand("ask patches with [pcolor = black] [output-print pycor]")
   }
 
   test("with 2a") { implicit fixture => import fixture._
-    declare("", WorldDimensions.square(5))
+    declare(Model(widgets = List(View.square(5))))
     testCommand("ask patches with [pxcor > 0 and pxcor < 2] [output-print pycor]")
   }
 
   test("with 2") { implicit fixture => import fixture._
-    declare("", WorldDimensions.square(5))
+    declare(Model(widgets = List(View.square(5))))
     testCommand("ask patches with [pxcor = 1] [output-print pycor]")
   }
 
   test("with 3") { implicit fixture => import fixture._
-    declare("", WorldDimensions.square(5))
+    declare(Model(widgets = List(View.square(5))))
     testCommand("ask patches with [pxcor = -3 and pycor = 2] [ output-print self ]")
   }
 
   test("with + turtles accessing turtle and patch vars") { implicit fixture => import fixture._
-    declare("", WorldDimensions.square(5))
+    declare(Model(widgets = List(View.square(5))))
     testCommand("cro 5 ask turtles [fd 1]")
     testCommand("ask turtles with [pxcor =  1] [output-print pycor]")
     testCommand("ask turtles with [pxcor = -1] [output-print ycor]")
   }
 
   test("of") { implicit fixture => import fixture._
-    declare("", WorldDimensions.square(0))
+    declare(Model(widgets = List(View.square(0))))
     testCommand("cro 5")
     testCommand("output-print sum [who] of turtles")
     testCommand("output-print [ pxcor ] of patch 0 0")
   }
 
   test("one-of") { implicit fixture => import fixture._
-    declare("", WorldDimensions.square(0))
+    declare(Model(widgets = List(View.square(0))))
     testCommand("output-print one-of patches")
     testCommand("output-print one-of turtles")
     testCommand("create-turtles 2")
@@ -207,14 +207,14 @@ class TestAgents extends DockingSuite with SlowTest {
   }
 
   test("patch set") { implicit fixture => import fixture._
-    declare("", WorldDimensions.square(5))
+    declare(Model(widgets = List(View.square(5))))
     testCommand("ask patches with [pxcor = -1 and pycor = 0] [ set pcolor green ]")
     testCommand("ask patch 0 0 [ set pcolor green ]")
     testCommand("output-print count patches with [pcolor = green]")
   }
 
   test("any") { implicit fixture => import fixture._
-    declare("", WorldDimensions.square(0))
+    declare(Model(widgets = List(View.square(0))))
     testCommand("output-print any? patches")
     testCommand("output-print any? turtles")
     testCommand("cro 1")
@@ -222,25 +222,25 @@ class TestAgents extends DockingSuite with SlowTest {
   }
 
   test("all") { implicit fixture => import fixture._
-    declare("", WorldDimensions.square(4))
+    declare(Model(widgets = List(View.square(4))))
     testCommand("crt 20 [ setxy random-xcor random-ycor ]")
     testCommand("output-print all? turtles [ pxcor > 0 ]")
     testCommand("output-print all? turtles [ pxcor > -10 ]")
   }
 
   test("dimensions") { implicit fixture => import fixture._
-    declare("", WorldDimensions(-1, 2, -3, 4))
+    declare(Model(widgets = List(View(minPxcor = -1, maxPxcor = 2, minPycor = -3, maxPycor = 4))))
     testCommand("output-print min-pxcor")
   }
 
   test("and, or") { implicit fixture => import fixture._
-    declare("", WorldDimensions.square(5))
+    declare(Model(widgets = List(View.square(5))))
     testCommand("output-print count patches with [pxcor = 0 or pycor = 0]")
     testCommand("output-print count patches with [pxcor = 0 and pycor = 0]")
   }
 
   test("neighbors") { implicit fixture => import fixture._
-    declare("", WorldDimensions.square(5))
+    declare(Model(widgets = List(View.square(5))))
     testCommand("""ask patches [ ask neighbors [ output-print self ]]""")
     testCommand("""ask patches [ ask neighbors4 [ output-print self ]]""")
     testCommand("ask patches [ sprout 1 ]")
@@ -248,14 +248,14 @@ class TestAgents extends DockingSuite with SlowTest {
   }
 
   test("setting a built-in patch variable") { implicit fixture => import fixture._
-    declare("", WorldDimensions.square(5))
+    declare(Model(widgets = List(View.square(5))))
     testCommand("ask patches with [pxcor = 2 and pycor = 3] [ set pcolor green ]")
     testCommand("output-print count patches with [pcolor = green]")
     testCommand("ask patches [ output-print self output-print pcolor ]")
   }
 
   test("setting a patches-own variable") { implicit fixture => import fixture._
-    declare("patches-own [foo]", WorldDimensions.square(5))
+    declare(Model(code = "patches-own [foo]", widgets = List(View.square(5))))
     testCommand("ask patches with [pxcor = 2 and pycor = 3] [ set foo green ]")
     testCommand("output-print count patches with [foo = green]")
     testCommand("ask patches [ output-print self output-print foo ]")
@@ -278,7 +278,7 @@ class TestAgents extends DockingSuite with SlowTest {
   }
 
   test("turtle motion") { implicit fixture => import fixture._
-    declare("", WorldDimensions.square(5))
+    declare(Model(widgets = List(View.square(5))))
     testCommand("crt 100")
     testCommand("ask turtles [ setxy random-xcor random-ycor ]")
     for (_ <- 1 to 10)
@@ -286,28 +286,28 @@ class TestAgents extends DockingSuite with SlowTest {
   }
 
   test("patch-ahead") { implicit fixture => import fixture._
-    declare("", WorldDimensions.square(2))
+    declare(Model(widgets = List(View.square(2))))
     testCommand("cro 7")
     testCommand("ask turtles [ output-print patch-ahead 1 ]")
     testCommand("ask turtles [ output-print patch-ahead 100 ]")
   }
 
   test("can-move") { implicit fixture => import fixture._
-    declare("", WorldDimensions.square(2))
+    declare(Model(widgets = List(View.square(2))))
     testCommand("cro 7")
     testCommand("ask turtles [ output-print can-move? 1 ]")
     testCommand("ask turtles [ output-print can-move? 100 ]")
   }
 
   test("turtles-here") { implicit fixture => import fixture._
-    declare("", WorldDimensions.square(2))
+    declare(Model(widgets = List(View.square(2))))
     testCommand("ask patches [ sprout 2 ]")
     testCommand("output-print sum [count turtles-here] of turtles")
     compare("sum [count turtles-here] of turtles")
   }
 
   test("turtles-here 2") { implicit fixture => import fixture._
-    declare("", WorldDimensions.square(2))
+    declare(Model(widgets = List(View.square(2))))
     testCommand("crt 20")
     testCommand("ask turtles [ set heading 0 fd .3 ]")
     testCommand("ask turtle 0 [ ask turtles-here [ output-print self ] ]")
@@ -316,7 +316,7 @@ class TestAgents extends DockingSuite with SlowTest {
   }
 
   test("turtles-on") { implicit fixture => import fixture._
-    declare("", WorldDimensions.square(2))
+    declare(Model(widgets = List(View.square(2))))
     testCommand("ask patches [ sprout 2 ]")
     compare("[ who ] of turtles-on turtle 0")
     compare("[ who ] of turtles-on patch 0 0")
@@ -328,7 +328,7 @@ class TestAgents extends DockingSuite with SlowTest {
   }
 
   test("turtles-at") { implicit fixture => import fixture._
-    declare("", WorldDimensions.square(2))
+    declare(Model(widgets = List(View.square(2))))
     compare("[ who ] of [ turtles-at 0 0 ] of patch 0 0")
     compare("[ who ] of [ turtles-at 1 1 ] of patch 0 0")
     testCommand("ask patches [ sprout 2 ]")
@@ -354,7 +354,7 @@ class TestAgents extends DockingSuite with SlowTest {
   }
 
   test("patch-set construction") { implicit fixture => import fixture._
-    declare("globals [p]", WorldDimensions.square(2))
+    declare(Model(code = "globals [p]", widgets = List(View.square(2))))
     testCommand("set p no-patches")
     compare("count p")
     compare("any? p")
@@ -397,13 +397,13 @@ class TestAgents extends DockingSuite with SlowTest {
   }
 
   test("in-radius") { implicit fixture => import fixture._
-    declare("", WorldDimensions.square(5))
+    declare(Model(widgets = List(View.square(5))))
     testCommand("crt 50 [ setxy random-xcor random-ycor ]")
     testCommand("ask turtles [ let s count turtles in-radius 2 ]")
   }
 
   test("n-of patches") { implicit fixture => import fixture._
-    declare("", WorldDimensions.square(5))
+    declare(Model(widgets = List(View.square(5))))
     testCommand("ask n-of 15 patches [ output-print (list pxcor pycor) ]")
   }
 
@@ -426,7 +426,7 @@ class TestAgents extends DockingSuite with SlowTest {
   }
 
   test("other") { implicit fixture => import fixture._
-    declare("", WorldDimensions.square(2))
+    declare(Model(widgets = List(View.square(2))))
     testCommand("crt 10")
     testCommand("ask turtle 0 [ ask other turtles [ output-print self ] ]")
     testCommand("ask turtles [ ask other turtles-here [ output-print self ] ]")
@@ -443,7 +443,7 @@ class TestAgents extends DockingSuite with SlowTest {
   }
 
   test("watch") { implicit fixture => import fixture._
-    declare("", WorldDimensions.square(5))
+    declare(Model(widgets = List(View.square(5))))
     testCommand("crt 3")
     testCommand("ask turtles [ fd 1 ]")
     testCommand("watch turtle 0")
