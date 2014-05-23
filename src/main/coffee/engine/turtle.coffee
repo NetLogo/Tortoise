@@ -20,9 +20,9 @@ define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/co
       @getPatchHere().arrive(this)
     updateBreed: (breed) -> #@# This code is lunacy
       if @breed
-        @breed.remove(@)
+        @breed.remove(this)
       @breed = breed
-      breed.add(@)
+      breed.add(this)
       @shape = @breed.shape()
       if @breed isnt @world.breedManager.turtles()
         @world.breedManager.turtles().add(this)
@@ -204,7 +204,7 @@ define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/co
     isBreed: (breedName) ->
       @breed.name.toUpperCase() is breedName.toUpperCase()
     die: ->
-      @breed.remove(@)
+      @breed.remove(this)
       if @id isnt -1
         @world.removeTurtle(@id)
         @seppuku()

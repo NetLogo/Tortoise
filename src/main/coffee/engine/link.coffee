@@ -25,7 +25,7 @@ define(['engine/builtins', 'engine/colormodel', 'engine/comparator', 'engine/exc
       @thickness  = 0
       @tiemode    = "none"
 
-      @breed.add(@) #@# No.
+      @breed.add(this)
       @end1._links.push(this)
       @end2._links.push(this)
       @updateEndRelatedVars()
@@ -48,7 +48,7 @@ define(['engine/builtins', 'engine/colormodel', 'engine/comparator', 'engine/exc
       else
         @vars[n - Builtins.linkBuiltins.length] = value
     die: ->
-      @breed.remove(@)
+      @breed.remove(this)
       if @id isnt -1
         @end1._removeLink(this)
         @end2._removeLink(this)
