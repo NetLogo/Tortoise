@@ -25,6 +25,7 @@ define(['integration/lodash', 'integration/strictmath', 'engine/topology/topolog
 
       @getPatches().forEach((patch) => #@# Oh, mutation, thou art a cruel, deceptive bitch.  Thou cannst maketh two-eth separate-eth loops over the same thing-eth seem sane
         scratch[patch.pxcor - @minPxcor][patch.pycor - @minPycor] = patch.getPatchVariable(vn)
+        return
       )
 
       @getPatches().forEach((patch) =>
@@ -38,6 +39,7 @@ define(['integration/lodash', 'integration/strictmath', 'engine/topology/topolog
            @getPatchEast(pxcor, pycor), @getPatchNorthEast(pxcor, pycor)]
         diffusalSum = _(orderedNeighbors).map((nb) => scratch[nb.pxcor - @minPxcor][nb.pycor - @minPycor]).reduce((acc, x) -> acc + x)
         patch.setPatchVariable(vn, patch.getPatchVariable(vn) * (1.0 - coefficient) + (diffusalSum / 8) * coefficient)
+        return
       )
 
     #@# I think I tried to fix all this in the ScalaJS version.  Did I succeed?  (I doubt it)

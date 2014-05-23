@@ -157,6 +157,7 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
           turtle.die()
         catch error
           throw error if not (error instanceof Exception.DeathInterrupt)
+        return
       )
       @_turtleIDManager.reset()
       return
@@ -167,6 +168,7 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
         patch.setPatchVariable(4, 9.9)   # 4 = plabel-color
         for i in [Builtins.patchBuiltins.size...patch.vars.length] #@# ABSTRACT IT!
           patch.setPatchVariable(i, 0)
+        return
       )
       @patchesAllBlack(true)
       @patchesWithLabels(0)
