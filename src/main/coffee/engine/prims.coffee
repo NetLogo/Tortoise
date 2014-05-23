@@ -169,7 +169,11 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'engi
           else if input instanceof Patch
             result.push(input)
           else if input isnt Nobody
-            input.forEach((agent) -> if not (agent in result) then result.push(agent))
+            input.forEach((agent) ->
+              if not (agent in result)
+                result.push(agent)
+              return
+            )
       recurse(inputs)
       new PatchSet(result)
     repeat: (n, fn) ->

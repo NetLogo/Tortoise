@@ -7,7 +7,7 @@ define(['integration/lodash'], (_) ->
       @vars = _(0).range(n).map(-> 0).value()
       return
     clear: (n) -> #@# Weird that this function takes arguments...
-      _(n).range(@vars.length).forEach((num) => @vars[num] = 0)
+      _(n).range(@vars.length).forEach((num) => @vars[num] = 0; return)
       return
     getGlobal: (n) ->
       @vars[n]

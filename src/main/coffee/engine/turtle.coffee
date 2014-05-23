@@ -100,7 +100,7 @@ define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/co
             [directed, isSource] = typePair
             @connectedLinks(directed, isSource).toArray()
         ).flatten().forEach(
-          (link) -> link.updateEndRelatedVars()
+          (link) -> link.updateEndRelatedVars(); return
         )
       return
     linkNeighbors: (isDirected, isSource) ->
@@ -214,6 +214,7 @@ define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/co
               link.die()
             catch error
               throw error if not (error instanceof Exception.DeathInterrupt)
+          return
         )
         @id = -1
         @getPatchHere().leave(this)
