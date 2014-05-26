@@ -5,19 +5,26 @@ define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/co
       ,  Nobody,          TurtleSet,          Trig) ->
 
   class Turtle
-    vars:   undefined #@# You are the bane of your own existence
+
+    vars: undefined #@# You are the bane of your own existence
+
+    _links: undefined
     _xcor:  undefined
     _ycor:  undefined
-    _links: undefined
+
     #@# Should guard against improperly-named breeds, including empty-string breed names
     constructor: (@world, @id, @color = 0, @heading = 0, xcor = 0, ycor = 0, breed = @world.breedManager.turtles(), @label = "", @labelcolor = 9.9, @hidden = false, @size = 1.0, @pensize = 1.0, @penmode = "up") ->
+      @_links = []
       @_xcor  = xcor
       @_ycor  = ycor
-      @_links = []
+
       @breedVars = {} #@# Can be outside the constructor
       @updateBreed(breed)
+
       @vars = _(@world.turtlesOwn.vars).cloneDeep() #@# Can be outside the constructor
+
       @getPatchHere().arrive(this)
+
     updateBreed: (breed) -> #@# This code is lunacy
       if @breed
         @breed.remove(this)
