@@ -195,7 +195,7 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
         link = new Link(@_linkIDManager.next(), directed, end1, end2, this)
         @updater.updated(link)(Builtins.linkBuiltins...)
         @updater.updated(link)(Builtins.linkExtras...)
-        @updater.updated(link)(Builtins.turtleBuiltins.slice(1)...) #@# See, this update nonsense is awful
+        @updater.updated(link)("breed", "color", "hidden", "label", "labelcolor", "shape") #@# See, this update nonsense is awful.
         @_links.insert(link)
         link
       else
