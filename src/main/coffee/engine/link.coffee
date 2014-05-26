@@ -72,7 +72,7 @@ define(['engine/builtins', 'engine/colormodel', 'engine/comparator', 'engine/exc
       @size = @world.topology().distanceXY(@end1.xcor(), @end1.ycor(), @end2.xcor(), @end2.ycor())
       @midpointx = @world.topology().midpointx(@end1.xcor(), @end2.xcor())
       @midpointy = @world.topology().midpointy(@end1.ycor(), @end2.ycor())
-      @world.updater.updated(this)(Builtins.linkExtras...)
+      @world.updater.updated(this)("heading", "size", "midpointx", "midpointy")
     toString: -> "(#{@breed.singular} #{@end1.id} #{@end2.id})"
 
     compare: (x) -> #@# Unify with `Links.compare`
