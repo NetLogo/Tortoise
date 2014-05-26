@@ -10,7 +10,7 @@ define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/co
     _ycor:  undefined
     _links: undefined
     #@# Should guard against improperly-named breeds, including empty-string breed names
-    constructor: (@world, @color = 0, @heading = 0, xcor = 0, ycor = 0, breed = @world.breedManager.turtles(), @label = "", @labelcolor = 9.9, @hidden = false, @size = 1.0, @pensize = 1.0, @penmode = "up") ->
+    constructor: (@world, @id, @color = 0, @heading = 0, xcor = 0, ycor = 0, breed = @world.breedManager.turtles(), @label = "", @labelcolor = 9.9, @hidden = false, @size = 1.0, @pensize = 1.0, @penmode = "up") ->
       @_xcor  = xcor
       @_ycor  = ycor
       @_links = []
@@ -264,12 +264,13 @@ define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/co
 
     # () => Turtle
     _makeTurtleCopy: (breed) ->
-      turtle = new Turtle(@world, @color, @heading, @xcor(), @ycor(), breed, @label, @labelcolor, @hidden, @size, @pensize, @penmode) #@# Sounds like we ought have some cloning system, of which this function is a first step
+      turtleGenFunc = (id) => new Turtle(@world, id, @color, @heading, @xcor(), @ycor(), breed, @label, @labelcolor, @hidden, @size, @pensize, @penmode) #@# Sounds like we ought have some cloning system, of which this function is a first step
+      turtle        = @world.createTurtle(turtleGenFunc)
       _(0).range(TurtlesOwn.vars.length).forEach((n) =>
         turtle.setTurtleVariable(Builtins.turtleBuiltins.length + n, @getTurtleVariable(Builtins.turtleBuiltins.length + n))
         return
       )
-      @world.createTurtle(turtle)
+      turtle
 
     moveTo: (agent) ->
       [x, y] = agent.getCoords()
