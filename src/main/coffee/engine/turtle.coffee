@@ -1,8 +1,8 @@
 #@# Extends: `Agent`, `Vassal`, `CanTalkToPatches`
 define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/comparator', 'engine/exception'
-      , 'engine/nobody', 'engine/turtleset', 'engine/trig']
+      , 'engine/nobody', 'engine/penmanager', 'engine/turtleset', 'engine/trig']
      , ( _,                    Builtins,          ColorModel,          Comparator,          Exception
-      ,  Nobody,          TurtleSet,          Trig) ->
+      ,  Nobody,          PenManager,          TurtleSet,          Trig) ->
 
   class Turtle
 
@@ -13,7 +13,7 @@ define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/co
     _ycor:  undefined
 
     #@# Should guard against improperly-named breeds, including empty-string breed names
-    constructor: (@world, @id, @color = 0, @heading = 0, xcor = 0, ycor = 0, breed = @world.breedManager.turtles(), @label = "", @labelcolor = 9.9, @hidden = false, @size = 1.0, @pensize = 1.0, @penmode = "up") ->
+    constructor: (@world, @id, @color = 0, @heading = 0, xcor = 0, ycor = 0, breed = @world.breedManager.turtles(), @label = "", @labelcolor = 9.9, @hidden = false, @size = 1.0, @penManager = new PenManager(@world.updater.updated(this))) ->
       @_links = []
       @_xcor  = xcor
       @_ycor  = ycor
@@ -234,6 +234,10 @@ define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/co
           @ycor()
         else if n is 8 #breed
           @world.turtlesOfBreed(@breed.name) #@# Seems weird that I should need to do this...?
+        else if n is 11 #pen-size
+          @penManager.getSize()
+        else if n is 12 #pen-mode
+          @penManager.getMode().toString()
         else
           this[Builtins.turtleBuiltins[n]]
       else
@@ -246,6 +250,13 @@ define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/co
           @setXcor(value)
         else if n is 4 #ycor
           @setYcor(value)
+        else if n is 11 #pen-size
+          @penManager.setSize(value)
+        else if n is 12 #pen-mode
+          if value is "up"
+            @penManager.raisePen()
+          else
+            @penManager.lowerPen() # This is (tragically) JVM NetLogo's idea of sanity... --JAB (5/26/14)
         else
           if n is 5  # shape
             value = value.toLowerCase()
@@ -271,7 +282,7 @@ define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/co
 
     # () => Turtle
     _makeTurtleCopy: (breed) ->
-      turtleGenFunc = (id) => new Turtle(@world, id, @color, @heading, @xcor(), @ycor(), breed, @label, @labelcolor, @hidden, @size, @pensize, @penmode) #@# Sounds like we ought have some cloning system, of which this function is a first step
+      turtleGenFunc = (id) => new Turtle(@world, id, @color, @heading, @xcor(), @ycor(), breed, @label, @labelcolor, @hidden, @size, @penManager.clone()) #@# Sounds like we ought have some cloning system, of which this function is a first step
       turtle        = @world.createTurtle(turtleGenFunc)
       _(0).range(TurtlesOwn.vars.length).forEach((n) =>
         turtle.setTurtleVariable(Builtins.turtleBuiltins.length + n, @getTurtleVariable(Builtins.turtleBuiltins.length + n))
@@ -284,15 +295,6 @@ define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/co
       @setXY(x, y)
     watchme: ->
       @world.observer.watch(this)
-
-    penDown: -> #@# For shame!
-      @penmode = "down"
-      @world.updater.updated(this)("penmode")
-      return
-    penUp: ->
-      @penmode = "up"
-      @world.updater.updated(this)("penmode")
-      return
 
     _removeLink: (link) ->
       @_links.splice(@_links.indexOf(link)) #@# Surely there's a more-coherent way to write this

@@ -55,12 +55,12 @@ function go() {
   });
   if (Globals.getGlobal(2)) {
     AgentSet.ask(world.getTurtleOfBreed("PARTICLES", 0), true, function() {
-      AgentSet.self().penDown();
+      AgentSet.self().penManager.lowerPen();
     });
   }
   else {
     AgentSet.ask(world.getTurtleOfBreed("PARTICLES", 0), true, function() {
-      AgentSet.self().penUp();
+      AgentSet.self().penManager.raisePen();
     });
   }
   world.ticker.tickAdvance(Globals.getGlobal(5));
