@@ -52,8 +52,8 @@ define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/co
         else
           breed
       @updateBreed(trueBreed)
-      @world.updater.updated(this, "breed")
-      @world.updater.updated(this, "shape")
+      @world.updater.updated(this)("breed")
+      @world.updater.updated(this)("shape")
     toString: -> "(#{@breed.singular} #{@id})"
     keepHeadingInRange: -> #@# Since this code is duplicated in `Turtle.patchRightAndAhead`, it should take a value and return a normalized one
       if not (0 <= @heading < 360)
@@ -70,7 +70,7 @@ define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/co
     faceXY: (x, y) ->
       if x isnt @xcor() or y isnt @ycor()
         @heading = @world.topology().towards(@xcor(), @ycor(), x, y)
-        @world.updater.updated(this, "heading")
+        @world.updater.updated(this)("heading")
     face: (agent) ->
       [x, y] = agent.getCoords()
       @faceXY(x, y)
@@ -170,7 +170,7 @@ define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/co
       if @canMove(distance)
         @setXcor(@xcor() + distance * Trig.sin(@heading))
         @setYcor(@ycor() + distance * Trig.cos(@heading))
-        @world.updater.updated(this, "xcor", "ycor")
+        @world.updater.updated(this)("xcor", "ycor")
         return true
       return false #@# Orly?
     dx: ->
@@ -180,7 +180,7 @@ define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/co
     right: (angle) ->
       @heading += angle
       @keepHeadingInRange()
-      @world.updater.updated(this, "heading") #@# Why do all of these function calls manage updates for themselves?  Why am I dreaming of an `@world.updater. monad?
+      @world.updater.updated(this)("heading") #@# Why do all of these function calls manage updates for themselves?  Why am I dreaming of an `@world.updater. monad?
       return
     setXY: (x, y) ->
       origXcor = @xcor()
@@ -195,11 +195,11 @@ define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/co
           throw new Exception.TopologyInterrupt("The point [ #{x} , #{y} ] is outside of the boundaries of the world and wrapping is not permitted in one or both directions.")
         else
           throw error
-      @world.updater.updated(this, "xcor", "ycor")
+      @world.updater.updated(this)("xcor", "ycor")
       return
     hideTurtle: (flag) -> #@# Varname
       @hidden = flag
-      @world.updater.updated(this, "hidden")
+      @world.updater.updated(this)("hidden")
       return
     isBreed: (breedName) ->
       @breed.name.toUpperCase() is breedName.toUpperCase()
@@ -245,7 +245,7 @@ define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/co
           this[Builtins.turtleBuiltins[n]] = value
           if n is 2  # heading
             @keepHeadingInRange()
-        @world.updater.updated(this, Builtins.turtleBuiltins[n])
+        @world.updater.updated(this)(Builtins.turtleBuiltins[n])
       else
         @vars[n - Builtins.turtleBuiltins.length] = value
     getBreedVariable: (n) -> @breedVars[n]
@@ -280,11 +280,11 @@ define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/co
 
     penDown: -> #@# For shame!
       @penmode = "down"
-      @world.updater.updated(this, "penmode")
+      @world.updater.updated(this)("penmode")
       return
     penUp: ->
       @penmode = "up"
-      @world.updater.updated(this, "penmode")
+      @world.updater.updated(this)("penmode")
       return
 
     _removeLink: (link) ->

@@ -33,7 +33,7 @@ define(['engine/patch', 'engine/turtle'], (Patch, Turtle) ->
 
     # () => Unit
     _updatePerspective: ->
-      @_updater.updated(this, "perspective", "targetAgent")
+      @_updater.updated(this)("perspective", "targetAgent")
       return
 
 )

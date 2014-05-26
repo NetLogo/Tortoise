@@ -44,7 +44,7 @@ define(['engine/builtins', 'engine/colormodel', 'engine/comparator', 'engine/exc
           else
             value
         this[Builtins.linkBuiltins[n]] = newValue
-        @world.updater.updated(this, Builtins.linkBuiltins[n])
+        @world.updater.updated(this)(Builtins.linkBuiltins[n])
       else
         @vars[n - Builtins.linkBuiltins.length] = value
     die: ->
@@ -64,7 +64,7 @@ define(['engine/builtins', 'engine/colormodel', 'engine/comparator', 'engine/exc
         else
           value
       this[Builtins.turtleBuiltins[n]] = newValue
-      @world.updater.updated(this, Builtins.turtleBuiltins[n])
+      @world.updater.updated(this)(Builtins.turtleBuiltins[n])
     bothEnds: -> new TurtleSet([@end1, @end2])
     otherEnd: -> if @end1 is AgentSet.myself() then @end2 else @end1
     updateEndRelatedVars: ->
@@ -72,7 +72,7 @@ define(['engine/builtins', 'engine/colormodel', 'engine/comparator', 'engine/exc
       @size = @world.topology().distanceXY(@end1.xcor(), @end1.ycor(), @end2.xcor(), @end2.ycor())
       @midpointx = @world.topology().midpointx(@end1.xcor(), @end2.xcor())
       @midpointy = @world.topology().midpointy(@end1.ycor(), @end2.ycor())
-      @world.updater.updated(this, Builtins.linkExtras...)
+      @world.updater.updated(this)(Builtins.linkExtras...)
     toString: -> "(#{@breed.singular} #{@end1.id} #{@end2.id})"
 
     compare: (x) -> #@# Unify with `Links.compare`

@@ -33,7 +33,7 @@ define(['integration/lodash', 'integration/random', 'engine/builtins', 'engine/c
           this.plabel = value
         else
           this[Builtins.patchBuiltins[n]] = value
-        @world.updater.updated(this, Builtins.patchBuiltins[n])
+        @world.updater.updated(this)(Builtins.patchBuiltins[n])
       else
         @vars[n - Builtins.patchBuiltins.length] = value
     leave: (turtle) -> @turtles.splice(@turtles.indexOf(turtle, 0), 1) #@# These functions are named strangely (`patch.arrive(turtle0)` doesn't make a lot of sense to me as an English-speaker)

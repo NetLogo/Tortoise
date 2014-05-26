@@ -23,7 +23,7 @@ define(['engine/exception', 'engine/link', 'engine/observer', 'engine/patch', 'e
     update: (agentType, id, newAgent) ->
       @_updates[0][agentType][id] = newAgent
 
-    updated: (obj, vars...) -> #@# Polymorphize correctly
+    updated: (obj) => (vars...) => #@# Polymorphize correctly
       update = @_updates[0]
 
       entry =

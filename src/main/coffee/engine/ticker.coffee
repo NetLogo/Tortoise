@@ -48,7 +48,7 @@ define(['engine/exception'], (Exception) ->
     # ((Number) => Number) => Unit
     _updateTicks: (updateFunc) ->
       @_count = updateFunc(@_count)
-      @_updater.updated(this, "ticks")
+      @_updater.updated(this)("ticks")
       return
 
 )
