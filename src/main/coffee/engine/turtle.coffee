@@ -85,9 +85,9 @@ define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/co
       @world.topology().inRadius(this, @xcor(), @ycor(), agents, radius)
     patchAt: (dx, dy) -> #@# Make not silly
       try
-        x = world.topology().wrapX(@xcor() + dx)
-        y = world.topology().wrapY(@ycor() + dy)
-        world.getPatchAt(x, y)
+        x = @world.topology().wrapX(@xcor() + dx)
+        y = @world.topology().wrapY(@ycor() + dy)
+        @world.getPatchAt(x, y)
       catch error
         if error instanceof Exception.TopologyInterrupt
           Nobody
