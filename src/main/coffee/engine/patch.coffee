@@ -26,10 +26,10 @@ define(['integration/lodash', 'integration/random', 'engine/builtins', 'engine/c
         else if Builtins.patchBuiltins[n] is "plabel"
           if value is "" #@# Lodash, weird code
             if this.plabel isnt ""
-              world.patchesWithLabels(world._patchesWithLabels - 1)
+              @world.decrementPatchLabelCount()
           else
             if this.plabel is ""
-              world.patchesWithLabels(world._patchesWithLabels + 1)
+              @world.incrementPatchLabelCount()
           this.plabel = value
         else
           this[Builtins.patchBuiltins[n]] = value
