@@ -74,7 +74,7 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
       # http://stackoverflow.com/questions/4631525/concatenating-an-array-of-arrays-in-coffeescript
       @_patches = [].concat nested... #@# I don't know what this means, nor what that comment above is, so it's automatically awful
       for patch in @_patches
-        @updater.updated(patch, "pxcor", "pycor", "pcolor", "plabel", "plabelcolor")
+        @updater.updated(patch)("pxcor", "pycor", "pcolor", "plabel", "plabelcolor")
     topology: -> @_topology
     links: () ->
       new LinkSet(@_links.toArray())
@@ -106,7 +106,7 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
       @createPatches()
       @patchesAllBlack(true)
       @patchesWithLabels(0)
-      @updater.updated(this, "width", "height", "minPxcor", "minPycor", "maxPxcor", "maxPycor")
+      @updater.updated(this)("width", "height", "minPxcor", "minPycor", "maxPxcor", "maxPycor")
       return
 
     width: () -> 1 + @maxPxcor - @minPxcor #@# Defer to topology x2
@@ -125,7 +125,7 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
       @_links = @_links.remove(link)
       if @_links.isEmpty()
         @unbreededLinksAreDirected = false
-        @updater.updated(this, "unbreededLinksAreDirected")
+        @updater.updated(this)("unbreededLinksAreDirected")
       return
     removeTurtle: (id) -> #@# Having two different collections of turtles to manage seems avoidable
       turtle = @_turtlesById[id]
@@ -133,10 +133,10 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
       delete @_turtlesById[id]
     patchesAllBlack: (val) -> #@# Varname
       @_patchesAllBlack = val
-      @updater.updated(this, "patchesAllBlack")
+      @updater.updated(this)("patchesAllBlack")
     patchesWithLabels: (val) ->
       @_patchesWithLabels = val
-      @updater.updated(this, "patchesWithLabels")
+      @updater.updated(this)("patchesWithLabels")
     clearAll: ->
       @globals.clear(@interfaceGlobalCount)
       @clearTurtles()
@@ -176,7 +176,7 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
     createTurtle: (turtleGenFunc) ->
       id     = @_turtleIDManager.next()
       turtle = turtleGenFunc(id)
-      @updater.updated(turtle, Builtins.turtleBuiltins...)
+      @updater.updated(turtle)(Builtins.turtleBuiltins...)
       @_turtles.push(turtle)
       @_turtlesById[id] = turtle
       turtle
@@ -193,9 +193,9 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
         end2 = from
       if @getLink(end1.id, end2.id) is Nobody
         link = new Link(@_linkIDManager.next(), directed, end1, end2, this)
-        @updater.updated(link, Builtins.linkBuiltins...)
-        @updater.updated(link, Builtins.linkExtras...)
-        @updater.updated(link, Builtins.turtleBuiltins.slice(1)...) #@# See, this update nonsense is awful
+        @updater.updated(link)(Builtins.linkBuiltins...)
+        @updater.updated(link)(Builtins.linkExtras...)
+        @updater.updated(link)(Builtins.turtleBuiltins.slice(1)...) #@# See, this update nonsense is awful
         @_links.insert(link)
         link
       else
@@ -210,16 +210,16 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
     getNeighbors4: (pxcor, pycor) -> @topology().getNeighbors4(pxcor, pycor)
     createDirectedLink: (from, to) ->
       @unbreededLinksAreDirected = true
-      @updater.updated(this, "unbreededLinksAreDirected")
+      @updater.updated(this)("unbreededLinksAreDirected")
       @createLink(true, from, to)
     createDirectedLinks: (source, others) -> #@# Clarity
       @unbreededLinksAreDirected = true
-      @updater.updated(this, "unbreededLinksAreDirected")
+      @updater.updated(this)("unbreededLinksAreDirected")
       links = _(others.toArray()).map((turtle) => @createLink(true, source, turtle)).filter((other) -> other isnt Nobody).value()
       new LinkSet(links)
     createReverseDirectedLinks: (source, others) -> #@# Clarity
       @unbreededLinksAreDirected = true
-      @updater.updated(this, "unbreededLinksAreDirected")
+      @updater.updated(this)("unbreededLinksAreDirected")
       links = _(others.toArray()).map((turtle) => @createLink(true, turtle, source)).filter((other) -> other isnt Nobody).value()
       new LinkSet(links)
     createUndirectedLink: (source, other) ->
