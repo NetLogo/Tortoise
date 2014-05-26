@@ -6,10 +6,9 @@ define(['engine/exception'], (Exception) ->
     # Number
     _count: undefined
 
-    # (Updater, Number) => Ticker
-    constructor: (@_updater, @_ownerID) ->
-      @id = @_ownerID #@# This `id` crap for `Updater` is getting stupidly out of hand...
-      @clear()
+    # ((String*) => Unit) => Ticker
+    constructor: (@_updateFunc) ->
+      @_count = -1
 
     # () => Unit
     reset: ->
@@ -46,9 +45,9 @@ define(['engine/exception'], (Exception) ->
       @_count
 
     # ((Number) => Number) => Unit
-    _updateTicks: (updateFunc) ->
-      @_count = updateFunc(@_count)
-      @_updater.updated(this)("ticks")
+    _updateTicks: (updateCountFunc) ->
+      @_count = updateCountFunc(@_count)
+      @_updateFunc("ticks")
       return
 
 )

@@ -1,8 +1,8 @@
 #@# Make an `Update` class that always has turtles, links, and patches
 #@# Vassal: { id: ID, companion: { trackedKeys: Set }, registerUpdate: Array[String -> Value] }
 #@# Overlord: { updates: Array[Update], flushUpdates: Unit, collectUpdates: Array[Update] }
-define(['engine/exception', 'engine/link', 'engine/observer', 'engine/patch', 'engine/ticker', 'engine/turtle', 'engine/world']
-     , ( Exception,          Link,          Observer,          Patch,          Ticker,         Turtle,          World) ->
+define(['engine/exception', 'engine/link', 'engine/observer', 'engine/patch', 'engine/turtle', 'engine/world']
+     , ( Exception,          Link,          Observer,          Patch,          Turtle,          World) ->
 
   class Updater
 
@@ -33,7 +33,7 @@ define(['engine/exception', 'engine/link', 'engine/observer', 'engine/patch', 'e
           update.patches
         else if obj instanceof Link
           update.links
-        else if obj instanceof World or obj instanceof Ticker
+        else if obj instanceof World
           update.world
         else if obj instanceof Observer
           update.observer
@@ -89,10 +89,9 @@ define(['engine/exception', 'engine/link', 'engine/observer', 'engine/patch', 'e
             entryUpdate["LABEL"] = obj[v].toString()
           when "plabel"
             entryUpdate["PLABEL"] = obj[v].toString()
-          # `Ticker` start
+          # `World` start
           when "ticks"
-            entryUpdate["ticks"] = obj._count
-          # `Ticker` end / `World` start
+            entryUpdate["ticks"] = obj.ticker._count
           when "patchesAllBlack"
             entryUpdate["patchesAllBlack"] = obj._patchesAllBlack
           when "patchesWithLabels"
