@@ -4,7 +4,7 @@
   the other things you might want ought to get initialized by RequireJS here. --JAB (5/7/14)
 ###
 require(['engine/workspace', 'integration/agentmodel', 'integration/denuller', 'integration/notimplemented'
-       , 'integration/printer', 'engine/dump', 'engine/prims', 'engine/call', 'engine/noop', 'engine/tasks']
+       , 'integration/printer', 'engine/dump', 'engine/prims', 'engine/call', 'engine/tasks']
       , ( Workspace,          AgentModel,               Denuller,               notImplemented
-       ,  Printer,               Dump,          Prims,          Call,          noop,          Tasks) ->
+       ,  Printer,               Dump,          Prims,          Call,          Tasks) ->
 )
