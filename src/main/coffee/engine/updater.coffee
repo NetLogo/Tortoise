@@ -74,9 +74,9 @@ define(['engine/exception', 'engine/link', 'engine/observer', 'engine/patch', 'e
           when "labelcolor"
             entryUpdate["LABEL-COLOR"] = obj[v]
           when "pensize"
-            entryUpdate["PEN-SIZE"] = obj[v]
+            entryUpdate["PEN-SIZE"] = obj.penManager.getSize()
           when "penmode"
-            entryUpdate["PEN-MODE"] = obj[v]
+            entryUpdate["PEN-MODE"] = obj.penManager.getMode().toString()
           when "hidden"
             entryUpdate["HIDDEN?"] = obj[v]
           when "tiemode"
