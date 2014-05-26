@@ -105,7 +105,7 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
         @_topology = new Box(@minPxcor, @maxPxcor, @minPycor, @maxPycor, @patches, @getPatchAt)
       @createPatches()
       @patchesAllBlack(true)
-      @patchesWithLabels(0)
+      @resetPatchLabelCount()
       @updater.updated(this)("width", "height", "minPxcor", "minPycor", "maxPxcor", "maxPycor")
       return
 
@@ -134,16 +134,35 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
     patchesAllBlack: (val) -> #@# Varname
       @_patchesAllBlack = val
       @updater.updated(this)("patchesAllBlack")
-    patchesWithLabels: (val) ->
-      @_patchesWithLabels = val
+
+    # () => Unit
+    incrementPatchLabelCount: ->
+      @_setPatchLabelCount((count) -> count + 1)
+      return
+
+    # () => Unit
+    decrementPatchLabelCount: ->
+      @_setPatchLabelCount((count) -> count - 1)
+      return
+
+    # () => Unit
+    resetPatchLabelCount: ->
+      @_setPatchLabelCount(-> 0)
+      return
+
+    # ((Number) => Number) => Unit
+    _setPatchLabelCount: (updateCountFunc) ->
+      @_patchesWithLabels = updateCountFunc(@_patchesWithLabels)
       @updater.updated(this)("patchesWithLabels")
+      return
+
     clearAll: ->
       @globals.clear(@interfaceGlobalCount)
       @clearTurtles()
       @createPatches()
       @_linkIDManager.reset()
       @patchesAllBlack(true)
-      @patchesWithLabels(0)
+      @resetPatchLabelCount()
       @ticker.clear()
       return
     clearTurtles: ->
@@ -171,7 +190,7 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
         return
       )
       @patchesAllBlack(true)
-      @patchesWithLabels(0)
+      @resetPatchLabelCount()
       return
     createTurtle: (turtleGenFunc) ->
       id     = @_turtleIDManager.next()
