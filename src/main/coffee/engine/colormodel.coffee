@@ -1,8 +1,13 @@
 define(['integration/lodash'], (_) -> {
+
+  # Number
   COLOR_MAX: 140
+
+  # () => Array[Number]
   baseColors: ->
-    for i in [0..13]
-      i * 10 + 5
+    _(0).range(@COLOR_MAX / 10).map((n) -> (n * 10) + 5).value()
+
+  # (Number) => Number
   wrapColor: (color) ->
     if _(color).isArray()
       color
@@ -12,4 +17,5 @@ define(['integration/lodash'], (_) -> {
         modColor
       else
         @COLOR_MAX + modColor
+
 })
