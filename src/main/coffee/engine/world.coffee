@@ -51,7 +51,7 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
       })
 
       @observer = new Observer(updater)
-      @ticker   = new Ticker(updater, @id)
+      @ticker   = new Ticker(updater.updated(this))
 
       @_links           = new WorldLinks(@linkCompare)
       @_linkIDManager   = new IDManager #@# The fact that `World` even talks to ID managers (rather than a container for the type of agent) seems undesirable to me
