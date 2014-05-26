@@ -173,11 +173,12 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
       @patchesAllBlack(true)
       @patchesWithLabels(0)
       return
-    createTurtle: (turtle) ->
-      turtle.id = @_turtleIDManager.next()
+    createTurtle: (turtleGenFunc) ->
+      id     = @_turtleIDManager.next()
+      turtle = turtleGenFunc(id)
       @updater.updated(turtle, Builtins.turtleBuiltins...)
       @_turtles.push(turtle)
-      @_turtlesById[turtle.id] = turtle
+      @_turtlesById[id] = turtle
       turtle
     ###
     #@# We shouldn't be looking up links in the tree everytime we create a link; JVM NL uses 2 `LinkedHashMap[Turtle, Buffer[Link]]`s (to, from) --JAB (2/7/14)
@@ -200,10 +201,10 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
       else
         Nobody
     createOrderedTurtles: (n, breedName) -> #@# Clarity is a good thing
-      turtles = _(0).range(n).map((num) => @createTurtle(new Turtle(this, (10 * num + 5) % 140, (360 * num) / n, 0, 0, @breedManager.get(breedName)))).value()
+      turtles = _(0).range(n).map((num) => @createTurtle((id) => new Turtle(this, id, (10 * num + 5) % 140, (360 * num) / n, 0, 0, @breedManager.get(breedName)))).value()
       new TurtleSet(turtles, @breedManager.get(breedName))
     createTurtles: (n, breedName) -> #@# Clarity is still good
-      turtles = _(0).range(n).map(=> @createTurtle(new Turtle(this, 5 + 10 * Random.nextInt(14), Random.nextInt(360), 0, 0, @breedManager.get(breedName)))).value()
+      turtles = _(0).range(n).map(=> @createTurtle((id) => new Turtle(this, id, 5 + 10 * Random.nextInt(14), Random.nextInt(360), 0, 0, @breedManager.get(breedName)))).value()
       new TurtleSet(turtles, @breedManager.get(breedName))
     getNeighbors: (pxcor, pycor) -> @topology().getNeighbors(pxcor, pycor)
     getNeighbors4: (pxcor, pycor) -> @topology().getNeighbors4(pxcor, pycor)
