@@ -46,7 +46,6 @@ class RuntimeInit(program: api.Program, model: core.Model) {
         |var Link       = require('engine/link');
         |var LinkSet    = require('engine/linkset');
         |var Nobody     = require('engine/nobody');
-        |var noop       = require('engine/noop');
         |var PatchSet   = require('engine/patchset');
         |var Tasks      = require('engine/tasks');
         |var Trig       = require('engine/trig');
