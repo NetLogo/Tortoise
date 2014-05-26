@@ -6,22 +6,25 @@ define(['engine/exception', 'engine/link', 'engine/observer', 'engine/patch', 'e
 
   class Updater
 
-    Updates: [{turtles: {}, patches: {}, links: {}, observer: {}, world: {}}] #@# Privatize
+    @_updates = undefined
+
+    constructor: ->
+      @_updates = [{turtles: {}, patches: {}, links: {}, observer: {}, world: {}}]
 
     collectUpdates: ->
       result =
-        if @Updates.length is 0 #@# `isEmpty`?
+        if @_updates.length is 0 #@# `isEmpty`?
           [turtles: {}, patches: {}]
         else
-          @Updates
-      @Updates = [{turtles: {}, patches: {}, links: {}, observer: {}, world: {}}]
+          @_updates
+      @_updates = [{turtles: {}, patches: {}, links: {}, observer: {}, world: {}}]
       result
 
     update: (agentType, id, newAgent) ->
-      @Updates[0][agentType][id] = newAgent
+      @_updates[0][agentType][id] = newAgent
 
     updated: (obj, vars...) -> #@# Polymorphize correctly
-      update = @Updates[0]
+      update = @_updates[0]
 
       entry =
         if obj instanceof Turtle
