@@ -194,8 +194,7 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
       if @getLink(end1.id, end2.id) is Nobody
         link = new Link(@_linkIDManager.next(), directed, end1, end2, this)
         @updater.updated(link)(Builtins.linkBuiltins...)
-        @updater.updated(link)(Builtins.linkExtras...)
-        @updater.updated(link)("breed", "color", "hidden", "label", "labelcolor", "shape") #@# See, this update nonsense is awful.
+        @updater.updated(link)(Builtins.linkExtras...) #@# See, this update nonsense is awful.
         @_links.insert(link)
         link
       else

@@ -3,5 +3,5 @@ define(-> {
   turtleBuiltins: ["id", "color", "heading", "xcor", "ycor", "shape", "label", "labelcolor", "breed", "hidden", "size", "pensize", "penmode"]
   patchBuiltins:  ["pxcor", "pycor", "pcolor", "plabel", "plabelcolor"]
   linkBuiltins:   ["end1", "end2", "lcolor", "llabel", "llabelcolor", "lhidden", "lbreed", "thickness", "lshape", "tiemode"]
-  linkExtras:     ["size", "heading", "midpointx", "midpointy"]
+  linkExtras:     ["color", "heading", "shape", "label", "labelcolor", "breed", "hidden", "size", "midpointx", "midpointy"]
 })
