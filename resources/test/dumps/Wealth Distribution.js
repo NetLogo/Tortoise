@@ -71,7 +71,7 @@ function recolorPatch() {
   AgentSet.setPatchVariable(2, Prims.scaleColor(45, AgentSet.getPatchVariable(5), 0, Globals.getGlobal(8)));
 }
 function setupTurtles() {
-  BreedManager.setDefaultShape(world.turtles(), "person");
+  BreedManager.setDefaultShape(world.turtles().getBreedName(), "person")
   AgentSet.ask(world.createTurtles(Globals.getGlobal(3), ""), true, function() {
     AgentSet.self().moveTo(AgentSet.oneOf(world.patches()));
     AgentSet.setTurtleVariable(10, 1.5);

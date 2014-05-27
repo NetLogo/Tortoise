@@ -52,7 +52,7 @@ function setupCars() {
     notImplemented('user-message', undefined)((Dump("") + Dump("There are too many cars for the amount of road.  Please decrease the NUMBER-OF-CARS slider to below ") + Dump((world.width() + 1)) + Dump(" and press the SETUP button again.  The setup has stopped.")));
     throw new Exception.StopInterrupt;
   }
-  BreedManager.setDefaultShape(world.turtles(), "car");
+  BreedManager.setDefaultShape(world.turtles().getBreedName(), "car")
   AgentSet.ask(world.createTurtles(Globals.getGlobal(0), ""), true, function() {
     AgentSet.setTurtleVariable(1, 105);
     AgentSet.setTurtleVariable(3, Prims.randomXcor());

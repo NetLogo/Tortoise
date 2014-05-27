@@ -41,7 +41,7 @@ function setup() {
   world.ticker.reset();
 }
 function setupTurtles() {
-  BreedManager.setDefaultShape(world.turtles(), "person");
+  BreedManager.setDefaultShape(world.turtles().getBreedName(), "person")
   AgentSet.ask(world.createTurtles(Globals.getGlobal(3), ""), true, function() {
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
     AgentSet.setTurtleVariable(16, Prims.random(Globals.getGlobal(6)));

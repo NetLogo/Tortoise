@@ -47,7 +47,7 @@ function makeNewcomer() {
 }
 function setup() {
   world.clearAll();
-  BreedManager.setDefaultShape(world.turtles(), "circle");
+  BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
   Prims.repeat(Globals.getGlobal(3), function () {
     Call(makeNewcomer);
   });

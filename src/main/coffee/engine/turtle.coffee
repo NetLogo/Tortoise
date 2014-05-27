@@ -30,7 +30,7 @@ define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/co
         @breed.remove(this)
       @breed = breed
       breed.add(this)
-      @shape = @breed.shape()
+      @shape = @breed.getShape()
       if @breed isnt @world.breedManager.turtles()
         @world.breedManager.turtles().add(this)
         for x in @breed.vars

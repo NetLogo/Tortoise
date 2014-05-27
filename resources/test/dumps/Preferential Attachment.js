@@ -34,7 +34,7 @@ var StrictMath     = require('integration/strictmath');
 Globals.init(2);
 function setup() {
   world.clearAll();
-  BreedManager.setDefaultShape(world.turtles(), "circle");
+  BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
   Call(makeNode, Nobody);
   Call(makeNode, world.getTurtle(0));
   world.ticker.reset();

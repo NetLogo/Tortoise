@@ -70,7 +70,7 @@ function setupField() {
   }));
 }
 function setupBalls() {
-  BreedManager.setDefaultShape(world.turtles(), "circle");
+  BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
   AgentSet.ask(Globals.getGlobal(9), true, function() {
     AgentSet.ask(Prims.sprout(1, ""), true, function() {
       AgentSet.setTurtleVariable(1, 25);

@@ -46,7 +46,7 @@ BreedManager.get("PARTICLES").vars =["SPEED", "MASS"];function benchmark() {
 function setup() {
   world.clearAll();
   world.ticker.reset();
-  BreedManager.setDefaultShape(world.turtlesOfBreed("PARTICLES"), "circle");
+  BreedManager.setDefaultShape(world.turtlesOfBreed("PARTICLES").getBreedName(), "circle")
   Globals.setGlobal(13, true);
   Globals.setGlobal(14, 0.2);
   Globals.setGlobal(6, (world.maxPxcor - 1));

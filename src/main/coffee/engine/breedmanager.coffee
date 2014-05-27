@@ -12,11 +12,16 @@ define(['integration/lodash'], (_) ->
     # We can't just set this in the constructor, because people can swoop into the manager and change the turtles'
     # default shape --JAB (5/27/14)
     # () => String
-    shape: ->
+    getShape: ->
       if @_shape?
         @_shape
       else
         @manager.turtles()._shape
+
+    # (String) => Unit
+    setShape: (newShape) ->
+      @_shape = newShape
+      return
 
     # (Agent) => Unit
     add: (newAgent) ->
@@ -40,19 +45,32 @@ define(['integration/lodash'], (_) ->
 
 
   class BreedManager
-    defaultBreeds: -> {
-      TURTLES: new Breed("TURTLES", "turtle", this, "default"),
-      LINKS: new Breed("LINKS", "link", this, "default")
-    }
-    breeds: {} #@# Privatize
-    reset: -> @breeds = @defaultBreeds()
+
+    # Object[String, Breed]
+    _breeds: undefined
+
+    # () => BreedManager
+    constructor: ->
+      @_breeds = {
+        TURTLES: new Breed("TURTLES", "turtle", this, "default"),
+        LINKS:   new Breed("LINKS",   "link",   this, "default")
+      }
+
+    # (String, String) => Unit
     add: (name, singular) ->
-      upperName = name.toUpperCase()
-      @breeds[upperName] = new Breed(upperName, singular.toLowerCase(), this)
+      trueName     = name.toUpperCase()
+      trueSingular = singular.toLowerCase()
+      @_breeds[trueName] = new Breed(trueName, trueSingular, this)
+      return
+
+    # (String) => Breed
     get: (name) ->
-      @breeds[name.toUpperCase()]
-    setDefaultShape: (agents, shape) ->
-      @get(agents.getBreedName())._shape = shape.toLowerCase() #@# Oh, yeah?  You just go and modify the private member?  Pretty cool!
+      @_breeds[name.toUpperCase()]
+
+    # (String, String) => Unit
+    setDefaultShape: (breedName, shape) ->
+      @get(breedName).setShape(shape.toLowerCase())
+      return
 
     # () => Breed
     turtles: ->

@@ -38,7 +38,7 @@ function setup() {
   Globals.setGlobal(3, AgentSet.agentFilter(world.patches(), function() {
     return Call(groupSite_p);
   }));
-  BreedManager.setDefaultShape(world.turtles(), "person");
+  BreedManager.setDefaultShape(world.turtles().getBreedName(), "person")
   AgentSet.ask(world.createTurtles(Globals.getGlobal(1), ""), true, function() {
     Call(chooseSex);
     AgentSet.setTurtleVariable(10, 3);

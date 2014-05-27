@@ -35,7 +35,7 @@ Globals.init(3);
 TurtlesOwn.init(2);
 function setup() {
   world.clearAll();
-  BreedManager.setDefaultShape(world.turtles(), "circle");
+  BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
   AgentSet.ask(world.createTurtles(world.width(), ""), true, function() {
     AgentSet.setTurtleVariable(3, AgentSet.getTurtleVariable(0));
     AgentSet.setTurtleVariable(1, 15);

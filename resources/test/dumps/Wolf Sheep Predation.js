@@ -53,7 +53,7 @@ BreedManager.get("WOLVES").vars =[""];function setup() {
       }
     });
   }
-  BreedManager.setDefaultShape(world.turtlesOfBreed("SHEEP"), "sheep");
+  BreedManager.setDefaultShape(world.turtlesOfBreed("SHEEP").getBreedName(), "sheep")
   AgentSet.ask(world.createTurtles(Globals.getGlobal(0), "SHEEP"), true, function() {
     AgentSet.setTurtleVariable(1, 9.9);
     AgentSet.setTurtleVariable(10, 1.5);
@@ -61,7 +61,7 @@ BreedManager.get("WOLVES").vars =[""];function setup() {
     AgentSet.setTurtleVariable(13, Prims.random((2 * Globals.getGlobal(1))));
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
   });
-  BreedManager.setDefaultShape(world.turtlesOfBreed("WOLVES"), "wolf");
+  BreedManager.setDefaultShape(world.turtlesOfBreed("WOLVES").getBreedName(), "wolf")
   AgentSet.ask(world.createTurtles(Globals.getGlobal(3), "WOLVES"), true, function() {
     AgentSet.setTurtleVariable(1, 0);
     AgentSet.setTurtleVariable(10, 2);
