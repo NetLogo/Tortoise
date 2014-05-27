@@ -266,13 +266,14 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'engi
 
     # (Array[Array[T]|T]) => Array[T]
     sentence: (xs...) ->
-      result = [] #@# Pushing is for poppers of pills
-      for x in xs
-        if Type(x).isArray()
-          result.push(x...)
-        else
-          result.push(x)
-      result
+      f =
+        (acc, x) ->
+          if Type(x).isArray()
+            acc.concat(x)
+          else
+            acc.push(x)
+            acc
+      _(xs).foldl(f, [])
 
     # (Array[T]) => Number
     variance: (xs) -> #@# Clarity
