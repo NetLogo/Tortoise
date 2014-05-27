@@ -206,12 +206,9 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'engi
       throw new Exception.NetLogoException("boom!")
 
     # (T, (Array[T]|String|AgentSet)) => Boolean
-    member: (x, xs) -> #@# Lodash
+    member: (x, xs) ->
       if Type(xs).isArray()
-        for y in xs
-          if @equality(x, y)
-            return true
-        false
+        _(xs).some((y) => @equality(x, y))
       else if Type(x).isString()
         xs.indexOf(x) != -1
       else  # agentset
