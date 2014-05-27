@@ -16,26 +16,40 @@ define(['integration/lodash', 'integration/random', 'engine/builtins', 'engine/c
         this[Builtins.patchBuiltins[n]]
       else
         @vars[n - Builtins.patchBuiltins.length]
+
     setPatchVariable: (n, value) ->
       if n < Builtins.patchBuiltins.length
-        if Builtins.patchBuiltins[n] is "pcolor"
+        @_setBuiltinVariable(n, value)
+      else
+        @vars[n - Builtins.patchBuiltins.length] = value
+
+    # (Number, T) => Unit
+    _setBuiltinVariable: (n, value) ->
+      builtinVar = Builtins.patchBuiltins[n]
+      finalValue =
+        if builtinVar is "pcolor"
           newValue = ColorModel.wrapColor(value)
           if newValue isnt 0
             @world.patchesAllBlack(false)
-          this[Builtins.patchBuiltins[n]] = newValue
-        else if Builtins.patchBuiltins[n] is "plabel"
-          if value is "" #@# Lodash, weird code
-            if this.plabel isnt ""
-              @world.decrementPatchLabelCount()
-          else
-            if this.plabel is ""
-              @world.incrementPatchLabelCount()
-          this.plabel = value
+          newValue
+
+        else if builtinVar is "plabel"
+          wasEmpty = @plabel is ""
+          isEmpty  = value is ""
+          if isEmpty and not wasEmpty
+            @world.decrementPatchLabelCount()
+          else if not isEmpty and wasEmpty
+            @world.incrementPatchLabelCount()
+          value
+
         else
-          this[Builtins.patchBuiltins[n]] = value
-        @world.updater.updated(this)(Builtins.patchBuiltins[n])
-      else
-        @vars[n - Builtins.patchBuiltins.length] = value
+          value
+
+      this[builtinVar] = finalValue
+      @world.updater.updated(this)(builtinVar)
+
+      return
+
     leave: (turtle) -> @turtles.splice(@turtles.indexOf(turtle, 0), 1) #@# These functions are named strangely (`patch.arrive(turtle0)` doesn't make a lot of sense to me as an English-speaker)
     arrive: (turtle) ->
       @turtles.push(turtle)
