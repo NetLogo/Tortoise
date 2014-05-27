@@ -214,19 +214,18 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'engi
       else # agentset
         xs.exists((a) -> x is a)
 
-    # (T, (Array[T]|String|AgentSet)) => Number
-    position: (x, xs) -> #@# Lodash
-      if Type(xs).isArray()
-        for y, i in xs
-          if @equality(x, y)
-            return i
-        false
-      else
-        result = xs.indexOf(x)
-        if result is -1
-          false
+    # (T, (Array[T]|String|AgentSet)) => Number|Boolean
+    position: (x, xs) ->
+      index =
+        if Type(xs).isArray()
+          _(xs).findIndex((y) => @equality(x, y))
         else
-          result
+          xs.indexOf(x)
+
+      if index isnt -1
+        index
+      else
+        false
 
     # (T, U <: (Array[T]|String)) => U
     remove: (x, xs) -> #@# Lodash
