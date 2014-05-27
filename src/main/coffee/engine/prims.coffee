@@ -180,10 +180,14 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'engi
       for [0...n]
         fn()
       return
+
+    # (Number, FunctionN) => Unit
     #@# not a real implementation, always just runs body - ST 4/22/14
     every: (time, fn) ->
       fn()
       return
+
+    # (Number, Number) => Number
     subtractHeadings: (h1, h2) ->
       if h1 < 0 || h1 >= 360
         h1 = (h1 % 360 + 360) % 360
@@ -196,8 +200,12 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'engi
         diff - 360
       else
         diff + 360
+
+    # () => Nothing
     boom: ->
       throw new Exception.NetLogoException("boom!")
+
+    # (T, (Array[T]|String|AgentSet)) => Boolean
     member: (x, xs) -> #@# Lodash
       if Type(xs).isArray()
         for y in xs
@@ -208,6 +216,8 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'engi
         xs.indexOf(x) != -1
       else  # agentset
         xs.exists((a) -> x is a)
+
+    # (T, (Array[T]|String|AgentSet)) => Number
     position: (x, xs) -> #@# Lodash
       if Type(xs).isArray()
         for y, i in xs
@@ -220,6 +230,8 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'engi
           false
         else
           result
+
+    # (T, U <: (Array[T]|String)) => U
     remove: (x, xs) -> #@# Lodash
       if Type(xs).isArray()
         result = []
@@ -229,6 +241,8 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'engi
         result
       else
         xs.replaceAll(x, "")
+
+    # (Number, U <: (Array[T]|String)) => U
     removeItem: (n, xs) -> #@# Lodash
       if Type(xs).isArray()
         xs = xs[..]
@@ -236,6 +250,8 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'engi
         xs
       else
         xs.slice(0, n) + xs.slice(n + 1, xs.length)
+
+    # (Number, U <: (Array[T]|String), T) => U
     replaceItem: (n, xs, x) -> #@# Lodash
       if Type(xs).isArray()
         xs = xs[..]
@@ -243,10 +259,16 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'engi
         xs
       else
         xs.slice(0, n) + x + xs.slice(n + 1, xs.length)
+
+    # (Array[T], Number, Number) => Array[T]
     sublist: (xs, n1, n2) ->
       xs[n1...n2]
+
+    # (String, Number, Number) => String
     substring: (xs, n1, n2) ->
       xs.substr(n1, n2 - n1)
+
+    # (Array[Array[T]|T]) => Array[T]
     sentence: (xs...) ->
       result = [] #@# Pushing is for poppers of pills
       for x in xs
@@ -255,6 +277,8 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'engi
         else
           result.push(x)
       result
+
+    # (Array[T]) => Number
     variance: (xs) -> #@# Clarity
       sum = 0
       count = xs.length
@@ -271,6 +295,8 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'engi
         if Type(x).isNumber()
           squareOfDifference += StrictMath.pow(x - mean, 2)
       squareOfDifference / (count - 1)
+
+    # (String, Patch|Turtle|PatchSet|TurtleSet) => TurtleSet
     breedOn: (breedName, what) -> #@# Wat?
       breed = @world.breedManager.get(breedName)
       patches =
