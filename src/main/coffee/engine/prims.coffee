@@ -258,7 +258,7 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'engi
 
     # (Array[T], Number, Number) => Array[T]
     sublist: (xs, n1, n2) ->
-      xs[n1...n2]
+      xs.slice(n1, n2)
 
     # (String, Number, Number) => String
     substring: (xs, n1, n2) ->
