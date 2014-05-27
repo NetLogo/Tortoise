@@ -294,25 +294,21 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'engi
       squareOfDifference / (count - 1)
 
     # (String, Patch|Turtle|PatchSet|TurtleSet) => TurtleSet
-    breedOn: (breedName, what) -> #@# Wat?
-      breed = @world.breedManager.get(breedName)
+    breedOn: (breedName, x) ->
       patches =
-        if what instanceof Patch
-          [what]
-        else if what instanceof Turtle
-          [what.getPatchHere()]
-        else if what instanceof PatchSet
-          what.toArray()
-        else if what instanceof TurtleSet
-          _(what.toArray()).map((t) -> t.getPatchHere())
+        if x instanceof Patch
+          [x]
+        else if x instanceof Turtle
+          [x.getPatchHere()]
+        else if x instanceof PatchSet
+          x.toArray()
+        else if x instanceof TurtleSet
+          _(x.toArray()).map((t) -> t.getPatchHere()).value()
         else
-          throw new Exception.NetLogoException("`breed-on` unsupported for class '#{typeof(what)}'")
-      result = [] #@# I hate this
-      for p in patches
-        for t in p.turtles
-          if t.breed is breed
-            result.push(t)
-      new TurtleSet(result, breed.name)
+          throw new Exception.NetLogoException("`breed-on` unsupported for class '#{typeof(x)}'")
+
+      turtles = _(patches).map((p) -> p.turtles).flatten().filter((t) -> t.breed.name is breedName).value()
+      new TurtleSet(turtles, breedName)
 
     turtlesOn: (agentsOrAgent) -> #@# Lunacy
       agents =
