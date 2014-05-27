@@ -13,14 +13,16 @@ define(['engine/abstractagents', 'engine/exception', 'engine/iterator', 'engine/
 
   class AgentSet
 
+    _self:   undefined #@# Lame
+    _myself: undefined #@# Lame, only used by a tiny subset of this class
+
+    constructor: ->
+      @_self   = 0
+      @_myself = 0
+
     count: (xs) -> xs.size()
     any: (xs) -> xs.nonEmpty()
     all: (xs, f) -> xs.every((agent) => @askAgent(agent, f))
-    _self: 0 #@# Lame
-    _myself: 0 #@# Lame, only used by a tiny subset of this class
-    reset: ->
-      @_self = 0
-      @_myself = 0
     self: => @_self
     myself: -> if @_myself isnt 0 then @_myself else throw new Exception.NetLogoException("There is no agent for MYSELF to refer to.") #@# I wouldn't be surprised if this is entirely avoidable
     askAgent: (agent, f) ->
