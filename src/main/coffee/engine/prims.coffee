@@ -248,11 +248,13 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'engi
     # (Number, U <: (Array[T]|String), T) => U
     replaceItem: (n, xs, x) -> #@# Lodash
       if Type(xs).isArray()
-        xs = xs[..]
-        xs[n] = x
-        xs
+        temp = xs[..]
+        temp.splice(n, 1, x)
+        temp
       else
-        xs.slice(0, n) + x + xs.slice(n + 1, xs.length)
+        pre  = xs.slice(0, n)
+        post = xs.slice(n + 1)
+        pre + x + post
 
     # (Array[T], Number, Number) => Array[T]
     sublist: (xs, n1, n2) ->
