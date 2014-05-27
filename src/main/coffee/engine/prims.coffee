@@ -228,15 +228,11 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'engi
         false
 
     # (T, U <: (Array[T]|String)) => U
-    remove: (x, xs) -> #@# Lodash
+    remove: (x, xs) ->
       if Type(xs).isArray()
-        result = []
-        for y in xs
-          if not @equality(x, y)
-            result.push(y)
-        result
+        _(xs).filter((y) => not @equality(x, y)).value()
       else
-        xs.replaceAll(x, "")
+        xs.replace(new RegExp(x, "g"), "") # Replace all occurences of `x` --JAB (5/26/14)
 
     # (Number, U <: (Array[T]|String)) => U
     removeItem: (n, xs) -> #@# Lodash
