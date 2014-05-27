@@ -235,13 +235,15 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'engi
         xs.replace(new RegExp(x, "g"), "") # Replace all occurences of `x` --JAB (5/26/14)
 
     # (Number, U <: (Array[T]|String)) => U
-    removeItem: (n, xs) -> #@# Lodash
+    removeItem: (n, xs) ->
       if Type(xs).isArray()
-        xs = xs[..]
-        xs[n..n] = []
-        xs
+        temp = xs[..]
+        temp.splice(n, 1) # Cryptic, but effective --JAB (5/26/14)
+        temp
       else
-        xs.slice(0, n) + xs.slice(n + 1, xs.length)
+        pre  = xs.slice(0, n)
+        post = xs.slice(n + 1)
+        pre + post
 
     # (Number, U <: (Array[T]|String), T) => U
     replaceItem: (n, xs, x) -> #@# Lodash
