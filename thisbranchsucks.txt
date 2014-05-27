@@ -6,7 +6,6 @@ Very High:
 
 High:
 -FPification
--`Breed and `BreedManager` are wonky
 -`Shufflerator` is lame
 -Replace `AgentModel` with an `Overlord` and overhaul the code
 --Things should stop managing their own updates
