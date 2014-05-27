@@ -211,7 +211,7 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'engi
         _(xs).some((y) => @equality(x, y))
       else if Type(x).isString()
         xs.indexOf(x) != -1
-      else  # agentset
+      else # agentset
         xs.exists((a) -> x is a)
 
     # (T, (Array[T]|String|AgentSet)) => Number
