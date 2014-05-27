@@ -49,7 +49,7 @@ BreedManager.get("CLOCKERS").vars =[""];function benchmark() {
 function setup() {
   world.clearAll();
   world.ticker.reset();
-  BreedManager.setDefaultShape(world.turtlesOfBreed("PARTICLES"), "circle");
+  BreedManager.setDefaultShape(world.turtlesOfBreed("PARTICLES").getBreedName(), "circle")
   Globals.setGlobal(21, false);
   Globals.setGlobal(7, (world.maxPxcor - 1));
   Globals.setGlobal(12, ((2 * (Globals.getGlobal(7) - 1)) + 1));
@@ -423,7 +423,7 @@ function lastN(n, theList) {
   }
 }
 function makeClocker() {
-  BreedManager.setDefaultShape(world.turtlesOfBreed("CLOCKERS"), "clocker");
+  BreedManager.setDefaultShape(world.turtlesOfBreed("CLOCKERS").getBreedName(), "clocker")
   AgentSet.ask(world.createOrderedTurtles(1, "CLOCKERS"), true, function() {
     Prims.setXY((Globals.getGlobal(7) - 5), (Globals.getGlobal(7) - 5));
     AgentSet.setTurtleVariable(1, (115 + 2));

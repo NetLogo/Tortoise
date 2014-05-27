@@ -37,7 +37,7 @@ BreedManager.get("FIRES").vars =[""];
 BreedManager.add("EMBERS", "ember");
 BreedManager.get("EMBERS").vars =[""];function setup() {
   world.clearAll();
-  BreedManager.setDefaultShape(world.turtles(), "square");
+  BreedManager.setDefaultShape(world.turtles().getBreedName(), "square")
   AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
     return Prims.lt(Prims.randomFloat(100), Globals.getGlobal(0));
   }), true, function() {

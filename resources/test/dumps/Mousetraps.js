@@ -38,7 +38,7 @@ function setup() {
   AgentSet.ask(world.patches(), true, function() {
     AgentSet.setPatchVariable(2, (105 + 3));
   });
-  BreedManager.setDefaultShape(world.turtles(), "circle");
+  BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
   AgentSet.ask(world.createTurtles(1, ""), true, function() {
     AgentSet.setTurtleVariable(1, 9.9);
     AgentSet.setTurtleVariable(10, 1.5);

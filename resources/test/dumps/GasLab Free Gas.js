@@ -35,7 +35,7 @@ Globals.init(17);
 BreedManager.add("PARTICLES", "particle");
 BreedManager.get("PARTICLES").vars =["SPEED", "MASS", "ENERGY", "LAST-COLLISION"];function setup() {
   world.clearAll();
-  BreedManager.setDefaultShape(world.turtlesOfBreed("PARTICLES"), "circle");
+  BreedManager.setDefaultShape(world.turtlesOfBreed("PARTICLES").getBreedName(), "circle")
   Globals.setGlobal(6, 0.1073);
   Call(makeParticles);
   Call(updateVariables);

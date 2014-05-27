@@ -179,7 +179,6 @@ object SimplePrims {
         case _: prim.etc._resettimer        => "workspace.timer.reset"
         case _: prim.etc._tick              => "world.ticker.tick"
         case _: prim.etc._tickadvance       => "world.ticker.tickAdvance"
-        case _: prim.etc._setdefaultshape   => "BreedManager.setDefaultShape"
         case _: prim.etc._moveto            => "AgentSet.self().moveTo"
         case _: prim.etc._face              => "AgentSet.self().face"
         case _: prim.etc._facexy            => "AgentSet.self().faceXY"

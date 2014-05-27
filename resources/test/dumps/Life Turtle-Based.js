@@ -38,8 +38,8 @@ BreedManager.get("CELLS").vars =[""];
 BreedManager.add("BABIES", "baby");
 BreedManager.get("BABIES").vars =[""];function setupBlank() {
   world.clearAll();
-  BreedManager.setDefaultShape(world.turtlesOfBreed("CELLS"), "circle");
-  BreedManager.setDefaultShape(world.turtlesOfBreed("BABIES"), "dot");
+  BreedManager.setDefaultShape(world.turtlesOfBreed("CELLS").getBreedName(), "circle")
+  BreedManager.setDefaultShape(world.turtlesOfBreed("BABIES").getBreedName(), "dot")
   AgentSet.ask(world.patches(), true, function() {
     AgentSet.setPatchVariable(5, 0);
   });

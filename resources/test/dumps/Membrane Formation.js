@@ -40,7 +40,7 @@ BreedManager.get("OILS").vars =[""];function setup() {
   Globals.setGlobal(6, 2);
   Globals.setGlobal(7, 4);
   Globals.setGlobal(8, 1.3);
-  BreedManager.setDefaultShape(world.turtles(), "circle");
+  BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
   AgentSet.ask(world.createTurtles((Globals.getGlobal(0) + Globals.getGlobal(1)), "WATERS"), true, function() {
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
     AgentSet.setTurtleVariable(1, 105);

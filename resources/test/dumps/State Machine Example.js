@@ -35,7 +35,7 @@ Globals.init(2);
 TurtlesOwn.init(2);
 function setup() {
   world.clearAll();
-  BreedManager.setDefaultShape(world.turtles(), "bug");
+  BreedManager.setDefaultShape(world.turtles().getBreedName(), "bug")
   AgentSet.ask(world.patches(), true, function() {
     if (Prims.lt(Prims.randomFloat(100), Globals.getGlobal(1))) {
       AgentSet.setPatchVariable(2, 45);

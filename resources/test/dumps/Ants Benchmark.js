@@ -51,7 +51,7 @@ function benchmark() {
   Globals.setGlobal(4, workspace.timer.elapsed());
 }
 function setupTurtles() {
-  BreedManager.setDefaultShape(world.turtles(), "bug");
+  BreedManager.setDefaultShape(world.turtles().getBreedName(), "bug")
   AgentSet.ask(world.createOrderedTurtles(Globals.getGlobal(3), ""), true, function() {
     AgentSet.setTurtleVariable(10, 2);
     Prims.right(Prims.randomFloat(360));

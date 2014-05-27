@@ -43,11 +43,11 @@ BreedManager.get("CO2S").vars =[""];
 BreedManager.add("CLOUDS", "cloud");
 BreedManager.get("CLOUDS").vars =["CLOUD-SPEED", "CLOUD-ID"];function setup() {
   world.clearAll();
-  BreedManager.setDefaultShape(world.turtlesOfBreed("RAYS"), "ray");
-  BreedManager.setDefaultShape(world.turtlesOfBreed("IRS"), "ray");
-  BreedManager.setDefaultShape(world.turtlesOfBreed("CLOUDS"), "cloud");
-  BreedManager.setDefaultShape(world.turtlesOfBreed("HEATS"), "dot");
-  BreedManager.setDefaultShape(world.turtlesOfBreed("CO2S"), "CO2-molecule");
+  BreedManager.setDefaultShape(world.turtlesOfBreed("RAYS").getBreedName(), "ray")
+  BreedManager.setDefaultShape(world.turtlesOfBreed("IRS").getBreedName(), "ray")
+  BreedManager.setDefaultShape(world.turtlesOfBreed("CLOUDS").getBreedName(), "cloud")
+  BreedManager.setDefaultShape(world.turtlesOfBreed("HEATS").getBreedName(), "dot")
+  BreedManager.setDefaultShape(world.turtlesOfBreed("CO2S").getBreedName(), "CO2-molecule")
   Call(setupWorld);
   Globals.setGlobal(4, 12);
   world.ticker.reset();

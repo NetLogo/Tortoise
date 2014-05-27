@@ -27,7 +27,6 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
     constructor: (@globals, @patchesOwn, @turtlesOwn, @linksOwn, @agentSet, @updater, @breedManager, @minPxcor, @maxPxcor
                 , @minPycor, @maxPycor, @patchSize, @wrappingAllowedInX, @wrappingAllowedInY, turtleShapeList
                 , linkShapeList, @interfaceGlobalCount) ->
-      @breedManager.reset()
       @updater.collectUpdates()
       @updater.update("world", 0, {
         worldWidth: Math.abs(@minPxcor - @maxPxcor) + 1,
