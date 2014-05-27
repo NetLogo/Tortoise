@@ -1,9 +1,24 @@
 define(['integration/lodash'], (_) ->
 
   class Breed
-    constructor: (@name, @singular, @manager, @_shape = false, @members = []) -> #@# How come the default is `false`, but `BreedManager.defaultBreeds` passes in `"default"`?
-    shape: () -> if @_shape then @_shape else @manager.turtles()._shape
-    vars: []
+
+    # Array[String]
+    vars: undefined
+
+    # (String, String, BreedManager, String, Array[Agent]) => Breed
+    constructor: (@name, @singular, @manager, @_shape = undefined, @members = []) ->
+      @vars = []
+
+    # We can't just set this in the constructor, because people can swoop into the manager and change the turtles'
+    # default shape --JAB (5/27/14)
+    # () => String
+    shape: ->
+      if @_shape?
+        @_shape
+      else
+        @manager.turtles()._shape
+
+    # (Agent) => Unit
     add: (newAgent) ->
       index = _(@members).findIndex((agent) -> agent.id > newAgent.id)
       indexToSplitAt =
@@ -14,10 +29,14 @@ define(['integration/lodash'], (_) ->
       howManyToThrowOut = 0
       whatToInsert = newAgent
       @members.splice(indexToSplitAt, howManyToThrowOut, whatToInsert)
+      return
+
+    # (Agent) => Unit
     remove: (agent) ->
       indexToSplitAt = @members.indexOf(agent)
       howManyToThrowOut = 1
       @members.splice(indexToSplitAt, howManyToThrowOut)
+      return
 
 
   class BreedManager
