@@ -276,21 +276,16 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'engi
       _(xs).foldl(f, [])
 
     # (Array[T]) => Number
-    variance: (xs) -> #@# Clarity
-      sum = 0
-      count = xs.length
-      for x in xs
-        if Type(x).isNumber()
-          sum += x
-        else
-          --count
+    variance: (xs) ->
+      numbers = _(xs).filter((x) -> Type(x).isNumber())
+      count   = numbers.size()
+
       if count < 2
         throw new Exception.NetLogoException("Can't find the variance of a list without at least two numbers")
+
+      sum  = numbers.foldl(((acc, x) -> acc + x), 0)
       mean = sum / count
-      squareOfDifference = 0
-      for x in xs
-        if Type(x).isNumber()
-          squareOfDifference += StrictMath.pow(x - mean, 2)
+      squareOfDifference = numbers.foldl(((acc, x) -> acc + StrictMath.pow(x - mean, 2)), 0)
       squareOfDifference / (count - 1)
 
     # (String, Patch|Turtle|PatchSet|TurtleSet) => TurtleSet
