@@ -1,10 +1,10 @@
 #@# No more code golf
-define(['integration/lodash', 'integration/printer', 'integration/random', 'engine/abstractagents', 'engine/comparator'
-      , 'engine/dump', 'engine/exception', 'engine/link', 'engine/nobody', 'engine/patch', 'engine/patchset'
-      , 'engine/turtle', 'engine/turtleset', 'engine/typechecker']
-     , ( _,                    Printer,               Random,               AbstractAgents,          Comparator
-      ,  Dump,          Exception,          Link,          Nobody,          Patch,          PatchSet
-      ,  Turtle,          TurtleSet,          Type) ->
+define(['integration/lodash', 'integration/printer', 'integration/random', 'integration/strictmath'
+      , 'engine/abstractagents', 'engine/comparator', 'engine/dump', 'engine/exception', 'engine/link', 'engine/nobody'
+      , 'engine/patch', 'engine/patchset', 'engine/turtle', 'engine/turtleset', 'engine/typechecker']
+     , ( _,                    Printer,               Random,               StrictMath
+      , AbstractAgents,          Comparator,           Dump,          Exception,          Link,          Nobody
+      , Patch,          PatchSet,           Turtle,          TurtleSet,          Type) ->
 
   class Prims
 
