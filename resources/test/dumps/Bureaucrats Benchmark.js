@@ -1,4 +1,4 @@
-var workspace     = require('engine/workspace')(['plot_', 'total', 'result'], ['plot_'], 0, 99, 0, 99, 3.0, false, false, {"default":{"rotate":true,"elements":[{"xcors":[150,40,150,260],"ycors":[5,250,205,250],"type":"polygon","color":"rgba(141, 141, 141, 1.0)","filled":true,"marked":true}]}}, {"default":{}});
+var workspace     = require('engine/workspace')(['plot?', 'total', 'result'], ['plot?'], 0, 99, 0, 99, 3.0, false, false, {"default":{"rotate":true,"elements":[{"xcors":[150,40,150,260],"ycors":[5,250,205,250],"type":"polygon","color":"rgba(141, 141, 141, 1.0)","filled":true,"marked":true}]}}, {"default":{}});
 var AgentSet      = workspace.agentSet;
 var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
@@ -84,4 +84,4 @@ function colorize() {
     AgentSet.setPatchVariable(2, 15);
   }
 }
-world.observer.setGlobal('plot_', false);
+world.observer.setGlobal('plot?', false);
