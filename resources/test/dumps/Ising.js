@@ -42,9 +42,9 @@ function setup(initialMagnetization) {
     }
     Call(recolor);
   });
-  world.getGlobals().sum_of_spins = Prims.sum(AgentSet.of(world.patches(), function() {
+  world.observer.setGlobal('sum_of_spins', Prims.sum(AgentSet.of(world.patches(), function() {
     return AgentSet.getPatchVariable(5);
-  }));
+  })));
   world.ticker.reset();
 }
 function go() {
@@ -57,9 +57,9 @@ function update() {
   var ediff = ((2 * AgentSet.getPatchVariable(5)) * Prims.sum(AgentSet.of(Prims.getNeighbors4(), function() {
     return AgentSet.getPatchVariable(5);
   })));
-  if ((Prims.lte(ediff, 0) || (Prims.gt(world.getGlobals().temperature, 0) && Prims.lt(Prims.randomFloat(1), StrictMath.exp(((- ediff) / world.getGlobals().temperature)))))) {
+  if ((Prims.lte(ediff, 0) || (Prims.gt(world.observer.getGlobal('temperature'), 0) && Prims.lt(Prims.randomFloat(1), StrictMath.exp(((- ediff) / world.observer.getGlobal('temperature'))))))) {
     AgentSet.setPatchVariable(5, (- AgentSet.getPatchVariable(5)));
-    world.getGlobals().sum_of_spins = (world.getGlobals().sum_of_spins + (2 * AgentSet.getPatchVariable(5)));
+    world.observer.setGlobal('sum_of_spins', (world.observer.getGlobal('sum_of_spins') + (2 * AgentSet.getPatchVariable(5))));
     Call(recolor);
   }
 }
@@ -72,7 +72,7 @@ function recolor() {
   }
 }
 function magnetization() {
-  return (world.getGlobals().sum_of_spins / AgentSet.count(world.patches()));
+  return (world.observer.getGlobal('sum_of_spins') / AgentSet.count(world.patches()));
 }
-world.getGlobals().temperature = 2.24;
-world.getGlobals().plotting_interval = 100;
+world.observer.setGlobal('temperature', 2.24);
+world.observer.setGlobal('plotting_interval', 100);

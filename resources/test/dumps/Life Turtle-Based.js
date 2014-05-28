@@ -46,7 +46,7 @@ BreedManager.get("BABIES").vars =[""];function setupBlank() {
 function setupRandom() {
   Call(setupBlank);
   AgentSet.ask(world.patches(), true, function() {
-    if (Prims.lt(Prims.randomFloat(100), world.getGlobals().initial_density)) {
+    if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal('initial_density'))) {
       AgentSet.ask(Prims.sprout(1, "BABIES"), true, function() {});
     }
   });
@@ -152,4 +152,4 @@ function update() {
   }
   AgentSet.setPatchVariable(5, 0);
 }
-world.getGlobals().initial_density = 35;
+world.observer.setGlobal('initial_density', 35);

@@ -53,12 +53,12 @@ function go() {
       AgentSet.setPatchVariable(5, 0);
     }
     if (Prims.equality(AgentSet.getPatchVariable(6), 4)) {
-      if (world.getGlobals().change_vote_if_tied_) {
+      if (world.observer.getGlobal('change_vote_if_tied_')) {
         AgentSet.setPatchVariable(5, (1 - AgentSet.getPatchVariable(5)));
       }
     }
     if (Prims.equality(AgentSet.getPatchVariable(6), 5)) {
-      if (world.getGlobals().award_close_calls_to_loser_) {
+      if (world.observer.getGlobal('award_close_calls_to_loser_')) {
         AgentSet.setPatchVariable(5, 0);
       }
       else {
@@ -66,7 +66,7 @@ function go() {
       }
     }
     if (Prims.equality(AgentSet.getPatchVariable(6), 3)) {
-      if (world.getGlobals().award_close_calls_to_loser_) {
+      if (world.observer.getGlobal('award_close_calls_to_loser_')) {
         AgentSet.setPatchVariable(5, 1);
       }
       else {
@@ -85,5 +85,5 @@ function recolorPatch() {
     AgentSet.setPatchVariable(2, 105);
   }
 }
-world.getGlobals().change_vote_if_tied_ = false;
-world.getGlobals().award_close_calls_to_loser_ = false;
+world.observer.setGlobal('change_vote_if_tied_', false);
+world.observer.setGlobal('award_close_calls_to_loser_', false);

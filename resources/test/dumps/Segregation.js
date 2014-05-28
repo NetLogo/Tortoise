@@ -33,16 +33,16 @@ var StrictMath     = require('integration/strictmath');
 TurtlesOwn.init(4);
 function setup() {
   world.clearAll();
-  if (Prims.gt(world.getGlobals().number, AgentSet.count(world.patches()))) {
+  if (Prims.gt(world.observer.getGlobal('number'), AgentSet.count(world.patches()))) {
     notImplemented('user-message', undefined)((Dump("") + Dump("This pond only has room for ") + Dump(AgentSet.count(world.patches())) + Dump(" turtles.")));
     throw new Exception.StopInterrupt;
   }
-  AgentSet.ask(AgentSet.nOf(world.getGlobals().number, world.patches()), true, function() {
+  AgentSet.ask(AgentSet.nOf(world.observer.getGlobal('number'), world.patches()), true, function() {
     AgentSet.ask(Prims.sprout(1, ""), true, function() {
       AgentSet.setTurtleVariable(1, 15);
     });
   });
-  AgentSet.ask(AgentSet.nOf((world.getGlobals().number / 2), world.turtles()), true, function() {
+  AgentSet.ask(AgentSet.nOf((world.observer.getGlobal('number') / 2), world.turtles()), true, function() {
     AgentSet.setTurtleVariable(1, 55);
   });
   Call(updateVariables);
@@ -88,7 +88,7 @@ function updateTurtles() {
       }));
     })));
     AgentSet.setTurtleVariable(16, (AgentSet.getTurtleVariable(14) + AgentSet.getTurtleVariable(15)));
-    AgentSet.setTurtleVariable(13, Prims.gte(AgentSet.getTurtleVariable(14), ((world.getGlobals().__similar_wanted * AgentSet.getTurtleVariable(16)) / 100)));
+    AgentSet.setTurtleVariable(13, Prims.gte(AgentSet.getTurtleVariable(14), ((world.observer.getGlobal('__similar_wanted') * AgentSet.getTurtleVariable(16)) / 100)));
   });
 }
 function updateGlobals() {
@@ -98,10 +98,10 @@ function updateGlobals() {
   var totalNeighbors = Prims.sum(AgentSet.of(world.turtles(), function() {
     return AgentSet.getTurtleVariable(16);
   }));
-  world.getGlobals().percent_similar = ((similarNeighbors / totalNeighbors) * 100);
-  world.getGlobals().percent_unhappy = ((AgentSet.count(AgentSet.agentFilter(world.turtles(), function() {
+  world.observer.setGlobal('percent_similar', ((similarNeighbors / totalNeighbors) * 100));
+  world.observer.setGlobal('percent_unhappy', ((AgentSet.count(AgentSet.agentFilter(world.turtles(), function() {
     return !(AgentSet.getTurtleVariable(13));
-  })) / AgentSet.count(world.turtles())) * 100);
+  })) / AgentSet.count(world.turtles())) * 100));
 }
-world.getGlobals().number = 2000;
-world.getGlobals().__similar_wanted = 30;
+world.observer.setGlobal('number', 2000);
+world.observer.setGlobal('__similar_wanted', 30);

@@ -33,14 +33,14 @@ var StrictMath     = require('integration/strictmath');
 TurtlesOwn.init(2);
 function setup() {
   world.clearAll();
-  world.getGlobals().group_sites = AgentSet.agentFilter(world.patches(), function() {
+  world.observer.setGlobal('group_sites', AgentSet.agentFilter(world.patches(), function() {
     return Call(groupSite_p);
-  });
+  }));
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "person")
-  AgentSet.ask(world.createTurtles(world.getGlobals().number, ""), true, function() {
+  AgentSet.ask(world.createTurtles(world.observer.getGlobal('number'), ""), true, function() {
     Call(chooseSex);
     AgentSet.setTurtleVariable(10, 3);
-    AgentSet.setTurtleVariable(14, AgentSet.oneOf(world.getGlobals().group_sites));
+    AgentSet.setTurtleVariable(14, AgentSet.oneOf(world.observer.getGlobal('group_sites')));
     AgentSet.self().moveTo(AgentSet.getTurtleVariable(14));
   });
   AgentSet.ask(world.turtles(), true, function() {
@@ -83,7 +83,7 @@ function updateHappiness() {
     }));
   }));
   var opposite = (total - same);
-  AgentSet.setTurtleVariable(13, Prims.lte((opposite / total), (world.getGlobals().tolerance / 100)));
+  AgentSet.setTurtleVariable(13, Prims.lte((opposite / total), (world.observer.getGlobal('tolerance') / 100)));
 }
 function leaveIfUnhappy() {
   if (!(AgentSet.getTurtleVariable(13))) {
@@ -94,7 +94,7 @@ function leaveIfUnhappy() {
 function findNewGroups() {
   notImplemented('display', undefined)();
   var malcontents = AgentSet.agentFilter(world.turtles(), function() {
-    return !(Prims.member(AgentSet.self().getPatchHere(), world.getGlobals().group_sites));
+    return !(Prims.member(AgentSet.self().getPatchHere(), world.observer.getGlobal('group_sites')));
   });
   if (!(AgentSet.any(malcontents))) {
     throw new Exception.StopInterrupt;
@@ -105,8 +105,8 @@ function findNewGroups() {
   Call(findNewGroups);
 }
 function groupSite_p() {
-  var groupInterval = StrictMath.floor((world.width() / world.getGlobals().num_groups));
-  return (((Prims.equality(AgentSet.getPatchVariable(1), 0) && Prims.lte(AgentSet.getPatchVariable(0), 0)) && Prims.equality(Prims.mod(AgentSet.getPatchVariable(0), groupInterval), 0)) && Prims.lt(StrictMath.floor(((- AgentSet.getPatchVariable(0)) / groupInterval)), world.getGlobals().num_groups));
+  var groupInterval = StrictMath.floor((world.width() / world.observer.getGlobal('num_groups')));
+  return (((Prims.equality(AgentSet.getPatchVariable(1), 0) && Prims.lte(AgentSet.getPatchVariable(0), 0)) && Prims.equality(Prims.mod(AgentSet.getPatchVariable(0), groupInterval), 0)) && Prims.lt(StrictMath.floor(((- AgentSet.getPatchVariable(0)) / groupInterval)), world.observer.getGlobal('num_groups')));
 }
 function spreadOutVertically() {
   if (Call(woman_p)) {
@@ -128,7 +128,7 @@ function spreadOutVertically() {
   }
 }
 function countBoringGroups() {
-  AgentSet.ask(world.getGlobals().group_sites, true, function() {
+  AgentSet.ask(world.observer.getGlobal('group_sites'), true, function() {
     if (Call(boring_p)) {
       AgentSet.setPatchVariable(4, 5);
     }
@@ -136,9 +136,9 @@ function countBoringGroups() {
       AgentSet.setPatchVariable(4, 9.9);
     }
   });
-  world.getGlobals().boring_groups = AgentSet.count(AgentSet.agentFilter(world.getGlobals().group_sites, function() {
+  world.observer.setGlobal('boring_groups', AgentSet.count(AgentSet.agentFilter(world.observer.getGlobal('group_sites'), function() {
     return Prims.equality(AgentSet.getPatchVariable(4), 5);
-  }));
+  })));
 }
 function boring_p() {
   return Prims.equality(Prims.length(Prims.removeDuplicates(AgentSet.of(AgentSet.self().turtlesHere(), function() {
@@ -146,7 +146,7 @@ function boring_p() {
   }))), 1);
 }
 function updateLabels() {
-  AgentSet.ask(world.getGlobals().group_sites, true, function() {
+  AgentSet.ask(world.observer.getGlobal('group_sites'), true, function() {
     AgentSet.setPatchVariable(3, AgentSet.count(AgentSet.self().turtlesHere()));
   });
 }
@@ -156,6 +156,6 @@ function chooseSex() {
 function woman_p() {
   return Prims.equality(AgentSet.getTurtleVariable(1), 135);
 }
-world.getGlobals().tolerance = 25;
-world.getGlobals().number = 70;
-world.getGlobals().num_groups = 10;
+world.observer.setGlobal('tolerance', 25);
+world.observer.setGlobal('number', 70);
+world.observer.setGlobal('num_groups', 10);

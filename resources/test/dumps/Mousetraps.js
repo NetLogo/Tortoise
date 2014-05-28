@@ -32,7 +32,7 @@ var StrictMath     = require('integration/strictmath');
 
 function setup() {
   world.clearAll();
-  world.getGlobals().traps_triggered = 0;
+  world.observer.setGlobal('traps_triggered', 0);
   AgentSet.ask(world.patches(), true, function() {
     AgentSet.setPatchVariable(2, (105 + 3));
   });
@@ -53,7 +53,7 @@ function go() {
     }
     else {
       AgentSet.setPatchVariable(2, 15);
-      world.getGlobals().traps_triggered = (world.getGlobals().traps_triggered + 1);
+      world.observer.setGlobal('traps_triggered', (world.observer.getGlobal('traps_triggered') + 1));
       AgentSet.ask(Prims.hatch(1, ""), true, function() {
         Call(move);
       });
@@ -64,6 +64,6 @@ function go() {
 }
 function move() {
   Prims.right(Prims.randomFloat(360));
-  Prims.fd(Prims.randomFloat(world.getGlobals().max_distance));
+  Prims.fd(Prims.randomFloat(world.observer.getGlobal('max_distance')));
 }
-world.getGlobals().max_distance = 4.5;
+world.observer.setGlobal('max_distance', 4.5);

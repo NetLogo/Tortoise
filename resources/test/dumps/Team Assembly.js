@@ -38,7 +38,7 @@ function makeNewcomer() {
     AgentSet.setTurtleVariable(10, 1.8);
     AgentSet.setTurtleVariable(13, false);
     AgentSet.setTurtleVariable(14, false);
-    world.getGlobals().newcomer = AgentSet.self();
+    world.observer.setGlobal('newcomer', AgentSet.self());
     AgentSet.setTurtleVariable(15, 0);
     AgentSet.setTurtleVariable(16, false);
   });
@@ -46,7 +46,7 @@ function makeNewcomer() {
 function setup() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
-  Prims.repeat(world.getGlobals().team_size, function () {
+  Prims.repeat(world.observer.getGlobal('team_size'), function () {
     Call(makeNewcomer);
   });
   AgentSet.ask(world.turtles(), true, function() {
@@ -56,7 +56,7 @@ function setup() {
   Call(tieCollaborators);
   Call(colorCollaborations);
   AgentSet.ask(world.turtles(), true, function() {
-    AgentSet.setTurtleVariable(2, ((360 / world.getGlobals().team_size) * AgentSet.getTurtleVariable(0)));
+    AgentSet.setTurtleVariable(2, ((360 / world.observer.getGlobal('team_size')) * AgentSet.getTurtleVariable(0)));
     Prims.fd(1.75);
     AgentSet.setTurtleVariable(14, false);
   });
@@ -76,13 +76,13 @@ function go() {
   Call(tieCollaborators);
   Call(colorCollaborations);
   AgentSet.ask(world.turtles(), true, function() {
-    if (Prims.gt(AgentSet.getTurtleVariable(15), world.getGlobals().max_downtime)) {
+    if (Prims.gt(AgentSet.getTurtleVariable(15), world.observer.getGlobal('max_downtime'))) {
       AgentSet.die();
     }
     AgentSet.setTurtleVariable(14, false);
     AgentSet.setTurtleVariable(15, (AgentSet.getTurtleVariable(15) + 1));
   });
-  if (world.getGlobals().layout_) {
+  if (world.observer.getGlobal('layout_')) {
     Call(layout);
   }
   Call(findAllComponents);
@@ -90,13 +90,13 @@ function go() {
 }
 function pickTeamMembers() {
   var newTeamMember = Nobody;
-  Prims.repeat(world.getGlobals().team_size, function () {
-    if (Prims.gte(Prims.randomFloat(100), world.getGlobals().p)) {
+  Prims.repeat(world.observer.getGlobal('team_size'), function () {
+    if (Prims.gte(Prims.randomFloat(100), world.observer.getGlobal('p'))) {
       Call(makeNewcomer);
-      newTeamMember = world.getGlobals().newcomer;
+      newTeamMember = world.observer.getGlobal('newcomer');
     }
     else {
-      if ((Prims.lt(Prims.randomFloat(100), world.getGlobals().q) && AgentSet.any(AgentSet.agentFilter(world.turtles(), function() {
+      if ((Prims.lt(Prims.randomFloat(100), world.observer.getGlobal('q')) && AgentSet.any(AgentSet.agentFilter(world.turtles(), function() {
         return (AgentSet.getTurtleVariable(14) && AgentSet.any(AgentSet.agentFilter(AgentSet.linkNeighbors(false, false), function() {
           return !(AgentSet.getTurtleVariable(14));
         })));
@@ -174,8 +174,8 @@ function layout() {
   });
 }
 function findAllComponents() {
-  world.getGlobals().components = [];
-  world.getGlobals().giant_component_size = 0;
+  world.observer.setGlobal('components', []);
+  world.observer.setGlobal('giant_component_size', 0);
   AgentSet.ask(world.turtles(), true, function() {
     AgentSet.setTurtleVariable(16, false);
   });
@@ -186,14 +186,14 @@ function findAllComponents() {
     if (Prims.equality(start, Nobody)) {
       throw new Exception.StopInterrupt;
     }
-    world.getGlobals().component_size = 0;
+    world.observer.setGlobal('component_size', 0);
     AgentSet.ask(start, true, function() {
       Call(explore);
     });
-    if (Prims.gt(world.getGlobals().component_size, world.getGlobals().giant_component_size)) {
-      world.getGlobals().giant_component_size = world.getGlobals().component_size;
+    if (Prims.gt(world.observer.getGlobal('component_size'), world.observer.getGlobal('giant_component_size'))) {
+      world.observer.setGlobal('giant_component_size', world.observer.getGlobal('component_size'));
     }
-    world.getGlobals().components = Prims.lput(world.getGlobals().component_size, world.getGlobals().components);
+    world.observer.setGlobal('components', Prims.lput(world.observer.getGlobal('component_size'), world.observer.getGlobal('components')));
   };
 }
 function explore() {
@@ -201,14 +201,14 @@ function explore() {
     throw new Exception.StopInterrupt;
   }
   AgentSet.setTurtleVariable(16, true);
-  world.getGlobals().component_size = (world.getGlobals().component_size + 1);
+  world.observer.setGlobal('component_size', (world.observer.getGlobal('component_size') + 1));
   AgentSet.ask(AgentSet.linkNeighbors(false, false), true, function() {
     Call(explore);
   });
 }
-world.getGlobals().layout_ = true;
-world.getGlobals().p = 40;
-world.getGlobals().q = 65;
-world.getGlobals().team_size = 4;
-world.getGlobals().plot_ = true;
-world.getGlobals().max_downtime = 40;
+world.observer.setGlobal('layout_', true);
+world.observer.setGlobal('p', 40);
+world.observer.setGlobal('q', 65);
+world.observer.setGlobal('team_size', 4);
+world.observer.setGlobal('plot_', true);
+world.observer.setGlobal('max_downtime', 40);

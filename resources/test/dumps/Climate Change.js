@@ -47,23 +47,23 @@ BreedManager.get("CLOUDS").vars =["CLOUD-SPEED", "CLOUD-ID"];function setup() {
   BreedManager.setDefaultShape(world.turtlesOfBreed("HEATS").getBreedName(), "dot")
   BreedManager.setDefaultShape(world.turtlesOfBreed("CO2S").getBreedName(), "CO2-molecule")
   Call(setupWorld);
-  world.getGlobals().temperature = 12;
+  world.observer.setGlobal('temperature', 12);
   world.ticker.reset();
 }
 function setupWorld() {
-  world.getGlobals().sky_top = (world.maxPycor - 5);
-  world.getGlobals().earth_top = 0;
+  world.observer.setGlobal('sky_top', (world.maxPycor - 5));
+  world.observer.setGlobal('earth_top', 0);
   AgentSet.ask(world.patches(), true, function() {
-    if (Prims.gt(AgentSet.getPatchVariable(1), world.getGlobals().sky_top)) {
+    if (Prims.gt(AgentSet.getPatchVariable(1), world.observer.getGlobal('sky_top'))) {
       AgentSet.setPatchVariable(2, Prims.scaleColor(9.9, AgentSet.getPatchVariable(1), 22, 15));
     }
-    if ((Prims.lte(AgentSet.getPatchVariable(1), world.getGlobals().sky_top) && Prims.gt(AgentSet.getPatchVariable(1), world.getGlobals().earth_top))) {
+    if ((Prims.lte(AgentSet.getPatchVariable(1), world.observer.getGlobal('sky_top')) && Prims.gt(AgentSet.getPatchVariable(1), world.observer.getGlobal('earth_top')))) {
       AgentSet.setPatchVariable(2, Prims.scaleColor(105, AgentSet.getPatchVariable(1), -20, 20));
     }
-    if (Prims.lt(AgentSet.getPatchVariable(1), world.getGlobals().earth_top)) {
+    if (Prims.lt(AgentSet.getPatchVariable(1), world.observer.getGlobal('earth_top'))) {
       AgentSet.setPatchVariable(2, (15 + 3));
     }
-    if (Prims.equality(AgentSet.getPatchVariable(1), world.getGlobals().earth_top)) {
+    if (Prims.equality(AgentSet.getPatchVariable(1), world.observer.getGlobal('earth_top'))) {
       Call(updateAlbedo);
     }
   });
@@ -74,7 +74,7 @@ function go() {
   });
   Call(runSunshine);
   AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
-    return Prims.equality(AgentSet.getPatchVariable(1), world.getGlobals().earth_top);
+    return Prims.equality(AgentSet.getPatchVariable(1), world.observer.getGlobal('earth_top'));
   }), true, function() {
     Call(updateAlbedo);
   });
@@ -84,11 +84,11 @@ function go() {
   world.ticker.tick();
 }
 function updateAlbedo() {
-  AgentSet.setPatchVariable(2, Prims.scaleColor(55, world.getGlobals().albedo, 0, 1));
+  AgentSet.setPatchVariable(2, Prims.scaleColor(55, world.observer.getGlobal('albedo'), 0, 1));
 }
 function addCloud() {
-  var skyHeight = (world.getGlobals().sky_top - world.getGlobals().earth_top);
-  var y = ((world.getGlobals().earth_top + Prims.randomFloat((skyHeight - 4))) + 2);
+  var skyHeight = (world.observer.getGlobal('sky_top') - world.observer.getGlobal('earth_top'));
+  var y = ((world.observer.getGlobal('earth_top') + Prims.randomFloat((skyHeight - 4))) + 2);
   var speed = (Prims.randomFloat(0.1) + 0.01);
   var x = Prims.randomXcor();
   var id = 0;
@@ -130,7 +130,7 @@ function runSunshine() {
   Call(encounterEarth);
 }
 function createSunshine() {
-  if (Prims.gt((10 * world.getGlobals().sun_brightness), Prims.random(50))) {
+  if (Prims.gt((10 * world.observer.getGlobal('sun_brightness')), Prims.random(50))) {
     AgentSet.ask(world.createTurtles(1, "RAYS"), true, function() {
       AgentSet.setTurtleVariable(2, 160);
       AgentSet.setTurtleVariable(1, 45);
@@ -147,9 +147,9 @@ function reflectRaysFromClouds() {
 }
 function encounterEarth() {
   AgentSet.ask(AgentSet.agentFilter(world.turtlesOfBreed("RAYS"), function() {
-    return Prims.lte(AgentSet.getTurtleVariable(4), world.getGlobals().earth_top);
+    return Prims.lte(AgentSet.getTurtleVariable(4), world.observer.getGlobal('earth_top'));
   }), true, function() {
-    if (Prims.gt((100 * world.getGlobals().albedo), Prims.random(100))) {
+    if (Prims.gt((100 * world.observer.getGlobal('albedo')), Prims.random(100))) {
       AgentSet.setTurtleVariable(2, (180 - AgentSet.getTurtleVariable(2)));
     }
     else {
@@ -160,7 +160,7 @@ function encounterEarth() {
   });
 }
 function runHeat() {
-  world.getGlobals().temperature = ((0.99 * world.getGlobals().temperature) + (0.01 * (12 + (0.1 * AgentSet.count(world.turtlesOfBreed("HEATS"))))));
+  world.observer.setGlobal('temperature', ((0.99 * world.observer.getGlobal('temperature')) + (0.01 * (12 + (0.1 * AgentSet.count(world.turtlesOfBreed("HEATS")))))));
   AgentSet.ask(world.turtlesOfBreed("HEATS"), true, function() {
     var dist = (0.5 * Prims.randomFloat(1));
     if (AgentSet.self().canMove(dist)) {
@@ -169,8 +169,8 @@ function runHeat() {
     else {
       AgentSet.setTurtleVariable(2, (180 - AgentSet.getTurtleVariable(2)));
     }
-    if (Prims.gte(AgentSet.getTurtleVariable(4), world.getGlobals().earth_top)) {
-      if (((Prims.gt(world.getGlobals().temperature, (20 + Prims.random(40))) && Prims.gt(AgentSet.getTurtleVariable(3), 0)) && Prims.lt(AgentSet.getTurtleVariable(3), (world.maxPxcor - 8)))) {
+    if (Prims.gte(AgentSet.getTurtleVariable(4), world.observer.getGlobal('earth_top'))) {
+      if (((Prims.gt(world.observer.getGlobal('temperature'), (20 + Prims.random(40))) && Prims.gt(AgentSet.getTurtleVariable(3), 0)) && Prims.lt(AgentSet.getTurtleVariable(3), (world.maxPxcor - 8)))) {
         AgentSet.setBreed(world.turtlesOfBreed("IRS"));
         AgentSet.setTurtleVariable(2, 20);
         AgentSet.setTurtleVariable(1, 125);
@@ -187,7 +187,7 @@ function runIr() {
       AgentSet.die();
     }
     Prims.fd(0.3);
-    if (Prims.lte(AgentSet.getTurtleVariable(4), world.getGlobals().earth_top)) {
+    if (Prims.lte(AgentSet.getTurtleVariable(4), world.observer.getGlobal('earth_top'))) {
       AgentSet.setBreed(world.turtlesOfBreed("HEATS"));
       Prims.right(Prims.random(45));
       Prims.left(Prims.random(45));
@@ -199,10 +199,10 @@ function runIr() {
   });
 }
 function addCo2() {
-  var skyHeight = (world.getGlobals().sky_top - world.getGlobals().earth_top);
+  var skyHeight = (world.observer.getGlobal('sky_top') - world.observer.getGlobal('earth_top'));
   AgentSet.ask(world.createTurtles(25, "CO2S"), true, function() {
     AgentSet.setTurtleVariable(1, 55);
-    Prims.setXY(Prims.randomXcor(), (world.getGlobals().earth_top + Prims.randomFloat(skyHeight)));
+    Prims.setXY(Prims.randomXcor(), (world.observer.getGlobal('earth_top') + Prims.randomFloat(skyHeight)));
   });
 }
 function removeCo2() {
@@ -226,5 +226,5 @@ function runCo2() {
     Prims.fd(dist);
   });
 }
-world.getGlobals().sun_brightness = 1;
-world.getGlobals().albedo = 0.6;
+world.observer.setGlobal('sun_brightness', 1);
+world.observer.setGlobal('albedo', 0.6);

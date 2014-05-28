@@ -32,16 +32,16 @@ var StrictMath     = require('integration/strictmath');
 
 BreedManager.add("MOTHS", "moth");
 BreedManager.get("MOTHS").vars =["AGE"];function envColor() {
-  return (9 - world.getGlobals().darkness);
+  return (9 - world.observer.getGlobal('darkness'));
 }
 function deltaEnv() {
-  return (world.getGlobals().speed / 100);
+  return (world.observer.getGlobal('speed') / 100);
 }
 function randomColor() {
   return (Prims.random(9) + 1);
 }
 function upperBound() {
-  return (4 * world.getGlobals().num_moths);
+  return (4 * world.observer.getGlobal('num_moths'));
 }
 function setup() {
   world.clearAll();
@@ -51,14 +51,14 @@ function setup() {
   world.ticker.reset();
 }
 function setupWorld() {
-  world.getGlobals().darkness = 0;
-  world.getGlobals().darkening_ = true;
+  world.observer.setGlobal('darkness', 0);
+  world.observer.setGlobal('darkening_', true);
   AgentSet.ask(world.patches(), true, function() {
     AgentSet.setPatchVariable(2, Call(envColor));
   });
 }
 function setupMoths() {
-  AgentSet.ask(world.createTurtles(world.getGlobals().num_moths, "MOTHS"), true, function() {
+  AgentSet.ask(world.createTurtles(world.observer.getGlobal('num_moths'), "MOTHS"), true, function() {
     AgentSet.setTurtleVariable(1, Call(randomColor));
     Call(mothsPickShape);
     AgentSet.setBreedVariable("AGE", Prims.random(3));
@@ -72,7 +72,7 @@ function go() {
     Call(mothsGetEaten);
     Call(mothsAge);
   });
-  if (world.getGlobals().cycle_pollution_) {
+  if (world.observer.getGlobal('cycle_pollution_')) {
     Call(cyclePollution);
   }
   world.ticker.tick();
@@ -81,15 +81,15 @@ function go() {
 function mothsMate() {
   if ((Prims.equality(AgentSet.getBreedVariable("AGE"), 2) || Prims.equality(AgentSet.getBreedVariable("AGE"), 3))) {
     AgentSet.ask(Prims.hatch(2, ""), true, function() {
-      if (Prims.lt(Prims.randomFloat(100), world.getGlobals().mutation)) {
+      if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal('mutation'))) {
         if (Prims.equality(Prims.random(2), 0)) {
-          AgentSet.setTurtleVariable(1, StrictMath.round((AgentSet.getTurtleVariable(1) + (Prims.randomFloat(world.getGlobals().mutation) / 12.5))));
+          AgentSet.setTurtleVariable(1, StrictMath.round((AgentSet.getTurtleVariable(1) + (Prims.randomFloat(world.observer.getGlobal('mutation')) / 12.5))));
           if (Prims.gte(AgentSet.getTurtleVariable(1), 9)) {
             AgentSet.setTurtleVariable(1, 9);
           }
         }
         else {
-          AgentSet.setTurtleVariable(1, StrictMath.round((AgentSet.getTurtleVariable(1) - (Prims.randomFloat(world.getGlobals().mutation) / 12.5))));
+          AgentSet.setTurtleVariable(1, StrictMath.round((AgentSet.getTurtleVariable(1) - (Prims.randomFloat(world.observer.getGlobal('mutation')) / 12.5))));
           if ((Prims.lte(AgentSet.getTurtleVariable(1), 1) || Prims.gte(AgentSet.getTurtleVariable(1), 130))) {
             AgentSet.setTurtleVariable(1, 1);
           }
@@ -103,7 +103,7 @@ function mothsMate() {
   }
 }
 function mothsGetEaten() {
-  if (Prims.lt(Prims.randomFloat(1000), ((world.getGlobals().selection * StrictMath.abs((Call(envColor) - AgentSet.getTurtleVariable(1)))) + 200))) {
+  if (Prims.lt(Prims.randomFloat(1000), ((world.observer.getGlobal('selection') * StrictMath.abs((Call(envColor) - AgentSet.getTurtleVariable(1)))) + 200))) {
     AgentSet.die();
   }
 }
@@ -129,46 +129,46 @@ function mothsPickShape() {
   }
 }
 function updateMonitors() {
-  world.getGlobals().light_moths = AgentSet.count(AgentSet.agentFilter(world.turtlesOfBreed("MOTHS"), function() {
+  world.observer.setGlobal('light_moths', AgentSet.count(AgentSet.agentFilter(world.turtlesOfBreed("MOTHS"), function() {
     return Prims.gte(AgentSet.getTurtleVariable(1), 7);
-  }));
-  world.getGlobals().dark_moths = AgentSet.count(AgentSet.agentFilter(world.turtlesOfBreed("MOTHS"), function() {
+  })));
+  world.observer.setGlobal('dark_moths', AgentSet.count(AgentSet.agentFilter(world.turtlesOfBreed("MOTHS"), function() {
     return Prims.lte(AgentSet.getTurtleVariable(1), 3);
-  }));
-  world.getGlobals().medium_moths = (AgentSet.count(world.turtlesOfBreed("MOTHS")) - (world.getGlobals().light_moths + world.getGlobals().dark_moths));
+  })));
+  world.observer.setGlobal('medium_moths', (AgentSet.count(world.turtlesOfBreed("MOTHS")) - (world.observer.getGlobal('light_moths') + world.observer.getGlobal('dark_moths'))));
 }
 function polluteWorld() {
-  if (Prims.lte(world.getGlobals().darkness, (8 - Call(deltaEnv)))) {
-    world.getGlobals().darkness = (world.getGlobals().darkness + Call(deltaEnv));
+  if (Prims.lte(world.observer.getGlobal('darkness'), (8 - Call(deltaEnv)))) {
+    world.observer.setGlobal('darkness', (world.observer.getGlobal('darkness') + Call(deltaEnv)));
     AgentSet.ask(world.patches(), true, function() {
       AgentSet.setPatchVariable(2, Call(envColor));
     });
   }
   else {
-    world.getGlobals().darkening_ = false;
+    world.observer.setGlobal('darkening_', false);
   }
 }
 function cleanUpWorld() {
-  if (Prims.gte(world.getGlobals().darkness, (0 + Call(deltaEnv)))) {
-    world.getGlobals().darkness = (world.getGlobals().darkness - Call(deltaEnv));
+  if (Prims.gte(world.observer.getGlobal('darkness'), (0 + Call(deltaEnv)))) {
+    world.observer.setGlobal('darkness', (world.observer.getGlobal('darkness') - Call(deltaEnv)));
     AgentSet.ask(world.patches(), true, function() {
       AgentSet.setPatchVariable(2, Call(envColor));
     });
   }
   else {
-    world.getGlobals().darkening_ = true;
+    world.observer.setGlobal('darkening_', true);
   }
 }
 function cyclePollution() {
-  if (Prims.equality(world.getGlobals().darkening_, true)) {
+  if (Prims.equality(world.observer.getGlobal('darkening_'), true)) {
     Call(polluteWorld);
   }
   else {
     Call(cleanUpWorld);
   }
 }
-world.getGlobals().num_moths = 100;
-world.getGlobals().mutation = 15;
-world.getGlobals().selection = 50;
-world.getGlobals().speed = 10;
-world.getGlobals().cycle_pollution_ = false;
+world.observer.setGlobal('num_moths', 100);
+world.observer.setGlobal('mutation', 15);
+world.observer.setGlobal('selection', 50);
+world.observer.setGlobal('speed', 10);
+world.observer.setGlobal('cycle_pollution_', false);

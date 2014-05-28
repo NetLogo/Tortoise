@@ -33,7 +33,7 @@ var StrictMath     = require('integration/strictmath');
 PatchesOwn.init(1);
 function setup() {
   world.clearAll();
-  AgentSet.ask(world.createTurtles(world.getGlobals().population, ""), true, function() {
+  AgentSet.ask(world.createTurtles(world.observer.getGlobal('population'), ""), true, function() {
     AgentSet.setTurtleVariable(1, 15);
     AgentSet.setTurtleVariable(10, 2);
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
@@ -45,10 +45,10 @@ function setup() {
 }
 function go() {
   AgentSet.ask(world.turtles(), true, function() {
-    if (Prims.gt(AgentSet.getPatchVariable(5), world.getGlobals().sniff_threshold)) {
+    if (Prims.gt(AgentSet.getPatchVariable(5), world.observer.getGlobal('sniff_threshold'))) {
       Call(turnTowardChemical);
     }
-    Prims.right(((Prims.randomFloat(world.getGlobals().wiggle_angle) - Prims.randomFloat(world.getGlobals().wiggle_angle)) + world.getGlobals().wiggle_bias));
+    Prims.right(((Prims.randomFloat(world.observer.getGlobal('wiggle_angle')) - Prims.randomFloat(world.observer.getGlobal('wiggle_angle'))) + world.observer.getGlobal('wiggle_bias')));
     Prims.fd(1);
     AgentSet.setPatchVariable(5, (AgentSet.getPatchVariable(5) + 2));
   });
@@ -63,23 +63,23 @@ function turnTowardChemical() {
   var ahead = AgentSet.of(AgentSet.self().patchAhead(1), function() {
     return AgentSet.getPatchVariable(5);
   });
-  var myright = AgentSet.of(AgentSet.self().patchRightAndAhead(world.getGlobals().sniff_angle, 1), function() {
+  var myright = AgentSet.of(AgentSet.self().patchRightAndAhead(world.observer.getGlobal('sniff_angle'), 1), function() {
     return AgentSet.getPatchVariable(5);
   });
-  var myleft = AgentSet.of(AgentSet.self().patchLeftAndAhead(world.getGlobals().sniff_angle, 1), function() {
+  var myleft = AgentSet.of(AgentSet.self().patchLeftAndAhead(world.observer.getGlobal('sniff_angle'), 1), function() {
     return AgentSet.getPatchVariable(5);
   });
   if ((Prims.gte(myright, ahead) && Prims.gte(myright, myleft))) {
-    Prims.right(world.getGlobals().sniff_angle);
+    Prims.right(world.observer.getGlobal('sniff_angle'));
   }
   else {
     if (Prims.gte(myleft, ahead)) {
-      Prims.left(world.getGlobals().sniff_angle);
+      Prims.left(world.observer.getGlobal('sniff_angle'));
     }
   }
 }
-world.getGlobals().population = 400;
-world.getGlobals().sniff_threshold = 1;
-world.getGlobals().sniff_angle = 45;
-world.getGlobals().wiggle_angle = 40;
-world.getGlobals().wiggle_bias = 0;
+world.observer.setGlobal('population', 400);
+world.observer.setGlobal('sniff_threshold', 1);
+world.observer.setGlobal('sniff_angle', 45);
+world.observer.setGlobal('wiggle_angle', 40);
+world.observer.setGlobal('wiggle_bias', 0);

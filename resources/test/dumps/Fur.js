@@ -34,8 +34,8 @@ PatchesOwn.init(3);
 function setup() {
   world.clearAll();
   AgentSet.ask(world.patches(), true, function() {
-    AgentSet.setPatchVariable(6, Call(ellipseIn, world.getGlobals().inner_radius_x, world.getGlobals().inner_radius_y));
-    AgentSet.setPatchVariable(7, Call(ellipseRing, world.getGlobals().outer_radius_x, world.getGlobals().outer_radius_y, world.getGlobals().inner_radius_x, world.getGlobals().inner_radius_y));
+    AgentSet.setPatchVariable(6, Call(ellipseIn, world.observer.getGlobal('inner_radius_x'), world.observer.getGlobal('inner_radius_y')));
+    AgentSet.setPatchVariable(7, Call(ellipseRing, world.observer.getGlobal('outer_radius_x'), world.observer.getGlobal('outer_radius_y'), world.observer.getGlobal('inner_radius_x'), world.observer.getGlobal('inner_radius_y')));
   });
   if (AgentSet.any(AgentSet.agentFilter(world.patches(), function() {
     return Prims.equality(AgentSet.count(AgentSet.getPatchVariable(7)), 0);
@@ -50,7 +50,7 @@ function setup() {
 }
 function restart() {
   AgentSet.ask(world.patches(), true, function() {
-    if (Prims.lt(Prims.randomFloat(100), world.getGlobals().initial_density)) {
+    if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal('initial_density'))) {
       AgentSet.setPatchVariable(2, 9.9);
     }
     else {
@@ -75,7 +75,7 @@ function pickNewColor() {
   var inhibitor = AgentSet.count(AgentSet.agentFilter(AgentSet.getPatchVariable(7), function() {
     return Prims.equality(AgentSet.getPatchVariable(2), 9.9);
   }));
-  var difference = (activator - (world.getGlobals().ratio * inhibitor));
+  var difference = (activator - (world.observer.getGlobal('ratio') * inhibitor));
   if (Prims.gt(difference, 0)) {
     AgentSet.setPatchVariable(5, 9.9);
   }
@@ -105,9 +105,9 @@ function ydistance(otherPatch) {
     return AgentSet.getPatchVariable(1);
   }));
 }
-world.getGlobals().initial_density = 50;
-world.getGlobals().ratio = 0.35;
-world.getGlobals().inner_radius_x = 3;
-world.getGlobals().inner_radius_y = 3;
-world.getGlobals().outer_radius_x = 6;
-world.getGlobals().outer_radius_y = 6;
+world.observer.setGlobal('initial_density', 50);
+world.observer.setGlobal('ratio', 0.35);
+world.observer.setGlobal('inner_radius_x', 3);
+world.observer.setGlobal('inner_radius_y', 3);
+world.observer.setGlobal('outer_radius_x', 6);
+world.observer.setGlobal('outer_radius_y', 6);

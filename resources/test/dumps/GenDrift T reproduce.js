@@ -32,8 +32,8 @@ var StrictMath     = require('integration/strictmath');
 
 function setup() {
   world.clearAll();
-  AgentSet.ask(world.createTurtles(world.getGlobals().number, ""), true, function() {
-    AgentSet.setTurtleVariable(1, (5 + (Prims.random(world.getGlobals().colors) * 10)));
+  AgentSet.ask(world.createTurtles(world.observer.getGlobal('number'), ""), true, function() {
+    AgentSet.setTurtleVariable(1, (5 + (Prims.random(world.observer.getGlobal('colors')) * 10)));
     if (Prims.equality(AgentSet.getTurtleVariable(1), 75)) {
       AgentSet.setTurtleVariable(1, 125);
     }
@@ -66,10 +66,10 @@ function birth() {
 function death() {
   var totalTurtles = AgentSet.count(world.turtles());
   AgentSet.ask(world.turtles(), true, function() {
-    if (Prims.gt(Prims.random(totalTurtles), world.getGlobals().number)) {
+    if (Prims.gt(Prims.random(totalTurtles), world.observer.getGlobal('number'))) {
       AgentSet.die();
     }
   });
 }
-world.getGlobals().colors = 5;
-world.getGlobals().number = 500;
+world.observer.setGlobal('colors', 5);
+world.observer.setGlobal('number', 500);

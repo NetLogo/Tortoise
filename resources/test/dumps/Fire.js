@@ -37,7 +37,7 @@ BreedManager.get("EMBERS").vars =[""];function setup() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "square")
   AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
-    return Prims.lt(Prims.randomFloat(100), world.getGlobals().density);
+    return Prims.lt(Prims.randomFloat(100), world.observer.getGlobal('density'));
   }), true, function() {
     AgentSet.setPatchVariable(2, 55);
   });
@@ -46,10 +46,10 @@ BreedManager.get("EMBERS").vars =[""];function setup() {
   }), true, function() {
     Call(ignite);
   });
-  world.getGlobals().initial_trees = AgentSet.count(AgentSet.agentFilter(world.patches(), function() {
+  world.observer.setGlobal('initial_trees', AgentSet.count(AgentSet.agentFilter(world.patches(), function() {
     return Prims.equality(AgentSet.getPatchVariable(2), 55);
-  }));
-  world.getGlobals().burned_trees = 0;
+  })));
+  world.observer.setGlobal('burned_trees', 0);
   world.ticker.reset();
 }
 function go() {
@@ -72,7 +72,7 @@ function ignite() {
     AgentSet.setTurtleVariable(1, 15);
   });
   AgentSet.setPatchVariable(2, 0);
-  world.getGlobals().burned_trees = (world.getGlobals().burned_trees + 1);
+  world.observer.setGlobal('burned_trees', (world.observer.getGlobal('burned_trees') + 1));
 }
 function fadeEmbers() {
   AgentSet.ask(world.turtlesOfBreed("EMBERS"), true, function() {
@@ -83,4 +83,4 @@ function fadeEmbers() {
     }
   });
 }
-world.getGlobals().density = 57;
+world.observer.setGlobal('density', 57);

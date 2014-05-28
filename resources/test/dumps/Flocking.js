@@ -33,7 +33,7 @@ var StrictMath     = require('integration/strictmath');
 TurtlesOwn.init(2);
 function setup() {
   world.clearAll();
-  AgentSet.ask(world.createTurtles(world.getGlobals().population, ""), true, function() {
+  AgentSet.ask(world.createTurtles(world.observer.getGlobal('population'), ""), true, function() {
     AgentSet.setTurtleVariable(1, ((45 - 2) + Prims.random(7)));
     AgentSet.setTurtleVariable(10, 1.5);
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
@@ -56,7 +56,7 @@ function flock() {
   Call(findFlockmates);
   if (AgentSet.any(AgentSet.getTurtleVariable(13))) {
     Call(findNearestNeighbor);
-    if (Prims.lt(AgentSet.self().distance(AgentSet.getTurtleVariable(14)), world.getGlobals().minimum_separation)) {
+    if (Prims.lt(AgentSet.self().distance(AgentSet.getTurtleVariable(14)), world.observer.getGlobal('minimum_separation'))) {
       Call(separate);
     }
     else {
@@ -66,7 +66,7 @@ function flock() {
   }
 }
 function findFlockmates() {
-  AgentSet.setTurtleVariable(13, AgentSet.other(AgentSet.self().inRadius(world.turtles(), world.getGlobals().vision)));
+  AgentSet.setTurtleVariable(13, AgentSet.other(AgentSet.self().inRadius(world.turtles(), world.observer.getGlobal('vision'))));
 }
 function findNearestNeighbor() {
   AgentSet.setTurtleVariable(14, AgentSet.minOneOf(AgentSet.getTurtleVariable(13), function() {
@@ -76,10 +76,10 @@ function findNearestNeighbor() {
 function separate() {
   Call(turnAway, AgentSet.of(AgentSet.getTurtleVariable(14), function() {
     return AgentSet.getTurtleVariable(2);
-  }), world.getGlobals().max_separate_turn);
+  }), world.observer.getGlobal('max_separate_turn'));
 }
 function align() {
-  Call(turnTowards, Call(averageFlockmateHeading), world.getGlobals().max_align_turn);
+  Call(turnTowards, Call(averageFlockmateHeading), world.observer.getGlobal('max_align_turn'));
 }
 function averageFlockmateHeading() {
   var xComponent = Prims.sum(AgentSet.of(AgentSet.getTurtleVariable(13), function() {
@@ -96,7 +96,7 @@ function averageFlockmateHeading() {
   }
 }
 function cohere() {
-  Call(turnTowards, Call(averageHeadingTowardsFlockmates), world.getGlobals().max_cohere_turn);
+  Call(turnTowards, Call(averageHeadingTowardsFlockmates), world.observer.getGlobal('max_cohere_turn'));
 }
 function averageHeadingTowardsFlockmates() {
   var xComponent = Prims.mean(AgentSet.of(AgentSet.getTurtleVariable(13), function() {
@@ -131,9 +131,9 @@ function turnAtMost(turn, maxTurn) {
     Prims.right(turn);
   }
 }
-world.getGlobals().population = 300;
-world.getGlobals().max_align_turn = 5;
-world.getGlobals().max_cohere_turn = 3;
-world.getGlobals().max_separate_turn = 1.5;
-world.getGlobals().vision = 3;
-world.getGlobals().minimum_separation = 1;
+world.observer.setGlobal('population', 300);
+world.observer.setGlobal('max_align_turn', 5);
+world.observer.setGlobal('max_cohere_turn', 3);
+world.observer.setGlobal('max_separate_turn', 1.5);
+world.observer.setGlobal('vision', 3);
+world.observer.setGlobal('minimum_separation', 1);

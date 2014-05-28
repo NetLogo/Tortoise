@@ -33,7 +33,7 @@ var StrictMath     = require('integration/strictmath');
 TurtlesOwn.init(2);
 function setup() {
   world.clearAll();
-  AgentSet.ask(world.createTurtles(world.getGlobals().population, ""), true, function() {
+  AgentSet.ask(world.createTurtles(world.observer.getGlobal('population'), ""), true, function() {
     AgentSet.setTurtleVariable(1, 125);
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
     AgentSet.setTurtleVariable(13, Nobody);
@@ -56,8 +56,8 @@ function go() {
   world.ticker.tick();
 }
 function attachTurtle() {
-  var xd = (world.getGlobals().near_radius + Prims.random((world.getGlobals().far_radius - world.getGlobals().near_radius)));
-  var yd = (world.getGlobals().near_radius + Prims.random((world.getGlobals().far_radius - world.getGlobals().near_radius)));
+  var xd = (world.observer.getGlobal('near_radius') + Prims.random((world.observer.getGlobal('far_radius') - world.observer.getGlobal('near_radius'))));
+  var yd = (world.observer.getGlobal('near_radius') + Prims.random((world.observer.getGlobal('far_radius') - world.observer.getGlobal('near_radius'))));
   if (Prims.equality(Prims.random(2), 0)) {
     xd = (- xd);
   }
@@ -93,13 +93,13 @@ function attachTurtle() {
 }
 function turnTurtle() {
   if (Prims.equality(AgentSet.getTurtleVariable(13), Nobody)) {
-    Prims.right((Prims.randomFloat(world.getGlobals().waver) - Prims.randomFloat(world.getGlobals().waver)));
+    Prims.right((Prims.randomFloat(world.observer.getGlobal('waver')) - Prims.randomFloat(world.observer.getGlobal('waver'))));
   }
   else {
     AgentSet.self().face(AgentSet.getTurtleVariable(13));
   }
 }
-world.getGlobals().waver = 70;
-world.getGlobals().far_radius = 10;
-world.getGlobals().population = 1500;
-world.getGlobals().near_radius = 5;
+world.observer.setGlobal('waver', 70);
+world.observer.setGlobal('far_radius', 10);
+world.observer.setGlobal('population', 1500);
+world.observer.setGlobal('near_radius', 5);

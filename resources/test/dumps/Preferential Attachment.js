@@ -43,7 +43,7 @@ function go() {
   });
   Call(makeNode, Call(findPartner));
   world.ticker.tick();
-  if (world.getGlobals().layout_) {
+  if (world.observer.getGlobal('layout_')) {
     Call(layout);
   }
 }
@@ -107,5 +107,5 @@ function limitMagnitude(number, limit) {
   }
   return number;
 }
-world.getGlobals().plot_ = true;
-world.getGlobals().layout_ = true;
+world.observer.setGlobal('plot_', true);
+world.observer.setGlobal('layout_', true);
