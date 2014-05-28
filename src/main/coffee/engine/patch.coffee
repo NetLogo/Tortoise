@@ -6,10 +6,14 @@ define(['integration/lodash', 'integration/random', 'engine/builtins', 'engine/c
       ,  Exception,          Nobody,          Turtle,          TurtleSet) ->
 
   class Patch
-    vars: undefined
+
+    vars:    undefined # Array[Any]
+    turtles: undefined # Array[Turtle]
+
     constructor: (@id, @pxcor, @pycor, @world, @pcolor = 0.0, @plabel = "", @plabelcolor = 9.9) ->
-      @vars = _(@world.patchesOwn.vars).cloneDeep()
-      @turtles = [] #@# Why put this in the constructor?
+      @vars    = _(@world.patchesOwn.vars).cloneDeep()
+      @turtles = []
+
     toString: -> "(patch #{@pxcor} #{@pycor})"
     getPatchVariable: (n) ->
       if n < Builtins.patchBuiltins.length
