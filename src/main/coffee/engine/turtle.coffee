@@ -287,7 +287,7 @@ define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/co
     _makeTurtleCopy: (breed) ->
       turtleGenFunc = (id) => new Turtle(@world, id, @color, @heading, @xcor(), @ycor(), breed, @label, @labelcolor, @hidden, @size, @penManager.clone()) #@# Sounds like we ought have some cloning system, of which this function is a first step
       turtle        = @world.createTurtle(turtleGenFunc)
-      _(0).range(TurtlesOwn.vars.length).forEach((n) =>
+      _(0).range(@world.turtlesOwn.vars.length).forEach((n) =>
         turtle.setTurtleVariable(Builtins.turtleBuiltins.length + n, @getTurtleVariable(Builtins.turtleBuiltins.length + n))
         return
       )
