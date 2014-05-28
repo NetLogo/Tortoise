@@ -24,9 +24,9 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
     _turtlesById:       undefined
 
     #@# I'm aware that some of this stuff ought to not live on `World`
-    constructor: (@globals, @patchesOwn, @turtlesOwn, @linksOwn, @agentSet, @updater, @breedManager, @minPxcor, @maxPxcor
-                , @minPycor, @maxPycor, @patchSize, @wrappingAllowedInX, @wrappingAllowedInY, turtleShapeList
-                , linkShapeList, @interfaceGlobalCount) ->
+    constructor: (@patchesOwn, @turtlesOwn, @linksOwn, @agentSet, @updater, @breedManager, globalNames
+                , interfaceGlobalNames, @minPxcor, @maxPxcor, @minPycor, @maxPycor, @patchSize, @wrappingAllowedInX
+                , @wrappingAllowedInY, turtleShapeList, linkShapeList) ->
       @updater.collectUpdates()
       @updater.update("world", 0, {
         worldWidth: Math.abs(@minPxcor - @maxPxcor) + 1,
@@ -48,7 +48,7 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
         wrappingAllowedInY: @wrappingAllowedInY
       })
 
-      @observer = new Observer(updater)
+      @observer = new Observer(updater, globalNames, interfaceGlobalNames)
       @ticker   = new Ticker(updater.updated(this))
 
       @_links           = new WorldLinks(@linkCompare)
@@ -155,7 +155,7 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
       return
 
     clearAll: ->
-      @globals.clear(@interfaceGlobalCount)
+      @observer.clearCodeGlobals()
       @clearTurtles()
       @createPatches()
       @_linkIDManager.reset()
@@ -271,5 +271,9 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
         1
       else
         throw new Exception.NetLogoException("We have yet to implement link breed comparison")
+
+    # () => Object[String, Any]
+    getGlobals: ->
+      @observer.variables
 
 )
