@@ -1,26 +1,43 @@
 #@# Lame
 define(['integration/random'], (Random) ->
+
   class Shufflerator #@# Maybe use my `Iterator` implementation, or maybe Mori has one?
-    constructor: (@agents) ->
-      @agents = @agents[..]
-      @fetch()
-    i: 0
-    nextOne: null
-    hasNext: -> @nextOne?
+
+    _agents:  undefined # AbstractAgents
+    _i:       undefined # Number
+    _nextOne: undefined # Agent
+
+    # (AbstractAgents) => Shufflerator
+    constructor: (_agents) ->
+      @_agents  = _agents[..]
+      @_i       = 0
+      @_nextOne = null
+
+      @_fetch()
+
+    # () => Boolean
+    hasNext: ->
+      @_i <= @_agents.length
+
+    # () => Agent
     next: ->
-      result = @nextOne
-      @fetch()
+      result = @_nextOne
+      @_fetch()
       result
-    fetch: ->
-      if @i >= @agents.length
-        @nextOne = null
-      else
-        if @i < @agents.length - 1
-          randNum = @i + Random.nextInt(@agents.length - @i)
-          @nextOne = @agents[randNum]
-          @agents[randNum] = @agents[@i]
+
+    # () => Unit
+    _fetch: ->
+      if @hasNext()
+        if @_i < @_agents.length - 1
+          randNum = @_i + Random.nextInt(@_agents.length - @_i)
+          @_nextOne = @_agents[randNum]
+          @_agents[randNum] = @_agents[@_i]
         else
-          @nextOne = @agents[@i]
-        @i = @i + 1 #@# It's called "@i++"
+          @_nextOne = @_agents[@_i]
+        @_i++
+      else
+        @_nextOne = null
+
       return
+
 )
