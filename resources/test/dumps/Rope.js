@@ -52,10 +52,10 @@ function go() {
     return Prims.equality(AgentSet.getTurtleVariable(1), 55);
   }), true, function() {
     if (Prims.gt(world.ticker.tickCount(), 100)) {
-      AgentSet.setTurtleVariable(14, (world.getGlobals().amplitude * Trig.unsquashedSin((world.getGlobals().frequency * world.ticker.tickCount()))));
+      AgentSet.setTurtleVariable(14, (world.observer.getGlobal('amplitude') * Trig.unsquashedSin((world.observer.getGlobal('frequency') * world.ticker.tickCount()))));
     }
     else {
-      AgentSet.setTurtleVariable(14, (((world.ticker.tickCount() / 100) * world.getGlobals().amplitude) * Trig.unsquashedSin((world.getGlobals().frequency * world.ticker.tickCount()))));
+      AgentSet.setTurtleVariable(14, (((world.ticker.tickCount() / 100) * world.observer.getGlobal('amplitude')) * Trig.unsquashedSin((world.observer.getGlobal('frequency') * world.ticker.tickCount()))));
     }
     if (!Prims.equality(AgentSet.self().patchAt(0, (AgentSet.getTurtleVariable(14) - AgentSet.getTurtleVariable(4))), Nobody)) {
       AgentSet.setTurtleVariable(4, AgentSet.getTurtleVariable(14));
@@ -73,7 +73,7 @@ function go() {
     }) - AgentSet.getTurtleVariable(14)) + (AgentSet.of(world.getTurtle((AgentSet.getTurtleVariable(0) + 1)), function() {
       return AgentSet.getTurtleVariable(14);
     }) - AgentSet.getTurtleVariable(14)))));
-    AgentSet.setTurtleVariable(13, (((1000 - world.getGlobals().friction) / 1000) * AgentSet.getTurtleVariable(13)));
+    AgentSet.setTurtleVariable(13, (((1000 - world.observer.getGlobal('friction')) / 1000) * AgentSet.getTurtleVariable(13)));
   });
   AgentSet.ask(AgentSet.agentFilter(world.turtles(), function() {
     return Prims.equality(AgentSet.getTurtleVariable(1), 15);
@@ -89,6 +89,6 @@ function go() {
   });
   world.ticker.tick();
 }
-world.getGlobals().friction = 24;
-world.getGlobals().frequency = 10;
-world.getGlobals().amplitude = 30;
+world.observer.setGlobal('friction', 24);
+world.observer.setGlobal('frequency', 10);
+world.observer.setGlobal('amplitude', 30);

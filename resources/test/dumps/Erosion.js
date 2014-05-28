@@ -33,10 +33,10 @@ var StrictMath     = require('integration/strictmath');
 PatchesOwn.init(3);
 function setup() {
   world.clearAll();
-  world.getGlobals().show_water_ = true;
+  world.observer.setGlobal('show_water_', true);
   AgentSet.ask(world.patches(), true, function() {
-    if (world.getGlobals().bumpy_) {
-      if (world.getGlobals().hill_) {
+    if (world.observer.getGlobal('bumpy_')) {
+      if (world.observer.getGlobal('hill_')) {
         AgentSet.setPatchVariable(5, (((-100 * (AgentSet.self().distanceXY(0, 0) / world.maxPxcor)) + 100) + Prims.random(100)));
       }
       else {
@@ -49,8 +49,8 @@ function setup() {
     AgentSet.setPatchVariable(6, 0);
     AgentSet.setPatchVariable(7, false);
   });
-  if (world.getGlobals().bumpy_) {
-    Prims.repeat(world.getGlobals().terrain_smoothness, function () {
+  if (world.observer.getGlobal('bumpy_')) {
+    Prims.repeat(world.observer.getGlobal('terrain_smoothness'), function () {
       world.topology().diffuse(5, 0.5);
     });
   }
@@ -60,19 +60,19 @@ function setup() {
     AgentSet.setPatchVariable(7, true);
     AgentSet.setPatchVariable(5, -10000000);
   });
-  world.getGlobals().drains = AgentSet.agentFilter(world.patches(), function() {
+  world.observer.setGlobal('drains', AgentSet.agentFilter(world.patches(), function() {
     return AgentSet.getPatchVariable(7);
-  });
-  world.getGlobals().land = AgentSet.agentFilter(world.patches(), function() {
+  }));
+  world.observer.setGlobal('land', AgentSet.agentFilter(world.patches(), function() {
     return !(AgentSet.getPatchVariable(7));
-  });
-  AgentSet.ask(world.getGlobals().land, true, function() {
+  }));
+  AgentSet.ask(world.observer.getGlobal('land'), true, function() {
     Call(recolor);
   });
   world.ticker.reset();
 }
 function recolor() {
-  if ((Prims.equality(AgentSet.getPatchVariable(6), 0) || !(world.getGlobals().show_water_))) {
+  if ((Prims.equality(AgentSet.getPatchVariable(6), 0) || !(world.observer.getGlobal('show_water_')))) {
     AgentSet.setPatchVariable(2, Prims.scaleColor(9.9, AgentSet.getPatchVariable(5), -250, 100));
   }
   else {
@@ -80,33 +80,33 @@ function recolor() {
   }
 }
 function showWater() {
-  world.getGlobals().show_water_ = true;
-  AgentSet.ask(world.getGlobals().land, true, function() {
+  world.observer.setGlobal('show_water_', true);
+  AgentSet.ask(world.observer.getGlobal('land'), true, function() {
     Call(recolor);
   });
 }
 function hideWater() {
-  world.getGlobals().show_water_ = false;
-  AgentSet.ask(world.getGlobals().land, true, function() {
+  world.observer.setGlobal('show_water_', false);
+  AgentSet.ask(world.observer.getGlobal('land'), true, function() {
     Call(recolor);
   });
 }
 function go() {
-  AgentSet.ask(world.getGlobals().land, true, function() {
-    if (Prims.lt(Prims.randomFloat(1), world.getGlobals().rainfall)) {
+  AgentSet.ask(world.observer.getGlobal('land'), true, function() {
+    if (Prims.lt(Prims.randomFloat(1), world.observer.getGlobal('rainfall'))) {
       AgentSet.setPatchVariable(6, (AgentSet.getPatchVariable(6) + 1));
     }
   });
-  AgentSet.ask(world.getGlobals().land, true, function() {
+  AgentSet.ask(world.observer.getGlobal('land'), true, function() {
     if (Prims.gt(AgentSet.getPatchVariable(6), 0)) {
       Call(flow);
     }
   });
-  AgentSet.ask(world.getGlobals().drains, true, function() {
+  AgentSet.ask(world.observer.getGlobal('drains'), true, function() {
     AgentSet.setPatchVariable(6, 0);
     AgentSet.setPatchVariable(5, -10000000);
   });
-  AgentSet.ask(world.getGlobals().land, true, function() {
+  AgentSet.ask(world.observer.getGlobal('land'), true, function() {
     Call(recolor);
   });
   world.ticker.tick();
@@ -121,7 +121,7 @@ function flow() {
     return AgentSet.getPatchVariable(6);
   })))));
   if (Prims.gt(amount, 0)) {
-    var erosion = (amount * (1 - world.getGlobals().soil_hardness));
+    var erosion = (amount * (1 - world.observer.getGlobal('soil_hardness')));
     AgentSet.setPatchVariable(5, (AgentSet.getPatchVariable(5) - erosion));
     amount = Prims.min(Prims.list(AgentSet.getPatchVariable(6), (0.5 * (((AgentSet.getPatchVariable(5) + AgentSet.getPatchVariable(6)) - AgentSet.of(target, function() {
       return AgentSet.getPatchVariable(5);
@@ -134,8 +134,8 @@ function flow() {
     });
   }
 }
-world.getGlobals().terrain_smoothness = 6;
-world.getGlobals().rainfall = 0.1;
-world.getGlobals().bumpy_ = true;
-world.getGlobals().soil_hardness = 0.8;
-world.getGlobals().hill_ = false;
+world.observer.setGlobal('terrain_smoothness', 6);
+world.observer.setGlobal('rainfall', 0.1);
+world.observer.setGlobal('bumpy_', true);
+world.observer.setGlobal('soil_hardness', 0.8);
+world.observer.setGlobal('hill_', false);

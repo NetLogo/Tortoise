@@ -37,7 +37,7 @@ function benchmark() {
   Prims.repeat(20000, function () {
     Call(go);
   });
-  world.getGlobals().result = workspace.timer.elapsed();
+  world.observer.setGlobal('result', workspace.timer.elapsed());
 }
 function setup() {
   world.clearAll();

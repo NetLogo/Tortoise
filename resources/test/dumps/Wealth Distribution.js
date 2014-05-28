@@ -34,7 +34,7 @@ TurtlesOwn.init(5);
 PatchesOwn.init(2);
 function setup() {
   world.clearAll();
-  world.getGlobals().max_grain = 50;
+  world.observer.setGlobal('max_grain', 50);
   Call(setupPatches);
   Call(setupTurtles);
   Call(updateLorenzAndGini);
@@ -43,8 +43,8 @@ function setup() {
 function setupPatches() {
   AgentSet.ask(world.patches(), true, function() {
     AgentSet.setPatchVariable(6, 0);
-    if (Prims.lte(Prims.randomFloat(100), world.getGlobals().percent_best_land)) {
-      AgentSet.setPatchVariable(6, world.getGlobals().max_grain);
+    if (Prims.lte(Prims.randomFloat(100), world.observer.getGlobal('percent_best_land'))) {
+      AgentSet.setPatchVariable(6, world.observer.getGlobal('max_grain'));
       AgentSet.setPatchVariable(5, AgentSet.getPatchVariable(6));
     }
   });
@@ -66,11 +66,11 @@ function setupPatches() {
   });
 }
 function recolorPatch() {
-  AgentSet.setPatchVariable(2, Prims.scaleColor(45, AgentSet.getPatchVariable(5), 0, world.getGlobals().max_grain));
+  AgentSet.setPatchVariable(2, Prims.scaleColor(45, AgentSet.getPatchVariable(5), 0, world.observer.getGlobal('max_grain')));
 }
 function setupTurtles() {
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "person")
-  AgentSet.ask(world.createTurtles(world.getGlobals().num_people, ""), true, function() {
+  AgentSet.ask(world.createTurtles(world.observer.getGlobal('num_people'), ""), true, function() {
     AgentSet.self().moveTo(AgentSet.oneOf(world.patches()));
     AgentSet.setTurtleVariable(10, 1.5);
     Call(setInitialTurtleVars);
@@ -81,10 +81,10 @@ function setupTurtles() {
 function setInitialTurtleVars() {
   AgentSet.setTurtleVariable(13, 0);
   AgentSet.self().face(AgentSet.oneOf(Prims.getNeighbors4()));
-  AgentSet.setTurtleVariable(15, (world.getGlobals().life_expectancy_min + Prims.random(((world.getGlobals().life_expectancy_max - world.getGlobals().life_expectancy_min) + 1))));
-  AgentSet.setTurtleVariable(16, (1 + Prims.random(world.getGlobals().metabolism_max)));
+  AgentSet.setTurtleVariable(15, (world.observer.getGlobal('life_expectancy_min') + Prims.random(((world.observer.getGlobal('life_expectancy_max') - world.observer.getGlobal('life_expectancy_min')) + 1))));
+  AgentSet.setTurtleVariable(16, (1 + Prims.random(world.observer.getGlobal('metabolism_max'))));
   AgentSet.setTurtleVariable(14, (AgentSet.getTurtleVariable(16) + Prims.random(50)));
-  AgentSet.setTurtleVariable(17, (1 + Prims.random(world.getGlobals().max_vision)));
+  AgentSet.setTurtleVariable(17, (1 + Prims.random(world.observer.getGlobal('max_vision'))));
 }
 function recolorTurtles() {
   var maxWealth = Prims.max(AgentSet.of(world.turtles(), function() {
@@ -113,7 +113,7 @@ function go() {
     Call(moveEatAgeDie);
   });
   Call(recolorTurtles);
-  if (Prims.equality(Prims.mod(world.ticker.tickCount(), world.getGlobals().grain_growth_interval), 0)) {
+  if (Prims.equality(Prims.mod(world.ticker.tickCount(), world.observer.getGlobal('grain_growth_interval')), 0)) {
     AgentSet.ask(world.patches(), true, function() {
       Call(growGrain);
     });
@@ -155,7 +155,7 @@ function grainAhead() {
 }
 function growGrain() {
   if (Prims.lt(AgentSet.getPatchVariable(5), AgentSet.getPatchVariable(6))) {
-    AgentSet.setPatchVariable(5, (AgentSet.getPatchVariable(5) + world.getGlobals().num_grain_grown));
+    AgentSet.setPatchVariable(5, (AgentSet.getPatchVariable(5) + world.observer.getGlobal('num_grain_grown')));
     if (Prims.gt(AgentSet.getPatchVariable(5), AgentSet.getPatchVariable(6))) {
       AgentSet.setPatchVariable(5, AgentSet.getPatchVariable(6));
     }
@@ -186,20 +186,20 @@ function updateLorenzAndGini() {
   var totalWealth = Prims.sum(sortedWealths);
   var wealthSumSoFar = 0;
   var index = 0;
-  world.getGlobals().gini_index_reserve = 0;
-  world.getGlobals().lorenz_points = [];
-  Prims.repeat(world.getGlobals().num_people, function () {
+  world.observer.setGlobal('gini_index_reserve', 0);
+  world.observer.setGlobal('lorenz_points', []);
+  Prims.repeat(world.observer.getGlobal('num_people'), function () {
     wealthSumSoFar = (wealthSumSoFar + Prims.item(index, sortedWealths));
-    world.getGlobals().lorenz_points = Prims.lput(((wealthSumSoFar / totalWealth) * 100), world.getGlobals().lorenz_points);
+    world.observer.setGlobal('lorenz_points', Prims.lput(((wealthSumSoFar / totalWealth) * 100), world.observer.getGlobal('lorenz_points')));
     index = (index + 1);
-    world.getGlobals().gini_index_reserve = ((world.getGlobals().gini_index_reserve + (index / world.getGlobals().num_people)) - (wealthSumSoFar / totalWealth));
+    world.observer.setGlobal('gini_index_reserve', ((world.observer.getGlobal('gini_index_reserve') + (index / world.observer.getGlobal('num_people'))) - (wealthSumSoFar / totalWealth)));
   });
 }
-world.getGlobals().max_vision = 5;
-world.getGlobals().grain_growth_interval = 1;
-world.getGlobals().metabolism_max = 15;
-world.getGlobals().num_people = 250;
-world.getGlobals().percent_best_land = 10;
-world.getGlobals().life_expectancy_max = 83;
-world.getGlobals().num_grain_grown = 4;
-world.getGlobals().life_expectancy_min = 1;
+world.observer.setGlobal('max_vision', 5);
+world.observer.setGlobal('grain_growth_interval', 1);
+world.observer.setGlobal('metabolism_max', 15);
+world.observer.setGlobal('num_people', 250);
+world.observer.setGlobal('percent_best_land', 10);
+world.observer.setGlobal('life_expectancy_max', 83);
+world.observer.setGlobal('num_grain_grown', 4);
+world.observer.setGlobal('life_expectancy_min', 1);

@@ -36,14 +36,14 @@ function setup() {
   world.clearAll();
   Call(setupGlobals);
   Call(setupPatches);
-  Call(makeCurrent, AgentSet.oneOf(world.getGlobals().intersections));
+  Call(makeCurrent, AgentSet.oneOf(world.observer.getGlobal('intersections')));
   Call(labelCurrent);
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "car")
-  if (Prims.gt(world.getGlobals().num_cars, AgentSet.count(world.getGlobals().roads))) {
+  if (Prims.gt(world.observer.getGlobal('num_cars'), AgentSet.count(world.observer.getGlobal('roads')))) {
     notImplemented('user-message', undefined)((Dump("") + Dump("There are too many cars for the amount of ") + Dump("road.  Either increase the amount of roads ") + Dump("by increasing the GRID-SIZE-X or ") + Dump("GRID-SIZE-Y sliders, or decrease the ") + Dump("number of cars by lowering the NUMBER slider.\n") + Dump("The setup has stopped.")));
     throw new Exception.StopInterrupt;
   }
-  AgentSet.ask(world.createTurtles(world.getGlobals().num_cars, ""), true, function() {
+  AgentSet.ask(world.createTurtles(world.observer.getGlobal('num_cars'), ""), true, function() {
     Call(setupCars);
     Call(setCarColor);
     Call(recordData);
@@ -54,12 +54,12 @@ function setup() {
   world.ticker.reset();
 }
 function setupGlobals() {
-  world.getGlobals().current_light = Nobody;
-  world.getGlobals().phase = 0;
-  world.getGlobals().num_cars_stopped = 0;
-  world.getGlobals().grid_x_inc = (world.width() / world.getGlobals().grid_size_x);
-  world.getGlobals().grid_y_inc = (world.height() / world.getGlobals().grid_size_y);
-  world.getGlobals().acceleration = 0.099;
+  world.observer.setGlobal('current_light', Nobody);
+  world.observer.setGlobal('phase', 0);
+  world.observer.setGlobal('num_cars_stopped', 0);
+  world.observer.setGlobal('grid_x_inc', (world.width() / world.observer.getGlobal('grid_size_x')));
+  world.observer.setGlobal('grid_y_inc', (world.height() / world.observer.getGlobal('grid_size_y')));
+  world.observer.setGlobal('acceleration', 0.099);
 }
 function setupPatches() {
   AgentSet.ask(world.patches(), true, function() {
@@ -71,25 +71,25 @@ function setupPatches() {
     AgentSet.setPatchVariable(9, -1);
     AgentSet.setPatchVariable(2, (35 + 3));
   });
-  world.getGlobals().roads = AgentSet.agentFilter(world.patches(), function() {
-    return (Prims.equality(StrictMath.floor(Prims.mod(((AgentSet.getPatchVariable(0) + world.maxPxcor) - StrictMath.floor((world.getGlobals().grid_x_inc - 1))), world.getGlobals().grid_x_inc)), 0) || Prims.equality(StrictMath.floor(Prims.mod((AgentSet.getPatchVariable(1) + world.maxPycor), world.getGlobals().grid_y_inc)), 0));
-  });
-  world.getGlobals().intersections = AgentSet.agentFilter(world.getGlobals().roads, function() {
-    return (Prims.equality(StrictMath.floor(Prims.mod(((AgentSet.getPatchVariable(0) + world.maxPxcor) - StrictMath.floor((world.getGlobals().grid_x_inc - 1))), world.getGlobals().grid_x_inc)), 0) && Prims.equality(StrictMath.floor(Prims.mod((AgentSet.getPatchVariable(1) + world.maxPycor), world.getGlobals().grid_y_inc)), 0));
-  });
-  AgentSet.ask(world.getGlobals().roads, true, function() {
+  world.observer.setGlobal('roads', AgentSet.agentFilter(world.patches(), function() {
+    return (Prims.equality(StrictMath.floor(Prims.mod(((AgentSet.getPatchVariable(0) + world.maxPxcor) - StrictMath.floor((world.observer.getGlobal('grid_x_inc') - 1))), world.observer.getGlobal('grid_x_inc'))), 0) || Prims.equality(StrictMath.floor(Prims.mod((AgentSet.getPatchVariable(1) + world.maxPycor), world.observer.getGlobal('grid_y_inc'))), 0));
+  }));
+  world.observer.setGlobal('intersections', AgentSet.agentFilter(world.observer.getGlobal('roads'), function() {
+    return (Prims.equality(StrictMath.floor(Prims.mod(((AgentSet.getPatchVariable(0) + world.maxPxcor) - StrictMath.floor((world.observer.getGlobal('grid_x_inc') - 1))), world.observer.getGlobal('grid_x_inc'))), 0) && Prims.equality(StrictMath.floor(Prims.mod((AgentSet.getPatchVariable(1) + world.maxPycor), world.observer.getGlobal('grid_y_inc'))), 0));
+  }));
+  AgentSet.ask(world.observer.getGlobal('roads'), true, function() {
     AgentSet.setPatchVariable(2, 9.9);
   });
   Call(setupIntersections);
 }
 function setupIntersections() {
-  AgentSet.ask(world.getGlobals().intersections, true, function() {
+  AgentSet.ask(world.observer.getGlobal('intersections'), true, function() {
     AgentSet.setPatchVariable(5, true);
     AgentSet.setPatchVariable(6, true);
     AgentSet.setPatchVariable(9, 0);
     AgentSet.setPatchVariable(10, true);
-    AgentSet.setPatchVariable(7, StrictMath.floor(((AgentSet.getPatchVariable(1) + world.maxPycor) / world.getGlobals().grid_y_inc)));
-    AgentSet.setPatchVariable(8, StrictMath.floor(((AgentSet.getPatchVariable(0) + world.maxPxcor) / world.getGlobals().grid_x_inc)));
+    AgentSet.setPatchVariable(7, StrictMath.floor(((AgentSet.getPatchVariable(1) + world.maxPycor) / world.observer.getGlobal('grid_y_inc'))));
+    AgentSet.setPatchVariable(8, StrictMath.floor(((AgentSet.getPatchVariable(0) + world.maxPxcor) / world.observer.getGlobal('grid_x_inc'))));
     Call(setSignalColors);
   });
 }
@@ -106,7 +106,7 @@ function setupCars() {
     }
   }
   else {
-    if (Prims.equality(StrictMath.floor(Prims.mod(((AgentSet.getPatchVariable(0) + world.maxPxcor) - StrictMath.floor((world.getGlobals().grid_x_inc - 1))), world.getGlobals().grid_x_inc)), 0)) {
+    if (Prims.equality(StrictMath.floor(Prims.mod(((AgentSet.getPatchVariable(0) + world.maxPxcor) - StrictMath.floor((world.observer.getGlobal('grid_x_inc') - 1))), world.observer.getGlobal('grid_x_inc'))), 0)) {
       AgentSet.setTurtleVariable(14, true);
     }
     else {
@@ -121,14 +121,14 @@ function setupCars() {
   }
 }
 function putOnEmptyRoad() {
-  AgentSet.self().moveTo(AgentSet.oneOf(AgentSet.agentFilter(world.getGlobals().roads, function() {
+  AgentSet.self().moveTo(AgentSet.oneOf(AgentSet.agentFilter(world.observer.getGlobal('roads'), function() {
     return !(AgentSet.any(Prims.turtlesOn(AgentSet.self())));
   })));
 }
 function go() {
   Call(updateCurrent);
   Call(setSignals);
-  world.getGlobals().num_cars_stopped = 0;
+  world.observer.setGlobal('num_cars_stopped', 0);
   AgentSet.ask(world.turtles(), true, function() {
     Call(setCarSpeed);
     Prims.fd(AgentSet.getTurtleVariable(13));
@@ -154,22 +154,22 @@ function chooseCurrent() {
   }
 }
 function makeCurrent(light) {
-  world.getGlobals().current_light = light;
-  world.getGlobals().current_phase = AgentSet.of(world.getGlobals().current_light, function() {
+  world.observer.setGlobal('current_light', light);
+  world.observer.setGlobal('current_phase', AgentSet.of(world.observer.getGlobal('current_light'), function() {
     return AgentSet.getPatchVariable(9);
-  });
-  world.getGlobals().current_auto_ = AgentSet.of(world.getGlobals().current_light, function() {
+  }));
+  world.observer.setGlobal('current_auto_', AgentSet.of(world.observer.getGlobal('current_light'), function() {
     return AgentSet.getPatchVariable(10);
-  });
+  }));
 }
 function updateCurrent() {
-  AgentSet.ask(world.getGlobals().current_light, true, function() {
-    AgentSet.setPatchVariable(9, world.getGlobals().current_phase);
-    AgentSet.setPatchVariable(10, world.getGlobals().current_auto_);
+  AgentSet.ask(world.observer.getGlobal('current_light'), true, function() {
+    AgentSet.setPatchVariable(9, world.observer.getGlobal('current_phase'));
+    AgentSet.setPatchVariable(10, world.observer.getGlobal('current_auto_'));
   });
 }
 function labelCurrent() {
-  AgentSet.ask(world.getGlobals().current_light, true, function() {
+  AgentSet.ask(world.observer.getGlobal('current_light'), true, function() {
     AgentSet.ask(AgentSet.self().patchAt(-1, 1), true, function() {
       AgentSet.setPatchVariable(4, 0);
       AgentSet.setPatchVariable(3, "current");
@@ -177,22 +177,22 @@ function labelCurrent() {
   });
 }
 function unlabelCurrent() {
-  AgentSet.ask(world.getGlobals().current_light, true, function() {
+  AgentSet.ask(world.observer.getGlobal('current_light'), true, function() {
     AgentSet.ask(AgentSet.self().patchAt(-1, 1), true, function() {
       AgentSet.setPatchVariable(3, "");
     });
   });
 }
 function setSignals() {
-  AgentSet.ask(AgentSet.agentFilter(world.getGlobals().intersections, function() {
-    return (AgentSet.getPatchVariable(10) && Prims.equality(world.getGlobals().phase, StrictMath.floor(((AgentSet.getPatchVariable(9) * world.getGlobals().ticks_per_cycle) / 100))));
+  AgentSet.ask(AgentSet.agentFilter(world.observer.getGlobal('intersections'), function() {
+    return (AgentSet.getPatchVariable(10) && Prims.equality(world.observer.getGlobal('phase'), StrictMath.floor(((AgentSet.getPatchVariable(9) * world.observer.getGlobal('ticks_per_cycle')) / 100))));
   }), true, function() {
     AgentSet.setPatchVariable(6, !(AgentSet.getPatchVariable(6)));
     Call(setSignalColors);
   });
 }
 function setSignalColors() {
-  if (world.getGlobals().power_) {
+  if (world.observer.getGlobal('power_')) {
     if (AgentSet.getPatchVariable(6)) {
       AgentSet.ask(AgentSet.self().patchAt(-1, 0), true, function() {
         AgentSet.setPatchVariable(2, 15);
@@ -258,19 +258,19 @@ function slowDown() {
     AgentSet.setTurtleVariable(13, 0);
   }
   else {
-    AgentSet.setTurtleVariable(13, (AgentSet.getTurtleVariable(13) - world.getGlobals().acceleration));
+    AgentSet.setTurtleVariable(13, (AgentSet.getTurtleVariable(13) - world.observer.getGlobal('acceleration')));
   }
 }
 function speedUp() {
-  if (Prims.gt(AgentSet.getTurtleVariable(13), world.getGlobals().speed_limit)) {
-    AgentSet.setTurtleVariable(13, world.getGlobals().speed_limit);
+  if (Prims.gt(AgentSet.getTurtleVariable(13), world.observer.getGlobal('speed_limit'))) {
+    AgentSet.setTurtleVariable(13, world.observer.getGlobal('speed_limit'));
   }
   else {
-    AgentSet.setTurtleVariable(13, (AgentSet.getTurtleVariable(13) + world.getGlobals().acceleration));
+    AgentSet.setTurtleVariable(13, (AgentSet.getTurtleVariable(13) + world.observer.getGlobal('acceleration')));
   }
 }
 function setCarColor() {
-  if (Prims.lt(AgentSet.getTurtleVariable(13), (world.getGlobals().speed_limit / 2))) {
+  if (Prims.lt(AgentSet.getTurtleVariable(13), (world.observer.getGlobal('speed_limit') / 2))) {
     AgentSet.setTurtleVariable(1, 105);
   }
   else {
@@ -279,7 +279,7 @@ function setCarColor() {
 }
 function recordData() {
   if (Prims.equality(AgentSet.getTurtleVariable(13), 0)) {
-    world.getGlobals().num_cars_stopped = (world.getGlobals().num_cars_stopped + 1);
+    world.observer.setGlobal('num_cars_stopped', (world.observer.getGlobal('num_cars_stopped') + 1));
     AgentSet.setTurtleVariable(15, (AgentSet.getTurtleVariable(15) + 1));
   }
   else {
@@ -287,22 +287,22 @@ function recordData() {
   }
 }
 function changeCurrent() {
-  AgentSet.ask(world.getGlobals().current_light, true, function() {
+  AgentSet.ask(world.observer.getGlobal('current_light'), true, function() {
     AgentSet.setPatchVariable(6, !(AgentSet.getPatchVariable(6)));
     Call(setSignalColors);
   });
 }
 function nextPhase() {
-  world.getGlobals().phase = (world.getGlobals().phase + 1);
-  if (Prims.equality(Prims.mod(world.getGlobals().phase, world.getGlobals().ticks_per_cycle), 0)) {
-    world.getGlobals().phase = 0;
+  world.observer.setGlobal('phase', (world.observer.getGlobal('phase') + 1));
+  if (Prims.equality(Prims.mod(world.observer.getGlobal('phase'), world.observer.getGlobal('ticks_per_cycle')), 0)) {
+    world.observer.setGlobal('phase', 0);
   }
 }
-world.getGlobals().grid_size_y = 5;
-world.getGlobals().grid_size_x = 5;
-world.getGlobals().power_ = true;
-world.getGlobals().num_cars = 200;
-world.getGlobals().speed_limit = 1;
-world.getGlobals().ticks_per_cycle = 20;
-world.getGlobals().current_phase = 0;
-world.getGlobals().current_auto_ = true;
+world.observer.setGlobal('grid_size_y', 5);
+world.observer.setGlobal('grid_size_x', 5);
+world.observer.setGlobal('power_', true);
+world.observer.setGlobal('num_cars', 200);
+world.observer.setGlobal('speed_limit', 1);
+world.observer.setGlobal('ticks_per_cycle', 20);
+world.observer.setGlobal('current_phase', 0);
+world.observer.setGlobal('current_auto_', true);

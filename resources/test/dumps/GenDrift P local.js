@@ -33,7 +33,7 @@ var StrictMath     = require('integration/strictmath');
 function setup() {
   world.clearAll();
   AgentSet.ask(world.patches(), true, function() {
-    AgentSet.setPatchVariable(2, ((Prims.random(world.getGlobals().colors) * 10) + 5));
+    AgentSet.setPatchVariable(2, ((Prims.random(world.observer.getGlobal('colors')) * 10) + 5));
     if (Prims.equality(AgentSet.getPatchVariable(2), 75)) {
       AgentSet.setPatchVariable(2, 125);
     }
@@ -53,4 +53,4 @@ function go() {
   });
   world.ticker.tick();
 }
-world.getGlobals().colors = 5;
+world.observer.setGlobal('colors', 5);

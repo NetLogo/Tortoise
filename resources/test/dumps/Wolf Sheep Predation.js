@@ -40,36 +40,36 @@ BreedManager.get("WOLVES").vars =[""];function setup() {
   AgentSet.ask(world.patches(), true, function() {
     AgentSet.setPatchVariable(2, 55);
   });
-  if (world.getGlobals().grass_) {
+  if (world.observer.getGlobal('grass_')) {
     AgentSet.ask(world.patches(), true, function() {
       AgentSet.setPatchVariable(2, AgentSet.oneOf([55, 35]));
       if (Prims.equality(AgentSet.getPatchVariable(2), 55)) {
-        AgentSet.setPatchVariable(5, world.getGlobals().grass_regrowth_time);
+        AgentSet.setPatchVariable(5, world.observer.getGlobal('grass_regrowth_time'));
       }
       else {
-        AgentSet.setPatchVariable(5, Prims.random(world.getGlobals().grass_regrowth_time));
+        AgentSet.setPatchVariable(5, Prims.random(world.observer.getGlobal('grass_regrowth_time')));
       }
     });
   }
   BreedManager.setDefaultShape(world.turtlesOfBreed("SHEEP").getBreedName(), "sheep")
-  AgentSet.ask(world.createTurtles(world.getGlobals().initial_number_sheep, "SHEEP"), true, function() {
+  AgentSet.ask(world.createTurtles(world.observer.getGlobal('initial_number_sheep'), "SHEEP"), true, function() {
     AgentSet.setTurtleVariable(1, 9.9);
     AgentSet.setTurtleVariable(10, 1.5);
     AgentSet.setTurtleVariable(7, (105 - 2));
-    AgentSet.setTurtleVariable(13, Prims.random((2 * world.getGlobals().sheep_gain_from_food)));
+    AgentSet.setTurtleVariable(13, Prims.random((2 * world.observer.getGlobal('sheep_gain_from_food'))));
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
   });
   BreedManager.setDefaultShape(world.turtlesOfBreed("WOLVES").getBreedName(), "wolf")
-  AgentSet.ask(world.createTurtles(world.getGlobals().initial_number_wolves, "WOLVES"), true, function() {
+  AgentSet.ask(world.createTurtles(world.observer.getGlobal('initial_number_wolves'), "WOLVES"), true, function() {
     AgentSet.setTurtleVariable(1, 0);
     AgentSet.setTurtleVariable(10, 2);
-    AgentSet.setTurtleVariable(13, Prims.random((2 * world.getGlobals().wolf_gain_from_food)));
+    AgentSet.setTurtleVariable(13, Prims.random((2 * world.observer.getGlobal('wolf_gain_from_food'))));
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
   });
   Call(displayLabels);
-  world.getGlobals().grass = AgentSet.count(AgentSet.agentFilter(world.patches(), function() {
+  world.observer.setGlobal('grass', AgentSet.count(AgentSet.agentFilter(world.patches(), function() {
     return Prims.equality(AgentSet.getPatchVariable(2), 55);
-  }));
+  })));
   world.ticker.reset();
 }
 function go() {
@@ -78,7 +78,7 @@ function go() {
   }
   AgentSet.ask(world.turtlesOfBreed("SHEEP"), true, function() {
     Call(move);
-    if (world.getGlobals().grass_) {
+    if (world.observer.getGlobal('grass_')) {
       AgentSet.setTurtleVariable(13, (AgentSet.getTurtleVariable(13) - 1));
       Call(eatGrass);
     }
@@ -92,14 +92,14 @@ function go() {
     Call(death);
     Call(reproduceWolves);
   });
-  if (world.getGlobals().grass_) {
+  if (world.observer.getGlobal('grass_')) {
     AgentSet.ask(world.patches(), true, function() {
       Call(growGrass);
     });
   }
-  world.getGlobals().grass = AgentSet.count(AgentSet.agentFilter(world.patches(), function() {
+  world.observer.setGlobal('grass', AgentSet.count(AgentSet.agentFilter(world.patches(), function() {
     return Prims.equality(AgentSet.getPatchVariable(2), 55);
-  }));
+  })));
   world.ticker.tick();
   Call(displayLabels);
 }
@@ -111,11 +111,11 @@ function move() {
 function eatGrass() {
   if (Prims.equality(AgentSet.getPatchVariable(2), 55)) {
     AgentSet.setPatchVariable(2, 35);
-    AgentSet.setTurtleVariable(13, (AgentSet.getTurtleVariable(13) + world.getGlobals().sheep_gain_from_food));
+    AgentSet.setTurtleVariable(13, (AgentSet.getTurtleVariable(13) + world.observer.getGlobal('sheep_gain_from_food')));
   }
 }
 function reproduceSheep() {
-  if (Prims.lt(Prims.randomFloat(100), world.getGlobals().sheep_reproduce)) {
+  if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal('sheep_reproduce'))) {
     AgentSet.setTurtleVariable(13, (AgentSet.getTurtleVariable(13) / 2));
     AgentSet.ask(Prims.hatch(1, ""), true, function() {
       Prims.right(Prims.randomFloat(360));
@@ -124,7 +124,7 @@ function reproduceSheep() {
   }
 }
 function reproduceWolves() {
-  if (Prims.lt(Prims.randomFloat(100), world.getGlobals().wolf_reproduce)) {
+  if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal('wolf_reproduce'))) {
     AgentSet.setTurtleVariable(13, (AgentSet.getTurtleVariable(13) / 2));
     AgentSet.ask(Prims.hatch(1, ""), true, function() {
       Prims.right(Prims.randomFloat(360));
@@ -138,7 +138,7 @@ function catchSheep() {
     AgentSet.ask(prey, true, function() {
       AgentSet.die();
     });
-    AgentSet.setTurtleVariable(13, (AgentSet.getTurtleVariable(13) + world.getGlobals().wolf_gain_from_food));
+    AgentSet.setTurtleVariable(13, (AgentSet.getTurtleVariable(13) + world.observer.getGlobal('wolf_gain_from_food')));
   }
 }
 function death() {
@@ -150,7 +150,7 @@ function growGrass() {
   if (Prims.equality(AgentSet.getPatchVariable(2), 35)) {
     if (Prims.lte(AgentSet.getPatchVariable(5), 0)) {
       AgentSet.setPatchVariable(2, 55);
-      AgentSet.setPatchVariable(5, world.getGlobals().grass_regrowth_time);
+      AgentSet.setPatchVariable(5, world.observer.getGlobal('grass_regrowth_time'));
     }
     else {
       AgentSet.setPatchVariable(5, (AgentSet.getPatchVariable(5) - 1));
@@ -161,23 +161,23 @@ function displayLabels() {
   AgentSet.ask(world.turtles(), true, function() {
     AgentSet.setTurtleVariable(6, "");
   });
-  if (world.getGlobals().show_energy_) {
+  if (world.observer.getGlobal('show_energy_')) {
     AgentSet.ask(world.turtlesOfBreed("WOLVES"), true, function() {
       AgentSet.setTurtleVariable(6, StrictMath.round(AgentSet.getTurtleVariable(13)));
     });
-    if (world.getGlobals().grass_) {
+    if (world.observer.getGlobal('grass_')) {
       AgentSet.ask(world.turtlesOfBreed("SHEEP"), true, function() {
         AgentSet.setTurtleVariable(6, StrictMath.round(AgentSet.getTurtleVariable(13)));
       });
     }
   }
 }
-world.getGlobals().initial_number_sheep = 100;
-world.getGlobals().sheep_gain_from_food = 4;
-world.getGlobals().sheep_reproduce = 4;
-world.getGlobals().initial_number_wolves = 50;
-world.getGlobals().wolf_gain_from_food = 20;
-world.getGlobals().wolf_reproduce = 5;
-world.getGlobals().grass_ = false;
-world.getGlobals().grass_regrowth_time = 30;
-world.getGlobals().show_energy_ = false;
+world.observer.setGlobal('initial_number_sheep', 100);
+world.observer.setGlobal('sheep_gain_from_food', 4);
+world.observer.setGlobal('sheep_reproduce', 4);
+world.observer.setGlobal('initial_number_wolves', 50);
+world.observer.setGlobal('wolf_gain_from_food', 20);
+world.observer.setGlobal('wolf_reproduce', 5);
+world.observer.setGlobal('grass_', false);
+world.observer.setGlobal('grass_regrowth_time', 30);
+world.observer.setGlobal('show_energy_', false);

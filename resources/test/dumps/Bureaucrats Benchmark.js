@@ -38,7 +38,7 @@ function benchmark() {
   Prims.repeat(5000, function () {
     Call(go);
   });
-  world.getGlobals().result = workspace.timer.elapsed();
+  world.observer.setGlobal('result', workspace.timer.elapsed());
 }
 function setup() {
   world.clearAll();
@@ -46,14 +46,14 @@ function setup() {
     AgentSet.setPatchVariable(5, 2);
     Call(colorize);
   });
-  world.getGlobals().total = (2 * AgentSet.count(world.patches()));
+  world.observer.setGlobal('total', (2 * AgentSet.count(world.patches())));
   world.ticker.reset();
 }
 function go() {
   var activePatches = Prims.patchSet(AgentSet.oneOf(world.patches()));
   AgentSet.ask(activePatches, true, function() {
     AgentSet.setPatchVariable(5, (AgentSet.getPatchVariable(5) + 1));
-    world.getGlobals().total = (world.getGlobals().total + 1);
+    world.observer.setGlobal('total', (world.observer.getGlobal('total') + 1));
     Call(colorize);
   });
   while (AgentSet.any(activePatches)) {
@@ -62,11 +62,11 @@ function go() {
     });
     AgentSet.ask(overloadedPatches, true, function() {
       AgentSet.setPatchVariable(5, (AgentSet.getPatchVariable(5) - 4));
-      world.getGlobals().total = (world.getGlobals().total - 4);
+      world.observer.setGlobal('total', (world.observer.getGlobal('total') - 4));
       Call(colorize);
       AgentSet.ask(Prims.getNeighbors4(), true, function() {
         AgentSet.setPatchVariable(5, (AgentSet.getPatchVariable(5) + 1));
-        world.getGlobals().total = (world.getGlobals().total + 1);
+        world.observer.setGlobal('total', (world.observer.getGlobal('total') + 1));
         Call(colorize);
       });
     });
@@ -84,4 +84,4 @@ function colorize() {
     AgentSet.setPatchVariable(2, 15);
   }
 }
-world.getGlobals().plot_ = false;
+world.observer.setGlobal('plot_', false);

@@ -37,7 +37,7 @@ function setup() {
     Call(setupRoad);
   });
   Call(setupCars);
-  world.observer.watch(world.getGlobals().sample_car);
+  world.observer.watch(world.observer.getGlobal('sample_car'));
   world.ticker.reset();
 }
 function setupRoad() {
@@ -46,12 +46,12 @@ function setupRoad() {
   }
 }
 function setupCars() {
-  if (Prims.gt(world.getGlobals().number_of_cars, world.width())) {
+  if (Prims.gt(world.observer.getGlobal('number_of_cars'), world.width())) {
     notImplemented('user-message', undefined)((Dump("") + Dump("There are too many cars for the amount of road.  Please decrease the NUMBER-OF-CARS slider to below ") + Dump((world.width() + 1)) + Dump(" and press the SETUP button again.  The setup has stopped.")));
     throw new Exception.StopInterrupt;
   }
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "car")
-  AgentSet.ask(world.createTurtles(world.getGlobals().number_of_cars, ""), true, function() {
+  AgentSet.ask(world.createTurtles(world.observer.getGlobal('number_of_cars'), ""), true, function() {
     AgentSet.setTurtleVariable(1, 105);
     AgentSet.setTurtleVariable(3, Prims.randomXcor());
     AgentSet.setTurtleVariable(2, 90);
@@ -60,8 +60,8 @@ function setupCars() {
     AgentSet.setTurtleVariable(15, 0);
     Call(separateCars);
   });
-  world.getGlobals().sample_car = AgentSet.oneOf(world.turtles());
-  AgentSet.ask(world.getGlobals().sample_car, true, function() {
+  world.observer.setGlobal('sample_car', AgentSet.oneOf(world.turtles()));
+  AgentSet.ask(world.observer.getGlobal('sample_car'), true, function() {
     AgentSet.setTurtleVariable(1, 15);
   });
 }
@@ -93,11 +93,11 @@ function go() {
 function slowDownCar(carAhead) {
   AgentSet.setTurtleVariable(13, (AgentSet.of(carAhead, function() {
     return AgentSet.getTurtleVariable(13);
-  }) - world.getGlobals().deceleration));
+  }) - world.observer.getGlobal('deceleration')));
 }
 function speedUpCar() {
-  AgentSet.setTurtleVariable(13, (AgentSet.getTurtleVariable(13) + world.getGlobals().acceleration));
+  AgentSet.setTurtleVariable(13, (AgentSet.getTurtleVariable(13) + world.observer.getGlobal('acceleration')));
 }
-world.getGlobals().number_of_cars = 20;
-world.getGlobals().deceleration = 0.026;
-world.getGlobals().acceleration = 0.0045;
+world.observer.setGlobal('number_of_cars', 20);
+world.observer.setGlobal('deceleration', 0.026);
+world.observer.setGlobal('acceleration', 0.0045);

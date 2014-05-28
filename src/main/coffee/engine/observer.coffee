@@ -1,10 +1,11 @@
-define(['engine/patch', 'engine/turtle', 'integration/lodash'], (Patch, Turtle, _) ->
+define(['engine/patch', 'engine/turtle', 'engine/variablemanager', 'integration/lodash']
+     , ( Patch,          Turtle,          VariableManager,          _) ->
 
   class Observer
 
     id: 0
 
-    variables: undefined # Object[String, Any]
+    _varManager: undefined # VariableManager
 
     _perspective: undefined # Number
     _targetAgent: undefined # (Number, Number)
@@ -14,7 +15,7 @@ define(['engine/patch', 'engine/turtle', 'integration/lodash'], (Patch, Turtle, 
     # (Updater, Array[String], Array[String]) => Observer
     constructor: (@_updater, @_globalNames, @_interfaceGlobalNames) ->
       @resetPerspective()
-      @_initGlobals(@_globalNames)
+      @_varManager      = new VariableManager(@_globalNames)
       @_codeGlobalNames = _(@_globalNames).difference(@_interfaceGlobalNames)
 
     # (Agent) => Unit
@@ -37,19 +38,22 @@ define(['engine/patch', 'engine/turtle', 'integration/lodash'], (Patch, Turtle, 
       @_updatePerspective()
       return
 
+    # (String) => Any
+    getGlobal: (varName) ->
+      @_varManager.get(varName)
+
+    # (String, Any) => Unit
+    setGlobal: (varName, value) ->
+      @_varManager.set(varName, value)
+
     # () => Unit
     clearCodeGlobals: ->
-      _(@_codeGlobalNames).forEach((name) => @variables[name] = 0; return)
+      _(@_codeGlobalNames).forEach((name) => @_varManager.set(name, 0); return)
       return
 
     # () => Unit
     _updatePerspective: ->
       @_updater.updated(this)("perspective", "targetAgent")
-      return
-
-    # (Array[String]) => Unit
-    _initGlobals: (globalNames) ->
-      @variables = _(globalNames).foldl(((acc, name) => acc[name] = 0; acc), {})
       return
 
 )

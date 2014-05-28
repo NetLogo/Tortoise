@@ -272,8 +272,4 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
       else
         throw new Exception.NetLogoException("We have yet to implement link breed comparison")
 
-    # () => Object[String, Any]
-    getGlobals: ->
-      @observer.variables
-
 )

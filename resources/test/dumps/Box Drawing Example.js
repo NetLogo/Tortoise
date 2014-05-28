@@ -33,36 +33,36 @@ var StrictMath     = require('integration/strictmath');
 function setupCorner() {
   world.clearAll();
   AgentSet.ask(world.patches(), true, function() {
-    if (((Prims.equality(AgentSet.getPatchVariable(0), 0) && Prims.gte(AgentSet.getPatchVariable(1), 0)) && Prims.lte(AgentSet.getPatchVariable(1), world.getGlobals().edge))) {
+    if (((Prims.equality(AgentSet.getPatchVariable(0), 0) && Prims.gte(AgentSet.getPatchVariable(1), 0)) && Prims.lte(AgentSet.getPatchVariable(1), world.observer.getGlobal('edge')))) {
       AgentSet.setPatchVariable(2, 15);
     }
-    if (((Prims.equality(AgentSet.getPatchVariable(0), world.getGlobals().edge) && Prims.gte(AgentSet.getPatchVariable(1), 0)) && Prims.lte(AgentSet.getPatchVariable(1), world.getGlobals().edge))) {
+    if (((Prims.equality(AgentSet.getPatchVariable(0), world.observer.getGlobal('edge')) && Prims.gte(AgentSet.getPatchVariable(1), 0)) && Prims.lte(AgentSet.getPatchVariable(1), world.observer.getGlobal('edge')))) {
       AgentSet.setPatchVariable(2, 15);
     }
-    if (((Prims.equality(AgentSet.getPatchVariable(1), 0) && Prims.gte(AgentSet.getPatchVariable(0), 0)) && Prims.lte(AgentSet.getPatchVariable(0), world.getGlobals().edge))) {
+    if (((Prims.equality(AgentSet.getPatchVariable(1), 0) && Prims.gte(AgentSet.getPatchVariable(0), 0)) && Prims.lte(AgentSet.getPatchVariable(0), world.observer.getGlobal('edge')))) {
       AgentSet.setPatchVariable(2, 15);
     }
-    if (((Prims.equality(AgentSet.getPatchVariable(1), world.getGlobals().edge) && Prims.gte(AgentSet.getPatchVariable(0), 0)) && Prims.lte(AgentSet.getPatchVariable(0), world.getGlobals().edge))) {
+    if (((Prims.equality(AgentSet.getPatchVariable(1), world.observer.getGlobal('edge')) && Prims.gte(AgentSet.getPatchVariable(0), 0)) && Prims.lte(AgentSet.getPatchVariable(0), world.observer.getGlobal('edge')))) {
       AgentSet.setPatchVariable(2, 15);
     }
   });
 }
 function setupCenter() {
   world.clearAll();
-  world.getGlobals().halfedge = Prims._int((world.getGlobals().edge / 2));
+  world.observer.setGlobal('halfedge', Prims._int((world.observer.getGlobal('edge') / 2)));
   AgentSet.ask(world.patches(), true, function() {
-    if (((Prims.equality(AgentSet.getPatchVariable(0), (- world.getGlobals().halfedge)) && Prims.gte(AgentSet.getPatchVariable(1), (- world.getGlobals().halfedge))) && Prims.lte(AgentSet.getPatchVariable(1), (0 + world.getGlobals().halfedge)))) {
+    if (((Prims.equality(AgentSet.getPatchVariable(0), (- world.observer.getGlobal('halfedge'))) && Prims.gte(AgentSet.getPatchVariable(1), (- world.observer.getGlobal('halfedge')))) && Prims.lte(AgentSet.getPatchVariable(1), (0 + world.observer.getGlobal('halfedge'))))) {
       AgentSet.setPatchVariable(2, 105);
     }
-    if (((Prims.equality(AgentSet.getPatchVariable(0), (0 + world.getGlobals().halfedge)) && Prims.gte(AgentSet.getPatchVariable(1), (- world.getGlobals().halfedge))) && Prims.lte(AgentSet.getPatchVariable(1), (0 + world.getGlobals().halfedge)))) {
+    if (((Prims.equality(AgentSet.getPatchVariable(0), (0 + world.observer.getGlobal('halfedge'))) && Prims.gte(AgentSet.getPatchVariable(1), (- world.observer.getGlobal('halfedge')))) && Prims.lte(AgentSet.getPatchVariable(1), (0 + world.observer.getGlobal('halfedge'))))) {
       AgentSet.setPatchVariable(2, 105);
     }
-    if (((Prims.equality(AgentSet.getPatchVariable(1), (- world.getGlobals().halfedge)) && Prims.gte(AgentSet.getPatchVariable(0), (- world.getGlobals().halfedge))) && Prims.lte(AgentSet.getPatchVariable(0), (0 + world.getGlobals().halfedge)))) {
+    if (((Prims.equality(AgentSet.getPatchVariable(1), (- world.observer.getGlobal('halfedge'))) && Prims.gte(AgentSet.getPatchVariable(0), (- world.observer.getGlobal('halfedge')))) && Prims.lte(AgentSet.getPatchVariable(0), (0 + world.observer.getGlobal('halfedge'))))) {
       AgentSet.setPatchVariable(2, 105);
     }
-    if (((Prims.equality(AgentSet.getPatchVariable(1), (0 + world.getGlobals().halfedge)) && Prims.gte(AgentSet.getPatchVariable(0), (- world.getGlobals().halfedge))) && Prims.lte(AgentSet.getPatchVariable(0), (0 + world.getGlobals().halfedge)))) {
+    if (((Prims.equality(AgentSet.getPatchVariable(1), (0 + world.observer.getGlobal('halfedge'))) && Prims.gte(AgentSet.getPatchVariable(0), (- world.observer.getGlobal('halfedge')))) && Prims.lte(AgentSet.getPatchVariable(0), (0 + world.observer.getGlobal('halfedge'))))) {
       AgentSet.setPatchVariable(2, 105);
     }
   });
 }
-world.getGlobals().edge = 8;
+world.observer.setGlobal('edge', 8);

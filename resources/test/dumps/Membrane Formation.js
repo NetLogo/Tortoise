@@ -35,20 +35,20 @@ BreedManager.get("WATERS").vars =[""];
 BreedManager.add("OILS", "oil");
 BreedManager.get("OILS").vars =[""];function setup() {
   world.clearAll();
-  world.getGlobals().lipid_length = 2;
-  world.getGlobals().interaction_distance = 4;
-  world.getGlobals().too_close_distance = 1.3;
+  world.observer.setGlobal('lipid_length', 2);
+  world.observer.setGlobal('interaction_distance', 4);
+  world.observer.setGlobal('too_close_distance', 1.3);
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
-  AgentSet.ask(world.createTurtles((world.getGlobals().num_water + world.getGlobals().num_lipids), "WATERS"), true, function() {
+  AgentSet.ask(world.createTurtles((world.observer.getGlobal('num_water') + world.observer.getGlobal('num_lipids')), "WATERS"), true, function() {
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
     AgentSet.setTurtleVariable(1, 105);
   });
-  AgentSet.ask(world.createTurtles(world.getGlobals().num_lipids, "OILS"), true, function() {
+  AgentSet.ask(world.createTurtles(world.observer.getGlobal('num_lipids'), "OILS"), true, function() {
     var partner = AgentSet.oneOf(AgentSet.agentFilter(world.turtlesOfBreed("WATERS"), function() {
       return !(AgentSet.any(AgentSet.connectedLinks(false, false)));
     }));
     AgentSet.self().moveTo(partner);
-    Prims.fd(world.getGlobals().lipid_length);
+    Prims.fd(world.observer.getGlobal('lipid_length'));
     AgentSet.ask(LinkPrims.createLinkWith(partner), false, function() {});
     AgentSet.setTurtleVariable(1, 25);
     AgentSet.ask(partner, true, function() {
@@ -66,7 +66,7 @@ function go() {
   world.ticker.tick();
 }
 function interactWithNeighbor() {
-  var near = AgentSet.oneOf(AgentSet.other(AgentSet.agentFilter(AgentSet.self().inRadius(world.turtles(), world.getGlobals().interaction_distance), function() {
+  var near = AgentSet.oneOf(AgentSet.other(AgentSet.agentFilter(AgentSet.self().inRadius(world.turtles(), world.observer.getGlobal('interaction_distance')), function() {
     return !(AgentSet.isLinkNeighbor(false, false)(AgentSet.myself()));
   })));
   if (!Prims.equality(near, Nobody)) {
@@ -74,32 +74,32 @@ function interactWithNeighbor() {
     if (Prims.equality(AgentSet.of(near, function() {
       return AgentSet.getTurtleVariable(8);
     }), AgentSet.getTurtleVariable(8))) {
-      Prims.fd(world.getGlobals().water_water_force);
+      Prims.fd(world.observer.getGlobal('water_water_force'));
     }
     else {
-      Prims.fd(world.getGlobals().water_oil_force);
+      Prims.fd(world.observer.getGlobal('water_oil_force'));
     }
   }
 }
 function repelTooCloseNeighbor() {
-  var tooNear = AgentSet.oneOf(AgentSet.other(AgentSet.self().inRadius(world.turtles(), world.getGlobals().too_close_distance)));
+  var tooNear = AgentSet.oneOf(AgentSet.other(AgentSet.self().inRadius(world.turtles(), world.observer.getGlobal('too_close_distance'))));
   if (!Prims.equality(tooNear, Nobody)) {
     AgentSet.self().face(tooNear);
-    Prims.fd(world.getGlobals().too_close_force);
+    Prims.fd(world.observer.getGlobal('too_close_force'));
   }
 }
 function interactWithPartner() {
   var partner = AgentSet.oneOf(AgentSet.linkNeighbors(false, false));
   if (!Prims.equality(partner, Nobody)) {
     AgentSet.self().face(partner);
-    Prims.fd((AgentSet.self().distance(partner) - world.getGlobals().lipid_length));
+    Prims.fd((AgentSet.self().distance(partner) - world.observer.getGlobal('lipid_length')));
   }
   Prims.left(Prims.random(360));
-  Prims.fd(world.getGlobals().random_force);
+  Prims.fd(world.observer.getGlobal('random_force'));
 }
-world.getGlobals().num_water = 750;
-world.getGlobals().num_lipids = 250;
-world.getGlobals().water_water_force = 0.2;
-world.getGlobals().water_oil_force = -0.7;
-world.getGlobals().too_close_force = -0.3;
-world.getGlobals().random_force = 0.1;
+world.observer.setGlobal('num_water', 750);
+world.observer.setGlobal('num_lipids', 250);
+world.observer.setGlobal('water_water_force', 0.2);
+world.observer.setGlobal('water_oil_force', -0.7);
+world.observer.setGlobal('too_close_force', -0.3);
+world.observer.setGlobal('random_force', 0.1);

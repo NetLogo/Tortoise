@@ -35,7 +35,7 @@ function setup() {
   AgentSet.ask(world.patches(), true, function() {
     AgentSet.setPatchVariable(2, 9.9);
   });
-  AgentSet.ask(world.createTurtles(world.getGlobals().num_vants, ""), true, function() {
+  AgentSet.ask(world.createTurtles(world.observer.getGlobal('num_vants'), ""), true, function() {
     AgentSet.self().face(AgentSet.oneOf(Prims.getNeighbors4()));
     AgentSet.setTurtleVariable(1, 15);
     AgentSet.setTurtleVariable(10, 6);
@@ -72,4 +72,4 @@ function turn() {
     Prims.left(90);
   }
 }
-world.getGlobals().num_vants = 1;
+world.observer.setGlobal('num_vants', 1);

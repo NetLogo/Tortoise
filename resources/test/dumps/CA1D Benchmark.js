@@ -32,9 +32,9 @@ var StrictMath     = require('integration/strictmath');
 
 PatchesOwn.init(1);
 function startup() {
-  world.getGlobals().rules_shown_ = false;
-  world.getGlobals().gone_ = false;
-  world.getGlobals().old_rule = world.getGlobals().rule;
+  world.observer.setGlobal('rules_shown_', false);
+  world.observer.setGlobal('gone_', false);
+  world.observer.setGlobal('old_rule', world.observer.getGlobal('rule'));
 }
 function benchmark() {
   Random.setSeed(4378);
@@ -43,26 +43,26 @@ function benchmark() {
   Prims.repeat((10 * world.height()), function () {
     Call(go);
   });
-  world.getGlobals().result = workspace.timer.elapsed();
+  world.observer.setGlobal('result', workspace.timer.elapsed());
 }
 function setupGeneral() {
   world.clearPatches();
   world.clearTurtles();
-  world.getGlobals().row = world.maxPycor;
+  world.observer.setGlobal('row', world.maxPycor);
   Call(refreshRules);
-  world.getGlobals().gone_ = false;
-  world.getGlobals().rules_shown_ = false;
+  world.observer.setGlobal('gone_', false);
+  world.observer.setGlobal('rules_shown_', false);
 }
 function singleCell() {
   Call(setupGeneral);
   AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
-    return Prims.equality(AgentSet.getPatchVariable(1), world.getGlobals().row);
+    return Prims.equality(AgentSet.getPatchVariable(1), world.observer.getGlobal('row'));
   }), true, function() {
     AgentSet.setPatchVariable(5, false);
-    AgentSet.setPatchVariable(2, world.getGlobals().background);
+    AgentSet.setPatchVariable(2, world.observer.getGlobal('background'));
   });
-  AgentSet.ask(Prims.patch(0, world.getGlobals().row), true, function() {
-    AgentSet.setPatchVariable(2, world.getGlobals().foreground);
+  AgentSet.ask(Prims.patch(0, world.observer.getGlobal('row')), true, function() {
+    AgentSet.setPatchVariable(2, world.observer.getGlobal('foreground'));
     AgentSet.setPatchVariable(5, true);
   });
   world.ticker.reset();
@@ -70,16 +70,16 @@ function singleCell() {
 function setupRandom() {
   Call(setupGeneral);
   AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
-    return Prims.equality(AgentSet.getPatchVariable(1), world.getGlobals().row);
+    return Prims.equality(AgentSet.getPatchVariable(1), world.observer.getGlobal('row'));
   }), true, function() {
-    AgentSet.setPatchVariable(5, Prims.lt(Prims.random(100), world.getGlobals().density));
+    AgentSet.setPatchVariable(5, Prims.lt(Prims.random(100), world.observer.getGlobal('density')));
     Call(colorPatch);
   });
   world.ticker.reset();
 }
 function setupContinue() {
   var on_pList = [];
-  if (!(world.getGlobals().gone_)) {
+  if (!(world.observer.getGlobal('gone_'))) {
     throw new Exception.StopInterrupt;
   }
   on_pList = Tasks.map(Tasks.reporterTask(function() {
@@ -88,23 +88,23 @@ function setupContinue() {
       return AgentSet.getPatchVariable(5);
     });
   }), Prims.sort(AgentSet.agentFilter(world.patches(), function() {
-    return Prims.equality(AgentSet.getPatchVariable(1), world.getGlobals().row);
+    return Prims.equality(AgentSet.getPatchVariable(1), world.observer.getGlobal('row'));
   })));
   Call(setupGeneral);
   AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
-    return Prims.equality(AgentSet.getPatchVariable(1), world.getGlobals().row);
+    return Prims.equality(AgentSet.getPatchVariable(1), world.observer.getGlobal('row'));
   }), true, function() {
     AgentSet.setPatchVariable(5, Prims.item((AgentSet.getPatchVariable(0) + world.maxPxcor), on_pList));
     Call(colorPatch);
   });
-  world.getGlobals().gone_ = true;
+  world.observer.setGlobal('gone_', true);
 }
 function go() {
-  if (world.getGlobals().rules_shown_) {
+  if (world.observer.getGlobal('rules_shown_')) {
     throw new Exception.StopInterrupt;
   }
-  if (Prims.equality(world.getGlobals().row, world.minPycor)) {
-    if (world.getGlobals().auto_continue_) {
+  if (Prims.equality(world.observer.getGlobal('row'), world.minPycor)) {
+    if (world.observer.getGlobal('auto_continue_')) {
       notImplemented('display', undefined)();
       Call(setupContinue);
     }
@@ -113,17 +113,17 @@ function go() {
     }
   }
   AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
-    return Prims.equality(AgentSet.getPatchVariable(1), world.getGlobals().row);
+    return Prims.equality(AgentSet.getPatchVariable(1), world.observer.getGlobal('row'));
   }), true, function() {
     Call(doRule);
   });
-  world.getGlobals().row = (world.getGlobals().row - 1);
+  world.observer.setGlobal('row', (world.observer.getGlobal('row') - 1));
   AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
-    return Prims.equality(AgentSet.getPatchVariable(1), world.getGlobals().row);
+    return Prims.equality(AgentSet.getPatchVariable(1), world.observer.getGlobal('row'));
   }), true, function() {
     Call(colorPatch);
   });
-  world.getGlobals().gone_ = true;
+  world.observer.setGlobal('gone_', true);
   world.ticker.tick();
 }
 function doRule() {
@@ -133,17 +133,17 @@ function doRule() {
   var rightOn_p = AgentSet.of(AgentSet.self().patchAt(1, 0), function() {
     return AgentSet.getPatchVariable(5);
   });
-  var newValue = ((((((((((world.getGlobals().iii && leftOn_p) && AgentSet.getPatchVariable(5)) && rightOn_p) || (((world.getGlobals().iio && leftOn_p) && AgentSet.getPatchVariable(5)) && !(rightOn_p))) || (((world.getGlobals().ioi && leftOn_p) && !(AgentSet.getPatchVariable(5))) && rightOn_p)) || (((world.getGlobals().ioo && leftOn_p) && !(AgentSet.getPatchVariable(5))) && !(rightOn_p))) || (((world.getGlobals().oii && !(leftOn_p)) && AgentSet.getPatchVariable(5)) && rightOn_p)) || (((world.getGlobals().oio && !(leftOn_p)) && AgentSet.getPatchVariable(5)) && !(rightOn_p))) || (((world.getGlobals().ooi && !(leftOn_p)) && !(AgentSet.getPatchVariable(5))) && rightOn_p)) || (((world.getGlobals().ooo && !(leftOn_p)) && !(AgentSet.getPatchVariable(5))) && !(rightOn_p)));
+  var newValue = ((((((((((world.observer.getGlobal('iii') && leftOn_p) && AgentSet.getPatchVariable(5)) && rightOn_p) || (((world.observer.getGlobal('iio') && leftOn_p) && AgentSet.getPatchVariable(5)) && !(rightOn_p))) || (((world.observer.getGlobal('ioi') && leftOn_p) && !(AgentSet.getPatchVariable(5))) && rightOn_p)) || (((world.observer.getGlobal('ioo') && leftOn_p) && !(AgentSet.getPatchVariable(5))) && !(rightOn_p))) || (((world.observer.getGlobal('oii') && !(leftOn_p)) && AgentSet.getPatchVariable(5)) && rightOn_p)) || (((world.observer.getGlobal('oio') && !(leftOn_p)) && AgentSet.getPatchVariable(5)) && !(rightOn_p))) || (((world.observer.getGlobal('ooi') && !(leftOn_p)) && !(AgentSet.getPatchVariable(5))) && rightOn_p)) || (((world.observer.getGlobal('ooo') && !(leftOn_p)) && !(AgentSet.getPatchVariable(5))) && !(rightOn_p)));
   AgentSet.ask(AgentSet.self().patchAt(0, -1), true, function() {
     AgentSet.setPatchVariable(5, newValue);
   });
 }
 function colorPatch() {
   if (AgentSet.getPatchVariable(5)) {
-    AgentSet.setPatchVariable(2, world.getGlobals().foreground);
+    AgentSet.setPatchVariable(2, world.observer.getGlobal('foreground'));
   }
   else {
-    AgentSet.setPatchVariable(2, world.getGlobals().background);
+    AgentSet.setPatchVariable(2, world.observer.getGlobal('background'));
   }
 }
 function bindigit(number, powerOfTwo) {
@@ -155,50 +155,50 @@ function bindigit(number, powerOfTwo) {
   }
 }
 function refreshRules() {
-  if (Prims.equality(world.getGlobals().rule, world.getGlobals().old_rule)) {
-    if (!Prims.equality(world.getGlobals().rule, Call(calculateRule))) {
-      world.getGlobals().rule = Call(calculateRule);
+  if (Prims.equality(world.observer.getGlobal('rule'), world.observer.getGlobal('old_rule'))) {
+    if (!Prims.equality(world.observer.getGlobal('rule'), Call(calculateRule))) {
+      world.observer.setGlobal('rule', Call(calculateRule));
     }
   }
   else {
     Call(extrapolateSwitches);
   }
-  world.getGlobals().old_rule = world.getGlobals().rule;
+  world.observer.setGlobal('old_rule', world.observer.getGlobal('rule'));
 }
 function extrapolateSwitches() {
-  world.getGlobals().ooo = Prims.equality(Call(bindigit, world.getGlobals().rule, 0), 1);
-  world.getGlobals().ooi = Prims.equality(Call(bindigit, world.getGlobals().rule, 1), 1);
-  world.getGlobals().oio = Prims.equality(Call(bindigit, world.getGlobals().rule, 2), 1);
-  world.getGlobals().oii = Prims.equality(Call(bindigit, world.getGlobals().rule, 3), 1);
-  world.getGlobals().ioo = Prims.equality(Call(bindigit, world.getGlobals().rule, 4), 1);
-  world.getGlobals().ioi = Prims.equality(Call(bindigit, world.getGlobals().rule, 5), 1);
-  world.getGlobals().iio = Prims.equality(Call(bindigit, world.getGlobals().rule, 6), 1);
-  world.getGlobals().iii = Prims.equality(Call(bindigit, world.getGlobals().rule, 7), 1);
+  world.observer.setGlobal('ooo', Prims.equality(Call(bindigit, world.observer.getGlobal('rule'), 0), 1));
+  world.observer.setGlobal('ooi', Prims.equality(Call(bindigit, world.observer.getGlobal('rule'), 1), 1));
+  world.observer.setGlobal('oio', Prims.equality(Call(bindigit, world.observer.getGlobal('rule'), 2), 1));
+  world.observer.setGlobal('oii', Prims.equality(Call(bindigit, world.observer.getGlobal('rule'), 3), 1));
+  world.observer.setGlobal('ioo', Prims.equality(Call(bindigit, world.observer.getGlobal('rule'), 4), 1));
+  world.observer.setGlobal('ioi', Prims.equality(Call(bindigit, world.observer.getGlobal('rule'), 5), 1));
+  world.observer.setGlobal('iio', Prims.equality(Call(bindigit, world.observer.getGlobal('rule'), 6), 1));
+  world.observer.setGlobal('iii', Prims.equality(Call(bindigit, world.observer.getGlobal('rule'), 7), 1));
 }
 function calculateRule() {
   var rresult = 0;
-  if (world.getGlobals().ooo) {
+  if (world.observer.getGlobal('ooo')) {
     rresult = (rresult + 1);
   }
-  if (world.getGlobals().ooi) {
+  if (world.observer.getGlobal('ooi')) {
     rresult = (rresult + 2);
   }
-  if (world.getGlobals().oio) {
+  if (world.observer.getGlobal('oio')) {
     rresult = (rresult + 4);
   }
-  if (world.getGlobals().oii) {
+  if (world.observer.getGlobal('oii')) {
     rresult = (rresult + 8);
   }
-  if (world.getGlobals().ioo) {
+  if (world.observer.getGlobal('ioo')) {
     rresult = (rresult + 16);
   }
-  if (world.getGlobals().ioi) {
+  if (world.observer.getGlobal('ioi')) {
     rresult = (rresult + 32);
   }
-  if (world.getGlobals().iio) {
+  if (world.observer.getGlobal('iio')) {
     rresult = (rresult + 64);
   }
-  if (world.getGlobals().iii) {
+  if (world.observer.getGlobal('iii')) {
     rresult = (rresult + 128);
   }
   return rresult;
@@ -230,14 +230,14 @@ function showRules() {
       AgentSet.die();
     });
   });
-  world.getGlobals().rules_shown_ = true;
+  world.observer.setGlobal('rules_shown_', true);
 }
 function printBlock(state) {
   if (state) {
-    AgentSet.setTurtleVariable(1, world.getGlobals().foreground);
+    AgentSet.setTurtleVariable(1, world.observer.getGlobal('foreground'));
   }
   else {
-    AgentSet.setTurtleVariable(1, world.getGlobals().background);
+    AgentSet.setTurtleVariable(1, world.observer.getGlobal('background'));
   }
   AgentSet.setTurtleVariable(2, 90);
   Prims.repeat(4, function () {
@@ -248,26 +248,26 @@ function printBlock(state) {
 }
 function listRules() {
   var rules = [];
-  rules = Prims.lput(Prims.lput(world.getGlobals().ooo, [false, false, false]), rules);
-  rules = Prims.lput(Prims.lput(world.getGlobals().ooi, [false, false, true]), rules);
-  rules = Prims.lput(Prims.lput(world.getGlobals().oio, [false, true, false]), rules);
-  rules = Prims.lput(Prims.lput(world.getGlobals().oii, [false, true, true]), rules);
-  rules = Prims.lput(Prims.lput(world.getGlobals().ioo, [true, false, false]), rules);
-  rules = Prims.lput(Prims.lput(world.getGlobals().ioi, [true, false, true]), rules);
-  rules = Prims.lput(Prims.lput(world.getGlobals().iio, [true, true, false]), rules);
-  rules = Prims.lput(Prims.lput(world.getGlobals().iii, [true, true, true]), rules);
+  rules = Prims.lput(Prims.lput(world.observer.getGlobal('ooo'), [false, false, false]), rules);
+  rules = Prims.lput(Prims.lput(world.observer.getGlobal('ooi'), [false, false, true]), rules);
+  rules = Prims.lput(Prims.lput(world.observer.getGlobal('oio'), [false, true, false]), rules);
+  rules = Prims.lput(Prims.lput(world.observer.getGlobal('oii'), [false, true, true]), rules);
+  rules = Prims.lput(Prims.lput(world.observer.getGlobal('ioo'), [true, false, false]), rules);
+  rules = Prims.lput(Prims.lput(world.observer.getGlobal('ioi'), [true, false, true]), rules);
+  rules = Prims.lput(Prims.lput(world.observer.getGlobal('iio'), [true, true, false]), rules);
+  rules = Prims.lput(Prims.lput(world.observer.getGlobal('iii'), [true, true, true]), rules);
   return rules;
 }
-world.getGlobals().ooo = true;
-world.getGlobals().ooi = false;
-world.getGlobals().oio = false;
-world.getGlobals().oii = true;
-world.getGlobals().ioo = false;
-world.getGlobals().ioi = true;
-world.getGlobals().iio = true;
-world.getGlobals().iii = false;
-world.getGlobals().foreground = 55;
-world.getGlobals().background = 0;
-world.getGlobals().rule = 105;
-world.getGlobals().density = 10;
-world.getGlobals().auto_continue_ = true;
+world.observer.setGlobal('ooo', true);
+world.observer.setGlobal('ooi', false);
+world.observer.setGlobal('oio', false);
+world.observer.setGlobal('oii', true);
+world.observer.setGlobal('ioo', false);
+world.observer.setGlobal('ioi', true);
+world.observer.setGlobal('iio', true);
+world.observer.setGlobal('iii', false);
+world.observer.setGlobal('foreground', 55);
+world.observer.setGlobal('background', 0);
+world.observer.setGlobal('rule', 105);
+world.observer.setGlobal('density', 10);
+world.observer.setGlobal('auto_continue_', true);

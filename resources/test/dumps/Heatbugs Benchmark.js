@@ -39,17 +39,17 @@ function benchmark() {
   Prims.repeat(1000, function () {
     Call(go);
   });
-  world.getGlobals().result = workspace.timer.elapsed();
+  world.observer.setGlobal('result', workspace.timer.elapsed());
 }
 function setup() {
   world.clearAll();
   world.ticker.reset();
-  AgentSet.ask(AgentSet.nOf(world.getGlobals().bug_count, world.patches()), true, function() {
+  AgentSet.ask(AgentSet.nOf(world.observer.getGlobal('bug_count'), world.patches()), true, function() {
     AgentSet.ask(Prims.sprout(1, ""), true, function() {
       AgentSet.setTurtleVariable(1, 65);
       AgentSet.setTurtleVariable(10, 1.75);
-      AgentSet.setTurtleVariable(13, (world.getGlobals().min_ideal_temp + Prims.random(StrictMath.abs((world.getGlobals().max_ideal_temp - world.getGlobals().min_ideal_temp)))));
-      AgentSet.setTurtleVariable(14, (world.getGlobals().min_output_heat + Prims.random(StrictMath.abs((world.getGlobals().max_output_heat - world.getGlobals().min_output_heat)))));
+      AgentSet.setTurtleVariable(13, (world.observer.getGlobal('min_ideal_temp') + Prims.random(StrictMath.abs((world.observer.getGlobal('max_ideal_temp') - world.observer.getGlobal('min_ideal_temp'))))));
+      AgentSet.setTurtleVariable(14, (world.observer.getGlobal('min_output_heat') + Prims.random(StrictMath.abs((world.observer.getGlobal('max_output_heat') - world.observer.getGlobal('min_output_heat'))))));
       AgentSet.setTurtleVariable(15, StrictMath.abs((AgentSet.getTurtleVariable(13) - AgentSet.getPatchVariable(5))));
     });
   });
@@ -58,7 +58,7 @@ function go() {
   if (!(AgentSet.any(world.turtles()))) {
     throw new Exception.StopInterrupt;
   }
-  world.topology().diffuse(5, world.getGlobals().diffusion_rate);
+  world.topology().diffuse(5, world.observer.getGlobal('diffusion_rate'));
   AgentSet.ask(world.turtles(), true, function() {
     Call(step);
   });
@@ -67,7 +67,7 @@ function go() {
 }
 function recolorPatches() {
   AgentSet.ask(world.patches(), true, function() {
-    AgentSet.setPatchVariable(5, (AgentSet.getPatchVariable(5) * (1 - world.getGlobals().evaporation_rate)));
+    AgentSet.setPatchVariable(5, (AgentSet.getPatchVariable(5) * (1 - world.observer.getGlobal('evaporation_rate'))));
     AgentSet.setPatchVariable(2, Prims.scaleColor(15, AgentSet.getPatchVariable(5), 0, 500));
   });
 }
@@ -78,7 +78,7 @@ function step() {
   }
   else {
     var target = Call(findTarget);
-    if ((!Prims.equality(AgentSet.self().getPatchHere(), target) || Prims.gt(world.getGlobals().random_move_chance, Prims.random(100)))) {
+    if ((!Prims.equality(AgentSet.self().getPatchHere(), target) || Prims.gt(world.observer.getGlobal('random_move_chance'), Prims.random(100)))) {
       Call(bugMove, target);
     }
     AgentSet.setPatchVariable(5, (AgentSet.getPatchVariable(5) + AgentSet.getTurtleVariable(14)));
@@ -111,11 +111,11 @@ function bugMove(target) {
     }
   }
 }
-world.getGlobals().bug_count = 100;
-world.getGlobals().evaporation_rate = 0.01;
-world.getGlobals().diffusion_rate = 1;
-world.getGlobals().random_move_chance = 0;
-world.getGlobals().min_ideal_temp = 170;
-world.getGlobals().max_ideal_temp = 310;
-world.getGlobals().max_output_heat = 100;
-world.getGlobals().min_output_heat = 30;
+world.observer.setGlobal('bug_count', 100);
+world.observer.setGlobal('evaporation_rate', 0.01);
+world.observer.setGlobal('diffusion_rate', 1);
+world.observer.setGlobal('random_move_chance', 0);
+world.observer.setGlobal('min_ideal_temp', 170);
+world.observer.setGlobal('max_ideal_temp', 310);
+world.observer.setGlobal('max_output_heat', 100);
+world.observer.setGlobal('min_output_heat', 30);

@@ -41,7 +41,7 @@ object Prims {
         s"AgentSet.getTurtleVariable($vn)"
       case pv: prim._patchvariable          => s"AgentSet.getPatchVariable(${pv.vn})"
       case r: prim._reference               => s"${r.reference.vn}"
-      case ov: prim._observervariable       => s"world.getGlobals().${Compiler.sanitizeVarName(ov.displayName)}"
+      case ov: prim._observervariable       => s"world.observer.getGlobal('${Compiler.sanitizeVarName(ov.displayName)}')"
       case _: prim._word                    =>
         ("\"\"" +: args).map(arg => "Dump(" + arg + ")").mkString("(", " + ", ")")
       case _: prim._with =>
@@ -141,7 +141,7 @@ object Prims {
       case p: prim._letvariable =>
         s"${Handlers.ident(p.let.name)} = ${arg(1)};"
       case p: prim._observervariable =>
-        s"world.getGlobals().${Compiler.sanitizeVarName(p.displayName)} = ${arg(1)};"
+        s"world.observer.setGlobal('${Compiler.sanitizeVarName(p.displayName)}', ${arg(1)});"
       case bv: prim._breedvariable =>
         s"""AgentSet.setBreedVariable("${bv.name}", ${arg(1)});"""
       case p: prim._linkvariable =>

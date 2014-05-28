@@ -33,11 +33,11 @@ var StrictMath     = require('integration/strictmath');
 TurtlesOwn.init(4);
 function setup() {
   world.clearAll();
-  AgentSet.ask(world.createTurtles(world.getGlobals().number, ""), true, function() {
+  AgentSet.ask(world.createTurtles(world.observer.getGlobal('number'), ""), true, function() {
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
-    AgentSet.setTurtleVariable(13, Prims.random(StrictMath.round(world.getGlobals().cycle_length)));
-    AgentSet.setTurtleVariable(14, world.getGlobals().flash_length);
-    if (Prims.equality(world.getGlobals().strategy, "delay")) {
+    AgentSet.setTurtleVariable(13, Prims.random(StrictMath.round(world.observer.getGlobal('cycle_length'))));
+    AgentSet.setTurtleVariable(14, world.observer.getGlobal('flash_length'));
+    if (Prims.equality(world.observer.getGlobal('strategy'), "delay")) {
       AgentSet.setTurtleVariable(15, AgentSet.getTurtleVariable(14));
       AgentSet.setTurtleVariable(16, -1);
     }
@@ -70,7 +70,7 @@ function recolor() {
   }
   else {
     AgentSet.setTurtleVariable(1, (5 - 2));
-    if (world.getGlobals().show_dark_fireflies_) {
+    if (world.observer.getGlobal('show_dark_fireflies_')) {
       AgentSet.self().hideTurtle(false);;
     }
     else {
@@ -84,20 +84,20 @@ function move() {
 }
 function incrementClock() {
   AgentSet.setTurtleVariable(13, (AgentSet.getTurtleVariable(13) + 1));
-  if (Prims.equality(AgentSet.getTurtleVariable(13), world.getGlobals().cycle_length)) {
+  if (Prims.equality(AgentSet.getTurtleVariable(13), world.observer.getGlobal('cycle_length'))) {
     AgentSet.setTurtleVariable(13, 0);
   }
 }
 function look() {
   if (Prims.gte(AgentSet.count(AgentSet.agentFilter(AgentSet.self().inRadius(world.turtles(), 1), function() {
     return Prims.equality(AgentSet.getTurtleVariable(1), 45);
-  })), world.getGlobals().flashes_to_reset)) {
+  })), world.observer.getGlobal('flashes_to_reset'))) {
     AgentSet.setTurtleVariable(13, AgentSet.getTurtleVariable(15));
   }
 }
-world.getGlobals().number = 1500;
-world.getGlobals().cycle_length = 10;
-world.getGlobals().flash_length = 1;
-world.getGlobals().flashes_to_reset = 1;
-world.getGlobals().show_dark_fireflies_ = true;
-world.getGlobals().strategy = "delay";
+world.observer.setGlobal('number', 1500);
+world.observer.setGlobal('cycle_length', 10);
+world.observer.setGlobal('flash_length', 1);
+world.observer.setGlobal('flashes_to_reset', 1);
+world.observer.setGlobal('show_dark_fireflies_', true);
+world.observer.setGlobal('strategy', "delay");

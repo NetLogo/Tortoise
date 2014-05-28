@@ -46,11 +46,11 @@ function benchmark() {
   Prims.repeat(800, function () {
     Call(go);
   });
-  world.getGlobals().result = workspace.timer.elapsed();
+  world.observer.setGlobal('result', workspace.timer.elapsed());
 }
 function setupTurtles() {
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "bug")
-  AgentSet.ask(world.createOrderedTurtles(world.getGlobals().ants, ""), true, function() {
+  AgentSet.ask(world.createOrderedTurtles(world.observer.getGlobal('ants'), ""), true, function() {
     AgentSet.setTurtleVariable(10, 2);
     Prims.right(Prims.randomFloat(360));
     AgentSet.setTurtleVariable(1, 15);
@@ -110,7 +110,7 @@ function go() {
   AgentSet.ask(world.turtles(), true, function() {
     Call(goTurtles);
   });
-  world.topology().diffuse(5, (world.getGlobals().diffusion_rate / 100));
+  world.topology().diffuse(5, (world.observer.getGlobal('diffusion_rate') / 100));
   AgentSet.ask(world.patches(), true, function() {
     Call(goPatches);
   });
@@ -130,7 +130,7 @@ function goTurtles() {
   }
 }
 function goPatches() {
-  AgentSet.setPatchVariable(5, ((AgentSet.getPatchVariable(5) * (100 - world.getGlobals().evaporation_rate)) / 100));
+  AgentSet.setPatchVariable(5, ((AgentSet.getPatchVariable(5) * (100 - world.observer.getGlobal('evaporation_rate'))) / 100));
   Call(updateDisplay);
 }
 function returnToNest() {
@@ -229,7 +229,7 @@ function chemicalScent(angle) {
   return 0;
 }
 function doPlotting() {
-  if (!(world.getGlobals().plot_)) {
+  if (!(world.observer.getGlobal('plot_'))) {
     throw new Exception.StopInterrupt;
   }
   notImplemented('set-current-plot', undefined)("Food in each pile");
@@ -246,7 +246,7 @@ function doPlotting() {
     return Prims.equality(AgentSet.getPatchVariable(2), 105);
   })));
 }
-world.getGlobals().diffusion_rate = 53;
-world.getGlobals().evaporation_rate = 10;
-world.getGlobals().plot_ = true;
-world.getGlobals().ants = 300;
+world.observer.setGlobal('diffusion_rate', 53);
+world.observer.setGlobal('evaporation_rate', 10);
+world.observer.setGlobal('plot_', true);
+world.observer.setGlobal('ants', 300);

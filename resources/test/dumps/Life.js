@@ -41,7 +41,7 @@ function setupBlank() {
 function setupRandom() {
   world.clearAll();
   AgentSet.ask(world.patches(), true, function() {
-    if (Prims.lt(Prims.randomFloat(100), world.getGlobals().initial_density)) {
+    if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal('initial_density'))) {
       Call(cellBirth);
     }
     else {
@@ -52,11 +52,11 @@ function setupRandom() {
 }
 function cellBirth() {
   AgentSet.setPatchVariable(5, true);
-  AgentSet.setPatchVariable(2, world.getGlobals().fgcolor);
+  AgentSet.setPatchVariable(2, world.observer.getGlobal('fgcolor'));
 }
 function cellDeath() {
   AgentSet.setPatchVariable(5, false);
-  AgentSet.setPatchVariable(2, world.getGlobals().bgcolor);
+  AgentSet.setPatchVariable(2, world.observer.getGlobal('bgcolor'));
 }
 function go() {
   AgentSet.ask(world.patches(), true, function() {
@@ -92,6 +92,6 @@ function drawCells() {
     notImplemented('display', undefined)();
   }
 }
-world.getGlobals().initial_density = 35;
-world.getGlobals().fgcolor = 123;
-world.getGlobals().bgcolor = 79;
+world.observer.setGlobal('initial_density', 35);
+world.observer.setGlobal('fgcolor', 123);
+world.observer.setGlobal('bgcolor', 79);

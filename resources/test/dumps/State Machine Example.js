@@ -35,11 +35,11 @@ function setup() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "bug")
   AgentSet.ask(world.patches(), true, function() {
-    if (Prims.lt(Prims.randomFloat(100), world.getGlobals().density)) {
+    if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal('density'))) {
       AgentSet.setPatchVariable(2, 45);
     }
   });
-  AgentSet.ask(world.createTurtles(world.getGlobals().number, ""), true, function() {
+  AgentSet.ask(world.createTurtles(world.observer.getGlobal('number'), ""), true, function() {
     AgentSet.setTurtleVariable(1, 9.9);
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
     AgentSet.setTurtleVariable(13, Tasks.commandTask(function() {
@@ -105,5 +105,5 @@ function getAway() {
     }));
   }
 }
-world.getGlobals().number = 400;
-world.getGlobals().density = 20;
+world.observer.setGlobal('number', 400);
+world.observer.setGlobal('density', 20);

@@ -35,7 +35,7 @@ function setup() {
   AgentSet.ask(Prims.patch(0, 0), true, function() {
     AgentSet.setPatchVariable(2, 55);
   });
-  AgentSet.ask(world.createTurtles(world.getGlobals().num_particles, ""), true, function() {
+  AgentSet.ask(world.createTurtles(world.observer.getGlobal('num_particles'), ""), true, function() {
     AgentSet.setTurtleVariable(1, 15);
     AgentSet.setTurtleVariable(10, 1.5);
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
@@ -44,8 +44,8 @@ function setup() {
 }
 function go() {
   AgentSet.ask(world.turtles(), true, function() {
-    Prims.right(Prims.random(world.getGlobals().wiggle_angle));
-    Prims.left(Prims.random(world.getGlobals().wiggle_angle));
+    Prims.right(Prims.random(world.observer.getGlobal('wiggle_angle')));
+    Prims.left(Prims.random(world.observer.getGlobal('wiggle_angle')));
     Prims.fd(1);
     if (AgentSet.any(AgentSet.agentFilter(Prims.getNeighbors(), function() {
       return Prims.equality(AgentSet.getPatchVariable(2), 55);
@@ -56,5 +56,5 @@ function go() {
   });
   world.ticker.tick();
 }
-world.getGlobals().wiggle_angle = 60;
-world.getGlobals().num_particles = 2500;
+world.observer.setGlobal('wiggle_angle', 60);
+world.observer.setGlobal('num_particles', 2500);

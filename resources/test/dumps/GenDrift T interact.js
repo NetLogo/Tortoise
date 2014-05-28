@@ -33,8 +33,8 @@ var StrictMath     = require('integration/strictmath');
 function setup() {
   world.clearTurtles();
   notImplemented('clear-all-plots', undefined)();
-  AgentSet.ask(world.createTurtles(world.getGlobals().number, ""), true, function() {
-    AgentSet.setTurtleVariable(1, Prims.item(Prims.random(world.getGlobals().colors), [5, 15, 25, 35, 45, 55, 65, 85, 95, 125]));
+  AgentSet.ask(world.createTurtles(world.observer.getGlobal('number'), ""), true, function() {
+    AgentSet.setTurtleVariable(1, Prims.item(Prims.random(world.observer.getGlobal('colors')), [5, 15, 25, 35, 45, 55, 65, 85, 95, 125]));
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
     Call(moveOffWall);
   });
@@ -80,7 +80,7 @@ function findTopSpecies() {
       winningAmount = howMany;
     }
   }), ColorModel.baseColors());
-  world.getGlobals().max_percent = ((100 * winningAmount) / AgentSet.count(world.turtles()));
+  world.observer.setGlobal('max_percent', ((100 * winningAmount) / AgentSet.count(world.turtles())));
 }
 function placeWall() {
   if (notImplemented('mouse-down?', false)()) {
@@ -113,5 +113,5 @@ function moveOffWall() {
     AgentSet.self().moveTo(AgentSet.oneOf(Prims.getNeighbors()));
   }
 }
-world.getGlobals().colors = 5;
-world.getGlobals().number = 300;
+world.observer.setGlobal('colors', 5);
+world.observer.setGlobal('number', 300);

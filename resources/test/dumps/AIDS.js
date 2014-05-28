@@ -38,15 +38,15 @@ function setup() {
   world.ticker.reset();
 }
 function setupGlobals() {
-  world.getGlobals().infection_chance = 50;
-  world.getGlobals().symptoms_show = 200;
-  world.getGlobals().slider_check_1 = world.getGlobals().average_commitment;
-  world.getGlobals().slider_check_2 = world.getGlobals().average_coupling_tendency;
-  world.getGlobals().slider_check_3 = world.getGlobals().average_condom_use;
-  world.getGlobals().slider_check_4 = world.getGlobals().average_test_frequency;
+  world.observer.setGlobal('infection_chance', 50);
+  world.observer.setGlobal('symptoms_show', 200);
+  world.observer.setGlobal('slider_check_1', world.observer.getGlobal('average_commitment'));
+  world.observer.setGlobal('slider_check_2', world.observer.getGlobal('average_coupling_tendency'));
+  world.observer.setGlobal('slider_check_3', world.observer.getGlobal('average_condom_use'));
+  world.observer.setGlobal('slider_check_4', world.observer.getGlobal('average_test_frequency'));
 }
 function setupPeople() {
-  AgentSet.ask(world.createTurtles(world.getGlobals().initial_people, ""), true, function() {
+  AgentSet.ask(world.createTurtles(world.observer.getGlobal('initial_people'), ""), true, function() {
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
     AgentSet.setTurtleVariable(14, false);
     AgentSet.setTurtleVariable(16, false);
@@ -57,9 +57,9 @@ function setupPeople() {
     else {
       AgentSet.setTurtleVariable(5, "person lefty");
     }
-    AgentSet.setTurtleVariable(13, Prims.lt(AgentSet.getTurtleVariable(0), (world.getGlobals().initial_people * 0.025)));
+    AgentSet.setTurtleVariable(13, Prims.lt(AgentSet.getTurtleVariable(0), (world.observer.getGlobal('initial_people') * 0.025)));
     if (AgentSet.getTurtleVariable(13)) {
-      AgentSet.setTurtleVariable(15, Prims.randomFloat(world.getGlobals().symptoms_show));
+      AgentSet.setTurtleVariable(15, Prims.randomFloat(world.observer.getGlobal('symptoms_show')));
     }
     Call(assignCommitment);
     Call(assignCouplingTendency);
@@ -82,16 +82,16 @@ function assignColor() {
   }
 }
 function assignCommitment() {
-  AgentSet.setTurtleVariable(18, Call(randomNear, world.getGlobals().average_commitment));
+  AgentSet.setTurtleVariable(18, Call(randomNear, world.observer.getGlobal('average_commitment')));
 }
 function assignCouplingTendency() {
-  AgentSet.setTurtleVariable(19, Call(randomNear, world.getGlobals().average_coupling_tendency));
+  AgentSet.setTurtleVariable(19, Call(randomNear, world.observer.getGlobal('average_coupling_tendency')));
 }
 function assignCondomUse() {
-  AgentSet.setTurtleVariable(20, Call(randomNear, world.getGlobals().average_condom_use));
+  AgentSet.setTurtleVariable(20, Call(randomNear, world.observer.getGlobal('average_condom_use')));
 }
 function assignTestFrequency() {
-  AgentSet.setTurtleVariable(21, Call(randomNear, world.getGlobals().average_test_frequency));
+  AgentSet.setTurtleVariable(21, Call(randomNear, world.observer.getGlobal('average_test_frequency')));
 }
 function randomNear(center) {
   var result = 0;
@@ -138,29 +138,29 @@ function go() {
   world.ticker.tick();
 }
 function checkSliders() {
-  if (!Prims.equality(world.getGlobals().slider_check_1, world.getGlobals().average_commitment)) {
+  if (!Prims.equality(world.observer.getGlobal('slider_check_1'), world.observer.getGlobal('average_commitment'))) {
     AgentSet.ask(world.turtles(), true, function() {
       Call(assignCommitment);
     });
-    world.getGlobals().slider_check_1 = world.getGlobals().average_commitment;
+    world.observer.setGlobal('slider_check_1', world.observer.getGlobal('average_commitment'));
   }
-  if (!Prims.equality(world.getGlobals().slider_check_2, world.getGlobals().average_coupling_tendency)) {
+  if (!Prims.equality(world.observer.getGlobal('slider_check_2'), world.observer.getGlobal('average_coupling_tendency'))) {
     AgentSet.ask(world.turtles(), true, function() {
       Call(assignCouplingTendency);
     });
-    world.getGlobals().slider_check_2 = world.getGlobals().average_coupling_tendency;
+    world.observer.setGlobal('slider_check_2', world.observer.getGlobal('average_coupling_tendency'));
   }
-  if (!Prims.equality(world.getGlobals().slider_check_3, world.getGlobals().average_condom_use)) {
+  if (!Prims.equality(world.observer.getGlobal('slider_check_3'), world.observer.getGlobal('average_condom_use'))) {
     AgentSet.ask(world.turtles(), true, function() {
       Call(assignCondomUse);
     });
-    world.getGlobals().slider_check_3 = world.getGlobals().average_condom_use;
+    world.observer.setGlobal('slider_check_3', world.observer.getGlobal('average_condom_use'));
   }
-  if (!Prims.equality(world.getGlobals().slider_check_4, world.getGlobals().average_test_frequency)) {
+  if (!Prims.equality(world.observer.getGlobal('slider_check_4'), world.observer.getGlobal('average_test_frequency'))) {
     AgentSet.ask(world.turtles(), true, function() {
       Call(assignTestFrequency);
     });
-    world.getGlobals().slider_check_4 = world.getGlobals().average_test_frequency;
+    world.observer.setGlobal('slider_check_4', world.observer.getGlobal('average_test_frequency'));
   }
 }
 function move() {
@@ -225,7 +225,7 @@ function infect() {
     if ((Prims.gt(Prims.randomFloat(11), AgentSet.getTurtleVariable(20)) || Prims.gt(Prims.randomFloat(11), AgentSet.of(AgentSet.getTurtleVariable(22), function() {
       return AgentSet.getTurtleVariable(20);
     })))) {
-      if (Prims.lt(Prims.randomFloat(100), world.getGlobals().infection_chance)) {
+      if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal('infection_chance'))) {
         AgentSet.ask(AgentSet.getTurtleVariable(22), true, function() {
           AgentSet.setTurtleVariable(13, true);
         });
@@ -239,7 +239,7 @@ function test() {
       AgentSet.setTurtleVariable(14, true);
     }
   }
-  if (Prims.gt(AgentSet.getTurtleVariable(15), world.getGlobals().symptoms_show)) {
+  if (Prims.gt(AgentSet.getTurtleVariable(15), world.observer.getGlobal('symptoms_show'))) {
     if (Prims.lt(Prims.randomFloat(100), 5)) {
       AgentSet.setTurtleVariable(14, true);
     }
@@ -255,8 +255,8 @@ function _percent_infected() {
     return 0;
   }
 }
-world.getGlobals().initial_people = 300;
-world.getGlobals().average_commitment = 50;
-world.getGlobals().average_coupling_tendency = 5;
-world.getGlobals().average_condom_use = 0;
-world.getGlobals().average_test_frequency = 0;
+world.observer.setGlobal('initial_people', 300);
+world.observer.setGlobal('average_commitment', 50);
+world.observer.setGlobal('average_coupling_tendency', 5);
+world.observer.setGlobal('average_condom_use', 0);
+world.observer.setGlobal('average_test_frequency', 0);
