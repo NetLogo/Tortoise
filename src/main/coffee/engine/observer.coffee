@@ -1,15 +1,21 @@
-define(['engine/patch', 'engine/turtle'], (Patch, Turtle) ->
+define(['engine/patch', 'engine/turtle', 'integration/lodash'], (Patch, Turtle, _) ->
 
   class Observer
 
     id: 0
 
+    variables: undefined # Object[String, Any]
+
     _perspective: undefined
     _targetAgent: undefined
 
-    # (Updater) => Observer
-    constructor: (@_updater) ->
+    _codeGlobalNames: undefined # Array[String]
+
+    # (Updater, Array[String], Array[String]) => Observer
+    constructor: (@_updater, @_globalNames, @_interfaceGlobalNames) ->
       @resetPerspective()
+      @_initGlobals(@_globalNames)
+      @_codeGlobalNames = _(@_globalNames).difference(@_interfaceGlobalNames)
 
     # (Agent) => Unit
     watch: (agent) ->
@@ -32,8 +38,18 @@ define(['engine/patch', 'engine/turtle'], (Patch, Turtle) ->
       return
 
     # () => Unit
+    clearCodeGlobals: ->
+      _(@_codeGlobalNames).forEach((name) => @variables[name] = 0; return)
+      return
+
+    # () => Unit
     _updatePerspective: ->
       @_updater.updated(this)("perspective", "targetAgent")
+      return
+
+    # (Array[String]) => Unit
+    _initGlobals: (globalNames) ->
+      @variables = _(globalNames).foldl(((acc, name) => acc[name] = 0; acc), {})
       return
 
 )

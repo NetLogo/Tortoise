@@ -77,4 +77,7 @@ object Compiler extends CompilerLike {
       Handlers.reporter(defs.head.statements.stmts(1).args(0))
   }
 
+  def sanitizeVarName(varName: String): String =
+    varName.replaceAll("[^a-zA-Z0-9_]", "_").toLowerCase
+
 }

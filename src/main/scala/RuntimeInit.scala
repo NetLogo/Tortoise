@@ -37,9 +37,8 @@ class RuntimeInit(program: Program, model: Model) {
     val linkShapesJson = shapeList(parseLinkShapes(model.linkShapes.toArray))
     val view = model.view
     import view._
-    val workspaceArgs = s"$minPxcor, $maxPxcor, $minPycor, $maxPycor, $patchSize, " +
-      s"$wrappingAllowedInX, $wrappingAllowedInY, $turtleShapesJson, $linkShapesJson, " +
-      s"${program.interfaceGlobals.size}"
+    val workspaceArgs = s"$globalNames, $interfaceGlobalNames, $minPxcor, $maxPxcor, $minPycor, $maxPycor, $patchSize, " +
+      s"$wrappingAllowedInX, $wrappingAllowedInY, $turtleShapesJson, $linkShapesJson"
 
      s"""var workspace     = require('engine/workspace')($workspaceArgs);
         |var AgentSet      = workspace.agentSet;
@@ -49,7 +48,6 @@ class RuntimeInit(program: Program, model: Model) {
         |var Prims         = workspace.prims;
         |var Updater       = workspace.updater;
         |var world         = workspace.world;
-        |var Globals       = world.globals;
         |var TurtlesOwn    = world.turtlesOwn;
         |var PatchesOwn    = world.patchesOwn;
         |var LinksOwn      = world.linksOwn;
@@ -74,13 +72,12 @@ class RuntimeInit(program: Program, model: Model) {
         |var Random         = require('integration/random');
         |var StrictMath     = require('integration/strictmath');
         |
-        |$globals$turtlesOwn$patchesOwn$linksOwn$breeds""".stripMargin
+        |$turtlesOwn$patchesOwn$linksOwn$breeds""".stripMargin
   }
 
-  // if there are any globals,
-  // tell the runtime how many there are, it will initialize them all to 0.
-  // if not, do nothing.
-  def globals = vars(program.globals, "Globals")
+  private def globalNames = mkJSArrStr(program.globals map Compiler.sanitizeVarName)
+
+  private def interfaceGlobalNames = mkJSArrStr(program.interfaceGlobals map Compiler.sanitizeVarName)
 
   // tell the runtime how many *-own variables there are
   val turtleBuiltinCount =
@@ -107,5 +104,8 @@ class RuntimeInit(program: Program, model: Model) {
   private def vars(s: Seq[String], initPath: String) =
     if (s.nonEmpty) s"$initPath.init(${s.size});\n"
     else ""
+
+  private def mkJSArrStr(arrayValues: Seq[String]): String =
+    arrayValues.mkString("['", "', '", "']")
 
 }
