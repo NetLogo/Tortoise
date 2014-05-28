@@ -6,8 +6,8 @@ define(['engine/patch', 'engine/turtle', 'integration/lodash'], (Patch, Turtle, 
 
     variables: undefined # Object[String, Any]
 
-    _perspective: undefined
-    _targetAgent: undefined
+    _perspective: undefined # Number
+    _targetAgent: undefined # (Number, Number)
 
     _codeGlobalNames: undefined # Array[String]
 
