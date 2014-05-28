@@ -1,11 +1,21 @@
 define(->
+
   class Iterator
-    constructor: (@agents) ->
-      @agents = @agents[..]
-      @i = 0
-    hasNext: -> @i < @agents.length
+
+    _agents: undefined # AbstractAgents
+    _i:      undefined # Number
+
+    # (AbstractAgents) => Iterator
+    constructor: (agents) ->
+      @_agents = agents[..]
+      @_i      = 0
+
+    # () => Boolean
+    hasNext: ->
+      @_i < @_agents.length
+
+    # () => Agent
     next: ->
-      result = @agents[@i]
-      @i = @i + 1
-      result
+      @_agents[@_i++]
+
 )
