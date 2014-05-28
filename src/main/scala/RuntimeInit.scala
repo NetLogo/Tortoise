@@ -75,9 +75,9 @@ class RuntimeInit(program: Program, model: Model) {
         |$turtlesOwn$patchesOwn$linksOwn$breeds""".stripMargin
   }
 
-  private def globalNames = mkJSArrStr(program.globals map Compiler.sanitizeVarName)
+  private def globalNames = mkJSArrStr(program.globals map (_.toLowerCase))
 
-  private def interfaceGlobalNames = mkJSArrStr(program.interfaceGlobals map Compiler.sanitizeVarName)
+  private def interfaceGlobalNames = mkJSArrStr(program.interfaceGlobals map (_.toLowerCase))
 
   // tell the runtime how many *-own variables there are
   val turtleBuiltinCount =

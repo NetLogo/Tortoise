@@ -1,4 +1,4 @@
-var workspace     = require('engine/workspace')(['animate_avalanches_', 'drop_location', 'grains_per_patch', 'total', 'total_on_tick', 'sizes', 'last_size', 'lifetimes', 'last_lifetime', 'selected_patch', 'default_color', 'fired_color', 'selected_color'], ['animate_avalanches_', 'drop_location', 'grains_per_patch'], -50, 50, -50, 50, 4.0, false, false, {"default":{"rotate":true,"elements":[{"xcors":[150,40,150,260],"ycors":[5,250,205,250],"type":"polygon","color":"rgba(141, 141, 141, 1.0)","filled":true,"marked":true}]}}, {"default":{}});
+var workspace     = require('engine/workspace')(['animate-avalanches?', 'drop-location', 'grains-per-patch', 'total', 'total-on-tick', 'sizes', 'last-size', 'lifetimes', 'last-lifetime', 'selected-patch', 'default-color', 'fired-color', 'selected-color'], ['animate-avalanches?', 'drop-location', 'grains-per-patch'], -50, 50, -50, 50, 4.0, false, false, {"default":{"rotate":true,"elements":[{"xcors":[150,40,150,260],"ycors":[5,250,205,250],"type":"polygon","color":"rgba(141, 141, 141, 1.0)","filled":true,"marked":true}]}}, {"default":{}});
 var AgentSet      = workspace.agentSet;
 var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
@@ -33,14 +33,14 @@ var StrictMath     = require('integration/strictmath');
 PatchesOwn.init(3);
 function setup(setupTask) {
   world.clearAll();
-  world.observer.setGlobal('default_color', 105);
-  world.observer.setGlobal('fired_color', 15);
-  world.observer.setGlobal('selected_color', 55);
-  world.observer.setGlobal('selected_patch', Nobody);
+  world.observer.setGlobal('default-color', 105);
+  world.observer.setGlobal('fired-color', 15);
+  world.observer.setGlobal('selected-color', 55);
+  world.observer.setGlobal('selected-patch', Nobody);
   AgentSet.ask(world.patches(), true, function() {
     AgentSet.setPatchVariable(5, (setupTask)());
     AgentSet.setPatchVariable(6, []);
-    AgentSet.setPatchVariable(7, world.observer.getGlobal('default_color'));
+    AgentSet.setPatchVariable(7, world.observer.getGlobal('default-color'));
   });
   var ignore = Call(stabilize, false);
   AgentSet.ask(world.patches(), true, function() {
@@ -75,7 +75,7 @@ function go() {
       Call(updateN, 1);
       Call(recolor);
     });
-    var results = Call(stabilize, world.observer.getGlobal('animate_avalanches_'));
+    var results = Call(stabilize, world.observer.getGlobal('animate-avalanches?'));
     var avalanchePatches = Prims.first(results);
     var lifetime = Prims.last(results);
     if (AgentSet.any(avalanchePatches)) {
@@ -90,21 +90,21 @@ function go() {
     });
     notImplemented('display', undefined)();
     AgentSet.ask(avalanchePatches, true, function() {
-      AgentSet.setPatchVariable(7, world.observer.getGlobal('default_color'));
+      AgentSet.setPatchVariable(7, world.observer.getGlobal('default-color'));
       Call(recolor);
     });
-    world.observer.setGlobal('total_on_tick', world.observer.getGlobal('total'));
+    world.observer.setGlobal('total-on-tick', world.observer.getGlobal('total'));
     world.ticker.tick();
   }
 }
 function explore() {
   if (notImplemented('mouse-inside?', false)()) {
     var p = Prims.patch(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)());
-    world.observer.setGlobal('selected_patch', p);
+    world.observer.setGlobal('selected-patch', p);
     AgentSet.ask(world.patches(), true, function() {
       Call(pushN);
     });
-    AgentSet.ask(world.observer.getGlobal('selected_patch'), true, function() {
+    AgentSet.ask(world.observer.getGlobal('selected-patch'), true, function() {
       Call(updateN, 1);
     });
     var results = Call(stabilize, false);
@@ -112,21 +112,21 @@ function explore() {
       Call(popN);
     });
     AgentSet.ask(world.patches(), true, function() {
-      AgentSet.setPatchVariable(7, world.observer.getGlobal('default_color'));
+      AgentSet.setPatchVariable(7, world.observer.getGlobal('default-color'));
       Call(recolor);
     });
     var avalanchePatches = Prims.first(results);
     AgentSet.ask(avalanchePatches, true, function() {
-      AgentSet.setPatchVariable(7, world.observer.getGlobal('selected_color'));
+      AgentSet.setPatchVariable(7, world.observer.getGlobal('selected-color'));
       Call(recolor);
     });
     notImplemented('display', undefined)();
   }
   else {
-    if (!Prims.equality(world.observer.getGlobal('selected_patch'), Nobody)) {
-      world.observer.setGlobal('selected_patch', Nobody);
+    if (!Prims.equality(world.observer.getGlobal('selected-patch'), Nobody)) {
+      world.observer.setGlobal('selected-patch', Nobody);
       AgentSet.ask(world.patches(), true, function() {
-        AgentSet.setPatchVariable(7, world.observer.getGlobal('default_color'));
+        AgentSet.setPatchVariable(7, world.observer.getGlobal('default-color'));
         Call(recolor);
       });
     }
@@ -146,7 +146,7 @@ function stabilize(animate_p) {
       iters = (iters + 1);
     }
     AgentSet.ask(overloadedPatches, true, function() {
-      AgentSet.setPatchVariable(7, world.observer.getGlobal('fired_color'));
+      AgentSet.setPatchVariable(7, world.observer.getGlobal('fired-color'));
       Call(updateN, -4);
       if (animate_p) {
         Call(recolor);
@@ -173,13 +173,13 @@ function updateN(howMuch) {
   world.observer.setGlobal('total', (world.observer.getGlobal('total') + howMuch));
 }
 function dropPatch() {
-  if (Prims.equality(world.observer.getGlobal('drop_location'), "center")) {
+  if (Prims.equality(world.observer.getGlobal('drop-location'), "center")) {
     return Prims.patch(0, 0);
   }
-  if (Prims.equality(world.observer.getGlobal('drop_location'), "random")) {
+  if (Prims.equality(world.observer.getGlobal('drop-location'), "random")) {
     return AgentSet.oneOf(world.patches());
   }
-  if ((Prims.equality(world.observer.getGlobal('drop_location'), "mouse-click") && notImplemented('mouse-down?', false)())) {
+  if ((Prims.equality(world.observer.getGlobal('drop-location'), "mouse-click") && notImplemented('mouse-down?', false)())) {
     Prims.every(0.3, function () {
       return Prims.patch(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)());
     });
@@ -193,6 +193,6 @@ function popN() {
   Call(updateN, (Prims.first(AgentSet.getPatchVariable(6)) - AgentSet.getPatchVariable(5)));
   AgentSet.setPatchVariable(6, Prims.butLast(AgentSet.getPatchVariable(6)));
 }
-world.observer.setGlobal('animate_avalanches_', false);
-world.observer.setGlobal('drop_location', "random");
-world.observer.setGlobal('grains_per_patch', 0);
+world.observer.setGlobal('animate-avalanches?', false);
+world.observer.setGlobal('drop-location', "random");
+world.observer.setGlobal('grains-per-patch', 0);
