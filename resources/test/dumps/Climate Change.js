@@ -30,10 +30,10 @@ var notImplemented = require('integration/notimplemented');
 var Random         = require('integration/random');
 var StrictMath     = require('integration/strictmath');
 
-BreedManager.add("RAYS", "ray", ['']);
-BreedManager.add("IRS", "ir", ['']);
-BreedManager.add("HEATS", "heat", ['']);
-BreedManager.add("CO2S", "co2", ['']);
+BreedManager.add("RAYS", "ray", []);
+BreedManager.add("IRS", "ir", []);
+BreedManager.add("HEATS", "heat", []);
+BreedManager.add("CO2S", "co2", []);
 BreedManager.add("CLOUDS", "cloud", ['cloud-speed', 'cloud-id']);
 function setup() {
   world.clearAll();

@@ -32,7 +32,7 @@ var StrictMath     = require('integration/strictmath');
 
 BreedManager.add("PARTICLES", "particle", ['speed', 'mass', 'energy', 'wall-hits', 'momentum-difference', 'last-collision']);
 BreedManager.add("FLASHES", "flash", ['birthday']);
-BreedManager.add("CLOCKERS", "clocker", ['']);
+BreedManager.add("CLOCKERS", "clocker", []);
 function benchmark() {
   Random.setSeed(361);
   workspace.timer.reset();

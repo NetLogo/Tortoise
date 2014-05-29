@@ -31,8 +31,8 @@ var Random         = require('integration/random');
 var StrictMath     = require('integration/strictmath');
 
 BreedManager.add("COLUMN-COUNTERS", "column-counter", ['my-column', 'my-column-patches']);
-BreedManager.add("FRAMES", "frame", ['']);
-BreedManager.add("MESSENGERS", "messenger", ['']);
+BreedManager.add("FRAMES", "frame", []);
+BreedManager.add("MESSENGERS", "messenger", []);
 function setup() {
   world.clearAll();
   world.observer.setGlobal('max-y-histogram', (world.minPycor + world.observer.getGlobal('height')));
