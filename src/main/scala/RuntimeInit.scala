@@ -102,6 +102,9 @@ class RuntimeInit(program: Program, model: Model) {
     else ""
 
   private def mkJSArrStr(arrayValues: Seq[String]): String =
-    arrayValues.mkString("['", "', '", "']")
+    if (arrayValues.nonEmpty)
+      arrayValues.mkString("['", "', '", "']")
+    else
+      "[]"
 
 }
