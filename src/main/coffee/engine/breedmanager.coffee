@@ -45,19 +45,22 @@ define(['integration/lodash'], (_) ->
     # Object[String, Breed]
     _breeds: undefined
 
-    # () => BreedManager
-    constructor: ->
-      @_breeds = {
+    # type BreedObj = { name: String, singular: String, varNames: Array[String] }
+    # (Array[BreedObj]) => BreedManager
+    constructor: (breedObjs) ->
+      defaultBreeds = {
         TURTLES: new Breed("TURTLES", "turtle", this, [], "default"),
         LINKS:   new Breed("LINKS",   "link",   this, [], "default")
       }
-
-    # (String, String, Array[String]) => Unit
-    add: (name, singular, variableNames = []) ->
-      trueName     = name.toUpperCase()
-      trueSingular = singular.toLowerCase()
-      @_breeds[trueName] = new Breed(trueName, trueSingular, this, variableNames)
-      return
+      @_breeds = _(breedObjs).foldl(
+        (acc, breedObj) =>
+          trueName      = breedObj.name.toUpperCase()
+          trueSingular  = breedObj.singular.toLowerCase()
+          trueVarNames  = breedObj.varNames or []
+          acc[trueName] = new Breed(trueName, trueSingular, this, trueVarNames)
+          acc
+        , defaultBreeds
+      )
 
     # (String) => Breed
     get: (name) ->
