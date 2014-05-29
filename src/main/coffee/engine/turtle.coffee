@@ -62,10 +62,7 @@ define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/co
       @world.updater.updated(this)("breed")
       @world.updater.updated(this)("shape")
     toString: -> "(#{@breed.singular} #{@id})"
-    keepHeadingInRange: -> #@# Since this code is duplicated in `Turtle.patchRightAndAhead`, it should take a value and return a normalized one
-      if not (0 <= @heading < 360)
-        @heading = ((@heading % 360) + 360) % 360
-      return
+
     canMove: (distance) -> @patchAhead(distance) isnt Nobody
     distanceXY: (x, y) -> @world.topology().distanceXY(@xcor(), @ycor(), x, y)
     distance: (agent) -> @world.topology().distance(@xcor(), @ycor(), agent)
@@ -188,8 +185,8 @@ define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/co
     dy: ->
       Trig.cos(@heading)
     right: (angle) ->
-      @heading += angle
-      @keepHeadingInRange()
+      newHeading = @heading + angle
+      @heading   = @_normalizeHeading(newHeading)
       @world.updater.updated(this)("heading") #@# Why do all of these function calls manage updates for themselves?  Why am I dreaming of an `@world.updater. monad?
       return
     setXY: (x, y) ->
@@ -260,12 +257,12 @@ define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/co
             @penManager.raisePen()
           else
             @penManager.lowerPen() # This is (tragically) JVM NetLogo's idea of sanity... --JAB (5/26/14)
+        else if n is 2  # heading
+          @heading = @_normalizeHeading(value)
         else
           if n is 5  # shape
             value = value.toLowerCase()
           this[Builtins.turtleBuiltins[n]] = value
-          if n is 2  # heading
-            @keepHeadingInRange()
         @world.updater.updated(this)(Builtins.turtleBuiltins[n])
       else
         @vars[n - Builtins.turtleBuiltins.length] = value
@@ -310,5 +307,12 @@ define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/co
 
     seppuku: ->
       @world.updater.update("turtles", @id, { WHO: -1 }) #@# If you're awful and you know it, clap your hands!
+
+    # (Number) => Number
+    _normalizeHeading: (heading) ->
+      if (0 <= heading < 360)
+        heading
+      else
+        ((heading % 360) + 360) % 360
 
 )
