@@ -30,8 +30,8 @@ var notImplemented = require('integration/notimplemented');
 var Random         = require('integration/random');
 var StrictMath     = require('integration/strictmath');
 
-BreedManager.add("MOTHS", "moth");
-BreedManager.get("MOTHS").vars =["AGE"];function envColor() {
+BreedManager.add("MOTHS", "moth", ['age']);
+function envColor() {
   return (9 - world.observer.getGlobal('darkness'));
 }
 function deltaEnv() {
@@ -61,7 +61,7 @@ function setupMoths() {
   AgentSet.ask(world.createTurtles(world.observer.getGlobal('num-moths'), "MOTHS"), true, function() {
     AgentSet.setTurtleVariable(1, Call(randomColor));
     Call(mothsPickShape);
-    AgentSet.setBreedVariable("AGE", Prims.random(3));
+    AgentSet.setBreedVariable("age", Prims.random(3));
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
   });
 }
@@ -79,7 +79,7 @@ function go() {
   Call(updateMonitors);
 }
 function mothsMate() {
-  if ((Prims.equality(AgentSet.getBreedVariable("AGE"), 2) || Prims.equality(AgentSet.getBreedVariable("AGE"), 3))) {
+  if ((Prims.equality(AgentSet.getBreedVariable("age"), 2) || Prims.equality(AgentSet.getBreedVariable("age"), 3))) {
     AgentSet.ask(Prims.hatch(2, ""), true, function() {
       if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal('mutation'))) {
         if (Prims.equality(Prims.random(2), 0)) {
@@ -96,7 +96,7 @@ function mothsMate() {
         }
       }
       Call(mothsPickShape);
-      AgentSet.setBreedVariable("AGE", 0);
+      AgentSet.setBreedVariable("age", 0);
       Prims.right(Prims.randomFloat(360));
       Prims.fd(1);
     });
@@ -118,7 +118,7 @@ function mothsGrimReaper() {
   }
 }
 function mothsAge() {
-  AgentSet.setBreedVariable("AGE", (AgentSet.getBreedVariable("AGE") + 1));
+  AgentSet.setBreedVariable("age", (AgentSet.getBreedVariable("age") + 1));
 }
 function mothsPickShape() {
   if (Prims.lt(AgentSet.getTurtleVariable(1), 5)) {

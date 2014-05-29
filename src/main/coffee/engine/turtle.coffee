@@ -33,7 +33,7 @@ define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/co
       @shape = @breed.getShape()
       if @breed isnt @world.breedManager.turtles()
         @world.breedManager.turtles().add(this)
-        for x in @breed.vars
+        for x in @breed.varNames
           if not @breedVars[x]?
             @breedVars[x] = 0
     xcor: -> @_xcor

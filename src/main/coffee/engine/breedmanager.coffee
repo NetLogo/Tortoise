@@ -2,12 +2,8 @@ define(['integration/lodash'], (_) ->
 
   class Breed
 
-    # Array[String]
-    vars: undefined
-
-    # (String, String, BreedManager, String, Array[Agent]) => Breed
-    constructor: (@name, @singular, @manager, @_shape = undefined, @members = []) ->
-      @vars = []
+    # (String, String, BreedManager, Array[String], String, Array[Agent]) => Breed
+    constructor: (@name, @singular, @manager, @varNames = [], @_shape = undefined, @members = []) ->
 
     # We can't just set this in the constructor, because people can swoop into the manager and change the turtles'
     # default shape --JAB (5/27/14)
@@ -52,15 +48,15 @@ define(['integration/lodash'], (_) ->
     # () => BreedManager
     constructor: ->
       @_breeds = {
-        TURTLES: new Breed("TURTLES", "turtle", this, "default"),
-        LINKS:   new Breed("LINKS",   "link",   this, "default")
+        TURTLES: new Breed("TURTLES", "turtle", this, [], "default"),
+        LINKS:   new Breed("LINKS",   "link",   this, [], "default")
       }
 
-    # (String, String) => Unit
-    add: (name, singular) ->
+    # (String, String, Array[String]) => Unit
+    add: (name, singular, variableNames = []) ->
       trueName     = name.toUpperCase()
       trueSingular = singular.toLowerCase()
-      @_breeds[trueName] = new Breed(trueName, trueSingular, this)
+      @_breeds[trueName] = new Breed(trueName, trueSingular, this, variableNames)
       return
 
     # (String) => Breed

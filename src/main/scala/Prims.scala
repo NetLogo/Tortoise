@@ -33,7 +33,7 @@ object Prims {
         (Handlers.ident(call.procedure.name) +: args)
           .mkString("Call(", ", ", ")")
       case _: prim._unaryminus              => s"(- ${arg(0)})"
-      case bv: prim._breedvariable          => s"""AgentSet.getBreedVariable("${bv.name}")"""
+      case bv: prim._breedvariable          => s"""AgentSet.getBreedVariable("${bv.name.toLowerCase}")"""
       case tv: prim._turtlevariable         => s"AgentSet.getTurtleVariable(${tv.vn})"
       case tv: prim._linkvariable           => s"AgentSet.getLinkVariable(${tv.vn})"
       case tv: prim._turtleorlinkvariable   =>
@@ -143,7 +143,7 @@ object Prims {
       case p: prim._observervariable =>
         s"world.observer.setGlobal('${p.displayName.toLowerCase}', ${arg(1)});"
       case bv: prim._breedvariable =>
-        s"""AgentSet.setBreedVariable("${bv.name}", ${arg(1)});"""
+        s"""AgentSet.setBreedVariable("${bv.name.toLowerCase}", ${arg(1)});"""
       case p: prim._linkvariable =>
         s"AgentSet.setLinkVariable(${p.vn}, ${arg(1)});"
       case p: prim._turtlevariable =>
