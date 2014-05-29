@@ -19,7 +19,7 @@ class TestEngine extends FunSuite {
 
   test("empty world") {
     val nashorn = new Nashorn
-    nashorn.eval("""var workspace = require('engine/workspace')([], [], -1, 1, -1, 1);
+    nashorn.eval("""var workspace = require('engine/workspace')([])([], [], -1, 1, -1, 1);
                    |var AgentSet  = workspace.agentSet;
                    |var world     = workspace.world;""".stripMargin)
     nashorn.eval("world.clearAll()")

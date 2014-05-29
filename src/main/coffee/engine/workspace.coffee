@@ -3,12 +3,12 @@ define(['engine/agentset', 'engine/breedmanager', 'engine/layoutmanager', 'engin
      , ( AgentSet,          BreedManager,          LayoutManager,          LinkPrims,          LinksOwn
       ,  PatchesOwn,          Prims,          Timer,          TurtlesOwn,          Updater,          World) ->
 
-  () -> # World args; see constructor for `World` --JAB (4/17/14)
+  (breedObjs) -> () -> # World args; see constructor for `World` --JAB (4/17/14)
 
     worldArgs = arguments # If you want `Workspace` to take more parameters--parameters not related to `World`--just keep returning new functions
 
     agentSet     = new AgentSet
-    breedManager = new BreedManager
+    breedManager = new BreedManager(breedObjs)
     timer        = new Timer
     updater      = new Updater
 

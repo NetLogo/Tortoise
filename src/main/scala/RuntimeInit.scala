@@ -25,7 +25,7 @@ class RuntimeInit(program: api.Program, model: core.Model) {
     val workspaceArgs = s"$globalNames, $interfaceGlobalNames, $minPxcor, $maxPxcor, $minPycor, $maxPycor, $patchSize, " +
       s"$wrappingAllowedInX, $wrappingAllowedInY, $turtleShapesJson, $linkShapesJson"
 
-     s"""var workspace     = require('engine/workspace')($workspaceArgs);
+     s"""var workspace     = require('engine/workspace')($breedObjects)($workspaceArgs);
         |var AgentSet      = workspace.agentSet;
         |var BreedManager  = workspace.breedManager;
         |var LayoutManager = workspace.layoutManager;
@@ -57,12 +57,24 @@ class RuntimeInit(program: api.Program, model: core.Model) {
         |var Random         = require('integration/random');
         |var StrictMath     = require('integration/strictmath');
         |
-        |$turtlesOwn$patchesOwn$linksOwn$breeds""".stripMargin
+        |$turtlesOwn$patchesOwn$linksOwn""".stripMargin
   }
 
   private def globalNames = mkJSArrStr(program.globals map (_.toLowerCase) map wrapInQuotes)
 
   private def interfaceGlobalNames = mkJSArrStr(program.interfaceGlobals map (_.toLowerCase) map wrapInQuotes)
+
+  private def breedObjects = {
+    val breedObjs =
+      program.breeds.values.map {
+        b =>
+          val name     = s"'${b.name}'"
+          val singular = s"'${b.singular.toLowerCase}'"
+          val varNames = mkJSArrStr(b.owns map (_.toLowerCase) map wrapInQuotes)
+          s"""{ name: $name, singular: $singular, varNames: $varNames }"""
+      }
+    mkJSArrStr(breedObjs)
+  }
 
   // tell the runtime how many *-own variables there are
   val turtleBuiltinCount =
@@ -77,10 +89,6 @@ class RuntimeInit(program: api.Program, model: core.Model) {
     vars(program.patchesOwn.drop(patchBuiltinCount), "PatchesOwn")
   def linksOwn =
     vars(program.linksOwn.drop(linkBuiltinCount), "LinksOwn")
-  def breeds =
-    program.breeds.values.map(
-      b => s"""BreedManager.add("${b.name}", "${b.singular.toLowerCase}", ${mkJSArrStr(b.owns map (_.toLowerCase))});\n"""
-    ).mkString
 
   private def vars(s: Seq[String], initPath: String) =
     if (s.nonEmpty) s"$initPath.init(${s.size});\n"
