@@ -30,7 +30,7 @@ var notImplemented = require('integration/notimplemented');
 var Random         = require('integration/random');
 var StrictMath     = require('integration/strictmath');
 
-BreedManager.add("PARTICLES", "particle", ['speed', 'mass', 'energy', 'last-collision']);
+BreedManager.add("PARTICLES", "particle", [speed, mass, energy, last-collision]);
 function setup() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtlesOfBreed("PARTICLES").getBreedName(), "circle")

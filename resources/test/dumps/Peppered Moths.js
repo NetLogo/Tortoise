@@ -30,7 +30,7 @@ var notImplemented = require('integration/notimplemented');
 var Random         = require('integration/random');
 var StrictMath     = require('integration/strictmath');
 
-BreedManager.add("MOTHS", "moth", ['age']);
+BreedManager.add("MOTHS", "moth", [age]);
 function envColor() {
   return (9 - world.observer.getGlobal('darkness'));
 }

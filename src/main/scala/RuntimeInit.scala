@@ -75,9 +75,9 @@ class RuntimeInit(program: Program, model: Model) {
         |$turtlesOwn$patchesOwn$linksOwn$breeds""".stripMargin
   }
 
-  private def globalNames = mkJSArrStr(program.globals map (_.toLowerCase))
+  private def globalNames = mkJSArrStr(program.globals map (_.toLowerCase) map wrapInQuotes)
 
-  private def interfaceGlobalNames = mkJSArrStr(program.interfaceGlobals map (_.toLowerCase))
+  private def interfaceGlobalNames = mkJSArrStr(program.interfaceGlobals map (_.toLowerCase) map wrapInQuotes)
 
   // tell the runtime how many *-own variables there are
   val turtleBuiltinCount =
@@ -101,9 +101,12 @@ class RuntimeInit(program: Program, model: Model) {
     if (s.nonEmpty) s"$initPath.init(${s.size});\n"
     else ""
 
-  private def mkJSArrStr(arrayValues: Seq[String]): String =
+  private def wrapInQuotes(str: String): String =
+    s"'$str'"
+
+  private def mkJSArrStr(arrayValues: Iterable[String]): String =
     if (arrayValues.nonEmpty)
-      arrayValues.mkString("['", "', '", "']")
+      arrayValues.mkString("[", ", ", "]")
     else
       "[]"
 
