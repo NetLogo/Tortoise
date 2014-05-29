@@ -6,7 +6,8 @@ define(['integration/lodash'], (_) ->
     _getters:   undefined # Object[String, => Any]
     _setters:   undefined # Object[String, (Any) => Unit]
 
-    # (Array[String], Array[{ name: String, get: () => Any, set: (Any) => Unit }]) => VariableManager
+    # type VariableBundle = { name: String, get: () => Any, set: (Any) => Unit }
+    # (Array[String], Array[VariableBundle]) => VariableManager
     constructor: (varNames = [], getAndSetFuncs = []) ->
       @_variables = _(varNames).foldl(((acc, name) => acc[name] = 0; acc), {})
       [@_getters, @_setters] =
