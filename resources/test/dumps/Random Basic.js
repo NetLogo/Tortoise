@@ -30,7 +30,7 @@ var notImplemented = require('integration/notimplemented');
 var Random         = require('integration/random');
 var StrictMath     = require('integration/strictmath');
 
-BreedManager.add("COLUMN-COUNTERS", "column-counter", ['my-column', 'my-column-patches']);
+BreedManager.add("COLUMN-COUNTERS", "column-counter", [my-column, my-column-patches]);
 BreedManager.add("FRAMES", "frame", []);
 BreedManager.add("MESSENGERS", "messenger", []);
 function setup() {

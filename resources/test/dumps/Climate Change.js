@@ -34,7 +34,7 @@ BreedManager.add("RAYS", "ray", []);
 BreedManager.add("IRS", "ir", []);
 BreedManager.add("HEATS", "heat", []);
 BreedManager.add("CO2S", "co2", []);
-BreedManager.add("CLOUDS", "cloud", ['cloud-speed', 'cloud-id']);
+BreedManager.add("CLOUDS", "cloud", [cloud-speed, cloud-id]);
 function setup() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtlesOfBreed("RAYS").getBreedName(), "ray")

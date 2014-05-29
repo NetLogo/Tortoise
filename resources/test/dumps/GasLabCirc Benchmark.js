@@ -30,7 +30,7 @@ var notImplemented = require('integration/notimplemented');
 var Random         = require('integration/random');
 var StrictMath     = require('integration/strictmath');
 
-BreedManager.add("PARTICLES", "particle", ['speed', 'mass']);
+BreedManager.add("PARTICLES", "particle", [speed, mass]);
 function benchmark() {
   Random.setSeed(12345);
   workspace.timer.reset();
