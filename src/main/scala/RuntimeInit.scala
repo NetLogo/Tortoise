@@ -79,12 +79,8 @@ class RuntimeInit(program: api.Program, model: core.Model) {
     vars(program.linksOwn.drop(linkBuiltinCount), "LinksOwn")
   def breeds =
     program.breeds.values.map(
-      b =>
-        s"""BreedManager.add("${b.name}", "${b.singular.toLowerCase}");\n""" +
-          s"""BreedManager.get("${b.name}").vars =""" +
-          b.owns.mkString("[\"", "\", \"", "\"]") +
-          ";"
-    ).mkString("\n")
+      b => s"""BreedManager.add("${b.name}", "${b.singular.toLowerCase}", ${mkJSArrStr(b.owns map (_.toLowerCase))});\n"""
+    ).mkString
 
   private def vars(s: Seq[String], initPath: String) =
     if (s.nonEmpty) s"$initPath.init(${s.size});\n"

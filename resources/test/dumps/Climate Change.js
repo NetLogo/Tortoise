@@ -30,16 +30,12 @@ var notImplemented = require('integration/notimplemented');
 var Random         = require('integration/random');
 var StrictMath     = require('integration/strictmath');
 
-BreedManager.add("RAYS", "ray");
-BreedManager.get("RAYS").vars =[""];
-BreedManager.add("IRS", "ir");
-BreedManager.get("IRS").vars =[""];
-BreedManager.add("HEATS", "heat");
-BreedManager.get("HEATS").vars =[""];
-BreedManager.add("CO2S", "co2");
-BreedManager.get("CO2S").vars =[""];
-BreedManager.add("CLOUDS", "cloud");
-BreedManager.get("CLOUDS").vars =["CLOUD-SPEED", "CLOUD-ID"];function setup() {
+BreedManager.add("RAYS", "ray", ['']);
+BreedManager.add("IRS", "ir", ['']);
+BreedManager.add("HEATS", "heat", ['']);
+BreedManager.add("CO2S", "co2", ['']);
+BreedManager.add("CLOUDS", "cloud", ['cloud-speed', 'cloud-id']);
+function setup() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtlesOfBreed("RAYS").getBreedName(), "ray")
   BreedManager.setDefaultShape(world.turtlesOfBreed("IRS").getBreedName(), "ray")
@@ -70,7 +66,7 @@ function setupWorld() {
 }
 function go() {
   AgentSet.ask(world.turtlesOfBreed("CLOUDS"), true, function() {
-    Prims.fd(AgentSet.getBreedVariable("CLOUD-SPEED"));
+    Prims.fd(AgentSet.getBreedVariable("cloud-speed"));
   });
   Call(runSunshine);
   AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
@@ -94,12 +90,12 @@ function addCloud() {
   var id = 0;
   if (AgentSet.any(world.turtlesOfBreed("CLOUDS"))) {
     id = (Prims.max(AgentSet.of(world.turtlesOfBreed("CLOUDS"), function() {
-      return AgentSet.getBreedVariable("CLOUD-ID");
+      return AgentSet.getBreedVariable("cloud-id");
     })) + 1);
   }
   AgentSet.ask(world.createTurtles((3 + Prims.random(20)), "CLOUDS"), true, function() {
-    AgentSet.setBreedVariable("CLOUD-SPEED", speed);
-    AgentSet.setBreedVariable("CLOUD-ID", id);
+    AgentSet.setBreedVariable("cloud-speed", speed);
+    AgentSet.setBreedVariable("cloud-id", id);
     Prims.setXY(((x + Prims.random(9)) - 4), (((y + 2.5) + Prims.randomFloat(2)) - Prims.randomFloat(2)));
     AgentSet.setTurtleVariable(1, 9.9);
     AgentSet.setTurtleVariable(10, (2 + Prims.random(2)));
@@ -109,10 +105,10 @@ function addCloud() {
 function removeCloud() {
   if (AgentSet.any(world.turtlesOfBreed("CLOUDS"))) {
     var doomedId = AgentSet.oneOf(Prims.removeDuplicates(AgentSet.of(world.turtlesOfBreed("CLOUDS"), function() {
-      return AgentSet.getBreedVariable("CLOUD-ID");
+      return AgentSet.getBreedVariable("cloud-id");
     })));
     AgentSet.ask(AgentSet.agentFilter(world.turtlesOfBreed("CLOUDS"), function() {
-      return Prims.equality(AgentSet.getBreedVariable("CLOUD-ID"), doomedId);
+      return Prims.equality(AgentSet.getBreedVariable("cloud-id"), doomedId);
     }), true, function() {
       AgentSet.die();
     });
