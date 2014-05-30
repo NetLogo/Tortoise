@@ -38,12 +38,7 @@ define(['engine/builtins', 'engine/colormodel', 'engine/comparator', 'engine/exc
         @vars[n - Builtins.linkBuiltins.length]
     setLinkVariable: (n, value) ->
       if n < Builtins.linkBuiltins.length
-        newValue =
-          if Builtins.linkBuiltins[n] is "lcolor"
-            ColorModel.wrapColor(value)
-          else
-            value
-        this[Builtins.linkBuiltins[n]] = newValue
+        this[Builtins.linkBuiltins[n]] = value
         @world.updater.updated(this)(Builtins.linkBuiltins[n])
       else
         @vars[n - Builtins.linkBuiltins.length] = value
