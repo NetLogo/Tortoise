@@ -124,33 +124,33 @@ define(['engine/exception', 'engine/link', 'engine/observer', 'engine/patch', 'e
             when "breed"
               ["BREED", link.breed.name]
             when "color"
-              ["COLOR", link.color]
+              ["COLOR", link._color]
             when "end1"
               ["END1", link.end1.id]
             when "end2"
               ["END2", link.end2.id]
             when "heading"
-              ["HEADING", link.heading]
+              ["HEADING", link.getHeading()]
             when "hidden"
-              ["HIDDEN?", link.hidden]
+              ["HIDDEN?", link._isHidden]
             when "id"
               ["ID", link.id]
             when "label"
-              ["LABEL", link.label.toString()]
+              ["LABEL", link._label.toString()]
             when "labelcolor"
-              ["LABEL-COLOR", link.labelcolor]
+              ["LABEL-COLOR", link._labelcolor]
             when "midpointx"
-              ["MIDPOINTX", link.midpointx]
+              ["MIDPOINTX", link.getMidpointX()]
             when "midpointy"
-              ["MIDPOINTY", link.midpointy]
+              ["MIDPOINTY", link.getMidpointY()]
             when "shape"
-              ["SHAPE", link.shape]
+              ["SHAPE", link._shape]
             when "size"
-              ["SIZE", link.size]
+              ["SIZE", link.getSize()]
             when "thickness"
-              ["THICKNESS", link.thickness]
+              ["THICKNESS", link._thickness]
             when "tiemode"
-              ["TIE-MODE", link.tiemode]
+              ["TIE-MODE", link._tiemode]
             when "lcolor", "llabel", "llabelcolor", "lhidden", "lbreed", "lshape" # Ignored!
               ["", ""]
             else
