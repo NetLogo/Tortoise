@@ -26,98 +26,98 @@ define(['engine/exception', 'engine/link', 'engine/observer', 'engine/patch', 'e
     updated: (obj) => (vars...) => #@# Polymorphize correctly
       update = @_updates[0]
 
-      if obj instanceof Link
-        entry       = update.links
-        entryUpdate = @_updateLinks(obj, vars, entry[obj.id] or {})
-        entry[obj.id] = entryUpdate
-      else
-        entry =
-          if obj instanceof Turtle
-            update.turtles
-          else if obj instanceof Patch
-            update.patches
-          else if obj instanceof World
-            update.world
-          else if obj instanceof Observer
-            update.observer
-          else
-            throw new Exception.NetLogoException("Unrecognized update type")
+      [entry, updateFunc] =
+        if obj instanceof Turtle
+          [update.turtles, @_updateTurtles]
+        else if obj instanceof Patch
+          [update.patches, @_updatePatches]
+        else if obj instanceof Link
+          [update.links, @_updateLinks]
+        else if obj instanceof World
+          [update.world, @_updateWorld]
+        else if obj instanceof Observer
+          [update.observer, @_updateObserver]
+        else
+          throw new Exception.NetLogoException("Unrecognized update type")
 
-        entryUpdate = entry[obj.id] or {}
+      entryUpdate = entry[obj.id] or {}
 
-        # Receiving updates for a turtle that's about to die means the turtle was
-        # reborn, so we revive it in the update - BH 1/13/2014
-        if entryUpdate['WHO'] < 0
-          delete entryUpdate['WHO']
+      # Receiving updates for a turtle that's about to die means the turtle was
+      # reborn, so we revive it in the update - BH 1/13/2014
+      if entryUpdate['WHO'] < 0
+        delete entryUpdate['WHO']
 
-        ###
-        is there some less simpleminded way we could build this? surely there
-        must be. my CoffeeScript fu is stoppable - ST 1/24/13
-        Possible strategy. For variables with -, just replace it with a _ instead
-        of concatenating the words. For variables with a ?, replace it with _p or
-        something. For variables that need some kind of accessor, make the variable
-        that has the NetLogo name refer to the same thing that the NetLogo variable
-        does and make a different variable that refers to the thing you want in js.
-        For example, turtle.breed should refer to the breed name and
-        turtle._breed should point to the actual breed object.
-        BH 1/13/2014
-        ###
-        for v in vars #@# Create a mapper from engine names to view names; that aside, this thing is absolutely ridiculous
-          switch v
-            when "xcor"
-              entryUpdate["XCOR"] = obj.xcor()
-            when "ycor"
-              entryUpdate["YCOR"] = obj.ycor()
-            when "id"
-              entryUpdate["WHO"] = obj[v]
-            when "plabelcolor"
-              entryUpdate["PLABEL-COLOR"] = obj[v]
-            when "breed"
-              entryUpdate["BREED"] = obj[v].name
-            when "labelcolor"
-              entryUpdate["LABEL-COLOR"] = obj[v]
-            when "pensize"
-              entryUpdate["PEN-SIZE"] = obj.penManager.getSize()
-            when "penmode"
-              entryUpdate["PEN-MODE"] = obj.penManager.getMode().toString()
-            when "hidden"
-              entryUpdate["HIDDEN?"] = obj[v]
-            when "label"
-              entryUpdate["LABEL"] = obj[v].toString()
-            when "plabel"
-              entryUpdate["PLABEL"] = obj[v].toString()
-            # `World` start
-            when "ticks"
-              entryUpdate["ticks"] = obj.ticker._count
-            when "patchesAllBlack"
-              entryUpdate["patchesAllBlack"] = obj._patchesAllBlack
-            when "patchesWithLabels"
-              entryUpdate["patchesWithLabels"] = obj._patchesWithLabels
-            when "unbreededLinksAreDirected"
-              entryUpdate["unbreededLinksAreDirected"] = obj.unbreededLinksAreDirected
-            when "width"
-              entryUpdate["worldWidth"] = obj.width()
-            when "height"
-                entryUpdate["worldHeight"] = obj.height()
-            # `World` end / `Observer` start
-            when "perspective"
-              entryUpdate["perspective"] = obj._perspective
-            when "targetAgent"
-              entryUpdate["targetAgent"] = obj._targetAgent
-            # `Observer` end
-            else
-              entryUpdate[v.toUpperCase()] = obj[v]
-
-        entry[obj.id] = entryUpdate
+      entry[obj.id] = updateFunc(obj, vars, entryUpdate)
 
       return
 
+
+    # (Turtle, Array[String], Object[String, Any]) => Object[String, Any]
+    _updateTurtles: (turtle, vars, updateBundle) ->
+      for v in vars
+        [varName, value] =
+          switch v
+            when "breed"
+              ["BREED", turtle.breed.name]
+            when "color"
+              ["COLOR", turtle.color]
+            when "heading"
+              ["HEADING", turtle.heading]
+            when "id"
+              ["WHO", turtle.id]
+            when "labelcolor"
+              ["LABEL-COLOR", turtle.labelcolor]
+            when "hidden"
+              ["HIDDEN?", turtle.hidden]
+            when "label"
+              ["LABEL", turtle.label.toString()]
+            when "pensize"
+              ["PEN-SIZE", turtle.penManager.getSize()]
+            when "penmode"
+              ["PEN-MODE", turtle.penManager.getMode().toString()]
+            when "shape"
+              ["SHAPE", turtle.shape]
+            when "size"
+              ["SIZE", turtle.size]
+            when "xcor"
+              ["XCOR", turtle.xcor()]
+            when "ycor"
+              ["YCOR", turtle.ycor()]
+            else
+              throw new Exception.NetLogoException("Unknown turtle variable for update: #{v}")
+
+        updateBundle[varName] = value
+
+      updateBundle
+
+
+    # (Patch, Array[String], Object[String, Any]) => Object[String, Any]
+    _updatePatches: (patch, vars, updateBundle) ->
+      for v in vars
+        [varName, value] =
+          switch v
+            when "id"
+              ["WHO", patch.id]
+            when "pcolor"
+              ["PCOLOR", patch.pcolor]
+            when "plabelcolor"
+              ["PLABEL-COLOR", patch.plabelcolor]
+            when "plabel"
+              ["PLABEL", patch.plabel.toString()]
+            when "pxcor"
+              ["PXCOR", patch.pxcor]
+            when "pycor"
+              ["PYCOR", patch.pycor]
+            else
+              throw new Exception.NetLogoException("Unknown patch variable for update: #{v}")
+
+        updateBundle[varName] = value
+
+      updateBundle
+
+
     # (Link, Array[String], Object[String, Any]) => Object[String, Any]
     _updateLinks: (link, vars, updateBundle) ->
-
-      if updateBundle['WHO'] < 0
-        delete updateBundle['WHO']
-
       for v in vars
         [varName, value] =
           switch v
@@ -158,6 +158,60 @@ define(['engine/exception', 'engine/link', 'engine/observer', 'engine/patch', 'e
 
         if varName isnt ""
           updateBundle[varName] = value
+
+      updateBundle
+
+
+    # (World, Array[String], Object[String, Any]) => Object[String, Any]
+    _updateWorld: (world, vars, updateBundle) ->
+      for v in vars
+        [varName, value] =
+          switch v
+            when "height"
+              ["worldHeight", world.height()]
+            when "id"
+              ["WHO", world.id]
+            when "patchesAllBlack"
+              ["patchesAllBlack", world._patchesAllBlack]
+            when "patchesWithLabels"
+              ["patchesWithLabels", world._patchesWithLabels]
+            when "maxPxcor"
+              ["MAXPXCOR", world.maxPxcor]
+            when "maxPycor"
+              ["MAXPYCOR", world.maxPycor]
+            when "minPxcor"
+              ["MINPXCOR", world.minPxcor]
+            when "minPycor"
+              ["MINPYCOR", world.minPycor]
+            when "ticks"
+              ["ticks", world.ticker._count]
+            when "unbreededLinksAreDirected"
+              ["unbreededLinksAreDirected", world.unbreededLinksAreDirected]
+            when "width"
+              ["worldWidth", world.width()]
+            else
+              throw new Exception.NetLogoException("Unknown world variable for update: #{v}")
+
+        updateBundle[varName] = value
+
+      updateBundle
+
+
+    # (Observer, Array[String], Object[String, Any]) => Object[String, Any]
+    _updateObserver: (observer, vars, updateBundle) ->
+      for v in vars
+        [varName, value] =
+          switch v
+            when "id"
+              ["WHO", observer.id]
+            when "perspective"
+              ["perspective", observer._perspective]
+            when "targetAgent"
+              ["targetAgent", observer._targetAgent]
+            else
+              throw new Exception.NetLogoException("Unknown observer variable for update: #{v}")
+
+        updateBundle[varName] = value
 
       updateBundle
 
