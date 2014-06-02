@@ -77,9 +77,17 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
     links: () ->
       new LinkSet(@_links.toArray())
     turtles: () -> new TurtleSet(@_turtles)
+
+    # (String) => TurtleSet
     turtlesOfBreed: (breedName) ->
       breed = @breedManager.get(breedName)
       new TurtleSet(breed.members, breedName)
+
+    # (String) => LinkSet
+    linksOfBreed: (breedName) ->
+      breed = @breedManager.get(breedName)
+      new LinkSet(breed.members, breedName)
+
     patches: => new PatchSet(@_patches)
     resize: (minPxcor, maxPxcor, minPycor, maxPycor) ->
 
