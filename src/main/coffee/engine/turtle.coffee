@@ -1,35 +1,32 @@
 #@# Extends: `Agent`, `Vassal`, `CanTalkToPatches`
 #@# Why do all of these function calls manage updates for themselves?  Why am I dreaming of an `@world.updater. monad?
-define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/comparator', 'engine/exception'
-      , 'engine/nobody', 'engine/penmanager', 'engine/turtleset', 'engine/trig', 'engine/variablemanager']
-     , ( _,                    Builtins,          ColorModel,          Comparator,          Exception
-      ,  Nobody,          PenManager,          TurtleSet,          Trig,          VariableManager) ->
+define(['integration/lodash', 'engine/abstractagents', 'engine/builtins', 'engine/colormodel', 'engine/comparator'
+      , 'engine/exception', 'engine/nobody', 'engine/penmanager', 'engine/turtleset', 'engine/trig'
+      , 'engine/variablemanager']
+     , ( _,                    AbstractAgents,          Builtins,          ColorModel,          Comparator
+      ,  Exception,          Nobody,          PenManager,          TurtleSet,          Trig
+      ,  VariableManager) ->
 
   class Turtle
 
+    _breed:      undefined # Breed
     _links:      undefined # Array[Link]
     _varManager: undefined # VariableManager
 
     #@# Should guard against improperly-named breeds, including empty-string breed names
     constructor: (@world, @id, @color = 0, @heading = 0, @_xcor = 0, @_ycor = 0, breed = @world.breedManager.turtles(), @label = "", @labelcolor = 9.9, @hidden = false, @size = 1.0, @penManager = new PenManager(@world.updater.updated(this))) ->
       @_links = []
+      @_setBreed(breed)
 
-      @breedVars = {} #@# Can be outside the constructor
-      @updateBreed(breed)
-
-      varNames     = @world.turtlesOwnNames
+      varNames     = @world.turtlesOwnNames.concat(breed.varNames)
       @_varManager = @_genVarManager(varNames)
 
       @getPatchHere().arrive(this)
 
-    updateBreed: (breed) -> #@# This code is lunacy
-      @_setBreed(breed)
-      @_setShape(breed.getShape())
-      if breed isnt @world.breedManager.turtles()
-        @world.breedManager.turtles().add(this)
-        for x in breed.varNames
-          if not @breedVars[x]?
-            @breedVars[x] = 0
+    # () => String
+    getBreedName: ->
+      @_breed.name
+
     xcor: -> @_xcor
     setXcor: (newX) ->
       originPatch = @getPatchHere()
@@ -48,14 +45,7 @@ define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/co
         originPatch.leave(this)
         @getPatchHere().arrive(this)
       @refreshLinks()
-    setBreed: (breed) ->
-      trueBreed =
-        if _(breed).isString()
-          @world.breedManager.get(breed)
-        else
-          breed
-      @updateBreed(trueBreed)
-    toString: -> "(#{@breed.singular} #{@id})"
+    toString: -> "(#{@_breed.singular} #{@id})"
 
     canMove: (distance) -> @patchAhead(distance) isnt Nobody
     distanceXY: (x, y) -> @world.topology().distanceXY(@xcor(), @ycor(), x, y)
@@ -198,9 +188,9 @@ define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/co
       @_setIsHidden(flag)
       return
     isBreed: (breedName) ->
-      @breed.name.toUpperCase() is breedName.toUpperCase()
+      @_breed.name.toUpperCase() is breedName.toUpperCase()
     die: ->
-      @breed.remove(this)
+      @_breed.remove(this)
       if @id isnt -1
         @world.removeTurtle(@id)
         @seppuku()
@@ -225,8 +215,15 @@ define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/co
       @_varManager.set(varName, value)
       return
 
-    getBreedVariable: (n) -> @breedVars[n]
-    setBreedVariable: (n, value) -> @breedVars[n] = value
+    # (String) => Any
+    getBreedVariable: (varName) ->
+      @_varManager.get(varName)
+
+    # (String, Any) => Unit
+    setBreedVariable: (varName, value) ->
+      @_varManager.set(varName, value)
+      return
+
     getPatchHere: -> @world.getPatchAt(@xcor(), @ycor())
     getPatchVariable: (n)    -> @getPatchHere().getPatchVariable(n)
     setPatchVariable: (n, value) -> @getPatchHere().setPatchVariable(n, value)
@@ -235,7 +232,7 @@ define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/co
     turtlesHere: -> @getPatchHere().turtlesHere()
     breedHere: (breedName) -> @getPatchHere().breedHere(breedName)
     hatch: (n, breedName) ->
-      breed      = if breedName? and not _(breedName).isEmpty() then @world.breedManager.get(breedName) else @breed #@# Why is this even a thing?
+      breed      = if breedName? and not _(breedName).isEmpty() then @world.breedManager.get(breedName) else @_breed #@# Why is this even a thing?
       newTurtles = _(0).range(n).map(=> @_makeTurtleCopy(breed)).value()
       new TurtleSet(newTurtles, breed)
 
@@ -278,19 +275,19 @@ define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/co
     _genVarManager: (extraVarNames) ->
 
       varBundles = [
-        { name: 'breed',       get: (=> @world.turtlesOfBreed(@breed.name)), set: ((x) => @_setBreed(x))             },
-        { name: 'color',       get: (=> @color),                             set: ((x) => @_setColor(x))             },
-        { name: 'heading',     get: (=> @heading),                           set: ((x) => @_setHeading(x))           },
-        { name: 'hidden?',     get: (=> @hidden),                            set: ((x) => @_setIsHidden(x))          },
-        { name: 'label',       get: (=> @label),                             set: ((x) => @_setLabel(x))             },
-        { name: 'label-color', get: (=> @labelcolor),                        set: ((x) => @_setLabelColor(x))        },
-        { name: 'pen-mode',    get: (=> @penManager.getMode().toString()),   set: ((x) => @penManager.setPenMode(x)) },
-        { name: 'pen-size',    get: (=> @penManager.getSize()),              set: ((x) => @penManager.setSize(x))    },
-        { name: 'shape',       get: (=> @shape),                             set: ((x) => @_setShape(x))             },
-        { name: 'size',        get: (=> @size),                              set: ((x) => @_setSize(x))              },
-        { name: 'who',         get: (=> @id),                                set: (->)                               },
-        { name: 'xcor',        get: (=> @xcor()),                            set: ((x) => @setXcor(x))               },
-        { name: 'ycor',        get: (=> @ycor()),                            set: ((x) => @setYcor(x))               }
+        { name: 'breed',       get: (=> @world.turtlesOfBreed(@_breed.name)), set: ((x) => @_setBreed(x))             },
+        { name: 'color',       get: (=> @color),                              set: ((x) => @_setColor(x))             },
+        { name: 'heading',     get: (=> @heading),                            set: ((x) => @_setHeading(x))           },
+        { name: 'hidden?',     get: (=> @hidden),                             set: ((x) => @_setIsHidden(x))          },
+        { name: 'label',       get: (=> @label),                              set: ((x) => @_setLabel(x))             },
+        { name: 'label-color', get: (=> @labelcolor),                         set: ((x) => @_setLabelColor(x))        },
+        { name: 'pen-mode',    get: (=> @penManager.getMode().toString()),    set: ((x) => @penManager.setPenMode(x)) },
+        { name: 'pen-size',    get: (=> @penManager.getSize()),               set: ((x) => @penManager.setSize(x))    },
+        { name: 'shape',       get: (=> @shape),                              set: ((x) => @_setShape(x))             },
+        { name: 'size',        get: (=> @size),                               set: ((x) => @_setSize(x))              },
+        { name: 'who',         get: (=> @id),                                 set: (->)                               },
+        { name: 'xcor',        get: (=> @xcor()),                             set: ((x) => @setXcor(x))               },
+        { name: 'ycor',        get: (=> @ycor()),                             set: ((x) => @setYcor(x))               }
       ]
 
       new VariableManager(extraVarNames, varBundles)
@@ -310,12 +307,30 @@ define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/co
 
     # (Breed) => Unit
     _setBreed: (breed) ->
-      if @breed
-        @breed.remove(this)
-      @breed = breed
-      breed.add(this)
+
+      trueBreed =
+        if _(breed).isString()
+          @world.breedManager.get(breed)
+        else if breed instanceof AbstractAgents
+          @world.breedManager.get(breed.getBreedName())
+        else
+          breed
+
+      if @_breed isnt trueBreed
+        trueBreed.add(this)
+        if @_breed?
+          @_breed.remove(this)
+
+      @_breed = trueBreed
       @_genVarUpdate("breed")
+
+      @_setShape(trueBreed.getShape())
+
+      if trueBreed isnt @world.breedManager.turtles()
+        @world.breedManager.turtles().add(this)
+
       return
+
 
     # (Number) => Unit
     _setColor: (color) ->

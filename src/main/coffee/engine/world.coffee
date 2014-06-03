@@ -125,7 +125,7 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
     getTurtle: (id) -> @_turtlesById[id] or Nobody
     getTurtleOfBreed: (breedName, id) ->
       turtle = @getTurtle(id)
-      if turtle.breed.name.toUpperCase() is breedName.toUpperCase() then turtle else Nobody
+      if turtle.getBreedName().toUpperCase() is breedName.toUpperCase() then turtle else Nobody
     removeLink: (id) ->
       link = @_links.find((link) -> link.id is id)
       @_links = @_links.remove(link)
@@ -271,11 +271,11 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
         -1
       else if a.end2.id > b.end2.id
         1
-      else if a.breed is b.breed
+      else if a.getBreedName() is b.getBreedName()
         0
-      else if a.breed is @breedManager.links()
+      else if a.getBreedName() is "LINKS"
         -1
-      else if b.breed is @breedManager.links()
+      else if b.getBreedName() is "LINKS"
         1
       else
         throw new Exception.NetLogoException("We have yet to implement link breed comparison")

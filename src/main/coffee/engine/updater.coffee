@@ -58,7 +58,7 @@ define(['engine/exception', 'engine/link', 'engine/observer', 'engine/patch', 'e
         [varName, value] =
           switch v
             when "breed"
-              ["BREED", turtle.breed.name]
+              ["BREED", turtle.getBreedName()]
             when "color"
               ["COLOR", turtle.color]
             when "heading"
@@ -122,7 +122,7 @@ define(['engine/exception', 'engine/link', 'engine/observer', 'engine/patch', 'e
         [varName, value] =
           switch v
             when "breed"
-              ["BREED", link.breed.name]
+              ["BREED", link.getBreedName()]
             when "color"
               ["COLOR", link._color]
             when "end1"

@@ -171,9 +171,15 @@ define(['engine/abstractagents', 'engine/exception', 'engine/iterator', 'engine/
       @_self.setLinkVariable(varName, value)
       return
 
-    getBreedVariable: (n)    -> @_self.getBreedVariable(n)
-    setBreedVariable: (n, value) -> @_self.setBreedVariable(n, value)
-    setBreed: (agentSet) -> @_self.setBreed(agentSet.getBreedName())
+    # (String) => Any
+    getBreedVariable: (varName) ->
+      @_self.getBreedVariable(varName)
+
+    # (String, Any) => Unit
+    setBreedVariable: (varName, value) ->
+      @_self.setBreedVariable(varName, value)
+      return
+
     getPatchVariable:  (n)    -> @_self.getPatchVariable(n)
     setPatchVariable:  (n, value) -> @_self.setPatchVariable(n, value)
     other: (agentSet) ->

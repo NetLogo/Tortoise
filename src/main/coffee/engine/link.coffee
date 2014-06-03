@@ -1,12 +1,11 @@
-define(['engine/builtins', 'engine/colormodel', 'engine/comparator', 'engine/exception', 'engine/turtleset'
-      , 'engine/variablemanager']
-     , ( Builtins,          ColorModel,          Comparator,          Exception,          TurtleSet
-      ,  VariableManager) ->
+define(['engine/abstractagents', 'engine/builtins', 'engine/colormodel', 'engine/comparator', 'engine/exception'
+      , 'engine/turtleset', 'engine/variablemanager']
+     , ( AbstractAgents,          Builtins,          ColorModel,          Comparator,          Exception
+      ,  TurtleSet,          VariableManager) ->
 
   class Link
 
-    breed: undefined # Breed
-
+    _breed:      undefined # Breed
     _varManager: undefined # VariableManager
 
     xcor: -> #@# WHAT?! x2
@@ -21,6 +20,10 @@ define(['engine/builtins', 'engine/colormodel', 'engine/comparator', 'engine/exc
       @end2._links.push(this)
       @updateEndRelatedVars()
       @_varManager = @_genVarManager(@world.linksOwnNames)
+
+    # () => String
+    getBreedName: ->
+      @_breed.name
 
     # (String) => Any
     getTurtleVariable: (varName) ->
@@ -41,7 +44,7 @@ define(['engine/builtins', 'engine/colormodel', 'engine/comparator', 'engine/exc
       return
 
     die: ->
-      @breed.remove(this)
+      @_breed.remove(this)
       if @id isnt -1
         @end1._removeLink(this)
         @end2._removeLink(this)
@@ -60,7 +63,7 @@ define(['engine/builtins', 'engine/colormodel', 'engine/comparator', 'engine/exc
 
     # () => String
     toString: ->
-      "(#{@breed.singular} #{@end1.id} #{@end2.id})"
+      "(#{@_breed.singular} #{@end1.id} #{@end2.id})"
 
     # () => Number
     getHeading: ->
@@ -91,16 +94,16 @@ define(['engine/builtins', 'engine/colormodel', 'engine/comparator', 'engine/exc
     # Array[String] => VariableManager
     _genVarManager: (extraVarNames) ->
       varBundles = [
-        { name: 'breed',       get: (=> @world.linksOfBreed(@breed.name)), set: ((x) => @_setBreed(x))      },
-        { name: 'color',       get: (=> @_color),                          set: ((x) => @_setColor(x))      },
-        { name: 'end1',        get: (=> @end1),                            set: ((x) => @_setEnd1(x))       },
-        { name: 'end2',        get: (=> @end2),                            set: ((x) => @_setEnd2(x))       },
-        { name: 'hidden?',     get: (=> @_isHidden),                       set: ((x) => @_setIsHidden(x))   },
-        { name: 'label',       get: (=> @_label),                          set: ((x) => @_setLabel(x))      },
-        { name: 'label-color', get: (=> @_labelcolor),                     set: ((x) => @_setLabelColor(x)) },
-        { name: 'shape',       get: (=> @_shape),                          set: ((x) => @_setShape(x))      },
-        { name: 'thickness',   get: (=> @_thickness),                      set: ((x) => @_setThickness(x))  },
-        { name: 'tie-mode',    get: (=> @_tiemode),                        set: ((x) => @_setTieMode(x))    }
+        { name: 'breed',       get: (=> @world.linksOfBreed(@_breed.name)), set: ((x) => @_setBreed(x))      },
+        { name: 'color',       get: (=> @_color),                           set: ((x) => @_setColor(x))      },
+        { name: 'end1',        get: (=> @end1),                             set: ((x) => @_setEnd1(x))       },
+        { name: 'end2',        get: (=> @end2),                             set: ((x) => @_setEnd2(x))       },
+        { name: 'hidden?',     get: (=> @_isHidden),                        set: ((x) => @_setIsHidden(x))   },
+        { name: 'label',       get: (=> @_label),                           set: ((x) => @_setLabel(x))      },
+        { name: 'label-color', get: (=> @_labelcolor),                      set: ((x) => @_setLabelColor(x)) },
+        { name: 'shape',       get: (=> @_shape),                           set: ((x) => @_setShape(x))      },
+        { name: 'thickness',   get: (=> @_thickness),                       set: ((x) => @_setThickness(x))  },
+        { name: 'tie-mode',    get: (=> @_tiemode),                         set: ((x) => @_setTieMode(x))    }
       ]
 
       new VariableManager(extraVarNames, varBundles)
@@ -112,12 +115,30 @@ define(['engine/builtins', 'engine/colormodel', 'engine/comparator', 'engine/exc
 
     # (Breed) => Unit
     _setBreed: (breed) ->
-      if @breed
-        @breed.remove(this)
-      @breed = breed
-      breed.add(this)
+
+      trueBreed =
+        if _(breed).isString()
+          @world.breedManager.get(breed)
+        else if breed instanceof AbstractAgents
+          @world.breedManager.get(breed.getBreedName())
+        else
+          breed
+
+      if @_breed isnt trueBreed
+        trueBreed.add(this)
+        if @_breed?
+          @_breed.remove(this)
+
+      @_breed = trueBreed
       @_genVarUpdate("breed")
+
+      @_setShape(trueBreed.getShape())
+
+      if trueBreed isnt @world.breedManager.links()
+        @world.breedManager.links().add(this)
+
       return
+
 
     # (Number) => Unit
     _setColor: (color) ->
