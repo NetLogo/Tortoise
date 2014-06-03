@@ -18,22 +18,12 @@ class RuntimeInit(program: Program, model: Model) {
 
   def init: String = {
 
-    val turtlesOwn = {
-      val builtinCount = AgentVariables.getImplicitTurtleVariables.size
-      vars(program.turtlesOwn.drop(builtinCount), "TurtlesOwn")
-    }
-
     val patchesOwn = {
       val builtinCount = AgentVariables.getImplicitPatchVariables.size
       vars(program.patchesOwn.drop(builtinCount), "PatchesOwn")
     }
 
-    val linksOwn = {
-      val builtinCount = AgentVariables.getImplicitLinkVariables.size
-      vars(program.linksOwn.drop(builtinCount), "LinksOwn")
-    }
-
-    genInitJS(genBreedObjects, genWorkspaceArgs, turtlesOwn, patchesOwn, linksOwn)
+    genInitJS(genBreedObjects, genWorkspaceArgs, patchesOwn)
 
   }
 
@@ -67,8 +57,16 @@ class RuntimeInit(program: Program, model: Model) {
     def parseLinkShapes(strings: Array[String]): ShapeList =
       new ShapeList(AgentKind.Link, LinkShape.parseShapes(strings, Version.version).asScala)
 
+    // The turtle varnames information is only used by the `Turtle` class, which already has intrinsic knowledge of many
+    // variables (often in special-cased form, e.g. `color`), so we should only bother passing in turtles-own variables
+    // that aren't intrinsic to the class. --JAB (5/29/14)
+    val linkVarNames   = program.linksOwn   diff AgentVariables.getImplicitLinkVariables
+    val turtleVarNames = program.turtlesOwn diff AgentVariables.getImplicitTurtleVariables
+
     val globalNames          = mkJSArrStr(program.globals          map (_.toLowerCase) map wrapInQuotes)
     val interfaceGlobalNames = mkJSArrStr(program.interfaceGlobals map (_.toLowerCase) map wrapInQuotes)
+    val linksOwnNames        = mkJSArrStr(linkVarNames             map (_.toLowerCase) map wrapInQuotes)
+    val turtlesOwnNames      = mkJSArrStr(turtleVarNames           map (_.toLowerCase) map wrapInQuotes)
 
     val turtleShapesJson = shapeList(parseTurtleShapes(model.turtleShapes.toArray))
     val linkShapesJson   = shapeList(parseLinkShapes(model.linkShapes.toArray))
@@ -76,8 +74,8 @@ class RuntimeInit(program: Program, model: Model) {
     val view = model.view
     import view._
 
-    s"$globalNames, $interfaceGlobalNames, $minPxcor, $maxPxcor, $minPycor, $maxPycor, $patchSize, " +
-      s"$wrappingAllowedInX, $wrappingAllowedInY, $turtleShapesJson, $linkShapesJson"
+    s"$globalNames, $interfaceGlobalNames, $turtlesOwnNames, $linksOwnNames, $minPxcor, $maxPxcor, $minPycor, $maxPycor, " +
+      s"$patchSize, $wrappingAllowedInX, $wrappingAllowedInY, $turtleShapesJson, $linkShapesJson"
 
   }
 
@@ -96,7 +94,7 @@ class RuntimeInit(program: Program, model: Model) {
     else
       "[]"
 
-  private def genInitJS(breedObjects: String, workspaceArgs: String, turtlesOwn: String, patchesOwn: String, linksOwn: String): String =
+  private def genInitJS(breedObjects: String, workspaceArgs: String, patchesOwn: String): String =
     s"""var workspace     = require('engine/workspace')($breedObjects)($workspaceArgs);
        |var AgentSet      = workspace.agentSet;
        |var BreedManager  = workspace.breedManager;
@@ -105,9 +103,7 @@ class RuntimeInit(program: Program, model: Model) {
        |var Prims         = workspace.prims;
        |var Updater       = workspace.updater;
        |var world         = workspace.world;
-       |var TurtlesOwn    = world.turtlesOwn;
        |var PatchesOwn    = world.patchesOwn;
-       |var LinksOwn      = world.linksOwn;
        |
        |var Call       = require('engine/call');
        |var ColorModel = require('engine/colormodel');
@@ -129,7 +125,6 @@ class RuntimeInit(program: Program, model: Model) {
        |var Random         = require('integration/random');
        |var StrictMath     = require('integration/strictmath');
        |
-       |$turtlesOwn$patchesOwn$linksOwn""".stripMargin
+       |$patchesOwn""".stripMargin
 
 }
-

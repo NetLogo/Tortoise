@@ -1,105 +1,43 @@
-define(['engine/builtins', 'engine/colormodel', 'engine/comparator', 'engine/exception', 'engine/turtleset']
-     , ( Builtins,          ColorModel,          Comparator,          Exception,          TurtleSet) ->
+define(['engine/builtins', 'engine/colormodel', 'engine/comparator', 'engine/exception', 'engine/turtleset'
+      , 'engine/variablemanager']
+     , ( Builtins,          ColorModel,          Comparator,          Exception,          TurtleSet
+      ,  VariableManager) ->
 
   class Link
 
-    _vars: undefined # Array[Any]
+    breed: undefined # Breed
+
+    _varManager: undefined # VariableManager
 
     xcor: -> #@# WHAT?! x2
     ycor: ->
 
     # (Number, Boolean, Turtle, Turtle, World, Breed, Number, Boolean, String, Number, String, Number, String) => Link
-    constructor: (@id, @directed, @end1, @end2, @world, @breed = @world.breedManager.links(), @_color = 5
+    constructor: (@id, @directed, @end1, @end2, @world, breed = @world.breedManager.links(), @_color = 5
                 , @_isHidden = false, @_label = "", @_labelcolor = 9.9, @_shape = "default", @_thickness = 0
                 , @_tiemode = "none") ->
-      @breed.add(this)
+      @_setBreed(breed)
       @end1._links.push(this)
       @end2._links.push(this)
       @updateEndRelatedVars()
-      @_vars = (x for x in @world.linksOwn.vars)
+      @_varManager = @_genVarManager(@world.linksOwnNames)
 
-    # (Number) => Any
-    getLinkVariable: (n) ->
-      if n < Builtins.linkBuiltins.length
-        varName = Builtins.linkBuiltins[n]
-        switch varName
-          when "end1"
-            @end1
-          when "end2"
-            @end2
-          when "thickness"
-            @_thickness
-          when "tiemode"
-            @_tiemode
-          else
-            throw new Exception.NetLogoException("Invalid link varname: #{varName}")
-      else
-        @_vars[n - Builtins.linkBuiltins.length]
+    # (String) => Any
+    getTurtleVariable: (varName) ->
+      @_varManager.get(varName)
 
-    # (Number, Any) => Unit
-    setLinkVariable: (n, value) ->
-      if n < Builtins.linkBuiltins.length
-        varName = Builtins.linkBuiltins[n]
-        switch varName
-          when "end1"
-            @end1 = value
-          when "end2"
-            @end2 = value
-          when "thickness"
-            @_thickness = value
-          when "tiemode"
-            @_tiemode = value
-          else
-            throw new Exception.NetLogoException("Invalid link varname: #{varName}")
-        @world.updater.updated(this)(varName)
-      else
-        @_vars[n - Builtins.linkBuiltins.length] = value
+    # (String, Any) => Unit
+    setTurtleVariable: (varName, value) ->
+      @_varManager.set(varName, value)
       return
 
-    # (Number) => Any
-    getTurtleVariable: (n) ->
-      if n < Builtins.turtleBuiltins.length
-        varName = Builtins.turtleBuiltins[n]
-        switch varName
-          when "breed"
-            @breed
-          when "color"
-            @_color
-          when "hidden"
-            @_isHidden
-          when "label"
-            @_label
-          when "labelcolor"
-            @_labelcolor
-          when "shape"
-            @_shape
-          else
-            throw new Exception.NetLogoException("Invalid link varname: #{varName}")
-      else
-        @_vars[n - Builtins.turtleBuiltins.length]
+    # (String) => Any
+    getLinkVariable: (varName) ->
+      @_varManager.get(varName)
 
-    # (Number, Any) => Unit
-    setTurtleVariable: (n, value) ->
-      if n < Builtins.turtleBuiltins.length
-        varName = Builtins.turtleBuiltins[n]
-        switch varName
-          when "breed"
-            @breed = value
-          when "color"
-            @_color = ColorModel.wrapColor(value)
-          when "hidden"
-            @_isHidden = value
-          when "label"
-            @_label = value
-          when "labelcolor"
-            @_labelcolor = value
-          when "shape"
-            @_shape = value
-          else
-            throw new Exception.NetLogoException("Invalid link varname: #{varName}")
-        @world.updater.updated(this)(varName)
-      else
-        @_vars[n - Builtins.turtleBuiltins.length] = value
+    # (String, Any) => Unit
+    setLinkVariable: (varName, value) ->
+      @_varManager.set(varName, value)
       return
 
     die: ->
@@ -149,5 +87,90 @@ define(['engine/builtins', 'engine/colormodel', 'engine/comparator', 'engine/exc
 
     seppuku: ->
       @world.updater.update("links", @id, { WHO: -1 }) #@# If you're awful and you know it, clap your hands!
+
+    # Array[String] => VariableManager
+    _genVarManager: (extraVarNames) ->
+      varBundles = [
+        { name: 'breed',       get: (=> @world.linksOfBreed(@breed.name)), set: ((x) => @_setBreed(x))      },
+        { name: 'color',       get: (=> @_color),                          set: ((x) => @_setColor(x))      },
+        { name: 'end1',        get: (=> @end1),                            set: ((x) => @_setEnd1(x))       },
+        { name: 'end2',        get: (=> @end2),                            set: ((x) => @_setEnd2(x))       },
+        { name: 'hidden?',     get: (=> @_isHidden),                       set: ((x) => @_setIsHidden(x))   },
+        { name: 'label',       get: (=> @_label),                          set: ((x) => @_setLabel(x))      },
+        { name: 'label-color', get: (=> @_labelcolor),                     set: ((x) => @_setLabelColor(x)) },
+        { name: 'shape',       get: (=> @_shape),                          set: ((x) => @_setShape(x))      },
+        { name: 'thickness',   get: (=> @_thickness),                      set: ((x) => @_setThickness(x))  },
+        { name: 'tie-mode',    get: (=> @_tiemode),                        set: ((x) => @_setTieMode(x))    }
+      ]
+
+      new VariableManager(extraVarNames, varBundles)
+
+    # (String) => Unit
+    _genVarUpdate: (varName) ->
+      @world.updater.updated(this)(varName)
+      return
+
+    # (Breed) => Unit
+    _setBreed: (breed) ->
+      if @breed
+        @breed.remove(this)
+      @breed = breed
+      breed.add(this)
+      @_genVarUpdate("breed")
+      return
+
+    # (Number) => Unit
+    _setColor: (color) ->
+      @_color = ColorModel.wrapColor(color)
+      @_genVarUpdate("color")
+      return
+
+    # (Turtle) => Unit
+    _setEnd1: (turtle) ->
+      @end1 = turtle
+      @_genVarUpdate("end1")
+      return
+
+    # (Turtle) => Unit
+    _setEnd2: (turtle) ->
+      @end2 = turtle
+      @_genVarUpdate("end2")
+      return
+
+    # (Boolean) => Unit
+    _setIsHidden: (isHidden) ->
+      @_isHidden = isHidden
+      @_genVarUpdate("hidden?")
+      return
+
+    # (String) => Unit
+    _setLabel: (label) ->
+      @_label = label
+      @_genVarUpdate("label")
+      return
+
+    # (Number) => Unit
+    _setLabelColor: (color) ->
+      @_labelcolor = ColorModel.wrapColor(color)
+      @_genVarUpdate("label-color")
+      return
+
+    # (String) => Unit
+    _setShape: (shape) ->
+      @_shape = shape.toLowerCase()
+      @_genVarUpdate("shape")
+      return
+
+    # (Number) => Unit
+    _setThickness: (thickness) ->
+      @_thickness = thickness
+      @_genVarUpdate("thickness")
+      return
+
+    # (String) => Unit
+    _setTieMode: (mode) ->
+      @_tiemode = mode
+      @_genVarUpdate("tie-mode")
+      return
 
 )

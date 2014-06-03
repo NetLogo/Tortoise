@@ -65,15 +65,15 @@ define(['engine/exception', 'engine/link', 'engine/observer', 'engine/patch', 'e
               ["HEADING", turtle.heading]
             when "id"
               ["WHO", turtle.id]
-            when "labelcolor"
+            when "label-color"
               ["LABEL-COLOR", turtle.labelcolor]
-            when "hidden"
+            when "hidden?"
               ["HIDDEN?", turtle.hidden]
             when "label"
               ["LABEL", turtle.label.toString()]
-            when "pensize"
+            when "pen-size"
               ["PEN-SIZE", turtle.penManager.getSize()]
-            when "penmode"
+            when "pen-mode"
               ["PEN-MODE", turtle.penManager.getMode().toString()]
             when "shape"
               ["SHAPE", turtle.shape]
@@ -131,13 +131,13 @@ define(['engine/exception', 'engine/link', 'engine/observer', 'engine/patch', 'e
               ["END2", link.end2.id]
             when "heading"
               ["HEADING", link.getHeading()]
-            when "hidden"
+            when "hidden?"
               ["HIDDEN?", link._isHidden]
             when "id"
               ["ID", link.id]
             when "label"
               ["LABEL", link._label.toString()]
-            when "labelcolor"
+            when "label-color"
               ["LABEL-COLOR", link._labelcolor]
             when "midpointx"
               ["MIDPOINTX", link.getMidpointX()]
@@ -149,7 +149,7 @@ define(['engine/exception', 'engine/link', 'engine/observer', 'engine/patch', 'e
               ["SIZE", link.getSize()]
             when "thickness"
               ["THICKNESS", link._thickness]
-            when "tiemode"
+            when "tie-mode"
               ["TIE-MODE", link._tiemode]
             when "lcolor", "llabel", "llabelcolor", "lhidden", "lbreed", "lshape" # Ignored!
               ["", ""]

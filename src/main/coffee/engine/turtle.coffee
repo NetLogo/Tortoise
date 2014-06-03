@@ -1,45 +1,40 @@
 #@# Extends: `Agent`, `Vassal`, `CanTalkToPatches`
+#@# Why do all of these function calls manage updates for themselves?  Why am I dreaming of an `@world.updater. monad?
 define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/comparator', 'engine/exception'
-      , 'engine/nobody', 'engine/penmanager', 'engine/turtleset', 'engine/trig']
+      , 'engine/nobody', 'engine/penmanager', 'engine/turtleset', 'engine/trig', 'engine/variablemanager']
      , ( _,                    Builtins,          ColorModel,          Comparator,          Exception
-      ,  Nobody,          PenManager,          TurtleSet,          Trig) ->
+      ,  Nobody,          PenManager,          TurtleSet,          Trig,          VariableManager) ->
 
   class Turtle
 
-    vars: undefined #@# You are the bane of your own existence
-
-    _links: undefined
-    _xcor:  undefined
-    _ycor:  undefined
+    _links:      undefined # Array[Link]
+    _varManager: undefined # VariableManager
 
     #@# Should guard against improperly-named breeds, including empty-string breed names
-    constructor: (@world, @id, @color = 0, @heading = 0, xcor = 0, ycor = 0, breed = @world.breedManager.turtles(), @label = "", @labelcolor = 9.9, @hidden = false, @size = 1.0, @penManager = new PenManager(@world.updater.updated(this))) ->
+    constructor: (@world, @id, @color = 0, @heading = 0, @_xcor = 0, @_ycor = 0, breed = @world.breedManager.turtles(), @label = "", @labelcolor = 9.9, @hidden = false, @size = 1.0, @penManager = new PenManager(@world.updater.updated(this))) ->
       @_links = []
-      @_xcor  = xcor
-      @_ycor  = ycor
 
       @breedVars = {} #@# Can be outside the constructor
       @updateBreed(breed)
 
-      @vars = _(@world.turtlesOwn.vars).cloneDeep() #@# Can be outside the constructor
+      varNames     = @world.turtlesOwnNames
+      @_varManager = @_genVarManager(varNames)
 
       @getPatchHere().arrive(this)
 
     updateBreed: (breed) -> #@# This code is lunacy
-      if @breed
-        @breed.remove(this)
-      @breed = breed
-      breed.add(this)
-      @shape = @breed.getShape()
-      if @breed isnt @world.breedManager.turtles()
+      @_setBreed(breed)
+      @_setShape(breed.getShape())
+      if breed isnt @world.breedManager.turtles()
         @world.breedManager.turtles().add(this)
-        for x in @breed.varNames
+        for x in breed.varNames
           if not @breedVars[x]?
             @breedVars[x] = 0
     xcor: -> @_xcor
     setXcor: (newX) ->
       originPatch = @getPatchHere()
       @_xcor = @world.topology().wrapX(newX)
+      @world.updater.updated(this)("xcor")
       if originPatch isnt @getPatchHere()
         originPatch.leave(this)
         @getPatchHere().arrive(this)
@@ -48,6 +43,7 @@ define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/co
     setYcor: (newY) ->
       originPatch = @getPatchHere()
       @_ycor = @world.topology().wrapY(newY)
+      @world.updater.updated(this)("ycor")
       if originPatch isnt @getPatchHere()
         originPatch.leave(this)
         @getPatchHere().arrive(this)
@@ -59,8 +55,6 @@ define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/co
         else
           breed
       @updateBreed(trueBreed)
-      @world.updater.updated(this)("breed")
-      @world.updater.updated(this)("shape")
     toString: -> "(#{@breed.singular} #{@id})"
 
     canMove: (distance) -> @patchAhead(distance) isnt Nobody
@@ -73,8 +67,7 @@ define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/co
       @world.topology().towards(@xcor(), @ycor(), x, y)
     faceXY: (x, y) ->
       if x isnt @xcor() or y isnt @ycor()
-        @heading = @world.topology().towards(@xcor(), @ycor(), x, y)
-        @world.updater.updated(this)("heading")
+        @_setHeading(@world.topology().towards(@xcor(), @ycor(), x, y))
     face: (agent) ->
       [x, y] = agent.getCoords()
       @faceXY(x, y)
@@ -177,7 +170,6 @@ define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/co
       if @canMove(distance)
         @setXcor(@xcor() + distance * Trig.sin(@heading))
         @setYcor(@ycor() + distance * Trig.cos(@heading))
-        @world.updater.updated(this)("xcor", "ycor")
         return true
       return false #@# Orly?
     dx: ->
@@ -186,8 +178,7 @@ define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/co
       Trig.cos(@heading)
     right: (angle) ->
       newHeading = @heading + angle
-      @heading   = @_normalizeHeading(newHeading)
-      @world.updater.updated(this)("heading") #@# Why do all of these function calls manage updates for themselves?  Why am I dreaming of an `@world.updater. monad?
+      @_setHeading(@_normalizeHeading(newHeading))
       return
     setXY: (x, y) ->
       origXcor = @xcor()
@@ -202,11 +193,9 @@ define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/co
           throw new Exception.TopologyInterrupt("The point [ #{x} , #{y} ] is outside of the boundaries of the world and wrapping is not permitted in one or both directions.")
         else
           throw error
-      @world.updater.updated(this)("xcor", "ycor")
       return
     hideTurtle: (flag) -> #@# Varname
-      @hidden = flag
-      @world.updater.updated(this)("hidden")
+      @_setIsHidden(flag)
       return
     isBreed: (breedName) ->
       @breed.name.toUpperCase() is breedName.toUpperCase()
@@ -226,46 +215,16 @@ define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/co
         @id = -1
         @getPatchHere().leave(this)
       throw new Exception.DeathInterrupt("Call only from inside an askAgent block")
-    getTurtleVariable: (n) -> #@# Obviously, we're awful people and this can be improved
-      if n < Builtins.turtleBuiltins.length
-        if n is 3 #xcor
-          @xcor()
-        else if n is 4 #ycor
-          @ycor()
-        else if n is 8 #breed
-          @world.turtlesOfBreed(@breed.name) #@# Seems weird that I should need to do this...?
-        else if n is 11 #pen-size
-          @penManager.getSize()
-        else if n is 12 #pen-mode
-          @penManager.getMode().toString()
-        else
-          this[Builtins.turtleBuiltins[n]]
-      else
-        @vars[n - Builtins.turtleBuiltins.length]
-    setTurtleVariable: (n, value) -> #@# Here we go again!
-      if n < Builtins.turtleBuiltins.length
-        if n is 1 # color
-          this[Builtins.turtleBuiltins[n]] = ColorModel.wrapColor(value)
-        else if n is 3 #xcor
-          @setXcor(value)
-        else if n is 4 #ycor
-          @setYcor(value)
-        else if n is 11 #pen-size
-          @penManager.setSize(value)
-        else if n is 12 #pen-mode
-          if value is "up"
-            @penManager.raisePen()
-          else
-            @penManager.lowerPen() # This is (tragically) JVM NetLogo's idea of sanity... --JAB (5/26/14)
-        else if n is 2  # heading
-          @heading = @_normalizeHeading(value)
-        else
-          if n is 5  # shape
-            value = value.toLowerCase()
-          this[Builtins.turtleBuiltins[n]] = value
-        @world.updater.updated(this)(Builtins.turtleBuiltins[n])
-      else
-        @vars[n - Builtins.turtleBuiltins.length] = value
+
+    # (String) => Any
+    getTurtleVariable: (varName) ->
+      @_varManager.get(varName)
+
+    # (String, Any) => Unit
+    setTurtleVariable: (varName, value) ->
+      @_varManager.set(varName, value)
+      return
+
     getBreedVariable: (n) -> @breedVars[n]
     setBreedVariable: (n, value) -> @breedVars[n] = value
     getPatchHere: -> @world.getPatchAt(@xcor(), @ycor())
@@ -284,8 +243,8 @@ define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/co
     _makeTurtleCopy: (breed) ->
       turtleGenFunc = (id) => new Turtle(@world, id, @color, @heading, @xcor(), @ycor(), breed, @label, @labelcolor, @hidden, @size, @penManager.clone()) #@# Sounds like we ought have some cloning system, of which this function is a first step
       turtle        = @world.createTurtle(turtleGenFunc)
-      _(0).range(@world.turtlesOwn.vars.length).forEach((n) =>
-        turtle.setTurtleVariable(Builtins.turtleBuiltins.length + n, @getTurtleVariable(Builtins.turtleBuiltins.length + n))
+      _(@world.turtlesOwnNames).forEach((varName) =>
+        turtle.setTurtleVariable(varName, @getTurtleVariable(varName))
         return
       )
       turtle
@@ -314,5 +273,90 @@ define(['integration/lodash', 'engine/builtins', 'engine/colormodel', 'engine/co
         heading
       else
         ((heading % 360) + 360) % 360
+
+    # Array[String] => VariableManager
+    _genVarManager: (extraVarNames) ->
+
+      varBundles = [
+        { name: 'breed',       get: (=> @world.turtlesOfBreed(@breed.name)), set: ((x) => @_setBreed(x))             },
+        { name: 'color',       get: (=> @color),                             set: ((x) => @_setColor(x))             },
+        { name: 'heading',     get: (=> @heading),                           set: ((x) => @_setHeading(x))           },
+        { name: 'hidden?',     get: (=> @hidden),                            set: ((x) => @_setIsHidden(x))          },
+        { name: 'label',       get: (=> @label),                             set: ((x) => @_setLabel(x))             },
+        { name: 'label-color', get: (=> @labelcolor),                        set: ((x) => @_setLabelColor(x))        },
+        { name: 'pen-mode',    get: (=> @penManager.getMode().toString()),   set: ((x) => @penManager.setPenMode(x)) },
+        { name: 'pen-size',    get: (=> @penManager.getSize()),              set: ((x) => @penManager.setSize(x))    },
+        { name: 'shape',       get: (=> @shape),                             set: ((x) => @_setShape(x))             },
+        { name: 'size',        get: (=> @size),                              set: ((x) => @_setSize(x))              },
+        { name: 'who',         get: (=> @id),                                set: (->)                               },
+        { name: 'xcor',        get: (=> @xcor()),                            set: ((x) => @setXcor(x))               },
+        { name: 'ycor',        get: (=> @ycor()),                            set: ((x) => @setYcor(x))               }
+      ]
+
+      new VariableManager(extraVarNames, varBundles)
+
+    # (String) => Unit
+    _genVarUpdate: (varName) ->
+      @world.updater.updated(this)(varName)
+      return
+
+
+    ###
+     "Jason, this is craziness!", you say.  "Not quite," I say.  It _is_ kind of lame, but changing turtle members
+     needs to be controlled, so that all changes cause updates to be triggered.  And since the `VariableManager` needs
+     to know how to set all of the variables, we may as well declare the code for that in a place where it can be
+     easily reused. --JAB (6/2/14)
+    ###
+
+    # (Breed) => Unit
+    _setBreed: (breed) ->
+      if @breed
+        @breed.remove(this)
+      @breed = breed
+      breed.add(this)
+      @_genVarUpdate("breed")
+      return
+
+    # (Number) => Unit
+    _setColor: (color) ->
+      @color = ColorModel.wrapColor(color)
+      @_genVarUpdate("color")
+      return
+
+    # (Number) => Unit
+    _setHeading: (heading) ->
+      @heading = @_normalizeHeading(heading)
+      @_genVarUpdate("heading")
+      return
+
+    # (Boolean) => Unit
+    _setIsHidden: (isHidden) ->
+      @hidden = isHidden
+      @_genVarUpdate("hidden?")
+      return
+
+    # (String) => Unit
+    _setLabel: (label) ->
+      @label = label
+      @_genVarUpdate("label")
+      return
+
+    # (Number) => Unit
+    _setLabelColor: (color) ->
+      @labelcolor = ColorModel.wrapColor(color)
+      @_genVarUpdate("label-color")
+      return
+
+    # (String) => Unit
+    _setShape: (shape) ->
+      @shape = shape.toLowerCase()
+      @_genVarUpdate("shape")
+      return
+
+    # (Number) => Unit
+    _setSize: (size) ->
+      @size = size
+      @_genVarUpdate("size")
+      return
 
 )

@@ -24,8 +24,8 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
     _turtlesById:       undefined
 
     #@# I'm aware that some of this stuff ought to not live on `World`
-    constructor: (@patchesOwn, @turtlesOwn, @linksOwn, @agentSet, @updater, @breedManager, globalNames
-                , interfaceGlobalNames, @minPxcor, @maxPxcor, @minPycor, @maxPycor, @patchSize, @wrappingAllowedInX
+    constructor: (@patchesOwn, @agentSet, @updater, @breedManager, globalNames, interfaceGlobalNames, @turtlesOwnNames
+                , @linksOwnNames, @minPxcor, @maxPxcor, @minPycor, @maxPycor, @patchSize, @wrappingAllowedInX
                 , @wrappingAllowedInY, turtleShapeList, linkShapeList) ->
       @updater.collectUpdates()
       @updater.update("world", 0, {

@@ -20,6 +20,14 @@ define(->
     getMode: ->
       @_status
 
+    # This is (tragically) JVM NetLogo's idea of sanity... --JAB (5/26/14)
+    # (String) => Unit
+    setPenMode: (position) ->
+      if position is "up"
+        @raisePen()
+      else
+        @lowerPen()
+
     # () => Unit
     raisePen: ->
       @_updateStatus(Up)
@@ -42,13 +50,13 @@ define(->
     # (Number) => Unit
     _updateSize: (newSize) ->
       @_size = newSize
-      @_updateFunc("pensize")
+      @_updateFunc("pen-size")
       return
 
     # (PenStatus) => Unit
     _updateStatus: (newStatus) ->
       @_status = newStatus
-      @_updateFunc("penmode")
+      @_updateFunc("pen-mode")
       return
 
 
