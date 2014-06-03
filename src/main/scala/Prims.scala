@@ -31,11 +31,10 @@ object Prims {
           .mkString("Call(", ", ", ")")
       case _: prim._unaryminus              => s"(- ${arg(0)})"
       case bv: prim._breedvariable          => s"""AgentSet.getBreedVariable("${bv.name.toLowerCase}")"""
-      case tv: prim._turtlevariable         => s"AgentSet.getTurtleVariable(${tv.vn})"
-      case tv: prim._linkvariable           => s"AgentSet.getLinkVariable(${tv.vn})"
+      case tv: prim._turtlevariable         => s"AgentSet.getTurtleVariable('${tv.displayName.toLowerCase}')"
+      case tv: prim._linkvariable           => s"AgentSet.getLinkVariable('${tv.displayName.toLowerCase}')"
       case tv: prim._turtleorlinkvariable   =>
-        val vn = api.AgentVariables.getImplicitTurtleVariables.indexOf(tv.varName)
-        s"AgentSet.getTurtleVariable($vn)"
+        s"AgentSet.getTurtleVariable('${tv.varName.toLowerCase}')"
       case pv: prim._patchvariable          => s"AgentSet.getPatchVariable(${pv.vn})"
       case r: prim._reference               => s"${r.reference.vn}"
       case ov: prim._observervariable       => s"world.observer.getGlobal('${ov.displayName.toLowerCase}')"
@@ -144,14 +143,13 @@ object Prims {
       case bv: prim._breedvariable =>
         s"""AgentSet.setBreedVariable("${bv.name.toLowerCase}", ${arg(1)});"""
       case p: prim._linkvariable =>
-        s"AgentSet.setLinkVariable(${p.vn}, ${arg(1)});"
+        s"AgentSet.setLinkVariable('${p.displayName.toLowerCase}', ${arg(1)});"
       case p: prim._turtlevariable =>
-        s"AgentSet.setTurtleVariable(${p.vn}, ${arg(1)});"
+        s"AgentSet.setTurtleVariable('${p.displayName.toLowerCase}', ${arg(1)});"
       case p: prim._turtleorlinkvariable if p.varName == "BREED" =>
         s"AgentSet.setBreed(${arg(1)});" // #@# I'm pretty sure this is dead wrong. --JAB (5/8/14)
       case p: prim._turtleorlinkvariable =>
-        val vn = api.AgentVariables.getImplicitTurtleVariables.indexOf(p.varName)
-        s"AgentSet.setTurtleVariable($vn, ${arg(1)});"
+        s"AgentSet.setTurtleVariable('${p.varName.toLowerCase}', ${arg(1)});"
       case p: prim._patchvariable =>
         s"AgentSet.setPatchVariable(${p.vn}, ${arg(1)});"
       case p: prim._procedurevariable =>
