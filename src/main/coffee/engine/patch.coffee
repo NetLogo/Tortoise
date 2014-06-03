@@ -69,9 +69,8 @@ define(['integration/lodash', 'integration/random', 'engine/builtins', 'engine/c
       turtles = _(0).range(n).map(=> @world.createTurtle((id) => new Turtle(@world, id, 5 + 10 * Random.nextInt(14), Random.nextInt(360), @pxcor, @pycor, breed))).value() #@# Moar clarity, plox; and why do patches know how to create turtles?!
       new TurtleSet(turtles, breed)
     breedHere: (breedName) ->
-      breed   = @world.breedManager.get(breedName)
-      turtles = _(@turtles).filter((turtle) -> turtle.breed is breed).value()
-      new TurtleSet(turtles, breed)
+      turtles = _(@turtles).filter((turtle) -> turtle.getBreedName() is breedName).value()
+      new TurtleSet(turtles, breedName)
     turtlesAt: (dx, dy) ->
       @patchAt(dx, dy).turtlesHere()
     patchAt: (dx, dy) ->

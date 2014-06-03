@@ -148,7 +148,7 @@ object Prims {
       case p: prim._turtlevariable =>
         s"AgentSet.setTurtleVariable('${p.displayName.toLowerCase}', ${arg(1)});"
       case p: prim._turtleorlinkvariable if p.varName == "BREED" =>
-        s"AgentSet.setBreed(${arg(1)});" // #@# I'm pretty sure this is dead wrong. --JAB (5/8/14)
+        s"AgentSet.setTurtleVariable('breed', ${arg(1)});"
       case p: prim._turtleorlinkvariable =>
         s"AgentSet.setTurtleVariable('${p.varName.toLowerCase}', ${arg(1)});"
       case p: prim._patchvariable =>

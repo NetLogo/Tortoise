@@ -302,7 +302,7 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
         else
           throw new Exception.NetLogoException("`breed-on` unsupported for class '#{typeof(x)}'")
 
-      turtles = _(patches).map((p) -> p.turtles).flatten().filter((t) -> t.breed.name is breedName).value()
+      turtles = _(patches).map((p) -> p.turtles).flatten().filter((t) -> t.getBreedName() is breedName).value()
       new TurtleSet(turtles, breedName)
 
     turtlesOn: (agentsOrAgent) -> #@# Lunacy
