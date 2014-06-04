@@ -15,7 +15,7 @@ define(['engine/patch', 'engine/turtle', 'engine/variablemanager', 'integration/
     # (Updater, Array[String], Array[String]) => Observer
     constructor: (@_updater, @_globalNames, @_interfaceGlobalNames) ->
       @resetPerspective()
-      @_varManager      = new VariableManager(@_globalNames)
+      @_varManager      = VariableManager.Companion.generate(@_globalNames)
       @_codeGlobalNames = _(@_globalNames).difference(@_interfaceGlobalNames)
 
     # (Agent) => Unit

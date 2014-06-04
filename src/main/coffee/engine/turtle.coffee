@@ -15,11 +15,11 @@ define(['integration/lodash', 'engine/abstractagents', 'engine/builtins', 'engin
 
     #@# Should guard against improperly-named breeds, including empty-string breed names
     constructor: (@world, @id, @color = 0, @heading = 0, @_xcor = 0, @_ycor = 0, breed = @world.breedManager.turtles(), @label = "", @labelcolor = 9.9, @hidden = false, @size = 1.0, @penManager = new PenManager(@world.updater.updated(this))) ->
-      @_links = []
-      @_setBreed(breed)
-
       varNames     = @world.turtlesOwnNames.concat(breed.varNames)
       @_varManager = @_genVarManager(varNames)
+
+      @_links = []
+      @_setBreed(breed)
 
       @getPatchHere().arrive(this)
 
@@ -290,7 +290,7 @@ define(['integration/lodash', 'engine/abstractagents', 'engine/builtins', 'engin
         { name: 'ycor',        get: (=> @ycor()),                             set: ((x) => @setYcor(x))               }
       ]
 
-      new VariableManager(extraVarNames, varBundles)
+      VariableManager.Companion.generate(extraVarNames, varBundles)
 
     # (String) => Unit
     _genVarUpdate: (varName) ->
@@ -318,8 +318,19 @@ define(['integration/lodash', 'engine/abstractagents', 'engine/builtins', 'engin
 
       if @_breed isnt trueBreed
         trueBreed.add(this)
-        if @_breed?
-          @_breed.remove(this)
+
+        newNames = trueBreed.varNames
+        oldNames =
+          if @_breed?
+            @_breed.remove(this)
+            @_breed.varNames
+          else
+            []
+
+        obsoletedNames = _(oldNames).difference(newNames).value()
+        freshNames     = _(newNames).difference(oldNames).value()
+
+        @_varManager = @_varManager.refineBy(obsoletedNames)(freshNames)
 
       @_breed = trueBreed
       @_genVarUpdate("breed")
