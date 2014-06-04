@@ -24,7 +24,7 @@ define(['integration/lodash', 'integration/strictmath', 'engine/topology/topolog
       scratch = _(0).range(@width).map(-> []).value()
 
       @getPatches().forEach((patch) => #@# Oh, mutation, thou art a cruel, deceptive bitch.  Thou cannst maketh two-eth separate-eth loops over the same thing-eth seem sane
-        scratch[patch.pxcor - @minPxcor][patch.pycor - @minPycor] = patch.getPatchVariable(varName)
+        scratch[patch.pxcor - @minPxcor][patch.pycor - @minPycor] = patch.getVariable(varName)
         return
       )
 
@@ -38,7 +38,7 @@ define(['integration/lodash', 'integration/strictmath', 'engine/topology/topolog
            @getPatchNorth(pxcor, pycor), @getPatchSouthEast(pxcor, pycor),
            @getPatchEast(pxcor, pycor), @getPatchNorthEast(pxcor, pycor)]
         diffusalSum = _(orderedNeighbors).map((nb) => scratch[nb.pxcor - @minPxcor][nb.pycor - @minPycor]).reduce((acc, x) -> acc + x)
-        patch.setPatchVariable(varName, patch.getPatchVariable(varName) * (1.0 - coefficient) + (diffusalSum / 8) * coefficient)
+        patch.setVariable(varName, patch.getVariable(varName) * (1.0 - coefficient) + (diffusalSum / 8) * coefficient)
         return
       )
 

@@ -1,4 +1,3 @@
-#@# CanTalkToPatches: { getPatchVariable(Int): Any, setPatchVariable(Int, Any): Unit }
 #@# Extends `CanTalkToPatches`, `Agent`, `Vassal`
 define(['integration/lodash', 'integration/random', 'engine/builtins', 'engine/colormodel', 'engine/comparator'
       , 'engine/exception', 'engine/nobody', 'engine/turtle', 'engine/turtleset', 'engine/variablemanager']
@@ -14,6 +13,15 @@ define(['integration/lodash', 'integration/random', 'engine/builtins', 'engine/c
     constructor: (@id, @pxcor, @pycor, @world, @_pcolor = 0.0, @_plabel = "", @_plabelcolor = 9.9) ->
       @turtles = []
       @_varManager = @_genVarManager(@world.patchesOwnNames)
+
+    # (String) => Any
+    getVariable: (varName) ->
+      @_varManager.get(varName)
+
+    # (String, Any) => Unit
+    setVariable: (varName, value) ->
+      @_varManager.set(varName, value)
+      return
 
     # (String) => Any
     getPatchVariable: (varName) ->

@@ -154,30 +154,12 @@ define(['engine/abstractagents', 'engine/exception', 'engine/iterator', 'engine/
       ((other) => @_self.findLinkViaNeighbor(directed, isSource, other))
 
     # (String) => Any
-    getTurtleVariable: (varName) ->
-      @_self.getTurtleVariable(varName)
+    getVariable: (varName) ->
+      @_self.getVariable(varName)
 
     # (String, Any) => Unit
-    setTurtleVariable: (varName, value) ->
-      @_self.setTurtleVariable(varName, value)
-      return
-
-    # (String) => Any
-    getLinkVariable: (varName) ->
-      @_self.getLinkVariable(varName)
-
-    # (String, Any) => Unit
-    setLinkVariable: (varName, value) ->
-      @_self.setLinkVariable(varName, value)
-      return
-
-    # (String) => Any
-    getBreedVariable: (varName) ->
-      @_self.getBreedVariable(varName)
-
-    # (String, Any) => Unit
-    setBreedVariable: (varName, value) ->
-      @_self.setBreedVariable(varName, value)
+    setVariable: (varName, value) ->
+      @_self.setVariable(varName, value)
       return
 
     # (String) => Any

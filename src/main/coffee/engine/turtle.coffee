@@ -207,26 +207,27 @@ define(['integration/lodash', 'engine/abstractagents', 'engine/builtins', 'engin
       throw new Exception.DeathInterrupt("Call only from inside an askAgent block")
 
     # (String) => Any
-    getTurtleVariable: (varName) ->
+    getVariable: (varName) ->
       @_varManager.get(varName)
 
     # (String, Any) => Unit
-    setTurtleVariable: (varName, value) ->
+    setVariable: (varName, value) ->
       @_varManager.set(varName, value)
       return
+
+    # () => Patch
+    getPatchHere: ->
+      @world.getPatchAt(@xcor(), @ycor())
 
     # (String) => Any
-    getBreedVariable: (varName) ->
-      @_varManager.get(varName)
+    getPatchVariable: (varName) ->
+      @getPatchHere().getVariable(varName)
 
     # (String, Any) => Unit
-    setBreedVariable: (varName, value) ->
-      @_varManager.set(varName, value)
+    setPatchVariable: (varName, value) ->
+      @getPatchHere().setVariable(varName, value)
       return
 
-    getPatchHere: -> @world.getPatchAt(@xcor(), @ycor())
-    getPatchVariable: (n)    -> @getPatchHere().getPatchVariable(n)
-    setPatchVariable: (n, value) -> @getPatchHere().setPatchVariable(n, value)
     getNeighbors: -> @getPatchHere().getNeighbors()
     getNeighbors4: -> @getPatchHere().getNeighbors4()
     turtlesHere: -> @getPatchHere().turtlesHere()
@@ -241,7 +242,7 @@ define(['integration/lodash', 'engine/abstractagents', 'engine/builtins', 'engin
       turtleGenFunc = (id) => new Turtle(@world, id, @color, @heading, @xcor(), @ycor(), breed, @label, @labelcolor, @hidden, @size, @penManager.clone()) #@# Sounds like we ought have some cloning system, of which this function is a first step
       turtle        = @world.createTurtle(turtleGenFunc)
       _(@world.turtlesOwnNames).forEach((varName) =>
-        turtle.setTurtleVariable(varName, @getTurtleVariable(varName))
+        turtle.setVariable(varName, @getVariable(varName))
         return
       )
       turtle
