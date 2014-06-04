@@ -20,11 +20,11 @@ define(['integration/lodash', 'integration/strictmath', 'engine/topology/topolog
         (@height - StrictMath.abs(y1 - y2)) * (if y2 > y1 then -1 else 1)
       else
         Math.abs(y1 - y2) * (if y1 > y2 then -1 else 1)
-    diffuse: (vn, coefficient) -> #@# Varname
+    diffuse: (varName, coefficient) -> #@# Varname
       scratch = _(0).range(@width).map(-> []).value()
 
       @getPatches().forEach((patch) => #@# Oh, mutation, thou art a cruel, deceptive bitch.  Thou cannst maketh two-eth separate-eth loops over the same thing-eth seem sane
-        scratch[patch.pxcor - @minPxcor][patch.pycor - @minPycor] = patch.getPatchVariable(vn)
+        scratch[patch.pxcor - @minPxcor][patch.pycor - @minPycor] = patch.getPatchVariable(varName)
         return
       )
 
@@ -38,7 +38,7 @@ define(['integration/lodash', 'integration/strictmath', 'engine/topology/topolog
            @getPatchNorth(pxcor, pycor), @getPatchSouthEast(pxcor, pycor),
            @getPatchEast(pxcor, pycor), @getPatchNorthEast(pxcor, pycor)]
         diffusalSum = _(orderedNeighbors).map((nb) => scratch[nb.pxcor - @minPxcor][nb.pycor - @minPycor]).reduce((acc, x) -> acc + x)
-        patch.setPatchVariable(vn, patch.getPatchVariable(vn) * (1.0 - coefficient) + (diffusalSum / 8) * coefficient)
+        patch.setPatchVariable(varName, patch.getPatchVariable(varName) * (1.0 - coefficient) + (diffusalSum / 8) * coefficient)
         return
       )
 

@@ -16,16 +16,35 @@ import
 
 class RuntimeInit(program: Program, model: Model) {
 
-  def init: String = {
-
-    val patchesOwn = {
-      val builtinCount = AgentVariables.getImplicitPatchVariables.size
-      vars(program.patchesOwn.drop(builtinCount), "PatchesOwn")
-    }
-
-    genInitJS(genBreedObjects, genWorkspaceArgs, patchesOwn)
-
-  }
+  def init: String =
+    s"""var workspace     = require('engine/workspace')($genBreedObjects)($genWorkspaceArgs);
+       |var AgentSet      = workspace.agentSet;
+       |var BreedManager  = workspace.breedManager;
+       |var LayoutManager = workspace.layoutManager;
+       |var LinkPrims     = workspace.linkPrims;
+       |var Prims         = workspace.prims;
+       |var Updater       = workspace.updater;
+       |var world         = workspace.world;
+       |
+       |var Call       = require('engine/call');
+       |var ColorModel = require('engine/colormodel');
+       |var Dump       = require('engine/dump');
+       |var Exception  = require('engine/exception');
+       |var Link       = require('engine/link');
+       |var LinkSet    = require('engine/linkset');
+       |var Nobody     = require('engine/nobody');
+       |var PatchSet   = require('engine/patchset');
+       |var Tasks      = require('engine/tasks');
+       |var Trig       = require('engine/trig');
+       |var Turtle     = require('engine/turtle');
+       |var TurtleSet  = require('engine/turtleset');
+       |var Type       = require('engine/typechecker');
+       |
+       |var AgentModel     = require('integration/agentmodel');
+       |var Denuller       = require('integration/denuller');
+       |var notImplemented = require('integration/notimplemented');
+       |var Random         = require('integration/random');
+       |var StrictMath     = require('integration/strictmath');""".stripMargin
 
   private def genBreedObjects: String = {
     val breedObjs =
@@ -61,11 +80,13 @@ class RuntimeInit(program: Program, model: Model) {
     // variables (often in special-cased form, e.g. `color`), so we should only bother passing in turtles-own variables
     // that aren't intrinsic to the class. --JAB (5/29/14)
     val linkVarNames   = program.linksOwn   diff AgentVariables.getImplicitLinkVariables
+    val patchVarNames  = program.patchesOwn diff AgentVariables.getImplicitPatchVariables
     val turtleVarNames = program.turtlesOwn diff AgentVariables.getImplicitTurtleVariables
 
     val globalNames          = mkJSArrStr(program.globals          map (_.toLowerCase) map wrapInQuotes)
     val interfaceGlobalNames = mkJSArrStr(program.interfaceGlobals map (_.toLowerCase) map wrapInQuotes)
     val linksOwnNames        = mkJSArrStr(linkVarNames             map (_.toLowerCase) map wrapInQuotes)
+    val patchesOwnNames      = mkJSArrStr(patchVarNames            map (_.toLowerCase) map wrapInQuotes)
     val turtlesOwnNames      = mkJSArrStr(turtleVarNames           map (_.toLowerCase) map wrapInQuotes)
 
     val turtleShapesJson = shapeList(parseTurtleShapes(model.turtleShapes.toArray))
@@ -74,16 +95,10 @@ class RuntimeInit(program: Program, model: Model) {
     val view = model.view
     import view._
 
-    s"$globalNames, $interfaceGlobalNames, $turtlesOwnNames, $linksOwnNames, $minPxcor, $maxPxcor, $minPycor, $maxPycor, " +
-      s"$patchSize, $wrappingAllowedInX, $wrappingAllowedInY, $turtleShapesJson, $linkShapesJson"
+    s"$globalNames, $interfaceGlobalNames, $turtlesOwnNames, $linksOwnNames, $patchesOwnNames, $minPxcor, $maxPxcor, " +
+      s"$minPycor, $maxPycor, $patchSize, $wrappingAllowedInX, $wrappingAllowedInY, $turtleShapesJson, $linkShapesJson"
 
   }
-
-  private def vars(s: Seq[String], initPath: String): String =
-    if (s.nonEmpty)
-      s"$initPath.init(${s.size});\n"
-    else
-      ""
 
   private def wrapInQuotes(str: String): String =
     s"'$str'"
@@ -93,38 +108,5 @@ class RuntimeInit(program: Program, model: Model) {
       arrayValues.mkString("[", ", ", "]")
     else
       "[]"
-
-  private def genInitJS(breedObjects: String, workspaceArgs: String, patchesOwn: String): String =
-    s"""var workspace     = require('engine/workspace')($breedObjects)($workspaceArgs);
-       |var AgentSet      = workspace.agentSet;
-       |var BreedManager  = workspace.breedManager;
-       |var LayoutManager = workspace.layoutManager;
-       |var LinkPrims     = workspace.linkPrims;
-       |var Prims         = workspace.prims;
-       |var Updater       = workspace.updater;
-       |var world         = workspace.world;
-       |var PatchesOwn    = world.patchesOwn;
-       |
-       |var Call       = require('engine/call');
-       |var ColorModel = require('engine/colormodel');
-       |var Dump       = require('engine/dump');
-       |var Exception  = require('engine/exception');
-       |var Link       = require('engine/link');
-       |var LinkSet    = require('engine/linkset');
-       |var Nobody     = require('engine/nobody');
-       |var PatchSet   = require('engine/patchset');
-       |var Tasks      = require('engine/tasks');
-       |var Trig       = require('engine/trig');
-       |var Turtle     = require('engine/turtle');
-       |var TurtleSet  = require('engine/turtleset');
-       |var Type       = require('engine/typechecker');
-       |
-       |var AgentModel     = require('integration/agentmodel');
-       |var Denuller       = require('integration/denuller');
-       |var notImplemented = require('integration/notimplemented');
-       |var Random         = require('integration/random');
-       |var StrictMath     = require('integration/strictmath');
-       |
-       |$patchesOwn""".stripMargin
 
 }

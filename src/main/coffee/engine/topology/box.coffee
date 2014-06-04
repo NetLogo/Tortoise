@@ -33,13 +33,13 @@ define(['engine/exception', 'engine/topology/topology'], (Exception, Topology) -
     getPatchSouthEast: (pxcor, pycor) -> (pycor isnt @minPycor) and (pxcor isnt @maxPxcor) and @getPatchAt(pxcor + 1, pycor - 1)
     getPatchNorthEast: (pxcor, pycor) -> (pycor isnt @maxPycor) and (pxcor isnt @maxPxcor) and @getPatchAt(pxcor + 1, pycor + 1)
 
-    diffuse: (vn, coefficient) -> #@# Guacy moley
+    diffuse: (varName, coefficient) -> #@# Guacy moley
       yy = @height
       xx = @width
       scratch =
         for x in [0...xx]
           for y in [0...yy]
-            @getPatchAt(x + @minPxcor, y + @minPycor).getPatchVariable(vn)
+            @getPatchAt(x + @minPxcor, y + @minPycor).getPatchVariable(varName)
       scratch2 =
         for [0...xx]
           for [0...yy]
@@ -110,6 +110,6 @@ define(['engine/exception', 'engine/topology/topology'], (Exception, Topology) -
             scratch2[x - 1][y - 1] += diffuseVal
       for y in [0...yy]
         for x in [0...xx]
-          @getPatchAt(x + @minPxcor, y + @minPycor).setPatchVariable(vn, scratch2[x][y])
+          @getPatchAt(x + @minPxcor, y + @minPycor).setPatchVariable(varName, scratch2[x][y])
 
 )
