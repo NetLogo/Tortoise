@@ -35,8 +35,8 @@ object Prims {
       case tv: prim._linkvariable           => s"AgentSet.getLinkVariable('${tv.displayName.toLowerCase}')"
       case tv: prim._turtleorlinkvariable   =>
         s"AgentSet.getTurtleVariable('${tv.varName.toLowerCase}')"
-      case pv: prim._patchvariable          => s"AgentSet.getPatchVariable(${pv.vn})"
-      case r: prim._reference               => s"${r.reference.vn}"
+      case pv: prim._patchvariable          => s"AgentSet.getPatchVariable('${pv.displayName.toLowerCase}')"
+      case r: prim._reference               => s"${r.reference.original.displayName.toLowerCase}"
       case ov: prim._observervariable       => s"world.observer.getGlobal('${ov.displayName.toLowerCase}')"
       case _: prim._word                    =>
         ("\"\"" +: args).map(arg => "Dump(" + arg + ")").mkString("(", " + ", ")")
@@ -109,6 +109,7 @@ object Prims {
       case _: prim.etc._createlinkswith  => generateCreateLink(s, "createLinksWith")
       case _: prim.etc._every            => generateEvery(s)
       case h: prim._hatch                => generateHatch(s, h.breedName)
+      case _: prim.etc._diffuse          => s"world.topology().diffuse('${arg(0)}', ${arg(1)})"
       case x: prim.etc._setdefaultshape  => s"BreedManager.setDefaultShape(${arg(0)}.getBreedName(), ${arg(1)})"
       case call: prim._call              =>
         (Handlers.ident(call.procedure.name) +: args)
@@ -151,7 +152,7 @@ object Prims {
       case p: prim._turtleorlinkvariable =>
         s"AgentSet.setTurtleVariable('${p.varName.toLowerCase}', ${arg(1)});"
       case p: prim._patchvariable =>
-        s"AgentSet.setPatchVariable(${p.vn}, ${arg(1)});"
+        s"AgentSet.setPatchVariable('${p.displayName.toLowerCase}', ${arg(1)});"
       case p: prim._procedurevariable =>
         s"${Handlers.ident(p.name)} = ${arg(1)};"
       case x =>

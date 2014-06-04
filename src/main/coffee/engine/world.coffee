@@ -24,9 +24,9 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
     _turtlesById:       undefined
 
     #@# I'm aware that some of this stuff ought to not live on `World`
-    constructor: (@patchesOwn, @agentSet, @updater, @breedManager, globalNames, interfaceGlobalNames, @turtlesOwnNames
-                , @linksOwnNames, @minPxcor, @maxPxcor, @minPycor, @maxPycor, @patchSize, @wrappingAllowedInX
-                , @wrappingAllowedInY, turtleShapeList, linkShapeList) ->
+    constructor: (@agentSet, @updater, @breedManager, globalNames, interfaceGlobalNames, @turtlesOwnNames
+                , @linksOwnNames, @patchesOwnNames, @minPxcor, @maxPxcor, @minPycor, @maxPycor, @patchSize
+                , @wrappingAllowedInX, @wrappingAllowedInY, turtleShapeList, linkShapeList) ->
       @updater.collectUpdates()
       @updater.update("world", 0, {
         worldWidth: Math.abs(@minPxcor - @maxPxcor) + 1,
@@ -72,7 +72,7 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
       # http://stackoverflow.com/questions/4631525/concatenating-an-array-of-arrays-in-coffeescript
       @_patches = [].concat nested... #@# I don't know what this means, nor what that comment above is, so it's automatically awful
       for patch in @_patches
-        @updater.updated(patch)("pxcor", "pycor", "pcolor", "plabel", "plabelcolor")
+        @updater.updated(patch)("pxcor", "pycor", "pcolor", "plabel", "plabel-color")
     topology: -> @_topology
     links: () ->
       new LinkSet(@_links.toArray())
@@ -187,14 +187,7 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
       @_turtleIDManager.reset()
       return
     clearPatches: ->
-      @patches().forEach((patch) -> #@# Oh, yeah?
-        patch.setPatchVariable(2, 0)   # 2 = pcolor
-        patch.setPatchVariable(3, "")    # 3 = plabel
-        patch.setPatchVariable(4, 9.9)   # 4 = plabel-color
-        for i in [Builtins.patchBuiltins.size...patch.vars.length] #@# ABSTRACT IT!
-          patch.setPatchVariable(i, 0)
-        return
-      )
+      @patches().forEach((patch) -> patch.reset(); return)
       @patchesAllBlack(true)
       @resetPatchLabelCount()
       return

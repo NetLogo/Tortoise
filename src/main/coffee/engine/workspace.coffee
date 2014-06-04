@@ -1,7 +1,7 @@
-define(['engine/agentset', 'engine/breedmanager', 'engine/layoutmanager', 'engine/linkprims', 'engine/patchesown'
-      , 'engine/prims', 'engine/timer', 'engine/updater', 'engine/world']
-     , ( AgentSet,          BreedManager,          LayoutManager,          LinkPrims,          PatchesOwn
-      ,  Prims,          Timer,          Updater,          World) ->
+define(['engine/agentset', 'engine/breedmanager', 'engine/layoutmanager', 'engine/linkprims', 'engine/prims'
+      , 'engine/timer', 'engine/updater', 'engine/world']
+     , ( AgentSet,          BreedManager,          LayoutManager,          LinkPrims,          Prims
+      ,  Timer,          Updater,          World) ->
 
   (breedObjs) -> () -> # World args; see constructor for `World` --JAB (4/17/14)
 
@@ -12,7 +12,7 @@ define(['engine/agentset', 'engine/breedmanager', 'engine/layoutmanager', 'engin
     timer        = new Timer
     updater      = new Updater
 
-    world         = new World(new PatchesOwn, agentSet, updater, breedManager, worldArgs...)
+    world         = new World(agentSet, updater, breedManager, worldArgs...)
     layoutManager = new LayoutManager(world)
     linkPrims     = new LinkPrims(world)
     prims         = new Prims(world)

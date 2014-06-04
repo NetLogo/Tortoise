@@ -99,11 +99,11 @@ define(['engine/exception', 'engine/link', 'engine/observer', 'engine/patch', 'e
             when "id"
               ["WHO", patch.id]
             when "pcolor"
-              ["PCOLOR", patch.pcolor]
-            when "plabelcolor"
-              ["PLABEL-COLOR", patch.plabelcolor]
+              ["PCOLOR", patch._pcolor]
             when "plabel"
-              ["PLABEL", patch.plabel.toString()]
+              ["PLABEL", patch._plabel.toString()]
+            when "plabel-color"
+              ["PLABEL-COLOR", patch._plabelcolor]
             when "pxcor"
               ["PXCOR", patch.pxcor]
             when "pycor"

@@ -192,7 +192,6 @@ object SimplePrims {
         case _: prim.etc._setxy             => "Prims.setXY"
         case _: prim.etc._die               => "AgentSet.die"
         case _: prim.etc._randomseed        => "Random.setSeed"
-        case _: prim.etc._diffuse           => "world.topology().diffuse"
         case _: prim.etc._setcurrentplot    => "notImplemented('set-current-plot', undefined)"
         case _: prim.etc._setcurrentplotpen => "notImplemented('set-current-plot-pen', undefined)"
         case _: prim.etc._plot              => "notImplemented('plot', undefined)"

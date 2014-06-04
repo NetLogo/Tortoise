@@ -180,8 +180,15 @@ define(['engine/abstractagents', 'engine/exception', 'engine/iterator', 'engine/
       @_self.setBreedVariable(varName, value)
       return
 
-    getPatchVariable:  (n)    -> @_self.getPatchVariable(n)
-    setPatchVariable:  (n, value) -> @_self.setPatchVariable(n, value)
+    # (String) => Any
+    getPatchVariable: (varName) ->
+      @_self.getPatchVariable(varName)
+
+    # (String, Any) => Unit
+    setPatchVariable: (varName, value) ->
+      @_self.setPatchVariable(varName, value)
+      return
+
     other: (agentSet) ->
       agentSet.filter((agent) => agent isnt @_self)
     shuffle: (agents) ->
