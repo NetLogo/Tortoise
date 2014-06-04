@@ -64,9 +64,9 @@ function setupBalls() {
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
   AgentSet.ask(world.observer.getGlobal('try-line'), true, function() {
     AgentSet.ask(Prims.sprout(1, ""), true, function() {
-      AgentSet.setTurtleVariable('color', 25);
-      AgentSet.setTurtleVariable('start-patch', AgentSet.self().getPatchHere());
-      AgentSet.setTurtleVariable('heading', (Prims.randomFloat(90) + 90));
+      AgentSet.setVariable('color', 25);
+      AgentSet.setVariable('start-patch', AgentSet.self().getPatchHere());
+      AgentSet.setVariable('heading', (Prims.randomFloat(90) + 90));
     });
   });
   Call(plotScores);
@@ -101,23 +101,23 @@ function checkPatch(thePatch) {
   if (Prims.equality(AgentSet.of(thePatch, function() {
     return AgentSet.getPatchVariable('pcolor');
   }), 55)) {
-    AgentSet.ask(AgentSet.getTurtleVariable('start-patch'), true, function() {
+    AgentSet.ask(AgentSet.getVariable('start-patch'), true, function() {
       AgentSet.setPatchVariable('score', (AgentSet.getPatchVariable('score') + 1));
     });
     AgentSet.die();
   }
 }
 function nextPatch() {
-  if (Prims.lt(AgentSet.getTurtleVariable('heading'), AgentSet.self().towardsXY((AgentSet.getPatchVariable('pxcor') + 0.5), (AgentSet.getPatchVariable('pycor') + 0.5)))) {
+  if (Prims.lt(AgentSet.getVariable('heading'), AgentSet.self().towardsXY((AgentSet.getPatchVariable('pxcor') + 0.5), (AgentSet.getPatchVariable('pycor') + 0.5)))) {
     return AgentSet.self().patchAt(0, 1);
   }
-  if (Prims.lt(AgentSet.getTurtleVariable('heading'), AgentSet.self().towardsXY((AgentSet.getPatchVariable('pxcor') + 0.5), (AgentSet.getPatchVariable('pycor') - 0.5)))) {
+  if (Prims.lt(AgentSet.getVariable('heading'), AgentSet.self().towardsXY((AgentSet.getPatchVariable('pxcor') + 0.5), (AgentSet.getPatchVariable('pycor') - 0.5)))) {
     return AgentSet.self().patchAt(1, 0);
   }
-  if (Prims.lt(AgentSet.getTurtleVariable('heading'), AgentSet.self().towardsXY((AgentSet.getPatchVariable('pxcor') - 0.5), (AgentSet.getPatchVariable('pycor') - 0.5)))) {
+  if (Prims.lt(AgentSet.getVariable('heading'), AgentSet.self().towardsXY((AgentSet.getPatchVariable('pxcor') - 0.5), (AgentSet.getPatchVariable('pycor') - 0.5)))) {
     return AgentSet.self().patchAt(0, -1);
   }
-  if (Prims.lt(AgentSet.getTurtleVariable('heading'), AgentSet.self().towardsXY((AgentSet.getPatchVariable('pxcor') - 0.5), (AgentSet.getPatchVariable('pycor') + 0.5)))) {
+  if (Prims.lt(AgentSet.getVariable('heading'), AgentSet.self().towardsXY((AgentSet.getPatchVariable('pxcor') - 0.5), (AgentSet.getPatchVariable('pycor') + 0.5)))) {
     return AgentSet.self().patchAt(-1, 0);
   }
   return AgentSet.self().patchAt(0, 1);

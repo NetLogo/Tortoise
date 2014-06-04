@@ -65,34 +65,34 @@ function setupTurtles() {
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "person")
   AgentSet.ask(world.createTurtles(world.observer.getGlobal('num-people'), ""), true, function() {
     AgentSet.self().moveTo(AgentSet.oneOf(world.patches()));
-    AgentSet.setTurtleVariable('size', 1.5);
+    AgentSet.setVariable('size', 1.5);
     Call(setInitialTurtleVars);
-    AgentSet.setTurtleVariable('age', Prims.random(AgentSet.getTurtleVariable('life-expectancy')));
+    AgentSet.setVariable('age', Prims.random(AgentSet.getVariable('life-expectancy')));
   });
   Call(recolorTurtles);
 }
 function setInitialTurtleVars() {
-  AgentSet.setTurtleVariable('age', 0);
+  AgentSet.setVariable('age', 0);
   AgentSet.self().face(AgentSet.oneOf(Prims.getNeighbors4()));
-  AgentSet.setTurtleVariable('life-expectancy', (world.observer.getGlobal('life-expectancy-min') + Prims.random(((world.observer.getGlobal('life-expectancy-max') - world.observer.getGlobal('life-expectancy-min')) + 1))));
-  AgentSet.setTurtleVariable('metabolism', (1 + Prims.random(world.observer.getGlobal('metabolism-max'))));
-  AgentSet.setTurtleVariable('wealth', (AgentSet.getTurtleVariable('metabolism') + Prims.random(50)));
-  AgentSet.setTurtleVariable('vision', (1 + Prims.random(world.observer.getGlobal('max-vision'))));
+  AgentSet.setVariable('life-expectancy', (world.observer.getGlobal('life-expectancy-min') + Prims.random(((world.observer.getGlobal('life-expectancy-max') - world.observer.getGlobal('life-expectancy-min')) + 1))));
+  AgentSet.setVariable('metabolism', (1 + Prims.random(world.observer.getGlobal('metabolism-max'))));
+  AgentSet.setVariable('wealth', (AgentSet.getVariable('metabolism') + Prims.random(50)));
+  AgentSet.setVariable('vision', (1 + Prims.random(world.observer.getGlobal('max-vision'))));
 }
 function recolorTurtles() {
   var maxWealth = Prims.max(AgentSet.of(world.turtles(), function() {
-    return AgentSet.getTurtleVariable('wealth');
+    return AgentSet.getVariable('wealth');
   }));
   AgentSet.ask(world.turtles(), true, function() {
-    if (Prims.lte(AgentSet.getTurtleVariable('wealth'), (maxWealth / 3))) {
-      AgentSet.setTurtleVariable('color', 15);
+    if (Prims.lte(AgentSet.getVariable('wealth'), (maxWealth / 3))) {
+      AgentSet.setVariable('color', 15);
     }
     else {
-      if (Prims.lte(AgentSet.getTurtleVariable('wealth'), ((maxWealth * 2) / 3))) {
-        AgentSet.setTurtleVariable('color', 55);
+      if (Prims.lte(AgentSet.getVariable('wealth'), ((maxWealth * 2) / 3))) {
+        AgentSet.setVariable('color', 55);
       }
       else {
-        AgentSet.setTurtleVariable('color', 105);
+        AgentSet.setVariable('color', 105);
       }
     }
   });
@@ -115,30 +115,30 @@ function go() {
   world.ticker.tick();
 }
 function turnTowardsGrain() {
-  AgentSet.setTurtleVariable('heading', 0);
+  AgentSet.setVariable('heading', 0);
   var bestDirection = 0;
   var bestAmount = Call(grainAhead);
-  AgentSet.setTurtleVariable('heading', 90);
+  AgentSet.setVariable('heading', 90);
   if (Prims.gt(Call(grainAhead), bestAmount)) {
     bestDirection = 90;
     bestAmount = Call(grainAhead);
   }
-  AgentSet.setTurtleVariable('heading', 180);
+  AgentSet.setVariable('heading', 180);
   if (Prims.gt(Call(grainAhead), bestAmount)) {
     bestDirection = 180;
     bestAmount = Call(grainAhead);
   }
-  AgentSet.setTurtleVariable('heading', 270);
+  AgentSet.setVariable('heading', 270);
   if (Prims.gt(Call(grainAhead), bestAmount)) {
     bestDirection = 270;
     bestAmount = Call(grainAhead);
   }
-  AgentSet.setTurtleVariable('heading', bestDirection);
+  AgentSet.setVariable('heading', bestDirection);
 }
 function grainAhead() {
   var total = 0;
   var howFar = 1;
-  Prims.repeat(AgentSet.getTurtleVariable('vision'), function () {
+  Prims.repeat(AgentSet.getVariable('vision'), function () {
     total = (total + AgentSet.of(AgentSet.self().patchAhead(howFar), function() {
       return AgentSet.getPatchVariable('grain-here');
     }));
@@ -157,7 +157,7 @@ function growGrain() {
 }
 function harvest() {
   AgentSet.ask(world.turtles(), true, function() {
-    AgentSet.setTurtleVariable('wealth', StrictMath.floor((AgentSet.getTurtleVariable('wealth') + (AgentSet.getPatchVariable('grain-here') / AgentSet.count(AgentSet.self().turtlesHere())))));
+    AgentSet.setVariable('wealth', StrictMath.floor((AgentSet.getVariable('wealth') + (AgentSet.getPatchVariable('grain-here') / AgentSet.count(AgentSet.self().turtlesHere())))));
   });
   AgentSet.ask(world.turtles(), true, function() {
     AgentSet.setPatchVariable('grain-here', 0);
@@ -166,15 +166,15 @@ function harvest() {
 }
 function moveEatAgeDie() {
   Prims.fd(1);
-  AgentSet.setTurtleVariable('wealth', (AgentSet.getTurtleVariable('wealth') - AgentSet.getTurtleVariable('metabolism')));
-  AgentSet.setTurtleVariable('age', (AgentSet.getTurtleVariable('age') + 1));
-  if ((Prims.lt(AgentSet.getTurtleVariable('wealth'), 0) || Prims.gte(AgentSet.getTurtleVariable('age'), AgentSet.getTurtleVariable('life-expectancy')))) {
+  AgentSet.setVariable('wealth', (AgentSet.getVariable('wealth') - AgentSet.getVariable('metabolism')));
+  AgentSet.setVariable('age', (AgentSet.getVariable('age') + 1));
+  if ((Prims.lt(AgentSet.getVariable('wealth'), 0) || Prims.gte(AgentSet.getVariable('age'), AgentSet.getVariable('life-expectancy')))) {
     Call(setInitialTurtleVars);
   }
 }
 function updateLorenzAndGini() {
   var sortedWealths = Prims.sort(AgentSet.of(world.turtles(), function() {
-    return AgentSet.getTurtleVariable('wealth');
+    return AgentSet.getVariable('wealth');
   }));
   var totalWealth = Prims.sum(sortedWealths);
   var wealthSumSoFar = 0;

@@ -39,11 +39,11 @@ function setup() {
   world.ticker.reset();
   AgentSet.ask(AgentSet.nOf(world.observer.getGlobal('bug-count'), world.patches()), true, function() {
     AgentSet.ask(Prims.sprout(1, ""), true, function() {
-      AgentSet.setTurtleVariable('color', 65);
-      AgentSet.setTurtleVariable('size', 1.75);
-      AgentSet.setTurtleVariable('ideal-temp', (world.observer.getGlobal('min-ideal-temp') + Prims.random(StrictMath.abs((world.observer.getGlobal('max-ideal-temp') - world.observer.getGlobal('min-ideal-temp'))))));
-      AgentSet.setTurtleVariable('output-heat', (world.observer.getGlobal('min-output-heat') + Prims.random(StrictMath.abs((world.observer.getGlobal('max-output-heat') - world.observer.getGlobal('min-output-heat'))))));
-      AgentSet.setTurtleVariable('unhappiness', StrictMath.abs((AgentSet.getTurtleVariable('ideal-temp') - AgentSet.getPatchVariable('temp'))));
+      AgentSet.setVariable('color', 65);
+      AgentSet.setVariable('size', 1.75);
+      AgentSet.setVariable('ideal-temp', (world.observer.getGlobal('min-ideal-temp') + Prims.random(StrictMath.abs((world.observer.getGlobal('max-ideal-temp') - world.observer.getGlobal('min-ideal-temp'))))));
+      AgentSet.setVariable('output-heat', (world.observer.getGlobal('min-output-heat') + Prims.random(StrictMath.abs((world.observer.getGlobal('max-output-heat') - world.observer.getGlobal('min-output-heat'))))));
+      AgentSet.setVariable('unhappiness', StrictMath.abs((AgentSet.getVariable('ideal-temp') - AgentSet.getPatchVariable('temp'))));
     });
   });
 }
@@ -65,20 +65,20 @@ function recolorPatches() {
   });
 }
 function step() {
-  AgentSet.setTurtleVariable('unhappiness', StrictMath.abs((AgentSet.getTurtleVariable('ideal-temp') - AgentSet.getPatchVariable('temp'))));
-  if (Prims.equality(AgentSet.getTurtleVariable('unhappiness'), 0)) {
-    AgentSet.setPatchVariable('temp', (AgentSet.getPatchVariable('temp') + AgentSet.getTurtleVariable('output-heat')));
+  AgentSet.setVariable('unhappiness', StrictMath.abs((AgentSet.getVariable('ideal-temp') - AgentSet.getPatchVariable('temp'))));
+  if (Prims.equality(AgentSet.getVariable('unhappiness'), 0)) {
+    AgentSet.setPatchVariable('temp', (AgentSet.getPatchVariable('temp') + AgentSet.getVariable('output-heat')));
   }
   else {
     var target = Call(findTarget);
     if ((!Prims.equality(AgentSet.self().getPatchHere(), target) || Prims.gt(world.observer.getGlobal('random-move-chance'), Prims.random(100)))) {
       Call(bugMove, target);
     }
-    AgentSet.setPatchVariable('temp', (AgentSet.getPatchVariable('temp') + AgentSet.getTurtleVariable('output-heat')));
+    AgentSet.setPatchVariable('temp', (AgentSet.getPatchVariable('temp') + AgentSet.getVariable('output-heat')));
   }
 }
 function findTarget() {
-  if (Prims.lt(AgentSet.getPatchVariable('temp'), AgentSet.getTurtleVariable('ideal-temp'))) {
+  if (Prims.lt(AgentSet.getPatchVariable('temp'), AgentSet.getVariable('ideal-temp'))) {
     return AgentSet.maxOneOf(Prims.getNeighbors(), function() {
       return AgentSet.getPatchVariable('temp');
     });

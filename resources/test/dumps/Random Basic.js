@@ -49,9 +49,9 @@ function setupColumnCounters() {
   }), true, function() {
     AgentSet.ask(Prims.sprout(1, "COLUMN-COUNTERS"), true, function() {
       AgentSet.self().hideTurtle(true);;
-      AgentSet.setTurtleVariable('heading', 0);
-      AgentSet.setBreedVariable("my-column", StrictMath.floor(((AgentSet.getPatchVariable('pxcor') + (world.observer.getGlobal('sample-space') / 2)) + 1)));
-      AgentSet.setBreedVariable("my-column-patches", AgentSet.agentFilter(world.patches(), function() {
+      AgentSet.setVariable('heading', 0);
+      AgentSet.setVariable('my-column', StrictMath.floor(((AgentSet.getPatchVariable('pxcor') + (world.observer.getGlobal('sample-space') / 2)) + 1)));
+      AgentSet.setVariable('my-column-patches', AgentSet.agentFilter(world.patches(), function() {
         return Prims.equality(AgentSet.getPatchVariable('pxcor'), AgentSet.of(AgentSet.myself(), function() {
           return AgentSet.getPatchVariable('pxcor');
         }));
@@ -80,19 +80,19 @@ function go() {
 function selectRandomValue() {
   AgentSet.ask(Prims.patch(0, (world.observer.getGlobal('max-y-histogram') + 4)), true, function() {
     AgentSet.ask(Prims.sprout(1, "MESSENGERS"), true, function() {
-      AgentSet.setTurtleVariable('shape', "default");
-      AgentSet.setTurtleVariable('color', 0);
-      AgentSet.setTurtleVariable('heading', 180);
-      AgentSet.setTurtleVariable('size', 12);
-      AgentSet.setTurtleVariable('label', (1 + Prims.random(world.observer.getGlobal('sample-space'))));
+      AgentSet.setVariable('shape', "default");
+      AgentSet.setVariable('color', 0);
+      AgentSet.setVariable('heading', 180);
+      AgentSet.setVariable('size', 12);
+      AgentSet.setVariable('label', (1 + Prims.random(world.observer.getGlobal('sample-space'))));
       world.observer.setGlobal('the-messenger', AgentSet.self());
     });
   });
 }
 function sendMessengerToItsColumn() {
   var it = AgentSet.oneOf(AgentSet.agentFilter(world.turtlesOfBreed("COLUMN-COUNTERS"), function() {
-    return Prims.equality(AgentSet.getBreedVariable("my-column"), AgentSet.of(world.observer.getGlobal('the-messenger'), function() {
-      return AgentSet.getTurtleVariable('label');
+    return Prims.equality(AgentSet.getVariable('my-column'), AgentSet.of(world.observer.getGlobal('the-messenger'), function() {
+      return AgentSet.getVariable('label');
     }));
   }));
   AgentSet.ask(world.observer.getGlobal('the-messenger'), true, function() {
@@ -106,7 +106,7 @@ function sendMessengerToItsColumn() {
   AgentSet.ask(it, true, function() {
     Call(createFrame);
     Prims.fd(1);
-    if (Prims.equality(AgentSet.getTurtleVariable('ycor'), world.observer.getGlobal('max-y-histogram'))) {
+    if (Prims.equality(AgentSet.getVariable('ycor'), world.observer.getGlobal('max-y-histogram'))) {
       world.observer.setGlobal('time-to-stop?', true);
     }
   });
@@ -114,15 +114,15 @@ function sendMessengerToItsColumn() {
 function createFrame() {
   AgentSet.ask(AgentSet.self().getPatchHere(), true, function() {
     AgentSet.ask(Prims.sprout(1, "FRAMES"), true, function() {
-      AgentSet.setTurtleVariable('shape', "frame");
-      AgentSet.setTurtleVariable('color', 0);
+      AgentSet.setVariable('shape', "frame");
+      AgentSet.setVariable('color', 0);
     });
   });
 }
 function paint() {
   AgentSet.ask(world.turtlesOfBreed("COLUMN-COUNTERS"), true, function() {
-    if (Prims.lte(AgentSet.getBreedVariable("my-column"), ((world.observer.getGlobal('red-green') * world.observer.getGlobal('sample-space')) / 100))) {
-      AgentSet.ask(AgentSet.agentFilter(AgentSet.getBreedVariable("my-column-patches"), function() {
+    if (Prims.lte(AgentSet.getVariable('my-column'), ((world.observer.getGlobal('red-green') * world.observer.getGlobal('sample-space')) / 100))) {
+      AgentSet.ask(AgentSet.agentFilter(AgentSet.getVariable('my-column-patches'), function() {
         return Prims.lt(AgentSet.getPatchVariable('pycor'), AgentSet.of(AgentSet.myself(), function() {
           return AgentSet.getPatchVariable('pycor');
         }));
@@ -131,7 +131,7 @@ function paint() {
       });
     }
     else {
-      AgentSet.ask(AgentSet.agentFilter(AgentSet.getBreedVariable("my-column-patches"), function() {
+      AgentSet.ask(AgentSet.agentFilter(AgentSet.getVariable('my-column-patches'), function() {
         return Prims.lt(AgentSet.getPatchVariable('pycor'), AgentSet.of(AgentSet.myself(), function() {
           return AgentSet.getPatchVariable('pycor');
         }));
@@ -151,14 +151,14 @@ function _percent_Full() {
 }
 function biggestGap() {
   var maxColumn = Prims.max(AgentSet.of(world.turtlesOfBreed("COLUMN-COUNTERS"), function() {
-    return AgentSet.count(AgentSet.agentFilter(AgentSet.getBreedVariable("my-column-patches"), function() {
+    return AgentSet.count(AgentSet.agentFilter(AgentSet.getVariable('my-column-patches'), function() {
       return Prims.lt(AgentSet.getPatchVariable('pycor'), AgentSet.of(AgentSet.myself(), function() {
         return AgentSet.getPatchVariable('pycor');
       }));
     }));
   }));
   var minColumn = Prims.min(AgentSet.of(world.turtlesOfBreed("COLUMN-COUNTERS"), function() {
-    return AgentSet.count(AgentSet.agentFilter(AgentSet.getBreedVariable("my-column-patches"), function() {
+    return AgentSet.count(AgentSet.agentFilter(AgentSet.getVariable('my-column-patches'), function() {
       return Prims.lt(AgentSet.getPatchVariable('pycor'), AgentSet.of(AgentSet.myself(), function() {
         return AgentSet.getPatchVariable('pycor');
       }));

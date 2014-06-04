@@ -28,16 +28,16 @@ var Random         = require('integration/random');
 var StrictMath     = require('integration/strictmath');function setup() {
   world.clearAll();
   AgentSet.ask(world.createTurtles(world.observer.getGlobal('population'), ""), true, function() {
-    AgentSet.setTurtleVariable('color', 125);
+    AgentSet.setVariable('color', 125);
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
-    AgentSet.setTurtleVariable('leader', Nobody);
-    AgentSet.setTurtleVariable('follower', Nobody);
+    AgentSet.setVariable('leader', Nobody);
+    AgentSet.setVariable('follower', Nobody);
   });
   world.ticker.reset();
 }
 function go() {
   AgentSet.ask(world.turtles(), true, function() {
-    if (Prims.equality(AgentSet.getTurtleVariable('leader'), Nobody)) {
+    if (Prims.equality(AgentSet.getVariable('leader'), Nobody)) {
       Call(attachTurtle);
     }
   });
@@ -59,38 +59,38 @@ function attachTurtle() {
     yd = (- yd);
   }
   var candidate = AgentSet.oneOf(AgentSet.agentFilter(AgentSet.self().turtlesAt(xd, yd), function() {
-    return Prims.equality(AgentSet.getTurtleVariable('follower'), Nobody);
+    return Prims.equality(AgentSet.getVariable('follower'), Nobody);
   }));
   if (Prims.equality(candidate, Nobody)) {
     throw new Exception.StopInterrupt;
   }
   AgentSet.ask(candidate, true, function() {
-    AgentSet.setTurtleVariable('follower', AgentSet.myself());
+    AgentSet.setVariable('follower', AgentSet.myself());
   });
-  AgentSet.setTurtleVariable('leader', candidate);
-  if (Prims.equality(AgentSet.getTurtleVariable('follower'), Nobody)) {
-    AgentSet.setTurtleVariable('color', 65);
+  AgentSet.setVariable('leader', candidate);
+  if (Prims.equality(AgentSet.getVariable('follower'), Nobody)) {
+    AgentSet.setVariable('color', 65);
   }
   else {
-    AgentSet.setTurtleVariable('color', 95);
-    AgentSet.setTurtleVariable('shape', "line");
+    AgentSet.setVariable('color', 95);
+    AgentSet.setVariable('shape', "line");
   }
   AgentSet.ask(candidate, true, function() {
-    if (Prims.equality(AgentSet.getTurtleVariable('leader'), Nobody)) {
-      AgentSet.setTurtleVariable('color', 45);
+    if (Prims.equality(AgentSet.getVariable('leader'), Nobody)) {
+      AgentSet.setVariable('color', 45);
     }
     else {
-      AgentSet.setTurtleVariable('color', 95);
-      AgentSet.setTurtleVariable('shape', "line");
+      AgentSet.setVariable('color', 95);
+      AgentSet.setVariable('shape', "line");
     }
   });
 }
 function turnTurtle() {
-  if (Prims.equality(AgentSet.getTurtleVariable('leader'), Nobody)) {
+  if (Prims.equality(AgentSet.getVariable('leader'), Nobody)) {
     Prims.right((Prims.randomFloat(world.observer.getGlobal('waver')) - Prims.randomFloat(world.observer.getGlobal('waver'))));
   }
   else {
-    AgentSet.self().face(AgentSet.getTurtleVariable('leader'));
+    AgentSet.self().face(AgentSet.getVariable('leader'));
   }
 }
 world.observer.setGlobal('waver', 70);

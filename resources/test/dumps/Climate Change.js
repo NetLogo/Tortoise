@@ -56,7 +56,7 @@ function setupWorld() {
 }
 function go() {
   AgentSet.ask(world.turtlesOfBreed("CLOUDS"), true, function() {
-    Prims.fd(AgentSet.getBreedVariable("cloud-speed"));
+    Prims.fd(AgentSet.getVariable('cloud-speed'));
   });
   Call(runSunshine);
   AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
@@ -80,25 +80,25 @@ function addCloud() {
   var id = 0;
   if (AgentSet.any(world.turtlesOfBreed("CLOUDS"))) {
     id = (Prims.max(AgentSet.of(world.turtlesOfBreed("CLOUDS"), function() {
-      return AgentSet.getBreedVariable("cloud-id");
+      return AgentSet.getVariable('cloud-id');
     })) + 1);
   }
   AgentSet.ask(world.createTurtles((3 + Prims.random(20)), "CLOUDS"), true, function() {
-    AgentSet.setBreedVariable("cloud-speed", speed);
-    AgentSet.setBreedVariable("cloud-id", id);
+    AgentSet.setVariable('cloud-speed', speed);
+    AgentSet.setVariable('cloud-id', id);
     Prims.setXY(((x + Prims.random(9)) - 4), (((y + 2.5) + Prims.randomFloat(2)) - Prims.randomFloat(2)));
-    AgentSet.setTurtleVariable('color', 9.9);
-    AgentSet.setTurtleVariable('size', (2 + Prims.random(2)));
-    AgentSet.setTurtleVariable('heading', 90);
+    AgentSet.setVariable('color', 9.9);
+    AgentSet.setVariable('size', (2 + Prims.random(2)));
+    AgentSet.setVariable('heading', 90);
   });
 }
 function removeCloud() {
   if (AgentSet.any(world.turtlesOfBreed("CLOUDS"))) {
     var doomedId = AgentSet.oneOf(Prims.removeDuplicates(AgentSet.of(world.turtlesOfBreed("CLOUDS"), function() {
-      return AgentSet.getBreedVariable("cloud-id");
+      return AgentSet.getVariable('cloud-id');
     })));
     AgentSet.ask(AgentSet.agentFilter(world.turtlesOfBreed("CLOUDS"), function() {
-      return Prims.equality(AgentSet.getBreedVariable("cloud-id"), doomedId);
+      return Prims.equality(AgentSet.getVariable('cloud-id'), doomedId);
     }), true, function() {
       AgentSet.die();
     });
@@ -118,8 +118,8 @@ function runSunshine() {
 function createSunshine() {
   if (Prims.gt((10 * world.observer.getGlobal('sun-brightness')), Prims.random(50))) {
     AgentSet.ask(world.createTurtles(1, "RAYS"), true, function() {
-      AgentSet.setTurtleVariable('heading', 160);
-      AgentSet.setTurtleVariable('color', 45);
+      AgentSet.setVariable('heading', 160);
+      AgentSet.setVariable('color', 45);
       Prims.setXY((Prims.random(10) + world.minPxcor), world.maxPycor);
     });
   }
@@ -128,20 +128,20 @@ function reflectRaysFromClouds() {
   AgentSet.ask(AgentSet.agentFilter(world.turtlesOfBreed("RAYS"), function() {
     return AgentSet.any(AgentSet.self().breedHere("CLOUDS"));
   }), true, function() {
-    AgentSet.setTurtleVariable('heading', (180 - AgentSet.getTurtleVariable('heading')));
+    AgentSet.setVariable('heading', (180 - AgentSet.getVariable('heading')));
   });
 }
 function encounterEarth() {
   AgentSet.ask(AgentSet.agentFilter(world.turtlesOfBreed("RAYS"), function() {
-    return Prims.lte(AgentSet.getTurtleVariable('ycor'), world.observer.getGlobal('earth-top'));
+    return Prims.lte(AgentSet.getVariable('ycor'), world.observer.getGlobal('earth-top'));
   }), true, function() {
     if (Prims.gt((100 * world.observer.getGlobal('albedo')), Prims.random(100))) {
-      AgentSet.setTurtleVariable('heading', (180 - AgentSet.getTurtleVariable('heading')));
+      AgentSet.setVariable('heading', (180 - AgentSet.getVariable('heading')));
     }
     else {
       Prims.right((Prims.random(45) - Prims.random(45)));
-      AgentSet.setTurtleVariable('color', ((15 - 2) + Prims.random(4)));
-      AgentSet.setTurtleVariable('breed', world.turtlesOfBreed("HEATS"));
+      AgentSet.setVariable('color', ((15 - 2) + Prims.random(4)));
+      AgentSet.setVariable('breed', world.turtlesOfBreed("HEATS"));
     }
   });
 }
@@ -153,16 +153,16 @@ function runHeat() {
       Prims.fd(dist);
     }
     else {
-      AgentSet.setTurtleVariable('heading', (180 - AgentSet.getTurtleVariable('heading')));
+      AgentSet.setVariable('heading', (180 - AgentSet.getVariable('heading')));
     }
-    if (Prims.gte(AgentSet.getTurtleVariable('ycor'), world.observer.getGlobal('earth-top'))) {
-      if (((Prims.gt(world.observer.getGlobal('temperature'), (20 + Prims.random(40))) && Prims.gt(AgentSet.getTurtleVariable('xcor'), 0)) && Prims.lt(AgentSet.getTurtleVariable('xcor'), (world.maxPxcor - 8)))) {
-        AgentSet.setTurtleVariable('breed', world.turtlesOfBreed("IRS"));
-        AgentSet.setTurtleVariable('heading', 20);
-        AgentSet.setTurtleVariable('color', 125);
+    if (Prims.gte(AgentSet.getVariable('ycor'), world.observer.getGlobal('earth-top'))) {
+      if (((Prims.gt(world.observer.getGlobal('temperature'), (20 + Prims.random(40))) && Prims.gt(AgentSet.getVariable('xcor'), 0)) && Prims.lt(AgentSet.getVariable('xcor'), (world.maxPxcor - 8)))) {
+        AgentSet.setVariable('breed', world.turtlesOfBreed("IRS"));
+        AgentSet.setVariable('heading', 20);
+        AgentSet.setVariable('color', 125);
       }
       else {
-        AgentSet.setTurtleVariable('heading', (100 + Prims.random(160)));
+        AgentSet.setVariable('heading', (100 + Prims.random(160)));
       }
     }
   });
@@ -173,21 +173,21 @@ function runIr() {
       AgentSet.die();
     }
     Prims.fd(0.3);
-    if (Prims.lte(AgentSet.getTurtleVariable('ycor'), world.observer.getGlobal('earth-top'))) {
-      AgentSet.setTurtleVariable('breed', world.turtlesOfBreed("HEATS"));
+    if (Prims.lte(AgentSet.getVariable('ycor'), world.observer.getGlobal('earth-top'))) {
+      AgentSet.setVariable('breed', world.turtlesOfBreed("HEATS"));
       Prims.right(Prims.random(45));
       Prims.left(Prims.random(45));
-      AgentSet.setTurtleVariable('color', ((15 - 2) + Prims.random(4)));
+      AgentSet.setVariable('color', ((15 - 2) + Prims.random(4)));
     }
     if (AgentSet.any(AgentSet.self().breedHere("CO2S"))) {
-      AgentSet.setTurtleVariable('heading', (180 - AgentSet.getTurtleVariable('heading')));
+      AgentSet.setVariable('heading', (180 - AgentSet.getVariable('heading')));
     }
   });
 }
 function addCo2() {
   var skyHeight = (world.observer.getGlobal('sky-top') - world.observer.getGlobal('earth-top'));
   AgentSet.ask(world.createTurtles(25, "CO2S"), true, function() {
-    AgentSet.setTurtleVariable('color', 55);
+    AgentSet.setVariable('color', 55);
     Prims.setXY(Prims.randomXcor(), (world.observer.getGlobal('earth-top') + Prims.randomFloat(skyHeight)));
   });
 }
@@ -207,7 +207,7 @@ function runCo2() {
     if (AgentSet.of(AgentSet.self().patchAhead(dist), function() {
       return !(Prims.shadeOf(105, AgentSet.getPatchVariable('pcolor')));
     })) {
-      AgentSet.setTurtleVariable('heading', (180 - AgentSet.getTurtleVariable('heading')));
+      AgentSet.setVariable('heading', (180 - AgentSet.getVariable('heading')));
     }
     Prims.fd(dist);
   });

@@ -34,7 +34,7 @@ var StrictMath     = require('integration/strictmath');function setup() {
 }
 function go() {
   AgentSet.ask(world.links(), true, function() {
-    AgentSet.setTurtleVariable('color', 5);
+    AgentSet.setVariable('color', 5);
   });
   Call(makeNode, Call(findPartner));
   world.ticker.tick();
@@ -44,10 +44,10 @@ function go() {
 }
 function makeNode(oldNode) {
   AgentSet.ask(world.createTurtles(1, ""), true, function() {
-    AgentSet.setTurtleVariable('color', 15);
+    AgentSet.setVariable('color', 15);
     if (!Prims.equality(oldNode, Nobody)) {
       AgentSet.ask(LinkPrims.createLinkWith(oldNode), true, function() {
-        AgentSet.setTurtleVariable('color', 55);
+        AgentSet.setVariable('color', 55);
       });
       AgentSet.self().moveTo(oldNode);
       Prims.fd(8);
@@ -60,14 +60,14 @@ function findPartner() {
   });
 }
 function resizeNodes() {
-  if (AgentSet.all(world.turtles(), function(){ return Prims.lte(AgentSet.getTurtleVariable('size'), 1) })) {
+  if (AgentSet.all(world.turtles(), function(){ return Prims.lte(AgentSet.getVariable('size'), 1) })) {
     AgentSet.ask(world.turtles(), true, function() {
-      AgentSet.setTurtleVariable('size', StrictMath.sqrt(AgentSet.count(AgentSet.linkNeighbors(false, false))));
+      AgentSet.setVariable('size', StrictMath.sqrt(AgentSet.count(AgentSet.linkNeighbors(false, false))));
     });
   }
   else {
     AgentSet.ask(world.turtles(), true, function() {
-      AgentSet.setTurtleVariable('size', 1);
+      AgentSet.setVariable('size', 1);
     });
   }
 }
@@ -78,19 +78,19 @@ function layout() {
     notImplemented('display', undefined)();
   });
   var xOffset = (Prims.max(AgentSet.of(world.turtles(), function() {
-    return AgentSet.getTurtleVariable('xcor');
+    return AgentSet.getVariable('xcor');
   })) + Prims.min(AgentSet.of(world.turtles(), function() {
-    return AgentSet.getTurtleVariable('xcor');
+    return AgentSet.getVariable('xcor');
   })));
   var yOffset = (Prims.max(AgentSet.of(world.turtles(), function() {
-    return AgentSet.getTurtleVariable('ycor');
+    return AgentSet.getVariable('ycor');
   })) + Prims.min(AgentSet.of(world.turtles(), function() {
-    return AgentSet.getTurtleVariable('ycor');
+    return AgentSet.getVariable('ycor');
   })));
   xOffset = Call(limitMagnitude, xOffset, 0.1);
   yOffset = Call(limitMagnitude, yOffset, 0.1);
   AgentSet.ask(world.turtles(), true, function() {
-    Prims.setXY((AgentSet.getTurtleVariable('xcor') - (xOffset / 2)), (AgentSet.getTurtleVariable('ycor') - (yOffset / 2)));
+    Prims.setXY((AgentSet.getVariable('xcor') - (xOffset / 2)), (AgentSet.getVariable('ycor') - (yOffset / 2)));
   });
 }
 function limitMagnitude(number, limit) {

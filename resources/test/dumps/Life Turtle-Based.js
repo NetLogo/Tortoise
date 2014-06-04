@@ -46,18 +46,18 @@ function setupRandom() {
 }
 function birth() {
   AgentSet.ask(Prims.sprout(1, "BABIES"), true, function() {
-    AgentSet.setTurtleVariable('color', (65 + 1));
+    AgentSet.setVariable('color', (65 + 1));
   });
 }
 function go() {
   AgentSet.ask(AgentSet.agentFilter(world.turtlesOfBreed("CELLS"), function() {
-    return Prims.equality(AgentSet.getTurtleVariable('color'), 5);
+    return Prims.equality(AgentSet.getVariable('color'), 5);
   }), true, function() {
     AgentSet.die();
   });
   AgentSet.ask(world.turtlesOfBreed("BABIES"), true, function() {
-    AgentSet.setTurtleVariable('breed', world.turtlesOfBreed("CELLS"));
-    AgentSet.setTurtleVariable('color', 9.9);
+    AgentSet.setVariable('breed', world.turtlesOfBreed("CELLS"));
+    AgentSet.setVariable('color', 9.9);
   });
   AgentSet.ask(world.turtlesOfBreed("CELLS"), true, function() {
     AgentSet.ask(Prims.getNeighbors(), true, function() {
@@ -66,10 +66,10 @@ function go() {
   });
   AgentSet.ask(world.turtlesOfBreed("CELLS"), true, function() {
     if ((Prims.equality(AgentSet.getPatchVariable('live-neighbors'), 2) || Prims.equality(AgentSet.getPatchVariable('live-neighbors'), 3))) {
-      AgentSet.setTurtleVariable('color', 9.9);
+      AgentSet.setVariable('color', 9.9);
     }
     else {
-      AgentSet.setTurtleVariable('color', 5);
+      AgentSet.setVariable('color', 5);
     }
   });
   AgentSet.ask(world.patches(), true, function() {
@@ -100,7 +100,7 @@ function draw() {
       AgentSet.die();
     });
     AgentSet.ask(Prims.sprout(1, "CELLS"), true, function() {
-      AgentSet.setTurtleVariable('color', 9.9);
+      AgentSet.setVariable('color', 9.9);
     });
     Call(update);
     AgentSet.ask(Prims.getNeighbors(), true, function() {
@@ -125,19 +125,19 @@ function update() {
   if (AgentSet.any(AgentSet.self().breedHere("CELLS"))) {
     if ((Prims.equality(n, 2) || Prims.equality(n, 3))) {
       AgentSet.ask(AgentSet.self().breedHere("CELLS"), true, function() {
-        AgentSet.setTurtleVariable('color', 9.9);
+        AgentSet.setVariable('color', 9.9);
       });
     }
     else {
       AgentSet.ask(AgentSet.self().breedHere("CELLS"), true, function() {
-        AgentSet.setTurtleVariable('color', 5);
+        AgentSet.setVariable('color', 5);
       });
     }
   }
   else {
     if (Prims.equality(n, 3)) {
       AgentSet.ask(Prims.sprout(1, "BABIES"), true, function() {
-        AgentSet.setTurtleVariable('color', (65 + 1));
+        AgentSet.setVariable('color', (65 + 1));
       });
     }
   }

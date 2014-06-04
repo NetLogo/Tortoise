@@ -33,7 +33,7 @@ var StrictMath     = require('integration/strictmath');function setup() {
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
   AgentSet.ask(world.createTurtles((world.observer.getGlobal('num-water') + world.observer.getGlobal('num-lipids')), "WATERS"), true, function() {
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
-    AgentSet.setTurtleVariable('color', 105);
+    AgentSet.setVariable('color', 105);
   });
   AgentSet.ask(world.createTurtles(world.observer.getGlobal('num-lipids'), "OILS"), true, function() {
     var partner = AgentSet.oneOf(AgentSet.agentFilter(world.turtlesOfBreed("WATERS"), function() {
@@ -42,9 +42,9 @@ var StrictMath     = require('integration/strictmath');function setup() {
     AgentSet.self().moveTo(partner);
     Prims.fd(world.observer.getGlobal('lipid-length'));
     AgentSet.ask(LinkPrims.createLinkWith(partner), false, function() {});
-    AgentSet.setTurtleVariable('color', 25);
+    AgentSet.setVariable('color', 25);
     AgentSet.ask(partner, true, function() {
-      AgentSet.setTurtleVariable('color', 115);
+      AgentSet.setVariable('color', 115);
     });
   });
   world.ticker.reset();
@@ -64,8 +64,8 @@ function interactWithNeighbor() {
   if (!Prims.equality(near, Nobody)) {
     AgentSet.self().face(near);
     if (Prims.equality(AgentSet.of(near, function() {
-      return AgentSet.getTurtleVariable('breed');
-    }), AgentSet.getTurtleVariable('breed'))) {
+      return AgentSet.getVariable('breed');
+    }), AgentSet.getVariable('breed'))) {
       Prims.fd(world.observer.getGlobal('water-water-force'));
     }
     else {
