@@ -1,4 +1,4 @@
-var workspace     = require('engine/workspace')([])(['plot?', 'total', 'result'], ['plot?'], [], [], 0, 99, 0, 99, 3.0, false, false, {"default":{"rotate":true,"elements":[{"xcors":[150,40,150,260],"ycors":[5,250,205,250],"type":"polygon","color":"rgba(141, 141, 141, 1.0)","filled":true,"marked":true}]}}, {"default":{}});
+var workspace     = require('engine/workspace')([])(['plot?', 'total', 'result'], ['plot?'], [], [], ['n'], 0, 99, 0, 99, 3.0, false, false, {"default":{"rotate":true,"elements":[{"xcors":[150,40,150,260],"ycors":[5,250,205,250],"type":"polygon","color":"rgba(141, 141, 141, 1.0)","filled":true,"marked":true}]}}, {"default":{}});
 var AgentSet      = workspace.agentSet;
 var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
@@ -6,7 +6,6 @@ var LinkPrims     = workspace.linkPrims;
 var Prims         = workspace.prims;
 var Updater       = workspace.updater;
 var world         = workspace.world;
-var PatchesOwn    = world.patchesOwn;
 
 var Call       = require('engine/call');
 var ColorModel = require('engine/colormodel');
@@ -26,10 +25,7 @@ var AgentModel     = require('integration/agentmodel');
 var Denuller       = require('integration/denuller');
 var notImplemented = require('integration/notimplemented');
 var Random         = require('integration/random');
-var StrictMath     = require('integration/strictmath');
-
-PatchesOwn.init(1);
-function benchmark() {
+var StrictMath     = require('integration/strictmath');function benchmark() {
   Random.setSeed(0);
   workspace.timer.reset();
   Call(setup);
@@ -41,7 +37,7 @@ function benchmark() {
 function setup() {
   world.clearAll();
   AgentSet.ask(world.patches(), true, function() {
-    AgentSet.setPatchVariable(5, 2);
+    AgentSet.setPatchVariable('n', 2);
     Call(colorize);
   });
   world.observer.setGlobal('total', (2 * AgentSet.count(world.patches())));
@@ -50,20 +46,20 @@ function setup() {
 function go() {
   var activePatches = Prims.patchSet(AgentSet.oneOf(world.patches()));
   AgentSet.ask(activePatches, true, function() {
-    AgentSet.setPatchVariable(5, (AgentSet.getPatchVariable(5) + 1));
+    AgentSet.setPatchVariable('n', (AgentSet.getPatchVariable('n') + 1));
     world.observer.setGlobal('total', (world.observer.getGlobal('total') + 1));
     Call(colorize);
   });
   while (AgentSet.any(activePatches)) {
     var overloadedPatches = AgentSet.agentFilter(activePatches, function() {
-      return Prims.gt(AgentSet.getPatchVariable(5), 3);
+      return Prims.gt(AgentSet.getPatchVariable('n'), 3);
     });
     AgentSet.ask(overloadedPatches, true, function() {
-      AgentSet.setPatchVariable(5, (AgentSet.getPatchVariable(5) - 4));
+      AgentSet.setPatchVariable('n', (AgentSet.getPatchVariable('n') - 4));
       world.observer.setGlobal('total', (world.observer.getGlobal('total') - 4));
       Call(colorize);
       AgentSet.ask(Prims.getNeighbors4(), true, function() {
-        AgentSet.setPatchVariable(5, (AgentSet.getPatchVariable(5) + 1));
+        AgentSet.setPatchVariable('n', (AgentSet.getPatchVariable('n') + 1));
         world.observer.setGlobal('total', (world.observer.getGlobal('total') + 1));
         Call(colorize);
       });
@@ -75,11 +71,11 @@ function go() {
   world.ticker.tick();
 }
 function colorize() {
-  if (Prims.lte(AgentSet.getPatchVariable(5), 3)) {
-    AgentSet.setPatchVariable(2, Prims.item(AgentSet.getPatchVariable(5), [83, 54, 45, 25]));
+  if (Prims.lte(AgentSet.getPatchVariable('n'), 3)) {
+    AgentSet.setPatchVariable('pcolor', Prims.item(AgentSet.getPatchVariable('n'), [83, 54, 45, 25]));
   }
   else {
-    AgentSet.setPatchVariable(2, 15);
+    AgentSet.setPatchVariable('pcolor', 15);
   }
 }
 world.observer.setGlobal('plot?', false);

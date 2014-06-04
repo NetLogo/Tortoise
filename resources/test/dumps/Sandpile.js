@@ -1,4 +1,4 @@
-var workspace     = require('engine/workspace')([])(['animate-avalanches?', 'drop-location', 'grains-per-patch', 'total', 'total-on-tick', 'sizes', 'last-size', 'lifetimes', 'last-lifetime', 'selected-patch', 'default-color', 'fired-color', 'selected-color'], ['animate-avalanches?', 'drop-location', 'grains-per-patch'], [], [], -50, 50, -50, 50, 4.0, false, false, {"default":{"rotate":true,"elements":[{"xcors":[150,40,150,260],"ycors":[5,250,205,250],"type":"polygon","color":"rgba(141, 141, 141, 1.0)","filled":true,"marked":true}]}}, {"default":{}});
+var workspace     = require('engine/workspace')([])(['animate-avalanches?', 'drop-location', 'grains-per-patch', 'total', 'total-on-tick', 'sizes', 'last-size', 'lifetimes', 'last-lifetime', 'selected-patch', 'default-color', 'fired-color', 'selected-color'], ['animate-avalanches?', 'drop-location', 'grains-per-patch'], [], [], ['n', 'n-stack', 'base-color'], -50, 50, -50, 50, 4.0, false, false, {"default":{"rotate":true,"elements":[{"xcors":[150,40,150,260],"ycors":[5,250,205,250],"type":"polygon","color":"rgba(141, 141, 141, 1.0)","filled":true,"marked":true}]}}, {"default":{}});
 var AgentSet      = workspace.agentSet;
 var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
@@ -6,7 +6,6 @@ var LinkPrims     = workspace.linkPrims;
 var Prims         = workspace.prims;
 var Updater       = workspace.updater;
 var world         = workspace.world;
-var PatchesOwn    = world.patchesOwn;
 
 var Call       = require('engine/call');
 var ColorModel = require('engine/colormodel');
@@ -26,26 +25,23 @@ var AgentModel     = require('integration/agentmodel');
 var Denuller       = require('integration/denuller');
 var notImplemented = require('integration/notimplemented');
 var Random         = require('integration/random');
-var StrictMath     = require('integration/strictmath');
-
-PatchesOwn.init(3);
-function setup(setupTask) {
+var StrictMath     = require('integration/strictmath');function setup(setupTask) {
   world.clearAll();
   world.observer.setGlobal('default-color', 105);
   world.observer.setGlobal('fired-color', 15);
   world.observer.setGlobal('selected-color', 55);
   world.observer.setGlobal('selected-patch', Nobody);
   AgentSet.ask(world.patches(), true, function() {
-    AgentSet.setPatchVariable(5, (setupTask)());
-    AgentSet.setPatchVariable(6, []);
-    AgentSet.setPatchVariable(7, world.observer.getGlobal('default-color'));
+    AgentSet.setPatchVariable('n', (setupTask)());
+    AgentSet.setPatchVariable('n-stack', []);
+    AgentSet.setPatchVariable('base-color', world.observer.getGlobal('default-color'));
   });
   var ignore = Call(stabilize, false);
   AgentSet.ask(world.patches(), true, function() {
     Call(recolor);
   });
   world.observer.setGlobal('total', Prims.sum(AgentSet.of(world.patches(), function() {
-    return AgentSet.getPatchVariable(5);
+    return AgentSet.getPatchVariable('n');
   })));
   world.observer.setGlobal('sizes', []);
   world.observer.setGlobal('lifetimes', []);
@@ -64,7 +60,7 @@ function setupRandom() {
   }));
 }
 function recolor() {
-  AgentSet.setPatchVariable(2, Prims.scaleColor(AgentSet.getPatchVariable(7), AgentSet.getPatchVariable(5), 0, 4));
+  AgentSet.setPatchVariable('pcolor', Prims.scaleColor(AgentSet.getPatchVariable('base-color'), AgentSet.getPatchVariable('n'), 0, 4));
 }
 function go() {
   var drop = Call(dropPatch);
@@ -88,7 +84,7 @@ function go() {
     });
     notImplemented('display', undefined)();
     AgentSet.ask(avalanchePatches, true, function() {
-      AgentSet.setPatchVariable(7, world.observer.getGlobal('default-color'));
+      AgentSet.setPatchVariable('base-color', world.observer.getGlobal('default-color'));
       Call(recolor);
     });
     world.observer.setGlobal('total-on-tick', world.observer.getGlobal('total'));
@@ -110,12 +106,12 @@ function explore() {
       Call(popN);
     });
     AgentSet.ask(world.patches(), true, function() {
-      AgentSet.setPatchVariable(7, world.observer.getGlobal('default-color'));
+      AgentSet.setPatchVariable('base-color', world.observer.getGlobal('default-color'));
       Call(recolor);
     });
     var avalanchePatches = Prims.first(results);
     AgentSet.ask(avalanchePatches, true, function() {
-      AgentSet.setPatchVariable(7, world.observer.getGlobal('selected-color'));
+      AgentSet.setPatchVariable('base-color', world.observer.getGlobal('selected-color'));
       Call(recolor);
     });
     notImplemented('display', undefined)();
@@ -124,7 +120,7 @@ function explore() {
     if (!Prims.equality(world.observer.getGlobal('selected-patch'), Nobody)) {
       world.observer.setGlobal('selected-patch', Nobody);
       AgentSet.ask(world.patches(), true, function() {
-        AgentSet.setPatchVariable(7, world.observer.getGlobal('default-color'));
+        AgentSet.setPatchVariable('base-color', world.observer.getGlobal('default-color'));
         Call(recolor);
       });
     }
@@ -132,19 +128,19 @@ function explore() {
 }
 function stabilize(animate_p) {
   var activePatches = AgentSet.agentFilter(world.patches(), function() {
-    return Prims.gt(AgentSet.getPatchVariable(5), 3);
+    return Prims.gt(AgentSet.getPatchVariable('n'), 3);
   });
   var iters = 0;
   var avalanchePatches = new PatchSet([]);
   while (AgentSet.any(activePatches)) {
     var overloadedPatches = AgentSet.agentFilter(activePatches, function() {
-      return Prims.gt(AgentSet.getPatchVariable(5), 3);
+      return Prims.gt(AgentSet.getPatchVariable('n'), 3);
     });
     if (AgentSet.any(overloadedPatches)) {
       iters = (iters + 1);
     }
     AgentSet.ask(overloadedPatches, true, function() {
-      AgentSet.setPatchVariable(7, world.observer.getGlobal('fired-color'));
+      AgentSet.setPatchVariable('base-color', world.observer.getGlobal('fired-color'));
       Call(updateN, -4);
       if (animate_p) {
         Call(recolor);
@@ -167,7 +163,7 @@ function stabilize(animate_p) {
   return Prims.list(avalanchePatches, iters);
 }
 function updateN(howMuch) {
-  AgentSet.setPatchVariable(5, (AgentSet.getPatchVariable(5) + howMuch));
+  AgentSet.setPatchVariable('n', (AgentSet.getPatchVariable('n') + howMuch));
   world.observer.setGlobal('total', (world.observer.getGlobal('total') + howMuch));
 }
 function dropPatch() {
@@ -185,11 +181,11 @@ function dropPatch() {
   return Nobody;
 }
 function pushN() {
-  AgentSet.setPatchVariable(6, Prims.fput(AgentSet.getPatchVariable(5), AgentSet.getPatchVariable(6)));
+  AgentSet.setPatchVariable('n-stack', Prims.fput(AgentSet.getPatchVariable('n'), AgentSet.getPatchVariable('n-stack')));
 }
 function popN() {
-  Call(updateN, (Prims.first(AgentSet.getPatchVariable(6)) - AgentSet.getPatchVariable(5)));
-  AgentSet.setPatchVariable(6, Prims.butLast(AgentSet.getPatchVariable(6)));
+  Call(updateN, (Prims.first(AgentSet.getPatchVariable('n-stack')) - AgentSet.getPatchVariable('n')));
+  AgentSet.setPatchVariable('n-stack', Prims.butLast(AgentSet.getPatchVariable('n-stack')));
 }
 world.observer.setGlobal('animate-avalanches?', false);
 world.observer.setGlobal('drop-location', "random");
