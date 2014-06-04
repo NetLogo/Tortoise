@@ -30,11 +30,10 @@ object Prims {
         (Handlers.ident(call.procedure.name) +: args)
           .mkString("Call(", ", ", ")")
       case _: prim._unaryminus              => s"(- ${arg(0)})"
-      case bv: prim._breedvariable          => s"""AgentSet.getBreedVariable("${bv.name.toLowerCase}")"""
-      case tv: prim._turtlevariable         => s"AgentSet.getTurtleVariable('${tv.displayName.toLowerCase}')"
-      case tv: prim._linkvariable           => s"AgentSet.getLinkVariable('${tv.displayName.toLowerCase}')"
-      case tv: prim._turtleorlinkvariable   =>
-        s"AgentSet.getTurtleVariable('${tv.varName.toLowerCase}')"
+      case bv: prim._breedvariable          => s"AgentSet.getVariable('${bv.name.toLowerCase}')"
+      case tv: prim._turtlevariable         => s"AgentSet.getVariable('${tv.displayName.toLowerCase}')"
+      case tv: prim._linkvariable           => s"AgentSet.getVariable('${tv.displayName.toLowerCase}')"
+      case tv: prim._turtleorlinkvariable   => s"AgentSet.getVariable('${tv.varName.toLowerCase}')"
       case pv: prim._patchvariable          => s"AgentSet.getPatchVariable('${pv.displayName.toLowerCase}')"
       case r: prim._reference               => s"${r.reference.original.displayName.toLowerCase}"
       case ov: prim._observervariable       => s"world.observer.getGlobal('${ov.displayName.toLowerCase}')"
@@ -142,15 +141,15 @@ object Prims {
       case p: prim._observervariable =>
         s"world.observer.setGlobal('${p.displayName.toLowerCase}', ${arg(1)});"
       case bv: prim._breedvariable =>
-        s"""AgentSet.setBreedVariable("${bv.name.toLowerCase}", ${arg(1)});"""
+        s"AgentSet.setVariable('${bv.name.toLowerCase}', ${arg(1)});"
       case p: prim._linkvariable =>
-        s"AgentSet.setLinkVariable('${p.displayName.toLowerCase}', ${arg(1)});"
+        s"AgentSet.setVariable('${p.displayName.toLowerCase}', ${arg(1)});"
       case p: prim._turtlevariable =>
-        s"AgentSet.setTurtleVariable('${p.displayName.toLowerCase}', ${arg(1)});"
+        s"AgentSet.setVariable('${p.displayName.toLowerCase}', ${arg(1)});"
       case p: prim._turtleorlinkvariable if p.varName == "BREED" =>
-        s"AgentSet.setTurtleVariable('breed', ${arg(1)});"
+        s"AgentSet.setVariable('breed', ${arg(1)});"
       case p: prim._turtleorlinkvariable =>
-        s"AgentSet.setTurtleVariable('${p.varName.toLowerCase}', ${arg(1)});"
+        s"AgentSet.setVariable('${p.varName.toLowerCase}', ${arg(1)});"
       case p: prim._patchvariable =>
         s"AgentSet.setPatchVariable('${p.displayName.toLowerCase}', ${arg(1)});"
       case p: prim._procedurevariable =>

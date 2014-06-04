@@ -39,7 +39,7 @@ define(['engine/exception', 'engine/topology/topology'], (Exception, Topology) -
       scratch =
         for x in [0...xx]
           for y in [0...yy]
-            @getPatchAt(x + @minPxcor, y + @minPycor).getPatchVariable(varName)
+            @getPatchAt(x + @minPxcor, y + @minPycor).getVariable(varName)
       scratch2 =
         for [0...xx]
           for [0...yy]
@@ -110,6 +110,6 @@ define(['engine/exception', 'engine/topology/topology'], (Exception, Topology) -
             scratch2[x - 1][y - 1] += diffuseVal
       for y in [0...yy]
         for x in [0...xx]
-          @getPatchAt(x + @minPxcor, y + @minPycor).setPatchVariable(varName, scratch2[x][y])
+          @getPatchAt(x + @minPxcor, y + @minPycor).setVariable(varName, scratch2[x][y])
 
 )

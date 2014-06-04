@@ -26,20 +26,11 @@ define(['integration/lodash', 'engine/abstractagents', 'engine/builtins', 'engin
       @_breed.name
 
     # (String) => Any
-    getTurtleVariable: (varName) ->
+    getVariable: (varName) ->
       @_varManager.get(varName)
 
     # (String, Any) => Unit
-    setTurtleVariable: (varName, value) ->
-      @_varManager.set(varName, value)
-      return
-
-    # (String) => Any
-    getLinkVariable: (varName) ->
-      @_varManager.get(varName)
-
-    # (String, Any) => Unit
-    setLinkVariable: (varName, value) ->
+    setVariable: (varName, value) ->
       @_varManager.set(varName, value)
       return
 
