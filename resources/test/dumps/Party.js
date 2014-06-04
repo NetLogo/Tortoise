@@ -33,9 +33,9 @@ var StrictMath     = require('integration/strictmath');function setup() {
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "person")
   AgentSet.ask(world.createTurtles(world.observer.getGlobal('number'), ""), true, function() {
     Call(chooseSex);
-    AgentSet.setTurtleVariable('size', 3);
-    AgentSet.setTurtleVariable('my-group-site', AgentSet.oneOf(world.observer.getGlobal('group-sites')));
-    AgentSet.self().moveTo(AgentSet.getTurtleVariable('my-group-site'));
+    AgentSet.setVariable('size', 3);
+    AgentSet.setVariable('my-group-site', AgentSet.oneOf(world.observer.getGlobal('group-sites')));
+    AgentSet.self().moveTo(AgentSet.getVariable('my-group-site'));
   });
   AgentSet.ask(world.turtles(), true, function() {
     Call(updateHappiness);
@@ -48,11 +48,11 @@ var StrictMath     = require('integration/strictmath');function setup() {
   world.ticker.reset();
 }
 function go() {
-  if (AgentSet.all(world.turtles(), function(){ return AgentSet.getTurtleVariable('happy?') })) {
+  if (AgentSet.all(world.turtles(), function(){ return AgentSet.getVariable('happy?') })) {
     throw new Exception.StopInterrupt;
   }
   AgentSet.ask(world.turtles(), true, function() {
-    AgentSet.self().moveTo(AgentSet.getTurtleVariable('my-group-site'));
+    AgentSet.self().moveTo(AgentSet.getVariable('my-group-site'));
   });
   AgentSet.ask(world.turtles(), true, function() {
     Call(updateHappiness);
@@ -64,7 +64,7 @@ function go() {
   Call(updateLabels);
   Call(countBoringGroups);
   AgentSet.ask(world.turtles(), true, function() {
-    AgentSet.setTurtleVariable('my-group-site', AgentSet.self().getPatchHere());
+    AgentSet.setVariable('my-group-site', AgentSet.self().getPatchHere());
     Call(spreadOutVertically);
   });
   world.ticker.tick();
@@ -72,16 +72,16 @@ function go() {
 function updateHappiness() {
   var total = AgentSet.count(AgentSet.self().turtlesHere());
   var same = AgentSet.count(AgentSet.agentFilter(AgentSet.self().turtlesHere(), function() {
-    return Prims.equality(AgentSet.getTurtleVariable('color'), AgentSet.of(AgentSet.myself(), function() {
-      return AgentSet.getTurtleVariable('color');
+    return Prims.equality(AgentSet.getVariable('color'), AgentSet.of(AgentSet.myself(), function() {
+      return AgentSet.getVariable('color');
     }));
   }));
   var opposite = (total - same);
-  AgentSet.setTurtleVariable('happy?', Prims.lte((opposite / total), (world.observer.getGlobal('tolerance') / 100)));
+  AgentSet.setVariable('happy?', Prims.lte((opposite / total), (world.observer.getGlobal('tolerance') / 100)));
 }
 function leaveIfUnhappy() {
-  if (!(AgentSet.getTurtleVariable('happy?'))) {
-    AgentSet.setTurtleVariable('heading', AgentSet.oneOf([90, 270]));
+  if (!(AgentSet.getVariable('happy?'))) {
+    AgentSet.setVariable('heading', AgentSet.oneOf([90, 270]));
     Prims.fd(1);
   }
 }
@@ -104,10 +104,10 @@ function groupSite_p() {
 }
 function spreadOutVertically() {
   if (Call(woman_p)) {
-    AgentSet.setTurtleVariable('heading', 180);
+    AgentSet.setVariable('heading', 180);
   }
   else {
-    AgentSet.setTurtleVariable('heading', 0);
+    AgentSet.setVariable('heading', 0);
   }
   Prims.fd(4);
   while (AgentSet.any(AgentSet.other(AgentSet.self().turtlesHere()))) {
@@ -115,8 +115,8 @@ function spreadOutVertically() {
       Prims.fd(1);
     }
     else {
-      AgentSet.setTurtleVariable('xcor', (AgentSet.getTurtleVariable('xcor') - 1));
-      AgentSet.setTurtleVariable('ycor', 0);
+      AgentSet.setVariable('xcor', (AgentSet.getVariable('xcor') - 1));
+      AgentSet.setVariable('ycor', 0);
       Prims.fd(4);
     }
   }
@@ -136,7 +136,7 @@ function countBoringGroups() {
 }
 function boring_p() {
   return Prims.equality(Prims.length(Prims.removeDuplicates(AgentSet.of(AgentSet.self().turtlesHere(), function() {
-    return AgentSet.getTurtleVariable('color');
+    return AgentSet.getVariable('color');
   }))), 1);
 }
 function updateLabels() {
@@ -145,10 +145,10 @@ function updateLabels() {
   });
 }
 function chooseSex() {
-  AgentSet.setTurtleVariable('color', AgentSet.oneOf([135, 105]));
+  AgentSet.setVariable('color', AgentSet.oneOf([135, 105]));
 }
 function woman_p() {
-  return Prims.equality(AgentSet.getTurtleVariable('color'), 135);
+  return Prims.equality(AgentSet.getVariable('color'), 135);
 }
 world.observer.setGlobal('tolerance', 25);
 world.observer.setGlobal('number', 70);

@@ -45,7 +45,7 @@ function setupHex() {
     if (Prims.equality(Prims.mod(AgentSet.getPatchVariable('pxcor'), 2), 0)) {
       AgentSet.ask(LinkPrims.createLinksWith(AgentSet.self().turtlesAt(1, -1)), false, function() {});
       AgentSet.ask(LinkPrims.createLinksWith(AgentSet.self().turtlesAt(-1, -1)), false, function() {});
-      AgentSet.setTurtleVariable('ycor', (AgentSet.getTurtleVariable('ycor') - 0.5));
+      AgentSet.setVariable('ycor', (AgentSet.getVariable('ycor') - 0.5));
     }
   });
 }

@@ -44,10 +44,10 @@ function benchmark() {
 function setupTurtles() {
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "bug")
   AgentSet.ask(world.createOrderedTurtles(world.observer.getGlobal('ants'), ""), true, function() {
-    AgentSet.setTurtleVariable('size', 2);
+    AgentSet.setVariable('size', 2);
     Prims.right(Prims.randomFloat(360));
-    AgentSet.setTurtleVariable('color', 15);
-    AgentSet.setTurtleVariable('carrying-food?', false);
+    AgentSet.setVariable('color', 15);
+    AgentSet.setVariable('carrying-food?', false);
   });
 }
 function setupPatches() {
@@ -111,13 +111,13 @@ function go() {
   Call(doPlotting);
 }
 function goTurtles() {
-  if (Prims.lt(AgentSet.getTurtleVariable('who'), world.ticker.tickCount())) {
-    if (AgentSet.getTurtleVariable('carrying-food?')) {
-      AgentSet.setTurtleVariable('color', (25 + 1));
+  if (Prims.lt(AgentSet.getVariable('who'), world.ticker.tickCount())) {
+    if (AgentSet.getVariable('carrying-food?')) {
+      AgentSet.setVariable('color', (25 + 1));
       Call(returnToNest);
     }
     else {
-      AgentSet.setTurtleVariable('color', 15);
+      AgentSet.setVariable('color', 15);
       Call(lookForFood);
     }
   }
@@ -128,15 +128,15 @@ function goPatches() {
 }
 function returnToNest() {
   if (AgentSet.getPatchVariable('nest?')) {
-    AgentSet.setTurtleVariable('carrying-food?', false);
+    AgentSet.setVariable('carrying-food?', false);
     Prims.right(180);
     Prims.fd(1);
   }
   else {
-    AgentSet.setPatchVariable('chemical', (AgentSet.getPatchVariable('chemical') + AgentSet.getTurtleVariable('drop-size')));
-    AgentSet.setTurtleVariable('drop-size', (AgentSet.getTurtleVariable('drop-size') - 1.5));
-    if (Prims.lt(AgentSet.getTurtleVariable('drop-size'), 1)) {
-      AgentSet.setTurtleVariable('drop-size', 1);
+    AgentSet.setPatchVariable('chemical', (AgentSet.getPatchVariable('chemical') + AgentSet.getVariable('drop-size')));
+    AgentSet.setVariable('drop-size', (AgentSet.getVariable('drop-size') - 1.5));
+    if (Prims.lt(AgentSet.getVariable('drop-size'), 1)) {
+      AgentSet.setVariable('drop-size', 1);
     }
     Call(uphillNestScent);
     Call(wiggle);
@@ -145,9 +145,9 @@ function returnToNest() {
 }
 function lookForFood() {
   if (Prims.gt(AgentSet.getPatchVariable('food'), 0)) {
-    AgentSet.setTurtleVariable('carrying-food?', true);
+    AgentSet.setVariable('carrying-food?', true);
     AgentSet.setPatchVariable('food', (AgentSet.getPatchVariable('food') - 1));
-    AgentSet.setTurtleVariable('drop-size', 60);
+    AgentSet.setVariable('drop-size', 60);
     Prims.right(180);
     throw new Exception.StopInterrupt;
   }

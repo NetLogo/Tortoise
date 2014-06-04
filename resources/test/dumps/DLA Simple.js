@@ -31,8 +31,8 @@ var StrictMath     = require('integration/strictmath');function setup() {
     AgentSet.setPatchVariable('pcolor', 55);
   });
   AgentSet.ask(world.createTurtles(world.observer.getGlobal('num-particles'), ""), true, function() {
-    AgentSet.setTurtleVariable('color', 15);
-    AgentSet.setTurtleVariable('size', 1.5);
+    AgentSet.setVariable('color', 15);
+    AgentSet.setVariable('size', 1.5);
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
   });
   world.ticker.reset();

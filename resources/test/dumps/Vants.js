@@ -32,8 +32,8 @@ var StrictMath     = require('integration/strictmath');function setup() {
   });
   AgentSet.ask(world.createTurtles(world.observer.getGlobal('num-vants'), ""), true, function() {
     AgentSet.self().face(AgentSet.oneOf(Prims.getNeighbors4()));
-    AgentSet.setTurtleVariable('color', 15);
-    AgentSet.setTurtleVariable('size', 6);
+    AgentSet.setVariable('color', 15);
+    AgentSet.setVariable('size', 6);
   });
   world.ticker.reset();
 }

@@ -28,8 +28,8 @@ var Random         = require('integration/random');
 var StrictMath     = require('integration/strictmath');function setup() {
   world.clearAll();
   AgentSet.ask(world.createTurtles(world.observer.getGlobal('population'), ""), true, function() {
-    AgentSet.setTurtleVariable('color', ((45 - 2) + Prims.random(7)));
-    AgentSet.setTurtleVariable('size', 1.5);
+    AgentSet.setVariable('color', ((45 - 2) + Prims.random(7)));
+    AgentSet.setVariable('size', 1.5);
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
   });
   world.ticker.reset();
@@ -48,9 +48,9 @@ function go() {
 }
 function flock() {
   Call(findFlockmates);
-  if (AgentSet.any(AgentSet.getTurtleVariable('flockmates'))) {
+  if (AgentSet.any(AgentSet.getVariable('flockmates'))) {
     Call(findNearestNeighbor);
-    if (Prims.lt(AgentSet.self().distance(AgentSet.getTurtleVariable('nearest-neighbor')), world.observer.getGlobal('minimum-separation'))) {
+    if (Prims.lt(AgentSet.self().distance(AgentSet.getVariable('nearest-neighbor')), world.observer.getGlobal('minimum-separation'))) {
       Call(separate);
     }
     else {
@@ -60,30 +60,30 @@ function flock() {
   }
 }
 function findFlockmates() {
-  AgentSet.setTurtleVariable('flockmates', AgentSet.other(AgentSet.self().inRadius(world.turtles(), world.observer.getGlobal('vision'))));
+  AgentSet.setVariable('flockmates', AgentSet.other(AgentSet.self().inRadius(world.turtles(), world.observer.getGlobal('vision'))));
 }
 function findNearestNeighbor() {
-  AgentSet.setTurtleVariable('nearest-neighbor', AgentSet.minOneOf(AgentSet.getTurtleVariable('flockmates'), function() {
+  AgentSet.setVariable('nearest-neighbor', AgentSet.minOneOf(AgentSet.getVariable('flockmates'), function() {
     return AgentSet.self().distance(AgentSet.myself());
   }));
 }
 function separate() {
-  Call(turnAway, AgentSet.of(AgentSet.getTurtleVariable('nearest-neighbor'), function() {
-    return AgentSet.getTurtleVariable('heading');
+  Call(turnAway, AgentSet.of(AgentSet.getVariable('nearest-neighbor'), function() {
+    return AgentSet.getVariable('heading');
   }), world.observer.getGlobal('max-separate-turn'));
 }
 function align() {
   Call(turnTowards, Call(averageFlockmateHeading), world.observer.getGlobal('max-align-turn'));
 }
 function averageFlockmateHeading() {
-  var xComponent = Prims.sum(AgentSet.of(AgentSet.getTurtleVariable('flockmates'), function() {
+  var xComponent = Prims.sum(AgentSet.of(AgentSet.getVariable('flockmates'), function() {
     return AgentSet.self().dx();
   }));
-  var yComponent = Prims.sum(AgentSet.of(AgentSet.getTurtleVariable('flockmates'), function() {
+  var yComponent = Prims.sum(AgentSet.of(AgentSet.getVariable('flockmates'), function() {
     return AgentSet.self().dy();
   }));
   if ((Prims.equality(xComponent, 0) && Prims.equality(yComponent, 0))) {
-    return AgentSet.getTurtleVariable('heading');
+    return AgentSet.getVariable('heading');
   }
   else {
     return Trig.atan(xComponent, yComponent);
@@ -93,24 +93,24 @@ function cohere() {
   Call(turnTowards, Call(averageHeadingTowardsFlockmates), world.observer.getGlobal('max-cohere-turn'));
 }
 function averageHeadingTowardsFlockmates() {
-  var xComponent = Prims.mean(AgentSet.of(AgentSet.getTurtleVariable('flockmates'), function() {
+  var xComponent = Prims.mean(AgentSet.of(AgentSet.getVariable('flockmates'), function() {
     return Trig.unsquashedSin((AgentSet.self().towards(AgentSet.myself()) + 180));
   }));
-  var yComponent = Prims.mean(AgentSet.of(AgentSet.getTurtleVariable('flockmates'), function() {
+  var yComponent = Prims.mean(AgentSet.of(AgentSet.getVariable('flockmates'), function() {
     return Trig.unsquashedCos((AgentSet.self().towards(AgentSet.myself()) + 180));
   }));
   if ((Prims.equality(xComponent, 0) && Prims.equality(yComponent, 0))) {
-    return AgentSet.getTurtleVariable('heading');
+    return AgentSet.getVariable('heading');
   }
   else {
     return Trig.atan(xComponent, yComponent);
   }
 }
 function turnTowards(newHeading, maxTurn) {
-  Call(turnAtMost, Prims.subtractHeadings(newHeading, AgentSet.getTurtleVariable('heading')), maxTurn);
+  Call(turnAtMost, Prims.subtractHeadings(newHeading, AgentSet.getVariable('heading')), maxTurn);
 }
 function turnAway(newHeading, maxTurn) {
-  Call(turnAtMost, Prims.subtractHeadings(AgentSet.getTurtleVariable('heading'), newHeading), maxTurn);
+  Call(turnAtMost, Prims.subtractHeadings(AgentSet.getVariable('heading'), newHeading), maxTurn);
 }
 function turnAtMost(turn, maxTurn) {
   if (Prims.gt(StrictMath.abs(turn), maxTurn)) {

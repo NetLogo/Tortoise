@@ -29,7 +29,7 @@ var StrictMath     = require('integration/strictmath');function setup() {
   world.clearTurtles();
   notImplemented('clear-all-plots', undefined)();
   AgentSet.ask(world.createTurtles(world.observer.getGlobal('number'), ""), true, function() {
-    AgentSet.setTurtleVariable('color', Prims.item(Prims.random(world.observer.getGlobal('colors')), [5, 15, 25, 35, 45, 55, 65, 85, 95, 125]));
+    AgentSet.setVariable('color', Prims.item(Prims.random(world.observer.getGlobal('colors')), [5, 15, 25, 35, 45, 55, 65, 85, 95, 125]));
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
     Call(moveOffWall);
   });
@@ -37,7 +37,7 @@ var StrictMath     = require('integration/strictmath');function setup() {
 }
 function go() {
   if (Prims.equality(Prims.variance(AgentSet.of(world.turtles(), function() {
-    return AgentSet.getTurtleVariable('color');
+    return AgentSet.getVariable('color');
   })), 0)) {
     throw new Exception.StopInterrupt;
   }
@@ -59,8 +59,8 @@ function go() {
 function meet() {
   var candidate = AgentSet.oneOf(AgentSet.self().turtlesAt(1, 0));
   if (!Prims.equality(candidate, Nobody)) {
-    AgentSet.setTurtleVariable('color', AgentSet.of(candidate, function() {
-      return AgentSet.getTurtleVariable('color');
+    AgentSet.setVariable('color', AgentSet.of(candidate, function() {
+      return AgentSet.getVariable('color');
     }));
   }
 }
@@ -69,7 +69,7 @@ function findTopSpecies() {
   Tasks.forEach(Tasks.commandTask(function() {
     var taskArguments = arguments;
     var howMany = AgentSet.count(AgentSet.agentFilter(world.turtles(), function() {
-      return Prims.equality(AgentSet.getTurtleVariable('color'), taskArguments[0]);
+      return Prims.equality(AgentSet.getVariable('color'), taskArguments[0]);
     }));
     if (Prims.gt(howMany, winningAmount)) {
       winningAmount = howMany;

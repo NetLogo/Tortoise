@@ -46,17 +46,17 @@ function setupCars() {
   }
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "car")
   AgentSet.ask(world.createTurtles(world.observer.getGlobal('number-of-cars'), ""), true, function() {
-    AgentSet.setTurtleVariable('color', 105);
-    AgentSet.setTurtleVariable('xcor', Prims.randomXcor());
-    AgentSet.setTurtleVariable('heading', 90);
-    AgentSet.setTurtleVariable('speed', (0.1 + Prims.randomFloat(0.9)));
-    AgentSet.setTurtleVariable('speed-limit', 1);
-    AgentSet.setTurtleVariable('speed-min', 0);
+    AgentSet.setVariable('color', 105);
+    AgentSet.setVariable('xcor', Prims.randomXcor());
+    AgentSet.setVariable('heading', 90);
+    AgentSet.setVariable('speed', (0.1 + Prims.randomFloat(0.9)));
+    AgentSet.setVariable('speed-limit', 1);
+    AgentSet.setVariable('speed-min', 0);
     Call(separateCars);
   });
   world.observer.setGlobal('sample-car', AgentSet.oneOf(world.turtles()));
   AgentSet.ask(world.observer.getGlobal('sample-car'), true, function() {
-    AgentSet.setTurtleVariable('color', 15);
+    AgentSet.setVariable('color', 15);
   });
 }
 function separateCars() {
@@ -74,23 +74,23 @@ function go() {
     else {
       Call(speedUpCar);
     }
-    if (Prims.lt(AgentSet.getTurtleVariable('speed'), AgentSet.getTurtleVariable('speed-min'))) {
-      AgentSet.setTurtleVariable('speed', AgentSet.getTurtleVariable('speed-min'));
+    if (Prims.lt(AgentSet.getVariable('speed'), AgentSet.getVariable('speed-min'))) {
+      AgentSet.setVariable('speed', AgentSet.getVariable('speed-min'));
     }
-    if (Prims.gt(AgentSet.getTurtleVariable('speed'), AgentSet.getTurtleVariable('speed-limit'))) {
-      AgentSet.setTurtleVariable('speed', AgentSet.getTurtleVariable('speed-limit'));
+    if (Prims.gt(AgentSet.getVariable('speed'), AgentSet.getVariable('speed-limit'))) {
+      AgentSet.setVariable('speed', AgentSet.getVariable('speed-limit'));
     }
-    Prims.fd(AgentSet.getTurtleVariable('speed'));
+    Prims.fd(AgentSet.getVariable('speed'));
   });
   world.ticker.tick();
 }
 function slowDownCar(carAhead) {
-  AgentSet.setTurtleVariable('speed', (AgentSet.of(carAhead, function() {
-    return AgentSet.getTurtleVariable('speed');
+  AgentSet.setVariable('speed', (AgentSet.of(carAhead, function() {
+    return AgentSet.getVariable('speed');
   }) - world.observer.getGlobal('deceleration')));
 }
 function speedUpCar() {
-  AgentSet.setTurtleVariable('speed', (AgentSet.getTurtleVariable('speed') + world.observer.getGlobal('acceleration')));
+  AgentSet.setVariable('speed', (AgentSet.getVariable('speed') + world.observer.getGlobal('acceleration')));
 }
 world.observer.setGlobal('number-of-cars', 20);
 world.observer.setGlobal('deceleration', 0.026);

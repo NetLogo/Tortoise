@@ -36,10 +36,10 @@ function setupTurtles() {
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "person")
   AgentSet.ask(world.createTurtles(world.observer.getGlobal('people'), ""), true, function() {
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
-    AgentSet.setTurtleVariable('age', Prims.random(world.observer.getGlobal('lifespan')));
-    AgentSet.setTurtleVariable('sick-count', 0);
-    AgentSet.setTurtleVariable('immune?', false);
-    AgentSet.setTurtleVariable('size', 1.5);
+    AgentSet.setVariable('age', Prims.random(world.observer.getGlobal('lifespan')));
+    AgentSet.setVariable('sick-count', 0);
+    AgentSet.setVariable('immune?', false);
+    AgentSet.setVariable('size', 1.5);
     Call(getHealthy);
   });
   AgentSet.ask(AgentSet.nOf(10, world.turtles()), true, function() {
@@ -47,21 +47,21 @@ function setupTurtles() {
   });
 }
 function getSick() {
-  AgentSet.setTurtleVariable('sick?', true);
-  AgentSet.setTurtleVariable('immune?', false);
-  AgentSet.setTurtleVariable('color', 15);
+  AgentSet.setVariable('sick?', true);
+  AgentSet.setVariable('immune?', false);
+  AgentSet.setVariable('color', 15);
 }
 function getHealthy() {
-  AgentSet.setTurtleVariable('sick?', false);
-  AgentSet.setTurtleVariable('immune?', false);
-  AgentSet.setTurtleVariable('sick-count', 0);
-  AgentSet.setTurtleVariable('color', 55);
+  AgentSet.setVariable('sick?', false);
+  AgentSet.setVariable('immune?', false);
+  AgentSet.setVariable('sick-count', 0);
+  AgentSet.setVariable('color', 55);
 }
 function becomeImmune() {
-  AgentSet.setTurtleVariable('sick?', false);
-  AgentSet.setTurtleVariable('sick-count', 0);
-  AgentSet.setTurtleVariable('immune?', true);
-  AgentSet.setTurtleVariable('color', 5);
+  AgentSet.setVariable('sick?', false);
+  AgentSet.setVariable('sick-count', 0);
+  AgentSet.setVariable('immune?', true);
+  AgentSet.setVariable('color', 5);
 }
 function setupConstants() {
   world.observer.setGlobal('lifespan', 100);
@@ -80,20 +80,20 @@ function go() {
 function updateGlobalVariables() {
   if (Prims.gt(AgentSet.count(world.turtles()), 0)) {
     world.observer.setGlobal('%infected', ((AgentSet.count(AgentSet.agentFilter(world.turtles(), function() {
-      return AgentSet.getTurtleVariable('sick?');
+      return AgentSet.getVariable('sick?');
     })) / AgentSet.count(world.turtles())) * 100));
     world.observer.setGlobal('%immune', ((AgentSet.count(AgentSet.agentFilter(world.turtles(), function() {
-      return AgentSet.getTurtleVariable('immune?');
+      return AgentSet.getVariable('immune?');
     })) / AgentSet.count(world.turtles())) * 100));
   }
 }
 function getOlder() {
   AgentSet.ask(world.turtles(), true, function() {
-    AgentSet.setTurtleVariable('age', (AgentSet.getTurtleVariable('age') + 1));
-    if (AgentSet.getTurtleVariable('sick?')) {
-      AgentSet.setTurtleVariable('sick-count', (AgentSet.getTurtleVariable('sick-count') + 1));
+    AgentSet.setVariable('age', (AgentSet.getVariable('age') + 1));
+    if (AgentSet.getVariable('sick?')) {
+      AgentSet.setVariable('sick-count', (AgentSet.getVariable('sick-count') + 1));
     }
-    if (Prims.gt(AgentSet.getTurtleVariable('age'), world.observer.getGlobal('lifespan'))) {
+    if (Prims.gt(AgentSet.getVariable('age'), world.observer.getGlobal('lifespan'))) {
       AgentSet.die();
     }
   });
@@ -107,10 +107,10 @@ function move() {
 }
 function infect() {
   AgentSet.ask(AgentSet.agentFilter(world.turtles(), function() {
-    return AgentSet.getTurtleVariable('sick?');
+    return AgentSet.getVariable('sick?');
   }), true, function() {
     AgentSet.ask(AgentSet.other(AgentSet.agentFilter(AgentSet.self().turtlesHere(), function() {
-      return !(AgentSet.getTurtleVariable('immune?'));
+      return !(AgentSet.getVariable('immune?'));
     })), true, function() {
       if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal('infectiousness'))) {
         Call(getSick);
@@ -120,9 +120,9 @@ function infect() {
 }
 function recover() {
   AgentSet.ask(AgentSet.agentFilter(world.turtles(), function() {
-    return AgentSet.getTurtleVariable('sick?');
+    return AgentSet.getVariable('sick?');
   }), true, function() {
-    if (Prims.gt(Prims.random(AgentSet.getTurtleVariable('sick-count')), (world.observer.getGlobal('lifespan') * (world.observer.getGlobal('duration') / 100)))) {
+    if (Prims.gt(Prims.random(AgentSet.getVariable('sick-count')), (world.observer.getGlobal('lifespan') * (world.observer.getGlobal('duration') / 100)))) {
       if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal('chance-recover'))) {
         Call(becomeImmune);
       }
@@ -134,11 +134,11 @@ function recover() {
 }
 function reproduce() {
   AgentSet.ask(AgentSet.agentFilter(world.turtles(), function() {
-    return !(AgentSet.getTurtleVariable('sick?'));
+    return !(AgentSet.getVariable('sick?'));
   }), true, function() {
     if ((Prims.lt(AgentSet.count(world.turtles()), world.observer.getGlobal('carrying-capacity')) && Prims.lt(Prims.random(world.observer.getGlobal('lifespan')), world.observer.getGlobal('average-offspring')))) {
       AgentSet.ask(Prims.hatch(1, ""), true, function() {
-        AgentSet.setTurtleVariable('age', 1);
+        AgentSet.setVariable('age', 1);
         Prims.left(45);
         Prims.fd(1);
         Call(getHealthy);

@@ -53,9 +53,9 @@ function setupWorld() {
 }
 function setupMoths() {
   AgentSet.ask(world.createTurtles(world.observer.getGlobal('num-moths'), "MOTHS"), true, function() {
-    AgentSet.setTurtleVariable('color', Call(randomColor));
+    AgentSet.setVariable('color', Call(randomColor));
     Call(mothsPickShape);
-    AgentSet.setBreedVariable("age", Prims.random(3));
+    AgentSet.setVariable('age', Prims.random(3));
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
   });
 }
@@ -73,31 +73,31 @@ function go() {
   Call(updateMonitors);
 }
 function mothsMate() {
-  if ((Prims.equality(AgentSet.getBreedVariable("age"), 2) || Prims.equality(AgentSet.getBreedVariable("age"), 3))) {
+  if ((Prims.equality(AgentSet.getVariable('age'), 2) || Prims.equality(AgentSet.getVariable('age'), 3))) {
     AgentSet.ask(Prims.hatch(2, ""), true, function() {
       if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal('mutation'))) {
         if (Prims.equality(Prims.random(2), 0)) {
-          AgentSet.setTurtleVariable('color', StrictMath.round((AgentSet.getTurtleVariable('color') + (Prims.randomFloat(world.observer.getGlobal('mutation')) / 12.5))));
-          if (Prims.gte(AgentSet.getTurtleVariable('color'), 9)) {
-            AgentSet.setTurtleVariable('color', 9);
+          AgentSet.setVariable('color', StrictMath.round((AgentSet.getVariable('color') + (Prims.randomFloat(world.observer.getGlobal('mutation')) / 12.5))));
+          if (Prims.gte(AgentSet.getVariable('color'), 9)) {
+            AgentSet.setVariable('color', 9);
           }
         }
         else {
-          AgentSet.setTurtleVariable('color', StrictMath.round((AgentSet.getTurtleVariable('color') - (Prims.randomFloat(world.observer.getGlobal('mutation')) / 12.5))));
-          if ((Prims.lte(AgentSet.getTurtleVariable('color'), 1) || Prims.gte(AgentSet.getTurtleVariable('color'), 130))) {
-            AgentSet.setTurtleVariable('color', 1);
+          AgentSet.setVariable('color', StrictMath.round((AgentSet.getVariable('color') - (Prims.randomFloat(world.observer.getGlobal('mutation')) / 12.5))));
+          if ((Prims.lte(AgentSet.getVariable('color'), 1) || Prims.gte(AgentSet.getVariable('color'), 130))) {
+            AgentSet.setVariable('color', 1);
           }
         }
       }
       Call(mothsPickShape);
-      AgentSet.setBreedVariable("age", 0);
+      AgentSet.setVariable('age', 0);
       Prims.right(Prims.randomFloat(360));
       Prims.fd(1);
     });
   }
 }
 function mothsGetEaten() {
-  if (Prims.lt(Prims.randomFloat(1000), ((world.observer.getGlobal('selection') * StrictMath.abs((Call(envColor) - AgentSet.getTurtleVariable('color')))) + 200))) {
+  if (Prims.lt(Prims.randomFloat(1000), ((world.observer.getGlobal('selection') * StrictMath.abs((Call(envColor) - AgentSet.getVariable('color')))) + 200))) {
     AgentSet.die();
   }
 }
@@ -112,22 +112,22 @@ function mothsGrimReaper() {
   }
 }
 function mothsAge() {
-  AgentSet.setBreedVariable("age", (AgentSet.getBreedVariable("age") + 1));
+  AgentSet.setVariable('age', (AgentSet.getVariable('age') + 1));
 }
 function mothsPickShape() {
-  if (Prims.lt(AgentSet.getTurtleVariable('color'), 5)) {
-    AgentSet.setTurtleVariable('shape', "moth dark");
+  if (Prims.lt(AgentSet.getVariable('color'), 5)) {
+    AgentSet.setVariable('shape', "moth dark");
   }
   else {
-    AgentSet.setTurtleVariable('shape', "moth light");
+    AgentSet.setVariable('shape', "moth light");
   }
 }
 function updateMonitors() {
   world.observer.setGlobal('light-moths', AgentSet.count(AgentSet.agentFilter(world.turtlesOfBreed("MOTHS"), function() {
-    return Prims.gte(AgentSet.getTurtleVariable('color'), 7);
+    return Prims.gte(AgentSet.getVariable('color'), 7);
   })));
   world.observer.setGlobal('dark-moths', AgentSet.count(AgentSet.agentFilter(world.turtlesOfBreed("MOTHS"), function() {
-    return Prims.lte(AgentSet.getTurtleVariable('color'), 3);
+    return Prims.lte(AgentSet.getVariable('color'), 3);
   })));
   world.observer.setGlobal('medium-moths', (AgentSet.count(world.turtlesOfBreed("MOTHS")) - (world.observer.getGlobal('light-moths') + world.observer.getGlobal('dark-moths'))));
 }

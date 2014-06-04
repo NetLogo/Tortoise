@@ -28,9 +28,9 @@ var Random         = require('integration/random');
 var StrictMath     = require('integration/strictmath');function setup() {
   world.clearAll();
   AgentSet.ask(world.createTurtles(world.observer.getGlobal('number'), ""), true, function() {
-    AgentSet.setTurtleVariable('color', (5 + (Prims.random(world.observer.getGlobal('colors')) * 10)));
-    if (Prims.equality(AgentSet.getTurtleVariable('color'), 75)) {
-      AgentSet.setTurtleVariable('color', 125);
+    AgentSet.setVariable('color', (5 + (Prims.random(world.observer.getGlobal('colors')) * 10)));
+    if (Prims.equality(AgentSet.getVariable('color'), 75)) {
+      AgentSet.setVariable('color', 125);
     }
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
   });
@@ -38,7 +38,7 @@ var StrictMath     = require('integration/strictmath');function setup() {
 }
 function go() {
   if (Prims.equality(Prims.variance(AgentSet.of(world.turtles(), function() {
-    return AgentSet.getTurtleVariable('color');
+    return AgentSet.getVariable('color');
   })), 0)) {
     throw new Exception.StopInterrupt;
   }

@@ -28,8 +28,8 @@ var Random         = require('integration/random');
 var StrictMath     = require('integration/strictmath');function setup() {
   world.clearAll();
   AgentSet.ask(world.createTurtles(world.observer.getGlobal('population'), ""), true, function() {
-    AgentSet.setTurtleVariable('color', 15);
-    AgentSet.setTurtleVariable('size', 2);
+    AgentSet.setVariable('color', 15);
+    AgentSet.setVariable('size', 2);
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
   });
   AgentSet.ask(world.patches(), true, function() {

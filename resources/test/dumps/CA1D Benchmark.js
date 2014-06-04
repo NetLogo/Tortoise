@@ -209,18 +209,18 @@ function showRules() {
     return (Prims.equality(AgentSet.getPatchVariable('pycor'), world.maxPycor) && Prims.equality(Prims.mod((AgentSet.getPatchVariable('pxcor') + 1), StrictMath.floor((world.width() / 8))), 0));
   }), true, function() {
     AgentSet.ask(Prims.sprout(1, ""), true, function() {
-      AgentSet.setTurtleVariable('heading', 270);
+      AgentSet.setVariable('heading', 270);
       Prims.fd(18);
-      Call(printBlock, Prims.item(0, Prims.item(AgentSet.getTurtleVariable('who'), rules)));
+      Call(printBlock, Prims.item(0, Prims.item(AgentSet.getVariable('who'), rules)));
       Prims.fd(2);
-      Call(printBlock, Prims.item(1, Prims.item(AgentSet.getTurtleVariable('who'), rules)));
+      Call(printBlock, Prims.item(1, Prims.item(AgentSet.getVariable('who'), rules)));
       Prims.fd(2);
-      Call(printBlock, Prims.item(2, Prims.item(AgentSet.getTurtleVariable('who'), rules)));
+      Call(printBlock, Prims.item(2, Prims.item(AgentSet.getVariable('who'), rules)));
       Prims.bk(2);
-      AgentSet.setTurtleVariable('heading', 180);
+      AgentSet.setVariable('heading', 180);
       Prims.fd(2);
-      AgentSet.setTurtleVariable('heading', 90);
-      Call(printBlock, Prims.item(3, Prims.item(AgentSet.getTurtleVariable('who'), rules)));
+      AgentSet.setVariable('heading', 90);
+      Call(printBlock, Prims.item(3, Prims.item(AgentSet.getVariable('who'), rules)));
       AgentSet.die();
     });
   });
@@ -228,14 +228,14 @@ function showRules() {
 }
 function printBlock(state) {
   if (state) {
-    AgentSet.setTurtleVariable('color', world.observer.getGlobal('foreground'));
+    AgentSet.setVariable('color', world.observer.getGlobal('foreground'));
   }
   else {
-    AgentSet.setTurtleVariable('color', world.observer.getGlobal('background'));
+    AgentSet.setVariable('color', world.observer.getGlobal('background'));
   }
-  AgentSet.setTurtleVariable('heading', 90);
+  AgentSet.setVariable('heading', 90);
   Prims.repeat(4, function () {
-    AgentSet.setPatchVariable('pcolor', AgentSet.getTurtleVariable('color'));
+    AgentSet.setPatchVariable('pcolor', AgentSet.getVariable('color'));
     Prims.right(90);
     Prims.fd(1);
   });

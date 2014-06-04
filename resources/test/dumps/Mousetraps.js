@@ -33,8 +33,8 @@ var StrictMath     = require('integration/strictmath');function setup() {
   });
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
   AgentSet.ask(world.createTurtles(1, ""), true, function() {
-    AgentSet.setTurtleVariable('color', 9.9);
-    AgentSet.setTurtleVariable('size', 1.5);
+    AgentSet.setVariable('color', 9.9);
+    AgentSet.setVariable('size', 1.5);
   });
   world.ticker.reset();
 }
