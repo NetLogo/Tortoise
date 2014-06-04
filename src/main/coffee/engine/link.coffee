@@ -1,7 +1,7 @@
-define(['engine/abstractagents', 'engine/builtins', 'engine/colormodel', 'engine/comparator', 'engine/exception'
-      , 'engine/turtleset', 'engine/variablemanager']
-     , ( AbstractAgents,          Builtins,          ColorModel,          Comparator,          Exception
-      ,  TurtleSet,          VariableManager) ->
+define(['integration/lodash', 'engine/abstractagents', 'engine/builtins', 'engine/colormodel', 'engine/comparator'
+      , 'engine/exception', 'engine/turtleset', 'engine/variablemanager']
+     , ( _,                    AbstractAgents,          Builtins,          ColorModel,          Comparator
+      ,  Exception,          TurtleSet,          VariableManager) ->
 
   class Link
 
@@ -15,11 +15,11 @@ define(['engine/abstractagents', 'engine/builtins', 'engine/colormodel', 'engine
     constructor: (@id, @directed, @end1, @end2, @world, breed = @world.breedManager.links(), @_color = 5
                 , @_isHidden = false, @_label = "", @_labelcolor = 9.9, @_shape = "default", @_thickness = 0
                 , @_tiemode = "none") ->
+      @_varManager = @_genVarManager(@world.linksOwnNames)
       @_setBreed(breed)
       @end1._links.push(this)
       @end2._links.push(this)
       @updateEndRelatedVars()
-      @_varManager = @_genVarManager(@world.linksOwnNames)
 
     # () => String
     getBreedName: ->
@@ -106,7 +106,7 @@ define(['engine/abstractagents', 'engine/builtins', 'engine/colormodel', 'engine
         { name: 'tie-mode',    get: (=> @_tiemode),                         set: ((x) => @_setTieMode(x))    }
       ]
 
-      new VariableManager(extraVarNames, varBundles)
+      VariableManager.Companion.generate(extraVarNames, varBundles)
 
     # (String) => Unit
     _genVarUpdate: (varName) ->
@@ -126,8 +126,19 @@ define(['engine/abstractagents', 'engine/builtins', 'engine/colormodel', 'engine
 
       if @_breed isnt trueBreed
         trueBreed.add(this)
-        if @_breed?
-          @_breed.remove(this)
+
+        newNames = trueBreed.varNames
+        oldNames =
+          if @_breed?
+            @_breed.remove(this)
+            @_breed.varNames
+          else
+            []
+
+        obsoletedNames = _(oldNames).difference(newNames).value()
+        freshNames     = _(newNames).difference(oldNames).value()
+
+        @_varManager = @_varManager.refineBy(obsoletedNames)(freshNames)
 
       @_breed = trueBreed
       @_genVarUpdate("breed")
