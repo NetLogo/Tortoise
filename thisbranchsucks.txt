@@ -3,7 +3,6 @@ Things that are lousy about this branch:
 Very High:
 -`Prims` vs. `AgentSet` nonsense sucks
 -`Agents` should not be named as such, and should (hopefully) roll in with `AgentSet`
--Splats are slow.  But we pretty much always control whether or not we're passing in a variable number of arguments, so why not just pass in an array?
 
 High:
 -FPification
