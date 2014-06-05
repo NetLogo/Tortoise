@@ -25,6 +25,7 @@ Mid:
 -Agentsets don't handle dead agents correctly.  JVM NetLogo has `DeadSkippingIterator` for this.  Tortoise just continues to act as if the dead agents are valid, unless they're a part of a breed agentset.  Check out being able to observe object changes in ECAMScript 6.
 
 Low:
+-Change JVM `Shufflerator` so it doesn't prepoll the iteration and can then change the Tortoise `Shufflerator`
 -Optimizations
 -Random number generation often seems to take a lot of a model's time.  Would it be crazy to run the random generator within a web worker and constantly keep a pre-computed queue of 100 or 1000 or so numbers?
 -Lousy interfaces with SpiderMonkey and V8
