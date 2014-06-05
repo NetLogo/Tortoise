@@ -4,6 +4,8 @@
 define(['engine/exception', 'engine/link', 'engine/observer', 'engine/patch', 'engine/turtle', 'engine/world']
      , ( Exception,          Link,          Observer,          Patch,          Turtle,          World) ->
 
+  ignored = ["", ""]
+
   class Updater
 
     @_updates = undefined
@@ -26,17 +28,17 @@ define(['engine/exception', 'engine/link', 'engine/observer', 'engine/patch', 'e
     updated: (obj) => (vars...) => #@# Polymorphize correctly
       update = @_updates[0]
 
-      [entry, updateFunc] =
+      [entry, objMap] =
         if obj instanceof Turtle
-          [update.turtles, @_updateTurtles]
+          [update.turtles, @_turtleMap(obj)]
         else if obj instanceof Patch
-          [update.patches, @_updatePatches]
+          [update.patches, @_patchMap(obj)]
         else if obj instanceof Link
-          [update.links, @_updateLinks]
+          [update.links, @_linkMap(obj)]
         else if obj instanceof World
-          [update.world, @_updateWorld]
+          [update.world, @_worldMap(obj)]
         else if obj instanceof Observer
-          [update.observer, @_updateObserver]
+          [update.observer, @_observerMap(obj)]
         else
           throw new Exception.NetLogoException("Unrecognized update type")
 
@@ -47,172 +49,91 @@ define(['engine/exception', 'engine/link', 'engine/observer', 'engine/patch', 'e
       if entryUpdate['WHO'] < 0
         delete entryUpdate['WHO']
 
-      entry[obj.id] = updateFunc(obj, vars, entryUpdate)
+      for v in vars
+        mapping = objMap[v]
+        if mapping?
+          if mapping isnt ignored
+            [varName, value]     = mapping
+            entryUpdate[varName] = value
+            entry[obj.id]        = entryUpdate
+        else
+          throw new Exception.NetLogoException("Unknown #{obj.constructor.name} variable for update: #{v}")
 
       return
 
 
-    # (Turtle, Array[String], Object[String, Any]) => Object[String, Any]
-    _updateTurtles: (turtle, vars, updateBundle) ->
-      for v in vars
-        [varName, value] =
-          switch v
-            when "breed"
-              ["BREED", turtle.getBreedName()]
-            when "color"
-              ["COLOR", turtle.color]
-            when "heading"
-              ["HEADING", turtle.heading]
-            when "id"
-              ["WHO", turtle.id]
-            when "label-color"
-              ["LABEL-COLOR", turtle.labelcolor]
-            when "hidden?"
-              ["HIDDEN?", turtle.hidden]
-            when "label"
-              ["LABEL", turtle.label.toString()]
-            when "pen-size"
-              ["PEN-SIZE", turtle.penManager.getSize()]
-            when "pen-mode"
-              ["PEN-MODE", turtle.penManager.getMode().toString()]
-            when "shape"
-              ["SHAPE", turtle.shape]
-            when "size"
-              ["SIZE", turtle.size]
-            when "xcor"
-              ["XCOR", turtle.xcor()]
-            when "ycor"
-              ["YCOR", turtle.ycor()]
-            else
-              throw new Exception.NetLogoException("Unknown turtle variable for update: #{v}")
+    # (Turtle) => Object[String, (String, Any)]
+    _turtleMap: (turtle) -> {
+      breed:         ["BREED",       turtle.getBreedName()]
+      color:         ["COLOR",       turtle.color]
+      heading:       ["HEADING",     turtle.heading]
+      id:            ["WHO",         turtle.id]
+      'label-color': ["LABEL-COLOR", turtle.labelcolor]
+      'hidden?':     ["HIDDEN?",     turtle.hidden]
+      label:         ["LABEL",       turtle.label.toString()]
+      'pen-size':    ["PEN-SIZE",    turtle.penManager.getSize()]
+      'pen-mode':    ["PEN-MODE",    turtle.penManager.getMode().toString()]
+      shape:         ["SHAPE",       turtle.shape]
+      size:          ["SIZE",        turtle.size]
+      xcor:          ["XCOR",        turtle.xcor()]
+      ycor:          ["YCOR",        turtle.ycor()]
+    }
 
-        updateBundle[varName] = value
+    # (Patch) => Object[String, (String, Any)]
+    _patchMap: (patch) -> {
+      id:             ["WHO",          patch.id]
+      pcolor:         ["PCOLOR",       patch._pcolor]
+      plabel:         ["PLABEL",       patch._plabel.toString()]
+      'plabel-color': ["PLABEL-COLOR", patch._plabelcolor]
+      pxcor:          ["PXCOR",        patch.pxcor]
+      pycor:          ["PYCOR",        patch.pycor]
+    }
 
-      updateBundle
+    # (Link) => Object[String, (String, Any)]
+    _linkMap: (link) -> {
+      breed:         ["BREED",       link.getBreedName()]
+      color:         ["COLOR",       link._color]
+      end1:          ["END1",        link.end1.id]
+      end2:          ["END2",        link.end2.id]
+      heading:       ["HEADING",     link.getHeading()]
+      'hidden?':     ["HIDDEN?",     link._isHidden]
+      id:            ["ID",          link.id]
+      label:         ["LABEL",       link._label.toString()]
+      'label-color': ["LABEL-COLOR", link._labelcolor]
+      midpointx:     ["MIDPOINTX",   link.getMidpointX()]
+      midpointy:     ["MIDPOINTY",   link.getMidpointY()]
+      shape:         ["SHAPE",       link._shape]
+      size:          ["SIZE",        link.getSize()]
+      thickness:     ["THICKNESS",   link._thickness]
+      'tie-mode':    ["TIE-MODE",    link._tiemode]
+      lcolor:        ignored
+      llabel:        ignored
+      llabelcolor:   ignored
+      lhidden:       ignored
+      lbreed:        ignored
+      lshape:        ignored
+    }
 
+    # (World) => Object[String, (String, Any)]
+    _worldMap: (world) -> {
+      height:                     ["worldHeight",               world.height()]
+      id:                         ["WHO",                       world.id]
+      patchesAllBlack:            ["patchesAllBlack",           world._patchesAllBlack]
+      patchesWithLabels:          ["patchesWithLabels",         world._patchesWithLabels]
+      maxPxcor:                   ["MAXPXCOR",                  world.maxPxcor]
+      maxPycor:                   ["MAXPYCOR",                  world.maxPycor]
+      minPxcor:                   ["MINPXCOR",                  world.minPxcor]
+      minPycor:                   ["MINPYCOR",                  world.minPycor]
+      ticks:                      ["ticks",                     world.ticker._count]
+      unbreededLinksAreDirected:  ["unbreededLinksAreDirected", world.unbreededLinksAreDirected]
+      width:                      ["worldWidth",                world.width()]
+    }
 
-    # (Patch, Array[String], Object[String, Any]) => Object[String, Any]
-    _updatePatches: (patch, vars, updateBundle) ->
-      for v in vars
-        [varName, value] =
-          switch v
-            when "id"
-              ["WHO", patch.id]
-            when "pcolor"
-              ["PCOLOR", patch._pcolor]
-            when "plabel"
-              ["PLABEL", patch._plabel.toString()]
-            when "plabel-color"
-              ["PLABEL-COLOR", patch._plabelcolor]
-            when "pxcor"
-              ["PXCOR", patch.pxcor]
-            when "pycor"
-              ["PYCOR", patch.pycor]
-            else
-              throw new Exception.NetLogoException("Unknown patch variable for update: #{v}")
-
-        updateBundle[varName] = value
-
-      updateBundle
-
-
-    # (Link, Array[String], Object[String, Any]) => Object[String, Any]
-    _updateLinks: (link, vars, updateBundle) ->
-      for v in vars
-        [varName, value] =
-          switch v
-            when "breed"
-              ["BREED", link.getBreedName()]
-            when "color"
-              ["COLOR", link._color]
-            when "end1"
-              ["END1", link.end1.id]
-            when "end2"
-              ["END2", link.end2.id]
-            when "heading"
-              ["HEADING", link.getHeading()]
-            when "hidden?"
-              ["HIDDEN?", link._isHidden]
-            when "id"
-              ["ID", link.id]
-            when "label"
-              ["LABEL", link._label.toString()]
-            when "label-color"
-              ["LABEL-COLOR", link._labelcolor]
-            when "midpointx"
-              ["MIDPOINTX", link.getMidpointX()]
-            when "midpointy"
-              ["MIDPOINTY", link.getMidpointY()]
-            when "shape"
-              ["SHAPE", link._shape]
-            when "size"
-              ["SIZE", link.getSize()]
-            when "thickness"
-              ["THICKNESS", link._thickness]
-            when "tie-mode"
-              ["TIE-MODE", link._tiemode]
-            when "lcolor", "llabel", "llabelcolor", "lhidden", "lbreed", "lshape" # Ignored!
-              ["", ""]
-            else
-              throw new Exception.NetLogoException("Unknown link variable for update: #{v}")
-
-        if varName isnt ""
-          updateBundle[varName] = value
-
-      updateBundle
-
-
-    # (World, Array[String], Object[String, Any]) => Object[String, Any]
-    _updateWorld: (world, vars, updateBundle) ->
-      for v in vars
-        [varName, value] =
-          switch v
-            when "height"
-              ["worldHeight", world.height()]
-            when "id"
-              ["WHO", world.id]
-            when "patchesAllBlack"
-              ["patchesAllBlack", world._patchesAllBlack]
-            when "patchesWithLabels"
-              ["patchesWithLabels", world._patchesWithLabels]
-            when "maxPxcor"
-              ["MAXPXCOR", world.maxPxcor]
-            when "maxPycor"
-              ["MAXPYCOR", world.maxPycor]
-            when "minPxcor"
-              ["MINPXCOR", world.minPxcor]
-            when "minPycor"
-              ["MINPYCOR", world.minPycor]
-            when "ticks"
-              ["ticks", world.ticker._count]
-            when "unbreededLinksAreDirected"
-              ["unbreededLinksAreDirected", world.unbreededLinksAreDirected]
-            when "width"
-              ["worldWidth", world.width()]
-            else
-              throw new Exception.NetLogoException("Unknown world variable for update: #{v}")
-
-        updateBundle[varName] = value
-
-      updateBundle
-
-
-    # (Observer, Array[String], Object[String, Any]) => Object[String, Any]
-    _updateObserver: (observer, vars, updateBundle) ->
-      for v in vars
-        [varName, value] =
-          switch v
-            when "id"
-              ["WHO", observer.id]
-            when "perspective"
-              ["perspective", observer._perspective]
-            when "targetAgent"
-              ["targetAgent", observer._targetAgent]
-            else
-              throw new Exception.NetLogoException("Unknown observer variable for update: #{v}")
-
-        updateBundle[varName] = value
-
-      updateBundle
+    # (Observer) => Object[String, (String, Any)]
+    _observerMap: (observer) -> {
+      id:          ["WHO",         observer.id]
+      perspective: ["perspective", observer._perspective]
+      targetAgent: ["targetAgent", observer._targetAgent]
+    }
 
 )
