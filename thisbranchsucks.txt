@@ -25,6 +25,7 @@ Mid:
 
 Low:
 -Change JVM `Shufflerator` so it doesn't prepoll the iteration and can then change the Tortoise `Shufflerator`
--Optimizations
+-What if we coalesced serialization updates like we coalesce view updates?  How about `collectUpdates: -> unsuspend(); value = oldCollectUpdates(); suspend(); value`, and `updated`, while suspended, just creates a map of `AgentType => ID => { Agent, Set[StaleVarNames] }`?  I think this could both solve the problem of non-optimal performance from not having fine control over when updates are created, and also the problem of it being unnecessarily-complicated/-difficult/borderline-impossible to manage updates optimally and correctly when sprinkling them through the code.
 -Random number generation often seems to take a lot of a model's time.  Would it be crazy to run the random generator within a web worker and constantly keep a pre-computed queue of 100 or 1000 or so numbers?
+-Other optimizations
 -Lousy interfaces with SpiderMonkey and V8
