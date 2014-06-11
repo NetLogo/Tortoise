@@ -16,20 +16,20 @@ define(['integration/lodash', 'integration/random', 'engine/builtins', 'engine/c
 
     # (String) => Any
     getVariable: (varName) ->
-      @_varManager.get(varName)
+      @_varManager[varName]
 
     # (String, Any) => Unit
     setVariable: (varName, value) ->
-      @_varManager.set(varName, value)
+      @_varManager[varName] = value
       return
 
     # (String) => Any
     getPatchVariable: (varName) ->
-      @_varManager.get(varName)
+      @_varManager[varName]
 
     # (String, Any) => Unit
     setPatchVariable: (varName, value) ->
-      @_varManager.set(varName, value)
+      @_varManager[varName] = value
       return
 
     leave: (turtle) -> @turtles.splice(@turtles.indexOf(turtle, 0), 1) #@# These functions are named strangely (`patch.arrive(turtle0)` doesn't make a lot of sense to me as an English-speaker)
@@ -90,7 +90,7 @@ define(['integration/lodash', 'integration/random', 'engine/builtins', 'engine/c
         { name: 'pycor',        get: (=> @pycor),        set: (->)                         }
       ]
 
-      VariableManager.Companion.generate(extraVarNames, varBundles)
+      new VariableManager(extraVarNames, varBundles)
 
     # (String) => Unit
     _genVarUpdate: (varName) ->
