@@ -90,12 +90,12 @@ function pickTeamMembers() {
     }
     else {
       if ((Prims.lt(Prims.randomFloat(100), world.observer.getGlobal('q')) && AgentSet.any(AgentSet.agentFilter(world.turtles(), function() {
-        return (AgentSet.getVariable('in-team?') && AgentSet.any(AgentSet.agentFilter(AgentSet.linkNeighbors(false, false), function() {
+        return (AgentSet.getVariable('in-team?') && AgentSet.any(AgentSet.agentFilter(LinkPrims.linkNeighbors(false, false), function() {
           return !(AgentSet.getVariable('in-team?'));
         })));
       })))) {
         newTeamMember = AgentSet.oneOf(AgentSet.agentFilter(world.turtles(), function() {
-          return (!(AgentSet.getVariable('in-team?')) && AgentSet.any(AgentSet.agentFilter(AgentSet.linkNeighbors(false, false), function() {
+          return (!(AgentSet.getVariable('in-team?')) && AgentSet.any(AgentSet.agentFilter(LinkPrims.linkNeighbors(false, false), function() {
             return AgentSet.getVariable('in-team?');
           })));
         }));
@@ -195,7 +195,7 @@ function explore() {
   }
   AgentSet.setVariable('explored?', true);
   world.observer.setGlobal('component-size', (world.observer.getGlobal('component-size') + 1));
-  AgentSet.ask(AgentSet.linkNeighbors(false, false), true, function() {
+  AgentSet.ask(LinkPrims.linkNeighbors(false, false), true, function() {
     Call(explore);
   });
 }

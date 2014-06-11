@@ -62,7 +62,7 @@ function findPartner() {
 function resizeNodes() {
   if (AgentSet.all(world.turtles(), function(){ return Prims.lte(AgentSet.getVariable('size'), 1) })) {
     AgentSet.ask(world.turtles(), true, function() {
-      AgentSet.setVariable('size', StrictMath.sqrt(AgentSet.count(AgentSet.linkNeighbors(false, false))));
+      AgentSet.setVariable('size', StrictMath.sqrt(AgentSet.count(LinkPrims.linkNeighbors(false, false))));
     });
   }
   else {

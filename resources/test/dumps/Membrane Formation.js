@@ -37,7 +37,7 @@ var StrictMath     = require('integration/strictmath');function setup() {
   });
   AgentSet.ask(world.createTurtles(world.observer.getGlobal('num-lipids'), "OILS"), true, function() {
     var partner = AgentSet.oneOf(AgentSet.agentFilter(world.turtlesOfBreed("WATERS"), function() {
-      return !(AgentSet.any(AgentSet.connectedLinks(false, false)));
+      return !(AgentSet.any(LinkPrims.connectedLinks(false, false)));
     }));
     AgentSet.self().moveTo(partner);
     Prims.fd(world.observer.getGlobal('lipid-length'));
@@ -59,7 +59,7 @@ function go() {
 }
 function interactWithNeighbor() {
   var near = AgentSet.oneOf(AgentSet.other(AgentSet.agentFilter(AgentSet.self().inRadius(world.turtles(), world.observer.getGlobal('interaction-distance')), function() {
-    return !(AgentSet.isLinkNeighbor(false, false)(AgentSet.myself()));
+    return !(LinkPrims.isLinkNeighbor(false, false)(AgentSet.myself()));
   })));
   if (!Prims.equality(near, Nobody)) {
     AgentSet.self().face(near);
@@ -81,7 +81,7 @@ function repelTooCloseNeighbor() {
   }
 }
 function interactWithPartner() {
-  var partner = AgentSet.oneOf(AgentSet.linkNeighbors(false, false));
+  var partner = AgentSet.oneOf(LinkPrims.linkNeighbors(false, false));
   if (!Prims.equality(partner, Nobody)) {
     AgentSet.self().face(partner);
     Prims.fd((AgentSet.self().distance(partner) - world.observer.getGlobal('lipid-length')));
