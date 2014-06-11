@@ -208,11 +208,11 @@ define(['integration/lodash', 'engine/abstractagents', 'engine/builtins', 'engin
 
     # (String) => Any
     getVariable: (varName) ->
-      @_varManager.get(varName)
+      @_varManager[varName]
 
     # (String, Any) => Unit
     setVariable: (varName, value) ->
-      @_varManager.set(varName, value)
+      @_varManager[varName] = value
       return
 
     # () => Patch
@@ -291,7 +291,7 @@ define(['integration/lodash', 'engine/abstractagents', 'engine/builtins', 'engin
         { name: 'ycor',        get: (=> @ycor()),                             set: ((x) => @setYcor(x))               }
       ]
 
-      VariableManager.Companion.generate(extraVarNames, varBundles)
+      new VariableManager(extraVarNames, varBundles)
 
     # (String) => Unit
     _genVarUpdate: (varName) ->
@@ -331,7 +331,7 @@ define(['integration/lodash', 'engine/abstractagents', 'engine/builtins', 'engin
         obsoletedNames = _(oldNames).difference(newNames).value()
         freshNames     = _(newNames).difference(oldNames).value()
 
-        @_varManager = @_varManager.refineBy(obsoletedNames)(freshNames)
+        @_varManager.refineBy(obsoletedNames)(freshNames)
 
       @_breed = trueBreed
       @_genVarUpdate("breed")

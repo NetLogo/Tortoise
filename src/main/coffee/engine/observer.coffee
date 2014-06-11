@@ -15,7 +15,7 @@ define(['engine/patch', 'engine/turtle', 'engine/variablemanager', 'integration/
     # (Updater, Array[String], Array[String]) => Observer
     constructor: (@_updater, @_globalNames, @_interfaceGlobalNames) ->
       @resetPerspective()
-      @_varManager      = VariableManager.Companion.generate(@_globalNames)
+      @_varManager      = new VariableManager(@_globalNames)
       @_codeGlobalNames = _(@_globalNames).difference(@_interfaceGlobalNames)
 
     # (Agent) => Unit
@@ -40,15 +40,16 @@ define(['engine/patch', 'engine/turtle', 'engine/variablemanager', 'integration/
 
     # (String) => Any
     getGlobal: (varName) ->
-      @_varManager.get(varName)
+      @_varManager[varName]
 
     # (String, Any) => Unit
     setGlobal: (varName, value) ->
-      @_varManager.set(varName, value)
+      @_varManager[varName] = value
+      return
 
     # () => Unit
     clearCodeGlobals: ->
-      _(@_codeGlobalNames).forEach((name) => @_varManager.set(name, 0); return)
+      _(@_codeGlobalNames).forEach((name) => @_varManager[name] = 0; return)
       return
 
     # () => Unit
