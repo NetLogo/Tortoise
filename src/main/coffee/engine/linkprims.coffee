@@ -13,4 +13,16 @@ define(->
     createLinkWith: (other) -> @world.createUndirectedLink(@self(), other)
     createLinksWith: (others) -> @world.createUndirectedLinks(@self(), @shuffle(others))
 
+    # (Boolean, Boolean) => Array[Link]
+    connectedLinks: (directed, isSource) -> @self().connectedLinks(directed, isSource)
+
+    # (Boolean, Boolean) => Array[Turtle]
+    linkNeighbors: (directed, isSource) -> @self().linkNeighbors(directed, isSource)
+
+    # (Boolean, Boolean) => (Turtle) => Boolean
+    isLinkNeighbor: (directed, isSource) -> ((other) => @self().isLinkNeighbor(directed, isSource, other))
+
+    # (Boolean, Boolean) => (Turtle) => Link
+    findLinkViaNeighbor: (directed, isSource) -> ((other) => @self().findLinkViaNeighbor(directed, isSource, other))
+
 )

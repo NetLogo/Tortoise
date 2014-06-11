@@ -146,12 +146,6 @@ define(['engine/abstractagents', 'engine/exception', 'engine/iterator', 'engine/
             result
       )
     die: -> @_self.die()
-    connectedLinks: (directed, isSource) -> @_self.connectedLinks(directed, isSource)
-    linkNeighbors: (directed, isSource) -> @_self.linkNeighbors(directed, isSource)
-    isLinkNeighbor: (directed, isSource) ->
-      ((other) => @_self.isLinkNeighbor(directed, isSource, other))
-    findLinkViaNeighbor: (directed, isSource) ->
-      ((other) => @_self.findLinkViaNeighbor(directed, isSource, other))
 
     # (String) => Any
     getVariable: (varName) ->
