@@ -3,11 +3,11 @@ define(['integration/random'], (Random) ->
 
   class Shufflerator #@# Maybe use my `Iterator` implementation, or maybe Mori has one?
 
-    _agents:  undefined # AbstractAgents
+    _agents:  undefined # AbstractAgentSet
     _i:       undefined # Number
     _nextOne: undefined # Agent
 
-    # (AbstractAgents) => Shufflerator
+    # (AbstractAgentSet) => Shufflerator
     constructor: (_agents) ->
       @_agents  = _agents[..]
       @_i       = 0

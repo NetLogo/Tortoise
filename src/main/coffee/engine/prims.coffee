@@ -1,10 +1,10 @@
 #@# No more code golf
 define(['integration/lodash', 'integration/printer', 'integration/random', 'integration/strictmath'
-      , 'engine/abstractagents', 'engine/comparator', 'engine/dump', 'engine/exception', 'engine/iterator'
+      , 'engine/abstractagentset', 'engine/comparator', 'engine/dump', 'engine/exception', 'engine/iterator'
       , 'engine/link', 'engine/nobody', 'engine/patch', 'engine/patchset', 'engine/shufflerator', 'engine/turtle'
       , 'engine/turtleset', 'engine/typechecker']
      , ( _,                    Printer,               Random,               StrictMath
-      ,  AbstractAgents,          Comparator,           Dump,          Exception,          Iterator
+      ,  AbstractAgentSet,          Comparator,           Dump,          Exception,          Iterator
       ,  Link,          Nobody,          Patch,          PatchSet,          Shufflerator,          Turtle
       ,  TurtleSet,          Type) ->
 
@@ -36,10 +36,10 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
         (a is b) or ( # This code has been purposely rewritten into a crude, optimized form --JAB (3/19/14)
           if Type(a).isArray() and Type(b).isArray()
             a.length is b.length and a.every((elem, i) => @equality(elem, b[i]))
-          else if a instanceof AbstractAgents and b instanceof AbstractAgents #@# Could be sped up to O(n) (from O(n^2)) by zipping the two arrays
+          else if a instanceof AbstractAgentSet and b instanceof AbstractAgentSet #@# Could be sped up to O(n) (from O(n^2)) by zipping the two arrays
             a.size() is b.size() and Object.getPrototypeOf(a) is Object.getPrototypeOf(b) and a.toArray().every((elem) -> (elem in b.toArray())) #@# Wrong!
           else
-            (a instanceof AbstractAgents and a.getBreedName? and a.getBreedName() is b.name) or (b instanceof AbstractAgents and b.getBreedName? and b.getBreedName() is a.name) or
+            (a instanceof AbstractAgentSet and a.getBreedName? and a.getBreedName() is b.name) or (b instanceof AbstractAgentSet and b.getBreedName? and b.getBreedName() is a.name) or
               (a is Nobody and b.id is -1) or (b is Nobody and a.id is -1) or ((a instanceof Turtle or a instanceof Link) and a.compare(b) is Comparator.EQUALS)
         )
       else
@@ -151,7 +151,7 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
           xs[..].sort(@_world.linkCompare)
         else
           throw new Exception.NetLogoException("We don't know how to sort your kind here!")
-      else if xs instanceof AbstractAgents
+      else if xs instanceof AbstractAgentSet
         xs.sort()
       else
         throw new Exception.NetLogoException("can only sort lists and agentsets")
@@ -312,7 +312,7 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
 
     turtlesOn: (agentsOrAgent) -> #@# Lunacy
       agents =
-        if agentsOrAgent instanceof AbstractAgents
+        if agentsOrAgent instanceof AbstractAgentSet
           agentsOrAgent.toArray()
         else
           [agentsOrAgent]
@@ -324,15 +324,15 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
       @_getSelf().die()
       return
 
-    # (AbstractAgents[T]) => AbstractAgents[T]
+    # (AbstractAgentSet[T]) => AbstractAgentSet[T]
     other: (agentSet) ->
       self = @_getSelf()
       agentSet.filter((agent) => agent isnt self)
 
-    # (Agent|AbstractAgents[T], Boolean, () => Any) => Unit
+    # (Agent|AbstractAgentSet[T], Boolean, () => Any) => Unit
     ask: (agentsOrAgent, shouldShuffle, f) ->
       agents = #@# Nonsense
-        if agentsOrAgent instanceof AbstractAgents
+        if agentsOrAgent instanceof AbstractAgentSet
           agentsOrAgent.toArray()
         else
           [agentsOrAgent]
@@ -372,10 +372,10 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
       @_getSelf().setPatchVariable(varName, value)
       return
 
-    # [Result] @ (Agent|AbstractAgents[T], () => Result) => Result|Array[Result]
+    # [Result] @ (Agent|AbstractAgentSet[T], () => Result) => Result|Array[Result]
     of: (agentsOrAgent, f) -> #@# This is nonsense; same with `ask`.  If you're giving me something, _you_ get it into the right type first, not me!
       agents =
-        if agentsOrAgent instanceof AbstractAgents
+        if agentsOrAgent instanceof AbstractAgentSet
           agentsOrAgent.toArray()
         else
           [agentsOrAgent]
@@ -384,15 +384,15 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
       while iter.hasNext() #@# FP.  Also, move out of the 1990s.
         agent = iter.next()
         result.push(@_world.selfManager.askAgent(f)(agent))
-      if agentsOrAgent instanceof AbstractAgents #@# Awful to be doing this twice here...
+      if agentsOrAgent instanceof AbstractAgentSet #@# Awful to be doing this twice here...
         result
       else
         result[0]
 
-    # [Item] @ (AbstractAgents[Item]|Array[Item]) => Item
+    # [Item] @ (AbstractAgentSet[Item]|Array[Item]) => Item
     oneOf: (agentsOrList) ->
       arr =
-        if agentsOrList instanceof AbstractAgents #@# Stop this nonsense.  This code gives me such anxiety...
+        if agentsOrList instanceof AbstractAgentSet #@# Stop this nonsense.  This code gives me such anxiety...
           agentsOrList.toArray()
         else
           agentsOrList
@@ -401,9 +401,9 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
       else
         arr[Random.nextInt(arr.length)]
 
-    # [Item] @ (AbstractAgents[Item]|Array[Item]) => Array[Item]
+    # [Item] @ (AbstractAgentSet[Item]|Array[Item]) => Array[Item]
     nOf: (resultSize, agentsOrList) ->
-      if not (agentsOrList instanceof AbstractAgents) #@# How does this even make sense?
+      if not (agentsOrList instanceof AbstractAgentSet) #@# How does this even make sense?
         throw new Exception.NetLogoException("n-of not implemented on lists yet")
       items = agentsOrList.toArray()
       agentsOrList.copyWithNewAgents( #@# Oh, FFS

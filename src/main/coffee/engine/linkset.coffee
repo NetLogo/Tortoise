@@ -1,7 +1,7 @@
-define(['engine/abstractagents'], (AbstractAgents) ->
+define(['engine/abstractagentset'], (AbstractAgentSet) ->
 
   # Type Parameter: T <: Link - The type of links within `_agents`
-  class LinkSet extends AbstractAgents
+  class LinkSet extends AbstractAgentSet
 
     # (Array[T]) => LinkSet
     constructor: (@_agents, @_breedName ="LINKS") ->

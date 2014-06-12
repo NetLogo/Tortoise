@@ -2,10 +2,10 @@ define(->
 
   class Iterator
 
-    _agents: undefined # AbstractAgents
+    _agents: undefined # AbstractAgentSet
     _i:      undefined # Number
 
-    # (AbstractAgents) => Iterator
+    # (AbstractAgentSet) => Iterator
     constructor: (agents) ->
       @_agents = agents[..]
       @_i      = 0
