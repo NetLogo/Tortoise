@@ -28,13 +28,13 @@ var Random         = require('integration/random');
 var StrictMath     = require('integration/strictmath');function setup() {
   world.clearAll();
   world.observer.setGlobal('traps-triggered', 0);
-  AgentSet.ask(world.patches(), true, function() {
-    AgentSet.setPatchVariable('pcolor', (105 + 3));
+  Prims.ask(world.patches(), true, function() {
+    Prims.setPatchVariable('pcolor', (105 + 3));
   });
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
-  AgentSet.ask(world.createTurtles(1, ""), true, function() {
-    AgentSet.setVariable('color', 9.9);
-    AgentSet.setVariable('size', 1.5);
+  Prims.ask(world.createTurtles(1, ""), true, function() {
+    Prims.setVariable('color', 9.9);
+    Prims.setVariable('size', 1.5);
   });
   world.ticker.reset();
 }
@@ -42,14 +42,14 @@ function go() {
   if (!(world.turtles().nonEmpty())) {
     throw new Exception.StopInterrupt;
   }
-  AgentSet.ask(world.turtles(), true, function() {
-    if (Prims.equality(AgentSet.getPatchVariable('pcolor'), 15)) {
-      AgentSet.die();
+  Prims.ask(world.turtles(), true, function() {
+    if (Prims.equality(Prims.getPatchVariable('pcolor'), 15)) {
+      Prims.die();
     }
     else {
-      AgentSet.setPatchVariable('pcolor', 15);
+      Prims.setPatchVariable('pcolor', 15);
       world.observer.setGlobal('traps-triggered', (world.observer.getGlobal('traps-triggered') + 1));
-      AgentSet.ask(Prims.hatch(1, ""), true, function() {
+      Prims.ask(Prims.hatch(1, ""), true, function() {
         Call(move);
       });
       Call(move);

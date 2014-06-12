@@ -27,128 +27,128 @@ var notImplemented = require('integration/notimplemented');
 var Random         = require('integration/random');
 var StrictMath     = require('integration/strictmath');function setup() {
   world.clearAll();
-  world.observer.setGlobal('group-sites', AgentSet.agentFilter(world.patches(), function() {
+  world.observer.setGlobal('group-sites', world.patches().agentFilter(function() {
     return Call(groupSite_p);
   }));
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "person")
-  AgentSet.ask(world.createTurtles(world.observer.getGlobal('number'), ""), true, function() {
+  Prims.ask(world.createTurtles(world.observer.getGlobal('number'), ""), true, function() {
     Call(chooseSex);
-    AgentSet.setVariable('size', 3);
-    AgentSet.setVariable('my-group-site', AgentSet.oneOf(world.observer.getGlobal('group-sites')));
-    AgentSet.self().moveTo(AgentSet.getVariable('my-group-site'));
+    Prims.setVariable('size', 3);
+    Prims.setVariable('my-group-site', Prims.oneOf(world.observer.getGlobal('group-sites')));
+    AgentSet.self().moveTo(Prims.getVariable('my-group-site'));
   });
-  AgentSet.ask(world.turtles(), true, function() {
+  Prims.ask(world.turtles(), true, function() {
     Call(updateHappiness);
   });
   Call(countBoringGroups);
   Call(updateLabels);
-  AgentSet.ask(world.turtles(), true, function() {
+  Prims.ask(world.turtles(), true, function() {
     Call(spreadOutVertically);
   });
   world.ticker.reset();
 }
 function go() {
-  if (AgentSet.all(world.turtles(), function(){ return AgentSet.getVariable('happy?') })) {
+  if (world.turtles().agentAll(function(){ return Prims.getVariable('happy?') })) {
     throw new Exception.StopInterrupt;
   }
-  AgentSet.ask(world.turtles(), true, function() {
-    AgentSet.self().moveTo(AgentSet.getVariable('my-group-site'));
+  Prims.ask(world.turtles(), true, function() {
+    AgentSet.self().moveTo(Prims.getVariable('my-group-site'));
   });
-  AgentSet.ask(world.turtles(), true, function() {
+  Prims.ask(world.turtles(), true, function() {
     Call(updateHappiness);
   });
-  AgentSet.ask(world.turtles(), true, function() {
+  Prims.ask(world.turtles(), true, function() {
     Call(leaveIfUnhappy);
   });
   Call(findNewGroups);
   Call(updateLabels);
   Call(countBoringGroups);
-  AgentSet.ask(world.turtles(), true, function() {
-    AgentSet.setVariable('my-group-site', AgentSet.self().getPatchHere());
+  Prims.ask(world.turtles(), true, function() {
+    Prims.setVariable('my-group-site', AgentSet.self().getPatchHere());
     Call(spreadOutVertically);
   });
   world.ticker.tick();
 }
 function updateHappiness() {
   var total = AgentSet.self().turtlesHere().size();
-  var same = AgentSet.agentFilter(AgentSet.self().turtlesHere(), function() {
-    return Prims.equality(AgentSet.getVariable('color'), AgentSet.of(AgentSet.myself(), function() {
-      return AgentSet.getVariable('color');
+  var same = AgentSet.self().turtlesHere().agentFilter(function() {
+    return Prims.equality(Prims.getVariable('color'), Prims.of(AgentSet.myself(), function() {
+      return Prims.getVariable('color');
     }));
   }).size();
   var opposite = (total - same);
-  AgentSet.setVariable('happy?', Prims.lte((opposite / total), (world.observer.getGlobal('tolerance') / 100)));
+  Prims.setVariable('happy?', Prims.lte((opposite / total), (world.observer.getGlobal('tolerance') / 100)));
 }
 function leaveIfUnhappy() {
-  if (!(AgentSet.getVariable('happy?'))) {
-    AgentSet.setVariable('heading', AgentSet.oneOf([90, 270]));
+  if (!(Prims.getVariable('happy?'))) {
+    Prims.setVariable('heading', Prims.oneOf([90, 270]));
     Prims.fd(1);
   }
 }
 function findNewGroups() {
   notImplemented('display', undefined)();
-  var malcontents = AgentSet.agentFilter(world.turtles(), function() {
+  var malcontents = world.turtles().agentFilter(function() {
     return !(Prims.member(AgentSet.self().getPatchHere(), world.observer.getGlobal('group-sites')));
   });
   if (!(malcontents.nonEmpty())) {
     throw new Exception.StopInterrupt;
   }
-  AgentSet.ask(malcontents, true, function() {
+  Prims.ask(malcontents, true, function() {
     Prims.fd(1);
   });
   Call(findNewGroups);
 }
 function groupSite_p() {
   var groupInterval = StrictMath.floor((world.width() / world.observer.getGlobal('num-groups')));
-  return (((Prims.equality(AgentSet.getPatchVariable('pycor'), 0) && Prims.lte(AgentSet.getPatchVariable('pxcor'), 0)) && Prims.equality(Prims.mod(AgentSet.getPatchVariable('pxcor'), groupInterval), 0)) && Prims.lt(StrictMath.floor(((- AgentSet.getPatchVariable('pxcor')) / groupInterval)), world.observer.getGlobal('num-groups')));
+  return (((Prims.equality(Prims.getPatchVariable('pycor'), 0) && Prims.lte(Prims.getPatchVariable('pxcor'), 0)) && Prims.equality(Prims.mod(Prims.getPatchVariable('pxcor'), groupInterval), 0)) && Prims.lt(StrictMath.floor(((- Prims.getPatchVariable('pxcor')) / groupInterval)), world.observer.getGlobal('num-groups')));
 }
 function spreadOutVertically() {
   if (Call(woman_p)) {
-    AgentSet.setVariable('heading', 180);
+    Prims.setVariable('heading', 180);
   }
   else {
-    AgentSet.setVariable('heading', 0);
+    Prims.setVariable('heading', 0);
   }
   Prims.fd(4);
-  while (AgentSet.other(AgentSet.self().turtlesHere()).nonEmpty()) {
+  while (Prims.other(AgentSet.self().turtlesHere()).nonEmpty()) {
     if (AgentSet.self().canMove(2)) {
       Prims.fd(1);
     }
     else {
-      AgentSet.setVariable('xcor', (AgentSet.getVariable('xcor') - 1));
-      AgentSet.setVariable('ycor', 0);
+      Prims.setVariable('xcor', (Prims.getVariable('xcor') - 1));
+      Prims.setVariable('ycor', 0);
       Prims.fd(4);
     }
   }
 }
 function countBoringGroups() {
-  AgentSet.ask(world.observer.getGlobal('group-sites'), true, function() {
+  Prims.ask(world.observer.getGlobal('group-sites'), true, function() {
     if (Call(boring_p)) {
-      AgentSet.setPatchVariable('plabel-color', 5);
+      Prims.setPatchVariable('plabel-color', 5);
     }
     else {
-      AgentSet.setPatchVariable('plabel-color', 9.9);
+      Prims.setPatchVariable('plabel-color', 9.9);
     }
   });
-  world.observer.setGlobal('boring-groups', AgentSet.agentFilter(world.observer.getGlobal('group-sites'), function() {
-    return Prims.equality(AgentSet.getPatchVariable('plabel-color'), 5);
+  world.observer.setGlobal('boring-groups', world.observer.getGlobal('group-sites').agentFilter(function() {
+    return Prims.equality(Prims.getPatchVariable('plabel-color'), 5);
   }).size());
 }
 function boring_p() {
-  return Prims.equality(Prims.length(Prims.removeDuplicates(AgentSet.of(AgentSet.self().turtlesHere(), function() {
-    return AgentSet.getVariable('color');
+  return Prims.equality(Prims.length(Prims.removeDuplicates(Prims.of(AgentSet.self().turtlesHere(), function() {
+    return Prims.getVariable('color');
   }))), 1);
 }
 function updateLabels() {
-  AgentSet.ask(world.observer.getGlobal('group-sites'), true, function() {
-    AgentSet.setPatchVariable('plabel', AgentSet.self().turtlesHere().size());
+  Prims.ask(world.observer.getGlobal('group-sites'), true, function() {
+    Prims.setPatchVariable('plabel', AgentSet.self().turtlesHere().size());
   });
 }
 function chooseSex() {
-  AgentSet.setVariable('color', AgentSet.oneOf([135, 105]));
+  Prims.setVariable('color', Prims.oneOf([135, 105]));
 }
 function woman_p() {
-  return Prims.equality(AgentSet.getVariable('color'), 135);
+  return Prims.equality(Prims.getVariable('color'), 135);
 }
 world.observer.setGlobal('tolerance', 25);
 world.observer.setGlobal('number', 70);

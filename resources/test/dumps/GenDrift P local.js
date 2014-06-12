@@ -27,23 +27,23 @@ var notImplemented = require('integration/notimplemented');
 var Random         = require('integration/random');
 var StrictMath     = require('integration/strictmath');function setup() {
   world.clearAll();
-  AgentSet.ask(world.patches(), true, function() {
-    AgentSet.setPatchVariable('pcolor', ((Prims.random(world.observer.getGlobal('colors')) * 10) + 5));
-    if (Prims.equality(AgentSet.getPatchVariable('pcolor'), 75)) {
-      AgentSet.setPatchVariable('pcolor', 125);
+  Prims.ask(world.patches(), true, function() {
+    Prims.setPatchVariable('pcolor', ((Prims.random(world.observer.getGlobal('colors')) * 10) + 5));
+    if (Prims.equality(Prims.getPatchVariable('pcolor'), 75)) {
+      Prims.setPatchVariable('pcolor', 125);
     }
   });
   world.ticker.reset();
 }
 function go() {
-  if (Prims.equality(Prims.variance(AgentSet.of(world.patches(), function() {
-    return AgentSet.getPatchVariable('pcolor');
+  if (Prims.equality(Prims.variance(Prims.of(world.patches(), function() {
+    return Prims.getPatchVariable('pcolor');
   })), 0)) {
     throw new Exception.StopInterrupt;
   }
-  AgentSet.ask(world.patches(), true, function() {
-    AgentSet.setPatchVariable('pcolor', AgentSet.of(AgentSet.oneOf(Prims.getNeighbors()), function() {
-      return AgentSet.getPatchVariable('pcolor');
+  Prims.ask(world.patches(), true, function() {
+    Prims.setPatchVariable('pcolor', Prims.of(Prims.oneOf(Prims.getNeighbors()), function() {
+      return Prims.getPatchVariable('pcolor');
     }));
   });
   world.ticker.tick();

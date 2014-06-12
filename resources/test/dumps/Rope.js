@@ -28,53 +28,53 @@ var Random         = require('integration/random');
 var StrictMath     = require('integration/strictmath');function setup() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
-  AgentSet.ask(world.createTurtles(world.width(), ""), true, function() {
-    AgentSet.setVariable('xcor', AgentSet.getVariable('who'));
-    AgentSet.setVariable('color', 15);
-    AgentSet.setVariable('size', 1.5);
-    if (Prims.equality(AgentSet.getPatchVariable('pxcor'), world.maxPxcor)) {
-      AgentSet.setVariable('color', 105);
+  Prims.ask(world.createTurtles(world.width(), ""), true, function() {
+    Prims.setVariable('xcor', Prims.getVariable('who'));
+    Prims.setVariable('color', 15);
+    Prims.setVariable('size', 1.5);
+    if (Prims.equality(Prims.getPatchVariable('pxcor'), world.maxPxcor)) {
+      Prims.setVariable('color', 105);
     }
-    if (Prims.equality(AgentSet.getPatchVariable('pxcor'), world.minPxcor)) {
-      AgentSet.setVariable('color', 55);
+    if (Prims.equality(Prims.getPatchVariable('pxcor'), world.minPxcor)) {
+      Prims.setVariable('color', 55);
     }
   });
   world.ticker.reset();
 }
 function go() {
-  AgentSet.ask(AgentSet.agentFilter(world.turtles(), function() {
-    return Prims.equality(AgentSet.getVariable('color'), 55);
+  Prims.ask(world.turtles().agentFilter(function() {
+    return Prims.equality(Prims.getVariable('color'), 55);
   }), true, function() {
     if (Prims.gt(world.ticker.tickCount(), 100)) {
-      AgentSet.setVariable('ypos', (world.observer.getGlobal('amplitude') * Trig.unsquashedSin((world.observer.getGlobal('frequency') * world.ticker.tickCount()))));
+      Prims.setVariable('ypos', (world.observer.getGlobal('amplitude') * Trig.unsquashedSin((world.observer.getGlobal('frequency') * world.ticker.tickCount()))));
     }
     else {
-      AgentSet.setVariable('ypos', (((world.ticker.tickCount() / 100) * world.observer.getGlobal('amplitude')) * Trig.unsquashedSin((world.observer.getGlobal('frequency') * world.ticker.tickCount()))));
+      Prims.setVariable('ypos', (((world.ticker.tickCount() / 100) * world.observer.getGlobal('amplitude')) * Trig.unsquashedSin((world.observer.getGlobal('frequency') * world.ticker.tickCount()))));
     }
-    if (!Prims.equality(AgentSet.self().patchAt(0, (AgentSet.getVariable('ypos') - AgentSet.getVariable('ycor'))), Nobody)) {
-      AgentSet.setVariable('ycor', AgentSet.getVariable('ypos'));
+    if (!Prims.equality(AgentSet.self().patchAt(0, (Prims.getVariable('ypos') - Prims.getVariable('ycor'))), Nobody)) {
+      Prims.setVariable('ycor', Prims.getVariable('ypos'));
       AgentSet.self().hideTurtle(false);;
     }
     else {
       AgentSet.self().hideTurtle(true);;
     }
   });
-  AgentSet.ask(AgentSet.agentFilter(world.turtles(), function() {
-    return Prims.equality(AgentSet.getVariable('color'), 15);
+  Prims.ask(world.turtles().agentFilter(function() {
+    return Prims.equality(Prims.getVariable('color'), 15);
   }), true, function() {
-    AgentSet.setVariable('yvel', (AgentSet.getVariable('yvel') + ((AgentSet.of(world.getTurtle((AgentSet.getVariable('who') - 1)), function() {
-      return AgentSet.getVariable('ypos');
-    }) - AgentSet.getVariable('ypos')) + (AgentSet.of(world.getTurtle((AgentSet.getVariable('who') + 1)), function() {
-      return AgentSet.getVariable('ypos');
-    }) - AgentSet.getVariable('ypos')))));
-    AgentSet.setVariable('yvel', (((1000 - world.observer.getGlobal('friction')) / 1000) * AgentSet.getVariable('yvel')));
+    Prims.setVariable('yvel', (Prims.getVariable('yvel') + ((Prims.of(world.getTurtle((Prims.getVariable('who') - 1)), function() {
+      return Prims.getVariable('ypos');
+    }) - Prims.getVariable('ypos')) + (Prims.of(world.getTurtle((Prims.getVariable('who') + 1)), function() {
+      return Prims.getVariable('ypos');
+    }) - Prims.getVariable('ypos')))));
+    Prims.setVariable('yvel', (((1000 - world.observer.getGlobal('friction')) / 1000) * Prims.getVariable('yvel')));
   });
-  AgentSet.ask(AgentSet.agentFilter(world.turtles(), function() {
-    return Prims.equality(AgentSet.getVariable('color'), 15);
+  Prims.ask(world.turtles().agentFilter(function() {
+    return Prims.equality(Prims.getVariable('color'), 15);
   }), true, function() {
-    AgentSet.setVariable('ypos', (AgentSet.getVariable('ypos') + AgentSet.getVariable('yvel')));
-    if (!Prims.equality(AgentSet.self().patchAt(0, (AgentSet.getVariable('ypos') - AgentSet.getVariable('ycor'))), Nobody)) {
-      AgentSet.setVariable('ycor', AgentSet.getVariable('ypos'));
+    Prims.setVariable('ypos', (Prims.getVariable('ypos') + Prims.getVariable('yvel')));
+    if (!Prims.equality(AgentSet.self().patchAt(0, (Prims.getVariable('ypos') - Prims.getVariable('ycor'))), Nobody)) {
+      Prims.setVariable('ycor', Prims.getVariable('ypos'));
       AgentSet.self().hideTurtle(false);;
     }
     else {

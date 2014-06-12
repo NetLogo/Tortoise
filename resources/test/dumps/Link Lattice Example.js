@@ -27,25 +27,25 @@ var notImplemented = require('integration/notimplemented');
 var Random         = require('integration/random');
 var StrictMath     = require('integration/strictmath');function setupSquare() {
   world.clearAll();
-  AgentSet.ask(world.patches(), true, function() {
-    AgentSet.ask(Prims.sprout(1, ""), true, function() {});
+  Prims.ask(world.patches(), true, function() {
+    Prims.ask(Prims.sprout(1, ""), true, function() {});
   });
-  AgentSet.ask(world.turtles(), true, function() {
-    AgentSet.ask(LinkPrims.createLinksWith(Prims.turtlesOn(Prims.getNeighbors4())), false, function() {});
+  Prims.ask(world.turtles(), true, function() {
+    Prims.ask(LinkPrims.createLinksWith(Prims.turtlesOn(Prims.getNeighbors4())), false, function() {});
   });
 }
 function setupHex() {
   world.clearAll();
-  AgentSet.ask(world.patches(), true, function() {
-    AgentSet.ask(Prims.sprout(1, ""), true, function() {});
+  Prims.ask(world.patches(), true, function() {
+    Prims.ask(Prims.sprout(1, ""), true, function() {});
   });
-  AgentSet.ask(world.turtles(), true, function() {
-    AgentSet.ask(LinkPrims.createLinksWith(AgentSet.self().turtlesAt(0, 1)), false, function() {});
-    AgentSet.ask(LinkPrims.createLinksWith(AgentSet.self().turtlesAt(1, 0)), false, function() {});
-    if (Prims.equality(Prims.mod(AgentSet.getPatchVariable('pxcor'), 2), 0)) {
-      AgentSet.ask(LinkPrims.createLinksWith(AgentSet.self().turtlesAt(1, -1)), false, function() {});
-      AgentSet.ask(LinkPrims.createLinksWith(AgentSet.self().turtlesAt(-1, -1)), false, function() {});
-      AgentSet.setVariable('ycor', (AgentSet.getVariable('ycor') - 0.5));
+  Prims.ask(world.turtles(), true, function() {
+    Prims.ask(LinkPrims.createLinksWith(AgentSet.self().turtlesAt(0, 1)), false, function() {});
+    Prims.ask(LinkPrims.createLinksWith(AgentSet.self().turtlesAt(1, 0)), false, function() {});
+    if (Prims.equality(Prims.mod(Prims.getPatchVariable('pxcor'), 2), 0)) {
+      Prims.ask(LinkPrims.createLinksWith(AgentSet.self().turtlesAt(1, -1)), false, function() {});
+      Prims.ask(LinkPrims.createLinksWith(AgentSet.self().turtlesAt(-1, -1)), false, function() {});
+      Prims.setVariable('ycor', (Prims.getVariable('ycor') - 0.5));
     }
   });
 }

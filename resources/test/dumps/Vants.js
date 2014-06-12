@@ -27,20 +27,20 @@ var notImplemented = require('integration/notimplemented');
 var Random         = require('integration/random');
 var StrictMath     = require('integration/strictmath');function setup() {
   world.clearAll();
-  AgentSet.ask(world.patches(), true, function() {
-    AgentSet.setPatchVariable('pcolor', 9.9);
+  Prims.ask(world.patches(), true, function() {
+    Prims.setPatchVariable('pcolor', 9.9);
   });
-  AgentSet.ask(world.createTurtles(world.observer.getGlobal('num-vants'), ""), true, function() {
-    AgentSet.self().face(AgentSet.oneOf(Prims.getNeighbors4()));
-    AgentSet.setVariable('color', 15);
-    AgentSet.setVariable('size', 6);
+  Prims.ask(world.createTurtles(world.observer.getGlobal('num-vants'), ""), true, function() {
+    AgentSet.self().face(Prims.oneOf(Prims.getNeighbors4()));
+    Prims.setVariable('color', 15);
+    Prims.setVariable('size', 6);
   });
   world.ticker.reset();
 }
 function goForward() {
   Tasks.forEach(Tasks.commandTask(function() {
     var taskArguments = arguments;
-    AgentSet.ask(taskArguments[0], true, function() {
+    Prims.ask(taskArguments[0], true, function() {
       Prims.fd(1);
       Call(turn);
     });
@@ -50,7 +50,7 @@ function goForward() {
 function goReverse() {
   Tasks.forEach(Tasks.commandTask(function() {
     var taskArguments = arguments;
-    AgentSet.ask(taskArguments[0], true, function() {
+    Prims.ask(taskArguments[0], true, function() {
       Call(turn);
       Prims.bk(1);
     });
@@ -58,12 +58,12 @@ function goReverse() {
   world.ticker.tick();
 }
 function turn() {
-  if (Prims.equality(AgentSet.getPatchVariable('pcolor'), 9.9)) {
-    AgentSet.setPatchVariable('pcolor', 0);
+  if (Prims.equality(Prims.getPatchVariable('pcolor'), 9.9)) {
+    Prims.setPatchVariable('pcolor', 0);
     Prims.right(90);
   }
   else {
-    AgentSet.setPatchVariable('pcolor', 9.9);
+    Prims.setPatchVariable('pcolor', 9.9);
     Prims.left(90);
   }
 }

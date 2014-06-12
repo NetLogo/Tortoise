@@ -37,14 +37,14 @@ var StrictMath     = require('integration/strictmath');function benchmark() {
 function setup() {
   world.clearAll();
   world.ticker.reset();
-  AgentSet.ask(world.createOrderedTurtles(1000, ""), true, function() {
-    AgentSet.self().moveTo(AgentSet.oneOf(world.patches()));
-    AgentSet.self().face(AgentSet.oneOf(Prims.getNeighbors4()));
+  Prims.ask(world.createOrderedTurtles(1000, ""), true, function() {
+    AgentSet.self().moveTo(Prims.oneOf(world.patches()));
+    AgentSet.self().face(Prims.oneOf(Prims.getNeighbors4()));
   });
 }
 function go() {
-  AgentSet.ask(world.turtles(), true, function() {
-    AgentSet.self().face(AgentSet.oneOf(Prims.getNeighbors4()));
+  Prims.ask(world.turtles(), true, function() {
+    AgentSet.self().face(Prims.oneOf(Prims.getNeighbors4()));
     Prims.fd(1);
   });
   world.ticker.tick();

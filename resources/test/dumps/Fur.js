@@ -27,12 +27,12 @@ var notImplemented = require('integration/notimplemented');
 var Random         = require('integration/random');
 var StrictMath     = require('integration/strictmath');function setup() {
   world.clearAll();
-  AgentSet.ask(world.patches(), true, function() {
-    AgentSet.setPatchVariable('inner-neighbors', Call(ellipseIn, world.observer.getGlobal('inner-radius-x'), world.observer.getGlobal('inner-radius-y')));
-    AgentSet.setPatchVariable('outer-neighbors', Call(ellipseRing, world.observer.getGlobal('outer-radius-x'), world.observer.getGlobal('outer-radius-y'), world.observer.getGlobal('inner-radius-x'), world.observer.getGlobal('inner-radius-y')));
+  Prims.ask(world.patches(), true, function() {
+    Prims.setPatchVariable('inner-neighbors', Call(ellipseIn, world.observer.getGlobal('inner-radius-x'), world.observer.getGlobal('inner-radius-y')));
+    Prims.setPatchVariable('outer-neighbors', Call(ellipseRing, world.observer.getGlobal('outer-radius-x'), world.observer.getGlobal('outer-radius-y'), world.observer.getGlobal('inner-radius-x'), world.observer.getGlobal('inner-radius-y')));
   });
-  if (AgentSet.agentFilter(world.patches(), function() {
-    return Prims.equality(AgentSet.getPatchVariable('outer-neighbors').size(), 0);
+  if (world.patches().agentFilter(function() {
+    return Prims.equality(Prims.getPatchVariable('outer-neighbors').size(), 0);
   }).nonEmpty()) {
     notImplemented('user-message', undefined)((Dump("") + Dump("It doesn't make sense that 'outer' is equal to or smaller than 'inner.' ") + Dump(" Please reset the sliders and press Setup again.")));
     throw new Exception.StopInterrupt;
@@ -43,60 +43,60 @@ var StrictMath     = require('integration/strictmath');function setup() {
   world.ticker.reset();
 }
 function restart() {
-  AgentSet.ask(world.patches(), true, function() {
+  Prims.ask(world.patches(), true, function() {
     if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal('initial-density'))) {
-      AgentSet.setPatchVariable('pcolor', 9.9);
+      Prims.setPatchVariable('pcolor', 9.9);
     }
     else {
-      AgentSet.setPatchVariable('pcolor', 0);
+      Prims.setPatchVariable('pcolor', 0);
     }
   });
   world.ticker.reset();
 }
 function go() {
-  AgentSet.ask(world.patches(), true, function() {
+  Prims.ask(world.patches(), true, function() {
     Call(pickNewColor);
   });
-  AgentSet.ask(world.patches(), true, function() {
-    AgentSet.setPatchVariable('pcolor', AgentSet.getPatchVariable('new-color'));
+  Prims.ask(world.patches(), true, function() {
+    Prims.setPatchVariable('pcolor', Prims.getPatchVariable('new-color'));
   });
   world.ticker.tick();
 }
 function pickNewColor() {
-  var activator = AgentSet.agentFilter(AgentSet.getPatchVariable('inner-neighbors'), function() {
-    return Prims.equality(AgentSet.getPatchVariable('pcolor'), 9.9);
+  var activator = Prims.getPatchVariable('inner-neighbors').agentFilter(function() {
+    return Prims.equality(Prims.getPatchVariable('pcolor'), 9.9);
   }).size();
-  var inhibitor = AgentSet.agentFilter(AgentSet.getPatchVariable('outer-neighbors'), function() {
-    return Prims.equality(AgentSet.getPatchVariable('pcolor'), 9.9);
+  var inhibitor = Prims.getPatchVariable('outer-neighbors').agentFilter(function() {
+    return Prims.equality(Prims.getPatchVariable('pcolor'), 9.9);
   }).size();
   var difference = (activator - (world.observer.getGlobal('ratio') * inhibitor));
   if (Prims.gt(difference, 0)) {
-    AgentSet.setPatchVariable('new-color', 9.9);
+    Prims.setPatchVariable('new-color', 9.9);
   }
   else {
     if (Prims.lt(difference, 0)) {
-      AgentSet.setPatchVariable('new-color', 0);
+      Prims.setPatchVariable('new-color', 0);
     }
   }
 }
 function ellipseIn(xRadius, yRadius) {
-  return AgentSet.agentFilter(AgentSet.self().inRadius(world.patches(), Prims.max(Prims.list(xRadius, yRadius))), function() {
+  return AgentSet.self().inRadius(world.patches(), Prims.max(Prims.list(xRadius, yRadius))).agentFilter(function() {
     return Prims.gte(1, ((StrictMath.pow(Call(xdistance, AgentSet.myself()), 2) / StrictMath.pow(xRadius, 2)) + (StrictMath.pow(Call(ydistance, AgentSet.myself()), 2) / StrictMath.pow(yRadius, 2))));
   });
 }
 function ellipseRing(outxRadius, outyRadius, inxRadius, inyRadius) {
-  return AgentSet.agentFilter(AgentSet.self().inRadius(world.patches(), Prims.max(Prims.list(outxRadius, outyRadius))), function() {
+  return AgentSet.self().inRadius(world.patches(), Prims.max(Prims.list(outxRadius, outyRadius))).agentFilter(function() {
     return (Prims.gte(1, ((StrictMath.pow(Call(xdistance, AgentSet.myself()), 2) / StrictMath.pow(outxRadius, 2)) + (StrictMath.pow(Call(ydistance, AgentSet.myself()), 2) / StrictMath.pow(outyRadius, 2)))) && Prims.lt(1, ((StrictMath.pow(Call(xdistance, AgentSet.myself()), 2) / StrictMath.pow(inxRadius, 2)) + (StrictMath.pow(Call(ydistance, AgentSet.myself()), 2) / StrictMath.pow(inyRadius, 2)))));
   });
 }
 function xdistance(otherPatch) {
-  return AgentSet.self().distanceXY(AgentSet.of(otherPatch, function() {
-    return AgentSet.getPatchVariable('pxcor');
-  }), AgentSet.getPatchVariable('pycor'));
+  return AgentSet.self().distanceXY(Prims.of(otherPatch, function() {
+    return Prims.getPatchVariable('pxcor');
+  }), Prims.getPatchVariable('pycor'));
 }
 function ydistance(otherPatch) {
-  return AgentSet.self().distanceXY(AgentSet.getPatchVariable('pxcor'), AgentSet.of(otherPatch, function() {
-    return AgentSet.getPatchVariable('pycor');
+  return AgentSet.self().distanceXY(Prims.getPatchVariable('pxcor'), Prims.of(otherPatch, function() {
+    return Prims.getPatchVariable('pycor');
   }));
 }
 world.observer.setGlobal('initial-density', 50);

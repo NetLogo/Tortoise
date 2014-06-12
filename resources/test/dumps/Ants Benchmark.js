@@ -43,100 +43,100 @@ function benchmark() {
 }
 function setupTurtles() {
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "bug")
-  AgentSet.ask(world.createOrderedTurtles(world.observer.getGlobal('ants'), ""), true, function() {
-    AgentSet.setVariable('size', 2);
+  Prims.ask(world.createOrderedTurtles(world.observer.getGlobal('ants'), ""), true, function() {
+    Prims.setVariable('size', 2);
     Prims.right(Prims.randomFloat(360));
-    AgentSet.setVariable('color', 15);
-    AgentSet.setVariable('carrying-food?', false);
+    Prims.setVariable('color', 15);
+    Prims.setVariable('carrying-food?', false);
   });
 }
 function setupPatches() {
-  AgentSet.ask(world.patches(), true, function() {
-    AgentSet.setPatchVariable('chemical', 0);
-    AgentSet.setPatchVariable('food', 0);
-    AgentSet.setPatchVariable('food-source-number', -1);
+  Prims.ask(world.patches(), true, function() {
+    Prims.setPatchVariable('chemical', 0);
+    Prims.setPatchVariable('food', 0);
+    Prims.setPatchVariable('food-source-number', -1);
     Call(setupNest);
     Call(setupFood);
     Call(updateDisplay);
   });
 }
 function setupNest() {
-  AgentSet.setPatchVariable('nest?', Prims.lt(AgentSet.self().distanceXY(0, 0), 5));
-  AgentSet.setPatchVariable('nest-scent', (200 - AgentSet.self().distanceXY(0, 0)));
+  Prims.setPatchVariable('nest?', Prims.lt(AgentSet.self().distanceXY(0, 0), 5));
+  Prims.setPatchVariable('nest-scent', (200 - AgentSet.self().distanceXY(0, 0)));
 }
 function setupFood() {
   if (Prims.lt(AgentSet.self().distanceXY((0.6 * world.maxPxcor), 0), 5)) {
-    AgentSet.setPatchVariable('food-source-number', 1);
+    Prims.setPatchVariable('food-source-number', 1);
   }
   if (Prims.lt(AgentSet.self().distanceXY((-0.6 * world.maxPxcor), (-0.6 * world.maxPycor)), 5)) {
-    AgentSet.setPatchVariable('food-source-number', 2);
+    Prims.setPatchVariable('food-source-number', 2);
   }
   if (Prims.lt(AgentSet.self().distanceXY((-0.8 * world.maxPxcor), (0.8 * world.maxPycor)), 5)) {
-    AgentSet.setPatchVariable('food-source-number', 3);
+    Prims.setPatchVariable('food-source-number', 3);
   }
-  if (Prims.gt(AgentSet.getPatchVariable('food-source-number'), 0)) {
-    AgentSet.setPatchVariable('food', (1 + Prims.random(2)));
+  if (Prims.gt(Prims.getPatchVariable('food-source-number'), 0)) {
+    Prims.setPatchVariable('food', (1 + Prims.random(2)));
   }
 }
 function updateDisplay() {
-  if (AgentSet.getPatchVariable('nest?')) {
-    AgentSet.setPatchVariable('pcolor', 115);
+  if (Prims.getPatchVariable('nest?')) {
+    Prims.setPatchVariable('pcolor', 115);
   }
   else {
-    if (Prims.gt(AgentSet.getPatchVariable('food'), 0)) {
-      if (Prims.equality(AgentSet.getPatchVariable('food-source-number'), 1)) {
-        AgentSet.setPatchVariable('pcolor', 85);
+    if (Prims.gt(Prims.getPatchVariable('food'), 0)) {
+      if (Prims.equality(Prims.getPatchVariable('food-source-number'), 1)) {
+        Prims.setPatchVariable('pcolor', 85);
       }
-      if (Prims.equality(AgentSet.getPatchVariable('food-source-number'), 2)) {
-        AgentSet.setPatchVariable('pcolor', 95);
+      if (Prims.equality(Prims.getPatchVariable('food-source-number'), 2)) {
+        Prims.setPatchVariable('pcolor', 95);
       }
-      if (Prims.equality(AgentSet.getPatchVariable('food-source-number'), 3)) {
-        AgentSet.setPatchVariable('pcolor', 105);
+      if (Prims.equality(Prims.getPatchVariable('food-source-number'), 3)) {
+        Prims.setPatchVariable('pcolor', 105);
       }
     }
     else {
-      AgentSet.setPatchVariable('pcolor', Prims.scaleColor(55, AgentSet.getPatchVariable('chemical'), 0.1, 5));
+      Prims.setPatchVariable('pcolor', Prims.scaleColor(55, Prims.getPatchVariable('chemical'), 0.1, 5));
     }
   }
 }
 function go() {
-  AgentSet.ask(world.turtles(), true, function() {
+  Prims.ask(world.turtles(), true, function() {
     Call(goTurtles);
   });
   world.topology().diffuse('chemical', (world.observer.getGlobal('diffusion-rate') / 100))
-  AgentSet.ask(world.patches(), true, function() {
+  Prims.ask(world.patches(), true, function() {
     Call(goPatches);
   });
   world.ticker.tick();
   Call(doPlotting);
 }
 function goTurtles() {
-  if (Prims.lt(AgentSet.getVariable('who'), world.ticker.tickCount())) {
-    if (AgentSet.getVariable('carrying-food?')) {
-      AgentSet.setVariable('color', (25 + 1));
+  if (Prims.lt(Prims.getVariable('who'), world.ticker.tickCount())) {
+    if (Prims.getVariable('carrying-food?')) {
+      Prims.setVariable('color', (25 + 1));
       Call(returnToNest);
     }
     else {
-      AgentSet.setVariable('color', 15);
+      Prims.setVariable('color', 15);
       Call(lookForFood);
     }
   }
 }
 function goPatches() {
-  AgentSet.setPatchVariable('chemical', ((AgentSet.getPatchVariable('chemical') * (100 - world.observer.getGlobal('evaporation-rate'))) / 100));
+  Prims.setPatchVariable('chemical', ((Prims.getPatchVariable('chemical') * (100 - world.observer.getGlobal('evaporation-rate'))) / 100));
   Call(updateDisplay);
 }
 function returnToNest() {
-  if (AgentSet.getPatchVariable('nest?')) {
-    AgentSet.setVariable('carrying-food?', false);
+  if (Prims.getPatchVariable('nest?')) {
+    Prims.setVariable('carrying-food?', false);
     Prims.right(180);
     Prims.fd(1);
   }
   else {
-    AgentSet.setPatchVariable('chemical', (AgentSet.getPatchVariable('chemical') + AgentSet.getVariable('drop-size')));
-    AgentSet.setVariable('drop-size', (AgentSet.getVariable('drop-size') - 1.5));
-    if (Prims.lt(AgentSet.getVariable('drop-size'), 1)) {
-      AgentSet.setVariable('drop-size', 1);
+    Prims.setPatchVariable('chemical', (Prims.getPatchVariable('chemical') + Prims.getVariable('drop-size')));
+    Prims.setVariable('drop-size', (Prims.getVariable('drop-size') - 1.5));
+    if (Prims.lt(Prims.getVariable('drop-size'), 1)) {
+      Prims.setVariable('drop-size', 1);
     }
     Call(uphillNestScent);
     Call(wiggle);
@@ -144,18 +144,18 @@ function returnToNest() {
   }
 }
 function lookForFood() {
-  if (Prims.gt(AgentSet.getPatchVariable('food'), 0)) {
-    AgentSet.setVariable('carrying-food?', true);
-    AgentSet.setPatchVariable('food', (AgentSet.getPatchVariable('food') - 1));
-    AgentSet.setVariable('drop-size', 60);
+  if (Prims.gt(Prims.getPatchVariable('food'), 0)) {
+    Prims.setVariable('carrying-food?', true);
+    Prims.setPatchVariable('food', (Prims.getPatchVariable('food') - 1));
+    Prims.setVariable('drop-size', 60);
     Prims.right(180);
     throw new Exception.StopInterrupt;
   }
-  if (Prims.gt(AgentSet.getPatchVariable('chemical'), 2)) {
+  if (Prims.gt(Prims.getPatchVariable('chemical'), 2)) {
     Prims.fd(1);
   }
   else {
-    if (Prims.lt(AgentSet.getPatchVariable('chemical'), 0.05)) {
+    if (Prims.lt(Prims.getPatchVariable('chemical'), 0.05)) {
       Call(wiggle);
       Prims.fd(1);
     }
@@ -167,8 +167,8 @@ function lookForFood() {
 }
 function uphillChemical() {
   Call(wiggle);
-  var scentAhead = AgentSet.of(AgentSet.self().patchAhead(1), function() {
-    return AgentSet.getPatchVariable('chemical');
+  var scentAhead = Prims.of(AgentSet.self().patchAhead(1), function() {
+    return Prims.getPatchVariable('chemical');
   });
   var scentRight = Call(chemicalScent, 45);
   var scentLeft = Call(chemicalScent, -45);
@@ -183,8 +183,8 @@ function uphillChemical() {
 }
 function uphillNestScent() {
   Call(wiggle);
-  var scentAhead = AgentSet.of(AgentSet.self().patchAhead(1), function() {
-    return AgentSet.getPatchVariable('nest-scent');
+  var scentAhead = Prims.of(AgentSet.self().patchAhead(1), function() {
+    return Prims.getPatchVariable('nest-scent');
   });
   var scentRight = Call(getNestScent, 45);
   var scentLeft = Call(getNestScent, -45);
@@ -206,8 +206,8 @@ function wiggle() {
 function getNestScent(angle) {
   var p = AgentSet.self().patchRightAndAhead(angle, 1);
   if (!Prims.equality(p, Nobody)) {
-    return AgentSet.of(p, function() {
-      return AgentSet.getPatchVariable('nest-scent');
+    return Prims.of(p, function() {
+      return Prims.getPatchVariable('nest-scent');
     });
   }
   return 0;
@@ -215,8 +215,8 @@ function getNestScent(angle) {
 function chemicalScent(angle) {
   var p = AgentSet.self().patchRightAndAhead(angle, 1);
   if (!Prims.equality(p, Nobody)) {
-    return AgentSet.of(p, function() {
-      return AgentSet.getPatchVariable('chemical');
+    return Prims.of(p, function() {
+      return Prims.getPatchVariable('chemical');
     });
   }
   return 0;
@@ -227,16 +227,16 @@ function doPlotting() {
   }
   notImplemented('set-current-plot', undefined)("Food in each pile");
   notImplemented('set-current-plot-pen', undefined)("food-in-pile1");
-  notImplemented('plot', undefined)(AgentSet.agentFilter(world.patches(), function() {
-    return Prims.equality(AgentSet.getPatchVariable('pcolor'), 85);
+  notImplemented('plot', undefined)(world.patches().agentFilter(function() {
+    return Prims.equality(Prims.getPatchVariable('pcolor'), 85);
   }).size());
   notImplemented('set-current-plot-pen', undefined)("food-in-pile2");
-  notImplemented('plot', undefined)(AgentSet.agentFilter(world.patches(), function() {
-    return Prims.equality(AgentSet.getPatchVariable('pcolor'), 95);
+  notImplemented('plot', undefined)(world.patches().agentFilter(function() {
+    return Prims.equality(Prims.getPatchVariable('pcolor'), 95);
   }).size());
   notImplemented('set-current-plot-pen', undefined)("food-in-pile3");
-  notImplemented('plot', undefined)(AgentSet.agentFilter(world.patches(), function() {
-    return Prims.equality(AgentSet.getPatchVariable('pcolor'), 105);
+  notImplemented('plot', undefined)(world.patches().agentFilter(function() {
+    return Prims.equality(Prims.getPatchVariable('pcolor'), 105);
   }).size());
 }
 world.observer.setGlobal('diffusion-rate', 53);
