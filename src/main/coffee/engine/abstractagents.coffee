@@ -56,7 +56,7 @@ define(['integration/lodash'], (_) ->
       @_agents[..]
 
     # (Array[U]) => AbstractAgents[U]
-    replaceAgents: (agents) ->
+    copyWithNewAgents: (agents) ->
       @_generateFrom(agents, this)
 
     # () => String
