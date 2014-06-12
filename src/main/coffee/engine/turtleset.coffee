@@ -1,7 +1,7 @@
-define(['engine/abstractagents'], (AbstractAgents) ->
+define(['engine/abstractagentset'], (AbstractAgentSet) ->
 
   # Type Parameter: T <: Turtle - The type of turtles within `_agents`
-  class TurtleSet extends AbstractAgents
+  class TurtleSet extends AbstractAgentSet
 
     # (Array[T]) => TurtleSet
     constructor: (@_agents, @_breedName = "TURTLES") ->

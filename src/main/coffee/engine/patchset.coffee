@@ -1,7 +1,7 @@
-define(['engine/abstractagents'], (AbstractAgents) ->
+define(['engine/abstractagentset'], (AbstractAgentSet) ->
 
   # Type Parameter: T <: Patch - The type of patches within `_agents`
-  class PatchSet extends AbstractAgents
+  class PatchSet extends AbstractAgentSet
 
     # (Array[T]) => PatchSet
     constructor: (@_agents) ->

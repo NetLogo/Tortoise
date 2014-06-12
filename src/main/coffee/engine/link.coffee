@@ -1,6 +1,6 @@
-define(['integration/lodash', 'engine/abstractagents', 'engine/builtins', 'engine/colormodel', 'engine/comparator'
+define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'engine/colormodel', 'engine/comparator'
       , 'engine/exception', 'engine/turtleset', 'engine/variablemanager']
-     , ( _,                    AbstractAgents,          Builtins,          ColorModel,          Comparator
+     , ( _,                    AbstractAgentSet,          Builtins,          ColorModel,          Comparator
       ,  Exception,          TurtleSet,          VariableManager) ->
 
   class Link
@@ -110,7 +110,7 @@ define(['integration/lodash', 'engine/abstractagents', 'engine/builtins', 'engin
       trueBreed =
         if _(breed).isString()
           @world.breedManager.get(breed)
-        else if breed instanceof AbstractAgents
+        else if breed instanceof AbstractAgentSet
           @world.breedManager.get(breed.getBreedName())
         else
           breed

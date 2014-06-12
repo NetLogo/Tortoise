@@ -4,11 +4,11 @@ define(['integration/random', 'integration/seq', 'engine/nobody', 'engine/shuffl
     ,  ( Random,               Seq,               Nobody,          Shufflerator) ->
 
   # Type Parameter: T <: Agent - The type of agents within `_items`
-  class AbstractAgents extends Seq
+  class AbstractAgentSet extends Seq
 
     @_askAgent: undefined # [U] @ (() => U) => (Agent) => U
 
-    # (Array[T]) => AbstractAgents[T]
+    # (Array[T]) => AbstractAgentSet[T]
     constructor: (agents) ->
       super(agents)
       @_askAgent =
@@ -17,7 +17,7 @@ define(['integration/random', 'integration/seq', 'engine/nobody', 'engine/shuffl
         else
           () -> undefined
 
-    # (() => Boolean) => AbstractAgents[T]
+    # (() => Boolean) => AbstractAgentSet[T]
     agentFilter: (f) ->
       @filter(@_askAgent(f))
 
@@ -33,7 +33,7 @@ define(['integration/random', 'integration/seq', 'engine/nobody', 'engine/shuffl
     minOneOf: (f) ->
       @_findBestOf(Number.MAX_VALUE, ((result, currentBest) -> result < currentBest), f)
 
-    # () => AbstractAgents[T]
+    # () => AbstractAgentSet[T]
     shuffled: ->
       result = []
       iter = new Shufflerator(@toArray())
@@ -48,7 +48,7 @@ define(['integration/random', 'integration/seq', 'engine/nobody', 'engine/shuffl
       else
         @toArray().sort((x, y) -> x.compare(y).toInt)
 
-    # (Array[U]) => AbstractAgents[U]
+    # (Array[U]) => AbstractAgentSet[U]
     copyWithNewAgents: (agents) ->
       @_generateFrom(agents, this)
 
