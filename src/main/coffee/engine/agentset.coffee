@@ -63,7 +63,7 @@ define(['engine/abstractagents', 'engine/exception', 'engine/iterator', 'engine/
       else
         winners[Random.nextInt(winners.length)]
 
-    shuffle: (agents) ->
+    shuffled: (agents) ->
       result = []
       iter = new Shufflerator(agents.toArray())
       while iter.hasNext() #@# 1990 rears its ugly head again

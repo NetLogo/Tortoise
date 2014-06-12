@@ -2,13 +2,13 @@ define(->
 
   class LinkPrims
 
-    @_self:    undefined # () => Turtle
-    @_shuffle: undefined # (AbstractAgents) => TurtleSet
+    @_self:     undefined # () => Turtle
+    @_shuffled: undefined # (AbstractAgents) => TurtleSet
 
     # (World) => LinkPrims
     constructor: (@_world) ->
-      @_self    = @_world.agentSet.self
-      @_shuffle = @_world.agentSet.shuffle
+      @_self     = @_world.agentSet.self
+      @_shuffled = @_world.agentSet.shuffled
 
     # (Turtle) => Link
     createLinkFrom: (otherTurtle) ->
@@ -16,7 +16,7 @@ define(->
 
     # (TurtleSet) => LinkSet
     createLinksFrom: (otherTurtles) ->
-      @_world.createReverseDirectedLinks(@_self(), @_shuffle(otherTurtles))
+      @_world.createReverseDirectedLinks(@_self(), @_shuffled(otherTurtles))
 
     # (Turtle) => Link
     createLinkTo: (otherTurtle) ->
@@ -24,7 +24,7 @@ define(->
 
     # (TurtleSet) => LinkSet
     createLinksTo: (otherTurtles) ->
-      @_world.createDirectedLinks(@_self(), @_shuffle(otherTurtles))
+      @_world.createDirectedLinks(@_self(), @_shuffled(otherTurtles))
 
     # (Turtle) => Link
     createLinkWith: (otherTurtle) ->
@@ -32,7 +32,7 @@ define(->
 
     # (TurtleSet) => LinkSet
     createLinksWith: (otherTurtles) ->
-      @_world.createUndirectedLinks(@_self(), @_shuffle(otherTurtles))
+      @_world.createUndirectedLinks(@_self(), @_shuffled(otherTurtles))
 
     # (Boolean, Boolean) => Array[Link]
     connectedLinks: (isDirected, isSource) ->
