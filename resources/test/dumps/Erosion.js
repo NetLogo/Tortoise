@@ -28,103 +28,103 @@ var Random         = require('integration/random');
 var StrictMath     = require('integration/strictmath');function setup() {
   world.clearAll();
   world.observer.setGlobal('show-water?', true);
-  AgentSet.ask(world.patches(), true, function() {
+  Prims.ask(world.patches(), true, function() {
     if (world.observer.getGlobal('bumpy?')) {
       if (world.observer.getGlobal('hill?')) {
-        AgentSet.setPatchVariable('elevation', (((-100 * (AgentSet.self().distanceXY(0, 0) / world.maxPxcor)) + 100) + Prims.random(100)));
+        Prims.setPatchVariable('elevation', (((-100 * (AgentSet.self().distanceXY(0, 0) / world.maxPxcor)) + 100) + Prims.random(100)));
       }
       else {
-        AgentSet.setPatchVariable('elevation', Prims.random(125));
+        Prims.setPatchVariable('elevation', Prims.random(125));
       }
     }
     else {
-      AgentSet.setPatchVariable('elevation', 100);
+      Prims.setPatchVariable('elevation', 100);
     }
-    AgentSet.setPatchVariable('water', 0);
-    AgentSet.setPatchVariable('drain?', false);
+    Prims.setPatchVariable('water', 0);
+    Prims.setPatchVariable('drain?', false);
   });
   if (world.observer.getGlobal('bumpy?')) {
     Prims.repeat(world.observer.getGlobal('terrain-smoothness'), function () {
       world.topology().diffuse('elevation', 0.5)
     });
   }
-  AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
+  Prims.ask(world.patches().agentFilter(function() {
     return !Prims.equality(Prims.getNeighbors().size(), 8);
   }), true, function() {
-    AgentSet.setPatchVariable('drain?', true);
-    AgentSet.setPatchVariable('elevation', -10000000);
+    Prims.setPatchVariable('drain?', true);
+    Prims.setPatchVariable('elevation', -10000000);
   });
-  world.observer.setGlobal('drains', AgentSet.agentFilter(world.patches(), function() {
-    return AgentSet.getPatchVariable('drain?');
+  world.observer.setGlobal('drains', world.patches().agentFilter(function() {
+    return Prims.getPatchVariable('drain?');
   }));
-  world.observer.setGlobal('land', AgentSet.agentFilter(world.patches(), function() {
-    return !(AgentSet.getPatchVariable('drain?'));
+  world.observer.setGlobal('land', world.patches().agentFilter(function() {
+    return !(Prims.getPatchVariable('drain?'));
   }));
-  AgentSet.ask(world.observer.getGlobal('land'), true, function() {
+  Prims.ask(world.observer.getGlobal('land'), true, function() {
     Call(recolor);
   });
   world.ticker.reset();
 }
 function recolor() {
-  if ((Prims.equality(AgentSet.getPatchVariable('water'), 0) || !(world.observer.getGlobal('show-water?')))) {
-    AgentSet.setPatchVariable('pcolor', Prims.scaleColor(9.9, AgentSet.getPatchVariable('elevation'), -250, 100));
+  if ((Prims.equality(Prims.getPatchVariable('water'), 0) || !(world.observer.getGlobal('show-water?')))) {
+    Prims.setPatchVariable('pcolor', Prims.scaleColor(9.9, Prims.getPatchVariable('elevation'), -250, 100));
   }
   else {
-    AgentSet.setPatchVariable('pcolor', Prims.scaleColor(105, Prims.min(Prims.list(AgentSet.getPatchVariable('water'), 75)), 100, -10));
+    Prims.setPatchVariable('pcolor', Prims.scaleColor(105, Prims.min(Prims.list(Prims.getPatchVariable('water'), 75)), 100, -10));
   }
 }
 function showWater() {
   world.observer.setGlobal('show-water?', true);
-  AgentSet.ask(world.observer.getGlobal('land'), true, function() {
+  Prims.ask(world.observer.getGlobal('land'), true, function() {
     Call(recolor);
   });
 }
 function hideWater() {
   world.observer.setGlobal('show-water?', false);
-  AgentSet.ask(world.observer.getGlobal('land'), true, function() {
+  Prims.ask(world.observer.getGlobal('land'), true, function() {
     Call(recolor);
   });
 }
 function go() {
-  AgentSet.ask(world.observer.getGlobal('land'), true, function() {
+  Prims.ask(world.observer.getGlobal('land'), true, function() {
     if (Prims.lt(Prims.randomFloat(1), world.observer.getGlobal('rainfall'))) {
-      AgentSet.setPatchVariable('water', (AgentSet.getPatchVariable('water') + 1));
+      Prims.setPatchVariable('water', (Prims.getPatchVariable('water') + 1));
     }
   });
-  AgentSet.ask(world.observer.getGlobal('land'), true, function() {
-    if (Prims.gt(AgentSet.getPatchVariable('water'), 0)) {
+  Prims.ask(world.observer.getGlobal('land'), true, function() {
+    if (Prims.gt(Prims.getPatchVariable('water'), 0)) {
       Call(flow);
     }
   });
-  AgentSet.ask(world.observer.getGlobal('drains'), true, function() {
-    AgentSet.setPatchVariable('water', 0);
-    AgentSet.setPatchVariable('elevation', -10000000);
+  Prims.ask(world.observer.getGlobal('drains'), true, function() {
+    Prims.setPatchVariable('water', 0);
+    Prims.setPatchVariable('elevation', -10000000);
   });
-  AgentSet.ask(world.observer.getGlobal('land'), true, function() {
+  Prims.ask(world.observer.getGlobal('land'), true, function() {
     Call(recolor);
   });
   world.ticker.tick();
 }
 function flow() {
-  var target = AgentSet.minOneOf(Prims.getNeighbors(), function() {
-    return (AgentSet.getPatchVariable('elevation') + AgentSet.getPatchVariable('water'));
+  var target = Prims.getNeighbors().minOneOf(function() {
+    return (Prims.getPatchVariable('elevation') + Prims.getPatchVariable('water'));
   });
-  var amount = Prims.min(Prims.list(AgentSet.getPatchVariable('water'), (0.5 * (((AgentSet.getPatchVariable('elevation') + AgentSet.getPatchVariable('water')) - AgentSet.of(target, function() {
-    return AgentSet.getPatchVariable('elevation');
-  })) - AgentSet.of(target, function() {
-    return AgentSet.getPatchVariable('water');
+  var amount = Prims.min(Prims.list(Prims.getPatchVariable('water'), (0.5 * (((Prims.getPatchVariable('elevation') + Prims.getPatchVariable('water')) - Prims.of(target, function() {
+    return Prims.getPatchVariable('elevation');
+  })) - Prims.of(target, function() {
+    return Prims.getPatchVariable('water');
   })))));
   if (Prims.gt(amount, 0)) {
     var erosion = (amount * (1 - world.observer.getGlobal('soil-hardness')));
-    AgentSet.setPatchVariable('elevation', (AgentSet.getPatchVariable('elevation') - erosion));
-    amount = Prims.min(Prims.list(AgentSet.getPatchVariable('water'), (0.5 * (((AgentSet.getPatchVariable('elevation') + AgentSet.getPatchVariable('water')) - AgentSet.of(target, function() {
-      return AgentSet.getPatchVariable('elevation');
-    })) - AgentSet.of(target, function() {
-      return AgentSet.getPatchVariable('water');
+    Prims.setPatchVariable('elevation', (Prims.getPatchVariable('elevation') - erosion));
+    amount = Prims.min(Prims.list(Prims.getPatchVariable('water'), (0.5 * (((Prims.getPatchVariable('elevation') + Prims.getPatchVariable('water')) - Prims.of(target, function() {
+      return Prims.getPatchVariable('elevation');
+    })) - Prims.of(target, function() {
+      return Prims.getPatchVariable('water');
     })))));
-    AgentSet.setPatchVariable('water', (AgentSet.getPatchVariable('water') - amount));
-    AgentSet.ask(target, true, function() {
-      AgentSet.setPatchVariable('water', (AgentSet.getPatchVariable('water') + amount));
+    Prims.setPatchVariable('water', (Prims.getPatchVariable('water') - amount));
+    Prims.ask(target, true, function() {
+      Prims.setPatchVariable('water', (Prims.getPatchVariable('water') + amount));
     });
   }
 }

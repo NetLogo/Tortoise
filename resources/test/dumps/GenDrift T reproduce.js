@@ -27,22 +27,22 @@ var notImplemented = require('integration/notimplemented');
 var Random         = require('integration/random');
 var StrictMath     = require('integration/strictmath');function setup() {
   world.clearAll();
-  AgentSet.ask(world.createTurtles(world.observer.getGlobal('number'), ""), true, function() {
-    AgentSet.setVariable('color', (5 + (Prims.random(world.observer.getGlobal('colors')) * 10)));
-    if (Prims.equality(AgentSet.getVariable('color'), 75)) {
-      AgentSet.setVariable('color', 125);
+  Prims.ask(world.createTurtles(world.observer.getGlobal('number'), ""), true, function() {
+    Prims.setVariable('color', (5 + (Prims.random(world.observer.getGlobal('colors')) * 10)));
+    if (Prims.equality(Prims.getVariable('color'), 75)) {
+      Prims.setVariable('color', 125);
     }
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
   });
   world.ticker.reset();
 }
 function go() {
-  if (Prims.equality(Prims.variance(AgentSet.of(world.turtles(), function() {
-    return AgentSet.getVariable('color');
+  if (Prims.equality(Prims.variance(Prims.of(world.turtles(), function() {
+    return Prims.getVariable('color');
   })), 0)) {
     throw new Exception.StopInterrupt;
   }
-  AgentSet.ask(world.turtles(), true, function() {
+  Prims.ask(world.turtles(), true, function() {
     Prims.right(Prims.random(50));
     Prims.left(Prims.random(50));
     Prims.fd(1);
@@ -52,17 +52,17 @@ function go() {
   world.ticker.tick();
 }
 function birth() {
-  AgentSet.ask(world.turtles(), true, function() {
-    AgentSet.ask(Prims.hatch(Prims.random(5), ""), true, function() {
+  Prims.ask(world.turtles(), true, function() {
+    Prims.ask(Prims.hatch(Prims.random(5), ""), true, function() {
       Prims.fd(1);
     });
   });
 }
 function death() {
   var totalTurtles = world.turtles().size();
-  AgentSet.ask(world.turtles(), true, function() {
+  Prims.ask(world.turtles(), true, function() {
     if (Prims.gt(Prims.random(totalTurtles), world.observer.getGlobal('number'))) {
-      AgentSet.die();
+      Prims.die();
     }
   });
 }

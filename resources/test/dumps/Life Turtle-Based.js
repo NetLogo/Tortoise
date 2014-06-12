@@ -29,61 +29,61 @@ var StrictMath     = require('integration/strictmath');function setupBlank() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtlesOfBreed("CELLS").getBreedName(), "circle")
   BreedManager.setDefaultShape(world.turtlesOfBreed("BABIES").getBreedName(), "dot")
-  AgentSet.ask(world.patches(), true, function() {
-    AgentSet.setPatchVariable('live-neighbors', 0);
+  Prims.ask(world.patches(), true, function() {
+    Prims.setPatchVariable('live-neighbors', 0);
   });
   world.ticker.reset();
 }
 function setupRandom() {
   Call(setupBlank);
-  AgentSet.ask(world.patches(), true, function() {
+  Prims.ask(world.patches(), true, function() {
     if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal('initial-density'))) {
-      AgentSet.ask(Prims.sprout(1, "BABIES"), true, function() {});
+      Prims.ask(Prims.sprout(1, "BABIES"), true, function() {});
     }
   });
   Call(go);
   world.ticker.reset();
 }
 function birth() {
-  AgentSet.ask(Prims.sprout(1, "BABIES"), true, function() {
-    AgentSet.setVariable('color', (65 + 1));
+  Prims.ask(Prims.sprout(1, "BABIES"), true, function() {
+    Prims.setVariable('color', (65 + 1));
   });
 }
 function go() {
-  AgentSet.ask(AgentSet.agentFilter(world.turtlesOfBreed("CELLS"), function() {
-    return Prims.equality(AgentSet.getVariable('color'), 5);
+  Prims.ask(world.turtlesOfBreed("CELLS").agentFilter(function() {
+    return Prims.equality(Prims.getVariable('color'), 5);
   }), true, function() {
-    AgentSet.die();
+    Prims.die();
   });
-  AgentSet.ask(world.turtlesOfBreed("BABIES"), true, function() {
-    AgentSet.setVariable('breed', world.turtlesOfBreed("CELLS"));
-    AgentSet.setVariable('color', 9.9);
+  Prims.ask(world.turtlesOfBreed("BABIES"), true, function() {
+    Prims.setVariable('breed', world.turtlesOfBreed("CELLS"));
+    Prims.setVariable('color', 9.9);
   });
-  AgentSet.ask(world.turtlesOfBreed("CELLS"), true, function() {
-    AgentSet.ask(Prims.getNeighbors(), true, function() {
-      AgentSet.setPatchVariable('live-neighbors', (AgentSet.getPatchVariable('live-neighbors') + 1));
+  Prims.ask(world.turtlesOfBreed("CELLS"), true, function() {
+    Prims.ask(Prims.getNeighbors(), true, function() {
+      Prims.setPatchVariable('live-neighbors', (Prims.getPatchVariable('live-neighbors') + 1));
     });
   });
-  AgentSet.ask(world.turtlesOfBreed("CELLS"), true, function() {
-    if ((Prims.equality(AgentSet.getPatchVariable('live-neighbors'), 2) || Prims.equality(AgentSet.getPatchVariable('live-neighbors'), 3))) {
-      AgentSet.setVariable('color', 9.9);
+  Prims.ask(world.turtlesOfBreed("CELLS"), true, function() {
+    if ((Prims.equality(Prims.getPatchVariable('live-neighbors'), 2) || Prims.equality(Prims.getPatchVariable('live-neighbors'), 3))) {
+      Prims.setVariable('color', 9.9);
     }
     else {
-      AgentSet.setVariable('color', 5);
+      Prims.setVariable('color', 5);
     }
   });
-  AgentSet.ask(world.patches(), true, function() {
-    if ((!(AgentSet.self().breedHere("CELLS").nonEmpty()) && Prims.equality(AgentSet.getPatchVariable('live-neighbors'), 3))) {
+  Prims.ask(world.patches(), true, function() {
+    if ((!(AgentSet.self().breedHere("CELLS").nonEmpty()) && Prims.equality(Prims.getPatchVariable('live-neighbors'), 3))) {
       Call(birth);
     }
-    AgentSet.setPatchVariable('live-neighbors', 0);
+    Prims.setPatchVariable('live-neighbors', 0);
   });
   world.ticker.tick();
 }
 function drawCells() {
   var erasing_p = Prims.breedOn("CELLS", Prims.patch(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)())).nonEmpty();
   while (notImplemented('mouse-down?', false)()) {
-    AgentSet.ask(Prims.patch(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)()), true, function() {
+    Prims.ask(Prims.patch(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)()), true, function() {
       if (erasing_p) {
         Call(erase);
       }
@@ -96,51 +96,51 @@ function drawCells() {
 }
 function draw() {
   if (!(AgentSet.self().breedHere("CELLS").nonEmpty())) {
-    AgentSet.ask(AgentSet.self().turtlesHere(), true, function() {
-      AgentSet.die();
+    Prims.ask(AgentSet.self().turtlesHere(), true, function() {
+      Prims.die();
     });
-    AgentSet.ask(Prims.sprout(1, "CELLS"), true, function() {
-      AgentSet.setVariable('color', 9.9);
+    Prims.ask(Prims.sprout(1, "CELLS"), true, function() {
+      Prims.setVariable('color', 9.9);
     });
     Call(update);
-    AgentSet.ask(Prims.getNeighbors(), true, function() {
+    Prims.ask(Prims.getNeighbors(), true, function() {
       Call(update);
     });
   }
 }
 function erase() {
-  AgentSet.ask(AgentSet.self().turtlesHere(), true, function() {
-    AgentSet.die();
+  Prims.ask(AgentSet.self().turtlesHere(), true, function() {
+    Prims.die();
   });
   Call(update);
-  AgentSet.ask(Prims.getNeighbors(), true, function() {
+  Prims.ask(Prims.getNeighbors(), true, function() {
     Call(update);
   });
 }
 function update() {
-  AgentSet.ask(AgentSet.self().breedHere("BABIES"), true, function() {
-    AgentSet.die();
+  Prims.ask(AgentSet.self().breedHere("BABIES"), true, function() {
+    Prims.die();
   });
   var n = Prims.breedOn("CELLS", Prims.getNeighbors()).size();
   if (AgentSet.self().breedHere("CELLS").nonEmpty()) {
     if ((Prims.equality(n, 2) || Prims.equality(n, 3))) {
-      AgentSet.ask(AgentSet.self().breedHere("CELLS"), true, function() {
-        AgentSet.setVariable('color', 9.9);
+      Prims.ask(AgentSet.self().breedHere("CELLS"), true, function() {
+        Prims.setVariable('color', 9.9);
       });
     }
     else {
-      AgentSet.ask(AgentSet.self().breedHere("CELLS"), true, function() {
-        AgentSet.setVariable('color', 5);
+      Prims.ask(AgentSet.self().breedHere("CELLS"), true, function() {
+        Prims.setVariable('color', 5);
       });
     }
   }
   else {
     if (Prims.equality(n, 3)) {
-      AgentSet.ask(Prims.sprout(1, "BABIES"), true, function() {
-        AgentSet.setVariable('color', (65 + 1));
+      Prims.ask(Prims.sprout(1, "BABIES"), true, function() {
+        Prims.setVariable('color', (65 + 1));
       });
     }
   }
-  AgentSet.setPatchVariable('live-neighbors', 0);
+  Prims.setPatchVariable('live-neighbors', 0);
 }
 world.observer.setGlobal('initial-density', 35);

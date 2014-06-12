@@ -27,41 +27,41 @@ var notImplemented = require('integration/notimplemented');
 var Random         = require('integration/random');
 var StrictMath     = require('integration/strictmath');function setup() {
   world.clearAll();
-  AgentSet.ask(world.createTurtles(world.observer.getGlobal('population'), ""), true, function() {
-    AgentSet.setVariable('color', 15);
-    AgentSet.setVariable('size', 2);
+  Prims.ask(world.createTurtles(world.observer.getGlobal('population'), ""), true, function() {
+    Prims.setVariable('color', 15);
+    Prims.setVariable('size', 2);
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
   });
-  AgentSet.ask(world.patches(), true, function() {
-    AgentSet.setPatchVariable('chemical', 0);
+  Prims.ask(world.patches(), true, function() {
+    Prims.setPatchVariable('chemical', 0);
   });
   world.ticker.reset();
 }
 function go() {
-  AgentSet.ask(world.turtles(), true, function() {
-    if (Prims.gt(AgentSet.getPatchVariable('chemical'), world.observer.getGlobal('sniff-threshold'))) {
+  Prims.ask(world.turtles(), true, function() {
+    if (Prims.gt(Prims.getPatchVariable('chemical'), world.observer.getGlobal('sniff-threshold'))) {
       Call(turnTowardChemical);
     }
     Prims.right(((Prims.randomFloat(world.observer.getGlobal('wiggle-angle')) - Prims.randomFloat(world.observer.getGlobal('wiggle-angle'))) + world.observer.getGlobal('wiggle-bias')));
     Prims.fd(1);
-    AgentSet.setPatchVariable('chemical', (AgentSet.getPatchVariable('chemical') + 2));
+    Prims.setPatchVariable('chemical', (Prims.getPatchVariable('chemical') + 2));
   });
   world.topology().diffuse('chemical', 1)
-  AgentSet.ask(world.patches(), true, function() {
-    AgentSet.setPatchVariable('chemical', (AgentSet.getPatchVariable('chemical') * 0.9));
-    AgentSet.setPatchVariable('pcolor', Prims.scaleColor(55, AgentSet.getPatchVariable('chemical'), 0.1, 3));
+  Prims.ask(world.patches(), true, function() {
+    Prims.setPatchVariable('chemical', (Prims.getPatchVariable('chemical') * 0.9));
+    Prims.setPatchVariable('pcolor', Prims.scaleColor(55, Prims.getPatchVariable('chemical'), 0.1, 3));
   });
   world.ticker.tick();
 }
 function turnTowardChemical() {
-  var ahead = AgentSet.of(AgentSet.self().patchAhead(1), function() {
-    return AgentSet.getPatchVariable('chemical');
+  var ahead = Prims.of(AgentSet.self().patchAhead(1), function() {
+    return Prims.getPatchVariable('chemical');
   });
-  var myright = AgentSet.of(AgentSet.self().patchRightAndAhead(world.observer.getGlobal('sniff-angle'), 1), function() {
-    return AgentSet.getPatchVariable('chemical');
+  var myright = Prims.of(AgentSet.self().patchRightAndAhead(world.observer.getGlobal('sniff-angle'), 1), function() {
+    return Prims.getPatchVariable('chemical');
   });
-  var myleft = AgentSet.of(AgentSet.self().patchLeftAndAhead(world.observer.getGlobal('sniff-angle'), 1), function() {
-    return AgentSet.getPatchVariable('chemical');
+  var myleft = Prims.of(AgentSet.self().patchLeftAndAhead(world.observer.getGlobal('sniff-angle'), 1), function() {
+    return Prims.getPatchVariable('chemical');
   });
   if ((Prims.gte(myright, ahead) && Prims.gte(myright, myleft))) {
     Prims.right(world.observer.getGlobal('sniff-angle'));

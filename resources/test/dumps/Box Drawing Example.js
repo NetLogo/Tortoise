@@ -27,36 +27,36 @@ var notImplemented = require('integration/notimplemented');
 var Random         = require('integration/random');
 var StrictMath     = require('integration/strictmath');function setupCorner() {
   world.clearAll();
-  AgentSet.ask(world.patches(), true, function() {
-    if (((Prims.equality(AgentSet.getPatchVariable('pxcor'), 0) && Prims.gte(AgentSet.getPatchVariable('pycor'), 0)) && Prims.lte(AgentSet.getPatchVariable('pycor'), world.observer.getGlobal('edge')))) {
-      AgentSet.setPatchVariable('pcolor', 15);
+  Prims.ask(world.patches(), true, function() {
+    if (((Prims.equality(Prims.getPatchVariable('pxcor'), 0) && Prims.gte(Prims.getPatchVariable('pycor'), 0)) && Prims.lte(Prims.getPatchVariable('pycor'), world.observer.getGlobal('edge')))) {
+      Prims.setPatchVariable('pcolor', 15);
     }
-    if (((Prims.equality(AgentSet.getPatchVariable('pxcor'), world.observer.getGlobal('edge')) && Prims.gte(AgentSet.getPatchVariable('pycor'), 0)) && Prims.lte(AgentSet.getPatchVariable('pycor'), world.observer.getGlobal('edge')))) {
-      AgentSet.setPatchVariable('pcolor', 15);
+    if (((Prims.equality(Prims.getPatchVariable('pxcor'), world.observer.getGlobal('edge')) && Prims.gte(Prims.getPatchVariable('pycor'), 0)) && Prims.lte(Prims.getPatchVariable('pycor'), world.observer.getGlobal('edge')))) {
+      Prims.setPatchVariable('pcolor', 15);
     }
-    if (((Prims.equality(AgentSet.getPatchVariable('pycor'), 0) && Prims.gte(AgentSet.getPatchVariable('pxcor'), 0)) && Prims.lte(AgentSet.getPatchVariable('pxcor'), world.observer.getGlobal('edge')))) {
-      AgentSet.setPatchVariable('pcolor', 15);
+    if (((Prims.equality(Prims.getPatchVariable('pycor'), 0) && Prims.gte(Prims.getPatchVariable('pxcor'), 0)) && Prims.lte(Prims.getPatchVariable('pxcor'), world.observer.getGlobal('edge')))) {
+      Prims.setPatchVariable('pcolor', 15);
     }
-    if (((Prims.equality(AgentSet.getPatchVariable('pycor'), world.observer.getGlobal('edge')) && Prims.gte(AgentSet.getPatchVariable('pxcor'), 0)) && Prims.lte(AgentSet.getPatchVariable('pxcor'), world.observer.getGlobal('edge')))) {
-      AgentSet.setPatchVariable('pcolor', 15);
+    if (((Prims.equality(Prims.getPatchVariable('pycor'), world.observer.getGlobal('edge')) && Prims.gte(Prims.getPatchVariable('pxcor'), 0)) && Prims.lte(Prims.getPatchVariable('pxcor'), world.observer.getGlobal('edge')))) {
+      Prims.setPatchVariable('pcolor', 15);
     }
   });
 }
 function setupCenter() {
   world.clearAll();
   world.observer.setGlobal('halfedge', Prims._int((world.observer.getGlobal('edge') / 2)));
-  AgentSet.ask(world.patches(), true, function() {
-    if (((Prims.equality(AgentSet.getPatchVariable('pxcor'), (- world.observer.getGlobal('halfedge'))) && Prims.gte(AgentSet.getPatchVariable('pycor'), (- world.observer.getGlobal('halfedge')))) && Prims.lte(AgentSet.getPatchVariable('pycor'), (0 + world.observer.getGlobal('halfedge'))))) {
-      AgentSet.setPatchVariable('pcolor', 105);
+  Prims.ask(world.patches(), true, function() {
+    if (((Prims.equality(Prims.getPatchVariable('pxcor'), (- world.observer.getGlobal('halfedge'))) && Prims.gte(Prims.getPatchVariable('pycor'), (- world.observer.getGlobal('halfedge')))) && Prims.lte(Prims.getPatchVariable('pycor'), (0 + world.observer.getGlobal('halfedge'))))) {
+      Prims.setPatchVariable('pcolor', 105);
     }
-    if (((Prims.equality(AgentSet.getPatchVariable('pxcor'), (0 + world.observer.getGlobal('halfedge'))) && Prims.gte(AgentSet.getPatchVariable('pycor'), (- world.observer.getGlobal('halfedge')))) && Prims.lte(AgentSet.getPatchVariable('pycor'), (0 + world.observer.getGlobal('halfedge'))))) {
-      AgentSet.setPatchVariable('pcolor', 105);
+    if (((Prims.equality(Prims.getPatchVariable('pxcor'), (0 + world.observer.getGlobal('halfedge'))) && Prims.gte(Prims.getPatchVariable('pycor'), (- world.observer.getGlobal('halfedge')))) && Prims.lte(Prims.getPatchVariable('pycor'), (0 + world.observer.getGlobal('halfedge'))))) {
+      Prims.setPatchVariable('pcolor', 105);
     }
-    if (((Prims.equality(AgentSet.getPatchVariable('pycor'), (- world.observer.getGlobal('halfedge'))) && Prims.gte(AgentSet.getPatchVariable('pxcor'), (- world.observer.getGlobal('halfedge')))) && Prims.lte(AgentSet.getPatchVariable('pxcor'), (0 + world.observer.getGlobal('halfedge'))))) {
-      AgentSet.setPatchVariable('pcolor', 105);
+    if (((Prims.equality(Prims.getPatchVariable('pycor'), (- world.observer.getGlobal('halfedge'))) && Prims.gte(Prims.getPatchVariable('pxcor'), (- world.observer.getGlobal('halfedge')))) && Prims.lte(Prims.getPatchVariable('pxcor'), (0 + world.observer.getGlobal('halfedge'))))) {
+      Prims.setPatchVariable('pcolor', 105);
     }
-    if (((Prims.equality(AgentSet.getPatchVariable('pycor'), (0 + world.observer.getGlobal('halfedge'))) && Prims.gte(AgentSet.getPatchVariable('pxcor'), (- world.observer.getGlobal('halfedge')))) && Prims.lte(AgentSet.getPatchVariable('pxcor'), (0 + world.observer.getGlobal('halfedge'))))) {
-      AgentSet.setPatchVariable('pcolor', 105);
+    if (((Prims.equality(Prims.getPatchVariable('pycor'), (0 + world.observer.getGlobal('halfedge'))) && Prims.gte(Prims.getPatchVariable('pxcor'), (- world.observer.getGlobal('halfedge')))) && Prims.lte(Prims.getPatchVariable('pxcor'), (0 + world.observer.getGlobal('halfedge'))))) {
+      Prims.setPatchVariable('pcolor', 105);
     }
   });
 }

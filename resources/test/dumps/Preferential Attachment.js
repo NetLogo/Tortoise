@@ -33,8 +33,8 @@ var StrictMath     = require('integration/strictmath');function setup() {
   world.ticker.reset();
 }
 function go() {
-  AgentSet.ask(world.links(), true, function() {
-    AgentSet.setVariable('color', 5);
+  Prims.ask(world.links(), true, function() {
+    Prims.setVariable('color', 5);
   });
   Call(makeNode, Call(findPartner));
   world.ticker.tick();
@@ -43,11 +43,11 @@ function go() {
   }
 }
 function makeNode(oldNode) {
-  AgentSet.ask(world.createTurtles(1, ""), true, function() {
-    AgentSet.setVariable('color', 15);
+  Prims.ask(world.createTurtles(1, ""), true, function() {
+    Prims.setVariable('color', 15);
     if (!Prims.equality(oldNode, Nobody)) {
-      AgentSet.ask(LinkPrims.createLinkWith(oldNode), true, function() {
-        AgentSet.setVariable('color', 55);
+      Prims.ask(LinkPrims.createLinkWith(oldNode), true, function() {
+        Prims.setVariable('color', 55);
       });
       AgentSet.self().moveTo(oldNode);
       Prims.fd(8);
@@ -55,19 +55,19 @@ function makeNode(oldNode) {
   });
 }
 function findPartner() {
-  return AgentSet.of(AgentSet.oneOf(world.links()), function() {
-    return AgentSet.oneOf(AgentSet.self().bothEnds());
+  return Prims.of(Prims.oneOf(world.links()), function() {
+    return Prims.oneOf(AgentSet.self().bothEnds());
   });
 }
 function resizeNodes() {
-  if (AgentSet.all(world.turtles(), function(){ return Prims.lte(AgentSet.getVariable('size'), 1) })) {
-    AgentSet.ask(world.turtles(), true, function() {
-      AgentSet.setVariable('size', StrictMath.sqrt(LinkPrims.linkNeighbors(false, false).size()));
+  if (world.turtles().agentAll(function(){ return Prims.lte(Prims.getVariable('size'), 1) })) {
+    Prims.ask(world.turtles(), true, function() {
+      Prims.setVariable('size', StrictMath.sqrt(LinkPrims.linkNeighbors(false, false).size()));
     });
   }
   else {
-    AgentSet.ask(world.turtles(), true, function() {
-      AgentSet.setVariable('size', 1);
+    Prims.ask(world.turtles(), true, function() {
+      Prims.setVariable('size', 1);
     });
   }
 }
@@ -77,20 +77,20 @@ function layout() {
     LayoutManager.layoutSpring(world.turtles(), world.links(), (1 / factor), (7 / factor), (1 / factor));
     notImplemented('display', undefined)();
   });
-  var xOffset = (Prims.max(AgentSet.of(world.turtles(), function() {
-    return AgentSet.getVariable('xcor');
-  })) + Prims.min(AgentSet.of(world.turtles(), function() {
-    return AgentSet.getVariable('xcor');
+  var xOffset = (Prims.max(Prims.of(world.turtles(), function() {
+    return Prims.getVariable('xcor');
+  })) + Prims.min(Prims.of(world.turtles(), function() {
+    return Prims.getVariable('xcor');
   })));
-  var yOffset = (Prims.max(AgentSet.of(world.turtles(), function() {
-    return AgentSet.getVariable('ycor');
-  })) + Prims.min(AgentSet.of(world.turtles(), function() {
-    return AgentSet.getVariable('ycor');
+  var yOffset = (Prims.max(Prims.of(world.turtles(), function() {
+    return Prims.getVariable('ycor');
+  })) + Prims.min(Prims.of(world.turtles(), function() {
+    return Prims.getVariable('ycor');
   })));
   xOffset = Call(limitMagnitude, xOffset, 0.1);
   yOffset = Call(limitMagnitude, yOffset, 0.1);
-  AgentSet.ask(world.turtles(), true, function() {
-    Prims.setXY((AgentSet.getVariable('xcor') - (xOffset / 2)), (AgentSet.getVariable('ycor') - (yOffset / 2)));
+  Prims.ask(world.turtles(), true, function() {
+    Prims.setXY((Prims.getVariable('xcor') - (xOffset / 2)), (Prims.getVariable('ycor') - (yOffset / 2)));
   });
 }
 function limitMagnitude(number, limit) {

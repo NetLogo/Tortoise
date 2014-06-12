@@ -27,22 +27,22 @@ var notImplemented = require('integration/notimplemented');
 var Random         = require('integration/random');
 var StrictMath     = require('integration/strictmath');function setup() {
   world.clearAll();
-  AgentSet.ask(world.patches(), true, function() {
-    AgentSet.setPatchVariable('heat', Prims.random(212));
-    AgentSet.setPatchVariable('pcolor', Prims.scaleColor(15, AgentSet.getPatchVariable('heat'), 0, 212));
+  Prims.ask(world.patches(), true, function() {
+    Prims.setPatchVariable('heat', Prims.random(212));
+    Prims.setPatchVariable('pcolor', Prims.scaleColor(15, Prims.getPatchVariable('heat'), 0, 212));
   });
   world.ticker.reset();
 }
 function go() {
   world.topology().diffuse('heat', 1)
-  AgentSet.ask(world.patches(), true, function() {
-    AgentSet.setPatchVariable('heat', Prims.mod((AgentSet.getPatchVariable('heat') + 5), 212));
-    AgentSet.setPatchVariable('pcolor', Prims.scaleColor(15, AgentSet.getPatchVariable('heat'), 0, 212));
+  Prims.ask(world.patches(), true, function() {
+    Prims.setPatchVariable('heat', Prims.mod((Prims.getPatchVariable('heat') + 5), 212));
+    Prims.setPatchVariable('pcolor', Prims.scaleColor(15, Prims.getPatchVariable('heat'), 0, 212));
   });
   world.ticker.tick();
 }
 function averageHeat() {
-  return Prims.mean(AgentSet.of(world.patches(), function() {
-    return AgentSet.getPatchVariable('heat');
+  return Prims.mean(Prims.of(world.patches(), function() {
+    return Prims.getPatchVariable('heat');
   }));
 }

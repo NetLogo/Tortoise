@@ -27,26 +27,26 @@ var notImplemented = require('integration/notimplemented');
 var Random         = require('integration/random');
 var StrictMath     = require('integration/strictmath');function setup() {
   world.clearAll();
-  AgentSet.ask(Prims.patch(0, 0), true, function() {
-    AgentSet.setPatchVariable('pcolor', 55);
+  Prims.ask(Prims.patch(0, 0), true, function() {
+    Prims.setPatchVariable('pcolor', 55);
   });
-  AgentSet.ask(world.createTurtles(world.observer.getGlobal('num-particles'), ""), true, function() {
-    AgentSet.setVariable('color', 15);
-    AgentSet.setVariable('size', 1.5);
+  Prims.ask(world.createTurtles(world.observer.getGlobal('num-particles'), ""), true, function() {
+    Prims.setVariable('color', 15);
+    Prims.setVariable('size', 1.5);
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
   });
   world.ticker.reset();
 }
 function go() {
-  AgentSet.ask(world.turtles(), true, function() {
+  Prims.ask(world.turtles(), true, function() {
     Prims.right(Prims.random(world.observer.getGlobal('wiggle-angle')));
     Prims.left(Prims.random(world.observer.getGlobal('wiggle-angle')));
     Prims.fd(1);
-    if (AgentSet.agentFilter(Prims.getNeighbors(), function() {
-      return Prims.equality(AgentSet.getPatchVariable('pcolor'), 55);
+    if (Prims.getNeighbors().agentFilter(function() {
+      return Prims.equality(Prims.getPatchVariable('pcolor'), 55);
     }).nonEmpty()) {
-      AgentSet.setPatchVariable('pcolor', 55);
-      AgentSet.die();
+      Prims.setPatchVariable('pcolor', 55);
+      Prims.die();
     }
   });
   world.ticker.tick();

@@ -34,80 +34,80 @@ var StrictMath     = require('integration/strictmath');function setup() {
   world.ticker.reset();
 }
 function setupPatches() {
-  AgentSet.ask(world.patches(), true, function() {
-    AgentSet.setPatchVariable('max-grain-here', 0);
+  Prims.ask(world.patches(), true, function() {
+    Prims.setPatchVariable('max-grain-here', 0);
     if (Prims.lte(Prims.randomFloat(100), world.observer.getGlobal('percent-best-land'))) {
-      AgentSet.setPatchVariable('max-grain-here', world.observer.getGlobal('max-grain'));
-      AgentSet.setPatchVariable('grain-here', AgentSet.getPatchVariable('max-grain-here'));
+      Prims.setPatchVariable('max-grain-here', world.observer.getGlobal('max-grain'));
+      Prims.setPatchVariable('grain-here', Prims.getPatchVariable('max-grain-here'));
     }
   });
   Prims.repeat(5, function () {
-    AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
-      return !Prims.equality(AgentSet.getPatchVariable('max-grain-here'), 0);
+    Prims.ask(world.patches().agentFilter(function() {
+      return !Prims.equality(Prims.getPatchVariable('max-grain-here'), 0);
     }), true, function() {
-      AgentSet.setPatchVariable('grain-here', AgentSet.getPatchVariable('max-grain-here'));
+      Prims.setPatchVariable('grain-here', Prims.getPatchVariable('max-grain-here'));
     });
     world.topology().diffuse('grain-here', 0.25)
   });
   Prims.repeat(10, function () {
     world.topology().diffuse('grain-here', 0.25)
   });
-  AgentSet.ask(world.patches(), true, function() {
-    AgentSet.setPatchVariable('grain-here', StrictMath.floor(AgentSet.getPatchVariable('grain-here')));
-    AgentSet.setPatchVariable('max-grain-here', AgentSet.getPatchVariable('grain-here'));
+  Prims.ask(world.patches(), true, function() {
+    Prims.setPatchVariable('grain-here', StrictMath.floor(Prims.getPatchVariable('grain-here')));
+    Prims.setPatchVariable('max-grain-here', Prims.getPatchVariable('grain-here'));
     Call(recolorPatch);
   });
 }
 function recolorPatch() {
-  AgentSet.setPatchVariable('pcolor', Prims.scaleColor(45, AgentSet.getPatchVariable('grain-here'), 0, world.observer.getGlobal('max-grain')));
+  Prims.setPatchVariable('pcolor', Prims.scaleColor(45, Prims.getPatchVariable('grain-here'), 0, world.observer.getGlobal('max-grain')));
 }
 function setupTurtles() {
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "person")
-  AgentSet.ask(world.createTurtles(world.observer.getGlobal('num-people'), ""), true, function() {
-    AgentSet.self().moveTo(AgentSet.oneOf(world.patches()));
-    AgentSet.setVariable('size', 1.5);
+  Prims.ask(world.createTurtles(world.observer.getGlobal('num-people'), ""), true, function() {
+    AgentSet.self().moveTo(Prims.oneOf(world.patches()));
+    Prims.setVariable('size', 1.5);
     Call(setInitialTurtleVars);
-    AgentSet.setVariable('age', Prims.random(AgentSet.getVariable('life-expectancy')));
+    Prims.setVariable('age', Prims.random(Prims.getVariable('life-expectancy')));
   });
   Call(recolorTurtles);
 }
 function setInitialTurtleVars() {
-  AgentSet.setVariable('age', 0);
-  AgentSet.self().face(AgentSet.oneOf(Prims.getNeighbors4()));
-  AgentSet.setVariable('life-expectancy', (world.observer.getGlobal('life-expectancy-min') + Prims.random(((world.observer.getGlobal('life-expectancy-max') - world.observer.getGlobal('life-expectancy-min')) + 1))));
-  AgentSet.setVariable('metabolism', (1 + Prims.random(world.observer.getGlobal('metabolism-max'))));
-  AgentSet.setVariable('wealth', (AgentSet.getVariable('metabolism') + Prims.random(50)));
-  AgentSet.setVariable('vision', (1 + Prims.random(world.observer.getGlobal('max-vision'))));
+  Prims.setVariable('age', 0);
+  AgentSet.self().face(Prims.oneOf(Prims.getNeighbors4()));
+  Prims.setVariable('life-expectancy', (world.observer.getGlobal('life-expectancy-min') + Prims.random(((world.observer.getGlobal('life-expectancy-max') - world.observer.getGlobal('life-expectancy-min')) + 1))));
+  Prims.setVariable('metabolism', (1 + Prims.random(world.observer.getGlobal('metabolism-max'))));
+  Prims.setVariable('wealth', (Prims.getVariable('metabolism') + Prims.random(50)));
+  Prims.setVariable('vision', (1 + Prims.random(world.observer.getGlobal('max-vision'))));
 }
 function recolorTurtles() {
-  var maxWealth = Prims.max(AgentSet.of(world.turtles(), function() {
-    return AgentSet.getVariable('wealth');
+  var maxWealth = Prims.max(Prims.of(world.turtles(), function() {
+    return Prims.getVariable('wealth');
   }));
-  AgentSet.ask(world.turtles(), true, function() {
-    if (Prims.lte(AgentSet.getVariable('wealth'), (maxWealth / 3))) {
-      AgentSet.setVariable('color', 15);
+  Prims.ask(world.turtles(), true, function() {
+    if (Prims.lte(Prims.getVariable('wealth'), (maxWealth / 3))) {
+      Prims.setVariable('color', 15);
     }
     else {
-      if (Prims.lte(AgentSet.getVariable('wealth'), ((maxWealth * 2) / 3))) {
-        AgentSet.setVariable('color', 55);
+      if (Prims.lte(Prims.getVariable('wealth'), ((maxWealth * 2) / 3))) {
+        Prims.setVariable('color', 55);
       }
       else {
-        AgentSet.setVariable('color', 105);
+        Prims.setVariable('color', 105);
       }
     }
   });
 }
 function go() {
-  AgentSet.ask(world.turtles(), true, function() {
+  Prims.ask(world.turtles(), true, function() {
     Call(turnTowardsGrain);
   });
   Call(harvest);
-  AgentSet.ask(world.turtles(), true, function() {
+  Prims.ask(world.turtles(), true, function() {
     Call(moveEatAgeDie);
   });
   Call(recolorTurtles);
   if (Prims.equality(Prims.mod(world.ticker.tickCount(), world.observer.getGlobal('grain-growth-interval')), 0)) {
-    AgentSet.ask(world.patches(), true, function() {
+    Prims.ask(world.patches(), true, function() {
       Call(growGrain);
     });
   }
@@ -115,66 +115,66 @@ function go() {
   world.ticker.tick();
 }
 function turnTowardsGrain() {
-  AgentSet.setVariable('heading', 0);
+  Prims.setVariable('heading', 0);
   var bestDirection = 0;
   var bestAmount = Call(grainAhead);
-  AgentSet.setVariable('heading', 90);
+  Prims.setVariable('heading', 90);
   if (Prims.gt(Call(grainAhead), bestAmount)) {
     bestDirection = 90;
     bestAmount = Call(grainAhead);
   }
-  AgentSet.setVariable('heading', 180);
+  Prims.setVariable('heading', 180);
   if (Prims.gt(Call(grainAhead), bestAmount)) {
     bestDirection = 180;
     bestAmount = Call(grainAhead);
   }
-  AgentSet.setVariable('heading', 270);
+  Prims.setVariable('heading', 270);
   if (Prims.gt(Call(grainAhead), bestAmount)) {
     bestDirection = 270;
     bestAmount = Call(grainAhead);
   }
-  AgentSet.setVariable('heading', bestDirection);
+  Prims.setVariable('heading', bestDirection);
 }
 function grainAhead() {
   var total = 0;
   var howFar = 1;
-  Prims.repeat(AgentSet.getVariable('vision'), function () {
-    total = (total + AgentSet.of(AgentSet.self().patchAhead(howFar), function() {
-      return AgentSet.getPatchVariable('grain-here');
+  Prims.repeat(Prims.getVariable('vision'), function () {
+    total = (total + Prims.of(AgentSet.self().patchAhead(howFar), function() {
+      return Prims.getPatchVariable('grain-here');
     }));
     howFar = (howFar + 1);
   });
   return total;
 }
 function growGrain() {
-  if (Prims.lt(AgentSet.getPatchVariable('grain-here'), AgentSet.getPatchVariable('max-grain-here'))) {
-    AgentSet.setPatchVariable('grain-here', (AgentSet.getPatchVariable('grain-here') + world.observer.getGlobal('num-grain-grown')));
-    if (Prims.gt(AgentSet.getPatchVariable('grain-here'), AgentSet.getPatchVariable('max-grain-here'))) {
-      AgentSet.setPatchVariable('grain-here', AgentSet.getPatchVariable('max-grain-here'));
+  if (Prims.lt(Prims.getPatchVariable('grain-here'), Prims.getPatchVariable('max-grain-here'))) {
+    Prims.setPatchVariable('grain-here', (Prims.getPatchVariable('grain-here') + world.observer.getGlobal('num-grain-grown')));
+    if (Prims.gt(Prims.getPatchVariable('grain-here'), Prims.getPatchVariable('max-grain-here'))) {
+      Prims.setPatchVariable('grain-here', Prims.getPatchVariable('max-grain-here'));
     }
     Call(recolorPatch);
   }
 }
 function harvest() {
-  AgentSet.ask(world.turtles(), true, function() {
-    AgentSet.setVariable('wealth', StrictMath.floor((AgentSet.getVariable('wealth') + (AgentSet.getPatchVariable('grain-here') / AgentSet.self().turtlesHere().size()))));
+  Prims.ask(world.turtles(), true, function() {
+    Prims.setVariable('wealth', StrictMath.floor((Prims.getVariable('wealth') + (Prims.getPatchVariable('grain-here') / AgentSet.self().turtlesHere().size()))));
   });
-  AgentSet.ask(world.turtles(), true, function() {
-    AgentSet.setPatchVariable('grain-here', 0);
+  Prims.ask(world.turtles(), true, function() {
+    Prims.setPatchVariable('grain-here', 0);
     Call(recolorPatch);
   });
 }
 function moveEatAgeDie() {
   Prims.fd(1);
-  AgentSet.setVariable('wealth', (AgentSet.getVariable('wealth') - AgentSet.getVariable('metabolism')));
-  AgentSet.setVariable('age', (AgentSet.getVariable('age') + 1));
-  if ((Prims.lt(AgentSet.getVariable('wealth'), 0) || Prims.gte(AgentSet.getVariable('age'), AgentSet.getVariable('life-expectancy')))) {
+  Prims.setVariable('wealth', (Prims.getVariable('wealth') - Prims.getVariable('metabolism')));
+  Prims.setVariable('age', (Prims.getVariable('age') + 1));
+  if ((Prims.lt(Prims.getVariable('wealth'), 0) || Prims.gte(Prims.getVariable('age'), Prims.getVariable('life-expectancy')))) {
     Call(setInitialTurtleVars);
   }
 }
 function updateLorenzAndGini() {
-  var sortedWealths = Prims.sort(AgentSet.of(world.turtles(), function() {
-    return AgentSet.getVariable('wealth');
+  var sortedWealths = Prims.sort(Prims.of(world.turtles(), function() {
+    return Prims.getVariable('wealth');
   }));
   var totalWealth = Prims.sum(sortedWealths);
   var wealthSumSoFar = 0;

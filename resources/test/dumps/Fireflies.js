@@ -27,43 +27,43 @@ var notImplemented = require('integration/notimplemented');
 var Random         = require('integration/random');
 var StrictMath     = require('integration/strictmath');function setup() {
   world.clearAll();
-  AgentSet.ask(world.createTurtles(world.observer.getGlobal('number'), ""), true, function() {
+  Prims.ask(world.createTurtles(world.observer.getGlobal('number'), ""), true, function() {
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
-    AgentSet.setVariable('clock', Prims.random(StrictMath.round(world.observer.getGlobal('cycle-length'))));
-    AgentSet.setVariable('threshold', world.observer.getGlobal('flash-length'));
+    Prims.setVariable('clock', Prims.random(StrictMath.round(world.observer.getGlobal('cycle-length'))));
+    Prims.setVariable('threshold', world.observer.getGlobal('flash-length'));
     if (Prims.equality(world.observer.getGlobal('strategy'), "delay")) {
-      AgentSet.setVariable('reset-level', AgentSet.getVariable('threshold'));
-      AgentSet.setVariable('window', -1);
+      Prims.setVariable('reset-level', Prims.getVariable('threshold'));
+      Prims.setVariable('window', -1);
     }
     else {
-      AgentSet.setVariable('reset-level', 0);
-      AgentSet.setVariable('window', (AgentSet.getVariable('threshold') + 1));
+      Prims.setVariable('reset-level', 0);
+      Prims.setVariable('window', (Prims.getVariable('threshold') + 1));
     }
-    AgentSet.setVariable('size', 2);
+    Prims.setVariable('size', 2);
     Call(recolor);
   });
   world.ticker.reset();
 }
 function go() {
-  AgentSet.ask(world.turtles(), true, function() {
+  Prims.ask(world.turtles(), true, function() {
     Call(move);
     Call(incrementClock);
-    if ((Prims.gt(AgentSet.getVariable('clock'), AgentSet.getVariable('window')) && Prims.gte(AgentSet.getVariable('clock'), AgentSet.getVariable('threshold')))) {
+    if ((Prims.gt(Prims.getVariable('clock'), Prims.getVariable('window')) && Prims.gte(Prims.getVariable('clock'), Prims.getVariable('threshold')))) {
       Call(look);
     }
   });
-  AgentSet.ask(world.turtles(), true, function() {
+  Prims.ask(world.turtles(), true, function() {
     Call(recolor);
   });
   world.ticker.tick();
 }
 function recolor() {
-  if (Prims.lt(AgentSet.getVariable('clock'), AgentSet.getVariable('threshold'))) {
+  if (Prims.lt(Prims.getVariable('clock'), Prims.getVariable('threshold'))) {
     AgentSet.self().hideTurtle(false);;
-    AgentSet.setVariable('color', 45);
+    Prims.setVariable('color', 45);
   }
   else {
-    AgentSet.setVariable('color', (5 - 2));
+    Prims.setVariable('color', (5 - 2));
     if (world.observer.getGlobal('show-dark-fireflies?')) {
       AgentSet.self().hideTurtle(false);;
     }
@@ -77,16 +77,16 @@ function move() {
   Prims.fd(1);
 }
 function incrementClock() {
-  AgentSet.setVariable('clock', (AgentSet.getVariable('clock') + 1));
-  if (Prims.equality(AgentSet.getVariable('clock'), world.observer.getGlobal('cycle-length'))) {
-    AgentSet.setVariable('clock', 0);
+  Prims.setVariable('clock', (Prims.getVariable('clock') + 1));
+  if (Prims.equality(Prims.getVariable('clock'), world.observer.getGlobal('cycle-length'))) {
+    Prims.setVariable('clock', 0);
   }
 }
 function look() {
-  if (Prims.gte(AgentSet.agentFilter(AgentSet.self().inRadius(world.turtles(), 1), function() {
-    return Prims.equality(AgentSet.getVariable('color'), 45);
+  if (Prims.gte(AgentSet.self().inRadius(world.turtles(), 1).agentFilter(function() {
+    return Prims.equality(Prims.getVariable('color'), 45);
   }).size(), world.observer.getGlobal('flashes-to-reset'))) {
-    AgentSet.setVariable('clock', AgentSet.getVariable('reset-level'));
+    Prims.setVariable('clock', Prims.getVariable('reset-level'));
   }
 }
 world.observer.setGlobal('number', 1500);

@@ -27,7 +27,7 @@ var notImplemented = require('integration/notimplemented');
 var Random         = require('integration/random');
 var StrictMath     = require('integration/strictmath');function setup() {
   world.clearAll();
-  AgentSet.ask(world.patches(), true, function() {
+  Prims.ask(world.patches(), true, function() {
     Call(setupRoad);
   });
   Call(setupCars);
@@ -35,8 +35,8 @@ var StrictMath     = require('integration/strictmath');function setup() {
   world.ticker.reset();
 }
 function setupRoad() {
-  if ((Prims.lt(AgentSet.getPatchVariable('pycor'), 2) && Prims.gt(AgentSet.getPatchVariable('pycor'), -2))) {
-    AgentSet.setPatchVariable('pcolor', 9.9);
+  if ((Prims.lt(Prims.getPatchVariable('pycor'), 2) && Prims.gt(Prims.getPatchVariable('pycor'), -2))) {
+    Prims.setPatchVariable('pcolor', 9.9);
   }
 }
 function setupCars() {
@@ -45,52 +45,52 @@ function setupCars() {
     throw new Exception.StopInterrupt;
   }
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "car")
-  AgentSet.ask(world.createTurtles(world.observer.getGlobal('number-of-cars'), ""), true, function() {
-    AgentSet.setVariable('color', 105);
-    AgentSet.setVariable('xcor', Prims.randomXcor());
-    AgentSet.setVariable('heading', 90);
-    AgentSet.setVariable('speed', (0.1 + Prims.randomFloat(0.9)));
-    AgentSet.setVariable('speed-limit', 1);
-    AgentSet.setVariable('speed-min', 0);
+  Prims.ask(world.createTurtles(world.observer.getGlobal('number-of-cars'), ""), true, function() {
+    Prims.setVariable('color', 105);
+    Prims.setVariable('xcor', Prims.randomXcor());
+    Prims.setVariable('heading', 90);
+    Prims.setVariable('speed', (0.1 + Prims.randomFloat(0.9)));
+    Prims.setVariable('speed-limit', 1);
+    Prims.setVariable('speed-min', 0);
     Call(separateCars);
   });
-  world.observer.setGlobal('sample-car', AgentSet.oneOf(world.turtles()));
-  AgentSet.ask(world.observer.getGlobal('sample-car'), true, function() {
-    AgentSet.setVariable('color', 15);
+  world.observer.setGlobal('sample-car', Prims.oneOf(world.turtles()));
+  Prims.ask(world.observer.getGlobal('sample-car'), true, function() {
+    Prims.setVariable('color', 15);
   });
 }
 function separateCars() {
-  if (AgentSet.other(AgentSet.self().turtlesHere()).nonEmpty()) {
+  if (Prims.other(AgentSet.self().turtlesHere()).nonEmpty()) {
     Prims.fd(1);
     Call(separateCars);
   }
 }
 function go() {
-  AgentSet.ask(world.turtles(), true, function() {
-    var carAhead = AgentSet.oneOf(Prims.turtlesOn(AgentSet.self().patchAhead(1)));
+  Prims.ask(world.turtles(), true, function() {
+    var carAhead = Prims.oneOf(Prims.turtlesOn(AgentSet.self().patchAhead(1)));
     if (!Prims.equality(carAhead, Nobody)) {
       Call(slowDownCar, carAhead);
     }
     else {
       Call(speedUpCar);
     }
-    if (Prims.lt(AgentSet.getVariable('speed'), AgentSet.getVariable('speed-min'))) {
-      AgentSet.setVariable('speed', AgentSet.getVariable('speed-min'));
+    if (Prims.lt(Prims.getVariable('speed'), Prims.getVariable('speed-min'))) {
+      Prims.setVariable('speed', Prims.getVariable('speed-min'));
     }
-    if (Prims.gt(AgentSet.getVariable('speed'), AgentSet.getVariable('speed-limit'))) {
-      AgentSet.setVariable('speed', AgentSet.getVariable('speed-limit'));
+    if (Prims.gt(Prims.getVariable('speed'), Prims.getVariable('speed-limit'))) {
+      Prims.setVariable('speed', Prims.getVariable('speed-limit'));
     }
-    Prims.fd(AgentSet.getVariable('speed'));
+    Prims.fd(Prims.getVariable('speed'));
   });
   world.ticker.tick();
 }
 function slowDownCar(carAhead) {
-  AgentSet.setVariable('speed', (AgentSet.of(carAhead, function() {
-    return AgentSet.getVariable('speed');
+  Prims.setVariable('speed', (Prims.of(carAhead, function() {
+    return Prims.getVariable('speed');
   }) - world.observer.getGlobal('deceleration')));
 }
 function speedUpCar() {
-  AgentSet.setVariable('speed', (AgentSet.getVariable('speed') + world.observer.getGlobal('acceleration')));
+  Prims.setVariable('speed', (Prims.getVariable('speed') + world.observer.getGlobal('acceleration')));
 }
 world.observer.setGlobal('number-of-cars', 20);
 world.observer.setGlobal('deceleration', 0.026);

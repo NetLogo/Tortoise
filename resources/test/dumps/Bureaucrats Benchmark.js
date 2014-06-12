@@ -36,46 +36,46 @@ var StrictMath     = require('integration/strictmath');function benchmark() {
 }
 function setup() {
   world.clearAll();
-  AgentSet.ask(world.patches(), true, function() {
-    AgentSet.setPatchVariable('n', 2);
+  Prims.ask(world.patches(), true, function() {
+    Prims.setPatchVariable('n', 2);
     Call(colorize);
   });
   world.observer.setGlobal('total', (2 * world.patches().size()));
   world.ticker.reset();
 }
 function go() {
-  var activePatches = Prims.patchSet(AgentSet.oneOf(world.patches()));
-  AgentSet.ask(activePatches, true, function() {
-    AgentSet.setPatchVariable('n', (AgentSet.getPatchVariable('n') + 1));
+  var activePatches = Prims.patchSet(Prims.oneOf(world.patches()));
+  Prims.ask(activePatches, true, function() {
+    Prims.setPatchVariable('n', (Prims.getPatchVariable('n') + 1));
     world.observer.setGlobal('total', (world.observer.getGlobal('total') + 1));
     Call(colorize);
   });
   while (activePatches.nonEmpty()) {
-    var overloadedPatches = AgentSet.agentFilter(activePatches, function() {
-      return Prims.gt(AgentSet.getPatchVariable('n'), 3);
+    var overloadedPatches = activePatches.agentFilter(function() {
+      return Prims.gt(Prims.getPatchVariable('n'), 3);
     });
-    AgentSet.ask(overloadedPatches, true, function() {
-      AgentSet.setPatchVariable('n', (AgentSet.getPatchVariable('n') - 4));
+    Prims.ask(overloadedPatches, true, function() {
+      Prims.setPatchVariable('n', (Prims.getPatchVariable('n') - 4));
       world.observer.setGlobal('total', (world.observer.getGlobal('total') - 4));
       Call(colorize);
-      AgentSet.ask(Prims.getNeighbors4(), true, function() {
-        AgentSet.setPatchVariable('n', (AgentSet.getPatchVariable('n') + 1));
+      Prims.ask(Prims.getNeighbors4(), true, function() {
+        Prims.setPatchVariable('n', (Prims.getPatchVariable('n') + 1));
         world.observer.setGlobal('total', (world.observer.getGlobal('total') + 1));
         Call(colorize);
       });
     });
-    activePatches = Prims.patchSet(AgentSet.of(overloadedPatches, function() {
+    activePatches = Prims.patchSet(Prims.of(overloadedPatches, function() {
       return Prims.getNeighbors4();
     }));
   }
   world.ticker.tick();
 }
 function colorize() {
-  if (Prims.lte(AgentSet.getPatchVariable('n'), 3)) {
-    AgentSet.setPatchVariable('pcolor', Prims.item(AgentSet.getPatchVariable('n'), [83, 54, 45, 25]));
+  if (Prims.lte(Prims.getPatchVariable('n'), 3)) {
+    Prims.setPatchVariable('pcolor', Prims.item(Prims.getPatchVariable('n'), [83, 54, 45, 25]));
   }
   else {
-    AgentSet.setPatchVariable('pcolor', 15);
+    Prims.setPatchVariable('pcolor', 15);
   }
 }
 world.observer.setGlobal('plot?', false);

@@ -27,14 +27,14 @@ var notImplemented = require('integration/notimplemented');
 var Random         = require('integration/random');
 var StrictMath     = require('integration/strictmath');function setupBlank() {
   world.clearAll();
-  AgentSet.ask(world.patches(), true, function() {
+  Prims.ask(world.patches(), true, function() {
     Call(cellDeath);
   });
   world.ticker.reset();
 }
 function setupRandom() {
   world.clearAll();
-  AgentSet.ask(world.patches(), true, function() {
+  Prims.ask(world.patches(), true, function() {
     if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal('initial-density'))) {
       Call(cellBirth);
     }
@@ -45,25 +45,25 @@ function setupRandom() {
   world.ticker.reset();
 }
 function cellBirth() {
-  AgentSet.setPatchVariable('living?', true);
-  AgentSet.setPatchVariable('pcolor', world.observer.getGlobal('fgcolor'));
+  Prims.setPatchVariable('living?', true);
+  Prims.setPatchVariable('pcolor', world.observer.getGlobal('fgcolor'));
 }
 function cellDeath() {
-  AgentSet.setPatchVariable('living?', false);
-  AgentSet.setPatchVariable('pcolor', world.observer.getGlobal('bgcolor'));
+  Prims.setPatchVariable('living?', false);
+  Prims.setPatchVariable('pcolor', world.observer.getGlobal('bgcolor'));
 }
 function go() {
-  AgentSet.ask(world.patches(), true, function() {
-    AgentSet.setPatchVariable('live-neighbors', AgentSet.agentFilter(Prims.getNeighbors(), function() {
-      return AgentSet.getPatchVariable('living?');
+  Prims.ask(world.patches(), true, function() {
+    Prims.setPatchVariable('live-neighbors', Prims.getNeighbors().agentFilter(function() {
+      return Prims.getPatchVariable('living?');
     }).size());
   });
-  AgentSet.ask(world.patches(), true, function() {
-    if (Prims.equality(AgentSet.getPatchVariable('live-neighbors'), 3)) {
+  Prims.ask(world.patches(), true, function() {
+    if (Prims.equality(Prims.getPatchVariable('live-neighbors'), 3)) {
       Call(cellBirth);
     }
     else {
-      if (!Prims.equality(AgentSet.getPatchVariable('live-neighbors'), 2)) {
+      if (!Prims.equality(Prims.getPatchVariable('live-neighbors'), 2)) {
         Call(cellDeath);
       }
     }
@@ -71,11 +71,11 @@ function go() {
   world.ticker.tick();
 }
 function drawCells() {
-  var erasing_p = AgentSet.of(Prims.patch(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)()), function() {
-    return AgentSet.getPatchVariable('living?');
+  var erasing_p = Prims.of(Prims.patch(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)()), function() {
+    return Prims.getPatchVariable('living?');
   });
   while (notImplemented('mouse-down?', false)()) {
-    AgentSet.ask(Prims.patch(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)()), true, function() {
+    Prims.ask(Prims.patch(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)()), true, function() {
       if (erasing_p) {
         Call(cellDeath);
       }

@@ -27,42 +27,42 @@ var notImplemented = require('integration/notimplemented');
 var Random         = require('integration/random');
 var StrictMath     = require('integration/strictmath');function setup(initialMagnetization) {
   world.clearAll();
-  AgentSet.ask(world.patches(), true, function() {
+  Prims.ask(world.patches(), true, function() {
     if (Prims.equality(initialMagnetization, 0)) {
-      AgentSet.setPatchVariable('spin', AgentSet.oneOf([-1, 1]));
+      Prims.setPatchVariable('spin', Prims.oneOf([-1, 1]));
     }
     else {
-      AgentSet.setPatchVariable('spin', initialMagnetization);
+      Prims.setPatchVariable('spin', initialMagnetization);
     }
     Call(recolor);
   });
-  world.observer.setGlobal('sum-of-spins', Prims.sum(AgentSet.of(world.patches(), function() {
-    return AgentSet.getPatchVariable('spin');
+  world.observer.setGlobal('sum-of-spins', Prims.sum(Prims.of(world.patches(), function() {
+    return Prims.getPatchVariable('spin');
   })));
   world.ticker.reset();
 }
 function go() {
-  AgentSet.ask(AgentSet.oneOf(world.patches()), true, function() {
+  Prims.ask(Prims.oneOf(world.patches()), true, function() {
     Call(update);
   });
   world.ticker.tick();
 }
 function update() {
-  var ediff = ((2 * AgentSet.getPatchVariable('spin')) * Prims.sum(AgentSet.of(Prims.getNeighbors4(), function() {
-    return AgentSet.getPatchVariable('spin');
+  var ediff = ((2 * Prims.getPatchVariable('spin')) * Prims.sum(Prims.of(Prims.getNeighbors4(), function() {
+    return Prims.getPatchVariable('spin');
   })));
   if ((Prims.lte(ediff, 0) || (Prims.gt(world.observer.getGlobal('temperature'), 0) && Prims.lt(Prims.randomFloat(1), StrictMath.exp(((- ediff) / world.observer.getGlobal('temperature'))))))) {
-    AgentSet.setPatchVariable('spin', (- AgentSet.getPatchVariable('spin')));
-    world.observer.setGlobal('sum-of-spins', (world.observer.getGlobal('sum-of-spins') + (2 * AgentSet.getPatchVariable('spin'))));
+    Prims.setPatchVariable('spin', (- Prims.getPatchVariable('spin')));
+    world.observer.setGlobal('sum-of-spins', (world.observer.getGlobal('sum-of-spins') + (2 * Prims.getPatchVariable('spin'))));
     Call(recolor);
   }
 }
 function recolor() {
-  if (Prims.equality(AgentSet.getPatchVariable('spin'), 1)) {
-    AgentSet.setPatchVariable('pcolor', (105 + 2));
+  if (Prims.equality(Prims.getPatchVariable('spin'), 1)) {
+    Prims.setPatchVariable('pcolor', (105 + 2));
   }
   else {
-    AgentSet.setPatchVariable('pcolor', (105 - 2));
+    Prims.setPatchVariable('pcolor', (105 - 2));
   }
 }
 function magnetization() {

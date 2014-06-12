@@ -55,37 +55,37 @@ function setup() {
   Call(doPlotting);
 }
 function updateVariables() {
-  world.observer.setGlobal('medium', AgentSet.agentFilter(world.turtlesOfBreed("PARTICLES"), function() {
-    return Prims.equality(AgentSet.getVariable('color'), 55);
+  world.observer.setGlobal('medium', world.turtlesOfBreed("PARTICLES").agentFilter(function() {
+    return Prims.equality(Prims.getVariable('color'), 55);
   }).size());
-  world.observer.setGlobal('slow', AgentSet.agentFilter(world.turtlesOfBreed("PARTICLES"), function() {
-    return Prims.equality(AgentSet.getVariable('color'), 105);
+  world.observer.setGlobal('slow', world.turtlesOfBreed("PARTICLES").agentFilter(function() {
+    return Prims.equality(Prims.getVariable('color'), 105);
   }).size());
-  world.observer.setGlobal('fast', AgentSet.agentFilter(world.turtlesOfBreed("PARTICLES"), function() {
-    return Prims.equality(AgentSet.getVariable('color'), 15);
+  world.observer.setGlobal('fast', world.turtlesOfBreed("PARTICLES").agentFilter(function() {
+    return Prims.equality(Prims.getVariable('color'), 15);
   }).size());
-  world.observer.setGlobal('avg-speed', Prims.mean(AgentSet.of(world.turtlesOfBreed("PARTICLES"), function() {
-    return AgentSet.getVariable('speed');
+  world.observer.setGlobal('avg-speed', Prims.mean(Prims.of(world.turtlesOfBreed("PARTICLES"), function() {
+    return Prims.getVariable('speed');
   })));
-  world.observer.setGlobal('avg-energy', Prims.mean(AgentSet.of(world.turtlesOfBreed("PARTICLES"), function() {
-    return AgentSet.getVariable('energy');
+  world.observer.setGlobal('avg-energy', Prims.mean(Prims.of(world.turtlesOfBreed("PARTICLES"), function() {
+    return Prims.getVariable('energy');
   })));
 }
 function go() {
-  AgentSet.ask(world.turtlesOfBreed("PARTICLES"), true, function() {
+  Prims.ask(world.turtlesOfBreed("PARTICLES"), true, function() {
     Call(bounce);
   });
-  AgentSet.ask(world.turtlesOfBreed("PARTICLES"), true, function() {
+  Prims.ask(world.turtlesOfBreed("PARTICLES"), true, function() {
     Call(move);
   });
-  AgentSet.ask(world.turtlesOfBreed("PARTICLES"), true, function() {
+  Prims.ask(world.turtlesOfBreed("PARTICLES"), true, function() {
     if (world.observer.getGlobal('collide?')) {
       Call(checkForCollision);
     }
   });
   if (world.observer.getGlobal('trace?')) {
-    AgentSet.ask(world.getTurtleOfBreed("PARTICLES", 0), true, function() {
-      AgentSet.setPatchVariable('pcolor', 5);
+    Prims.ask(world.getTurtleOfBreed("PARTICLES", 0), true, function() {
+      Prims.setPatchVariable('pcolor', 5);
       world.observer.setGlobal('fade-needed?', true);
     });
   }
@@ -93,15 +93,15 @@ function go() {
   world.ticker.tickAdvance(world.observer.getGlobal('tick-length'));
   if (Prims.gt(StrictMath.floor(world.ticker.tickCount()), StrictMath.floor((world.ticker.tickCount() - world.observer.getGlobal('tick-length'))))) {
     if (world.turtlesOfBreed("PARTICLES").nonEmpty()) {
-      world.observer.setGlobal('wall-hits-per-particle', Prims.mean(AgentSet.of(world.turtlesOfBreed("PARTICLES"), function() {
-        return AgentSet.getVariable('wall-hits');
+      world.observer.setGlobal('wall-hits-per-particle', Prims.mean(Prims.of(world.turtlesOfBreed("PARTICLES"), function() {
+        return Prims.getVariable('wall-hits');
       })));
     }
     else {
       world.observer.setGlobal('wall-hits-per-particle', 0);
     }
-    AgentSet.ask(world.turtlesOfBreed("PARTICLES"), true, function() {
-      AgentSet.setVariable('wall-hits', 0);
+    Prims.ask(world.turtlesOfBreed("PARTICLES"), true, function() {
+      Prims.setVariable('wall-hits', 0);
     });
     if (world.observer.getGlobal('fade-needed?')) {
       Call(fadePatches);
@@ -111,23 +111,23 @@ function go() {
     Call(doPlotting);
   }
   Call(calculateTickLength);
-  AgentSet.ask(world.turtlesOfBreed("CLOCKERS"), true, function() {
-    AgentSet.setVariable('heading', (world.ticker.tickCount() * 360));
+  Prims.ask(world.turtlesOfBreed("CLOCKERS"), true, function() {
+    Prims.setVariable('heading', (world.ticker.tickCount() * 360));
   });
-  AgentSet.ask(AgentSet.agentFilter(world.turtlesOfBreed("FLASHES"), function() {
-    return Prims.gt((world.ticker.tickCount() - AgentSet.getVariable('birthday')), 0.4);
+  Prims.ask(world.turtlesOfBreed("FLASHES").agentFilter(function() {
+    return Prims.gt((world.ticker.tickCount() - Prims.getVariable('birthday')), 0.4);
   }), true, function() {
-    AgentSet.setPatchVariable('pcolor', 45);
-    AgentSet.die();
+    Prims.setPatchVariable('pcolor', 45);
+    Prims.die();
   });
   notImplemented('display', undefined)();
 }
 function calculateTickLength() {
-  if (AgentSet.agentFilter(world.turtlesOfBreed("PARTICLES"), function() {
-    return Prims.gt(AgentSet.getVariable('speed'), 0);
+  if (world.turtlesOfBreed("PARTICLES").agentFilter(function() {
+    return Prims.gt(Prims.getVariable('speed'), 0);
   }).nonEmpty()) {
-    world.observer.setGlobal('tick-length', (1 / StrictMath.ceil(Prims.max(AgentSet.of(world.turtlesOfBreed("PARTICLES"), function() {
-      return AgentSet.getVariable('speed');
+    world.observer.setGlobal('tick-length', (1 / StrictMath.ceil(Prims.max(Prims.of(world.turtlesOfBreed("PARTICLES"), function() {
+      return Prims.getVariable('speed');
     })))));
   }
   else {
@@ -135,31 +135,31 @@ function calculateTickLength() {
   }
 }
 function calculatePressure() {
-  world.observer.setGlobal('pressure', (15 * Prims.sum(AgentSet.of(world.turtlesOfBreed("PARTICLES"), function() {
-    return AgentSet.getVariable('momentum-difference');
+  world.observer.setGlobal('pressure', (15 * Prims.sum(Prims.of(world.turtlesOfBreed("PARTICLES"), function() {
+    return Prims.getVariable('momentum-difference');
   }))));
   world.observer.setGlobal('pressure-history', Prims.lput(world.observer.getGlobal('pressure'), world.observer.getGlobal('pressure-history')));
   world.observer.setGlobal('zero-pressure-count', Prims.length(world.observer.getGlobal('pressure-history').filter(Tasks.reporterTask(function() {
     var taskArguments = arguments;
     return Prims.equality(taskArguments[0], 0);
   }))));
-  AgentSet.ask(world.turtlesOfBreed("PARTICLES"), true, function() {
-    AgentSet.setVariable('momentum-difference', 0);
+  Prims.ask(world.turtlesOfBreed("PARTICLES"), true, function() {
+    Prims.setVariable('momentum-difference', 0);
   });
 }
 function bounce() {
-  if (Prims.shadeOf(45, AgentSet.getPatchVariable('pcolor'))) {
+  if (Prims.shadeOf(45, Prims.getPatchVariable('pcolor'))) {
     throw new Exception.StopInterrupt;
   }
   var newPatch = AgentSet.self().patchAhead(1);
-  var newPx = AgentSet.of(newPatch, function() {
-    return AgentSet.getPatchVariable('pxcor');
+  var newPx = Prims.of(newPatch, function() {
+    return Prims.getPatchVariable('pxcor');
   });
-  var newPy = AgentSet.of(newPatch, function() {
-    return AgentSet.getPatchVariable('pycor');
+  var newPy = Prims.of(newPatch, function() {
+    return Prims.getPatchVariable('pycor');
   });
-  if (!(Prims.shadeOf(45, AgentSet.of(newPatch, function() {
-    return AgentSet.getPatchVariable('pcolor');
+  if (!(Prims.shadeOf(45, Prims.of(newPatch, function() {
+    return Prims.getPatchVariable('pcolor');
   })))) {
     throw new Exception.StopInterrupt;
   }
@@ -167,109 +167,109 @@ function bounce() {
     throw new Exception.StopInterrupt;
   }
   if (Prims.equality(StrictMath.abs(newPx), world.observer.getGlobal('box-edge'))) {
-    AgentSet.setVariable('heading', (- AgentSet.getVariable('heading')));
-    AgentSet.setVariable('wall-hits', (AgentSet.getVariable('wall-hits') + 1));
-    AgentSet.setVariable('momentum-difference', (AgentSet.getVariable('momentum-difference') + (StrictMath.abs((((Trig.unsquashedSin(AgentSet.getVariable('heading')) * 2) * AgentSet.getVariable('mass')) * AgentSet.getVariable('speed'))) / world.observer.getGlobal('length-vertical-surface'))));
+    Prims.setVariable('heading', (- Prims.getVariable('heading')));
+    Prims.setVariable('wall-hits', (Prims.getVariable('wall-hits') + 1));
+    Prims.setVariable('momentum-difference', (Prims.getVariable('momentum-difference') + (StrictMath.abs((((Trig.unsquashedSin(Prims.getVariable('heading')) * 2) * Prims.getVariable('mass')) * Prims.getVariable('speed'))) / world.observer.getGlobal('length-vertical-surface'))));
   }
   if (Prims.equality(StrictMath.abs(newPy), world.observer.getGlobal('box-edge'))) {
-    AgentSet.setVariable('heading', (180 - AgentSet.getVariable('heading')));
-    AgentSet.setVariable('wall-hits', (AgentSet.getVariable('wall-hits') + 1));
-    AgentSet.setVariable('momentum-difference', (AgentSet.getVariable('momentum-difference') + (StrictMath.abs((((Trig.unsquashedCos(AgentSet.getVariable('heading')) * 2) * AgentSet.getVariable('mass')) * AgentSet.getVariable('speed'))) / world.observer.getGlobal('length-horizontal-surface'))));
+    Prims.setVariable('heading', (180 - Prims.getVariable('heading')));
+    Prims.setVariable('wall-hits', (Prims.getVariable('wall-hits') + 1));
+    Prims.setVariable('momentum-difference', (Prims.getVariable('momentum-difference') + (StrictMath.abs((((Trig.unsquashedCos(Prims.getVariable('heading')) * 2) * Prims.getVariable('mass')) * Prims.getVariable('speed'))) / world.observer.getGlobal('length-horizontal-surface'))));
   }
-  AgentSet.ask(Prims.patch(newPx, newPy), true, function() {
-    AgentSet.ask(Prims.sprout(1, "FLASHES"), true, function() {
+  Prims.ask(Prims.patch(newPx, newPy), true, function() {
+    Prims.ask(Prims.sprout(1, "FLASHES"), true, function() {
       AgentSet.self().hideTurtle(true);;
-      AgentSet.setVariable('birthday', world.ticker.tickCount());
-      AgentSet.setPatchVariable('pcolor', (45 - 3));
+      Prims.setVariable('birthday', world.ticker.tickCount());
+      Prims.setPatchVariable('pcolor', (45 - 3));
     });
   });
 }
 function move() {
   var oldPatch = AgentSet.self().getPatchHere();
-  Prims.jump((AgentSet.getVariable('speed') * world.observer.getGlobal('tick-length')));
+  Prims.jump((Prims.getVariable('speed') * world.observer.getGlobal('tick-length')));
   if (!Prims.equality(AgentSet.self().getPatchHere(), oldPatch)) {
-    AgentSet.setVariable('last-collision', Nobody);
+    Prims.setVariable('last-collision', Nobody);
   }
 }
 function checkForCollision() {
-  if (Prims.equality(AgentSet.other(AgentSet.self().breedHere("PARTICLES")).size(), 1)) {
-    var candidate = AgentSet.oneOf(AgentSet.other(AgentSet.agentFilter(AgentSet.self().breedHere("PARTICLES"), function() {
-      return (Prims.lt(AgentSet.getVariable('who'), AgentSet.of(AgentSet.myself(), function() {
-        return AgentSet.getVariable('who');
-      })) && !Prims.equality(AgentSet.myself(), AgentSet.getVariable('last-collision')));
+  if (Prims.equality(Prims.other(AgentSet.self().breedHere("PARTICLES")).size(), 1)) {
+    var candidate = Prims.oneOf(Prims.other(AgentSet.self().breedHere("PARTICLES").agentFilter(function() {
+      return (Prims.lt(Prims.getVariable('who'), Prims.of(AgentSet.myself(), function() {
+        return Prims.getVariable('who');
+      })) && !Prims.equality(AgentSet.myself(), Prims.getVariable('last-collision')));
     })));
-    if ((!Prims.equality(candidate, Nobody) && (Prims.gt(AgentSet.getVariable('speed'), 0) || Prims.gt(AgentSet.of(candidate, function() {
-      return AgentSet.getVariable('speed');
+    if ((!Prims.equality(candidate, Nobody) && (Prims.gt(Prims.getVariable('speed'), 0) || Prims.gt(Prims.of(candidate, function() {
+      return Prims.getVariable('speed');
     }), 0)))) {
       Call(collideWith, candidate);
-      AgentSet.setVariable('last-collision', candidate);
-      AgentSet.ask(candidate, true, function() {
-        AgentSet.setVariable('last-collision', AgentSet.myself());
+      Prims.setVariable('last-collision', candidate);
+      Prims.ask(candidate, true, function() {
+        Prims.setVariable('last-collision', AgentSet.myself());
       });
     }
   }
 }
 function collideWith(otherParticle) {
-  var mass2 = AgentSet.of(otherParticle, function() {
-    return AgentSet.getVariable('mass');
+  var mass2 = Prims.of(otherParticle, function() {
+    return Prims.getVariable('mass');
   });
-  var speed2 = AgentSet.of(otherParticle, function() {
-    return AgentSet.getVariable('speed');
+  var speed2 = Prims.of(otherParticle, function() {
+    return Prims.getVariable('speed');
   });
-  var heading2 = AgentSet.of(otherParticle, function() {
-    return AgentSet.getVariable('heading');
+  var heading2 = Prims.of(otherParticle, function() {
+    return Prims.getVariable('heading');
   });
   var theta = Prims.randomFloat(360);
-  var v1t = (AgentSet.getVariable('speed') * Trig.unsquashedCos((theta - AgentSet.getVariable('heading'))));
-  var v1l = (AgentSet.getVariable('speed') * Trig.unsquashedSin((theta - AgentSet.getVariable('heading'))));
+  var v1t = (Prims.getVariable('speed') * Trig.unsquashedCos((theta - Prims.getVariable('heading'))));
+  var v1l = (Prims.getVariable('speed') * Trig.unsquashedSin((theta - Prims.getVariable('heading'))));
   var v2t = (speed2 * Trig.unsquashedCos((theta - heading2)));
   var v2l = (speed2 * Trig.unsquashedSin((theta - heading2)));
-  var vcm = (((AgentSet.getVariable('mass') * v1t) + (mass2 * v2t)) / (AgentSet.getVariable('mass') + mass2));
+  var vcm = (((Prims.getVariable('mass') * v1t) + (mass2 * v2t)) / (Prims.getVariable('mass') + mass2));
   v1t = ((2 * vcm) - v1t);
   v2t = ((2 * vcm) - v2t);
-  AgentSet.setVariable('speed', StrictMath.sqrt(((v1t * v1t) + (v1l * v1l))));
-  AgentSet.setVariable('energy', (((0.5 * AgentSet.getVariable('mass')) * AgentSet.getVariable('speed')) * AgentSet.getVariable('speed')));
+  Prims.setVariable('speed', StrictMath.sqrt(((v1t * v1t) + (v1l * v1l))));
+  Prims.setVariable('energy', (((0.5 * Prims.getVariable('mass')) * Prims.getVariable('speed')) * Prims.getVariable('speed')));
   if ((!Prims.equality(v1l, 0) || !Prims.equality(v1t, 0))) {
-    AgentSet.setVariable('heading', (theta - Trig.atan(v1l, v1t)));
+    Prims.setVariable('heading', (theta - Trig.atan(v1l, v1t)));
   }
-  AgentSet.ask(otherParticle, true, function() {
-    AgentSet.setVariable('speed', StrictMath.sqrt(((v2t * v2t) + (v2l * v2l))));
+  Prims.ask(otherParticle, true, function() {
+    Prims.setVariable('speed', StrictMath.sqrt(((v2t * v2t) + (v2l * v2l))));
   });
-  AgentSet.ask(otherParticle, true, function() {
-    AgentSet.setVariable('energy', (((0.5 * AgentSet.getVariable('mass')) * AgentSet.getVariable('speed')) * AgentSet.getVariable('speed')));
+  Prims.ask(otherParticle, true, function() {
+    Prims.setVariable('energy', (((0.5 * Prims.getVariable('mass')) * Prims.getVariable('speed')) * Prims.getVariable('speed')));
   });
   if ((!Prims.equality(v2l, 0) || !Prims.equality(v2t, 0))) {
-    AgentSet.ask(otherParticle, true, function() {
-      AgentSet.setVariable('heading', (theta - Trig.atan(v2l, v2t)));
+    Prims.ask(otherParticle, true, function() {
+      Prims.setVariable('heading', (theta - Trig.atan(v2l, v2t)));
     });
   }
   Call(recolor);
-  AgentSet.ask(otherParticle, true, function() {
+  Prims.ask(otherParticle, true, function() {
     Call(recolor);
   });
 }
 function recolor() {
-  if (Prims.lt(AgentSet.getVariable('speed'), (0.5 * 10))) {
-    AgentSet.setVariable('color', 105);
+  if (Prims.lt(Prims.getVariable('speed'), (0.5 * 10))) {
+    Prims.setVariable('color', 105);
   }
   else {
-    if (Prims.gt(AgentSet.getVariable('speed'), (1.5 * 10))) {
-      AgentSet.setVariable('color', 15);
+    if (Prims.gt(Prims.getVariable('speed'), (1.5 * 10))) {
+      Prims.setVariable('color', 15);
     }
     else {
-      AgentSet.setVariable('color', 55);
+      Prims.setVariable('color', 55);
     }
   }
 }
 function fadePatches() {
-  var tracePatches = AgentSet.agentFilter(world.patches(), function() {
-    return (!Prims.equality(AgentSet.getPatchVariable('pcolor'), 45) && !Prims.equality(AgentSet.getPatchVariable('pcolor'), 0));
+  var tracePatches = world.patches().agentFilter(function() {
+    return (!Prims.equality(Prims.getPatchVariable('pcolor'), 45) && !Prims.equality(Prims.getPatchVariable('pcolor'), 0));
   });
   if (tracePatches.nonEmpty()) {
-    AgentSet.ask(tracePatches, true, function() {
-      AgentSet.setPatchVariable('pcolor', (AgentSet.getPatchVariable('pcolor') - 0.4));
-      if ((!(world.observer.getGlobal('trace?')) || Prims.equality(StrictMath.round(AgentSet.getPatchVariable('pcolor')), 0))) {
-        AgentSet.setPatchVariable('pcolor', 0);
+    Prims.ask(tracePatches, true, function() {
+      Prims.setPatchVariable('pcolor', (Prims.getPatchVariable('pcolor') - 0.4));
+      if ((!(world.observer.getGlobal('trace?')) || Prims.equality(StrictMath.round(Prims.getPatchVariable('pcolor')), 0))) {
+        Prims.setPatchVariable('pcolor', 0);
       }
     });
   }
@@ -278,14 +278,14 @@ function fadePatches() {
   }
 }
 function makeBox() {
-  AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
-    return ((Prims.equality(StrictMath.abs(AgentSet.getPatchVariable('pxcor')), world.observer.getGlobal('box-edge')) && Prims.lte(StrictMath.abs(AgentSet.getPatchVariable('pycor')), world.observer.getGlobal('box-edge'))) || (Prims.equality(StrictMath.abs(AgentSet.getPatchVariable('pycor')), world.observer.getGlobal('box-edge')) && Prims.lte(StrictMath.abs(AgentSet.getPatchVariable('pxcor')), world.observer.getGlobal('box-edge'))));
+  Prims.ask(world.patches().agentFilter(function() {
+    return ((Prims.equality(StrictMath.abs(Prims.getPatchVariable('pxcor')), world.observer.getGlobal('box-edge')) && Prims.lte(StrictMath.abs(Prims.getPatchVariable('pycor')), world.observer.getGlobal('box-edge'))) || (Prims.equality(StrictMath.abs(Prims.getPatchVariable('pycor')), world.observer.getGlobal('box-edge')) && Prims.lte(StrictMath.abs(Prims.getPatchVariable('pxcor')), world.observer.getGlobal('box-edge'))));
   }), true, function() {
-    AgentSet.setPatchVariable('pcolor', 45);
+    Prims.setPatchVariable('pcolor', 45);
   });
 }
 function makeParticles() {
-  AgentSet.ask(world.createOrderedTurtles(world.observer.getGlobal('number-of-particles'), "PARTICLES"), true, function() {
+  Prims.ask(world.createOrderedTurtles(world.observer.getGlobal('number-of-particles'), "PARTICLES"), true, function() {
     Call(setupParticle);
     Call(randomPosition);
     Call(recolor);
@@ -293,16 +293,16 @@ function makeParticles() {
   Call(calculateTickLength);
 }
 function setupParticle() {
-  AgentSet.setVariable('speed', world.observer.getGlobal('init-particle-speed'));
-  AgentSet.setVariable('mass', world.observer.getGlobal('particle-mass'));
-  AgentSet.setVariable('energy', (((0.5 * AgentSet.getVariable('mass')) * AgentSet.getVariable('speed')) * AgentSet.getVariable('speed')));
-  AgentSet.setVariable('last-collision', Nobody);
-  AgentSet.setVariable('wall-hits', 0);
-  AgentSet.setVariable('momentum-difference', 0);
+  Prims.setVariable('speed', world.observer.getGlobal('init-particle-speed'));
+  Prims.setVariable('mass', world.observer.getGlobal('particle-mass'));
+  Prims.setVariable('energy', (((0.5 * Prims.getVariable('mass')) * Prims.getVariable('speed')) * Prims.getVariable('speed')));
+  Prims.setVariable('last-collision', Nobody);
+  Prims.setVariable('wall-hits', 0);
+  Prims.setVariable('momentum-difference', 0);
 }
 function randomPosition() {
   Prims.setXY(((1 - world.observer.getGlobal('box-edge')) + Prims.randomFloat(((2 * world.observer.getGlobal('box-edge')) - 2))), ((1 - world.observer.getGlobal('box-edge')) + Prims.randomFloat(((2 * world.observer.getGlobal('box-edge')) - 2))));
-  AgentSet.setVariable('heading', Prims.randomFloat(360));
+  Prims.setVariable('heading', Prims.randomFloat(360));
 }
 function setupPlotz() {
   notImplemented('set-current-plot', undefined)("Speed Counts");
@@ -353,44 +353,44 @@ function doPlotting() {
 function plotHistograms() {
   notImplemented('set-current-plot', undefined)("Energy histogram");
   notImplemented('set-current-plot-pen', undefined)("fast");
-  notImplemented('histogram', undefined)(AgentSet.of(AgentSet.agentFilter(world.turtlesOfBreed("PARTICLES"), function() {
-    return Prims.equality(AgentSet.getVariable('color'), 15);
+  notImplemented('histogram', undefined)(Prims.of(world.turtlesOfBreed("PARTICLES").agentFilter(function() {
+    return Prims.equality(Prims.getVariable('color'), 15);
   }), function() {
-    return AgentSet.getVariable('energy');
+    return Prims.getVariable('energy');
   }));
   notImplemented('set-current-plot-pen', undefined)("medium");
-  notImplemented('histogram', undefined)(AgentSet.of(AgentSet.agentFilter(world.turtlesOfBreed("PARTICLES"), function() {
-    return Prims.equality(AgentSet.getVariable('color'), 55);
+  notImplemented('histogram', undefined)(Prims.of(world.turtlesOfBreed("PARTICLES").agentFilter(function() {
+    return Prims.equality(Prims.getVariable('color'), 55);
   }), function() {
-    return AgentSet.getVariable('energy');
+    return Prims.getVariable('energy');
   }));
   notImplemented('set-current-plot-pen', undefined)("slow");
-  notImplemented('histogram', undefined)(AgentSet.of(AgentSet.agentFilter(world.turtlesOfBreed("PARTICLES"), function() {
-    return Prims.equality(AgentSet.getVariable('color'), 105);
+  notImplemented('histogram', undefined)(Prims.of(world.turtlesOfBreed("PARTICLES").agentFilter(function() {
+    return Prims.equality(Prims.getVariable('color'), 105);
   }), function() {
-    return AgentSet.getVariable('energy');
+    return Prims.getVariable('energy');
   }));
   notImplemented('set-current-plot-pen', undefined)("avg-energy");
   notImplemented('plot-pen-reset', undefined)();
   Call(drawVertLine, world.observer.getGlobal('avg-energy'));
   notImplemented('set-current-plot', undefined)("Speed histogram");
   notImplemented('set-current-plot-pen', undefined)("fast");
-  notImplemented('histogram', undefined)(AgentSet.of(AgentSet.agentFilter(world.turtlesOfBreed("PARTICLES"), function() {
-    return Prims.equality(AgentSet.getVariable('color'), 15);
+  notImplemented('histogram', undefined)(Prims.of(world.turtlesOfBreed("PARTICLES").agentFilter(function() {
+    return Prims.equality(Prims.getVariable('color'), 15);
   }), function() {
-    return AgentSet.getVariable('speed');
+    return Prims.getVariable('speed');
   }));
   notImplemented('set-current-plot-pen', undefined)("medium");
-  notImplemented('histogram', undefined)(AgentSet.of(AgentSet.agentFilter(world.turtlesOfBreed("PARTICLES"), function() {
-    return Prims.equality(AgentSet.getVariable('color'), 55);
+  notImplemented('histogram', undefined)(Prims.of(world.turtlesOfBreed("PARTICLES").agentFilter(function() {
+    return Prims.equality(Prims.getVariable('color'), 55);
   }), function() {
-    return AgentSet.getVariable('speed');
+    return Prims.getVariable('speed');
   }));
   notImplemented('set-current-plot-pen', undefined)("slow");
-  notImplemented('histogram', undefined)(AgentSet.of(AgentSet.agentFilter(world.turtlesOfBreed("PARTICLES"), function() {
-    return Prims.equality(AgentSet.getVariable('color'), 105);
+  notImplemented('histogram', undefined)(Prims.of(world.turtlesOfBreed("PARTICLES").agentFilter(function() {
+    return Prims.equality(Prims.getVariable('color'), 105);
   }), function() {
-    return AgentSet.getVariable('speed');
+    return Prims.getVariable('speed');
   }));
   notImplemented('set-current-plot-pen', undefined)("avg-speed");
   notImplemented('plot-pen-reset', undefined)();
@@ -412,11 +412,11 @@ function lastN(n, theList) {
 }
 function makeClocker() {
   BreedManager.setDefaultShape(world.turtlesOfBreed("CLOCKERS").getBreedName(), "clocker")
-  AgentSet.ask(world.createOrderedTurtles(1, "CLOCKERS"), true, function() {
+  Prims.ask(world.createOrderedTurtles(1, "CLOCKERS"), true, function() {
     Prims.setXY((world.observer.getGlobal('box-edge') - 5), (world.observer.getGlobal('box-edge') - 5));
-    AgentSet.setVariable('color', (115 + 2));
-    AgentSet.setVariable('size', 10);
-    AgentSet.setVariable('heading', 0);
+    Prims.setVariable('color', (115 + 2));
+    Prims.setVariable('size', 10);
+    Prims.setVariable('heading', 0);
   });
 }
 world.observer.setGlobal('number-of-particles', 150);
