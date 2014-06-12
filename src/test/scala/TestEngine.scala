@@ -24,7 +24,7 @@ class TestEngine extends FunSuite {
                    |var world     = workspace.world;""".stripMargin)
     nashorn.eval("world.clearAll()")
     assertResult(Double.box(9)) {
-      nashorn.eval("AgentSet.count(world.patches())")
+      nashorn.eval("world.patches().size()")
     }
   }
 
