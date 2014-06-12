@@ -117,7 +117,7 @@ define(['engine/abstractagents', 'engine/exception', 'engine/iterator', 'engine/
       if not (agentsOrList instanceof AbstractAgents) #@# How does this even make sense?
         throw new Exception.NetLogoException("n-of not implemented on lists yet")
       items = agentsOrList.toArray()
-      agentsOrList.replaceAgents( #@# Oh, FFS
+      agentsOrList.copyWithNewAgents( #@# Oh, FFS
         switch resultSize
           when 0
             []
@@ -170,5 +170,5 @@ define(['engine/abstractagents', 'engine/exception', 'engine/iterator', 'engine/
       iter = new Shufflerator(agents.toArray())
       while iter.hasNext() #@# 1990 rears its ugly head again
         result.push(iter.next())
-      agents.replaceAgents(result)
+      agents.copyWithNewAgents(result)
 )

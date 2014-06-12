@@ -108,6 +108,6 @@ define(['integration/lodash', 'integration/strictmath', 'engine/nobody', 'engine
                 result.push(turtle)
               return
             )
-      agents.replaceAgents(result)
+      agents.copyWithNewAgents(result)
 
 )
