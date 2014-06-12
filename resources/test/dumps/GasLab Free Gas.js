@@ -63,18 +63,18 @@ function go() {
   notImplemented('display', undefined)();
 }
 function updateVariables() {
-  world.observer.setGlobal('medium', AgentSet.count(AgentSet.agentFilter(world.turtlesOfBreed("PARTICLES"), function() {
+  world.observer.setGlobal('medium', AgentSet.agentFilter(world.turtlesOfBreed("PARTICLES"), function() {
     return Prims.equality(AgentSet.getVariable('color'), 55);
-  })));
-  world.observer.setGlobal('slow', AgentSet.count(AgentSet.agentFilter(world.turtlesOfBreed("PARTICLES"), function() {
+  }).size());
+  world.observer.setGlobal('slow', AgentSet.agentFilter(world.turtlesOfBreed("PARTICLES"), function() {
     return Prims.equality(AgentSet.getVariable('color'), 105);
-  })));
-  world.observer.setGlobal('fast', AgentSet.count(AgentSet.agentFilter(world.turtlesOfBreed("PARTICLES"), function() {
+  }).size());
+  world.observer.setGlobal('fast', AgentSet.agentFilter(world.turtlesOfBreed("PARTICLES"), function() {
     return Prims.equality(AgentSet.getVariable('color'), 15);
-  })));
-  world.observer.setGlobal('percent-medium', ((world.observer.getGlobal('medium') / AgentSet.count(world.turtlesOfBreed("PARTICLES"))) * 100));
-  world.observer.setGlobal('percent-slow', ((world.observer.getGlobal('slow') / AgentSet.count(world.turtlesOfBreed("PARTICLES"))) * 100));
-  world.observer.setGlobal('percent-fast', ((world.observer.getGlobal('fast') / AgentSet.count(world.turtlesOfBreed("PARTICLES"))) * 100));
+  }).size());
+  world.observer.setGlobal('percent-medium', ((world.observer.getGlobal('medium') / world.turtlesOfBreed("PARTICLES").size()) * 100));
+  world.observer.setGlobal('percent-slow', ((world.observer.getGlobal('slow') / world.turtlesOfBreed("PARTICLES").size()) * 100));
+  world.observer.setGlobal('percent-fast', ((world.observer.getGlobal('fast') / world.turtlesOfBreed("PARTICLES").size()) * 100));
   world.observer.setGlobal('avg-speed', Prims.mean(AgentSet.of(world.turtlesOfBreed("PARTICLES"), function() {
     return AgentSet.getVariable('speed');
   })));
@@ -83,9 +83,9 @@ function updateVariables() {
   })));
 }
 function calculateTickDelta() {
-  if (AgentSet.any(AgentSet.agentFilter(world.turtlesOfBreed("PARTICLES"), function() {
+  if (AgentSet.agentFilter(world.turtlesOfBreed("PARTICLES"), function() {
     return Prims.gt(AgentSet.getVariable('speed'), 0);
-  }))) {
+  }).nonEmpty()) {
     world.observer.setGlobal('tick-delta', Prims.min(Prims.list((1 / StrictMath.ceil(Prims.max(AgentSet.of(world.turtlesOfBreed("PARTICLES"), function() {
       return AgentSet.getVariable('speed');
     })))), world.observer.getGlobal('max-tick-delta'))));
@@ -101,7 +101,7 @@ function move() {
   Prims.jump((AgentSet.getVariable('speed') * world.observer.getGlobal('tick-delta')));
 }
 function checkForCollision() {
-  if (Prims.equality(AgentSet.count(AgentSet.other(AgentSet.self().breedHere("PARTICLES"))), 1)) {
+  if (Prims.equality(AgentSet.other(AgentSet.self().breedHere("PARTICLES")).size(), 1)) {
     var candidate = AgentSet.oneOf(AgentSet.other(AgentSet.agentFilter(AgentSet.self().breedHere("PARTICLES"), function() {
       return (Prims.lt(AgentSet.getVariable('who'), AgentSet.of(AgentSet.myself(), function() {
         return AgentSet.getVariable('who');

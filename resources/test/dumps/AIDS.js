@@ -240,10 +240,10 @@ function test() {
   }
 }
 function _percent_infected() {
-  if (AgentSet.any(world.turtles())) {
-    return ((AgentSet.count(AgentSet.agentFilter(world.turtles(), function() {
+  if (world.turtles().nonEmpty()) {
+    return ((AgentSet.agentFilter(world.turtles(), function() {
       return AgentSet.getVariable('infected?');
-    })) / AgentSet.count(world.turtles())) * 100);
+    }).size() / world.turtles().size()) * 100);
   }
   else {
     return 0;

@@ -43,7 +43,7 @@ var StrictMath     = require('integration/strictmath');function setup() {
 }
 function setupField() {
   AgentSet.ask(world.patches(), true, function() {
-    if (!Prims.equality(AgentSet.count(Prims.getNeighbors()), 8)) {
+    if (!Prims.equality(Prims.getNeighbors().size(), 8)) {
       AgentSet.setPatchVariable('pcolor', 15);
     }
     if (((Prims.equality(AgentSet.getPatchVariable('pycor'), world.minPycor) && Prims.gte(AgentSet.getPatchVariable('pxcor'), world.observer.getGlobal('goal-pos'))) && Prims.lt(AgentSet.getPatchVariable('pxcor'), (world.observer.getGlobal('goal-pos') + world.observer.getGlobal('goal-size'))))) {
@@ -72,13 +72,13 @@ function setupBalls() {
   Call(plotScores);
 }
 function go() {
-  while (AgentSet.any(world.turtles())) {
+  while (world.turtles().nonEmpty()) {
     AgentSet.ask(world.turtles(), true, function() {
       Call(move);
     });
     notImplemented('display', undefined)();
   }
-  world.observer.setGlobal('kicks', (world.observer.getGlobal('kicks') + AgentSet.count(world.observer.getGlobal('try-line'))));
+  world.observer.setGlobal('kicks', (world.observer.getGlobal('kicks') + world.observer.getGlobal('try-line').size()));
   world.observer.setGlobal('goals', Prims.sum(AgentSet.of(world.observer.getGlobal('try-line'), function() {
     return AgentSet.getPatchVariable('score');
   })));

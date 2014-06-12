@@ -57,12 +57,12 @@ function findNewState() {
     AgentSet.setPatchVariable('new-state', 0);
   }
   else {
-    var a = AgentSet.count(AgentSet.agentFilter(Prims.getNeighbors(), function() {
+    var a = AgentSet.agentFilter(Prims.getNeighbors(), function() {
       return (Prims.gt(AgentSet.getPatchVariable('state'), 0) && Prims.lt(AgentSet.getPatchVariable('state'), world.observer.getGlobal('n')));
-    }));
-    var b = AgentSet.count(AgentSet.agentFilter(Prims.getNeighbors(), function() {
+    }).size();
+    var b = AgentSet.agentFilter(Prims.getNeighbors(), function() {
       return Prims.equality(AgentSet.getPatchVariable('state'), world.observer.getGlobal('n'));
-    }));
+    }).size();
     if (Prims.equality(AgentSet.getPatchVariable('state'), 0)) {
       AgentSet.setPatchVariable('new-state', (Prims._int((a / world.observer.getGlobal('k1'))) + Prims._int((b / world.observer.getGlobal('k2')))));
     }

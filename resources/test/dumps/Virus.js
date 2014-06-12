@@ -78,13 +78,13 @@ function go() {
   world.ticker.tick();
 }
 function updateGlobalVariables() {
-  if (Prims.gt(AgentSet.count(world.turtles()), 0)) {
-    world.observer.setGlobal('%infected', ((AgentSet.count(AgentSet.agentFilter(world.turtles(), function() {
+  if (Prims.gt(world.turtles().size(), 0)) {
+    world.observer.setGlobal('%infected', ((AgentSet.agentFilter(world.turtles(), function() {
       return AgentSet.getVariable('sick?');
-    })) / AgentSet.count(world.turtles())) * 100));
-    world.observer.setGlobal('%immune', ((AgentSet.count(AgentSet.agentFilter(world.turtles(), function() {
+    }).size() / world.turtles().size()) * 100));
+    world.observer.setGlobal('%immune', ((AgentSet.agentFilter(world.turtles(), function() {
       return AgentSet.getVariable('immune?');
-    })) / AgentSet.count(world.turtles())) * 100));
+    }).size() / world.turtles().size()) * 100));
   }
 }
 function getOlder() {
@@ -136,7 +136,7 @@ function reproduce() {
   AgentSet.ask(AgentSet.agentFilter(world.turtles(), function() {
     return !(AgentSet.getVariable('sick?'));
   }), true, function() {
-    if ((Prims.lt(AgentSet.count(world.turtles()), world.observer.getGlobal('carrying-capacity')) && Prims.lt(Prims.random(world.observer.getGlobal('lifespan')), world.observer.getGlobal('average-offspring')))) {
+    if ((Prims.lt(world.turtles().size(), world.observer.getGlobal('carrying-capacity')) && Prims.lt(Prims.random(world.observer.getGlobal('lifespan')), world.observer.getGlobal('average-offspring')))) {
       AgentSet.ask(Prims.hatch(1, ""), true, function() {
         AgentSet.setVariable('age', 1);
         Prims.left(45);

@@ -68,14 +68,14 @@ function findTopSpecies() {
   var winningAmount = 0;
   Tasks.forEach(Tasks.commandTask(function() {
     var taskArguments = arguments;
-    var howMany = AgentSet.count(AgentSet.agentFilter(world.turtles(), function() {
+    var howMany = AgentSet.agentFilter(world.turtles(), function() {
       return Prims.equality(AgentSet.getVariable('color'), taskArguments[0]);
-    }));
+    }).size();
     if (Prims.gt(howMany, winningAmount)) {
       winningAmount = howMany;
     }
   }), ColorModel.baseColors());
-  world.observer.setGlobal('max-percent', ((100 * winningAmount) / AgentSet.count(world.turtles())));
+  world.observer.setGlobal('max-percent', ((100 * winningAmount) / world.turtles().size()));
 }
 function placeWall() {
   if (notImplemented('mouse-down?', false)) {

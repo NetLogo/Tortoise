@@ -37,6 +37,8 @@ object Prims {
       case pv: prim._patchvariable          => s"AgentSet.getPatchVariable('${pv.displayName.toLowerCase}')"
       case r: prim._reference               => s"${r.reference.original.displayName.toLowerCase}"
       case ov: prim._observervariable       => s"world.observer.getGlobal('${ov.displayName.toLowerCase}')"
+      case _: prim._count                   => s"${arg(0)}.size()"
+      case _: prim._any                     => s"${arg(0)}.nonEmpty()"
       case _: prim._word                    =>
         ("\"\"" +: args).map(arg => "Dump(" + arg + ")").mkString("(", " + ", ")")
       case _: prim._with =>

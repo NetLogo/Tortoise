@@ -48,7 +48,7 @@ function go() {
 }
 function flock() {
   Call(findFlockmates);
-  if (AgentSet.any(AgentSet.getVariable('flockmates'))) {
+  if (AgentSet.getVariable('flockmates').nonEmpty()) {
     Call(findNearestNeighbor);
     if (Prims.lt(AgentSet.self().distance(AgentSet.getVariable('nearest-neighbor')), world.observer.getGlobal('minimum-separation'))) {
       Call(separate);

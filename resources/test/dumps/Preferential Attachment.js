@@ -62,7 +62,7 @@ function findPartner() {
 function resizeNodes() {
   if (AgentSet.all(world.turtles(), function(){ return Prims.lte(AgentSet.getVariable('size'), 1) })) {
     AgentSet.ask(world.turtles(), true, function() {
-      AgentSet.setVariable('size', StrictMath.sqrt(AgentSet.count(LinkPrims.linkNeighbors(false, false))));
+      AgentSet.setVariable('size', StrictMath.sqrt(LinkPrims.linkNeighbors(false, false).size()));
     });
   }
   else {
@@ -73,7 +73,7 @@ function resizeNodes() {
 }
 function layout() {
   Prims.repeat(3, function () {
-    var factor = StrictMath.sqrt(AgentSet.count(world.turtles()));
+    var factor = StrictMath.sqrt(world.turtles().size());
     LayoutManager.layoutSpring(world.turtles(), world.links(), (1 / factor), (7 / factor), (1 / factor));
     notImplemented('display', undefined)();
   });

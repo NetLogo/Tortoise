@@ -54,9 +54,9 @@ function cellDeath() {
 }
 function go() {
   AgentSet.ask(world.patches(), true, function() {
-    AgentSet.setPatchVariable('live-neighbors', AgentSet.count(AgentSet.agentFilter(Prims.getNeighbors(), function() {
+    AgentSet.setPatchVariable('live-neighbors', AgentSet.agentFilter(Prims.getNeighbors(), function() {
       return AgentSet.getPatchVariable('living?');
-    })));
+    }).size());
   });
   AgentSet.ask(world.patches(), true, function() {
     if (Prims.equality(AgentSet.getPatchVariable('live-neighbors'), 3)) {

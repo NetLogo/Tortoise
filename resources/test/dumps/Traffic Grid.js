@@ -32,7 +32,7 @@ var StrictMath     = require('integration/strictmath');function setup() {
   Call(makeCurrent, AgentSet.oneOf(world.observer.getGlobal('intersections')));
   Call(labelCurrent);
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "car")
-  if (Prims.gt(world.observer.getGlobal('num-cars'), AgentSet.count(world.observer.getGlobal('roads')))) {
+  if (Prims.gt(world.observer.getGlobal('num-cars'), world.observer.getGlobal('roads').size())) {
     notImplemented('user-message', undefined)((Dump("") + Dump("There are too many cars for the amount of ") + Dump("road.  Either increase the amount of roads ") + Dump("by increasing the GRID-SIZE-X or ") + Dump("GRID-SIZE-Y sliders, or decrease the ") + Dump("number of cars by lowering the NUMBER slider.\n") + Dump("The setup has stopped.")));
     throw new Exception.StopInterrupt;
   }
@@ -115,7 +115,7 @@ function setupCars() {
 }
 function putOnEmptyRoad() {
   AgentSet.self().moveTo(AgentSet.oneOf(AgentSet.agentFilter(world.observer.getGlobal('roads'), function() {
-    return !(AgentSet.any(Prims.turtlesOn(AgentSet.self())));
+    return !(Prims.turtlesOn(AgentSet.self()).nonEmpty());
   })));
 }
 function go() {
@@ -227,12 +227,12 @@ function setCarSpeed() {
 }
 function setSpeed(deltaX, deltaY) {
   var turtlesAhead = AgentSet.self().turtlesAt(deltaX, deltaY);
-  if (AgentSet.any(turtlesAhead)) {
-    if (AgentSet.any(AgentSet.agentFilter(turtlesAhead, function() {
+  if (turtlesAhead.nonEmpty()) {
+    if (AgentSet.agentFilter(turtlesAhead, function() {
       return !Prims.equality(AgentSet.getVariable('up-car?'), AgentSet.of(AgentSet.myself(), function() {
         return AgentSet.getVariable('up-car?');
       }));
-    }))) {
+    }).nonEmpty()) {
       AgentSet.setVariable('speed', 0);
     }
     else {

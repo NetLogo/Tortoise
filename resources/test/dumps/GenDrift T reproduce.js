@@ -59,7 +59,7 @@ function birth() {
   });
 }
 function death() {
-  var totalTurtles = AgentSet.count(world.turtles());
+  var totalTurtles = world.turtles().size();
   AgentSet.ask(world.turtles(), true, function() {
     if (Prims.gt(Prims.random(totalTurtles), world.observer.getGlobal('number'))) {
       AgentSet.die();

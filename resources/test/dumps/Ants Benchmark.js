@@ -227,17 +227,17 @@ function doPlotting() {
   }
   notImplemented('set-current-plot', undefined)("Food in each pile");
   notImplemented('set-current-plot-pen', undefined)("food-in-pile1");
-  notImplemented('plot', undefined)(AgentSet.count(AgentSet.agentFilter(world.patches(), function() {
+  notImplemented('plot', undefined)(AgentSet.agentFilter(world.patches(), function() {
     return Prims.equality(AgentSet.getPatchVariable('pcolor'), 85);
-  })));
+  }).size());
   notImplemented('set-current-plot-pen', undefined)("food-in-pile2");
-  notImplemented('plot', undefined)(AgentSet.count(AgentSet.agentFilter(world.patches(), function() {
+  notImplemented('plot', undefined)(AgentSet.agentFilter(world.patches(), function() {
     return Prims.equality(AgentSet.getPatchVariable('pcolor'), 95);
-  })));
+  }).size());
   notImplemented('set-current-plot-pen', undefined)("food-in-pile3");
-  notImplemented('plot', undefined)(AgentSet.count(AgentSet.agentFilter(world.patches(), function() {
+  notImplemented('plot', undefined)(AgentSet.agentFilter(world.patches(), function() {
     return Prims.equality(AgentSet.getPatchVariable('pcolor'), 105);
-  })));
+  }).size());
 }
 world.observer.setGlobal('diffusion-rate', 53);
 world.observer.setGlobal('evaporation-rate', 10);

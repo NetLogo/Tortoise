@@ -339,7 +339,7 @@ function makeParticles() {
   Call(arrange, world.turtlesOfBreed("PARTICLES"));
 }
 function arrange(particleSet) {
-  if (!(AgentSet.any(particleSet))) {
+  if (!(particleSet.nonEmpty())) {
     throw new Exception.StopInterrupt;
   }
   AgentSet.ask(particleSet, true, function() {
@@ -350,11 +350,11 @@ function arrange(particleSet) {
   }));
 }
 function overlapping_p() {
-  return AgentSet.any(AgentSet.other(AgentSet.agentFilter(AgentSet.self().inRadius(world.turtlesOfBreed("PARTICLES"), ((AgentSet.getVariable('size') + world.observer.getGlobal('largest-particle-size')) / 2)), function() {
+  return AgentSet.other(AgentSet.agentFilter(AgentSet.self().inRadius(world.turtlesOfBreed("PARTICLES"), ((AgentSet.getVariable('size') + world.observer.getGlobal('largest-particle-size')) / 2)), function() {
     return Prims.lt(AgentSet.self().distance(AgentSet.myself()), ((AgentSet.getVariable('size') + AgentSet.of(AgentSet.myself(), function() {
       return AgentSet.getVariable('size');
     })) / 2));
-  })));
+  })).nonEmpty();
 }
 function randomPosition() {
   Prims.setXY((AgentSet.oneOf([1, -1]) * Prims.randomFloat(((world.observer.getGlobal('box-edge') - 0.5) - (AgentSet.getVariable('size') / 2)))), (AgentSet.oneOf([1, -1]) * Prims.randomFloat(((world.observer.getGlobal('box-edge') - 0.5) - (AgentSet.getVariable('size') / 2)))));

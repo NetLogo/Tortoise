@@ -27,8 +27,8 @@ var notImplemented = require('integration/notimplemented');
 var Random         = require('integration/random');
 var StrictMath     = require('integration/strictmath');function setup() {
   world.clearAll();
-  if (Prims.gt(world.observer.getGlobal('number'), AgentSet.count(world.patches()))) {
-    notImplemented('user-message', undefined)((Dump("") + Dump("This pond only has room for ") + Dump(AgentSet.count(world.patches())) + Dump(" turtles.")));
+  if (Prims.gt(world.observer.getGlobal('number'), world.patches().size())) {
+    notImplemented('user-message', undefined)((Dump("") + Dump("This pond only has room for ") + Dump(world.patches().size()) + Dump(" turtles.")));
     throw new Exception.StopInterrupt;
   }
   AgentSet.ask(AgentSet.nOf(world.observer.getGlobal('number'), world.patches()), true, function() {
@@ -60,7 +60,7 @@ function moveUnhappyTurtles() {
 function findNewSpot() {
   Prims.right(Prims.randomFloat(360));
   Prims.fd(Prims.randomFloat(10));
-  if (AgentSet.any(AgentSet.other(AgentSet.self().turtlesHere()))) {
+  if (AgentSet.other(AgentSet.self().turtlesHere()).nonEmpty()) {
     Call(findNewSpot);
   }
   AgentSet.self().moveTo(AgentSet.self().getPatchHere());
@@ -71,16 +71,16 @@ function updateVariables() {
 }
 function updateTurtles() {
   AgentSet.ask(world.turtles(), true, function() {
-    AgentSet.setVariable('similar-nearby', AgentSet.count(AgentSet.agentFilter(Prims.turtlesOn(Prims.getNeighbors()), function() {
+    AgentSet.setVariable('similar-nearby', AgentSet.agentFilter(Prims.turtlesOn(Prims.getNeighbors()), function() {
       return Prims.equality(AgentSet.getVariable('color'), AgentSet.of(AgentSet.myself(), function() {
         return AgentSet.getVariable('color');
       }));
-    })));
-    AgentSet.setVariable('other-nearby', AgentSet.count(AgentSet.agentFilter(Prims.turtlesOn(Prims.getNeighbors()), function() {
+    }).size());
+    AgentSet.setVariable('other-nearby', AgentSet.agentFilter(Prims.turtlesOn(Prims.getNeighbors()), function() {
       return !Prims.equality(AgentSet.getVariable('color'), AgentSet.of(AgentSet.myself(), function() {
         return AgentSet.getVariable('color');
       }));
-    })));
+    }).size());
     AgentSet.setVariable('total-nearby', (AgentSet.getVariable('similar-nearby') + AgentSet.getVariable('other-nearby')));
     AgentSet.setVariable('happy?', Prims.gte(AgentSet.getVariable('similar-nearby'), ((world.observer.getGlobal('%-similar-wanted') * AgentSet.getVariable('total-nearby')) / 100)));
   });
@@ -93,9 +93,9 @@ function updateGlobals() {
     return AgentSet.getVariable('total-nearby');
   }));
   world.observer.setGlobal('percent-similar', ((similarNeighbors / totalNeighbors) * 100));
-  world.observer.setGlobal('percent-unhappy', ((AgentSet.count(AgentSet.agentFilter(world.turtles(), function() {
+  world.observer.setGlobal('percent-unhappy', ((AgentSet.agentFilter(world.turtles(), function() {
     return !(AgentSet.getVariable('happy?'));
-  })) / AgentSet.count(world.turtles())) * 100));
+  }).size() / world.turtles().size()) * 100));
 }
 world.observer.setGlobal('number', 2000);
 world.observer.setGlobal('%-similar-wanted', 30);

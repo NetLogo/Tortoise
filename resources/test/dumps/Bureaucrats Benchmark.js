@@ -40,7 +40,7 @@ function setup() {
     AgentSet.setPatchVariable('n', 2);
     Call(colorize);
   });
-  world.observer.setGlobal('total', (2 * AgentSet.count(world.patches())));
+  world.observer.setGlobal('total', (2 * world.patches().size()));
   world.ticker.reset();
 }
 function go() {
@@ -50,7 +50,7 @@ function go() {
     world.observer.setGlobal('total', (world.observer.getGlobal('total') + 1));
     Call(colorize);
   });
-  while (AgentSet.any(activePatches)) {
+  while (activePatches.nonEmpty()) {
     var overloadedPatches = AgentSet.agentFilter(activePatches, function() {
       return Prims.gt(AgentSet.getPatchVariable('n'), 3);
     });

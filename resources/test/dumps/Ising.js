@@ -66,7 +66,7 @@ function recolor() {
   }
 }
 function magnetization() {
-  return (world.observer.getGlobal('sum-of-spins') / AgentSet.count(world.patches()));
+  return (world.observer.getGlobal('sum-of-spins') / world.patches().size());
 }
 world.observer.setGlobal('temperature', 2.24);
 world.observer.setGlobal('plotting-interval', 100);
