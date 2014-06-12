@@ -33,11 +33,11 @@ object Prims {
         (Handlers.ident(call.procedure.name) +: args)
           .mkString("Call(", ", ", ")")
       case _: prim._unaryminus              => s"(- ${arg(0)})"
-      case bv: prim._breedvariable          => s"AgentSet.getVariable('${bv.name.toLowerCase}')"
-      case tv: prim._turtlevariable         => s"AgentSet.getVariable('${tv.displayName.toLowerCase}')"
-      case tv: prim._linkvariable           => s"AgentSet.getVariable('${tv.displayName.toLowerCase}')"
-      case tv: prim._turtleorlinkvariable   => s"AgentSet.getVariable('${tv.varName.toLowerCase}')"
-      case pv: prim._patchvariable          => s"AgentSet.getPatchVariable('${pv.displayName.toLowerCase}')"
+      case bv: prim._breedvariable          => s"Prims.getVariable('${bv.name.toLowerCase}')"
+      case tv: prim._turtlevariable         => s"Prims.getVariable('${tv.displayName.toLowerCase}')"
+      case tv: prim._linkvariable           => s"Prims.getVariable('${tv.displayName.toLowerCase}')"
+      case tv: prim._turtleorlinkvariable   => s"Prims.getVariable('${tv.varName.toLowerCase}')"
+      case pv: prim._patchvariable          => s"Prims.getPatchVariable('${pv.displayName.toLowerCase}')"
       case r: prim._reference               => s"${r.reference.original.displayName.toLowerCase}"
       case ov: prim._observervariable       => s"world.observer.getGlobal('${ov.displayName.toLowerCase}')"
       case _: prim._count                   => s"${arg(0)}.size()"
@@ -51,7 +51,7 @@ object Prims {
       case _: prim._of =>
         val agents = arg(1)
         val body = Handlers.reporter(r.args(0))
-        s"AgentSet.of($agents, ${Handlers.fun(r.args(0), true)})"
+        s"Prims.of($agents, ${Handlers.fun(r.args(0), true)})"
       case _: prim.etc._maxoneof =>
         val agents = arg(0)
         val metric = Handlers.reporter(r.args(1))
@@ -144,17 +144,17 @@ object Prims {
       case p: prim._observervariable =>
         s"world.observer.setGlobal('${p.displayName.toLowerCase}', ${arg(1)});"
       case bv: prim._breedvariable =>
-        s"AgentSet.setVariable('${bv.name.toLowerCase}', ${arg(1)});"
+        s"Prims.setVariable('${bv.name.toLowerCase}', ${arg(1)});"
       case p: prim._linkvariable =>
-        s"AgentSet.setVariable('${p.displayName.toLowerCase}', ${arg(1)});"
+        s"Prims.setVariable('${p.displayName.toLowerCase}', ${arg(1)});"
       case p: prim._turtlevariable =>
-        s"AgentSet.setVariable('${p.displayName.toLowerCase}', ${arg(1)});"
+        s"Prims.setVariable('${p.displayName.toLowerCase}', ${arg(1)});"
       case p: prim._turtleorlinkvariable if p.varName == "BREED" =>
-        s"AgentSet.setVariable('breed', ${arg(1)});"
+        s"Prims.setVariable('breed', ${arg(1)});"
       case p: prim._turtleorlinkvariable =>
-        s"AgentSet.setVariable('${p.varName.toLowerCase}', ${arg(1)});"
+        s"Prims.setVariable('${p.varName.toLowerCase}', ${arg(1)});"
       case p: prim._patchvariable =>
-        s"AgentSet.setPatchVariable('${p.displayName.toLowerCase}', ${arg(1)});"
+        s"Prims.setPatchVariable('${p.displayName.toLowerCase}', ${arg(1)});"
       case p: prim._procedurevariable =>
         s"${Handlers.ident(p.name)} = ${arg(1)};"
       case x =>
@@ -208,7 +208,7 @@ object Prims {
   def generateAsk(s: ast.Statement, shuffle: Boolean): String = {
     val agents = Handlers.reporter(s.args(0))
     val body = Handlers.fun(s.args(1))
-    s"AgentSet.ask($agents, $shuffle, $body);"
+    s"Prims.ask($agents, $shuffle, $body);"
   }
 
   def generateCreateLink(s: ast.Statement, name: String): String = {
@@ -219,7 +219,7 @@ object Prims {
       s.args(1).asInstanceOf[ast.CommandBlock]
         .statements.stmts.nonEmpty
     val body = Handlers.fun(s.args(1))
-    s"""AgentSet.ask(LinkPrims.$name($other), $nonEmptyCommandBlock, $body);"""
+    s"""Prims.ask(LinkPrims.$name($other), $nonEmptyCommandBlock, $body);"""
   }
 
   def generateCreateTurtles(s: ast.Statement, ordered: Boolean): String = {
@@ -233,20 +233,20 @@ object Prims {
         case x => throw new IllegalArgumentException("How did you get here with class of type " + x.getClass.getName)
       }
     val body = Handlers.fun(s.args(1))
-    s"""AgentSet.ask(world.$name($n, "$breed"), true, $body);"""
+    s"""Prims.ask(world.$name($n, "$breed"), true, $body);"""
   }
 
   def generateSprout(s: ast.Statement): String = {
     val n = Handlers.reporter(s.args(0))
     val body = Handlers.fun(s.args(1))
     val breedName = s.command.asInstanceOf[prim._sprout].breedName
-    s"""AgentSet.ask(Prims.sprout($n, "$breedName"), true, $body);"""
+    s"""Prims.ask(Prims.sprout($n, "$breedName"), true, $body);"""
   }
 
   def generateHatch(s: ast.Statement, breedName: String): String = {
     val n = Handlers.reporter(s.args(0))
     val body = Handlers.fun(s.args(1))
-    s"""AgentSet.ask(Prims.hatch($n, "$breedName"), true, $body);"""
+    s"""Prims.ask(Prims.hatch($n, "$breedName"), true, $body);"""
   }
 
   def generateEvery(w: ast.Statement): String = {
