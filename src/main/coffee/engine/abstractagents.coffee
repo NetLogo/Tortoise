@@ -13,7 +13,7 @@ define(['integration/random', 'integration/seq', 'engine/nobody', 'engine/shuffl
       super(agents)
       @_askAgent =
         if agents[0]?
-          agents[0].world.agentSet.askAgent
+          agents[0].world.selfManager.askAgent
         else
           () -> undefined
 

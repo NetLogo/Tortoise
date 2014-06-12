@@ -13,7 +13,7 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
     _getSelf: undefined # () => Agent
 
     constructor: (@_world) ->
-      @_getSelf = @_world.agentSet.self
+      @_getSelf = @_world.selfManager.self
 
     fd: (n) -> @_getSelf().fd(n)
     bk: (n) -> @_getSelf().fd(-n)
@@ -210,7 +210,7 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
     boom: ->
       throw new Exception.NetLogoException("boom!")
 
-    # (T, (Array[T]|String|AgentSet)) => Boolean
+    # (T, (Array[T]|String|AbstractAgentSet[T])) => Boolean
     member: (x, xs) ->
       if Type(xs).isArray()
         _(xs).some((y) => @equality(x, y))
@@ -219,7 +219,7 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
       else # agentset
         xs.exists((a) -> x is a)
 
-    # (T, (Array[T]|String|AgentSet)) => Number|Boolean
+    # (T, (Array[T]|String|AbstractAgentSet[T])) => Number|Boolean
     position: (x, xs) ->
       index =
         if Type(xs).isArray()
@@ -345,7 +345,7 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
 
       while iter.hasNext() #@# Srsly?  Is this Java 1.4?
         agent = iter.next()
-        @_world.agentSet.askAgent(f)(agent)
+        @_world.selfManager.askAgent(f)(agent)
 
       # If an asker indirectly commits suicide, the exception should propagate.  FD 11/1/2013
       if @_getSelf().id is -1
@@ -383,7 +383,7 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
       iter = new Shufflerator(agents)
       while iter.hasNext() #@# FP.  Also, move out of the 1990s.
         agent = iter.next()
-        result.push(@_world.agentSet.askAgent(f)(agent))
+        result.push(@_world.selfManager.askAgent(f)(agent))
       if agentsOrAgent instanceof AbstractAgents #@# Awful to be doing this twice here...
         result
       else

@@ -2,11 +2,11 @@ define(->
 
   class LinkPrims
 
-    @_self:     undefined # () => Turtle
+    @_self: undefined # () => Turtle
 
     # (World) => LinkPrims
     constructor: (@_world) ->
-      @_self     = @_world.agentSet.self
+      @_self = @_world.selfManager.self
 
     # (Turtle) => Link
     createLinkFrom: (otherTurtle) ->

@@ -18,11 +18,11 @@ class RuntimeInit(program: Program, model: Model) {
 
   def init: String =
     s"""var workspace     = require('engine/workspace')($genBreedObjects)($genWorkspaceArgs);
-       |var AgentSet      = workspace.agentSet;
        |var BreedManager  = workspace.breedManager;
        |var LayoutManager = workspace.layoutManager;
        |var LinkPrims     = workspace.linkPrims;
        |var Prims         = workspace.prims;
+       |var SelfManager   = workspace.selfManager;
        |var Updater       = workspace.updater;
        |var world         = workspace.world;
        |

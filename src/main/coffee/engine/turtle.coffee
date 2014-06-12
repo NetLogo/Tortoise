@@ -131,7 +131,7 @@ define(['integration/lodash', 'engine/abstractagents', 'engine/builtins', 'engin
       else
         Nobody
 
-    otherEnd: -> if this is @world.agentSet.myself().end1 then @world.agentSet.myself().end2 else @world.agentSet.myself().end1
+    otherEnd: -> if this is @world.selfManager.myself().end1 then @world.selfManager.myself().end2 else @world.selfManager.myself().end1
     patchRightAndAhead: (angle, distance) ->
       heading = @heading + angle #@# Mutation is for bad people (FP)
       if not (0 <= heading < 360)
