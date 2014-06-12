@@ -10,7 +10,6 @@ High:
 -"CC Uri" notices
 -`Iterator` is puny and questionable in its existence, and its interface sucks
 -Code in `Tasks` is confusing
--`_not` should not be wrapping everything in parens (move to `SimplePrims`)
 
 Mid:
 -Names of private members should be preceded with underscores
