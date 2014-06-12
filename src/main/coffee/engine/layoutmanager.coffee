@@ -19,7 +19,7 @@ define(['integration/lodash', 'integration/random', 'integration/strictmath', 'e
 
       agt = []
       i = 0
-      for turtle in @world.agentSet.shuffle(nodeSet).toArray() #@# Lodash
+      for turtle in @world.agentSet.shuffled(nodeSet).toArray() #@# Lodash
         agt[i] = turtle
         tMap[turtle.id] = i
         ax[i] = 0.0
