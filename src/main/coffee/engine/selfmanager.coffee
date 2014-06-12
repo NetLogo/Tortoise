@@ -1,9 +1,9 @@
 define(['engine/exception'], (Exception) ->
 
-  class AgentSet
+  class SelfManager
 
     _self:   undefined #@# Lame
-    _myself: undefined #@# Lame, only used by a tiny subset of this class
+    _myself: undefined #@# Lame
 
     constructor: ->
       @_self   = 0

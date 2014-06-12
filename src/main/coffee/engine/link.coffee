@@ -45,7 +45,7 @@ define(['integration/lodash', 'engine/abstractagents', 'engine/builtins', 'engin
       throw new Exception.DeathInterrupt("Call only from inside an askAgent block")
 
     bothEnds: -> new TurtleSet([@end1, @end2])
-    otherEnd: -> if @end1 is AgentSet.myself() then @end2 else @end1
+    otherEnd: -> if @end1 is @world.selfManager.myself() then @end2 else @end1
 
     # () => Unit
     updateEndRelatedVars: ->
