@@ -8,22 +8,25 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
 
   class Prims
 
-    constructor: (@world) ->
+    _getSelf: undefined # () => Agent
 
-    fd: (n) -> @world.agentSet.self().fd(n)
-    bk: (n) -> @world.agentSet.self().fd(-n)
-    jump: (n) -> @world.agentSet.self().jump(n)
-    right: (n) -> @world.agentSet.self().right(n)
-    left: (n) -> @world.agentSet.self().right(-n)
-    setXY: (x, y) -> @world.agentSet.self().setXY(x, y)
+    constructor: (@_world) ->
+      @_getSelf = @_world.agentSet.self
+
+    fd: (n) -> @_getSelf().fd(n)
+    bk: (n) -> @_getSelf().fd(-n)
+    jump: (n) -> @_getSelf().jump(n)
+    right: (n) -> @_getSelf().right(n)
+    left: (n) -> @_getSelf().right(-n)
+    setXY: (x, y) -> @_getSelf().setXY(x, y)
     empty: (xs) -> xs.length is 0
-    getNeighbors: -> @world.agentSet.self().getNeighbors()
-    getNeighbors4: -> @world.agentSet.self().getNeighbors4()
-    sprout: (n, breedName) -> @world.agentSet.self().sprout(n, breedName)
-    hatch: (n, breedName) -> @world.agentSet.self().hatch(n, breedName)
-    patch: (x, y) -> @world.getPatchAt(x, y)
-    randomXcor: -> @world.minPxcor - 0.5 + Random.nextDouble() * (@world.maxPxcor - @world.minPxcor + 1)
-    randomYcor: -> @world.minPycor - 0.5 + Random.nextDouble() * (@world.maxPycor - @world.minPycor + 1)
+    getNeighbors: -> @_getSelf().getNeighbors()
+    getNeighbors4: -> @_getSelf().getNeighbors4()
+    sprout: (n, breedName) -> @_getSelf().sprout(n, breedName)
+    hatch: (n, breedName) -> @_getSelf().hatch(n, breedName)
+    patch: (x, y) -> @_world.getPatchAt(x, y)
+    randomXcor: -> @_world.minPxcor - 0.5 + Random.nextDouble() * (@_world.maxPxcor - @_world.minPxcor + 1)
+    randomYcor: -> @_world.minPycor - 0.5 + Random.nextDouble() * (@_world.maxPycor - @_world.minPycor + 1)
     shadeOf: (c1, c2) -> Math.floor(c1 / 10) is Math.floor(c2 / 10) #@# Varnames
     isBreed: (breedName, x) -> if x.isBreed? and x.id isnt -1 then x.isBreed(breedName) else false
     equality: (a, b) ->
@@ -143,7 +146,7 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
         else if wrappedItems.all((x) -> x instanceof Turtle) or wrappedItems.all((x) -> x instanceof Patch)
           xs[..].sort((x, y) -> x.compare(y).toInt)
         else if wrappedItems.all((x) -> x instanceof Link)
-          xs[..].sort(@world.linkCompare)
+          xs[..].sort(@_world.linkCompare)
         else
           throw new Exception.NetLogoException("We don't know how to sort your kind here!")
       else if xs instanceof AbstractAgents
