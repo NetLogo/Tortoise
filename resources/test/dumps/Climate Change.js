@@ -106,7 +106,7 @@ function removeCloud() {
 }
 function runSunshine() {
   Prims.ask(world.turtlesOfBreed("RAYS"), true, function() {
-    if (!(SelfManager.self().canMove(0.3))) {
+    if (!SelfManager.self().canMove(0.3)) {
       Prims.die();
     }
     Prims.fd(0.3);
@@ -169,7 +169,7 @@ function runHeat() {
 }
 function runIr() {
   Prims.ask(world.turtlesOfBreed("IRS"), true, function() {
-    if (!(SelfManager.self().canMove(0.3))) {
+    if (!SelfManager.self().canMove(0.3)) {
       Prims.die();
     }
     Prims.fd(0.3);
@@ -205,7 +205,7 @@ function runCo2() {
     Prims.right((Prims.random(51) - 25));
     var dist = (0.05 + Prims.randomFloat(0.1));
     if (Prims.of(SelfManager.self().patchAhead(dist), function() {
-      return !(Prims.shadeOf(105, Prims.getPatchVariable('pcolor')));
+      return !Prims.shadeOf(105, Prims.getPatchVariable('pcolor'));
     })) {
       Prims.setVariable('heading', (180 - Prims.getVariable('heading')));
     }

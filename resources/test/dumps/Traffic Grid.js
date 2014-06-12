@@ -115,7 +115,7 @@ function setupCars() {
 }
 function putOnEmptyRoad() {
   SelfManager.self().moveTo(Prims.oneOf(world.observer.getGlobal('roads').agentFilter(function() {
-    return !(Prims.turtlesOn(SelfManager.self()).nonEmpty());
+    return !Prims.turtlesOn(SelfManager.self()).nonEmpty();
   })));
 }
 function go() {
@@ -180,7 +180,7 @@ function setSignals() {
   Prims.ask(world.observer.getGlobal('intersections').agentFilter(function() {
     return (Prims.getPatchVariable('auto?') && Prims.equality(world.observer.getGlobal('phase'), StrictMath.floor(((Prims.getPatchVariable('my-phase') * world.observer.getGlobal('ticks-per-cycle')) / 100))));
   }), true, function() {
-    Prims.setPatchVariable('green-light-up?', !(Prims.getPatchVariable('green-light-up?')));
+    Prims.setPatchVariable('green-light-up?', !Prims.getPatchVariable('green-light-up?'));
     Call(setSignalColors);
   });
 }
@@ -281,7 +281,7 @@ function recordData() {
 }
 function changeCurrent() {
   Prims.ask(world.observer.getGlobal('current-light'), true, function() {
-    Prims.setPatchVariable('green-light-up?', !(Prims.getPatchVariable('green-light-up?')));
+    Prims.setPatchVariable('green-light-up?', !Prims.getPatchVariable('green-light-up?'));
     Call(setSignalColors);
   });
 }

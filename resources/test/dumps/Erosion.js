@@ -58,7 +58,7 @@ var StrictMath     = require('integration/strictmath');function setup() {
     return Prims.getPatchVariable('drain?');
   }));
   world.observer.setGlobal('land', world.patches().agentFilter(function() {
-    return !(Prims.getPatchVariable('drain?'));
+    return !Prims.getPatchVariable('drain?');
   }));
   Prims.ask(world.observer.getGlobal('land'), true, function() {
     Call(recolor);
@@ -66,7 +66,7 @@ var StrictMath     = require('integration/strictmath');function setup() {
   world.ticker.reset();
 }
 function recolor() {
-  if ((Prims.equality(Prims.getPatchVariable('water'), 0) || !(world.observer.getGlobal('show-water?')))) {
+  if ((Prims.equality(Prims.getPatchVariable('water'), 0) || !world.observer.getGlobal('show-water?'))) {
     Prims.setPatchVariable('pcolor', Prims.scaleColor(9.9, Prims.getPatchVariable('elevation'), -250, 100));
   }
   else {

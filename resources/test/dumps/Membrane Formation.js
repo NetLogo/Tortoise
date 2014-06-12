@@ -37,7 +37,7 @@ var StrictMath     = require('integration/strictmath');function setup() {
   });
   Prims.ask(world.createTurtles(world.observer.getGlobal('num-lipids'), "OILS"), true, function() {
     var partner = Prims.oneOf(world.turtlesOfBreed("WATERS").agentFilter(function() {
-      return !(LinkPrims.connectedLinks(false, false).nonEmpty());
+      return !LinkPrims.connectedLinks(false, false).nonEmpty();
     }));
     SelfManager.self().moveTo(partner);
     Prims.fd(world.observer.getGlobal('lipid-length'));
@@ -59,7 +59,7 @@ function go() {
 }
 function interactWithNeighbor() {
   var near = Prims.oneOf(Prims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal('interaction-distance')).agentFilter(function() {
-    return !(LinkPrims.isLinkNeighbor(false, false)(SelfManager.myself()));
+    return !LinkPrims.isLinkNeighbor(false, false)(SelfManager.myself());
   })));
   if (!Prims.equality(near, Nobody)) {
     SelfManager.self().face(near);

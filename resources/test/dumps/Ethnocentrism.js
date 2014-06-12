@@ -100,7 +100,7 @@ function go() {
 }
 function immigrate() {
   var emptyPatches = world.patches().agentFilter(function() {
-    return !(SelfManager.self().turtlesHere().nonEmpty());
+    return !SelfManager.self().turtlesHere().nonEmpty();
   });
   var howMany = Prims.min(Prims.list(world.observer.getGlobal('immigrants-per-day'), emptyPatches.size()));
   Prims.ask(Prims.nOf(howMany, emptyPatches), true, function() {
@@ -152,7 +152,7 @@ function interact() {
 function reproduce() {
   if (Prims.lt(Prims.randomFloat(1), Prims.getVariable('ptr'))) {
     var destination = Prims.oneOf(Prims.getNeighbors4().agentFilter(function() {
-      return !(SelfManager.self().turtlesHere().nonEmpty());
+      return !SelfManager.self().turtlesHere().nonEmpty();
     }));
     if (!Prims.equality(destination, Nobody)) {
       Prims.ask(Prims.hatch(1, ""), true, function() {
@@ -170,10 +170,10 @@ function mutate() {
     }
   }
   if (Prims.lt(Prims.randomFloat(1), world.observer.getGlobal('mutation-rate'))) {
-    Prims.setVariable('cooperate-with-same?', !(Prims.getVariable('cooperate-with-same?')));
+    Prims.setVariable('cooperate-with-same?', !Prims.getVariable('cooperate-with-same?'));
   }
   if (Prims.lt(Prims.randomFloat(1), world.observer.getGlobal('mutation-rate'))) {
-    Prims.setVariable('cooperate-with-different?', !(Prims.getVariable('cooperate-with-different?')));
+    Prims.setVariable('cooperate-with-different?', !Prims.getVariable('cooperate-with-different?'));
   }
   Call(updateShape);
 }

@@ -158,16 +158,16 @@ function bounce() {
   var newPy = Prims.of(newPatch, function() {
     return Prims.getPatchVariable('pycor');
   });
-  if (!(Prims.shadeOf(45, Prims.of(newPatch, function() {
+  if (!Prims.shadeOf(45, Prims.of(newPatch, function() {
     return Prims.getPatchVariable('pcolor');
-  })))) {
+  }))) {
     throw new Exception.StopInterrupt;
   }
   if ((!Prims.equality(StrictMath.abs(newPx), world.observer.getGlobal('box-edge')) && !Prims.equality(StrictMath.abs(newPy), world.observer.getGlobal('box-edge')))) {
     throw new Exception.StopInterrupt;
   }
   if (Prims.equality(StrictMath.abs(newPx), world.observer.getGlobal('box-edge'))) {
-    Prims.setVariable('heading', (- Prims.getVariable('heading')));
+    Prims.setVariable('heading', -Prims.getVariable('heading'));
     Prims.setVariable('wall-hits', (Prims.getVariable('wall-hits') + 1));
     Prims.setVariable('momentum-difference', (Prims.getVariable('momentum-difference') + (StrictMath.abs((((Trig.unsquashedSin(Prims.getVariable('heading')) * 2) * Prims.getVariable('mass')) * Prims.getVariable('speed'))) / world.observer.getGlobal('length-vertical-surface'))));
   }
@@ -268,7 +268,7 @@ function fadePatches() {
   if (tracePatches.nonEmpty()) {
     Prims.ask(tracePatches, true, function() {
       Prims.setPatchVariable('pcolor', (Prims.getPatchVariable('pcolor') - 0.4));
-      if ((!(world.observer.getGlobal('trace?')) || Prims.equality(StrictMath.round(Prims.getPatchVariable('pcolor')), 0))) {
+      if ((!world.observer.getGlobal('trace?') || Prims.equality(StrictMath.round(Prims.getPatchVariable('pcolor')), 0))) {
         Prims.setPatchVariable('pcolor', 0);
       }
     });

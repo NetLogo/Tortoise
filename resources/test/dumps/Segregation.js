@@ -52,7 +52,7 @@ function go() {
 }
 function moveUnhappyTurtles() {
   Prims.ask(world.turtles().agentFilter(function() {
-    return !(Prims.getVariable('happy?'));
+    return !Prims.getVariable('happy?');
   }), true, function() {
     Call(findNewSpot);
   });
@@ -94,7 +94,7 @@ function updateGlobals() {
   }));
   world.observer.setGlobal('percent-similar', ((similarNeighbors / totalNeighbors) * 100));
   world.observer.setGlobal('percent-unhappy', ((world.turtles().agentFilter(function() {
-    return !(Prims.getVariable('happy?'));
+    return !Prims.getVariable('happy?');
   }).size() / world.turtles().size()) * 100));
 }
 world.observer.setGlobal('number', 2000);
