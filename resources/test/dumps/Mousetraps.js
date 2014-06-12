@@ -39,7 +39,7 @@ var StrictMath     = require('integration/strictmath');function setup() {
   world.ticker.reset();
 }
 function go() {
-  if (!(AgentSet.any(world.turtles()))) {
+  if (!(world.turtles().nonEmpty())) {
     throw new Exception.StopInterrupt;
   }
   AgentSet.ask(world.turtles(), true, function() {

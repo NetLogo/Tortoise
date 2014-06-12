@@ -69,8 +69,6 @@ object SimplePrims {
         case _: prim._patches                => "world.patches"
         case _: prim.etc._ticks              => "world.ticker.tickCount"
         case _: prim.etc._timer              => "workspace.timer.elapsed"
-        case _: prim._count                  => "AgentSet.count"
-        case _: prim._any                    => "AgentSet.any"
         case _: prim._list                   => "Prims.list"
         case _: prim.etc._item               => "Prims.item"
         case _: prim.etc._first              => "Prims.first"

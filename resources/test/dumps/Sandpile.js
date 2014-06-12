@@ -72,8 +72,8 @@ function go() {
     var results = Call(stabilize, world.observer.getGlobal('animate-avalanches?'));
     var avalanchePatches = Prims.first(results);
     var lifetime = Prims.last(results);
-    if (AgentSet.any(avalanchePatches)) {
-      world.observer.setGlobal('sizes', Prims.lput(AgentSet.count(avalanchePatches), world.observer.getGlobal('sizes')));
+    if (avalanchePatches.nonEmpty()) {
+      world.observer.setGlobal('sizes', Prims.lput(avalanchePatches.size(), world.observer.getGlobal('sizes')));
       world.observer.setGlobal('lifetimes', Prims.lput(lifetime, world.observer.getGlobal('lifetimes')));
     }
     AgentSet.ask(avalanchePatches, true, function() {
@@ -132,11 +132,11 @@ function stabilize(animate_p) {
   });
   var iters = 0;
   var avalanchePatches = new PatchSet([]);
-  while (AgentSet.any(activePatches)) {
+  while (activePatches.nonEmpty()) {
     var overloadedPatches = AgentSet.agentFilter(activePatches, function() {
       return Prims.gt(AgentSet.getPatchVariable('n'), 3);
     });
-    if (AgentSet.any(overloadedPatches)) {
+    if (overloadedPatches.nonEmpty()) {
       iters = (iters + 1);
     }
     AgentSet.ask(overloadedPatches, true, function() {

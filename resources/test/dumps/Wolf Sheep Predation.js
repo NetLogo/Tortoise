@@ -57,13 +57,13 @@ var StrictMath     = require('integration/strictmath');function setup() {
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
   });
   Call(displayLabels);
-  world.observer.setGlobal('grass', AgentSet.count(AgentSet.agentFilter(world.patches(), function() {
+  world.observer.setGlobal('grass', AgentSet.agentFilter(world.patches(), function() {
     return Prims.equality(AgentSet.getPatchVariable('pcolor'), 55);
-  })));
+  }).size());
   world.ticker.reset();
 }
 function go() {
-  if (!(AgentSet.any(world.turtles()))) {
+  if (!(world.turtles().nonEmpty())) {
     throw new Exception.StopInterrupt;
   }
   AgentSet.ask(world.turtlesOfBreed("SHEEP"), true, function() {
@@ -87,9 +87,9 @@ function go() {
       Call(growGrass);
     });
   }
-  world.observer.setGlobal('grass', AgentSet.count(AgentSet.agentFilter(world.patches(), function() {
+  world.observer.setGlobal('grass', AgentSet.agentFilter(world.patches(), function() {
     return Prims.equality(AgentSet.getPatchVariable('pcolor'), 55);
-  })));
+  }).size());
   world.ticker.tick();
   Call(displayLabels);
 }

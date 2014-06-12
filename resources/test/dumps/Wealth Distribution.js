@@ -157,7 +157,7 @@ function growGrain() {
 }
 function harvest() {
   AgentSet.ask(world.turtles(), true, function() {
-    AgentSet.setVariable('wealth', StrictMath.floor((AgentSet.getVariable('wealth') + (AgentSet.getPatchVariable('grain-here') / AgentSet.count(AgentSet.self().turtlesHere())))));
+    AgentSet.setVariable('wealth', StrictMath.floor((AgentSet.getVariable('wealth') + (AgentSet.getPatchVariable('grain-here') / AgentSet.self().turtlesHere().size()))));
   });
   AgentSet.ask(world.turtles(), true, function() {
     AgentSet.setPatchVariable('grain-here', 0);

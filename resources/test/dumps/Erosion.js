@@ -49,7 +49,7 @@ var StrictMath     = require('integration/strictmath');function setup() {
     });
   }
   AgentSet.ask(AgentSet.agentFilter(world.patches(), function() {
-    return !Prims.equality(AgentSet.count(Prims.getNeighbors()), 8);
+    return !Prims.equality(Prims.getNeighbors().size(), 8);
   }), true, function() {
     AgentSet.setPatchVariable('drain?', true);
     AgentSet.setPatchVariable('elevation', -10000000);

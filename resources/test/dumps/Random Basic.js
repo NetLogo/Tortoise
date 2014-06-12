@@ -142,27 +142,27 @@ function paint() {
   });
 }
 function _percent_Red() {
-  return Prims.precision(((100 * AgentSet.count(AgentSet.agentFilter(world.patches(), function() {
+  return Prims.precision(((100 * AgentSet.agentFilter(world.patches(), function() {
     return Prims.equality(AgentSet.getPatchVariable('pcolor'), 15);
-  }))) / AgentSet.count(world.turtlesOfBreed("FRAMES"))), 2);
+  }).size()) / world.turtlesOfBreed("FRAMES").size()), 2);
 }
 function _percent_Full() {
-  return Prims.precision(((100 * AgentSet.count(world.turtlesOfBreed("FRAMES"))) / (world.observer.getGlobal('height') * world.observer.getGlobal('sample-space'))), 2);
+  return Prims.precision(((100 * world.turtlesOfBreed("FRAMES").size()) / (world.observer.getGlobal('height') * world.observer.getGlobal('sample-space'))), 2);
 }
 function biggestGap() {
   var maxColumn = Prims.max(AgentSet.of(world.turtlesOfBreed("COLUMN-COUNTERS"), function() {
-    return AgentSet.count(AgentSet.agentFilter(AgentSet.getVariable('my-column-patches'), function() {
+    return AgentSet.agentFilter(AgentSet.getVariable('my-column-patches'), function() {
       return Prims.lt(AgentSet.getPatchVariable('pycor'), AgentSet.of(AgentSet.myself(), function() {
         return AgentSet.getPatchVariable('pycor');
       }));
-    }));
+    }).size();
   }));
   var minColumn = Prims.min(AgentSet.of(world.turtlesOfBreed("COLUMN-COUNTERS"), function() {
-    return AgentSet.count(AgentSet.agentFilter(AgentSet.getVariable('my-column-patches'), function() {
+    return AgentSet.agentFilter(AgentSet.getVariable('my-column-patches'), function() {
       return Prims.lt(AgentSet.getPatchVariable('pycor'), AgentSet.of(AgentSet.myself(), function() {
         return AgentSet.getPatchVariable('pycor');
       }));
-    }));
+    }).size();
   }));
   return (maxColumn - minColumn);
 }

@@ -105,7 +105,7 @@ function mothsGrimReaper() {
   if (Prims.equality(Prims.random(13), 0)) {
     AgentSet.die();
   }
-  if (Prims.gt(AgentSet.count(world.turtlesOfBreed("MOTHS")), Call(upperBound))) {
+  if (Prims.gt(world.turtlesOfBreed("MOTHS").size(), Call(upperBound))) {
     if (Prims.equality(Prims.random(2), 0)) {
       AgentSet.die();
     }
@@ -123,13 +123,13 @@ function mothsPickShape() {
   }
 }
 function updateMonitors() {
-  world.observer.setGlobal('light-moths', AgentSet.count(AgentSet.agentFilter(world.turtlesOfBreed("MOTHS"), function() {
+  world.observer.setGlobal('light-moths', AgentSet.agentFilter(world.turtlesOfBreed("MOTHS"), function() {
     return Prims.gte(AgentSet.getVariable('color'), 7);
-  })));
-  world.observer.setGlobal('dark-moths', AgentSet.count(AgentSet.agentFilter(world.turtlesOfBreed("MOTHS"), function() {
+  }).size());
+  world.observer.setGlobal('dark-moths', AgentSet.agentFilter(world.turtlesOfBreed("MOTHS"), function() {
     return Prims.lte(AgentSet.getVariable('color'), 3);
-  })));
-  world.observer.setGlobal('medium-moths', (AgentSet.count(world.turtlesOfBreed("MOTHS")) - (world.observer.getGlobal('light-moths') + world.observer.getGlobal('dark-moths'))));
+  }).size());
+  world.observer.setGlobal('medium-moths', (world.turtlesOfBreed("MOTHS").size() - (world.observer.getGlobal('light-moths') + world.observer.getGlobal('dark-moths'))));
 }
 function polluteWorld() {
   if (Prims.lte(world.observer.getGlobal('darkness'), (8 - Call(deltaEnv)))) {

@@ -20,8 +20,6 @@ define(['engine/abstractagents', 'engine/exception', 'engine/iterator', 'engine/
       @_self   = 0
       @_myself = 0
 
-    count: (xs) -> xs.size()
-    any: (xs) -> xs.nonEmpty()
     all: (xs, f) -> xs.every((agent) => @askAgent(agent, f))
     self: => @_self
     myself: -> if @_myself isnt 0 then @_myself else throw new Exception.NetLogoException("There is no agent for MYSELF to refer to.") #@# I wouldn't be surprised if this is entirely avoidable

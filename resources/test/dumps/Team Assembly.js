@@ -89,15 +89,15 @@ function pickTeamMembers() {
       newTeamMember = world.observer.getGlobal('newcomer');
     }
     else {
-      if ((Prims.lt(Prims.randomFloat(100), world.observer.getGlobal('q')) && AgentSet.any(AgentSet.agentFilter(world.turtles(), function() {
-        return (AgentSet.getVariable('in-team?') && AgentSet.any(AgentSet.agentFilter(LinkPrims.linkNeighbors(false, false), function() {
+      if ((Prims.lt(Prims.randomFloat(100), world.observer.getGlobal('q')) && AgentSet.agentFilter(world.turtles(), function() {
+        return (AgentSet.getVariable('in-team?') && AgentSet.agentFilter(LinkPrims.linkNeighbors(false, false), function() {
           return !(AgentSet.getVariable('in-team?'));
-        })));
-      })))) {
+        }).nonEmpty());
+      }).nonEmpty())) {
         newTeamMember = AgentSet.oneOf(AgentSet.agentFilter(world.turtles(), function() {
-          return (!(AgentSet.getVariable('in-team?')) && AgentSet.any(AgentSet.agentFilter(LinkPrims.linkNeighbors(false, false), function() {
+          return (!(AgentSet.getVariable('in-team?')) && AgentSet.agentFilter(LinkPrims.linkNeighbors(false, false), function() {
             return AgentSet.getVariable('in-team?');
-          })));
+          }).nonEmpty());
         }));
       }
       else {

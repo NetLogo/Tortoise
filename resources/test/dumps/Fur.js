@@ -31,9 +31,9 @@ var StrictMath     = require('integration/strictmath');function setup() {
     AgentSet.setPatchVariable('inner-neighbors', Call(ellipseIn, world.observer.getGlobal('inner-radius-x'), world.observer.getGlobal('inner-radius-y')));
     AgentSet.setPatchVariable('outer-neighbors', Call(ellipseRing, world.observer.getGlobal('outer-radius-x'), world.observer.getGlobal('outer-radius-y'), world.observer.getGlobal('inner-radius-x'), world.observer.getGlobal('inner-radius-y')));
   });
-  if (AgentSet.any(AgentSet.agentFilter(world.patches(), function() {
-    return Prims.equality(AgentSet.count(AgentSet.getPatchVariable('outer-neighbors')), 0);
-  }))) {
+  if (AgentSet.agentFilter(world.patches(), function() {
+    return Prims.equality(AgentSet.getPatchVariable('outer-neighbors').size(), 0);
+  }).nonEmpty()) {
     notImplemented('user-message', undefined)((Dump("") + Dump("It doesn't make sense that 'outer' is equal to or smaller than 'inner.' ") + Dump(" Please reset the sliders and press Setup again.")));
     throw new Exception.StopInterrupt;
   }
@@ -63,12 +63,12 @@ function go() {
   world.ticker.tick();
 }
 function pickNewColor() {
-  var activator = AgentSet.count(AgentSet.agentFilter(AgentSet.getPatchVariable('inner-neighbors'), function() {
+  var activator = AgentSet.agentFilter(AgentSet.getPatchVariable('inner-neighbors'), function() {
     return Prims.equality(AgentSet.getPatchVariable('pcolor'), 9.9);
-  }));
-  var inhibitor = AgentSet.count(AgentSet.agentFilter(AgentSet.getPatchVariable('outer-neighbors'), function() {
+  }).size();
+  var inhibitor = AgentSet.agentFilter(AgentSet.getPatchVariable('outer-neighbors'), function() {
     return Prims.equality(AgentSet.getPatchVariable('pcolor'), 9.9);
-  }));
+  }).size();
   var difference = (activator - (world.observer.getGlobal('ratio') * inhibitor));
   if (Prims.gt(difference, 0)) {
     AgentSet.setPatchVariable('new-color', 9.9);

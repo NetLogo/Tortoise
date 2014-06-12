@@ -60,7 +60,7 @@ function setupCars() {
   });
 }
 function separateCars() {
-  if (AgentSet.any(AgentSet.other(AgentSet.self().turtlesHere()))) {
+  if (AgentSet.other(AgentSet.self().turtlesHere()).nonEmpty()) {
     Prims.fd(1);
     Call(separateCars);
   }

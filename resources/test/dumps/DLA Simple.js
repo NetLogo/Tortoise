@@ -42,9 +42,9 @@ function go() {
     Prims.right(Prims.random(world.observer.getGlobal('wiggle-angle')));
     Prims.left(Prims.random(world.observer.getGlobal('wiggle-angle')));
     Prims.fd(1);
-    if (AgentSet.any(AgentSet.agentFilter(Prims.getNeighbors(), function() {
+    if (AgentSet.agentFilter(Prims.getNeighbors(), function() {
       return Prims.equality(AgentSet.getPatchVariable('pcolor'), 55);
-    }))) {
+    }).nonEmpty()) {
       AgentSet.setPatchVariable('pcolor', 55);
       AgentSet.die();
     }

@@ -83,9 +83,9 @@ function incrementClock() {
   }
 }
 function look() {
-  if (Prims.gte(AgentSet.count(AgentSet.agentFilter(AgentSet.self().inRadius(world.turtles(), 1), function() {
+  if (Prims.gte(AgentSet.agentFilter(AgentSet.self().inRadius(world.turtles(), 1), function() {
     return Prims.equality(AgentSet.getVariable('color'), 45);
-  })), world.observer.getGlobal('flashes-to-reset'))) {
+  }).size(), world.observer.getGlobal('flashes-to-reset'))) {
     AgentSet.setVariable('clock', AgentSet.getVariable('reset-level'));
   }
 }

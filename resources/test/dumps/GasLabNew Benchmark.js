@@ -55,15 +55,15 @@ function setup() {
   Call(doPlotting);
 }
 function updateVariables() {
-  world.observer.setGlobal('medium', AgentSet.count(AgentSet.agentFilter(world.turtlesOfBreed("PARTICLES"), function() {
+  world.observer.setGlobal('medium', AgentSet.agentFilter(world.turtlesOfBreed("PARTICLES"), function() {
     return Prims.equality(AgentSet.getVariable('color'), 55);
-  })));
-  world.observer.setGlobal('slow', AgentSet.count(AgentSet.agentFilter(world.turtlesOfBreed("PARTICLES"), function() {
+  }).size());
+  world.observer.setGlobal('slow', AgentSet.agentFilter(world.turtlesOfBreed("PARTICLES"), function() {
     return Prims.equality(AgentSet.getVariable('color'), 105);
-  })));
-  world.observer.setGlobal('fast', AgentSet.count(AgentSet.agentFilter(world.turtlesOfBreed("PARTICLES"), function() {
+  }).size());
+  world.observer.setGlobal('fast', AgentSet.agentFilter(world.turtlesOfBreed("PARTICLES"), function() {
     return Prims.equality(AgentSet.getVariable('color'), 15);
-  })));
+  }).size());
   world.observer.setGlobal('avg-speed', Prims.mean(AgentSet.of(world.turtlesOfBreed("PARTICLES"), function() {
     return AgentSet.getVariable('speed');
   })));
@@ -92,7 +92,7 @@ function go() {
   var oldClock = world.ticker.tickCount();
   world.ticker.tickAdvance(world.observer.getGlobal('tick-length'));
   if (Prims.gt(StrictMath.floor(world.ticker.tickCount()), StrictMath.floor((world.ticker.tickCount() - world.observer.getGlobal('tick-length'))))) {
-    if (AgentSet.any(world.turtlesOfBreed("PARTICLES"))) {
+    if (world.turtlesOfBreed("PARTICLES").nonEmpty()) {
       world.observer.setGlobal('wall-hits-per-particle', Prims.mean(AgentSet.of(world.turtlesOfBreed("PARTICLES"), function() {
         return AgentSet.getVariable('wall-hits');
       })));
@@ -123,9 +123,9 @@ function go() {
   notImplemented('display', undefined)();
 }
 function calculateTickLength() {
-  if (AgentSet.any(AgentSet.agentFilter(world.turtlesOfBreed("PARTICLES"), function() {
+  if (AgentSet.agentFilter(world.turtlesOfBreed("PARTICLES"), function() {
     return Prims.gt(AgentSet.getVariable('speed'), 0);
-  }))) {
+  }).nonEmpty()) {
     world.observer.setGlobal('tick-length', (1 / StrictMath.ceil(Prims.max(AgentSet.of(world.turtlesOfBreed("PARTICLES"), function() {
       return AgentSet.getVariable('speed');
     })))));
@@ -192,7 +192,7 @@ function move() {
   }
 }
 function checkForCollision() {
-  if (Prims.equality(AgentSet.count(AgentSet.other(AgentSet.self().breedHere("PARTICLES"))), 1)) {
+  if (Prims.equality(AgentSet.other(AgentSet.self().breedHere("PARTICLES")).size(), 1)) {
     var candidate = AgentSet.oneOf(AgentSet.other(AgentSet.agentFilter(AgentSet.self().breedHere("PARTICLES"), function() {
       return (Prims.lt(AgentSet.getVariable('who'), AgentSet.of(AgentSet.myself(), function() {
         return AgentSet.getVariable('who');
@@ -265,7 +265,7 @@ function fadePatches() {
   var tracePatches = AgentSet.agentFilter(world.patches(), function() {
     return (!Prims.equality(AgentSet.getPatchVariable('pcolor'), 45) && !Prims.equality(AgentSet.getPatchVariable('pcolor'), 0));
   });
-  if (AgentSet.any(tracePatches)) {
+  if (tracePatches.nonEmpty()) {
     AgentSet.ask(tracePatches, true, function() {
       AgentSet.setPatchVariable('pcolor', (AgentSet.getPatchVariable('pcolor') - 0.4));
       if ((!(world.observer.getGlobal('trace?')) || Prims.equality(StrictMath.round(AgentSet.getPatchVariable('pcolor')), 0))) {

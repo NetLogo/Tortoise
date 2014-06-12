@@ -70,12 +70,12 @@ function go() {
   world.ticker.tick();
 }
 function updateHappiness() {
-  var total = AgentSet.count(AgentSet.self().turtlesHere());
-  var same = AgentSet.count(AgentSet.agentFilter(AgentSet.self().turtlesHere(), function() {
+  var total = AgentSet.self().turtlesHere().size();
+  var same = AgentSet.agentFilter(AgentSet.self().turtlesHere(), function() {
     return Prims.equality(AgentSet.getVariable('color'), AgentSet.of(AgentSet.myself(), function() {
       return AgentSet.getVariable('color');
     }));
-  }));
+  }).size();
   var opposite = (total - same);
   AgentSet.setVariable('happy?', Prims.lte((opposite / total), (world.observer.getGlobal('tolerance') / 100)));
 }
@@ -90,7 +90,7 @@ function findNewGroups() {
   var malcontents = AgentSet.agentFilter(world.turtles(), function() {
     return !(Prims.member(AgentSet.self().getPatchHere(), world.observer.getGlobal('group-sites')));
   });
-  if (!(AgentSet.any(malcontents))) {
+  if (!(malcontents.nonEmpty())) {
     throw new Exception.StopInterrupt;
   }
   AgentSet.ask(malcontents, true, function() {
@@ -110,7 +110,7 @@ function spreadOutVertically() {
     AgentSet.setVariable('heading', 0);
   }
   Prims.fd(4);
-  while (AgentSet.any(AgentSet.other(AgentSet.self().turtlesHere()))) {
+  while (AgentSet.other(AgentSet.self().turtlesHere()).nonEmpty()) {
     if (AgentSet.self().canMove(2)) {
       Prims.fd(1);
     }
@@ -130,9 +130,9 @@ function countBoringGroups() {
       AgentSet.setPatchVariable('plabel-color', 9.9);
     }
   });
-  world.observer.setGlobal('boring-groups', AgentSet.count(AgentSet.agentFilter(world.observer.getGlobal('group-sites'), function() {
+  world.observer.setGlobal('boring-groups', AgentSet.agentFilter(world.observer.getGlobal('group-sites'), function() {
     return Prims.equality(AgentSet.getPatchVariable('plabel-color'), 5);
-  })));
+  }).size());
 }
 function boring_p() {
   return Prims.equality(Prims.length(Prims.removeDuplicates(AgentSet.of(AgentSet.self().turtlesHere(), function() {
@@ -141,7 +141,7 @@ function boring_p() {
 }
 function updateLabels() {
   AgentSet.ask(world.observer.getGlobal('group-sites'), true, function() {
-    AgentSet.setPatchVariable('plabel', AgentSet.count(AgentSet.self().turtlesHere()));
+    AgentSet.setPatchVariable('plabel', AgentSet.self().turtlesHere().size());
   });
 }
 function chooseSex() {

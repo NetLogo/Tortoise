@@ -37,7 +37,7 @@ var StrictMath     = require('integration/strictmath');function setup() {
   });
   AgentSet.ask(world.createTurtles(world.observer.getGlobal('num-lipids'), "OILS"), true, function() {
     var partner = AgentSet.oneOf(AgentSet.agentFilter(world.turtlesOfBreed("WATERS"), function() {
-      return !(AgentSet.any(LinkPrims.connectedLinks(false, false)));
+      return !(LinkPrims.connectedLinks(false, false).nonEmpty());
     }));
     AgentSet.self().moveTo(partner);
     Prims.fd(world.observer.getGlobal('lipid-length'));

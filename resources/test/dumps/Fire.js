@@ -38,14 +38,14 @@ var StrictMath     = require('integration/strictmath');function setup() {
   }), true, function() {
     Call(ignite);
   });
-  world.observer.setGlobal('initial-trees', AgentSet.count(AgentSet.agentFilter(world.patches(), function() {
+  world.observer.setGlobal('initial-trees', AgentSet.agentFilter(world.patches(), function() {
     return Prims.equality(AgentSet.getPatchVariable('pcolor'), 55);
-  })));
+  }).size());
   world.observer.setGlobal('burned-trees', 0);
   world.ticker.reset();
 }
 function go() {
-  if (!(AgentSet.any(world.turtles()))) {
+  if (!(world.turtles().nonEmpty())) {
     throw new Exception.StopInterrupt;
   }
   AgentSet.ask(world.turtlesOfBreed("FIRES"), true, function() {
