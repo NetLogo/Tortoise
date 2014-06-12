@@ -1,7 +1,7 @@
 define(['engine/abstractagents', 'engine/exception', 'engine/iterator', 'engine/nobody', 'integration/random'
-      , 'engine/shufflerator', 'integration/lodash']
+      , 'integration/lodash']
      , ( AbstractAgents,          Exception,          Iterator,          Nobody,          Random
-      ,  Shufflerator,          _) ->
+      ,  _) ->
 
   class AgentSet
 
@@ -63,10 +63,4 @@ define(['engine/abstractagents', 'engine/exception', 'engine/iterator', 'engine/
       else
         winners[Random.nextInt(winners.length)]
 
-    shuffled: (agents) ->
-      result = []
-      iter = new Shufflerator(agents.toArray())
-      while iter.hasNext() #@# 1990 rears its ugly head again
-        result.push(iter.next())
-      agents.copyWithNewAgents(result)
 )

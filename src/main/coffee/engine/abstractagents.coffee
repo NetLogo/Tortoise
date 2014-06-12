@@ -1,6 +1,6 @@
 #@# We won't need to call `toArray` each time in our own functions when this learns how to iterate over dead agents...
 # Never instantiate this class directly --JAB (5/7/14)
-define(['integration/seq'], (Seq) ->
+define(['integration/seq', 'engine/shufflerator'], (Seq, Shufflerator) ->
 
   # Type Parameter: T <: Agent - The type of agents within `_items`
   class AbstractAgents extends Seq
@@ -15,6 +15,14 @@ define(['integration/seq'], (Seq) ->
           agents[0].world.agentSet.askAgent
         else
           () -> undefined
+
+    # () => AbstractAgents[T]
+    shuffled: ->
+      result = []
+      iter = new Shufflerator(@toArray())
+      while iter.hasNext() #@# 1990 rears its ugly head again
+        result.push(iter.next())
+      @copyWithNewAgents(result)
 
     # () => Array[T]
     sort: ->
