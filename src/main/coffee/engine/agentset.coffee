@@ -1,7 +1,5 @@
-define(['engine/abstractagents', 'engine/exception', 'engine/iterator', 'engine/nobody', 'integration/random'
-      , 'integration/lodash']
-     , ( AbstractAgents,          Exception,          Iterator,          Nobody,          Random
-      ,  _) ->
+define(['engine/abstractagents', 'engine/exception', 'engine/iterator', 'engine/nobody', 'integration/random']
+     , ( AbstractAgents,          Exception,          Iterator,          Nobody,          Random) ->
 
   class AgentSet
 
