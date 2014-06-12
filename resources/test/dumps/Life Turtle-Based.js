@@ -73,7 +73,7 @@ function go() {
     }
   });
   Prims.ask(world.patches(), true, function() {
-    if ((!(SelfManager.self().breedHere("CELLS").nonEmpty()) && Prims.equality(Prims.getPatchVariable('live-neighbors'), 3))) {
+    if ((!SelfManager.self().breedHere("CELLS").nonEmpty() && Prims.equality(Prims.getPatchVariable('live-neighbors'), 3))) {
       Call(birth);
     }
     Prims.setPatchVariable('live-neighbors', 0);
@@ -95,7 +95,7 @@ function drawCells() {
   }
 }
 function draw() {
-  if (!(SelfManager.self().breedHere("CELLS").nonEmpty())) {
+  if (!SelfManager.self().breedHere("CELLS").nonEmpty()) {
     Prims.ask(SelfManager.self().turtlesHere(), true, function() {
       Prims.die();
     });

@@ -80,7 +80,7 @@ function updateHappiness() {
   Prims.setVariable('happy?', Prims.lte((opposite / total), (world.observer.getGlobal('tolerance') / 100)));
 }
 function leaveIfUnhappy() {
-  if (!(Prims.getVariable('happy?'))) {
+  if (!Prims.getVariable('happy?')) {
     Prims.setVariable('heading', Prims.oneOf([90, 270]));
     Prims.fd(1);
   }
@@ -88,9 +88,9 @@ function leaveIfUnhappy() {
 function findNewGroups() {
   notImplemented('display', undefined)();
   var malcontents = world.turtles().agentFilter(function() {
-    return !(Prims.member(SelfManager.self().getPatchHere(), world.observer.getGlobal('group-sites')));
+    return !Prims.member(SelfManager.self().getPatchHere(), world.observer.getGlobal('group-sites'));
   });
-  if (!(malcontents.nonEmpty())) {
+  if (!malcontents.nonEmpty()) {
     throw new Exception.StopInterrupt;
   }
   Prims.ask(malcontents, true, function() {
@@ -100,7 +100,7 @@ function findNewGroups() {
 }
 function groupSite_p() {
   var groupInterval = StrictMath.floor((world.width() / world.observer.getGlobal('num-groups')));
-  return (((Prims.equality(Prims.getPatchVariable('pycor'), 0) && Prims.lte(Prims.getPatchVariable('pxcor'), 0)) && Prims.equality(Prims.mod(Prims.getPatchVariable('pxcor'), groupInterval), 0)) && Prims.lt(StrictMath.floor(((- Prims.getPatchVariable('pxcor')) / groupInterval)), world.observer.getGlobal('num-groups')));
+  return (((Prims.equality(Prims.getPatchVariable('pycor'), 0) && Prims.lte(Prims.getPatchVariable('pxcor'), 0)) && Prims.equality(Prims.mod(Prims.getPatchVariable('pxcor'), groupInterval), 0)) && Prims.lt(StrictMath.floor((-Prims.getPatchVariable('pxcor') / groupInterval)), world.observer.getGlobal('num-groups')));
 }
 function spreadOutVertically() {
   if (Call(woman_p)) {

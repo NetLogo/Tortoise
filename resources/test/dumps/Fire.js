@@ -45,7 +45,7 @@ var StrictMath     = require('integration/strictmath');function setup() {
   world.ticker.reset();
 }
 function go() {
-  if (!(world.turtles().nonEmpty())) {
+  if (!world.turtles().nonEmpty()) {
     throw new Exception.StopInterrupt;
   }
   Prims.ask(world.turtlesOfBreed("FIRES"), true, function() {

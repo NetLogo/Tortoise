@@ -110,7 +110,7 @@ function infect() {
     return Prims.getVariable('sick?');
   }), true, function() {
     Prims.ask(Prims.other(SelfManager.self().turtlesHere().agentFilter(function() {
-      return !(Prims.getVariable('immune?'));
+      return !Prims.getVariable('immune?');
     })), true, function() {
       if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal('infectiousness'))) {
         Call(getSick);
@@ -134,7 +134,7 @@ function recover() {
 }
 function reproduce() {
   Prims.ask(world.turtles().agentFilter(function() {
-    return !(Prims.getVariable('sick?'));
+    return !Prims.getVariable('sick?');
   }), true, function() {
     if ((Prims.lt(world.turtles().size(), world.observer.getGlobal('carrying-capacity')) && Prims.lt(Prims.random(world.observer.getGlobal('lifespan')), world.observer.getGlobal('average-offspring')))) {
       Prims.ask(Prims.hatch(1, ""), true, function() {

@@ -199,7 +199,7 @@ function uphillNestScent() {
 }
 function wiggle() {
   Prims.right((Prims.random(40) - Prims.random(40)));
-  if (!(SelfManager.self().canMove(1))) {
+  if (!SelfManager.self().canMove(1)) {
     Prims.right(180);
   }
 }
@@ -222,7 +222,7 @@ function chemicalScent(angle) {
   return 0;
 }
 function doPlotting() {
-  if (!(world.observer.getGlobal('plot?'))) {
+  if (!world.observer.getGlobal('plot?')) {
     throw new Exception.StopInterrupt;
   }
   notImplemented('set-current-plot', undefined)("Food in each pile");

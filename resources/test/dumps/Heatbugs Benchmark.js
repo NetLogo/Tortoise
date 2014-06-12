@@ -48,7 +48,7 @@ function setup() {
   });
 }
 function go() {
-  if (!(world.turtles().nonEmpty())) {
+  if (!world.turtles().nonEmpty()) {
     throw new Exception.StopInterrupt;
   }
   world.topology().diffuse('temp', world.observer.getGlobal('diffusion-rate'))
@@ -91,14 +91,14 @@ function findTarget() {
 }
 function bugMove(target) {
   var tries = 0;
-  if (!(Prims.turtlesOn(target).nonEmpty())) {
+  if (!Prims.turtlesOn(target).nonEmpty()) {
     SelfManager.self().moveTo(target);
     throw new Exception.StopInterrupt;
   }
   while (Prims.lte(tries, 9)) {
     tries = (tries + 1);
     target = Prims.oneOf(Prims.getNeighbors());
-    if (!(Prims.turtlesOn(target).nonEmpty())) {
+    if (!Prims.turtlesOn(target).nonEmpty()) {
       SelfManager.self().moveTo(target);
       throw new Exception.StopInterrupt;
     }

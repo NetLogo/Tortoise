@@ -95,7 +95,6 @@ object SimplePrims {
         case _: prim.etc._nof                => "Prims.nOf"
         case _: prim.etc._removeduplicates   => "Prims.removeDuplicates"
         case _: prim.etc._patchset           => "Prims.patchSet"
-        case _: prim._not                    => "!"
         case _: prim.etc._distance           => "SelfManager.self().distance"
         case _: prim.etc._distancexy         => "SelfManager.self().distanceXY"
         case _: prim.etc._inradius           => "SelfManager.self().inRadius"

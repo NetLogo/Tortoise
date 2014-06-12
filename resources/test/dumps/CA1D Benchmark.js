@@ -73,7 +73,7 @@ function setupRandom() {
 }
 function setupContinue() {
   var on_pList = [];
-  if (!(world.observer.getGlobal('gone?'))) {
+  if (!world.observer.getGlobal('gone?')) {
     throw new Exception.StopInterrupt;
   }
   on_pList = Tasks.map(Tasks.reporterTask(function() {
@@ -127,7 +127,7 @@ function doRule() {
   var rightOn_p = Prims.of(SelfManager.self().patchAt(1, 0), function() {
     return Prims.getPatchVariable('on?');
   });
-  var newValue = ((((((((((world.observer.getGlobal('iii') && leftOn_p) && Prims.getPatchVariable('on?')) && rightOn_p) || (((world.observer.getGlobal('iio') && leftOn_p) && Prims.getPatchVariable('on?')) && !(rightOn_p))) || (((world.observer.getGlobal('ioi') && leftOn_p) && !(Prims.getPatchVariable('on?'))) && rightOn_p)) || (((world.observer.getGlobal('ioo') && leftOn_p) && !(Prims.getPatchVariable('on?'))) && !(rightOn_p))) || (((world.observer.getGlobal('oii') && !(leftOn_p)) && Prims.getPatchVariable('on?')) && rightOn_p)) || (((world.observer.getGlobal('oio') && !(leftOn_p)) && Prims.getPatchVariable('on?')) && !(rightOn_p))) || (((world.observer.getGlobal('ooi') && !(leftOn_p)) && !(Prims.getPatchVariable('on?'))) && rightOn_p)) || (((world.observer.getGlobal('ooo') && !(leftOn_p)) && !(Prims.getPatchVariable('on?'))) && !(rightOn_p)));
+  var newValue = ((((((((((world.observer.getGlobal('iii') && leftOn_p) && Prims.getPatchVariable('on?')) && rightOn_p) || (((world.observer.getGlobal('iio') && leftOn_p) && Prims.getPatchVariable('on?')) && !rightOn_p)) || (((world.observer.getGlobal('ioi') && leftOn_p) && !Prims.getPatchVariable('on?')) && rightOn_p)) || (((world.observer.getGlobal('ioo') && leftOn_p) && !Prims.getPatchVariable('on?')) && !rightOn_p)) || (((world.observer.getGlobal('oii') && !leftOn_p) && Prims.getPatchVariable('on?')) && rightOn_p)) || (((world.observer.getGlobal('oio') && !leftOn_p) && Prims.getPatchVariable('on?')) && !rightOn_p)) || (((world.observer.getGlobal('ooi') && !leftOn_p) && !Prims.getPatchVariable('on?')) && rightOn_p)) || (((world.observer.getGlobal('ooo') && !leftOn_p) && !Prims.getPatchVariable('on?')) && !rightOn_p));
   Prims.ask(SelfManager.self().patchAt(0, -1), true, function() {
     Prims.setPatchVariable('on?', newValue);
   });

@@ -91,18 +91,18 @@ function pickTeamMembers() {
     else {
       if ((Prims.lt(Prims.randomFloat(100), world.observer.getGlobal('q')) && world.turtles().agentFilter(function() {
         return (Prims.getVariable('in-team?') && LinkPrims.linkNeighbors(false, false).agentFilter(function() {
-          return !(Prims.getVariable('in-team?'));
+          return !Prims.getVariable('in-team?');
         }).nonEmpty());
       }).nonEmpty())) {
         newTeamMember = Prims.oneOf(world.turtles().agentFilter(function() {
-          return (!(Prims.getVariable('in-team?')) && LinkPrims.linkNeighbors(false, false).agentFilter(function() {
+          return (!Prims.getVariable('in-team?') && LinkPrims.linkNeighbors(false, false).agentFilter(function() {
             return Prims.getVariable('in-team?');
           }).nonEmpty());
         }));
       }
       else {
         newTeamMember = Prims.oneOf(world.turtles().agentFilter(function() {
-          return !(Prims.getVariable('in-team?'));
+          return !Prims.getVariable('in-team?');
         }));
       }
     }
@@ -174,7 +174,7 @@ function findAllComponents() {
   });
   while (true) {
     var start = Prims.oneOf(world.turtles().agentFilter(function() {
-      return !(Prims.getVariable('explored?'));
+      return !Prims.getVariable('explored?');
     }));
     if (Prims.equality(start, Nobody)) {
       throw new Exception.StopInterrupt;

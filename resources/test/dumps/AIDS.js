@@ -63,7 +63,7 @@ function setupPeople() {
   });
 }
 function assignColor() {
-  if (!(Prims.getVariable('infected?'))) {
+  if (!Prims.getVariable('infected?')) {
     Prims.setVariable('color', 55);
   }
   else {
@@ -108,12 +108,12 @@ function go() {
     }
   });
   Prims.ask(world.turtles(), true, function() {
-    if (!(Prims.getVariable('coupled?'))) {
+    if (!Prims.getVariable('coupled?')) {
       Call(move);
     }
   });
   Prims.ask(world.turtles(), true, function() {
-    if (((!(Prims.getVariable('coupled?')) && Prims.equality(Prims.getVariable('shape'), "person righty")) && Prims.lt(Prims.randomFloat(10), Prims.getVariable('coupling-tendency')))) {
+    if (((!Prims.getVariable('coupled?') && Prims.equality(Prims.getVariable('shape'), "person righty")) && Prims.lt(Prims.randomFloat(10), Prims.getVariable('coupling-tendency')))) {
       Call(couple);
     }
   });
@@ -163,7 +163,7 @@ function move() {
 }
 function couple() {
   var potentialPartner = Prims.oneOf(SelfManager.self().turtlesAt(-1, 0).agentFilter(function() {
-    return (!(Prims.getVariable('coupled?')) && Prims.equality(Prims.getVariable('shape'), "person lefty"));
+    return (!Prims.getVariable('coupled?') && Prims.equality(Prims.getVariable('shape'), "person lefty"));
   }));
   if (!Prims.equality(potentialPartner, Nobody)) {
     if (Prims.lt(Prims.randomFloat(10), Prims.of(potentialPartner, function() {
@@ -215,7 +215,7 @@ function uncouple() {
   }
 }
 function infect() {
-  if (((Prims.getVariable('coupled?') && Prims.getVariable('infected?')) && !(Prims.getVariable('known?')))) {
+  if (((Prims.getVariable('coupled?') && Prims.getVariable('infected?')) && !Prims.getVariable('known?'))) {
     if ((Prims.gt(Prims.randomFloat(11), Prims.getVariable('condom-use')) || Prims.gt(Prims.randomFloat(11), Prims.of(Prims.getVariable('partner'), function() {
       return Prims.getVariable('condom-use');
     })))) {
