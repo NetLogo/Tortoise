@@ -2,27 +2,52 @@ define(->
 
   class LinkPrims
 
-    constructor: (@world) ->
-      @self    = @world.agentSet.self
-      @shuffle = @world.agentSet.shuffle
+    @_self:    undefined # () => Turtle
+    @_shuffle: undefined # (AbstractAgents) => TurtleSet
 
-    createLinkFrom: (other) -> @world.createDirectedLink(other, @self())
-    createLinksFrom: (others) -> @world.createReverseDirectedLinks(@self(), @shuffle(others))
-    createLinkTo: (other) -> @world.createDirectedLink(@self(), other)
-    createLinksTo: (others) -> @world.createDirectedLinks(@self(), @shuffle(others))
-    createLinkWith: (other) -> @world.createUndirectedLink(@self(), other)
-    createLinksWith: (others) -> @world.createUndirectedLinks(@self(), @shuffle(others))
+    # (World) => LinkPrims
+    constructor: (@_world) ->
+      @_self    = @_world.agentSet.self
+      @_shuffle = @_world.agentSet.shuffle
+
+    # (Turtle) => Link
+    createLinkFrom: (otherTurtle) ->
+      @_world.createDirectedLink(otherTurtle, @_self())
+
+    # (TurtleSet) => LinkSet
+    createLinksFrom: (otherTurtles) ->
+      @_world.createReverseDirectedLinks(@_self(), @_shuffle(otherTurtles))
+
+    # (Turtle) => Link
+    createLinkTo: (otherTurtle) ->
+      @_world.createDirectedLink(@_self(), otherTurtle)
+
+    # (TurtleSet) => LinkSet
+    createLinksTo: (otherTurtles) ->
+      @_world.createDirectedLinks(@_self(), @_shuffle(otherTurtles))
+
+    # (Turtle) => Link
+    createLinkWith: (otherTurtle) ->
+      @_world.createUndirectedLink(@_self(), otherTurtle)
+
+    # (TurtleSet) => LinkSet
+    createLinksWith: (otherTurtles) ->
+      @_world.createUndirectedLinks(@_self(), @_shuffle(otherTurtles))
 
     # (Boolean, Boolean) => Array[Link]
-    connectedLinks: (directed, isSource) -> @self().connectedLinks(directed, isSource)
+    connectedLinks: (isDirected, isSource) ->
+      @_self().connectedLinks(isDirected, isSource)
 
     # (Boolean, Boolean) => Array[Turtle]
-    linkNeighbors: (directed, isSource) -> @self().linkNeighbors(directed, isSource)
+    linkNeighbors: (isDirected, isSource) ->
+      @_self().linkNeighbors(isDirected, isSource)
 
     # (Boolean, Boolean) => (Turtle) => Boolean
-    isLinkNeighbor: (directed, isSource) -> ((other) => @self().isLinkNeighbor(directed, isSource, other))
+    isLinkNeighbor: (isDirected, isSource) ->
+      ((otherTurtle) => @_self().isLinkNeighbor(isDirected, isSource, otherTurtle))
 
     # (Boolean, Boolean) => (Turtle) => Link
-    findLinkViaNeighbor: (directed, isSource) -> ((other) => @self().findLinkViaNeighbor(directed, isSource, other))
+    findLinkViaNeighbor: (isDirected, isSource) ->
+      ((otherTurtle) => @_self().findLinkViaNeighbor(isDirected, isSource, otherTurtle))
 
 )
