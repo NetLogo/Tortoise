@@ -1,11 +1,3 @@
-###
-Some things are in AgentSet, others in Prims.  The distinction seems
-arbitrary/confusing.  May we should put *everything* in Prims, and
-Agents can be private.  Prims could/would/should be the
-compiler/runtime interface.  Dunno what's best. --ST
-###
-#@# End this fence-riding nonsense ASAP; I think it makes sense to have one of these that depends on the workspace/world (for the few prims that directly do), and then one that doesn't
-#@# Should be unified with `AbstractAgents`
 define(['engine/abstractagents', 'engine/exception', 'engine/iterator', 'engine/nobody', 'integration/random'
       , 'engine/shufflerator', 'integration/lodash']
      , ( AbstractAgents,          Exception,          Iterator,          Nobody,          Random
@@ -35,24 +27,6 @@ define(['engine/abstractagents', 'engine/exception', 'engine/iterator', 'engine/
       @_self = oldAgent
       @_myself = oldMyself
       res
-    ask: (agentsOrAgent, shuffle, f) ->
-      agents =
-        if agentsOrAgent instanceof AbstractAgents
-          agentsOrAgent.toArray()
-        else
-          [agentsOrAgent]
-      iter =
-        if shuffle #@# Fix yo' varnames, son!
-          new Shufflerator(agents)
-        else
-          new Iterator(agents)
-      while iter.hasNext() #@# Srsly?  Is this Java 1.4?
-        agent = iter.next()
-        @askAgent(agent, f)
-      # If an asker indirectly commits suicide, the exception should propagate.  FD 11/1/2013
-      if @_self.id is -1
-        throw new Exception.DeathInterrupt
-      return
     # can't call it `with`, that's taken in JavaScript. so is `filter` - ST 2/19/14
     #@# Above comment seems bogus.  Since when can you not do something in JavaScript?
     agentFilter: (agents, f) ->
@@ -88,83 +62,7 @@ define(['engine/abstractagents', 'engine/exception', 'engine/iterator', 'engine/
         Nobody
       else
         winners[Random.nextInt(winners.length)]
-    of: (agentsOrAgent, f) -> #@# This is nonsense; same with `ask`.  If you're giving me something, _you_ get it into the right type first, not me!
-      agents =
-        if agentsOrAgent instanceof AbstractAgents
-          agentsOrAgent.toArray()
-        else
-          [agentsOrAgent]
-      result = []
-      iter = new Shufflerator(agents)
-      while iter.hasNext() #@# FP.  Also, move out of the 1990s.
-        agent = iter.next()
-        result.push(@askAgent(agent, f))
-      if agentsOrAgent instanceof AbstractAgents #@# Awful to be doing this twice here...
-        result
-      else
-        result[0]
-    oneOf: (agentsOrList) ->
-      arr =
-        if agentsOrList instanceof AbstractAgents #@# Stop this nonsense.  This code gives me such anxiety...
-          agentsOrList.toArray()
-        else
-          agentsOrList
-      if arr.length is 0
-        Nobody
-      else
-        arr[Random.nextInt(arr.length)]
-    nOf: (resultSize, agentsOrList) ->
-      if not (agentsOrList instanceof AbstractAgents) #@# How does this even make sense?
-        throw new Exception.NetLogoException("n-of not implemented on lists yet")
-      items = agentsOrList.toArray()
-      agentsOrList.copyWithNewAgents( #@# Oh, FFS
-        switch resultSize
-          when 0
-            []
-          when 1
-            [items[Random.nextInt(items.length)]]
-          when 2
-            index1 = Random.nextInt(items.length)
-            index2 = Random.nextInt(items.length - 1)
-            [newIndex1, newIndex2] =
-              if index2 >= index1
-                [index1, index2 + 1]
-              else
-                [index2, index1]
-            [items[newIndex1], items[newIndex2]]
-          else
-            i = 0
-            j = 0
-            result = []
-            while j < resultSize #@# Lodash it!  And why not just use the general case?
-              if Random.nextInt(items.length - i) < resultSize - j
-                result.push(items[i])
-                j += 1
-              i += 1
-            result
-      )
-    die: -> @_self.die()
 
-    # (String) => Any
-    getVariable: (varName) ->
-      @_self.getVariable(varName)
-
-    # (String, Any) => Unit
-    setVariable: (varName, value) ->
-      @_self.setVariable(varName, value)
-      return
-
-    # (String) => Any
-    getPatchVariable: (varName) ->
-      @_self.getPatchVariable(varName)
-
-    # (String, Any) => Unit
-    setPatchVariable: (varName, value) ->
-      @_self.setPatchVariable(varName, value)
-      return
-
-    other: (agentSet) ->
-      agentSet.filter((agent) => agent isnt @_self)
     shuffle: (agents) ->
       result = []
       iter = new Shufflerator(agents.toArray())
