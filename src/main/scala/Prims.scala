@@ -44,7 +44,7 @@ object Prims {
       case _: prim._with =>
         val agents = arg(0)
         val filter = Handlers.reporter(r.args(1))
-        s"AgentSet.agentFilter($agents, ${Handlers.fun(r.args(1), true)})"
+        s"$agents.agentFilter(${Handlers.fun(r.args(1), true)})"
       case _: prim._of =>
         val agents = arg(1)
         val body = Handlers.reporter(r.args(0))
@@ -52,15 +52,15 @@ object Prims {
       case _: prim.etc._maxoneof =>
         val agents = arg(0)
         val metric = Handlers.reporter(r.args(1))
-        s"AgentSet.maxOneOf($agents, ${Handlers.fun(r.args(1), true)})"
+        s"$agents.maxOneOf(${Handlers.fun(r.args(1), true)})"
       case _: prim.etc._minoneof =>
         val agents = arg(0)
         val metric = Handlers.reporter(r.args(1))
-        s"AgentSet.minOneOf($agents, ${Handlers.fun(r.args(1), true)})"
+        s"$agents.minOneOf(${Handlers.fun(r.args(1), true)})"
       case o: prim.etc._all =>
         val agents = arg(0)
         val body = Handlers.reporter(r.args(1))
-        s"AgentSet.all($agents, function(){ return $body })"
+        s"$agents.agentAll(function(){ return $body })"
       case _: prim.etc._islink              => s"(${arg(0)} instanceof Link)"
       case _: prim.etc._isturtle            => s"(${arg(0)} instanceof Turtle)"
       case _: prim.etc._ifelsevalue         => s"${arg(0)} ? ${arg(1)} : ${arg(2)}"
