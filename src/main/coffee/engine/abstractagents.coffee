@@ -5,9 +5,16 @@ define(['integration/seq'], (Seq) ->
   # Type Parameter: T <: Agent - The type of agents within `_items`
   class AbstractAgents extends Seq
 
+    @_askAgent: undefined # (Agent, () => Any) => Any
+
     # (Array[T]) => AbstractAgents[T]
     constructor: (agents) ->
       super(agents)
+      @_askAgent =
+        if agents[0]?
+          agents[0].world.agentSet.askAgent
+        else
+          () -> undefined
 
     # () => Array[T]
     sort: ->
