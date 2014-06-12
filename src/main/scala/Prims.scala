@@ -32,7 +32,7 @@ object Prims {
       case call: prim._callreport           =>
         (Handlers.ident(call.procedure.name) +: args)
           .mkString("Call(", ", ", ")")
-      case _: prim._unaryminus              => s"-${arg(0)}"
+      case _: prim._unaryminus              => s" -${arg(0)}" // The space is important, because these can be nested --JAB (6/12/14)
       case _: prim._not                     => s"!${arg(0)}"
       case bv: prim._breedvariable          => s"Prims.getVariable('${bv.name.toLowerCase}')"
       case tv: prim._turtlevariable         => s"Prims.getVariable('${tv.displayName.toLowerCase}')"
