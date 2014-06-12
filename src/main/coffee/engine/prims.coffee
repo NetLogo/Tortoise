@@ -345,7 +345,7 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
 
       while iter.hasNext() #@# Srsly?  Is this Java 1.4?
         agent = iter.next()
-        @_world.agentSet.askAgent(agent, f)
+        @_world.agentSet.askAgent(f)(agent)
 
       # If an asker indirectly commits suicide, the exception should propagate.  FD 11/1/2013
       if @_getSelf().id is -1
@@ -383,7 +383,7 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
       iter = new Shufflerator(agents)
       while iter.hasNext() #@# FP.  Also, move out of the 1990s.
         agent = iter.next()
-        result.push(@_world.agentSet.askAgent(agent, f))
+        result.push(@_world.agentSet.askAgent(f)(agent))
       if agentsOrAgent instanceof AbstractAgents #@# Awful to be doing this twice here...
         result
       else

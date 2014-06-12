@@ -5,7 +5,7 @@ define(['integration/seq', 'engine/shufflerator'], (Seq, Shufflerator) ->
   # Type Parameter: T <: Agent - The type of agents within `_items`
   class AbstractAgents extends Seq
 
-    @_askAgent: undefined # (Agent, () => Any) => Any
+    @_askAgent: undefined # (() => Any) => (Agent) => Any
 
     # (Array[T]) => AbstractAgents[T]
     constructor: (agents) ->

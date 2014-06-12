@@ -10,10 +10,10 @@ define(['engine/abstractagents', 'engine/exception', 'engine/iterator', 'engine/
       @_self   = 0
       @_myself = 0
 
-    all: (xs, f) -> xs.every((agent) => @askAgent(agent, f))
+    all: (xs, f) -> xs.every(@askAgent(f))
     self: => @_self
     myself: -> if @_myself isnt 0 then @_myself else throw new Exception.NetLogoException("There is no agent for MYSELF to refer to.") #@# I wouldn't be surprised if this is entirely avoidable
-    askAgent: (agent, f) ->
+    askAgent: (f) => (agent) =>
       oldMyself = @_myself #@# All of this contextual swapping can be handled more clearly
       oldAgent = @_self
       @_myself = @_self
@@ -28,7 +28,7 @@ define(['engine/abstractagents', 'engine/exception', 'engine/iterator', 'engine/
     # can't call it `with`, that's taken in JavaScript. so is `filter` - ST 2/19/14
     #@# Above comment seems bogus.  Since when can you not do something in JavaScript?
     agentFilter: (agents, f) ->
-      agents.filter((agent) => @askAgent(agent, f))
+      agents.filter(@askAgent(f))
     # min/MaxOneOf are copy/pasted from each other.  hard to say whether
     # DRY-ing them would be worth the possible performance impact. - ST 3/17/14
     #@# I concur; generalize this!
@@ -36,7 +36,7 @@ define(['engine/abstractagents', 'engine/exception', 'engine/iterator', 'engine/
       winningValue = -Number.MAX_VALUE
       winners = []
       for agent in agents.toArray() #@# Hurr, `reduce`, hurr
-        result = @askAgent(agent, f)
+        result = @askAgent(f)(agent)
         if result >= winningValue
           if result > winningValue
             winningValue = result
@@ -50,7 +50,7 @@ define(['engine/abstractagents', 'engine/exception', 'engine/iterator', 'engine/
       winningValue = Number.MAX_VALUE
       winners = []
       for agent in agents.toArray()
-        result = @askAgent(agent, f)
+        result = @askAgent(f)(agent)
         if result <= winningValue
           if result < winningValue
             winningValue = result
