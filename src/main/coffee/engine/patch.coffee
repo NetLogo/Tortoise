@@ -106,7 +106,7 @@ define(['integration/lodash', 'integration/random', 'engine/builtins', 'engine/c
 
     # [T] @ (AbstractAgentSet[T], Number) => AbstractAgentSet[T]
     inRadius: (agents, radius) ->
-      @world.topology.inRadius(this, @pxcor, @pycor, agents, radius)
+      @world.topology.inRadius(@pxcor, @pycor, agents, radius)
 
     # (Patch) => { toInt: Number }
     compare: (x) ->

@@ -53,38 +53,13 @@ define(['integration/abstractmethoderror', 'integration/lodash', 'integration/st
     midpointx: (x1, x2) -> @_wrap((x1 + (x1 + @_shortestX(x1, x2))) / 2, @minPxcor - 0.5, @maxPxcor + 0.5) #@# What does this mean?  I don't know!
     midpointy: (y1, y2) -> @_wrap((y1 + (y1 + @_shortestY(y1, y2))) / 2, @minPycor - 0.5, @maxPycor + 0.5) #@# What does this mean?  I don't know!
 
-    # [T] @ (Agent, Number, Number, AbstractAgentSet[T], Number) => AbstractAgentSet[T]
-    inRadius: (origin, x, y, agents, radius) ->
-      result = []
-
-      roundedRadius = Math.ceil(radius)
-      width = @width / 2
-      height = @height / 2
-      if roundedRadius < width or not @_wrapInX #@# FP
-        minDX = -roundedRadius
-        maxDX = roundedRadius
-      else
-        maxDX = StrictMath.floor(width)
-        minDX = -Math.ceil(width - 1)
-      if roundedRadius < height or not @_wrapInY
-        minDY = -roundedRadius
-        maxDY = roundedRadius
-      else
-        maxDY = StrictMath.floor(height)
-        minDY = -Math.ceil(height - 1)
-
-      for dy in [minDY..maxDY] #@# 'Tis crap
-        for dx in [minDX..maxDX]
-          patch = origin.patchAt(dx, dy)
-          if patch isnt Nobody #@# Feels `Option.map(f).getOrElse`-ish
-            if @distanceXY(patch.pxcor, patch.pycor, x, y) <= radius and agents.filter((agent) -> agent is patch).nonEmpty()
-              result.push(patch)
-            patch.turtlesHere().forEach((turtle) =>
-              if @distanceXY(turtle.xcor, turtle.ycor, x, y) <= radius and agents.filter((agent) -> agent is turtle).nonEmpty()
-                result.push(turtle)
-              return
-            )
-      agents.copyWithNewAgents(result)
+    # (Number, Number, AbstractAgents[Agent], Number)
+    inRadius: (x, y, agents, radius) ->
+      agents.filter(
+        (agent) =>
+          [xcor, ycor] = agent.getCoords()
+          @distanceXY(xcor, ycor, x, y) <= radius
+      )
 
     # (Number, Number) => Array[Patch]
     _getNeighbors: (pxcor, pycor) -> #@# Was I able to fix this in the ScalaJS version?
