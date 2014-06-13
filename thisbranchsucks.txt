@@ -1,24 +1,24 @@
 Things that are lousy about this branch:
 
 High:
--FPification
--`Shufflerator` is lame
--Replace `AgentModel` with an `Overlord` and overhaul the code
---Things should stop managing their own updates
--Clean up import ordering and 'integration' vs. 'engine' nonsense and grab-bag of files in 'engine'
--"CC Uri" notices
--`Iterator` is puny and questionable in its existence, and its interface sucks
--Code in `Tasks` is confusing
-
-Mid:
 -Names of private members should be preceded with underscores
 -Apply type signatures to all methods
 --`Unit` functions should end in `return`
--Value wrappers: ID, NLColor, XCor, YCor, PenMode
--Agentsets don't handle dead agents correctly.  JVM NetLogo has `DeadSkippingIterator` for this.  Tortoise just continues to act as if the dead agents are valid, unless they're a part of a breed agentset.  Check out being able to observe object changes in ECAMScript 6.
+-FPification
+-Clean up import ordering and 'integration' vs. 'engine' nonsense and grab-bag of files in 'engine'
+-"CC Uri" notices
+-Code in `Tasks` is confusing
+
+Mid:
+-Replace `AgentModel` with an `Overlord` and overhaul the code
+--Things should stop managing their own updates
+-`Iterator`/`Shufflerator` rethinking
+--JVM `Shufflerator` should be changed so that it doesn't prepoll the iteration
+--`Iterator` should just wrap Mori's iterator, providing an interface for `doseq` and `fmap`
+--`Shufflerator` should just extend `Iterator` with a predefined function for randomly iterating a list
+--There should be an `AgentIterator` or something, so we can emulate JVM NetLogo's `DeadSkippingIterator`.  The lack of this is the source of numerous tests being classified as freebies.
 
 Low:
--Change JVM `Shufflerator` so it doesn't prepoll the iteration and can then change the Tortoise `Shufflerator`
 -What if we coalesced serialization updates like we coalesce view updates?  How about `collectUpdates: -> unsuspend(); value = oldCollectUpdates(); suspend(); value`, and `updated`, while suspended, just creates a map of `AgentType => ID => { Agent, Set[StaleVarNames] }`?  I think this could both solve the problem of non-optimal performance from not having fine control over when updates are created, and also the problem of it being unnecessarily-complicated/-difficult/borderline-impossible to manage updates optimally and correctly when sprinkling them through the code.
 -Random number generation often seems to take a lot of a model's time.  Would it be crazy to run the random generator within a web worker and constantly keep a pre-computed queue of 100 or 1000 or so numbers?
 -Other optimizations
