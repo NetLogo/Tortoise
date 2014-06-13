@@ -99,7 +99,7 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
 
     # [T] @ (AbstractAgentSet[T], Number) => AbstractAgentSet[T]
     inRadius: (agents, radius) ->
-      @world.topology.inRadius(this, @xcor, @ycor, agents, radius)
+      @world.topology.inRadius(@xcor, @ycor, agents, radius)
 
     #@# Boy, this code sure is familiar... (`Patch.patchAt`)
     # (Number, Number) => Patch
