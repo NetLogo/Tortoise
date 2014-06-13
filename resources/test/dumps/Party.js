@@ -100,7 +100,7 @@ function findNewGroups() {
 }
 function groupSite_p() {
   var groupInterval = StrictMath.floor((world.width() / world.observer.getGlobal('num-groups')));
-  return (((Prims.equality(Prims.getPatchVariable('pycor'), 0) && Prims.lte(Prims.getPatchVariable('pxcor'), 0)) && Prims.equality(Prims.mod(Prims.getPatchVariable('pxcor'), groupInterval), 0)) && Prims.lt(StrictMath.floor((-Prims.getPatchVariable('pxcor') / groupInterval)), world.observer.getGlobal('num-groups')));
+  return (((Prims.equality(Prims.getPatchVariable('pycor'), 0) && Prims.lte(Prims.getPatchVariable('pxcor'), 0)) && Prims.equality(Prims.mod(Prims.getPatchVariable('pxcor'), groupInterval), 0)) && Prims.lt(StrictMath.floor(( -Prims.getPatchVariable('pxcor') / groupInterval)), world.observer.getGlobal('num-groups')));
 }
 function spreadOutVertically() {
   if (Call(woman_p)) {
