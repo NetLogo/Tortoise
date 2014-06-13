@@ -11,7 +11,8 @@ define(['integration/lodash'], (_) ->
       @_items.length
 
     # () => Number
-    length: @size
+    length: ->
+      @size()
 
     # () => Boolean
     isEmpty: ->
