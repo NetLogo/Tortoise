@@ -22,6 +22,10 @@ define(['integration/lodash'], (_) ->
     nonEmpty: ->
       @size() isnt 0
 
+    # (T) => Boolean
+    contains: (item) ->
+      _(@toArray()).contains(item)
+
     # ((T) => Boolean) => Boolean
     exists: (pred) ->
       _(@toArray()).some(pred)
