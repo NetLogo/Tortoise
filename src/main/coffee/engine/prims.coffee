@@ -36,8 +36,13 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
         (a is b) or ( # This code has been purposely rewritten into a crude, optimized form --JAB (3/19/14)
           if Type(a).isArray() and Type(b).isArray()
             a.length is b.length and a.every((elem, i) => @equality(elem, b[i]))
-          else if a instanceof AbstractAgentSet and b instanceof AbstractAgentSet #@# Could be sped up to O(n) (from O(n^2)) by zipping the two arrays
-            a.size() is b.size() and Object.getPrototypeOf(a) is Object.getPrototypeOf(b) and a.toArray().every((elem) -> (elem in b.toArray())) #@# Wrong!
+          else if a instanceof AbstractAgentSet and b instanceof AbstractAgentSet
+            subsumes = (xs, ys) =>
+              for x, index in xs
+                if not @equality(ys[index], x)
+                  return false
+              true
+            a.size() is b.size() and Object.getPrototypeOf(a) is Object.getPrototypeOf(b) and subsumes(a.toArray(), b.toArray())
           else
             (a instanceof AbstractAgentSet and a.getBreedName? and a.getBreedName() is b.name) or (b instanceof AbstractAgentSet and b.getBreedName? and b.getBreedName() is a.name) or
               (a is Nobody and b.id is -1) or (b is Nobody and a.id is -1) or ((a instanceof Turtle or a instanceof Link) and a.compare(b) is Comparator.EQUALS)
