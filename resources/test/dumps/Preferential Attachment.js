@@ -97,8 +97,8 @@ function limitMagnitude(number, limit) {
   if (Prims.gt(number, limit)) {
     return limit;
   }
-  if (Prims.lt(number, -limit)) {
-    return -limit;
+  if (Prims.lt(number,  -limit)) {
+    return  -limit;
   }
   return number;
 }

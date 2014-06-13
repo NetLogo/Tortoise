@@ -53,10 +53,10 @@ function attachTurtle() {
   var xd = (world.observer.getGlobal('near-radius') + Prims.random((world.observer.getGlobal('far-radius') - world.observer.getGlobal('near-radius'))));
   var yd = (world.observer.getGlobal('near-radius') + Prims.random((world.observer.getGlobal('far-radius') - world.observer.getGlobal('near-radius'))));
   if (Prims.equality(Prims.random(2), 0)) {
-    xd = -xd;
+    xd =  -xd;
   }
   if (Prims.equality(Prims.random(2), 0)) {
-    yd = -yd;
+    yd =  -yd;
   }
   var candidate = Prims.oneOf(SelfManager.self().turtlesAt(xd, yd).agentFilter(function() {
     return Prims.equality(Prims.getVariable('follower'), Nobody);

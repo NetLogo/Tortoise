@@ -35,7 +35,7 @@ var StrictMath     = require('integration/strictmath');function setup() {
 }
 function createHistogramWidth() {
   Prims.ask(world.patches(), true, function() {
-    if (((Prims.gte(Prims.getPatchVariable('pxcor'), (-world.observer.getGlobal('sample-space') / 2)) && Prims.lt(Prims.getPatchVariable('pxcor'), (world.observer.getGlobal('sample-space') / 2))) && Prims.lt(Prims.getPatchVariable('pycor'), world.observer.getGlobal('max-y-histogram')))) {
+    if (((Prims.gte(Prims.getPatchVariable('pxcor'), ( -world.observer.getGlobal('sample-space') / 2)) && Prims.lt(Prims.getPatchVariable('pxcor'), (world.observer.getGlobal('sample-space') / 2))) && Prims.lt(Prims.getPatchVariable('pycor'), world.observer.getGlobal('max-y-histogram')))) {
       Prims.setPatchVariable('pcolor', 45);
     }
     else {

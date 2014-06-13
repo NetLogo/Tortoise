@@ -51,8 +51,8 @@ function update() {
   var ediff = ((2 * Prims.getPatchVariable('spin')) * Prims.sum(Prims.of(Prims.getNeighbors4(), function() {
     return Prims.getPatchVariable('spin');
   })));
-  if ((Prims.lte(ediff, 0) || (Prims.gt(world.observer.getGlobal('temperature'), 0) && Prims.lt(Prims.randomFloat(1), StrictMath.exp((-ediff / world.observer.getGlobal('temperature'))))))) {
-    Prims.setPatchVariable('spin', -Prims.getPatchVariable('spin'));
+  if ((Prims.lte(ediff, 0) || (Prims.gt(world.observer.getGlobal('temperature'), 0) && Prims.lt(Prims.randomFloat(1), StrictMath.exp(( -ediff / world.observer.getGlobal('temperature'))))))) {
+    Prims.setPatchVariable('spin',  -Prims.getPatchVariable('spin'));
     world.observer.setGlobal('sum-of-spins', (world.observer.getGlobal('sum-of-spins') + (2 * Prims.getPatchVariable('spin'))));
     Call(recolor);
   }

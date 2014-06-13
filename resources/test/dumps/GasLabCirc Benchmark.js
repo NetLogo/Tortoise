@@ -131,7 +131,7 @@ function checkForParticleCollision() {
     var d1 = (StrictMath.pow(pv, 2) - ((4 * vSquared) * pSquared));
     var timeToCollision = -1;
     if (Prims.gte(d1, 0)) {
-      timeToCollision = ((-pv - StrictMath.sqrt(d1)) / (2 * vSquared));
+      timeToCollision = (( -pv - StrictMath.sqrt(d1)) / (2 * vSquared));
     }
     if (Prims.gt(timeToCollision, 0)) {
       var collidingPair = Prims.list((timeToCollision + world.ticker.tickCount()), SelfManager.self(), SelfManager.myself());
@@ -143,9 +143,9 @@ function checkForWallCollision() {
   var xSpeed = (Prims.getVariable('speed') * Call(convertHeadingX, Prims.getVariable('heading')));
   var ySpeed = (Prims.getVariable('speed') * Call(convertHeadingY, Prims.getVariable('heading')));
   var xposPlane = (world.observer.getGlobal('box-edge') - 0.5);
-  var xnegPlane = (-world.observer.getGlobal('box-edge') + 0.5);
+  var xnegPlane = ( -world.observer.getGlobal('box-edge') + 0.5);
   var yposPlane = (world.observer.getGlobal('box-edge') - 0.5);
-  var ynegPlane = (-world.observer.getGlobal('box-edge') + 0.5);
+  var ynegPlane = ( -world.observer.getGlobal('box-edge') + 0.5);
   var contactPointXpos = (Prims.getVariable('xcor') + (Prims.getVariable('size') / 2));
   var contactPointXneg = (Prims.getVariable('xcor') - (Prims.getVariable('size') / 2));
   var contactPointYpos = (Prims.getVariable('ycor') + (Prims.getVariable('size') / 2));
@@ -235,7 +235,7 @@ function collideWinners() {
   }
   if ((Prims.equality(world.observer.getGlobal('colliding-particle-2'), "plane-xpos") || Prims.equality(world.observer.getGlobal('colliding-particle-2'), "plane-xneg"))) {
     Prims.ask(world.observer.getGlobal('colliding-particle-1'), true, function() {
-      Prims.setVariable('heading', -Prims.getVariable('heading'));
+      Prims.setVariable('heading',  -Prims.getVariable('heading'));
     });
     throw new Exception.StopInterrupt;
   }

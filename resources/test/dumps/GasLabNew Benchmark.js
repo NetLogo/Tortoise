@@ -167,7 +167,7 @@ function bounce() {
     throw new Exception.StopInterrupt;
   }
   if (Prims.equality(StrictMath.abs(newPx), world.observer.getGlobal('box-edge'))) {
-    Prims.setVariable('heading', -Prims.getVariable('heading'));
+    Prims.setVariable('heading',  -Prims.getVariable('heading'));
     Prims.setVariable('wall-hits', (Prims.getVariable('wall-hits') + 1));
     Prims.setVariable('momentum-difference', (Prims.getVariable('momentum-difference') + (StrictMath.abs((((Trig.unsquashedSin(Prims.getVariable('heading')) * 2) * Prims.getVariable('mass')) * Prims.getVariable('speed'))) / world.observer.getGlobal('length-vertical-surface'))));
   }
