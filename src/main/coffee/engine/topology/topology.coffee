@@ -60,11 +60,9 @@ define(['integration/lodash', 'integration/strictmath', 'engine/nobody', 'engine
 
     distanceXY: (x1, y1, x2, y2) -> #@# Long line
       StrictMath.sqrt(StrictMath.pow(@shortestX(x1, x2), 2) + StrictMath.pow(@shortestY(y1, y2), 2))
-    distance: (x1, y1, agent) -> #@# If you're polymorphizing, you ought to just do it properly in the OO way
-      if agent instanceof Turtle
-        @distanceXY(x1, y1, agent.xcor(), agent.ycor())
-      else if agent instanceof Patch
-        @distanceXY(x1, y1, agent.pxcor, agent.pycor)
+    distance: (x1, y1, agent) ->
+      [x2, y2] = agent.getCoords()
+      @distanceXY(x1, y1, x2, y2)
 
     towards: (x1, y1, x2, y2) ->
       dx = @shortestX(x1, x2)
