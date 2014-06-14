@@ -100,14 +100,17 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
       @maxPxcor = maxPxcor
       @minPycor = minPycor
       @maxPycor = maxPycor
-      if @wrappingAllowedInX and @wrappingAllowedInY #@# `Topology.Companion` should know how to generate a topology from these values; what does `World` care?
-        @_topology = new Torus(@minPxcor, @maxPxcor, @minPycor, @maxPycor, @patches, @getPatchAt) #@# FP a-go-go
-      else if @wrappingAllowedInX
-        @_topology = new VertCylinder(@minPxcor, @maxPxcor, @minPycor, @maxPycor, @patches, @getPatchAt)
-      else if @wrappingAllowedInY
-        @_topology = new HorizCylinder(@minPxcor, @maxPxcor, @minPycor, @maxPycor, @patches, @getPatchAt)
-      else
-        @_topology = new Box(@minPxcor, @maxPxcor, @minPycor, @maxPycor, @patches, @getPatchAt)
+
+      @_topology =
+        if @wrappingAllowedInX and @wrappingAllowedInY #@# `Topology.Companion` should know how to generate a topology from these values; what does `World` care?
+          new Torus(@minPxcor, @maxPxcor, @minPycor, @maxPycor, @patches, @getPatchAt)
+        else if @wrappingAllowedInX
+          new VertCylinder(@minPxcor, @maxPxcor, @minPycor, @maxPycor, @patches, @getPatchAt)
+        else if @wrappingAllowedInY
+          new HorizCylinder(@minPxcor, @maxPxcor, @minPycor, @maxPycor, @patches, @getPatchAt)
+        else
+          new Box(@minPxcor, @maxPxcor, @minPycor, @maxPycor, @patches, @getPatchAt)
+
       @createPatches()
       @patchesAllBlack(true)
       @resetPatchLabelCount()
@@ -197,17 +200,19 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
       @_turtles.push(turtle)
       @_turtlesById[id] = turtle
       turtle
+
     ###
     #@# We shouldn't be looking up links in the tree everytime we create a link; JVM NL uses 2 `LinkedHashMap[Turtle, Buffer[Link]]`s (to, from) --JAB (2/7/14)
     #@# The return of `Nobody` followed by clients `filter`ing against it screams "flatMap!" --JAB (2/7/14)
     ###
+    # (Boolean, Turtle, Turtle) => Link
     createLink: (directed, from, to) ->
-      if from.id < to.id or directed #@# FP FTW
-        end1 = from
-        end2 = to
-      else
-        end1 = to
-        end2 = from
+      [end1, end2] =
+        if from.id < to.id or directed
+          [from, to]
+        else
+          [to, from]
+
       if @getLink(end1.id, end2.id) is Nobody
         link = new Link(@_linkIDManager.next(), directed, end1, end2, this)
         @updater.updated(link)(Builtins.linkBuiltins...)
@@ -216,6 +221,7 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
         link
       else
         Nobody
+
     createOrderedTurtles: (n, breedName) -> #@# Clarity is a good thing
       turtles = _(0).range(n).map((num) => @createTurtle((id) => new Turtle(this, id, (10 * num + 5) % 140, (360 * num) / n, 0, 0, @breedManager.get(breedName)))).value()
       new TurtleSet(turtles, @breedManager.get(breedName))

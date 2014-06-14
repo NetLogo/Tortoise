@@ -12,11 +12,13 @@ define(['integration/lodash', 'integration/strictmath', 'engine/nobody', 'engine
     constructor: (@minPxcor, @maxPxcor, @minPycor, @maxPycor, @getPatches, @getPatchAt) ->
       @height = 1 + @maxPycor - @minPycor
       @width  = 1 + @maxPxcor - @minPxcor
+
+    # (Number, Number, Number) => Number
     wrap: (pos, min, max) ->
       if pos >= max
-        (min + ((pos - max) % (max - min)))
+        min + ((pos - max) % (max - min))
       else if pos < min
-        result = max - ((min - pos) % (max - min)) #@# FP
+        result = max - ((min - pos) % (max - min))
         if result < max
           result
         else

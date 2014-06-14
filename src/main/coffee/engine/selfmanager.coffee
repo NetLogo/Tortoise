@@ -30,10 +30,10 @@ define(['engine/exception'], (Exception) ->
       @_myself = @_self
       @_self   = agent
 
-      try
-        res = f() #@# FP
-      catch error
-        throw error if not (error instanceof Exception.DeathInterrupt or error instanceof Exception.StopInterrupt)
+      res =
+        try f()
+        catch error
+          throw error if not (error instanceof Exception.DeathInterrupt or error instanceof Exception.StopInterrupt)
 
       @_self   = oldAgent
       @_myself = oldMyself
