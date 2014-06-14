@@ -1,3 +1,5 @@
+# (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
+
 define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engine/exception', 'engine/idmanager'
       , 'engine/link', 'engine/linkset', 'engine/nobody', 'engine/observer', 'engine/patch', 'engine/patchset'
       , 'engine/ticker', 'engine/turtle', 'engine/turtleset', 'engine/worldlinks', 'engine/topology/box'

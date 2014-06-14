@@ -1,3 +1,5 @@
+# (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
+
 #@# Extends: `Agent`, `Vassal`, `CanTalkToPatches`
 #@# Why do all of these function calls manage updates for themselves?  Why am I dreaming of an `@world.updater. monad?
 define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'engine/colormodel', 'engine/comparator'

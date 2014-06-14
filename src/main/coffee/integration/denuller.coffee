@@ -1,3 +1,5 @@
+# (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
+
 ###
 used to work around Nashorn bug where JSON.parse on objects with
 integer keys sometimes invents nonexistent entries with null values;

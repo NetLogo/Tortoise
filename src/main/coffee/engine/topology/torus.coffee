@@ -1,3 +1,5 @@
+# (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
+
 define(['integration/lodash', 'integration/strictmath', 'engine/topology/topology'], (_, StrictMath, Topology) ->
 
   #@# Redundancy with other topologies...

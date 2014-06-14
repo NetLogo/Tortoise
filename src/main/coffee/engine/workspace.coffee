@@ -1,3 +1,5 @@
+# (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
+
 define(['engine/breedmanager', 'engine/layoutmanager', 'engine/linkprims', 'engine/prims', 'engine/selfmanager'
       , 'engine/timer', 'engine/updater', 'engine/world']
      , ( BreedManager,          LayoutManager,          LinkPrims,          Prims,          SelfManager

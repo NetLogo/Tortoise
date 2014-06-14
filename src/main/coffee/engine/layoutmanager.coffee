@@ -1,3 +1,5 @@
+# (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
+
 # Copied pretty much verbatim from Layouts.java --FD
 define(['integration/lodash', 'integration/random', 'integration/strictmath', 'engine/trig']
      , ( _,                    Random,               StrictMath,               Trig) ->

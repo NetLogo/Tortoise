@@ -1,3 +1,5 @@
+# (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
+
 #@# We won't need to call `toArray` each time in our own functions when this learns how to iterate over dead agents...
 # Never instantiate this class directly --JAB (5/7/14)
 define(['integration/random', 'integration/seq', 'engine/nobody', 'engine/shufflerator']

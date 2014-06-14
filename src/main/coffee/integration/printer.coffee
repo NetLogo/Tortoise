@@ -1,3 +1,5 @@
+# (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
+
 define(->
   if console? # V8
     console.log.bind(console) # If the console context doesn't get bound, the function fails on use --JAB (4/21/14)

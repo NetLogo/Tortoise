@@ -1,3 +1,5 @@
+# (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
+
 define(['engine/patch', 'engine/turtle', 'engine/variablemanager', 'integration/lodash']
      , ( Patch,          Turtle,          VariableManager,          _) ->
 

@@ -1,3 +1,5 @@
+# (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
+
 ###
 on Nashorn, we provide this via MersenneTwisterFast.  in the browser,
 we delegate to Math.random(), for speed.  we could swap in a JS

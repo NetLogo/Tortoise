@@ -1,3 +1,5 @@
+# (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
+
 ###
   `Workspace` is needed to do anything.  If you want the core of Tortoise, do `require('engine/workspace')`.
   If you want the peripheral stuff (i.e. because you're a compiler or test infrastructure),

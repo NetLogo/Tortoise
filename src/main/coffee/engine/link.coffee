@@ -1,3 +1,5 @@
+# (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
+
 define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'engine/colormodel', 'engine/comparator'
       , 'engine/exception', 'engine/turtleset', 'engine/variablemanager']
      , ( _,                    AbstractAgentSet,          Builtins,          ColorModel,          Comparator

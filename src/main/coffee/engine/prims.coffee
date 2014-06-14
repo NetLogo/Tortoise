@@ -1,3 +1,5 @@
+# (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
+
 #@# No more code golf
 define(['integration/lodash', 'integration/printer', 'integration/random', 'integration/strictmath'
       , 'engine/abstractagentset', 'engine/comparator', 'engine/dump', 'engine/exception', 'engine/iterator'

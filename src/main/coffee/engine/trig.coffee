@@ -1,3 +1,5 @@
+# (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
+
 define(['integration/strictmath', 'engine/exception'], (StrictMath, Exception) -> {
   squash: (x) ->
     if StrictMath.abs(x) < 3.2e-15

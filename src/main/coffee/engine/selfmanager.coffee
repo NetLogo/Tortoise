@@ -1,3 +1,5 @@
+# (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
+
 define(['engine/exception'], (Exception) ->
 
   # Type Parameter: SelfType - Number|Agent - The type that `self` or `myself` could be at any time

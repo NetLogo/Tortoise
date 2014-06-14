@@ -1,3 +1,5 @@
+# (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
+
 define(['engine/abstractagentset'], (AbstractAgentSet) ->
 
   # Type Parameter: T <: Patch - The type of patches within `_agents`
