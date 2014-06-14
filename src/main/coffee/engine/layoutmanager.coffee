@@ -66,7 +66,7 @@ define(['integration/lodash', 'integration/random', 'integration/strictmath', 'e
         if t1Index isnt -1
           ax[t1Index] += dx
           ay[t1Index] += dy
-        if t2Index isnt -1 #@# Surely all of this control flow can be FPified
+        if t2Index isnt -1
           ax[t2Index] -= dx
           ay[t2Index] -= dy
 

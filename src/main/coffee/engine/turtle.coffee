@@ -132,16 +132,17 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
         Nobody
 
     otherEnd: -> if this is @world.selfManager.myself().end1 then @world.selfManager.myself().end2 else @world.selfManager.myself().end1
+
+    # (Number, Number) => Patch
     patchRightAndAhead: (angle, distance) ->
-      heading = @heading + angle #@# Mutation is for bad people (FP)
-      if not (0 <= heading < 360)
-        heading = ((heading % 360) + 360) % 360
+      heading = @_normalizeHeading(@heading + angle)
       try
         newX = @world.topology().wrapX(@xcor() + distance * Trig.sin(heading))
         newY = @world.topology().wrapY(@ycor() + distance * Trig.cos(heading))
-        return @world.getPatchAt(newX, newY) #@# Unnecessary `return`
+        @world.getPatchAt(newX, newY)
       catch error
         if error instanceof Exception.TopologyInterrupt then Nobody else throw error
+
     patchLeftAndAhead: (angle, distance) ->
       @patchRightAndAhead(-angle, distance)
     patchAhead: (distance) ->

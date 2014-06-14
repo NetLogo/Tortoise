@@ -386,7 +386,7 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
           [agentsOrAgent]
       result = []
       iter = new Shufflerator(agents)
-      while iter.hasNext() #@# FP.  Also, move out of the 1990s.
+      while iter.hasNext()
         agent = iter.next()
         result.push(@_world.selfManager.askAgent(f)(agent))
       if agentsOrAgent instanceof AbstractAgentSet #@# Awful to be doing this twice here...
