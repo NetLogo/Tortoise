@@ -1,3 +1,5 @@
+# (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
+
 define(['integration/cloner'], (Cloner) ->
   if StrictMath? # Nashorn
     StrictMath

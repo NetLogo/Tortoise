@@ -1,3 +1,5 @@
+# (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
+
 define(['engine/exception', 'engine/topology/topology'], (Exception, Topology) ->
 
   class Box extends Topology

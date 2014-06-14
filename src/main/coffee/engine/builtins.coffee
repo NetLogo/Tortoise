@@ -1,3 +1,5 @@
+# (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
+
 #@# Links inherit `turtleBuiltins`, and `linkBuiltins` contain a bunch of crazy placeholder variables that don't actually mean anything --JAB (2/6/14)
 define(-> {
   turtleBuiltins: ["id", "color", "heading", "xcor", "ycor", "shape", "label", "label-color", "breed", "hidden?", "size", "pen-size", "pen-mode"]

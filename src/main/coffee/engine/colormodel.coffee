@@ -1,3 +1,5 @@
+# (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
+
 define(['integration/lodash'], (_) -> {
 
   # Number

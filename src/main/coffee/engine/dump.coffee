@@ -1,3 +1,5 @@
+# (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
+
 define(['integration/lodash'], (_) ->
 
   # Needs a name here since it's recursive --JAB (4/16/14)

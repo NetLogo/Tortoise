@@ -5,7 +5,6 @@ High:
 -Apply type signatures to all methods
 --`Unit` functions should end in `return`
 -Clean up import ordering and 'integration' vs. 'engine' nonsense and grab-bag of files in 'engine'
--"CC Uri" notices
 -Code in `Tasks` is confusing
 
 Mid:

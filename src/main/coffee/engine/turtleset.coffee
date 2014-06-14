@@ -1,3 +1,5 @@
+# (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
+
 define(['engine/abstractagentset'], (AbstractAgentSet) ->
 
   # Type Parameter: T <: Turtle - The type of turtles within `_agents`

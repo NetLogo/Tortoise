@@ -1,3 +1,5 @@
+# (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
+
 #@# This makes me uncomfortable
 define(['integration/lodash'], (_) -> {
   commandTask: (fn) ->

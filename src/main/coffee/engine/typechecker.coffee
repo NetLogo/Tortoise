@@ -1,3 +1,5 @@
+# (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
+
 ###
 This class should be favored over Lodash when you want quick typechecking that need not be thorough.
 This was made specifically to compensate for the fact that Lodash's typechecking was swapped

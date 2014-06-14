@@ -1,3 +1,5 @@
+# (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
+
 #@# Extends `CanTalkToPatches`, `Agent`, `Vassal`
 define(['integration/lodash', 'integration/random', 'engine/builtins', 'engine/colormodel', 'engine/comparator'
       , 'engine/exception', 'engine/nobody', 'engine/turtle', 'engine/turtleset', 'engine/variablemanager']
