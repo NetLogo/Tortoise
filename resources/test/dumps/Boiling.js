@@ -34,7 +34,7 @@ var StrictMath     = require('integration/strictmath');function setup() {
   world.ticker.reset();
 }
 function go() {
-  world.topology().diffuse('heat', 1)
+  world.topology.diffuse('heat', 1)
   Prims.ask(world.patches(), true, function() {
     Prims.setPatchVariable('heat', Prims.mod((Prims.getPatchVariable('heat') + 5), 212));
     Prims.setPatchVariable('pcolor', Prims.scaleColor(15, Prims.getPatchVariable('heat'), 0, 212));

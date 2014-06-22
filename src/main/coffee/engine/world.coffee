@@ -15,6 +15,7 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
 
     observer: undefined # Observer
     ticker:   undefined # Ticker
+    topology: undefined # Topology
 
     _links:             undefined # WorldLinks
     _linkIDManager:     undefined # IDManager
@@ -22,7 +23,6 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
     _patches:           undefined # Array[Patch]
     _patchesAllBlack:   undefined # Boolean
     _patchesWithLabels: undefined # Number
-    _topology:          undefined # Topology
     _turtles:           undefined # Array[Turtle]
     _turtlesById:       undefined # Object[Number, Turtle]
 
@@ -54,13 +54,13 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
 
       @observer = new Observer(updater, globalNames, interfaceGlobalNames)
       @ticker   = new Ticker(updater.updated(this))
+      @topology = null
 
       @_links           = new WorldLinks(@linkCompare)
       @_linkIDManager   = new IDManager #@# The fact that `World` even talks to ID managers (rather than a container for the type of agent) seems undesirable to me
       @_turtleIDManager = new IDManager
       @_patches         = []
       @_patchesAllBlack = true
-      @_topology        = null
       @_turtles         = []
       @_turtlesById     = {}
 
@@ -82,10 +82,6 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
 
       return
 
-
-    # () => Topology
-    topology: ->
-      @_topology
 
     # () => LinkSet
     links: () ->
@@ -123,7 +119,7 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
       @minPycor = minPycor
       @maxPycor = maxPycor
 
-      @_topology =
+      @topology =
         if @_wrappingAllowedInX and @_wrappingAllowedInY #@# `Topology.Companion` should know how to generate a topology from these values; what does `World` care?
           new Torus(@minPxcor, @maxPxcor, @minPycor, @maxPycor, @patches, @getPatchAt)
         else if @_wrappingAllowedInX
@@ -267,11 +263,11 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
 
     # (Number, Number) => PatchSet
     getNeighbors: (pxcor, pycor) ->
-      @topology().getNeighbors(pxcor, pycor)
+      @topology.getNeighbors(pxcor, pycor)
 
     # (Number, Number) => PatchSet
     getNeighbors4: (pxcor, pycor) ->
-      @topology().getNeighbors4(pxcor, pycor)
+      @topology.getNeighbors4(pxcor, pycor)
 
     # (Turtle, Turtle) => Link
     createDirectedLink: (from, to) ->

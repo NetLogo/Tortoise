@@ -51,7 +51,7 @@ function go() {
   if (!world.turtles().nonEmpty()) {
     throw new Exception.StopInterrupt;
   }
-  world.topology().diffuse('temp', world.observer.getGlobal('diffusion-rate'))
+  world.topology.diffuse('temp', world.observer.getGlobal('diffusion-rate'))
   Prims.ask(world.turtles(), true, function() {
     Call(step);
   });
