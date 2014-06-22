@@ -1,6 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['integration/lodash'], (_) ->
+define(->
 
   # type VariableBundle = { name: String, get: GetFunc, set: SetFunc }
 

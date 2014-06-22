@@ -64,7 +64,7 @@ object JSONSerializer {
   }
 
   def serialize(v: AnyRef): String = {
-    compact(render(toJValue(v)));
+    compact(render(toJValue(v)))
   }
 
   def toJValue(v: AnyRef): JValue = v match {

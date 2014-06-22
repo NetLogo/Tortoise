@@ -17,7 +17,7 @@ class Nashorn {
   // the (null) became necessary when we upgraded to sbt 0.13. I don't understand why.
   // classloaders, go figure! - ST 8/26/13
   val engine =
-    (new javax.script.ScriptEngineManager(null))
+    new javax.script.ScriptEngineManager(null)
       .getEngineByName("nashorn")
       .ensuring(_ != null, "JavaScript engine unavailable")
 
@@ -45,8 +45,8 @@ class Nashorn {
     fromNashorn(engine.eval(script))
 
   // translate from Nashorn values to NetLogo values
-  def fromNashorn(x: AnyRef): AnyRef =
-    x match {
+  def fromNashorn(jsValue: AnyRef): AnyRef =
+    jsValue match {
       case a: jdk.nashorn.api.scripting.ScriptObjectMirror if a.isArray =>
         api.LogoList.fromIterator(
           Iterator.from(0)

@@ -1,9 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['integration/lodash', 'integration/strictmath', 'engine/nobody', 'engine/patch', 'engine/patchset'
-      , 'engine/turtle']
-     , ( _,                    StrictMath,               Nobody,          Patch,          PatchSet
-      ,  Turtle) ->
+define(['integration/lodash', 'integration/strictmath', 'engine/nobody', 'engine/patch', 'engine/patchset']
+     , ( _,                    StrictMath,               Nobody,          Patch,          PatchSet) ->
 
   class Topology
 

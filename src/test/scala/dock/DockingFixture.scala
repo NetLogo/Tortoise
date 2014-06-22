@@ -129,7 +129,7 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
       throw new IllegalStateException("Exception occurred in JS but not headless: " + actualOutput)
     } else if(exceptionOccurredInHeadless && exceptionOccurredInJS) {
       if(headlessException != actualOutput)
-        throw new IllegalStateException(s"""Exception in JS was "$actualOutput" but exception in headless was "${headlessException}" """)
+        throw new IllegalStateException(s"""Exception in JS was "$actualOutput" but exception in headless was "$headlessException" """)
     } else {
       //println(expectedJson)
       //println(actualJson)
