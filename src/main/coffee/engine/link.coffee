@@ -44,7 +44,7 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
         @end1.removeLink(this)
         @end2.removeLink(this)
         @world.removeLink(@id)
-        @seppuku()
+        @_seppuku()
         @id = -1
       throw new Exception.DeathInterrupt("Call only from inside an askAgent block")
 
@@ -90,7 +90,7 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
         else throw new Exception.NetLogoException("Comparison should only yield an integer within the interval [-1,1]")
 
     # () => Unit
-    seppuku: ->
+    _seppuku: ->
       @world.updater.update("links", @id, { WHO: -1 }) #@# If you're awful and you know it, clap your hands!
       return
 

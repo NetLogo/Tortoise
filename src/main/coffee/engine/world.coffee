@@ -29,8 +29,8 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
     #@# I'm aware that some of this stuff ought to not live on `World`
     # (SelfManager, Updater, BreedManager, Array[String], Array[String], Array[String], Array[String], Array[String], Number, Number, Number, Number, Number, Boolean, Boolean, Array[Object], Array[Object]) => World
     constructor: (@selfManager, @updater, @breedManager, globalNames, interfaceGlobalNames, @turtlesOwnNames
-                , @linksOwnNames, @patchesOwnNames, @minPxcor, @maxPxcor, @minPycor, @maxPycor, @patchSize
-                , @wrappingAllowedInX, @wrappingAllowedInY, turtleShapeList, linkShapeList) ->
+                , @linksOwnNames, @patchesOwnNames, @minPxcor, @maxPxcor, @minPycor, @maxPycor, @_patchSize
+                , @_wrappingAllowedInX, @_wrappingAllowedInY, turtleShapeList, linkShapeList) ->
       @updater.collectUpdates()
       @updater.update("world", 0, {
         worldWidth: Math.abs(@minPxcor - @maxPxcor) + 1,
@@ -41,15 +41,15 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
         maxPycor: @maxPycor,
         linkBreeds: "XXX IMPLEMENT ME",
         linkShapeList: linkShapeList,
-        patchSize: @patchSize,
+        patchSize: @_patchSize,
         patchesAllBlack: @_patchesAllBlack,
         patchesWithLabels: @_patchesWithLabels,
         ticks: -1,
         turtleBreeds: "XXX IMPLEMENT ME",
         turtleShapeList: turtleShapeList,
         unbreededLinksAreDirected: false
-        wrappingAllowedInX: @wrappingAllowedInX,
-        wrappingAllowedInY: @wrappingAllowedInY
+        wrappingAllowedInX: @_wrappingAllowedInX,
+        wrappingAllowedInY: @_wrappingAllowedInY
       })
 
       @observer = new Observer(updater, globalNames, interfaceGlobalNames)
@@ -124,18 +124,18 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
       @maxPycor = maxPycor
 
       @_topology =
-        if @wrappingAllowedInX and @wrappingAllowedInY #@# `Topology.Companion` should know how to generate a topology from these values; what does `World` care?
+        if @_wrappingAllowedInX and @_wrappingAllowedInY #@# `Topology.Companion` should know how to generate a topology from these values; what does `World` care?
           new Torus(@minPxcor, @maxPxcor, @minPycor, @maxPycor, @patches, @getPatchAt)
-        else if @wrappingAllowedInX
+        else if @_wrappingAllowedInX
           new VertCylinder(@minPxcor, @maxPxcor, @minPycor, @maxPycor, @patches, @getPatchAt)
-        else if @wrappingAllowedInY
+        else if @_wrappingAllowedInY
           new HorizCylinder(@minPxcor, @maxPxcor, @minPycor, @maxPycor, @patches, @getPatchAt)
         else
           new Box(@minPxcor, @maxPxcor, @minPycor, @maxPycor, @patches, @getPatchAt)
 
       @createPatches()
       @patchesAllBlack(true)
-      @resetPatchLabelCount()
+      @_resetPatchLabelCount()
       @updater.updated(this)("width", "height", "minPxcor", "minPycor", "maxPxcor", "maxPycor")
 
       return
@@ -201,7 +201,7 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
       return
 
     # () => Unit
-    resetPatchLabelCount: ->
+    _resetPatchLabelCount: ->
       @_setPatchLabelCount(-> 0)
       return
 
@@ -218,7 +218,7 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
       @createPatches()
       @_linkIDManager.reset()
       @patchesAllBlack(true)
-      @resetPatchLabelCount()
+      @_resetPatchLabelCount()
       @ticker.clear()
       return
 
@@ -243,7 +243,7 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
     clearPatches: ->
       @patches().forEach((patch) -> patch.reset(); return)
       @patchesAllBlack(true)
-      @resetPatchLabelCount()
+      @_resetPatchLabelCount()
       return
 
     # ((Number) => Turtle) => Turtle
@@ -254,27 +254,6 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
       @_turtles.push(turtle)
       @_turtlesById[id] = turtle
       turtle
-
-    ###
-    #@# We shouldn't be looking up links in the tree everytime we create a link; JVM NL uses 2 `LinkedHashMap[Turtle, Buffer[Link]]`s (to, from) --JAB (2/7/14)
-    #@# The return of `Nobody` followed by clients `filter`ing against it screams "flatMap!" --JAB (2/7/14)
-    ###
-    # (Boolean, Turtle, Turtle) => Link
-    createLink: (directed, from, to) ->
-      [end1, end2] =
-        if from.id < to.id or directed
-          [from, to]
-        else
-          [to, from]
-
-      if @getLink(end1.id, end2.id) is Nobody
-        link = new Link(@_linkIDManager.next(), directed, end1, end2, this)
-        @updater.updated(link)(Builtins.linkBuiltins...)
-        @updater.updated(link)(Builtins.linkExtras...) #@# See, this update nonsense is awful.
-        @_links.insert(link)
-        link
-      else
-        Nobody
 
     # (Number, String) => TurtleSet
     createOrderedTurtles: (n, breedName) -> #@# Clarity is a good thing
@@ -298,30 +277,30 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
     createDirectedLink: (from, to) ->
       @unbreededLinksAreDirected = true
       @updater.updated(this)("unbreededLinksAreDirected")
-      @createLink(true, from, to)
+      @_createLink(true, from, to)
 
     # (Turtle, TurtleSet) => LinkSet
     createDirectedLinks: (source, others) -> #@# Clarity
       @unbreededLinksAreDirected = true
       @updater.updated(this)("unbreededLinksAreDirected")
-      links = _(others.toArray()).map((turtle) => @createLink(true, source, turtle)).filter((other) -> other isnt Nobody).value()
+      links = _(others.toArray()).map((turtle) => @_createLink(true, source, turtle)).filter((other) -> other isnt Nobody).value()
       new LinkSet(links)
 
     # (Turtle, TurtleSet) => LinkSet
     createReverseDirectedLinks: (source, others) -> #@# Clarity
       @unbreededLinksAreDirected = true
       @updater.updated(this)("unbreededLinksAreDirected")
-      links = _(others.toArray()).map((turtle) => @createLink(true, turtle, source)).filter((other) -> other isnt Nobody).value()
+      links = _(others.toArray()).map((turtle) => @_createLink(true, turtle, source)).filter((other) -> other isnt Nobody).value()
       new LinkSet(links)
 
     # (Turtle, Turtle) => Link
     createUndirectedLink: (source, other) ->
-      @createLink(false, source, other)
+      @_createLink(false, source, other)
 
     #@# Should be able to call `map` directly, without juggling around with Lodash
     # (Turtle, TurtleSet) => LinkSet
     createUndirectedLinks: (source, others) -> #@# Clarity
-      links = _(others.toArray()).map((turtle) => @createLink(false, source, turtle)).filter((other) -> other isnt Nobody).value()
+      links = _(others.toArray()).map((turtle) => @_createLink(false, source, turtle)).filter((other) -> other isnt Nobody).value()
       new LinkSet(links)
 
     # (Number, Number) => Link
@@ -354,5 +333,26 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
         1
       else
         throw new Exception.NetLogoException("We have yet to implement link breed comparison")
+
+    ###
+    #@# We shouldn't be looking up links in the tree everytime we create a link; JVM NL uses 2 `LinkedHashMap[Turtle, Buffer[Link]]`s (to, from) --JAB (2/7/14)
+    #@# The return of `Nobody` followed by clients `filter`ing against it screams "flatMap!" --JAB (2/7/14)
+    ###
+    # (Boolean, Turtle, Turtle) => Link
+    _createLink: (directed, from, to) ->
+      [end1, end2] =
+      if from.id < to.id or directed
+        [from, to]
+      else
+        [to, from]
+
+      if @getLink(end1.id, end2.id) is Nobody
+        link = new Link(@_linkIDManager.next(), directed, end1, end2, this)
+        @updater.updated(link)(Builtins.linkBuiltins...)
+        @updater.updated(link)(Builtins.linkExtras...) #@# See, this update nonsense is awful.
+        @_links.insert(link)
+        link
+      else
+        Nobody
 
 )

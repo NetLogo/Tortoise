@@ -7,7 +7,7 @@ define(['integration/lodash', 'integration/random', 'integration/strictmath', 'e
   class LayoutManager
 
     # (World) => LayoutManager
-    constructor: (@world) ->
+    constructor: (@_world) ->
 
     #@# Okay, so... in what universe is it alright for a single function to be 120 lines long?
     # (TurtleSet, LinkSet, Number, Number, Number) => Unit
@@ -100,13 +100,13 @@ define(['integration/lodash', 'integration/random', 'integration/strictmath', 'e
       # we need to bump some node a small amount, in case all nodes
       # are stuck on a single line --FD
       if nodeCount > 1
-        perturbAmt = (@world.width() + @world.height()) / 1.0e10
+        perturbAmt = (@_world.width() + @_world.height()) / 1.0e10
         ax[0] += Random.nextDouble() * perturbAmt - perturbAmt / 2.0
         ay[0] += Random.nextDouble() * perturbAmt - perturbAmt / 2.0
 
       # try to choose something that's reasonable perceptually --
       # for temporal aliasing, don't want to jump too far on any given timestep. --FD
-      limit = (@world.width() + @world.height()) / 50.0
+      limit = (@_world.width() + @_world.height()) / 50.0
 
       for i in [0...nodeCount]
         turtle = agt[i]
@@ -126,15 +126,15 @@ define(['integration/lodash', 'integration/random', 'integration/strictmath', 'e
         newx = turtle.xcor() + fx
         newy = turtle.ycor() + fy
 
-        if newx > @world.maxPxcor
-          newx = @world.maxPxcor
-        else if newx < @world.minPxcor
-          newx = @world.minPxcor
+        if newx > @_world.maxPxcor
+          newx = @_world.maxPxcor
+        else if newx < @_world.minPxcor
+          newx = @_world.minPxcor
 
-        if newy > @world.maxPycor
-          newy = @world.maxPycor
-        else if newy < @world.minPycor
-          newy = @world.minPycor
+        if newy > @_world.maxPycor
+          newy = @_world.maxPycor
+        else if newy < @_world.minPycor
+          newy = @_world.minPycor
         turtle.setXY(newx, newy)
 
       return

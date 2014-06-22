@@ -3,19 +3,12 @@
 define(['integration/strictmath', 'engine/exception'], (StrictMath, Exception) -> {
 
   # (Number) => Number
-  squash: (x) ->
-    if StrictMath.abs(x) < 3.2e-15
-      0
-    else
-      x
-
-  # (Number) => Number
   sin: (degrees) -> #@# Simplifify x4
-    @squash(StrictMath.sin(StrictMath.toRadians(degrees)))
+    @_squash(StrictMath.sin(StrictMath.toRadians(degrees)))
 
   # (Number) => Number
   cos: (degrees) ->
-    @squash(StrictMath.cos(StrictMath.toRadians(degrees)))
+    @_squash(StrictMath.cos(StrictMath.toRadians(degrees)))
 
   # (Number) => Number
   unsquashedSin: (degrees) ->
@@ -35,5 +28,12 @@ define(['integration/strictmath', 'engine/exception'], (StrictMath, Exception) -
       if d1 > 0 then 90 else 270
     else
       (StrictMath.toDegrees(StrictMath.atan2(d1, d2)) + 360) % 360 #@# Lame style
+
+  # (Number) => Number
+  _squash: (x) ->
+    if StrictMath.abs(x) < 3.2e-15
+      0
+    else
+      x
 
 })

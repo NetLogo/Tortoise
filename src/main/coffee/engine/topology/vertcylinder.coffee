@@ -7,19 +7,9 @@ define(['integration/strictmath', 'engine/exception', 'engine/topology/topology'
     _wrapInX: true  # Boolean
     _wrapInY: false # Boolean
 
-    # (Number, Number) => Number
-    shortestX: (x1, x2) -> #@# Some lameness
-      if StrictMath.abs(x1 - x2) > (1 + @maxPxcor - @minPxcor) / 2
-        (@width - StrictMath.abs(x1 - x2)) * (if x2 > x1 then -1 else 1)
-      else
-        Math.abs(x1 - x2) * (if x1 > x2 then -1 else 1)
-
-    # (Number, Number) => Number
-    shortestY: (y1, y2) -> Math.abs(y1 - y2) * (if y1 > y2 then -1 else 1)
-
     # (Number) => Number
     wrapX: (pos) ->
-      @wrap(pos, @minPxcor - 0.5, @maxPxcor + 0.5)
+      @_wrap(pos, @minPxcor - 0.5, @maxPxcor + 0.5)
 
     # (Number) => Number
     wrapY: (pos) ->
@@ -31,62 +21,62 @@ define(['integration/strictmath', 'engine/exception', 'engine/topology/topology'
         throw new Exception.TopologyInterrupt ("Cannot move turtle beyond the world's edge.")
 
     # (Number, Number) => Patch
-    getPatchNorth: (pxcor, pycor) ->
-      (pycor isnt @maxPycor) and @getPatchAt(pxcor, pycor + 1) #@# This booleanism is really weird.  It's present across topologies.
+    _getPatchNorth: (pxcor, pycor) ->
+      (pycor isnt @maxPycor) and @_getPatchAt(pxcor, pycor + 1) #@# This booleanism is really weird.  It's present across topologies.
 
     # (Number, Number) => Patch
-    getPatchSouth: (pxcor, pycor) ->
-      (pycor isnt @minPycor) and @getPatchAt(pxcor, pycor - 1)
+    _getPatchSouth: (pxcor, pycor) ->
+      (pycor isnt @minPycor) and @_getPatchAt(pxcor, pycor - 1)
 
     # (Number, Number) => Patch
-    getPatchEast: (pxcor, pycor) ->
+    _getPatchEast: (pxcor, pycor) ->
       if pxcor is @maxPxcor
-        @getPatchAt(@minPxcor, pycor)
+        @_getPatchAt(@minPxcor, pycor)
       else
-        @getPatchAt(pxcor + 1, pycor)
+        @_getPatchAt(pxcor + 1, pycor)
 
     # (Number, Number) => Patch
-    getPatchWest: (pxcor, pycor) ->
+    _getPatchWest: (pxcor, pycor) ->
       if pxcor is @minPxcor
-        @getPatchAt(@maxPxcor, pycor)
+        @_getPatchAt(@maxPxcor, pycor)
       else
-        @getPatchAt(pxcor - 1, pycor)
+        @_getPatchAt(pxcor - 1, pycor)
 
     # (Number, Number) => Patch
-    getPatchNorthWest: (pxcor, pycor) ->
+    _getPatchNorthWest: (pxcor, pycor) ->
       if pycor is @maxPycor
         false
       else if pxcor is @minPxcor
-        @getPatchAt(@maxPxcor, pycor + 1)
+        @_getPatchAt(@maxPxcor, pycor + 1)
       else
-        @getPatchAt(pxcor - 1, pycor + 1)
+        @_getPatchAt(pxcor - 1, pycor + 1)
 
     # (Number, Number) => Patch
-    getPatchSouthWest: (pxcor, pycor) ->
+    _getPatchSouthWest: (pxcor, pycor) ->
       if pycor is @minPycor
         false
       else if pxcor is @minPxcor
-        @getPatchAt(@maxPxcor, pycor - 1)
+        @_getPatchAt(@maxPxcor, pycor - 1)
       else
-        @getPatchAt(pxcor - 1, pycor - 1)
+        @_getPatchAt(pxcor - 1, pycor - 1)
 
     # (Number, Number) => Patch
-    getPatchSouthEast: (pxcor, pycor) ->
+    _getPatchSouthEast: (pxcor, pycor) ->
       if pycor is @minPycor
         false
       else if pxcor is @maxPxcor
-        @getPatchAt(@minPxcor, pycor - 1)
+        @_getPatchAt(@minPxcor, pycor - 1)
       else
-        @getPatchAt(pxcor + 1, pycor - 1)
+        @_getPatchAt(pxcor + 1, pycor - 1)
 
     # (Number, Number) => Patch
-    getPatchNorthEast: (pxcor, pycor) ->
+    _getPatchNorthEast: (pxcor, pycor) ->
       if pycor is @maxPycor
         false
       else if pxcor is @maxPxcor
-        @getPatchAt(@minPxcor, pycor + 1)
+        @_getPatchAt(@minPxcor, pycor + 1)
       else
-        @getPatchAt(pxcor + 1, pycor + 1)
+        @_getPatchAt(pxcor + 1, pycor + 1)
 
     # (String, Number) => Unit
     diffuse: (varName, coefficient) -> #@# Holy guacamole!
@@ -95,7 +85,7 @@ define(['integration/strictmath', 'engine/exception', 'engine/topology/topology'
       scratch =
         for x in [0...xx]
           for y in [0...yy]
-            @getPatchAt(x + @minPxcor, y + @minPycor).getVariable(varName)
+            @_getPatchAt(x + @minPxcor, y + @minPycor).getVariable(varName)
       scratch2 =
         for [0...xx]
           for [0...yy]
@@ -129,8 +119,20 @@ define(['integration/strictmath', 'engine/exception', 'engine/topology/topology'
             scratch2[(x + 1) % xx][(y - 1) % yy] += diffuseVal
       for y in [0...yy]
         for x in [0...xx]
-          @getPatchAt(x + @minPxcor, y + @minPycor).setVariable(varName, scratch2[x][y])
+          @_getPatchAt(x + @minPxcor, y + @minPycor).setVariable(varName, scratch2[x][y])
 
       return
+
+
+    # (Number, Number) => Number
+    _shortestX: (x1, x2) -> #@# Some lameness
+      if StrictMath.abs(x1 - x2) > (1 + @maxPxcor - @minPxcor) / 2
+        (@width - StrictMath.abs(x1 - x2)) * (if x2 > x1 then -1 else 1)
+      else
+        Math.abs(x1 - x2) * (if x1 > x2 then -1 else 1)
+
+    # (Number, Number) => Number
+    _shortestY: (y1, y2) ->
+      Math.abs(y1 - y2) * (if y1 > y2 then -1 else 1)
 
 )

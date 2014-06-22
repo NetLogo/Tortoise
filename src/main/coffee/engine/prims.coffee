@@ -346,7 +346,7 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
       if Type(xs).isArray()
         _(xs).some((y) => @equality(x, y))
       else if Type(x).isString()
-        xs.indexOf(x) != -1
+        xs.indexOf(x) isnt -1
       else # agentset
         xs.exists((a) -> x is a)
 

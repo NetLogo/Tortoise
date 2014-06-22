@@ -17,7 +17,7 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
 
     #@# Should guard against improperly-named breeds, including empty-string breed names
     # (World, Number, Number, Number, Number, Number, Breed, String, Number, Boolean, Number, PenManager) => Turtle
-    constructor: (@world, @id, @color = 0, @heading = 0, @_xcor = 0, @_ycor = 0, breed = @world.breedManager.turtles(), @label = "", @labelcolor = 9.9, @hidden = false, @size = 1.0, @penManager = new PenManager(@world.updater.updated(this))) ->
+    constructor: (@world, @id, @_color = 0, @_heading = 0, @_xcor = 0, @_ycor = 0, breed = @world.breedManager.turtles(), @_label = "", @_labelcolor = 9.9, @_hidden = false, @_size = 1.0, @penManager = new PenManager(@world.updater.updated(this))) ->
       varNames     = @world.turtlesOwnNames.concat(breed.varNames)
       @_varManager = @_genVarManager(varNames)
 
@@ -39,25 +39,25 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
       @_ycor
 
     # (Number) => Unit
-    setXcor: (newX) ->
+    _setXcor: (newX) ->
       originPatch = @getPatchHere()
       @_xcor = @world.topology().wrapX(newX)
       @world.updater.updated(this)("xcor")
       if originPatch isnt @getPatchHere()
         originPatch.leave(this)
         @getPatchHere().arrive(this)
-      @refreshLinks()
+      @_refreshLinks()
       return
 
     # (Number) => Unit
-    setYcor: (newY) ->
+    _setYcor: (newY) ->
       originPatch = @getPatchHere()
       @_ycor = @world.topology().wrapY(newY)
       @world.updater.updated(this)("ycor")
       if originPatch isnt @getPatchHere()
         originPatch.leave(this)
         @getPatchHere().arrive(this)
-      @refreshLinks()
+      @_refreshLinks()
       return
 
     # (Link) => Unit
@@ -132,19 +132,6 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
           (link) => (not link.directed and link.end1 is this) or (not link.directed and link.end2 is this)
       @world.links().filter(filterFunc)
 
-    # () => Unit
-    refreshLinks: ->
-      if not _(@_links).isEmpty()
-        linkTypes = [[true, true], [true, false], [false, false]]
-        _(linkTypes).map(
-          (typePair) =>
-            [directed, isSource] = typePair
-            @connectedLinks(directed, isSource).toArray()
-        ).flatten().forEach(
-          (link) -> link.updateEndRelatedVars(); return
-        )
-      return
-
     # (Boolean, Boolean) => TurtleSet
     linkNeighbors: (isDirected, isSource) ->
       reductionFunc =
@@ -197,7 +184,7 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
 
     # (Number, Number) => Patch
     patchRightAndAhead: (angle, distance) ->
-      heading = @_normalizeHeading(@heading + angle)
+      heading = @_normalizeHeading(@_heading + angle)
       try
         newX = @world.topology().wrapX(@xcor() + distance * Trig.sin(heading))
         newY = @world.topology().wrapY(@ycor() + distance * Trig.cos(heading))
@@ -228,22 +215,22 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
     # () => Boolean
     jump: (distance) ->
       if @canMove(distance)
-        @setXcor(@xcor() + distance * Trig.sin(@heading))
-        @setYcor(@ycor() + distance * Trig.cos(@heading))
+        @_setXcor(@xcor() + distance * Trig.sin(@_heading))
+        @_setYcor(@ycor() + distance * Trig.cos(@_heading))
         return true
       return false #@# Orly?
 
     # () => Number
     dx: ->
-      Trig.sin(@heading)
+      Trig.sin(@_heading)
 
     # () => Number
     dy: ->
-      Trig.cos(@heading)
+      Trig.cos(@_heading)
 
     # (Number) => Unit
     right: (angle) ->
-      newHeading = @heading + angle
+      newHeading = @_heading + angle
       @_setHeading(@_normalizeHeading(newHeading))
       return
 
@@ -252,11 +239,11 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
       origXcor = @xcor()
       origYcor = @ycor()
       try
-        @setXcor(x)
-        @setYcor(y)
+        @_setXcor(x)
+        @_setYcor(y)
       catch error
-        @setXcor(origXcor)
-        @setYcor(origYcor)
+        @_setXcor(origXcor)
+        @_setYcor(origYcor)
         if error instanceof Exception.TopologyInterrupt
           throw new Exception.TopologyInterrupt("The point [ #{x} , #{y} ] is outside of the boundaries of the world and wrapping is not permitted in one or both directions.")
         else
@@ -277,7 +264,7 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
       @_breed.remove(this)
       if @id isnt -1
         @world.removeTurtle(@id)
-        @seppuku()
+        @_seppuku()
         @world.links().forEach((link) =>
           if link.end1.id is @id or link.end2.id is @id
             try
@@ -336,7 +323,7 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
 
     # () => Turtle
     _makeTurtleCopy: (breed) ->
-      turtleGenFunc = (id) => new Turtle(@world, id, @color, @heading, @xcor(), @ycor(), breed, @label, @labelcolor, @hidden, @size, @penManager.clone()) #@# Sounds like we ought have some cloning system, of which this function is a first step
+      turtleGenFunc = (id) => new Turtle(@world, id, @_color, @_heading, @xcor(), @ycor(), breed, @_label, @_labelcolor, @_hidden, @_size, @penManager.clone()) #@# Sounds like we ought have some cloning system, of which this function is a first step
       turtle        = @world.createTurtle(turtleGenFunc)
       _(@world.turtlesOwnNames).forEach((varName) =>
         turtle.setVariable(varName, @getVariable(varName))
@@ -367,11 +354,6 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
       else
         Comparator.NOT_EQUALS
 
-    # () => Unit
-    seppuku: ->
-      @world.updater.update("turtles", @id, { WHO: -1 }) #@# If you're awful and you know it, clap your hands!
-      return
-
     # () => String
     toString: ->
       "(#{@_breed.singular} #{@id})"
@@ -383,23 +365,41 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
       else
         ((heading % 360) + 360) % 360
 
+    # () => Unit
+    _refreshLinks: ->
+      if not _(@_links).isEmpty()
+        linkTypes = [[true, true], [true, false], [false, false]]
+        _(linkTypes).map(
+          (typePair) =>
+            [directed, isSource] = typePair
+            @connectedLinks(directed, isSource).toArray()
+        ).flatten().forEach(
+          (link) -> link.updateEndRelatedVars(); return
+        )
+      return
+
+    # () => Unit
+    _seppuku: ->
+      @world.updater.update("turtles", @id, { WHO: -1 }) #@# If you're awful and you know it, clap your hands!
+      return
+
     # Array[String] => VariableManager
     _genVarManager: (extraVarNames) ->
 
       varBundles = [
         { name: 'breed',       get: (=> @world.turtlesOfBreed(@_breed.name)), set: ((x) => @_setBreed(x))             },
-        { name: 'color',       get: (=> @color),                              set: ((x) => @_setColor(x))             },
-        { name: 'heading',     get: (=> @heading),                            set: ((x) => @_setHeading(x))           },
-        { name: 'hidden?',     get: (=> @hidden),                             set: ((x) => @_setIsHidden(x))          },
-        { name: 'label',       get: (=> @label),                              set: ((x) => @_setLabel(x))             },
-        { name: 'label-color', get: (=> @labelcolor),                         set: ((x) => @_setLabelColor(x))        },
+        { name: 'color',       get: (=> @_color),                             set: ((x) => @_setColor(x))             },
+        { name: 'heading',     get: (=> @_heading),                           set: ((x) => @_setHeading(x))           },
+        { name: 'hidden?',     get: (=> @_hidden),                            set: ((x) => @_setIsHidden(x))          },
+        { name: 'label',       get: (=> @_label),                             set: ((x) => @_setLabel(x))             },
+        { name: 'label-color', get: (=> @_labelcolor),                        set: ((x) => @_setLabelColor(x))        },
         { name: 'pen-mode',    get: (=> @penManager.getMode().toString()),    set: ((x) => @penManager.setPenMode(x)) },
         { name: 'pen-size',    get: (=> @penManager.getSize()),               set: ((x) => @penManager.setSize(x))    },
-        { name: 'shape',       get: (=> @shape),                              set: ((x) => @_setShape(x))             },
-        { name: 'size',        get: (=> @size),                               set: ((x) => @_setSize(x))              },
+        { name: 'shape',       get: (=> @_shape),                             set: ((x) => @_setShape(x))             },
+        { name: 'size',        get: (=> @_size),                              set: ((x) => @_setSize(x))              },
         { name: 'who',         get: (=> @id),                                 set: (->)                               },
-        { name: 'xcor',        get: (=> @xcor()),                             set: ((x) => @setXcor(x))               },
-        { name: 'ycor',        get: (=> @ycor()),                             set: ((x) => @setYcor(x))               }
+        { name: 'xcor',        get: (=> @xcor()),                             set: ((x) => @_setXcor(x))              },
+        { name: 'ycor',        get: (=> @ycor()),                             set: ((x) => @_setYcor(x))              }
       ]
 
       new VariableManager(extraVarNames, varBundles)
@@ -457,43 +457,43 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
 
     # (Number) => Unit
     _setColor: (color) ->
-      @color = ColorModel.wrapColor(color)
+      @_color = ColorModel.wrapColor(color)
       @_genVarUpdate("color")
       return
 
     # (Number) => Unit
     _setHeading: (heading) ->
-      @heading = @_normalizeHeading(heading)
+      @_heading = @_normalizeHeading(heading)
       @_genVarUpdate("heading")
       return
 
     # (Boolean) => Unit
     _setIsHidden: (isHidden) ->
-      @hidden = isHidden
+      @_hidden = isHidden
       @_genVarUpdate("hidden?")
       return
 
     # (String) => Unit
     _setLabel: (label) ->
-      @label = label
+      @_label = label
       @_genVarUpdate("label")
       return
 
     # (Number) => Unit
     _setLabelColor: (color) ->
-      @labelcolor = ColorModel.wrapColor(color)
+      @_labelcolor = ColorModel.wrapColor(color)
       @_genVarUpdate("label-color")
       return
 
     # (String) => Unit
     _setShape: (shape) ->
-      @shape = shape.toLowerCase()
+      @_shape = shape.toLowerCase()
       @_genVarUpdate("shape")
       return
 
     # (Number) => Unit
     _setSize: (size) ->
-      @size = size
+      @_size = size
       @_genVarUpdate("size")
       return
 
