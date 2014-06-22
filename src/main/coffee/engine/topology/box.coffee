@@ -4,12 +4,19 @@ define(['engine/exception', 'engine/topology/topology'], (Exception, Topology) -
 
   class Box extends Topology
 
-    _wrapInX: false
-    _wrapInY: false
+    _wrapInX: false # Boolean
+    _wrapInY: false # Boolean
 
     #@# Weird x2
-    shortestX: (x1, x2) -> Math.abs(x1 - x2) * (if x1 > x2 then -1 else 1)
-    shortestY: (y1, y2) -> Math.abs(y1 - y2) * (if y1 > y2 then -1 else 1)
+    # (Number, Number) => Number
+    shortestX: (x1, x2) ->
+      Math.abs(x1 - x2) * (if x1 > x2 then -1 else 1)
+
+    # (Number, Number) => Number
+    shortestY: (y1, y2) ->
+      Math.abs(y1 - y2) * (if y1 > y2 then -1 else 1)
+
+    # (Number) => Number
     wrapX: (pos) ->
       minX = @minPxcor - 0.5
       maxX = @maxPxcor + 0.5
@@ -17,6 +24,8 @@ define(['engine/exception', 'engine/topology/topology'], (Exception, Topology) -
         pos
       else # Amusingly, Headless throws a similarly inconsistent and grammatically incorrect error message --JAB (4/29/14)
         throw new Exception.TopologyInterrupt ("Cannot move turtle beyond the worlds edge.")
+
+    # (Number) => Number
     wrapY: (pos) ->
       minY = @minPycor - 0.5
       maxY = @maxPycor + 0.5
@@ -25,16 +34,19 @@ define(['engine/exception', 'engine/topology/topology'], (Exception, Topology) -
       else # Amusingly, Headless throws a similarly inconsistent and grammatically incorrect error message --JAB (4/29/14)
         throw new Exception.TopologyInterrupt ("Cannot move turtle beyond the worlds edge.")
 
+    # (Number, Number) => Patch
     getPatchNorth: (pxcor, pycor) -> (pycor isnt @maxPycor) and @getPatchAt(pxcor, pycor + 1)
     getPatchSouth: (pxcor, pycor) -> (pycor isnt @minPycor) and @getPatchAt(pxcor, pycor - 1)
-    getPatchEast: (pxcor, pycor) -> (pxcor isnt @maxPxcor) and @getPatchAt(pxcor + 1, pycor)
-    getPatchWest: (pxcor, pycor) -> (pxcor isnt @minPxcor) and @getPatchAt(pxcor - 1, pycor)
+    getPatchEast:  (pxcor, pycor) -> (pxcor isnt @maxPxcor) and @getPatchAt(pxcor + 1, pycor)
+    getPatchWest:  (pxcor, pycor) -> (pxcor isnt @minPxcor) and @getPatchAt(pxcor - 1, pycor)
 
+    # (Number, Number) => Patch
     getPatchNorthWest: (pxcor, pycor) -> (pycor isnt @maxPycor) and (pxcor isnt @minPxcor) and @getPatchAt(pxcor - 1, pycor + 1)
     getPatchSouthWest: (pxcor, pycor) -> (pycor isnt @minPycor) and (pxcor isnt @minPxcor) and @getPatchAt(pxcor - 1, pycor - 1)
     getPatchSouthEast: (pxcor, pycor) -> (pycor isnt @minPycor) and (pxcor isnt @maxPxcor) and @getPatchAt(pxcor + 1, pycor - 1)
     getPatchNorthEast: (pxcor, pycor) -> (pycor isnt @maxPycor) and (pxcor isnt @maxPxcor) and @getPatchAt(pxcor + 1, pycor + 1)
 
+    # (String, Number) => Unit
     diffuse: (varName, coefficient) -> #@# Guacy moley
       yy = @height
       xx = @width
@@ -113,5 +125,7 @@ define(['engine/exception', 'engine/topology/topology'], (Exception, Topology) -
       for y in [0...yy]
         for x in [0...xx]
           @getPatchAt(x + @minPxcor, y + @minPycor).setVariable(varName, scratch2[x][y])
+
+      return
 
 )

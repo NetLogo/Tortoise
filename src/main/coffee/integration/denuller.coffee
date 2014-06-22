@@ -7,6 +7,7 @@ see http://bugs.java.com/bugdatabase/view_bug.do?bug_id=8038119
 ###
 define(['integration/lodash'], (_) ->
 
+  # [T] @ (T) => T
   denull =
     (x) ->
       if _(x).isArray()

@@ -10,6 +10,7 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
     _breed:      undefined # Breed
     _varManager: undefined # VariableManager
 
+    # () => Unit
     xcor: -> #@# WHAT?! x2
     ycor: ->
 
@@ -36,18 +37,24 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
       @_varManager[varName] = value
       return
 
+    # () => Nothing
     die: ->
       @_breed.remove(this)
       if @id isnt -1
-        @end1._removeLink(this)
-        @end2._removeLink(this)
+        @end1.removeLink(this)
+        @end2.removeLink(this)
         @world.removeLink(@id)
         @seppuku()
         @id = -1
       throw new Exception.DeathInterrupt("Call only from inside an askAgent block")
 
-    bothEnds: -> new TurtleSet([@end1, @end2])
-    otherEnd: -> if @end1 is @world.selfManager.myself() then @end2 else @end1
+    # () => TurtleSet
+    bothEnds: ->
+      new TurtleSet([@end1, @end2])
+
+    # () => Turtle
+    otherEnd: ->
+      if @end1 is @world.selfManager.myself() then @end2 else @end1
 
     # () => Unit
     updateEndRelatedVars: ->
@@ -74,6 +81,7 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
     getSize: ->
       @world.topology().distanceXY(@end1.xcor(), @end1.ycor(), @end2.xcor(), @end2.ycor())
 
+    # (Any) => { toInt: Number }
     compare: (x) -> #@# Unify with `Links.compare`
       switch @world.linkCompare(this, x)
         when -1 then Comparator.LESS_THAN
@@ -81,8 +89,10 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
         when  1 then Comparator.GREATER_THAN
         else throw new Exception.NetLogoException("Comparison should only yield an integer within the interval [-1,1]")
 
+    # () => Unit
     seppuku: ->
       @world.updater.update("links", @id, { WHO: -1 }) #@# If you're awful and you know it, clap your hands!
+      return
 
     # Array[String] => VariableManager
     _genVarManager: (extraVarNames) ->

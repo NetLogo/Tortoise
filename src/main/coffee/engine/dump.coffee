@@ -3,6 +3,7 @@
 define(['integration/lodash'], (_) ->
 
   # Needs a name here since it's recursive --JAB (4/16/14)
+  # (Any) => String
   Dump =
     (x) ->
       if _(x).isArray()

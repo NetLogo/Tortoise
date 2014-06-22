@@ -5,7 +5,7 @@ define(['engine/patch', 'engine/turtle', 'engine/variablemanager', 'integration/
 
   class Observer
 
-    id: 0
+    id: 0 # Number
 
     _varManager: undefined # VariableManager
 

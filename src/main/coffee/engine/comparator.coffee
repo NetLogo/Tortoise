@@ -8,6 +8,7 @@ define(-> {
   GREATER_THAN: { toInt: 1 }  #@# Should inherit from `NOT_EQUALS`
   LESS_THAN:    { toInt: -1 } #@# Should inherit from `NOT_EQUALS`
 
+  # (Number, Number) => { toInt: Number }
   numericCompare: (x, y) ->
     if x < y
       @LESS_THAN

@@ -2,19 +2,23 @@
 
 define(->
   class AgentModel
-    constructor: ->
-      @turtles = {}
-      @patches = {}
-      @links = {}
-      @observer = {}
-      @world = {}
 
+    # () => AgentModel
+    constructor: ->
+      @turtles  = {}
+      @patches  = {}
+      @links    = {}
+      @observer = {}
+      @world    = {}
+
+    # () => Unit
     updates: (modelUpdates) ->
       for u in modelUpdates
         @update(u)
       return
 
-    update: (modelUpdate) -> # boolean #@# Lousy comment
+    # (Updater.Update) => Boolean
+    update: (modelUpdate) -> #@# Lousy comment
       anyUpdates = false
       # the three 'when varUpdates' checks below only seem to be
       # necessary on Nashorn, which apparently has trouble iterating
@@ -50,8 +54,10 @@ define(->
         mergeObjectInto(modelUpdate.world[0], @world)
       anyUpdates
 
+    # (Object, Object) => Unit
     mergeObjectInto = (updatedObject, targetObject) ->
       for variable, value of updatedObject
         targetObject[variable.toLowerCase()] = value
       return
+
 )

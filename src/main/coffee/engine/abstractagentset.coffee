@@ -5,12 +5,11 @@
 define(['integration/random', 'integration/seq', 'engine/nobody', 'engine/shufflerator']
     ,  ( Random,               Seq,               Nobody,          Shufflerator) ->
 
-  # Type Parameter: T <: Agent - The type of agents within `_items`
   class AbstractAgentSet extends Seq
 
     @_askAgent: undefined # [U] @ (() => U) => (Agent) => U
 
-    # (Array[T]) => AbstractAgentSet[T]
+    # [T <: Agent] @ (Array[T]) => AbstractAgentSet[T]
     constructor: (agents) ->
       super(agents)
       @_askAgent =
@@ -50,7 +49,7 @@ define(['integration/random', 'integration/seq', 'engine/nobody', 'engine/shuffl
       else
         @toArray().sort((x, y) -> x.compare(y).toInt)
 
-    # (Array[U]) => AbstractAgentSet[U]
+    # (Array[T]) => AbstractAgentSet[T]
     copyWithNewAgents: (agents) ->
       @_generateFrom(agents, this)
 

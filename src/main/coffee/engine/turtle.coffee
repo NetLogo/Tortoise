@@ -16,6 +16,7 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
     _varManager: undefined # VariableManager
 
     #@# Should guard against improperly-named breeds, including empty-string breed names
+    # (World, Number, Number, Number, Number, Number, Breed, String, Number, Boolean, Number, PenManager) => Turtle
     constructor: (@world, @id, @color = 0, @heading = 0, @_xcor = 0, @_ycor = 0, breed = @world.breedManager.turtles(), @label = "", @labelcolor = 9.9, @hidden = false, @size = 1.0, @penManager = new PenManager(@world.updater.updated(this))) ->
       varNames     = @world.turtlesOwnNames.concat(breed.varNames)
       @_varManager = @_genVarManager(varNames)
@@ -29,7 +30,15 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
     getBreedName: ->
       @_breed.name
 
-    xcor: -> @_xcor
+    # () => Number
+    xcor: ->
+      @_xcor
+
+    # () => Number
+    ycor: ->
+      @_ycor
+
+    # (Number) => Unit
     setXcor: (newX) ->
       originPatch = @getPatchHere()
       @_xcor = @world.topology().wrapX(newX)
@@ -38,7 +47,9 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
         originPatch.leave(this)
         @getPatchHere().arrive(this)
       @refreshLinks()
-    ycor: -> @_ycor
+      return
+
+    # (Number) => Unit
     setYcor: (newY) ->
       originPatch = @getPatchHere()
       @_ycor = @world.topology().wrapY(newY)
@@ -47,24 +58,51 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
         originPatch.leave(this)
         @getPatchHere().arrive(this)
       @refreshLinks()
-    toString: -> "(#{@_breed.singular} #{@id})"
+      return
 
-    canMove: (distance) -> @patchAhead(distance) isnt Nobody
-    distanceXY: (x, y) -> @world.topology().distanceXY(@xcor(), @ycor(), x, y)
-    distance: (agent) -> @world.topology().distance(@xcor(), @ycor(), agent)
-    towardsXY: (x, y) -> @world.topology().towards(@xcor(), @ycor(), x, y)
-    getCoords: -> [@xcor(), @ycor()]
+    # (Number) => Boolean
+    canMove: (distance) ->
+      @patchAhead(distance) isnt Nobody
+
+    # (Turtle|Patch) => Number
+    distance: (agent) ->
+      @world.topology().distance(@xcor(), @ycor(), agent)
+
+    # (Number, Number) => Number
+    distanceXY: (x, y) ->
+      @world.topology().distanceXY(@xcor(), @ycor(), x, y)
+
+    # () => (Number, Number)
+    getCoords: ->
+      [@xcor(), @ycor()]
+
+    # (Turtle|Patch) => Number
     towards: (agent) -> #@# Unify, man!
       [x, y] = agent.getCoords()
       @world.topology().towards(@xcor(), @ycor(), x, y)
+
+    # (Number, Number) => Number
+    towardsXY: (x, y) ->
+      @world.topology().towards(@xcor(), @ycor(), x, y)
+
+    # (Number, Number) => Unit
     faceXY: (x, y) ->
       if x isnt @xcor() or y isnt @ycor()
         @_setHeading(@world.topology().towards(@xcor(), @ycor(), x, y))
+      return
+
+    # (Turtle|Patch) => Unit
     face: (agent) ->
       [x, y] = agent.getCoords()
       @faceXY(x, y)
+      return
+
+    # [T] @ (AbstractAgentSet[T], Number) => AbstractAgentSet[T]
     inRadius: (agents, radius) ->
       @world.topology().inRadius(this, @xcor(), @ycor(), agents, radius)
+
+    #@# Boy, this code sure is familiar... (`Patch.patchAt`)
+    # (Number, Number) => Patch
     patchAt: (dx, dy) -> #@# Make not silly
       try
         x = @world.topology().wrapX(@xcor() + dx)
@@ -75,8 +113,12 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
           Nobody
         else
           throw error
+
+    # (Number, Number) => TurtleSet
     turtlesAt: (dx, dy) ->
       @getPatchHere().turtlesAt(dx, dy)
+
+    # (Boolean, Boolean) => LinkSet
     connectedLinks: (isDirected, isSource) ->
       filterFunc =
         if isDirected #@# Conditional is unnecessary, really
@@ -84,6 +126,8 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
         else
           (link) => (not link.directed and link.end1 is this) or (not link.directed and link.end2 is this)
       @world.links().filter(filterFunc)
+
+    # () => Unit
     refreshLinks: ->
       if not _(@_links).isEmpty()
         linkTypes = [[true, true], [true, false], [false, false]]
@@ -95,6 +139,8 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
           (link) -> link.updateEndRelatedVars(); return
         )
       return
+
+    # (Boolean, Boolean) => TurtleSet
     linkNeighbors: (isDirected, isSource) ->
       reductionFunc =
         if isDirected
@@ -115,8 +161,11 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
       turtles = world.links().toArray().reduce(reductionFunc, [])
       new TurtleSet(turtles)
 
+    # (Boolean, Boolean, Turtle) => Boolean
     isLinkNeighbor: (directed, isSource, other) -> #@# Other WHAT?
       @linkNeighbors(directed, isSource).filter((neighbor) -> neighbor is other).nonEmpty() #@# `_(derp).some(f)` (Lodash)
+
+    # (Boolean, Boolean, Turtle) => Link
     findLinkViaNeighbor: (isDirected, isSource, other) -> #@# Other WHAT?
       findFunc =
         if isDirected
@@ -133,7 +182,13 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
       else
         Nobody
 
-    otherEnd: -> if this is @world.selfManager.myself().end1 then @world.selfManager.myself().end2 else @world.selfManager.myself().end1
+
+    # () => Turtle
+    otherEnd: ->
+      if this is @world.selfManager.myself().end1
+        @world.selfManager.myself().end2
+      else
+        @world.selfManager.myself().end1
 
     # (Number, Number) => Patch
     patchRightAndAhead: (angle, distance) ->
@@ -145,10 +200,15 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
       catch error
         if error instanceof Exception.TopologyInterrupt then Nobody else throw error
 
+    # (Number, Number) => Patch
     patchLeftAndAhead: (angle, distance) ->
       @patchRightAndAhead(-angle, distance)
+
+    # (Number) => Patch
     patchAhead: (distance) ->
       @patchRightAndAhead(0, distance)
+
+    # (Number) => Unit
     fd: (distance) ->
       if distance > 0
         while distance >= 1 and @jump(1) #@# Possible point of improvement
@@ -159,20 +219,30 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
           distance += 1
         @jump(distance)
       return
+
+    # () => Boolean
     jump: (distance) ->
       if @canMove(distance)
         @setXcor(@xcor() + distance * Trig.sin(@heading))
         @setYcor(@ycor() + distance * Trig.cos(@heading))
         return true
       return false #@# Orly?
+
+    # () => Number
     dx: ->
       Trig.sin(@heading)
+
+    # () => Number
     dy: ->
       Trig.cos(@heading)
+
+    # (Number) => Unit
     right: (angle) ->
       newHeading = @heading + angle
       @_setHeading(@_normalizeHeading(newHeading))
       return
+
+    # (Number, Number) => Unit
     setXY: (x, y) ->
       origXcor = @xcor()
       origYcor = @ycor()
@@ -187,11 +257,17 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
         else
           throw error
       return
+
+    # (Boolean) => Unit
     hideTurtle: (flag) -> #@# Varname
       @_setIsHidden(flag)
       return
+
+    # (String) => Boolean
     isBreed: (breedName) ->
       @_breed.name.toUpperCase() is breedName.toUpperCase()
+
+    # () => Nothing
     die: ->
       @_breed.remove(this)
       if @id isnt -1
@@ -231,10 +307,23 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
       @getPatchHere().setVariable(varName, value)
       return
 
-    getNeighbors: -> @getPatchHere().getNeighbors()
-    getNeighbors4: -> @getPatchHere().getNeighbors4()
-    turtlesHere: -> @getPatchHere().turtlesHere()
-    breedHere: (breedName) -> @getPatchHere().breedHere(breedName)
+    # () => PatchSet
+    getNeighbors: ->
+      @getPatchHere().getNeighbors()
+
+    # () => PatchSet
+    getNeighbors4: ->
+      @getPatchHere().getNeighbors4()
+
+    # () => TurtleSet
+    turtlesHere: ->
+      @getPatchHere().turtlesHere()
+
+    # (String) => TurtleSet
+    breedHere: (breedName) ->
+      @getPatchHere().breedHere(breedName)
+
+    # (Number, String) => TurtleSet
     hatch: (n, breedName) ->
       breed      = if breedName? and not _(breedName).isEmpty() then @world.breedManager.get(breedName) else @_breed #@# Why is this even a thing?
       newTurtles = _(0).range(n).map(=> @_makeTurtleCopy(breed)).value()
@@ -250,23 +339,37 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
       )
       turtle
 
+    # (Turtle|Patch) => Unit
     moveTo: (agent) ->
       [x, y] = agent.getCoords()
       @setXY(x, y)
+      return
+
+    # () => Unit
     watchme: ->
       @world.observer.watch(this)
+      return
 
-    _removeLink: (link) ->
+    # (Link) => Unit
+    removeLink: (link) ->
       @_links.splice(@_links.indexOf(link)) #@# Surely there's a more-coherent way to write this
+      return
 
+    # (Any) => Comparator
     compare: (x) ->
       if x instanceof Turtle
         Comparator.numericCompare(@id, x.id)
       else
         Comparator.NOT_EQUALS
 
+    # () => Unit
     seppuku: ->
       @world.updater.update("turtles", @id, { WHO: -1 }) #@# If you're awful and you know it, clap your hands!
+      return
+
+    # () => String
+    toString: ->
+      "(#{@_breed.singular} #{@id})"
 
     # (Number) => Number
     _normalizeHeading: (heading) ->

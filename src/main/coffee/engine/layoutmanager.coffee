@@ -6,9 +6,11 @@ define(['integration/lodash', 'integration/random', 'integration/strictmath', 'e
 
   class LayoutManager
 
+    # (World) => LayoutManager
     constructor: (@world) ->
 
     #@# Okay, so... in what universe is it alright for a single function to be 120 lines long?
+    # (TurtleSet, LinkSet, Number, Number, Number) => Unit
     layoutSpring: (nodeSet, linkSet, spr, len, rep) ->
       nodeCount = nodeSet.size()
       if nodeSet.isEmpty()
@@ -134,5 +136,7 @@ define(['integration/lodash', 'integration/random', 'integration/strictmath', 'e
         else if newy < @world.minPycor
           newy = @world.minPycor
         turtle.setXY(newx, newy)
+
+      return
 
 )

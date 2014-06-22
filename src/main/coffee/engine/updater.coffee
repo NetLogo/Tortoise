@@ -10,23 +10,36 @@ define(['engine/exception', 'engine/link', 'engine/observer', 'engine/patch', 'e
 
   class Updater
 
-    @_updates = undefined
+    # type Updatable   = Turtle|Patch|Link|World|Observer
+    # type EngineKey   = String
+    # type Key         = String
+    # type Value       = Any
+    # type UpdateEntry = Object[Key, Value]
+    # type _UE         = UpdateEntry
+    # type Update      = { turtles: _UE, patches: _UE, links: _UE, observer: _UE, world: _UE }
 
+    @_updates = undefined # Array[Update]
+
+    # () => Updater
     constructor: ->
       @_updates = [{turtles: {}, patches: {}, links: {}, observer: {}, world: {}}]
 
+    # () => Array[Update]
     collectUpdates: ->
       result =
         if @_updates.length is 0 #@# `isEmpty`?
-          [turtles: {}, patches: {}]
+          [{turtles: {}, patches: {}}]
         else
           @_updates
       @_updates = [{turtles: {}, patches: {}, links: {}, observer: {}, world: {}}]
       result
 
+    # (String, Number, UpdateEntry) => Unit
     update: (agentType, id, newAgent) ->
       @_updates[0][agentType][id] = newAgent
+      return
 
+    # (Updatable) => (EngineKey*) => Unit
     updated: (obj) => (vars...) =>
       update = @_updates[0]
 
@@ -64,7 +77,7 @@ define(['engine/exception', 'engine/link', 'engine/observer', 'engine/patch', 'e
       return
 
 
-    # (Turtle) => Object[String, (String, Any)]
+    # (Turtle) => Object[EngineKey, (Key, Value)]
     _turtleMap: (turtle) -> {
       breed:         ["BREED",       turtle.getBreedName()]
       color:         ["COLOR",       turtle.color]
@@ -81,7 +94,7 @@ define(['engine/exception', 'engine/link', 'engine/observer', 'engine/patch', 'e
       ycor:          ["YCOR",        turtle.ycor()]
     }
 
-    # (Patch) => Object[String, (String, Any)]
+    # (Patch) => Object[EngineKey, (Key, Value)]
     _patchMap: (patch) -> {
       id:             ["WHO",          patch.id]
       pcolor:         ["PCOLOR",       patch._pcolor]
@@ -91,7 +104,7 @@ define(['engine/exception', 'engine/link', 'engine/observer', 'engine/patch', 'e
       pycor:          ["PYCOR",        patch.pycor]
     }
 
-    # (Link) => Object[String, (String, Any)]
+    # (Link) => Object[EngineKey, (Key, Value)]
     _linkMap: (link) -> {
       breed:         ["BREED",       link.getBreedName()]
       color:         ["COLOR",       link._color]
@@ -116,7 +129,7 @@ define(['engine/exception', 'engine/link', 'engine/observer', 'engine/patch', 'e
       lshape:        ignored
     }
 
-    # (World) => Object[String, (String, Any)]
+    # (World) => Object[EngineKey, (Key, Value)]
     _worldMap: (world) -> {
       height:                     ["worldHeight",               world.height()]
       id:                         ["WHO",                       world.id]
@@ -131,7 +144,7 @@ define(['engine/exception', 'engine/link', 'engine/observer', 'engine/patch', 'e
       width:                      ["worldWidth",                world.width()]
     }
 
-    # (Observer) => Object[String, (String, Any)]
+    # (Observer) => Object[EngineKey, (Key, Value)]
     _observerMap: (observer) -> {
       id:          ["WHO",         observer.id]
       perspective: ["perspective", observer._perspective]
