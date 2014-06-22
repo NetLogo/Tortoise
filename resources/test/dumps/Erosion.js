@@ -45,7 +45,7 @@ var StrictMath     = require('integration/strictmath');function setup() {
   });
   if (world.observer.getGlobal('bumpy?')) {
     Prims.repeat(world.observer.getGlobal('terrain-smoothness'), function () {
-      world.topology().diffuse('elevation', 0.5)
+      world.topology.diffuse('elevation', 0.5)
     });
   }
   Prims.ask(world.patches().agentFilter(function() {

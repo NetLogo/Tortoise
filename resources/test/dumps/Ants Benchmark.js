@@ -103,7 +103,7 @@ function go() {
   Prims.ask(world.turtles(), true, function() {
     Call(goTurtles);
   });
-  world.topology().diffuse('chemical', (world.observer.getGlobal('diffusion-rate') / 100))
+  world.topology.diffuse('chemical', (world.observer.getGlobal('diffusion-rate') / 100))
   Prims.ask(world.patches(), true, function() {
     Call(goPatches);
   });

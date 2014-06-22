@@ -33,7 +33,7 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
     # (Number) => Unit
     _setXcor: (newX) ->
       originPatch = @getPatchHere()
-      @xcor = @world.topology().wrapX(newX)
+      @xcor = @world.topology.wrapX(newX)
       @world.updater.updated(this)("xcor")
       if originPatch isnt @getPatchHere()
         originPatch.leave(this)
@@ -44,7 +44,7 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
     # (Number) => Unit
     _setYcor: (newY) ->
       originPatch = @getPatchHere()
-      @ycor = @world.topology().wrapY(newY)
+      @ycor = @world.topology.wrapY(newY)
       @world.updater.updated(this)("ycor")
       if originPatch isnt @getPatchHere()
         originPatch.leave(this)
@@ -63,11 +63,11 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
 
     # (Turtle|Patch) => Number
     distance: (agent) ->
-      @world.topology().distance(@xcor, @ycor, agent)
+      @world.topology.distance(@xcor, @ycor, agent)
 
     # (Number, Number) => Number
     distanceXY: (x, y) ->
-      @world.topology().distanceXY(@xcor, @ycor, x, y)
+      @world.topology.distanceXY(@xcor, @ycor, x, y)
 
     # () => (Number, Number)
     getCoords: ->
@@ -76,16 +76,16 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
     # (Turtle|Patch) => Number
     towards: (agent) -> #@# Unify, man!
       [x, y] = agent.getCoords()
-      @world.topology().towards(@xcor, @ycor, x, y)
+      @world.topology.towards(@xcor, @ycor, x, y)
 
     # (Number, Number) => Number
     towardsXY: (x, y) ->
-      @world.topology().towards(@xcor, @ycor, x, y)
+      @world.topology.towards(@xcor, @ycor, x, y)
 
     # (Number, Number) => Unit
     faceXY: (x, y) ->
       if x isnt @xcor or y isnt @ycor
-        @_setHeading(@world.topology().towards(@xcor, @ycor, x, y))
+        @_setHeading(@world.topology.towards(@xcor, @ycor, x, y))
       return
 
     # (Turtle|Patch) => Unit
@@ -96,14 +96,14 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
 
     # [T] @ (AbstractAgentSet[T], Number) => AbstractAgentSet[T]
     inRadius: (agents, radius) ->
-      @world.topology().inRadius(this, @xcor, @ycor, agents, radius)
+      @world.topology.inRadius(this, @xcor, @ycor, agents, radius)
 
     #@# Boy, this code sure is familiar... (`Patch.patchAt`)
     # (Number, Number) => Patch
     patchAt: (dx, dy) -> #@# Make not silly
       try
-        x = @world.topology().wrapX(@xcor + dx)
-        y = @world.topology().wrapY(@ycor + dy)
+        x = @world.topology.wrapX(@xcor + dx)
+        y = @world.topology.wrapY(@ycor + dy)
         @world.getPatchAt(x, y)
       catch error
         if error instanceof Exception.TopologyInterrupt
@@ -178,8 +178,8 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
     patchRightAndAhead: (angle, distance) ->
       heading = @_normalizeHeading(@_heading + angle)
       try
-        newX = @world.topology().wrapX(@xcor + distance * Trig.sin(heading))
-        newY = @world.topology().wrapY(@ycor + distance * Trig.cos(heading))
+        newX = @world.topology.wrapX(@xcor + distance * Trig.sin(heading))
+        newY = @world.topology.wrapY(@ycor + distance * Trig.cos(heading))
         @world.getPatchAt(newX, newY)
       catch error
         if error instanceof Exception.TopologyInterrupt then Nobody else throw error

@@ -67,19 +67,19 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
 
     # () => Number
     getHeading: ->
-      @world.topology().towards(@end1.xcor, @end1.ycor, @end2.xcor, @end2.ycor)
+      @world.topology.towards(@end1.xcor, @end1.ycor, @end2.xcor, @end2.ycor)
 
     # () => Number
     getMidpointX: ->
-      @world.topology().midpointx(@end1.xcor, @end2.xcor)
+      @world.topology.midpointx(@end1.xcor, @end2.xcor)
 
     # () => Number
     getMidpointY: ->
-      @world.topology().midpointy(@end1.ycor, @end2.ycor)
+      @world.topology.midpointy(@end1.ycor, @end2.ycor)
 
     # () => Number
     getSize: ->
-      @world.topology().distanceXY(@end1.xcor, @end1.ycor, @end2.xcor, @end2.ycor)
+      @world.topology.distanceXY(@end1.xcor, @end1.ycor, @end2.xcor, @end2.ycor)
 
     # (Any) => { toInt: Number }
     compare: (x) -> #@# Unify with `Links.compare`

@@ -51,15 +51,15 @@ define(['integration/lodash', 'integration/random', 'engine/builtins', 'engine/c
 
     # (Agent) => Number
     distance: (agent) ->
-      @world.topology().distance(@pxcor, @pycor, agent)
+      @world.topology.distance(@pxcor, @pycor, agent)
 
     # (Number, Number) => Number
     distanceXY: (x, y) ->
-      @world.topology().distanceXY(@pxcor, @pycor, x, y)
+      @world.topology.distanceXY(@pxcor, @pycor, x, y)
 
     # (Number, Number) => Number
     towardsXY: (x, y) ->
-      @world.topology().towards(@pxcor, @pycor, x, y)
+      @world.topology.towards(@pxcor, @pycor, x, y)
 
     # () => TurtleSet
     turtlesHere: ->
@@ -93,8 +93,8 @@ define(['integration/lodash', 'integration/random', 'engine/builtins', 'engine/c
     # (Number, Number) => Patch
     patchAt: (dx, dy) ->
       try
-        newX = @world.topology().wrapX(@pxcor + dx)
-        newY = @world.topology().wrapY(@pycor + dy)
+        newX = @world.topology.wrapX(@pxcor + dx)
+        newY = @world.topology.wrapY(@pycor + dy)
         return @world.getPatchAt(newX, newY) #@# Unnecessary `return`
       catch error
         if error instanceof Exception.TopologyInterrupt then Nobody else throw error
@@ -106,7 +106,7 @@ define(['integration/lodash', 'integration/random', 'engine/builtins', 'engine/c
 
     # [T] @ (AbstractAgentSet[T], Number) => AbstractAgentSet[T]
     inRadius: (agents, radius) ->
-      @world.topology().inRadius(this, @pxcor, @pycor, agents, radius)
+      @world.topology.inRadius(this, @pxcor, @pycor, agents, radius)
 
     # (Patch) => { toInt: Number }
     compare: (x) ->

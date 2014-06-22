@@ -46,7 +46,7 @@ function go() {
     Prims.fd(1);
     Prims.setPatchVariable('chemical', (Prims.getPatchVariable('chemical') + 2));
   });
-  world.topology().diffuse('chemical', 1)
+  world.topology.diffuse('chemical', 1)
   Prims.ask(world.patches(), true, function() {
     Prims.setPatchVariable('chemical', (Prims.getPatchVariable('chemical') * 0.9));
     Prims.setPatchVariable('pcolor', Prims.scaleColor(55, Prims.getPatchVariable('chemical'), 0.1, 3));

@@ -47,10 +47,10 @@ function setupPatches() {
     }), true, function() {
       Prims.setPatchVariable('grain-here', Prims.getPatchVariable('max-grain-here'));
     });
-    world.topology().diffuse('grain-here', 0.25)
+    world.topology.diffuse('grain-here', 0.25)
   });
   Prims.repeat(10, function () {
-    world.topology().diffuse('grain-here', 0.25)
+    world.topology.diffuse('grain-here', 0.25)
   });
   Prims.ask(world.patches(), true, function() {
     Prims.setPatchVariable('grain-here', StrictMath.floor(Prims.getPatchVariable('grain-here')));
