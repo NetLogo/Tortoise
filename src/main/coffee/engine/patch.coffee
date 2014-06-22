@@ -89,6 +89,7 @@ define(['integration/lodash', 'integration/random', 'engine/builtins', 'engine/c
     turtlesAt: (dx, dy) ->
       @patchAt(dx, dy).turtlesHere()
 
+    #@# Should be able to get rid of this and delegate to the `World`...
     # (Number, Number) => Patch
     patchAt: (dx, dy) ->
       try

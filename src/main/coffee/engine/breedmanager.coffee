@@ -5,7 +5,7 @@ define(['integration/lodash'], (_) ->
   class Breed
 
     # (String, String, BreedManager, Array[String], String, Array[Agent]) => Breed
-    constructor: (@name, @singular, @manager, @varNames = [], @_shape = undefined, @members = []) ->
+    constructor: (@name, @singular, @_manager, @varNames = [], @_shape = undefined, @members = []) ->
 
     # We can't just set this in the constructor, because people can swoop into the manager and change the turtles'
     # default shape --JAB (5/27/14)
@@ -14,7 +14,7 @@ define(['integration/lodash'], (_) ->
       if @_shape?
         @_shape
       else
-        @manager.turtles()._shape
+        @_manager.turtles()._shape
 
     # (String) => Unit
     setShape: (newShape) ->
