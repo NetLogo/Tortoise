@@ -1,7 +1,9 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['integration/lodash', 'integration/strictmath', 'engine/nobody', 'engine/patch', 'engine/patchset']
-     , ( _,                    StrictMath,               Nobody,          Patch,          PatchSet) ->
+define(['integration/abstractmethoderror', 'integration/lodash', 'integration/strictmath', 'engine/nobody'
+      , 'engine/patch', 'engine/patchset']
+     , ( abstractMethod,                    _,                    StrictMath,               Nobody
+      ,  Patch,          PatchSet) ->
 
   class Topology
 
@@ -124,5 +126,19 @@ define(['integration/lodash', 'integration/strictmath', 'engine/nobody', 'engine
           min
       else
         pos
+
+    # (Number, Number) => Number
+    _shortestX: (x1, x2) -> abstractMethod('Topology._shortestX')
+    _shortestY: (y1, y2) -> abstractMethod('Topology._shortestY')
+
+    # (Number, Number) => Patch
+    _getPatchNorth:     (x, y) -> abstractMethod('Topology._getPatchNorth')
+    _getPatchEast:      (x, y) -> abstractMethod('Topology._getPatchEast')
+    _getPatchSouth:     (x, y) -> abstractMethod('Topology._getPatchSouth')
+    _getPatchWest:      (x, y) -> abstractMethod('Topology._getPatchWest')
+    _getPatchNorthEast: (x, y) -> abstractMethod('Topology._getPatchNorthEast')
+    _getPatchSouthEast: (x, y) -> abstractMethod('Topology._getPatchSouthEast')
+    _getPatchSouthWest: (x, y) -> abstractMethod('Topology._getPatchSouthWest')
+    _getPatchNorthWest: (x, y) -> abstractMethod('Topology._getPatchNorthWest')
 
 )
