@@ -22,12 +22,12 @@ trait TortoiseFinder extends lang.Finder {
   override def withFixture[T](name: String)(body: AbstractFixture => T): T =
     freebies.get(name.stripSuffix(" (NormalMode)")) match {
       case None =>
-        body(new TortoiseFixture(name, nashorn, notImplemented _))
+        body(new TortoiseFixture(name, nashorn, notImplemented))
       case Some(x) if x.contains("TOO SLOW") =>
         notImplemented("TOO SLOW")
       case Some(excuse) =>
         try
-          body(new TortoiseFixture(name, nashorn, notImplemented _))
+          body(new TortoiseFixture(name, nashorn, notImplemented))
         catch {
           case _: TestPendingException =>
             // ignore; we'll hit the fail() below
