@@ -44,10 +44,11 @@ define(['integration/lodash'], (_) ->
 
   class BreedManager
 
+    # type BreedObj = { name: String, singular: String, varNames: Array[String] }
+
     # Object[String, Breed]
     _breeds: undefined
 
-    # type BreedObj = { name: String, singular: String, varNames: Array[String] }
     # (Array[BreedObj]) => BreedManager
     constructor: (breedObjs) ->
       defaultBreeds = {

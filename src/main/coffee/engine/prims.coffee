@@ -1,6 +1,5 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-#@# No more code golf
 define(['integration/lodash', 'integration/printer', 'integration/random', 'integration/strictmath'
       , 'engine/abstractagentset', 'engine/comparator', 'engine/dump', 'engine/exception', 'engine/iterator'
       , 'engine/link', 'engine/nobody', 'engine/patch', 'engine/patchset', 'engine/shufflerator', 'engine/turtle'
@@ -12,27 +11,85 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
 
   class Prims
 
+    # type ListOrSet[T] = Array[T]|AbstractAgentSet[T]
+    # type AgentOrSet   = [T <: Agent] @ T|AbstractAgentSet[T]
+
     _getSelf: undefined # () => Agent
 
+    # (World) => Prims
     constructor: (@_world) ->
       @_getSelf = @_world.selfManager.self
 
-    fd: (n) -> @_getSelf().fd(n)
-    bk: (n) -> @_getSelf().fd(-n)
-    jump: (n) -> @_getSelf().jump(n)
-    right: (n) -> @_getSelf().right(n)
-    left: (n) -> @_getSelf().right(-n)
-    setXY: (x, y) -> @_getSelf().setXY(x, y)
-    empty: (xs) -> xs.length is 0
-    getNeighbors: -> @_getSelf().getNeighbors()
-    getNeighbors4: -> @_getSelf().getNeighbors4()
-    sprout: (n, breedName) -> @_getSelf().sprout(n, breedName)
-    hatch: (n, breedName) -> @_getSelf().hatch(n, breedName)
-    patch: (x, y) -> @_world.getPatchAt(x, y)
-    randomXcor: -> @_world.minPxcor - 0.5 + Random.nextDouble() * (@_world.maxPxcor - @_world.minPxcor + 1)
-    randomYcor: -> @_world.minPycor - 0.5 + Random.nextDouble() * (@_world.maxPycor - @_world.minPycor + 1)
-    shadeOf: (c1, c2) -> Math.floor(c1 / 10) is Math.floor(c2 / 10) #@# Varnames
-    isBreed: (breedName, x) -> if x.isBreed? and x.id isnt -1 then x.isBreed(breedName) else false
+    # (Number) => Unit
+    fd: (n) ->
+      @_getSelf().fd(n)
+      return
+
+    # (Number) => Unit
+    bk: (n) ->
+      @_getSelf().fd(-n)
+      return
+
+    # (Number) => Boolean
+    jump: (n) ->
+      @_getSelf().jump(n)
+
+    # (Number) => Unit
+    right: (n) ->
+      @_getSelf().right(n)
+      return
+
+    # (Number) => Unit
+    left: (n) ->
+      @_getSelf().right(-n)
+      return
+
+    # (Number, Number) => Unit
+    setXY: (x, y) ->
+      @_getSelf().setXY(x, y)
+      return
+
+    # [T] @ (String|Array[T]) => Boolean
+    empty: (xs) ->
+      xs.length is 0
+
+    # () => PatchSet
+    getNeighbors: ->
+      @_getSelf().getNeighbors()
+
+    # () => PatchSet
+    getNeighbors4: ->
+      @_getSelf().getNeighbors4()
+
+    # (Number, String) => TurtleSet
+    sprout: (n, breedName) ->
+      @_getSelf().sprout(n, breedName)
+
+    # (Number, String) => TurtleSet
+    hatch: (n, breedName) ->
+      @_getSelf().hatch(n, breedName)
+
+    # (Number, Number) => Patch
+    patch: (x, y) ->
+      @_world.getPatchAt(x, y)
+
+    # () => Number
+    randomXcor: ->
+      @_world.minPxcor - 0.5 + Random.nextDouble() * (@_world.maxPxcor - @_world.minPxcor + 1)
+
+    # () => Number
+    randomYcor: ->
+      @_world.minPycor - 0.5 + Random.nextDouble() * (@_world.maxPycor - @_world.minPycor + 1)
+
+    # (Number, Number) => Number
+    shadeOf: (c1, c2) ->
+      Math.floor(c1 / 10) is Math.floor(c2 / 10) #@# Varnames
+
+    # (String, Any) => Boolean
+    isBreed: (breedName, x) ->
+      if x.isBreed? and x.id isnt -1 then x.isBreed(breedName) else false
+
+    # (Any, Any) => Boolean
     equality: (a, b) ->
       if a? and b?
         (a is b) or ( # This code has been purposely rewritten into a crude, optimized form --JAB (3/19/14)
@@ -52,7 +109,7 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
       else
         throw new Exception.NetLogoException("Checking equality on undefined is an invalid condition")
 
-
+    # (Any, Any) => Boolean
     lt: (a, b) ->
       if (Type(a).isString() and Type(b).isString()) or (Type(a).isNumber() and Type(b).isNumber())
         a < b
@@ -61,6 +118,7 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
       else
         throw new Exception.NetLogoException("Invalid operands to `lt`")
 
+    # (Any, Any) => Boolean
     gt: (a, b) ->
       if (Type(a).isString() and Type(b).isString()) or (Type(a).isNumber() and Type(b).isNumber())
         a > b
@@ -69,8 +127,11 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
       else
         throw new Exception.NetLogoException("Invalid operands to `gt`")
 
+    # (Any, Any) => Boolean
     lte: (a, b) -> @lt(a, b) or @equality(a, b)
     gte: (a, b) -> @gt(a, b) or @equality(a, b)
+
+    # (Number, Number, Number, Number) => Number
     scaleColor: (color, number, min, max) -> #@# I don't know WTF this is, so it has to be wrong
       color = Math.floor(color / 10) * 10
       perc = 0.0
@@ -98,6 +159,8 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
       if perc < 0
         perc = 0
       color + perc
+
+    # (Number) => Number
     random: (n) ->
       truncated =
         if n >= 0
@@ -110,25 +173,73 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
         Random.nextLong(truncated)
       else
         -Random.nextLong(-truncated)
-    randomFloat: (n) -> n * Random.nextDouble()
-    list: (xs...) -> xs
-    item: (n, xs) -> xs[n]
-    first: (xs) -> xs[0]
+
+    # (Number) => Number
+    randomFloat: (n) ->
+      n * Random.nextDouble()
+
+    # [T] @ (T*) => Array[T]
+    list: (xs...) ->
+      xs
+
+    # [Item] @ (Number, Array[Item]) => Item
+    item: (n, xs) ->
+      xs[n]
+
+    # [Item] @ (Array[Item]) => Item
+    first: (xs) ->
+      xs[0]
+
+    # [Item] @ (Array[Item]) => Item
     last: (xs) -> xs[xs.length - 1]
-    fput: (x, xs) -> [x].concat(xs) #@# Lodash, son
+
+    # [Item] @ (Item, Array[Item]) => Array[Item]
+    fput: (x, xs) ->
+      [x].concat(xs) #@# Lodash, son
+
+    # [Item] @ (Item, Array[Item]) => Array[Item]
     lput: (x, xs) -> #@# Lodash, son
       result = xs[..]
       result.push(x)
       result
-    butFirst: (xs) -> xs[1..] # Lodashing this stuff is no good, since it doesn't handle strings correctly.  Could use Underscore.string... --JAB (5/5/14)
-    butLast: (xs) -> xs[0...xs.length - 1]
-    length: (xs) -> xs.length
-    _int: (n) -> if n < 0 then Math.ceil(n) else Math.floor(n) #@# WTF is this?  Wouldn't `n|0` suffice?
-    mod: (a, b) -> ((a % b) + b) % b #@# WTF?
-    max: (xs) -> Math.max(xs...)
-    min: (xs) -> Math.min(xs...)
-    mean: (xs) -> @sum(xs) / xs.length
-    sum: (xs) -> xs.reduce(((a, b) -> a + b), 0)
+
+    # [T] @ (Array[T]|String) => Array[T]|String
+    butFirst: (xs) ->
+      xs[1..] # Lodashing this stuff is no good, since it doesn't handle strings correctly.  Could use Underscore.string... --JAB (5/5/14)
+
+    # [T] @ (Array[T]|String) => Array[T]|String
+    butLast: (xs) ->
+      xs[0...xs.length - 1]
+
+    # [T] @ (Array[T]) => Number
+    length: (xs) ->
+      xs.length
+
+    # (Number) => Number
+    _int: (n) ->
+      if n < 0 then Math.ceil(n) else Math.floor(n) #@# WTF is this?  Wouldn't `n|0` suffice?
+
+    # (Number, Number) => Number
+    mod: (a, b) ->
+      ((a % b) + b) % b #@# WTF?
+
+    # (Array[Number]) => Number
+    max: (xs) ->
+      Math.max(xs...)
+
+    # (Array[Number]) => Number
+    min: (xs) ->
+      Math.min(xs...)
+
+    # (Array[Number]) => Number
+    mean: (xs) ->
+      @sum(xs) / xs.length
+
+    # (Array[Number]) => Number
+    sum: (xs) ->
+      xs.reduce(((a, b) -> a + b), 0)
+
+    # (Number, Number) => Number
     precision: (n, places) ->
       multiplier = Math.pow(10, places)
       result = Math.floor(n * multiplier + .5) / multiplier
@@ -136,6 +247,8 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
         result
       else
         Math.round(result) #@# Huh?
+
+    # [T] @ (Array[T]|String) => Array[T]|String
     reverse: (xs) -> #@# Lodash
       if Type(xs).isArray()
         xs[..].reverse()
@@ -143,6 +256,8 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
         xs.split("").reverse().join("")
       else
         throw new Exception.NetLogoException("can only reverse lists and strings")
+
+    # [T] @ (ListOrSet[T]) => ListOrSet[T]
     sort: (xs) -> #@# Seems greatly improvable
       if Type(xs).isArray()
         wrappedItems = _(xs)
@@ -162,6 +277,8 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
         xs.sort()
       else
         throw new Exception.NetLogoException("can only sort lists and agentsets")
+
+    # [T] @ (Array[T]) => Array[T]
     removeDuplicates: (xs) -> #@# Good use of data structures and actually trying could get this into reasonable time complexity
       if xs.length < 2
         xs
@@ -169,8 +286,13 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
         xs.filter(
           (elem, pos) => not _(xs.slice(0, pos)).some((x) => @equality(x, elem))
         )
+
+    # (Any) => Unit
     outputPrint: (x) ->
       Printer(Dump(x))
+      return
+
+    # [T <: (Array[T]|Patch|AbstractAgentSet[T])] @ (T*) => PatchSet
     patchSet: (inputs...) ->
       #@# O(n^2) -- should be smarter (use hashing for contains check)
       result = []
@@ -188,6 +310,8 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
             )
       recurse(inputs)
       new PatchSet(result)
+
+    # (Number, FunctionN) => Unit
     repeat: (n, fn) ->
       for [0...n]
         fn()
@@ -217,7 +341,7 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
     boom: ->
       throw new Exception.NetLogoException("boom!")
 
-    # (T, (Array[T]|String|AbstractAgentSet[T])) => Boolean
+    # [Item, Container <: (Array[Item]|String|AbstractAgentSet[Item])] @ (Item, Container) => Boolean
     member: (x, xs) ->
       if Type(xs).isArray()
         _(xs).some((y) => @equality(x, y))
@@ -226,7 +350,7 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
       else # agentset
         xs.exists((a) -> x is a)
 
-    # (T, (Array[T]|String|AbstractAgentSet[T])) => Number|Boolean
+    # [Item, Container <: (Array[Item]|String|AbstractAgentSet[Item])] @ (Item, Container) => Number|Boolean
     position: (x, xs) ->
       index =
         if Type(xs).isArray()
@@ -239,14 +363,14 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
       else
         false
 
-    # (T, U <: (Array[T]|String)) => U
+    # [Item, Container <: (Array[Item]|String)] @ (Item, Container) => Container
     remove: (x, xs) ->
       if Type(xs).isArray()
         _(xs).filter((y) => not @equality(x, y)).value()
       else
         xs.replace(new RegExp(x, "g"), "") # Replace all occurences of `x` --JAB (5/26/14)
 
-    # (Number, U <: (Array[T]|String)) => U
+    # [Item, Container <: (Array[Item]|String)] @ (Number, Container) => Container
     removeItem: (n, xs) ->
       if Type(xs).isArray()
         temp = xs[..]
@@ -257,7 +381,7 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
         post = xs.slice(n + 1)
         pre + post
 
-    # (Number, U <: (Array[T]|String), T) => U
+    # [Item, Container <: (Array[Item]|String)] @ (Number, Container, Item) => Container
     replaceItem: (n, xs, x) -> #@# Lodash
       if Type(xs).isArray()
         temp = xs[..]
@@ -268,7 +392,7 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
         post = xs.slice(n + 1)
         pre + x + post
 
-    # (Array[T], Number, Number) => Array[T]
+    # [T] @ (Array[T], Number, Number) => Array[T]
     sublist: (xs, n1, n2) ->
       xs.slice(n1, n2)
 
@@ -276,7 +400,7 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
     substring: (xs, n1, n2) ->
       xs.substr(n1, n2 - n1)
 
-    # (Array[Array[T]|T]) => Array[T]
+    # [T] @ (Array[Array[T]|T]) => Array[T]
     sentence: (xs...) ->
       f =
         (acc, x) ->
@@ -287,7 +411,7 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
             acc
       _(xs).foldl(f, [])
 
-    # (Array[T]) => Number
+    # [T] @ (Array[T]) => Number
     variance: (xs) ->
       numbers = _(xs).filter((x) -> Type(x).isNumber())
       count   = numbers.size()
@@ -317,6 +441,7 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
       turtles = _(patches).map((p) -> p.turtles).flatten().filter((t) -> t.getBreedName() is breedName).value()
       new TurtleSet(turtles, breedName)
 
+    # [T] @ (AgentOrSet) => TurtleSet
     turtlesOn: (agentsOrAgent) -> #@# Lunacy
       agents =
         if agentsOrAgent instanceof AbstractAgentSet
@@ -331,12 +456,12 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
       @_getSelf().die()
       return
 
-    # (AbstractAgentSet[T]) => AbstractAgentSet[T]
+    # [T] @ (AbstractAgentSet[T]) => AbstractAgentSet[T]
     other: (agentSet) ->
       self = @_getSelf()
       agentSet.filter((agent) => agent isnt self)
 
-    # (Agent|AbstractAgentSet[T], Boolean, () => Any) => Unit
+    # [T] @ (AgentOrSet[T], Boolean, () => Any) => Unit
     ask: (agentsOrAgent, shouldShuffle, f) ->
       agents = #@# Nonsense
         if agentsOrAgent instanceof AbstractAgentSet
@@ -379,7 +504,7 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
       @_getSelf().setPatchVariable(varName, value)
       return
 
-    # [Result] @ (Agent|AbstractAgentSet[T], () => Result) => Result|Array[Result]
+    # [T, Result] @ (AgentOrSet[T], () => Result) => Result|Array[Result]
     of: (agentsOrAgent, f) -> #@# This is nonsense; same with `ask`.  If you're giving me something, _you_ get it into the right type first, not me!
       agents =
         if agentsOrAgent instanceof AbstractAgentSet
@@ -396,7 +521,7 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
       else
         result[0]
 
-    # [Item] @ (AbstractAgentSet[Item]|Array[Item]) => Item
+    # [Item] @ (ListOrSet[Item]) => Item
     oneOf: (agentsOrList) ->
       arr =
         if agentsOrList instanceof AbstractAgentSet #@# Stop this nonsense.  This code gives me such anxiety...
@@ -408,7 +533,7 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
       else
         arr[Random.nextInt(arr.length)]
 
-    # [Item] @ (AbstractAgentSet[Item]|Array[Item]) => Array[Item]
+    # [Item] @ (ListOrSet[Item]) => Array[Item]
     nOf: (resultSize, agentsOrList) ->
       if not (agentsOrList instanceof AbstractAgentSet) #@# How does this even make sense?
         throw new Exception.NetLogoException("n-of not implemented on lists yet")

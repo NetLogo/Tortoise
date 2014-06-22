@@ -8,7 +8,7 @@ into the sorting code and caused a 25% performance hit in BZ Benchmark. --JAB (4
 define(->
 
   class Type
-    constructor: (@x) ->
+    constructor: (@x) -> # (Any) => Type
     isArray:    -> Array.isArray(@x)
     isBoolean:  -> typeof(@x) is "boolean"
     isFunction: -> typeof(@x) is "function"

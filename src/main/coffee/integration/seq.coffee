@@ -2,10 +2,9 @@
 
 define(['integration/lodash'], (_) ->
 
-  # Type Parameter: T - The type of items within `_items`
   class Seq
 
-    # (Array[T]) => Seq[T]
+    # [T] @ (Array[T]) => Seq[T]
     constructor: (@_items) ->
 
     # () => Number
@@ -57,7 +56,7 @@ define(['integration/lodash'], (_) ->
     toString: ->
       "Seq(#{@_items.toString()})"
 
-    # (Array[U], Seq[V]) => Seq[U]
+    # (Array[T], Seq[T]) => Seq[T]
     _generateFrom: (newItems, oldSeq) ->
       new Seq(newItems)
 

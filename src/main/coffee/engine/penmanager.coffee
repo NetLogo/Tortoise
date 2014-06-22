@@ -3,8 +3,8 @@
 define(->
 
   class PenStatus
-    constructor: (@_name) ->
-    toString: -> @_name
+    constructor: (@_name) -> # (String) => PenStatus
+    toString: -> @_name # () => String
 
   Up   = new PenStatus("up")
   Down = new PenStatus("down")
@@ -29,6 +29,7 @@ define(->
         @raisePen()
       else
         @lowerPen()
+      return
 
     # () => Unit
     raisePen: ->

@@ -2,10 +2,9 @@
 
 define(['engine/abstractagentset'], (AbstractAgentSet) ->
 
-  # Type Parameter: T <: Link - The type of links within `_agents`
   class LinkSet extends AbstractAgentSet
 
-    # (Array[T]) => LinkSet
+    # [T <: Link] @ (Array[T]) => LinkSet
     constructor: (@_agents, @_breedName ="LINKS") ->
       super(@_agents)
 
@@ -17,7 +16,7 @@ define(['engine/abstractagentset'], (AbstractAgentSet) ->
     toString: ->
       "(agentset, #{@size()} #{@getBreedName().toLowerCase()})"
 
-    # (Array[U <: Turtle], TurtleSet[V]) => TurtleSet[U]
+    # (Array[T], TurtleSet[T]) => TurtleSet[T]
     _generateFrom: (newAgentArr, agents) ->
       new LinkSet(newAgentArr, agents.getBreedName())
 

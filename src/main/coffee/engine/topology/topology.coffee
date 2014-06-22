@@ -8,7 +8,11 @@ define(['integration/lodash', 'integration/strictmath', 'engine/nobody', 'engine
     _wrapInX: undefined # Boolean
     _wrapInY: undefined # Boolean
 
+    height: undefined # Number
+    width:  undefined # Number
+
     #@# Room for improvement
+    # (Number, Number, Number, Number, () => PatchSet, (Number, Number) => Patch) => Topology
     constructor: (@minPxcor, @maxPxcor, @minPycor, @maxPycor, @getPatches, @getPatchAt) ->
       @height = 1 + @maxPycor - @minPycor
       @width  = 1 + @maxPxcor - @minPxcor
@@ -26,10 +30,12 @@ define(['integration/lodash', 'integration/strictmath', 'engine/nobody', 'engine
       else
         pos
 
+    # (Number, Number) => PatchSet
     getNeighbors: (pxcor, pycor) -> #@# This should memoize
       patches = _(@_getNeighbors(pxcor, pycor)).filter((patch) -> patch isnt false).value()
       new PatchSet(patches)
 
+    # (Number, Number) => Array[Patch]
     _getNeighbors: (pxcor, pycor) -> #@# Was I able to fix this in the ScalaJS version?
       if pxcor is @maxPxcor and pxcor is @minPxcor #@# How can you just go and reference properties of yourself that you don't require?
         if pycor is @maxPycor and pycor is @minPycor
@@ -44,10 +50,12 @@ define(['integration/lodash', 'integration/strictmath', 'engine/nobody', 'engine
          @getPatchNorthEast(pxcor, pycor), @getPatchSouthEast(pxcor, pycor),
          @getPatchSouthWest(pxcor, pycor), @getPatchNorthWest(pxcor, pycor)]
 
+    # (Number, Number) => PatchSet
     getNeighbors4: (pxcor, pycor) ->
       patches = _(@_getNeighbors4(pxcor, pycor)).filter((patch) -> patch isnt false).value() #@# This code is awkward
       new PatchSet(patches)
 
+    # (Number, Number) => Array[Patch]
     _getNeighbors4: (pxcor, pycor) -> #@# Any improvement in ScalaJS version?
       if pxcor is @maxPxcor and pxcor is @minPxcor
         if pycor is @maxPycor and pycor is @minPycor
@@ -60,12 +68,16 @@ define(['integration/lodash', 'integration/strictmath', 'engine/nobody', 'engine
         [@getPatchNorth(pxcor, pycor), @getPatchEast(pxcor, pycor),
          @getPatchSouth(pxcor, pycor), @getPatchWest(pxcor, pycor)]
 
+    # (Number, Number, Number, Number) => Number
     distanceXY: (x1, y1, x2, y2) -> #@# Long line
       StrictMath.sqrt(StrictMath.pow(@shortestX(x1, x2), 2) + StrictMath.pow(@shortestY(y1, y2), 2))
+
+    # (Number, Number, Turtle|Patch) => Number
     distance: (x1, y1, agent) ->
       [x2, y2] = agent.getCoords()
       @distanceXY(x1, y1, x2, y2)
 
+    # (Number, Number, Number, Number) => Number
     towards: (x1, y1, x2, y2) ->
       dx = @shortestX(x1, x2)
       dy = @shortestY(y1, y2)
@@ -75,9 +87,12 @@ define(['integration/lodash', 'integration/strictmath', 'engine/nobody', 'engine
         if dx >= 0 then 90 else 270
       else
         (270 + StrictMath.toDegrees (Math.PI + StrictMath.atan2(-dy, dx))) % 360 #@# Long line
+
+    # (Number, Number) => Number
     midpointx: (x1, x2) -> @wrap((x1 + (x1 + @shortestX(x1, x2))) / 2, @minPxcor - 0.5, @maxPxcor + 0.5) #@# What does this mean?  I don't know!
     midpointy: (y1, y2) -> @wrap((y1 + (y1 + @shortestY(y1, y2))) / 2, @minPycor - 0.5, @maxPycor + 0.5) #@# What does this mean?  I don't know!
 
+    # [T] @ (Agent, Number, Number, AbstractAgentSet[T], Number) => AbstractAgentSet[T]
     inRadius: (origin, x, y, agents, radius) ->
       result = []
 

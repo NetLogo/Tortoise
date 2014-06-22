@@ -39,5 +39,4 @@ define(->
       Object.defineProperty(this, propName, config)
       return
 
-
 )

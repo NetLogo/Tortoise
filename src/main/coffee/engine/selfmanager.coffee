@@ -2,8 +2,9 @@
 
 define(['engine/exception'], (Exception) ->
 
-  # Type Parameter: SelfType - Number|Agent - The type that `self` or `myself` could be at any time
   class SelfManager
+
+    # type SelfType = Number|Agent // The type that `self` or `myself` could be at any time
 
     _self:   undefined # SelfType #@# Lame
     _myself: undefined # SelfType #@# Lame

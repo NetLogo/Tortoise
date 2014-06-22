@@ -11,21 +11,23 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
 
   class World
 
-    id: 0
-    observer: undefined
-    ticker:   undefined
+    id: 0 # Number
 
-    _links:             undefined
-    _linkIDManager:     undefined
-    _turtleIDManager:   undefined
-    _patches:           undefined
-    _patchesAllBlack:   undefined
-    _patchesWithLabels: undefined
-    _topology:          undefined
-    _turtles:           undefined
-    _turtlesById:       undefined
+    observer: undefined # Observer
+    ticker:   undefined # Ticker
+
+    _links:             undefined # WorldLinks
+    _linkIDManager:     undefined # IDManager
+    _turtleIDManager:   undefined # IDManager
+    _patches:           undefined # Array[Patch]
+    _patchesAllBlack:   undefined # Boolean
+    _patchesWithLabels: undefined # Number
+    _topology:          undefined # Topology
+    _turtles:           undefined # Array[Turtle]
+    _turtlesById:       undefined # Object[Number, Turtle]
 
     #@# I'm aware that some of this stuff ought to not live on `World`
+    # (SelfManager, Updater, BreedManager, Array[String], Array[String], Array[String], Array[String], Array[String], Number, Number, Number, Number, Number, Boolean, Boolean, Array[Object], Array[Object]) => World
     constructor: (@selfManager, @updater, @breedManager, globalNames, interfaceGlobalNames, @turtlesOwnNames
                 , @linksOwnNames, @patchesOwnNames, @minPxcor, @maxPxcor, @minPycor, @maxPycor, @patchSize
                 , @wrappingAllowedInX, @wrappingAllowedInY, turtleShapeList, linkShapeList) ->
@@ -65,19 +67,33 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
       @resize(@minPxcor, @maxPxcor, @minPycor, @maxPycor)
 
 
+    # () => Unit
     createPatches: ->
       nested =
         for y in [@maxPycor..@minPycor]
           for x in [@minPxcor..@maxPxcor]
             id = (@width() * (@maxPycor - y)) + x - @minPxcor
             new Patch(id, x, y, this)
+
       @_patches = [].concat(nested...)
+
       for patch in @_patches
         @updater.updated(patch)("pxcor", "pycor", "pcolor", "plabel", "plabel-color")
-    topology: -> @_topology
+
+      return
+
+
+    # () => Topology
+    topology: ->
+      @_topology
+
+    # () => LinkSet
     links: () ->
       new LinkSet(@_links.toArray())
-    turtles: () -> new TurtleSet(@_turtles)
+
+    # () => TurtleSet
+    turtles: () ->
+      new TurtleSet(@_turtles)
 
     # (String) => TurtleSet
     turtlesOfBreed: (breedName) ->
@@ -89,7 +105,11 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
       breed = @breedManager.get(breedName)
       new LinkSet(breed.members, breedName)
 
-    patches: => new PatchSet(@_patches)
+    # () => PatchSet
+    patches: =>
+      new PatchSet(@_patches)
+
+    # (Number, Number, Number, Number) => Unit
     resize: (minPxcor, maxPxcor, minPycor, maxPycor) ->
 
       if not (minPxcor <= 0 <= maxPxcor and minPycor <= 0 <= maxPycor)
@@ -117,19 +137,38 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
       @patchesAllBlack(true)
       @resetPatchLabelCount()
       @updater.updated(this)("width", "height", "minPxcor", "minPycor", "maxPxcor", "maxPycor")
+
       return
 
-    width: () -> 1 + @maxPxcor - @minPxcor #@# Defer to topology x2
-    height: () -> 1 + @maxPycor - @minPycor
+
+    # () => Number
+    width: ->
+      1 + @maxPxcor - @minPxcor #@# Defer to topology x2
+
+    # () => Number
+    height: ->
+      1 + @maxPycor - @minPycor
+
+    # (Number, Number) => Patch
     getPatchAt: (x, y) =>
       trueX  = (x - @minPxcor) % @width()  + @minPxcor # Handle negative coordinates and wrapping
       trueY  = (y - @minPycor) % @height() + @minPycor
       index  = (@maxPycor - StrictMath.round(trueY)) * @width() + (StrictMath.round(trueX) - @minPxcor)
       @_patches[index]
-    getTurtle: (id) -> @_turtlesById[id] or Nobody
+
+    # (Number) => Turtle
+    getTurtle: (id) ->
+      @_turtlesById[id] or Nobody
+
+    # (String, Number) => Turtle
     getTurtleOfBreed: (breedName, id) ->
       turtle = @getTurtle(id)
-      if turtle.getBreedName().toUpperCase() is breedName.toUpperCase() then turtle else Nobody
+      if turtle.getBreedName().toUpperCase() is breedName.toUpperCase()
+        turtle
+      else
+        Nobody
+
+    # (Number) => Unit
     removeLink: (id) ->
       link = @_links.find((link) -> link.id is id)
       @_links = @_links.remove(link)
@@ -137,13 +176,19 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
         @unbreededLinksAreDirected = false
         @updater.updated(this)("unbreededLinksAreDirected")
       return
+
+    # (Number) => Unit
     removeTurtle: (id) -> #@# Having two different collections of turtles to manage seems avoidable
       turtle = @_turtlesById[id]
       @_turtles.splice(@_turtles.indexOf(turtle), 1)
       delete @_turtlesById[id]
+      return
+
+    # (Boolean) => Unit
     patchesAllBlack: (val) -> #@# Varname
       @_patchesAllBlack = val
       @updater.updated(this)("patchesAllBlack")
+      return
 
     # () => Unit
     incrementPatchLabelCount: ->
@@ -166,6 +211,7 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
       @updater.updated(this)("patchesWithLabels")
       return
 
+    # () => Unit
     clearAll: ->
       @observer.clearCodeGlobals()
       @clearTurtles()
@@ -175,6 +221,8 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
       @resetPatchLabelCount()
       @ticker.clear()
       return
+
+    # () => Unit
     clearTurtles: ->
       # We iterate through a copy of the array since it will be modified during
       # iteration.
@@ -190,11 +238,15 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
       )
       @_turtleIDManager.reset()
       return
+
+    # () => Unit
     clearPatches: ->
       @patches().forEach((patch) -> patch.reset(); return)
       @patchesAllBlack(true)
       @resetPatchLabelCount()
       return
+
+    # ((Number) => Turtle) => Turtle
     createTurtle: (turtleGenFunc) ->
       id     = @_turtleIDManager.next()
       turtle = turtleGenFunc(id)
@@ -224,33 +276,55 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
       else
         Nobody
 
+    # (Number, String) => TurtleSet
     createOrderedTurtles: (n, breedName) -> #@# Clarity is a good thing
       turtles = _(0).range(n).map((num) => @createTurtle((id) => new Turtle(this, id, (10 * num + 5) % 140, (360 * num) / n, 0, 0, @breedManager.get(breedName)))).value()
       new TurtleSet(turtles, @breedManager.get(breedName))
+
+    # (Number, String) => TurtleSet
     createTurtles: (n, breedName) -> #@# Clarity is still good
       turtles = _(0).range(n).map(=> @createTurtle((id) => new Turtle(this, id, 5 + 10 * Random.nextInt(14), Random.nextInt(360), 0, 0, @breedManager.get(breedName)))).value()
       new TurtleSet(turtles, @breedManager.get(breedName))
-    getNeighbors: (pxcor, pycor) -> @topology().getNeighbors(pxcor, pycor)
-    getNeighbors4: (pxcor, pycor) -> @topology().getNeighbors4(pxcor, pycor)
+
+    # (Number, Number) => PatchSet
+    getNeighbors: (pxcor, pycor) ->
+      @topology().getNeighbors(pxcor, pycor)
+
+    # (Number, Number) => PatchSet
+    getNeighbors4: (pxcor, pycor) ->
+      @topology().getNeighbors4(pxcor, pycor)
+
+    # (Turtle, Turtle) => Link
     createDirectedLink: (from, to) ->
       @unbreededLinksAreDirected = true
       @updater.updated(this)("unbreededLinksAreDirected")
       @createLink(true, from, to)
+
+    # (Turtle, TurtleSet) => LinkSet
     createDirectedLinks: (source, others) -> #@# Clarity
       @unbreededLinksAreDirected = true
       @updater.updated(this)("unbreededLinksAreDirected")
       links = _(others.toArray()).map((turtle) => @createLink(true, source, turtle)).filter((other) -> other isnt Nobody).value()
       new LinkSet(links)
+
+    # (Turtle, TurtleSet) => LinkSet
     createReverseDirectedLinks: (source, others) -> #@# Clarity
       @unbreededLinksAreDirected = true
       @updater.updated(this)("unbreededLinksAreDirected")
       links = _(others.toArray()).map((turtle) => @createLink(true, turtle, source)).filter((other) -> other isnt Nobody).value()
       new LinkSet(links)
+
+    # (Turtle, Turtle) => Link
     createUndirectedLink: (source, other) ->
       @createLink(false, source, other)
+
+    #@# Should be able to call `map` directly, without juggling around with Lodash
+    # (Turtle, TurtleSet) => LinkSet
     createUndirectedLinks: (source, others) -> #@# Clarity
       links = _(others.toArray()).map((turtle) => @createLink(false, source, turtle)).filter((other) -> other isnt Nobody).value()
       new LinkSet(links)
+
+    # (Number, Number) => Link
     getLink: (fromId, toId) ->
       link = @_links.find((link) -> link.end1.id is fromId and link.end2.id is toId)
       if link?
@@ -258,6 +332,7 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
       else
         Nobody
 
+    # (Link, Link) => Int
     linkCompare: (a, b) => #@# Heinous
       if a is b
         0

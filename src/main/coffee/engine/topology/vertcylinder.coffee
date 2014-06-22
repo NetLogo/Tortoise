@@ -4,17 +4,24 @@ define(['integration/strictmath', 'engine/exception', 'engine/topology/topology'
 
   class VertCylinder extends Topology
 
-    _wrapInX: true
-    _wrapInY: false
+    _wrapInX: true  # Boolean
+    _wrapInY: false # Boolean
 
+    # (Number, Number) => Number
     shortestX: (x1, x2) -> #@# Some lameness
       if StrictMath.abs(x1 - x2) > (1 + @maxPxcor - @minPxcor) / 2
         (@width - StrictMath.abs(x1 - x2)) * (if x2 > x1 then -1 else 1)
       else
         Math.abs(x1 - x2) * (if x1 > x2 then -1 else 1)
+
+    # (Number, Number) => Number
     shortestY: (y1, y2) -> Math.abs(y1 - y2) * (if y1 > y2 then -1 else 1)
+
+    # (Number) => Number
     wrapX: (pos) ->
       @wrap(pos, @minPxcor - 0.5, @maxPxcor + 0.5)
+
+    # (Number) => Number
     wrapY: (pos) ->
       minY = @minPycor - 0.5
       maxY = @maxPycor + 0.5
@@ -22,20 +29,30 @@ define(['integration/strictmath', 'engine/exception', 'engine/topology/topology'
         pos
       else
         throw new Exception.TopologyInterrupt ("Cannot move turtle beyond the world's edge.")
-    getPatchNorth: (pxcor, pycor) -> (pycor isnt @maxPycor) and @getPatchAt(pxcor, pycor + 1)
-    getPatchSouth: (pxcor, pycor) -> (pycor isnt @minPycor) and @getPatchAt(pxcor, pycor - 1)
+
+    # (Number, Number) => Patch
+    getPatchNorth: (pxcor, pycor) ->
+      (pycor isnt @maxPycor) and @getPatchAt(pxcor, pycor + 1) #@# This booleanism is really weird.  It's present across topologies.
+
+    # (Number, Number) => Patch
+    getPatchSouth: (pxcor, pycor) ->
+      (pycor isnt @minPycor) and @getPatchAt(pxcor, pycor - 1)
+
+    # (Number, Number) => Patch
     getPatchEast: (pxcor, pycor) ->
       if pxcor is @maxPxcor
         @getPatchAt(@minPxcor, pycor)
       else
         @getPatchAt(pxcor + 1, pycor)
 
+    # (Number, Number) => Patch
     getPatchWest: (pxcor, pycor) ->
       if pxcor is @minPxcor
         @getPatchAt(@maxPxcor, pycor)
       else
         @getPatchAt(pxcor - 1, pycor)
 
+    # (Number, Number) => Patch
     getPatchNorthWest: (pxcor, pycor) ->
       if pycor is @maxPycor
         false
@@ -44,6 +61,7 @@ define(['integration/strictmath', 'engine/exception', 'engine/topology/topology'
       else
         @getPatchAt(pxcor - 1, pycor + 1)
 
+    # (Number, Number) => Patch
     getPatchSouthWest: (pxcor, pycor) ->
       if pycor is @minPycor
         false
@@ -52,6 +70,7 @@ define(['integration/strictmath', 'engine/exception', 'engine/topology/topology'
       else
         @getPatchAt(pxcor - 1, pycor - 1)
 
+    # (Number, Number) => Patch
     getPatchSouthEast: (pxcor, pycor) ->
       if pycor is @minPycor
         false
@@ -60,6 +79,7 @@ define(['integration/strictmath', 'engine/exception', 'engine/topology/topology'
       else
         @getPatchAt(pxcor + 1, pycor - 1)
 
+    # (Number, Number) => Patch
     getPatchNorthEast: (pxcor, pycor) ->
       if pycor is @maxPycor
         false
@@ -67,6 +87,8 @@ define(['integration/strictmath', 'engine/exception', 'engine/topology/topology'
         @getPatchAt(@minPxcor, pycor + 1)
       else
         @getPatchAt(pxcor + 1, pycor + 1)
+
+    # (String, Number) => Unit
     diffuse: (varName, coefficient) -> #@# Holy guacamole!
       yy = @height
       xx = @width
@@ -108,5 +130,7 @@ define(['integration/strictmath', 'engine/exception', 'engine/topology/topology'
       for y in [0...yy]
         for x in [0...xx]
           @getPatchAt(x + @minPxcor, y + @minPycor).setVariable(varName, scratch2[x][y])
+
+      return
 
 )
