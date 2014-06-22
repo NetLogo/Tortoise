@@ -80,7 +80,7 @@ define(['integration/abstractmethoderror', 'integration/lodash', 'integration/st
             if @distanceXY(patch.pxcor, patch.pycor, x, y) <= radius and agents.filter((agent) -> agent is patch).nonEmpty()
               result.push(patch)
             patch.turtlesHere().forEach((turtle) =>
-              if @distanceXY(turtle.xcor(), turtle.ycor(), x, y) <= radius and agents.filter((agent) -> agent is turtle).nonEmpty()
+              if @distanceXY(turtle.xcor, turtle.ycor, x, y) <= radius and agents.filter((agent) -> agent is turtle).nonEmpty()
                 result.push(turtle)
               return
             )

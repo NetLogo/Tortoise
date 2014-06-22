@@ -65,8 +65,8 @@ define(['integration/lodash', 'integration/random', 'integration/strictmath', 'e
           dx += (spr * len) / div # arbitrary x-dir push-off --FD
         else
           f = spr * (dist - len) / div
-          dx = dx + (f * (t2.xcor() - t1.xcor()) / dist)
-          dy = dy + (f * (t2.ycor() - t1.ycor()) / dist)
+          dx = dx + (f * (t2.xcor - t1.xcor) / dist)
+          dy = dy + (f * (t2.ycor - t1.ycor) / dist)
         if t1Index isnt -1
           ax[t1Index] += dx
           ay[t1Index] += dy
@@ -83,15 +83,15 @@ define(['integration/lodash', 'integration/random', 'integration/strictmath', 'e
           div = (degCount[i] + degCount[j]) / 2.0
           div = Math.max(div, 1.0)
 
-          if t2.xcor() is t1.xcor() and t2.ycor() is t1.ycor()
+          if t2.xcor is t1.xcor and t2.ycor is t1.ycor
             ang = 360 * Random.nextDouble()
             dx = -(rep / div * Trig.sin(StrictMath.toRadians(ang)))
             dy = -(rep / div * Trig.cos(StrictMath.toRadians(ang)))
           else
             dist = t1.distance(t2)
             f = rep / (dist * dist) / div
-            dx = -(f * (t2.xcor() - t1.xcor()) / dist)
-            dy = -(f * (t2.ycor() - t1.ycor()) / dist)
+            dx = -(f * (t2.xcor - t1.xcor) / dist)
+            dy = -(f * (t2.ycor - t1.ycor) / dist)
           ax[i] += dx
           ay[i] += dy
           ax[j] -= dx
@@ -123,8 +123,8 @@ define(['integration/lodash', 'integration/random', 'integration/strictmath', 'e
         else if fy < -limit
           fy = -limit
 
-        newx = turtle.xcor() + fx
-        newy = turtle.ycor() + fy
+        newx = turtle.xcor + fx
+        newy = turtle.ycor + fy
 
         if newx > @_world.maxPxcor
           newx = @_world.maxPxcor

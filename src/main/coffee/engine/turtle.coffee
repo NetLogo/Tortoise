@@ -17,7 +17,7 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
 
     #@# Should guard against improperly-named breeds, including empty-string breed names
     # (World, Number, Number, Number, Number, Number, Breed, String, Number, Boolean, Number, PenManager) => Turtle
-    constructor: (@world, @id, @_color = 0, @_heading = 0, @_xcor = 0, @_ycor = 0, breed = @world.breedManager.turtles(), @_label = "", @_labelcolor = 9.9, @_hidden = false, @_size = 1.0, @penManager = new PenManager(@world.updater.updated(this))) ->
+    constructor: (@world, @id, @_color = 0, @_heading = 0, @xcor = 0, @ycor = 0, breed = @world.breedManager.turtles(), @_label = "", @_labelcolor = 9.9, @_hidden = false, @_size = 1.0, @penManager = new PenManager(@world.updater.updated(this))) ->
       varNames     = @world.turtlesOwnNames.concat(breed.varNames)
       @_varManager = @_genVarManager(varNames)
 
@@ -30,18 +30,10 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
     getBreedName: ->
       @_breed.name
 
-    # () => Number
-    xcor: ->
-      @_xcor
-
-    # () => Number
-    ycor: ->
-      @_ycor
-
     # (Number) => Unit
     _setXcor: (newX) ->
       originPatch = @getPatchHere()
-      @_xcor = @world.topology().wrapX(newX)
+      @xcor = @world.topology().wrapX(newX)
       @world.updater.updated(this)("xcor")
       if originPatch isnt @getPatchHere()
         originPatch.leave(this)
@@ -52,7 +44,7 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
     # (Number) => Unit
     _setYcor: (newY) ->
       originPatch = @getPatchHere()
-      @_ycor = @world.topology().wrapY(newY)
+      @ycor = @world.topology().wrapY(newY)
       @world.updater.updated(this)("ycor")
       if originPatch isnt @getPatchHere()
         originPatch.leave(this)
@@ -71,29 +63,29 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
 
     # (Turtle|Patch) => Number
     distance: (agent) ->
-      @world.topology().distance(@xcor(), @ycor(), agent)
+      @world.topology().distance(@xcor, @ycor, agent)
 
     # (Number, Number) => Number
     distanceXY: (x, y) ->
-      @world.topology().distanceXY(@xcor(), @ycor(), x, y)
+      @world.topology().distanceXY(@xcor, @ycor, x, y)
 
     # () => (Number, Number)
     getCoords: ->
-      [@xcor(), @ycor()]
+      [@xcor, @ycor]
 
     # (Turtle|Patch) => Number
     towards: (agent) -> #@# Unify, man!
       [x, y] = agent.getCoords()
-      @world.topology().towards(@xcor(), @ycor(), x, y)
+      @world.topology().towards(@xcor, @ycor, x, y)
 
     # (Number, Number) => Number
     towardsXY: (x, y) ->
-      @world.topology().towards(@xcor(), @ycor(), x, y)
+      @world.topology().towards(@xcor, @ycor, x, y)
 
     # (Number, Number) => Unit
     faceXY: (x, y) ->
-      if x isnt @xcor() or y isnt @ycor()
-        @_setHeading(@world.topology().towards(@xcor(), @ycor(), x, y))
+      if x isnt @xcor or y isnt @ycor
+        @_setHeading(@world.topology().towards(@xcor, @ycor, x, y))
       return
 
     # (Turtle|Patch) => Unit
@@ -104,14 +96,14 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
 
     # [T] @ (AbstractAgentSet[T], Number) => AbstractAgentSet[T]
     inRadius: (agents, radius) ->
-      @world.topology().inRadius(this, @xcor(), @ycor(), agents, radius)
+      @world.topology().inRadius(this, @xcor, @ycor, agents, radius)
 
     #@# Boy, this code sure is familiar... (`Patch.patchAt`)
     # (Number, Number) => Patch
     patchAt: (dx, dy) -> #@# Make not silly
       try
-        x = @world.topology().wrapX(@xcor() + dx)
-        y = @world.topology().wrapY(@ycor() + dy)
+        x = @world.topology().wrapX(@xcor + dx)
+        y = @world.topology().wrapY(@ycor + dy)
         @world.getPatchAt(x, y)
       catch error
         if error instanceof Exception.TopologyInterrupt
@@ -186,8 +178,8 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
     patchRightAndAhead: (angle, distance) ->
       heading = @_normalizeHeading(@_heading + angle)
       try
-        newX = @world.topology().wrapX(@xcor() + distance * Trig.sin(heading))
-        newY = @world.topology().wrapY(@ycor() + distance * Trig.cos(heading))
+        newX = @world.topology().wrapX(@xcor + distance * Trig.sin(heading))
+        newY = @world.topology().wrapY(@ycor + distance * Trig.cos(heading))
         @world.getPatchAt(newX, newY)
       catch error
         if error instanceof Exception.TopologyInterrupt then Nobody else throw error
@@ -215,8 +207,8 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
     # () => Boolean
     jump: (distance) ->
       if @canMove(distance)
-        @_setXcor(@xcor() + distance * Trig.sin(@_heading))
-        @_setYcor(@ycor() + distance * Trig.cos(@_heading))
+        @_setXcor(@xcor + distance * Trig.sin(@_heading))
+        @_setYcor(@ycor + distance * Trig.cos(@_heading))
         return true
       return false #@# Orly?
 
@@ -236,8 +228,8 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
 
     # (Number, Number) => Unit
     setXY: (x, y) ->
-      origXcor = @xcor()
-      origYcor = @ycor()
+      origXcor = @xcor
+      origYcor = @ycor
       try
         @_setXcor(x)
         @_setYcor(y)
@@ -288,7 +280,7 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
 
     # () => Patch
     getPatchHere: ->
-      @world.getPatchAt(@xcor(), @ycor())
+      @world.getPatchAt(@xcor, @ycor)
 
     # (String) => Any
     getPatchVariable: (varName) ->
@@ -323,7 +315,7 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
 
     # () => Turtle
     _makeTurtleCopy: (breed) ->
-      turtleGenFunc = (id) => new Turtle(@world, id, @_color, @_heading, @xcor(), @ycor(), breed, @_label, @_labelcolor, @_hidden, @_size, @penManager.clone()) #@# Sounds like we ought have some cloning system, of which this function is a first step
+      turtleGenFunc = (id) => new Turtle(@world, id, @_color, @_heading, @xcor, @ycor, breed, @_label, @_labelcolor, @_hidden, @_size, @penManager.clone()) #@# Sounds like we ought have some cloning system, of which this function is a first step
       turtle        = @world.createTurtle(turtleGenFunc)
       _(@world.turtlesOwnNames).forEach((varName) =>
         turtle.setVariable(varName, @getVariable(varName))
@@ -398,8 +390,8 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
         { name: 'shape',       get: (=> @_shape),                             set: ((x) => @_setShape(x))             },
         { name: 'size',        get: (=> @_size),                              set: ((x) => @_setSize(x))              },
         { name: 'who',         get: (=> @id),                                 set: (->)                               },
-        { name: 'xcor',        get: (=> @xcor()),                             set: ((x) => @_setXcor(x))              },
-        { name: 'ycor',        get: (=> @ycor()),                             set: ((x) => @_setYcor(x))              }
+        { name: 'xcor',        get: (=> @xcor),                               set: ((x) => @_setXcor(x))              },
+        { name: 'ycor',        get: (=> @ycor),                               set: ((x) => @_setYcor(x))              }
       ]
 
       new VariableManager(extraVarNames, varBundles)

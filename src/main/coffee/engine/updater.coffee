@@ -90,8 +90,8 @@ define(['engine/exception', 'engine/link', 'engine/observer', 'engine/patch', 'e
       'pen-mode':    ["PEN-MODE",    turtle.penManager.getMode().toString()]
       shape:         ["SHAPE",       turtle._shape]
       size:          ["SIZE",        turtle._size]
-      xcor:          ["XCOR",        turtle.xcor()]
-      ycor:          ["YCOR",        turtle.ycor()]
+      xcor:          ["XCOR",        turtle.xcor]
+      ycor:          ["YCOR",        turtle.ycor]
     }
 
     # (Patch) => Object[EngineKey, (Key, Value)]
