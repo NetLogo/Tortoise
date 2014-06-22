@@ -20,8 +20,8 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
                 , @_tiemode = "none") ->
       @_varManager = @_genVarManager(@world.linksOwnNames)
       @_setBreed(breed)
-      @end1._links.push(this)
-      @end2._links.push(this)
+      @end1.addLink(this)
+      @end2.addLink(this)
       @updateEndRelatedVars()
 
     # () => String

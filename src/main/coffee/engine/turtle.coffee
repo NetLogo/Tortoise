@@ -60,6 +60,11 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
       @refreshLinks()
       return
 
+    # (Link) => Unit
+    addLink: (link) =>
+      @_links.push(link)
+      return
+
     # (Number) => Boolean
     canMove: (distance) ->
       @patchAhead(distance) isnt Nobody
