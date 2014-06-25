@@ -14,9 +14,14 @@ define(['engine/patch', 'engine/turtle', 'engine/variablemanager', 'integration/
 
     _codeGlobalNames: undefined # Array[String]
 
-    # (Updater, Array[String], Array[String]) => Observer
-    constructor: (@_updater, @_globalNames, @_interfaceGlobalNames) ->
+    _updateVarsByName: undefined # (String*) => Unit
+
+    # ((Updatable) => (String*) => Unit, Array[String], Array[String]) => Observer
+    constructor: (genUpdate, @_globalNames, @_interfaceGlobalNames) ->
+      @_updateVarsByName = genUpdate(this)
+
       @resetPerspective()
+
       @_varManager      = new VariableManager(@_globalNames)
       @_codeGlobalNames = _(@_globalNames).difference(@_interfaceGlobalNames)
 
@@ -56,7 +61,7 @@ define(['engine/patch', 'engine/turtle', 'engine/variablemanager', 'integration/
 
     # () => Unit
     _updatePerspective: ->
-      @_updater.updated(this)("perspective", "targetAgent")
+      @_updateVarsByName("perspective", "targetAgent")
       return
 
 )

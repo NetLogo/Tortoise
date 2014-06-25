@@ -52,7 +52,7 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
         wrappingAllowedInY: @_wrappingAllowedInY
       })
 
-      @observer = new Observer(updater, globalNames, interfaceGlobalNames)
+      @observer = new Observer(updater.updated, globalNames, interfaceGlobalNames)
       @ticker   = new Ticker(updater.updated(this))
       @topology = null
 
@@ -73,7 +73,7 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
         for y in [@maxPycor..@minPycor]
           for x in [@minPxcor..@maxPxcor]
             id = (@width() * (@maxPycor - y)) + x - @minPxcor
-            new Patch(id, x, y, this)
+            new Patch(id, x, y, this, @updater.updated)
 
       @_patches = [].concat(nested...)
 
@@ -253,12 +253,12 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
 
     # (Number, String) => TurtleSet
     createOrderedTurtles: (n, breedName) -> #@# Clarity is a good thing
-      turtles = _(0).range(n).map((num) => @createTurtle((id) => new Turtle(this, id, (10 * num + 5) % 140, (360 * num) / n, 0, 0, @breedManager.get(breedName)))).value()
+      turtles = _(0).range(n).map((num) => @createTurtle((id) => new Turtle(this, id, @updater.updated, @updater.registerDeadTurtle, (10 * num + 5) % 140, (360 * num) / n, 0, 0, @breedManager.get(breedName)))).value()
       new TurtleSet(turtles, @breedManager.get(breedName))
 
     # (Number, String) => TurtleSet
     createTurtles: (n, breedName) -> #@# Clarity is still good
-      turtles = _(0).range(n).map(=> @createTurtle((id) => new Turtle(this, id, 5 + 10 * Random.nextInt(14), Random.nextInt(360), 0, 0, @breedManager.get(breedName)))).value()
+      turtles = _(0).range(n).map(=> @createTurtle((id) => new Turtle(this, id, @updater.updated, @updater.registerDeadTurtle, 5 + 10 * Random.nextInt(14), Random.nextInt(360), 0, 0, @breedManager.get(breedName)))).value()
       new TurtleSet(turtles, @breedManager.get(breedName))
 
     # (Number, Number) => PatchSet
@@ -343,7 +343,7 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
         [to, from]
 
       if @getLink(end1.id, end2.id) is Nobody
-        link = new Link(@_linkIDManager.next(), directed, end1, end2, this)
+        link = new Link(@_linkIDManager.next(), directed, end1, end2, this, @updater.updated, @updater.registerDeadLink)
         @updater.updated(link)(Builtins.linkBuiltins...)
         @updater.updated(link)(Builtins.linkExtras...) #@# See, this update nonsense is awful.
         @_links.insert(link)

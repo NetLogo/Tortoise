@@ -11,13 +11,16 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
 
   class Turtle
 
-    _breed:      undefined # Breed
-    _links:      undefined # Array[Link]
-    _varManager: undefined # VariableManager
+    _breed:            undefined # Breed
+    _links:            undefined # Array[Link]
+    _updateVarsByName: undefined # (String*) => Unit
+    _varManager:       undefined # VariableManager
 
     #@# Should guard against improperly-named breeds, including empty-string breed names
-    # (World, Number, Number, Number, Number, Number, Breed, String, Number, Boolean, Number, PenManager) => Turtle
-    constructor: (@world, @id, @_color = 0, @_heading = 0, @xcor = 0, @ycor = 0, breed = @world.breedManager.turtles(), @_label = "", @_labelcolor = 9.9, @_hidden = false, @_size = 1.0, @penManager = new PenManager(@world.updater.updated(this))) ->
+    # (World, Number, (Updatable) => (String*) => Unit, (Number) => Unit, Number, Number, Number, Number, Breed, String, Number, Boolean, Number, PenManager) => Turtle
+    constructor: (@world, @id, genUpdate, @_registerDeath, @_color = 0, @_heading = 0, @xcor = 0, @ycor = 0, breed = @world.breedManager.turtles(), @_label = "", @_labelcolor = 9.9, @_hidden = false, @_size = 1.0, @penManager = new PenManager(genUpdate(this))) ->
+      @_updateVarsByName = genUpdate(this)
+
       varNames     = @world.turtlesOwnNames.concat(breed.varNames)
       @_varManager = @_genVarManager(varNames)
 
@@ -34,7 +37,7 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
     _setXcor: (newX) ->
       originPatch = @getPatchHere()
       @xcor = @world.topology.wrapX(newX)
-      @world.updater.updated(this)("xcor")
+      @_updateVarsByName("xcor")
       if originPatch isnt @getPatchHere()
         originPatch.leave(this)
         @getPatchHere().arrive(this)
@@ -45,7 +48,7 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
     _setYcor: (newY) ->
       originPatch = @getPatchHere()
       @ycor = @world.topology.wrapY(newY)
-      @world.updater.updated(this)("ycor")
+      @_updateVarsByName("ycor")
       if originPatch isnt @getPatchHere()
         originPatch.leave(this)
         @getPatchHere().arrive(this)
@@ -315,7 +318,7 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
 
     # () => Turtle
     _makeTurtleCopy: (breed) ->
-      turtleGenFunc = (id) => new Turtle(@world, id, @_color, @_heading, @xcor, @ycor, breed, @_label, @_labelcolor, @_hidden, @_size, @penManager.clone()) #@# Sounds like we ought have some cloning system, of which this function is a first step
+      turtleGenFunc = (id) => new Turtle(@world, id, @world.updater.updated, @_registerDeath, @_color, @_heading, @xcor, @ycor, breed, @_label, @_labelcolor, @_hidden, @_size, @penManager.clone()) #@# Sounds like we ought have some cloning system, of which this function is a first step
       turtle        = @world.createTurtle(turtleGenFunc)
       _(@world.turtlesOwnNames).forEach((varName) =>
         turtle.setVariable(varName, @getVariable(varName))
@@ -372,7 +375,7 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
 
     # () => Unit
     _seppuku: ->
-      @world.updater.registerDeadTurtle(@id)
+      @_registerDeath(@id)
       return
 
     # Array[String] => VariableManager
@@ -398,7 +401,7 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
 
     # (String) => Unit
     _genVarUpdate: (varName) ->
-      @world.updater.updated(this)(varName)
+      @_updateVarsByName(varName)
       return
 
 
