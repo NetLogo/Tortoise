@@ -8,12 +8,14 @@ define(['integration/lodash', 'integration/random', 'engine/builtins', 'engine/c
 
   class Patch
 
-    _varManager: undefined # VariableManager
+    _updateVarsByName: undefined # (String*) => Unit
+    _varManager:       undefined # VariableManager
 
     turtles: undefined # Array[Turtle]
 
-    # (Number, Number, Number, World, Number, String, Number) => Patch
-    constructor: (@id, @pxcor, @pycor, @world, @_pcolor = 0.0, @_plabel = "", @_plabelcolor = 9.9) ->
+    # (Number, Number, Number, World, (Updatable) => (String*) => Unit, Number, String, Number) => Patch
+    constructor: (@id, @pxcor, @pycor, @world, genUpdate, @_pcolor = 0.0, @_plabel = "", @_plabelcolor = 9.9) ->
+      @_updateVarsByName = genUpdate(this)
       @turtles = []
       @_varManager = @_genVarManager(@world.patchesOwnNames)
 
@@ -76,7 +78,7 @@ define(['integration/lodash', 'integration/random', 'engine/builtins', 'engine/c
     # (Number, String) => TurtleSet
     sprout: (n, breedName) ->
       breed   = if "" is breedName then @world.breedManager.turtles() else @world.breedManager.get(breedName) #@# This conditional is begging for a bug
-      turtles = _(0).range(n).map(=> @world.createTurtle((id) => new Turtle(@world, id, 5 + 10 * Random.nextInt(14), Random.nextInt(360), @pxcor, @pycor, breed))).value() #@# Moar clarity, plox; and why do patches know how to create turtles?!
+      turtles = _(0).range(n).map(=> @world.createTurtle((id) => new Turtle(@world, id, @world.updater.updated, @world.updater.registerDeadTurtle, 5 + 10 * Random.nextInt(14), Random.nextInt(360), @pxcor, @pycor, breed))).value() #@# Moar clarity, plox; and why do patches know how to create turtles?!
       new TurtleSet(turtles, breed)
 
     # (String) => TurtleSet
@@ -139,7 +141,7 @@ define(['integration/lodash', 'integration/random', 'engine/builtins', 'engine/c
 
     # (String) => Unit
     _genVarUpdate: (varName) ->
-      @world.updater.updated(this)(varName)
+      @_updateVarsByName(varName)
       return
 
     # (Number) => Unit

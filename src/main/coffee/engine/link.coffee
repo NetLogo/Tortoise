@@ -7,17 +7,19 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
 
   class Link
 
-    _breed:      undefined # Breed
-    _varManager: undefined # VariableManager
+    _breed:            undefined # Breed
+    _updateVarsByName: undefined # (String*) => Unit
+    _varManager:       undefined # VariableManager
 
     # () => Unit
     xcor: -> #@# WHAT?! x2
     ycor: ->
 
-    # (Number, Boolean, Turtle, Turtle, World, Breed, Number, Boolean, String, Number, String, Number, String) => Link
-    constructor: (@id, @directed, @end1, @end2, @world, breed = @world.breedManager.links(), @_color = 5
-                , @_isHidden = false, @_label = "", @_labelcolor = 9.9, @_shape = "default", @_thickness = 0
-                , @_tiemode = "none") ->
+    # (Number, Boolean, Turtle, Turtle, World, (Updatable) => (String*) => Unit, (Number) => Unit, Breed, Number, Boolean, String, Number, String, Number, String) => Link
+    constructor: (@id, @directed, @end1, @end2, @world, genUpdate, @_registerDeath, breed = @world.breedManager.links()
+                , @_color = 5, @_isHidden = false, @_label = "", @_labelcolor = 9.9, @_shape = "default"
+                , @_thickness = 0, @_tiemode = "none") ->
+      @_updateVarsByName = genUpdate(this)
       @_varManager = @_genVarManager(@world.linksOwnNames)
       @_setBreed(breed)
       @end1.addLink(this)
@@ -58,7 +60,7 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
 
     # () => Unit
     updateEndRelatedVars: ->
-      @world.updater.updated(this)("heading", "size", "midpointx", "midpointy")
+      @_updateVarsByName("heading", "size", "midpointx", "midpointy")
       return
 
     # () => String
@@ -91,7 +93,7 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
 
     # () => Unit
     _seppuku: ->
-      @world.updater.registerDeadLink(@id)
+      @_registerDeath(@id)
       return
 
     # Array[String] => VariableManager
@@ -113,7 +115,7 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
 
     # (String) => Unit
     _genVarUpdate: (varName) ->
-      @world.updater.updated(this)(varName)
+      @_updateVarsByName(varName)
       return
 
     # (Breed) => Unit

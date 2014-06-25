@@ -35,12 +35,12 @@ define(['engine/exception', 'engine/link', 'engine/observer', 'engine/patch', 'e
       result
 
     # (Number) => Unit
-    registerDeadLink: (id) ->
+    registerDeadLink: (id) =>
       @_update("links", id, { WHO: -1 })
       return
 
     # (Number) => Unit
-    registerDeadTurtle: (id) ->
+    registerDeadTurtle: (id) =>
       @_update("turtles", id, { WHO: -1 })
       return
 
