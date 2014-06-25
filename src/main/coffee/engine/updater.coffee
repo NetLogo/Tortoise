@@ -34,9 +34,19 @@ define(['engine/exception', 'engine/link', 'engine/observer', 'engine/patch', 'e
       @_updates = [{turtles: {}, patches: {}, links: {}, observer: {}, world: {}}]
       result
 
-    # (String, Number, UpdateEntry) => Unit
-    update: (agentType, id, newAgent) ->
-      @_updates[0][agentType][id] = newAgent
+    # (Number) => Unit
+    registerDeadLink: (id) ->
+      @_update("links", id, { WHO: -1 })
+      return
+
+    # (Number) => Unit
+    registerDeadTurtle: (id) ->
+      @_update("turtles", id, { WHO: -1 })
+      return
+
+    # (UpdateEntry, Number) => Unit
+    registerWorldState: (state, id = 0) ->
+      @_update("world", id, state)
       return
 
     # (Updatable) => (EngineKey*) => Unit
@@ -150,5 +160,10 @@ define(['engine/exception', 'engine/link', 'engine/observer', 'engine/patch', 'e
       perspective: ["perspective", observer._perspective]
       targetAgent: ["targetAgent", observer._targetAgent]
     }
+
+    # (String, Number, UpdateEntry) => Unit
+    _update: (agentType, id, newAgent) ->
+      @_updates[0][agentType][id] = newAgent
+      return
 
 )

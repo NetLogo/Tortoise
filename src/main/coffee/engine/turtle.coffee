@@ -372,7 +372,7 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
 
     # () => Unit
     _seppuku: ->
-      @world.updater.update("turtles", @id, { WHO: -1 }) #@# If you're awful and you know it, clap your hands!
+      @world.updater.registerDeadTurtle(@id)
       return
 
     # Array[String] => VariableManager
