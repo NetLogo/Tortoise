@@ -32,7 +32,7 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
                 , @linksOwnNames, @patchesOwnNames, @minPxcor, @maxPxcor, @minPycor, @maxPycor, @_patchSize
                 , @_wrappingAllowedInX, @_wrappingAllowedInY, turtleShapeList, linkShapeList) ->
       @updater.collectUpdates()
-      @updater.update("world", 0, {
+      @updater.registerWorldState({
         worldWidth: Math.abs(@minPxcor - @maxPxcor) + 1,
         worldHeight: Math.abs(@minPycor - @maxPycor) + 1,
         minPxcor: @minPxcor,

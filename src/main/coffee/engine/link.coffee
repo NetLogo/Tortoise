@@ -91,7 +91,7 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
 
     # () => Unit
     _seppuku: ->
-      @world.updater.update("links", @id, { WHO: -1 }) #@# If you're awful and you know it, clap your hands!
+      @world.updater.registerDeadLink(@id)
       return
 
     # Array[String] => VariableManager
