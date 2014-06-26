@@ -32,10 +32,10 @@ var StrictMath     = require('integration/strictmath');function setup() {
     Prims.setVariable('xcor', Prims.getVariable('who'));
     Prims.setVariable('color', 15);
     Prims.setVariable('size', 1.5);
-    if (Prims.equality(Prims.getPatchVariable('pxcor'), world.maxPxcor)) {
+    if (Prims.equality(Prims.getPatchVariable('pxcor'), world.topology.maxPxcor)) {
       Prims.setVariable('color', 105);
     }
-    if (Prims.equality(Prims.getPatchVariable('pxcor'), world.minPxcor)) {
+    if (Prims.equality(Prims.getPatchVariable('pxcor'), world.topology.minPxcor)) {
       Prims.setVariable('color', 55);
     }
   });

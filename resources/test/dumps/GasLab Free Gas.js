@@ -181,7 +181,7 @@ function setupParticle() {
   Prims.setVariable('last-collision', Nobody);
 }
 function randomPosition() {
-  Prims.setXY(((1 + world.minPxcor) + Prims.randomFloat(((2 * world.maxPxcor) - 2))), ((1 + world.minPycor) + Prims.randomFloat(((2 * world.maxPycor) - 2))));
+  Prims.setXY(((1 + world.topology.minPxcor) + Prims.randomFloat(((2 * world.topology.maxPxcor) - 2))), ((1 + world.topology.minPycor) + Prims.randomFloat(((2 * world.topology.maxPycor) - 2))));
 }
 function lastN(n, theList) {
   if (Prims.gte(n, Prims.length(theList))) {

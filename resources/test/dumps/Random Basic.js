@@ -27,7 +27,7 @@ var notImplemented = require('integration/notimplemented');
 var Random         = require('integration/random');
 var StrictMath     = require('integration/strictmath');function setup() {
   world.clearAll();
-  world.observer.setGlobal('max-y-histogram', (world.minPycor + world.observer.getGlobal('height')));
+  world.observer.setGlobal('max-y-histogram', (world.topology.minPycor + world.observer.getGlobal('height')));
   Call(createHistogramWidth);
   Call(setupColumnCounters);
   world.observer.setGlobal('time-to-stop?', false);
@@ -45,7 +45,7 @@ function createHistogramWidth() {
 }
 function setupColumnCounters() {
   Prims.ask(world.patches().agentFilter(function() {
-    return (Prims.equality(Prims.getPatchVariable('pycor'), world.minPycor) && Prims.equality(Prims.getPatchVariable('pcolor'), 45));
+    return (Prims.equality(Prims.getPatchVariable('pycor'), world.topology.minPycor) && Prims.equality(Prims.getPatchVariable('pcolor'), 45));
   }), true, function() {
     Prims.ask(Prims.sprout(1, "COLUMN-COUNTERS"), true, function() {
       SelfManager.self().hideTurtle(true);;

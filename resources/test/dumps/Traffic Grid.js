@@ -65,10 +65,10 @@ function setupPatches() {
     Prims.setPatchVariable('pcolor', (35 + 3));
   });
   world.observer.setGlobal('roads', world.patches().agentFilter(function() {
-    return (Prims.equality(StrictMath.floor(Prims.mod(((Prims.getPatchVariable('pxcor') + world.maxPxcor) - StrictMath.floor((world.observer.getGlobal('grid-x-inc') - 1))), world.observer.getGlobal('grid-x-inc'))), 0) || Prims.equality(StrictMath.floor(Prims.mod((Prims.getPatchVariable('pycor') + world.maxPycor), world.observer.getGlobal('grid-y-inc'))), 0));
+    return (Prims.equality(StrictMath.floor(Prims.mod(((Prims.getPatchVariable('pxcor') + world.topology.maxPxcor) - StrictMath.floor((world.observer.getGlobal('grid-x-inc') - 1))), world.observer.getGlobal('grid-x-inc'))), 0) || Prims.equality(StrictMath.floor(Prims.mod((Prims.getPatchVariable('pycor') + world.topology.maxPycor), world.observer.getGlobal('grid-y-inc'))), 0));
   }));
   world.observer.setGlobal('intersections', world.observer.getGlobal('roads').agentFilter(function() {
-    return (Prims.equality(StrictMath.floor(Prims.mod(((Prims.getPatchVariable('pxcor') + world.maxPxcor) - StrictMath.floor((world.observer.getGlobal('grid-x-inc') - 1))), world.observer.getGlobal('grid-x-inc'))), 0) && Prims.equality(StrictMath.floor(Prims.mod((Prims.getPatchVariable('pycor') + world.maxPycor), world.observer.getGlobal('grid-y-inc'))), 0));
+    return (Prims.equality(StrictMath.floor(Prims.mod(((Prims.getPatchVariable('pxcor') + world.topology.maxPxcor) - StrictMath.floor((world.observer.getGlobal('grid-x-inc') - 1))), world.observer.getGlobal('grid-x-inc'))), 0) && Prims.equality(StrictMath.floor(Prims.mod((Prims.getPatchVariable('pycor') + world.topology.maxPycor), world.observer.getGlobal('grid-y-inc'))), 0));
   }));
   Prims.ask(world.observer.getGlobal('roads'), true, function() {
     Prims.setPatchVariable('pcolor', 9.9);
@@ -81,8 +81,8 @@ function setupIntersections() {
     Prims.setPatchVariable('green-light-up?', true);
     Prims.setPatchVariable('my-phase', 0);
     Prims.setPatchVariable('auto?', true);
-    Prims.setPatchVariable('my-row', StrictMath.floor(((Prims.getPatchVariable('pycor') + world.maxPycor) / world.observer.getGlobal('grid-y-inc'))));
-    Prims.setPatchVariable('my-column', StrictMath.floor(((Prims.getPatchVariable('pxcor') + world.maxPxcor) / world.observer.getGlobal('grid-x-inc'))));
+    Prims.setPatchVariable('my-row', StrictMath.floor(((Prims.getPatchVariable('pycor') + world.topology.maxPycor) / world.observer.getGlobal('grid-y-inc'))));
+    Prims.setPatchVariable('my-column', StrictMath.floor(((Prims.getPatchVariable('pxcor') + world.topology.maxPxcor) / world.observer.getGlobal('grid-x-inc'))));
     Call(setSignalColors);
   });
 }
@@ -99,7 +99,7 @@ function setupCars() {
     }
   }
   else {
-    if (Prims.equality(StrictMath.floor(Prims.mod(((Prims.getPatchVariable('pxcor') + world.maxPxcor) - StrictMath.floor((world.observer.getGlobal('grid-x-inc') - 1))), world.observer.getGlobal('grid-x-inc'))), 0)) {
+    if (Prims.equality(StrictMath.floor(Prims.mod(((Prims.getPatchVariable('pxcor') + world.topology.maxPxcor) - StrictMath.floor((world.observer.getGlobal('grid-x-inc') - 1))), world.observer.getGlobal('grid-x-inc'))), 0)) {
       Prims.setVariable('up-car?', true);
     }
     else {

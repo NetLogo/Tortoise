@@ -80,7 +80,7 @@ function findTopSpecies() {
 function placeWall() {
   if (notImplemented('mouse-down?', false)) {
     Prims.ask(world.patches().agentFilter(function() {
-      return (Prims.equality(StrictMath.abs(Prims.getPatchVariable('pycor')), world.maxPycor) || Prims.equality(Prims.getPatchVariable('pycor'), StrictMath.round(notImplemented('mouse-ycor', 0)())));
+      return (Prims.equality(StrictMath.abs(Prims.getPatchVariable('pycor')), world.topology.maxPycor) || Prims.equality(Prims.getPatchVariable('pycor'), StrictMath.round(notImplemented('mouse-ycor', 0)())));
     }), true, function() {
       Prims.setPatchVariable('pcolor', 9.9);
       Prims.ask(SelfManager.self().turtlesHere(), true, function() {

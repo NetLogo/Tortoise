@@ -126,15 +126,15 @@ define(['integration/lodash', 'integration/random', 'integration/strictmath', 'e
         newx = turtle.xcor + fx
         newy = turtle.ycor + fy
 
-        if newx > @_world.maxPxcor
-          newx = @_world.maxPxcor
-        else if newx < @_world.minPxcor
-          newx = @_world.minPxcor
+        if newx > @_world.topology.maxPxcor
+          newx = @_world.topology.maxPxcor
+        else if newx < @_world.topology.minPxcor
+          newx = @_world.topology.minPxcor
 
-        if newy > @_world.maxPycor
-          newy = @_world.maxPycor
-        else if newy < @_world.minPycor
-          newy = @_world.minPycor
+        if newy > @_world.topology.maxPycor
+          newy = @_world.topology.maxPycor
+        else if newy < @_world.topology.minPycor
+          newy = @_world.topology.minPycor
         turtle.setXY(newx, newy)
 
       return
