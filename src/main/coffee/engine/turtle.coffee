@@ -318,8 +318,7 @@ define(['integration/lodash', 'engine/abstractagentset', 'engine/builtins', 'eng
 
     # () => Turtle
     _makeTurtleCopy: (breed) ->
-      turtleGenFunc = (id) => new Turtle(@world, id, @world.updater.updated, @_registerDeath, @_color, @_heading, @xcor, @ycor, breed, @_label, @_labelcolor, @_hidden, @_size, @penManager.clone()) #@# Sounds like we ought have some cloning system, of which this function is a first step
-      turtle        = @world.createTurtle(turtleGenFunc)
+      turtle = @world.createTurtle(@_color, @_heading, @xcor, @ycor, breed, @_label, @_labelcolor, @_hidden, @_size, @penManager.clone())
       _(@world.turtlesOwnNames).forEach((varName) =>
         turtle.setVariable(varName, @getVariable(varName))
         return

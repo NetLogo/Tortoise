@@ -208,7 +208,7 @@ function showRules() {
   Prims.ask(world.patches().agentFilter(function() {
     return (Prims.equality(Prims.getPatchVariable('pycor'), world.maxPycor) && Prims.equality(Prims.mod((Prims.getPatchVariable('pxcor') + 1), StrictMath.floor((world.width() / 8))), 0));
   }), true, function() {
-    Prims.ask(Prims.sprout(1, ""), true, function() {
+    Prims.ask(Prims.sprout(1, "TURTLES"), true, function() {
       Prims.setVariable('heading', 270);
       Prims.fd(18);
       Call(printBlock, Prims.item(0, Prims.item(Prims.getVariable('who'), rules)));

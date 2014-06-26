@@ -32,7 +32,7 @@ var StrictMath     = require('integration/strictmath');function setup() {
     throw new Exception.StopInterrupt;
   }
   Prims.ask(Prims.nOf(world.observer.getGlobal('number'), world.patches()), true, function() {
-    Prims.ask(Prims.sprout(1, ""), true, function() {
+    Prims.ask(Prims.sprout(1, "TURTLES"), true, function() {
       Prims.setVariable('color', 15);
     });
   });

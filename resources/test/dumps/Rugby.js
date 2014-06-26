@@ -63,7 +63,7 @@ function setupField() {
 function setupBalls() {
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
   Prims.ask(world.observer.getGlobal('try-line'), true, function() {
-    Prims.ask(Prims.sprout(1, ""), true, function() {
+    Prims.ask(Prims.sprout(1, "TURTLES"), true, function() {
       Prims.setVariable('color', 25);
       Prims.setVariable('start-patch', SelfManager.self().getPatchHere());
       Prims.setVariable('heading', (Prims.randomFloat(90) + 90));
