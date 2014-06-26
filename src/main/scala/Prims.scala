@@ -242,7 +242,8 @@ object Prims {
     val n = Handlers.reporter(s.args(0))
     val body = Handlers.fun(s.args(1))
     val breedName = s.command.asInstanceOf[prim._sprout].breedName
-    s"""Prims.ask(Prims.sprout($n, "$breedName"), true, $body);"""
+    val trueBreedName = if (breedName.nonEmpty) breedName else "TURTLES"
+    s"""Prims.ask(Prims.sprout($n, "$trueBreedName"), true, $body);"""
   }
 
   def generateHatch(s: ast.Statement, breedName: String): String = {

@@ -64,7 +64,7 @@ function initializeVariables() {
   world.observer.setGlobal('last100coop', []);
 }
 function createTurtle() {
-  Prims.ask(Prims.sprout(1, ""), true, function() {
+  Prims.ask(Prims.sprout(1, "TURTLES"), true, function() {
     Prims.setVariable('color', Call(randomColor));
     Prims.setVariable('cooperate-with-same?', Prims.lt(Prims.randomFloat(1), world.observer.getGlobal('immigrant-chance-cooperate-with-same')));
     Prims.setVariable('cooperate-with-different?', Prims.lt(Prims.randomFloat(1), world.observer.getGlobal('immigrant-chance-cooperate-with-different')));

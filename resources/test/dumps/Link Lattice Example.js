@@ -28,7 +28,7 @@ var Random         = require('integration/random');
 var StrictMath     = require('integration/strictmath');function setupSquare() {
   world.clearAll();
   Prims.ask(world.patches(), true, function() {
-    Prims.ask(Prims.sprout(1, ""), true, function() {});
+    Prims.ask(Prims.sprout(1, "TURTLES"), true, function() {});
   });
   Prims.ask(world.turtles(), true, function() {
     Prims.ask(LinkPrims.createLinksWith(Prims.turtlesOn(Prims.getNeighbors4())), false, function() {});
@@ -37,7 +37,7 @@ var StrictMath     = require('integration/strictmath');function setupSquare() {
 function setupHex() {
   world.clearAll();
   Prims.ask(world.patches(), true, function() {
-    Prims.ask(Prims.sprout(1, ""), true, function() {});
+    Prims.ask(Prims.sprout(1, "TURTLES"), true, function() {});
   });
   Prims.ask(world.turtles(), true, function() {
     Prims.ask(LinkPrims.createLinksWith(SelfManager.self().turtlesAt(0, 1)), false, function() {});

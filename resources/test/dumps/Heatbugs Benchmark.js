@@ -38,7 +38,7 @@ function setup() {
   world.clearAll();
   world.ticker.reset();
   Prims.ask(Prims.nOf(world.observer.getGlobal('bug-count'), world.patches()), true, function() {
-    Prims.ask(Prims.sprout(1, ""), true, function() {
+    Prims.ask(Prims.sprout(1, "TURTLES"), true, function() {
       Prims.setVariable('color', 65);
       Prims.setVariable('size', 1.75);
       Prims.setVariable('ideal-temp', (world.observer.getGlobal('min-ideal-temp') + Prims.random(StrictMath.abs((world.observer.getGlobal('max-ideal-temp') - world.observer.getGlobal('min-ideal-temp'))))));

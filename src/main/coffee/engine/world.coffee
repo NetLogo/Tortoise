@@ -1,13 +1,15 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engine/exception', 'engine/idmanager'
-      , 'engine/link', 'engine/linkset', 'engine/nobody', 'engine/observer', 'engine/patch', 'engine/patchset'
-      , 'engine/ticker', 'engine/turtle', 'engine/turtleset', 'engine/worldlinks', 'engine/topology/box'
-      , 'engine/topology/horizcylinder', 'engine/topology/torus', 'engine/topology/vertcylinder', 'integration/lodash']
-     , ( Random,               StrictMath,               Builtins,          Exception,          IDManager
-      ,  Link,          LinkSet,          Nobody,          Observer,          Patch,          PatchSet
-      ,  Ticker,          Turtle,          TurtleSet,          WorldLinks,          Box
-      ,  HorizCylinder,                   Torus,                   VertCylinder,                   _) ->
+define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engine/colormodel', 'engine/exception'
+      , 'engine/idmanager', 'engine/link', 'engine/linkset', 'engine/nobody', 'engine/observer', 'engine/patch'
+      , 'engine/patchset', 'engine/ticker', 'engine/turtle', 'engine/turtleset', 'engine/worldlinks'
+      , 'engine/topology/box', 'engine/topology/horizcylinder', 'engine/topology/torus', 'engine/topology/vertcylinder'
+      , 'integration/lodash']
+     , ( Random,               StrictMath,               Builtins,          ColorModel,          Exception
+      ,  IDManager,          Link,          LinkSet,          Nobody,          Observer,          Patch
+      ,  PatchSet,          Ticker,          Turtle,          TurtleSet,          WorldLinks
+      ,  Box,                   HorizCylinder,                   Torus,                   VertCylinder
+      ,  _) ->
 
   class World
 
@@ -242,23 +244,32 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
       @_resetPatchLabelCount()
       return
 
-    # ((Number) => Turtle) => Turtle
-    createTurtle: (turtleGenFunc) ->
+    # (Number, Number, Number, Number, Breed, String, Number, Boolean, Number, PenManager) => Turtle
+    createTurtle: (color, heading, xcor, ycor, breed, label, lcolor, isHidden, size, penManager) ->
       id     = @_turtleIDManager.next()
-      turtle = turtleGenFunc(id)
+      turtle = new Turtle(this, id, @updater.updated, @updater.registerDeadTurtle, color, heading, xcor, ycor, breed, label, lcolor, isHidden, size, penManager)
       @updater.updated(turtle)(Builtins.turtleBuiltins...)
       @_turtles.push(turtle)
       @_turtlesById[id] = turtle
       turtle
 
     # (Number, String) => TurtleSet
-    createOrderedTurtles: (n, breedName) -> #@# Clarity is a good thing
-      turtles = _(0).range(n).map((num) => @createTurtle((id) => new Turtle(this, id, @updater.updated, @updater.registerDeadTurtle, (10 * num + 5) % 140, (360 * num) / n, 0, 0, @breedManager.get(breedName)))).value()
+    createOrderedTurtles: (n, breedName) ->
+      turtles = _(0).range(n).map(
+        (num) =>
+          color   = ColorModel.nthColor(num)
+          heading = (360 * num) / n
+          @createTurtle(color, heading, 0, 0, @breedManager.get(breedName))
+      ).value()
       new TurtleSet(turtles, @breedManager.get(breedName))
 
     # (Number, String) => TurtleSet
-    createTurtles: (n, breedName) -> #@# Clarity is still good
-      turtles = _(0).range(n).map(=> @createTurtle((id) => new Turtle(this, id, @updater.updated, @updater.registerDeadTurtle, 5 + 10 * Random.nextInt(14), Random.nextInt(360), 0, 0, @breedManager.get(breedName)))).value()
+    createTurtles: (n, breedName, xcor = 0, ycor = 0) ->
+      turtles = _(0).range(n).map(=>
+        color   = ColorModel.randomColor()
+        heading = Random.nextInt(360)
+        @createTurtle(color, heading, xcor, ycor, @breedManager.get(breedName))
+      ).value()
       new TurtleSet(turtles, @breedManager.get(breedName))
 
     # (Number, Number) => PatchSet

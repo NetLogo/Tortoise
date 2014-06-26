@@ -77,9 +77,7 @@ define(['integration/lodash', 'integration/random', 'engine/builtins', 'engine/c
 
     # (Number, String) => TurtleSet
     sprout: (n, breedName) ->
-      breed   = if "" is breedName then @world.breedManager.turtles() else @world.breedManager.get(breedName) #@# This conditional is begging for a bug
-      turtles = _(0).range(n).map(=> @world.createTurtle((id) => new Turtle(@world, id, @world.updater.updated, @world.updater.registerDeadTurtle, 5 + 10 * Random.nextInt(14), Random.nextInt(360), @pxcor, @pycor, breed))).value() #@# Moar clarity, plox; and why do patches know how to create turtles?!
-      new TurtleSet(turtles, breed)
+      @world.createTurtles(n, breedName, @pxcor, @pycor)
 
     # (String) => TurtleSet
     breedHere: (breedName) ->
