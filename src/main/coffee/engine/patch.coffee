@@ -14,7 +14,7 @@ define(['integration/lodash', 'integration/random', 'engine/builtins', 'engine/c
     turtles: undefined # Array[Turtle]
 
     # (Number, Number, Number, World, (Updatable) => (String*) => Unit, Number, String, Number) => Patch
-    constructor: (@id, @pxcor, @pycor, @world, genUpdate, @_pcolor = 0.0, @_plabel = "", @_plabelcolor = 9.9) ->
+    constructor: (@id, @pxcor, @pycor, @world, genUpdate, @_declareNonBlackPatch, @_pcolor = 0.0, @_plabel = "", @_plabelcolor = 9.9) ->
       @_updateVarsByName = genUpdate(this)
       @turtles = []
       @_varManager = @_genVarManager(@world.patchesOwnNames)
@@ -149,7 +149,7 @@ define(['integration/lodash', 'integration/random', 'engine/builtins', 'engine/c
         @_pcolor = wrappedColor
         @_genVarUpdate("pcolor")
         if wrappedColor isnt 0
-          @world.patchesAllBlack(false)
+          @_declareNonBlackPatch()
       return
 
     # (String) => Unit
