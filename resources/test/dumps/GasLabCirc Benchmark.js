@@ -41,7 +41,7 @@ function setup() {
   BreedManager.setDefaultShape(world.turtlesOfBreed("PARTICLES").getBreedName(), "circle")
   world.observer.setGlobal('manage-view-updates?', true);
   world.observer.setGlobal('view-update-rate', 0.2);
-  world.observer.setGlobal('box-edge', (world.maxPxcor - 1));
+  world.observer.setGlobal('box-edge', (world.topology.maxPxcor - 1));
   Call(makeBox);
   Call(makeParticles);
   world.observer.setGlobal('tick-length', (1 / StrictMath.ceil(Prims.max(Prims.of(world.turtlesOfBreed("PARTICLES"), function() {

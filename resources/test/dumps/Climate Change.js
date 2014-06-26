@@ -37,7 +37,7 @@ var StrictMath     = require('integration/strictmath');function setup() {
   world.ticker.reset();
 }
 function setupWorld() {
-  world.observer.setGlobal('sky-top', (world.maxPycor - 5));
+  world.observer.setGlobal('sky-top', (world.topology.maxPycor - 5));
   world.observer.setGlobal('earth-top', 0);
   Prims.ask(world.patches(), true, function() {
     if (Prims.gt(Prims.getPatchVariable('pycor'), world.observer.getGlobal('sky-top'))) {
@@ -120,7 +120,7 @@ function createSunshine() {
     Prims.ask(world.createTurtles(1, "RAYS"), true, function() {
       Prims.setVariable('heading', 160);
       Prims.setVariable('color', 45);
-      Prims.setXY((Prims.random(10) + world.minPxcor), world.maxPycor);
+      Prims.setXY((Prims.random(10) + world.topology.minPxcor), world.topology.maxPycor);
     });
   }
 }
@@ -156,7 +156,7 @@ function runHeat() {
       Prims.setVariable('heading', (180 - Prims.getVariable('heading')));
     }
     if (Prims.gte(Prims.getVariable('ycor'), world.observer.getGlobal('earth-top'))) {
-      if (((Prims.gt(world.observer.getGlobal('temperature'), (20 + Prims.random(40))) && Prims.gt(Prims.getVariable('xcor'), 0)) && Prims.lt(Prims.getVariable('xcor'), (world.maxPxcor - 8)))) {
+      if (((Prims.gt(world.observer.getGlobal('temperature'), (20 + Prims.random(40))) && Prims.gt(Prims.getVariable('xcor'), 0)) && Prims.lt(Prims.getVariable('xcor'), (world.topology.maxPxcor - 8)))) {
         Prims.setVariable('breed', world.turtlesOfBreed("IRS"));
         Prims.setVariable('heading', 20);
         Prims.setVariable('color', 125);

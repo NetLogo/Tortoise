@@ -46,7 +46,7 @@ function setupField() {
     if (!Prims.equality(Prims.getNeighbors().size(), 8)) {
       Prims.setPatchVariable('pcolor', 15);
     }
-    if (((Prims.equality(Prims.getPatchVariable('pycor'), world.minPycor) && Prims.gte(Prims.getPatchVariable('pxcor'), world.observer.getGlobal('goal-pos'))) && Prims.lt(Prims.getPatchVariable('pxcor'), (world.observer.getGlobal('goal-pos') + world.observer.getGlobal('goal-size'))))) {
+    if (((Prims.equality(Prims.getPatchVariable('pycor'), world.topology.minPycor) && Prims.gte(Prims.getPatchVariable('pxcor'), world.observer.getGlobal('goal-pos'))) && Prims.lt(Prims.getPatchVariable('pxcor'), (world.observer.getGlobal('goal-pos') + world.observer.getGlobal('goal-size'))))) {
       Prims.setPatchVariable('pcolor', 55);
     }
   });
@@ -86,7 +86,7 @@ function go() {
   world.ticker.tick();
 }
 function move() {
-  if ((Prims.gte(Prims.getPatchVariable('pxcor'), (world.maxPxcor - 1)) || Prims.gte(Prims.getPatchVariable('pycor'), (world.minPycor + 1)))) {
+  if ((Prims.gte(Prims.getPatchVariable('pxcor'), (world.topology.maxPxcor - 1)) || Prims.gte(Prims.getPatchVariable('pycor'), (world.topology.minPycor + 1)))) {
     Call(checkPatch, Call(nextPatch));
     Call(checkPatch, SelfManager.self().patchAhead(1));
   }
@@ -150,7 +150,7 @@ function plotScores() {
   Prims.ask(world.observer.getGlobal('histogram-area'), true, function() {
     if (Prims.gt(Prims.getPatchVariable('pxcor'), (world.observer.getGlobal('kick-line') - ((Prims.of(SelfManager.self().patchAt((world.observer.getGlobal('kick-line') - Prims.getPatchVariable('pxcor')), 0), function() {
       return Prims.getPatchVariable('score');
-    }) * (world.observer.getGlobal('kick-line') - world.minPxcor)) / world.observer.getGlobal('current-max'))))) {
+    }) * (world.observer.getGlobal('kick-line') - world.topology.minPxcor)) / world.observer.getGlobal('current-max'))))) {
       if (Prims.equality(Prims.of(SelfManager.self().patchAt((world.observer.getGlobal('kick-line') - Prims.getPatchVariable('pxcor')), 0), function() {
         return Prims.getPatchVariable('score');
       }), world.observer.getGlobal('current-max'))) {
@@ -167,7 +167,7 @@ function plotScores() {
 }
 function findAnalyticSolution() {
   Prims.ask(world.patches().agentFilter(function() {
-    return Prims.gt(Prims.getPatchVariable('pycor'), world.minPycor);
+    return Prims.gt(Prims.getPatchVariable('pycor'), world.topology.minPycor);
   }), true, function() {
     Call(calcGoalAngle);
   });
@@ -194,8 +194,8 @@ function drawLevelCurves() {
   });
 }
 function calcGoalAngle() {
-  Prims.setPatchVariable('left-angle', SelfManager.self().towardsXY((world.observer.getGlobal('goal-pos') - 0.5), (world.minPycor + 0.5)));
-  Prims.setPatchVariable('right-angle', SelfManager.self().towardsXY(((world.observer.getGlobal('goal-pos') + world.observer.getGlobal('goal-size')) - 0.5), (world.minPycor + 0.5)));
+  Prims.setPatchVariable('left-angle', SelfManager.self().towardsXY((world.observer.getGlobal('goal-pos') - 0.5), (world.topology.minPycor + 0.5)));
+  Prims.setPatchVariable('right-angle', SelfManager.self().towardsXY(((world.observer.getGlobal('goal-pos') + world.observer.getGlobal('goal-size')) - 0.5), (world.topology.minPycor + 0.5)));
   Prims.setPatchVariable('goal-angle', Prims.mod((Prims.getPatchVariable('right-angle') - Prims.getPatchVariable('left-angle')), 360));
 }
 world.observer.setGlobal('kick-line', 20);

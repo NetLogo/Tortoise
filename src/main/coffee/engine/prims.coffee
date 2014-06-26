@@ -75,11 +75,11 @@ define(['integration/lodash', 'integration/printer', 'integration/random', 'inte
 
     # () => Number
     randomXcor: ->
-      @_world.minPxcor - 0.5 + Random.nextDouble() * (@_world.maxPxcor - @_world.minPxcor + 1)
+      @_world.topology.minPxcor - 0.5 + Random.nextDouble() * (@_world.topology.maxPxcor - @_world.topology.minPxcor + 1)
 
     # () => Number
-    randomYcor: ->
-      @_world.minPycor - 0.5 + Random.nextDouble() * (@_world.maxPycor - @_world.minPycor + 1)
+    randomYcor: -> #@# Redundancy!
+      @_world.topology.minPycor - 0.5 + Random.nextDouble() * (@_world.topology.maxPycor - @_world.topology.minPycor + 1)
 
     # (Number, Number) => Number
     shadeOf: (c1, c2) ->

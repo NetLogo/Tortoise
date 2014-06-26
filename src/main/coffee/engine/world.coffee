@@ -31,16 +31,16 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
     #@# I'm aware that some of this stuff ought to not live on `World`
     # (SelfManager, Updater, BreedManager, Array[String], Array[String], Array[String], Array[String], Array[String], Number, Number, Number, Number, Number, Boolean, Boolean, Array[Object], Array[Object]) => World
     constructor: (@selfManager, @_updater, @breedManager, globalNames, interfaceGlobalNames, @turtlesOwnNames
-                , @linksOwnNames, @patchesOwnNames, @minPxcor, @maxPxcor, @minPycor, @maxPycor, @_patchSize
+                , @linksOwnNames, @patchesOwnNames, minPxcor, maxPxcor, minPycor, maxPycor, @_patchSize
                 , @_wrappingAllowedInX, @_wrappingAllowedInY, turtleShapeList, linkShapeList) ->
       @_updater.collectUpdates()
       @_updater.registerWorldState({
-        worldWidth: Math.abs(@minPxcor - @maxPxcor) + 1,
-        worldHeight: Math.abs(@minPycor - @maxPycor) + 1,
-        minPxcor: @minPxcor,
-        minPycor: @minPycor,
-        maxPxcor: @maxPxcor,
-        maxPycor: @maxPycor,
+        worldWidth: Math.abs(minPxcor - maxPxcor) + 1,
+        worldHeight: Math.abs(minPycor - maxPycor) + 1,
+        minPxcor: minPxcor,
+        minPycor: minPycor,
+        maxPxcor: maxPxcor,
+        maxPycor: maxPycor,
         linkBreeds: "XXX IMPLEMENT ME",
         linkShapeList: linkShapeList,
         patchSize: @_patchSize,
@@ -66,15 +66,15 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
       @_turtles         = []
       @_turtlesById     = {}
 
-      @resize(@minPxcor, @maxPxcor, @minPycor, @maxPycor)
+      @resize(minPxcor, maxPxcor, minPycor, maxPycor)
 
 
     # () => Unit
     createPatches: ->
       nested =
-        for y in [@maxPycor..@minPycor]
-          for x in [@minPxcor..@maxPxcor]
-            id = (@topology.width * (@maxPycor - y)) + x - @minPxcor
+        for y in [@topology.maxPycor..@topology.minPycor]
+          for x in [@topology.minPxcor..@topology.maxPxcor]
+            id = (@topology.width * (@topology.maxPycor - y)) + x - @topology.minPxcor
             new Patch(id, x, y, this, @_updater.updated, @_declarePatchesNotAllBlack)
 
       @_patches = [].concat(nested...)
@@ -116,20 +116,15 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
       # For some reason, JVM NetLogo doesn't restart `who` ordering after `resize-world`; even the test for this is existentially confused. --JAB (4/3/14)
       @_turtleIDManager.suspendDuring(() => @clearTurtles())
 
-      @minPxcor = minPxcor
-      @maxPxcor = maxPxcor
-      @minPycor = minPycor
-      @maxPycor = maxPycor
-
       @topology =
         if @_wrappingAllowedInX and @_wrappingAllowedInY #@# `Topology.Companion` should know how to generate a topology from these values; what does `World` care?
-          new Torus(@minPxcor, @maxPxcor, @minPycor, @maxPycor, @patches, @getPatchAt)
+          new Torus(minPxcor, maxPxcor, minPycor, maxPycor, @patches, @getPatchAt)
         else if @_wrappingAllowedInX
-          new VertCylinder(@minPxcor, @maxPxcor, @minPycor, @maxPycor, @patches, @getPatchAt)
+          new VertCylinder(minPxcor, maxPxcor, minPycor, maxPycor, @patches, @getPatchAt)
         else if @_wrappingAllowedInY
-          new HorizCylinder(@minPxcor, @maxPxcor, @minPycor, @maxPycor, @patches, @getPatchAt)
+          new HorizCylinder(minPxcor, maxPxcor, minPycor, maxPycor, @patches, @getPatchAt)
         else
-          new Box(@minPxcor, @maxPxcor, @minPycor, @maxPycor, @patches, @getPatchAt)
+          new Box(minPxcor, maxPxcor, minPycor, maxPycor, @patches, @getPatchAt)
 
       @createPatches()
       @_declarePatchesAllBlack()
@@ -141,9 +136,9 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
 
     # (Number, Number) => Patch
     getPatchAt: (x, y) =>
-      trueX  = (x - @minPxcor) % @topology.width  + @minPxcor # Handle negative coordinates and wrapping
-      trueY  = (y - @minPycor) % @topology.height + @minPycor
-      index  = (@maxPycor - StrictMath.round(trueY)) * @topology.width + (StrictMath.round(trueX) - @minPxcor)
+      trueX  = (x - @topology.minPxcor) % @topology.width  + @topology.minPxcor # Handle negative coordinates and wrapping
+      trueY  = (y - @topology.minPycor) % @topology.height + @topology.minPycor
+      index  = (@topology.maxPycor - StrictMath.round(trueY)) * @topology.width + (StrictMath.round(trueX) - @topology.minPxcor)
       @_patches[index]
 
     # (Number) => Turtle

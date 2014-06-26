@@ -39,7 +39,7 @@ function setup() {
   world.ticker.reset();
   BreedManager.setDefaultShape(world.turtlesOfBreed("PARTICLES").getBreedName(), "circle")
   world.observer.setGlobal('fade-needed?', false);
-  world.observer.setGlobal('box-edge', (world.maxPxcor - 1));
+  world.observer.setGlobal('box-edge', (world.topology.maxPxcor - 1));
   world.observer.setGlobal('length-horizontal-surface', ((2 * (world.observer.getGlobal('box-edge') - 1)) + 1));
   world.observer.setGlobal('length-vertical-surface', ((2 * (world.observer.getGlobal('box-edge') - 1)) + 1));
   Call(makeBox);

@@ -42,7 +42,7 @@ function benchmark() {
 function setupGeneral() {
   world.clearPatches();
   world.clearTurtles();
-  world.observer.setGlobal('row', world.maxPycor);
+  world.observer.setGlobal('row', world.topology.maxPycor);
   Call(refreshRules);
   world.observer.setGlobal('gone?', false);
   world.observer.setGlobal('rules-shown?', false);
@@ -88,7 +88,7 @@ function setupContinue() {
   Prims.ask(world.patches().agentFilter(function() {
     return Prims.equality(Prims.getPatchVariable('pycor'), world.observer.getGlobal('row'));
   }), true, function() {
-    Prims.setPatchVariable('on?', Prims.item((Prims.getPatchVariable('pxcor') + world.maxPxcor), on_pList));
+    Prims.setPatchVariable('on?', Prims.item((Prims.getPatchVariable('pxcor') + world.topology.maxPxcor), on_pList));
     Call(colorPatch);
   });
   world.observer.setGlobal('gone?', true);
@@ -97,7 +97,7 @@ function go() {
   if (world.observer.getGlobal('rules-shown?')) {
     throw new Exception.StopInterrupt;
   }
-  if (Prims.equality(world.observer.getGlobal('row'), world.minPycor)) {
+  if (Prims.equality(world.observer.getGlobal('row'), world.topology.minPycor)) {
     if (world.observer.getGlobal('auto-continue?')) {
       notImplemented('display', undefined)();
       Call(setupContinue);
@@ -201,12 +201,12 @@ function showRules() {
   Call(setupGeneral);
   var rules = Call(listRules);
   Prims.ask(world.patches().agentFilter(function() {
-    return Prims.gt(Prims.getPatchVariable('pycor'), (world.maxPycor - 5));
+    return Prims.gt(Prims.getPatchVariable('pycor'), (world.topology.maxPycor - 5));
   }), true, function() {
     Prims.setPatchVariable('pcolor', 5);
   });
   Prims.ask(world.patches().agentFilter(function() {
-    return (Prims.equality(Prims.getPatchVariable('pycor'), world.maxPycor) && Prims.equality(Prims.mod((Prims.getPatchVariable('pxcor') + 1), StrictMath.floor((world.topology.width / 8))), 0));
+    return (Prims.equality(Prims.getPatchVariable('pycor'), world.topology.maxPycor) && Prims.equality(Prims.mod((Prims.getPatchVariable('pxcor') + 1), StrictMath.floor((world.topology.width / 8))), 0));
   }), true, function() {
     Prims.ask(Prims.sprout(1, "TURTLES"), true, function() {
       Prims.setVariable('heading', 270);

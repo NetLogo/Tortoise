@@ -65,13 +65,13 @@ function setupNest() {
   Prims.setPatchVariable('nest-scent', (200 - SelfManager.self().distanceXY(0, 0)));
 }
 function setupFood() {
-  if (Prims.lt(SelfManager.self().distanceXY((0.6 * world.maxPxcor), 0), 5)) {
+  if (Prims.lt(SelfManager.self().distanceXY((0.6 * world.topology.maxPxcor), 0), 5)) {
     Prims.setPatchVariable('food-source-number', 1);
   }
-  if (Prims.lt(SelfManager.self().distanceXY((-0.6 * world.maxPxcor), (-0.6 * world.maxPycor)), 5)) {
+  if (Prims.lt(SelfManager.self().distanceXY((-0.6 * world.topology.maxPxcor), (-0.6 * world.topology.maxPycor)), 5)) {
     Prims.setPatchVariable('food-source-number', 2);
   }
-  if (Prims.lt(SelfManager.self().distanceXY((-0.8 * world.maxPxcor), (0.8 * world.maxPycor)), 5)) {
+  if (Prims.lt(SelfManager.self().distanceXY((-0.8 * world.topology.maxPxcor), (0.8 * world.topology.maxPycor)), 5)) {
     Prims.setPatchVariable('food-source-number', 3);
   }
   if (Prims.gt(Prims.getPatchVariable('food-source-number'), 0)) {

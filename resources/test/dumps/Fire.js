@@ -34,7 +34,7 @@ var StrictMath     = require('integration/strictmath');function setup() {
     Prims.setPatchVariable('pcolor', 55);
   });
   Prims.ask(world.patches().agentFilter(function() {
-    return Prims.equality(Prims.getPatchVariable('pxcor'), world.minPxcor);
+    return Prims.equality(Prims.getPatchVariable('pxcor'), world.topology.minPxcor);
   }), true, function() {
     Call(ignite);
   });

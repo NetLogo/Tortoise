@@ -31,7 +31,7 @@ var StrictMath     = require('integration/strictmath');function setup() {
   Prims.ask(world.patches(), true, function() {
     if (world.observer.getGlobal('bumpy?')) {
       if (world.observer.getGlobal('hill?')) {
-        Prims.setPatchVariable('elevation', (((-100 * (SelfManager.self().distanceXY(0, 0) / world.maxPxcor)) + 100) + Prims.random(100)));
+        Prims.setPatchVariable('elevation', (((-100 * (SelfManager.self().distanceXY(0, 0) / world.topology.maxPxcor)) + 100) + Prims.random(100)));
       }
       else {
         Prims.setPatchVariable('elevation', Prims.random(125));
