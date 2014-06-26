@@ -30,11 +30,11 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
 
     #@# I'm aware that some of this stuff ought to not live on `World`
     # (SelfManager, Updater, BreedManager, Array[String], Array[String], Array[String], Array[String], Array[String], Number, Number, Number, Number, Number, Boolean, Boolean, Array[Object], Array[Object]) => World
-    constructor: (@selfManager, @updater, @breedManager, globalNames, interfaceGlobalNames, @turtlesOwnNames
+    constructor: (@selfManager, @_updater, @breedManager, globalNames, interfaceGlobalNames, @turtlesOwnNames
                 , @linksOwnNames, @patchesOwnNames, @minPxcor, @maxPxcor, @minPycor, @maxPycor, @_patchSize
                 , @_wrappingAllowedInX, @_wrappingAllowedInY, turtleShapeList, linkShapeList) ->
-      @updater.collectUpdates()
-      @updater.registerWorldState({
+      @_updater.collectUpdates()
+      @_updater.registerWorldState({
         worldWidth: Math.abs(@minPxcor - @maxPxcor) + 1,
         worldHeight: Math.abs(@minPycor - @maxPycor) + 1,
         minPxcor: @minPxcor,
@@ -54,8 +54,8 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
         wrappingAllowedInY: @_wrappingAllowedInY
       })
 
-      @observer = new Observer(updater.updated, globalNames, interfaceGlobalNames)
-      @ticker   = new Ticker(updater.updated(this))
+      @observer = new Observer(@_updater.updated, globalNames, interfaceGlobalNames)
+      @ticker   = new Ticker(@_updater.updated(this))
       @topology = null
 
       @_links           = new WorldLinks(@linkCompare)
@@ -75,12 +75,12 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
         for y in [@maxPycor..@minPycor]
           for x in [@minPxcor..@maxPxcor]
             id = (@width() * (@maxPycor - y)) + x - @minPxcor
-            new Patch(id, x, y, this, @updater.updated)
+            new Patch(id, x, y, this, @_updater.updated)
 
       @_patches = [].concat(nested...)
 
       for patch in @_patches
-        @updater.updated(patch)("pxcor", "pycor", "pcolor", "plabel", "plabel-color")
+        @_updater.updated(patch)("pxcor", "pycor", "pcolor", "plabel", "plabel-color")
 
       return
 
@@ -134,7 +134,7 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
       @createPatches()
       @patchesAllBlack(true)
       @_resetPatchLabelCount()
-      @updater.updated(this)("width", "height", "minPxcor", "minPycor", "maxPxcor", "maxPycor")
+      @_updater.updated(this)("width", "height", "minPxcor", "minPycor", "maxPxcor", "maxPycor")
 
       return
 
@@ -172,7 +172,7 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
       @_links = @_links.remove(link)
       if @_links.isEmpty()
         @unbreededLinksAreDirected = false
-        @updater.updated(this)("unbreededLinksAreDirected")
+        @_updater.updated(this)("unbreededLinksAreDirected")
       return
 
     # (Number) => Unit
@@ -185,7 +185,7 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
     # (Boolean) => Unit
     patchesAllBlack: (val) -> #@# Varname
       @_patchesAllBlack = val
-      @updater.updated(this)("patchesAllBlack")
+      @_updater.updated(this)("patchesAllBlack")
       return
 
     # () => Unit
@@ -206,7 +206,7 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
     # ((Number) => Number) => Unit
     _setPatchLabelCount: (updateCountFunc) ->
       @_patchesWithLabels = updateCountFunc(@_patchesWithLabels)
-      @updater.updated(this)("patchesWithLabels")
+      @_updater.updated(this)("patchesWithLabels")
       return
 
     # () => Unit
@@ -247,8 +247,8 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
     # (Number, Number, Number, Number, Breed, String, Number, Boolean, Number, PenManager) => Turtle
     createTurtle: (color, heading, xcor, ycor, breed, label, lcolor, isHidden, size, penManager) ->
       id     = @_turtleIDManager.next()
-      turtle = new Turtle(this, id, @updater.updated, @updater.registerDeadTurtle, color, heading, xcor, ycor, breed, label, lcolor, isHidden, size, penManager)
-      @updater.updated(turtle)(Builtins.turtleBuiltins...)
+      turtle = new Turtle(this, id, @_updater.updated, @_updater.registerDeadTurtle, color, heading, xcor, ycor, breed, label, lcolor, isHidden, size, penManager)
+      @_updater.updated(turtle)(Builtins.turtleBuiltins...)
       @_turtles.push(turtle)
       @_turtlesById[id] = turtle
       turtle
@@ -283,20 +283,20 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
     # (Turtle, Turtle) => Link
     createDirectedLink: (from, to) ->
       @unbreededLinksAreDirected = true
-      @updater.updated(this)("unbreededLinksAreDirected")
+      @_updater.updated(this)("unbreededLinksAreDirected")
       @_createLink(true, from, to)
 
     # (Turtle, TurtleSet) => LinkSet
     createDirectedLinks: (source, others) -> #@# Clarity
       @unbreededLinksAreDirected = true
-      @updater.updated(this)("unbreededLinksAreDirected")
+      @_updater.updated(this)("unbreededLinksAreDirected")
       links = _(others.toArray()).map((turtle) => @_createLink(true, source, turtle)).filter((other) -> other isnt Nobody).value()
       new LinkSet(links)
 
     # (Turtle, TurtleSet) => LinkSet
     createReverseDirectedLinks: (source, others) -> #@# Clarity
       @unbreededLinksAreDirected = true
-      @updater.updated(this)("unbreededLinksAreDirected")
+      @_updater.updated(this)("unbreededLinksAreDirected")
       links = _(others.toArray()).map((turtle) => @_createLink(true, turtle, source)).filter((other) -> other isnt Nobody).value()
       new LinkSet(links)
 
@@ -354,9 +354,9 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
         [to, from]
 
       if @getLink(end1.id, end2.id) is Nobody
-        link = new Link(@_linkIDManager.next(), directed, end1, end2, this, @updater.updated, @updater.registerDeadLink)
-        @updater.updated(link)(Builtins.linkBuiltins...)
-        @updater.updated(link)(Builtins.linkExtras...) #@# See, this update nonsense is awful.
+        link = new Link(@_linkIDManager.next(), directed, end1, end2, this, @_updater.updated, @_updater.registerDeadLink)
+        @_updater.updated(link)(Builtins.linkBuiltins...)
+        @_updater.updated(link)(Builtins.linkExtras...) #@# See, this update nonsense is awful.
         @_links.insert(link)
         link
       else
