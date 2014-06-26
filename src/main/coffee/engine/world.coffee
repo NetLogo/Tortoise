@@ -345,7 +345,7 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
       else if b.getBreedName() is "LINKS"
         1
       else
-        throw new Exception.NetLogoException("We have yet to implement link breed comparison")
+        throw new Exception.NetLogoException("Unsure how Link #{a.id} differs from Link #{b.id}") # JVM NetLogo uses the order the breeds were declared in, but that incites my hatred --JAB (6/26/14)
 
     ###
     #@# We shouldn't be looking up links in the tree everytime we create a link; JVM NL uses 2 `LinkedHashMap[Turtle, Buffer[Link]]`s (to, from) --JAB (2/7/14)
