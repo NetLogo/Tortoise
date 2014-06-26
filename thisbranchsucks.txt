@@ -1,7 +1,6 @@
 Things that are lousy about this branch:
 
 High:
--Names of private members should be preceded with underscores
 -Clean up import ordering and 'integration' vs. 'engine' nonsense and grab-bag of files in 'engine'
 -Code in `Tasks` is confusing
 
