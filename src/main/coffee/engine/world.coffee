@@ -32,7 +32,7 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
     # (SelfManager, Updater, BreedManager, Array[String], Array[String], Array[String], Array[String], Array[String], Number, Number, Number, Number, Number, Boolean, Boolean, Array[Object], Array[Object]) => World
     constructor: (@selfManager, @_updater, @breedManager, globalNames, interfaceGlobalNames, @turtlesOwnNames
                 , @linksOwnNames, @patchesOwnNames, minPxcor, maxPxcor, minPycor, maxPycor, @_patchSize
-                , @_wrappingAllowedInX, @_wrappingAllowedInY, turtleShapeList, linkShapeList) ->
+                , wrappingAllowedInX, wrappingAllowedInY, turtleShapeList, linkShapeList) ->
       @_updater.collectUpdates()
       @_updater.registerWorldState({
         worldWidth: Math.abs(minPxcor - maxPxcor) + 1,
@@ -50,8 +50,8 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
         turtleBreeds: "XXX IMPLEMENT ME",
         turtleShapeList: turtleShapeList,
         unbreededLinksAreDirected: false
-        wrappingAllowedInX: @_wrappingAllowedInX,
-        wrappingAllowedInY: @_wrappingAllowedInY
+        wrappingAllowedInX: wrappingAllowedInX,
+        wrappingAllowedInY: wrappingAllowedInY
       })
 
       @observer = new Observer(@_updater.updated, globalNames, interfaceGlobalNames)
@@ -66,7 +66,7 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
       @_turtles         = []
       @_turtlesById     = {}
 
-      @resize(minPxcor, maxPxcor, minPycor, maxPycor)
+      @resize(minPxcor, maxPxcor, minPycor, maxPycor, wrappingAllowedInX, wrappingAllowedInY)
 
 
     # () => Unit
@@ -107,8 +107,8 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
     patches: =>
       new PatchSet(@_patches)
 
-    # (Number, Number, Number, Number) => Unit
-    resize: (minPxcor, maxPxcor, minPycor, maxPycor) ->
+    # (Number, Number, Number, Number, Boolean, Boolean) => Unit
+    resize: (minPxcor, maxPxcor, minPycor, maxPycor, wrapsInX = @topology._wrapInX, wrapsInY = @topology._wrapInY) ->
 
       if not (minPxcor <= 0 <= maxPxcor and minPycor <= 0 <= maxPycor)
         throw new Exception.NetLogoException("You must include the point (0, 0) in the world.")
@@ -117,11 +117,11 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
       @_turtleIDManager.suspendDuring(() => @clearTurtles())
 
       @topology =
-        if @_wrappingAllowedInX and @_wrappingAllowedInY #@# `Topology.Companion` should know how to generate a topology from these values; what does `World` care?
+        if wrapsInX and wrapsInY #@# `Topology.Companion` should know how to generate a topology from these values; what does `World` care?
           new Torus(minPxcor, maxPxcor, minPycor, maxPycor, @patches, @getPatchAt)
-        else if @_wrappingAllowedInX
+        else if wrapsInX
           new VertCylinder(minPxcor, maxPxcor, minPycor, maxPycor, @patches, @getPatchAt)
-        else if @_wrappingAllowedInY
+        else if wrapsInY
           new HorizCylinder(minPxcor, maxPxcor, minPycor, maxPycor, @patches, @getPatchAt)
         else
           new Box(minPxcor, maxPxcor, minPycor, maxPycor, @patches, @getPatchAt)
