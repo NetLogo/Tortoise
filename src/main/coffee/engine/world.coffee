@@ -75,7 +75,7 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
         for y in [@maxPycor..@minPycor]
           for x in [@minPxcor..@maxPxcor]
             id = (@width() * (@maxPycor - y)) + x - @minPxcor
-            new Patch(id, x, y, this, @_updater.updated)
+            new Patch(id, x, y, this, @_updater.updated, @_declarePatchesNotAllBlack)
 
       @_patches = [].concat(nested...)
 
@@ -132,7 +132,7 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
           new Box(@minPxcor, @maxPxcor, @minPycor, @maxPycor, @patches, @getPatchAt)
 
       @createPatches()
-      @patchesAllBlack(true)
+      @_declarePatchesAllBlack()
       @_resetPatchLabelCount()
       @_updater.updated(this)("width", "height", "minPxcor", "minPycor", "maxPxcor", "maxPycor")
 
@@ -182,9 +182,15 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
       delete @_turtlesById[id]
       return
 
-    # (Boolean) => Unit
-    patchesAllBlack: (val) -> #@# Varname
-      @_patchesAllBlack = val
+    # () => Unit
+    _declarePatchesAllBlack: ->
+      @_patchesAllBlack = true
+      @_updater.updated(this)("patchesAllBlack")
+      return
+
+    # () => Unit
+    _declarePatchesNotAllBlack: =>
+      @_patchesAllBlack = false
       @_updater.updated(this)("patchesAllBlack")
       return
 
@@ -215,7 +221,7 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
       @clearTurtles()
       @createPatches()
       @_linkIDManager.reset()
-      @patchesAllBlack(true)
+      @_declarePatchesAllBlack()
       @_resetPatchLabelCount()
       @ticker.clear()
       return
@@ -240,7 +246,7 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
     # () => Unit
     clearPatches: ->
       @patches().forEach((patch) -> patch.reset(); return)
-      @patchesAllBlack(true)
+      @_declarePatchesAllBlack()
       @_resetPatchLabelCount()
       return
 
