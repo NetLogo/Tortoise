@@ -100,13 +100,13 @@ define(['integration/lodash', 'integration/random', 'integration/strictmath', 'e
       # we need to bump some node a small amount, in case all nodes
       # are stuck on a single line --FD
       if nodeCount > 1
-        perturbAmt = (@_world.width() + @_world.height()) / 1.0e10
+        perturbAmt = (@_world.topology.width + @_world.topology.height) / 1.0e10
         ax[0] += Random.nextDouble() * perturbAmt - perturbAmt / 2.0
         ay[0] += Random.nextDouble() * perturbAmt - perturbAmt / 2.0
 
       # try to choose something that's reasonable perceptually --
       # for temporal aliasing, don't want to jump too far on any given timestep. --FD
-      limit = (@_world.width() + @_world.height()) / 50.0
+      limit = (@_world.topology.width + @_world.topology.height) / 50.0
 
       for i in [0...nodeCount]
         turtle = agt[i]

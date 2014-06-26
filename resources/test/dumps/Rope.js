@@ -28,7 +28,7 @@ var Random         = require('integration/random');
 var StrictMath     = require('integration/strictmath');function setup() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
-  Prims.ask(world.createTurtles(world.width(), ""), true, function() {
+  Prims.ask(world.createTurtles(world.topology.width, ""), true, function() {
     Prims.setVariable('xcor', Prims.getVariable('who'));
     Prims.setVariable('color', 15);
     Prims.setVariable('size', 1.5);

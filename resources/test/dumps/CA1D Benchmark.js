@@ -34,7 +34,7 @@ function benchmark() {
   Random.setSeed(4378);
   Call(setupRandom);
   workspace.timer.reset();
-  Prims.repeat((10 * world.height()), function () {
+  Prims.repeat((10 * world.topology.height), function () {
     Call(go);
   });
   world.observer.setGlobal('result', workspace.timer.elapsed());
@@ -206,7 +206,7 @@ function showRules() {
     Prims.setPatchVariable('pcolor', 5);
   });
   Prims.ask(world.patches().agentFilter(function() {
-    return (Prims.equality(Prims.getPatchVariable('pycor'), world.maxPycor) && Prims.equality(Prims.mod((Prims.getPatchVariable('pxcor') + 1), StrictMath.floor((world.width() / 8))), 0));
+    return (Prims.equality(Prims.getPatchVariable('pycor'), world.maxPycor) && Prims.equality(Prims.mod((Prims.getPatchVariable('pxcor') + 1), StrictMath.floor((world.topology.width / 8))), 0));
   }), true, function() {
     Prims.ask(Prims.sprout(1, "TURTLES"), true, function() {
       Prims.setVariable('heading', 270);

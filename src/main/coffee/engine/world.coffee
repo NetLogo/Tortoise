@@ -74,7 +74,7 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
       nested =
         for y in [@maxPycor..@minPycor]
           for x in [@minPxcor..@maxPxcor]
-            id = (@width() * (@maxPycor - y)) + x - @minPxcor
+            id = (@topology.width * (@maxPycor - y)) + x - @minPxcor
             new Patch(id, x, y, this, @_updater.updated, @_declarePatchesNotAllBlack)
 
       @_patches = [].concat(nested...)
@@ -139,19 +139,11 @@ define(['integration/random', 'integration/strictmath', 'engine/builtins', 'engi
       return
 
 
-    # () => Number
-    width: ->
-      1 + @maxPxcor - @minPxcor #@# Defer to topology x2
-
-    # () => Number
-    height: ->
-      1 + @maxPycor - @minPycor
-
     # (Number, Number) => Patch
     getPatchAt: (x, y) =>
-      trueX  = (x - @minPxcor) % @width()  + @minPxcor # Handle negative coordinates and wrapping
-      trueY  = (y - @minPycor) % @height() + @minPycor
-      index  = (@maxPycor - StrictMath.round(trueY)) * @width() + (StrictMath.round(trueX) - @minPxcor)
+      trueX  = (x - @minPxcor) % @topology.width  + @minPxcor # Handle negative coordinates and wrapping
+      trueY  = (y - @minPycor) % @topology.height + @minPycor
+      index  = (@maxPycor - StrictMath.round(trueY)) * @topology.width + (StrictMath.round(trueX) - @minPxcor)
       @_patches[index]
 
     # (Number) => Turtle

@@ -141,7 +141,7 @@ define(['engine/exception', 'engine/link', 'engine/observer', 'engine/patch', 'e
 
     # (World) => Object[EngineKey, (Key, Value)]
     _worldMap: (world) -> {
-      height:                     ["worldHeight",               world.height()]
+      height:                     ["worldHeight",               world.topology.height]
       id:                         ["WHO",                       world.id]
       patchesAllBlack:            ["patchesAllBlack",           world._patchesAllBlack]
       patchesWithLabels:          ["patchesWithLabels",         world._patchesWithLabels]
@@ -151,7 +151,7 @@ define(['engine/exception', 'engine/link', 'engine/observer', 'engine/patch', 'e
       minPycor:                   ["MINPYCOR",                  world.minPycor]
       ticks:                      ["ticks",                     world.ticker._count]
       unbreededLinksAreDirected:  ["unbreededLinksAreDirected", world.unbreededLinksAreDirected]
-      width:                      ["worldWidth",                world.width()]
+      width:                      ["worldWidth",                world.topology.width]
     }
 
     # (Observer) => Object[EngineKey, (Key, Value)]

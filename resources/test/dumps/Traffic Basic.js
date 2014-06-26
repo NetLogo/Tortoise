@@ -40,8 +40,8 @@ function setupRoad() {
   }
 }
 function setupCars() {
-  if (Prims.gt(world.observer.getGlobal('number-of-cars'), world.width())) {
-    notImplemented('user-message', undefined)((Dump("") + Dump("There are too many cars for the amount of road.  Please decrease the NUMBER-OF-CARS slider to below ") + Dump((world.width() + 1)) + Dump(" and press the SETUP button again.  The setup has stopped.")));
+  if (Prims.gt(world.observer.getGlobal('number-of-cars'), world.topology.width)) {
+    notImplemented('user-message', undefined)((Dump("") + Dump("There are too many cars for the amount of road.  Please decrease the NUMBER-OF-CARS slider to below ") + Dump((world.topology.width + 1)) + Dump(" and press the SETUP button again.  The setup has stopped.")));
     throw new Exception.StopInterrupt;
   }
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "car")

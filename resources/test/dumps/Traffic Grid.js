@@ -50,8 +50,8 @@ function setupGlobals() {
   world.observer.setGlobal('current-light', Nobody);
   world.observer.setGlobal('phase', 0);
   world.observer.setGlobal('num-cars-stopped', 0);
-  world.observer.setGlobal('grid-x-inc', (world.width() / world.observer.getGlobal('grid-size-x')));
-  world.observer.setGlobal('grid-y-inc', (world.height() / world.observer.getGlobal('grid-size-y')));
+  world.observer.setGlobal('grid-x-inc', (world.topology.width / world.observer.getGlobal('grid-size-x')));
+  world.observer.setGlobal('grid-y-inc', (world.topology.height / world.observer.getGlobal('grid-size-y')));
   world.observer.setGlobal('acceleration', 0.099);
 }
 function setupPatches() {
