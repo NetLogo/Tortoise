@@ -31,6 +31,8 @@ object SimplePrims {
         case _: prim.etc._plotymax         => "notImplemented('plot-y-max', 0)()"
         case _: prim.etc._mousexcor        => "notImplemented('mouse-xcor', 0)()"
         case _: prim.etc._mouseycor        => "notImplemented('mouse-ycor', 0)()"
+        case _: prim.etc._worldwidth       => "world.topology.width"
+        case _: prim.etc._worldheight      => "world.topology.height"
       }
   }
 
@@ -58,8 +60,6 @@ object SimplePrims {
         case _: prim.etc._patch              => "Prims.patch"
         case _: prim._neighbors              => "Prims.getNeighbors"
         case _: prim._neighbors4             => "Prims.getNeighbors4"
-        case _: prim.etc._worldwidth         => "world.width"
-        case _: prim.etc._worldheight        => "world.height"
         case _: prim._equal                  => "Prims.equality"
         case _: prim._notequal               => "!Prims.equality"
         case _: prim.etc._self               => "SelfManager.self"
