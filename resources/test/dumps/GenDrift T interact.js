@@ -74,7 +74,7 @@ function findTopSpecies() {
     if (Prims.gt(howMany, winningAmount)) {
       winningAmount = howMany;
     }
-  }), ColorModel.baseColors());
+  }), ColorModel.BASE_COLORS);
   world.observer.setGlobal('max-percent', ((100 * winningAmount) / world.turtles().size()));
 }
 function placeWall() {
