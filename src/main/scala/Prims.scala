@@ -68,6 +68,7 @@ object Prims {
       case _: prim.etc._reduce              => s"${arg(1)}.reduce(${arg(0)})"
       case _: prim.etc._filter              => s"${arg(1)}.filter(${arg(0)})"
       case _: prim.etc._nvalues             => s"Tasks.nValues(${arg(0)}, ${arg(1)})"
+      case _: prim.etc._basecolors          => "ColorModel.BASE_COLORS"
       case tv: prim._taskvariable           => s"taskArguments[${tv.varNumber - 1}]"
       case _: prim._task                    => arg(0)
       case _: prim._reportertask =>

@@ -148,7 +148,6 @@ object SimplePrims {
         case _: prim.etc._substring          => "Prims.substring"
         case _: prim.etc._exp                => "StrictMath.exp"
         case _: prim.etc._variance           => "Prims.variance"
-        case _: prim.etc._basecolors         => "ColorModel.baseColors"
       }
   }
 
