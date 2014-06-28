@@ -269,11 +269,11 @@ define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine
 
     # (Number, Number) => PatchSet
     getNeighbors: (pxcor, pycor) ->
-      @topology.getNeighbors(pxcor, pycor)
+      new PatchSet(@topology.getNeighbors(pxcor, pycor))
 
     # (Number, Number) => PatchSet
     getNeighbors4: (pxcor, pycor) ->
-      @topology.getNeighbors4(pxcor, pycor)
+      new PatchSet(@topology.getNeighbors4(pxcor, pycor))
 
     # (Turtle, Turtle) => Link
     createDirectedLink: (from, to) ->
