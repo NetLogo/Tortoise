@@ -5,8 +5,8 @@
   If you want the peripheral stuff (i.e. because you're a compiler or test infrastructure),
   the other things you might want ought to get initialized by RequireJS here. --JAB (5/7/14)
 ###
-require(['engine/workspace', 'integration/agentmodel', 'integration/denuller', 'integration/notimplemented'
-       , 'integration/printer', 'engine/dump', 'engine/prims', 'engine/call', 'engine/tasks']
-      , ( Workspace,          AgentModel,               Denuller,               notImplemented
-       ,  Printer,               Dump,          Prims,          Call,          Tasks) ->
+require(['agentmodel', 'engine/workspace', 'engine/prim/prims', 'engine/prim/tasks', 'nashorn/denuller', 'shim/printer'
+       , 'util/call', 'util/dump', 'util/notimplemented']
+      , ( AgentModel,   Workspace,          Prims,               Tasks,               Denuller,           Printer
+       ,  Call,        Dump,        notImplemented) ->
 )

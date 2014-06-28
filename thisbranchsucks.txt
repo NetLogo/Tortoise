@@ -1,9 +1,5 @@
 Things that are lousy about this branch:
 
-High:
--Could should be better separated into packages
--Clean up import ordering
-
 Mid:
 -Replace `AgentModel` with an `Overlord` and overhaul the code
 --Things should stop managing their own updates

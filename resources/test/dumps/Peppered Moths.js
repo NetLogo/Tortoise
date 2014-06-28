@@ -7,25 +7,26 @@ var SelfManager   = workspace.selfManager;
 var Updater       = workspace.updater;
 var world         = workspace.world;
 
-var Call       = require('engine/call');
-var ColorModel = require('engine/colormodel');
-var Dump       = require('engine/dump');
-var Exception  = require('engine/exception');
-var Link       = require('engine/link');
-var LinkSet    = require('engine/linkset');
-var Nobody     = require('engine/nobody');
-var PatchSet   = require('engine/patchset');
-var Tasks      = require('engine/tasks');
-var Trig       = require('engine/trig');
-var Turtle     = require('engine/turtle');
-var TurtleSet  = require('engine/turtleset');
-var Type       = require('engine/typechecker');
+var Call           = require('util/call');
+var ColorModel     = require('util/colormodel');
+var Dump           = require('util/dump');
+var Exception      = require('util/exception');
+var Trig           = require('util/trig');
+var Type           = require('util/typechecker');
+var notImplemented = require('util/notimplemented');
 
-var AgentModel     = require('integration/agentmodel');
-var Denuller       = require('integration/denuller');
-var notImplemented = require('integration/notimplemented');
-var Random         = require('integration/random');
-var StrictMath     = require('integration/strictmath');function envColor() {
+var Link      = require('engine/core/link');
+var LinkSet   = require('engine/core/linkset');
+var Nobody    = require('engine/core/nobody');
+var PatchSet  = require('engine/core/patchset');
+var Turtle    = require('engine/core/turtle');
+var TurtleSet = require('engine/core/turtleset');
+var Tasks     = require('engine/prim/tasks');
+
+var AgentModel     = require('agentmodel');
+var Denuller       = require('nashorn/denuller');
+var Random         = require('shim/random');
+var StrictMath     = require('shim/strictmath');function envColor() {
   return (9 - world.observer.getGlobal('darkness'));
 }
 function deltaEnv() {
