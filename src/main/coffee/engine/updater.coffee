@@ -3,8 +3,10 @@
 #@# Make an `Update` class that always has turtles, links, and patches
 #@# Vassal: { id: ID, companion: { trackedKeys: Set }, registerUpdate: Array[String -> Value] }
 #@# Overlord: { updates: Array[Update], flushUpdates: Unit, collectUpdates: Array[Update] }
-define(['engine/exception', 'engine/link', 'engine/observer', 'engine/patch', 'engine/turtle', 'engine/world']
-     , ( Exception,          Link,          Observer,          Patch,          Turtle,          World) ->
+define(['util/exception', 'engine/core/link', 'engine/core/observer', 'engine/core/patch', 'engine/core/turtle'
+      , 'engine/core/world']
+     , ( Exception,        Link,               Observer,               Patch,               Turtle
+      ,  World) ->
 
   ignored = ["", ""]
 
