@@ -2,7 +2,6 @@ Things that are lousy about this branch:
 
 High:
 -Clean up import ordering and 'integration' vs. 'engine' nonsense and grab-bag of files in 'engine'
--Code in `Tasks` is confusing
 
 Mid:
 -Replace `AgentModel` with an `Overlord` and overhaul the code
