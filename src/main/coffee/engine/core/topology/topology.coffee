@@ -1,7 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['shim/lodash', 'shim/strictmath', 'util/abstractmethoderror', 'engine/core/patchset']
-     , ( _,             StrictMath,        abstractMethod,             PatchSet) ->
+define(['shim/lodash', 'shim/strictmath', 'util/abstractmethoderror']
+     , ( _,             StrictMath,        abstractMethod) ->
 
   class Topology
 
@@ -17,15 +17,13 @@ define(['shim/lodash', 'shim/strictmath', 'util/abstractmethoderror', 'engine/co
       @height = 1 + @maxPycor - @minPycor
       @width  = 1 + @maxPxcor - @minPxcor
 
-    # (Number, Number) => PatchSet
+    # (Number, Number) => Array[Patch]
     getNeighbors: (pxcor, pycor) -> #@# This should memoize
-      patches = _(@_getNeighbors(pxcor, pycor)).filter((patch) -> patch isnt false).value()
-      new PatchSet(patches)
+      _(@_getNeighbors(pxcor, pycor)).filter((patch) -> patch isnt false).value() #@# This function shouldn't exist; why give patches that are `false`?
 
-    # (Number, Number) => PatchSet
+    # (Number, Number) => Array[Patch]
     getNeighbors4: (pxcor, pycor) ->
-      patches = _(@_getNeighbors4(pxcor, pycor)).filter((patch) -> patch isnt false).value() #@# This code is awkward
-      new PatchSet(patches)
+      _(@_getNeighbors4(pxcor, pycor)).filter((patch) -> patch isnt false).value()
 
     # (Number, Number, Number, Number) => Number
     distanceXY: (x1, y1, x2, y2) -> #@# Long line
