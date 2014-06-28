@@ -60,8 +60,8 @@ define(['shim/lodash', 'shim/strictmath', 'util/abstractmethoderror', 'engine/co
       )
 
     # (Number, Number) => Array[Patch]
-    _getNeighbors: (pxcor, pycor) -> #@# Was I able to fix this in the ScalaJS version?
-      if pxcor is @maxPxcor and pxcor is @minPxcor #@# How can you just go and reference properties of yourself that you don't require?
+    _getNeighbors: (pxcor, pycor) ->
+      if pxcor is @maxPxcor and pxcor is @minPxcor
         if pycor is @maxPycor and pycor is @minPycor
           []
         else
@@ -75,7 +75,7 @@ define(['shim/lodash', 'shim/strictmath', 'util/abstractmethoderror', 'engine/co
          @_getPatchSouthWest(pxcor, pycor), @_getPatchNorthWest(pxcor, pycor)]
 
     # (Number, Number) => Array[Patch]
-    _getNeighbors4: (pxcor, pycor) -> #@# Any improvement in ScalaJS version?
+    _getNeighbors4: (pxcor, pycor) ->
       if pxcor is @maxPxcor and pxcor is @minPxcor
         if pycor is @maxPycor and pycor is @minPycor
           []
