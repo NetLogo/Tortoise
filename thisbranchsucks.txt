@@ -1,7 +1,8 @@
 Things that are lousy about this branch:
 
 High:
--Clean up import ordering and 'integration' vs. 'engine' nonsense and grab-bag of files in 'engine'
+-Could should be better separated into packages
+-Clean up import ordering
 
 Mid:
 -Replace `AgentModel` with an `Overlord` and overhaul the code
