@@ -4,20 +4,20 @@ define(->
 
   class Iterator
 
-    _agents: undefined # AbstractAgentSet[T]
-    _i:      undefined # Number
+    _items: undefined # Array[T]
+    _i:     undefined # Number
 
-    # [T] @ (AbstractAgentSet) => Iterator[T]
-    constructor: (agents) ->
-      @_agents = agents[..]
-      @_i      = 0
+    # [T] @ (Array[T]) => Iterator[T]
+    constructor: (items) ->
+      @_items = items[..]
+      @_i     = 0
 
     # () => Boolean
     hasNext: ->
-      @_i < @_agents.length
+      @_i < @_items.length
 
-    # () => Agent
+    # () => T
     next: ->
-      @_agents[@_i++]
+      @_items[@_i++]
 
 )
