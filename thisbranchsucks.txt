@@ -1,8 +1,6 @@
 Things that are lousy about this branch:
 
 Mid:
--Replace `AgentModel` with an `Overlord` and overhaul the code
---Things should stop managing their own updates
 -`Iterator`/`Shufflerator` rethinking
 --JVM `Shufflerator` should be changed so that it doesn't prepoll the iteration
 --`Iterator` should just wrap Mori's iterator, providing an interface for `doseq` and `fmap`
