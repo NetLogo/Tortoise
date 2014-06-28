@@ -3,14 +3,12 @@
 define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine/core/observer', 'engine/core/patch'
       , 'engine/core/patchset', 'engine/core/turtle', 'engine/core/turtleset', 'engine/core/structure/builtins'
       , 'engine/core/structure/idmanager', 'engine/core/structure/ticker', 'engine/core/structure/worldlinks'
-      , 'engine/core/topology/box', 'engine/core/topology/horizcylinder', 'engine/core/topology/torus'
-      , 'engine/core/topology/vertcylinder', 'shim/lodash', 'shim/random', 'shim/strictmath', 'util/colormodel'
+      , 'engine/core/topology/factory', 'shim/lodash', 'shim/random', 'shim/strictmath', 'util/colormodel'
       , 'util/exception']
      , ( Link,               LinkSet,               Nobody,               Observer,               Patch
       ,  PatchSet,               Turtle,               TurtleSet,               Builtins
       ,  IDManager,                         Ticker,                         WorldLinks
-      ,  Box,                        HorizCylinder,                        Torus
-      ,  VertCylinder,                        _,             Random,        StrictMath,        ColorModel
+      ,  topologyFactory,                _,             Random,        StrictMath,        ColorModel
       ,  Exception) ->
 
   class World
@@ -118,15 +116,7 @@ define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine
       # For some reason, JVM NetLogo doesn't restart `who` ordering after `resize-world`; even the test for this is existentially confused. --JAB (4/3/14)
       @_turtleIDManager.suspendDuring(() => @clearTurtles())
 
-      @topology =
-        if wrapsInX and wrapsInY #@# `Topology.Companion` should know how to generate a topology from these values; what does `World` care?
-          new Torus(minPxcor, maxPxcor, minPycor, maxPycor, @patches, @getPatchAt)
-        else if wrapsInX
-          new VertCylinder(minPxcor, maxPxcor, minPycor, maxPycor, @patches, @getPatchAt)
-        else if wrapsInY
-          new HorizCylinder(minPxcor, maxPxcor, minPycor, maxPycor, @patches, @getPatchAt)
-        else
-          new Box(minPxcor, maxPxcor, minPycor, maxPycor, @patches, @getPatchAt)
+      @topology = topologyFactory(wrapsInX, wrapsInY, minPxcor, maxPxcor, minPycor, maxPycor, @patches, @getPatchAt)
 
       @createPatches()
       @_declarePatchesAllBlack()
