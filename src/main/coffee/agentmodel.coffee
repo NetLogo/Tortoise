@@ -11,7 +11,7 @@ define(->
       @observer = {}
       @world    = {}
 
-    # () => Unit
+    # (Array[Updater.Update]) => Unit
     updates: (modelUpdates) ->
       for u in modelUpdates
         @update(u)
