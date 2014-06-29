@@ -21,7 +21,7 @@ define(['shim/random'], (Random) ->
     hasNext: ->
       @_i <= @_items.length
 
-    # () => Agent
+    # () => T
     next: ->
       result = @_nextOne
       @_fetch()

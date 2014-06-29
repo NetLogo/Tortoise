@@ -14,11 +14,13 @@ define(['engine/core/link', 'engine/core/observer', 'engine/core/patch', 'engine
 
     # type Updatable   = Turtle|Patch|Link|World|Observer
     # type EngineKey   = String
+    # type ID          = String
     # type Key         = String
     # type Value       = Any
     # type UpdateEntry = Object[Key, Value]
-    # type _UE         = UpdateEntry
-    # type Update      = { turtles: _UE, patches: _UE, links: _UE, observer: _UE, world: _UE }
+    # type UpdateSet   = Object[ID, UpdateEntry]
+    # type _US         = UpdateSet
+    # type Update      = { turtles: _US, patches: _US, links: _US, observer: _US, world: _US }
 
     @_updates = undefined # Array[Update]
 
