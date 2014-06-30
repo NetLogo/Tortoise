@@ -18,7 +18,7 @@ object Prims {
       case SimplePrims.InfixReporter(op)    => s"(${arg(0)} $op ${arg(1)})"
       case SimplePrims.NormalReporter(op)   => s"$op($commaArgs)"
       case x: prim.etc._isbreed             => s"""Prims.isBreed("${x.breedName}", ${arg(0)})"""
-      case b: prim.etc._breed               => s"""world.turtlesOfBreed("${b.getBreedName}")"""
+      case b: prim._breed                   => s"""world.turtlesOfBreed("${b.getBreedName}")"""
       case b: prim.etc._breedsingular       => s"""world.getTurtleOfBreed("${b.breedName}", ${arg(0)})"""
       case b: prim.etc._breedhere           => s"""AgentSet.self().breedHere("${b.getBreedName}")"""
       case b: prim.etc._breedon             => s"""Prims.breedOn("${b.getBreedName}", ${arg(0)})"""

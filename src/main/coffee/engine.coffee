@@ -1565,33 +1565,18 @@ class Topology
   midpointy: (y1, y2) -> @wrap((y1 + (y1 + @shortestY(y1, y2))) / 2, world.minPycor - 0.5, world.maxPycor + 0.5)
 
   inRadius: (origin, x, y, agents, radius) ->
-    result = []
-
-    r = Math.ceil(radius)
-    width = world.width() / 2
-    height = world.height() / 2
-    if(r < width || !world.wrappingAllowedInX)
-      minDX = -r
-      maxDX = r
-    else
-      maxDX = StrictMath.floor(width)
-      minDX = -Math.ceil(width - 1)
-    if(r < height || !world.wrappingAllowedInY)
-      minDY = -r
-      maxDY = r
-    else
-      maxDY = StrictMath.floor(height)
-      minDY = -Math.ceil(height - 1)
-
-    for dy in [minDY..maxDY]
-      for dx in [minDX..maxDX]
-        p = origin.patchAt(dx, dy)
-        if p != Nobody
-          if(@distanceXY(p.pxcor, p.pycor, x, y) <= radius && agents.items.filter((o) -> o == p).length > 0)
-            result.push(p)
-          for t in p.turtlesHere().items
-            if(@distanceXY(t.xcor(), t.ycor(), x, y) <= radius && agents.items.filter((o) -> o == t).length > 0)
-              result.push(t)
+    result =
+      agents.items.filter(
+        (agent) =>
+          [xcor, ycor] =
+            if agent instanceof Turtle
+              [agent.xcor(), agent.ycor()]
+            else if agent instanceof Patch
+              [agent.pxcor, agent.pycor]
+            else
+              [undefined, undefined]
+          @distanceXY(xcor, ycor, x, y) <= radius
+      )
     new Agents(result, agents.breed, agents.kind)
 
 class Torus extends Topology
