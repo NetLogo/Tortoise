@@ -147,8 +147,8 @@ define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtl
       new TurtleSet(turtles)
 
     # (Boolean, Boolean, Turtle) => Boolean
-    isLinkNeighbor: (directed, isSource, other) -> #@# Other WHAT?
-      @linkNeighbors(directed, isSource).filter((neighbor) -> neighbor is other).nonEmpty() #@# `_(derp).some(f)` (Lodash)
+    isLinkNeighbor: (directed, isSource, other) -> #@# Varname, other WHAT?
+      @linkNeighbors(directed, isSource).filter((neighbor) -> neighbor is other).nonEmpty() #@# `_(derp).contains(other)` (Lodash)
 
     # (Boolean, Boolean, Turtle) => Link
     findLinkViaNeighbor: (isDirected, isSource, other) -> #@# Other WHAT?

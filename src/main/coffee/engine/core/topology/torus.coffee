@@ -18,7 +18,7 @@ define(['engine/core/topology/topology', 'shim/lodash', 'shim/strictmath'], (Top
 
     #@# Why is this `diffuse` so different from the others?
     # (String, Number) => Unit
-    diffuse: (varName, coefficient) -> #@# Varname
+    diffuse: (varName, coefficient) ->
       scratch = _(0).range(@width).map(-> []).value()
 
       @_getPatches().forEach((patch) => #@# Oh, mutation, thou art a cruel, deceptive bitch.  Thou cannst maketh two-eth separate-eth loops over the same thing-eth seem sane

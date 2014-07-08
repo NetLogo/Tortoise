@@ -279,7 +279,7 @@ define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine
       new LinkSet(links)
 
     # (Turtle, TurtleSet) => LinkSet
-    createReverseDirectedLinks: (source, others) -> #@# Clarity
+    createReverseDirectedLinks: (source, others) -> #@# Clarity, duplication FTW
       @unbreededLinksAreDirected = true
       @_updater.updated(this)("unbreededLinksAreDirected")
       links = _(others.toArray()).map((turtle) => @_createLink(true, turtle, source)).filter((other) -> other isnt Nobody).value()
