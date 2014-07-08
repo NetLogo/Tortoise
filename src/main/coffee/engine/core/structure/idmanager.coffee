@@ -20,7 +20,7 @@ define(->
     next: ->
       @_count++
 
-    # ((T) => U) => Unit
+    # (() => Any) => Unit
     suspendDuring: (f) ->
       oldCount = @_count
       f()

@@ -133,11 +133,11 @@ define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine
       index  = (@topology.maxPycor - StrictMath.round(trueY)) * @topology.width + (StrictMath.round(trueX) - @topology.minPxcor)
       @_patches[index]
 
-    # (Number) => Turtle
+    # (Number) => Agent
     getTurtle: (id) ->
       @_turtlesById[id] or Nobody
 
-    # (String, Number) => Turtle
+    # (String, Number) => Agent
     getTurtleOfBreed: (breedName, id) ->
       turtle = @getTurtle(id)
       if turtle.getBreedName().toUpperCase() is breedName.toUpperCase()
@@ -248,7 +248,7 @@ define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine
       ).value()
       new TurtleSet(turtles, @breedManager.get(breedName))
 
-    # (Number, String) => TurtleSet
+    # (Number, String, Number, Number) => TurtleSet
     createTurtles: (n, breedName, xcor = 0, ycor = 0) ->
       turtles = _(0).range(n).map(=>
         color   = ColorModel.randomColor()
@@ -295,7 +295,7 @@ define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine
       links = _(others.toArray()).map((turtle) => @_createLink(false, source, turtle)).filter((other) -> other isnt Nobody).value()
       new LinkSet(links)
 
-    # (Number, Number) => Link
+    # (Number, Number) => Agent
     getLink: (fromId, toId) ->
       link = @_links.find((link) -> link.end1.id is fromId and link.end2.id is toId)
       if link?

@@ -45,35 +45,35 @@ define(['engine/core/topology/topology', 'shim/lodash', 'shim/strictmath'], (Top
 
     #@# I think I tried to fix all this in the ScalaJS version.  Did I succeed?  (I doubt it)
     #@# All of these `_getPatch*` things probably ought to memoize
-    # (Number, Number) => Patch
+    # (Number, Number) => Patch|Boolean
     _getPatchNorth: (pxcor, pycor) ->
       if pycor is @maxPycor
         @_getPatchAt(pxcor, @minPycor)
       else
         @_getPatchAt(pxcor, pycor + 1)
 
-    # (Number, Number) => Patch
+    # (Number, Number) => Patch|Boolean
     _getPatchSouth: (pxcor, pycor) ->
       if pycor is @minPycor
         @_getPatchAt(pxcor, @maxPycor)
       else
         @_getPatchAt(pxcor, pycor - 1)
 
-    # (Number, Number) => Patch
+    # (Number, Number) => Patch|Boolean
     _getPatchEast: (pxcor, pycor) ->
       if pxcor is @maxPxcor
         @_getPatchAt(@minPxcor, pycor)
       else
         @_getPatchAt(pxcor + 1, pycor)
 
-    # (Number, Number) => Patch
+    # (Number, Number) => Patch|Boolean
     _getPatchWest: (pxcor, pycor) ->
       if pxcor is @minPxcor
         @_getPatchAt(@maxPxcor, pycor)
       else
         @_getPatchAt(pxcor - 1, pycor)
 
-    # (Number, Number) => Patch
+    # (Number, Number) => Patch|Boolean
     _getPatchNorthWest: (pxcor, pycor) ->
       if pycor is @maxPycor
         if pxcor is @minPxcor
@@ -85,7 +85,7 @@ define(['engine/core/topology/topology', 'shim/lodash', 'shim/strictmath'], (Top
       else
         @_getPatchAt(pxcor - 1, pycor + 1)
 
-    # (Number, Number) => Patch
+    # (Number, Number) => Patch|Boolean
     _getPatchSouthWest: (pxcor, pycor) ->
       if pycor is @minPycor
         if pxcor is @minPxcor
@@ -97,7 +97,7 @@ define(['engine/core/topology/topology', 'shim/lodash', 'shim/strictmath'], (Top
       else
         @_getPatchAt(pxcor - 1, pycor - 1)
 
-    # (Number, Number) => Patch
+    # (Number, Number) => Patch|Boolean
     _getPatchSouthEast: (pxcor, pycor) ->
       if pycor is @minPycor
         if pxcor is @maxPxcor
@@ -109,7 +109,7 @@ define(['engine/core/topology/topology', 'shim/lodash', 'shim/strictmath'], (Top
       else
         @_getPatchAt(pxcor + 1, pycor - 1)
 
-    # (Number, Number) => Patch
+    # (Number, Number) => Patch|Boolean
     _getPatchNorthEast: (pxcor, pycor) ->
       if pycor is @maxPycor
         if pxcor is @maxPxcor

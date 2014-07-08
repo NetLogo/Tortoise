@@ -20,29 +20,29 @@ define(['engine/core/topology/topology', 'shim/strictmath', 'util/exception'], (
       else
         throw new Exception.TopologyInterrupt ("Cannot move turtle beyond the world's edge.")
 
-    # (Number, Number) => Patch
+    # (Number, Number) => Patch|Boolean
     _getPatchNorth: (pxcor, pycor) ->
       (pycor isnt @maxPycor) and @_getPatchAt(pxcor, pycor + 1) #@# This booleanism is really weird.  It's present across topologies.
 
-    # (Number, Number) => Patch
+    # (Number, Number) => Patch|Boolean
     _getPatchSouth: (pxcor, pycor) ->
       (pycor isnt @minPycor) and @_getPatchAt(pxcor, pycor - 1)
 
-    # (Number, Number) => Patch
+    # (Number, Number) => Patch|Boolean
     _getPatchEast: (pxcor, pycor) ->
       if pxcor is @maxPxcor
         @_getPatchAt(@minPxcor, pycor)
       else
         @_getPatchAt(pxcor + 1, pycor)
 
-    # (Number, Number) => Patch
+    # (Number, Number) => Patch|Boolean
     _getPatchWest: (pxcor, pycor) ->
       if pxcor is @minPxcor
         @_getPatchAt(@maxPxcor, pycor)
       else
         @_getPatchAt(pxcor - 1, pycor)
 
-    # (Number, Number) => Patch
+    # (Number, Number) => Patch|Boolean
     _getPatchNorthWest: (pxcor, pycor) ->
       if pycor is @maxPycor
         false
@@ -51,7 +51,7 @@ define(['engine/core/topology/topology', 'shim/strictmath', 'util/exception'], (
       else
         @_getPatchAt(pxcor - 1, pycor + 1)
 
-    # (Number, Number) => Patch
+    # (Number, Number) => Patch|Boolean
     _getPatchSouthWest: (pxcor, pycor) ->
       if pycor is @minPycor
         false
@@ -60,7 +60,7 @@ define(['engine/core/topology/topology', 'shim/strictmath', 'util/exception'], (
       else
         @_getPatchAt(pxcor - 1, pycor - 1)
 
-    # (Number, Number) => Patch
+    # (Number, Number) => Patch|Boolean
     _getPatchSouthEast: (pxcor, pycor) ->
       if pycor is @minPycor
         false
@@ -69,7 +69,7 @@ define(['engine/core/topology/topology', 'shim/strictmath', 'util/exception'], (
       else
         @_getPatchAt(pxcor + 1, pycor - 1)
 
-    # (Number, Number) => Patch
+    # (Number, Number) => Patch|Boolean
     _getPatchNorthEast: (pxcor, pycor) ->
       if pycor is @maxPycor
         false

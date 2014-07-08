@@ -119,7 +119,8 @@ define(['engine/core/abstractagentset', 'engine/core/structure/builtins', 'engin
       @_updateVarsByName(varName)
       return
 
-    # (Breed) => Unit
+    #@# Pooey
+    # (AbstractAgentSet|Breed|String) => Unit
     _setBreed: (breed) ->
 
       trueBreed =

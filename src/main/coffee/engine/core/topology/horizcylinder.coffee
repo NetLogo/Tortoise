@@ -20,29 +20,29 @@ define(['engine/core/topology/topology', 'shim/strictmath', 'util/exception'], (
     wrapY: (pos) ->
       @_wrap(pos, @minPycor - 0.5, @maxPycor + 0.5)
 
-    # (Number, Number) => Patch
+    # (Number, Number) => Patch|Boolean
     _getPatchEast: (pxcor, pycor) ->
       (pxcor isnt @maxPxcor) and @_getPatchAt(pxcor + 1, pycor)
 
-    # (Number, Number) => Patch
+    # (Number, Number) => Patch|Boolean
     _getPatchWest: (pxcor, pycor) ->
       (pxcor isnt @minPxcor) and @_getPatchAt(pxcor - 1, pycor)
 
-    # (Number, Number) => Patch
+    # (Number, Number) => Patch|Boolean
     _getPatchNorth: (pxcor, pycor) ->
       if pycor is @maxPycor
         @_getPatchAt(pxcor, @minPycor)
       else
         @_getPatchAt(pxcor, pycor + 1)
 
-    # (Number, Number) => Patch
+    # (Number, Number) => Patch|Boolean
     _getPatchSouth: (pxcor, pycor) ->
       if pycor is @minPycor
         @_getPatchAt(pxcor, @maxPycor)
       else
         @_getPatchAt(pxcor, pycor - 1)
 
-    # (Number, Number) => Patch
+    # (Number, Number) => Patch|Boolean
     _getPatchNorthWest: (pxcor, pycor) ->
       if pxcor is @minPxcor
         false
@@ -51,7 +51,7 @@ define(['engine/core/topology/topology', 'shim/strictmath', 'util/exception'], (
       else
         @_getPatchAt(pxcor - 1, pycor + 1)
 
-    # (Number, Number) => Patch
+    # (Number, Number) => Patch|Boolean
     _getPatchSouthWest: (pxcor, pycor) ->
       if pxcor is @minPxcor
         false
@@ -60,7 +60,7 @@ define(['engine/core/topology/topology', 'shim/strictmath', 'util/exception'], (
       else
         @_getPatchAt(pxcor - 1, pycor - 1)
 
-    # (Number, Number) => Patch
+    # (Number, Number) => Patch|Boolean
     _getPatchSouthEast: (pxcor, pycor) ->
       if pxcor is @maxPxcor
         false
@@ -69,7 +69,7 @@ define(['engine/core/topology/topology', 'shim/strictmath', 'util/exception'], (
       else
         @_getPatchAt(pxcor + 1, pycor - 1)
 
-    # (Number, Number) => Patch
+    # (Number, Number) => Patch|Boolean
     _getPatchNorthEast: (pxcor, pycor) ->
       if pxcor is @maxPxcor
         false
