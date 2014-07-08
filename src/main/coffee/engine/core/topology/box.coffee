@@ -23,7 +23,7 @@ define(['engine/core/topology/topology', 'util/exception'], (Topology, Exception
       if minY < pos < maxY
         pos
       else # Amusingly, Headless throws a similarly inconsistent and grammatically incorrect error message --JAB (4/29/14)
-        throw new Exception.TopologyInterrupt ("Cannot move turtle beyond the worlds edge.")
+        throw new Exception.TopologyInterrupt("Cannot move turtle beyond the worlds edge.")
 
     # (Number, Number) => Patch|Boolean
     _getPatchNorth: (pxcor, pycor) -> (pycor isnt @maxPycor) and @_getPatchAt(pxcor, pycor + 1)

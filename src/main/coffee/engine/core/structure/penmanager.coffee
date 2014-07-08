@@ -62,5 +62,4 @@ define(->
       @_updateFunc("pen-mode")
       return
 
-
 )
