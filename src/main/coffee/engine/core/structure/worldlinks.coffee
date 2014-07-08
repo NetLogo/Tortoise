@@ -4,7 +4,7 @@ define(['shim/mori'], (Mori) ->
 
   class WorldLinks
 
-    @_links: undefined # SortedSet[Link]
+    @_links: undefined # Mori.SortedSet[Link]
 
     # ((Link, Link) => Int) => WorldLinks
     constructor: (@_compareFunc) ->
