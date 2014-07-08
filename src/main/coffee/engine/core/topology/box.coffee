@@ -25,13 +25,13 @@ define(['engine/core/topology/topology', 'util/exception'], (Topology, Exception
       else # Amusingly, Headless throws a similarly inconsistent and grammatically incorrect error message --JAB (4/29/14)
         throw new Exception.TopologyInterrupt ("Cannot move turtle beyond the worlds edge.")
 
-    # (Number, Number) => Patch
+    # (Number, Number) => Patch|Boolean
     _getPatchNorth: (pxcor, pycor) -> (pycor isnt @maxPycor) and @_getPatchAt(pxcor, pycor + 1)
     _getPatchSouth: (pxcor, pycor) -> (pycor isnt @minPycor) and @_getPatchAt(pxcor, pycor - 1)
     _getPatchEast:  (pxcor, pycor) -> (pxcor isnt @maxPxcor) and @_getPatchAt(pxcor + 1, pycor)
     _getPatchWest:  (pxcor, pycor) -> (pxcor isnt @minPxcor) and @_getPatchAt(pxcor - 1, pycor)
 
-    # (Number, Number) => Patch
+    # (Number, Number) => Patch|Boolean
     _getPatchNorthWest: (pxcor, pycor) -> (pycor isnt @maxPycor) and (pxcor isnt @minPxcor) and @_getPatchAt(pxcor - 1, pycor + 1)
     _getPatchSouthWest: (pxcor, pycor) -> (pycor isnt @minPycor) and (pxcor isnt @minPxcor) and @_getPatchAt(pxcor - 1, pycor - 1)
     _getPatchSouthEast: (pxcor, pycor) -> (pycor isnt @minPycor) and (pxcor isnt @maxPxcor) and @_getPatchAt(pxcor + 1, pycor - 1)

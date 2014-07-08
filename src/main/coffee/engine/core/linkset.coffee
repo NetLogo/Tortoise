@@ -16,7 +16,7 @@ define(['engine/core/abstractagentset'], (AbstractAgentSet) ->
     toString: ->
       "(agentset, #{@size()} #{@getBreedName().toLowerCase()})"
 
-    # (Array[T], TurtleSet[T]) => TurtleSet[T]
+    # (Array[T], LinkSet[T]) => LinkSet[T]
     _generateFrom: (newAgentArr, agents) ->
       new LinkSet(newAgentArr, agents.getBreedName())
 

@@ -14,7 +14,7 @@ define(['engine/core/nobody', 'engine/core/turtle', 'engine/core/turtleset', 'en
 
     turtles: undefined # Array[Turtle]
 
-    # (Number, Number, Number, World, (Updatable) => (String*) => Unit, Number, String, Number) => Patch
+    # (Number, Number, Number, World, (Updatable) => (String*) => Unit, () => Unit, Number, String, Number) => Patch
     constructor: (@id, @pxcor, @pycor, @world, genUpdate, @_declareNonBlackPatch, @_pcolor = 0.0, @_plabel = "", @_plabelcolor = 9.9) ->
       @_updateVarsByName = genUpdate(this)
       @turtles = []
@@ -91,7 +91,7 @@ define(['engine/core/nobody', 'engine/core/turtle', 'engine/core/turtleset', 'en
       @patchAt(dx, dy).turtlesHere()
 
     #@# Should be able to get rid of this and delegate to the `World`...
-    # (Number, Number) => Patch
+    # (Number, Number) => Agent
     patchAt: (dx, dy) ->
       try
         newX = @world.topology.wrapX(@pxcor + dx)

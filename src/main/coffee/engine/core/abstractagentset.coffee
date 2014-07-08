@@ -26,11 +26,11 @@ define(['engine/core/nobody', 'shim/random', 'util/seq', 'util/shufflerator']
     agentAll: (f) ->
       @every(@_askAgent(f))
 
-    # [U] @ (() => U) => T
+    # (() => Double) => Agent
     maxOneOf: (f) ->
       @_findBestOf(-Number.MAX_VALUE, ((result, currentBest) -> result > currentBest), f)
 
-    # [U] @ (() => U) => T
+    # (() => Double) => Agent
     minOneOf: (f) ->
       @_findBestOf(Number.MAX_VALUE, ((result, currentBest) -> result < currentBest), f)
 
@@ -53,7 +53,7 @@ define(['engine/core/nobody', 'shim/random', 'util/seq', 'util/shufflerator']
     copyWithNewAgents: (agents) ->
       @_generateFrom(agents, this)
 
-    # [U, V] @ (U, (U, V) => Boolean, () => V) => T
+    # [U] @ (U, (U, U) => Boolean, () => U) => Agent
     _findBestOf: (worstPossible, findIsBetter, f) ->
       winningValue = worstPossible #@# God awful.  Use `reduce` or _something_!
       winners = []

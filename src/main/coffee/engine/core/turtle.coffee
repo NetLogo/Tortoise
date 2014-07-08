@@ -175,7 +175,7 @@ define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtl
       else
         @world.selfManager.myself().end1
 
-    # (Number, Number) => Patch
+    # (Number, Number) => Agent
     patchRightAndAhead: (angle, distance) ->
       heading = @_normalizeHeading(@_heading + angle)
       try
@@ -185,11 +185,11 @@ define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtl
       catch error
         if error instanceof Exception.TopologyInterrupt then Nobody else throw error
 
-    # (Number, Number) => Patch
+    # (Number, Number) => Agent
     patchLeftAndAhead: (angle, distance) ->
       @patchRightAndAhead(-angle, distance)
 
-    # (Number) => Patch
+    # (Number) => Agent
     patchAhead: (distance) ->
       @patchRightAndAhead(0, distance)
 
@@ -205,7 +205,7 @@ define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtl
         @jump(distance)
       return
 
-    # () => Boolean
+    # (Number) => Boolean
     jump: (distance) ->
       if @canMove(distance)
         @_setXcor(@xcor + distance * Trig.sin(@_heading))
@@ -314,7 +314,7 @@ define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtl
       newTurtles = _(0).range(n).map(=> @_makeTurtleCopy(breed)).value()
       new TurtleSet(newTurtles, breed)
 
-    # () => Turtle
+    # (Breed) => Turtle
     _makeTurtleCopy: (breed) ->
       turtle = @world.createTurtle(@_color, @_heading, @xcor, @ycor, breed, @_label, @_labelcolor, @_hidden, @_size, @penManager.clone())
       _(@world.turtlesOwnNames).forEach((varName) =>
@@ -409,7 +409,7 @@ define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtl
      easily reused. --JAB (6/2/14)
     ###
 
-    # (Breed) => Unit
+    # (AbstractAgentSet|Breed|String) => Unit
     _setBreed: (breed) ->
 
       trueBreed =

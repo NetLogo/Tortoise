@@ -102,7 +102,7 @@ define(['shim/lodash', 'shim/strictmath', 'util/abstractmethoderror']
     _shortestX: (x1, x2) -> abstractMethod('Topology._shortestX')
     _shortestY: (y1, y2) -> abstractMethod('Topology._shortestY')
 
-    # (Number, Number) => Patch
+    # (Number, Number) => Patch|Boolean
     _getPatchNorth:     (x, y) -> abstractMethod('Topology._getPatchNorth')
     _getPatchEast:      (x, y) -> abstractMethod('Topology._getPatchEast')
     _getPatchSouth:     (x, y) -> abstractMethod('Topology._getPatchSouth')
