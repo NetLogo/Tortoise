@@ -40,7 +40,8 @@ libraryDependencies ++= Seq(
   "org.reflections" % "reflections" % "0.9.9-RC1" % "test",
   "com.google.code.findbugs" % "jsr305" % "2.0.1" % "test",
   "com.google.guava" % "guava" % "12.0"           % "test",
-  "org.javassist" % "javassist" % "3.16.1-GA"     % "test"
+  "org.javassist" % "javassist" % "3.16.1-GA"     % "test",
+  "org.scalaz" %% "scalaz-core" % "7.0.6"
 )
 
 libraryDependencies ++= Seq(
