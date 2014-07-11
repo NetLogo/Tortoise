@@ -246,7 +246,7 @@ define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine
           heading = (360 * num) / n
           @createTurtle(color, heading, 0, 0, @breedManager.get(breedName))
       ).value()
-      new TurtleSet(turtles, @breedManager.get(breedName))
+      new TurtleSet(turtles, breedName)
 
     # (Number, String, Number, Number) => TurtleSet
     createTurtles: (n, breedName, xcor = 0, ycor = 0) ->
@@ -255,7 +255,7 @@ define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine
         heading = Random.nextInt(360)
         @createTurtle(color, heading, xcor, ycor, @breedManager.get(breedName))
       ).value()
-      new TurtleSet(turtles, @breedManager.get(breedName))
+      new TurtleSet(turtles, breedName)
 
     # (Number, Number) => PatchSet
     getNeighbors: (pxcor, pycor) ->
@@ -333,10 +333,10 @@ define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine
     # (Boolean, Turtle, Turtle) => Link
     _createLink: (directed, from, to) ->
       [end1, end2] =
-      if from.id < to.id or directed
-        [from, to]
-      else
-        [to, from]
+        if from.id < to.id or directed
+          [from, to]
+        else
+          [to, from]
 
       if @getLink(end1.id, end2.id) is Nobody
         link = new Link(@_linkIDManager.next(), directed, end1, end2, this, @_updater.updated, @_updater.registerDeadLink)

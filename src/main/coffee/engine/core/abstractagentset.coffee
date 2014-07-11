@@ -16,7 +16,7 @@ define(['engine/core/nobody', 'shim/random', 'util/seq', 'util/shufflerator']
         if agents[0]?
           agents[0].world.selfManager.askAgent
         else
-          () -> undefined
+          () -> () -> undefined
 
     # (() => Boolean) => AbstractAgentSet[T]
     agentFilter: (f) ->

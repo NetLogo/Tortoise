@@ -14,7 +14,7 @@ define(['engine/core/topology/topology', 'util/exception'], (Topology, Exception
       if minX < pos < maxX
         pos
       else # Amusingly, Headless throws a similarly inconsistent and grammatically incorrect error message --JAB (4/29/14)
-        throw new Exception.TopologyInterrupt ("Cannot move turtle beyond the worlds edge.")
+        throw new Exception.TopologyInterrupt("Cannot move turtle beyond the worlds edge.")
 
     # (Number) => Number
     wrapY: (pos) ->

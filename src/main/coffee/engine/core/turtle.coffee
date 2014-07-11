@@ -11,6 +11,7 @@ define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtl
 
     _breed:            undefined # Breed
     _links:            undefined # Array[Link]
+    _shape:            undefined # String
     _updateVarsByName: undefined # (String*) => Unit
     _varManager:       undefined # VariableManager
 
