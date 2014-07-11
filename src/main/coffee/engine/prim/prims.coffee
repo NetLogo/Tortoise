@@ -475,9 +475,7 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
         else
           new Iterator(agents)
 
-      while iter.hasNext() #@# Srsly?  Is this Java 1.4?
-        agent = iter.next()
-        @_world.selfManager.askAgent(f)(agent)
+      iter.forEach(@_world.selfManager.askAgent(f))
 
       # If an asker indirectly commits suicide, the exception should propagate.  FD 11/1/2013
       if @_getSelf().id is -1
@@ -511,11 +509,7 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
           agentsOrAgent.toArray()
         else
           [agentsOrAgent]
-      result = []
-      iter = new Shufflerator(agents)
-      while iter.hasNext()
-        agent = iter.next()
-        result.push(@_world.selfManager.askAgent(f)(agent))
+      result = new Shufflerator(agents).map(@_world.selfManager.askAgent(f))
       if agentsOrAgent instanceof AbstractAgentSet #@# Awful to be doing this twice here...
         result
       else

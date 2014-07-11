@@ -1,28 +1,45 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-#@# Lame
-define(['shim/random'], (Random) ->
+define(['shim/random', 'util/iterator'], (Random, Iterator) ->
 
-  class Shufflerator #@# Maybe use my `Iterator` implementation, or maybe Mori has one?
+  class Shufflerator extends Iterator
 
-    _items:   undefined # Array[T]
     _i:       undefined # Number
     _nextOne: undefined # T
 
     # [T] @ (Array[T]) => Shufflerator
     constructor: (items) ->
-      @_items   = items[..]
+      super(items)
       @_i       = 0
       @_nextOne = null
 
       @_fetch()
 
+    # [U] @ ((T) => U) => Array[U]
+    map: (f) ->
+      acc = []
+      while @_hasNext()
+        acc.push(f(@_next()))
+      acc
+
+    # ((T) => Unit) => Unit
+    forEach: (f) ->
+      while @_hasNext()
+        f(@_next())
+
+    # () => Array[T]
+    toArray: ->
+      acc = []
+      while @_hasNext()
+        acc.push(@_next())
+      acc
+
     # () => Boolean
-    hasNext: ->
+    _hasNext: ->
       @_i <= @_items.length
 
     # () => T
-    next: ->
+    _next: ->
       result = @_nextOne
       @_fetch()
       result
@@ -39,7 +56,7 @@ define(['shim/random'], (Random) ->
     ###
     # () => Unit
     _fetch: ->
-      if @hasNext()
+      if @_hasNext()
         if @_i < @_items.length - 1
           randNum = @_i + Random.nextInt(@_items.length - @_i)
           @_nextOne = @_items[randNum]

@@ -3,8 +3,6 @@ Things that are lousy about this branch:
 Mid:
 -`Iterator`/`Shufflerator` rethinking
 --JVM `Shufflerator` should be changed so that it doesn't prepoll the iteration
---`Iterator` should just wrap Mori's iterator, providing an interface for `doseq` and `fmap`
---`Shufflerator` should just extend `Iterator` with a predefined function for randomly iterating a list
 --There should be an `AgentIterator` or something, so we can emulate JVM NetLogo's `DeadSkippingIterator`.  The lack of this is the source of numerous tests being classified as freebies.
 
 Low:
