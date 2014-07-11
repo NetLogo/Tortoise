@@ -36,10 +36,7 @@ define(['engine/core/nobody', 'shim/random', 'util/seq', 'util/shufflerator']
 
     # () => AbstractAgentSet[T]
     shuffled: ->
-      result = []
-      iter = new Shufflerator(@toArray())
-      while iter.hasNext() #@# 1990 rears its ugly head again
-        result.push(iter.next())
+      result = new Shufflerator(@toArray()).toArray()
       @copyWithNewAgents(result)
 
     # () => Array[T]
