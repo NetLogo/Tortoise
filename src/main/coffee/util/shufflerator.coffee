@@ -26,6 +26,7 @@ define(['shim/random', 'util/iterator'], (Random, Iterator) ->
     forEach: (f) ->
       while @_hasNext()
         f(@_next())
+      return
 
     # () => Array[T]
     toArray: ->
