@@ -32,16 +32,16 @@ var StrictMath     = require('shim/strictmath');function setup(setupTask) {
   world.observer.setGlobal('fired-color', 15);
   world.observer.setGlobal('selected-color', 55);
   world.observer.setGlobal('selected-patch', Nobody);
-  Prims.ask(world.patches(), true, function() {
+  world.patches().ask(function() {
     Prims.setPatchVariable('n', (setupTask)());
     Prims.setPatchVariable('n-stack', []);
     Prims.setPatchVariable('base-color', world.observer.getGlobal('default-color'));
-  });
+  }, true);
   var ignore = Call(stabilize, false);
-  Prims.ask(world.patches(), true, function() {
+  world.patches().ask(function() {
     Call(recolor);
-  });
-  world.observer.setGlobal('total', Prims.sum(Prims.of(world.patches(), function() {
+  }, true);
+  world.observer.setGlobal('total', Prims.sum(world.patches().projectionBy(function() {
     return Prims.getPatchVariable('n');
   })));
   world.observer.setGlobal('sizes', []);
@@ -66,10 +66,10 @@ function recolor() {
 function go() {
   var drop = Call(dropPatch);
   if (!Prims.equality(drop, Nobody)) {
-    Prims.ask(drop, true, function() {
+    drop.ask(function() {
       Call(updateN, 1);
       Call(recolor);
-    });
+    }, true);
     var results = Call(stabilize, world.observer.getGlobal('animate-avalanches?'));
     var avalanchePatches = Prims.first(results);
     var lifetime = Prims.last(results);
@@ -77,17 +77,17 @@ function go() {
       world.observer.setGlobal('sizes', Prims.lput(avalanchePatches.size(), world.observer.getGlobal('sizes')));
       world.observer.setGlobal('lifetimes', Prims.lput(lifetime, world.observer.getGlobal('lifetimes')));
     }
-    Prims.ask(avalanchePatches, true, function() {
+    avalanchePatches.ask(function() {
       Call(recolor);
-      Prims.ask(Prims.getNeighbors4(), true, function() {
+      Prims.getNeighbors4().ask(function() {
         Call(recolor);
-      });
-    });
+      }, true);
+    }, true);
     notImplemented('display', undefined)();
-    Prims.ask(avalanchePatches, true, function() {
+    avalanchePatches.ask(function() {
       Prims.setPatchVariable('base-color', world.observer.getGlobal('default-color'));
       Call(recolor);
-    });
+    }, true);
     world.observer.setGlobal('total-on-tick', world.observer.getGlobal('total'));
     world.ticker.tick();
   }
@@ -96,34 +96,34 @@ function explore() {
   if (notImplemented('mouse-inside?', false)) {
     var p = Prims.patch(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)());
     world.observer.setGlobal('selected-patch', p);
-    Prims.ask(world.patches(), true, function() {
+    world.patches().ask(function() {
       Call(pushN);
-    });
-    Prims.ask(world.observer.getGlobal('selected-patch'), true, function() {
+    }, true);
+    world.observer.getGlobal('selected-patch').ask(function() {
       Call(updateN, 1);
-    });
+    }, true);
     var results = Call(stabilize, false);
-    Prims.ask(world.patches(), true, function() {
+    world.patches().ask(function() {
       Call(popN);
-    });
-    Prims.ask(world.patches(), true, function() {
+    }, true);
+    world.patches().ask(function() {
       Prims.setPatchVariable('base-color', world.observer.getGlobal('default-color'));
       Call(recolor);
-    });
+    }, true);
     var avalanchePatches = Prims.first(results);
-    Prims.ask(avalanchePatches, true, function() {
+    avalanchePatches.ask(function() {
       Prims.setPatchVariable('base-color', world.observer.getGlobal('selected-color'));
       Call(recolor);
-    });
+    }, true);
     notImplemented('display', undefined)();
   }
   else {
     if (!Prims.equality(world.observer.getGlobal('selected-patch'), Nobody)) {
       world.observer.setGlobal('selected-patch', Nobody);
-      Prims.ask(world.patches(), true, function() {
+      world.patches().ask(function() {
         Prims.setPatchVariable('base-color', world.observer.getGlobal('default-color'));
         Call(recolor);
-      });
+      }, true);
     }
   }
 }
@@ -140,24 +140,24 @@ function stabilize(animate_p) {
     if (overloadedPatches.nonEmpty()) {
       iters = (iters + 1);
     }
-    Prims.ask(overloadedPatches, true, function() {
+    overloadedPatches.ask(function() {
       Prims.setPatchVariable('base-color', world.observer.getGlobal('fired-color'));
       Call(updateN, -4);
       if (animate_p) {
         Call(recolor);
       }
-      Prims.ask(Prims.getNeighbors4(), true, function() {
+      Prims.getNeighbors4().ask(function() {
         Call(updateN, 1);
         if (animate_p) {
           Call(recolor);
         }
-      });
-    });
+      }, true);
+    }, true);
     if (animate_p) {
       notImplemented('display', undefined)();
     }
     avalanchePatches = Prims.patchSet(avalanchePatches, overloadedPatches);
-    activePatches = Prims.patchSet(Prims.of(overloadedPatches, function() {
+    activePatches = Prims.patchSet(overloadedPatches.projectionBy(function() {
       return Prims.getNeighbors4();
     }));
   }

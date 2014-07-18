@@ -29,23 +29,23 @@ var Random         = require('shim/random');
 var StrictMath     = require('shim/strictmath');function setup() {
   world.clearTurtles();
   notImplemented('clear-all-plots', undefined)();
-  Prims.ask(world.createTurtles(world.observer.getGlobal('number'), ""), true, function() {
+  world.createTurtles(world.observer.getGlobal('number'), '').ask(function() {
     Prims.setVariable('color', Prims.item(Prims.random(world.observer.getGlobal('colors')), [5, 15, 25, 35, 45, 55, 65, 85, 95, 125]));
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
     Call(moveOffWall);
-  });
+  }, true);
   world.ticker.reset();
 }
 function go() {
-  if (Prims.equality(Prims.variance(Prims.of(world.turtles(), function() {
+  if (Prims.equality(Prims.variance(world.turtles().projectionBy(function() {
     return Prims.getVariable('color');
   })), 0)) {
     throw new Exception.StopInterrupt;
   }
-  Prims.ask(world.turtles(), true, function() {
+  world.turtles().ask(function() {
     Prims.right((Prims.random(50) - Prims.random(50)));
     Call(meet);
-    if (Prims.equality(Prims.of(SelfManager.self().patchAhead(0.5), function() {
+    if (Prims.equality(SelfManager.self().patchAhead(0.5).projectionBy(function() {
       return Prims.getPatchVariable('pcolor');
     }), 0)) {
       Prims.fd(0.5);
@@ -53,14 +53,14 @@ function go() {
     else {
       Prims.right(Prims.random(360));
     }
-  });
+  }, true);
   Call(findTopSpecies);
   world.ticker.tick();
 }
 function meet() {
   var candidate = Prims.oneOf(SelfManager.self().turtlesAt(1, 0));
   if (!Prims.equality(candidate, Nobody)) {
-    Prims.setVariable('color', Prims.of(candidate, function() {
+    Prims.setVariable('color', candidate.projectionBy(function() {
       return Prims.getVariable('color');
     }));
   }
@@ -80,24 +80,24 @@ function findTopSpecies() {
 }
 function placeWall() {
   if (notImplemented('mouse-down?', false)) {
-    Prims.ask(world.patches().agentFilter(function() {
+    world.patches().agentFilter(function() {
       return (Prims.equality(StrictMath.abs(Prims.getPatchVariable('pycor')), world.topology.maxPycor) || Prims.equality(Prims.getPatchVariable('pycor'), StrictMath.round(notImplemented('mouse-ycor', 0)())));
-    }), true, function() {
+    }).ask(function() {
       Prims.setPatchVariable('pcolor', 9.9);
-      Prims.ask(SelfManager.self().turtlesHere(), true, function() {
+      SelfManager.self().turtlesHere().ask(function() {
         Call(moveOffWall);
-      });
-    });
+      }, true);
+    }, true);
     notImplemented('display', undefined)();
   }
 }
 function removeWall() {
   if (notImplemented('mouse-down?', false)) {
-    Prims.ask(world.patches().agentFilter(function() {
+    world.patches().agentFilter(function() {
       return Prims.equality(Prims.getPatchVariable('pycor'), StrictMath.round(notImplemented('mouse-ycor', 0)()));
-    }), true, function() {
+    }).ask(function() {
       Prims.setPatchVariable('pcolor', 0);
-    });
+    }, true);
     notImplemented('display', undefined)();
   }
 }

@@ -28,40 +28,40 @@ var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
 var StrictMath     = require('shim/strictmath');function setup() {
   world.clearAll();
-  Prims.ask(world.createTurtles(world.observer.getGlobal('population'), ""), true, function() {
+  world.createTurtles(world.observer.getGlobal('population'), '').ask(function() {
     Prims.setVariable('color', 15);
     Prims.setVariable('size', 2);
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
-  });
-  Prims.ask(world.patches(), true, function() {
+  }, true);
+  world.patches().ask(function() {
     Prims.setPatchVariable('chemical', 0);
-  });
+  }, true);
   world.ticker.reset();
 }
 function go() {
-  Prims.ask(world.turtles(), true, function() {
+  world.turtles().ask(function() {
     if (Prims.gt(Prims.getPatchVariable('chemical'), world.observer.getGlobal('sniff-threshold'))) {
       Call(turnTowardChemical);
     }
     Prims.right(((Prims.randomFloat(world.observer.getGlobal('wiggle-angle')) - Prims.randomFloat(world.observer.getGlobal('wiggle-angle'))) + world.observer.getGlobal('wiggle-bias')));
     Prims.fd(1);
     Prims.setPatchVariable('chemical', (Prims.getPatchVariable('chemical') + 2));
-  });
+  }, true);
   world.topology.diffuse('chemical', 1)
-  Prims.ask(world.patches(), true, function() {
+  world.patches().ask(function() {
     Prims.setPatchVariable('chemical', (Prims.getPatchVariable('chemical') * 0.9));
     Prims.setPatchVariable('pcolor', Prims.scaleColor(55, Prims.getPatchVariable('chemical'), 0.1, 3));
-  });
+  }, true);
   world.ticker.tick();
 }
 function turnTowardChemical() {
-  var ahead = Prims.of(SelfManager.self().patchAhead(1), function() {
+  var ahead = SelfManager.self().patchAhead(1).projectionBy(function() {
     return Prims.getPatchVariable('chemical');
   });
-  var myright = Prims.of(SelfManager.self().patchRightAndAhead(world.observer.getGlobal('sniff-angle'), 1), function() {
+  var myright = SelfManager.self().patchRightAndAhead(world.observer.getGlobal('sniff-angle'), 1).projectionBy(function() {
     return Prims.getPatchVariable('chemical');
   });
-  var myleft = Prims.of(SelfManager.self().patchLeftAndAhead(world.observer.getGlobal('sniff-angle'), 1), function() {
+  var myleft = SelfManager.self().patchLeftAndAhead(world.observer.getGlobal('sniff-angle'), 1).projectionBy(function() {
     return Prims.getPatchVariable('chemical');
   });
   if ((Prims.gte(myright, ahead) && Prims.gte(myright, myleft))) {

@@ -28,20 +28,20 @@ var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
 var StrictMath     = require('shim/strictmath');function setup() {
   world.clearAll();
-  Prims.ask(world.patches(), true, function() {
+  world.patches().ask(function() {
     Prims.setPatchVariable('pcolor', ((Prims.random(world.observer.getGlobal('colors')) * 10) + 5));
     if (Prims.equality(Prims.getPatchVariable('pcolor'), 75)) {
       Prims.setPatchVariable('pcolor', 125);
     }
-  });
+  }, true);
   world.ticker.reset();
 }
 function go() {
-  Prims.ask(world.patches(), true, function() {
-    Prims.setPatchVariable('pcolor', Prims.of(Prims.oneOf(world.patches()), function() {
+  world.patches().ask(function() {
+    Prims.setPatchVariable('pcolor', Prims.oneOf(world.patches()).projectionBy(function() {
       return Prims.getPatchVariable('pcolor');
     }));
-  });
+  }, true);
   world.ticker.tick();
 }
 world.observer.setGlobal('colors', 5);

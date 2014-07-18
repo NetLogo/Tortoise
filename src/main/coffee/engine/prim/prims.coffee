@@ -12,7 +12,6 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
   class Prims
 
     # type ListOrSet[T] = Array[T]|AbstractAgentSet[T]
-    # type AgentOrSet   = [T <: Agent] @ T|AbstractAgentSet[T]
 
     _getSelf: undefined # () => Agent
 
@@ -441,15 +440,13 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
       turtles = _(patches).map((p) -> p.turtles).flatten().filter((t) -> t.getBreedName() is breedName).value()
       new TurtleSet(turtles, breedName)
 
-    # [T] @ (AgentOrSet) => TurtleSet
-    turtlesOn: (agentsOrAgent) -> #@# Lunacy
-      agents =
-        if agentsOrAgent instanceof AbstractAgentSet
-          agentsOrAgent.toArray()
-        else
-          [agentsOrAgent]
-      turtles = _(agents).map((agent) -> agent.turtlesHere().toArray()).flatten().value()
-      new TurtleSet(turtles)
+    # (PatchSet|TurtleSet|Patch|Turtle) => TurtleSet
+    turtlesOn: (agentsOrAgent) ->
+      if agentsOrAgent instanceof AbstractAgentSet
+        turtles = _(agentsOrAgent.toArray()).map((agent) -> agent.turtlesHere().toArray()).flatten().value()
+        new TurtleSet(turtles)
+      else
+        agentsOrAgent.turtlesHere()
 
     # () => Unit
     die: ->
@@ -460,29 +457,6 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
     other: (agentSet) ->
       self = @_getSelf()
       agentSet.filter((agent) => agent isnt self)
-
-    # [T] @ (AgentOrSet[T], Boolean, () => Any) => Unit
-    ask: (agentsOrAgent, shouldShuffle, f) ->
-      agents = #@# Nonsense
-        if agentsOrAgent instanceof AbstractAgentSet
-          agentsOrAgent.toArray()
-        else
-          [agentsOrAgent]
-
-      iter =
-        if shouldShuffle
-          new Shufflerator(agents)
-        else
-          new Iterator(agents)
-
-      iter.forEach(@_world.selfManager.askAgent(f))
-
-      # If an asker indirectly commits suicide, the exception should propagate.  FD 11/1/2013
-      if @_getSelf().id is -1
-        throw new Exception.DeathInterrupt
-
-      return
-
 
     # (String) => Any
     getVariable: (varName) ->
@@ -501,19 +475,6 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
     setPatchVariable: (varName, value) ->
       @_getSelf().setPatchVariable(varName, value)
       return
-
-    # [T, Result] @ (AgentOrSet[T], () => Result) => Result|Array[Result]
-    of: (agentsOrAgent, f) -> #@# This is nonsense; same with `ask`.  If you're giving me something, _you_ get it into the right type first, not me!
-      agents =
-        if agentsOrAgent instanceof AbstractAgentSet
-          agentsOrAgent.toArray()
-        else
-          [agentsOrAgent]
-      result = new Shufflerator(agents).map(@_world.selfManager.askAgent(f))
-      if agentsOrAgent instanceof AbstractAgentSet #@# Awful to be doing this twice here...
-        result
-      else
-        result[0]
 
     # [Item] @ (ListOrSet[Item]) => Item
     oneOf: (agentsOrList) ->

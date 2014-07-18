@@ -28,33 +28,33 @@ var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
 var StrictMath     = require('shim/strictmath');function setup() {
   world.clearAll();
-  Prims.ask(world.patches(), true, function() {
+  world.patches().ask(function() {
     Prims.setPatchVariable('pcolor', 9.9);
-  });
-  Prims.ask(world.createTurtles(world.observer.getGlobal('num-vants'), ""), true, function() {
+  }, true);
+  world.createTurtles(world.observer.getGlobal('num-vants'), '').ask(function() {
     SelfManager.self().face(Prims.oneOf(Prims.getNeighbors4()));
     Prims.setVariable('color', 15);
     Prims.setVariable('size', 6);
-  });
+  }, true);
   world.ticker.reset();
 }
 function goForward() {
   Tasks.forEach(Tasks.commandTask(function() {
     var taskArguments = arguments;
-    Prims.ask(taskArguments[0], true, function() {
+    taskArguments[0].ask(function() {
       Prims.fd(1);
       Call(turn);
-    });
+    }, true);
   }), Prims.sort(world.turtles()));
   world.ticker.tick();
 }
 function goReverse() {
   Tasks.forEach(Tasks.commandTask(function() {
     var taskArguments = arguments;
-    Prims.ask(taskArguments[0], true, function() {
+    taskArguments[0].ask(function() {
       Call(turn);
       Prims.bk(1);
-    });
+    }, true);
   }), Prims.reverse(Prims.sort(world.turtles())));
   world.ticker.tick();
 }

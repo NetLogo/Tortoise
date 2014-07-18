@@ -85,6 +85,17 @@ define(['engine/core/abstractagentset', 'engine/core/structure/builtins', 'engin
     getSize: ->
       @world.topology.distanceXY(@end1.xcor, @end1.ycor, @end2.xcor, @end2.ycor)
 
+    # (() => Any) => Unit
+    ask: (f) ->
+      @world.selfManager.askAgent(f)(this)
+      if @world.selfManager.self().id is -1
+        throw new Exception.DeathInterrupt
+      return
+
+    # [Result] @ (() => Result) => Result
+    projectionBy: (f) ->
+      @world.selfManager.askAgent(f)(this)
+
     # (Any) => { toInt: Number }
     compare: (x) -> #@# Unify with `Links.compare`
       switch @world.linkCompare(this, x)

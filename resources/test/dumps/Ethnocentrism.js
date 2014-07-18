@@ -34,9 +34,9 @@ var StrictMath     = require('shim/strictmath');function setupEmpty() {
 function setupFull() {
   world.clearAll();
   Call(initializeVariables);
-  Prims.ask(world.patches(), true, function() {
+  world.patches().ask(function() {
     Call(createTurtle);
-  });
+  }, true);
   world.ticker.reset();
 }
 function initializeVariables() {
@@ -65,12 +65,12 @@ function initializeVariables() {
   world.observer.setGlobal('last100coop', []);
 }
 function createTurtle() {
-  Prims.ask(Prims.sprout(1, "TURTLES"), true, function() {
+  Prims.sprout(1, 'TURTLES').ask(function() {
     Prims.setVariable('color', Call(randomColor));
     Prims.setVariable('cooperate-with-same?', Prims.lt(Prims.randomFloat(1), world.observer.getGlobal('immigrant-chance-cooperate-with-same')));
     Prims.setVariable('cooperate-with-different?', Prims.lt(Prims.randomFloat(1), world.observer.getGlobal('immigrant-chance-cooperate-with-different')));
     Call(updateShape);
-  });
+  }, true);
 }
 function randomColor() {
   return Prims.oneOf([15, 105, 45, 55]);
@@ -86,15 +86,15 @@ function clearStats() {
 function go() {
   Call(clearStats);
   Call(immigrate);
-  Prims.ask(world.turtles(), true, function() {
+  world.turtles().ask(function() {
     Prims.setVariable('ptr', world.observer.getGlobal('initial-ptr'));
-  });
-  Prims.ask(world.turtles(), true, function() {
+  }, true);
+  world.turtles().ask(function() {
     Call(interact);
-  });
-  Prims.ask(world.turtles(), true, function() {
+  }, true);
+  world.turtles().ask(function() {
     Call(reproduce);
-  });
+  }, true);
   Call(death);
   Call(updateStats);
   world.ticker.tick();
@@ -104,43 +104,43 @@ function immigrate() {
     return !SelfManager.self().turtlesHere().nonEmpty();
   });
   var howMany = Prims.min(Prims.list(world.observer.getGlobal('immigrants-per-day'), emptyPatches.size()));
-  Prims.ask(Prims.nOf(howMany, emptyPatches), true, function() {
+  Prims.nOf(howMany, emptyPatches).ask(function() {
     Call(createTurtle);
-  });
+  }, true);
 }
 function interact() {
-  Prims.ask(Prims.turtlesOn(Prims.getNeighbors4()), true, function() {
+  Prims.turtlesOn(Prims.getNeighbors4()).ask(function() {
     world.observer.setGlobal('meet', (world.observer.getGlobal('meet') + 1));
     world.observer.setGlobal('meet-agg', (world.observer.getGlobal('meet-agg') + 1));
-    if (Prims.equality(Prims.getVariable('color'), Prims.of(SelfManager.myself(), function() {
+    if (Prims.equality(Prims.getVariable('color'), SelfManager.myself().projectionBy(function() {
       return Prims.getVariable('color');
     }))) {
       world.observer.setGlobal('meetown', (world.observer.getGlobal('meetown') + 1));
       world.observer.setGlobal('meetown-agg', (world.observer.getGlobal('meetown-agg') + 1));
-      if (Prims.of(SelfManager.myself(), function() {
+      if (SelfManager.myself().projectionBy(function() {
         return Prims.getVariable('cooperate-with-same?');
       })) {
         world.observer.setGlobal('coopown', (world.observer.getGlobal('coopown') + 1));
         world.observer.setGlobal('coopown-agg', (world.observer.getGlobal('coopown-agg') + 1));
-        Prims.ask(SelfManager.myself(), true, function() {
+        SelfManager.myself().ask(function() {
           Prims.setVariable('ptr', (Prims.getVariable('ptr') - world.observer.getGlobal('cost-of-giving')));
-        });
+        }, true);
         Prims.setVariable('ptr', (Prims.getVariable('ptr') + world.observer.getGlobal('gain-of-receiving')));
       }
     }
-    if (!Prims.equality(Prims.getVariable('color'), Prims.of(SelfManager.myself(), function() {
+    if (!Prims.equality(Prims.getVariable('color'), SelfManager.myself().projectionBy(function() {
       return Prims.getVariable('color');
     }))) {
       world.observer.setGlobal('meetother', (world.observer.getGlobal('meetother') + 1));
       world.observer.setGlobal('meetother-agg', (world.observer.getGlobal('meetother-agg') + 1));
-      if (Prims.of(SelfManager.myself(), function() {
+      if (SelfManager.myself().projectionBy(function() {
         return Prims.getVariable('cooperate-with-different?');
       })) {
         world.observer.setGlobal('coopother', (world.observer.getGlobal('coopother') + 1));
         world.observer.setGlobal('coopother-agg', (world.observer.getGlobal('coopother-agg') + 1));
-        Prims.ask(SelfManager.myself(), true, function() {
+        SelfManager.myself().ask(function() {
           Prims.setVariable('ptr', (Prims.getVariable('ptr') - world.observer.getGlobal('cost-of-giving')));
-        });
+        }, true);
         Prims.setVariable('ptr', (Prims.getVariable('ptr') + world.observer.getGlobal('gain-of-receiving')));
       }
       else {
@@ -148,7 +148,7 @@ function interact() {
         world.observer.setGlobal('defother-agg', (world.observer.getGlobal('defother-agg') + 1));
       }
     }
-  });
+  }, true);
 }
 function reproduce() {
   if (Prims.lt(Prims.randomFloat(1), Prims.getVariable('ptr'))) {
@@ -156,10 +156,10 @@ function reproduce() {
       return !SelfManager.self().turtlesHere().nonEmpty();
     }));
     if (!Prims.equality(destination, Nobody)) {
-      Prims.ask(Prims.hatch(1, ""), true, function() {
+      Prims.hatch(1, '').ask(function() {
         SelfManager.self().moveTo(destination);
         Call(mutate);
-      });
+      }, true);
     }
   }
 }
@@ -179,11 +179,11 @@ function mutate() {
   Call(updateShape);
 }
 function death() {
-  Prims.ask(world.turtles(), true, function() {
+  world.turtles().ask(function() {
     if (Prims.lt(Prims.randomFloat(1), world.observer.getGlobal('death-rate'))) {
       Prims.die();
     }
-  });
+  }, true);
 }
 function updateShape() {
   if (Prims.getVariable('cooperate-with-same?')) {

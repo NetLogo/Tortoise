@@ -32,30 +32,30 @@ var StrictMath     = require('shim/strictmath');function setup() {
   world.observer.setGlobal('interaction-distance', 4);
   world.observer.setGlobal('too-close-distance', 1.3);
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
-  Prims.ask(world.createTurtles((world.observer.getGlobal('num-water') + world.observer.getGlobal('num-lipids')), "WATERS"), true, function() {
+  world.createTurtles((world.observer.getGlobal('num-water') + world.observer.getGlobal('num-lipids')), 'WATERS').ask(function() {
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
     Prims.setVariable('color', 105);
-  });
-  Prims.ask(world.createTurtles(world.observer.getGlobal('num-lipids'), "OILS"), true, function() {
+  }, true);
+  world.createTurtles(world.observer.getGlobal('num-lipids'), 'OILS').ask(function() {
     var partner = Prims.oneOf(world.turtlesOfBreed("WATERS").agentFilter(function() {
       return !LinkPrims.connectedLinks(false, false).nonEmpty();
     }));
     SelfManager.self().moveTo(partner);
     Prims.fd(world.observer.getGlobal('lipid-length'));
-    Prims.ask(LinkPrims.createLinkWith(partner), false, function() {});
+    LinkPrims.createLinkWith(partner).ask(function() {}, false);
     Prims.setVariable('color', 25);
-    Prims.ask(partner, true, function() {
+    partner.ask(function() {
       Prims.setVariable('color', 115);
-    });
-  });
+    }, true);
+  }, true);
   world.ticker.reset();
 }
 function go() {
-  Prims.ask(world.turtles(), true, function() {
+  world.turtles().ask(function() {
     Call(interactWithNeighbor);
     Call(repelTooCloseNeighbor);
     Call(interactWithPartner);
-  });
+  }, true);
   world.ticker.tick();
 }
 function interactWithNeighbor() {
@@ -64,7 +64,7 @@ function interactWithNeighbor() {
   })));
   if (!Prims.equality(near, Nobody)) {
     SelfManager.self().face(near);
-    if (Prims.equality(Prims.of(near, function() {
+    if (Prims.equality(near.projectionBy(function() {
       return Prims.getVariable('breed');
     }), Prims.getVariable('breed'))) {
       Prims.fd(world.observer.getGlobal('water-water-force'));

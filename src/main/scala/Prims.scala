@@ -46,10 +46,6 @@ object Prims {
         val agents = arg(0)
         val filter = Handlers.reporter(r.args(1))
         s"$agents.agentFilter(${Handlers.fun(r.args(1), true)})"
-      case _: prim._of =>
-        val agents = arg(1)
-        val body = Handlers.reporter(r.args(0))
-        s"Prims.of($agents, ${Handlers.fun(r.args(0), true)})"
       case _: prim.etc._maxoneof =>
         val agents = arg(0)
         val metric = Handlers.reporter(r.args(1))
@@ -62,6 +58,7 @@ object Prims {
         val agents = arg(0)
         val body = Handlers.reporter(r.args(1))
         s"$agents.agentAll(function(){ return $body })"
+      case _: prim._of                      => generateOf(r)
       case _: prim.etc._islink              => s"(${arg(0)} instanceof Link)"
       case _: prim.etc._isturtle            => s"(${arg(0)} instanceof Turtle)"
       case _: prim.etc._ifelsevalue         => s"${arg(0)} ? ${arg(1)} : ${arg(2)}"
@@ -210,18 +207,17 @@ object Prims {
   def generateAsk(s: ast.Statement, shuffle: Boolean): String = {
     val agents = Handlers.reporter(s.args(0))
     val body = Handlers.fun(s.args(1))
-    s"Prims.ask($agents, $shuffle, $body);"
+    genAsk(agents, shuffle, body)
   }
 
   def generateCreateLink(s: ast.Statement, name: String): String = {
-    import org.nlogo.prim._
     val other = Handlers.reporter(s.args(0))
     // This is so that we don't shuffle unnecessarily.  FD 10/31/2013
     val nonEmptyCommandBlock =
       s.args(1).asInstanceOf[ast.CommandBlock]
         .statements.stmts.nonEmpty
     val body = Handlers.fun(s.args(1))
-    s"""Prims.ask(LinkPrims.$name($other), $nonEmptyCommandBlock, $body);"""
+    genAsk(s"LinkPrims.$name($other)", nonEmptyCommandBlock, body)
   }
 
   def generateCreateTurtles(s: ast.Statement, ordered: Boolean): String = {
@@ -235,7 +231,7 @@ object Prims {
         case x => throw new IllegalArgumentException("How did you get here with class of type " + x.getClass.getName)
       }
     val body = Handlers.fun(s.args(1))
-    s"""Prims.ask(world.$name($n, "$breed"), true, $body);"""
+    genAsk(s"world.$name($n, '$breed')", true, body)
   }
 
   def generateSprout(s: ast.Statement): String = {
@@ -243,13 +239,14 @@ object Prims {
     val body = Handlers.fun(s.args(1))
     val breedName = s.command.asInstanceOf[prim._sprout].breedName
     val trueBreedName = if (breedName.nonEmpty) breedName else "TURTLES"
-    s"""Prims.ask(Prims.sprout($n, "$trueBreedName"), true, $body);"""
+    val sprouted = s"Prims.sprout($n, '$trueBreedName')"
+    genAsk(sprouted, true, body)
   }
 
   def generateHatch(s: ast.Statement, breedName: String): String = {
     val n = Handlers.reporter(s.args(0))
     val body = Handlers.fun(s.args(1))
-    s"""Prims.ask(Prims.hatch($n, "$breedName"), true, $body);"""
+    genAsk(s"Prims.hatch($n, '$breedName')", true, body)
   }
 
   def generateEvery(w: ast.Statement): String = {
@@ -258,6 +255,15 @@ object Prims {
     s"""|Prims.every($time, function () {
         |${Handlers.indented(body)}
         |});""".stripMargin
+  }
+
+  def genAsk(agents: String, shouldShuffle: Boolean, body: String): String =
+    s"""$agents.ask($body, $shouldShuffle);"""
+
+  def generateOf(r: ast.ReporterApp): String = {
+    val agents = Handlers.reporter(r.args(1))
+    val func   = Handlers.fun(r.args(0), isReporter = true)
+    s"$agents.projectionBy($func)"
   }
 
 }

@@ -37,14 +37,14 @@ var StrictMath     = require('shim/strictmath');function setup() {
     notImplemented('user-message', undefined)((Dump("") + Dump("There are too many cars for the amount of ") + Dump("road.  Either increase the amount of roads ") + Dump("by increasing the GRID-SIZE-X or ") + Dump("GRID-SIZE-Y sliders, or decrease the ") + Dump("number of cars by lowering the NUMBER slider.\n") + Dump("The setup has stopped.")));
     throw new Exception.StopInterrupt;
   }
-  Prims.ask(world.createTurtles(world.observer.getGlobal('num-cars'), ""), true, function() {
+  world.createTurtles(world.observer.getGlobal('num-cars'), '').ask(function() {
     Call(setupCars);
     Call(setCarColor);
     Call(recordData);
-  });
-  Prims.ask(world.turtles(), true, function() {
+  }, true);
+  world.turtles().ask(function() {
     Call(setCarSpeed);
-  });
+  }, true);
   world.ticker.reset();
 }
 function setupGlobals() {
@@ -56,7 +56,7 @@ function setupGlobals() {
   world.observer.setGlobal('acceleration', 0.099);
 }
 function setupPatches() {
-  Prims.ask(world.patches(), true, function() {
+  world.patches().ask(function() {
     Prims.setPatchVariable('intersection?', false);
     Prims.setPatchVariable('auto?', false);
     Prims.setPatchVariable('green-light-up?', true);
@@ -64,20 +64,20 @@ function setupPatches() {
     Prims.setPatchVariable('my-column', -1);
     Prims.setPatchVariable('my-phase', -1);
     Prims.setPatchVariable('pcolor', (35 + 3));
-  });
+  }, true);
   world.observer.setGlobal('roads', world.patches().agentFilter(function() {
     return (Prims.equality(StrictMath.floor(Prims.mod(((Prims.getPatchVariable('pxcor') + world.topology.maxPxcor) - StrictMath.floor((world.observer.getGlobal('grid-x-inc') - 1))), world.observer.getGlobal('grid-x-inc'))), 0) || Prims.equality(StrictMath.floor(Prims.mod((Prims.getPatchVariable('pycor') + world.topology.maxPycor), world.observer.getGlobal('grid-y-inc'))), 0));
   }));
   world.observer.setGlobal('intersections', world.observer.getGlobal('roads').agentFilter(function() {
     return (Prims.equality(StrictMath.floor(Prims.mod(((Prims.getPatchVariable('pxcor') + world.topology.maxPxcor) - StrictMath.floor((world.observer.getGlobal('grid-x-inc') - 1))), world.observer.getGlobal('grid-x-inc'))), 0) && Prims.equality(StrictMath.floor(Prims.mod((Prims.getPatchVariable('pycor') + world.topology.maxPycor), world.observer.getGlobal('grid-y-inc'))), 0));
   }));
-  Prims.ask(world.observer.getGlobal('roads'), true, function() {
+  world.observer.getGlobal('roads').ask(function() {
     Prims.setPatchVariable('pcolor', 9.9);
-  });
+  }, true);
   Call(setupIntersections);
 }
 function setupIntersections() {
-  Prims.ask(world.observer.getGlobal('intersections'), true, function() {
+  world.observer.getGlobal('intersections').ask(function() {
     Prims.setPatchVariable('intersection?', true);
     Prims.setPatchVariable('green-light-up?', true);
     Prims.setPatchVariable('my-phase', 0);
@@ -85,7 +85,7 @@ function setupIntersections() {
     Prims.setPatchVariable('my-row', StrictMath.floor(((Prims.getPatchVariable('pycor') + world.topology.maxPycor) / world.observer.getGlobal('grid-y-inc'))));
     Prims.setPatchVariable('my-column', StrictMath.floor(((Prims.getPatchVariable('pxcor') + world.topology.maxPxcor) / world.observer.getGlobal('grid-x-inc'))));
     Call(setSignalColors);
-  });
+  }, true);
 }
 function setupCars() {
   Prims.setVariable('speed', 0);
@@ -123,12 +123,12 @@ function go() {
   Call(updateCurrent);
   Call(setSignals);
   world.observer.setGlobal('num-cars-stopped', 0);
-  Prims.ask(world.turtles(), true, function() {
+  world.turtles().ask(function() {
     Call(setCarSpeed);
     Prims.fd(Prims.getVariable('speed'));
     Call(recordData);
     Call(setCarColor);
-  });
+  }, true);
   Call(nextPhase);
   world.ticker.tick();
 }
@@ -136,7 +136,7 @@ function chooseCurrent() {
   if (notImplemented('mouse-down?', false)) {
     var xMouse = notImplemented('mouse-xcor', 0)();
     var yMouse = notImplemented('mouse-ycor', 0)();
-    if (Prims.of(Prims.patch(xMouse, yMouse), function() {
+    if (Prims.patch(xMouse, yMouse).projectionBy(function() {
       return Prims.getPatchVariable('intersection?');
     })) {
       Call(updateCurrent);
@@ -149,68 +149,68 @@ function chooseCurrent() {
 }
 function makeCurrent(light) {
   world.observer.setGlobal('current-light', light);
-  world.observer.setGlobal('current-phase', Prims.of(world.observer.getGlobal('current-light'), function() {
+  world.observer.setGlobal('current-phase', world.observer.getGlobal('current-light').projectionBy(function() {
     return Prims.getPatchVariable('my-phase');
   }));
-  world.observer.setGlobal('current-auto?', Prims.of(world.observer.getGlobal('current-light'), function() {
+  world.observer.setGlobal('current-auto?', world.observer.getGlobal('current-light').projectionBy(function() {
     return Prims.getPatchVariable('auto?');
   }));
 }
 function updateCurrent() {
-  Prims.ask(world.observer.getGlobal('current-light'), true, function() {
+  world.observer.getGlobal('current-light').ask(function() {
     Prims.setPatchVariable('my-phase', world.observer.getGlobal('current-phase'));
     Prims.setPatchVariable('auto?', world.observer.getGlobal('current-auto?'));
-  });
+  }, true);
 }
 function labelCurrent() {
-  Prims.ask(world.observer.getGlobal('current-light'), true, function() {
-    Prims.ask(SelfManager.self().patchAt(-1, 1), true, function() {
+  world.observer.getGlobal('current-light').ask(function() {
+    SelfManager.self().patchAt(-1, 1).ask(function() {
       Prims.setPatchVariable('plabel-color', 0);
       Prims.setPatchVariable('plabel', "current");
-    });
-  });
+    }, true);
+  }, true);
 }
 function unlabelCurrent() {
-  Prims.ask(world.observer.getGlobal('current-light'), true, function() {
-    Prims.ask(SelfManager.self().patchAt(-1, 1), true, function() {
+  world.observer.getGlobal('current-light').ask(function() {
+    SelfManager.self().patchAt(-1, 1).ask(function() {
       Prims.setPatchVariable('plabel', "");
-    });
-  });
+    }, true);
+  }, true);
 }
 function setSignals() {
-  Prims.ask(world.observer.getGlobal('intersections').agentFilter(function() {
+  world.observer.getGlobal('intersections').agentFilter(function() {
     return (Prims.getPatchVariable('auto?') && Prims.equality(world.observer.getGlobal('phase'), StrictMath.floor(((Prims.getPatchVariable('my-phase') * world.observer.getGlobal('ticks-per-cycle')) / 100))));
-  }), true, function() {
+  }).ask(function() {
     Prims.setPatchVariable('green-light-up?', !Prims.getPatchVariable('green-light-up?'));
     Call(setSignalColors);
-  });
+  }, true);
 }
 function setSignalColors() {
   if (world.observer.getGlobal('power?')) {
     if (Prims.getPatchVariable('green-light-up?')) {
-      Prims.ask(SelfManager.self().patchAt(-1, 0), true, function() {
+      SelfManager.self().patchAt(-1, 0).ask(function() {
         Prims.setPatchVariable('pcolor', 15);
-      });
-      Prims.ask(SelfManager.self().patchAt(0, 1), true, function() {
+      }, true);
+      SelfManager.self().patchAt(0, 1).ask(function() {
         Prims.setPatchVariable('pcolor', 55);
-      });
+      }, true);
     }
     else {
-      Prims.ask(SelfManager.self().patchAt(-1, 0), true, function() {
+      SelfManager.self().patchAt(-1, 0).ask(function() {
         Prims.setPatchVariable('pcolor', 55);
-      });
-      Prims.ask(SelfManager.self().patchAt(0, 1), true, function() {
+      }, true);
+      SelfManager.self().patchAt(0, 1).ask(function() {
         Prims.setPatchVariable('pcolor', 15);
-      });
+      }, true);
     }
   }
   else {
-    Prims.ask(SelfManager.self().patchAt(-1, 0), true, function() {
+    SelfManager.self().patchAt(-1, 0).ask(function() {
       Prims.setPatchVariable('pcolor', 9.9);
-    });
-    Prims.ask(SelfManager.self().patchAt(0, 1), true, function() {
+    }, true);
+    SelfManager.self().patchAt(0, 1).ask(function() {
       Prims.setPatchVariable('pcolor', 9.9);
-    });
+    }, true);
   }
 }
 function setCarSpeed() {
@@ -230,14 +230,14 @@ function setSpeed(deltaX, deltaY) {
   var turtlesAhead = SelfManager.self().turtlesAt(deltaX, deltaY);
   if (turtlesAhead.nonEmpty()) {
     if (turtlesAhead.agentFilter(function() {
-      return !Prims.equality(Prims.getVariable('up-car?'), Prims.of(SelfManager.myself(), function() {
+      return !Prims.equality(Prims.getVariable('up-car?'), SelfManager.myself().projectionBy(function() {
         return Prims.getVariable('up-car?');
       }));
     }).nonEmpty()) {
       Prims.setVariable('speed', 0);
     }
     else {
-      Prims.setVariable('speed', Prims.of(Prims.oneOf(turtlesAhead), function() {
+      Prims.setVariable('speed', Prims.oneOf(turtlesAhead).projectionBy(function() {
         return Prims.getVariable('speed');
       }));
       Call(slowDown);
@@ -281,10 +281,10 @@ function recordData() {
   }
 }
 function changeCurrent() {
-  Prims.ask(world.observer.getGlobal('current-light'), true, function() {
+  world.observer.getGlobal('current-light').ask(function() {
     Prims.setPatchVariable('green-light-up?', !Prims.getPatchVariable('green-light-up?'));
     Call(setSignalColors);
-  });
+  }, true);
 }
 function nextPhase() {
   world.observer.setGlobal('phase', (world.observer.getGlobal('phase') + 1));

@@ -37,35 +37,35 @@ var StrictMath     = require('shim/strictmath');function benchmark() {
 }
 function setup() {
   world.clearAll();
-  Prims.ask(world.patches(), true, function() {
+  world.patches().ask(function() {
     Prims.setPatchVariable('n', 2);
     Call(colorize);
-  });
+  }, true);
   world.observer.setGlobal('total', (2 * world.patches().size()));
   world.ticker.reset();
 }
 function go() {
   var activePatches = Prims.patchSet(Prims.oneOf(world.patches()));
-  Prims.ask(activePatches, true, function() {
+  activePatches.ask(function() {
     Prims.setPatchVariable('n', (Prims.getPatchVariable('n') + 1));
     world.observer.setGlobal('total', (world.observer.getGlobal('total') + 1));
     Call(colorize);
-  });
+  }, true);
   while (activePatches.nonEmpty()) {
     var overloadedPatches = activePatches.agentFilter(function() {
       return Prims.gt(Prims.getPatchVariable('n'), 3);
     });
-    Prims.ask(overloadedPatches, true, function() {
+    overloadedPatches.ask(function() {
       Prims.setPatchVariable('n', (Prims.getPatchVariable('n') - 4));
       world.observer.setGlobal('total', (world.observer.getGlobal('total') - 4));
       Call(colorize);
-      Prims.ask(Prims.getNeighbors4(), true, function() {
+      Prims.getNeighbors4().ask(function() {
         Prims.setPatchVariable('n', (Prims.getPatchVariable('n') + 1));
         world.observer.setGlobal('total', (world.observer.getGlobal('total') + 1));
         Call(colorize);
-      });
-    });
-    activePatches = Prims.patchSet(Prims.of(overloadedPatches, function() {
+      }, true);
+    }, true);
+    activePatches = Prims.patchSet(overloadedPatches.projectionBy(function() {
       return Prims.getNeighbors4();
     }));
   }

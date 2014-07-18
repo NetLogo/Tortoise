@@ -28,22 +28,22 @@ var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
 var StrictMath     = require('shim/strictmath');function setup() {
   world.clearAll();
-  Prims.ask(world.patches(), true, function() {
+  world.patches().ask(function() {
     Prims.setPatchVariable('heat', Prims.random(212));
     Prims.setPatchVariable('pcolor', Prims.scaleColor(15, Prims.getPatchVariable('heat'), 0, 212));
-  });
+  }, true);
   world.ticker.reset();
 }
 function go() {
   world.topology.diffuse('heat', 1)
-  Prims.ask(world.patches(), true, function() {
+  world.patches().ask(function() {
     Prims.setPatchVariable('heat', Prims.mod((Prims.getPatchVariable('heat') + 5), 212));
     Prims.setPatchVariable('pcolor', Prims.scaleColor(15, Prims.getPatchVariable('heat'), 0, 212));
-  });
+  }, true);
   world.ticker.tick();
 }
 function averageHeat() {
-  return Prims.mean(Prims.of(world.patches(), function() {
+  return Prims.mean(world.patches().projectionBy(function() {
     return Prims.getPatchVariable('heat');
   }));
 }

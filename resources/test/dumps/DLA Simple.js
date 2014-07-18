@@ -28,18 +28,18 @@ var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
 var StrictMath     = require('shim/strictmath');function setup() {
   world.clearAll();
-  Prims.ask(Prims.patch(0, 0), true, function() {
+  Prims.patch(0, 0).ask(function() {
     Prims.setPatchVariable('pcolor', 55);
-  });
-  Prims.ask(world.createTurtles(world.observer.getGlobal('num-particles'), ""), true, function() {
+  }, true);
+  world.createTurtles(world.observer.getGlobal('num-particles'), '').ask(function() {
     Prims.setVariable('color', 15);
     Prims.setVariable('size', 1.5);
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
-  });
+  }, true);
   world.ticker.reset();
 }
 function go() {
-  Prims.ask(world.turtles(), true, function() {
+  world.turtles().ask(function() {
     Prims.right(Prims.random(world.observer.getGlobal('wiggle-angle')));
     Prims.left(Prims.random(world.observer.getGlobal('wiggle-angle')));
     Prims.fd(1);
@@ -49,7 +49,7 @@ function go() {
       Prims.setPatchVariable('pcolor', 55);
       Prims.die();
     }
-  });
+  }, true);
   world.ticker.tick();
 }
 world.observer.setGlobal('wiggle-angle', 60);

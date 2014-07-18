@@ -28,21 +28,21 @@ var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
 var StrictMath     = require('shim/strictmath');function setup() {
   world.clearAll();
-  Prims.ask(world.createTurtles(world.observer.getGlobal('population'), ""), true, function() {
+  world.createTurtles(world.observer.getGlobal('population'), '').ask(function() {
     Prims.setVariable('color', ((45 - 2) + Prims.random(7)));
     Prims.setVariable('size', 1.5);
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
-  });
+  }, true);
   world.ticker.reset();
 }
 function go() {
-  Prims.ask(world.turtles(), true, function() {
+  world.turtles().ask(function() {
     Call(flock);
-  });
+  }, true);
   Prims.repeat(5, function () {
-    Prims.ask(world.turtles(), true, function() {
+    world.turtles().ask(function() {
       Prims.fd(0.2);
-    });
+    }, true);
     notImplemented('display', undefined)();
   });
   world.ticker.tick();
@@ -69,7 +69,7 @@ function findNearestNeighbor() {
   }));
 }
 function separate() {
-  Call(turnAway, Prims.of(Prims.getVariable('nearest-neighbor'), function() {
+  Call(turnAway, Prims.getVariable('nearest-neighbor').projectionBy(function() {
     return Prims.getVariable('heading');
   }), world.observer.getGlobal('max-separate-turn'));
 }
@@ -77,10 +77,10 @@ function align() {
   Call(turnTowards, Call(averageFlockmateHeading), world.observer.getGlobal('max-align-turn'));
 }
 function averageFlockmateHeading() {
-  var xComponent = Prims.sum(Prims.of(Prims.getVariable('flockmates'), function() {
+  var xComponent = Prims.sum(Prims.getVariable('flockmates').projectionBy(function() {
     return SelfManager.self().dx();
   }));
-  var yComponent = Prims.sum(Prims.of(Prims.getVariable('flockmates'), function() {
+  var yComponent = Prims.sum(Prims.getVariable('flockmates').projectionBy(function() {
     return SelfManager.self().dy();
   }));
   if ((Prims.equality(xComponent, 0) && Prims.equality(yComponent, 0))) {
@@ -94,10 +94,10 @@ function cohere() {
   Call(turnTowards, Call(averageHeadingTowardsFlockmates), world.observer.getGlobal('max-cohere-turn'));
 }
 function averageHeadingTowardsFlockmates() {
-  var xComponent = Prims.mean(Prims.of(Prims.getVariable('flockmates'), function() {
+  var xComponent = Prims.mean(Prims.getVariable('flockmates').projectionBy(function() {
     return Trig.unsquashedSin((SelfManager.self().towards(SelfManager.myself()) + 180));
   }));
-  var yComponent = Prims.mean(Prims.of(Prims.getVariable('flockmates'), function() {
+  var yComponent = Prims.mean(Prims.getVariable('flockmates').projectionBy(function() {
     return Trig.unsquashedCos((SelfManager.self().towards(SelfManager.myself()) + 180));
   }));
   if ((Prims.equality(xComponent, 0) && Prims.equality(yComponent, 0))) {

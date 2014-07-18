@@ -48,25 +48,25 @@ function setup() {
 function setupWorld() {
   world.observer.setGlobal('darkness', 0);
   world.observer.setGlobal('darkening?', true);
-  Prims.ask(world.patches(), true, function() {
+  world.patches().ask(function() {
     Prims.setPatchVariable('pcolor', Call(envColor));
-  });
+  }, true);
 }
 function setupMoths() {
-  Prims.ask(world.createTurtles(world.observer.getGlobal('num-moths'), "MOTHS"), true, function() {
+  world.createTurtles(world.observer.getGlobal('num-moths'), 'MOTHS').ask(function() {
     Prims.setVariable('color', Call(randomColor));
     Call(mothsPickShape);
     Prims.setVariable('age', Prims.random(3));
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
-  });
+  }, true);
 }
 function go() {
-  Prims.ask(world.turtlesOfBreed("MOTHS"), true, function() {
+  world.turtlesOfBreed("MOTHS").ask(function() {
     Call(mothsMate);
     Call(mothsGrimReaper);
     Call(mothsGetEaten);
     Call(mothsAge);
-  });
+  }, true);
   if (world.observer.getGlobal('cycle-pollution?')) {
     Call(cyclePollution);
   }
@@ -75,7 +75,7 @@ function go() {
 }
 function mothsMate() {
   if ((Prims.equality(Prims.getVariable('age'), 2) || Prims.equality(Prims.getVariable('age'), 3))) {
-    Prims.ask(Prims.hatch(2, ""), true, function() {
+    Prims.hatch(2, '').ask(function() {
       if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal('mutation'))) {
         if (Prims.equality(Prims.random(2), 0)) {
           Prims.setVariable('color', StrictMath.round((Prims.getVariable('color') + (Prims.randomFloat(world.observer.getGlobal('mutation')) / 12.5))));
@@ -94,7 +94,7 @@ function mothsMate() {
       Prims.setVariable('age', 0);
       Prims.right(Prims.randomFloat(360));
       Prims.fd(1);
-    });
+    }, true);
   }
 }
 function mothsGetEaten() {
@@ -135,9 +135,9 @@ function updateMonitors() {
 function polluteWorld() {
   if (Prims.lte(world.observer.getGlobal('darkness'), (8 - Call(deltaEnv)))) {
     world.observer.setGlobal('darkness', (world.observer.getGlobal('darkness') + Call(deltaEnv)));
-    Prims.ask(world.patches(), true, function() {
+    world.patches().ask(function() {
       Prims.setPatchVariable('pcolor', Call(envColor));
-    });
+    }, true);
   }
   else {
     world.observer.setGlobal('darkening?', false);
@@ -146,9 +146,9 @@ function polluteWorld() {
 function cleanUpWorld() {
   if (Prims.gte(world.observer.getGlobal('darkness'), (0 + Call(deltaEnv)))) {
     world.observer.setGlobal('darkness', (world.observer.getGlobal('darkness') - Call(deltaEnv)));
-    Prims.ask(world.patches(), true, function() {
+    world.patches().ask(function() {
       Prims.setPatchVariable('pcolor', Call(envColor));
-    });
+    }, true);
   }
   else {
     world.observer.setGlobal('darkening?', true);

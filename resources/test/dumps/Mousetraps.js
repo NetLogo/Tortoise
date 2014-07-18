@@ -29,33 +29,33 @@ var Random         = require('shim/random');
 var StrictMath     = require('shim/strictmath');function setup() {
   world.clearAll();
   world.observer.setGlobal('traps-triggered', 0);
-  Prims.ask(world.patches(), true, function() {
+  world.patches().ask(function() {
     Prims.setPatchVariable('pcolor', (105 + 3));
-  });
+  }, true);
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
-  Prims.ask(world.createTurtles(1, ""), true, function() {
+  world.createTurtles(1, '').ask(function() {
     Prims.setVariable('color', 9.9);
     Prims.setVariable('size', 1.5);
-  });
+  }, true);
   world.ticker.reset();
 }
 function go() {
   if (!world.turtles().nonEmpty()) {
     throw new Exception.StopInterrupt;
   }
-  Prims.ask(world.turtles(), true, function() {
+  world.turtles().ask(function() {
     if (Prims.equality(Prims.getPatchVariable('pcolor'), 15)) {
       Prims.die();
     }
     else {
       Prims.setPatchVariable('pcolor', 15);
       world.observer.setGlobal('traps-triggered', (world.observer.getGlobal('traps-triggered') + 1));
-      Prims.ask(Prims.hatch(1, ""), true, function() {
+      Prims.hatch(1, '').ask(function() {
         Call(move);
-      });
+      }, true);
       Call(move);
     }
-  });
+  }, true);
   world.ticker.tick();
 }
 function move() {

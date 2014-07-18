@@ -29,7 +29,7 @@ var Random         = require('shim/random');
 var StrictMath     = require('shim/strictmath');function setup() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
-  Prims.ask(world.createTurtles(world.topology.width, ""), true, function() {
+  world.createTurtles(world.topology.width, '').ask(function() {
     Prims.setVariable('xcor', Prims.getVariable('who'));
     Prims.setVariable('color', 15);
     Prims.setVariable('size', 1.5);
@@ -39,13 +39,13 @@ var StrictMath     = require('shim/strictmath');function setup() {
     if (Prims.equality(Prims.getPatchVariable('pxcor'), world.topology.minPxcor)) {
       Prims.setVariable('color', 55);
     }
-  });
+  }, true);
   world.ticker.reset();
 }
 function go() {
-  Prims.ask(world.turtles().agentFilter(function() {
+  world.turtles().agentFilter(function() {
     return Prims.equality(Prims.getVariable('color'), 55);
-  }), true, function() {
+  }).ask(function() {
     if (Prims.gt(world.ticker.tickCount(), 100)) {
       Prims.setVariable('ypos', (world.observer.getGlobal('amplitude') * Trig.unsquashedSin((world.observer.getGlobal('frequency') * world.ticker.tickCount()))));
     }
@@ -59,20 +59,20 @@ function go() {
     else {
       SelfManager.self().hideTurtle(true);;
     }
-  });
-  Prims.ask(world.turtles().agentFilter(function() {
+  }, true);
+  world.turtles().agentFilter(function() {
     return Prims.equality(Prims.getVariable('color'), 15);
-  }), true, function() {
-    Prims.setVariable('yvel', (Prims.getVariable('yvel') + ((Prims.of(world.getTurtle((Prims.getVariable('who') - 1)), function() {
+  }).ask(function() {
+    Prims.setVariable('yvel', (Prims.getVariable('yvel') + ((world.getTurtle((Prims.getVariable('who') - 1)).projectionBy(function() {
       return Prims.getVariable('ypos');
-    }) - Prims.getVariable('ypos')) + (Prims.of(world.getTurtle((Prims.getVariable('who') + 1)), function() {
+    }) - Prims.getVariable('ypos')) + (world.getTurtle((Prims.getVariable('who') + 1)).projectionBy(function() {
       return Prims.getVariable('ypos');
     }) - Prims.getVariable('ypos')))));
     Prims.setVariable('yvel', (((1000 - world.observer.getGlobal('friction')) / 1000) * Prims.getVariable('yvel')));
-  });
-  Prims.ask(world.turtles().agentFilter(function() {
+  }, true);
+  world.turtles().agentFilter(function() {
     return Prims.equality(Prims.getVariable('color'), 15);
-  }), true, function() {
+  }).ask(function() {
     Prims.setVariable('ypos', (Prims.getVariable('ypos') + Prims.getVariable('yvel')));
     if (!Prims.equality(SelfManager.self().patchAt(0, (Prims.getVariable('ypos') - Prims.getVariable('ycor'))), Nobody)) {
       Prims.setVariable('ycor', Prims.getVariable('ypos'));
@@ -81,7 +81,7 @@ function go() {
     else {
       SelfManager.self().hideTurtle(true);;
     }
-  });
+  }, true);
   world.ticker.tick();
 }
 world.observer.setGlobal('friction', 24);

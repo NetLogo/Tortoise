@@ -68,6 +68,17 @@ define(['engine/core/nobody', 'engine/core/turtle', 'engine/core/turtleset', 'en
     turtlesHere: ->
       new TurtleSet(@turtles[..])
 
+    # (() => Any) => Unit
+    ask: (f) ->
+      @world.selfManager.askAgent(f)(this)
+      if @world.selfManager.self().id is -1
+        throw new Exception.DeathInterrupt
+      return
+
+    # [Result] @ (() => Result) => Result
+    projectionBy: (f) ->
+      @world.selfManager.askAgent(f)(this)
+
     # () => PatchSet
     getNeighbors: ->
       @world.getNeighbors(@pxcor, @pycor)

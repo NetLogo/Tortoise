@@ -29,16 +29,16 @@ var Random         = require('shim/random');
 var StrictMath     = require('shim/strictmath');function setup() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "square")
-  Prims.ask(world.patches().agentFilter(function() {
+  world.patches().agentFilter(function() {
     return Prims.lt(Prims.randomFloat(100), world.observer.getGlobal('density'));
-  }), true, function() {
+  }).ask(function() {
     Prims.setPatchVariable('pcolor', 55);
-  });
-  Prims.ask(world.patches().agentFilter(function() {
+  }, true);
+  world.patches().agentFilter(function() {
     return Prims.equality(Prims.getPatchVariable('pxcor'), world.topology.minPxcor);
-  }), true, function() {
+  }).ask(function() {
     Call(ignite);
-  });
+  }, true);
   world.observer.setGlobal('initial-trees', world.patches().agentFilter(function() {
     return Prims.equality(Prims.getPatchVariable('pcolor'), 55);
   }).size());
@@ -49,31 +49,31 @@ function go() {
   if (!world.turtles().nonEmpty()) {
     throw new Exception.StopInterrupt;
   }
-  Prims.ask(world.turtlesOfBreed("FIRES"), true, function() {
-    Prims.ask(Prims.getNeighbors4().agentFilter(function() {
+  world.turtlesOfBreed("FIRES").ask(function() {
+    Prims.getNeighbors4().agentFilter(function() {
       return Prims.equality(Prims.getPatchVariable('pcolor'), 55);
-    }), true, function() {
+    }).ask(function() {
       Call(ignite);
-    });
+    }, true);
     Prims.setVariable('breed', world.turtlesOfBreed("EMBERS"));
-  });
+  }, true);
   Call(fadeEmbers);
   world.ticker.tick();
 }
 function ignite() {
-  Prims.ask(Prims.sprout(1, "FIRES"), true, function() {
+  Prims.sprout(1, 'FIRES').ask(function() {
     Prims.setVariable('color', 15);
-  });
+  }, true);
   Prims.setPatchVariable('pcolor', 0);
   world.observer.setGlobal('burned-trees', (world.observer.getGlobal('burned-trees') + 1));
 }
 function fadeEmbers() {
-  Prims.ask(world.turtlesOfBreed("EMBERS"), true, function() {
+  world.turtlesOfBreed("EMBERS").ask(function() {
     Prims.setVariable('color', (Prims.getVariable('color') - 0.3));
     if (Prims.lt(Prims.getVariable('color'), (15 - 3.5))) {
       Prims.setPatchVariable('pcolor', Prims.getVariable('color'));
       Prims.die();
     }
-  });
+  }, true);
 }
 world.observer.setGlobal('density', 57);

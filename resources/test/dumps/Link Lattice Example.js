@@ -28,25 +28,25 @@ var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
 var StrictMath     = require('shim/strictmath');function setupSquare() {
   world.clearAll();
-  Prims.ask(world.patches(), true, function() {
-    Prims.ask(Prims.sprout(1, "TURTLES"), true, function() {});
-  });
-  Prims.ask(world.turtles(), true, function() {
-    Prims.ask(LinkPrims.createLinksWith(Prims.turtlesOn(Prims.getNeighbors4())), false, function() {});
-  });
+  world.patches().ask(function() {
+    Prims.sprout(1, 'TURTLES').ask(function() {}, true);
+  }, true);
+  world.turtles().ask(function() {
+    LinkPrims.createLinksWith(Prims.turtlesOn(Prims.getNeighbors4())).ask(function() {}, false);
+  }, true);
 }
 function setupHex() {
   world.clearAll();
-  Prims.ask(world.patches(), true, function() {
-    Prims.ask(Prims.sprout(1, "TURTLES"), true, function() {});
-  });
-  Prims.ask(world.turtles(), true, function() {
-    Prims.ask(LinkPrims.createLinksWith(SelfManager.self().turtlesAt(0, 1)), false, function() {});
-    Prims.ask(LinkPrims.createLinksWith(SelfManager.self().turtlesAt(1, 0)), false, function() {});
+  world.patches().ask(function() {
+    Prims.sprout(1, 'TURTLES').ask(function() {}, true);
+  }, true);
+  world.turtles().ask(function() {
+    LinkPrims.createLinksWith(SelfManager.self().turtlesAt(0, 1)).ask(function() {}, false);
+    LinkPrims.createLinksWith(SelfManager.self().turtlesAt(1, 0)).ask(function() {}, false);
     if (Prims.equality(Prims.mod(Prims.getPatchVariable('pxcor'), 2), 0)) {
-      Prims.ask(LinkPrims.createLinksWith(SelfManager.self().turtlesAt(1, -1)), false, function() {});
-      Prims.ask(LinkPrims.createLinksWith(SelfManager.self().turtlesAt(-1, -1)), false, function() {});
+      LinkPrims.createLinksWith(SelfManager.self().turtlesAt(1, -1)).ask(function() {}, false);
+      LinkPrims.createLinksWith(SelfManager.self().turtlesAt(-1, -1)).ask(function() {}, false);
       Prims.setVariable('ycor', (Prims.getVariable('ycor') - 0.5));
     }
-  });
+  }, true);
 }

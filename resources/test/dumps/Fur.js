@@ -28,10 +28,10 @@ var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
 var StrictMath     = require('shim/strictmath');function setup() {
   world.clearAll();
-  Prims.ask(world.patches(), true, function() {
+  world.patches().ask(function() {
     Prims.setPatchVariable('inner-neighbors', Call(ellipseIn, world.observer.getGlobal('inner-radius-x'), world.observer.getGlobal('inner-radius-y')));
     Prims.setPatchVariable('outer-neighbors', Call(ellipseRing, world.observer.getGlobal('outer-radius-x'), world.observer.getGlobal('outer-radius-y'), world.observer.getGlobal('inner-radius-x'), world.observer.getGlobal('inner-radius-y')));
-  });
+  }, true);
   if (world.patches().agentFilter(function() {
     return Prims.equality(Prims.getPatchVariable('outer-neighbors').size(), 0);
   }).nonEmpty()) {
@@ -44,23 +44,23 @@ var StrictMath     = require('shim/strictmath');function setup() {
   world.ticker.reset();
 }
 function restart() {
-  Prims.ask(world.patches(), true, function() {
+  world.patches().ask(function() {
     if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal('initial-density'))) {
       Prims.setPatchVariable('pcolor', 9.9);
     }
     else {
       Prims.setPatchVariable('pcolor', 0);
     }
-  });
+  }, true);
   world.ticker.reset();
 }
 function go() {
-  Prims.ask(world.patches(), true, function() {
+  world.patches().ask(function() {
     Call(pickNewColor);
-  });
-  Prims.ask(world.patches(), true, function() {
+  }, true);
+  world.patches().ask(function() {
     Prims.setPatchVariable('pcolor', Prims.getPatchVariable('new-color'));
-  });
+  }, true);
   world.ticker.tick();
 }
 function pickNewColor() {
@@ -91,12 +91,12 @@ function ellipseRing(outxRadius, outyRadius, inxRadius, inyRadius) {
   });
 }
 function xdistance(otherPatch) {
-  return SelfManager.self().distanceXY(Prims.of(otherPatch, function() {
+  return SelfManager.self().distanceXY(otherPatch.projectionBy(function() {
     return Prims.getPatchVariable('pxcor');
   }), Prims.getPatchVariable('pycor'));
 }
 function ydistance(otherPatch) {
-  return SelfManager.self().distanceXY(Prims.getPatchVariable('pxcor'), Prims.of(otherPatch, function() {
+  return SelfManager.self().distanceXY(Prims.getPatchVariable('pxcor'), otherPatch.projectionBy(function() {
     return Prims.getPatchVariable('pycor');
   }));
 }

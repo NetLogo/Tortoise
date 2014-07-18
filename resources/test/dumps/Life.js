@@ -28,21 +28,21 @@ var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
 var StrictMath     = require('shim/strictmath');function setupBlank() {
   world.clearAll();
-  Prims.ask(world.patches(), true, function() {
+  world.patches().ask(function() {
     Call(cellDeath);
-  });
+  }, true);
   world.ticker.reset();
 }
 function setupRandom() {
   world.clearAll();
-  Prims.ask(world.patches(), true, function() {
+  world.patches().ask(function() {
     if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal('initial-density'))) {
       Call(cellBirth);
     }
     else {
       Call(cellDeath);
     }
-  });
+  }, true);
   world.ticker.reset();
 }
 function cellBirth() {
@@ -54,12 +54,12 @@ function cellDeath() {
   Prims.setPatchVariable('pcolor', world.observer.getGlobal('bgcolor'));
 }
 function go() {
-  Prims.ask(world.patches(), true, function() {
+  world.patches().ask(function() {
     Prims.setPatchVariable('live-neighbors', Prims.getNeighbors().agentFilter(function() {
       return Prims.getPatchVariable('living?');
     }).size());
-  });
-  Prims.ask(world.patches(), true, function() {
+  }, true);
+  world.patches().ask(function() {
     if (Prims.equality(Prims.getPatchVariable('live-neighbors'), 3)) {
       Call(cellBirth);
     }
@@ -68,22 +68,22 @@ function go() {
         Call(cellDeath);
       }
     }
-  });
+  }, true);
   world.ticker.tick();
 }
 function drawCells() {
-  var erasing_p = Prims.of(Prims.patch(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)()), function() {
+  var erasing_p = Prims.patch(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)()).projectionBy(function() {
     return Prims.getPatchVariable('living?');
   });
   while (notImplemented('mouse-down?', false)) {
-    Prims.ask(Prims.patch(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)()), true, function() {
+    Prims.patch(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)()).ask(function() {
       if (erasing_p) {
         Call(cellDeath);
       }
       else {
         Call(cellBirth);
       }
-    });
+    }, true);
     notImplemented('display', undefined)();
   }
 }

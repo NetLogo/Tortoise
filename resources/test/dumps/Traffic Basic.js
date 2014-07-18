@@ -28,9 +28,9 @@ var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
 var StrictMath     = require('shim/strictmath');function setup() {
   world.clearAll();
-  Prims.ask(world.patches(), true, function() {
+  world.patches().ask(function() {
     Call(setupRoad);
-  });
+  }, true);
   Call(setupCars);
   world.observer.watch(world.observer.getGlobal('sample-car'));
   world.ticker.reset();
@@ -46,7 +46,7 @@ function setupCars() {
     throw new Exception.StopInterrupt;
   }
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "car")
-  Prims.ask(world.createTurtles(world.observer.getGlobal('number-of-cars'), ""), true, function() {
+  world.createTurtles(world.observer.getGlobal('number-of-cars'), '').ask(function() {
     Prims.setVariable('color', 105);
     Prims.setVariable('xcor', Prims.randomXcor());
     Prims.setVariable('heading', 90);
@@ -54,11 +54,11 @@ function setupCars() {
     Prims.setVariable('speed-limit', 1);
     Prims.setVariable('speed-min', 0);
     Call(separateCars);
-  });
+  }, true);
   world.observer.setGlobal('sample-car', Prims.oneOf(world.turtles()));
-  Prims.ask(world.observer.getGlobal('sample-car'), true, function() {
+  world.observer.getGlobal('sample-car').ask(function() {
     Prims.setVariable('color', 15);
-  });
+  }, true);
 }
 function separateCars() {
   if (Prims.other(SelfManager.self().turtlesHere()).nonEmpty()) {
@@ -67,7 +67,7 @@ function separateCars() {
   }
 }
 function go() {
-  Prims.ask(world.turtles(), true, function() {
+  world.turtles().ask(function() {
     var carAhead = Prims.oneOf(Prims.turtlesOn(SelfManager.self().patchAhead(1)));
     if (!Prims.equality(carAhead, Nobody)) {
       Call(slowDownCar, carAhead);
@@ -82,11 +82,11 @@ function go() {
       Prims.setVariable('speed', Prims.getVariable('speed-limit'));
     }
     Prims.fd(Prims.getVariable('speed'));
-  });
+  }, true);
   world.ticker.tick();
 }
 function slowDownCar(carAhead) {
-  Prims.setVariable('speed', (Prims.of(carAhead, function() {
+  Prims.setVariable('speed', (carAhead.projectionBy(function() {
     return Prims.getVariable('speed');
   }) - world.observer.getGlobal('deceleration')));
 }

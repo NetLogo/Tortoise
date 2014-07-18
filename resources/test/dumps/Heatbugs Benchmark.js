@@ -38,32 +38,32 @@ var StrictMath     = require('shim/strictmath');function benchmark() {
 function setup() {
   world.clearAll();
   world.ticker.reset();
-  Prims.ask(Prims.nOf(world.observer.getGlobal('bug-count'), world.patches()), true, function() {
-    Prims.ask(Prims.sprout(1, "TURTLES"), true, function() {
+  Prims.nOf(world.observer.getGlobal('bug-count'), world.patches()).ask(function() {
+    Prims.sprout(1, 'TURTLES').ask(function() {
       Prims.setVariable('color', 65);
       Prims.setVariable('size', 1.75);
       Prims.setVariable('ideal-temp', (world.observer.getGlobal('min-ideal-temp') + Prims.random(StrictMath.abs((world.observer.getGlobal('max-ideal-temp') - world.observer.getGlobal('min-ideal-temp'))))));
       Prims.setVariable('output-heat', (world.observer.getGlobal('min-output-heat') + Prims.random(StrictMath.abs((world.observer.getGlobal('max-output-heat') - world.observer.getGlobal('min-output-heat'))))));
       Prims.setVariable('unhappiness', StrictMath.abs((Prims.getVariable('ideal-temp') - Prims.getPatchVariable('temp'))));
-    });
-  });
+    }, true);
+  }, true);
 }
 function go() {
   if (!world.turtles().nonEmpty()) {
     throw new Exception.StopInterrupt;
   }
   world.topology.diffuse('temp', world.observer.getGlobal('diffusion-rate'))
-  Prims.ask(world.turtles(), true, function() {
+  world.turtles().ask(function() {
     Call(step);
-  });
+  }, true);
   Call(recolorPatches);
   world.ticker.tick();
 }
 function recolorPatches() {
-  Prims.ask(world.patches(), true, function() {
+  world.patches().ask(function() {
     Prims.setPatchVariable('temp', (Prims.getPatchVariable('temp') * (1 - world.observer.getGlobal('evaporation-rate'))));
     Prims.setPatchVariable('pcolor', Prims.scaleColor(15, Prims.getPatchVariable('temp'), 0, 500));
-  });
+  }, true);
 }
 function step() {
   Prims.setVariable('unhappiness', StrictMath.abs((Prims.getVariable('ideal-temp') - Prims.getPatchVariable('temp'))));

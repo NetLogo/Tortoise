@@ -28,7 +28,7 @@ var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
 var StrictMath     = require('shim/strictmath');function setup(initialMagnetization) {
   world.clearAll();
-  Prims.ask(world.patches(), true, function() {
+  world.patches().ask(function() {
     if (Prims.equality(initialMagnetization, 0)) {
       Prims.setPatchVariable('spin', Prims.oneOf([-1, 1]));
     }
@@ -36,20 +36,20 @@ var StrictMath     = require('shim/strictmath');function setup(initialMagnetizat
       Prims.setPatchVariable('spin', initialMagnetization);
     }
     Call(recolor);
-  });
-  world.observer.setGlobal('sum-of-spins', Prims.sum(Prims.of(world.patches(), function() {
+  }, true);
+  world.observer.setGlobal('sum-of-spins', Prims.sum(world.patches().projectionBy(function() {
     return Prims.getPatchVariable('spin');
   })));
   world.ticker.reset();
 }
 function go() {
-  Prims.ask(Prims.oneOf(world.patches()), true, function() {
+  Prims.oneOf(world.patches()).ask(function() {
     Call(update);
-  });
+  }, true);
   world.ticker.tick();
 }
 function update() {
-  var ediff = ((2 * Prims.getPatchVariable('spin')) * Prims.sum(Prims.of(Prims.getNeighbors4(), function() {
+  var ediff = ((2 * Prims.getPatchVariable('spin')) * Prims.sum(Prims.getNeighbors4().projectionBy(function() {
     return Prims.getPatchVariable('spin');
   })));
   if ((Prims.lte(ediff, 0) || (Prims.gt(world.observer.getGlobal('temperature'), 0) && Prims.lt(Prims.randomFloat(1), StrictMath.exp(( -ediff / world.observer.getGlobal('temperature'))))))) {
