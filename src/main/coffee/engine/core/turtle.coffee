@@ -168,7 +168,6 @@ define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtl
       else
         Nobody
 
-
     # () => Turtle
     otherEnd: ->
       if this is @world.selfManager.myself().end1
@@ -193,6 +192,17 @@ define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtl
     # (Number) => Agent
     patchAhead: (distance) ->
       @patchRightAndAhead(0, distance)
+
+    # (() => Any) => Unit
+    ask: (f) ->
+      @world.selfManager.askAgent(f)(this)
+      if @world.selfManager.self().id is -1
+        throw new Exception.DeathInterrupt
+      return
+
+    # [Result] @ (() => Result) => Result
+    projectionBy: (f) ->
+      @world.selfManager.askAgent(f)(this)
 
     # (Number) => Unit
     fd: (distance) ->

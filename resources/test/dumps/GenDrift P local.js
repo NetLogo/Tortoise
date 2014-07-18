@@ -28,25 +28,25 @@ var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
 var StrictMath     = require('shim/strictmath');function setup() {
   world.clearAll();
-  Prims.ask(world.patches(), true, function() {
+  world.patches().ask(function() {
     Prims.setPatchVariable('pcolor', ((Prims.random(world.observer.getGlobal('colors')) * 10) + 5));
     if (Prims.equality(Prims.getPatchVariable('pcolor'), 75)) {
       Prims.setPatchVariable('pcolor', 125);
     }
-  });
+  }, true);
   world.ticker.reset();
 }
 function go() {
-  if (Prims.equality(Prims.variance(Prims.of(world.patches(), function() {
+  if (Prims.equality(Prims.variance(world.patches().projectionBy(function() {
     return Prims.getPatchVariable('pcolor');
   })), 0)) {
     throw new Exception.StopInterrupt;
   }
-  Prims.ask(world.patches(), true, function() {
-    Prims.setPatchVariable('pcolor', Prims.of(Prims.oneOf(Prims.getNeighbors()), function() {
+  world.patches().ask(function() {
+    Prims.setPatchVariable('pcolor', Prims.oneOf(Prims.getNeighbors()).projectionBy(function() {
       return Prims.getPatchVariable('pcolor');
     }));
-  });
+  }, true);
   world.ticker.tick();
 }
 world.observer.setGlobal('colors', 5);

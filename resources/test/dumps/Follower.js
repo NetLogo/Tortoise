@@ -28,26 +28,26 @@ var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
 var StrictMath     = require('shim/strictmath');function setup() {
   world.clearAll();
-  Prims.ask(world.createTurtles(world.observer.getGlobal('population'), ""), true, function() {
+  world.createTurtles(world.observer.getGlobal('population'), '').ask(function() {
     Prims.setVariable('color', 125);
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
     Prims.setVariable('leader', Nobody);
     Prims.setVariable('follower', Nobody);
-  });
+  }, true);
   world.ticker.reset();
 }
 function go() {
-  Prims.ask(world.turtles(), true, function() {
+  world.turtles().ask(function() {
     if (Prims.equality(Prims.getVariable('leader'), Nobody)) {
       Call(attachTurtle);
     }
-  });
-  Prims.ask(world.turtles(), true, function() {
+  }, true);
+  world.turtles().ask(function() {
     Call(turnTurtle);
-  });
-  Prims.ask(world.turtles(), true, function() {
+  }, true);
+  world.turtles().ask(function() {
     Prims.fd(1);
-  });
+  }, true);
   world.ticker.tick();
 }
 function attachTurtle() {
@@ -65,9 +65,9 @@ function attachTurtle() {
   if (Prims.equality(candidate, Nobody)) {
     throw new Exception.StopInterrupt;
   }
-  Prims.ask(candidate, true, function() {
+  candidate.ask(function() {
     Prims.setVariable('follower', SelfManager.myself());
-  });
+  }, true);
   Prims.setVariable('leader', candidate);
   if (Prims.equality(Prims.getVariable('follower'), Nobody)) {
     Prims.setVariable('color', 65);
@@ -76,7 +76,7 @@ function attachTurtle() {
     Prims.setVariable('color', 95);
     Prims.setVariable('shape', "line");
   }
-  Prims.ask(candidate, true, function() {
+  candidate.ask(function() {
     if (Prims.equality(Prims.getVariable('leader'), Nobody)) {
       Prims.setVariable('color', 45);
     }
@@ -84,7 +84,7 @@ function attachTurtle() {
       Prims.setVariable('color', 95);
       Prims.setVariable('shape', "line");
     }
-  });
+  }, true);
 }
 function turnTurtle() {
   if (Prims.equality(Prims.getVariable('leader'), Nobody)) {

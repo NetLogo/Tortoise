@@ -44,22 +44,22 @@ function benchmark() {
 }
 function setupTurtles() {
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "bug")
-  Prims.ask(world.createOrderedTurtles(world.observer.getGlobal('ants'), ""), true, function() {
+  world.createOrderedTurtles(world.observer.getGlobal('ants'), '').ask(function() {
     Prims.setVariable('size', 2);
     Prims.right(Prims.randomFloat(360));
     Prims.setVariable('color', 15);
     Prims.setVariable('carrying-food?', false);
-  });
+  }, true);
 }
 function setupPatches() {
-  Prims.ask(world.patches(), true, function() {
+  world.patches().ask(function() {
     Prims.setPatchVariable('chemical', 0);
     Prims.setPatchVariable('food', 0);
     Prims.setPatchVariable('food-source-number', -1);
     Call(setupNest);
     Call(setupFood);
     Call(updateDisplay);
-  });
+  }, true);
 }
 function setupNest() {
   Prims.setPatchVariable('nest?', Prims.lt(SelfManager.self().distanceXY(0, 0), 5));
@@ -101,13 +101,13 @@ function updateDisplay() {
   }
 }
 function go() {
-  Prims.ask(world.turtles(), true, function() {
+  world.turtles().ask(function() {
     Call(goTurtles);
-  });
+  }, true);
   world.topology.diffuse('chemical', (world.observer.getGlobal('diffusion-rate') / 100))
-  Prims.ask(world.patches(), true, function() {
+  world.patches().ask(function() {
     Call(goPatches);
-  });
+  }, true);
   world.ticker.tick();
   Call(doPlotting);
 }
@@ -168,7 +168,7 @@ function lookForFood() {
 }
 function uphillChemical() {
   Call(wiggle);
-  var scentAhead = Prims.of(SelfManager.self().patchAhead(1), function() {
+  var scentAhead = SelfManager.self().patchAhead(1).projectionBy(function() {
     return Prims.getPatchVariable('chemical');
   });
   var scentRight = Call(chemicalScent, 45);
@@ -184,7 +184,7 @@ function uphillChemical() {
 }
 function uphillNestScent() {
   Call(wiggle);
-  var scentAhead = Prims.of(SelfManager.self().patchAhead(1), function() {
+  var scentAhead = SelfManager.self().patchAhead(1).projectionBy(function() {
     return Prims.getPatchVariable('nest-scent');
   });
   var scentRight = Call(getNestScent, 45);
@@ -207,7 +207,7 @@ function wiggle() {
 function getNestScent(angle) {
   var p = SelfManager.self().patchRightAndAhead(angle, 1);
   if (!Prims.equality(p, Nobody)) {
-    return Prims.of(p, function() {
+    return p.projectionBy(function() {
       return Prims.getPatchVariable('nest-scent');
     });
   }
@@ -216,7 +216,7 @@ function getNestScent(angle) {
 function chemicalScent(angle) {
   var p = SelfManager.self().patchRightAndAhead(angle, 1);
   if (!Prims.equality(p, Nobody)) {
-    return Prims.of(p, function() {
+    return p.projectionBy(function() {
       return Prims.getPatchVariable('chemical');
     });
   }

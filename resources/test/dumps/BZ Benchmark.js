@@ -38,19 +38,19 @@ var StrictMath     = require('shim/strictmath');function benchmark() {
 function setup() {
   world.clearAll();
   world.ticker.reset();
-  Prims.ask(world.patches(), true, function() {
+  world.patches().ask(function() {
     Prims.setPatchVariable('state', Prims.random((world.observer.getGlobal('n') + 1)));
     Prims.setPatchVariable('pcolor', Prims.scaleColor(15, Prims.getPatchVariable('state'), 0, world.observer.getGlobal('n')));
-  });
+  }, true);
 }
 function go() {
-  Prims.ask(world.patches(), true, function() {
+  world.patches().ask(function() {
     Call(findNewState);
-  });
-  Prims.ask(world.patches(), true, function() {
+  }, true);
+  world.patches().ask(function() {
     Prims.setPatchVariable('state', Prims.getPatchVariable('new-state'));
     Prims.setPatchVariable('pcolor', Prims.scaleColor(15, Prims.getPatchVariable('state'), 0, world.observer.getGlobal('n')));
-  });
+  }, true);
   world.ticker.tick();
 }
 function findNewState() {
@@ -68,7 +68,7 @@ function findNewState() {
       Prims.setPatchVariable('new-state', (Prims._int((a / world.observer.getGlobal('k1'))) + Prims._int((b / world.observer.getGlobal('k2')))));
     }
     else {
-      var s = (Prims.getPatchVariable('state') + Prims.sum(Prims.of(Prims.getNeighbors(), function() {
+      var s = (Prims.getPatchVariable('state') + Prims.sum(Prims.getNeighbors().projectionBy(function() {
         return Prims.getPatchVariable('state');
       })));
       Prims.setPatchVariable('new-state', (Prims._int((s / ((a + b) + 1))) + world.observer.getGlobal('g')));

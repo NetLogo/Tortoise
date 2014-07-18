@@ -27,7 +27,7 @@ var AgentModel     = require('agentmodel');
 var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
 var StrictMath     = require('shim/strictmath');function makeNewcomer() {
-  Prims.ask(world.createTurtles(1, ""), true, function() {
+  world.createTurtles(1, '').ask(function() {
     Prims.setVariable('color', (105 + 1));
     Prims.setVariable('size', 1.8);
     Prims.setVariable('incumbent?', false);
@@ -35,7 +35,7 @@ var StrictMath     = require('shim/strictmath');function makeNewcomer() {
     world.observer.setGlobal('newcomer', SelfManager.self());
     Prims.setVariable('downtime', 0);
     Prims.setVariable('explored?', false);
-  });
+  }, true);
 }
 function setup() {
   world.clearAll();
@@ -43,39 +43,39 @@ function setup() {
   Prims.repeat(world.observer.getGlobal('team-size'), function () {
     Call(makeNewcomer);
   });
-  Prims.ask(world.turtles(), true, function() {
+  world.turtles().ask(function() {
     Prims.setVariable('in-team?', true);
     Prims.setVariable('incumbent?', true);
-  });
+  }, true);
   Call(tieCollaborators);
   Call(colorCollaborations);
-  Prims.ask(world.turtles(), true, function() {
+  world.turtles().ask(function() {
     Prims.setVariable('heading', ((360 / world.observer.getGlobal('team-size')) * Prims.getVariable('who')));
     Prims.fd(1.75);
     Prims.setVariable('in-team?', false);
-  });
+  }, true);
   Call(findAllComponents);
   world.ticker.reset();
 }
 function go() {
-  Prims.ask(world.turtles(), true, function() {
+  world.turtles().ask(function() {
     Prims.setVariable('incumbent?', true);
     Prims.setVariable('color', (5 - 1.5));
     Prims.setVariable('size', 0.9);
-  });
-  Prims.ask(world.links(), true, function() {
+  }, true);
+  world.links().ask(function() {
     Prims.setVariable('new-collaboration?', false);
-  });
+  }, true);
   Call(pickTeamMembers);
   Call(tieCollaborators);
   Call(colorCollaborations);
-  Prims.ask(world.turtles(), true, function() {
+  world.turtles().ask(function() {
     if (Prims.gt(Prims.getVariable('downtime'), world.observer.getGlobal('max-downtime'))) {
       Prims.die();
     }
     Prims.setVariable('in-team?', false);
     Prims.setVariable('downtime', (Prims.getVariable('downtime') + 1));
-  });
+  }, true);
   if (world.observer.getGlobal('layout?')) {
     Call(layout);
   }
@@ -107,46 +107,46 @@ function pickTeamMembers() {
         }));
       }
     }
-    Prims.ask(newTeamMember, true, function() {
+    newTeamMember.ask(function() {
       Prims.setVariable('in-team?', true);
       Prims.setVariable('downtime', 0);
       Prims.setVariable('size', 1.8);
       Prims.setVariable('color', Prims.getVariable('incumbent?') ? (45 + 2) : (105 + 1));
-    });
+    }, true);
   });
 }
 function tieCollaborators() {
-  Prims.ask(world.turtles().agentFilter(function() {
+  world.turtles().agentFilter(function() {
     return Prims.getVariable('in-team?');
-  }), true, function() {
-    Prims.ask(LinkPrims.createLinksWith(Prims.other(world.turtles().agentFilter(function() {
+  }).ask(function() {
+    LinkPrims.createLinksWith(Prims.other(world.turtles().agentFilter(function() {
       return Prims.getVariable('in-team?');
-    }))), true, function() {
+    }))).ask(function() {
       Prims.setVariable('new-collaboration?', true);
       Prims.setVariable('thickness', 0.3);
-    });
-  });
+    }, true);
+  }, true);
 }
 function colorCollaborations() {
-  Prims.ask(world.links().agentFilter(function() {
-    return (Prims.of(Prims.getVariable('end1'), function() {
+  world.links().agentFilter(function() {
+    return (Prims.getVariable('end1').projectionBy(function() {
       return Prims.getVariable('in-team?');
-    }) && Prims.of(Prims.getVariable('end2'), function() {
+    }) && Prims.getVariable('end2').projectionBy(function() {
       return Prims.getVariable('in-team?');
     }));
-  }), true, function() {
+  }).ask(function() {
     if (Prims.getVariable('new-collaboration?')) {
-      if ((Prims.of(Prims.getVariable('end1'), function() {
+      if ((Prims.getVariable('end1').projectionBy(function() {
         return Prims.getVariable('incumbent?');
-      }) && Prims.of(Prims.getVariable('end2'), function() {
+      }) && Prims.getVariable('end2').projectionBy(function() {
         return Prims.getVariable('incumbent?');
       }))) {
         Prims.setVariable('color', 45);
       }
       else {
-        if ((Prims.of(Prims.getVariable('end1'), function() {
+        if ((Prims.getVariable('end1').projectionBy(function() {
           return Prims.getVariable('incumbent?');
-        }) || Prims.of(Prims.getVariable('end2'), function() {
+        }) || Prims.getVariable('end2').projectionBy(function() {
           return Prims.getVariable('incumbent?');
         }))) {
           Prims.setVariable('color', 55);
@@ -159,7 +159,7 @@ function colorCollaborations() {
     else {
       Prims.setVariable('color', 15);
     }
-  });
+  }, true);
 }
 function layout() {
   Prims.repeat(12, function () {
@@ -170,9 +170,9 @@ function layout() {
 function findAllComponents() {
   world.observer.setGlobal('components', []);
   world.observer.setGlobal('giant-component-size', 0);
-  Prims.ask(world.turtles(), true, function() {
+  world.turtles().ask(function() {
     Prims.setVariable('explored?', false);
-  });
+  }, true);
   while (true) {
     var start = Prims.oneOf(world.turtles().agentFilter(function() {
       return !Prims.getVariable('explored?');
@@ -181,9 +181,9 @@ function findAllComponents() {
       throw new Exception.StopInterrupt;
     }
     world.observer.setGlobal('component-size', 0);
-    Prims.ask(start, true, function() {
+    start.ask(function() {
       Call(explore);
-    });
+    }, true);
     if (Prims.gt(world.observer.getGlobal('component-size'), world.observer.getGlobal('giant-component-size'))) {
       world.observer.setGlobal('giant-component-size', world.observer.getGlobal('component-size'));
     }
@@ -196,9 +196,9 @@ function explore() {
   }
   Prims.setVariable('explored?', true);
   world.observer.setGlobal('component-size', (world.observer.getGlobal('component-size') + 1));
-  Prims.ask(LinkPrims.linkNeighbors(false, false), true, function() {
+  LinkPrims.linkNeighbors(false, false).ask(function() {
     Call(explore);
-  });
+  }, true);
 }
 world.observer.setGlobal('layout?', true);
 world.observer.setGlobal('p', 40);

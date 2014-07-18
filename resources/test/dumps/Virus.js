@@ -35,17 +35,17 @@ var StrictMath     = require('shim/strictmath');function setup() {
 }
 function setupTurtles() {
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "person")
-  Prims.ask(world.createTurtles(world.observer.getGlobal('people'), ""), true, function() {
+  world.createTurtles(world.observer.getGlobal('people'), '').ask(function() {
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
     Prims.setVariable('age', Prims.random(world.observer.getGlobal('lifespan')));
     Prims.setVariable('sick-count', 0);
     Prims.setVariable('immune?', false);
     Prims.setVariable('size', 1.5);
     Call(getHealthy);
-  });
-  Prims.ask(Prims.nOf(10, world.turtles()), true, function() {
+  }, true);
+  Prims.nOf(10, world.turtles()).ask(function() {
     Call(getSick);
-  });
+  }, true);
 }
 function getSick() {
   Prims.setVariable('sick?', true);
@@ -89,7 +89,7 @@ function updateGlobalVariables() {
   }
 }
 function getOlder() {
-  Prims.ask(world.turtles(), true, function() {
+  world.turtles().ask(function() {
     Prims.setVariable('age', (Prims.getVariable('age') + 1));
     if (Prims.getVariable('sick?')) {
       Prims.setVariable('sick-count', (Prims.getVariable('sick-count') + 1));
@@ -97,32 +97,32 @@ function getOlder() {
     if (Prims.gt(Prims.getVariable('age'), world.observer.getGlobal('lifespan'))) {
       Prims.die();
     }
-  });
+  }, true);
 }
 function move() {
-  Prims.ask(world.turtles(), true, function() {
+  world.turtles().ask(function() {
     Prims.right(Prims.random(100));
     Prims.left(Prims.random(100));
     Prims.fd(1);
-  });
+  }, true);
 }
 function infect() {
-  Prims.ask(world.turtles().agentFilter(function() {
+  world.turtles().agentFilter(function() {
     return Prims.getVariable('sick?');
-  }), true, function() {
-    Prims.ask(Prims.other(SelfManager.self().turtlesHere().agentFilter(function() {
+  }).ask(function() {
+    Prims.other(SelfManager.self().turtlesHere().agentFilter(function() {
       return !Prims.getVariable('immune?');
-    })), true, function() {
+    })).ask(function() {
       if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal('infectiousness'))) {
         Call(getSick);
       }
-    });
-  });
+    }, true);
+  }, true);
 }
 function recover() {
-  Prims.ask(world.turtles().agentFilter(function() {
+  world.turtles().agentFilter(function() {
     return Prims.getVariable('sick?');
-  }), true, function() {
+  }).ask(function() {
     if (Prims.gt(Prims.random(Prims.getVariable('sick-count')), (world.observer.getGlobal('lifespan') * (world.observer.getGlobal('duration') / 100)))) {
       if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal('chance-recover'))) {
         Call(becomeImmune);
@@ -131,21 +131,21 @@ function recover() {
         Prims.die();
       }
     }
-  });
+  }, true);
 }
 function reproduce() {
-  Prims.ask(world.turtles().agentFilter(function() {
+  world.turtles().agentFilter(function() {
     return !Prims.getVariable('sick?');
-  }), true, function() {
+  }).ask(function() {
     if ((Prims.lt(world.turtles().size(), world.observer.getGlobal('carrying-capacity')) && Prims.lt(Prims.random(world.observer.getGlobal('lifespan')), world.observer.getGlobal('average-offspring')))) {
-      Prims.ask(Prims.hatch(1, ""), true, function() {
+      Prims.hatch(1, '').ask(function() {
         Prims.setVariable('age', 1);
         Prims.left(45);
         Prims.fd(1);
         Call(getHealthy);
-      });
+      }, true);
     }
-  });
+  }, true);
 }
 world.observer.setGlobal('duration', 20);
 world.observer.setGlobal('chance-recover', 50);

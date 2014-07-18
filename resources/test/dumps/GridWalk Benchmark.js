@@ -38,15 +38,15 @@ var StrictMath     = require('shim/strictmath');function benchmark() {
 function setup() {
   world.clearAll();
   world.ticker.reset();
-  Prims.ask(world.createOrderedTurtles(1000, ""), true, function() {
+  world.createOrderedTurtles(1000, '').ask(function() {
     SelfManager.self().moveTo(Prims.oneOf(world.patches()));
     SelfManager.self().face(Prims.oneOf(Prims.getNeighbors4()));
-  });
+  }, true);
 }
 function go() {
-  Prims.ask(world.turtles(), true, function() {
+  world.turtles().ask(function() {
     SelfManager.self().face(Prims.oneOf(Prims.getNeighbors4()));
     Prims.fd(1);
-  });
+  }, true);
   world.ticker.tick();
 }

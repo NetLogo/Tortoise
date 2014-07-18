@@ -28,7 +28,7 @@ var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
 var StrictMath     = require('shim/strictmath');function setup() {
   world.clearAll();
-  Prims.ask(world.createTurtles(world.observer.getGlobal('number'), ""), true, function() {
+  world.createTurtles(world.observer.getGlobal('number'), '').ask(function() {
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
     Prims.setVariable('clock', Prims.random(StrictMath.round(world.observer.getGlobal('cycle-length'))));
     Prims.setVariable('threshold', world.observer.getGlobal('flash-length'));
@@ -42,20 +42,20 @@ var StrictMath     = require('shim/strictmath');function setup() {
     }
     Prims.setVariable('size', 2);
     Call(recolor);
-  });
+  }, true);
   world.ticker.reset();
 }
 function go() {
-  Prims.ask(world.turtles(), true, function() {
+  world.turtles().ask(function() {
     Call(move);
     Call(incrementClock);
     if ((Prims.gt(Prims.getVariable('clock'), Prims.getVariable('window')) && Prims.gte(Prims.getVariable('clock'), Prims.getVariable('threshold')))) {
       Call(look);
     }
-  });
-  Prims.ask(world.turtles(), true, function() {
+  }, true);
+  world.turtles().ask(function() {
     Call(recolor);
-  });
+  }, true);
   world.ticker.tick();
 }
 function recolor() {

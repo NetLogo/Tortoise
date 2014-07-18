@@ -28,19 +28,19 @@ var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
 var StrictMath     = require('shim/strictmath');function setup() {
   world.clearAll();
-  Prims.ask(world.patches(), true, function() {
+  world.patches().ask(function() {
     Prims.setPatchVariable('vote', Prims.random(2));
     Call(recolorPatch);
-  });
+  }, true);
   world.ticker.reset();
 }
 function go() {
-  Prims.ask(world.patches(), true, function() {
-    Prims.setPatchVariable('total', Prims.sum(Prims.of(Prims.getNeighbors(), function() {
+  world.patches().ask(function() {
+    Prims.setPatchVariable('total', Prims.sum(Prims.getNeighbors().projectionBy(function() {
       return Prims.getPatchVariable('vote');
     })));
-  });
-  Prims.ask(world.patches(), true, function() {
+  }, true);
+  world.patches().ask(function() {
     if (Prims.gt(Prims.getPatchVariable('total'), 5)) {
       Prims.setPatchVariable('vote', 1);
     }
@@ -69,7 +69,7 @@ function go() {
       }
     }
     Call(recolorPatch);
-  });
+  }, true);
   world.ticker.tick();
 }
 function recolorPatch() {

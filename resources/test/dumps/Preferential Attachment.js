@@ -34,9 +34,9 @@ var StrictMath     = require('shim/strictmath');function setup() {
   world.ticker.reset();
 }
 function go() {
-  Prims.ask(world.links(), true, function() {
+  world.links().ask(function() {
     Prims.setVariable('color', 5);
-  });
+  }, true);
   Call(makeNode, Call(findPartner));
   world.ticker.tick();
   if (world.observer.getGlobal('layout?')) {
@@ -44,32 +44,32 @@ function go() {
   }
 }
 function makeNode(oldNode) {
-  Prims.ask(world.createTurtles(1, ""), true, function() {
+  world.createTurtles(1, '').ask(function() {
     Prims.setVariable('color', 15);
     if (!Prims.equality(oldNode, Nobody)) {
-      Prims.ask(LinkPrims.createLinkWith(oldNode), true, function() {
+      LinkPrims.createLinkWith(oldNode).ask(function() {
         Prims.setVariable('color', 55);
-      });
+      }, true);
       SelfManager.self().moveTo(oldNode);
       Prims.fd(8);
     }
-  });
+  }, true);
 }
 function findPartner() {
-  return Prims.of(Prims.oneOf(world.links()), function() {
+  return Prims.oneOf(world.links()).projectionBy(function() {
     return Prims.oneOf(SelfManager.self().bothEnds());
   });
 }
 function resizeNodes() {
   if (world.turtles().agentAll(function(){ return Prims.lte(Prims.getVariable('size'), 1) })) {
-    Prims.ask(world.turtles(), true, function() {
+    world.turtles().ask(function() {
       Prims.setVariable('size', StrictMath.sqrt(LinkPrims.linkNeighbors(false, false).size()));
-    });
+    }, true);
   }
   else {
-    Prims.ask(world.turtles(), true, function() {
+    world.turtles().ask(function() {
       Prims.setVariable('size', 1);
-    });
+    }, true);
   }
 }
 function layout() {
@@ -78,21 +78,21 @@ function layout() {
     LayoutManager.layoutSpring(world.turtles(), world.links(), (1 / factor), (7 / factor), (1 / factor));
     notImplemented('display', undefined)();
   });
-  var xOffset = (Prims.max(Prims.of(world.turtles(), function() {
+  var xOffset = (Prims.max(world.turtles().projectionBy(function() {
     return Prims.getVariable('xcor');
-  })) + Prims.min(Prims.of(world.turtles(), function() {
+  })) + Prims.min(world.turtles().projectionBy(function() {
     return Prims.getVariable('xcor');
   })));
-  var yOffset = (Prims.max(Prims.of(world.turtles(), function() {
+  var yOffset = (Prims.max(world.turtles().projectionBy(function() {
     return Prims.getVariable('ycor');
-  })) + Prims.min(Prims.of(world.turtles(), function() {
+  })) + Prims.min(world.turtles().projectionBy(function() {
     return Prims.getVariable('ycor');
   })));
   xOffset = Call(limitMagnitude, xOffset, 0.1);
   yOffset = Call(limitMagnitude, yOffset, 0.1);
-  Prims.ask(world.turtles(), true, function() {
+  world.turtles().ask(function() {
     Prims.setXY((Prims.getVariable('xcor') - (xOffset / 2)), (Prims.getVariable('ycor') - (yOffset / 2)));
-  });
+  }, true);
 }
 function limitMagnitude(number, limit) {
   if (Prims.gt(number, limit)) {

@@ -28,44 +28,44 @@ var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
 var StrictMath     = require('shim/strictmath');function setup() {
   world.clearAll();
-  Prims.ask(world.createTurtles(world.observer.getGlobal('number'), ""), true, function() {
+  world.createTurtles(world.observer.getGlobal('number'), '').ask(function() {
     Prims.setVariable('color', (5 + (Prims.random(world.observer.getGlobal('colors')) * 10)));
     if (Prims.equality(Prims.getVariable('color'), 75)) {
       Prims.setVariable('color', 125);
     }
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
-  });
+  }, true);
   world.ticker.reset();
 }
 function go() {
-  if (Prims.equality(Prims.variance(Prims.of(world.turtles(), function() {
+  if (Prims.equality(Prims.variance(world.turtles().projectionBy(function() {
     return Prims.getVariable('color');
   })), 0)) {
     throw new Exception.StopInterrupt;
   }
-  Prims.ask(world.turtles(), true, function() {
+  world.turtles().ask(function() {
     Prims.right(Prims.random(50));
     Prims.left(Prims.random(50));
     Prims.fd(1);
-  });
+  }, true);
   Call(birth);
   Call(death);
   world.ticker.tick();
 }
 function birth() {
-  Prims.ask(world.turtles(), true, function() {
-    Prims.ask(Prims.hatch(Prims.random(5), ""), true, function() {
+  world.turtles().ask(function() {
+    Prims.hatch(Prims.random(5), '').ask(function() {
       Prims.fd(1);
-    });
-  });
+    }, true);
+  }, true);
 }
 function death() {
   var totalTurtles = world.turtles().size();
-  Prims.ask(world.turtles(), true, function() {
+  world.turtles().ask(function() {
     if (Prims.gt(Prims.random(totalTurtles), world.observer.getGlobal('number'))) {
       Prims.die();
     }
-  });
+  }, true);
 }
 world.observer.setGlobal('colors', 5);
 world.observer.setGlobal('number', 500);

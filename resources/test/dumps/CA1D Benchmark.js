@@ -50,26 +50,26 @@ function setupGeneral() {
 }
 function singleCell() {
   Call(setupGeneral);
-  Prims.ask(world.patches().agentFilter(function() {
+  world.patches().agentFilter(function() {
     return Prims.equality(Prims.getPatchVariable('pycor'), world.observer.getGlobal('row'));
-  }), true, function() {
+  }).ask(function() {
     Prims.setPatchVariable('on?', false);
     Prims.setPatchVariable('pcolor', world.observer.getGlobal('background'));
-  });
-  Prims.ask(Prims.patch(0, world.observer.getGlobal('row')), true, function() {
+  }, true);
+  Prims.patch(0, world.observer.getGlobal('row')).ask(function() {
     Prims.setPatchVariable('pcolor', world.observer.getGlobal('foreground'));
     Prims.setPatchVariable('on?', true);
-  });
+  }, true);
   world.ticker.reset();
 }
 function setupRandom() {
   Call(setupGeneral);
-  Prims.ask(world.patches().agentFilter(function() {
+  world.patches().agentFilter(function() {
     return Prims.equality(Prims.getPatchVariable('pycor'), world.observer.getGlobal('row'));
-  }), true, function() {
+  }).ask(function() {
     Prims.setPatchVariable('on?', Prims.lt(Prims.random(100), world.observer.getGlobal('density')));
     Call(colorPatch);
-  });
+  }, true);
   world.ticker.reset();
 }
 function setupContinue() {
@@ -79,19 +79,19 @@ function setupContinue() {
   }
   on_pList = Tasks.map(Tasks.reporterTask(function() {
     var taskArguments = arguments;
-    return Prims.of(taskArguments[0], function() {
+    return taskArguments[0].projectionBy(function() {
       return Prims.getPatchVariable('on?');
     });
   }), Prims.sort(world.patches().agentFilter(function() {
     return Prims.equality(Prims.getPatchVariable('pycor'), world.observer.getGlobal('row'));
   })));
   Call(setupGeneral);
-  Prims.ask(world.patches().agentFilter(function() {
+  world.patches().agentFilter(function() {
     return Prims.equality(Prims.getPatchVariable('pycor'), world.observer.getGlobal('row'));
-  }), true, function() {
+  }).ask(function() {
     Prims.setPatchVariable('on?', Prims.item((Prims.getPatchVariable('pxcor') + world.topology.maxPxcor), on_pList));
     Call(colorPatch);
-  });
+  }, true);
   world.observer.setGlobal('gone?', true);
 }
 function go() {
@@ -107,31 +107,31 @@ function go() {
       throw new Exception.StopInterrupt;
     }
   }
-  Prims.ask(world.patches().agentFilter(function() {
+  world.patches().agentFilter(function() {
     return Prims.equality(Prims.getPatchVariable('pycor'), world.observer.getGlobal('row'));
-  }), true, function() {
+  }).ask(function() {
     Call(doRule);
-  });
+  }, true);
   world.observer.setGlobal('row', (world.observer.getGlobal('row') - 1));
-  Prims.ask(world.patches().agentFilter(function() {
+  world.patches().agentFilter(function() {
     return Prims.equality(Prims.getPatchVariable('pycor'), world.observer.getGlobal('row'));
-  }), true, function() {
+  }).ask(function() {
     Call(colorPatch);
-  });
+  }, true);
   world.observer.setGlobal('gone?', true);
   world.ticker.tick();
 }
 function doRule() {
-  var leftOn_p = Prims.of(SelfManager.self().patchAt(-1, 0), function() {
+  var leftOn_p = SelfManager.self().patchAt(-1, 0).projectionBy(function() {
     return Prims.getPatchVariable('on?');
   });
-  var rightOn_p = Prims.of(SelfManager.self().patchAt(1, 0), function() {
+  var rightOn_p = SelfManager.self().patchAt(1, 0).projectionBy(function() {
     return Prims.getPatchVariable('on?');
   });
   var newValue = ((((((((((world.observer.getGlobal('iii') && leftOn_p) && Prims.getPatchVariable('on?')) && rightOn_p) || (((world.observer.getGlobal('iio') && leftOn_p) && Prims.getPatchVariable('on?')) && !rightOn_p)) || (((world.observer.getGlobal('ioi') && leftOn_p) && !Prims.getPatchVariable('on?')) && rightOn_p)) || (((world.observer.getGlobal('ioo') && leftOn_p) && !Prims.getPatchVariable('on?')) && !rightOn_p)) || (((world.observer.getGlobal('oii') && !leftOn_p) && Prims.getPatchVariable('on?')) && rightOn_p)) || (((world.observer.getGlobal('oio') && !leftOn_p) && Prims.getPatchVariable('on?')) && !rightOn_p)) || (((world.observer.getGlobal('ooi') && !leftOn_p) && !Prims.getPatchVariable('on?')) && rightOn_p)) || (((world.observer.getGlobal('ooo') && !leftOn_p) && !Prims.getPatchVariable('on?')) && !rightOn_p));
-  Prims.ask(SelfManager.self().patchAt(0, -1), true, function() {
+  SelfManager.self().patchAt(0, -1).ask(function() {
     Prims.setPatchVariable('on?', newValue);
-  });
+  }, true);
 }
 function colorPatch() {
   if (Prims.getPatchVariable('on?')) {
@@ -201,15 +201,15 @@ function calculateRule() {
 function showRules() {
   Call(setupGeneral);
   var rules = Call(listRules);
-  Prims.ask(world.patches().agentFilter(function() {
+  world.patches().agentFilter(function() {
     return Prims.gt(Prims.getPatchVariable('pycor'), (world.topology.maxPycor - 5));
-  }), true, function() {
+  }).ask(function() {
     Prims.setPatchVariable('pcolor', 5);
-  });
-  Prims.ask(world.patches().agentFilter(function() {
+  }, true);
+  world.patches().agentFilter(function() {
     return (Prims.equality(Prims.getPatchVariable('pycor'), world.topology.maxPycor) && Prims.equality(Prims.mod((Prims.getPatchVariable('pxcor') + 1), StrictMath.floor((world.topology.width / 8))), 0));
-  }), true, function() {
-    Prims.ask(Prims.sprout(1, "TURTLES"), true, function() {
+  }).ask(function() {
+    Prims.sprout(1, 'TURTLES').ask(function() {
       Prims.setVariable('heading', 270);
       Prims.fd(18);
       Call(printBlock, Prims.item(0, Prims.item(Prims.getVariable('who'), rules)));
@@ -223,8 +223,8 @@ function showRules() {
       Prims.setVariable('heading', 90);
       Call(printBlock, Prims.item(3, Prims.item(Prims.getVariable('who'), rules)));
       Prims.die();
-    });
-  });
+    }, true);
+  }, true);
   world.observer.setGlobal('rules-shown?', true);
 }
 function printBlock(state) {

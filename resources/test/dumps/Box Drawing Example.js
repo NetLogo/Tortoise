@@ -28,7 +28,7 @@ var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
 var StrictMath     = require('shim/strictmath');function setupCorner() {
   world.clearAll();
-  Prims.ask(world.patches(), true, function() {
+  world.patches().ask(function() {
     if (((Prims.equality(Prims.getPatchVariable('pxcor'), 0) && Prims.gte(Prims.getPatchVariable('pycor'), 0)) && Prims.lte(Prims.getPatchVariable('pycor'), world.observer.getGlobal('edge')))) {
       Prims.setPatchVariable('pcolor', 15);
     }
@@ -41,12 +41,12 @@ var StrictMath     = require('shim/strictmath');function setupCorner() {
     if (((Prims.equality(Prims.getPatchVariable('pycor'), world.observer.getGlobal('edge')) && Prims.gte(Prims.getPatchVariable('pxcor'), 0)) && Prims.lte(Prims.getPatchVariable('pxcor'), world.observer.getGlobal('edge')))) {
       Prims.setPatchVariable('pcolor', 15);
     }
-  });
+  }, true);
 }
 function setupCenter() {
   world.clearAll();
   world.observer.setGlobal('halfedge', Prims._int((world.observer.getGlobal('edge') / 2)));
-  Prims.ask(world.patches(), true, function() {
+  world.patches().ask(function() {
     if (((Prims.equality(Prims.getPatchVariable('pxcor'),  -world.observer.getGlobal('halfedge')) && Prims.gte(Prims.getPatchVariable('pycor'),  -world.observer.getGlobal('halfedge'))) && Prims.lte(Prims.getPatchVariable('pycor'), (0 + world.observer.getGlobal('halfedge'))))) {
       Prims.setPatchVariable('pcolor', 105);
     }
@@ -59,6 +59,6 @@ function setupCenter() {
     if (((Prims.equality(Prims.getPatchVariable('pycor'), (0 + world.observer.getGlobal('halfedge'))) && Prims.gte(Prims.getPatchVariable('pxcor'),  -world.observer.getGlobal('halfedge'))) && Prims.lte(Prims.getPatchVariable('pxcor'), (0 + world.observer.getGlobal('halfedge'))))) {
       Prims.setPatchVariable('pcolor', 105);
     }
-  });
+  }, true);
 }
 world.observer.setGlobal('edge', 8);

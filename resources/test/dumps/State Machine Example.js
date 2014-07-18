@@ -29,12 +29,12 @@ var Random         = require('shim/random');
 var StrictMath     = require('shim/strictmath');function setup() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "bug")
-  Prims.ask(world.patches(), true, function() {
+  world.patches().ask(function() {
     if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal('density'))) {
       Prims.setPatchVariable('pcolor', 45);
     }
-  });
-  Prims.ask(world.createTurtles(world.observer.getGlobal('number'), ""), true, function() {
+  }, true);
+  world.createTurtles(world.observer.getGlobal('number'), '').ask(function() {
     Prims.setVariable('color', 9.9);
     Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
     Prims.setVariable('next-task', Tasks.commandTask(function() {
@@ -42,11 +42,11 @@ var StrictMath     = require('shim/strictmath');function setup() {
       Call(searchForChip);
     }));
     Prims.setVariable('size', 5);
-  });
+  }, true);
   world.ticker.reset();
 }
 function go() {
-  Prims.ask(world.turtles(), true, function() {
+  world.turtles().ask(function() {
     if (Prims.gt(Prims.getVariable('steps'), 0)) {
       Prims.setVariable('steps', (Prims.getVariable('steps') - 1));
     }
@@ -55,7 +55,7 @@ function go() {
       Call(wiggle);
     }
     Prims.fd(1);
-  });
+  }, true);
   world.ticker.tick();
 }
 function wiggle() {
