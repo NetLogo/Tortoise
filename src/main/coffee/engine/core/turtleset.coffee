@@ -4,7 +4,7 @@ define(['engine/core/abstractagentset'], (AbstractAgentSet) ->
 
   class TurtleSet extends AbstractAgentSet
 
-    # [T <: Turtle] @ (Array[T]) => TurtleSet
+    # [T <: Turtle] @ (Array[T], String) => TurtleSet
     constructor: (@_agents, @_breedName = "TURTLES") ->
       super(@_agents)
 
