@@ -15,7 +15,7 @@ define(['shim/lodash'], (_) ->
         else
           "(command task)"
       else
-        "" + x #@# `toString`
+        String(x)
 
   Dump
 
