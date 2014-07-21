@@ -1,5 +1,10 @@
 import scala.util.Try
 
+// If you get an error like this: 'java.io.IOException: Cannot run program "npm": error=2, No such file or directory',
+// install NPM onto your path (`apt install node npm` for Linux users), and then install the Grunt command line tools
+// (`sudo npm install -g grunt-cli`).  Ensure that NodeJS is runnable by typing `node`, or Grunt will fail.  If Node
+// Node isn't there, try something like `sudo ln -s /usr/bin/nodejs /usr/local/bin/node` and then try again. --JAB (7/21/14)
+
 lazy val npm = inputKey[Unit]("Runs NPM commands from within SBT")
 
 npm := {
