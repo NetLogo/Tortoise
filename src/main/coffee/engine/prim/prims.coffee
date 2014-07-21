@@ -433,7 +433,7 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
         else if x instanceof PatchSet
           x.toArray()
         else if x instanceof TurtleSet
-          _(x.toArray()).map((t) -> t.getPatchHere()).value()
+          _(x.iterator().toArray()).map((t) -> t.getPatchHere()).value()
         else
           throw new Exception.NetLogoException("`breed-on` unsupported for class '#{typeof(x)}'")
 
@@ -443,7 +443,7 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
     # (PatchSet|TurtleSet|Patch|Turtle) => TurtleSet
     turtlesOn: (agentsOrAgent) ->
       if agentsOrAgent instanceof AbstractAgentSet
-        turtles = _(agentsOrAgent.toArray()).map((agent) -> agent.turtlesHere().toArray()).flatten().value()
+        turtles = _(agentsOrAgent.iterator().toArray()).map((agent) -> agent.turtlesHere().toArray()).flatten().value()
         new TurtleSet(turtles)
       else
         agentsOrAgent.turtlesHere()
@@ -480,7 +480,7 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
     oneOf: (agentsOrList) ->
       arr =
         if agentsOrList instanceof AbstractAgentSet #@# Stop this nonsense.  This code gives me such anxiety...
-          agentsOrList.toArray()
+          agentsOrList.iterator().toArray()
         else
           agentsOrList
       if arr.length is 0
@@ -492,7 +492,7 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
     nOf: (resultSize, agentsOrList) ->
       if not (agentsOrList instanceof AbstractAgentSet) #@# How does this even make sense?
         throw new Exception.NetLogoException("n-of not implemented on lists yet")
-      items = agentsOrList.toArray()
+      items = agentsOrList.iterator().toArray()
       agentsOrList.copyWithNewAgents( #@# Oh, FFS
         switch resultSize
           when 0

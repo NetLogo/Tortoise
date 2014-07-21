@@ -1,9 +1,10 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-#@# We won't need to call `toArray` each time in our own functions when this learns how to iterate over dead agents...
 # Never instantiate this class directly --JAB (5/7/14)
-define(['engine/core/nobody', 'shim/random', 'util/exception', 'util/iterator', 'util/seq', 'util/shufflerator']
-    ,  ( Nobody,               Random,        Exception,        Iterator,        Seq,        Shufflerator) ->
+define(['engine/core/nobody', 'shim/random', 'util/abstractmethoderror', 'util/exception', 'util/iterator'
+      , 'util/seq', 'util/shufflerator']
+    ,  ( Nobody,               Random,        abstractMethod,             Exception,        Iterator
+      ,  Seq,        Shufflerator) ->
 
   class AbstractAgentSet extends Seq
 
@@ -34,9 +35,9 @@ define(['engine/core/nobody', 'shim/random', 'util/exception', 'util/iterator', 
 
       iter =
         if shouldShuffle
-          new Shufflerator(@toArray())
+          @shufflerator()
         else
-          new Iterator(@toArray())
+          @iterator()
 
       iter.forEach(@_selfManager.askAgent(f))
 
@@ -47,7 +48,11 @@ define(['engine/core/nobody', 'shim/random', 'util/exception', 'util/iterator', 
 
     # [Result] @ (() => Result) => Array[Result]
     projectionBy: (f) ->
-      new Shufflerator(@toArray()).map(@_selfManager.askAgent(f))
+      @shufflerator().map(@_selfManager.askAgent(f))
+
+    # () => Iterator
+    iterator: ->
+      abstractMethod('AbstractAgentSet.iterator')
 
     # (() => Double) => Agent
     maxOneOf: (f) ->
@@ -59,8 +64,11 @@ define(['engine/core/nobody', 'shim/random', 'util/exception', 'util/iterator', 
 
     # () => AbstractAgentSet[T]
     shuffled: ->
-      result = new Shufflerator(@toArray()).toArray()
-      @copyWithNewAgents(result)
+      @copyWithNewAgents(@shufflerator().toArray())
+
+    # () => Shufflerator[T]
+    shufflerator: ->
+      new Shufflerator(@toArray())
 
     # () => Array[T]
     sort: ->
@@ -68,6 +76,11 @@ define(['engine/core/nobody', 'shim/random', 'util/exception', 'util/iterator', 
         @toArray()
       else
         @toArray().sort((x, y) -> x.compare(y).toInt)
+
+    # () => Array[T]
+    toArray: ->
+      @_items = @iterator().toArray() # Prune out dead agents --JAB (7/21/14)
+      @_items[..]
 
     # (Array[T]) => AbstractAgentSet[T]
     copyWithNewAgents: (agents) ->
