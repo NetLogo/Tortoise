@@ -1,9 +1,11 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['engine/updater', 'engine/core/breedmanager', 'engine/core/world', 'engine/core/structure/selfmanager'
-      , 'engine/prim/layoutmanager', 'engine/prim/linkprims', 'engine/prim/prims', 'util/timer']
-     , ( Updater,          BreedManager,               World,               SelfManager
-      ,  LayoutManager,               LinkPrims,               Prims,               Timer) ->
+define(['engine/dump', 'engine/updater', 'engine/core/breedmanager', 'engine/core/world'
+      , 'engine/core/structure/selfmanager', 'engine/prim/layoutmanager', 'engine/prim/linkprims', 'engine/prim/prims'
+      , 'util/timer']
+     , ( Dump,          Updater,          BreedManager,               World
+      ,  SelfManager,                         LayoutManager,               LinkPrims,               Prims
+      ,  Timer) ->
 
   (breedObjs) -> () -> # World args; see constructor for `World` --JAB (4/17/14)
 
@@ -17,7 +19,7 @@ define(['engine/updater', 'engine/core/breedmanager', 'engine/core/world', 'engi
     world         = new World(selfManager, updater, breedManager, worldArgs...)
     layoutManager = new LayoutManager(world)
     linkPrims     = new LinkPrims(world)
-    prims         = new Prims(world)
+    prims         = new Prims(world, Dump)
 
     {
       selfManager   : selfManager
