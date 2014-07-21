@@ -25,12 +25,12 @@ class RuntimeInit(program: Program, model: Model) {
        |
        |var Call           = require('util/call');
        |var ColorModel     = require('util/colormodel');
-       |var Dump           = require('util/dump');
        |var Exception      = require('util/exception');
        |var Trig           = require('util/trig');
        |var Type           = require('util/typechecker');
        |var notImplemented = require('util/notimplemented');
        |
+       |var Dump      = require('engine/dump');
        |var Link      = require('engine/core/link');
        |var LinkSet   = require('engine/core/linkset');
        |var Nobody    = require('engine/core/nobody');

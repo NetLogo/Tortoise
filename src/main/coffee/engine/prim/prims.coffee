@@ -2,12 +2,12 @@
 
 define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody', 'engine/core/patch'
       , 'engine/core/patchset', 'engine/core/turtle', 'engine/core/turtleset', 'shim/lodash', 'shim/printer'
-      , 'shim/random', 'shim/strictmath', 'util/comparator', 'util/dump', 'util/exception', 'util/iterator'
-      , 'util/shufflerator', 'util/typechecker']
+      , 'shim/random', 'shim/strictmath', 'util/comparator', 'util/exception', 'util/iterator', 'util/shufflerator'
+      , 'util/typechecker']
      , ( AbstractAgentSet,               Link,               Nobody,               Patch
       ,  PatchSet,               Turtle,               TurtleSet,               _,             Printer
-      ,  Random,        StrictMath,        Comparator,        Dump,        Exception,        Iterator
-      ,  Shufflerator,        Type) ->
+      ,  Random,        StrictMath,        Comparator,        Exception,        Iterator,        Shufflerator
+      ,  Type) ->
 
   class Prims
 
@@ -16,7 +16,7 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
     _getSelf: undefined # () => Agent
 
     # (World) => Prims
-    constructor: (@_world) ->
+    constructor: (@_world, @_Dumper) ->
       @_getSelf = @_world.selfManager.self
 
     # (Number) => Unit
@@ -288,7 +288,7 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
 
     # (Any) => Unit
     outputPrint: (x) ->
-      Printer(Dump(x))
+      Printer(@_Dumper(x))
       return
 
     # [T <: (Array[T]|Patch|AbstractAgentSet[T])] @ (T*) => PatchSet
