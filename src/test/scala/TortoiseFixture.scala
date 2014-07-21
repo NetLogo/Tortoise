@@ -54,12 +54,8 @@ class TestReporters extends lang.TestReporters with TortoiseFinder {
 class TestCommands extends lang.TestCommands with TortoiseFinder {
   override val freebies = Map[String, String](
     // should be handled in rewrite
-    "Agentsets::AgentSetEquality"      -> "Dead agents in agentsets are handled incorrectly",
-    "Agentsets::LinkAgentsetDeadLinks" -> "Dead agents in agentsets are handled incorrectly",
-    "Death::DeadLinks1"                -> "Dead agents in agentsets are handled incorrectly",
-    "Death::DeadTurtles10"             -> "Dead agents in agentsets are handled incorrectly",
-    "Death::DeadTurtles9"              -> "Dead agents in agentsets are handled incorrectly",
-    "OneOf::OneOfDyingTurtles"         -> "Dead agents in agentsets are handled incorrectly",
+    "Death::DeadLinks1"    -> "Links don't know how to play dead",
+    "Death::DeadTurtles10" -> "Turtles don't know how to play dead",
     "Interaction::Interaction3b1"                                             -> "correct answer requires empty init block optimization",
     "Interaction::Interaction3b2"                                             -> "correct answer requires empty init block optimization",
     "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksFrom" -> "correct answer requires empty init block optimization",

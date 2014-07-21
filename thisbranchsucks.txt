@@ -3,7 +3,6 @@ Things that are lousy about this branch:
 Mid:
 -`Iterator`/`Shufflerator` rethinking
 --JVM `Shufflerator` should be changed so that it doesn't prepoll the iteration
---There should be an `AgentIterator` or something, so we can emulate JVM NetLogo's `DeadSkippingIterator`.  The lack of this is the source of numerous tests being classified as freebies.
 
 Low:
 -What if we coalesced serialization updates like we coalesce view updates?  How about `collectUpdates: -> unsuspend(); value = oldCollectUpdates(); suspend(); value`, and `updated`, while suspended, just creates a map of `AgentType => ID => { Agent, Set[StaleVarNames] }`?  I think this could both solve the problem of non-optimal performance from not having fine control over when updates are created, and also the problem of it being unnecessarily-complicated/-difficult/borderline-impossible to manage updates optimally and correctly when sprinkling them through the code.

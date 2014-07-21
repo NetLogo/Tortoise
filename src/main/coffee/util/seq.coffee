@@ -2,6 +2,7 @@
 
 define(['shim/lodash'], (_) ->
 
+  # If you want at the items, use `toArray`!  NO ONE BUT `toArray` SHOULD TOUCH `_items`! --JAB (7/21/14)
   class Seq
 
     # [T] @ (Array[T]) => Seq[T]
@@ -9,7 +10,7 @@ define(['shim/lodash'], (_) ->
 
     # () => Number
     size: ->
-      @_items.length
+      @toArray().length
 
     # () => Number
     length: ->
@@ -54,7 +55,7 @@ define(['shim/lodash'], (_) ->
 
     # () => String
     toString: ->
-      "Seq(#{@_items.toString()})"
+      "Seq(#{@toArray().toString()})"
 
     # (Array[T], Seq[T]) => Seq[T]
     _generateFrom: (newItems, oldSeq) ->

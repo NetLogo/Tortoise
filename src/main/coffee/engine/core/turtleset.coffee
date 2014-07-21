@@ -1,6 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['engine/core/abstractagentset'], (AbstractAgentSet) ->
+define(['engine/core/abstractagentset', 'engine/core/structure/deadskippingiterator']
+     , ( AbstractAgentSet,               DeadSkippingIterator) ->
 
   class TurtleSet extends AbstractAgentSet
 
@@ -11,6 +12,10 @@ define(['engine/core/abstractagentset'], (AbstractAgentSet) ->
     # () => String
     getBreedName: ->
       @_breedName
+
+    # () => Iterator
+    iterator: ->
+      new DeadSkippingIterator(@_agents)
 
     # () => String
     toString: ->
