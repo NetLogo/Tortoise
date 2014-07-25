@@ -46,14 +46,16 @@ define(['shim/random', 'util/iterator'], (Random, Iterator) ->
       result
 
     ###
-      Note to self: You see this.  You hate this.  You want this to die.  However, it's not that simple.
-      Yes, it's true; this is a translation of the shufflerator from 'headless'.  Yes, that shufflerator
-      is insane like this and needlessly pre-iterates the agentset.  It's all true.  But changing this
-      to be sane isn't easy.  We need to keep in sync with JVM NetLogo's RNG.  If we don't pre-poll
-      the RNG, we get out of sync.  If we _only_ prepoll, we get wrong results, since the random number
-      is based on the rest of what `_fetch` is doing with `_i`.  Therefore, we _must_ pre-fetch.
-
-      This isn't a battle that you can't win.  Lament it and move on.  --JAB (5/27/14)
+      I dislike this.  The fact that the items are prepolled annoys me.  But there are two problems with trying to "fix"
+      that. First, fixing it involves changing JVM NetLogo/Headless.  To me, that requires a disproportionate amount of
+      effort to do, relative to how likely--that is, not very likely--that this code is to be heavily worked on in the
+      future.  The second problem is that it's not apparent to me how to you can make this code substantially cleaner
+      without significantly hurting performance.  The very idea of a structure that statefully iterates a collection in
+      a random order is difficult to put into clear computational terms.  When it needs to be done _efficiently_, that
+      becomes even more of a problem.  As far as I can tell, the only efficient way to do it is like how we're doing it
+      (one variable tracking the current index/offset, and an array where consumed items are thrown into the front).
+      Whatever.  The whole point is that this code isn't really worth worrying myself over, since it's pretty stable.
+      --JAB (7/25/14)
     ###
     # () => Unit
     _fetch: ->
