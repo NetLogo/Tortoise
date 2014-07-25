@@ -2,7 +2,6 @@
 
 define(['engine/core/topology/topology', 'shim/lodash', 'shim/strictmath'], (Topology, _, StrictMath) ->
 
-  #@# Redundancy with other topologies...
   class Torus extends Topology
 
     _wrapInX: true # Boolean
@@ -21,7 +20,7 @@ define(['engine/core/topology/topology', 'shim/lodash', 'shim/strictmath'], (Top
     diffuse: (varName, coefficient) ->
       scratch = _(0).range(@width).map(-> []).value()
 
-      @_getPatches().forEach((patch) => #@# Oh, mutation, thou art a cruel, deceptive bitch.  Thou cannst maketh two-eth separate-eth loops over the same thing-eth seem sane
+      @_getPatches().forEach((patch) =>
         scratch[patch.pxcor - @minPxcor][patch.pycor - @minPycor] = patch.getVariable(varName)
         return
       )
@@ -122,14 +121,14 @@ define(['engine/core/topology/topology', 'shim/lodash', 'shim/strictmath'], (Top
         @_getPatchAt(pxcor + 1, pycor + 1)
 
     # (Number, Number) => Number
-    _shortestX: (x1, x2) -> #@# Seems improvable
+    _shortestX: (x1, x2) ->
       if StrictMath.abs(x1 - x2) > @width / 2
         (@width - StrictMath.abs(x1 - x2)) * (if x2 > x1 then -1 else 1)
       else
         Math.abs(x1 - x2) * (if x1 > x2 then -1 else 1)
 
     # (Number, Number) => Number
-    _shortestY: (y1, y2) -> #@# Seems improvable
+    _shortestY: (y1, y2) ->
       if StrictMath.abs(y1 - y2) > @height / 2
         (@height - StrictMath.abs(y1 - y2)) * (if y2 > y1 then -1 else 1)
       else

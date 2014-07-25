@@ -11,7 +11,6 @@ define(['shim/lodash', 'shim/strictmath', 'util/abstractmethoderror']
     height: undefined # Number
     width:  undefined # Number
 
-    #@# Room for improvement
     # (Number, Number, Number, Number, () => PatchSet, (Number, Number) => Patch) => Topology
     constructor: (@minPxcor, @maxPxcor, @minPycor, @maxPycor, @_getPatches, @_getPatchAt) ->
       @height = 1 + @maxPycor - @minPycor
@@ -26,8 +25,10 @@ define(['shim/lodash', 'shim/strictmath', 'util/abstractmethoderror']
       _(@_getNeighbors4(pxcor, pycor)).filter((patch) -> patch isnt false).value()
 
     # (Number, Number, Number, Number) => Number
-    distanceXY: (x1, y1, x2, y2) -> #@# Long line
-      StrictMath.sqrt(StrictMath.pow(@_shortestX(x1, x2), 2) + StrictMath.pow(@_shortestY(y1, y2), 2))
+    distanceXY: (x1, y1, x2, y2) ->
+      a2 = StrictMath.pow(@_shortestX(x1, x2), 2)
+      b2 = StrictMath.pow(@_shortestY(y1, y2), 2)
+      StrictMath.sqrt(a2 + b2)
 
     # (Number, Number, Turtle|Patch) => Number
     distance: (x1, y1, agent) ->
@@ -38,16 +39,21 @@ define(['shim/lodash', 'shim/strictmath', 'util/abstractmethoderror']
     towards: (x1, y1, x2, y2) ->
       dx = @_shortestX(x1, x2)
       dy = @_shortestY(y1, y2)
-      if dx is 0 #@# Code of anger
+      if dx is 0
         if dy >= 0 then 0 else 180
       else if dy is 0
         if dx >= 0 then 90 else 270
       else
-        (270 + StrictMath.toDegrees (Math.PI + StrictMath.atan2(-dy, dx))) % 360 #@# Long line
+        (270 + StrictMath.toDegrees(Math.PI + StrictMath.atan2(-dy, dx))) % 360
 
     # (Number, Number) => Number
-    midpointx: (x1, x2) -> @_wrap((x1 + (x1 + @_shortestX(x1, x2))) / 2, @minPxcor - 0.5, @maxPxcor + 0.5) #@# What does this mean?  I don't know!
-    midpointy: (y1, y2) -> @_wrap((y1 + (y1 + @_shortestY(y1, y2))) / 2, @minPycor - 0.5, @maxPycor + 0.5) #@# What does this mean?  I don't know!
+    midpointx: (x1, x2) ->
+      pos = (x1 + (x1 + @_shortestX(x1, x2))) / 2
+      @_wrap(pos, @minPxcor - 0.5, @maxPxcor + 0.5)
+
+    midpointy: (y1, y2) ->
+      pos = (y1 + (y1 + @_shortestY(y1, y2))) / 2
+      @_wrap(pos, @minPycor - 0.5, @maxPycor + 0.5)
 
     # (Number, Number, AbstractAgents[Agent], Number)
     inRadius: (x, y, agents, radius) ->

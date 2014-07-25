@@ -207,11 +207,6 @@ define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine
 
     # () => Unit
     clearTurtles: ->
-      # We iterate through a copy of the array since it will be modified during
-      # iteration.
-      # A more efficient (but less readable) way of doing this is to iterate
-      # backwards through the array.
-      #@# I don't know what this is blathering about, but if it needs this comment, it can probably be written better
       @turtles().forEach((turtle) ->
         try
           turtle.die()
@@ -289,10 +284,9 @@ define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine
     createUndirectedLink: (source, other) ->
       @_createLink(false, source, other)
 
-    #@# Should be able to call `map` directly, without juggling around with Lodash
     # (Turtle, TurtleSet) => LinkSet
     createUndirectedLinks: (source, others) -> #@# Clarity
-      links = _(others.toArray()).map((turtle) => @_createLink(false, source, turtle)).filter((other) -> other isnt Nobody).value()
+      links = others.toArray().map((turtle) => @_createLink(false, source, turtle)).filter((other) -> other isnt Nobody)
       new LinkSet(links)
 
     # (Number, Number) => Agent
@@ -331,15 +325,15 @@ define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine
     #@# The return of `Nobody` followed by clients `filter`ing against it screams "flatMap!" --JAB (2/7/14)
     ###
     # (Boolean, Turtle, Turtle) => Link
-    _createLink: (directed, from, to) ->
+    _createLink: (isDirected, from, to) ->
       [end1, end2] =
-        if from.id < to.id or directed
+        if from.id < to.id or isDirected
           [from, to]
         else
           [to, from]
 
       if @getLink(end1.id, end2.id) is Nobody
-        link = new Link(@_linkIDManager.next(), directed, end1, end2, this, @_updater.updated, @_updater.registerDeadLink)
+        link = new Link(@_linkIDManager.next(), isDirected, end1, end2, this, @_updater.updated, @_updater.registerDeadLink)
         @_updater.updated(link)(Builtins.linkBuiltins...)
         @_updater.updated(link)(Builtins.linkExtras...) #@# See, this update nonsense is awful.
         @_links.insert(link)

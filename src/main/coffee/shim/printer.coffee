@@ -7,6 +7,6 @@ define(->
     println
   else if print? # SpiderMonkey
     print
-  else # Nashorn #@# Redundant
-    java.lang.System.out.println
+  else
+    () -> undefined
 )

@@ -16,9 +16,8 @@ define(['engine/core/abstractagentset', 'engine/core/structure/builtins', 'engin
     xcor: -> #@# WHAT?! x2
     ycor: ->
 
-    #@# "directed" is a bad name
     # (Number, Boolean, Turtle, Turtle, World, (Updatable) => (String*) => Unit, (Number) => Unit, Breed, Number, Boolean, String, Number, String, Number, String) => Link
-    constructor: (@id, @directed, @end1, @end2, @world, genUpdate, @_registerDeath, breed = @world.breedManager.links()
+    constructor: (@id, @isDirected, @end1, @end2, @world, genUpdate, @_registerDeath, breed = @world.breedManager.links()
                 , @_color = 5, @_isHidden = false, @_label = "", @_labelcolor = 9.9, @_shape = "default"
                 , @_thickness = 0, @_tiemode = "none") ->
       @_updateVarsByName = genUpdate(this)

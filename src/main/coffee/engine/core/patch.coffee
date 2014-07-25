@@ -39,12 +39,12 @@ define(['engine/core/nobody', 'engine/core/turtle', 'engine/core/turtleset', 'en
       return
 
     # (Turtle) => Unit
-    leave: (turtle) ->
-      @turtles.splice(@turtles.indexOf(turtle, 0), 1) #@# These functions are named strangely (`patch.arrive(turtle0)` doesn't make a lot of sense to me as an English-speaker)
+    untrackTurtle: (turtle) ->
+      @turtles.splice(@turtles.indexOf(turtle, 0), 1)
       return
 
     # (Turtle) => Unit
-    arrive: (turtle) ->
+    trackTurtle: (turtle) ->
       @turtles.push(turtle)
       return
 
@@ -107,7 +107,7 @@ define(['engine/core/nobody', 'engine/core/turtle', 'engine/core/turtleset', 'en
       try
         newX = @world.topology.wrapX(@pxcor + dx)
         newY = @world.topology.wrapY(@pycor + dy)
-        return @world.getPatchAt(newX, newY) #@# Unnecessary `return`
+        @world.getPatchAt(newX, newY)
       catch error
         if error instanceof Exception.TopologyInterrupt then Nobody else throw error
 

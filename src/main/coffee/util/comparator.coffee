@@ -5,8 +5,8 @@ define(-> {
   NOT_EQUALS: {}
 
   EQUALS:       { toInt: 0 }
-  GREATER_THAN: { toInt: 1 }  #@# Should inherit from `NOT_EQUALS`
-  LESS_THAN:    { toInt: -1 } #@# Should inherit from `NOT_EQUALS`
+  GREATER_THAN: { toInt: 1 }
+  LESS_THAN:    { toInt: -1 }
 
   # (Number, Number) => { toInt: Number }
   numericCompare: (x, y) ->

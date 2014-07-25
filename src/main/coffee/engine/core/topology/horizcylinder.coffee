@@ -8,7 +8,7 @@ define(['engine/core/topology/topology', 'shim/strictmath', 'util/exception'], (
     _wrapInY: true  # Boolean
 
     # (Number) => Number
-    wrapX: (pos) -> #@# Couldn't `Topology` have a `wrapXRestrictive` and `wrapXLenient` it could share between topologies, or something?
+    wrapX: (pos) ->
       minX = @minPxcor - 0.5
       maxX = @maxPxcor + 0.5
       if minX < pos < maxX
@@ -79,7 +79,7 @@ define(['engine/core/topology/topology', 'shim/strictmath', 'util/exception'], (
         @_getPatchAt(pxcor + 1, pycor + 1)
 
     # (String, Number) => Unit
-    diffuse: (varName, coefficient) -> #@# Dat guacamole
+    diffuse: (varName, coefficient) ->
       yy = @height
       xx = @width
       scratch =
@@ -125,10 +125,10 @@ define(['engine/core/topology/topology', 'shim/strictmath', 'util/exception'], (
 
     # (Number, Number) => Number
     _shortestX: (x1, x2) ->
-      Math.abs(x1 - x2) * (if x1 > x2 then -1 else 1) #@# Weird
+      Math.abs(x1 - x2) * (if x1 > x2 then -1 else 1)
 
     # (Number, Number) => Number
-    _shortestY: (y1, y2) -> #@# Weird
+    _shortestY: (y1, y2) ->
       if StrictMath.abs(y1 - y2) > (1 + @maxPycor - @minPycor) / 2
         (@height - Math.abs(y1 - y2)) * (if y2 > y1 then -1 else 1)
       else
