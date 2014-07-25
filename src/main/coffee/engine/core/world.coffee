@@ -35,8 +35,8 @@ define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine
                 , wrappingAllowedInX, wrappingAllowedInY, turtleShapeList, linkShapeList) ->
       @_updater.collectUpdates()
       @_updater.registerWorldState({
-        worldWidth: Math.abs(minPxcor - maxPxcor) + 1, #@# ...
-        worldHeight: Math.abs(minPycor - maxPycor) + 1,
+        worldWidth: maxPxcor - minPxcor + 1,
+        worldHeight: maxPycor - minPycor + 1,
         minPxcor: minPxcor,
         minPycor: minPycor,
         maxPxcor: maxPxcor,
