@@ -35,7 +35,7 @@ define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine
                 , wrappingAllowedInX, wrappingAllowedInY, turtleShapeList, linkShapeList) ->
       @_updater.collectUpdates()
       @_updater.registerWorldState({
-        worldWidth: Math.abs(minPxcor - maxPxcor) + 1,
+        worldWidth: Math.abs(minPxcor - maxPxcor) + 1, #@# ...
         worldHeight: Math.abs(minPycor - maxPycor) + 1,
         minPxcor: minPxcor,
         minPycor: minPycor,
@@ -335,7 +335,7 @@ define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine
       if @getLink(end1.id, end2.id) is Nobody
         link = new Link(@_linkIDManager.next(), isDirected, end1, end2, this, @_updater.updated, @_updater.registerDeadLink)
         @_updater.updated(link)(Builtins.linkBuiltins...)
-        @_updater.updated(link)(Builtins.linkExtras...) #@# See, this update nonsense is awful.
+        @_updater.updated(link)(Builtins.linkExtras...)
         @_links.insert(link)
         link
       else

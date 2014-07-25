@@ -17,7 +17,7 @@ define(['shim/lodash', 'shim/strictmath', 'util/abstractmethoderror']
       @width  = 1 + @maxPxcor - @minPxcor
 
     # (Number, Number) => Array[Patch]
-    getNeighbors: (pxcor, pycor) -> #@# This should memoize
+    getNeighbors: (pxcor, pycor) ->
       _(@_getNeighbors(pxcor, pycor)).filter((patch) -> patch isnt false).value() #@# This function shouldn't exist; why give patches that are `false`?
 
     # (Number, Number) => Array[Patch]

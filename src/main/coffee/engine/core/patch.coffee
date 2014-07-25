@@ -96,12 +96,10 @@ define(['engine/core/nobody', 'engine/core/turtle', 'engine/core/turtleset', 'en
       turtles = _(@turtles).filter((turtle) -> turtle.getBreedName() is breedName).value()
       new TurtleSet(turtles, breedName)
 
-    #@# Seems weird to me that you could ask a patch about the turtles/patch at coordinates other than its own...
     # (Number, Number) => TurtleSet
     turtlesAt: (dx, dy) ->
       @patchAt(dx, dy).turtlesHere()
 
-    #@# Should be able to get rid of this and delegate to the `World`...
     # (Number, Number) => Agent
     patchAt: (dx, dy) ->
       try
