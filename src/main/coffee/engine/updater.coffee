@@ -1,8 +1,5 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-#@# Make an `Update` class that always has turtles, links, and patches
-#@# Vassal: { id: ID, companion: { trackedKeys: Set }, registerUpdate: Array[String -> Value] }
-#@# Overlord: { updates: Array[Update], flushUpdates: Unit, collectUpdates: Array[Update] }
 define(['engine/core/link', 'engine/core/observer', 'engine/core/patch', 'engine/core/turtle', 'engine/core/world'
       , 'util/exception']
      , ( Link,               Observer,               Patch,               Turtle,               World
@@ -10,33 +7,33 @@ define(['engine/core/link', 'engine/core/observer', 'engine/core/patch', 'engine
 
   ignored = ["", ""]
 
+  # type ID          = String
+  # type Key         = String
+  # type Value       = Any
+  # type UpdateEntry = Object[Key, Value]
+  # type UpdateSet   = Object[ID, UpdateEntry]
+  # type _US         = UpdateSet
+
+  # (_US, _US, _US, _US, _US) => Update
+  class Update
+    constructor: (@turtles = {}, @patches = {}, @links = {}, @observer = {}, @world = {}) ->
+
   class Updater
 
     # type Updatable   = Turtle|Patch|Link|World|Observer
     # type EngineKey   = String
-    # type ID          = String
-    # type Key         = String
-    # type Value       = Any
-    # type UpdateEntry = Object[Key, Value]
-    # type UpdateSet   = Object[ID, UpdateEntry]
-    # type _US         = UpdateSet
-    # type Update      = { turtles: _US, patches: _US, links: _US, observer: _US, world: _US }
 
-    @_updates = undefined # Array[Update]
+    _updates: undefined # Array[Update]
 
     # () => Updater
     constructor: ->
-      @_updates = [{turtles: {}, patches: {}, links: {}, observer: {}, world: {}}]
+      @_flushUpdates()
 
     # () => Array[Update]
     collectUpdates: ->
-      result =
-        if @_updates.length is 0 #@# `isEmpty`?
-          [{turtles: {}, patches: {}}]
-        else
-          @_updates
-      @_updates = [{turtles: {}, patches: {}, links: {}, observer: {}, world: {}}]
-      result
+      temp = @_updates
+      @_flushUpdates()
+      temp
 
     # (Number) => Unit
     registerDeadLink: (id) =>
@@ -168,6 +165,11 @@ define(['engine/core/link', 'engine/core/observer', 'engine/core/patch', 'engine
     # (String, Number, UpdateEntry) => Unit
     _update: (agentType, id, newAgent) ->
       @_updates[0][agentType][id] = newAgent
+      return
+
+    # () => Unit
+    _flushUpdates: ->
+      @_updates = [new Update()]
       return
 
 )
