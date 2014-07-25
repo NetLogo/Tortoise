@@ -1,6 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['shim/lodash', 'util/exception'], (_, Exception) -> {
+define(['shim/lodash', 'util/exception', 'util/typechecker'], (_, Exception, Type) -> {
 
   # (Function) => Function
   commandTask: (fn) ->
@@ -14,11 +14,11 @@ define(['shim/lodash', 'util/exception'], (_, Exception) -> {
 
   # (Function) => Boolean
   isReporterTask: (x) ->
-    typeof(x) is "function" and x.isReporter
+    Type(x).isFunction() and x.isReporter
 
   # (Function) => Boolean
-  isCommandTask: (x) -> #@# Should use `Type`
-    typeof(x) is "function" and not x.isReporter
+  isCommandTask: (x) ->
+    Type(x).isFunction() and not x.isReporter
 
   # [Result] @ (Product => Result, Array[Any]*) => Array[Result]
   map: (fn, lists...) ->

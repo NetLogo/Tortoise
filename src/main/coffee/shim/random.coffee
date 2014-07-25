@@ -10,10 +10,10 @@ define(->
   if Random?
     Random
   else
-    obj = {} #@# Just declare the object literal...
-    obj.nextInt = (limit) -> Math.floor(Math.random() * limit)
-    obj.nextLong = obj.nextInt
-    obj.nextDouble = -> Math.random()
-    obj.setSeed = (seed) -> return # No-op!
-    obj
+    {
+      nextInt:    (limit) -> Math.floor(Math.random() * limit)
+      nextLong:   (limit) -> @nextInt(limit)
+      nextDouble:         -> Math.random()
+      setSeed:    (seed)  -> return # No-op!
+    }
 )

@@ -38,7 +38,7 @@ define(['engine/core/topology/topology', 'util/exception'], (Topology, Exception
     _getPatchNorthEast: (pxcor, pycor) -> (pycor isnt @maxPycor) and (pxcor isnt @maxPxcor) and @_getPatchAt(pxcor + 1, pycor + 1)
 
     # (String, Number) => Unit
-    diffuse: (varName, coefficient) -> #@# Guacy moley
+    diffuse: (varName, coefficient) ->
       yy = @height
       xx = @width
       scratch =
@@ -119,7 +119,6 @@ define(['engine/core/topology/topology', 'util/exception'], (Topology, Exception
 
       return
 
-    #@# Weird x2
     # (Number, Number) => Number
     _shortestX: (x1, x2) ->
       Math.abs(x1 - x2) * (if x1 > x2 then -1 else 1)

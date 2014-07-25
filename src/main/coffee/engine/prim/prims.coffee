@@ -72,13 +72,18 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
     patch: (x, y) ->
       @_world.getPatchAt(x, y)
 
+    #@# This sort of thing should live on topologies and get called directly
     # () => Number
     randomXcor: ->
-      @_world.topology.minPxcor - 0.5 + Random.nextDouble() * (@_world.topology.maxPxcor - @_world.topology.minPxcor + 1)
+      @_randomCor(@_world.topology.minPxcor, @_world.topology.maxPxcor)
 
     # () => Number
-    randomYcor: -> #@# Redundancy!
-      @_world.topology.minPycor - 0.5 + Random.nextDouble() * (@_world.topology.maxPycor - @_world.topology.minPycor + 1)
+    randomYcor: ->
+      @_randomCor(@_world.topology.minPycor, @_world.topology.maxPycor)
+
+    # (Number, Number) => Number
+    _randomCor: (min, max) ->
+      min - 0.5 + Random.nextDouble() * (max - min + 1)
 
     # (Number, Number) => Number
     shadeOf: (c1, c2) ->
@@ -112,7 +117,7 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
     lt: (a, b) ->
       if (Type(a).isString() and Type(b).isString()) or (Type(a).isNumber() and Type(b).isNumber())
         a < b
-      else if typeof(a) is typeof(b) and a.compare? and b.compare? #@# Use a class
+      else if typeof(a) is typeof(b) and a.compare? and b.compare?
         a.compare(b) is Comparator.LESS_THAN
       else
         throw new Exception.NetLogoException("Invalid operands to `lt`")
@@ -121,7 +126,7 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
     gt: (a, b) ->
       if (Type(a).isString() and Type(b).isString()) or (Type(a).isNumber() and Type(b).isNumber())
         a > b
-      else if typeof(a) is typeof(b) and a.compare? and b.compare? #@# Use a class
+      else if typeof(a) is typeof(b) and a.compare? and b.compare?
         a.compare(b) is Comparator.GREATER_THAN
       else
         throw new Exception.NetLogoException("Invalid operands to `gt`")
@@ -194,10 +199,10 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
 
     # [Item] @ (Item, Array[Item]) => Array[Item]
     fput: (x, xs) ->
-      [x].concat(xs) #@# Lodash, son
+      [x].concat(xs)
 
     # [Item] @ (Item, Array[Item]) => Array[Item]
-    lput: (x, xs) -> #@# Lodash, son
+    lput: (x, xs) ->
       result = xs[..]
       result.push(x)
       result
@@ -248,7 +253,7 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
         Math.round(result) #@# Huh?
 
     # [T] @ (Array[T]|String) => Array[T]|String
-    reverse: (xs) -> #@# Lodash
+    reverse: (xs) ->
       if Type(xs).isArray()
         xs[..].reverse()
       else if typeof(xs) is "string"
@@ -381,7 +386,7 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
         pre + post
 
     # [Item, Container <: (Array[Item]|String)] @ (Number, Container, Item) => Container
-    replaceItem: (n, xs, x) -> #@# Lodash
+    replaceItem: (n, xs, x) ->
       if Type(xs).isArray()
         temp = xs[..]
         temp.splice(n, 1, x)
@@ -490,7 +495,7 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
 
     # [Item] @ (ListOrSet[Item]) => Array[Item]
     nOf: (resultSize, agentsOrList) ->
-      if not (agentsOrList instanceof AbstractAgentSet) #@# How does this even make sense?
+      if not (agentsOrList instanceof AbstractAgentSet)
         throw new Exception.NetLogoException("n-of not implemented on lists yet")
       items = agentsOrList.iterator().toArray()
       agentsOrList.copyWithNewAgents( #@# Oh, FFS

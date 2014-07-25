@@ -79,7 +79,7 @@ define(['engine/core/topology/topology', 'shim/strictmath', 'util/exception'], (
         @_getPatchAt(pxcor + 1, pycor + 1)
 
     # (String, Number) => Unit
-    diffuse: (varName, coefficient) -> #@# Holy guacamole!
+    diffuse: (varName, coefficient) ->
       yy = @height
       xx = @width
       scratch =
@@ -125,7 +125,7 @@ define(['engine/core/topology/topology', 'shim/strictmath', 'util/exception'], (
 
 
     # (Number, Number) => Number
-    _shortestX: (x1, x2) -> #@# Some lameness
+    _shortestX: (x1, x2) ->
       if StrictMath.abs(x1 - x2) > (1 + @maxPxcor - @minPxcor) / 2
         (@width - StrictMath.abs(x1 - x2)) * (if x2 > x1 then -1 else 1)
       else

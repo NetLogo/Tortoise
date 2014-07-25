@@ -26,7 +26,7 @@ define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtl
       @_links = []
       @_setBreed(breed)
 
-      @getPatchHere().arrive(this)
+      @getPatchHere().trackTurtle(this)
 
     # () => String
     getBreedName: ->
@@ -38,8 +38,8 @@ define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtl
       @xcor = @world.topology.wrapX(newX)
       @_updateVarsByName("xcor")
       if originPatch isnt @getPatchHere()
-        originPatch.leave(this)
-        @getPatchHere().arrive(this)
+        originPatch.untrackTurtle(this)
+        @getPatchHere().trackTurtle(this)
       @_refreshLinks()
       return
 
@@ -49,8 +49,8 @@ define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtl
       @ycor = @world.topology.wrapY(newY)
       @_updateVarsByName("ycor")
       if originPatch isnt @getPatchHere()
-        originPatch.leave(this)
-        @getPatchHere().arrive(this)
+        originPatch.untrackTurtle(this)
+        @getPatchHere().trackTurtle(this)
       @_refreshLinks()
       return
 
@@ -121,9 +121,9 @@ define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtl
     connectedLinks: (isDirected, isSource) ->
       filterFunc =
         if isDirected #@# Conditional is unnecessary, really
-          (link) => (link.directed and link.end1 is this and isSource) or (link.directed and link.end2 is this and not isSource)
+          (link) => (link.isDirected and link.end1 is this and isSource) or (link.isDirected and link.end2 is this and not isSource)
         else
-          (link) => (not link.directed and link.end1 is this) or (not link.directed and link.end2 is this)
+          (link) => (not link.isDirected and link.end1 is this) or (not link.isDirected and link.end2 is this)
       @world.links().filter(filterFunc)
 
     # (Boolean, Boolean) => TurtleSet
@@ -131,16 +131,16 @@ define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtl
       reductionFunc =
         if isDirected
           (acc, link) =>
-            if link.directed and link.end1 is this and isSource
+            if link.isDirected and link.end1 is this and isSource
               acc.push(link.end2)
-            else if link.directed and link.end2 is this and not isSource
+            else if link.isDirected and link.end2 is this and not isSource
               acc.push(link.end1)
             acc
         else
           (acc, link) =>
-            if not link.directed and link.end1 is this
+            if not link.isDirected and link.end1 is this
               acc.push(link.end2)
-            else if not link.directed and link.end2 is this
+            else if not link.isDirected and link.end2 is this
               acc.push(link.end1)
             acc
 
@@ -148,16 +148,16 @@ define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtl
       new TurtleSet(turtles)
 
     # (Boolean, Boolean, Turtle) => Boolean
-    isLinkNeighbor: (directed, isSource, other) -> #@# Varname, other WHAT?
-      @linkNeighbors(directed, isSource).filter((neighbor) -> neighbor is other).nonEmpty() #@# `_(derp).contains(other)` (Lodash)
+    isLinkNeighbor: (isDirected, isSource, otherTurtle) -> #@# Varname, other WHAT?
+      @linkNeighbors(isDirected, isSource).filter((neighbor) -> neighbor is otherTurtle).nonEmpty() #@# `_(derp).contains(other)` (Lodash)
 
     # (Boolean, Boolean, Turtle) => Link
     findLinkViaNeighbor: (isDirected, isSource, other) -> #@# Other WHAT?
       findFunc =
         if isDirected
-          (link) => (link.directed and link.end1 is this and link.end2 is other and isSource) or (link.directed and link.end1 is other and link.end2 is this and not isSource)
+          (link) => (link.isDirected and link.end1 is this and link.end2 is other and isSource) or (link.isDirected and link.end1 is other and link.end2 is this and not isSource)
         else if not isDirected and not @world.unbreededLinksAreDirected
-          (link) => (not link.directed and link.end1 is this and link.end2 is other) or (not link.directed and link.end2 is this and link.end1 is other)
+          (link) => (not link.isDirected and link.end1 is this and link.end2 is other) or (not link.isDirected and link.end2 is this and link.end1 is other)
         else
           throw new Exception.NetLogoException("LINKS is a directed breed.")
 
@@ -278,7 +278,7 @@ define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtl
           return
         )
         @id = -1
-        @getPatchHere().leave(this)
+        @getPatchHere().untrackTurtle(this)
       throw new Exception.DeathInterrupt("Call only from inside an askAgent block")
 
     # (String) => Any
@@ -374,8 +374,8 @@ define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtl
         linkTypes = [[true, true], [true, false], [false, false]]
         _(linkTypes).map(
           (typePair) =>
-            [directed, isSource] = typePair
-            @connectedLinks(directed, isSource).toArray()
+            [isDirected, isSource] = typePair
+            @connectedLinks(isDirected, isSource).toArray()
         ).flatten().forEach(
           (link) -> link.updateEndRelatedVars(); return
         )
