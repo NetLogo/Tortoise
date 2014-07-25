@@ -22,7 +22,7 @@ define(['engine/core/topology/topology', 'shim/strictmath', 'util/exception'], (
 
     # (Number, Number) => Patch|Boolean
     _getPatchNorth: (pxcor, pycor) ->
-      (pycor isnt @maxPycor) and @_getPatchAt(pxcor, pycor + 1) #@# This booleanism is really weird.  It's present across topologies.
+      (pycor isnt @maxPycor) and @_getPatchAt(pxcor, pycor + 1)
 
     # (Number, Number) => Patch|Boolean
     _getPatchSouth: (pxcor, pycor) ->

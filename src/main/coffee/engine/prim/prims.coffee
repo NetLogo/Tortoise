@@ -29,9 +29,9 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
       @_getSelf().fd(-n)
       return
 
-    # (Number) => Boolean
+    # (Number) => Unit
     jump: (n) ->
-      @_getSelf().jump(n)
+      @_getSelf().jumpIfAble(n)
 
     # (Number) => Unit
     right: (n) ->
@@ -86,8 +86,8 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
       min - 0.5 + Random.nextDouble() * (max - min + 1)
 
     # (Number, Number) => Number
-    shadeOf: (c1, c2) ->
-      Math.floor(c1 / 10) is Math.floor(c2 / 10) #@# Varnames
+    shadeOf: (color1, color2) ->
+      Math.floor(color1 / 10) is Math.floor(color2 / 10)
 
     # (String, Any) => Boolean
     isBreed: (breedName, x) ->
@@ -225,7 +225,7 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
 
     # (Number, Number) => Number
     mod: (a, b) ->
-      ((a % b) + b) % b #@# WTF?
+      ((a % b) + b) % b
 
     # (Array[Number]) => Number
     max: (xs) ->
@@ -250,7 +250,7 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
       if places > 0
         result
       else
-        Math.round(result) #@# Huh?
+        Math.round(result)
 
     # [T] @ (Array[T]|String) => Array[T]|String
     reverse: (xs) ->

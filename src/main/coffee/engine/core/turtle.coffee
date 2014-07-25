@@ -76,9 +76,9 @@ define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtl
       [@xcor, @ycor]
 
     # (Turtle|Patch) => Number
-    towards: (agent) -> #@# Unify, man!
+    towards: (agent) ->
       [x, y] = agent.getCoords()
-      @world.topology.towards(@xcor, @ycor, x, y)
+      @towardsXY(x, y)
 
     # (Number, Number) => Number
     towardsXY: (x, y) ->
@@ -148,7 +148,7 @@ define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtl
       new TurtleSet(turtles)
 
     # (Boolean, Boolean, Turtle) => Boolean
-    isLinkNeighbor: (isDirected, isSource, otherTurtle) -> #@# Varname, other WHAT?
+    isLinkNeighbor: (isDirected, isSource, otherTurtle) ->
       @linkNeighbors(isDirected, isSource).filter((neighbor) -> neighbor is otherTurtle).nonEmpty() #@# `_(derp).contains(other)` (Lodash)
 
     # (Boolean, Boolean, Turtle) => Link
@@ -206,23 +206,24 @@ define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtl
 
     # (Number) => Unit
     fd: (distance) ->
-      if distance > 0
-        while distance >= 1 and @jump(1) #@# Possible point of improvement
-          distance -= 1
-        @jump(distance)
-      else if distance < 0
-        while distance <= -1 and @jump(-1)
-          distance += 1
-        @jump(distance)
+      increment      = if distance > 0 then 1 else -1
+      jumpsRemaining = distance / increment
+      while jumpsRemaining-- >= 1 and @jumpIfAble(increment)
+        {}
+      @jumpIfAble(distance % increment)
       return
 
     # (Number) => Boolean
-    jump: (distance) ->
-      if @canMove(distance)
-        @_setXcor(@xcor + distance * Trig.sin(@_heading))
-        @_setYcor(@ycor + distance * Trig.cos(@_heading))
-        return true
-      return false #@# Orly?
+    jumpIfAble: (distance) ->
+      canMove = @canMove(distance)
+      if canMove then @_jump(distance)
+      canMove
+
+    # (Number) => Unit
+    _jump: (distance) ->
+      @_setXcor(@xcor + distance * @dx())
+      @_setYcor(@ycor + distance * @dy())
+      return
 
     # () => Number
     dx: ->

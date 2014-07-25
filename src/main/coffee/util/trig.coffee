@@ -3,12 +3,12 @@
 define(['shim/strictmath', 'util/exception'], (StrictMath, Exception) -> {
 
   # (Number) => Number
-  sin: (degrees) -> #@# Simplifify x4
-    @_squash(StrictMath.sin(StrictMath.toRadians(degrees)))
+  sin: (degrees) ->
+    @_squash(@unsquashedSin(degrees))
 
   # (Number) => Number
   cos: (degrees) ->
-    @_squash(StrictMath.cos(StrictMath.toRadians(degrees)))
+    @_squash(@unsquashedCos(degrees))
 
   # (Number) => Number
   unsquashedSin: (degrees) ->
@@ -27,7 +27,7 @@ define(['shim/strictmath', 'util/exception'], (StrictMath, Exception) -> {
     else if d2 is 0
       if d1 > 0 then 90 else 270
     else
-      (StrictMath.toDegrees(StrictMath.atan2(d1, d2)) + 360) % 360 #@# Lame style
+      (StrictMath.toDegrees(StrictMath.atan2(d1, d2)) + 360) % 360
 
   # (Number) => Number
   _squash: (x) ->

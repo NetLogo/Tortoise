@@ -15,7 +15,6 @@ define(['engine/core/topology/topology', 'shim/lodash', 'shim/strictmath'], (Top
     wrapY: (pos) ->
       @_wrap(pos, @minPycor - 0.5, @maxPycor + 0.5)
 
-    #@# Why is this `diffuse` so different from the others?
     # (String, Number) => Unit
     diffuse: (varName, coefficient) ->
       scratch = _(0).range(@width).map(-> []).value()
@@ -42,8 +41,6 @@ define(['engine/core/topology/topology', 'shim/lodash', 'shim/strictmath'], (Top
       return
 
 
-    #@# I think I tried to fix all this in the ScalaJS version.  Did I succeed?  (I doubt it)
-    #@# All of these `_getPatch*` things probably ought to memoize
     # (Number, Number) => Patch|Boolean
     _getPatchNorth: (pxcor, pycor) ->
       if pycor is @maxPycor
