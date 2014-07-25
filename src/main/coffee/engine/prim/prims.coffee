@@ -262,19 +262,18 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
         throw new Exception.NetLogoException("can only reverse lists and strings")
 
     # [T] @ (ListOrSet[T]) => ListOrSet[T]
-    sort: (xs) -> #@# Seems greatly improvable
+    sort: (xs) ->
       if Type(xs).isArray()
-        wrappedItems = _(xs)
-        if wrappedItems.isEmpty()
+        forAll       = (f) -> _.all(xs, f)
+        agentClasses = [Turtle, Patch, Link]
+        if _(xs).isEmpty()
           xs
-        else if wrappedItems.all((x) -> Type(x).isNumber())
+        else if forAll((x) -> Type(x).isNumber())
           xs[..].sort((x, y) -> Comparator.numericCompare(x, y).toInt)
-        else if wrappedItems.all((x) -> Type(x).isString())
+        else if forAll((x) -> Type(x).isString())
           xs[..].sort()
-        else if wrappedItems.all((x) -> x instanceof Turtle) or wrappedItems.all((x) -> x instanceof Patch)
+        else if _(agentClasses).some((agentClass) -> forAll((x) -> x instanceof agentClass))
           xs[..].sort((x, y) -> x.compare(y).toInt)
-        else if wrappedItems.all((x) -> x instanceof Link)
-          xs[..].sort(@_world.linkCompare)
         else
           throw new Exception.NetLogoException("We don't know how to sort your kind here!")
       else if xs instanceof AbstractAgentSet
