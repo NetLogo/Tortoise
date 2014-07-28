@@ -354,7 +354,7 @@ define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtl
 
     # (Link) => Unit
     removeLink: (link) ->
-      @_links.splice(@_links.indexOf(link)) #@# Surely there's a more-coherent way to write this
+      @_links.splice(@_links.indexOf(link))
       return
 
     # (Any) => Comparator

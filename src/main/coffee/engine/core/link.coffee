@@ -1,10 +1,12 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 
-define(['engine/core/abstractagentset', 'engine/core/structure/builtins', 'engine/core/structure/variablemanager'
-      , 'engine/core/turtleset', 'shim/lodash', 'util/colormodel', 'util/comparator', 'util/exception']
-     , ( AbstractAgentSet,               Builtings,                        VariableManager
-      ,  TurtleSet,               _,             ColorModel,        Comparator,        Exception) ->
+define(['engine/core/abstractagentset', 'engine/core/structure/builtins', 'engine/core/structure/linkcompare'
+      , 'engine/core/structure/variablemanager' , 'engine/core/turtleset', 'shim/lodash', 'util/colormodel'
+      , 'util/comparator', 'util/exception']
+     , ( AbstractAgentSet,               Builtings,                        linkCompare
+      ,  VariableManager,                          TurtleSet,               _,             ColorModel
+      ,  Comparator,        Exception) ->
 
   class Link
 
@@ -92,8 +94,8 @@ define(['engine/core/abstractagentset', 'engine/core/structure/builtins', 'engin
       @world.selfManager.askAgent(f)(this)
 
     # (Any) => { toInt: Number }
-    compare: (x) -> #@# Unify with `Links.compare`
-      switch @world.linkCompare(this, x)
+    compare: (x) ->
+      switch linkCompare(this, x)
         when -1 then Comparator.LESS_THAN
         when  0 then Comparator.EQUALS
         when  1 then Comparator.GREATER_THAN
@@ -126,7 +128,6 @@ define(['engine/core/abstractagentset', 'engine/core/structure/builtins', 'engin
       @_updateVarsByName(varName)
       return
 
-    #@# Pooey
     # (AbstractAgentSet|Breed|String) => Unit
     _setBreed: (breed) ->
 
