@@ -1,14 +1,14 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['shim/mori'], (Mori) ->
+define(['engine/core/structure/linkcompare', 'shim/mori'], (linkCompare, Mori) ->
 
   class WorldLinks
 
     @_links: undefined # Mori.SortedSet[Link]
 
-    # ((Link, Link) => Int) => WorldLinks
-    constructor: (@_compareFunc) ->
-      @_links = Mori.sorted_set_by(@_compareFunc)
+    # () => WorldLinks
+    constructor: ->
+      @_links = Mori.sorted_set_by(linkCompare)
 
     # Side-effecting ops
     insert: (link) -> @_links = Mori.conj(@_links, link); this # (Link) => WorldLinks

@@ -28,10 +28,9 @@ define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine
     _turtles:           undefined # Array[Turtle]
     _turtlesById:       undefined # Object[Number, Turtle]
 
-    #@# I'm aware that some of this stuff ought to not live on `World`
     # (SelfManager, Updater, BreedManager, Array[String], Array[String], Array[String], Array[String], Array[String], Number, Number, Number, Number, Number, Boolean, Boolean, Array[Object], Array[Object]) => World
     constructor: (@selfManager, @_updater, @breedManager, globalNames, interfaceGlobalNames, @turtlesOwnNames
-                , @linksOwnNames, @patchesOwnNames, minPxcor, maxPxcor, minPycor, maxPycor, @_patchSize
+                , @linksOwnNames, @patchesOwnNames, minPxcor, maxPxcor, minPycor, maxPycor, _patchSize
                 , wrappingAllowedInX, wrappingAllowedInY, turtleShapeList, linkShapeList) ->
       @_updater.collectUpdates()
       @_updater.registerWorldState({
@@ -43,7 +42,7 @@ define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine
         maxPycor: maxPycor,
         linkBreeds: "XXX IMPLEMENT ME",
         linkShapeList: linkShapeList,
-        patchSize: @_patchSize,
+        patchSize: _patchSize,
         patchesAllBlack: @_patchesAllBlack,
         patchesWithLabels: @_patchesWithLabels,
         ticks: -1,
@@ -58,7 +57,7 @@ define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine
       @ticker   = new Ticker(@_updater.updated(this))
       @topology = null
 
-      @_links           = new WorldLinks(@linkCompare)
+      @_links           = new WorldLinks
       @_linkIDManager   = new IDManager #@# The fact that `World` even talks to ID managers (rather than a container for the type of agent) seems undesirable to me
       @_turtleIDManager = new IDManager
       @_patches         = []
@@ -262,31 +261,37 @@ define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine
 
     # (Turtle, Turtle) => Link
     createDirectedLink: (from, to) ->
-      @unbreededLinksAreDirected = true
-      @_updater.updated(this)("unbreededLinksAreDirected")
+      @_setUnbreededLinksDirected()
       @_createLink(true, from, to)
 
     # (Turtle, TurtleSet) => LinkSet
-    createDirectedLinks: (source, others) -> #@# Clarity
-      @unbreededLinksAreDirected = true
-      @_updater.updated(this)("unbreededLinksAreDirected")
-      links = _(others.toArray()).map((turtle) => @_createLink(true, source, turtle)).filter((other) -> other isnt Nobody).value()
-      new LinkSet(links)
+    createDirectedLinks: (source, others) ->
+      @_setUnbreededLinksDirected()
+      @_createLinksBy((turtle) => @_createLink(true, source, turtle))(others)
 
     # (Turtle, TurtleSet) => LinkSet
-    createReverseDirectedLinks: (source, others) -> #@# Clarity, duplication FTW
-      @unbreededLinksAreDirected = true
-      @_updater.updated(this)("unbreededLinksAreDirected")
-      links = _(others.toArray()).map((turtle) => @_createLink(true, turtle, source)).filter((other) -> other isnt Nobody).value()
-      new LinkSet(links)
+    createReverseDirectedLinks: (source, others) ->
+      @_setUnbreededLinksDirected()
+      @_createLinksBy((turtle) => @_createLink(true, turtle, source))(others)
 
     # (Turtle, Turtle) => Link
     createUndirectedLink: (source, other) ->
       @_createLink(false, source, other)
 
     # (Turtle, TurtleSet) => LinkSet
-    createUndirectedLinks: (source, others) -> #@# Clarity
-      links = others.toArray().map((turtle) => @_createLink(false, source, turtle)).filter((other) -> other isnt Nobody)
+    createUndirectedLinks: (source, others) ->
+      @_createLinksBy((turtle) => @_createLink(false, source, turtle))(others)
+
+    # () => Unit
+    _setUnbreededLinksDirected: ->
+      @unbreededLinksAreDirected = true
+      @_updater.updated(this)("unbreededLinksAreDirected")
+      return
+
+    # ((Turtle) => Link) => TurtleSet => LinkSet
+    _createLinksBy: (mkLink) -> (turtles) ->
+      isLink = (other) -> other isnt Nobody
+      links  = turtles.toArray().map(mkLink).filter(isLink)
       new LinkSet(links)
 
     # (Number, Number) => Agent
@@ -297,32 +302,8 @@ define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine
       else
         Nobody
 
-    # (Link, Link) => Int
-    linkCompare: (a, b) => #@# Heinous
-      if a is b
-        0
-      else if a.id is -1 and b.id is -1
-        0
-      else if a.end1.id < b.end1.id
-        -1
-      else if a.end1.id > b.end1.id
-        1
-      else if a.end2.id < b.end2.id
-        -1
-      else if a.end2.id > b.end2.id
-        1
-      else if a.getBreedName() is b.getBreedName()
-        0
-      else if a.getBreedName() is "LINKS"
-        -1
-      else if b.getBreedName() is "LINKS"
-        1
-      else
-        throw new Exception.NetLogoException("Unsure how Link #{a.id} differs from Link #{b.id}") # JVM NetLogo uses the order the breeds were declared in, but that incites my hatred --JAB (6/26/14)
-
     ###
     #@# We shouldn't be looking up links in the tree everytime we create a link; JVM NL uses 2 `LinkedHashMap[Turtle, Buffer[Link]]`s (to, from) --JAB (2/7/14)
-    #@# The return of `Nobody` followed by clients `filter`ing against it screams "flatMap!" --JAB (2/7/14)
     ###
     # (Boolean, Turtle, Turtle) => Link
     _createLink: (isDirected, from, to) ->
