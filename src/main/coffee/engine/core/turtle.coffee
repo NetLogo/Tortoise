@@ -15,7 +15,6 @@ define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtl
     _updateVarsByName: undefined # (String*) => Unit
     _varManager:       undefined # VariableManager
 
-    #@# Should guard against improperly-named breeds, including empty-string breed names
     # (World, Number, (Updatable) => (String*) => Unit, (Number) => Unit, Number, Number, Number, Number, Breed, String, Number, Boolean, Number, PenManager) => Turtle
     constructor: (@world, @id, genUpdate, @_registerDeath, @_color = 0, @_heading = 0, @xcor = 0, @ycor = 0, breed = @world.breedManager.turtles(), @_label = "", @_labelcolor = 9.9, @_hidden = false, @_size = 1.0, @penManager = new PenManager(genUpdate(this))) ->
       @_updateVarsByName = genUpdate(this)
@@ -100,9 +99,8 @@ define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtl
     inRadius: (agents, radius) ->
       @world.topology.inRadius(@xcor, @ycor, agents, radius)
 
-    #@# Boy, this code sure is familiar... (`Patch.patchAt`)
     # (Number, Number) => Patch
-    patchAt: (dx, dy) -> #@# Make not silly
+    patchAt: (dx, dy) ->
       try
         x = @world.topology.wrapX(@xcor + dx)
         y = @world.topology.wrapY(@ycor + dy)
@@ -120,7 +118,7 @@ define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtl
     # (Boolean, Boolean) => LinkSet
     connectedLinks: (isDirected, isSource) ->
       filterFunc =
-        if isDirected #@# Conditional is unnecessary, really
+        if isDirected
           (link) => (link.isDirected and link.end1 is this and isSource) or (link.isDirected and link.end2 is this and not isSource)
         else
           (link) => (not link.isDirected and link.end1 is this) or (not link.isDirected and link.end2 is this)
@@ -149,15 +147,21 @@ define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtl
 
     # (Boolean, Boolean, Turtle) => Boolean
     isLinkNeighbor: (isDirected, isSource, otherTurtle) ->
-      @linkNeighbors(isDirected, isSource).filter((neighbor) -> neighbor is otherTurtle).nonEmpty() #@# `_(derp).contains(other)` (Lodash)
+      @linkNeighbors(isDirected, isSource).contains(otherTurtle)
 
     # (Boolean, Boolean, Turtle) => Link
-    findLinkViaNeighbor: (isDirected, isSource, other) -> #@# Other WHAT?
+    findLinkViaNeighbor: (isDirected, isSource, otherTurtle) ->
       findFunc =
         if isDirected
-          (link) => (link.isDirected and link.end1 is this and link.end2 is other and isSource) or (link.isDirected and link.end1 is other and link.end2 is this and not isSource)
+          (link) =>
+            isDirectedFromMe = (link.isDirected and link.end1 is this and link.end2 is otherTurtle and isSource)
+            isDirectedToMe   = (link.isDirected and link.end1 is otherTurtle and link.end2 is this and not isSource)
+            isDirectedFromMe or isDirectedToMe
         else if not isDirected and not @world.unbreededLinksAreDirected
-          (link) => (not link.isDirected and link.end1 is this and link.end2 is other) or (not link.isDirected and link.end2 is this and link.end1 is other)
+          (link) =>
+            isFromMe = (not link.isDirected and link.end1 is this and link.end2 is otherTurtle)
+            isToMe   = (not link.isDirected and link.end2 is this and link.end1 is otherTurtle)
+            isFromMe or isToMe
         else
           throw new Exception.NetLogoException("LINKS is a directed breed.")
 
@@ -262,8 +266,8 @@ define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtl
       return
 
     # (Boolean) => Unit
-    hideTurtle: (flag) -> #@# Varname
-      @_setIsHidden(flag)
+    hideTurtle: (shouldHide) ->
+      @_setIsHidden(shouldHide)
       return
 
     # (String) => Boolean
@@ -328,8 +332,9 @@ define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtl
 
     # (Number, String) => TurtleSet
     hatch: (n, breedName) ->
-      breed      = if breedName? and not _(breedName).isEmpty() then @world.breedManager.get(breedName) else @_breed #@# Why is this even a thing?
-      newTurtles = _(0).range(n).map(=> @_makeTurtleCopy(breed)).value()
+      isNameValid = breedName? and not _(breedName).isEmpty()
+      breed       = if isNameValid then @world.breedManager.get(breedName) else @_breed
+      newTurtles  = _(0).range(n).map(=> @_makeTurtleCopy(breed)).value()
       new TurtleSet(newTurtles, breed)
 
     # (Breed) => Turtle
