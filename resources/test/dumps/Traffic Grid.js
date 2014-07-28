@@ -110,7 +110,7 @@ function go() {
   world.tick();
 }
 function chooseCurrent() {
-  if (notImplemented('mouse-down?', false)) {
+  if (notImplemented('mouse-down?', false)()) {
     var xMouse = notImplemented('mouse-xcor', 0)();
     var yMouse = notImplemented('mouse-ycor', 0)();
     if (AgentSet.of(Prims.patch(xMouse, yMouse), function() {

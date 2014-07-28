@@ -62,7 +62,7 @@ function go() {
 }
 function drawCells() {
   var erasing_p = AgentSet.any(Prims.breedOn("CELLS", Prims.patch(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)())));
-  while (notImplemented('mouse-down?', false)) {
+  while (notImplemented('mouse-down?', false)()) {
     AgentSet.ask(Prims.patch(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)()), true, function() {
       if (erasing_p) {
         Call(erase);
