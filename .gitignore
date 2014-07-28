@@ -30,3 +30,4 @@ tmp/
 /node_modules/
 /build/
 /engine-benchmarks.txt
+/.projections.json
