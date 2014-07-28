@@ -204,13 +204,19 @@ define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtl
     projectionBy: (f) ->
       @world.selfManager.askAgent(f)(this)
 
+    # Unfortunately, further attempts to streamline this code are very likely to lead to
+    # floating point arithmetic mismatches with JVM NetLogo....  Beware. --JAB (7/28/14)
     # (Number) => Unit
     fd: (distance) ->
-      increment      = if distance > 0 then 1 else -1
-      jumpsRemaining = distance / increment
-      while jumpsRemaining-- >= 1 and @jumpIfAble(increment)
-        {}
-      @jumpIfAble(distance % increment)
+      increment = if distance > 0 then 1 else -1
+      remaining = distance
+      if distance > 0
+        while remaining >= increment and @jumpIfAble(increment)
+          remaining -= increment
+      else if distance < 0
+        while remaining <= increment and @jumpIfAble(increment)
+          remaining -= increment
+      @jumpIfAble(remaining)
       return
 
     # (Number) => Boolean
