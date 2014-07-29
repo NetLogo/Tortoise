@@ -1,11 +1,9 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['engine/core/nobody', 'engine/core/turtle', 'engine/core/turtleset', 'engine/core/structure/builtins'
-      , 'engine/core/structure/variablemanager', 'shim/lodash', 'shim/random', 'util/colormodel', 'util/comparator'
-      , 'util/exception']
-     , ( Nobody,               Turtle,               TurtleSet,               Builtins
-      ,  VariableManager,                         _,             Random,        ColorModel,        Comparator
-      ,  Exception) ->
+define(['engine/core/nobody', 'engine/core/turtle', 'engine/core/turtleset', 'engine/core/structure/variablemanager'
+      , 'shim/lodash', 'shim/random', 'util/colormodel', 'util/comparator', 'util/exception']
+     , ( Nobody,               Turtle,               TurtleSet,               VariableManager
+      ,  _,             Random,        ColorModel,        Comparator,        Exception) ->
 
   class Patch
 
