@@ -1,12 +1,10 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 
-define(['engine/core/abstractagentset', 'engine/core/structure/builtins', 'engine/core/structure/linkcompare'
-      , 'engine/core/structure/variablemanager' , 'engine/core/turtleset', 'shim/lodash', 'util/colormodel'
-      , 'util/comparator', 'util/exception']
-     , ( AbstractAgentSet,               Builtings,                        linkCompare
-      ,  VariableManager,                          TurtleSet,               _,             ColorModel
-      ,  Comparator,        Exception) ->
+define(['engine/core/abstractagentset', 'engine/core/structure/linkcompare', 'engine/core/structure/variablemanager'
+      , 'engine/core/turtleset', 'shim/lodash', 'util/colormodel', 'util/comparator', 'util/exception']
+     , ( AbstractAgentSet,               linkCompare,                         VariableManager
+      ,  TurtleSet,               _,             ColorModel,        Comparator,        Exception) ->
 
   class Link
 

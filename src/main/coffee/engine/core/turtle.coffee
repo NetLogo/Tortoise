@@ -1,9 +1,9 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtleset', 'engine/core/structure/builtins'
+define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtleset'
       , 'engine/core/structure/penmanager', 'engine/core/structure/variablemanager', 'shim/lodash', 'util/colormodel'
       , 'util/comparator', 'util/exception', 'util/trig']
-     , ( AbstractAgentSet,               Nobody,               TurtleSet,               Builtins
+     , ( AbstractAgentSet,               Nobody,               TurtleSet
       ,  PenManager,                         VariableManager,                         _,             ColorModel
       ,  Comparator,        Exception,        Trig) ->
 
