@@ -7,6 +7,7 @@
 ###
 require(['agentmodel', 'engine/workspace', 'engine/prim/prims', 'engine/prim/tasks', 'nashorn/denuller', 'shim/printer'
        , 'util/call', 'util/notimplemented']
-      , ( AgentModel,   Workspace,          Prims,               Tasks,               Denuller,           Printer
+      ,
+      ( AgentModel,   Workspace,          Prims,               Tasks,               Denuller,           Printer
        ,  Call,        notImplemented) ->
 )

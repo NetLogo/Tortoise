@@ -4,6 +4,9 @@ module.exports = (grunt) ->
     pkg: grunt.file.readJSON('package.json'),
     coffee: {
       compile: {
+        options: {
+          bare: true
+        },
         files: [
           {
             expand: true,
@@ -24,6 +27,18 @@ module.exports = (grunt) ->
           name: "bootstrap"
         }
       }
+    },
+    closurecompiler: {
+      compile: {
+        files: {
+          "./target/classes/js/tortoise-engine-cl.js": ["./target/classes/js/tortoise/*-cl.js"]
+        },
+        options: {
+          "compilation_level": "SIMPLE_OPTIMIZATIONS",
+          "max_processes": 5,
+          "Formatting": "PRETTY_PRINT"
+        }
+      }
     }
   })
 
@@ -33,3 +48,4 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks('grunt-contrib-rename')
 
   grunt.registerTask('default', ['coffee', 'requirejs'])
+  grunt.registerTask('cc', ['closurecompiler:pretty'])
