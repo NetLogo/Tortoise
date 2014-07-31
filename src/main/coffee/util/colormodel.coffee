@@ -37,33 +37,39 @@ define(['shim/lodash', 'shim/random'], (_, Random) ->
       @_colorIntegral(color1) is @_colorIntegral(color2)
 
     # (Number, Number, Number, Number) => Number
-    scaleColor: (color, number, min, max) -> #@# I don't know WTF this is, so it has to be wrong
-      color = @_colorIntegral(color) * 10
-      perc = 0.0
-      if min > max
-        if number < max
-          perc = 1.0
-        else if number > min
-          perc = 0.0
+    scaleColor: (color, number, min, max) ->
+
+      percent =
+        if min > max
+          if number < max
+            1.0
+          else if number > min
+            0.0
+          else
+            tempval = min - number
+            tempmax = min - max
+            tempval / tempmax
         else
-          tempval = min - number
-          tempmax = min - max
-          perc = tempval / tempmax
-      else
-        if number > max
-          perc = 1.0
-        else if number < min
-          perc = 0.0
+          if number > max
+            1.0
+          else if number < min
+            0.0
+          else
+            tempval = number - min
+            tempmax = max    - min
+            tempval / tempmax
+
+      percent10 = percent * 10
+
+      finalPercent =
+        if percent10 >= 9.9999
+          9.9999
+        else if percent10 < 0
+          0
         else
-          tempval = number - min
-          tempmax = max - min
-          perc = tempval / tempmax
-      perc *= 10
-      if perc >= 9.9999
-        perc = 9.9999
-      if perc < 0
-        perc = 0
-      color + perc
+          percent10
+
+      @_colorIntegral(color) * 10 + finalPercent
 
     # (Number) => Number
     _colorIntegral: (color) ->
