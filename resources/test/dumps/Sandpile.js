@@ -61,7 +61,7 @@ function setupRandom() {
   }));
 }
 function recolor() {
-  Prims.setPatchVariable('pcolor', Prims.scaleColor(Prims.getPatchVariable('base-color'), Prims.getPatchVariable('n'), 0, 4));
+  Prims.setPatchVariable('pcolor', ColorModel.scaleColor(Prims.getPatchVariable('base-color'), Prims.getPatchVariable('n'), 0, 4));
 }
 function go() {
   var drop = Call(dropPatch);

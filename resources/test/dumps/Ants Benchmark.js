@@ -96,7 +96,7 @@ function updateDisplay() {
       }
     }
     else {
-      Prims.setPatchVariable('pcolor', Prims.scaleColor(55, Prims.getPatchVariable('chemical'), 0.1, 5));
+      Prims.setPatchVariable('pcolor', ColorModel.scaleColor(55, Prims.getPatchVariable('chemical'), 0.1, 5));
     }
   }
 }

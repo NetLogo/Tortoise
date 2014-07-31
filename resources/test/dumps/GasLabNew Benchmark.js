@@ -149,7 +149,7 @@ function calculatePressure() {
   }, true);
 }
 function bounce() {
-  if (Prims.shadeOf(45, Prims.getPatchVariable('pcolor'))) {
+  if (ColorModel.areRelatedByShade(45, Prims.getPatchVariable('pcolor'))) {
     throw new Exception.StopInterrupt;
   }
   var newPatch = SelfManager.self().patchAhead(1);
@@ -159,7 +159,7 @@ function bounce() {
   var newPy = newPatch.projectionBy(function() {
     return Prims.getPatchVariable('pycor');
   });
-  if (!Prims.shadeOf(45, newPatch.projectionBy(function() {
+  if (!ColorModel.areRelatedByShade(45, newPatch.projectionBy(function() {
     return Prims.getPatchVariable('pcolor');
   }))) {
     throw new Exception.StopInterrupt;

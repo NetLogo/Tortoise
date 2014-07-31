@@ -60,7 +60,7 @@ function setupPatches() {
   }, true);
 }
 function recolorPatch() {
-  Prims.setPatchVariable('pcolor', Prims.scaleColor(45, Prims.getPatchVariable('grain-here'), 0, world.observer.getGlobal('max-grain')));
+  Prims.setPatchVariable('pcolor', ColorModel.scaleColor(45, Prims.getPatchVariable('grain-here'), 0, world.observer.getGlobal('max-grain')));
 }
 function setupTurtles() {
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "person")

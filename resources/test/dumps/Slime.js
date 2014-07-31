@@ -50,7 +50,7 @@ function go() {
   world.topology.diffuse('chemical', 1)
   world.patches().ask(function() {
     Prims.setPatchVariable('chemical', (Prims.getPatchVariable('chemical') * 0.9));
-    Prims.setPatchVariable('pcolor', Prims.scaleColor(55, Prims.getPatchVariable('chemical'), 0.1, 3));
+    Prims.setPatchVariable('pcolor', ColorModel.scaleColor(55, Prims.getPatchVariable('chemical'), 0.1, 3));
   }, true);
   world.ticker.tick();
 }

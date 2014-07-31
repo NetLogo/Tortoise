@@ -85,10 +85,6 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
     _randomCor: (min, max) ->
       min - 0.5 + Random.nextDouble() * (max - min + 1)
 
-    # (Number, Number) => Number
-    shadeOf: (color1, color2) ->
-      Math.floor(color1 / 10) is Math.floor(color2 / 10)
-
     # (String, Any) => Boolean
     isBreed: (breedName, x) ->
       if x.isBreed? and x.id isnt -1 then x.isBreed(breedName) else false
@@ -134,35 +130,6 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
     # (Any, Any) => Boolean
     lte: (a, b) -> @lt(a, b) or @equality(a, b)
     gte: (a, b) -> @gt(a, b) or @equality(a, b)
-
-    # (Number, Number, Number, Number) => Number
-    scaleColor: (color, number, min, max) -> #@# I don't know WTF this is, so it has to be wrong
-      color = Math.floor(color / 10) * 10
-      perc = 0.0
-      if min > max
-        if number < max
-          perc = 1.0
-        else if number > min
-          perc = 0.0
-        else
-          tempval = min - number
-          tempmax = min - max
-          perc = tempval / tempmax
-      else
-        if number > max
-          perc = 1.0
-        else if number < min
-          perc = 0.0
-        else
-          tempval = number - min
-          tempmax = max - min
-          perc = tempval / tempmax
-      perc *= 10
-      if perc >= 9.9999
-        perc = 9.9999
-      if perc < 0
-        perc = 0
-      color + perc
 
     # (Number) => Number
     random: (n) ->

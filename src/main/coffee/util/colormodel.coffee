@@ -32,6 +32,43 @@ define(['shim/lodash', 'shim/random'], (_, Random) ->
         else
           ColorMax + modColor
 
+    # (Number, Number) => Boolean
+    areRelatedByShade: (color1, color2) ->
+      @_colorIntegral(color1) is @_colorIntegral(color2)
+
+    # (Number, Number, Number, Number) => Number
+    scaleColor: (color, number, min, max) -> #@# I don't know WTF this is, so it has to be wrong
+      color = @_colorIntegral(color) * 10
+      perc = 0.0
+      if min > max
+        if number < max
+          perc = 1.0
+        else if number > min
+          perc = 0.0
+        else
+          tempval = min - number
+          tempmax = min - max
+          perc = tempval / tempmax
+      else
+        if number > max
+          perc = 1.0
+        else if number < min
+          perc = 0.0
+        else
+          tempval = number - min
+          tempmax = max - min
+          perc = tempval / tempmax
+      perc *= 10
+      if perc >= 9.9999
+        perc = 9.9999
+      if perc < 0
+        perc = 0
+      color + perc
+
+    # (Number) => Number
+    _colorIntegral: (color) ->
+      Math.floor(color / 10)
+
   }
 
 )

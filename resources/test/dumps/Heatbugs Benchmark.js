@@ -62,7 +62,7 @@ function go() {
 function recolorPatches() {
   world.patches().ask(function() {
     Prims.setPatchVariable('temp', (Prims.getPatchVariable('temp') * (1 - world.observer.getGlobal('evaporation-rate'))));
-    Prims.setPatchVariable('pcolor', Prims.scaleColor(15, Prims.getPatchVariable('temp'), 0, 500));
+    Prims.setPatchVariable('pcolor', ColorModel.scaleColor(15, Prims.getPatchVariable('temp'), 0, 500));
   }, true);
 }
 function step() {

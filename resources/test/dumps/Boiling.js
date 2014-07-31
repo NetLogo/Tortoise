@@ -30,7 +30,7 @@ var StrictMath     = require('shim/strictmath');function setup() {
   world.clearAll();
   world.patches().ask(function() {
     Prims.setPatchVariable('heat', Prims.random(212));
-    Prims.setPatchVariable('pcolor', Prims.scaleColor(15, Prims.getPatchVariable('heat'), 0, 212));
+    Prims.setPatchVariable('pcolor', ColorModel.scaleColor(15, Prims.getPatchVariable('heat'), 0, 212));
   }, true);
   world.ticker.reset();
 }
@@ -38,7 +38,7 @@ function go() {
   world.topology.diffuse('heat', 1)
   world.patches().ask(function() {
     Prims.setPatchVariable('heat', Prims.mod((Prims.getPatchVariable('heat') + 5), 212));
-    Prims.setPatchVariable('pcolor', Prims.scaleColor(15, Prims.getPatchVariable('heat'), 0, 212));
+    Prims.setPatchVariable('pcolor', ColorModel.scaleColor(15, Prims.getPatchVariable('heat'), 0, 212));
   }, true);
   world.ticker.tick();
 }

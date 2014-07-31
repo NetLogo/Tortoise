@@ -68,10 +68,10 @@ var StrictMath     = require('shim/strictmath');function setup() {
 }
 function recolor() {
   if ((Prims.equality(Prims.getPatchVariable('water'), 0) || !world.observer.getGlobal('show-water?'))) {
-    Prims.setPatchVariable('pcolor', Prims.scaleColor(9.9, Prims.getPatchVariable('elevation'), -250, 100));
+    Prims.setPatchVariable('pcolor', ColorModel.scaleColor(9.9, Prims.getPatchVariable('elevation'), -250, 100));
   }
   else {
-    Prims.setPatchVariable('pcolor', Prims.scaleColor(105, Prims.min(Prims.list(Prims.getPatchVariable('water'), 75)), 100, -10));
+    Prims.setPatchVariable('pcolor', ColorModel.scaleColor(105, Prims.min(Prims.list(Prims.getPatchVariable('water'), 75)), 100, -10));
   }
 }
 function showWater() {

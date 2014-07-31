@@ -42,10 +42,10 @@ function setupWorld() {
   world.observer.setGlobal('earth-top', 0);
   world.patches().ask(function() {
     if (Prims.gt(Prims.getPatchVariable('pycor'), world.observer.getGlobal('sky-top'))) {
-      Prims.setPatchVariable('pcolor', Prims.scaleColor(9.9, Prims.getPatchVariable('pycor'), 22, 15));
+      Prims.setPatchVariable('pcolor', ColorModel.scaleColor(9.9, Prims.getPatchVariable('pycor'), 22, 15));
     }
     if ((Prims.lte(Prims.getPatchVariable('pycor'), world.observer.getGlobal('sky-top')) && Prims.gt(Prims.getPatchVariable('pycor'), world.observer.getGlobal('earth-top')))) {
-      Prims.setPatchVariable('pcolor', Prims.scaleColor(105, Prims.getPatchVariable('pycor'), -20, 20));
+      Prims.setPatchVariable('pcolor', ColorModel.scaleColor(105, Prims.getPatchVariable('pycor'), -20, 20));
     }
     if (Prims.lt(Prims.getPatchVariable('pycor'), world.observer.getGlobal('earth-top'))) {
       Prims.setPatchVariable('pcolor', (15 + 3));
@@ -71,7 +71,7 @@ function go() {
   world.ticker.tick();
 }
 function updateAlbedo() {
-  Prims.setPatchVariable('pcolor', Prims.scaleColor(55, world.observer.getGlobal('albedo'), 0, 1));
+  Prims.setPatchVariable('pcolor', ColorModel.scaleColor(55, world.observer.getGlobal('albedo'), 0, 1));
 }
 function addCloud() {
   var skyHeight = (world.observer.getGlobal('sky-top') - world.observer.getGlobal('earth-top'));
@@ -206,7 +206,7 @@ function runCo2() {
     Prims.right((Prims.random(51) - 25));
     var dist = (0.05 + Prims.randomFloat(0.1));
     if (SelfManager.self().patchAhead(dist).projectionBy(function() {
-      return !Prims.shadeOf(105, Prims.getPatchVariable('pcolor'));
+      return !ColorModel.areRelatedByShade(105, Prims.getPatchVariable('pcolor'));
     })) {
       Prims.setVariable('heading', (180 - Prims.getVariable('heading')));
     }

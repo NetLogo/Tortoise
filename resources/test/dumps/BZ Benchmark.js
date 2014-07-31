@@ -40,7 +40,7 @@ function setup() {
   world.ticker.reset();
   world.patches().ask(function() {
     Prims.setPatchVariable('state', Prims.random((world.observer.getGlobal('n') + 1)));
-    Prims.setPatchVariable('pcolor', Prims.scaleColor(15, Prims.getPatchVariable('state'), 0, world.observer.getGlobal('n')));
+    Prims.setPatchVariable('pcolor', ColorModel.scaleColor(15, Prims.getPatchVariable('state'), 0, world.observer.getGlobal('n')));
   }, true);
 }
 function go() {
@@ -49,7 +49,7 @@ function go() {
   }, true);
   world.patches().ask(function() {
     Prims.setPatchVariable('state', Prims.getPatchVariable('new-state'));
-    Prims.setPatchVariable('pcolor', Prims.scaleColor(15, Prims.getPatchVariable('state'), 0, world.observer.getGlobal('n')));
+    Prims.setPatchVariable('pcolor', ColorModel.scaleColor(15, Prims.getPatchVariable('state'), 0, world.observer.getGlobal('n')));
   }, true);
   world.ticker.tick();
 }
