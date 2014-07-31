@@ -25,7 +25,7 @@ define(['shim/lodash', 'shim/random'], (_, Random) ->
     wrapColor: (color) ->
       if _(color).isArray()
         color
-      else
+      else # Bah!  This branch ought to be equivalent to `color %% ColorMax`, but that causes floating-point discrepencies. --JAB (7/30/14)
         modColor = color % ColorMax
         if modColor >= 0
           modColor
