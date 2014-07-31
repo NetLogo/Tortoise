@@ -33,7 +33,7 @@ var StrictMath     = require('shim/strictmath');function setup() {
     if (Prims.equality(Prims.getVariable('color'), 75)) {
       Prims.setVariable('color', 125);
     }
-    Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
+    Prims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
   }, true);
   world.ticker.reset();
 }

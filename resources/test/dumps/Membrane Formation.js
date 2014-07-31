@@ -33,7 +33,7 @@ var StrictMath     = require('shim/strictmath');function setup() {
   world.observer.setGlobal('too-close-distance', 1.3);
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
   world.createTurtles((world.observer.getGlobal('num-water') + world.observer.getGlobal('num-lipids')), 'WATERS').ask(function() {
-    Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
+    Prims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
     Prims.setVariable('color', 105);
   }, true);
   world.createTurtles(world.observer.getGlobal('num-lipids'), 'OILS').ask(function() {

@@ -72,19 +72,6 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
     patch: (x, y) ->
       @_world.getPatchAt(x, y)
 
-    #@# This sort of thing should live on topologies and get called directly
-    # () => Number
-    randomXcor: ->
-      @_randomCor(@_world.topology.minPxcor, @_world.topology.maxPxcor)
-
-    # () => Number
-    randomYcor: ->
-      @_randomCor(@_world.topology.minPycor, @_world.topology.maxPycor)
-
-    # (Number, Number) => Number
-    _randomCor: (min, max) ->
-      min - 0.5 + Random.nextDouble() * (max - min + 1)
-
     # (String, Any) => Boolean
     isBreed: (breedName, x) ->
       if x.isBreed? and x.id isnt -1 then x.isBreed(breedName) else false

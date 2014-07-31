@@ -1,7 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['shim/lodash', 'shim/strictmath', 'util/abstractmethoderror']
-     , ( _,             StrictMath,        abstractMethod) ->
+define(['shim/lodash', 'shim/random', 'shim/strictmath', 'util/abstractmethoderror']
+     , ( _,             Random,        StrictMath,        abstractMethod) ->
 
   class Topology
 
@@ -69,6 +69,18 @@ define(['shim/lodash', 'shim/strictmath', 'util/abstractmethoderror']
           [xcor, ycor] = agent.getCoords()
           @distanceXY(xcor, ycor, x, y) <= radius
       )
+
+    # () => Number
+    randomXcor: ->
+      @_randomCor(@minPxcor, @maxPxcor)
+
+    # () => Number
+    randomYcor: ->
+      @_randomCor(@minPycor, @maxPycor)
+
+    # (Number, Number) => Number
+    _randomCor: (min, max) ->
+      min - 0.5 + Random.nextDouble() * (max - min + 1)
 
     # (Number, Number) => Array[Patch]
     _getNeighbors: (pxcor, pycor) ->

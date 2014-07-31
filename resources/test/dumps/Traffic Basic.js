@@ -48,7 +48,7 @@ function setupCars() {
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "car")
   world.createTurtles(world.observer.getGlobal('number-of-cars'), '').ask(function() {
     Prims.setVariable('color', 105);
-    Prims.setVariable('xcor', Prims.randomXcor());
+    Prims.setVariable('xcor', world.topology.randomXcor());
     Prims.setVariable('heading', 90);
     Prims.setVariable('speed', (0.1 + Prims.randomFloat(0.9)));
     Prims.setVariable('speed-limit', 1);

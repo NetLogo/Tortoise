@@ -48,14 +48,14 @@ var StrictMath     = require('shim/strictmath');function setup() {
     Prims.setVariable('size', 1.5);
     Prims.setVariable('label-color', (105 - 2));
     Prims.setVariable('energy', Prims.random((2 * world.observer.getGlobal('sheep-gain-from-food'))));
-    Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
+    Prims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
   }, true);
   BreedManager.setDefaultShape(world.turtlesOfBreed("WOLVES").getBreedName(), "wolf")
   world.createTurtles(world.observer.getGlobal('initial-number-wolves'), 'WOLVES').ask(function() {
     Prims.setVariable('color', 0);
     Prims.setVariable('size', 2);
     Prims.setVariable('energy', Prims.random((2 * world.observer.getGlobal('wolf-gain-from-food'))));
-    Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
+    Prims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
   }, true);
   Call(displayLabels);
   world.observer.setGlobal('grass', world.patches().agentFilter(function() {

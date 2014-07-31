@@ -36,7 +36,7 @@ var StrictMath     = require('shim/strictmath');function setup() {
 function setupTurtles() {
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "person")
   world.createTurtles(world.observer.getGlobal('people'), '').ask(function() {
-    Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
+    Prims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
     Prims.setVariable('age', Prims.random(world.observer.getGlobal('lifespan')));
     Prims.setVariable('sick-count', 0);
     Prims.setVariable('immune?', false);

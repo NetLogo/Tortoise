@@ -57,7 +57,7 @@ function setupMoths() {
     Prims.setVariable('color', Call(randomColor));
     Call(mothsPickShape);
     Prims.setVariable('age', Prims.random(3));
-    Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
+    Prims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
   }, true);
 }
 function go() {

@@ -31,7 +31,7 @@ var StrictMath     = require('shim/strictmath');function setup() {
   notImplemented('clear-all-plots', undefined)();
   world.createTurtles(world.observer.getGlobal('number'), '').ask(function() {
     Prims.setVariable('color', Prims.item(Prims.random(world.observer.getGlobal('colors')), [5, 15, 25, 35, 45, 55, 65, 85, 95, 125]));
-    Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
+    Prims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
     Call(moveOffWall);
   }, true);
   world.ticker.reset();

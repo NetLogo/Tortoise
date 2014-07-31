@@ -42,7 +42,7 @@ function setupGlobals() {
 }
 function setupPeople() {
   world.createTurtles(world.observer.getGlobal('initial-people'), '').ask(function() {
-    Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
+    Prims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
     Prims.setVariable('known?', false);
     Prims.setVariable('coupled?', false);
     Prims.setVariable('partner', Nobody);

@@ -34,7 +34,7 @@ var StrictMath     = require('shim/strictmath');function setup() {
   world.createTurtles(world.observer.getGlobal('num-particles'), '').ask(function() {
     Prims.setVariable('color', 15);
     Prims.setVariable('size', 1.5);
-    Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
+    Prims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
   }, true);
   world.ticker.reset();
 }

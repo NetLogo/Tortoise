@@ -31,7 +31,7 @@ var StrictMath     = require('shim/strictmath');function setup() {
   world.createTurtles(world.observer.getGlobal('population'), '').ask(function() {
     Prims.setVariable('color', 15);
     Prims.setVariable('size', 2);
-    Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
+    Prims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
   }, true);
   world.patches().ask(function() {
     Prims.setPatchVariable('chemical', 0);

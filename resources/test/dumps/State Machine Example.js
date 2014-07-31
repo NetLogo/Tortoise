@@ -36,7 +36,7 @@ var StrictMath     = require('shim/strictmath');function setup() {
   }, true);
   world.createTurtles(world.observer.getGlobal('number'), '').ask(function() {
     Prims.setVariable('color', 9.9);
-    Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
+    Prims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
     Prims.setVariable('next-task', Tasks.commandTask(function() {
       var taskArguments = arguments;
       Call(searchForChip);

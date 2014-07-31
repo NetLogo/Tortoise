@@ -77,7 +77,7 @@ function addCloud() {
   var skyHeight = (world.observer.getGlobal('sky-top') - world.observer.getGlobal('earth-top'));
   var y = ((world.observer.getGlobal('earth-top') + Prims.randomFloat((skyHeight - 4))) + 2);
   var speed = (Prims.randomFloat(0.1) + 0.01);
-  var x = Prims.randomXcor();
+  var x = world.topology.randomXcor();
   var id = 0;
   if (world.turtlesOfBreed("CLOUDS").nonEmpty()) {
     id = (Prims.max(world.turtlesOfBreed("CLOUDS").projectionBy(function() {
@@ -189,7 +189,7 @@ function addCo2() {
   var skyHeight = (world.observer.getGlobal('sky-top') - world.observer.getGlobal('earth-top'));
   world.createTurtles(25, 'CO2S').ask(function() {
     Prims.setVariable('color', 55);
-    Prims.setXY(Prims.randomXcor(), (world.observer.getGlobal('earth-top') + Prims.randomFloat(skyHeight)));
+    Prims.setXY(world.topology.randomXcor(), (world.observer.getGlobal('earth-top') + Prims.randomFloat(skyHeight)));
   }, true);
 }
 function removeCo2() {

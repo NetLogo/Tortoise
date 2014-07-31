@@ -30,7 +30,7 @@ var StrictMath     = require('shim/strictmath');function setup() {
   world.clearAll();
   world.createTurtles(world.observer.getGlobal('population'), '').ask(function() {
     Prims.setVariable('color', 125);
-    Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
+    Prims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
     Prims.setVariable('leader', Nobody);
     Prims.setVariable('follower', Nobody);
   }, true);
