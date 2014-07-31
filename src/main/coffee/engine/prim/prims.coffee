@@ -225,7 +225,7 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
 
     # (Number, Number) => Number
     mod: (a, b) ->
-      ((a % b) + b) % b
+      a %% b
 
     # (Array[Number]) => Number
     max: (xs) ->
