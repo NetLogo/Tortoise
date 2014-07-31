@@ -12,7 +12,7 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
     # type ListOrSet[T] = Array[T]|AbstractAgentSet[T]
 
     # (Dump) => Prims
-    constructor: (@_Dumper) ->
+    constructor: (@_dumper) ->
 
     # [T] @ (String|Array[T]) => Boolean
     empty: (xs) ->
@@ -192,7 +192,7 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
 
     # (Any) => Unit
     outputPrint: (x) ->
-      Printer(@_Dumper(x))
+      Printer(@_dumper(x))
       return
 
     # [T <: (Array[T]|Patch|AbstractAgentSet[T])] @ (T*) => PatchSet
