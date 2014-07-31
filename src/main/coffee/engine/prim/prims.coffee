@@ -321,8 +321,9 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
       return
 
     # (Number, FunctionN) => Unit
-    #@# not a real implementation, always just runs body - ST 4/22/14
+    # not a real implementation, always just runs body - ST 4/22/14
     every: (time, fn) ->
+      Printer("Warning: The `every` primitive is not yet properly supported.")
       fn()
       return
 
