@@ -451,7 +451,7 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
     # [Item] @ (ListOrSet[Item]) => Item
     oneOf: (agentsOrList) ->
       arr =
-        if agentsOrList instanceof AbstractAgentSet #@# Stop this nonsense.  This code gives me such anxiety...
+        if agentsOrList instanceof AbstractAgentSet
           agentsOrList.iterator().toArray()
         else
           agentsOrList
