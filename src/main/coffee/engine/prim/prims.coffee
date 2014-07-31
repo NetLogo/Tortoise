@@ -11,8 +11,8 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
 
     # type ListOrSet[T] = Array[T]|AbstractAgentSet[T]
 
-    # (Dump) => Prims
-    constructor: (@_dumper) ->
+    # (Dump, Hasher) => Prims
+    constructor: (@_dumper, @_hasher) ->
 
     # [T] @ (String|Array[T]) => Boolean
     empty: (xs) ->
@@ -182,13 +182,24 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
         throw new Exception.NetLogoException("can only sort lists and agentsets")
 
     # [T] @ (Array[T]) => Array[T]
-    removeDuplicates: (xs) -> #@# Good use of data structures and actually trying could get this into reasonable time complexity
+    removeDuplicates: (xs) ->
       if xs.length < 2
         xs
       else
-        xs.filter(
-          (elem, pos) => not _(xs.slice(0, pos)).some((x) => @equality(x, elem))
-        )
+        f =
+          ([accArr, accSet], x) =>
+            hash   = @_hasher(x)
+            values = accSet[hash]
+            if values?
+              if not _(values).some((y) => @equality(x, y))
+                accArr.push(x)
+                values.push(x)
+            else
+              accArr.push(x)
+              accSet[hash] = [x]
+            [accArr, accSet]
+        [out, []] = xs.reduce(f, [[], {}])
+        out
 
     # (Any) => Unit
     outputPrint: (x) ->

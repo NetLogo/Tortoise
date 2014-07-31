@@ -1,9 +1,9 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['engine/dump', 'engine/updater', 'engine/core/breedmanager', 'engine/core/world'
+define(['engine/dump', 'engine/hasher', 'engine/updater', 'engine/core/breedmanager', 'engine/core/world'
       , 'engine/core/structure/selfmanager', 'engine/prim/layoutmanager', 'engine/prim/linkprims', 'engine/prim/prims'
       , 'engine/prim/selfprims', 'util/timer']
-     , ( Dump,          Updater,          BreedManager,               World
+     , ( Dump,          Hasher,          Updater,          BreedManager,               World
       ,  SelfManager,                         LayoutManager,               LinkPrims,               Prims
       ,  SelfPrims,               Timer) ->
 
@@ -13,7 +13,7 @@ define(['engine/dump', 'engine/updater', 'engine/core/breedmanager', 'engine/cor
 
     selfManager  = new SelfManager
     breedManager = new BreedManager(breedObjs)
-    prims        = new Prims(Dump)
+    prims        = new Prims(Dump, Hasher)
     selfPrims    = new SelfPrims(selfManager.self)
     timer        = new Timer
     updater      = new Updater
