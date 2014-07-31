@@ -49,6 +49,10 @@ define(['shim/lodash'], (_) ->
       _(@toArray()).forEach(f)
       return
 
+    # [U] @ ((U, T) => U, U) => U
+    foldl: (f, initial) ->
+      _(@toArray()).foldl(f, initial)
+
     # () => Array[T]
     toArray: ->
       @_items[..]
