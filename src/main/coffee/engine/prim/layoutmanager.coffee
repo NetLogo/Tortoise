@@ -40,6 +40,7 @@ define(['shim/lodash', 'shim/random', 'shim/strictmath', 'util/trig']
           tMap[turtle.id] = i
           ax[i]           = 0.0
           ay[i]           = 0.0
+          return
       )
 
       [ax, ay, tMap, agt]
@@ -56,6 +57,7 @@ define(['shim/lodash', 'shim/random', 'shim/strictmath', 'util/trig']
             if index? then baseCounts[index]++
           f(t1)
           f(t2)
+          return
       )
       baseCounts
 
@@ -102,6 +104,8 @@ define(['shim/lodash', 'shim/random', 'shim/strictmath', 'util/trig']
           if t2Index isnt -1
             ax[t2Index] -= dx
             ay[t2Index] -= dy
+
+          return
 
       )
 
@@ -177,6 +181,7 @@ define(['shim/lodash', 'shim/random', 'shim/strictmath', 'util/trig']
           newX = calculateXCor(turtle.xcor + calculateLimit(ax[i]))
           newY = calculateYCor(turtle.ycor + calculateLimit(ay[i]))
           turtle.setXY(newX, newY)
+          return
       )
 
       return
