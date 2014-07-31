@@ -18,11 +18,18 @@ define(['shim/lodash', 'shim/strictmath', 'util/abstractmethoderror']
 
     # (Number, Number) => Array[Patch]
     getNeighbors: (pxcor, pycor) ->
-      _(@_getNeighbors(pxcor, pycor)).filter((patch) -> patch isnt false).value() #@# This function shouldn't exist; why give patches that are `false`?
+      @_filterNeighbors(@_getNeighbors(pxcor, pycor))
 
     # (Number, Number) => Array[Patch]
     getNeighbors4: (pxcor, pycor) ->
-      _(@_getNeighbors4(pxcor, pycor)).filter((patch) -> patch isnt false).value()
+      @_filterNeighbors(@_getNeighbors4(pxcor, pycor))
+
+    # Sadly, having topologies give out `false` and filtering it away seems to give the best balance between
+    # NetLogo semantics, code clarity, and efficiency.  I tried to kill this `false`-based nonsense, but I
+    # couldn't strike a better balance. --JAB (7/30/14)
+    # (Array[Patch]) => Array[Patch]
+    _filterNeighbors: (neighbors) ->
+      _(neighbors).filter((patch) -> patch isnt false).value()
 
     # (Number, Number, Number, Number) => Number
     distanceXY: (x1, y1, x2, y2) ->
