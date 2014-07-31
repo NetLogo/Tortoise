@@ -493,36 +493,41 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
       else
         arr[Random.nextInt(arr.length)]
 
-    # [Item] @ (ListOrSet[Item]) => Array[Item]
-    nOf: (resultSize, agentsOrList) ->
-      if not (agentsOrList instanceof AbstractAgentSet)
+    # [Item] @ (Number, ListOrSet[Item]) => ListOrSet[Item]
+    nOf: (n, agentsOrList) ->
+      if agentsOrList instanceof AbstractAgentSet
+        items    = agentsOrList.iterator().toArray()
+        newItems = @_nOfArray(n, items)
+        agentsOrList.copyWithNewAgents(newItems)
+      else
         throw new Exception.NetLogoException("n-of not implemented on lists yet")
-      items = agentsOrList.iterator().toArray()
-      agentsOrList.copyWithNewAgents( #@# Oh, FFS
-        switch resultSize
-          when 0
-            []
-          when 1
-            [items[Random.nextInt(items.length)]]
-          when 2
-            index1 = Random.nextInt(items.length)
-            index2 = Random.nextInt(items.length - 1)
-            [newIndex1, newIndex2] =
-            if index2 >= index1
-              [index1, index2 + 1]
-            else
-              [index2, index1]
-            [items[newIndex1], items[newIndex2]]
+
+    # Prodding at this code is like poking a beehive with a stick... --JAB (7/30/14)
+    # [Item] @ (Number, Array[Item]) => Array[Item]
+    _nOfArray: (n, items) ->
+      switch n
+        when 0
+          []
+        when 1
+          [items[Random.nextInt(items.length)]]
+        when 2
+          index1 = Random.nextInt(items.length)
+          index2 = Random.nextInt(items.length - 1)
+          [newIndex1, newIndex2] =
+          if index2 >= index1
+            [index1, index2 + 1]
           else
-            i = 0
-            j = 0
-            result = []
-            while j < resultSize #@# Lodash it!  And why not just use the general case?
-              if Random.nextInt(items.length - i) < resultSize - j
-                result.push(items[i])
-                j += 1
-              i += 1
-            result
-      )
+            [index2, index1]
+          [items[newIndex1], items[newIndex2]]
+        else
+          i = 0
+          j = 0
+          result = []
+          while j < n
+            if Random.nextInt(items.length - i) < n - j
+              result.push(items[i])
+              j += 1
+            i += 1
+          result
 
 )
