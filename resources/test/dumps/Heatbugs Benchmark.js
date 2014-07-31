@@ -3,6 +3,7 @@ var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
 var Prims         = workspace.prims;
+var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
 var Updater       = workspace.updater;
 var world         = workspace.world;
@@ -39,12 +40,12 @@ function setup() {
   world.clearAll();
   world.ticker.reset();
   Prims.nOf(world.observer.getGlobal('bug-count'), world.patches()).ask(function() {
-    Prims.sprout(1, 'TURTLES').ask(function() {
-      Prims.setVariable('color', 65);
-      Prims.setVariable('size', 1.75);
-      Prims.setVariable('ideal-temp', (world.observer.getGlobal('min-ideal-temp') + Prims.random(StrictMath.abs((world.observer.getGlobal('max-ideal-temp') - world.observer.getGlobal('min-ideal-temp'))))));
-      Prims.setVariable('output-heat', (world.observer.getGlobal('min-output-heat') + Prims.random(StrictMath.abs((world.observer.getGlobal('max-output-heat') - world.observer.getGlobal('min-output-heat'))))));
-      Prims.setVariable('unhappiness', StrictMath.abs((Prims.getVariable('ideal-temp') - Prims.getPatchVariable('temp'))));
+    SelfPrims.sprout(1, 'TURTLES').ask(function() {
+      SelfPrims.setVariable('color', 65);
+      SelfPrims.setVariable('size', 1.75);
+      SelfPrims.setVariable('ideal-temp', (world.observer.getGlobal('min-ideal-temp') + Prims.random(StrictMath.abs((world.observer.getGlobal('max-ideal-temp') - world.observer.getGlobal('min-ideal-temp'))))));
+      SelfPrims.setVariable('output-heat', (world.observer.getGlobal('min-output-heat') + Prims.random(StrictMath.abs((world.observer.getGlobal('max-output-heat') - world.observer.getGlobal('min-output-heat'))))));
+      SelfPrims.setVariable('unhappiness', StrictMath.abs((SelfPrims.getVariable('ideal-temp') - SelfPrims.getPatchVariable('temp'))));
     }, true);
   }, true);
 }
@@ -61,32 +62,32 @@ function go() {
 }
 function recolorPatches() {
   world.patches().ask(function() {
-    Prims.setPatchVariable('temp', (Prims.getPatchVariable('temp') * (1 - world.observer.getGlobal('evaporation-rate'))));
-    Prims.setPatchVariable('pcolor', ColorModel.scaleColor(15, Prims.getPatchVariable('temp'), 0, 500));
+    SelfPrims.setPatchVariable('temp', (SelfPrims.getPatchVariable('temp') * (1 - world.observer.getGlobal('evaporation-rate'))));
+    SelfPrims.setPatchVariable('pcolor', ColorModel.scaleColor(15, SelfPrims.getPatchVariable('temp'), 0, 500));
   }, true);
 }
 function step() {
-  Prims.setVariable('unhappiness', StrictMath.abs((Prims.getVariable('ideal-temp') - Prims.getPatchVariable('temp'))));
-  if (Prims.equality(Prims.getVariable('unhappiness'), 0)) {
-    Prims.setPatchVariable('temp', (Prims.getPatchVariable('temp') + Prims.getVariable('output-heat')));
+  SelfPrims.setVariable('unhappiness', StrictMath.abs((SelfPrims.getVariable('ideal-temp') - SelfPrims.getPatchVariable('temp'))));
+  if (Prims.equality(SelfPrims.getVariable('unhappiness'), 0)) {
+    SelfPrims.setPatchVariable('temp', (SelfPrims.getPatchVariable('temp') + SelfPrims.getVariable('output-heat')));
   }
   else {
     var target = Call(findTarget);
     if ((!Prims.equality(SelfManager.self().getPatchHere(), target) || Prims.gt(world.observer.getGlobal('random-move-chance'), Prims.random(100)))) {
       Call(bugMove, target);
     }
-    Prims.setPatchVariable('temp', (Prims.getPatchVariable('temp') + Prims.getVariable('output-heat')));
+    SelfPrims.setPatchVariable('temp', (SelfPrims.getPatchVariable('temp') + SelfPrims.getVariable('output-heat')));
   }
 }
 function findTarget() {
-  if (Prims.lt(Prims.getPatchVariable('temp'), Prims.getVariable('ideal-temp'))) {
-    return Prims.getNeighbors().maxOneOf(function() {
-      return Prims.getPatchVariable('temp');
+  if (Prims.lt(SelfPrims.getPatchVariable('temp'), SelfPrims.getVariable('ideal-temp'))) {
+    return SelfPrims.getNeighbors().maxOneOf(function() {
+      return SelfPrims.getPatchVariable('temp');
     });
   }
   else {
-    return Prims.getNeighbors().minOneOf(function() {
-      return Prims.getPatchVariable('temp');
+    return SelfPrims.getNeighbors().minOneOf(function() {
+      return SelfPrims.getPatchVariable('temp');
     });
   }
 }
@@ -98,7 +99,7 @@ function bugMove(target) {
   }
   while (Prims.lte(tries, 9)) {
     tries = (tries + 1);
-    target = Prims.oneOf(Prims.getNeighbors());
+    target = Prims.oneOf(SelfPrims.getNeighbors());
     if (!Prims.turtlesOn(target).nonEmpty()) {
       SelfManager.self().moveTo(target);
       throw new Exception.StopInterrupt;

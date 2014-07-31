@@ -3,6 +3,7 @@ var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
 var Prims         = workspace.prims;
+var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
 var Updater       = workspace.updater;
 var world         = workspace.world;
@@ -29,47 +30,47 @@ var Random         = require('shim/random');
 var StrictMath     = require('shim/strictmath');function setup() {
   world.clearAll();
   world.createTurtles(world.observer.getGlobal('population'), '').ask(function() {
-    Prims.setVariable('color', 15);
-    Prims.setVariable('size', 2);
-    Prims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
+    SelfPrims.setVariable('color', 15);
+    SelfPrims.setVariable('size', 2);
+    SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
   }, true);
   world.patches().ask(function() {
-    Prims.setPatchVariable('chemical', 0);
+    SelfPrims.setPatchVariable('chemical', 0);
   }, true);
   world.ticker.reset();
 }
 function go() {
   world.turtles().ask(function() {
-    if (Prims.gt(Prims.getPatchVariable('chemical'), world.observer.getGlobal('sniff-threshold'))) {
+    if (Prims.gt(SelfPrims.getPatchVariable('chemical'), world.observer.getGlobal('sniff-threshold'))) {
       Call(turnTowardChemical);
     }
-    Prims.right(((Prims.randomFloat(world.observer.getGlobal('wiggle-angle')) - Prims.randomFloat(world.observer.getGlobal('wiggle-angle'))) + world.observer.getGlobal('wiggle-bias')));
-    Prims.fd(1);
-    Prims.setPatchVariable('chemical', (Prims.getPatchVariable('chemical') + 2));
+    SelfPrims.right(((Prims.randomFloat(world.observer.getGlobal('wiggle-angle')) - Prims.randomFloat(world.observer.getGlobal('wiggle-angle'))) + world.observer.getGlobal('wiggle-bias')));
+    SelfPrims.fd(1);
+    SelfPrims.setPatchVariable('chemical', (SelfPrims.getPatchVariable('chemical') + 2));
   }, true);
   world.topology.diffuse('chemical', 1)
   world.patches().ask(function() {
-    Prims.setPatchVariable('chemical', (Prims.getPatchVariable('chemical') * 0.9));
-    Prims.setPatchVariable('pcolor', ColorModel.scaleColor(55, Prims.getPatchVariable('chemical'), 0.1, 3));
+    SelfPrims.setPatchVariable('chemical', (SelfPrims.getPatchVariable('chemical') * 0.9));
+    SelfPrims.setPatchVariable('pcolor', ColorModel.scaleColor(55, SelfPrims.getPatchVariable('chemical'), 0.1, 3));
   }, true);
   world.ticker.tick();
 }
 function turnTowardChemical() {
   var ahead = SelfManager.self().patchAhead(1).projectionBy(function() {
-    return Prims.getPatchVariable('chemical');
+    return SelfPrims.getPatchVariable('chemical');
   });
   var myright = SelfManager.self().patchRightAndAhead(world.observer.getGlobal('sniff-angle'), 1).projectionBy(function() {
-    return Prims.getPatchVariable('chemical');
+    return SelfPrims.getPatchVariable('chemical');
   });
   var myleft = SelfManager.self().patchLeftAndAhead(world.observer.getGlobal('sniff-angle'), 1).projectionBy(function() {
-    return Prims.getPatchVariable('chemical');
+    return SelfPrims.getPatchVariable('chemical');
   });
   if ((Prims.gte(myright, ahead) && Prims.gte(myright, myleft))) {
-    Prims.right(world.observer.getGlobal('sniff-angle'));
+    SelfPrims.right(world.observer.getGlobal('sniff-angle'));
   }
   else {
     if (Prims.gte(myleft, ahead)) {
-      Prims.left(world.observer.getGlobal('sniff-angle'));
+      SelfPrims.left(world.observer.getGlobal('sniff-angle'));
     }
   }
 }

@@ -6,71 +6,23 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
       , 'util/typechecker']
      , ( AbstractAgentSet,               Link,               Nobody,               Patch
       ,  PatchSet,               Turtle,               TurtleSet,               _,             Printer
-      ,  Random,        StrictMath,        Comparator,        Exception,        Iterator,        Shufflerator
+      ,  Random,        StrictMath,        Comparator,        Exception,        Iterator,        Shufflerator #@# Needless imports: .*erator
       ,  Type) ->
 
   class Prims
 
     # type ListOrSet[T] = Array[T]|AbstractAgentSet[T]
 
-    _getSelf: undefined # () => Agent
-
-    # (World) => Prims
+    # (World, Dump) => Prims
     constructor: (@_world, @_Dumper) ->
-      @_getSelf = @_world.selfManager.self
-
-    # (Number) => Unit
-    fd: (n) ->
-      @_getSelf().fd(n)
-      return
-
-    # (Number) => Unit
-    bk: (n) ->
-      @_getSelf().fd(-n)
-      return
-
-    # (Number) => Unit
-    jump: (n) ->
-      @_getSelf().jumpIfAble(n)
-
-    # (Number) => Unit
-    right: (n) ->
-      @_getSelf().right(n)
-      return
-
-    # (Number) => Unit
-    left: (n) ->
-      @_getSelf().right(-n)
-      return
-
-    # (Number, Number) => Unit
-    setXY: (x, y) ->
-      @_getSelf().setXY(x, y)
-      return
 
     # [T] @ (String|Array[T]) => Boolean
     empty: (xs) ->
       xs.length is 0
 
-    # () => PatchSet
-    getNeighbors: ->
-      @_getSelf().getNeighbors()
-
-    # () => PatchSet
-    getNeighbors4: ->
-      @_getSelf().getNeighbors4()
-
-    # (Number, String) => TurtleSet
-    sprout: (n, breedName) ->
-      @_getSelf().sprout(n, breedName)
-
-    # (Number, String) => TurtleSet
-    hatch: (n, breedName) ->
-      @_getSelf().hatch(n, breedName)
-
     # (Number, Number) => Patch
     patch: (x, y) ->
-      @_world.getPatchAt(x, y)
+      @_world.getPatchAt(x, y) #@# Needless
 
     # (String, Any) => Boolean
     isBreed: (breedName, x) ->
@@ -406,34 +358,6 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
         new TurtleSet(turtles)
       else
         agentsOrAgent.turtlesHere()
-
-    # () => Unit
-    die: ->
-      @_getSelf().die()
-      return
-
-    # [T] @ (AbstractAgentSet[T]) => AbstractAgentSet[T]
-    other: (agentSet) ->
-      self = @_getSelf()
-      agentSet.filter((agent) => agent isnt self)
-
-    # (String) => Any
-    getVariable: (varName) ->
-      @_getSelf().getVariable(varName)
-
-    # (String, Any) => Unit
-    setVariable: (varName, value) ->
-      @_getSelf().setVariable(varName, value)
-      return
-
-    # (String) => Any
-    getPatchVariable: (varName) ->
-      @_getSelf().getPatchVariable(varName)
-
-    # (String, Any) => Unit
-    setPatchVariable: (varName, value) ->
-      @_getSelf().setPatchVariable(varName, value)
-      return
 
     # [Item] @ (ListOrSet[Item]) => Item
     oneOf: (agentsOrList) ->

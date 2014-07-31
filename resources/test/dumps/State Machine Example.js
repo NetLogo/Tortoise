@@ -3,6 +3,7 @@ var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
 var Prims         = workspace.prims;
+var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
 var Updater       = workspace.updater;
 var world         = workspace.world;
@@ -31,70 +32,70 @@ var StrictMath     = require('shim/strictmath');function setup() {
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "bug")
   world.patches().ask(function() {
     if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal('density'))) {
-      Prims.setPatchVariable('pcolor', 45);
+      SelfPrims.setPatchVariable('pcolor', 45);
     }
   }, true);
   world.createTurtles(world.observer.getGlobal('number'), '').ask(function() {
-    Prims.setVariable('color', 9.9);
-    Prims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
-    Prims.setVariable('next-task', Tasks.commandTask(function() {
+    SelfPrims.setVariable('color', 9.9);
+    SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
+    SelfPrims.setVariable('next-task', Tasks.commandTask(function() {
       var taskArguments = arguments;
       Call(searchForChip);
     }));
-    Prims.setVariable('size', 5);
+    SelfPrims.setVariable('size', 5);
   }, true);
   world.ticker.reset();
 }
 function go() {
   world.turtles().ask(function() {
-    if (Prims.gt(Prims.getVariable('steps'), 0)) {
-      Prims.setVariable('steps', (Prims.getVariable('steps') - 1));
+    if (Prims.gt(SelfPrims.getVariable('steps'), 0)) {
+      SelfPrims.setVariable('steps', (SelfPrims.getVariable('steps') - 1));
     }
     else {
-      (Prims.getVariable('next-task'))();
+      (SelfPrims.getVariable('next-task'))();
       Call(wiggle);
     }
-    Prims.fd(1);
+    SelfPrims.fd(1);
   }, true);
   world.ticker.tick();
 }
 function wiggle() {
-  Prims.right(Prims.random(50));
-  Prims.left(Prims.random(50));
+  SelfPrims.right(Prims.random(50));
+  SelfPrims.left(Prims.random(50));
 }
 function searchForChip() {
-  if (Prims.equality(Prims.getPatchVariable('pcolor'), 45)) {
-    Prims.setPatchVariable('pcolor', 0);
-    Prims.setVariable('color', 25);
-    Prims.setVariable('steps', 20);
-    Prims.setVariable('next-task', Tasks.commandTask(function() {
+  if (Prims.equality(SelfPrims.getPatchVariable('pcolor'), 45)) {
+    SelfPrims.setPatchVariable('pcolor', 0);
+    SelfPrims.setVariable('color', 25);
+    SelfPrims.setVariable('steps', 20);
+    SelfPrims.setVariable('next-task', Tasks.commandTask(function() {
       var taskArguments = arguments;
       Call(findNewPile);
     }));
   }
 }
 function findNewPile() {
-  if (Prims.equality(Prims.getPatchVariable('pcolor'), 45)) {
-    Prims.setVariable('next-task', Tasks.commandTask(function() {
+  if (Prims.equality(SelfPrims.getPatchVariable('pcolor'), 45)) {
+    SelfPrims.setVariable('next-task', Tasks.commandTask(function() {
       var taskArguments = arguments;
       Call(putDownChip);
     }));
   }
 }
 function putDownChip() {
-  if (Prims.equality(Prims.getPatchVariable('pcolor'), 0)) {
-    Prims.setPatchVariable('pcolor', 45);
-    Prims.setVariable('color', 9.9);
-    Prims.setVariable('steps', 20);
-    Prims.setVariable('next-task', Tasks.commandTask(function() {
+  if (Prims.equality(SelfPrims.getPatchVariable('pcolor'), 0)) {
+    SelfPrims.setPatchVariable('pcolor', 45);
+    SelfPrims.setVariable('color', 9.9);
+    SelfPrims.setVariable('steps', 20);
+    SelfPrims.setVariable('next-task', Tasks.commandTask(function() {
       var taskArguments = arguments;
       Call(getAway);
     }));
   }
 }
 function getAway() {
-  if (Prims.equality(Prims.getPatchVariable('pcolor'), 0)) {
-    Prims.setVariable('next-task', Tasks.commandTask(function() {
+  if (Prims.equality(SelfPrims.getPatchVariable('pcolor'), 0)) {
+    SelfPrims.setVariable('next-task', Tasks.commandTask(function() {
       var taskArguments = arguments;
       Call(searchForChip);
     }));

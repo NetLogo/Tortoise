@@ -3,6 +3,7 @@ var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
 var Prims         = workspace.prims;
+var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
 var Updater       = workspace.updater;
 var world         = workspace.world;
@@ -36,8 +37,8 @@ var StrictMath     = require('shim/strictmath');function setup() {
   world.ticker.reset();
 }
 function setupRoad() {
-  if ((Prims.lt(Prims.getPatchVariable('pycor'), 2) && Prims.gt(Prims.getPatchVariable('pycor'), -2))) {
-    Prims.setPatchVariable('pcolor', 9.9);
+  if ((Prims.lt(SelfPrims.getPatchVariable('pycor'), 2) && Prims.gt(SelfPrims.getPatchVariable('pycor'), -2))) {
+    SelfPrims.setPatchVariable('pcolor', 9.9);
   }
 }
 function setupCars() {
@@ -47,22 +48,22 @@ function setupCars() {
   }
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "car")
   world.createTurtles(world.observer.getGlobal('number-of-cars'), '').ask(function() {
-    Prims.setVariable('color', 105);
-    Prims.setVariable('xcor', world.topology.randomXcor());
-    Prims.setVariable('heading', 90);
-    Prims.setVariable('speed', (0.1 + Prims.randomFloat(0.9)));
-    Prims.setVariable('speed-limit', 1);
-    Prims.setVariable('speed-min', 0);
+    SelfPrims.setVariable('color', 105);
+    SelfPrims.setVariable('xcor', world.topology.randomXcor());
+    SelfPrims.setVariable('heading', 90);
+    SelfPrims.setVariable('speed', (0.1 + Prims.randomFloat(0.9)));
+    SelfPrims.setVariable('speed-limit', 1);
+    SelfPrims.setVariable('speed-min', 0);
     Call(separateCars);
   }, true);
   world.observer.setGlobal('sample-car', Prims.oneOf(world.turtles()));
   world.observer.getGlobal('sample-car').ask(function() {
-    Prims.setVariable('color', 15);
+    SelfPrims.setVariable('color', 15);
   }, true);
 }
 function separateCars() {
-  if (Prims.other(SelfManager.self().turtlesHere()).nonEmpty()) {
-    Prims.fd(1);
+  if (SelfPrims.other(SelfManager.self().turtlesHere()).nonEmpty()) {
+    SelfPrims.fd(1);
     Call(separateCars);
   }
 }
@@ -75,23 +76,23 @@ function go() {
     else {
       Call(speedUpCar);
     }
-    if (Prims.lt(Prims.getVariable('speed'), Prims.getVariable('speed-min'))) {
-      Prims.setVariable('speed', Prims.getVariable('speed-min'));
+    if (Prims.lt(SelfPrims.getVariable('speed'), SelfPrims.getVariable('speed-min'))) {
+      SelfPrims.setVariable('speed', SelfPrims.getVariable('speed-min'));
     }
-    if (Prims.gt(Prims.getVariable('speed'), Prims.getVariable('speed-limit'))) {
-      Prims.setVariable('speed', Prims.getVariable('speed-limit'));
+    if (Prims.gt(SelfPrims.getVariable('speed'), SelfPrims.getVariable('speed-limit'))) {
+      SelfPrims.setVariable('speed', SelfPrims.getVariable('speed-limit'));
     }
-    Prims.fd(Prims.getVariable('speed'));
+    SelfPrims.fd(SelfPrims.getVariable('speed'));
   }, true);
   world.ticker.tick();
 }
 function slowDownCar(carAhead) {
-  Prims.setVariable('speed', (carAhead.projectionBy(function() {
-    return Prims.getVariable('speed');
+  SelfPrims.setVariable('speed', (carAhead.projectionBy(function() {
+    return SelfPrims.getVariable('speed');
   }) - world.observer.getGlobal('deceleration')));
 }
 function speedUpCar() {
-  Prims.setVariable('speed', (Prims.getVariable('speed') + world.observer.getGlobal('acceleration')));
+  SelfPrims.setVariable('speed', (SelfPrims.getVariable('speed') + world.observer.getGlobal('acceleration')));
 }
 world.observer.setGlobal('number-of-cars', 20);
 world.observer.setGlobal('deceleration', 0.026);

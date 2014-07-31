@@ -3,6 +3,7 @@ var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
 var Prims         = workspace.prims;
+var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
 var Updater       = workspace.updater;
 var world         = workspace.world;
@@ -36,17 +37,17 @@ var StrictMath     = require('shim/strictmath');function setup() {
 }
 function setupPatches() {
   world.patches().ask(function() {
-    Prims.setPatchVariable('max-grain-here', 0);
+    SelfPrims.setPatchVariable('max-grain-here', 0);
     if (Prims.lte(Prims.randomFloat(100), world.observer.getGlobal('percent-best-land'))) {
-      Prims.setPatchVariable('max-grain-here', world.observer.getGlobal('max-grain'));
-      Prims.setPatchVariable('grain-here', Prims.getPatchVariable('max-grain-here'));
+      SelfPrims.setPatchVariable('max-grain-here', world.observer.getGlobal('max-grain'));
+      SelfPrims.setPatchVariable('grain-here', SelfPrims.getPatchVariable('max-grain-here'));
     }
   }, true);
   Prims.repeat(5, function () {
     world.patches().agentFilter(function() {
-      return !Prims.equality(Prims.getPatchVariable('max-grain-here'), 0);
+      return !Prims.equality(SelfPrims.getPatchVariable('max-grain-here'), 0);
     }).ask(function() {
-      Prims.setPatchVariable('grain-here', Prims.getPatchVariable('max-grain-here'));
+      SelfPrims.setPatchVariable('grain-here', SelfPrims.getPatchVariable('max-grain-here'));
     }, true);
     world.topology.diffuse('grain-here', 0.25)
   });
@@ -54,46 +55,46 @@ function setupPatches() {
     world.topology.diffuse('grain-here', 0.25)
   });
   world.patches().ask(function() {
-    Prims.setPatchVariable('grain-here', StrictMath.floor(Prims.getPatchVariable('grain-here')));
-    Prims.setPatchVariable('max-grain-here', Prims.getPatchVariable('grain-here'));
+    SelfPrims.setPatchVariable('grain-here', StrictMath.floor(SelfPrims.getPatchVariable('grain-here')));
+    SelfPrims.setPatchVariable('max-grain-here', SelfPrims.getPatchVariable('grain-here'));
     Call(recolorPatch);
   }, true);
 }
 function recolorPatch() {
-  Prims.setPatchVariable('pcolor', ColorModel.scaleColor(45, Prims.getPatchVariable('grain-here'), 0, world.observer.getGlobal('max-grain')));
+  SelfPrims.setPatchVariable('pcolor', ColorModel.scaleColor(45, SelfPrims.getPatchVariable('grain-here'), 0, world.observer.getGlobal('max-grain')));
 }
 function setupTurtles() {
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "person")
   world.createTurtles(world.observer.getGlobal('num-people'), '').ask(function() {
     SelfManager.self().moveTo(Prims.oneOf(world.patches()));
-    Prims.setVariable('size', 1.5);
+    SelfPrims.setVariable('size', 1.5);
     Call(setInitialTurtleVars);
-    Prims.setVariable('age', Prims.random(Prims.getVariable('life-expectancy')));
+    SelfPrims.setVariable('age', Prims.random(SelfPrims.getVariable('life-expectancy')));
   }, true);
   Call(recolorTurtles);
 }
 function setInitialTurtleVars() {
-  Prims.setVariable('age', 0);
-  SelfManager.self().face(Prims.oneOf(Prims.getNeighbors4()));
-  Prims.setVariable('life-expectancy', (world.observer.getGlobal('life-expectancy-min') + Prims.random(((world.observer.getGlobal('life-expectancy-max') - world.observer.getGlobal('life-expectancy-min')) + 1))));
-  Prims.setVariable('metabolism', (1 + Prims.random(world.observer.getGlobal('metabolism-max'))));
-  Prims.setVariable('wealth', (Prims.getVariable('metabolism') + Prims.random(50)));
-  Prims.setVariable('vision', (1 + Prims.random(world.observer.getGlobal('max-vision'))));
+  SelfPrims.setVariable('age', 0);
+  SelfManager.self().face(Prims.oneOf(SelfPrims.getNeighbors4()));
+  SelfPrims.setVariable('life-expectancy', (world.observer.getGlobal('life-expectancy-min') + Prims.random(((world.observer.getGlobal('life-expectancy-max') - world.observer.getGlobal('life-expectancy-min')) + 1))));
+  SelfPrims.setVariable('metabolism', (1 + Prims.random(world.observer.getGlobal('metabolism-max'))));
+  SelfPrims.setVariable('wealth', (SelfPrims.getVariable('metabolism') + Prims.random(50)));
+  SelfPrims.setVariable('vision', (1 + Prims.random(world.observer.getGlobal('max-vision'))));
 }
 function recolorTurtles() {
   var maxWealth = Prims.max(world.turtles().projectionBy(function() {
-    return Prims.getVariable('wealth');
+    return SelfPrims.getVariable('wealth');
   }));
   world.turtles().ask(function() {
-    if (Prims.lte(Prims.getVariable('wealth'), (maxWealth / 3))) {
-      Prims.setVariable('color', 15);
+    if (Prims.lte(SelfPrims.getVariable('wealth'), (maxWealth / 3))) {
+      SelfPrims.setVariable('color', 15);
     }
     else {
-      if (Prims.lte(Prims.getVariable('wealth'), ((maxWealth * 2) / 3))) {
-        Prims.setVariable('color', 55);
+      if (Prims.lte(SelfPrims.getVariable('wealth'), ((maxWealth * 2) / 3))) {
+        SelfPrims.setVariable('color', 55);
       }
       else {
-        Prims.setVariable('color', 105);
+        SelfPrims.setVariable('color', 105);
       }
     }
   }, true);
@@ -116,66 +117,66 @@ function go() {
   world.ticker.tick();
 }
 function turnTowardsGrain() {
-  Prims.setVariable('heading', 0);
+  SelfPrims.setVariable('heading', 0);
   var bestDirection = 0;
   var bestAmount = Call(grainAhead);
-  Prims.setVariable('heading', 90);
+  SelfPrims.setVariable('heading', 90);
   if (Prims.gt(Call(grainAhead), bestAmount)) {
     bestDirection = 90;
     bestAmount = Call(grainAhead);
   }
-  Prims.setVariable('heading', 180);
+  SelfPrims.setVariable('heading', 180);
   if (Prims.gt(Call(grainAhead), bestAmount)) {
     bestDirection = 180;
     bestAmount = Call(grainAhead);
   }
-  Prims.setVariable('heading', 270);
+  SelfPrims.setVariable('heading', 270);
   if (Prims.gt(Call(grainAhead), bestAmount)) {
     bestDirection = 270;
     bestAmount = Call(grainAhead);
   }
-  Prims.setVariable('heading', bestDirection);
+  SelfPrims.setVariable('heading', bestDirection);
 }
 function grainAhead() {
   var total = 0;
   var howFar = 1;
-  Prims.repeat(Prims.getVariable('vision'), function () {
+  Prims.repeat(SelfPrims.getVariable('vision'), function () {
     total = (total + SelfManager.self().patchAhead(howFar).projectionBy(function() {
-      return Prims.getPatchVariable('grain-here');
+      return SelfPrims.getPatchVariable('grain-here');
     }));
     howFar = (howFar + 1);
   });
   return total;
 }
 function growGrain() {
-  if (Prims.lt(Prims.getPatchVariable('grain-here'), Prims.getPatchVariable('max-grain-here'))) {
-    Prims.setPatchVariable('grain-here', (Prims.getPatchVariable('grain-here') + world.observer.getGlobal('num-grain-grown')));
-    if (Prims.gt(Prims.getPatchVariable('grain-here'), Prims.getPatchVariable('max-grain-here'))) {
-      Prims.setPatchVariable('grain-here', Prims.getPatchVariable('max-grain-here'));
+  if (Prims.lt(SelfPrims.getPatchVariable('grain-here'), SelfPrims.getPatchVariable('max-grain-here'))) {
+    SelfPrims.setPatchVariable('grain-here', (SelfPrims.getPatchVariable('grain-here') + world.observer.getGlobal('num-grain-grown')));
+    if (Prims.gt(SelfPrims.getPatchVariable('grain-here'), SelfPrims.getPatchVariable('max-grain-here'))) {
+      SelfPrims.setPatchVariable('grain-here', SelfPrims.getPatchVariable('max-grain-here'));
     }
     Call(recolorPatch);
   }
 }
 function harvest() {
   world.turtles().ask(function() {
-    Prims.setVariable('wealth', StrictMath.floor((Prims.getVariable('wealth') + (Prims.getPatchVariable('grain-here') / SelfManager.self().turtlesHere().size()))));
+    SelfPrims.setVariable('wealth', StrictMath.floor((SelfPrims.getVariable('wealth') + (SelfPrims.getPatchVariable('grain-here') / SelfManager.self().turtlesHere().size()))));
   }, true);
   world.turtles().ask(function() {
-    Prims.setPatchVariable('grain-here', 0);
+    SelfPrims.setPatchVariable('grain-here', 0);
     Call(recolorPatch);
   }, true);
 }
 function moveEatAgeDie() {
-  Prims.fd(1);
-  Prims.setVariable('wealth', (Prims.getVariable('wealth') - Prims.getVariable('metabolism')));
-  Prims.setVariable('age', (Prims.getVariable('age') + 1));
-  if ((Prims.lt(Prims.getVariable('wealth'), 0) || Prims.gte(Prims.getVariable('age'), Prims.getVariable('life-expectancy')))) {
+  SelfPrims.fd(1);
+  SelfPrims.setVariable('wealth', (SelfPrims.getVariable('wealth') - SelfPrims.getVariable('metabolism')));
+  SelfPrims.setVariable('age', (SelfPrims.getVariable('age') + 1));
+  if ((Prims.lt(SelfPrims.getVariable('wealth'), 0) || Prims.gte(SelfPrims.getVariable('age'), SelfPrims.getVariable('life-expectancy')))) {
     Call(setInitialTurtleVars);
   }
 }
 function updateLorenzAndGini() {
   var sortedWealths = Prims.sort(world.turtles().projectionBy(function() {
-    return Prims.getVariable('wealth');
+    return SelfPrims.getVariable('wealth');
   }));
   var totalWealth = Prims.sum(sortedWealths);
   var wealthSumSoFar = 0;

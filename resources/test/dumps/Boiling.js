@@ -3,6 +3,7 @@ var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
 var Prims         = workspace.prims;
+var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
 var Updater       = workspace.updater;
 var world         = workspace.world;
@@ -29,21 +30,21 @@ var Random         = require('shim/random');
 var StrictMath     = require('shim/strictmath');function setup() {
   world.clearAll();
   world.patches().ask(function() {
-    Prims.setPatchVariable('heat', Prims.random(212));
-    Prims.setPatchVariable('pcolor', ColorModel.scaleColor(15, Prims.getPatchVariable('heat'), 0, 212));
+    SelfPrims.setPatchVariable('heat', Prims.random(212));
+    SelfPrims.setPatchVariable('pcolor', ColorModel.scaleColor(15, SelfPrims.getPatchVariable('heat'), 0, 212));
   }, true);
   world.ticker.reset();
 }
 function go() {
   world.topology.diffuse('heat', 1)
   world.patches().ask(function() {
-    Prims.setPatchVariable('heat', Prims.mod((Prims.getPatchVariable('heat') + 5), 212));
-    Prims.setPatchVariable('pcolor', ColorModel.scaleColor(15, Prims.getPatchVariable('heat'), 0, 212));
+    SelfPrims.setPatchVariable('heat', Prims.mod((SelfPrims.getPatchVariable('heat') + 5), 212));
+    SelfPrims.setPatchVariable('pcolor', ColorModel.scaleColor(15, SelfPrims.getPatchVariable('heat'), 0, 212));
   }, true);
   world.ticker.tick();
 }
 function averageHeat() {
   return Prims.mean(world.patches().projectionBy(function() {
-    return Prims.getPatchVariable('heat');
+    return SelfPrims.getPatchVariable('heat');
   }));
 }

@@ -3,6 +3,7 @@ var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
 var Prims         = workspace.prims;
+var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
 var Updater       = workspace.updater;
 var world         = workspace.world;
@@ -30,15 +31,15 @@ var StrictMath     = require('shim/strictmath');function setup(initialMagnetizat
   world.clearAll();
   world.patches().ask(function() {
     if (Prims.equality(initialMagnetization, 0)) {
-      Prims.setPatchVariable('spin', Prims.oneOf([-1, 1]));
+      SelfPrims.setPatchVariable('spin', Prims.oneOf([-1, 1]));
     }
     else {
-      Prims.setPatchVariable('spin', initialMagnetization);
+      SelfPrims.setPatchVariable('spin', initialMagnetization);
     }
     Call(recolor);
   }, true);
   world.observer.setGlobal('sum-of-spins', Prims.sum(world.patches().projectionBy(function() {
-    return Prims.getPatchVariable('spin');
+    return SelfPrims.getPatchVariable('spin');
   })));
   world.ticker.reset();
 }
@@ -49,21 +50,21 @@ function go() {
   world.ticker.tick();
 }
 function update() {
-  var ediff = ((2 * Prims.getPatchVariable('spin')) * Prims.sum(Prims.getNeighbors4().projectionBy(function() {
-    return Prims.getPatchVariable('spin');
+  var ediff = ((2 * SelfPrims.getPatchVariable('spin')) * Prims.sum(SelfPrims.getNeighbors4().projectionBy(function() {
+    return SelfPrims.getPatchVariable('spin');
   })));
   if ((Prims.lte(ediff, 0) || (Prims.gt(world.observer.getGlobal('temperature'), 0) && Prims.lt(Prims.randomFloat(1), StrictMath.exp(( -ediff / world.observer.getGlobal('temperature'))))))) {
-    Prims.setPatchVariable('spin',  -Prims.getPatchVariable('spin'));
-    world.observer.setGlobal('sum-of-spins', (world.observer.getGlobal('sum-of-spins') + (2 * Prims.getPatchVariable('spin'))));
+    SelfPrims.setPatchVariable('spin',  -SelfPrims.getPatchVariable('spin'));
+    world.observer.setGlobal('sum-of-spins', (world.observer.getGlobal('sum-of-spins') + (2 * SelfPrims.getPatchVariable('spin'))));
     Call(recolor);
   }
 }
 function recolor() {
-  if (Prims.equality(Prims.getPatchVariable('spin'), 1)) {
-    Prims.setPatchVariable('pcolor', (105 + 2));
+  if (Prims.equality(SelfPrims.getPatchVariable('spin'), 1)) {
+    SelfPrims.setPatchVariable('pcolor', (105 + 2));
   }
   else {
-    Prims.setPatchVariable('pcolor', (105 - 2));
+    SelfPrims.setPatchVariable('pcolor', (105 - 2));
   }
 }
 function magnetization() {

@@ -22,6 +22,7 @@ class RuntimeInit(program: Program, model: Model) {
        |var LayoutManager = workspace.layoutManager;
        |var LinkPrims     = workspace.linkPrims;
        |var Prims         = workspace.prims;
+       |var SelfPrims     = workspace.selfPrims;
        |var SelfManager   = workspace.selfManager;
        |var Updater       = workspace.updater;
        |var world         = workspace.world;

@@ -3,6 +3,7 @@ var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
 var Prims         = workspace.prims;
+var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
 var Updater       = workspace.updater;
 var world         = workspace.world;
@@ -29,24 +30,24 @@ var Random         = require('shim/random');
 var StrictMath     = require('shim/strictmath');function setupSquare() {
   world.clearAll();
   world.patches().ask(function() {
-    Prims.sprout(1, 'TURTLES').ask(function() {}, true);
+    SelfPrims.sprout(1, 'TURTLES').ask(function() {}, true);
   }, true);
   world.turtles().ask(function() {
-    LinkPrims.createLinksWith(Prims.turtlesOn(Prims.getNeighbors4())).ask(function() {}, false);
+    LinkPrims.createLinksWith(Prims.turtlesOn(SelfPrims.getNeighbors4())).ask(function() {}, false);
   }, true);
 }
 function setupHex() {
   world.clearAll();
   world.patches().ask(function() {
-    Prims.sprout(1, 'TURTLES').ask(function() {}, true);
+    SelfPrims.sprout(1, 'TURTLES').ask(function() {}, true);
   }, true);
   world.turtles().ask(function() {
     LinkPrims.createLinksWith(SelfManager.self().turtlesAt(0, 1)).ask(function() {}, false);
     LinkPrims.createLinksWith(SelfManager.self().turtlesAt(1, 0)).ask(function() {}, false);
-    if (Prims.equality(Prims.mod(Prims.getPatchVariable('pxcor'), 2), 0)) {
+    if (Prims.equality(Prims.mod(SelfPrims.getPatchVariable('pxcor'), 2), 0)) {
       LinkPrims.createLinksWith(SelfManager.self().turtlesAt(1, -1)).ask(function() {}, false);
       LinkPrims.createLinksWith(SelfManager.self().turtlesAt(-1, -1)).ask(function() {}, false);
-      Prims.setVariable('ycor', (Prims.getVariable('ycor') - 0.5));
+      SelfPrims.setVariable('ycor', (SelfPrims.getVariable('ycor') - 0.5));
     }
   }, true);
 }

@@ -3,6 +3,7 @@ var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
 var Prims         = workspace.prims;
+var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
 var Updater       = workspace.updater;
 var world         = workspace.world;
@@ -41,27 +42,27 @@ function setupWorld() {
   world.observer.setGlobal('sky-top', (world.topology.maxPycor - 5));
   world.observer.setGlobal('earth-top', 0);
   world.patches().ask(function() {
-    if (Prims.gt(Prims.getPatchVariable('pycor'), world.observer.getGlobal('sky-top'))) {
-      Prims.setPatchVariable('pcolor', ColorModel.scaleColor(9.9, Prims.getPatchVariable('pycor'), 22, 15));
+    if (Prims.gt(SelfPrims.getPatchVariable('pycor'), world.observer.getGlobal('sky-top'))) {
+      SelfPrims.setPatchVariable('pcolor', ColorModel.scaleColor(9.9, SelfPrims.getPatchVariable('pycor'), 22, 15));
     }
-    if ((Prims.lte(Prims.getPatchVariable('pycor'), world.observer.getGlobal('sky-top')) && Prims.gt(Prims.getPatchVariable('pycor'), world.observer.getGlobal('earth-top')))) {
-      Prims.setPatchVariable('pcolor', ColorModel.scaleColor(105, Prims.getPatchVariable('pycor'), -20, 20));
+    if ((Prims.lte(SelfPrims.getPatchVariable('pycor'), world.observer.getGlobal('sky-top')) && Prims.gt(SelfPrims.getPatchVariable('pycor'), world.observer.getGlobal('earth-top')))) {
+      SelfPrims.setPatchVariable('pcolor', ColorModel.scaleColor(105, SelfPrims.getPatchVariable('pycor'), -20, 20));
     }
-    if (Prims.lt(Prims.getPatchVariable('pycor'), world.observer.getGlobal('earth-top'))) {
-      Prims.setPatchVariable('pcolor', (15 + 3));
+    if (Prims.lt(SelfPrims.getPatchVariable('pycor'), world.observer.getGlobal('earth-top'))) {
+      SelfPrims.setPatchVariable('pcolor', (15 + 3));
     }
-    if (Prims.equality(Prims.getPatchVariable('pycor'), world.observer.getGlobal('earth-top'))) {
+    if (Prims.equality(SelfPrims.getPatchVariable('pycor'), world.observer.getGlobal('earth-top'))) {
       Call(updateAlbedo);
     }
   }, true);
 }
 function go() {
   world.turtlesOfBreed("CLOUDS").ask(function() {
-    Prims.fd(Prims.getVariable('cloud-speed'));
+    SelfPrims.fd(SelfPrims.getVariable('cloud-speed'));
   }, true);
   Call(runSunshine);
   world.patches().agentFilter(function() {
-    return Prims.equality(Prims.getPatchVariable('pycor'), world.observer.getGlobal('earth-top'));
+    return Prims.equality(SelfPrims.getPatchVariable('pycor'), world.observer.getGlobal('earth-top'));
   }).ask(function() {
     Call(updateAlbedo);
   }, true);
@@ -71,7 +72,7 @@ function go() {
   world.ticker.tick();
 }
 function updateAlbedo() {
-  Prims.setPatchVariable('pcolor', ColorModel.scaleColor(55, world.observer.getGlobal('albedo'), 0, 1));
+  SelfPrims.setPatchVariable('pcolor', ColorModel.scaleColor(55, world.observer.getGlobal('albedo'), 0, 1));
 }
 function addCloud() {
   var skyHeight = (world.observer.getGlobal('sky-top') - world.observer.getGlobal('earth-top'));
@@ -81,36 +82,36 @@ function addCloud() {
   var id = 0;
   if (world.turtlesOfBreed("CLOUDS").nonEmpty()) {
     id = (Prims.max(world.turtlesOfBreed("CLOUDS").projectionBy(function() {
-      return Prims.getVariable('cloud-id');
+      return SelfPrims.getVariable('cloud-id');
     })) + 1);
   }
   world.createTurtles((3 + Prims.random(20)), 'CLOUDS').ask(function() {
-    Prims.setVariable('cloud-speed', speed);
-    Prims.setVariable('cloud-id', id);
-    Prims.setXY(((x + Prims.random(9)) - 4), (((y + 2.5) + Prims.randomFloat(2)) - Prims.randomFloat(2)));
-    Prims.setVariable('color', 9.9);
-    Prims.setVariable('size', (2 + Prims.random(2)));
-    Prims.setVariable('heading', 90);
+    SelfPrims.setVariable('cloud-speed', speed);
+    SelfPrims.setVariable('cloud-id', id);
+    SelfPrims.setXY(((x + Prims.random(9)) - 4), (((y + 2.5) + Prims.randomFloat(2)) - Prims.randomFloat(2)));
+    SelfPrims.setVariable('color', 9.9);
+    SelfPrims.setVariable('size', (2 + Prims.random(2)));
+    SelfPrims.setVariable('heading', 90);
   }, true);
 }
 function removeCloud() {
   if (world.turtlesOfBreed("CLOUDS").nonEmpty()) {
     var doomedId = Prims.oneOf(Prims.removeDuplicates(world.turtlesOfBreed("CLOUDS").projectionBy(function() {
-      return Prims.getVariable('cloud-id');
+      return SelfPrims.getVariable('cloud-id');
     })));
     world.turtlesOfBreed("CLOUDS").agentFilter(function() {
-      return Prims.equality(Prims.getVariable('cloud-id'), doomedId);
+      return Prims.equality(SelfPrims.getVariable('cloud-id'), doomedId);
     }).ask(function() {
-      Prims.die();
+      SelfPrims.die();
     }, true);
   }
 }
 function runSunshine() {
   world.turtlesOfBreed("RAYS").ask(function() {
     if (!SelfManager.self().canMove(0.3)) {
-      Prims.die();
+      SelfPrims.die();
     }
-    Prims.fd(0.3);
+    SelfPrims.fd(0.3);
   }, true);
   Call(createSunshine);
   Call(reflectRaysFromClouds);
@@ -119,9 +120,9 @@ function runSunshine() {
 function createSunshine() {
   if (Prims.gt((10 * world.observer.getGlobal('sun-brightness')), Prims.random(50))) {
     world.createTurtles(1, 'RAYS').ask(function() {
-      Prims.setVariable('heading', 160);
-      Prims.setVariable('color', 45);
-      Prims.setXY((Prims.random(10) + world.topology.minPxcor), world.topology.maxPycor);
+      SelfPrims.setVariable('heading', 160);
+      SelfPrims.setVariable('color', 45);
+      SelfPrims.setXY((Prims.random(10) + world.topology.minPxcor), world.topology.maxPycor);
     }, true);
   }
 }
@@ -129,20 +130,20 @@ function reflectRaysFromClouds() {
   world.turtlesOfBreed("RAYS").agentFilter(function() {
     return SelfManager.self().breedHere("CLOUDS").nonEmpty();
   }).ask(function() {
-    Prims.setVariable('heading', (180 - Prims.getVariable('heading')));
+    SelfPrims.setVariable('heading', (180 - SelfPrims.getVariable('heading')));
   }, true);
 }
 function encounterEarth() {
   world.turtlesOfBreed("RAYS").agentFilter(function() {
-    return Prims.lte(Prims.getVariable('ycor'), world.observer.getGlobal('earth-top'));
+    return Prims.lte(SelfPrims.getVariable('ycor'), world.observer.getGlobal('earth-top'));
   }).ask(function() {
     if (Prims.gt((100 * world.observer.getGlobal('albedo')), Prims.random(100))) {
-      Prims.setVariable('heading', (180 - Prims.getVariable('heading')));
+      SelfPrims.setVariable('heading', (180 - SelfPrims.getVariable('heading')));
     }
     else {
-      Prims.right((Prims.random(45) - Prims.random(45)));
-      Prims.setVariable('color', ((15 - 2) + Prims.random(4)));
-      Prims.setVariable('breed', world.turtlesOfBreed("HEATS"));
+      SelfPrims.right((Prims.random(45) - Prims.random(45)));
+      SelfPrims.setVariable('color', ((15 - 2) + Prims.random(4)));
+      SelfPrims.setVariable('breed', world.turtlesOfBreed("HEATS"));
     }
   }, true);
 }
@@ -151,19 +152,19 @@ function runHeat() {
   world.turtlesOfBreed("HEATS").ask(function() {
     var dist = (0.5 * Prims.randomFloat(1));
     if (SelfManager.self().canMove(dist)) {
-      Prims.fd(dist);
+      SelfPrims.fd(dist);
     }
     else {
-      Prims.setVariable('heading', (180 - Prims.getVariable('heading')));
+      SelfPrims.setVariable('heading', (180 - SelfPrims.getVariable('heading')));
     }
-    if (Prims.gte(Prims.getVariable('ycor'), world.observer.getGlobal('earth-top'))) {
-      if (((Prims.gt(world.observer.getGlobal('temperature'), (20 + Prims.random(40))) && Prims.gt(Prims.getVariable('xcor'), 0)) && Prims.lt(Prims.getVariable('xcor'), (world.topology.maxPxcor - 8)))) {
-        Prims.setVariable('breed', world.turtlesOfBreed("IRS"));
-        Prims.setVariable('heading', 20);
-        Prims.setVariable('color', 125);
+    if (Prims.gte(SelfPrims.getVariable('ycor'), world.observer.getGlobal('earth-top'))) {
+      if (((Prims.gt(world.observer.getGlobal('temperature'), (20 + Prims.random(40))) && Prims.gt(SelfPrims.getVariable('xcor'), 0)) && Prims.lt(SelfPrims.getVariable('xcor'), (world.topology.maxPxcor - 8)))) {
+        SelfPrims.setVariable('breed', world.turtlesOfBreed("IRS"));
+        SelfPrims.setVariable('heading', 20);
+        SelfPrims.setVariable('color', 125);
       }
       else {
-        Prims.setVariable('heading', (100 + Prims.random(160)));
+        SelfPrims.setVariable('heading', (100 + Prims.random(160)));
       }
     }
   }, true);
@@ -171,46 +172,46 @@ function runHeat() {
 function runIr() {
   world.turtlesOfBreed("IRS").ask(function() {
     if (!SelfManager.self().canMove(0.3)) {
-      Prims.die();
+      SelfPrims.die();
     }
-    Prims.fd(0.3);
-    if (Prims.lte(Prims.getVariable('ycor'), world.observer.getGlobal('earth-top'))) {
-      Prims.setVariable('breed', world.turtlesOfBreed("HEATS"));
-      Prims.right(Prims.random(45));
-      Prims.left(Prims.random(45));
-      Prims.setVariable('color', ((15 - 2) + Prims.random(4)));
+    SelfPrims.fd(0.3);
+    if (Prims.lte(SelfPrims.getVariable('ycor'), world.observer.getGlobal('earth-top'))) {
+      SelfPrims.setVariable('breed', world.turtlesOfBreed("HEATS"));
+      SelfPrims.right(Prims.random(45));
+      SelfPrims.left(Prims.random(45));
+      SelfPrims.setVariable('color', ((15 - 2) + Prims.random(4)));
     }
     if (SelfManager.self().breedHere("CO2S").nonEmpty()) {
-      Prims.setVariable('heading', (180 - Prims.getVariable('heading')));
+      SelfPrims.setVariable('heading', (180 - SelfPrims.getVariable('heading')));
     }
   }, true);
 }
 function addCo2() {
   var skyHeight = (world.observer.getGlobal('sky-top') - world.observer.getGlobal('earth-top'));
   world.createTurtles(25, 'CO2S').ask(function() {
-    Prims.setVariable('color', 55);
-    Prims.setXY(world.topology.randomXcor(), (world.observer.getGlobal('earth-top') + Prims.randomFloat(skyHeight)));
+    SelfPrims.setVariable('color', 55);
+    SelfPrims.setXY(world.topology.randomXcor(), (world.observer.getGlobal('earth-top') + Prims.randomFloat(skyHeight)));
   }, true);
 }
 function removeCo2() {
   Prims.repeat(25, function () {
     if (world.turtlesOfBreed("CO2S").nonEmpty()) {
       Prims.oneOf(world.turtlesOfBreed("CO2S")).ask(function() {
-        Prims.die();
+        SelfPrims.die();
       }, true);
     }
   });
 }
 function runCo2() {
   world.turtlesOfBreed("CO2S").ask(function() {
-    Prims.right((Prims.random(51) - 25));
+    SelfPrims.right((Prims.random(51) - 25));
     var dist = (0.05 + Prims.randomFloat(0.1));
     if (SelfManager.self().patchAhead(dist).projectionBy(function() {
-      return !ColorModel.areRelatedByShade(105, Prims.getPatchVariable('pcolor'));
+      return !ColorModel.areRelatedByShade(105, SelfPrims.getPatchVariable('pcolor'));
     })) {
-      Prims.setVariable('heading', (180 - Prims.getVariable('heading')));
+      SelfPrims.setVariable('heading', (180 - SelfPrims.getVariable('heading')));
     }
-    Prims.fd(dist);
+    SelfPrims.fd(dist);
   }, true);
 }
 world.observer.setGlobal('sun-brightness', 1);

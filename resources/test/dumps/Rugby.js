@@ -3,6 +3,7 @@ var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
 var Prims         = workspace.prims;
+var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
 var Updater       = workspace.updater;
 var world         = workspace.world;
@@ -34,7 +35,7 @@ var StrictMath     = require('shim/strictmath');function setup() {
   world.observer.setGlobal('best-dist', -1);
   world.observer.setGlobal('kicks', 0);
   world.observer.getGlobal('try-line').ask(function() {
-    Prims.setPatchVariable('score', 0);
+    SelfPrims.setPatchVariable('score', 0);
   }, true);
   Call(findAnalyticSolution);
   if (world.observer.getGlobal('show-level-curves?')) {
@@ -44,30 +45,30 @@ var StrictMath     = require('shim/strictmath');function setup() {
 }
 function setupField() {
   world.patches().ask(function() {
-    if (!Prims.equality(Prims.getNeighbors().size(), 8)) {
-      Prims.setPatchVariable('pcolor', 15);
+    if (!Prims.equality(SelfPrims.getNeighbors().size(), 8)) {
+      SelfPrims.setPatchVariable('pcolor', 15);
     }
-    if (((Prims.equality(Prims.getPatchVariable('pycor'), world.topology.minPycor) && Prims.gte(Prims.getPatchVariable('pxcor'), world.observer.getGlobal('goal-pos'))) && Prims.lt(Prims.getPatchVariable('pxcor'), (world.observer.getGlobal('goal-pos') + world.observer.getGlobal('goal-size'))))) {
-      Prims.setPatchVariable('pcolor', 55);
+    if (((Prims.equality(SelfPrims.getPatchVariable('pycor'), world.topology.minPycor) && Prims.gte(SelfPrims.getPatchVariable('pxcor'), world.observer.getGlobal('goal-pos'))) && Prims.lt(SelfPrims.getPatchVariable('pxcor'), (world.observer.getGlobal('goal-pos') + world.observer.getGlobal('goal-size'))))) {
+      SelfPrims.setPatchVariable('pcolor', 55);
     }
   }, true);
   world.observer.setGlobal('try-line', world.patches().agentFilter(function() {
-    return (Prims.equality(Prims.getPatchVariable('pxcor'), world.observer.getGlobal('kick-line')) && Prims.equality(Prims.getPatchVariable('pcolor'), 0));
+    return (Prims.equality(SelfPrims.getPatchVariable('pxcor'), world.observer.getGlobal('kick-line')) && Prims.equality(SelfPrims.getPatchVariable('pcolor'), 0));
   }));
   world.observer.getGlobal('try-line').ask(function() {
-    Prims.setPatchVariable('pcolor', 45);
+    SelfPrims.setPatchVariable('pcolor', 45);
   }, true);
   world.observer.setGlobal('histogram-area', world.patches().agentFilter(function() {
-    return (Prims.lt(Prims.getPatchVariable('pxcor'), world.observer.getGlobal('kick-line')) && Prims.equality(Prims.getPatchVariable('pcolor'), 0));
+    return (Prims.lt(SelfPrims.getPatchVariable('pxcor'), world.observer.getGlobal('kick-line')) && Prims.equality(SelfPrims.getPatchVariable('pcolor'), 0));
   }));
 }
 function setupBalls() {
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
   world.observer.getGlobal('try-line').ask(function() {
-    Prims.sprout(1, 'TURTLES').ask(function() {
-      Prims.setVariable('color', 25);
-      Prims.setVariable('start-patch', SelfManager.self().getPatchHere());
-      Prims.setVariable('heading', (Prims.randomFloat(90) + 90));
+    SelfPrims.sprout(1, 'TURTLES').ask(function() {
+      SelfPrims.setVariable('color', 25);
+      SelfPrims.setVariable('start-patch', SelfManager.self().getPatchHere());
+      SelfPrims.setVariable('heading', (Prims.randomFloat(90) + 90));
     }, true);
   }, true);
   Call(plotScores);
@@ -81,123 +82,123 @@ function go() {
   }
   world.observer.setGlobal('kicks', (world.observer.getGlobal('kicks') + world.observer.getGlobal('try-line').size()));
   world.observer.setGlobal('goals', Prims.sum(world.observer.getGlobal('try-line').projectionBy(function() {
-    return Prims.getPatchVariable('score');
+    return SelfPrims.getPatchVariable('score');
   })));
   Call(setupBalls);
   world.ticker.tick();
 }
 function move() {
-  if ((Prims.gte(Prims.getPatchVariable('pxcor'), (world.topology.maxPxcor - 1)) || Prims.gte(Prims.getPatchVariable('pycor'), (world.topology.minPycor + 1)))) {
+  if ((Prims.gte(SelfPrims.getPatchVariable('pxcor'), (world.topology.maxPxcor - 1)) || Prims.gte(SelfPrims.getPatchVariable('pycor'), (world.topology.minPycor + 1)))) {
     Call(checkPatch, Call(nextPatch));
     Call(checkPatch, SelfManager.self().patchAhead(1));
   }
-  Prims.fd(1);
+  SelfPrims.fd(1);
 }
 function checkPatch(thePatch) {
   if (Prims.equality(thePatch.projectionBy(function() {
-    return Prims.getPatchVariable('pcolor');
+    return SelfPrims.getPatchVariable('pcolor');
   }), 15)) {
-    Prims.die();
+    SelfPrims.die();
   }
   if (Prims.equality(thePatch.projectionBy(function() {
-    return Prims.getPatchVariable('pcolor');
+    return SelfPrims.getPatchVariable('pcolor');
   }), 55)) {
-    Prims.getVariable('start-patch').ask(function() {
-      Prims.setPatchVariable('score', (Prims.getPatchVariable('score') + 1));
+    SelfPrims.getVariable('start-patch').ask(function() {
+      SelfPrims.setPatchVariable('score', (SelfPrims.getPatchVariable('score') + 1));
     }, true);
-    Prims.die();
+    SelfPrims.die();
   }
 }
 function nextPatch() {
-  if (Prims.lt(Prims.getVariable('heading'), SelfManager.self().towardsXY((Prims.getPatchVariable('pxcor') + 0.5), (Prims.getPatchVariable('pycor') + 0.5)))) {
+  if (Prims.lt(SelfPrims.getVariable('heading'), SelfManager.self().towardsXY((SelfPrims.getPatchVariable('pxcor') + 0.5), (SelfPrims.getPatchVariable('pycor') + 0.5)))) {
     return SelfManager.self().patchAt(0, 1);
   }
-  if (Prims.lt(Prims.getVariable('heading'), SelfManager.self().towardsXY((Prims.getPatchVariable('pxcor') + 0.5), (Prims.getPatchVariable('pycor') - 0.5)))) {
+  if (Prims.lt(SelfPrims.getVariable('heading'), SelfManager.self().towardsXY((SelfPrims.getPatchVariable('pxcor') + 0.5), (SelfPrims.getPatchVariable('pycor') - 0.5)))) {
     return SelfManager.self().patchAt(1, 0);
   }
-  if (Prims.lt(Prims.getVariable('heading'), SelfManager.self().towardsXY((Prims.getPatchVariable('pxcor') - 0.5), (Prims.getPatchVariable('pycor') - 0.5)))) {
+  if (Prims.lt(SelfPrims.getVariable('heading'), SelfManager.self().towardsXY((SelfPrims.getPatchVariable('pxcor') - 0.5), (SelfPrims.getPatchVariable('pycor') - 0.5)))) {
     return SelfManager.self().patchAt(0, -1);
   }
-  if (Prims.lt(Prims.getVariable('heading'), SelfManager.self().towardsXY((Prims.getPatchVariable('pxcor') - 0.5), (Prims.getPatchVariable('pycor') + 0.5)))) {
+  if (Prims.lt(SelfPrims.getVariable('heading'), SelfManager.self().towardsXY((SelfPrims.getPatchVariable('pxcor') - 0.5), (SelfPrims.getPatchVariable('pycor') + 0.5)))) {
     return SelfManager.self().patchAt(-1, 0);
   }
   return SelfManager.self().patchAt(0, 1);
 }
 function plotScores() {
   world.observer.setGlobal('current-max', Prims.max(world.observer.getGlobal('try-line').projectionBy(function() {
-    return Prims.getPatchVariable('score');
+    return SelfPrims.getPatchVariable('score');
   })));
   if (Prims.equality(world.observer.getGlobal('current-max'), 0)) {
     world.observer.getGlobal('histogram-area').ask(function() {
-      Prims.setPatchVariable('pcolor', 0);
+      SelfPrims.setPatchVariable('pcolor', 0);
     }, true);
     throw new Exception.StopInterrupt;
   }
   world.observer.getGlobal('try-line').ask(function() {
-    if (Prims.equality(Prims.getPatchVariable('score'), world.observer.getGlobal('current-max'))) {
-      world.observer.setGlobal('best-dist', Prims.getPatchVariable('pycor'));
+    if (Prims.equality(SelfPrims.getPatchVariable('score'), world.observer.getGlobal('current-max'))) {
+      world.observer.setGlobal('best-dist', SelfPrims.getPatchVariable('pycor'));
       SelfManager.self().patchAt(2, 0).ask(function() {
-        Prims.setPatchVariable('plabel', Prims.getPatchVariable('pycor'));
+        SelfPrims.setPatchVariable('plabel', SelfPrims.getPatchVariable('pycor'));
       }, true);
     }
     else {
-      if (!Prims.equality(Prims.getPatchVariable('pcolor'), 125)) {
+      if (!Prims.equality(SelfPrims.getPatchVariable('pcolor'), 125)) {
         SelfManager.self().patchAt(2, 0).ask(function() {
-          Prims.setPatchVariable('plabel', "");
+          SelfPrims.setPatchVariable('plabel', "");
         }, true);
       }
     }
   }, true);
   world.observer.getGlobal('histogram-area').ask(function() {
-    if (Prims.gt(Prims.getPatchVariable('pxcor'), (world.observer.getGlobal('kick-line') - ((SelfManager.self().patchAt((world.observer.getGlobal('kick-line') - Prims.getPatchVariable('pxcor')), 0).projectionBy(function() {
-      return Prims.getPatchVariable('score');
+    if (Prims.gt(SelfPrims.getPatchVariable('pxcor'), (world.observer.getGlobal('kick-line') - ((SelfManager.self().patchAt((world.observer.getGlobal('kick-line') - SelfPrims.getPatchVariable('pxcor')), 0).projectionBy(function() {
+      return SelfPrims.getPatchVariable('score');
     }) * (world.observer.getGlobal('kick-line') - world.topology.minPxcor)) / world.observer.getGlobal('current-max'))))) {
-      if (Prims.equality(SelfManager.self().patchAt((world.observer.getGlobal('kick-line') - Prims.getPatchVariable('pxcor')), 0).projectionBy(function() {
-        return Prims.getPatchVariable('score');
+      if (Prims.equality(SelfManager.self().patchAt((world.observer.getGlobal('kick-line') - SelfPrims.getPatchVariable('pxcor')), 0).projectionBy(function() {
+        return SelfPrims.getPatchVariable('score');
       }), world.observer.getGlobal('current-max'))) {
-        Prims.setPatchVariable('pcolor', 45);
+        SelfPrims.setPatchVariable('pcolor', 45);
       }
       else {
-        Prims.setPatchVariable('pcolor', 105);
+        SelfPrims.setPatchVariable('pcolor', 105);
       }
     }
     else {
-      Prims.setPatchVariable('pcolor', 0);
+      SelfPrims.setPatchVariable('pcolor', 0);
     }
   }, true);
 }
 function findAnalyticSolution() {
   world.patches().agentFilter(function() {
-    return Prims.gt(Prims.getPatchVariable('pycor'), world.topology.minPycor);
+    return Prims.gt(SelfPrims.getPatchVariable('pycor'), world.topology.minPycor);
   }).ask(function() {
     Call(calcGoalAngle);
   }, true);
   var winningPatch = world.observer.getGlobal('try-line').minOneOf(function() {
-    return Prims.getPatchVariable('goal-angle');
+    return SelfPrims.getPatchVariable('goal-angle');
   });
   winningPatch.ask(function() {
-    Prims.setPatchVariable('pcolor', 125);
+    SelfPrims.setPatchVariable('pcolor', 125);
     SelfManager.self().patchAt(2, 0).ask(function() {
-      Prims.setPatchVariable('plabel', Prims.getPatchVariable('pycor'));
+      SelfPrims.setPatchVariable('plabel', SelfPrims.getPatchVariable('pycor'));
     }, true);
   }, true);
   world.observer.setGlobal('analytic', winningPatch.projectionBy(function() {
-    return Prims.getPatchVariable('pycor');
+    return SelfPrims.getPatchVariable('pycor');
   }));
 }
 function drawLevelCurves() {
   world.patches().agentFilter(function() {
-    return (Prims.gt(Prims.getPatchVariable('pxcor'), world.observer.getGlobal('kick-line')) && Prims.lt(Prims.getPatchVariable('pcolor'), 10));
+    return (Prims.gt(SelfPrims.getPatchVariable('pxcor'), world.observer.getGlobal('kick-line')) && Prims.lt(SelfPrims.getPatchVariable('pcolor'), 10));
   }).ask(function() {
-    if (Prims.gt(Prims.getPatchVariable('goal-angle'), 270)) {
-      Prims.setPatchVariable('pcolor', ((360 - Prims.mod(Prims.getPatchVariable('goal-angle'), 10)) * 0.8));
+    if (Prims.gt(SelfPrims.getPatchVariable('goal-angle'), 270)) {
+      SelfPrims.setPatchVariable('pcolor', ((360 - Prims.mod(SelfPrims.getPatchVariable('goal-angle'), 10)) * 0.8));
     }
   }, true);
 }
 function calcGoalAngle() {
-  Prims.setPatchVariable('left-angle', SelfManager.self().towardsXY((world.observer.getGlobal('goal-pos') - 0.5), (world.topology.minPycor + 0.5)));
-  Prims.setPatchVariable('right-angle', SelfManager.self().towardsXY(((world.observer.getGlobal('goal-pos') + world.observer.getGlobal('goal-size')) - 0.5), (world.topology.minPycor + 0.5)));
-  Prims.setPatchVariable('goal-angle', Prims.mod((Prims.getPatchVariable('right-angle') - Prims.getPatchVariable('left-angle')), 360));
+  SelfPrims.setPatchVariable('left-angle', SelfManager.self().towardsXY((world.observer.getGlobal('goal-pos') - 0.5), (world.topology.minPycor + 0.5)));
+  SelfPrims.setPatchVariable('right-angle', SelfManager.self().towardsXY(((world.observer.getGlobal('goal-pos') + world.observer.getGlobal('goal-size')) - 0.5), (world.topology.minPycor + 0.5)));
+  SelfPrims.setPatchVariable('goal-angle', Prims.mod((SelfPrims.getPatchVariable('right-angle') - SelfPrims.getPatchVariable('left-angle')), 360));
 }
 world.observer.setGlobal('kick-line', 20);
 world.observer.setGlobal('goal-size', 11);

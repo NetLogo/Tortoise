@@ -3,6 +3,7 @@ var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
 var Prims         = workspace.prims;
+var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
 var Updater       = workspace.updater;
 var world         = workspace.world;
@@ -33,16 +34,16 @@ var StrictMath     = require('shim/strictmath');function setup(setupTask) {
   world.observer.setGlobal('selected-color', 55);
   world.observer.setGlobal('selected-patch', Nobody);
   world.patches().ask(function() {
-    Prims.setPatchVariable('n', (setupTask)());
-    Prims.setPatchVariable('n-stack', []);
-    Prims.setPatchVariable('base-color', world.observer.getGlobal('default-color'));
+    SelfPrims.setPatchVariable('n', (setupTask)());
+    SelfPrims.setPatchVariable('n-stack', []);
+    SelfPrims.setPatchVariable('base-color', world.observer.getGlobal('default-color'));
   }, true);
   var ignore = Call(stabilize, false);
   world.patches().ask(function() {
     Call(recolor);
   }, true);
   world.observer.setGlobal('total', Prims.sum(world.patches().projectionBy(function() {
-    return Prims.getPatchVariable('n');
+    return SelfPrims.getPatchVariable('n');
   })));
   world.observer.setGlobal('sizes', []);
   world.observer.setGlobal('lifetimes', []);
@@ -61,7 +62,7 @@ function setupRandom() {
   }));
 }
 function recolor() {
-  Prims.setPatchVariable('pcolor', ColorModel.scaleColor(Prims.getPatchVariable('base-color'), Prims.getPatchVariable('n'), 0, 4));
+  SelfPrims.setPatchVariable('pcolor', ColorModel.scaleColor(SelfPrims.getPatchVariable('base-color'), SelfPrims.getPatchVariable('n'), 0, 4));
 }
 function go() {
   var drop = Call(dropPatch);
@@ -79,13 +80,13 @@ function go() {
     }
     avalanchePatches.ask(function() {
       Call(recolor);
-      Prims.getNeighbors4().ask(function() {
+      SelfPrims.getNeighbors4().ask(function() {
         Call(recolor);
       }, true);
     }, true);
     notImplemented('display', undefined)();
     avalanchePatches.ask(function() {
-      Prims.setPatchVariable('base-color', world.observer.getGlobal('default-color'));
+      SelfPrims.setPatchVariable('base-color', world.observer.getGlobal('default-color'));
       Call(recolor);
     }, true);
     world.observer.setGlobal('total-on-tick', world.observer.getGlobal('total'));
@@ -107,12 +108,12 @@ function explore() {
       Call(popN);
     }, true);
     world.patches().ask(function() {
-      Prims.setPatchVariable('base-color', world.observer.getGlobal('default-color'));
+      SelfPrims.setPatchVariable('base-color', world.observer.getGlobal('default-color'));
       Call(recolor);
     }, true);
     var avalanchePatches = Prims.first(results);
     avalanchePatches.ask(function() {
-      Prims.setPatchVariable('base-color', world.observer.getGlobal('selected-color'));
+      SelfPrims.setPatchVariable('base-color', world.observer.getGlobal('selected-color'));
       Call(recolor);
     }, true);
     notImplemented('display', undefined)();
@@ -121,7 +122,7 @@ function explore() {
     if (!Prims.equality(world.observer.getGlobal('selected-patch'), Nobody)) {
       world.observer.setGlobal('selected-patch', Nobody);
       world.patches().ask(function() {
-        Prims.setPatchVariable('base-color', world.observer.getGlobal('default-color'));
+        SelfPrims.setPatchVariable('base-color', world.observer.getGlobal('default-color'));
         Call(recolor);
       }, true);
     }
@@ -129,24 +130,24 @@ function explore() {
 }
 function stabilize(animate_p) {
   var activePatches = world.patches().agentFilter(function() {
-    return Prims.gt(Prims.getPatchVariable('n'), 3);
+    return Prims.gt(SelfPrims.getPatchVariable('n'), 3);
   });
   var iters = 0;
   var avalanchePatches = new PatchSet([]);
   while (activePatches.nonEmpty()) {
     var overloadedPatches = activePatches.agentFilter(function() {
-      return Prims.gt(Prims.getPatchVariable('n'), 3);
+      return Prims.gt(SelfPrims.getPatchVariable('n'), 3);
     });
     if (overloadedPatches.nonEmpty()) {
       iters = (iters + 1);
     }
     overloadedPatches.ask(function() {
-      Prims.setPatchVariable('base-color', world.observer.getGlobal('fired-color'));
+      SelfPrims.setPatchVariable('base-color', world.observer.getGlobal('fired-color'));
       Call(updateN, -4);
       if (animate_p) {
         Call(recolor);
       }
-      Prims.getNeighbors4().ask(function() {
+      SelfPrims.getNeighbors4().ask(function() {
         Call(updateN, 1);
         if (animate_p) {
           Call(recolor);
@@ -158,13 +159,13 @@ function stabilize(animate_p) {
     }
     avalanchePatches = Prims.patchSet(avalanchePatches, overloadedPatches);
     activePatches = Prims.patchSet(overloadedPatches.projectionBy(function() {
-      return Prims.getNeighbors4();
+      return SelfPrims.getNeighbors4();
     }));
   }
   return Prims.list(avalanchePatches, iters);
 }
 function updateN(howMuch) {
-  Prims.setPatchVariable('n', (Prims.getPatchVariable('n') + howMuch));
+  SelfPrims.setPatchVariable('n', (SelfPrims.getPatchVariable('n') + howMuch));
   world.observer.setGlobal('total', (world.observer.getGlobal('total') + howMuch));
 }
 function dropPatch() {
@@ -182,11 +183,11 @@ function dropPatch() {
   return Nobody;
 }
 function pushN() {
-  Prims.setPatchVariable('n-stack', Prims.fput(Prims.getPatchVariable('n'), Prims.getPatchVariable('n-stack')));
+  SelfPrims.setPatchVariable('n-stack', Prims.fput(SelfPrims.getPatchVariable('n'), SelfPrims.getPatchVariable('n-stack')));
 }
 function popN() {
-  Call(updateN, (Prims.first(Prims.getPatchVariable('n-stack')) - Prims.getPatchVariable('n')));
-  Prims.setPatchVariable('n-stack', Prims.butLast(Prims.getPatchVariable('n-stack')));
+  Call(updateN, (Prims.first(SelfPrims.getPatchVariable('n-stack')) - SelfPrims.getPatchVariable('n')));
+  SelfPrims.setPatchVariable('n-stack', Prims.butLast(SelfPrims.getPatchVariable('n-stack')));
 }
 world.observer.setGlobal('animate-avalanches?', false);
 world.observer.setGlobal('drop-location', "random");

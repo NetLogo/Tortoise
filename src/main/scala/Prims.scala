@@ -34,11 +34,11 @@ object Prims {
           .mkString("Call(", ", ", ")")
       case _: prim._unaryminus              => s" -${arg(0)}" // The space is important, because these can be nested --JAB (6/12/14)
       case _: prim._not                     => s"!${arg(0)}"
-      case bv: prim._breedvariable          => s"Prims.getVariable('${bv.name.toLowerCase}')"
-      case tv: prim._turtlevariable         => s"Prims.getVariable('${tv.displayName.toLowerCase}')"
-      case tv: prim._linkvariable           => s"Prims.getVariable('${tv.displayName.toLowerCase}')"
-      case tv: prim._turtleorlinkvariable   => s"Prims.getVariable('${tv.varName.toLowerCase}')"
-      case pv: prim._patchvariable          => s"Prims.getPatchVariable('${pv.displayName.toLowerCase}')"
+      case bv: prim._breedvariable          => s"SelfPrims.getVariable('${bv.name.toLowerCase}')"
+      case tv: prim._turtlevariable         => s"SelfPrims.getVariable('${tv.displayName.toLowerCase}')"
+      case tv: prim._linkvariable           => s"SelfPrims.getVariable('${tv.displayName.toLowerCase}')"
+      case tv: prim._turtleorlinkvariable   => s"SelfPrims.getVariable('${tv.varName.toLowerCase}')"
+      case pv: prim._patchvariable          => s"SelfPrims.getPatchVariable('${pv.displayName.toLowerCase}')"
       case r: prim._reference               => s"${r.reference.original.displayName.toLowerCase}"
       case ov: prim._observervariable       => s"world.observer.getGlobal('${ov.displayName.toLowerCase}')"
       case _: prim._count                   => s"${arg(0)}.size()"
@@ -143,17 +143,17 @@ object Prims {
       case p: prim._observervariable =>
         s"world.observer.setGlobal('${p.displayName.toLowerCase}', ${arg(1)});"
       case bv: prim._breedvariable =>
-        s"Prims.setVariable('${bv.name.toLowerCase}', ${arg(1)});"
+        s"SelfPrims.setVariable('${bv.name.toLowerCase}', ${arg(1)});"
       case p: prim._linkvariable =>
-        s"Prims.setVariable('${p.displayName.toLowerCase}', ${arg(1)});"
+        s"SelfPrims.setVariable('${p.displayName.toLowerCase}', ${arg(1)});"
       case p: prim._turtlevariable =>
-        s"Prims.setVariable('${p.displayName.toLowerCase}', ${arg(1)});"
+        s"SelfPrims.setVariable('${p.displayName.toLowerCase}', ${arg(1)});"
       case p: prim._turtleorlinkvariable if p.varName == "BREED" =>
-        s"Prims.setVariable('breed', ${arg(1)});"
+        s"SelfPrims.setVariable('breed', ${arg(1)});"
       case p: prim._turtleorlinkvariable =>
-        s"Prims.setVariable('${p.varName.toLowerCase}', ${arg(1)});"
+        s"SelfPrims.setVariable('${p.varName.toLowerCase}', ${arg(1)});"
       case p: prim._patchvariable =>
-        s"Prims.setPatchVariable('${p.displayName.toLowerCase}', ${arg(1)});"
+        s"SelfPrims.setPatchVariable('${p.displayName.toLowerCase}', ${arg(1)});"
       case p: prim._procedurevariable =>
         s"${Handlers.ident(p.name)} = ${arg(1)};"
       case x =>
@@ -239,14 +239,14 @@ object Prims {
     val body = Handlers.fun(s.args(1))
     val breedName = s.command.asInstanceOf[prim._sprout].breedName
     val trueBreedName = if (breedName.nonEmpty) breedName else "TURTLES"
-    val sprouted = s"Prims.sprout($n, '$trueBreedName')"
+    val sprouted = s"SelfPrims.sprout($n, '$trueBreedName')"
     genAsk(sprouted, true, body)
   }
 
   def generateHatch(s: ast.Statement, breedName: String): String = {
     val n = Handlers.reporter(s.args(0))
     val body = Handlers.fun(s.args(1))
-    genAsk(s"Prims.hatch($n, '$breedName')", true, body)
+    genAsk(s"SelfPrims.hatch($n, '$breedName')", true, body)
   }
 
   def generateEvery(w: ast.Statement): String = {

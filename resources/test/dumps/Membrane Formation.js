@@ -3,6 +3,7 @@ var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
 var Prims         = workspace.prims;
+var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
 var Updater       = workspace.updater;
 var world         = workspace.world;
@@ -33,19 +34,19 @@ var StrictMath     = require('shim/strictmath');function setup() {
   world.observer.setGlobal('too-close-distance', 1.3);
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
   world.createTurtles((world.observer.getGlobal('num-water') + world.observer.getGlobal('num-lipids')), 'WATERS').ask(function() {
-    Prims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
-    Prims.setVariable('color', 105);
+    SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
+    SelfPrims.setVariable('color', 105);
   }, true);
   world.createTurtles(world.observer.getGlobal('num-lipids'), 'OILS').ask(function() {
     var partner = Prims.oneOf(world.turtlesOfBreed("WATERS").agentFilter(function() {
       return !LinkPrims.connectedLinks(false, false).nonEmpty();
     }));
     SelfManager.self().moveTo(partner);
-    Prims.fd(world.observer.getGlobal('lipid-length'));
+    SelfPrims.fd(world.observer.getGlobal('lipid-length'));
     LinkPrims.createLinkWith(partner).ask(function() {}, false);
-    Prims.setVariable('color', 25);
+    SelfPrims.setVariable('color', 25);
     partner.ask(function() {
-      Prims.setVariable('color', 115);
+      SelfPrims.setVariable('color', 115);
     }, true);
   }, true);
   world.ticker.reset();
@@ -59,36 +60,36 @@ function go() {
   world.ticker.tick();
 }
 function interactWithNeighbor() {
-  var near = Prims.oneOf(Prims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal('interaction-distance')).agentFilter(function() {
+  var near = Prims.oneOf(SelfPrims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal('interaction-distance')).agentFilter(function() {
     return !LinkPrims.isLinkNeighbor(false, false)(SelfManager.myself());
   })));
   if (!Prims.equality(near, Nobody)) {
     SelfManager.self().face(near);
     if (Prims.equality(near.projectionBy(function() {
-      return Prims.getVariable('breed');
-    }), Prims.getVariable('breed'))) {
-      Prims.fd(world.observer.getGlobal('water-water-force'));
+      return SelfPrims.getVariable('breed');
+    }), SelfPrims.getVariable('breed'))) {
+      SelfPrims.fd(world.observer.getGlobal('water-water-force'));
     }
     else {
-      Prims.fd(world.observer.getGlobal('water-oil-force'));
+      SelfPrims.fd(world.observer.getGlobal('water-oil-force'));
     }
   }
 }
 function repelTooCloseNeighbor() {
-  var tooNear = Prims.oneOf(Prims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal('too-close-distance'))));
+  var tooNear = Prims.oneOf(SelfPrims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal('too-close-distance'))));
   if (!Prims.equality(tooNear, Nobody)) {
     SelfManager.self().face(tooNear);
-    Prims.fd(world.observer.getGlobal('too-close-force'));
+    SelfPrims.fd(world.observer.getGlobal('too-close-force'));
   }
 }
 function interactWithPartner() {
   var partner = Prims.oneOf(LinkPrims.linkNeighbors(false, false));
   if (!Prims.equality(partner, Nobody)) {
     SelfManager.self().face(partner);
-    Prims.fd((SelfManager.self().distance(partner) - world.observer.getGlobal('lipid-length')));
+    SelfPrims.fd((SelfManager.self().distance(partner) - world.observer.getGlobal('lipid-length')));
   }
-  Prims.left(Prims.random(360));
-  Prims.fd(world.observer.getGlobal('random-force'));
+  SelfPrims.left(Prims.random(360));
+  SelfPrims.fd(world.observer.getGlobal('random-force'));
 }
 world.observer.setGlobal('num-water', 750);
 world.observer.setGlobal('num-lipids', 250);

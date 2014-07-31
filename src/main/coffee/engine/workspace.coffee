@@ -2,10 +2,10 @@
 
 define(['engine/dump', 'engine/updater', 'engine/core/breedmanager', 'engine/core/world'
       , 'engine/core/structure/selfmanager', 'engine/prim/layoutmanager', 'engine/prim/linkprims', 'engine/prim/prims'
-      , 'util/timer']
+      , 'engine/prim/selfprims', 'util/timer']
      , ( Dump,          Updater,          BreedManager,               World
       ,  SelfManager,                         LayoutManager,               LinkPrims,               Prims
-      ,  Timer) ->
+      ,  SelfPrims,               Timer) ->
 
   (breedObjs) -> () -> # World args; see constructor for `World` --JAB (4/17/14)
 
@@ -20,6 +20,7 @@ define(['engine/dump', 'engine/updater', 'engine/core/breedmanager', 'engine/cor
     layoutManager = new LayoutManager(world)
     linkPrims     = new LinkPrims(world)
     prims         = new Prims(world, Dump)
+    selfPrims     = new SelfPrims(selfManager.self)
 
     {
       selfManager   : selfManager
@@ -27,6 +28,7 @@ define(['engine/dump', 'engine/updater', 'engine/core/breedmanager', 'engine/cor
       layoutManager : layoutManager
       linkPrims     : linkPrims
       prims         : prims
+      selfPrims     : selfPrims
       timer         : timer
       updater       : updater
       world         : world

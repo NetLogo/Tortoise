@@ -3,6 +3,7 @@ var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
 var Prims         = workspace.prims;
+var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
 var Updater       = workspace.updater;
 var world         = workspace.world;
@@ -29,25 +30,25 @@ var Random         = require('shim/random');
 var StrictMath     = require('shim/strictmath');function setup() {
   world.clearAll();
   Prims.patch(0, 0).ask(function() {
-    Prims.setPatchVariable('pcolor', 55);
+    SelfPrims.setPatchVariable('pcolor', 55);
   }, true);
   world.createTurtles(world.observer.getGlobal('num-particles'), '').ask(function() {
-    Prims.setVariable('color', 15);
-    Prims.setVariable('size', 1.5);
-    Prims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
+    SelfPrims.setVariable('color', 15);
+    SelfPrims.setVariable('size', 1.5);
+    SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
   }, true);
   world.ticker.reset();
 }
 function go() {
   world.turtles().ask(function() {
-    Prims.right(Prims.random(world.observer.getGlobal('wiggle-angle')));
-    Prims.left(Prims.random(world.observer.getGlobal('wiggle-angle')));
-    Prims.fd(1);
-    if (Prims.getNeighbors().agentFilter(function() {
-      return Prims.equality(Prims.getPatchVariable('pcolor'), 55);
+    SelfPrims.right(Prims.random(world.observer.getGlobal('wiggle-angle')));
+    SelfPrims.left(Prims.random(world.observer.getGlobal('wiggle-angle')));
+    SelfPrims.fd(1);
+    if (SelfPrims.getNeighbors().agentFilter(function() {
+      return Prims.equality(SelfPrims.getPatchVariable('pcolor'), 55);
     }).nonEmpty()) {
-      Prims.setPatchVariable('pcolor', 55);
-      Prims.die();
+      SelfPrims.setPatchVariable('pcolor', 55);
+      SelfPrims.die();
     }
   }, true);
   world.ticker.tick();

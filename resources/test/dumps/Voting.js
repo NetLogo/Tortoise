@@ -3,6 +3,7 @@ var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
 var Prims         = workspace.prims;
+var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
 var Updater       = workspace.updater;
 var world         = workspace.world;
@@ -29,43 +30,43 @@ var Random         = require('shim/random');
 var StrictMath     = require('shim/strictmath');function setup() {
   world.clearAll();
   world.patches().ask(function() {
-    Prims.setPatchVariable('vote', Prims.random(2));
+    SelfPrims.setPatchVariable('vote', Prims.random(2));
     Call(recolorPatch);
   }, true);
   world.ticker.reset();
 }
 function go() {
   world.patches().ask(function() {
-    Prims.setPatchVariable('total', Prims.sum(Prims.getNeighbors().projectionBy(function() {
-      return Prims.getPatchVariable('vote');
+    SelfPrims.setPatchVariable('total', Prims.sum(SelfPrims.getNeighbors().projectionBy(function() {
+      return SelfPrims.getPatchVariable('vote');
     })));
   }, true);
   world.patches().ask(function() {
-    if (Prims.gt(Prims.getPatchVariable('total'), 5)) {
-      Prims.setPatchVariable('vote', 1);
+    if (Prims.gt(SelfPrims.getPatchVariable('total'), 5)) {
+      SelfPrims.setPatchVariable('vote', 1);
     }
-    if (Prims.lt(Prims.getPatchVariable('total'), 3)) {
-      Prims.setPatchVariable('vote', 0);
+    if (Prims.lt(SelfPrims.getPatchVariable('total'), 3)) {
+      SelfPrims.setPatchVariable('vote', 0);
     }
-    if (Prims.equality(Prims.getPatchVariable('total'), 4)) {
+    if (Prims.equality(SelfPrims.getPatchVariable('total'), 4)) {
       if (world.observer.getGlobal('change-vote-if-tied?')) {
-        Prims.setPatchVariable('vote', (1 - Prims.getPatchVariable('vote')));
+        SelfPrims.setPatchVariable('vote', (1 - SelfPrims.getPatchVariable('vote')));
       }
     }
-    if (Prims.equality(Prims.getPatchVariable('total'), 5)) {
+    if (Prims.equality(SelfPrims.getPatchVariable('total'), 5)) {
       if (world.observer.getGlobal('award-close-calls-to-loser?')) {
-        Prims.setPatchVariable('vote', 0);
+        SelfPrims.setPatchVariable('vote', 0);
       }
       else {
-        Prims.setPatchVariable('vote', 1);
+        SelfPrims.setPatchVariable('vote', 1);
       }
     }
-    if (Prims.equality(Prims.getPatchVariable('total'), 3)) {
+    if (Prims.equality(SelfPrims.getPatchVariable('total'), 3)) {
       if (world.observer.getGlobal('award-close-calls-to-loser?')) {
-        Prims.setPatchVariable('vote', 1);
+        SelfPrims.setPatchVariable('vote', 1);
       }
       else {
-        Prims.setPatchVariable('vote', 0);
+        SelfPrims.setPatchVariable('vote', 0);
       }
     }
     Call(recolorPatch);
@@ -73,11 +74,11 @@ function go() {
   world.ticker.tick();
 }
 function recolorPatch() {
-  if (Prims.equality(Prims.getPatchVariable('vote'), 0)) {
-    Prims.setPatchVariable('pcolor', 55);
+  if (Prims.equality(SelfPrims.getPatchVariable('vote'), 0)) {
+    SelfPrims.setPatchVariable('pcolor', 55);
   }
   else {
-    Prims.setPatchVariable('pcolor', 105);
+    SelfPrims.setPatchVariable('pcolor', 105);
   }
 }
 world.observer.setGlobal('change-vote-if-tied?', false);

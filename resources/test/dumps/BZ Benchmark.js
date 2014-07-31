@@ -3,6 +3,7 @@ var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
 var Prims         = workspace.prims;
+var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
 var Updater       = workspace.updater;
 var world         = workspace.world;
@@ -39,8 +40,8 @@ function setup() {
   world.clearAll();
   world.ticker.reset();
   world.patches().ask(function() {
-    Prims.setPatchVariable('state', Prims.random((world.observer.getGlobal('n') + 1)));
-    Prims.setPatchVariable('pcolor', ColorModel.scaleColor(15, Prims.getPatchVariable('state'), 0, world.observer.getGlobal('n')));
+    SelfPrims.setPatchVariable('state', Prims.random((world.observer.getGlobal('n') + 1)));
+    SelfPrims.setPatchVariable('pcolor', ColorModel.scaleColor(15, SelfPrims.getPatchVariable('state'), 0, world.observer.getGlobal('n')));
   }, true);
 }
 function go() {
@@ -48,33 +49,33 @@ function go() {
     Call(findNewState);
   }, true);
   world.patches().ask(function() {
-    Prims.setPatchVariable('state', Prims.getPatchVariable('new-state'));
-    Prims.setPatchVariable('pcolor', ColorModel.scaleColor(15, Prims.getPatchVariable('state'), 0, world.observer.getGlobal('n')));
+    SelfPrims.setPatchVariable('state', SelfPrims.getPatchVariable('new-state'));
+    SelfPrims.setPatchVariable('pcolor', ColorModel.scaleColor(15, SelfPrims.getPatchVariable('state'), 0, world.observer.getGlobal('n')));
   }, true);
   world.ticker.tick();
 }
 function findNewState() {
-  if (Prims.equality(Prims.getPatchVariable('state'), world.observer.getGlobal('n'))) {
-    Prims.setPatchVariable('new-state', 0);
+  if (Prims.equality(SelfPrims.getPatchVariable('state'), world.observer.getGlobal('n'))) {
+    SelfPrims.setPatchVariable('new-state', 0);
   }
   else {
-    var a = Prims.getNeighbors().agentFilter(function() {
-      return (Prims.gt(Prims.getPatchVariable('state'), 0) && Prims.lt(Prims.getPatchVariable('state'), world.observer.getGlobal('n')));
+    var a = SelfPrims.getNeighbors().agentFilter(function() {
+      return (Prims.gt(SelfPrims.getPatchVariable('state'), 0) && Prims.lt(SelfPrims.getPatchVariable('state'), world.observer.getGlobal('n')));
     }).size();
-    var b = Prims.getNeighbors().agentFilter(function() {
-      return Prims.equality(Prims.getPatchVariable('state'), world.observer.getGlobal('n'));
+    var b = SelfPrims.getNeighbors().agentFilter(function() {
+      return Prims.equality(SelfPrims.getPatchVariable('state'), world.observer.getGlobal('n'));
     }).size();
-    if (Prims.equality(Prims.getPatchVariable('state'), 0)) {
-      Prims.setPatchVariable('new-state', (Prims._int((a / world.observer.getGlobal('k1'))) + Prims._int((b / world.observer.getGlobal('k2')))));
+    if (Prims.equality(SelfPrims.getPatchVariable('state'), 0)) {
+      SelfPrims.setPatchVariable('new-state', (Prims._int((a / world.observer.getGlobal('k1'))) + Prims._int((b / world.observer.getGlobal('k2')))));
     }
     else {
-      var s = (Prims.getPatchVariable('state') + Prims.sum(Prims.getNeighbors().projectionBy(function() {
-        return Prims.getPatchVariable('state');
+      var s = (SelfPrims.getPatchVariable('state') + Prims.sum(SelfPrims.getNeighbors().projectionBy(function() {
+        return SelfPrims.getPatchVariable('state');
       })));
-      Prims.setPatchVariable('new-state', (Prims._int((s / ((a + b) + 1))) + world.observer.getGlobal('g')));
+      SelfPrims.setPatchVariable('new-state', (Prims._int((s / ((a + b) + 1))) + world.observer.getGlobal('g')));
     }
-    if (Prims.gt(Prims.getPatchVariable('new-state'), world.observer.getGlobal('n'))) {
-      Prims.setPatchVariable('new-state', world.observer.getGlobal('n'));
+    if (Prims.gt(SelfPrims.getPatchVariable('new-state'), world.observer.getGlobal('n'))) {
+      SelfPrims.setPatchVariable('new-state', world.observer.getGlobal('n'));
     }
   }
 }
