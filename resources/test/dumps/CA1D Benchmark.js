@@ -57,7 +57,7 @@ function singleCell() {
     SelfPrims.setPatchVariable('on?', false);
     SelfPrims.setPatchVariable('pcolor', world.observer.getGlobal('background'));
   }, true);
-  Prims.patch(0, world.observer.getGlobal('row')).ask(function() {
+  world.getPatchAt(0, world.observer.getGlobal('row')).ask(function() {
     SelfPrims.setPatchVariable('pcolor', world.observer.getGlobal('foreground'));
     SelfPrims.setPatchVariable('on?', true);
   }, true);

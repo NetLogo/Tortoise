@@ -83,9 +83,9 @@ function go() {
   world.ticker.tick();
 }
 function drawCells() {
-  var erasing_p = Prims.breedOn("CELLS", Prims.patch(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)())).nonEmpty();
+  var erasing_p = Prims.breedOn("CELLS", world.getPatchAt(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)())).nonEmpty();
   while (notImplemented('mouse-down?', false)()) {
-    Prims.patch(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)()).ask(function() {
+    world.getPatchAt(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)()).ask(function() {
       if (erasing_p) {
         Call(erase);
       }

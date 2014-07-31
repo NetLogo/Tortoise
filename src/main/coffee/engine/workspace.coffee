@@ -13,14 +13,14 @@ define(['engine/dump', 'engine/updater', 'engine/core/breedmanager', 'engine/cor
 
     selfManager  = new SelfManager
     breedManager = new BreedManager(breedObjs)
+    prims        = new Prims(Dump)
+    selfPrims    = new SelfPrims(selfManager.self)
     timer        = new Timer
     updater      = new Updater
 
     world         = new World(selfManager, updater, breedManager, worldArgs...)
     layoutManager = new LayoutManager(world)
     linkPrims     = new LinkPrims(world)
-    prims         = new Prims(world, Dump)
-    selfPrims     = new SelfPrims(selfManager.self)
 
     {
       selfManager   : selfManager

@@ -11,16 +11,12 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
 
     # type ListOrSet[T] = Array[T]|AbstractAgentSet[T]
 
-    # (World, Dump) => Prims
-    constructor: (@_world, @_Dumper) ->
+    # (Dump) => Prims
+    constructor: (@_Dumper) ->
 
     # [T] @ (String|Array[T]) => Boolean
     empty: (xs) ->
       xs.length is 0
-
-    # (Number, Number) => Patch
-    patch: (x, y) ->
-      @_world.getPatchAt(x, y) #@# Needless
 
     # (String, Any) => Boolean
     isBreed: (breedName, x) ->

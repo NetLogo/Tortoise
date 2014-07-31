@@ -57,7 +57,7 @@ object SimplePrims {
         case _: prim.etc._greaterorequal     => "Prims.gte"
         case _: prim.etc._lessorequal        => "Prims.lte"
         case _: prim.etc._turtle             => "world.getTurtle"
-        case _: prim.etc._patch              => "Prims.patch"
+        case _: prim.etc._patch              => "world.getPatchAt"
         case _: prim._neighbors              => "SelfPrims.getNeighbors"
         case _: prim._neighbors4             => "SelfPrims.getNeighbors4"
         case _: prim._equal                  => "Prims.equality"

@@ -178,7 +178,7 @@ function bounce() {
     SelfPrims.setVariable('wall-hits', (SelfPrims.getVariable('wall-hits') + 1));
     SelfPrims.setVariable('momentum-difference', (SelfPrims.getVariable('momentum-difference') + (StrictMath.abs((((Trig.unsquashedCos(SelfPrims.getVariable('heading')) * 2) * SelfPrims.getVariable('mass')) * SelfPrims.getVariable('speed'))) / world.observer.getGlobal('length-horizontal-surface'))));
   }
-  Prims.patch(newPx, newPy).ask(function() {
+  world.getPatchAt(newPx, newPy).ask(function() {
     SelfPrims.sprout(1, 'FLASHES').ask(function() {
       SelfManager.self().hideTurtle(true);;
       SelfPrims.setVariable('birthday', world.ticker.tickCount());

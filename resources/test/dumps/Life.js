@@ -73,11 +73,11 @@ function go() {
   world.ticker.tick();
 }
 function drawCells() {
-  var erasing_p = Prims.patch(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)()).projectionBy(function() {
+  var erasing_p = world.getPatchAt(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)()).projectionBy(function() {
     return SelfPrims.getPatchVariable('living?');
   });
   while (notImplemented('mouse-down?', false)()) {
-    Prims.patch(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)()).ask(function() {
+    world.getPatchAt(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)()).ask(function() {
       if (erasing_p) {
         Call(cellDeath);
       }

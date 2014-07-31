@@ -95,7 +95,7 @@ function go() {
 }
 function explore() {
   if (notImplemented('mouse-inside?', false)()) {
-    var p = Prims.patch(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)());
+    var p = world.getPatchAt(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)());
     world.observer.setGlobal('selected-patch', p);
     world.patches().ask(function() {
       Call(pushN);
@@ -170,14 +170,14 @@ function updateN(howMuch) {
 }
 function dropPatch() {
   if (Prims.equality(world.observer.getGlobal('drop-location'), "center")) {
-    return Prims.patch(0, 0);
+    return world.getPatchAt(0, 0);
   }
   if (Prims.equality(world.observer.getGlobal('drop-location'), "random")) {
     return Prims.oneOf(world.patches());
   }
   if ((Prims.equality(world.observer.getGlobal('drop-location'), "mouse-click") && notImplemented('mouse-down?', false)())) {
     Prims.every(0.3, function () {
-      return Prims.patch(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)());
+      return world.getPatchAt(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)());
     });
   }
   return Nobody;

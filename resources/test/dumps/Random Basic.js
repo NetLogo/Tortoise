@@ -80,7 +80,7 @@ function go() {
   world.ticker.tick();
 }
 function selectRandomValue() {
-  Prims.patch(0, (world.observer.getGlobal('max-y-histogram') + 4)).ask(function() {
+  world.getPatchAt(0, (world.observer.getGlobal('max-y-histogram') + 4)).ask(function() {
     SelfPrims.sprout(1, 'MESSENGERS').ask(function() {
       SelfPrims.setVariable('shape', "default");
       SelfPrims.setVariable('color', 0);

@@ -29,7 +29,7 @@ var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
 var StrictMath     = require('shim/strictmath');function setup() {
   world.clearAll();
-  Prims.patch(0, 0).ask(function() {
+  world.getPatchAt(0, 0).ask(function() {
     SelfPrims.setPatchVariable('pcolor', 55);
   }, true);
   world.createTurtles(world.observer.getGlobal('num-particles'), '').ask(function() {

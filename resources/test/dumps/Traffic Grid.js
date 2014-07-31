@@ -137,12 +137,12 @@ function chooseCurrent() {
   if (notImplemented('mouse-down?', false)()) {
     var xMouse = notImplemented('mouse-xcor', 0)();
     var yMouse = notImplemented('mouse-ycor', 0)();
-    if (Prims.patch(xMouse, yMouse).projectionBy(function() {
+    if (world.getPatchAt(xMouse, yMouse).projectionBy(function() {
       return SelfPrims.getPatchVariable('intersection?');
     })) {
       Call(updateCurrent);
       Call(unlabelCurrent);
-      Call(makeCurrent, Prims.patch(xMouse, yMouse));
+      Call(makeCurrent, world.getPatchAt(xMouse, yMouse));
       Call(labelCurrent);
       throw new Exception.StopInterrupt;
     }
