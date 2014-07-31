@@ -89,9 +89,8 @@ define(['engine/core/nobody', 'shim/random', 'util/abstractmethoderror', 'util/e
     # [U] @ (U, (U, U) => Boolean, () => U) => Agent
     _findBestOf: (worstPossible, findIsBetter, f) ->
       foldFunc =
-        (acc, agent) =>
+        ([currentBest, currentWinners], agent) =>
 
-          [currentBest, currentWinners] = acc
           result = @_selfManager.askAgent(f)(agent)
 
           if result is currentBest

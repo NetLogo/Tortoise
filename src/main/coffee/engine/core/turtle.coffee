@@ -385,9 +385,7 @@ define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtl
       if not _(@_links).isEmpty()
         linkTypes = [[true, true], [true, false], [false, false]]
         _(linkTypes).map(
-          (typePair) =>
-            [isDirected, isSource] = typePair
-            @connectedLinks(isDirected, isSource).toArray()
+          ([isDirected, isSource]) => @connectedLinks(isDirected, isSource).toArray()
         ).flatten().forEach(
           (link) -> link.updateEndRelatedVars(); return
         )
