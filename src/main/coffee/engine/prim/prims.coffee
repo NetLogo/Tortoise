@@ -2,12 +2,10 @@
 
 define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody', 'engine/core/patch'
       , 'engine/core/patchset', 'engine/core/turtle', 'engine/core/turtleset', 'shim/lodash', 'shim/printer'
-      , 'shim/random', 'shim/strictmath', 'util/comparator', 'util/exception', 'util/iterator', 'util/shufflerator'
-      , 'util/typechecker']
+      , 'shim/random', 'shim/strictmath', 'util/comparator', 'util/exception', 'util/typechecker']
      , ( AbstractAgentSet,               Link,               Nobody,               Patch
       ,  PatchSet,               Turtle,               TurtleSet,               _,             Printer
-      ,  Random,        StrictMath,        Comparator,        Exception,        Iterator,        Shufflerator #@# Needless imports: .*erator
-      ,  Type) ->
+      ,  Random,        StrictMath,        Comparator,        Exception,        Type) ->
 
   class Prims
 
