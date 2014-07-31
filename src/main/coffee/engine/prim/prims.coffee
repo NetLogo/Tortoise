@@ -221,7 +221,7 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
 
     # (Number) => Number
     _int: (n) ->
-      if n < 0 then Math.ceil(n) else Math.floor(n) #@# WTF is this?  Wouldn't `n|0` suffice?
+      n|0
 
     # (Number, Number) => Number
     mod: (a, b) ->
