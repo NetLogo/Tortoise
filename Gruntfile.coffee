@@ -29,9 +29,9 @@ module.exports = (grunt) ->
       }
     },
     closurecompiler: {
-      compile: {
+      pretty: {
         files: {
-          "./target/classes/js/tortoise-engine-cl.js": ["./target/classes/js/tortoise/*-cl.js"]
+          "./target/classes/js/tortoise-engine-cl.js": ["./target/classes/js/tortoise/gen-agentmodel-cl.js"]
         },
         options: {
           "compilation_level": "SIMPLE_OPTIMIZATIONS",
@@ -46,6 +46,7 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks('grunt-contrib-coffee')
   grunt.loadNpmTasks('grunt-contrib-copy')
   grunt.loadNpmTasks('grunt-contrib-rename')
+  grunt.loadNpmTasks('grunt-closurecompiler')
 
   grunt.registerTask('default', ['coffee', 'requirejs'])
   grunt.registerTask('cc', ['closurecompiler:pretty'])
