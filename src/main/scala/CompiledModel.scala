@@ -2,13 +2,13 @@ package org.nlogo.tortoise
 
 import org.nlogo.{ core, api, compile, nvm, workspace },
    nvm.FrontEndInterface.{ ProceduresMap, NoProcedures }
-import scalaz.{Scalaz, ValidationNel},
+import scalaz.{Scalaz, ValidationNel, Success, Failure, NonEmptyList},
   Scalaz.{ ToValidationV }
 
 
-class CompiledModel(compiledCode: String = "",
-                    procedures: ProceduresMap = NoProcedures,
-                    program: api.Program = api.Program.empty()) {
+class CompiledModel(val compiledCode: String = "",
+                    val procedures: ProceduresMap = NoProcedures,
+                    val program: api.Program = api.Program.empty()) {
 
   def compileReporter(logo: String) = CompiledModel.validate {
     Compiler.compileReporter(logo, procedures, program)
@@ -45,6 +45,14 @@ object CompiledModel {
     val model = api.model.ModelReader.parseModel(contents,
       new nvm.DefaultParserServices(compile.front.FrontEnd))
     CompiledModel.fromModel(model)
+  }
+
+  def fromCode(netlogoCode: String) =
+    fromModel(core.Model(netlogoCode, widgets = List(core.View.square(16))))
+
+  lazy val defaultModel: CompiledModel = fromCode("") match {
+    case Success(m: CompiledModel) => m
+    case Failure(NonEmptyList(h: api.CompilerException, t)) => throw h
   }
 
   def validate[T](compilationStmt: => T): ValidationNel[api.CompilerException, T] = try {
