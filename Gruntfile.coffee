@@ -31,7 +31,7 @@ module.exports = (grunt) ->
     closurecompiler: {
       pretty: {
         files: {
-          "./target/classes/js/tortoise-engine-cl.js": ["./target/classes/js/tortoise/gen-agentmodel-cl.js"]
+          "./target/classes/js/tortoise-engine-cl.js": ["./target/classes/js/tortoise/agentmodel-cl.js"]
         },
         options: {
           "compilation_level": "SIMPLE_OPTIMIZATIONS",

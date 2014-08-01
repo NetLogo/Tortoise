@@ -5,6 +5,7 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
+    "closure-library": "^1.43629075.2",
     "grunt": "0.4.4",
     "grunt-closure-compiler": "0.0.21",
     "grunt-closurecompiler": "^0.9.9",

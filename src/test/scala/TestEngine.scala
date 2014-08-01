@@ -19,7 +19,7 @@ class TestEngine extends FunSuite {
 
   test("empty world") {
     val nashorn = new Nashorn
-    nashorn.eval("""var workspace   = require('engine/workspace')([])([], [], [], [], [], -1, 1, -1, 1, 1, true, true);
+    nashorn.eval("""var workspace   = tortoise_engine.workspace([])([], [], [], [], [], -1, 1, -1, 1, 1, true, true);
                    |var SelfManager = workspace.selfManager;
                    |var world       = workspace.world;""".stripMargin)
     nashorn.eval("world.clearAll()")
@@ -32,7 +32,7 @@ class TestEngine extends FunSuite {
     val nashorn = new Nashorn
     val test = """[{"0":{"X":0},"2":{"X":0}}]"""
     val escaped = test.replaceAll("\"", "\\\\\"")
-    nashorn.eval("var Denuller = require('nashorn/denuller');")
+    nashorn.eval("var Denuller = nashorn.denuller;")
     assertResult(test) {
       nashorn.eval(s"""JSON.stringify(Denuller(JSON.parse("$escaped")))""")
     }

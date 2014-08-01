@@ -1,18 +1,7 @@
 #!/bin/bash
 
 CURR_DIR=`dirname $0`
-if [ `uname -s` = Linux ] ; then
-  # use JAVA_HOME from Travis if there is one
-  if [ -z "$TRAVIS" ] ; then
-    export JAVA_HOME=/usr/lib/jvm/java-8-sun
-  fi
-else
-  if [ `uname -s` = Darwin ] ; then
-    export JAVA_HOME=`/usr/libexec/java_home -F -v1.8*`
-  else
-    export JAVA_HOME=/usr
-  fi
-fi
+export JAVA_HOME='/home/jordan/Downloads/jdk1.8.0_11'
 
 export PATH=$JAVA_HOME/bin:$PATH
 JAVA=$JAVA_HOME/bin/java
