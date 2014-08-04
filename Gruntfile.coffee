@@ -16,6 +16,20 @@ module.exports = (grunt) ->
             ext: '.js'
           }
         ]
+      },
+      "cc-compile": {
+        options: {
+          bare: true
+        },
+        files : [
+          {
+            expand: true,
+            cwd: 'src/main/coffee',
+            src: ['**/*-cl.coffee']
+            dest: 'target/classes/js/tortoise',
+            ext: '-gen-cl.js'
+          }
+        ]
       }
     },
     requirejs: {
@@ -31,7 +45,7 @@ module.exports = (grunt) ->
     closurecompiler: {
       pretty: {
         files: {
-          "./target/classes/js/tortoise-engine-cl.js": ["./target/classes/js/tortoise/agentmodel-cl.js"]
+          "./target/classes/js/tortoise-engine-cl.js": ["./target/classes/js/tortoise/*-gen-cl.js"]
         },
         options: {
           "compilation_level": "SIMPLE_OPTIMIZATIONS",
