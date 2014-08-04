@@ -1,7 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 goog.provide('engine.core.structure.idmanager')
 
-class IDManager
+engine.core.structure.idmanager = class IDManager
 
   # Number
   _count: undefined

@@ -1,7 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 goog.provide('util.timer')
 
-class Timer
+util.timer = class Timer
 
   # Number
   _startTime: undefined

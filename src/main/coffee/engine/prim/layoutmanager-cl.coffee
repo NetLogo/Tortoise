@@ -6,7 +6,7 @@ goog.require('shim.random')
 goog.require('shim.strictmath')
 goog.require('util.trig')
 
-class LayoutManager
+engine.prim.layoutmanager = class LayoutManager
 
   # (World) => LayoutManager
   constructor: (@_world) ->

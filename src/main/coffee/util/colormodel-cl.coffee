@@ -1,8 +1,10 @@
+goog.provide('util.colormodel')
+
 # Purposely declared outside of the object so `BaseColors` can statically reference `ColorMax` --JAB (6/26/14)
 ColorMax   = 140
 BaseColors = _(0).range(ColorMax / 10).map((n) -> (n * 10) + 5).value()
 
-{
+util.colormodel = ColorModel = {
 
   COLOR_MAX:   ColorMax   # Number
   BASE_COLORS: BaseColors # Array[Number]

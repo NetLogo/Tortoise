@@ -1,7 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 goog.provide('util.iterator')
 
-class Iterator
+util.iterator = class Iterator
 
   _items: undefined # [T] @ Array[T]
 

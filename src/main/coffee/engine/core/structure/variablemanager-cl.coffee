@@ -4,7 +4,7 @@ goog.provide('engine.core.structure.variablemanager')
 
 # type VariableBundle = { name: String, get: GetFunc, set: SetFunc }
 
-class VariableManager
+engine.core.structure.variablemanager = class VariableManager
 
   # (Array[String], Array[VariableBundle]) => VariableManager
   constructor: (@_varNames = [], @_getAndSetFuncs = []) ->

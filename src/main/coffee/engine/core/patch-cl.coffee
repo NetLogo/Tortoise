@@ -11,7 +11,7 @@ goog.require('util.colormodel')
 goog.require('util.comparator')
 goog.require('util.exception')
 
-class Patch
+engine.core.patch = class Patch
 
   _updateVarsByName: undefined # (String*) => Unit
   _varManager:       undefined # VariableManager

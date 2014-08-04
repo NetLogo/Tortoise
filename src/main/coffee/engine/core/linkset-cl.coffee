@@ -4,7 +4,7 @@ goog.provide('engine.core.linkset')
 goog.require('engine.core.abstractagentset')
 goog.require('engine.core.structure.deadskippingiterator')
 
-class LinkSet extends AbstractAgentSet
+engine.core.linkset = class LinkSet extends AbstractAgentSet
 
   # [T <: Turtle] @ (Array[T], String) => TurtleSet
   constructor: (@_agents, @_breedName ="LINKS") ->

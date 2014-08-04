@@ -10,7 +10,7 @@ goog.require('util.colormodel')
 goog.require('util.comparator')
 goog.require('util.exception')
 
-class Link
+engine.core.link = class Link
 
   _breed:            undefined # Breed
   _updateVarsByName: undefined # (String*) => Unit

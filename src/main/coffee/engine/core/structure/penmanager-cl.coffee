@@ -8,7 +8,7 @@ class PenStatus
 Up   = new PenStatus("up")
 Down = new PenStatus("down")
 
-class PenManager
+engine.core.structure.penmanager = class PenManager
 
   # ((String*) => Unit, Number, PenStatus) => PenManager
   constructor: (@_updateFunc, @_size = 1.0, @_status = Up) ->

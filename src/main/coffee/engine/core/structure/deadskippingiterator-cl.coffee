@@ -3,7 +3,7 @@ goog.provide('engine.core.structure.deadskippingiterator')
 
 goog.require('util.iterator')
 
-class DeadSkippingIterator extends Iterator
+engine.core.structure.deadskippingiterator = class DeadSkippingIterator extends Iterator
 
   _i: undefined # Number
 

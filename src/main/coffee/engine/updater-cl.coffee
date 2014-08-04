@@ -21,7 +21,7 @@ ignored = ["", ""]
 class Update
   constructor: (@turtles = {}, @patches = {}, @links = {}, @observer = {}, @world = {}) ->
 
-class Updater
+engine.updater = class Updater
 
   # type Updatable   = Turtle|Patch|Link|World|Observer
   # type EngineKey   = String

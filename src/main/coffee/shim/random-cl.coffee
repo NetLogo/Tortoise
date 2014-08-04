@@ -8,7 +8,7 @@ but I fear (though have not measured) the performance impact --ST
 ###
 goog.provide('shim.random')
 
-if Random?
+shim.random =if Random?
   Random
 else
   {

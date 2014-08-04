@@ -11,7 +11,7 @@ goog.require('engine.prim.linkprims')
 goog.require('engine.prim.prims')
 goog.require('util.timer')
 
-(breedObjs) -> () -> # World args; see constructor for `World` --JAB (4/17/14)
+engine.workspace = Workspace = (breedObjs) -> () -> # World args; see constructor for `World` --JAB (4/17/14)
 
   worldArgs = arguments # If you want `Workspace` to take more parameters--parameters not related to `World`--just keep returning new functions
 

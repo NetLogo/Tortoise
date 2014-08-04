@@ -27,5 +27,5 @@ denull =
     else
       x
 
-denull
+nashorn.denuller = Denuller = denull
 

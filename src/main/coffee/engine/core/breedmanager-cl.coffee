@@ -43,7 +43,7 @@ class Breed
     return
 
 
-class BreedManager
+engine.core.breedmanager = class BreedManager
 
   # type BreedObj = { name: String, singular: String, varNames: Array[String] }
 

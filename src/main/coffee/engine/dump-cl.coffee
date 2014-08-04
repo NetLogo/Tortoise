@@ -6,7 +6,7 @@ goog.require('shim.lodash')
 
 # Needs a name here since it's recursive --JAB (4/16/14)
 # (Any) => String
-Dump =
+engine.dump = Dump =
   (x) ->
     if _(x).isArray()
       itemStr = _(x).map(Dump).value().join(" ")
@@ -17,6 +17,4 @@ Dump =
       "(command task)"
     else
       String(x)
-
-Dump
 

@@ -5,7 +5,7 @@ goog.require('engine.core.topology.topology')
 goog.require('shim.strictmath')
 goog.require('util.exception')
 
-class HorizCylinder extends Topology
+engine.core.topology.horizcylinder = class HorizCylinder extends Topology
 
   _wrapInX: false # Boolean
   _wrapInY: true  # Boolean

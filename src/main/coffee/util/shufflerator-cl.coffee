@@ -1,4 +1,6 @@
-class Shufflerator extends Iterator
+goog.provide('util.shufflerator')
+
+util.shufflerator = class Shufflerator extends Iterator
 
   _i:       undefined # Number
   _nextOne: undefined # T

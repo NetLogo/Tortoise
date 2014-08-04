@@ -4,7 +4,7 @@ goog.provide('engine.core.structure.worldlinks')
 goog.require('engine.core.structure.linkcompare')
 goog.require('shim.mori')
 
-class WorldLinks
+engine.core.structure.worldlinks = class WorldLinks
 
   @_links: undefined # Mori.SortedSet[Link]
 

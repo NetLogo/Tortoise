@@ -6,7 +6,7 @@ goog.require('engine.core.turtle')
 goog.require('engine.core.structure.variablemanager')
 goog.require('shim.lodash')
 
-class Observer
+engine.core.observer = class Observer
 
   id: 0 # Number
 

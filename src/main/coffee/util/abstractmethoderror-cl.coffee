@@ -2,6 +2,6 @@
 goog.provide('util.abstractmethoderror')
 
 # (String) => Nothing
-(msg) ->
+shim.abstractmethoderror = abstractMethod = (msg) ->
   throw new Error("Illegal method call: `#{msg}` is abstract")
 

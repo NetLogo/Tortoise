@@ -1,7 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 goog.provide('util.comparator')
 
-{
+util.comparator = Comparator = {
   NOT_EQUALS: {}
 
   EQUALS:       { toInt: 0 }

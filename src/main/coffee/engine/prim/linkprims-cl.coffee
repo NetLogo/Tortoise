@@ -1,7 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 goog.provide('engine.prim.linkprims')
 
-class LinkPrims
+engine.prim.linkprims = class LinkPrims
 
   @_self: undefined # () => Turtle
 

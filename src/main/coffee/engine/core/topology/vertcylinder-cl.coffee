@@ -5,7 +5,7 @@ goog.require('engine.core.topology.topology')
 goog.require('shim.strictmath')
 goog.require('util.exception')
 
-class VertCylinder extends Topology
+engine.core.topology.vertcylinder = class VertCylinder extends Topology
 
   _wrapInX: true  # Boolean
   _wrapInY: false # Boolean

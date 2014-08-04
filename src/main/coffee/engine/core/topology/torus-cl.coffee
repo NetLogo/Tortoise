@@ -5,7 +5,7 @@ goog.require('engine.core.topology.topology')
 goog.require('shim.lodash')
 goog.require('shim.strictmath')
 
-class Torus extends Topology
+engine.core.topology.torus = class Torus extends Topology
 
   _wrapInX: true # Boolean
   _wrapInY: true # Boolean

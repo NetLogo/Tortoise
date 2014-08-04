@@ -13,4 +13,6 @@ cloneFunc = # Stored into a variable for the sake of recursion --JAB (4/29/14)
       _(properties).reduce(entryCopyFunc, basicClone)
     else
       obj
-cloneFunc
+
+engine.cloner = Cloner = cloneFunc
+

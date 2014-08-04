@@ -7,7 +7,7 @@
 ###
 goog.provide('engine.core.nobody')
 
-{
+engine.core.nobody = Nobody = {
   ask: -> return
   toString: -> "nobody"
 }

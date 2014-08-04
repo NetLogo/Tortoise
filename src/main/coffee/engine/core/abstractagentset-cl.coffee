@@ -11,7 +11,7 @@ goog.require('util.iterator')
 goog.require('util.seq')
 goog.require('util.shufflerator')
 
-class AbstractAgentSet extends Seq
+engine.core.abstractagentset = class AbstractAgentSet extends Seq
 
   @_selfManager: undefined # SelfManager
 

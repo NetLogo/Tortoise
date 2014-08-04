@@ -3,7 +3,7 @@ goog.provide('engine.core.structure.ticker')
 
 goog.require('util.exception')
 
-class Ticker
+engine.core.structure.ticker = class Ticker
 
   # Number
   _count: undefined

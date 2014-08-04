@@ -12,7 +12,7 @@ goog.require('util.comparator')
 goog.require('util.exception')
 goog.require('util.trig')
 
-class Turtle
+engine.core.turtle = class Turtle
 
   _breed:            undefined # Breed
   _links:            undefined # Array[Link]

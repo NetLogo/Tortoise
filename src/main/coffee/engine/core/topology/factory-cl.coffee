@@ -6,7 +6,7 @@ goog.require('engine.core.topology.torus')
 goog.require('engine.core.topology.vertcylinder')
 
 # (Boolean, Boolean, Number, Number, Number, Number
-(wrapsInX, wrapsInY, minX, maxX, minY, maxY, getPatchesFunc, getPatchAtFunc) ->
+engine.core.topology.factory = topologyFactory = (wrapsInX, wrapsInY, minX, maxX, minY, maxY, getPatchesFunc, getPatchAtFunc) ->
   TopoClass =
     if wrapsInX and wrapsInY
       Torus

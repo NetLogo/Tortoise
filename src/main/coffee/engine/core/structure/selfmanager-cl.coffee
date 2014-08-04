@@ -3,7 +3,7 @@ goog.provide('engine.core.structure.selfmanager')
 
 goog.require('util.exception')
 
-class SelfManager
+engine.core.structure.selfmanager = class SelfManager
 
   # type SelfType = Number|Agent // The type that `self` or `myself` could be at any time
 

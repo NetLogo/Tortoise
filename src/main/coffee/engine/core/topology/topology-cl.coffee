@@ -5,7 +5,7 @@ goog.require('shim.lodash')
 goog.require('shim.strictmath')
 goog.require('util.abstractmethoderror')
 
-class Topology
+engine.core.topology.topology = class Topology
 
   _wrapInX: undefined # Boolean
   _wrapInY: undefined # Boolean

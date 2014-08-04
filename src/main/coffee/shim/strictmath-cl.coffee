@@ -3,7 +3,7 @@ goog.provide('shim.strictmath')
 
 goog.require('shim.cloner')
 
-if StrictMath? # Nashorn
+shim.strictmath = if StrictMath? # Nashorn
   StrictMath
 else
   obj = Cloner(Math)

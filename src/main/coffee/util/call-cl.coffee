@@ -4,7 +4,7 @@ goog.provide('util.call')
 goog.require('util.exception')
 
 # [Result] @ (Product => Result, Any*) => Result
-(fn, args...) ->
+util.call = Call = (fn, args...) ->
   try fn(args...)
   catch e
     if not (e instanceof Exception.StopInterrupt)

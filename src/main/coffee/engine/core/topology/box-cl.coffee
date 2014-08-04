@@ -4,7 +4,7 @@ goog.provide('engine.core.topology.box')
 goog.require('engine.core.topology.topology')
 goog.require('util.exception')
 
-class Box extends Topology
+engine.core.topology.box = class Box extends Topology
 
   _wrapInX: false # Boolean
   _wrapInY: false # Boolean

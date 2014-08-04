@@ -8,7 +8,7 @@ class DeathInterrupt    extends NetLogoException
 class TopologyInterrupt extends NetLogoException
 class StopInterrupt     extends NetLogoException
 
-{
+util.exception = Exception = {
   NetLogoException  : NetLogoException
   DeathInterrupt    : DeathInterrupt
   TopologyInterrupt : TopologyInterrupt

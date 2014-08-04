@@ -1,5 +1,7 @@
+goog.provide('util.seq')
+
 # If you want at the items, use `toArray`!  NO ONE BUT `toArray` SHOULD TOUCH `_items`! --JAB (7/21/14)
-class Seq
+util.seq = class Seq
 
   # [T] @ (Array[T]) => Seq[T]
   constructor: (@_items) ->

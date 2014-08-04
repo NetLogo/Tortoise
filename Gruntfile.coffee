@@ -11,7 +11,7 @@ module.exports = (grunt) ->
           {
             expand: true,
             cwd: 'src/main/coffee',
-            src: ['**/*.coffee'],
+            src: ['**/*.coffee', '!**/*-cl.coffee'],
             dest: 'target/classes/js/tortoise',
             ext: '.js'
           }
@@ -27,7 +27,7 @@ module.exports = (grunt) ->
             cwd: 'src/main/coffee',
             src: ['**/*-cl.coffee']
             dest: 'target/classes/js/tortoise',
-            ext: '-gen-cl.js'
+            ext: '-gen.js'
           }
         ]
       }
@@ -45,12 +45,16 @@ module.exports = (grunt) ->
     closurecompiler: {
       pretty: {
         files: {
-          "./target/classes/js/tortoise-engine-cl.js": ["./target/classes/js/tortoise/*-gen-cl.js"]
+          "./target/classes/js/tortoise-engine-cl.js": ["./target/classes/js/tortoise/**/*-gen.js"]
         },
         options: {
+          "closure_entry_point": "bootstrap",
+          "process_closure_primitives": "true",
+          "manage_closure_dependencies": "true",
           "compilation_level": "SIMPLE_OPTIMIZATIONS",
           "max_processes": 5,
-          "Formatting": "PRETTY_PRINT"
+          "formatting": "PRETTY_PRINT",
+          "output_wrapper_file": "anon-fun-wrapper.js"
         }
       }
     }
@@ -62,5 +66,5 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks('grunt-contrib-rename')
   grunt.loadNpmTasks('grunt-closurecompiler')
 
-  grunt.registerTask('default', ['coffee', 'requirejs'])
-  grunt.registerTask('cc', ['closurecompiler:pretty'])
+  grunt.registerTask('default', ['coffee:compile', 'requirejs'])
+  grunt.registerTask('cc', ['coffee:cc-compile', 'closurecompiler:pretty'])

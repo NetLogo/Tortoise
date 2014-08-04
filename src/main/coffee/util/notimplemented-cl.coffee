@@ -2,7 +2,7 @@
 goog.provide('util.notimplemented')
 
 # [T] @ (String, T) => () => T
-(name, defaultValue = {}) ->
+util.notimplemented = notImplemented = (name, defaultValue = {}) ->
   if console? and console.warn? then console.warn("The `#{name}` primitive has not yet been implemented.")
   -> defaultValue
 

@@ -4,7 +4,7 @@ goog.provide('engine.core.patchset')
 goog.require('engine.core.abstractagentset')
 goog.require('util.iterator')
 
-class PatchSet extends AbstractAgentSet
+engine.core.patchset = class PatchSet extends AbstractAgentSet
 
   # [T <: Patch] @ (Array[T]) => PatchSet
   constructor: (@_agents) ->

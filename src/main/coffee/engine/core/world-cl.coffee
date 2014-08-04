@@ -20,7 +20,7 @@ goog.require('shim.strictmath')
 goog.require('util.colormodel')
 goog.require('util.exception')
 
-class World
+engine.core.world = class World
 
   id: 0 # Number
 
