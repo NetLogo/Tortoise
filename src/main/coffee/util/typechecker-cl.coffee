@@ -7,14 +7,14 @@ into the sorting code and caused a 25% performance hit in BZ Benchmark. --JAB (4
 ###
 goog.provide('util.typechecker')
 
-  class Type
-    constructor: (@_x) -> # (Any) => Type
-    isArray:    -> Array.isArray(@_x)
-    isBoolean:  -> typeof(@_x) is "boolean"
-    isFunction: -> typeof(@_x) is "function"
-    isNumber:   -> typeof(@_x) is "number"
-    isObject:   -> typeof(@_x) is "object"
-    isString:   -> typeof(@_x) is "string"
+class Type
+  constructor: (@_x) -> # (Any) => Type
+  isArray:    -> Array.isArray(@_x)
+  isBoolean:  -> typeof(@_x) is "boolean"
+  isFunction: -> typeof(@_x) is "function"
+  isNumber:   -> typeof(@_x) is "number"
+  isObject:   -> typeof(@_x) is "object"
+  isString:   -> typeof(@_x) is "string"
 
-  (x) -> new Type(x)
+(x) -> new Type(x)
 

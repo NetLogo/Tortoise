@@ -9,23 +9,23 @@ goog.provide('nashorn.denuller')
 
 goog.require('shim.lodash')
 
-  # [T] @ (T) => T
-  denull =
-    (x) ->
-      if _(x).isArray()
-        _(x).map(denull).value()
+# [T] @ (T) => T
+denull =
+  (x) ->
+    if _(x).isArray()
+      _(x).map(denull).value()
 
-      else if _(x).isObject()
-        transformFunc =
-          (acc, value, key) ->
-            if value? or isNaN(key)
-              acc[key] = denull(value)
-            acc
+    else if _(x).isObject()
+      transformFunc =
+        (acc, value, key) ->
+          if value? or isNaN(key)
+            acc[key] = denull(value)
+          acc
 
-        _(x).transform(transformFunc, {}).value()
+      _(x).transform(transformFunc, {}).value()
 
-      else
-        x
+    else
+      x
 
-  denull
+denull
 

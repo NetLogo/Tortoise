@@ -8,13 +8,13 @@ but I fear (though have not measured) the performance impact --ST
 ###
 goog.provide('shim.random')
 
-  if Random?
-    Random
-  else
-    {
-      nextInt:    (limit) -> Math.floor(Math.random() * limit)
-      nextLong:   (limit) -> @nextInt(limit)
-      nextDouble:         -> Math.random()
-      setSeed:    (seed)  -> return # No-op!
-    }
+if Random?
+  Random
+else
+  {
+    nextInt:    (limit) -> Math.floor(Math.random() * limit)
+    nextLong:   (limit) -> @nextInt(limit)
+    nextDouble:         -> Math.random()
+    setSeed:    (seed)  -> return # No-op!
+  }
 

@@ -1,64 +1,59 @@
-# (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
-goog.provide('util.seq')
+# If you want at the items, use `toArray`!  NO ONE BUT `toArray` SHOULD TOUCH `_items`! --JAB (7/21/14)
+class Seq
 
-goog.require('shim.lodash')
+  # [T] @ (Array[T]) => Seq[T]
+  constructor: (@_items) ->
 
-  # If you want at the items, use `toArray`!  NO ONE BUT `toArray` SHOULD TOUCH `_items`! --JAB (7/21/14)
-  class Seq
+  # () => Number
+  size: ->
+    @toArray().length
 
-    # [T] @ (Array[T]) => Seq[T]
-    constructor: (@_items) ->
+  # () => Number
+  length: ->
+    @size()
 
-    # () => Number
-    size: ->
-      @toArray().length
+  # () => Boolean
+  isEmpty: ->
+    @size() is 0
 
-    # () => Number
-    length: ->
-      @size()
+  # () => Boolean
+  nonEmpty: ->
+    @size() isnt 0
 
-    # () => Boolean
-    isEmpty: ->
-      @size() is 0
+  # (T) => Boolean
+  contains: (item) ->
+    _(@toArray()).contains(item)
 
-    # () => Boolean
-    nonEmpty: ->
-      @size() isnt 0
+  # ((T) => Boolean) => Boolean
+  exists: (pred) ->
+    _(@toArray()).some(pred)
 
-    # (T) => Boolean
-    contains: (item) ->
-      _(@toArray()).contains(item)
+  # ((T) => Boolean) => Boolean
+  every: (pred) ->
+    _(@toArray()).every(pred)
 
-    # ((T) => Boolean) => Boolean
-    exists: (pred) ->
-      _(@toArray()).some(pred)
+  # ((T) => Boolean) => Seq[T]
+  filter: (pred) ->
+    @_generateFrom(_(@toArray()).filter(pred).value(), this)
 
-    # ((T) => Boolean) => Boolean
-    every: (pred) ->
-      _(@toArray()).every(pred)
+  # ((T) => Boolean) => T
+  find: (pred) ->
+    _(@toArray()).find(pred)
 
-    # ((T) => Boolean) => Seq[T]
-    filter: (pred) ->
-      @_generateFrom(_(@toArray()).filter(pred).value(), this)
+  # ((T) => Unit) => Unit
+  forEach: (f) ->
+    _(@toArray()).forEach(f)
+    return
 
-    # ((T) => Boolean) => T
-    find: (pred) ->
-      _(@toArray()).find(pred)
+  # () => Array[T]
+  toArray: ->
+    @_items[..]
 
-    # ((T) => Unit) => Unit
-    forEach: (f) ->
-      _(@toArray()).forEach(f)
-      return
+  # () => String
+  toString: ->
+    "Seq(#{@toArray().toString()})"
 
-    # () => Array[T]
-    toArray: ->
-      @_items[..]
-
-    # () => String
-    toString: ->
-      "Seq(#{@toArray().toString()})"
-
-    # (Array[T], Seq[T]) => Seq[T]
-    _generateFrom: (newItems, oldSeq) ->
-      new Seq(newItems)
+  # (Array[T], Seq[T]) => Seq[T]
+  _generateFrom: (newItems, oldSeq) ->
+    new Seq(newItems)
 

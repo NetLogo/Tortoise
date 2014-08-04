@@ -1,24 +1,24 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 goog.provide('util.iterator')
 
-  class Iterator
+class Iterator
 
-    _items: undefined # [T] @ Array[T]
+  _items: undefined # [T] @ Array[T]
 
-    # (Array[T]) => Iterator[T]
-    constructor: (items) ->
-      @_items = items[..]
+  # (Array[T]) => Iterator[T]
+  constructor: (items) ->
+    @_items = items[..]
 
-    # [U] @ ((T) => U) => Array[U]
-    map: (f) ->
-      @_items.map(f)
+  # [U] @ ((T) => U) => Array[U]
+  map: (f) ->
+    @_items.map(f)
 
-    # ((T) => Unit) => Unit
-    forEach: (f) ->
-      @_items.forEach(f)
-      return
+  # ((T) => Unit) => Unit
+  forEach: (f) ->
+    @_items.forEach(f)
+    return
 
-    # () => Array[T]
-    toArray: ->
-      @_items
+  # () => Array[T]
+  toArray: ->
+    @_items
 
