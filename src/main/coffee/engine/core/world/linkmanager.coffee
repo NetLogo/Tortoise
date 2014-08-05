@@ -88,7 +88,7 @@ define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine
       else
         Nobody
 
-    # ((Turtle) => Link) => TurtleSet => LinkSet
+    # ((Turtle) => Link) => (TurtleSet) => LinkSet
     _createLinksBy: (mkLink) -> (turtles) ->
       isLink = (other) -> other isnt Nobody
       links  = turtles.toArray().map(mkLink).filter(isLink)
