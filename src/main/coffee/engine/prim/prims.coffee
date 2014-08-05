@@ -206,23 +206,34 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
       Printer(@_dumper(x))
       return
 
-    # [T <: (Array[T]|Patch|AbstractAgentSet[T])] @ (T*) => PatchSet
+    # [T <: (Array[Patch]|Patch|AbstractAgentSet[Patch])] @ (T*) => PatchSet
     patchSet: (inputs...) ->
-      #@# O(n^2) -- should be smarter (use hashing for contains check)
-      result = []
-      recurse = (inputs) ->
-        for input in inputs
-          if Type(input).isArray()
-            recurse(input)
-          else if input instanceof Patch
-            result.push(input)
-          else if input isnt Nobody
-            input.forEach((agent) ->
-              if not (agent in result)
-                result.push(agent)
-              return
-            )
-      recurse(inputs)
+      result  = []
+      hashSet = {} # Must be global to `patchSet` (not `buildFromAgentSet`) because `inputs` is variadic --JAB (8/5/14)
+
+      hashIt = @_hasher
+
+      addPatch =
+        (p) ->
+          hash = hashIt(p)
+          if not hashSet.hasOwnProperty(hash)
+            result.push(p)
+            hashSet[hash] = true
+          return
+
+      buildFromAgentSet = (agentSet) -> agentSet.forEach(addPatch)
+
+      buildItems =
+        (inputs) =>
+          for input in inputs
+            if Type(input).isArray()
+              buildItems(input)
+            else if input instanceof Patch
+              addPatch(input)
+            else if input isnt Nobody
+              buildFromAgentSet(input)
+
+      buildItems(inputs)
       new PatchSet(result)
 
     # (Number, FunctionN) => Unit
