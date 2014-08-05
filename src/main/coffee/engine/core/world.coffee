@@ -134,7 +134,7 @@ define(['engine/core/nobody', 'engine/core/observer', 'engine/core/patch', 'engi
         Nobody
 
     # (Number) => Unit
-    removeTurtle: (id) -> #@# Having two different collections of turtles to manage seems avoidable
+    removeTurtle: (id) ->
       turtle = @_turtlesById[id]
       @_turtles.splice(@_turtles.indexOf(turtle), 1)
       delete @_turtlesById[id]
