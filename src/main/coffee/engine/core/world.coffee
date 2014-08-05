@@ -2,13 +2,13 @@
 
 define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine/core/observer', 'engine/core/patch'
       , 'engine/core/patchset', 'engine/core/turtle', 'engine/core/turtleset', 'engine/core/structure/builtins'
-      , 'engine/core/structure/idmanager', 'engine/core/structure/ticker', 'engine/core/structure/worldlinks'
-      , 'engine/core/topology/factory', 'shim/lodash', 'shim/random', 'shim/strictmath', 'util/colormodel'
+      , 'engine/core/topology/factory', 'engine/core/world/idmanager', 'engine/core/world/ticker'
+      , 'engine/core/world/worldlinks', 'shim/lodash', 'shim/random', 'shim/strictmath', 'util/colormodel'
       , 'util/exception']
      , ( Link,               LinkSet,               Nobody,               Observer,               Patch
       ,  PatchSet,               Turtle,               TurtleSet,               Builtins
-      ,  IDManager,                         Ticker,                         WorldLinks
-      ,  topologyFactory,                _,             Random,        StrictMath,        ColorModel
+      ,  topologyFactory,                IDManager,                     Ticker
+      ,  WorldLinks,                     _,             Random,        StrictMath,        ColorModel
       ,  Exception) ->
 
   class World
