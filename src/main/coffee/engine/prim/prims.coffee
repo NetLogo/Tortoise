@@ -208,33 +208,45 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
 
     # [T <: (Array[Patch]|Patch|AbstractAgentSet[Patch])] @ (T*) => PatchSet
     patchSet: (inputs...) ->
-      result  = []
-      hashSet = {} # Must be global to `patchSet` (not `buildFromAgentSet`) because `inputs` is variadic --JAB (8/5/14)
+      flattened = _(inputs).flatten().value()
+      if _(flattened).isEmpty()
+        new PatchSet([])
+      else if flattened.length is 1
+        head = flattened[0]
+        if head instanceof PatchSet
+          head
+        else if head instanceof Patch
+          new PatchSet([head])
+        else
+          new PatchSet([])
+      else
+        result  = []
+        hashSet = {}
 
-      hashIt = @_hasher
+        hashIt = @_hasher
 
-      addPatch =
-        (p) ->
-          hash = hashIt(p)
-          if not hashSet.hasOwnProperty(hash)
-            result.push(p)
-            hashSet[hash] = true
-          return
+        addPatch =
+          (p) ->
+            hash = hashIt(p)
+            if not hashSet.hasOwnProperty(hash)
+              result.push(p)
+              hashSet[hash] = true
+            return
 
-      buildFromAgentSet = (agentSet) -> agentSet.forEach(addPatch)
+        buildFromAgentSet = (agentSet) -> agentSet.forEach(addPatch)
 
-      buildItems =
-        (inputs) =>
-          for input in inputs
-            if Type(input).isArray()
-              buildItems(input)
-            else if input instanceof Patch
-              addPatch(input)
-            else if input isnt Nobody
-              buildFromAgentSet(input)
+        buildItems =
+          (inputs) =>
+            for input in inputs
+              if Type(input).isArray()
+                buildItems(input)
+              else if input instanceof Patch
+                addPatch(input)
+              else if input isnt Nobody
+                buildFromAgentSet(input)
 
-      buildItems(inputs)
-      new PatchSet(result)
+        buildItems(flattened)
+        new PatchSet(result)
 
     # (Number, FunctionN) => Unit
     repeat: (n, fn) ->
