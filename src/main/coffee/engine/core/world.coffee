@@ -3,12 +3,12 @@
 define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine/core/observer', 'engine/core/patch'
       , 'engine/core/patchset', 'engine/core/turtle', 'engine/core/turtleset', 'engine/core/structure/builtins'
       , 'engine/core/topology/factory', 'engine/core/world/idmanager', 'engine/core/world/ticker'
-      , 'engine/core/world/worldlinks', 'shim/lodash', 'shim/random', 'shim/strictmath', 'util/colormodel'
+      , 'engine/core/world/sortedlinks', 'shim/lodash', 'shim/random', 'shim/strictmath', 'util/colormodel'
       , 'util/exception']
      , ( Link,               LinkSet,               Nobody,               Observer,               Patch
       ,  PatchSet,               Turtle,               TurtleSet,               Builtins
       ,  topologyFactory,                IDManager,                     Ticker
-      ,  WorldLinks,                     _,             Random,        StrictMath,        ColorModel
+      ,  SortedLinks,                     _,             Random,        StrictMath,        ColorModel
       ,  Exception) ->
 
   class World
@@ -19,7 +19,7 @@ define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine
     ticker:   undefined # Ticker
     topology: undefined # Topology
 
-    _links:             undefined # WorldLinks
+    _links:             undefined # SortedLinks
     _linkIDManager:     undefined # IDManager
     _turtleIDManager:   undefined # IDManager
     _patches:           undefined # Array[Patch]
@@ -57,7 +57,7 @@ define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine
       @ticker   = new Ticker(@_updater.updated(this))
       @topology = null
 
-      @_links           = new WorldLinks
+      @_links           = new SortedLinks
       @_linkIDManager   = new IDManager #@# The fact that `World` even talks to ID managers (rather than a container for the type of agent) seems undesirable to me
       @_turtleIDManager = new IDManager
       @_patches         = []

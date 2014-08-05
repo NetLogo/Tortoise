@@ -2,17 +2,17 @@
 
 define(['engine/core/structure/linkcompare', 'shim/mori'], (linkCompare, Mori) ->
 
-  class WorldLinks
+  class SortedLinks
 
     @_links: undefined # Mori.SortedSet[Link]
 
-    # () => WorldLinks
+    # () => SortedLinks
     constructor: ->
       @_links = Mori.sorted_set_by(linkCompare)
 
     # Side-effecting ops
-    insert: (link) -> @_links = Mori.conj(@_links, link); this # (Link) => WorldLinks
-    remove: (link) -> @_links = Mori.disj(@_links, link); this # (Link) => WorldLinks
+    insert: (link) -> @_links = Mori.conj(@_links, link); this # (Link) => SortedLinks
+    remove: (link) -> @_links = Mori.disj(@_links, link); this # (Link) => SortedLinks
 
     # Pure ops
     find:   (pred) -> Mori.first(Mori.filter(pred, @_links)) # Mori's `filter` is lazy, so it's all cool --JAB (3/26/14) # ((Link) => Boolean) => Link
