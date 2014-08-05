@@ -83,13 +83,12 @@ define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine
 
       return
 
-
     # () => LinkSet
-    links: () ->
+    links: ->
       new LinkSet(@_links.toArray())
 
     # () => TurtleSet
-    turtles: () ->
+    turtles: ->
       new TurtleSet(@_turtles)
 
     # (String) => TurtleSet
@@ -148,9 +147,7 @@ define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine
     removeLink: (id) ->
       link = @_links.find((link) -> link.id is id)
       @_links = @_links.remove(link)
-      if @_links.isEmpty()
-        @unbreededLinksAreDirected = false
-        @_updater.updated(this)("unbreededLinksAreDirected")
+      if @_links.isEmpty() then @_setUnbreededLinksUndirected()
       return
 
     # (Number) => Unit
@@ -158,18 +155,6 @@ define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine
       turtle = @_turtlesById[id]
       @_turtles.splice(@_turtles.indexOf(turtle), 1)
       delete @_turtlesById[id]
-      return
-
-    # () => Unit
-    _declarePatchesAllBlack: ->
-      @_patchesAllBlack = true
-      @_updater.updated(this)("patchesAllBlack")
-      return
-
-    # () => Unit
-    _declarePatchesNotAllBlack: =>
-      @_patchesAllBlack = false
-      @_updater.updated(this)("patchesAllBlack")
       return
 
     # () => Unit
@@ -283,9 +268,27 @@ define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine
       @_createLinksBy((turtle) => @_createLink(false, source, turtle))(others)
 
     # () => Unit
-    _setUnbreededLinksDirected: ->
+    _setUnbreededLinksDirected: =>
       @unbreededLinksAreDirected = true
       @_updater.updated(this)("unbreededLinksAreDirected")
+      return
+
+    # () => Unit
+    _setUnbreededLinksUndirected: =>
+      @unbreededLinksAreDirected = false
+      @_updater.updated(this)("unbreededLinksAreDirected")
+      return
+
+    # () => Unit
+    _declarePatchesAllBlack: ->
+      @_patchesAllBlack = true
+      @_updater.updated(this)("patchesAllBlack")
+      return
+
+    # () => Unit
+    _declarePatchesNotAllBlack: =>
+      @_patchesAllBlack = false
+      @_updater.updated(this)("patchesAllBlack")
       return
 
     # ((Turtle) => Link) => TurtleSet => LinkSet
