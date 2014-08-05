@@ -42,7 +42,7 @@ define(['engine/core/abstractagentset', 'engine/core/structure/linkcompare', 'en
       if @id isnt -1
         @end1.removeLink(this)
         @end2.removeLink(this)
-        @world.removeLink(@id)
+        @world.linkManager.removeLink(@id)
         @_seppuku()
         @id = -1
       throw new Exception.DeathInterrupt("Call only from inside an askAgent block")
@@ -106,17 +106,18 @@ define(['engine/core/abstractagentset', 'engine/core/structure/linkcompare', 'en
 
     # Array[String] => VariableManager
     _genVarManager: (extraVarNames) ->
+      linksOfBreed = @world.linkManager.linksOfBreed
       varBundles = [
-        { name: 'breed',       get: (=> @world.linksOfBreed(@_breed.name)), set: ((x) => @_setBreed(x))      },
-        { name: 'color',       get: (=> @_color),                           set: ((x) => @_setColor(x))      },
-        { name: 'end1',        get: (=> @end1),                             set: ((x) => @_setEnd1(x))       },
-        { name: 'end2',        get: (=> @end2),                             set: ((x) => @_setEnd2(x))       },
-        { name: 'hidden?',     get: (=> @_isHidden),                        set: ((x) => @_setIsHidden(x))   },
-        { name: 'label',       get: (=> @_label),                           set: ((x) => @_setLabel(x))      },
-        { name: 'label-color', get: (=> @_labelcolor),                      set: ((x) => @_setLabelColor(x)) },
-        { name: 'shape',       get: (=> @_shape),                           set: ((x) => @_setShape(x))      },
-        { name: 'thickness',   get: (=> @_thickness),                       set: ((x) => @_setThickness(x))  },
-        { name: 'tie-mode',    get: (=> @_tiemode),                         set: ((x) => @_setTieMode(x))    }
+        { name: 'breed',       get: (=> linksOfBreed(@_breed.name)), set: ((x) => @_setBreed(x))      },
+        { name: 'color',       get: (=> @_color),                    set: ((x) => @_setColor(x))      },
+        { name: 'end1',        get: (=> @end1),                      set: ((x) => @_setEnd1(x))       },
+        { name: 'end2',        get: (=> @end2),                      set: ((x) => @_setEnd2(x))       },
+        { name: 'hidden?',     get: (=> @_isHidden),                 set: ((x) => @_setIsHidden(x))   },
+        { name: 'label',       get: (=> @_label),                    set: ((x) => @_setLabel(x))      },
+        { name: 'label-color', get: (=> @_labelcolor),               set: ((x) => @_setLabelColor(x)) },
+        { name: 'shape',       get: (=> @_shape),                    set: ((x) => @_setShape(x))      },
+        { name: 'thickness',   get: (=> @_thickness),                set: ((x) => @_setThickness(x))  },
+        { name: 'tie-mode',    get: (=> @_tiemode),                  set: ((x) => @_setTieMode(x))    }
       ]
 
       new VariableManager(extraVarNames, varBundles)

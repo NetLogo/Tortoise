@@ -1,26 +1,23 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine/core/observer', 'engine/core/patch'
-      , 'engine/core/patchset', 'engine/core/turtle', 'engine/core/turtleset', 'engine/core/structure/builtins'
-      , 'engine/core/topology/factory', 'engine/core/world/idmanager', 'engine/core/world/ticker'
-      , 'engine/core/world/sortedlinks', 'shim/lodash', 'shim/random', 'shim/strictmath', 'util/colormodel'
-      , 'util/exception']
-     , ( Link,               LinkSet,               Nobody,               Observer,               Patch
-      ,  PatchSet,               Turtle,               TurtleSet,               Builtins
-      ,  topologyFactory,                IDManager,                     Ticker
-      ,  SortedLinks,                     _,             Random,        StrictMath,        ColorModel
-      ,  Exception) ->
+define(['engine/core/nobody', 'engine/core/observer', 'engine/core/patch', 'engine/core/patchset', 'engine/core/turtle'
+      , 'engine/core/turtleset', 'engine/core/structure/builtins', 'engine/core/topology/factory'
+      , 'engine/core/world/idmanager', 'engine/core/world/linkmanager', 'engine/core/world/ticker',  'shim/lodash'
+      , 'shim/random', 'shim/strictmath', 'util/colormodel', 'util/exception']
+     , ( Nobody,               Observer,               Patch,               PatchSet,               Turtle
+      ,  TurtleSet,               Builtins,                         topologyFactory
+      ,  IDManager,                     LinkManager,                     Ticker,                      _
+      ,  Random,        StrictMath,        ColorModel,        Exception) ->
 
   class World
 
     id: 0 # Number
 
-    observer: undefined # Observer
-    ticker:   undefined # Ticker
-    topology: undefined # Topology
+    linkManager: undefined # LinkManager
+    observer:    undefined # Observer
+    ticker:      undefined # Ticker
+    topology:    undefined # Topology
 
-    _links:             undefined # SortedLinks
-    _linkIDManager:     undefined # IDManager
     _turtleIDManager:   undefined # IDManager
     _patches:           undefined # Array[Patch]
     _patchesAllBlack:   undefined # Boolean
@@ -53,13 +50,11 @@ define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine
         wrappingAllowedInY: wrappingAllowedInY
       })
 
-      @observer = new Observer(@_updater.updated, globalNames, interfaceGlobalNames)
-      @ticker   = new Ticker(@_updater.updated(this))
-      @topology = null
-
-      @_links           = new SortedLinks
-      @_linkIDManager   = new IDManager #@# The fact that `World` even talks to ID managers (rather than a container for the type of agent) seems undesirable to me
-      @_turtleIDManager = new IDManager
+      @linkManager = new LinkManager(this, breedManager, @_updater, @_setUnbreededLinksDirected, @_setUnbreededLinksUndirected)
+      @observer    = new Observer(@_updater.updated, globalNames, interfaceGlobalNames)
+      @ticker      = new Ticker(@_updater.updated(this))
+      @topology    = null
+      @_turtleIDManager = new IDManager #@# The fact that `World` even talks to ID managers (rather than a container for the type of agent) seems undesirable to me
       @_patches         = []
       @_patchesAllBlack = true
       @_turtles         = []
@@ -85,7 +80,7 @@ define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine
 
     # () => LinkSet
     links: ->
-      new LinkSet(@_links.toArray())
+      @linkManager.links()
 
     # () => TurtleSet
     turtles: ->
@@ -95,11 +90,6 @@ define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine
     turtlesOfBreed: (breedName) ->
       breed = @breedManager.get(breedName)
       new TurtleSet(breed.members, breedName)
-
-    # (String) => LinkSet
-    linksOfBreed: (breedName) ->
-      breed = @breedManager.get(breedName)
-      new LinkSet(breed.members, breedName)
 
     # () => PatchSet
     patches: =>
@@ -144,13 +134,6 @@ define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine
         Nobody
 
     # (Number) => Unit
-    removeLink: (id) ->
-      link = @_links.find((link) -> link.id is id)
-      @_links = @_links.remove(link)
-      if @_links.isEmpty() then @_setUnbreededLinksUndirected()
-      return
-
-    # (Number) => Unit
     removeTurtle: (id) -> #@# Having two different collections of turtles to manage seems avoidable
       turtle = @_turtlesById[id]
       @_turtles.splice(@_turtles.indexOf(turtle), 1)
@@ -158,32 +141,11 @@ define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine
       return
 
     # () => Unit
-    incrementPatchLabelCount: ->
-      @_setPatchLabelCount((count) -> count + 1)
-      return
-
-    # () => Unit
-    decrementPatchLabelCount: ->
-      @_setPatchLabelCount((count) -> count - 1)
-      return
-
-    # () => Unit
-    _resetPatchLabelCount: ->
-      @_setPatchLabelCount(-> 0)
-      return
-
-    # ((Number) => Number) => Unit
-    _setPatchLabelCount: (updateCountFunc) ->
-      @_patchesWithLabels = updateCountFunc(@_patchesWithLabels)
-      @_updater.updated(this)("patchesWithLabels")
-      return
-
-    # () => Unit
     clearAll: ->
       @observer.clearCodeGlobals()
       @clearTurtles()
       @createPatches()
-      @_linkIDManager.reset()
+      @linkManager._resetIDs()
       @_declarePatchesAllBlack()
       @_resetPatchLabelCount()
       @ticker.clear()
@@ -244,28 +206,26 @@ define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine
     getNeighbors4: (pxcor, pycor) ->
       new PatchSet(@topology.getNeighbors4(pxcor, pycor))
 
-    # (Turtle, Turtle) => Link
-    createDirectedLink: (from, to) ->
-      @_setUnbreededLinksDirected()
-      @_createLink(true, from, to)
+    # () => Unit
+    incrementPatchLabelCount: ->
+      @_setPatchLabelCount((count) -> count + 1)
+      return
 
-    # (Turtle, TurtleSet) => LinkSet
-    createDirectedLinks: (source, others) ->
-      @_setUnbreededLinksDirected()
-      @_createLinksBy((turtle) => @_createLink(true, source, turtle))(others)
+    # () => Unit
+    decrementPatchLabelCount: ->
+      @_setPatchLabelCount((count) -> count - 1)
+      return
 
-    # (Turtle, TurtleSet) => LinkSet
-    createReverseDirectedLinks: (source, others) ->
-      @_setUnbreededLinksDirected()
-      @_createLinksBy((turtle) => @_createLink(true, turtle, source))(others)
+    # () => Unit
+    _resetPatchLabelCount: ->
+      @_setPatchLabelCount(-> 0)
+      return
 
-    # (Turtle, Turtle) => Link
-    createUndirectedLink: (source, other) ->
-      @_createLink(false, source, other)
-
-    # (Turtle, TurtleSet) => LinkSet
-    createUndirectedLinks: (source, others) ->
-      @_createLinksBy((turtle) => @_createLink(false, source, turtle))(others)
+    # ((Number) => Number) => Unit
+    _setPatchLabelCount: (updateCountFunc) ->
+      @_patchesWithLabels = updateCountFunc(@_patchesWithLabels)
+      @_updater.updated(this)("patchesWithLabels")
+      return
 
     # () => Unit
     _setUnbreededLinksDirected: =>
@@ -290,39 +250,5 @@ define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine
       @_patchesAllBlack = false
       @_updater.updated(this)("patchesAllBlack")
       return
-
-    # ((Turtle) => Link) => TurtleSet => LinkSet
-    _createLinksBy: (mkLink) -> (turtles) ->
-      isLink = (other) -> other isnt Nobody
-      links  = turtles.toArray().map(mkLink).filter(isLink)
-      new LinkSet(links)
-
-    # (Number, Number) => Agent
-    getLink: (fromId, toId) ->
-      link = @_links.find((link) -> link.end1.id is fromId and link.end2.id is toId)
-      if link?
-        link
-      else
-        Nobody
-
-    ###
-    #@# We shouldn't be looking up links in the tree everytime we create a link; JVM NL uses 2 `LinkedHashMap[Turtle, Buffer[Link]]`s (to, from) --JAB (2/7/14)
-    ###
-    # (Boolean, Turtle, Turtle) => Link
-    _createLink: (isDirected, from, to) ->
-      [end1, end2] =
-        if from.id < to.id or isDirected
-          [from, to]
-        else
-          [to, from]
-
-      if @getLink(end1.id, end2.id) is Nobody
-        link = new Link(@_linkIDManager.next(), isDirected, end1, end2, this, @_updater.updated, @_updater.registerDeadLink)
-        @_updater.updated(link)(Builtins.linkBuiltins...)
-        @_updater.updated(link)(Builtins.linkExtras...)
-        @_links.insert(link)
-        link
-      else
-        Nobody
 
 )

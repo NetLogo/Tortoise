@@ -120,7 +120,7 @@ object SimplePrims {
         case _: prim.etc._int                => "Prims._int"
         case _: prim.etc._round              => "StrictMath.round"
         case _: prim.etc._precision          => "Prims.precision"
-        case _: prim.etc._link               => "world.getLink"
+        case _: prim.etc._link               => "world.linkManager.getLink"
         case _: prim.etc._linkneighbor       => "LinkPrims.isLinkNeighbor(false, false)"
         case _: prim.etc._inlinkneighbor     => "LinkPrims.isLinkNeighbor(true, false)"
         case _: prim.etc._outlinkneighbor    => "LinkPrims.isLinkNeighbor(true, true)"
