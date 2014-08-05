@@ -69,7 +69,7 @@ define(['engine/core/nobody', 'engine/core/observer', 'engine/core/patch', 'engi
         for y in [@topology.maxPycor..@topology.minPycor]
           for x in [@topology.minPxcor..@topology.maxPxcor]
             id = (@topology.width * (@topology.maxPycor - y)) + x - @topology.minPxcor
-            new Patch(id, x, y, this, @_updater.updated, @_declarePatchesNotAllBlack)
+            new Patch(id, x, y, this, @_updater.updated, @_declarePatchesNotAllBlack, @_decrementPatchLabelCount, @_incrementPatchLabelCount)
 
       @_patches = [].concat(nested...)
 
@@ -207,12 +207,12 @@ define(['engine/core/nobody', 'engine/core/observer', 'engine/core/patch', 'engi
       new PatchSet(@topology.getNeighbors4(pxcor, pycor))
 
     # () => Unit
-    incrementPatchLabelCount: ->
+    _incrementPatchLabelCount: =>
       @_setPatchLabelCount((count) -> count + 1)
       return
 
     # () => Unit
-    decrementPatchLabelCount: ->
+    _decrementPatchLabelCount: =>
       @_setPatchLabelCount((count) -> count - 1)
       return
 
