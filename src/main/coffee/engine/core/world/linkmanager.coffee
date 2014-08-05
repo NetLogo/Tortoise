@@ -53,12 +53,12 @@ define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine
       new LinkSet(@_links.toArray())
 
     # (String) => LinkSet
-    linksOfBreed: (breedName) =>
+    _linksOfBreed: (breedName) =>
       breed = @_breedManager.get(breedName)
       new LinkSet(breed.members, breedName)
 
     # (Number) => Unit
-    removeLink: (id) ->
+    _removeLink: (id) =>
       link = @_links.find((link) -> link.id is id)
       @_links = @_links.remove(link)
       if @_links.isEmpty() then @_notifyIsUndirected()
@@ -80,7 +80,7 @@ define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine
         [to, from]
 
       if @getLink(end1.id, end2.id) is Nobody
-        link = new Link(@_linkIDManager.next(), isDirected, end1, end2, @_world, @_updater.updated, @_updater.registerDeadLink)
+        link = new Link(@_linkIDManager.next(), isDirected, end1, end2, @_world, @_updater.updated, @_updater.registerDeadLink, @_removeLink, @_linksOfBreed)
         @_updater.updated(link)(Builtins.linkBuiltins...)
         @_updater.updated(link)(Builtins.linkExtras...)
         @_links.insert(link)

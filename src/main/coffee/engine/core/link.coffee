@@ -12,12 +12,12 @@ define(['engine/core/abstractagentset', 'engine/core/structure/linkcompare', 'en
     _updateVarsByName: undefined # (String*) => Unit
     _varManager:       undefined # VariableManager
 
-    # (Number, Boolean, Turtle, Turtle, World, (Updatable) => (String*) => Unit, (Number) => Unit, Breed, Number, Boolean, String, Number, String, Number, String) => Link
-    constructor: (@id, @isDirected, @end1, @end2, @world, genUpdate, @_registerDeath, breed = @world.breedManager.links()
-                , @_color = 5, @_isHidden = false, @_label = "", @_labelcolor = 9.9, @_shape = "default"
-                , @_thickness = 0, @_tiemode = "none") ->
+    # (Number, Boolean, Turtle, Turtle, World, (Updatable) => (String*) => Unit, (Number) => Unit, (Number) => Unit,  Breed, Number, Boolean, String, Number, String, Number, String) => Link
+    constructor: (@id, @isDirected, @end1, @end2, @world, genUpdate, @_registerDeath, @_registerRemoval
+                , getLinksByBreedName, breed = @world.breedManager.links(), @_color = 5, @_isHidden = false
+                , @_label = "", @_labelcolor = 9.9, @_shape = "default", @_thickness = 0, @_tiemode = "none") ->
       @_updateVarsByName = genUpdate(this)
-      @_varManager = @_genVarManager(@world.linksOwnNames)
+      @_varManager = @_genVarManager(@world.linksOwnNames, getLinksByBreedName)
       @_setBreed(breed)
       @end1.addLink(this)
       @end2.addLink(this)
@@ -42,7 +42,7 @@ define(['engine/core/abstractagentset', 'engine/core/structure/linkcompare', 'en
       if @id isnt -1
         @end1.removeLink(this)
         @end2.removeLink(this)
-        @world.linkManager.removeLink(@id)
+        @_registerRemoval(@id)
         @_seppuku()
         @id = -1
       throw new Exception.DeathInterrupt("Call only from inside an askAgent block")
@@ -104,20 +104,19 @@ define(['engine/core/abstractagentset', 'engine/core/structure/linkcompare', 'en
       @_registerDeath(@id)
       return
 
-    # Array[String] => VariableManager
-    _genVarManager: (extraVarNames) ->
-      linksOfBreed = @world.linkManager.linksOfBreed
+    # (Array[String], (String) => LinkSet) => VariableManager
+    _genVarManager: (extraVarNames, getLinksByBreedName) ->
       varBundles = [
-        { name: 'breed',       get: (=> linksOfBreed(@_breed.name)), set: ((x) => @_setBreed(x))      },
-        { name: 'color',       get: (=> @_color),                    set: ((x) => @_setColor(x))      },
-        { name: 'end1',        get: (=> @end1),                      set: ((x) => @_setEnd1(x))       },
-        { name: 'end2',        get: (=> @end2),                      set: ((x) => @_setEnd2(x))       },
-        { name: 'hidden?',     get: (=> @_isHidden),                 set: ((x) => @_setIsHidden(x))   },
-        { name: 'label',       get: (=> @_label),                    set: ((x) => @_setLabel(x))      },
-        { name: 'label-color', get: (=> @_labelcolor),               set: ((x) => @_setLabelColor(x)) },
-        { name: 'shape',       get: (=> @_shape),                    set: ((x) => @_setShape(x))      },
-        { name: 'thickness',   get: (=> @_thickness),                set: ((x) => @_setThickness(x))  },
-        { name: 'tie-mode',    get: (=> @_tiemode),                  set: ((x) => @_setTieMode(x))    }
+        { name: 'breed',       get: (=> getLinksByBreedName(@_breed.name)), set: ((x) => @_setBreed(x))      },
+        { name: 'color',       get: (=> @_color),                           set: ((x) => @_setColor(x))      },
+        { name: 'end1',        get: (=> @end1),                             set: ((x) => @_setEnd1(x))       },
+        { name: 'end2',        get: (=> @end2),                             set: ((x) => @_setEnd2(x))       },
+        { name: 'hidden?',     get: (=> @_isHidden),                        set: ((x) => @_setIsHidden(x))   },
+        { name: 'label',       get: (=> @_label),                           set: ((x) => @_setLabel(x))      },
+        { name: 'label-color', get: (=> @_labelcolor),                      set: ((x) => @_setLabelColor(x)) },
+        { name: 'shape',       get: (=> @_shape),                           set: ((x) => @_setShape(x))      },
+        { name: 'thickness',   get: (=> @_thickness),                       set: ((x) => @_setThickness(x))  },
+        { name: 'tie-mode',    get: (=> @_tiemode),                         set: ((x) => @_setTieMode(x))    }
       ]
 
       new VariableManager(extraVarNames, varBundles)
