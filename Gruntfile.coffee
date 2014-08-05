@@ -54,7 +54,7 @@ module.exports = (grunt) ->
           "compilation_level": "SIMPLE_OPTIMIZATIONS",
           "max_processes": 5,
           "formatting": "PRETTY_PRINT",
-          "output_wrapper_file": "anon-fun-wrapper.js"
+          "output_wrapper_file": "./client/anon-fun-wrapper.js"
         }
       }
     }
