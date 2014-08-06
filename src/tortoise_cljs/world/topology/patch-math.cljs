@@ -1,7 +1,8 @@
 (ns world.topology.patch-math
   (:require [util.math :refer [squash]]
             [world :refer [get-patch-at]]
-            [world.topology.vars :refer [min-pxcor min-pycor max-pxcor max-pycor wrap-in-x? wrap-in-y?]])) ;; should refer get-patch-at from world(?)
+            [world.topology.vars :refer [min-pxcor min-pycor max-pxcor
+                                         max-pycor wrap-in-x? wrap-in-y?]]))
 
 (defn squash-4 [v mn]
   (squash v mn 1.0E-4))
@@ -115,9 +116,48 @@
 
 ;; shortest-x wraps a difference out of bounds.
 ;; _shortestX does not.
+
 (defn shortest-x [x1 x2]
   (wrap-x (- x2 x1)))
 
 (defn shortest-y [y1 y2]
   (wrap-y (- y2 y1)))
 
+;; distances
+
+(defn distanceXY [x1 y1 x2 y2]
+  (let [a2 (.pow shim.strictmath (shortest-x x1, x2) 2)
+        b2 (.pow shim.strictmath (shortest-y y1, y2) 2)]
+    (.sqrt shim.strictmath (+ a2 b2))))
+
+(defn distance [x y agent]
+  (let [[ax ay] (.getCoords agent)]
+    (distanceXY x y ax ay)))
+
+;; towards
+
+(defn towards [x1 y1 x2 y2]
+  (let [dx (shortest-x x1 x2)
+        dy (shortest-y y1 y2)]
+    (cond
+     (= dx 0) (or (and (< dy 0) 180) 0)
+     (= dy 0) (or (and (< dx 0) 270) 90)
+     :default (-> (- dy)
+                  (.atan2 shim.strictmath dx)
+                  (+ (.-PI js/Math))
+                  (.toDegrees shim.strictmath)
+                  (mod 360)
+                  (+ 270)))))
+
+;; midpoints
+
+(defn midpoint-x [x1 x2]
+  (wrap-x (-> (shortest-x x1 x2) (/ 2) (+ x1))))
+
+(defn midpoint-y [y1 y2]
+  (wrap-y (-> (shortest-y y1 y2) (/ 2) (+ y1))))
+
+;; in-radius
+
+(defn in-radius [x y agents radius]
+  (filter #(<= (distance x y %) radius) agents))
