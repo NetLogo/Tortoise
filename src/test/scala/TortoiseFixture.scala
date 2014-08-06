@@ -54,8 +54,6 @@ class TestReporters extends lang.TestReporters with TortoiseFinder {
 class TestCommands extends lang.TestCommands with TortoiseFinder {
   override val freebies = Map[String, String](
     // should be handled in rewrite
-    "Death::DeadLinks1"    -> "Links don't know how to play dead",
-    "Death::DeadTurtles10" -> "Turtles don't know how to play dead",
     "Interaction::Interaction3b1"                                             -> "correct answer requires empty init block optimization",
     "Interaction::Interaction3b2"                                             -> "correct answer requires empty init block optimization",
     "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksFrom" -> "correct answer requires empty init block optimization",

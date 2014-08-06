@@ -206,7 +206,10 @@ define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtl
 
     # [Result] @ (() => Result) => Result
     projectionBy: (f) ->
-      @world.selfManager.askAgent(f)(this)
+      if not @_isDead()
+        @world.selfManager.askAgent(f)(this)
+      else
+        throw new Exception.NetLogoException("That #{@_breed.singular} is dead.")
 
     # Unfortunately, further attempts to streamline this code are very likely to lead to
     # floating point arithmetic mismatches with JVM NetLogo....  Beware. --JAB (7/28/14)
@@ -371,7 +374,14 @@ define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtl
 
     # () => String
     toString: ->
-      "(#{@_breed.singular} #{@id})"
+      if not @_isDead()
+        "(#{@_breed.singular} #{@id})"
+      else
+        "nobody"
+
+    # () => Boolean
+    _isDead: ->
+      @id is -1
 
     # (Number) => Number
     _normalizeHeading: (heading) ->

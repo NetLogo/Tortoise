@@ -62,7 +62,10 @@ define(['engine/core/abstractagentset', 'engine/core/structure/linkcompare', 'en
 
     # () => String
     toString: ->
-      "(#{@_breed.singular} #{@end1.id} #{@end2.id})"
+      if not @_isDead()
+        "(#{@_breed.singular} #{@end1.id} #{@end2.id})"
+      else
+        "nobody"
 
     # () => Number
     getHeading: ->
@@ -89,7 +92,10 @@ define(['engine/core/abstractagentset', 'engine/core/structure/linkcompare', 'en
 
     # [Result] @ (() => Result) => Result
     projectionBy: (f) ->
-      @world.selfManager.askAgent(f)(this)
+      if not @_isDead()
+        @world.selfManager.askAgent(f)(this)
+      else
+        throw new Exception.NetLogoException("That #{@_breed.singular} is dead.")
 
     # (Any) => { toInt: Number }
     compare: (x) ->
@@ -163,6 +169,9 @@ define(['engine/core/abstractagentset', 'engine/core/structure/linkcompare', 'en
 
       return
 
+    # () => Boolean
+    _isDead: ->
+      @id is -1
 
     # (Number) => Unit
     _setColor: (color) ->
