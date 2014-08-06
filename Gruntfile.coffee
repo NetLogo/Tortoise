@@ -71,10 +71,6 @@ module.exports = (grunt) ->
                  " ./target/classes/js/tortoise/" + (grunt.option('to') || "" + grunt.option('file')),
         stdout: true
       },
-      mkdir : {
-        command: "mkdir " + grunt.option('dir'),
-        stdout: true
-      },
       "cljs-clean": {
         command: "lein cljsbuild clean"
       },
