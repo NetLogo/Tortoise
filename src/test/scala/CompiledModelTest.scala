@@ -3,6 +3,7 @@ package org.nlogo.tortoise
 import org.scalatest.FunSuite
 import Compiler.{compileCommands, compileReporter}
 import org.nlogo.api
+import org.nlogo.core
 import scalaz.{Scalaz, Success, Failure, NonEmptyList, ValidationNel}
 
 class CompiledModelTest extends FunSuite {
@@ -61,14 +62,19 @@ class CompiledModelTest extends FunSuite {
     testInvalidReporter(CompiledModel.defaultModel, "[fd 1] of turtles")
   }
 
-  val model = CompiledModel.fromCode(
+  val modelCode =
     s"""|to go
         |end
         |to-report count-things
         |  report count turtles
-        |end""".stripMargin) match {
-    case Success(m: CompiledModel) => m
-    case Failure(NonEmptyList(ex: api.CompilerException, t)) => throw ex
+        |end""".stripMargin
+  def modelValidation = CompiledModel.fromCode(modelCode)
+  def model = modelValidation.valueOr(x => throw x.head)
+
+  test("model from code") {
+    testValid(modelCode,
+              Compiler.compileProcedures(core.Model(modelCode, widgets = List(core.View.square(16))))._1,
+              modelValidation map { _.compiledCode })
   }
 
   test("custom procedures valid") {
