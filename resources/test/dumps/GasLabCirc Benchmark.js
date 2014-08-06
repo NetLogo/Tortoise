@@ -40,13 +40,13 @@ var StrictMath     = require('shim/strictmath');function benchmark() {
 function setup() {
   world.clearAll();
   world.ticker.reset();
-  BreedManager.setDefaultShape(world.turtlesOfBreed("PARTICLES").getBreedName(), "circle")
+  BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("PARTICLES").getBreedName(), "circle")
   world.observer.setGlobal('manage-view-updates?', true);
   world.observer.setGlobal('view-update-rate', 0.2);
   world.observer.setGlobal('box-edge', (world.topology.maxPxcor - 1));
   Call(makeBox);
   Call(makeParticles);
-  world.observer.setGlobal('tick-length', (1 / StrictMath.ceil(Prims.max(world.turtlesOfBreed("PARTICLES").projectionBy(function() {
+  world.observer.setGlobal('tick-length', (1 / StrictMath.ceil(Prims.max(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() {
     return SelfPrims.getVariable('speed');
   })))));
   world.observer.setGlobal('original-tick-length', world.observer.getGlobal('tick-length'));
@@ -56,10 +56,10 @@ function setup() {
 }
 function rebuildCollisionList() {
   world.observer.setGlobal('colliding-particles', []);
-  world.turtlesOfBreed("PARTICLES").ask(function() {
+  world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() {
     Call(checkForWallCollision);
   }, true);
-  world.turtlesOfBreed("PARTICLES").ask(function() {
+  world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() {
     Call(checkForParticleCollision);
   }, true);
 }
@@ -93,7 +93,7 @@ function go() {
     }, true);
   }
   Call(sortCollisions);
-  world.turtlesOfBreed("PARTICLES").ask(function() {
+  world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() {
     SelfPrims.jump((SelfPrims.getVariable('speed') * world.observer.getGlobal('tick-length')));
   }, true);
   Call(collideWinners);
@@ -117,7 +117,7 @@ function checkForParticleCollision() {
   var myParticleSize = SelfPrims.getVariable('size');
   var myXSpeed = (SelfPrims.getVariable('speed') * Call(convertHeadingX, SelfPrims.getVariable('heading')));
   var myYSpeed = (SelfPrims.getVariable('speed') * Call(convertHeadingY, SelfPrims.getVariable('heading')));
-  SelfPrims.other(world.turtlesOfBreed("PARTICLES")).ask(function() {
+  SelfPrims.other(world.turtleManager.turtlesOfBreed("PARTICLES")).ask(function() {
     var dpx = (SelfPrims.getVariable('xcor') - myX);
     var dpy = (SelfPrims.getVariable('ycor') - myY);
     var xSpeed = (SelfPrims.getVariable('speed') * Call(convertHeadingX, SelfPrims.getVariable('heading')));
@@ -331,14 +331,14 @@ function makeBox() {
   }, true);
 }
 function makeParticles() {
-  world.createOrderedTurtles(world.observer.getGlobal('number'), 'PARTICLES').ask(function() {
+  world.turtleManager.createOrderedTurtles(world.observer.getGlobal('number'), 'PARTICLES').ask(function() {
     SelfPrims.setVariable('speed', 1);
     SelfPrims.setVariable('size', (world.observer.getGlobal('smallest-particle-size') + Prims.randomFloat((world.observer.getGlobal('largest-particle-size') - world.observer.getGlobal('smallest-particle-size')))));
     SelfPrims.setVariable('mass', (SelfPrims.getVariable('size') * SelfPrims.getVariable('size')));
     Call(recolor);
     SelfPrims.setVariable('heading', Prims.randomFloat(360));
   }, true);
-  Call(arrange, world.turtlesOfBreed("PARTICLES"));
+  Call(arrange, world.turtleManager.turtlesOfBreed("PARTICLES"));
 }
 function arrange(particleSet) {
   if (!particleSet.nonEmpty()) {
@@ -352,7 +352,7 @@ function arrange(particleSet) {
   }));
 }
 function overlapping_p() {
-  return SelfPrims.other(SelfManager.self().inRadius(world.turtlesOfBreed("PARTICLES"), ((SelfPrims.getVariable('size') + world.observer.getGlobal('largest-particle-size')) / 2)).agentFilter(function() {
+  return SelfPrims.other(SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("PARTICLES"), ((SelfPrims.getVariable('size') + world.observer.getGlobal('largest-particle-size')) / 2)).agentFilter(function() {
     return Prims.lt(SelfManager.self().distance(SelfManager.myself()), ((SelfPrims.getVariable('size') + SelfManager.myself().projectionBy(function() {
       return SelfPrims.getVariable('size');
     })) / 2));
@@ -362,7 +362,7 @@ function randomPosition() {
   SelfPrims.setXY((Prims.oneOf([1, -1]) * Prims.randomFloat(((world.observer.getGlobal('box-edge') - 0.5) - (SelfPrims.getVariable('size') / 2)))), (Prims.oneOf([1, -1]) * Prims.randomFloat(((world.observer.getGlobal('box-edge') - 0.5) - (SelfPrims.getVariable('size') / 2)))));
 }
 function reverseTime() {
-  world.turtlesOfBreed("PARTICLES").ask(function() {
+  world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() {
     SelfPrims.right(180);
   }, true);
   Call(rebuildCollisionList);
@@ -370,7 +370,7 @@ function reverseTime() {
 }
 function testTimeReversal(n) {
   Call(setup);
-  world.turtlesOfBreed("PARTICLES").ask(function() {
+  world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() {
     notImplemented('stamp', undefined)();
   }, true);
   while (Prims.lt(world.ticker.tickCount(), n)) {
@@ -381,7 +381,7 @@ function testTimeReversal(n) {
   while (Prims.lt(world.ticker.tickCount(), (2 * oldClock))) {
     Call(go);
   }
-  world.turtlesOfBreed("PARTICLES").ask(function() {
+  world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() {
     SelfPrims.setVariable('color', 9.9);
   }, true);
 }

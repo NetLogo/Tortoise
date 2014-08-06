@@ -39,7 +39,7 @@ var StrictMath     = require('shim/strictmath');function benchmark() {
 function setup() {
   world.clearAll();
   world.ticker.reset();
-  world.createOrderedTurtles(1000, '').ask(function() {
+  world.turtleManager.createOrderedTurtles(1000, '').ask(function() {
     SelfManager.self().moveTo(Prims.oneOf(world.patches()));
     SelfManager.self().face(Prims.oneOf(SelfPrims.getNeighbors4()));
   }, true);

@@ -38,7 +38,7 @@ var StrictMath     = require('shim/strictmath');function setup() {
     notImplemented('user-message', undefined)((Dump("") + Dump("There are too many cars for the amount of ") + Dump("road.  Either increase the amount of roads ") + Dump("by increasing the GRID-SIZE-X or ") + Dump("GRID-SIZE-Y sliders, or decrease the ") + Dump("number of cars by lowering the NUMBER slider.\n") + Dump("The setup has stopped.")));
     throw new Exception.StopInterrupt;
   }
-  world.createTurtles(world.observer.getGlobal('num-cars'), '').ask(function() {
+  world.turtleManager.createTurtles(world.observer.getGlobal('num-cars'), '').ask(function() {
     Call(setupCars);
     Call(setCarColor);
     Call(recordData);

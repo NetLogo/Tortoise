@@ -33,7 +33,7 @@ var StrictMath     = require('shim/strictmath');function setup() {
     return Call(groupSite_p);
   }));
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "person")
-  world.createTurtles(world.observer.getGlobal('number'), '').ask(function() {
+  world.turtleManager.createTurtles(world.observer.getGlobal('number'), '').ask(function() {
     Call(chooseSex);
     SelfPrims.setVariable('size', 3);
     SelfPrims.setVariable('my-group-site', Prims.oneOf(world.observer.getGlobal('group-sites')));

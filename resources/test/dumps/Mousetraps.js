@@ -34,7 +34,7 @@ var StrictMath     = require('shim/strictmath');function setup() {
     SelfPrims.setPatchVariable('pcolor', (105 + 3));
   }, true);
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
-  world.createTurtles(1, '').ask(function() {
+  world.turtleManager.createTurtles(1, '').ask(function() {
     SelfPrims.setVariable('color', 9.9);
     SelfPrims.setVariable('size', 1.5);
   }, true);

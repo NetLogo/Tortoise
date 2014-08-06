@@ -29,7 +29,7 @@ var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
 var StrictMath     = require('shim/strictmath');function setup() {
   world.clearAll();
-  BreedManager.setDefaultShape(world.turtlesOfBreed("PARTICLES").getBreedName(), "circle")
+  BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("PARTICLES").getBreedName(), "circle")
   world.observer.setGlobal('max-tick-delta', 0.1073);
   Call(makeParticles);
   Call(updateVariables);
@@ -38,21 +38,21 @@ var StrictMath     = require('shim/strictmath');function setup() {
   world.ticker.reset();
 }
 function go() {
-  world.turtlesOfBreed("PARTICLES").ask(function() {
+  world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() {
     Call(move);
   }, true);
-  world.turtlesOfBreed("PARTICLES").ask(function() {
+  world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() {
     if (world.observer.getGlobal('collide?')) {
       Call(checkForCollision);
     }
   }, true);
   if (world.observer.getGlobal('trace?')) {
-    world.getTurtleOfBreed("PARTICLES", 0).ask(function() {
+    world.turtleManager.getTurtleOfBreed("PARTICLES", 0).ask(function() {
       SelfManager.self().penManager.lowerPen();
     }, true);
   }
   else {
-    world.getTurtleOfBreed("PARTICLES", 0).ask(function() {
+    world.turtleManager.getTurtleOfBreed("PARTICLES", 0).ask(function() {
       SelfManager.self().penManager.raisePen();
     }, true);
   }
@@ -65,30 +65,30 @@ function go() {
   notImplemented('display', undefined)();
 }
 function updateVariables() {
-  world.observer.setGlobal('medium', world.turtlesOfBreed("PARTICLES").agentFilter(function() {
+  world.observer.setGlobal('medium', world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() {
     return Prims.equality(SelfPrims.getVariable('color'), 55);
   }).size());
-  world.observer.setGlobal('slow', world.turtlesOfBreed("PARTICLES").agentFilter(function() {
+  world.observer.setGlobal('slow', world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() {
     return Prims.equality(SelfPrims.getVariable('color'), 105);
   }).size());
-  world.observer.setGlobal('fast', world.turtlesOfBreed("PARTICLES").agentFilter(function() {
+  world.observer.setGlobal('fast', world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() {
     return Prims.equality(SelfPrims.getVariable('color'), 15);
   }).size());
-  world.observer.setGlobal('percent-medium', ((world.observer.getGlobal('medium') / world.turtlesOfBreed("PARTICLES").size()) * 100));
-  world.observer.setGlobal('percent-slow', ((world.observer.getGlobal('slow') / world.turtlesOfBreed("PARTICLES").size()) * 100));
-  world.observer.setGlobal('percent-fast', ((world.observer.getGlobal('fast') / world.turtlesOfBreed("PARTICLES").size()) * 100));
-  world.observer.setGlobal('avg-speed', Prims.mean(world.turtlesOfBreed("PARTICLES").projectionBy(function() {
+  world.observer.setGlobal('percent-medium', ((world.observer.getGlobal('medium') / world.turtleManager.turtlesOfBreed("PARTICLES").size()) * 100));
+  world.observer.setGlobal('percent-slow', ((world.observer.getGlobal('slow') / world.turtleManager.turtlesOfBreed("PARTICLES").size()) * 100));
+  world.observer.setGlobal('percent-fast', ((world.observer.getGlobal('fast') / world.turtleManager.turtlesOfBreed("PARTICLES").size()) * 100));
+  world.observer.setGlobal('avg-speed', Prims.mean(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() {
     return SelfPrims.getVariable('speed');
   })));
-  world.observer.setGlobal('avg-energy', Prims.mean(world.turtlesOfBreed("PARTICLES").projectionBy(function() {
+  world.observer.setGlobal('avg-energy', Prims.mean(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() {
     return SelfPrims.getVariable('energy');
   })));
 }
 function calculateTickDelta() {
-  if (world.turtlesOfBreed("PARTICLES").agentFilter(function() {
+  if (world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() {
     return Prims.gt(SelfPrims.getVariable('speed'), 0);
   }).nonEmpty()) {
-    world.observer.setGlobal('tick-delta', Prims.min(Prims.list((1 / StrictMath.ceil(Prims.max(world.turtlesOfBreed("PARTICLES").projectionBy(function() {
+    world.observer.setGlobal('tick-delta', Prims.min(Prims.list((1 / StrictMath.ceil(Prims.max(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() {
       return SelfPrims.getVariable('speed');
     })))), world.observer.getGlobal('max-tick-delta'))));
   }
@@ -169,7 +169,7 @@ function recolor() {
   }
 }
 function makeParticles() {
-  world.createTurtles(world.observer.getGlobal('number-of-particles'), 'PARTICLES').ask(function() {
+  world.turtleManager.createTurtles(world.observer.getGlobal('number-of-particles'), 'PARTICLES').ask(function() {
     Call(setupParticle);
     Call(randomPosition);
     Call(recolor);

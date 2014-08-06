@@ -29,7 +29,7 @@ var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
 var StrictMath     = require('shim/strictmath');function setup() {
   world.clearAll();
-  world.createTurtles(world.observer.getGlobal('number'), '').ask(function() {
+  world.turtleManager.createTurtles(world.observer.getGlobal('number'), '').ask(function() {
     SelfPrims.setVariable('color', (5 + (Prims.random(world.observer.getGlobal('colors')) * 10)));
     if (Prims.equality(SelfPrims.getVariable('color'), 75)) {
       SelfPrims.setVariable('color', 125);

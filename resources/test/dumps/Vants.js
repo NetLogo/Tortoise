@@ -32,7 +32,7 @@ var StrictMath     = require('shim/strictmath');function setup() {
   world.patches().ask(function() {
     SelfPrims.setPatchVariable('pcolor', 9.9);
   }, true);
-  world.createTurtles(world.observer.getGlobal('num-vants'), '').ask(function() {
+  world.turtleManager.createTurtles(world.observer.getGlobal('num-vants'), '').ask(function() {
     SelfManager.self().face(Prims.oneOf(SelfPrims.getNeighbors4()));
     SelfPrims.setVariable('color', 15);
     SelfPrims.setVariable('size', 6);

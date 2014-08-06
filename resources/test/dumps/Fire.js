@@ -50,13 +50,13 @@ function go() {
   if (!world.turtles().nonEmpty()) {
     throw new Exception.StopInterrupt;
   }
-  world.turtlesOfBreed("FIRES").ask(function() {
+  world.turtleManager.turtlesOfBreed("FIRES").ask(function() {
     SelfPrims.getNeighbors4().agentFilter(function() {
       return Prims.equality(SelfPrims.getPatchVariable('pcolor'), 55);
     }).ask(function() {
       Call(ignite);
     }, true);
-    SelfPrims.setVariable('breed', world.turtlesOfBreed("EMBERS"));
+    SelfPrims.setVariable('breed', world.turtleManager.turtlesOfBreed("EMBERS"));
   }, true);
   Call(fadeEmbers);
   world.ticker.tick();
@@ -69,7 +69,7 @@ function ignite() {
   world.observer.setGlobal('burned-trees', (world.observer.getGlobal('burned-trees') + 1));
 }
 function fadeEmbers() {
-  world.turtlesOfBreed("EMBERS").ask(function() {
+  world.turtleManager.turtlesOfBreed("EMBERS").ask(function() {
     SelfPrims.setVariable('color', (SelfPrims.getVariable('color') - 0.3));
     if (Prims.lt(SelfPrims.getVariable('color'), (15 - 3.5))) {
       SelfPrims.setPatchVariable('pcolor', SelfPrims.getVariable('color'));

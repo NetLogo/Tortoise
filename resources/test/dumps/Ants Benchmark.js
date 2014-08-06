@@ -45,7 +45,7 @@ function benchmark() {
 }
 function setupTurtles() {
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "bug")
-  world.createOrderedTurtles(world.observer.getGlobal('ants'), '').ask(function() {
+  world.turtleManager.createOrderedTurtles(world.observer.getGlobal('ants'), '').ask(function() {
     SelfPrims.setVariable('size', 2);
     SelfPrims.right(Prims.randomFloat(360));
     SelfPrims.setVariable('color', 15);

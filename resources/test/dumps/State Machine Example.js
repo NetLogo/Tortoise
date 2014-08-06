@@ -35,7 +35,7 @@ var StrictMath     = require('shim/strictmath');function setup() {
       SelfPrims.setPatchVariable('pcolor', 45);
     }
   }, true);
-  world.createTurtles(world.observer.getGlobal('number'), '').ask(function() {
+  world.turtleManager.createTurtles(world.observer.getGlobal('number'), '').ask(function() {
     SelfPrims.setVariable('color', 9.9);
     SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
     SelfPrims.setVariable('next-task', Tasks.commandTask(function() {

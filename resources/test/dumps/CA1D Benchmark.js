@@ -43,7 +43,7 @@ function benchmark() {
 }
 function setupGeneral() {
   world.clearPatches();
-  world.clearTurtles();
+  world.turtleManager.clearTurtles();
   world.observer.setGlobal('row', world.topology.maxPycor);
   Call(refreshRules);
   world.observer.setGlobal('gone?', false);

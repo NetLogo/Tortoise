@@ -29,7 +29,7 @@ var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
 var StrictMath     = require('shim/strictmath');function setup() {
   world.clearAll();
-  world.createTurtles(world.observer.getGlobal('number'), '').ask(function() {
+  world.turtleManager.createTurtles(world.observer.getGlobal('number'), '').ask(function() {
     SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
     SelfPrims.setVariable('clock', Prims.random(StrictMath.round(world.observer.getGlobal('cycle-length'))));
     SelfPrims.setVariable('threshold', world.observer.getGlobal('flash-length'));

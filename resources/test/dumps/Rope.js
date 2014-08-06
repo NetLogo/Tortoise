@@ -30,7 +30,7 @@ var Random         = require('shim/random');
 var StrictMath     = require('shim/strictmath');function setup() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
-  world.createTurtles(world.topology.width, '').ask(function() {
+  world.turtleManager.createTurtles(world.topology.width, '').ask(function() {
     SelfPrims.setVariable('xcor', SelfPrims.getVariable('who'));
     SelfPrims.setVariable('color', 15);
     SelfPrims.setVariable('size', 1.5);
@@ -64,9 +64,9 @@ function go() {
   world.turtles().agentFilter(function() {
     return Prims.equality(SelfPrims.getVariable('color'), 15);
   }).ask(function() {
-    SelfPrims.setVariable('yvel', (SelfPrims.getVariable('yvel') + ((world.getTurtle((SelfPrims.getVariable('who') - 1)).projectionBy(function() {
+    SelfPrims.setVariable('yvel', (SelfPrims.getVariable('yvel') + ((world.turtleManager.getTurtle((SelfPrims.getVariable('who') - 1)).projectionBy(function() {
       return SelfPrims.getVariable('ypos');
-    }) - SelfPrims.getVariable('ypos')) + (world.getTurtle((SelfPrims.getVariable('who') + 1)).projectionBy(function() {
+    }) - SelfPrims.getVariable('ypos')) + (world.turtleManager.getTurtle((SelfPrims.getVariable('who') + 1)).projectionBy(function() {
       return SelfPrims.getVariable('ypos');
     }) - SelfPrims.getVariable('ypos')))));
     SelfPrims.setVariable('yvel', (((1000 - world.observer.getGlobal('friction')) / 1000) * SelfPrims.getVariable('yvel')));

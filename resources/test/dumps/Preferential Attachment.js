@@ -31,7 +31,7 @@ var StrictMath     = require('shim/strictmath');function setup() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
   Call(makeNode, Nobody);
-  Call(makeNode, world.getTurtle(0));
+  Call(makeNode, world.turtleManager.getTurtle(0));
   world.ticker.reset();
 }
 function go() {
@@ -45,7 +45,7 @@ function go() {
   }
 }
 function makeNode(oldNode) {
-  world.createTurtles(1, '').ask(function() {
+  world.turtleManager.createTurtles(1, '').ask(function() {
     SelfPrims.setVariable('color', 15);
     if (!Prims.equality(oldNode, Nobody)) {
       LinkPrims.createLinkWith(oldNode).ask(function() {

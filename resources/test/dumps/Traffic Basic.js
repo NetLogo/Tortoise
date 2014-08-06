@@ -47,7 +47,7 @@ function setupCars() {
     throw new Exception.StopInterrupt;
   }
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "car")
-  world.createTurtles(world.observer.getGlobal('number-of-cars'), '').ask(function() {
+  world.turtleManager.createTurtles(world.observer.getGlobal('number-of-cars'), '').ask(function() {
     SelfPrims.setVariable('color', 105);
     SelfPrims.setVariable('xcor', world.topology.randomXcor());
     SelfPrims.setVariable('heading', 90);

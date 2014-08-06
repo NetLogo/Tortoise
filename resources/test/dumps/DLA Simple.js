@@ -32,7 +32,7 @@ var StrictMath     = require('shim/strictmath');function setup() {
   world.getPatchAt(0, 0).ask(function() {
     SelfPrims.setPatchVariable('pcolor', 55);
   }, true);
-  world.createTurtles(world.observer.getGlobal('num-particles'), '').ask(function() {
+  world.turtleManager.createTurtles(world.observer.getGlobal('num-particles'), '').ask(function() {
     SelfPrims.setVariable('color', 15);
     SelfPrims.setVariable('size', 1.5);
     SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());

@@ -28,7 +28,7 @@ var AgentModel     = require('agentmodel');
 var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
 var StrictMath     = require('shim/strictmath');function makeNewcomer() {
-  world.createTurtles(1, '').ask(function() {
+  world.turtleManager.createTurtles(1, '').ask(function() {
     SelfPrims.setVariable('color', (105 + 1));
     SelfPrims.setVariable('size', 1.8);
     SelfPrims.setVariable('incumbent?', false);

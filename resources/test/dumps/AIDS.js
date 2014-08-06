@@ -42,7 +42,7 @@ function setupGlobals() {
   world.observer.setGlobal('slider-check-4', world.observer.getGlobal('average-test-frequency'));
 }
 function setupPeople() {
-  world.createTurtles(world.observer.getGlobal('initial-people'), '').ask(function() {
+  world.turtleManager.createTurtles(world.observer.getGlobal('initial-people'), '').ask(function() {
     SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
     SelfPrims.setVariable('known?', false);
     SelfPrims.setVariable('coupled?', false);

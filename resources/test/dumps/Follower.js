@@ -29,7 +29,7 @@ var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
 var StrictMath     = require('shim/strictmath');function setup() {
   world.clearAll();
-  world.createTurtles(world.observer.getGlobal('population'), '').ask(function() {
+  world.turtleManager.createTurtles(world.observer.getGlobal('population'), '').ask(function() {
     SelfPrims.setVariable('color', 125);
     SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
     SelfPrims.setVariable('leader', Nobody);

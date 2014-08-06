@@ -28,9 +28,9 @@ var AgentModel     = require('agentmodel');
 var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
 var StrictMath     = require('shim/strictmath');function setup() {
-  world.clearTurtles();
+  world.turtleManager.clearTurtles();
   notImplemented('clear-all-plots', undefined)();
-  world.createTurtles(world.observer.getGlobal('number'), '').ask(function() {
+  world.turtleManager.createTurtles(world.observer.getGlobal('number'), '').ask(function() {
     SelfPrims.setVariable('color', Prims.item(Prims.random(world.observer.getGlobal('colors')), [5, 15, 25, 35, 45, 55, 65, 85, 95, 125]));
     SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
     Call(moveOffWall);

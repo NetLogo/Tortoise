@@ -54,7 +54,7 @@ function setupWorld() {
   }, true);
 }
 function setupMoths() {
-  world.createTurtles(world.observer.getGlobal('num-moths'), 'MOTHS').ask(function() {
+  world.turtleManager.createTurtles(world.observer.getGlobal('num-moths'), 'MOTHS').ask(function() {
     SelfPrims.setVariable('color', Call(randomColor));
     Call(mothsPickShape);
     SelfPrims.setVariable('age', Prims.random(3));
@@ -62,7 +62,7 @@ function setupMoths() {
   }, true);
 }
 function go() {
-  world.turtlesOfBreed("MOTHS").ask(function() {
+  world.turtleManager.turtlesOfBreed("MOTHS").ask(function() {
     Call(mothsMate);
     Call(mothsGrimReaper);
     Call(mothsGetEaten);
@@ -107,7 +107,7 @@ function mothsGrimReaper() {
   if (Prims.equality(Prims.random(13), 0)) {
     SelfPrims.die();
   }
-  if (Prims.gt(world.turtlesOfBreed("MOTHS").size(), Call(upperBound))) {
+  if (Prims.gt(world.turtleManager.turtlesOfBreed("MOTHS").size(), Call(upperBound))) {
     if (Prims.equality(Prims.random(2), 0)) {
       SelfPrims.die();
     }
@@ -125,13 +125,13 @@ function mothsPickShape() {
   }
 }
 function updateMonitors() {
-  world.observer.setGlobal('light-moths', world.turtlesOfBreed("MOTHS").agentFilter(function() {
+  world.observer.setGlobal('light-moths', world.turtleManager.turtlesOfBreed("MOTHS").agentFilter(function() {
     return Prims.gte(SelfPrims.getVariable('color'), 7);
   }).size());
-  world.observer.setGlobal('dark-moths', world.turtlesOfBreed("MOTHS").agentFilter(function() {
+  world.observer.setGlobal('dark-moths', world.turtleManager.turtlesOfBreed("MOTHS").agentFilter(function() {
     return Prims.lte(SelfPrims.getVariable('color'), 3);
   }).size());
-  world.observer.setGlobal('medium-moths', (world.turtlesOfBreed("MOTHS").size() - (world.observer.getGlobal('light-moths') + world.observer.getGlobal('dark-moths'))));
+  world.observer.setGlobal('medium-moths', (world.turtleManager.turtlesOfBreed("MOTHS").size() - (world.observer.getGlobal('light-moths') + world.observer.getGlobal('dark-moths'))));
 }
 function polluteWorld() {
   if (Prims.lte(world.observer.getGlobal('darkness'), (8 - Call(deltaEnv)))) {

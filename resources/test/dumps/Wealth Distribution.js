@@ -65,7 +65,7 @@ function recolorPatch() {
 }
 function setupTurtles() {
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "person")
-  world.createTurtles(world.observer.getGlobal('num-people'), '').ask(function() {
+  world.turtleManager.createTurtles(world.observer.getGlobal('num-people'), '').ask(function() {
     SelfManager.self().moveTo(Prims.oneOf(world.patches()));
     SelfPrims.setVariable('size', 1.5);
     Call(setInitialTurtleVars);
