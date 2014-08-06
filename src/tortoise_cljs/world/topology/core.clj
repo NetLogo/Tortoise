@@ -7,7 +7,7 @@
 (defmacro def-height []
   '(def height (inc (- max-pycor min-pycor))))
 
-(defmacro memo-patch-math [fun] `(memoizer ~'world.topology.patch-math ~fun))
+(defmacro memo-patch-math [fun] `(memoizer ~'topology.patch-math ~fun))
 
 (defmacro memo-get-neighbors-4 []
   '(defn get-neighbors-4 [x y]

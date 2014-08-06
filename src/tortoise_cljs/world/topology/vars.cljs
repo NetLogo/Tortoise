@@ -33,7 +33,7 @@
    :TORUS 'topology.torus})
 
 (def terraformers
-  {:TORUS (fn [] world.topology.torus.create)})
+  {:TORUS (fn [] topology.torus.create)})
 
 (defn ^:private _set_bounds! [x1 x2 y1 y2]
   (set! min-pxcor x1)

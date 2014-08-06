@@ -1,7 +1,7 @@
 (ns topology.patch-math
   (:require [util.math :refer [squash]]
             [world :refer [get-patch-at]]
-            [world.topology.vars :refer [min-pxcor min-pycor max-pxcor
+            [topology.vars :refer [min-pxcor min-pycor max-pxcor
                                          max-pycor wrap-in-x? wrap-in-y?]]))
 
 (defn squash-4 [v mn]

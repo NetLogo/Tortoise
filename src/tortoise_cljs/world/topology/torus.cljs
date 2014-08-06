@@ -1,8 +1,8 @@
 (ns topology.torus
-  (:require [world.topology.patch-math]
-            [world.topology.vars :refer [min-pycor min-pxcor max-pxcor max-pycor wrap-in-x? wrap-in-y?]]
+  (:require [topology.patch-math]
+            [topology.vars :refer [min-pycor min-pxcor max-pxcor max-pycor wrap-in-x? wrap-in-y?]]
             [util.etc :refer [js-err]])
-  (:require-macros [world.topology.core :refer [inheritant-bind]]
+  (:require-macros [topology.core :refer [inheritant-bind]]
                    [util.macros :refer [memoizer]]))
 
 ;; get-patch-north = memoize _get_patch_north
@@ -16,7 +16,7 @@
   ([]
     (inheritant-bind
      [ ]
-     (if (some #(= % world.topology.vars.$UNBOUND) (world.topology.vars.bounds))
+     (if (some #(= % topology.vars.$UNBOUND) (topology.vars.bounds))
        (js-err "$UNBOUND in world bounds")
        (create min-pxcor max-pxcor min-pycor max-pycor))))
   ([mnx mxx mny mxy]

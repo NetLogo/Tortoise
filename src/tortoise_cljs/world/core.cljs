@@ -1,5 +1,5 @@
 (ns world
-  (:require [world.topology.vars :refer [min-pxcor max-pxcor
+  (:require [topology.vars :refer [min-pxcor max-pxcor
                                          min-pycor max-pycor
                                          _set_bounds! terraformers]]
             [util.etc :refer [js-err]]))
