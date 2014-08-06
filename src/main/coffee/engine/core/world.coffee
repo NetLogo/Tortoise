@@ -1,14 +1,10 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['engine/core/nobody', 'engine/core/observer', 'engine/core/patch', 'engine/core/patchset', 'engine/core/turtle'
-      , 'engine/core/turtleset', 'engine/core/structure/builtins', 'engine/core/topology/factory'
-      , 'engine/core/world/idmanager', 'engine/core/world/linkmanager', 'engine/core/world/ticker'
-      , 'engine/core/world/turtlemanager',  'shim/lodash', 'shim/random', 'shim/strictmath', 'util/colormodel'
+define(['engine/core/observer', 'engine/core/patch', 'engine/core/patchset', 'engine/core/topology/factory'
+      , 'engine/core/world/linkmanager', 'engine/core/world/ticker', 'engine/core/world/turtlemanager',  'shim/strictmath'
       , 'util/exception']
-     , ( Nobody,               Observer,               Patch,               PatchSet,               Turtle
-      ,  TurtleSet,               Builtins,                         topologyFactory
-      ,  IDManager,                     LinkManager,                     Ticker
-      ,  TurtleManager,                      _,             Random,        StrictMath,        ColorModel
+     , ( Observer,               Patch,               PatchSet,               topologyFactory
+      ,  LinkManager,                     Ticker,                     TurtleManager,                      StrictMath
       ,  Exception) ->
 
   class World
