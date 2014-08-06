@@ -77,26 +77,6 @@
            (_get_patch_southwest x y)
            (_get_patch_southeast x y)])))
 
-
-;; if the fns inside of get-neighbors are memoized,
-;; I don't think there's a point to memoizing get-neighbors(?)
-
-;;(defn get-neighbors-4 [x y]
-;;  (filter #(not= % nil)
-;;          [(get-patch-north x y)
-;;           (get-patch-east  x y)
-;;           (get-patch-south x y)
-;;           (get-patch-west  x y)]))
-
-;;(defn get-neighbors [x y]
-;;  (concat
-;;    (get-neighbors-4 x y)
-;;    (filter #(not= % nil)
-;;           [(get-patch-northeast x y)
-;;            (get-patch-northwest x y)
-;;            (get-patch-southwest x y)
-;;            (get-patch-southeast x y)])))
-
 ;; shortest-x wraps a difference out of bounds.
 ;; _shortestX does not.
 
