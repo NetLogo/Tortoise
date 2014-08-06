@@ -17,5 +17,8 @@
     "lodash": "2.4.1",
     "mori": "0.2.6",
     "requirejs": "2.1.11"
+  },
+  "devDependencies": {
+    "grunt-exec": "^0.4.6"
   }
 }
