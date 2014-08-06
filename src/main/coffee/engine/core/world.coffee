@@ -20,10 +20,13 @@ define(['engine/core/nobody', 'engine/core/observer', 'engine/core/patch', 'engi
 
     _turtleIDManager:   undefined # IDManager
     _patches:           undefined # Array[Patch]
-    _patchesAllBlack:   undefined # Boolean
-    _patchesWithLabels: undefined # Number
     _turtles:           undefined # Array[Turtle]
     _turtlesById:       undefined # Object[Number, Turtle]
+
+    # Optimization-related variables
+    unbreededLinksAreDirected: undefined # Boolean
+    _patchesAllBlack:          undefined # Boolean
+    _patchesWithLabels:        undefined # Number
 
     # (SelfManager, Updater, BreedManager, Array[String], Array[String], Array[String], Array[String], Array[String], Number, Number, Number, Number, Number, Boolean, Boolean, Array[Object], Array[Object]) => World
     constructor: (@selfManager, @_updater, @breedManager, globalNames, interfaceGlobalNames, @turtlesOwnNames
@@ -56,9 +59,12 @@ define(['engine/core/nobody', 'engine/core/observer', 'engine/core/patch', 'engi
       @topology    = null
       @_turtleIDManager = new IDManager #@# The fact that `World` even talks to ID managers (rather than a container for the type of agent) seems undesirable to me
       @_patches         = []
-      @_patchesAllBlack = true
       @_turtles         = []
       @_turtlesById     = {}
+
+      @unbreededLinksAreDirected = false
+      @_patchesAllBlack          = true
+      @_patchesWithLabels        = 0
 
       @resize(minPxcor, maxPxcor, minPycor, maxPycor, wrappingAllowedInX, wrappingAllowedInY)
 
