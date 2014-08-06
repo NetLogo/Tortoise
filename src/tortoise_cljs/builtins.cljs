@@ -1,4 +1,4 @@
-(ns builtins)
+(ns engine.core.structure.builtins) ;; replace builtlins
 
 (def turtles [:id :color :heading :xcor :ycor :shape :label
               :label-color :breed :hidden? :size :pen-size
@@ -7,7 +7,7 @@
 (def patches [:pxcor :pycor :pcolor :plabel :plabel-color])
 
 (def links [:end1 :end2 :lcolor :llabel :llabelcolor :lhidden
-            :lbreed :thickness :lshape :tiemode])
+            :lbreed :thickness :lshape :tie-mode])
 
 ;; NOTE: this are fns on link; kept here for reference
 ;; renderer expects these; might have to add them to an adapter
@@ -19,8 +19,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Aliases                                                       ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(ns Builtins
+  (:use [engine.core.structure.builtins :only [turtles patches links links-extra]]))
 
-(def turtleBuiltins builtins/turtles)
-(def patchBuiltins  builtins/patches)
-(def linkBuiltins     builtins/links)
-(def linkExtras builtins/links-extra)
+(def turtleBuiltins (clj->js engine.core.structure.builtins/turtles))
+(def patchBuiltins  (clj->js engine.core.structure.builtins/patches))
+(def linkBuiltins     (clj->js engine.core.structure.builtins/links))
+(def linkExtras (clj->js engine.core.structure.builtins/links-extra))
