@@ -77,6 +77,10 @@ module.exports = (grunt) ->
       "cljs-compile": {
         command: "lein cljsbuild once default",
         stdout: true
+      },
+      "cljs-compile-auto": {
+        command: "lein cljsbuild auto default",
+        stdout: true
       }
     },
     copy: {
@@ -115,3 +119,4 @@ module.exports = (grunt) ->
   grunt.registerTask('replace', ['cljs-compile', 'exec:replace-with-cljs', 'closurecompiler:pretty'])
   grunt.registerTask('replace-all', ['cljs-compile', 'copy:replace-all-with-cljs', 'closurecompiler:pretty'])
   grunt.registerTask('unreplace', ['cc'])
+  grunt.registerTask('cljs-compile/auto', ['exec:cljs-compile-auto'])
