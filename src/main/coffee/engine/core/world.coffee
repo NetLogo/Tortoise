@@ -2,26 +2,31 @@
 
 define(['engine/core/nobody', 'engine/core/observer', 'engine/core/patch', 'engine/core/patchset', 'engine/core/turtle'
       , 'engine/core/turtleset', 'engine/core/structure/builtins', 'engine/core/topology/factory'
-      , 'engine/core/world/idmanager', 'engine/core/world/linkmanager', 'engine/core/world/ticker',  'shim/lodash'
-      , 'shim/random', 'shim/strictmath', 'util/colormodel', 'util/exception']
+      , 'engine/core/world/idmanager', 'engine/core/world/linkmanager', 'engine/core/world/ticker'
+      , 'engine/core/world/turtlemanager',  'shim/lodash', 'shim/random', 'shim/strictmath', 'util/colormodel'
+      , 'util/exception']
      , ( Nobody,               Observer,               Patch,               PatchSet,               Turtle
       ,  TurtleSet,               Builtins,                         topologyFactory
-      ,  IDManager,                     LinkManager,                     Ticker,                      _
-      ,  Random,        StrictMath,        ColorModel,        Exception) ->
+      ,  IDManager,                     LinkManager,                     Ticker
+      ,  TurtleManager,                      _,             Random,        StrictMath,        ColorModel
+      ,  Exception) ->
 
   class World
 
     id: 0 # Number
 
-    linkManager: undefined # LinkManager
-    observer:    undefined # Observer
-    ticker:      undefined # Ticker
-    topology:    undefined # Topology
+    linkManager:   undefined # LinkManager
+    observer:      undefined # Observer
+    ticker:        undefined # Ticker
+    topology:      undefined # Topology
+    turtleManager: undefined # TurtleManager
 
-    _turtleIDManager:   undefined # IDManager
-    _patches:           undefined # Array[Patch]
-    _turtles:           undefined # Array[Turtle]
-    _turtlesById:       undefined # Object[Number, Turtle]
+    _patches: undefined # Array[Patch]
+
+    # Optimization-related variables
+    unbreededLinksAreDirected: undefined # Boolean
+    _patchesAllBlack:          undefined # Boolean
+    _patchesWithLabels:        undefined # Number
 
     # Optimization-related variables
     unbreededLinksAreDirected: undefined # Boolean
@@ -53,14 +58,17 @@ define(['engine/core/nobody', 'engine/core/observer', 'engine/core/patch', 'engi
         wrappingAllowedInY: wrappingAllowedInY
       })
 
-      @linkManager = new LinkManager(this, breedManager, @_updater, @_setUnbreededLinksDirected, @_setUnbreededLinksUndirected)
-      @observer    = new Observer(@_updater.updated, globalNames, interfaceGlobalNames)
-      @ticker      = new Ticker(@_updater.updated(this))
-      @topology    = null
-      @_turtleIDManager = new IDManager #@# The fact that `World` even talks to ID managers (rather than a container for the type of agent) seems undesirable to me
+      @linkManager   = new LinkManager(this, breedManager, _updater, @_setUnbreededLinksDirected, @_setUnbreededLinksUndirected)
+      @observer      = new Observer(@_updater.updated, globalNames, interfaceGlobalNames)
+      @ticker        = new Ticker(@_updater.updated(this))
+      @topology      = null
+      @turtleManager = new TurtleManager(this, breedManager, _updater, )
+
       @_patches         = []
-      @_turtles         = []
-      @_turtlesById     = {}
+
+      @unbreededLinksAreDirected = false
+      @_patchesAllBlack          = true
+      @_patchesWithLabels        = 0
 
       @unbreededLinksAreDirected = false
       @_patchesAllBlack          = true
@@ -90,12 +98,7 @@ define(['engine/core/nobody', 'engine/core/observer', 'engine/core/patch', 'engi
 
     # () => TurtleSet
     turtles: ->
-      new TurtleSet(@_turtles)
-
-    # (String) => TurtleSet
-    turtlesOfBreed: (breedName) ->
-      breed = @breedManager.get(breedName)
-      new TurtleSet(breed.members, breedName)
+      @turtleManager.turtles()
 
     # () => PatchSet
     patches: =>
@@ -108,7 +111,7 @@ define(['engine/core/nobody', 'engine/core/observer', 'engine/core/patch', 'engi
         throw new Exception.NetLogoException("You must include the point (0, 0) in the world.")
 
       # For some reason, JVM NetLogo doesn't restart `who` ordering after `resize-world`; even the test for this is existentially confused. --JAB (4/3/14)
-      @_turtleIDManager.suspendDuring(() => @clearTurtles())
+      @turtleManager._clearTurtlesSuspended()
 
       @topology = topologyFactory(wrapsInX, wrapsInY, minPxcor, maxPxcor, minPycor, maxPycor, @patches, @getPatchAt)
 
@@ -119,7 +122,6 @@ define(['engine/core/nobody', 'engine/core/observer', 'engine/core/patch', 'engi
 
       return
 
-
     # (Number, Number) => Patch
     getPatchAt: (x, y) =>
       trueX  = (x - @topology.minPxcor) % @topology.width  + @topology.minPxcor # Handle negative coordinates and wrapping
@@ -127,29 +129,10 @@ define(['engine/core/nobody', 'engine/core/observer', 'engine/core/patch', 'engi
       index  = (@topology.maxPycor - StrictMath.round(trueY)) * @topology.width + (StrictMath.round(trueX) - @topology.minPxcor)
       @_patches[index]
 
-    # (Number) => Agent
-    getTurtle: (id) ->
-      @_turtlesById[id] or Nobody
-
-    # (String, Number) => Agent
-    getTurtleOfBreed: (breedName, id) ->
-      turtle = @getTurtle(id)
-      if turtle.getBreedName().toUpperCase() is breedName.toUpperCase()
-        turtle
-      else
-        Nobody
-
-    # (Number) => Unit
-    removeTurtle: (id) ->
-      turtle = @_turtlesById[id]
-      @_turtles.splice(@_turtles.indexOf(turtle), 1)
-      delete @_turtlesById[id]
-      return
-
     # () => Unit
     clearAll: ->
       @observer.clearCodeGlobals()
-      @clearTurtles()
+      @turtleManager.clearTurtles()
       @createPatches()
       @linkManager._resetIDs()
       @_declarePatchesAllBlack()
@@ -158,51 +141,11 @@ define(['engine/core/nobody', 'engine/core/observer', 'engine/core/patch', 'engi
       return
 
     # () => Unit
-    clearTurtles: ->
-      @turtles().forEach((turtle) ->
-        try
-          turtle.die()
-        catch error
-          throw error if not (error instanceof Exception.DeathInterrupt)
-        return
-      )
-      @_turtleIDManager.reset()
-      return
-
-    # () => Unit
     clearPatches: ->
       @patches().forEach((patch) -> patch.reset(); return)
       @_declarePatchesAllBlack()
       @_resetPatchLabelCount()
       return
-
-    # (Number, Number, Number, Number, Breed, String, Number, Boolean, Number, PenManager) => Turtle
-    createTurtle: (color, heading, xcor, ycor, breed, label, lcolor, isHidden, size, penManager) ->
-      id     = @_turtleIDManager.next()
-      turtle = new Turtle(this, id, @_updater.updated, @_updater.registerDeadTurtle, color, heading, xcor, ycor, breed, label, lcolor, isHidden, size, penManager)
-      @_updater.updated(turtle)(Builtins.turtleBuiltins...)
-      @_turtles.push(turtle)
-      @_turtlesById[id] = turtle
-      turtle
-
-    # (Number, String) => TurtleSet
-    createOrderedTurtles: (n, breedName) ->
-      turtles = _(0).range(n).map(
-        (num) =>
-          color   = ColorModel.nthColor(num)
-          heading = (360 * num) / n
-          @createTurtle(color, heading, 0, 0, @breedManager.get(breedName))
-      ).value()
-      new TurtleSet(turtles, breedName)
-
-    # (Number, String, Number, Number) => TurtleSet
-    createTurtles: (n, breedName, xcor = 0, ycor = 0) ->
-      turtles = _(0).range(n).map(=>
-        color   = ColorModel.randomColor()
-        heading = Random.nextInt(360)
-        @createTurtle(color, heading, xcor, ycor, @breedManager.get(breedName))
-      ).value()
-      new TurtleSet(turtles, breedName)
 
     # (Number, Number) => PatchSet
     getNeighbors: (pxcor, pycor) ->

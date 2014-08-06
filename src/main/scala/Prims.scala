@@ -21,8 +21,8 @@ object Prims {
       case SimplePrims.InfixReporter(op)    => s"(${arg(0)} $op ${arg(1)})"
       case SimplePrims.NormalReporter(op)   => s"$op($commaArgs)"
       case x: prim.etc._isbreed             => s"""Prims.isBreed("${x.breedName}", ${arg(0)})"""
-      case b: prim._breed                   => s"""world.turtlesOfBreed("${b.getBreedName}")"""
-      case b: prim.etc._breedsingular       => s"""world.getTurtleOfBreed("${b.breedName}", ${arg(0)})"""
+      case b: prim._breed                   => s"""world.turtleManager.turtlesOfBreed("${b.getBreedName}")"""
+      case b: prim.etc._breedsingular       => s"""world.turtleManager.getTurtleOfBreed("${b.breedName}", ${arg(0)})"""
       case b: prim.etc._breedhere           => s"""SelfManager.self().breedHere("${b.getBreedName}")"""
       case b: prim.etc._breedon             => s"""Prims.breedOn("${b.getBreedName}", ${arg(0)})"""
       case x: prim.etc._isstring            => s"Type(${arg(0)}).isString()"
@@ -231,7 +231,7 @@ object Prims {
         case x => throw new IllegalArgumentException("How did you get here with class of type " + x.getClass.getName)
       }
     val body = Handlers.fun(s.args(1))
-    genAsk(s"world.$name($n, '$breed')", true, body)
+    genAsk(s"world.turtleManager.$name($n, '$breed')", true, body)
   }
 
   def generateSprout(s: ast.Statement): String = {

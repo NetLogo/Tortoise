@@ -88,7 +88,7 @@ define(['engine/core/nobody', 'engine/core/turtle', 'engine/core/turtleset', 'en
 
     # (Number, String) => TurtleSet
     sprout: (n, breedName) ->
-      @world.createTurtles(n, breedName, @pxcor, @pycor)
+      @world.turtleManager.createTurtles(n, breedName, @pxcor, @pycor)
 
     # (String) => TurtleSet
     breedHere: (breedName) ->
