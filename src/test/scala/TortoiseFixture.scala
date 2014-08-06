@@ -65,14 +65,10 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
     "TurtlesHere::TurtlesHereCheckOrder2"                                     -> "correct answer requires empty init block optimization",
     "TurtlesHere::TurtlesHereCheckOrder3"                                     -> "correct answer requires empty init block optimization",
     "TurtlesHere::TurtlesHereCheckOrder4"                                     -> "correct answer requires empty init block optimization",
-    // significant; uncertain how to solve (`RandomNOfIsFair<X>`s could possibly be solved by making it faster to write agent variables, but maybe not)
-    "Random::RandomNOfIsFairForABreed"                        -> "TOO SLOW",
-    "Random::RandomNOfIsFairForAList"                         -> "TOO SLOW",
-    "Random::RandomNOfIsFairForAnAgentsetConstructedOnTheFly" -> "TOO SLOW",
-    "Random::RandomNOfIsFairForLinks"                         -> "TOO SLOW",
-    "Random::RandomNOfIsFairForPatches"                       -> "TOO SLOW",
-    "Random::RandomNOfIsFairForTurtles"                       -> "TOO SLOW",
+    // significant; uncertain how to solve
+    "Random::RandomNOfIsFairForLinks" -> "TOO SLOW",
     // requires features
+    "Random::RandomNOfIsFairForAList" -> "`n-of` not implemented for lists",
     "Tie::Tie2Nonrigid" -> "tie-mode link variable not implemented; ties not implemented at all",
     // requires handling of non-local exit (see in JVM NetLogo: `NonLocalExit`, `_report`, `_foreach`, `_run`)
     "Stop::ReportFromForeach" -> "no non-local exit from foreach",
