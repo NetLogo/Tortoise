@@ -17,7 +17,7 @@ class CompiledModelTest extends FunSuite {
 
   def testValid(code: String, expected: => String, observed: => ValidationNel[api.CompilerException, String]) =
     assertResult(expected)(observed.valueOr(exceptionNel =>
-      fail(s"The following code failed with the given error:\n$code\n\n${exceptionNel.head}")
+      fail(s"The following code failed with the given error:\n$code\n\n${exceptionNel.head}\n")
     ))
 
   def testValidCommand(model: CompiledModel, command: String) =
@@ -32,13 +32,13 @@ class CompiledModelTest extends FunSuite {
 
   def testInvalid(code: String, expected: => String, observed: => ValidationNel[api.CompilerException, String]) = try {
     expected
-    fail("Bad test: Code that should not have compiled did: " + code)
+    fail(s"Bad test: This code should not have compiled\n$code\nIt compiled to\n$expected\n")
   } catch {
     case expectedEx: api.CompilerException =>
       observed match {
-        case Success(_) => fail("This code should not have compiled: " + code)
+        case Success(s) => fail(s"This code should not have compiled\n$code\nIt compiled to\n$s\n")
         case Failure(NonEmptyList(ex)) => assertSameException(expectedEx, ex)
-        case f => fail("Code gave more than one failure: " + f)
+        case f => fail(s"This code gave more than one failure\n$code\n\n$f\n")
       }
   }
 
@@ -71,10 +71,22 @@ class CompiledModelTest extends FunSuite {
   def modelValidation = CompiledModel.fromCode(modelCode)
   def model = modelValidation.valueOr(x => throw x.head)
 
+  val badModelCode =
+    s"""|to go
+        |  foobar
+        |end""".stripMargin
+  def badModelValidation = CompiledModel.fromCode(badModelCode)
+
   test("model from code") {
     testValid(modelCode,
               Compiler.compileProcedures(core.Model(modelCode, widgets = List(core.View.square(16))))._1,
               modelValidation map { _.compiledCode })
+  }
+
+  test("invalid model from code") {
+    testInvalid(badModelCode,
+                Compiler.compileProcedures(core.Model(badModelCode, widgets = List(core.View.square(16))))._1,
+                badModelValidation map { _.compiledCode })
   }
 
   test("custom procedures valid") {
