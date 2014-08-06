@@ -7,15 +7,15 @@ define(['engine/core/nobody', 'engine/core/turtle', 'engine/core/turtleset', 'en
 
   class TurtleManager
 
-    _turtleIDManager: undefined # IDManager
-    _turtles:         undefined # Array[Turtle]
-    _turtlesById:     undefined # Object[Number, Turtle]
+    _idManager:   undefined # IDManager
+    _turtles:     undefined # Array[Turtle]
+    _turtlesById: undefined # Object[Number, Turtle]
 
     # (World, Updater, BreedManager) => TurtleManager
     constructor: (@_world, @_breedManager, @_updater) ->
-      @_turtleIDManager = new IDManager
-      @_turtles         = []
-      @_turtlesById     = {}
+      @_idManager   = new IDManager
+      @_turtles     = []
+      @_turtlesById = {}
 
     # () => Unit
     clearTurtles: ->
@@ -26,7 +26,7 @@ define(['engine/core/nobody', 'engine/core/turtle', 'engine/core/turtleset', 'en
           throw error if not (error instanceof Exception.DeathInterrupt)
         return
       )
-      @_turtleIDManager.reset()
+      @_idManager.reset()
       return
 
     # (Number, String) => TurtleSet
@@ -41,7 +41,7 @@ define(['engine/core/nobody', 'engine/core/turtle', 'engine/core/turtleset', 'en
 
     # (Number, Number, Number, Number, Breed, String, Number, Boolean, Number, PenManager) => Turtle
     createTurtle: (color, heading, xcor, ycor, breed, label, lcolor, isHidden, size, penManager) ->
-      id     = @_turtleIDManager.next()
+      id     = @_idManager.next()
       turtle = new Turtle(@_world, id, @_updater.updated, @_updater.registerDeadTurtle, color, heading, xcor, ycor, breed, label, lcolor, isHidden, size, penManager)
       @_updater.updated(turtle)(Builtins.turtleBuiltins...)
       @_turtles.push(turtle)
@@ -87,7 +87,7 @@ define(['engine/core/nobody', 'engine/core/turtle', 'engine/core/turtleset', 'en
 
     # () => Unit
     _clearTurtlesSuspended: ->
-      @_turtleIDManager.suspendDuring(() => @clearTurtles())
+      @_idManager.suspendDuring(() => @clearTurtles())
       return
 
 )

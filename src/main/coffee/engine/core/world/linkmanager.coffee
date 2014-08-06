@@ -7,19 +7,19 @@ define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine
      , ( Link,               LinkSet,               Nobody,               Builtins
       ,  IDManager,                     SortedLinks) ->
 
-  _links:         undefined # SortedLinks
-  _linksFrom:     undefined # Object[Number, Number]
-  _linkIDManager: undefined # IDManager
-  _linksTo:       undefined # Object[Number, Number]
+  _links:     undefined # SortedLinks
+  _linksFrom: undefined # Object[Number, Number]
+  _idManager: undefined # IDManager
+  _linksTo:   undefined # Object[Number, Number]
 
   class LinkManager
 
     # (World, BreedManager, Updater, () => Unit, () => Unit) => LinkManager
     constructor: (@_world, @_breedManager, @_updater, @_notifyIsDirected, @_notifyIsUndirected) ->
-      @_links         = new SortedLinks
-      @_linksFrom     = {}
-      @_linkIDManager = new IDManager
-      @_linksTo       = {}
+      @_links     = new SortedLinks
+      @_linksFrom = {}
+      @_idManager = new IDManager
+      @_linksTo   = {}
 
     # (Turtle, Turtle) => Link
     createDirectedLink: (from, to) ->
@@ -75,7 +75,7 @@ define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine
 
     # () => Unit
     _resetIDs: ->
-      @_linkIDManager.reset()
+      @_idManager.reset()
 
     # (Boolean, Turtle, Turtle) => Link
     _createLink: (isDirected, from, to) ->
@@ -86,7 +86,7 @@ define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine
           [to, from]
 
       if not @_linkExists(end1.id, end2.id, isDirected)
-        link = new Link(@_linkIDManager.next(), isDirected, end1, end2, @_world, @_updater.updated, @_updater.registerDeadLink, @_removeLink, @_linksOfBreed)
+        link = new Link(@_idManager.next(), isDirected, end1, end2, @_world, @_updater.updated, @_updater.registerDeadLink, @_removeLink, @_linksOfBreed)
         @_updater.updated(link)(Builtins.linkBuiltins...)
         @_updater.updated(link)(Builtins.linkExtras...)
         @_links.insert(link)
