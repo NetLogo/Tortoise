@@ -15,8 +15,8 @@ define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtl
     _updateVarsByName: undefined # (String*) => Unit
     _varManager:       undefined # VariableManager
 
-    # (World, Number, (Updatable) => (String*) => Unit, (Number) => Unit, Number, Number, Number, Number, Breed, String, Number, Boolean, Number, PenManager) => Turtle
-    constructor: (@world, @id, genUpdate, @_registerDeath, @_color = 0, @_heading = 0, @xcor = 0, @ycor = 0, breed = @world.breedManager.turtles(), @_label = "", @_labelcolor = 9.9, @_hidden = false, @_size = 1.0, @penManager = new PenManager(genUpdate(this))) ->
+    # (World, Number, (Updatable) => (String*) => Unit, (Number) => Unit, (Number, Number, Number, Number, Breed, String, Number, Boolean, Number, PenManager) => Turtle, (Number) => Unit, Number, Number, Number, Number, Breed, String, Number, Boolean, Number, PenManager) => Turtle
+    constructor: (@world, @id, genUpdate, @_registerDeath, @_createTurtle, @_removeTurtle, @_color = 0, @_heading = 0, @xcor = 0, @ycor = 0, breed = @world.breedManager.turtles(), @_label = "", @_labelcolor = 9.9, @_hidden = false, @_size = 1.0, @penManager = new PenManager(genUpdate(this))) ->
       @_updateVarsByName = genUpdate(this)
 
       varNames     = @world.turtlesOwnNames.concat(breed.varNames)
@@ -278,7 +278,7 @@ define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtl
     die: ->
       @_breed.remove(this)
       if @id isnt -1
-        @world.turtleManager.removeTurtle(@id)
+        @_removeTurtle(@id)
         @_seppuku()
         @world.links().forEach((link) =>
           if link.end1.id is @id or link.end2.id is @id
@@ -339,7 +339,7 @@ define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtl
 
     # (Breed) => Turtle
     _makeTurtleCopy: (breed) ->
-      turtle = @world.turtleManager.createTurtle(@_color, @_heading, @xcor, @ycor, breed, @_label, @_labelcolor, @_hidden, @_size, @penManager.clone())
+      turtle = @_createTurtle(@_color, @_heading, @xcor, @ycor, breed, @_label, @_labelcolor, @_hidden, @_size, @penManager.clone())
       _(@world.turtlesOwnNames).forEach((varName) =>
         turtle.setVariable(varName, @getVariable(varName))
         return

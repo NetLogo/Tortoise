@@ -35,25 +35,16 @@ define(['engine/core/nobody', 'engine/core/turtle', 'engine/core/turtleset', 'en
         (num) =>
           color   = ColorModel.nthColor(num)
           heading = (360 * num) / n
-          @createTurtle(color, heading, 0, 0, @_breedManager.get(breedName))
+          @_createTurtle(color, heading, 0, 0, @_breedManager.get(breedName))
       ).value()
       new TurtleSet(turtles, breedName)
-
-    # (Number, Number, Number, Number, Breed, String, Number, Boolean, Number, PenManager) => Turtle
-    createTurtle: (color, heading, xcor, ycor, breed, label, lcolor, isHidden, size, penManager) ->
-      id     = @_idManager.next()
-      turtle = new Turtle(@_world, id, @_updater.updated, @_updater.registerDeadTurtle, color, heading, xcor, ycor, breed, label, lcolor, isHidden, size, penManager)
-      @_updater.updated(turtle)(Builtins.turtleBuiltins...)
-      @_turtles.push(turtle)
-      @_turtlesById[id] = turtle
-      turtle
 
     # (Number, String, Number, Number) => TurtleSet
     createTurtles: (n, breedName, xcor = 0, ycor = 0) ->
       turtles = _(0).range(n).map(=>
         color   = ColorModel.randomColor()
         heading = Random.nextInt(360)
-        @createTurtle(color, heading, xcor, ycor, @_breedManager.get(breedName))
+        @_createTurtle(color, heading, xcor, ycor, @_breedManager.get(breedName))
       ).value()
       new TurtleSet(turtles, breedName)
 
@@ -69,13 +60,6 @@ define(['engine/core/nobody', 'engine/core/turtle', 'engine/core/turtleset', 'en
       else
         Nobody
 
-    # (Number) => Unit
-    removeTurtle: (id) ->
-      turtle = @_turtlesById[id]
-      @_turtles.splice(@_turtles.indexOf(turtle), 1)
-      delete @_turtlesById[id]
-      return
-
     # () => TurtleSet
     turtles: ->
       new TurtleSet(@_turtles)
@@ -88,6 +72,22 @@ define(['engine/core/nobody', 'engine/core/turtle', 'engine/core/turtleset', 'en
     # () => Unit
     _clearTurtlesSuspended: ->
       @_idManager.suspendDuring(() => @clearTurtles())
+      return
+
+    # (Number, Number, Number, Number, Breed, String, Number, Boolean, Number, PenManager) => Turtle
+    _createTurtle: (color, heading, xcor, ycor, breed, label, lcolor, isHidden, size, penManager) =>
+      id     = @_idManager.next()
+      turtle = new Turtle(@_world, id, @_updater.updated, @_updater.registerDeadTurtle, @_createTurtle, @_removeTurtle, color, heading, xcor, ycor, breed, label, lcolor, isHidden, size, penManager)
+      @_updater.updated(turtle)(Builtins.turtleBuiltins...)
+      @_turtles.push(turtle)
+      @_turtlesById[id] = turtle
+      turtle
+
+    # (Number) => Unit
+    _removeTurtle: (id) =>
+      turtle = @_turtlesById[id]
+      @_turtles.splice(@_turtles.indexOf(turtle), 1)
+      delete @_turtlesById[id]
       return
 
 )
