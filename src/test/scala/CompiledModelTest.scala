@@ -13,21 +13,21 @@ class CompiledModelTest extends FunSuite {
     assertResult(expected.end)(observed.end)
     assertResult(expected.filename)(observed.filename)
   }
-    
+
+  def testValid(code: String, expected: => String, observed: => ValidationNel[api.CompilerException, String]) =
+    assertResult(expected)(observed.valueOr(exceptionNel =>
+      fail(s"The following code failed with the given error:\n$code\n\n${exceptionNel.head}")
+    ))
 
   def testValidCommand(model: CompiledModel, command: String) =
-    assertResult(
-      compileCommands(command, model.procedures, model.program)
-    )(
-      model.compileCommand(command).valueOr(exNel => throw exNel.head)
-    )
+    testValid(command,
+              compileCommands(command, model.procedures, model.program),
+              model.compileCommand(command))
 
   def testValidReporter(model: CompiledModel, reporter: String) =
-    assertResult(
-      compileReporter(reporter, model.procedures, model.program)
-    )(
-      model.compileReporter(reporter).valueOr(exNel => throw exNel.head)
-    )
+    testValid(reporter,
+              compileReporter(reporter, model.procedures, model.program),
+              model.compileReporter(reporter))
 
   def testInvalid(code: String, expected: => String, observed: => ValidationNel[api.CompilerException, String]) = try {
     expected
