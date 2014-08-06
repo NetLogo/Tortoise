@@ -14,5 +14,5 @@ cloneFunc = # Stored into a variable for the sake of recursion --JAB (4/29/14)
     else
       obj
 
-engine.cloner = Cloner = cloneFunc
+shim.cloner = Cloner = cloneFunc
 
