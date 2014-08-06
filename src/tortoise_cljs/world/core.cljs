@@ -29,13 +29,12 @@
   (when (not inited?)
     (reset! _size 0)
     (_set_bounds! mnx mxx mny mxy)
-    (set! _topology_type (keyword tt)) ;; must come before reset! patchset
+    (set! _topology_type (keyword (.toUpperCase tt))) ;; must come before reset! patchset
     (reset! patchset (_gen_patchset min-pxcor max-pxcor min-pycor max-pycor))
-    (((terraformers (keyword tt))))
+    (((terraformers (keyword (.toUpperCase tt)))))
     (set! inited? true)))
 
 (defn get-patch-at [x y]
   (if (not inited?)
     (js-err "World not initialized")
     (nth (drop (* (inc (- max-pycor min-pycor)) (- x min-pxcor)) @patchset) (- y min-pycor))))
-
