@@ -2,7 +2,8 @@
   (:require [util.math :refer [squash]]
             [world :refer [get-patch-at]]
             [topology.vars :refer [min-pxcor min-pycor max-pxcor
-                                         max-pycor wrap-in-x? wrap-in-y?]]))
+                                         max-pycor wrap-in-x? wrap-in-y?]]
+            [shim.strictmath]))
 
 (defn squash-4 [v mn]
   (squash v mn 1.0E-4))
@@ -88,14 +89,15 @@
 
 ;; distances
 
-(defn distanceXY [x1 y1 x2 y2]
+(defn distance-xy [x1 y1 x2 y2]
   (let [a2 (.pow shim.strictmath (shortest-x x1, x2) 2)
         b2 (.pow shim.strictmath (shortest-y y1, y2) 2)]
     (.sqrt shim.strictmath (+ a2 b2))))
 
 (defn distance [x y agent]
+  ;; TODO: cl dependent (.getCoords agent)
   (let [[ax ay] (.getCoords agent)]
-    (distanceXY x y ax ay)))
+    (distance-xy x y ax ay)))
 
 ;; towards
 
