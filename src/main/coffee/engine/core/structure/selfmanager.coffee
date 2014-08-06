@@ -6,8 +6,8 @@ define(['util/exception'], (Exception) ->
 
     # type SelfType = Number|Agent // The type that `self` or `myself` could be at any time
 
-    _self:   undefined # SelfType #@# Lame
-    _myself: undefined # SelfType #@# Lame
+    _self:   undefined # SelfType
+    _myself: undefined # SelfType
 
     # () => SelfManager
     constructor: ->
@@ -19,7 +19,7 @@ define(['util/exception'], (Exception) ->
       @_self
 
     # () => SelfType
-    myself: -> #@# I wouldn't be surprised if this is entirely avoidable
+    myself: ->
       if @_myself isnt 0
         @_myself
       else
@@ -27,7 +27,7 @@ define(['util/exception'], (Exception) ->
 
     # [T] @ (() => T) => (Agent) => T
     askAgent: (f) => (agent) =>
-      oldMyself = @_myself #@# All of this contextual swapping can be handled more clearly; couldn't `f` just take `self` and `myself` as arguments?
+      oldMyself = @_myself
       oldAgent  = @_self
 
       @_myself = @_self
