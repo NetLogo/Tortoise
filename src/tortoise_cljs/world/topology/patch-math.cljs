@@ -59,23 +59,6 @@
 (defn _get_patch_northwest [x y]
   (get-patch-at (wrap-x (dec x)) (wrap-y (inc y))))
 
-;; can memoize all the things. :D
-;; perhaps will not want/need to memoize EVERYTHING,
-;; but for now just everything.
-
-;; NOTE: memoization here is not terribly useful.
-;;       move to topology initialization code.
-
-(def get-patch-north (memoize _get_patch_north))
-(def get-patch-east  (memoize _get_patch_east))
-(def get-patch-south (memoize _get_patch_south))
-(def get-patch-west  (memoize _get_patch_west))
-
-(def get-patch-northeast (memoize _get_patch_northeast))
-(def get-patch-southeast (memoize _get_patch_southeast))
-(def get-patch-southwest (memoize _get_patch_southwest))
-(def get-patch-northwest (memoize _get_patch_northwest))
-
 ;; get neighbors
 
 (defn _get_neighbors_4 [x y]
@@ -98,21 +81,21 @@
 ;; if the fns inside of get-neighbors are memoized,
 ;; I don't think there's a point to memoizing get-neighbors(?)
 
-(defn get-neighbors-4 [x y]
-  (filter #(not= % nil)
-          [(get-patch-north x y)
-           (get-patch-east  x y)
-           (get-patch-south x y)
-           (get-patch-west  x y)]))
+;;(defn get-neighbors-4 [x y]
+;;  (filter #(not= % nil)
+;;          [(get-patch-north x y)
+;;           (get-patch-east  x y)
+;;           (get-patch-south x y)
+;;           (get-patch-west  x y)]))
 
-(defn get-neighbors [x y]
-  (concat
-    (get-neighbors-4 x y)
-    (filter #(not= % nil)
-           [(get-patch-northeast x y)
-            (get-patch-northwest x y)
-            (get-patch-southwest x y)
-            (get-patch-southeast x y)])))
+;;(defn get-neighbors [x y]
+;;  (concat
+;;    (get-neighbors-4 x y)
+;;    (filter #(not= % nil)
+;;           [(get-patch-northeast x y)
+;;            (get-patch-northwest x y)
+;;            (get-patch-southwest x y)
+;;            (get-patch-southeast x y)])))
 
 ;; shortest-x wraps a difference out of bounds.
 ;; _shortestX does not.

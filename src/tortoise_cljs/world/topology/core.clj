@@ -1,37 +1,31 @@
 (ns world.topology.core
   (:require [util.macros :refer [memoizer]]))
 
-;; hand topology the functions it needs from world
-;; (I believe all it should need is get-patch-at)
-
-;; funcs (will be implemented in patch-math)
-;;
-;; distanceXY (x1, y1, x2, y2)
-;; distance (x, y, agent)
-;; towards (x1, y1, x2, y2)
-;; midpointx
-;; midpointy
-;; inRadius (x, y, agents, radius)
-
-;; abstract methods
-;;
-;; shortestX ;;wrapped vs origin distance btwn pnts
-;; shortestY
-
-;; def members when inheritant-bind is called.
-;;
-;; members
-;;
-;; width
-;; height
-
 (defmacro def-width []
-  '(def width (- max-pxcor min-pxcor)))
+  '(def width (inc (- max-pxcor min-pxcor))))
 
 (defmacro def-height []
-  '(def height (- max-pycor min-pycor)))
+  '(def height (inc (- max-pycor min-pycor))))
 
 (defmacro memo-patch-math [fun] `(memoizer ~'world.topology.patch-math ~fun))
+
+(defmacro memo-get-neighbors-4 []
+  '(defn get-neighbors-4 [x y]
+     (filter #(not= % nil)
+             [(get-patch-north x y)
+              (get-patch-east  x y)
+              (get-patch-south x y)
+              (get-patch-west  x y)])))
+
+(defmacro memo-get-neighbors []
+  '(defn get-neighbors [x y]
+     (concat
+       (get-neighbors-4 x y)
+       (filter #(not= % nil)
+               [(get-patch-northeast x y)
+                (get-patch-southeast x y)
+                (get-patch-southwest x y)
+                (get-patch-northwest x y)]))))
 
 (defmacro inheritant-bind [bind-block & body]
   `(binding ~bind-block
@@ -45,4 +39,6 @@
      (memo-patch-math ~'_get_patch_southeast)
      (memo-patch-math ~'_get_patch_northwest)
      (memo-patch-math ~'_get_patch_southwest)
+     (memo-get-neighbors-4)
+     (memo-get-neighbors)
      ~@body))
