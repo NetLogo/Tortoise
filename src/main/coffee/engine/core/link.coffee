@@ -12,7 +12,7 @@ define(['engine/core/abstractagentset', 'engine/core/structure/linkcompare', 'en
     _updateVarsByName: undefined # (String*) => Unit
     _varManager:       undefined # VariableManager
 
-    # (Number, Boolean, Turtle, Turtle, World, (Updatable) => (String*) => Unit, (Number) => Unit, (Number) => Unit,  Breed, Number, Boolean, String, Number, String, Number, String) => Link
+    # (Number, Boolean, Turtle, Turtle, World, (Updatable) => (String*) => Unit, (Number) => Unit, (Link) => Unit, (String) => LinkSet, Breed, Number, Boolean, String, Number, String, Number, String) => Link
     constructor: (@id, @isDirected, @end1, @end2, @world, genUpdate, @_registerDeath, @_registerRemoval
                 , getLinksByBreedName, breed = @world.breedManager.links(), @_color = 5, @_isHidden = false
                 , @_label = "", @_labelcolor = 9.9, @_shape = "default", @_thickness = 0, @_tiemode = "none") ->
@@ -42,7 +42,7 @@ define(['engine/core/abstractagentset', 'engine/core/structure/linkcompare', 'en
       if @id isnt -1
         @end1.removeLink(this)
         @end2.removeLink(this)
-        @_registerRemoval(@id)
+        @_registerRemoval(this)
         @_seppuku()
         @id = -1
       throw new Exception.DeathInterrupt("Call only from inside an askAgent block")
