@@ -32,8 +32,8 @@
   {:NONE "In the beginning, there was...",
    :TORUS 'topology.torus})
 
-(def terraformer
-  {:TORUS (fn [] topology.torus.create)})
+(def terraformers
+  {:TORUS (fn [] world.topology.torus.create)})
 
 (defn ^:private _set_bounds! [x1 x2 y1 y2]
   (set! min-pxcor x1)

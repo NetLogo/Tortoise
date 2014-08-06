@@ -1,10 +1,11 @@
 (ns world
-  (:require [world.topology.vars :refer [min-pxcor max-pxcor min-pycor max-pycor _set_bounds!]]
+  (:require [world.topology.vars :refer [min-pxcor max-pxcor
+                                         min-pycor max-pycor
+                                         _set_bounds! terraformers]]
             [util.etc :refer [js-err]]))
 
 (def _id (gensym "world_"))
 (def ^:dynamic inited? false)
-(def ^:dynamic _topology_generator :NONE)
 (def ^:dynamic _topology_type :NONE)
 
 (def ^:private _size (atom 0))
@@ -28,8 +29,9 @@
   (when (not inited?)
     (reset! _size 0)
     (_set_bounds! mnx mxx mny mxy)
-    (set! _topology_type (keyword (.toUpperCase tt))) ;; must come before reset! patchset
+    (set! _topology_type (keyword tt)) ;; must come before reset! patchset
     (reset! patchset (_gen_patchset min-pxcor max-pxcor min-pycor max-pycor))
+    (((terraformers (keyword tt))))
     (set! inited? true)))
 
 (defn get-patch-at [x y]
