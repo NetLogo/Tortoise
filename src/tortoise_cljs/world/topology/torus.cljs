@@ -1,4 +1,4 @@
-(ns world.topology.torus
+(ns topology.torus
   (:require [world.topology.patch-math]
             [world.topology.vars :refer [min-pycor min-pxcor max-pxcor max-pycor wrap-in-x? wrap-in-y?]]
             [util.etc :refer [js-err]])
@@ -16,9 +16,9 @@
   ([]
     (inheritant-bind
      [ ]
-     (if (some #(= % topology.vars.$UNBOUND) (topology.vars.bounds))
+     (if (some #(= % world.topology.vars.$UNBOUND) (world.topology.vars.bounds))
        (js-err "$UNBOUND in world bounds")
-       (init))))
+       (create min-pxcor max-pxcor min-pycor max-pycor))))
   ([mnx mxx mny mxy]
     (inheritant-bind
      [ min-pxcor mnx

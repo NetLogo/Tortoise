@@ -1,4 +1,4 @@
-(ns world.topology.patch-math
+(ns topology.patch-math
   (:require [util.math :refer [squash]]
             [world :refer [get-patch-at]]
             [world.topology.vars :refer [min-pxcor min-pycor max-pxcor

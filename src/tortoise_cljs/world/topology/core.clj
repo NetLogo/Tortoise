@@ -1,4 +1,4 @@
-(ns world.topology.core
+(ns topology.core
   (:require [util.macros :refer [memoizer]]))
 
 (defmacro def-width []

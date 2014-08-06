@@ -1,4 +1,4 @@
-(ns world.topology.vars)
+(ns topology.vars)
 
 ;;(declare-dyn max_pxcor
 ;;             min_pxcor
