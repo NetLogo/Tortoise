@@ -1,7 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['shim/lodash', 'shim/random', 'shim/strictmath', 'util/abstractmethoderror']
-     , ( _,             Random,        StrictMath,        abstractMethod) ->
+define(['shim/lodash', 'shim/random', 'shim/strictmath', 'util/abstractmethoderror', 'util/exception']
+     , ( _,             Random,        StrictMath,        abstractMethod,             Exception) ->
 
   class Topology
 
@@ -172,6 +172,35 @@ define(['shim/lodash', 'shim/random', 'shim/strictmath', 'util/abstractmethoderr
           min
       else
         pos
+
+    # (Number) => Number
+    _wrapXCautiously: (pos) ->
+      @_wrapCautiously(@minPxcor, @maxPxcor, pos)
+
+    # (Number) => Number
+    _wrapXLeniently: (pos) ->
+      @_wrapLeniently(@minPxcor, @maxPxcor, pos)
+
+    # (Number) => Number
+    _wrapYCautiously: (pos) ->
+      @_wrapCautiously(@minPycor, @maxPycor, pos)
+
+    # (Number) => Number
+    _wrapYLeniently: (pos) ->
+      @_wrapLeniently(@minPycor, @maxPycor, pos)
+
+    # (Number, Number, Number) => Number
+    _wrapCautiously: (minCor, maxCor, pos) ->
+      min = minCor - 0.5
+      max = maxCor + 0.5
+      if min < pos < max
+        pos
+      else
+        throw new Exception.TopologyInterrupt("Cannot move turtle beyond the world's edge.")
+
+    # (Number, Number, Number) => Number
+    _wrapLeniently:  (minCor, maxCor, pos) ->
+      @_wrap(pos, minCor - 0.5, maxCor + 0.5)
 
     # (Number) => Number
     wrapX: (pos) -> abstractMethod('Topology.wrapX')

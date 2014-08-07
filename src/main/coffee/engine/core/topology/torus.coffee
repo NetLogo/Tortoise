@@ -9,11 +9,11 @@ define(['engine/core/topology/topology', 'shim/lodash', 'shim/strictmath'], (Top
 
     # (Number) => Number
     wrapX: (pos) ->
-      @_wrap(pos, @minPxcor - 0.5, @maxPxcor + 0.5)
+      @_wrapXLeniently(pos)
 
     # (Number) => Number
     wrapY: (pos) ->
-      @_wrap(pos, @minPycor - 0.5, @maxPycor + 0.5)
+      @_wrapYLeniently(pos)
 
     # Overrides the default `Topology.diffuse` --JAB (8/6/14)
     # (String, Number) => Unit

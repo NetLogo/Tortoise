@@ -1,6 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['engine/core/topology/topology', 'util/exception'], (Topology, Exception) ->
+define(['engine/core/topology/topology'], (Topology) ->
 
   class Box extends Topology
 
@@ -9,21 +9,11 @@ define(['engine/core/topology/topology', 'util/exception'], (Topology, Exception
 
     # (Number) => Number
     wrapX: (pos) ->
-      minX = @minPxcor - 0.5
-      maxX = @maxPxcor + 0.5
-      if minX < pos < maxX
-        pos
-      else # Amusingly, Headless throws a similarly inconsistent and grammatically incorrect error message --JAB (4/29/14)
-        throw new Exception.TopologyInterrupt("Cannot move turtle beyond the worlds edge.")
+      @_wrapXCautiously(pos)
 
     # (Number) => Number
     wrapY: (pos) ->
-      minY = @minPycor - 0.5
-      maxY = @maxPycor + 0.5
-      if minY < pos < maxY
-        pos
-      else # Amusingly, Headless throws a similarly inconsistent and grammatically incorrect error message --JAB (4/29/14)
-        throw new Exception.TopologyInterrupt("Cannot move turtle beyond the worlds edge.")
+      @_wrapYCautiously(pos)
 
     # (Number, Number) => Patch|Boolean
     _getPatchNorth: (pxcor, pycor) -> (pycor isnt @maxPycor) and @_getPatchAt(pxcor, pycor + 1)

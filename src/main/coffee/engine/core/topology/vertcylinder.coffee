@@ -1,6 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['engine/core/topology/topology', 'shim/strictmath', 'util/exception'], (Topology, StrictMath, Exception) ->
+define(['engine/core/topology/topology', 'shim/strictmath'], (Topology, StrictMath) ->
 
   class VertCylinder extends Topology
 
@@ -9,16 +9,11 @@ define(['engine/core/topology/topology', 'shim/strictmath', 'util/exception'], (
 
     # (Number) => Number
     wrapX: (pos) ->
-      @_wrap(pos, @minPxcor - 0.5, @maxPxcor + 0.5)
+      @_wrapXLeniently(pos)
 
     # (Number) => Number
     wrapY: (pos) ->
-      minY = @minPycor - 0.5
-      maxY = @maxPycor + 0.5
-      if minY < pos < maxY
-        pos
-      else
-        throw new Exception.TopologyInterrupt ("Cannot move turtle beyond the world's edge.")
+      @_wrapYCautiously(pos)
 
     # (Number, Number) => Patch|Boolean
     _getPatchNorth: (pxcor, pycor) ->
