@@ -8,7 +8,7 @@ replace   = require('gulp-replace')
 amd2c     = require('amd-to-closure')
 
 gulp.task('closurify/clean', () ->
-  return gulp.src(['./target/closurificated/**/*'], {read: false})
+  return gulp.src(['./target/closurificated/**/*', './target/classes/js/tortoise/**/*iffy*'], {read: false})
       .pipe( rm() )
 )
 
@@ -32,17 +32,16 @@ gulp.task('closurify/replace-bootstrap', () ->
 
 gulp.task('closurify/replace', ['closurify/replace-bootstrap', 'closurify/replace-shim'])
 
-gulp.task('closurify/all', ['closurify/replace', 'closurify/clean'], () ->
-  gulp.src(['src/main/coffee/**/*.coffee', '!src/main/coffee/**/*-cl.coffee'])
-      .pipe(coffee({bare: true}).on('error', gutil.log))
-      .pipe(closurify({baseUrl: "./src/main/coffee"}))
+gulp.task('closurify/all', ['closurify/clean'], () ->
+  gulp.src(['./target/classes/js/tortoise/**/*.js'])
+      .pipe(closurify({baseUrl: "./target/classes/js/tortoise"}))
       .pipe(replace(/\$\$([' ])/g, '$1'))
       .pipe(replace(/([A-z0-9])\$([A-z0-9])/g, '$1.$2'))
       .pipe(replace(/[A-z0-9.]+\$\$([A-z0-9]+)/g, '$1'))
       .pipe(replace(/\$\$\./g, '.'))
       .pipe(replace(/\$\$/g, ''))
       .pipe(gulp.dest('./target/closurificated'))
-      .pipe(rename({suffix: "-iffy-gen"}))
+      .pipe(rename({suffix: "-iffy"}))
       .pipe(gulp.dest('./target/classes/js/tortoise'))
 )
 
