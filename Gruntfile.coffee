@@ -45,7 +45,7 @@ module.exports = (grunt) ->
     closurecompiler: {
       pretty: {
         files: {
-          "./target/classes/js/tortoise-engine-cl.js": ["./target/classes/js/tortoise/**/*-gen.js", "./node_modules/closure-library/closure/goog/**/*.js"]
+          "./target/classes/js/tortoise-engine-cl.js": ["./target/classes/js/tortoise/**/*-gen.js", "./node_modules/closure-library/closure/goog/**/*.js"],
         },
         options: {
           "closure_entry_point": "bootstrap",
@@ -60,9 +60,6 @@ module.exports = (grunt) ->
       }
     },
     exec: {
-      "transfer-cljs-core": {
-        command: "cp ./target/cljsbuild-compiler-0/cljs/core.js ./target/classes/js/tortoise/cljs/core-gen.js"
-      },
       "replace-with-cljs": {
         #grunt.fail.warn("not enough information given\r\n" +
         #                "please use flags \"--files=\"{files}\"" +
@@ -81,6 +78,9 @@ module.exports = (grunt) ->
       "cljs-compile-auto": {
         command: "lein cljsbuild auto default",
         stdout: true
+      },
+      "closurificate": {
+        command: "gulp closurify/all"
       }
     },
     copy: {
@@ -120,3 +120,5 @@ module.exports = (grunt) ->
   grunt.registerTask('replace-all', ['cljs-compile', 'copy:replace-all-with-cljs', 'closurecompiler:pretty'])
   grunt.registerTask('unreplace', ['cc'])
   grunt.registerTask('cljs-compile/auto', ['exec:cljs-compile-auto'])
+  grunt.registerTask('catchup', ['exec:closurificate', 'closurecompiler:pretty'])
+
