@@ -15,6 +15,7 @@ define(['engine/core/topology/topology', 'shim/lodash', 'shim/strictmath'], (Top
     wrapY: (pos) ->
       @_wrap(pos, @minPycor - 0.5, @maxPycor + 0.5)
 
+    # Overrides the default `Topology.diffuse` --JAB (8/6/14)
     # (String, Number) => Unit
     diffuse: (varName, coefficient) ->
       scratch = _(0).range(@width).map(-> []).value()
@@ -39,7 +40,6 @@ define(['engine/core/topology/topology', 'shim/lodash', 'shim/strictmath'], (Top
       )
 
       return
-
 
     # (Number, Number) => Patch|Boolean
     _getPatchNorth: (pxcor, pycor) ->

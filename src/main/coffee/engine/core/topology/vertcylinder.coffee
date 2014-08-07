@@ -78,18 +78,8 @@ define(['engine/core/topology/topology', 'shim/strictmath', 'util/exception'], (
       else
         @_getPatchAt(pxcor + 1, pycor + 1)
 
-    # (String, Number) => Unit
-    diffuse: (varName, coefficient) ->
-      yy = @height
-      xx = @width
-      scratch =
-        for x in [0...xx]
-          for y in [0...yy]
-            @_getPatchAt(x + @minPxcor, y + @minPycor).getVariable(varName)
-      scratch2 =
-        for [0...xx]
-          for [0...yy]
-            0
+    # (Number, Number, Array[Array[Number]], Array[Array[Number]], Number) => Unit
+    _refineScratchPads: (yy, xx, scratch, scratch2, coefficient) ->
       for y in [yy...(yy * 2)]
         for x in [xx...(xx * 2)]
           diffuseVal = (scratch[x - xx][y - yy] / 8) * coefficient
@@ -117,12 +107,7 @@ define(['engine/core/topology/topology', 'shim/strictmath', 'util/exception'], (
             scratch2[(x    ) % xx][(y - 1) % yy] += diffuseVal
             scratch2[(x + 1) % xx][(y    ) % yy] += diffuseVal
             scratch2[(x + 1) % xx][(y - 1) % yy] += diffuseVal
-      for y in [0...yy]
-        for x in [0...xx]
-          @_getPatchAt(x + @minPxcor, y + @minPycor).setVariable(varName, scratch2[x][y])
-
       return
-
 
     # (Number, Number) => Number
     _shortestX: (x1, x2) ->

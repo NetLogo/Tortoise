@@ -16,6 +16,11 @@ define(['shim/lodash', 'shim/random', 'shim/strictmath', 'util/abstractmethoderr
       @height = 1 + @maxPycor - @minPycor
       @width  = 1 + @maxPxcor - @minPxcor
 
+    # (String, Number) => Unit
+    diffuse: (varName, coefficient) ->
+      @_sloppyDiffuse(varName, coefficient)
+      return
+
     # (Number, Number) => Array[Patch]
     getNeighbors: (pxcor, pycor) ->
       @_filterNeighbors(@_getNeighbors(pxcor, pycor))
@@ -110,6 +115,31 @@ define(['shim/lodash', 'shim/random', 'shim/strictmath', 'util/abstractmethoderr
         [@_getPatchNorth(pxcor, pycor), @_getPatchEast(pxcor, pycor),
          @_getPatchSouth(pxcor, pycor), @_getPatchWest(pxcor, pycor)]
 
+    # (Number, Number, Array[Array[Number]], Array[Array[Number]], Number) => Unit
+    _refineScratchPads: (yy, xx, scratch, scratch2, coefficient) ->
+      return # If you want to use `_sloppyDiffuse` in your topology, override this --JAB (8/6/14)
+
+    # Used by most implementations of `diffuse`
+    # (String, Number) => Unit
+    _sloppyDiffuse: (varName, coefficient) ->
+      yy = @height
+      xx = @width
+
+      mapAll =
+        (f) ->
+          for x in [0...xx]
+            for y in [0...yy]
+              f(x, y)
+
+      scratch  = mapAll((x, y) => @_getPatchAt(x + @minPxcor, y + @minPycor).getVariable(varName))
+      scratch2 = mapAll(-> 0)
+
+      @_refineScratchPads(yy, xx, scratch, scratch2, coefficient)
+
+      mapAll((x, y) => @_getPatchAt(x + @minPxcor, y + @minPycor).setVariable(varName, scratch2[x][y]))
+
+      return
+
     # (Number, Number, Number) => Number
     _wrap: (pos, min, max) ->
       if pos >= max
@@ -126,9 +156,6 @@ define(['shim/lodash', 'shim/random', 'shim/strictmath', 'util/abstractmethoderr
     # (Number) => Number
     wrapX: (pos) -> abstractMethod('Topology.wrapX')
     wrapY: (pos) -> abstractMethod('Topology.wrapY')
-
-    # (String, Number) => Unit
-    diffuse: (varName, coefficient) -> abstractMethod('Topology.diffuse')
 
     # (Number, Number) => Number
     _shortestX: (x1, x2) -> abstractMethod('Topology._shortestX')
