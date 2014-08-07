@@ -13,7 +13,7 @@ gulp.task('closurify/clean', () ->
 )
 
 gulp.task('closurify/replace-shim', () ->
-  return gulp.src('cl-shiv/shim/*-cl.coffee'])
+  return gulp.src('cl-shiv/shim/*-cl.coffee')
              .pipe(rename((path) ->
                path.basename = path.basename.split('-')[0]
                return
