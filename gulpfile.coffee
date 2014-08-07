@@ -32,7 +32,7 @@ gulp.task('closurify/replace-bootstrap', () ->
 
 gulp.task('closurify/replace', ['closurify/replace-bootstrap', 'closurify/replace-shim'])
 
-gulp.task('closurify/all', ['closurify/clean'], () ->
+gulp.task('closurify/all', ['closurify/replace', 'closurify/clean'], () ->
   gulp.src(['src/main/coffee/**/*.coffee', '!src/main/coffee/**/*-cl.coffee'])
       .pipe(coffee({bare: true}).on('error', gutil.log))
       .pipe(closurify({baseUrl: "./src/main/coffee"}))
