@@ -2,10 +2,10 @@
 
 define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody', 'engine/core/patch'
       , 'engine/core/patchset', 'engine/core/turtle', 'engine/core/turtleset', 'shim/lodash', 'shim/printer'
-      , 'shim/random', 'shim/strictmath', 'util/comparator', 'util/exception', 'util/typechecker']
+      , 'shim/random', 'util/comparator', 'util/exception', 'util/typechecker']
      , ( AbstractAgentSet,               Link,               Nobody,               Patch
       ,  PatchSet,               Turtle,               TurtleSet,               _,             Printer
-      ,  Random,        StrictMath,        Comparator,        Exception,        Type) ->
+      ,  Random,        Comparator,        Exception,        Type) ->
 
   class Prims
 
@@ -14,9 +14,26 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
     # (Dump, Hasher) => Prims
     constructor: (@_dumper, @_hasher) ->
 
-    # (String, Any) => Boolean
-    isBreed: (breedName, x) ->
-      if x.isBreed? and x.id isnt -1 then x.isBreed(breedName) else false
+      # () => Nothing
+    boom: ->
+      throw new Exception.NetLogoException("boom!")
+
+    # (String, Patch|Turtle|PatchSet|TurtleSet) => TurtleSet
+    breedOn: (breedName, x) ->
+      patches =
+        if x instanceof Patch
+          [x]
+        else if x instanceof Turtle
+          [x.getPatchHere()]
+        else if x instanceof PatchSet
+          x.toArray()
+        else if x instanceof TurtleSet
+          _(x.iterator().toArray()).map((t) -> t.getPatchHere()).value()
+        else
+          throw new Exception.NetLogoException("`breed-on` unsupported for class '#{typeof(x)}'")
+
+      turtles = _(patches).map((p) -> p.turtles).flatten().filter((t) -> t.getBreedName() is breedName).value()
+      new TurtleSet(turtles, breedName)
 
     # (Any, Any) => Boolean
     equality: (a, b) ->
@@ -38,14 +55,12 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
       else
         throw new Exception.NetLogoException("Checking equality on undefined is an invalid condition")
 
-    # (Any, Any) => Boolean
-    lt: (a, b) ->
-      if (Type(a).isString() and Type(b).isString()) or (Type(a).isNumber() and Type(b).isNumber())
-        a < b
-      else if typeof(a) is typeof(b) and a.compare? and b.compare?
-        a.compare(b) is Comparator.LESS_THAN
-      else
-        throw new Exception.NetLogoException("Invalid operands to `lt`")
+    # (Number, FunctionN) => Unit
+    # not a real implementation, always just runs body - ST 4/22/14
+    every: (time, fn) ->
+      Printer("Warning: The `every` primitive is not yet properly supported.")
+      fn()
+      return
 
     # (Any, Any) => Boolean
     gt: (a, b) ->
@@ -57,43 +72,29 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
         throw new Exception.NetLogoException("Invalid operands to `gt`")
 
     # (Any, Any) => Boolean
-    lte: (a, b) -> @lt(a, b) or @equality(a, b)
-    gte: (a, b) -> @gt(a, b) or @equality(a, b)
+    gte: (a, b) ->
+      @gt(a, b) or @equality(a, b)
 
-    # (Number) => Number
-    random: (n) ->
-      truncated =
-        if n >= 0
-          Math.ceil(n)
-        else
-          Math.floor(n)
-      if truncated is 0
-        0
-      else if truncated > 0
-        Random.nextLong(truncated)
+    # (String, Any) => Boolean
+    isBreed: (breedName, x) ->
+      if x.isBreed? and x.id isnt -1 then x.isBreed(breedName) else false
+
+    # (Any, Any) => Boolean
+    lt: (a, b) ->
+      if (Type(a).isString() and Type(b).isString()) or (Type(a).isNumber() and Type(b).isNumber())
+        a < b
+      else if typeof(a) is typeof(b) and a.compare? and b.compare?
+        a.compare(b) is Comparator.LESS_THAN
       else
-        -Random.nextLong(-truncated)
+        throw new Exception.NetLogoException("Invalid operands to `lt`")
 
-    # (Number) => Number
-    randomFloat: (n) ->
-      n * Random.nextDouble()
-
-    # (Number) => Number
-    toInt: (n) ->
-      n|0
+    # (Any, Any) => Boolean
+    lte: (a, b) ->
+      @lt(a, b) or @equality(a, b)
 
     # (Number, Number) => Number
     mod: (a, b) ->
       a %% b
-
-    # (Number, Number) => Number
-    precision: (n, places) ->
-      multiplier = Math.pow(10, places)
-      result = Math.floor(n * multiplier + .5) / multiplier
-      if places > 0
-        result
-      else
-        Math.round(result)
 
     # (Any) => Unit
     outputPrint: (x) ->
@@ -142,17 +143,37 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
         buildItems(flattened)
         new PatchSet(result)
 
+    # (Number, Number) => Number
+    precision: (n, places) ->
+      multiplier = Math.pow(10, places)
+      result = Math.floor(n * multiplier + .5) / multiplier
+      if places > 0
+        result
+      else
+        Math.round(result)
+
+    # (Number) => Number
+    random: (n) ->
+      truncated =
+        if n >= 0
+          Math.ceil(n)
+        else
+          Math.floor(n)
+      if truncated is 0
+        0
+      else if truncated > 0
+        Random.nextLong(truncated)
+      else
+        -Random.nextLong(-truncated)
+
+    # (Number) => Number
+    randomFloat: (n) ->
+      n * Random.nextDouble()
+
     # (Number, FunctionN) => Unit
     repeat: (n, fn) ->
       for [0...n]
         fn()
-      return
-
-    # (Number, FunctionN) => Unit
-    # not a real implementation, always just runs body - ST 4/22/14
-    every: (time, fn) ->
-      Printer("Warning: The `every` primitive is not yet properly supported.")
-      fn()
       return
 
     # (Number, Number) => Number
@@ -169,26 +190,9 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
       else
         diff + 360
 
-    # () => Nothing
-    boom: ->
-      throw new Exception.NetLogoException("boom!")
-
-    # (String, Patch|Turtle|PatchSet|TurtleSet) => TurtleSet
-    breedOn: (breedName, x) ->
-      patches =
-        if x instanceof Patch
-          [x]
-        else if x instanceof Turtle
-          [x.getPatchHere()]
-        else if x instanceof PatchSet
-          x.toArray()
-        else if x instanceof TurtleSet
-          _(x.iterator().toArray()).map((t) -> t.getPatchHere()).value()
-        else
-          throw new Exception.NetLogoException("`breed-on` unsupported for class '#{typeof(x)}'")
-
-      turtles = _(patches).map((p) -> p.turtles).flatten().filter((t) -> t.getBreedName() is breedName).value()
-      new TurtleSet(turtles, breedName)
+    # (Number) => Number
+    toInt: (n) ->
+      n|0
 
     # (PatchSet|TurtleSet|Patch|Turtle) => TurtleSet
     turtlesOn: (agentsOrAgent) ->
