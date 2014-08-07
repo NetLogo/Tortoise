@@ -23,6 +23,8 @@ trait TortoiseFinder extends lang.Finder {
     freebies.get(name.stripSuffix(" (NormalMode)")) match {
       case None =>
         body(new TortoiseFixture(name, nashorn, notImplemented))
+      case Some(x) if x.contains("ASSUMES OPTIMIZATION") =>
+        notImplemented("Can only yield the correct answer if the optimizer is enabled")
       case Some(x) if x.contains("TOO SLOW") =>
         notImplemented("TOO SLOW")
       case Some(excuse) =>
@@ -53,23 +55,23 @@ class TestReporters extends lang.TestReporters with TortoiseFinder {
 
 class TestCommands extends lang.TestCommands with TortoiseFinder {
   override val freebies = Map[String, String](
-    // should be handled in rewrite
-    "Interaction::Interaction3b1"                                             -> "correct answer requires empty init block optimization",
-    "Interaction::Interaction3b2"                                             -> "correct answer requires empty init block optimization",
-    "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksFrom" -> "correct answer requires empty init block optimization",
-    "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksTo"   -> "correct answer requires empty init block optimization",
-    "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksWith" -> "correct answer requires empty init block optimization",
-    "TurtlesHere::TurtlesHereCheckOrder1"                                     -> "correct answer requires empty init block optimization",
-    "TurtlesHere::TurtlesHereCheckOrder2"                                     -> "correct answer requires empty init block optimization",
-    "TurtlesHere::TurtlesHereCheckOrder3"                                     -> "correct answer requires empty init block optimization",
-    "TurtlesHere::TurtlesHereCheckOrder4"                                     -> "correct answer requires empty init block optimization",
-    // significant; uncertain how to solve
-    "Random::RandomNOfIsFairForLinks" -> "TOO SLOW",
     // requires features
     "Random::RandomNOfIsFairForAList" -> "`n-of` not implemented for lists",
     "Tie::Tie2Nonrigid" -> "tie-mode link variable not implemented; ties not implemented at all",
     // requires handling of non-local exit (see in JVM NetLogo: `NonLocalExit`, `_report`, `_foreach`, `_run`)
     "Stop::ReportFromForeach" -> "no non-local exit from foreach",
+    // Significant: Requires the optimizer to be turned on
+    "Interaction::Interaction3b1"                                             -> "ASSUMES OPTIMIZATION: empty init block",
+    "Interaction::Interaction3b2"                                             -> "ASSUMES OPTIMIZATION: empty init block",
+    "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksFrom" -> "ASSUMES OPTIMIZATION: empty init block",
+    "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksTo"   -> "ASSUMES OPTIMIZATION: empty init block",
+    "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksWith" -> "ASSUMES OPTIMIZATION: empty init block",
+    "TurtlesHere::TurtlesHereCheckOrder1"                                     -> "ASSUMES OPTIMIZATION: empty init block",
+    "TurtlesHere::TurtlesHereCheckOrder2"                                     -> "ASSUMES OPTIMIZATION: empty init block",
+    "TurtlesHere::TurtlesHereCheckOrder3"                                     -> "ASSUMES OPTIMIZATION: empty init block",
+    "TurtlesHere::TurtlesHereCheckOrder4"                                     -> "ASSUMES OPTIMIZATION: empty init block",
+    // significant; uncertain how to solve
+    "Random::RandomNOfIsFairForLinks" -> "TOO SLOW",
     // requires Tortoise compiler changes
     "CommandTasks::*ToString3" -> "command task string representation doesn't match",
     "CommandTasks::*ToString4" -> "command task string representation doesn't match",
