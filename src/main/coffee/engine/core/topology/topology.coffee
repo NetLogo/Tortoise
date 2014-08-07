@@ -123,6 +123,13 @@ define(['shim/lodash', 'shim/random', 'shim/strictmath', 'util/abstractmethoderr
       else
         pos
 
+    # (Number) => Number
+    wrapX: (pos) -> abstractMethod('Topology.wrapX')
+    wrapY: (pos) -> abstractMethod('Topology.wrapY')
+
+    # (String, Number) => Unit
+    diffuse: (varName, coefficient) -> abstractMethod('Topology.diffuse')
+
     # (Number, Number) => Number
     _shortestX: (x1, x2) -> abstractMethod('Topology._shortestX')
     _shortestY: (y1, y2) -> abstractMethod('Topology._shortestY')
