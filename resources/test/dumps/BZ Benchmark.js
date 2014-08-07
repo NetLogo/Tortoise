@@ -2,6 +2,7 @@ var workspace     = require('engine/workspace')([])(['n', 'k1', 'k2', 'g', 'resu
 var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
+var ListPrims     = workspace.listPrims;
 var Prims         = workspace.prims;
 var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
@@ -27,7 +28,8 @@ var Tasks     = require('engine/prim/tasks');
 var AgentModel     = require('agentmodel');
 var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
-var StrictMath     = require('shim/strictmath');function benchmark() {
+var StrictMath     = require('shim/strictmath');
+function benchmark() {
   Random.setSeed(5454);
   workspace.timer.reset();
   Call(setup);
@@ -69,7 +71,7 @@ function findNewState() {
       SelfPrims.setPatchVariable('new-state', (Prims._int((a / world.observer.getGlobal('k1'))) + Prims._int((b / world.observer.getGlobal('k2')))));
     }
     else {
-      var s = (SelfPrims.getPatchVariable('state') + Prims.sum(SelfPrims.getNeighbors().projectionBy(function() {
+      var s = (SelfPrims.getPatchVariable('state') + ListPrims.sum(SelfPrims.getNeighbors().projectionBy(function() {
         return SelfPrims.getPatchVariable('state');
       })));
       SelfPrims.setPatchVariable('new-state', (Prims._int((s / ((a + b) + 1))) + world.observer.getGlobal('g')));

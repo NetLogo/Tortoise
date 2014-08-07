@@ -2,6 +2,7 @@ var workspace     = require('engine/workspace')([])(['layout?', 'p', 'q', 'team-
 var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
+var ListPrims     = workspace.listPrims;
 var Prims         = workspace.prims;
 var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
@@ -27,7 +28,8 @@ var Tasks     = require('engine/prim/tasks');
 var AgentModel     = require('agentmodel');
 var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
-var StrictMath     = require('shim/strictmath');function makeNewcomer() {
+var StrictMath     = require('shim/strictmath');
+function makeNewcomer() {
   world.turtleManager.createTurtles(1, '').ask(function() {
     SelfPrims.setVariable('color', (105 + 1));
     SelfPrims.setVariable('size', 1.8);
@@ -96,14 +98,14 @@ function pickTeamMembers() {
           return !SelfPrims.getVariable('in-team?');
         }).nonEmpty());
       }).nonEmpty())) {
-        newTeamMember = Prims.oneOf(world.turtles().agentFilter(function() {
+        newTeamMember = ListPrims.oneOf(world.turtles().agentFilter(function() {
           return (!SelfPrims.getVariable('in-team?') && LinkPrims.linkNeighbors(false, false).agentFilter(function() {
             return SelfPrims.getVariable('in-team?');
           }).nonEmpty());
         }));
       }
       else {
-        newTeamMember = Prims.oneOf(world.turtles().agentFilter(function() {
+        newTeamMember = ListPrims.oneOf(world.turtles().agentFilter(function() {
           return !SelfPrims.getVariable('in-team?');
         }));
       }
@@ -175,7 +177,7 @@ function findAllComponents() {
     SelfPrims.setVariable('explored?', false);
   }, true);
   while (true) {
-    var start = Prims.oneOf(world.turtles().agentFilter(function() {
+    var start = ListPrims.oneOf(world.turtles().agentFilter(function() {
       return !SelfPrims.getVariable('explored?');
     }));
     if (Prims.equality(start, Nobody)) {
@@ -188,7 +190,7 @@ function findAllComponents() {
     if (Prims.gt(world.observer.getGlobal('component-size'), world.observer.getGlobal('giant-component-size'))) {
       world.observer.setGlobal('giant-component-size', world.observer.getGlobal('component-size'));
     }
-    world.observer.setGlobal('components', Prims.lput(world.observer.getGlobal('component-size'), world.observer.getGlobal('components')));
+    world.observer.setGlobal('components', ListPrims.lput(world.observer.getGlobal('component-size'), world.observer.getGlobal('components')));
   };
 }
 function explore() {

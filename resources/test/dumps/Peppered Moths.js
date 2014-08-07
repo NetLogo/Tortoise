@@ -2,6 +2,7 @@ var workspace     = require('engine/workspace')([{ name: 'MOTHS', singular: 'mot
 var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
+var ListPrims     = workspace.listPrims;
 var Prims         = workspace.prims;
 var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
@@ -27,7 +28,8 @@ var Tasks     = require('engine/prim/tasks');
 var AgentModel     = require('agentmodel');
 var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
-var StrictMath     = require('shim/strictmath');function envColor() {
+var StrictMath     = require('shim/strictmath');
+function envColor() {
   return (9 - world.observer.getGlobal('darkness'));
 }
 function deltaEnv() {

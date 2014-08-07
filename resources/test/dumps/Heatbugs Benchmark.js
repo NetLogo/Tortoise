@@ -2,6 +2,7 @@ var workspace     = require('engine/workspace')([])(['bug-count', 'evaporation-r
 var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
+var ListPrims     = workspace.listPrims;
 var Prims         = workspace.prims;
 var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
@@ -27,7 +28,8 @@ var Tasks     = require('engine/prim/tasks');
 var AgentModel     = require('agentmodel');
 var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
-var StrictMath     = require('shim/strictmath');function benchmark() {
+var StrictMath     = require('shim/strictmath');
+function benchmark() {
   Random.setSeed(362);
   Call(setup);
   workspace.timer.reset();
@@ -39,7 +41,7 @@ var StrictMath     = require('shim/strictmath');function benchmark() {
 function setup() {
   world.clearAll();
   world.ticker.reset();
-  Prims.nOf(world.observer.getGlobal('bug-count'), world.patches()).ask(function() {
+  ListPrims.nOf(world.observer.getGlobal('bug-count'), world.patches()).ask(function() {
     SelfPrims.sprout(1, 'TURTLES').ask(function() {
       SelfPrims.setVariable('color', 65);
       SelfPrims.setVariable('size', 1.75);
@@ -99,7 +101,7 @@ function bugMove(target) {
   }
   while (Prims.lte(tries, 9)) {
     tries = (tries + 1);
-    target = Prims.oneOf(SelfPrims.getNeighbors());
+    target = ListPrims.oneOf(SelfPrims.getNeighbors());
     if (!Prims.turtlesOn(target).nonEmpty()) {
       SelfManager.self().moveTo(target);
       throw new Exception.StopInterrupt;

@@ -2,6 +2,7 @@ var workspace     = require('engine/workspace')([{ name: 'WATERS', singular: 'wa
 var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
+var ListPrims     = workspace.listPrims;
 var Prims         = workspace.prims;
 var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
@@ -27,7 +28,8 @@ var Tasks     = require('engine/prim/tasks');
 var AgentModel     = require('agentmodel');
 var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
-var StrictMath     = require('shim/strictmath');function setup() {
+var StrictMath     = require('shim/strictmath');
+function setup() {
   world.clearAll();
   world.observer.setGlobal('lipid-length', 2);
   world.observer.setGlobal('interaction-distance', 4);
@@ -38,7 +40,7 @@ var StrictMath     = require('shim/strictmath');function setup() {
     SelfPrims.setVariable('color', 105);
   }, true);
   world.turtleManager.createTurtles(world.observer.getGlobal('num-lipids'), 'OILS').ask(function() {
-    var partner = Prims.oneOf(world.turtleManager.turtlesOfBreed("WATERS").agentFilter(function() {
+    var partner = ListPrims.oneOf(world.turtleManager.turtlesOfBreed("WATERS").agentFilter(function() {
       return !LinkPrims.connectedLinks(false, false).nonEmpty();
     }));
     SelfManager.self().moveTo(partner);
@@ -60,7 +62,7 @@ function go() {
   world.ticker.tick();
 }
 function interactWithNeighbor() {
-  var near = Prims.oneOf(SelfPrims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal('interaction-distance')).agentFilter(function() {
+  var near = ListPrims.oneOf(SelfPrims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal('interaction-distance')).agentFilter(function() {
     return !LinkPrims.isLinkNeighbor(false, false)(SelfManager.myself());
   })));
   if (!Prims.equality(near, Nobody)) {
@@ -76,14 +78,14 @@ function interactWithNeighbor() {
   }
 }
 function repelTooCloseNeighbor() {
-  var tooNear = Prims.oneOf(SelfPrims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal('too-close-distance'))));
+  var tooNear = ListPrims.oneOf(SelfPrims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal('too-close-distance'))));
   if (!Prims.equality(tooNear, Nobody)) {
     SelfManager.self().face(tooNear);
     SelfPrims.fd(world.observer.getGlobal('too-close-force'));
   }
 }
 function interactWithPartner() {
-  var partner = Prims.oneOf(LinkPrims.linkNeighbors(false, false));
+  var partner = ListPrims.oneOf(LinkPrims.linkNeighbors(false, false));
   if (!Prims.equality(partner, Nobody)) {
     SelfManager.self().face(partner);
     SelfPrims.fd((SelfManager.self().distance(partner) - world.observer.getGlobal('lipid-length')));

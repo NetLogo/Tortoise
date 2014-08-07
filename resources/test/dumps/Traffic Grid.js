@@ -2,6 +2,7 @@ var workspace     = require('engine/workspace')([])(['grid-size-y', 'grid-size-x
 var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
+var ListPrims     = workspace.listPrims;
 var Prims         = workspace.prims;
 var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
@@ -27,11 +28,12 @@ var Tasks     = require('engine/prim/tasks');
 var AgentModel     = require('agentmodel');
 var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
-var StrictMath     = require('shim/strictmath');function setup() {
+var StrictMath     = require('shim/strictmath');
+function setup() {
   world.clearAll();
   Call(setupGlobals);
   Call(setupPatches);
-  Call(makeCurrent, Prims.oneOf(world.observer.getGlobal('intersections')));
+  Call(makeCurrent, ListPrims.oneOf(world.observer.getGlobal('intersections')));
   Call(labelCurrent);
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "car")
   if (Prims.gt(world.observer.getGlobal('num-cars'), world.observer.getGlobal('roads').size())) {
@@ -116,7 +118,7 @@ function setupCars() {
   }
 }
 function putOnEmptyRoad() {
-  SelfManager.self().moveTo(Prims.oneOf(world.observer.getGlobal('roads').agentFilter(function() {
+  SelfManager.self().moveTo(ListPrims.oneOf(world.observer.getGlobal('roads').agentFilter(function() {
     return !Prims.turtlesOn(SelfManager.self()).nonEmpty();
   })));
 }
@@ -238,7 +240,7 @@ function setSpeed(deltaX, deltaY) {
       SelfPrims.setVariable('speed', 0);
     }
     else {
-      SelfPrims.setVariable('speed', Prims.oneOf(turtlesAhead).projectionBy(function() {
+      SelfPrims.setVariable('speed', ListPrims.oneOf(turtlesAhead).projectionBy(function() {
         return SelfPrims.getVariable('speed');
       }));
       Call(slowDown);

@@ -2,6 +2,7 @@ var workspace     = require('engine/workspace')([])(['change-vote-if-tied?', 'aw
 var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
+var ListPrims     = workspace.listPrims;
 var Prims         = workspace.prims;
 var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
@@ -27,7 +28,8 @@ var Tasks     = require('engine/prim/tasks');
 var AgentModel     = require('agentmodel');
 var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
-var StrictMath     = require('shim/strictmath');function setup() {
+var StrictMath     = require('shim/strictmath');
+function setup() {
   world.clearAll();
   world.patches().ask(function() {
     SelfPrims.setPatchVariable('vote', Prims.random(2));
@@ -37,7 +39,7 @@ var StrictMath     = require('shim/strictmath');function setup() {
 }
 function go() {
   world.patches().ask(function() {
-    SelfPrims.setPatchVariable('total', Prims.sum(SelfPrims.getNeighbors().projectionBy(function() {
+    SelfPrims.setPatchVariable('total', ListPrims.sum(SelfPrims.getNeighbors().projectionBy(function() {
       return SelfPrims.getPatchVariable('vote');
     })));
   }, true);

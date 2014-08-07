@@ -2,6 +2,7 @@ var workspace     = require('engine/workspace')([])(['edge', 'halfedge'], ['edge
 var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
+var ListPrims     = workspace.listPrims;
 var Prims         = workspace.prims;
 var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
@@ -27,7 +28,8 @@ var Tasks     = require('engine/prim/tasks');
 var AgentModel     = require('agentmodel');
 var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
-var StrictMath     = require('shim/strictmath');function setupCorner() {
+var StrictMath     = require('shim/strictmath');
+function setupCorner() {
   world.clearAll();
   world.patches().ask(function() {
     if (((Prims.equality(SelfPrims.getPatchVariable('pxcor'), 0) && Prims.gte(SelfPrims.getPatchVariable('pycor'), 0)) && Prims.lte(SelfPrims.getPatchVariable('pycor'), world.observer.getGlobal('edge')))) {

@@ -2,6 +2,7 @@ var workspace     = require('engine/workspace')([{ name: 'COLUMN-COUNTERS', sing
 var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
+var ListPrims     = workspace.listPrims;
 var Prims         = workspace.prims;
 var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
@@ -27,7 +28,8 @@ var Tasks     = require('engine/prim/tasks');
 var AgentModel     = require('agentmodel');
 var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
-var StrictMath     = require('shim/strictmath');function setup() {
+var StrictMath     = require('shim/strictmath');
+function setup() {
   world.clearAll();
   world.observer.setGlobal('max-y-histogram', (world.topology.minPycor + world.observer.getGlobal('height')));
   Call(createHistogramWidth);
@@ -92,7 +94,7 @@ function selectRandomValue() {
   }, true);
 }
 function sendMessengerToItsColumn() {
-  var it = Prims.oneOf(world.turtleManager.turtlesOfBreed("COLUMN-COUNTERS").agentFilter(function() {
+  var it = ListPrims.oneOf(world.turtleManager.turtlesOfBreed("COLUMN-COUNTERS").agentFilter(function() {
     return Prims.equality(SelfPrims.getVariable('my-column'), world.observer.getGlobal('the-messenger').projectionBy(function() {
       return SelfPrims.getVariable('label');
     }));
@@ -152,14 +154,14 @@ function _percent_Full() {
   return Prims.precision(((100 * world.turtleManager.turtlesOfBreed("FRAMES").size()) / (world.observer.getGlobal('height') * world.observer.getGlobal('sample-space'))), 2);
 }
 function biggestGap() {
-  var maxColumn = Prims.max(world.turtleManager.turtlesOfBreed("COLUMN-COUNTERS").projectionBy(function() {
+  var maxColumn = ListPrims.max(world.turtleManager.turtlesOfBreed("COLUMN-COUNTERS").projectionBy(function() {
     return SelfPrims.getVariable('my-column-patches').agentFilter(function() {
       return Prims.lt(SelfPrims.getPatchVariable('pycor'), SelfManager.myself().projectionBy(function() {
         return SelfPrims.getPatchVariable('pycor');
       }));
     }).size();
   }));
-  var minColumn = Prims.min(world.turtleManager.turtlesOfBreed("COLUMN-COUNTERS").projectionBy(function() {
+  var minColumn = ListPrims.min(world.turtleManager.turtlesOfBreed("COLUMN-COUNTERS").projectionBy(function() {
     return SelfPrims.getVariable('my-column-patches').agentFilter(function() {
       return Prims.lt(SelfPrims.getPatchVariable('pycor'), SelfManager.myself().projectionBy(function() {
         return SelfPrims.getPatchVariable('pycor');

@@ -2,6 +2,7 @@ var workspace     = require('engine/workspace')([])(['tolerance', 'number', 'num
 var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
+var ListPrims     = workspace.listPrims;
 var Prims         = workspace.prims;
 var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
@@ -27,7 +28,8 @@ var Tasks     = require('engine/prim/tasks');
 var AgentModel     = require('agentmodel');
 var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
-var StrictMath     = require('shim/strictmath');function setup() {
+var StrictMath     = require('shim/strictmath');
+function setup() {
   world.clearAll();
   world.observer.setGlobal('group-sites', world.patches().agentFilter(function() {
     return Call(groupSite_p);
@@ -36,7 +38,7 @@ var StrictMath     = require('shim/strictmath');function setup() {
   world.turtleManager.createTurtles(world.observer.getGlobal('number'), '').ask(function() {
     Call(chooseSex);
     SelfPrims.setVariable('size', 3);
-    SelfPrims.setVariable('my-group-site', Prims.oneOf(world.observer.getGlobal('group-sites')));
+    SelfPrims.setVariable('my-group-site', ListPrims.oneOf(world.observer.getGlobal('group-sites')));
     SelfManager.self().moveTo(SelfPrims.getVariable('my-group-site'));
   }, true);
   world.turtles().ask(function() {
@@ -83,14 +85,14 @@ function updateHappiness() {
 }
 function leaveIfUnhappy() {
   if (!SelfPrims.getVariable('happy?')) {
-    SelfPrims.setVariable('heading', Prims.oneOf([90, 270]));
+    SelfPrims.setVariable('heading', ListPrims.oneOf([90, 270]));
     SelfPrims.fd(1);
   }
 }
 function findNewGroups() {
   notImplemented('display', undefined)();
   var malcontents = world.turtles().agentFilter(function() {
-    return !Prims.member(SelfManager.self().getPatchHere(), world.observer.getGlobal('group-sites'));
+    return !ListPrims.member(SelfManager.self().getPatchHere(), world.observer.getGlobal('group-sites'));
   });
   if (!malcontents.nonEmpty()) {
     throw new Exception.StopInterrupt;
@@ -137,7 +139,7 @@ function countBoringGroups() {
   }).size());
 }
 function boring_p() {
-  return Prims.equality(Prims.length(Prims.removeDuplicates(SelfManager.self().turtlesHere().projectionBy(function() {
+  return Prims.equality(ListPrims.length(ListPrims.removeDuplicates(SelfManager.self().turtlesHere().projectionBy(function() {
     return SelfPrims.getVariable('color');
   }))), 1);
 }
@@ -147,7 +149,7 @@ function updateLabels() {
   }, true);
 }
 function chooseSex() {
-  SelfPrims.setVariable('color', Prims.oneOf([135, 105]));
+  SelfPrims.setVariable('color', ListPrims.oneOf([135, 105]));
 }
 function woman_p() {
   return Prims.equality(SelfPrims.getVariable('color'), 135);

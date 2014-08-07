@@ -2,6 +2,7 @@ var workspace     = require('engine/workspace')([])(['number', '%-similar-wanted
 var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
+var ListPrims     = workspace.listPrims;
 var Prims         = workspace.prims;
 var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
@@ -27,18 +28,19 @@ var Tasks     = require('engine/prim/tasks');
 var AgentModel     = require('agentmodel');
 var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
-var StrictMath     = require('shim/strictmath');function setup() {
+var StrictMath     = require('shim/strictmath');
+function setup() {
   world.clearAll();
   if (Prims.gt(world.observer.getGlobal('number'), world.patches().size())) {
     notImplemented('user-message', undefined)((Dump("") + Dump("This pond only has room for ") + Dump(world.patches().size()) + Dump(" turtles.")));
     throw new Exception.StopInterrupt;
   }
-  Prims.nOf(world.observer.getGlobal('number'), world.patches()).ask(function() {
+  ListPrims.nOf(world.observer.getGlobal('number'), world.patches()).ask(function() {
     SelfPrims.sprout(1, 'TURTLES').ask(function() {
       SelfPrims.setVariable('color', 15);
     }, true);
   }, true);
-  Prims.nOf((world.observer.getGlobal('number') / 2), world.turtles()).ask(function() {
+  ListPrims.nOf((world.observer.getGlobal('number') / 2), world.turtles()).ask(function() {
     SelfPrims.setVariable('color', 55);
   }, true);
   Call(updateVariables);
@@ -88,10 +90,10 @@ function updateTurtles() {
   }, true);
 }
 function updateGlobals() {
-  var similarNeighbors = Prims.sum(world.turtles().projectionBy(function() {
+  var similarNeighbors = ListPrims.sum(world.turtles().projectionBy(function() {
     return SelfPrims.getVariable('similar-nearby');
   }));
-  var totalNeighbors = Prims.sum(world.turtles().projectionBy(function() {
+  var totalNeighbors = ListPrims.sum(world.turtles().projectionBy(function() {
     return SelfPrims.getVariable('total-nearby');
   }));
   world.observer.setGlobal('percent-similar', ((similarNeighbors / totalNeighbors) * 100));

@@ -2,6 +2,7 @@ var workspace     = require('engine/workspace')([])(['number-of-cars', 'decelera
 var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
+var ListPrims     = workspace.listPrims;
 var Prims         = workspace.prims;
 var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
@@ -27,7 +28,8 @@ var Tasks     = require('engine/prim/tasks');
 var AgentModel     = require('agentmodel');
 var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
-var StrictMath     = require('shim/strictmath');function setup() {
+var StrictMath     = require('shim/strictmath');
+function setup() {
   world.clearAll();
   world.patches().ask(function() {
     Call(setupRoad);
@@ -56,7 +58,7 @@ function setupCars() {
     SelfPrims.setVariable('speed-min', 0);
     Call(separateCars);
   }, true);
-  world.observer.setGlobal('sample-car', Prims.oneOf(world.turtles()));
+  world.observer.setGlobal('sample-car', ListPrims.oneOf(world.turtles()));
   world.observer.getGlobal('sample-car').ask(function() {
     SelfPrims.setVariable('color', 15);
   }, true);
@@ -69,7 +71,7 @@ function separateCars() {
 }
 function go() {
   world.turtles().ask(function() {
-    var carAhead = Prims.oneOf(Prims.turtlesOn(SelfManager.self().patchAhead(1)));
+    var carAhead = ListPrims.oneOf(Prims.turtlesOn(SelfManager.self().patchAhead(1)));
     if (!Prims.equality(carAhead, Nobody)) {
       Call(slowDownCar, carAhead);
     }

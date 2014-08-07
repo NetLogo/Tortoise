@@ -2,6 +2,7 @@ var workspace     = require('engine/workspace')([{ name: 'PARTICLES', singular: 
 var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
+var ListPrims     = workspace.listPrims;
 var Prims         = workspace.prims;
 var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
@@ -27,7 +28,8 @@ var Tasks     = require('engine/prim/tasks');
 var AgentModel     = require('agentmodel');
 var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
-var StrictMath     = require('shim/strictmath');function setup() {
+var StrictMath     = require('shim/strictmath');
+function setup() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("PARTICLES").getBreedName(), "circle")
   world.observer.setGlobal('max-tick-delta', 0.1073);
@@ -77,10 +79,10 @@ function updateVariables() {
   world.observer.setGlobal('percent-medium', ((world.observer.getGlobal('medium') / world.turtleManager.turtlesOfBreed("PARTICLES").size()) * 100));
   world.observer.setGlobal('percent-slow', ((world.observer.getGlobal('slow') / world.turtleManager.turtlesOfBreed("PARTICLES").size()) * 100));
   world.observer.setGlobal('percent-fast', ((world.observer.getGlobal('fast') / world.turtleManager.turtlesOfBreed("PARTICLES").size()) * 100));
-  world.observer.setGlobal('avg-speed', Prims.mean(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() {
+  world.observer.setGlobal('avg-speed', ListPrims.mean(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() {
     return SelfPrims.getVariable('speed');
   })));
-  world.observer.setGlobal('avg-energy', Prims.mean(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() {
+  world.observer.setGlobal('avg-energy', ListPrims.mean(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() {
     return SelfPrims.getVariable('energy');
   })));
 }
@@ -88,7 +90,7 @@ function calculateTickDelta() {
   if (world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() {
     return Prims.gt(SelfPrims.getVariable('speed'), 0);
   }).nonEmpty()) {
-    world.observer.setGlobal('tick-delta', Prims.min(Prims.list((1 / StrictMath.ceil(Prims.max(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() {
+    world.observer.setGlobal('tick-delta', ListPrims.min(ListPrims.list((1 / StrictMath.ceil(ListPrims.max(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() {
       return SelfPrims.getVariable('speed');
     })))), world.observer.getGlobal('max-tick-delta'))));
   }
@@ -104,7 +106,7 @@ function move() {
 }
 function checkForCollision() {
   if (Prims.equality(SelfPrims.other(SelfManager.self().breedHere("PARTICLES")).size(), 1)) {
-    var candidate = Prims.oneOf(SelfPrims.other(SelfManager.self().breedHere("PARTICLES").agentFilter(function() {
+    var candidate = ListPrims.oneOf(SelfPrims.other(SelfManager.self().breedHere("PARTICLES").agentFilter(function() {
       return (Prims.lt(SelfPrims.getVariable('who'), SelfManager.myself().projectionBy(function() {
         return SelfPrims.getVariable('who');
       })) && !Prims.equality(SelfManager.myself(), SelfPrims.getVariable('last-collision')));
@@ -186,11 +188,11 @@ function randomPosition() {
   SelfPrims.setXY(((1 + world.topology.minPxcor) + Prims.randomFloat(((2 * world.topology.maxPxcor) - 2))), ((1 + world.topology.minPycor) + Prims.randomFloat(((2 * world.topology.maxPycor) - 2))));
 }
 function lastN(n, theList) {
-  if (Prims.gte(n, Prims.length(theList))) {
+  if (Prims.gte(n, ListPrims.length(theList))) {
     return theList;
   }
   else {
-    return Call(lastN, n, Prims.butFirst(theList));
+    return Call(lastN, n, ListPrims.butFirst(theList));
   }
 }
 function drawVertLine(xval) {

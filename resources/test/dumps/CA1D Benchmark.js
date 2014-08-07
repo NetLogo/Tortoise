@@ -2,6 +2,7 @@ var workspace     = require('engine/workspace')([])(['ooo', 'ooi', 'oio', 'oii',
 var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
+var ListPrims     = workspace.listPrims;
 var Prims         = workspace.prims;
 var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
@@ -27,7 +28,8 @@ var Tasks     = require('engine/prim/tasks');
 var AgentModel     = require('agentmodel');
 var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
-var StrictMath     = require('shim/strictmath');function startup() {
+var StrictMath     = require('shim/strictmath');
+function startup() {
   world.observer.setGlobal('rules-shown?', false);
   world.observer.setGlobal('gone?', false);
   world.observer.setGlobal('old-rule', world.observer.getGlobal('rule'));
@@ -83,14 +85,14 @@ function setupContinue() {
     return taskArguments[0].projectionBy(function() {
       return SelfPrims.getPatchVariable('on?');
     });
-  }), Prims.sort(world.patches().agentFilter(function() {
+  }), ListPrims.sort(world.patches().agentFilter(function() {
     return Prims.equality(SelfPrims.getPatchVariable('pycor'), world.observer.getGlobal('row'));
   })));
   Call(setupGeneral);
   world.patches().agentFilter(function() {
     return Prims.equality(SelfPrims.getPatchVariable('pycor'), world.observer.getGlobal('row'));
   }).ask(function() {
-    SelfPrims.setPatchVariable('on?', Prims.item((SelfPrims.getPatchVariable('pxcor') + world.topology.maxPxcor), on_pList));
+    SelfPrims.setPatchVariable('on?', ListPrims.item((SelfPrims.getPatchVariable('pxcor') + world.topology.maxPxcor), on_pList));
     Call(colorPatch);
   }, true);
   world.observer.setGlobal('gone?', true);
@@ -213,16 +215,16 @@ function showRules() {
     SelfPrims.sprout(1, 'TURTLES').ask(function() {
       SelfPrims.setVariable('heading', 270);
       SelfPrims.fd(18);
-      Call(printBlock, Prims.item(0, Prims.item(SelfPrims.getVariable('who'), rules)));
+      Call(printBlock, ListPrims.item(0, ListPrims.item(SelfPrims.getVariable('who'), rules)));
       SelfPrims.fd(2);
-      Call(printBlock, Prims.item(1, Prims.item(SelfPrims.getVariable('who'), rules)));
+      Call(printBlock, ListPrims.item(1, ListPrims.item(SelfPrims.getVariable('who'), rules)));
       SelfPrims.fd(2);
-      Call(printBlock, Prims.item(2, Prims.item(SelfPrims.getVariable('who'), rules)));
+      Call(printBlock, ListPrims.item(2, ListPrims.item(SelfPrims.getVariable('who'), rules)));
       SelfPrims.bk(2);
       SelfPrims.setVariable('heading', 180);
       SelfPrims.fd(2);
       SelfPrims.setVariable('heading', 90);
-      Call(printBlock, Prims.item(3, Prims.item(SelfPrims.getVariable('who'), rules)));
+      Call(printBlock, ListPrims.item(3, ListPrims.item(SelfPrims.getVariable('who'), rules)));
       SelfPrims.die();
     }, true);
   }, true);
@@ -244,14 +246,14 @@ function printBlock(state) {
 }
 function listRules() {
   var rules = [];
-  rules = Prims.lput(Prims.lput(world.observer.getGlobal('ooo'), [false, false, false]), rules);
-  rules = Prims.lput(Prims.lput(world.observer.getGlobal('ooi'), [false, false, true]), rules);
-  rules = Prims.lput(Prims.lput(world.observer.getGlobal('oio'), [false, true, false]), rules);
-  rules = Prims.lput(Prims.lput(world.observer.getGlobal('oii'), [false, true, true]), rules);
-  rules = Prims.lput(Prims.lput(world.observer.getGlobal('ioo'), [true, false, false]), rules);
-  rules = Prims.lput(Prims.lput(world.observer.getGlobal('ioi'), [true, false, true]), rules);
-  rules = Prims.lput(Prims.lput(world.observer.getGlobal('iio'), [true, true, false]), rules);
-  rules = Prims.lput(Prims.lput(world.observer.getGlobal('iii'), [true, true, true]), rules);
+  rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal('ooo'), [false, false, false]), rules);
+  rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal('ooi'), [false, false, true]), rules);
+  rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal('oio'), [false, true, false]), rules);
+  rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal('oii'), [false, true, true]), rules);
+  rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal('ioo'), [true, false, false]), rules);
+  rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal('ioi'), [true, false, true]), rules);
+  rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal('iio'), [true, true, false]), rules);
+  rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal('iii'), [true, true, true]), rules);
   return rules;
 }
 world.observer.setGlobal('ooo', true);

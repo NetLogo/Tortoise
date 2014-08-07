@@ -2,6 +2,7 @@ var workspace     = require('engine/workspace')([])(['temperature', 'plotting-in
 var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
+var ListPrims     = workspace.listPrims;
 var Prims         = workspace.prims;
 var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
@@ -27,30 +28,31 @@ var Tasks     = require('engine/prim/tasks');
 var AgentModel     = require('agentmodel');
 var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
-var StrictMath     = require('shim/strictmath');function setup(initialMagnetization) {
+var StrictMath     = require('shim/strictmath');
+function setup(initialMagnetization) {
   world.clearAll();
   world.patches().ask(function() {
     if (Prims.equality(initialMagnetization, 0)) {
-      SelfPrims.setPatchVariable('spin', Prims.oneOf([-1, 1]));
+      SelfPrims.setPatchVariable('spin', ListPrims.oneOf([-1, 1]));
     }
     else {
       SelfPrims.setPatchVariable('spin', initialMagnetization);
     }
     Call(recolor);
   }, true);
-  world.observer.setGlobal('sum-of-spins', Prims.sum(world.patches().projectionBy(function() {
+  world.observer.setGlobal('sum-of-spins', ListPrims.sum(world.patches().projectionBy(function() {
     return SelfPrims.getPatchVariable('spin');
   })));
   world.ticker.reset();
 }
 function go() {
-  Prims.oneOf(world.patches()).ask(function() {
+  ListPrims.oneOf(world.patches()).ask(function() {
     Call(update);
   }, true);
   world.ticker.tick();
 }
 function update() {
-  var ediff = ((2 * SelfPrims.getPatchVariable('spin')) * Prims.sum(SelfPrims.getNeighbors4().projectionBy(function() {
+  var ediff = ((2 * SelfPrims.getPatchVariable('spin')) * ListPrims.sum(SelfPrims.getNeighbors4().projectionBy(function() {
     return SelfPrims.getPatchVariable('spin');
   })));
   if ((Prims.lte(ediff, 0) || (Prims.gt(world.observer.getGlobal('temperature'), 0) && Prims.lt(Prims.randomFloat(1), StrictMath.exp(( -ediff / world.observer.getGlobal('temperature'))))))) {

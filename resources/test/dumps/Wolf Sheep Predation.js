@@ -2,6 +2,7 @@ var workspace     = require('engine/workspace')([{ name: 'SHEEP', singular: 'a-s
 var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
+var ListPrims     = workspace.listPrims;
 var Prims         = workspace.prims;
 var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
@@ -27,14 +28,15 @@ var Tasks     = require('engine/prim/tasks');
 var AgentModel     = require('agentmodel');
 var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
-var StrictMath     = require('shim/strictmath');function setup() {
+var StrictMath     = require('shim/strictmath');
+function setup() {
   world.clearAll();
   world.patches().ask(function() {
     SelfPrims.setPatchVariable('pcolor', 55);
   }, true);
   if (world.observer.getGlobal('grass?')) {
     world.patches().ask(function() {
-      SelfPrims.setPatchVariable('pcolor', Prims.oneOf([55, 35]));
+      SelfPrims.setPatchVariable('pcolor', ListPrims.oneOf([55, 35]));
       if (Prims.equality(SelfPrims.getPatchVariable('pcolor'), 55)) {
         SelfPrims.setPatchVariable('countdown', world.observer.getGlobal('grass-regrowth-time'));
       }
@@ -125,7 +127,7 @@ function reproduceWolves() {
   }
 }
 function catchSheep() {
-  var prey = Prims.oneOf(SelfManager.self().breedHere("SHEEP"));
+  var prey = ListPrims.oneOf(SelfManager.self().breedHere("SHEEP"));
   if (!Prims.equality(prey, Nobody)) {
     prey.ask(function() {
       SelfPrims.die();

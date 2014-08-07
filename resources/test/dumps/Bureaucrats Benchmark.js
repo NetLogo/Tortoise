@@ -2,6 +2,7 @@ var workspace     = require('engine/workspace')([])(['plot?', 'total', 'result']
 var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
+var ListPrims     = workspace.listPrims;
 var Prims         = workspace.prims;
 var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
@@ -27,7 +28,8 @@ var Tasks     = require('engine/prim/tasks');
 var AgentModel     = require('agentmodel');
 var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
-var StrictMath     = require('shim/strictmath');function benchmark() {
+var StrictMath     = require('shim/strictmath');
+function benchmark() {
   Random.setSeed(0);
   workspace.timer.reset();
   Call(setup);
@@ -46,7 +48,7 @@ function setup() {
   world.ticker.reset();
 }
 function go() {
-  var activePatches = Prims.patchSet(Prims.oneOf(world.patches()));
+  var activePatches = Prims.patchSet(ListPrims.oneOf(world.patches()));
   activePatches.ask(function() {
     SelfPrims.setPatchVariable('n', (SelfPrims.getPatchVariable('n') + 1));
     world.observer.setGlobal('total', (world.observer.getGlobal('total') + 1));
@@ -74,7 +76,7 @@ function go() {
 }
 function colorize() {
   if (Prims.lte(SelfPrims.getPatchVariable('n'), 3)) {
-    SelfPrims.setPatchVariable('pcolor', Prims.item(SelfPrims.getPatchVariable('n'), [83, 54, 45, 25]));
+    SelfPrims.setPatchVariable('pcolor', ListPrims.item(SelfPrims.getPatchVariable('n'), [83, 54, 45, 25]));
   }
   else {
     SelfPrims.setPatchVariable('pcolor', 15);

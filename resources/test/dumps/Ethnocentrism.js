@@ -2,6 +2,7 @@ var workspace     = require('engine/workspace')([])(['mutation-rate', 'death-rat
 var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
+var ListPrims     = workspace.listPrims;
 var Prims         = workspace.prims;
 var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
@@ -27,7 +28,8 @@ var Tasks     = require('engine/prim/tasks');
 var AgentModel     = require('agentmodel');
 var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
-var StrictMath     = require('shim/strictmath');function setupEmpty() {
+var StrictMath     = require('shim/strictmath');
+function setupEmpty() {
   world.clearAll();
   Call(initializeVariables);
   world.ticker.reset();
@@ -74,7 +76,7 @@ function createTurtle() {
   }, true);
 }
 function randomColor() {
-  return Prims.oneOf([15, 105, 45, 55]);
+  return ListPrims.oneOf([15, 105, 45, 55]);
 }
 function clearStats() {
   world.observer.setGlobal('meetown', 0);
@@ -104,8 +106,8 @@ function immigrate() {
   var emptyPatches = world.patches().agentFilter(function() {
     return !SelfManager.self().turtlesHere().nonEmpty();
   });
-  var howMany = Prims.min(Prims.list(world.observer.getGlobal('immigrants-per-day'), emptyPatches.size()));
-  Prims.nOf(howMany, emptyPatches).ask(function() {
+  var howMany = ListPrims.min(ListPrims.list(world.observer.getGlobal('immigrants-per-day'), emptyPatches.size()));
+  ListPrims.nOf(howMany, emptyPatches).ask(function() {
     Call(createTurtle);
   }, true);
 }
@@ -153,7 +155,7 @@ function interact() {
 }
 function reproduce() {
   if (Prims.lt(Prims.randomFloat(1), SelfPrims.getVariable('ptr'))) {
-    var destination = Prims.oneOf(SelfPrims.getNeighbors4().agentFilter(function() {
+    var destination = ListPrims.oneOf(SelfPrims.getNeighbors4().agentFilter(function() {
       return !SelfManager.self().turtlesHere().nonEmpty();
     }));
     if (!Prims.equality(destination, Nobody)) {
@@ -205,101 +207,101 @@ function updateShape() {
   }
 }
 function updateStats() {
-  world.observer.setGlobal('last100dd', Call(shorten, Prims.lput(world.turtles().agentFilter(function() {
+  world.observer.setGlobal('last100dd', Call(shorten, ListPrims.lput(world.turtles().agentFilter(function() {
     return Prims.equality(SelfPrims.getVariable('shape'), "square 2");
   }).size(), world.observer.getGlobal('last100dd'))));
-  world.observer.setGlobal('last100cc', Call(shorten, Prims.lput(world.turtles().agentFilter(function() {
+  world.observer.setGlobal('last100cc', Call(shorten, ListPrims.lput(world.turtles().agentFilter(function() {
     return Prims.equality(SelfPrims.getVariable('shape'), "circle");
   }).size(), world.observer.getGlobal('last100cc'))));
-  world.observer.setGlobal('last100cd', Call(shorten, Prims.lput(world.turtles().agentFilter(function() {
+  world.observer.setGlobal('last100cd', Call(shorten, ListPrims.lput(world.turtles().agentFilter(function() {
     return Prims.equality(SelfPrims.getVariable('shape'), "circle 2");
   }).size(), world.observer.getGlobal('last100cd'))));
-  world.observer.setGlobal('last100dc', Call(shorten, Prims.lput(world.turtles().agentFilter(function() {
+  world.observer.setGlobal('last100dc', Call(shorten, ListPrims.lput(world.turtles().agentFilter(function() {
     return Prims.equality(SelfPrims.getVariable('shape'), "square");
   }).size(), world.observer.getGlobal('last100dc'))));
-  world.observer.setGlobal('last100coopown', Call(shorten, Prims.lput(world.observer.getGlobal('coopown'), world.observer.getGlobal('last100coopown'))));
-  world.observer.setGlobal('last100defother', Call(shorten, Prims.lput(world.observer.getGlobal('defother'), world.observer.getGlobal('last100defother'))));
-  world.observer.setGlobal('last100meetown', Call(shorten, Prims.lput(world.observer.getGlobal('meetown'), world.observer.getGlobal('last100meetown'))));
-  world.observer.setGlobal('last100coop', Call(shorten, Prims.lput((world.observer.getGlobal('coopown') + world.observer.getGlobal('coopother')), world.observer.getGlobal('last100coop'))));
-  world.observer.setGlobal('last100meet', Call(shorten, Prims.lput(world.observer.getGlobal('meet'), world.observer.getGlobal('last100meet'))));
-  world.observer.setGlobal('last100meetother', Call(shorten, Prims.lput(world.observer.getGlobal('meetother'), world.observer.getGlobal('last100meetother'))));
+  world.observer.setGlobal('last100coopown', Call(shorten, ListPrims.lput(world.observer.getGlobal('coopown'), world.observer.getGlobal('last100coopown'))));
+  world.observer.setGlobal('last100defother', Call(shorten, ListPrims.lput(world.observer.getGlobal('defother'), world.observer.getGlobal('last100defother'))));
+  world.observer.setGlobal('last100meetown', Call(shorten, ListPrims.lput(world.observer.getGlobal('meetown'), world.observer.getGlobal('last100meetown'))));
+  world.observer.setGlobal('last100coop', Call(shorten, ListPrims.lput((world.observer.getGlobal('coopown') + world.observer.getGlobal('coopother')), world.observer.getGlobal('last100coop'))));
+  world.observer.setGlobal('last100meet', Call(shorten, ListPrims.lput(world.observer.getGlobal('meet'), world.observer.getGlobal('last100meet'))));
+  world.observer.setGlobal('last100meetother', Call(shorten, ListPrims.lput(world.observer.getGlobal('meetother'), world.observer.getGlobal('last100meetother'))));
 }
 function shorten(theList) {
-  if (Prims.gt(Prims.length(theList), 100)) {
-    return Prims.butFirst(theList);
+  if (Prims.gt(ListPrims.length(theList), 100)) {
+    return ListPrims.butFirst(theList);
   }
   else {
     return theList;
   }
 }
 function meetownPercent() {
-  return (world.observer.getGlobal('meetown') / Prims.max(Prims.list(1, world.observer.getGlobal('meet'))));
+  return (world.observer.getGlobal('meetown') / ListPrims.max(ListPrims.list(1, world.observer.getGlobal('meet'))));
 }
 function meetownAggPercent() {
-  return (world.observer.getGlobal('meetown-agg') / Prims.max(Prims.list(1, world.observer.getGlobal('meet-agg'))));
+  return (world.observer.getGlobal('meetown-agg') / ListPrims.max(ListPrims.list(1, world.observer.getGlobal('meet-agg'))));
 }
 function coopownPercent() {
-  return (world.observer.getGlobal('coopown') / Prims.max(Prims.list(1, world.observer.getGlobal('meetown'))));
+  return (world.observer.getGlobal('coopown') / ListPrims.max(ListPrims.list(1, world.observer.getGlobal('meetown'))));
 }
 function coopownAggPercent() {
-  return (world.observer.getGlobal('coopown-agg') / Prims.max(Prims.list(1, world.observer.getGlobal('meetown-agg'))));
+  return (world.observer.getGlobal('coopown-agg') / ListPrims.max(ListPrims.list(1, world.observer.getGlobal('meetown-agg'))));
 }
 function defotherPercent() {
-  return (world.observer.getGlobal('defother') / Prims.max(Prims.list(1, world.observer.getGlobal('meetother'))));
+  return (world.observer.getGlobal('defother') / ListPrims.max(ListPrims.list(1, world.observer.getGlobal('meetother'))));
 }
 function defotherAggPercent() {
-  return (world.observer.getGlobal('defother-agg') / Prims.max(Prims.list(1, world.observer.getGlobal('meetother-agg'))));
+  return (world.observer.getGlobal('defother-agg') / ListPrims.max(ListPrims.list(1, world.observer.getGlobal('meetother-agg'))));
 }
 function consistEthnoPercent() {
-  return ((world.observer.getGlobal('defother') + world.observer.getGlobal('coopown')) / Prims.max(Prims.list(1, world.observer.getGlobal('meet'))));
+  return ((world.observer.getGlobal('defother') + world.observer.getGlobal('coopown')) / ListPrims.max(ListPrims.list(1, world.observer.getGlobal('meet'))));
 }
 function consistEthnoAggPercent() {
-  return ((world.observer.getGlobal('defother-agg') + world.observer.getGlobal('coopown-agg')) / Prims.max(Prims.list(1, world.observer.getGlobal('meet-agg'))));
+  return ((world.observer.getGlobal('defother-agg') + world.observer.getGlobal('coopown-agg')) / ListPrims.max(ListPrims.list(1, world.observer.getGlobal('meet-agg'))));
 }
 function coopPercent() {
-  return ((world.observer.getGlobal('coopown') + world.observer.getGlobal('coopother')) / Prims.max(Prims.list(1, world.observer.getGlobal('meet'))));
+  return ((world.observer.getGlobal('coopown') + world.observer.getGlobal('coopother')) / ListPrims.max(ListPrims.list(1, world.observer.getGlobal('meet'))));
 }
 function coopAggPercent() {
-  return ((world.observer.getGlobal('coopown-agg') + world.observer.getGlobal('coopother-agg')) / Prims.max(Prims.list(1, world.observer.getGlobal('meet-agg'))));
+  return ((world.observer.getGlobal('coopown-agg') + world.observer.getGlobal('coopother-agg')) / ListPrims.max(ListPrims.list(1, world.observer.getGlobal('meet-agg'))));
 }
 function ccCount() {
-  return (Prims.sum(world.observer.getGlobal('last100cc')) / Prims.max(Prims.list(1, Prims.length(world.observer.getGlobal('last100cc')))));
+  return (ListPrims.sum(world.observer.getGlobal('last100cc')) / ListPrims.max(ListPrims.list(1, ListPrims.length(world.observer.getGlobal('last100cc')))));
 }
 function cdCount() {
-  return (Prims.sum(world.observer.getGlobal('last100cd')) / Prims.max(Prims.list(1, Prims.length(world.observer.getGlobal('last100cd')))));
+  return (ListPrims.sum(world.observer.getGlobal('last100cd')) / ListPrims.max(ListPrims.list(1, ListPrims.length(world.observer.getGlobal('last100cd')))));
 }
 function dcCount() {
-  return (Prims.sum(world.observer.getGlobal('last100dc')) / Prims.max(Prims.list(1, Prims.length(world.observer.getGlobal('last100dc')))));
+  return (ListPrims.sum(world.observer.getGlobal('last100dc')) / ListPrims.max(ListPrims.list(1, ListPrims.length(world.observer.getGlobal('last100dc')))));
 }
 function ddCount() {
-  return (Prims.sum(world.observer.getGlobal('last100dd')) / Prims.max(Prims.list(1, Prims.length(world.observer.getGlobal('last100dd')))));
+  return (ListPrims.sum(world.observer.getGlobal('last100dd')) / ListPrims.max(ListPrims.list(1, ListPrims.length(world.observer.getGlobal('last100dd')))));
 }
 function ccPercent() {
-  return (Call(ccCount) / Prims.max(Prims.list(1, (((Call(ccCount) + Call(cdCount)) + Call(dcCount)) + Call(ddCount)))));
+  return (Call(ccCount) / ListPrims.max(ListPrims.list(1, (((Call(ccCount) + Call(cdCount)) + Call(dcCount)) + Call(ddCount)))));
 }
 function cdPercent() {
-  return (Call(cdCount) / Prims.max(Prims.list(1, (((Call(ccCount) + Call(cdCount)) + Call(dcCount)) + Call(ddCount)))));
+  return (Call(cdCount) / ListPrims.max(ListPrims.list(1, (((Call(ccCount) + Call(cdCount)) + Call(dcCount)) + Call(ddCount)))));
 }
 function dcPercent() {
-  return (Call(dcCount) / Prims.max(Prims.list(1, (((Call(ccCount) + Call(cdCount)) + Call(dcCount)) + Call(ddCount)))));
+  return (Call(dcCount) / ListPrims.max(ListPrims.list(1, (((Call(ccCount) + Call(cdCount)) + Call(dcCount)) + Call(ddCount)))));
 }
 function ddPercent() {
-  return (Call(ddCount) / Prims.max(Prims.list(1, (((Call(ccCount) + Call(cdCount)) + Call(dcCount)) + Call(ddCount)))));
+  return (Call(ddCount) / ListPrims.max(ListPrims.list(1, (((Call(ccCount) + Call(cdCount)) + Call(dcCount)) + Call(ddCount)))));
 }
 function last100coopownPercent() {
-  return (Prims.sum(world.observer.getGlobal('last100coopown')) / Prims.max(Prims.list(1, Prims.sum(world.observer.getGlobal('last100meetown')))));
+  return (ListPrims.sum(world.observer.getGlobal('last100coopown')) / ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal('last100meetown')))));
 }
 function last100defotherPercent() {
-  return (Prims.sum(world.observer.getGlobal('last100defother')) / Prims.max(Prims.list(1, Prims.sum(world.observer.getGlobal('last100meetother')))));
+  return (ListPrims.sum(world.observer.getGlobal('last100defother')) / ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal('last100meetother')))));
 }
 function last100consistEthnoPercent() {
-  return ((Prims.sum(world.observer.getGlobal('last100defother')) + Prims.sum(world.observer.getGlobal('last100coopown'))) / Prims.max(Prims.list(1, Prims.sum(world.observer.getGlobal('last100meet')))));
+  return ((ListPrims.sum(world.observer.getGlobal('last100defother')) + ListPrims.sum(world.observer.getGlobal('last100coopown'))) / ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal('last100meet')))));
 }
 function last100meetownPercent() {
-  return (Prims.sum(world.observer.getGlobal('last100meetown')) / Prims.max(Prims.list(1, Prims.sum(world.observer.getGlobal('last100meet')))));
+  return (ListPrims.sum(world.observer.getGlobal('last100meetown')) / ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal('last100meet')))));
 }
 function last100coopPercent() {
-  return (Prims.sum(world.observer.getGlobal('last100coop')) / Prims.max(Prims.list(1, Prims.sum(world.observer.getGlobal('last100meet')))));
+  return (ListPrims.sum(world.observer.getGlobal('last100coop')) / ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal('last100meet')))));
 }
 world.observer.setGlobal('mutation-rate', 0.005);
 world.observer.setGlobal('death-rate', 0.1);

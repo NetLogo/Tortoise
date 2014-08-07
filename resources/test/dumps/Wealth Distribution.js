@@ -2,6 +2,7 @@ var workspace     = require('engine/workspace')([])(['max-vision', 'grain-growth
 var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
+var ListPrims     = workspace.listPrims;
 var Prims         = workspace.prims;
 var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
@@ -27,7 +28,8 @@ var Tasks     = require('engine/prim/tasks');
 var AgentModel     = require('agentmodel');
 var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
-var StrictMath     = require('shim/strictmath');function setup() {
+var StrictMath     = require('shim/strictmath');
+function setup() {
   world.clearAll();
   world.observer.setGlobal('max-grain', 50);
   Call(setupPatches);
@@ -66,7 +68,7 @@ function recolorPatch() {
 function setupTurtles() {
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "person")
   world.turtleManager.createTurtles(world.observer.getGlobal('num-people'), '').ask(function() {
-    SelfManager.self().moveTo(Prims.oneOf(world.patches()));
+    SelfManager.self().moveTo(ListPrims.oneOf(world.patches()));
     SelfPrims.setVariable('size', 1.5);
     Call(setInitialTurtleVars);
     SelfPrims.setVariable('age', Prims.random(SelfPrims.getVariable('life-expectancy')));
@@ -75,14 +77,14 @@ function setupTurtles() {
 }
 function setInitialTurtleVars() {
   SelfPrims.setVariable('age', 0);
-  SelfManager.self().face(Prims.oneOf(SelfPrims.getNeighbors4()));
+  SelfManager.self().face(ListPrims.oneOf(SelfPrims.getNeighbors4()));
   SelfPrims.setVariable('life-expectancy', (world.observer.getGlobal('life-expectancy-min') + Prims.random(((world.observer.getGlobal('life-expectancy-max') - world.observer.getGlobal('life-expectancy-min')) + 1))));
   SelfPrims.setVariable('metabolism', (1 + Prims.random(world.observer.getGlobal('metabolism-max'))));
   SelfPrims.setVariable('wealth', (SelfPrims.getVariable('metabolism') + Prims.random(50)));
   SelfPrims.setVariable('vision', (1 + Prims.random(world.observer.getGlobal('max-vision'))));
 }
 function recolorTurtles() {
-  var maxWealth = Prims.max(world.turtles().projectionBy(function() {
+  var maxWealth = ListPrims.max(world.turtles().projectionBy(function() {
     return SelfPrims.getVariable('wealth');
   }));
   world.turtles().ask(function() {
@@ -175,17 +177,17 @@ function moveEatAgeDie() {
   }
 }
 function updateLorenzAndGini() {
-  var sortedWealths = Prims.sort(world.turtles().projectionBy(function() {
+  var sortedWealths = ListPrims.sort(world.turtles().projectionBy(function() {
     return SelfPrims.getVariable('wealth');
   }));
-  var totalWealth = Prims.sum(sortedWealths);
+  var totalWealth = ListPrims.sum(sortedWealths);
   var wealthSumSoFar = 0;
   var index = 0;
   world.observer.setGlobal('gini-index-reserve', 0);
   world.observer.setGlobal('lorenz-points', []);
   Prims.repeat(world.observer.getGlobal('num-people'), function () {
-    wealthSumSoFar = (wealthSumSoFar + Prims.item(index, sortedWealths));
-    world.observer.setGlobal('lorenz-points', Prims.lput(((wealthSumSoFar / totalWealth) * 100), world.observer.getGlobal('lorenz-points')));
+    wealthSumSoFar = (wealthSumSoFar + ListPrims.item(index, sortedWealths));
+    world.observer.setGlobal('lorenz-points', ListPrims.lput(((wealthSumSoFar / totalWealth) * 100), world.observer.getGlobal('lorenz-points')));
     index = (index + 1);
     world.observer.setGlobal('gini-index-reserve', ((world.observer.getGlobal('gini-index-reserve') + (index / world.observer.getGlobal('num-people'))) - (wealthSumSoFar / totalWealth)));
   });

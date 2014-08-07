@@ -2,6 +2,7 @@ var workspace     = require('engine/workspace')([])(['initial-density', 'ratio',
 var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
+var ListPrims     = workspace.listPrims;
 var Prims         = workspace.prims;
 var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
@@ -27,7 +28,8 @@ var Tasks     = require('engine/prim/tasks');
 var AgentModel     = require('agentmodel');
 var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
-var StrictMath     = require('shim/strictmath');function setup() {
+var StrictMath     = require('shim/strictmath');
+function setup() {
   world.clearAll();
   world.patches().ask(function() {
     SelfPrims.setPatchVariable('inner-neighbors', Call(ellipseIn, world.observer.getGlobal('inner-radius-x'), world.observer.getGlobal('inner-radius-y')));
@@ -82,12 +84,12 @@ function pickNewColor() {
   }
 }
 function ellipseIn(xRadius, yRadius) {
-  return SelfManager.self().inRadius(world.patches(), Prims.max(Prims.list(xRadius, yRadius))).agentFilter(function() {
+  return SelfManager.self().inRadius(world.patches(), ListPrims.max(ListPrims.list(xRadius, yRadius))).agentFilter(function() {
     return Prims.gte(1, ((StrictMath.pow(Call(xdistance, SelfManager.myself()), 2) / StrictMath.pow(xRadius, 2)) + (StrictMath.pow(Call(ydistance, SelfManager.myself()), 2) / StrictMath.pow(yRadius, 2))));
   });
 }
 function ellipseRing(outxRadius, outyRadius, inxRadius, inyRadius) {
-  return SelfManager.self().inRadius(world.patches(), Prims.max(Prims.list(outxRadius, outyRadius))).agentFilter(function() {
+  return SelfManager.self().inRadius(world.patches(), ListPrims.max(ListPrims.list(outxRadius, outyRadius))).agentFilter(function() {
     return (Prims.gte(1, ((StrictMath.pow(Call(xdistance, SelfManager.myself()), 2) / StrictMath.pow(outxRadius, 2)) + (StrictMath.pow(Call(ydistance, SelfManager.myself()), 2) / StrictMath.pow(outyRadius, 2)))) && Prims.lt(1, ((StrictMath.pow(Call(xdistance, SelfManager.myself()), 2) / StrictMath.pow(inxRadius, 2)) + (StrictMath.pow(Call(ydistance, SelfManager.myself()), 2) / StrictMath.pow(inyRadius, 2)))));
   });
 }

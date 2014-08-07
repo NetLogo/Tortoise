@@ -2,6 +2,7 @@ var workspace     = require('engine/workspace')([])(['num-vants'], ['num-vants']
 var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
+var ListPrims     = workspace.listPrims;
 var Prims         = workspace.prims;
 var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
@@ -27,13 +28,14 @@ var Tasks     = require('engine/prim/tasks');
 var AgentModel     = require('agentmodel');
 var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
-var StrictMath     = require('shim/strictmath');function setup() {
+var StrictMath     = require('shim/strictmath');
+function setup() {
   world.clearAll();
   world.patches().ask(function() {
     SelfPrims.setPatchVariable('pcolor', 9.9);
   }, true);
   world.turtleManager.createTurtles(world.observer.getGlobal('num-vants'), '').ask(function() {
-    SelfManager.self().face(Prims.oneOf(SelfPrims.getNeighbors4()));
+    SelfManager.self().face(ListPrims.oneOf(SelfPrims.getNeighbors4()));
     SelfPrims.setVariable('color', 15);
     SelfPrims.setVariable('size', 6);
   }, true);
@@ -46,7 +48,7 @@ function goForward() {
       SelfPrims.fd(1);
       Call(turn);
     }, true);
-  }), Prims.sort(world.turtles()));
+  }), ListPrims.sort(world.turtles()));
   world.ticker.tick();
 }
 function goReverse() {
@@ -56,7 +58,7 @@ function goReverse() {
       Call(turn);
       SelfPrims.bk(1);
     }, true);
-  }), Prims.reverse(Prims.sort(world.turtles())));
+  }), ListPrims.reverse(ListPrims.sort(world.turtles())));
   world.ticker.tick();
 }
 function turn() {

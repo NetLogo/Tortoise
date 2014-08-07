@@ -2,6 +2,7 @@ var workspace     = require('engine/workspace')([])(['colors', 'number', 'max-pe
 var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
+var ListPrims     = workspace.listPrims;
 var Prims         = workspace.prims;
 var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
@@ -27,18 +28,19 @@ var Tasks     = require('engine/prim/tasks');
 var AgentModel     = require('agentmodel');
 var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
-var StrictMath     = require('shim/strictmath');function setup() {
+var StrictMath     = require('shim/strictmath');
+function setup() {
   world.turtleManager.clearTurtles();
   notImplemented('clear-all-plots', undefined)();
   world.turtleManager.createTurtles(world.observer.getGlobal('number'), '').ask(function() {
-    SelfPrims.setVariable('color', Prims.item(Prims.random(world.observer.getGlobal('colors')), [5, 15, 25, 35, 45, 55, 65, 85, 95, 125]));
+    SelfPrims.setVariable('color', ListPrims.item(Prims.random(world.observer.getGlobal('colors')), [5, 15, 25, 35, 45, 55, 65, 85, 95, 125]));
     SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
     Call(moveOffWall);
   }, true);
   world.ticker.reset();
 }
 function go() {
-  if (Prims.equality(Prims.variance(world.turtles().projectionBy(function() {
+  if (Prims.equality(ListPrims.variance(world.turtles().projectionBy(function() {
     return SelfPrims.getVariable('color');
   })), 0)) {
     throw new Exception.StopInterrupt;
@@ -59,7 +61,7 @@ function go() {
   world.ticker.tick();
 }
 function meet() {
-  var candidate = Prims.oneOf(SelfManager.self().turtlesAt(1, 0));
+  var candidate = ListPrims.oneOf(SelfManager.self().turtlesAt(1, 0));
   if (!Prims.equality(candidate, Nobody)) {
     SelfPrims.setVariable('color', candidate.projectionBy(function() {
       return SelfPrims.getVariable('color');
@@ -107,7 +109,7 @@ function removeAllWalls() {
 }
 function moveOffWall() {
   while (!Prims.equality(SelfPrims.getPatchVariable('pcolor'), 0)) {
-    SelfManager.self().moveTo(Prims.oneOf(SelfPrims.getNeighbors()));
+    SelfManager.self().moveTo(ListPrims.oneOf(SelfPrims.getNeighbors()));
   }
 }
 world.observer.setGlobal('colors', 5);

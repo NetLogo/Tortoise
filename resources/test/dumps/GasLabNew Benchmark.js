@@ -2,6 +2,7 @@ var workspace     = require('engine/workspace')([{ name: 'PARTICLES', singular: 
 var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
+var ListPrims     = workspace.listPrims;
 var Prims         = workspace.prims;
 var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
@@ -27,7 +28,8 @@ var Tasks     = require('engine/prim/tasks');
 var AgentModel     = require('agentmodel');
 var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
-var StrictMath     = require('shim/strictmath');function benchmark() {
+var StrictMath     = require('shim/strictmath');
+function benchmark() {
   Random.setSeed(361);
   workspace.timer.reset();
   Call(setup);
@@ -66,10 +68,10 @@ function updateVariables() {
   world.observer.setGlobal('fast', world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() {
     return Prims.equality(SelfPrims.getVariable('color'), 15);
   }).size());
-  world.observer.setGlobal('avg-speed', Prims.mean(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() {
+  world.observer.setGlobal('avg-speed', ListPrims.mean(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() {
     return SelfPrims.getVariable('speed');
   })));
-  world.observer.setGlobal('avg-energy', Prims.mean(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() {
+  world.observer.setGlobal('avg-energy', ListPrims.mean(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() {
     return SelfPrims.getVariable('energy');
   })));
 }
@@ -95,7 +97,7 @@ function go() {
   world.ticker.tickAdvance(world.observer.getGlobal('tick-length'));
   if (Prims.gt(StrictMath.floor(world.ticker.tickCount()), StrictMath.floor((world.ticker.tickCount() - world.observer.getGlobal('tick-length'))))) {
     if (world.turtleManager.turtlesOfBreed("PARTICLES").nonEmpty()) {
-      world.observer.setGlobal('wall-hits-per-particle', Prims.mean(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() {
+      world.observer.setGlobal('wall-hits-per-particle', ListPrims.mean(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() {
         return SelfPrims.getVariable('wall-hits');
       })));
     }
@@ -128,7 +130,7 @@ function calculateTickLength() {
   if (world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() {
     return Prims.gt(SelfPrims.getVariable('speed'), 0);
   }).nonEmpty()) {
-    world.observer.setGlobal('tick-length', (1 / StrictMath.ceil(Prims.max(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() {
+    world.observer.setGlobal('tick-length', (1 / StrictMath.ceil(ListPrims.max(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() {
       return SelfPrims.getVariable('speed');
     })))));
   }
@@ -137,11 +139,11 @@ function calculateTickLength() {
   }
 }
 function calculatePressure() {
-  world.observer.setGlobal('pressure', (15 * Prims.sum(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() {
+  world.observer.setGlobal('pressure', (15 * ListPrims.sum(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() {
     return SelfPrims.getVariable('momentum-difference');
   }))));
-  world.observer.setGlobal('pressure-history', Prims.lput(world.observer.getGlobal('pressure'), world.observer.getGlobal('pressure-history')));
-  world.observer.setGlobal('zero-pressure-count', Prims.length(world.observer.getGlobal('pressure-history').filter(Tasks.reporterTask(function() {
+  world.observer.setGlobal('pressure-history', ListPrims.lput(world.observer.getGlobal('pressure'), world.observer.getGlobal('pressure-history')));
+  world.observer.setGlobal('zero-pressure-count', ListPrims.length(world.observer.getGlobal('pressure-history').filter(Tasks.reporterTask(function() {
     var taskArguments = arguments;
     return Prims.equality(taskArguments[0], 0);
   }))));
@@ -195,7 +197,7 @@ function move() {
 }
 function checkForCollision() {
   if (Prims.equality(SelfPrims.other(SelfManager.self().breedHere("PARTICLES")).size(), 1)) {
-    var candidate = Prims.oneOf(SelfPrims.other(SelfManager.self().breedHere("PARTICLES").agentFilter(function() {
+    var candidate = ListPrims.oneOf(SelfPrims.other(SelfManager.self().breedHere("PARTICLES").agentFilter(function() {
       return (Prims.lt(SelfPrims.getVariable('who'), SelfManager.myself().projectionBy(function() {
         return SelfPrims.getVariable('who');
       })) && !Prims.equality(SelfManager.myself(), SelfPrims.getVariable('last-collision')));
@@ -336,8 +338,8 @@ function setupHistograms() {
 }
 function doPlotting() {
   notImplemented('set-current-plot', undefined)("Pressure vs. Time");
-  if (Prims.gt(Prims.length(world.observer.getGlobal('pressure-history')), 0)) {
-    notImplemented('plotxy', undefined)(world.ticker.tickCount(), Prims.mean(Call(lastN, 3, world.observer.getGlobal('pressure-history'))));
+  if (Prims.gt(ListPrims.length(world.observer.getGlobal('pressure-history')), 0)) {
+    notImplemented('plotxy', undefined)(world.ticker.tickCount(), ListPrims.mean(Call(lastN, 3, world.observer.getGlobal('pressure-history'))));
   }
   notImplemented('set-current-plot', undefined)("Speed Counts");
   notImplemented('set-current-plot-pen', undefined)("fast");
@@ -405,11 +407,11 @@ function drawVertLine(xval) {
   notImplemented('plot-pen-up', undefined)();
 }
 function lastN(n, theList) {
-  if (Prims.gte(n, Prims.length(theList))) {
+  if (Prims.gte(n, ListPrims.length(theList))) {
     return theList;
   }
   else {
-    return Call(lastN, n, Prims.butFirst(theList));
+    return Call(lastN, n, ListPrims.butFirst(theList));
   }
 }
 function makeClocker() {

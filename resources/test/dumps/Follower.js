@@ -2,6 +2,7 @@ var workspace     = require('engine/workspace')([])(['waver', 'far-radius', 'pop
 var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
+var ListPrims     = workspace.listPrims;
 var Prims         = workspace.prims;
 var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
@@ -27,7 +28,8 @@ var Tasks     = require('engine/prim/tasks');
 var AgentModel     = require('agentmodel');
 var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
-var StrictMath     = require('shim/strictmath');function setup() {
+var StrictMath     = require('shim/strictmath');
+function setup() {
   world.clearAll();
   world.turtleManager.createTurtles(world.observer.getGlobal('population'), '').ask(function() {
     SelfPrims.setVariable('color', 125);
@@ -60,7 +62,7 @@ function attachTurtle() {
   if (Prims.equality(Prims.random(2), 0)) {
     yd =  -yd;
   }
-  var candidate = Prims.oneOf(SelfManager.self().turtlesAt(xd, yd).agentFilter(function() {
+  var candidate = ListPrims.oneOf(SelfManager.self().turtlesAt(xd, yd).agentFilter(function() {
     return Prims.equality(SelfPrims.getVariable('follower'), Nobody);
   }));
   if (Prims.equality(candidate, Nobody)) {

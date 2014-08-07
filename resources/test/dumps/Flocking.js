@@ -2,6 +2,7 @@ var workspace     = require('engine/workspace')([])(['population', 'max-align-tu
 var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
+var ListPrims     = workspace.listPrims;
 var Prims         = workspace.prims;
 var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
@@ -27,7 +28,8 @@ var Tasks     = require('engine/prim/tasks');
 var AgentModel     = require('agentmodel');
 var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
-var StrictMath     = require('shim/strictmath');function setup() {
+var StrictMath     = require('shim/strictmath');
+function setup() {
   world.clearAll();
   world.turtleManager.createTurtles(world.observer.getGlobal('population'), '').ask(function() {
     SelfPrims.setVariable('color', ((45 - 2) + Prims.random(7)));
@@ -78,10 +80,10 @@ function align() {
   Call(turnTowards, Call(averageFlockmateHeading), world.observer.getGlobal('max-align-turn'));
 }
 function averageFlockmateHeading() {
-  var xComponent = Prims.sum(SelfPrims.getVariable('flockmates').projectionBy(function() {
+  var xComponent = ListPrims.sum(SelfPrims.getVariable('flockmates').projectionBy(function() {
     return SelfManager.self().dx();
   }));
-  var yComponent = Prims.sum(SelfPrims.getVariable('flockmates').projectionBy(function() {
+  var yComponent = ListPrims.sum(SelfPrims.getVariable('flockmates').projectionBy(function() {
     return SelfManager.self().dy();
   }));
   if ((Prims.equality(xComponent, 0) && Prims.equality(yComponent, 0))) {
@@ -95,10 +97,10 @@ function cohere() {
   Call(turnTowards, Call(averageHeadingTowardsFlockmates), world.observer.getGlobal('max-cohere-turn'));
 }
 function averageHeadingTowardsFlockmates() {
-  var xComponent = Prims.mean(SelfPrims.getVariable('flockmates').projectionBy(function() {
+  var xComponent = ListPrims.mean(SelfPrims.getVariable('flockmates').projectionBy(function() {
     return Trig.unsquashedSin((SelfManager.self().towards(SelfManager.myself()) + 180));
   }));
-  var yComponent = Prims.mean(SelfPrims.getVariable('flockmates').projectionBy(function() {
+  var yComponent = ListPrims.mean(SelfPrims.getVariable('flockmates').projectionBy(function() {
     return Trig.unsquashedCos((SelfManager.self().towards(SelfManager.myself()) + 180));
   }));
   if ((Prims.equality(xComponent, 0) && Prims.equality(yComponent, 0))) {

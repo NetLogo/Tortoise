@@ -2,6 +2,7 @@ var workspace     = require('engine/workspace')([])(['plot?', 'layout?'], ['plot
 var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
+var ListPrims     = workspace.listPrims;
 var Prims         = workspace.prims;
 var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
@@ -27,7 +28,8 @@ var Tasks     = require('engine/prim/tasks');
 var AgentModel     = require('agentmodel');
 var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
-var StrictMath     = require('shim/strictmath');function setup() {
+var StrictMath     = require('shim/strictmath');
+function setup() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
   Call(makeNode, Nobody);
@@ -57,8 +59,8 @@ function makeNode(oldNode) {
   }, true);
 }
 function findPartner() {
-  return Prims.oneOf(world.links()).projectionBy(function() {
-    return Prims.oneOf(SelfManager.self().bothEnds());
+  return ListPrims.oneOf(world.links()).projectionBy(function() {
+    return ListPrims.oneOf(SelfManager.self().bothEnds());
   });
 }
 function resizeNodes() {
@@ -79,14 +81,14 @@ function layout() {
     LayoutManager.layoutSpring(world.turtles(), world.links(), (1 / factor), (7 / factor), (1 / factor));
     notImplemented('display', undefined)();
   });
-  var xOffset = (Prims.max(world.turtles().projectionBy(function() {
+  var xOffset = (ListPrims.max(world.turtles().projectionBy(function() {
     return SelfPrims.getVariable('xcor');
-  })) + Prims.min(world.turtles().projectionBy(function() {
+  })) + ListPrims.min(world.turtles().projectionBy(function() {
     return SelfPrims.getVariable('xcor');
   })));
-  var yOffset = (Prims.max(world.turtles().projectionBy(function() {
+  var yOffset = (ListPrims.max(world.turtles().projectionBy(function() {
     return SelfPrims.getVariable('ycor');
-  })) + Prims.min(world.turtles().projectionBy(function() {
+  })) + ListPrims.min(world.turtles().projectionBy(function() {
     return SelfPrims.getVariable('ycor');
   })));
   xOffset = Call(limitMagnitude, xOffset, 0.1);

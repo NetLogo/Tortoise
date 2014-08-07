@@ -2,6 +2,7 @@ var workspace     = require('engine/workspace')([])(['initial-people', 'average-
 var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
+var ListPrims     = workspace.listPrims;
 var Prims         = workspace.prims;
 var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
@@ -27,7 +28,8 @@ var Tasks     = require('engine/prim/tasks');
 var AgentModel     = require('agentmodel');
 var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
-var StrictMath     = require('shim/strictmath');function setup() {
+var StrictMath     = require('shim/strictmath');
+function setup() {
   world.clearAll();
   Call(setupGlobals);
   Call(setupPeople);
@@ -164,7 +166,7 @@ function move() {
   SelfPrims.fd(1);
 }
 function couple() {
-  var potentialPartner = Prims.oneOf(SelfManager.self().turtlesAt(-1, 0).agentFilter(function() {
+  var potentialPartner = ListPrims.oneOf(SelfManager.self().turtlesAt(-1, 0).agentFilter(function() {
     return (!SelfPrims.getVariable('coupled?') && Prims.equality(SelfPrims.getVariable('shape'), "person lefty"));
   }));
   if (!Prims.equality(potentialPartner, Nobody)) {

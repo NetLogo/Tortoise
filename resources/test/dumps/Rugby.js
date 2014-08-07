@@ -2,6 +2,7 @@ var workspace     = require('engine/workspace')([])(['kick-line', 'goal-size', '
 var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
+var ListPrims     = workspace.listPrims;
 var Prims         = workspace.prims;
 var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
@@ -27,7 +28,8 @@ var Tasks     = require('engine/prim/tasks');
 var AgentModel     = require('agentmodel');
 var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
-var StrictMath     = require('shim/strictmath');function setup() {
+var StrictMath     = require('shim/strictmath');
+function setup() {
   world.clearAll();
   Call(setupField);
   Call(setupBalls);
@@ -81,7 +83,7 @@ function go() {
     notImplemented('display', undefined)();
   }
   world.observer.setGlobal('kicks', (world.observer.getGlobal('kicks') + world.observer.getGlobal('try-line').size()));
-  world.observer.setGlobal('goals', Prims.sum(world.observer.getGlobal('try-line').projectionBy(function() {
+  world.observer.setGlobal('goals', ListPrims.sum(world.observer.getGlobal('try-line').projectionBy(function() {
     return SelfPrims.getPatchVariable('score');
   })));
   Call(setupBalls);
@@ -125,7 +127,7 @@ function nextPatch() {
   return SelfManager.self().patchAt(0, 1);
 }
 function plotScores() {
-  world.observer.setGlobal('current-max', Prims.max(world.observer.getGlobal('try-line').projectionBy(function() {
+  world.observer.setGlobal('current-max', ListPrims.max(world.observer.getGlobal('try-line').projectionBy(function() {
     return SelfPrims.getPatchVariable('score');
   })));
   if (Prims.equality(world.observer.getGlobal('current-max'), 0)) {

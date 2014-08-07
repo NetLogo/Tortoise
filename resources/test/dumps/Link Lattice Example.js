@@ -2,6 +2,7 @@ var workspace     = require('engine/workspace')([])([], [], [], [], [], 0, 25, 0
 var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
+var ListPrims     = workspace.listPrims;
 var Prims         = workspace.prims;
 var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
@@ -27,7 +28,8 @@ var Tasks     = require('engine/prim/tasks');
 var AgentModel     = require('agentmodel');
 var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
-var StrictMath     = require('shim/strictmath');function setupSquare() {
+var StrictMath     = require('shim/strictmath');
+function setupSquare() {
   world.clearAll();
   world.patches().ask(function() {
     SelfPrims.sprout(1, 'TURTLES').ask(function() {}, true);

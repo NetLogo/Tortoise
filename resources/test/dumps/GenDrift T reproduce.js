@@ -2,6 +2,7 @@ var workspace     = require('engine/workspace')([])(['colors', 'number'], ['colo
 var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
+var ListPrims     = workspace.listPrims;
 var Prims         = workspace.prims;
 var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
@@ -27,7 +28,8 @@ var Tasks     = require('engine/prim/tasks');
 var AgentModel     = require('agentmodel');
 var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
-var StrictMath     = require('shim/strictmath');function setup() {
+var StrictMath     = require('shim/strictmath');
+function setup() {
   world.clearAll();
   world.turtleManager.createTurtles(world.observer.getGlobal('number'), '').ask(function() {
     SelfPrims.setVariable('color', (5 + (Prims.random(world.observer.getGlobal('colors')) * 10)));
@@ -39,7 +41,7 @@ var StrictMath     = require('shim/strictmath');function setup() {
   world.ticker.reset();
 }
 function go() {
-  if (Prims.equality(Prims.variance(world.turtles().projectionBy(function() {
+  if (Prims.equality(ListPrims.variance(world.turtles().projectionBy(function() {
     return SelfPrims.getVariable('color');
   })), 0)) {
     throw new Exception.StopInterrupt;

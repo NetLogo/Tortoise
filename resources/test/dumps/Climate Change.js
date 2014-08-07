@@ -2,6 +2,7 @@ var workspace     = require('engine/workspace')([{ name: 'RAYS', singular: 'ray'
 var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
+var ListPrims     = workspace.listPrims;
 var Prims         = workspace.prims;
 var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
@@ -27,7 +28,8 @@ var Tasks     = require('engine/prim/tasks');
 var AgentModel     = require('agentmodel');
 var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
-var StrictMath     = require('shim/strictmath');function setup() {
+var StrictMath     = require('shim/strictmath');
+function setup() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("RAYS").getBreedName(), "ray")
   BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("IRS").getBreedName(), "ray")
@@ -81,7 +83,7 @@ function addCloud() {
   var x = world.topology.randomXcor();
   var id = 0;
   if (world.turtleManager.turtlesOfBreed("CLOUDS").nonEmpty()) {
-    id = (Prims.max(world.turtleManager.turtlesOfBreed("CLOUDS").projectionBy(function() {
+    id = (ListPrims.max(world.turtleManager.turtlesOfBreed("CLOUDS").projectionBy(function() {
       return SelfPrims.getVariable('cloud-id');
     })) + 1);
   }
@@ -96,7 +98,7 @@ function addCloud() {
 }
 function removeCloud() {
   if (world.turtleManager.turtlesOfBreed("CLOUDS").nonEmpty()) {
-    var doomedId = Prims.oneOf(Prims.removeDuplicates(world.turtleManager.turtlesOfBreed("CLOUDS").projectionBy(function() {
+    var doomedId = ListPrims.oneOf(ListPrims.removeDuplicates(world.turtleManager.turtlesOfBreed("CLOUDS").projectionBy(function() {
       return SelfPrims.getVariable('cloud-id');
     })));
     world.turtleManager.turtlesOfBreed("CLOUDS").agentFilter(function() {
@@ -196,7 +198,7 @@ function addCo2() {
 function removeCo2() {
   Prims.repeat(25, function () {
     if (world.turtleManager.turtlesOfBreed("CO2S").nonEmpty()) {
-      Prims.oneOf(world.turtleManager.turtlesOfBreed("CO2S")).ask(function() {
+      ListPrims.oneOf(world.turtleManager.turtlesOfBreed("CO2S")).ask(function() {
         SelfPrims.die();
       }, true);
     }

@@ -2,6 +2,7 @@ var workspace     = require('engine/workspace')([])(['animate-avalanches?', 'dro
 var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
+var ListPrims     = workspace.listPrims;
 var Prims         = workspace.prims;
 var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
@@ -27,7 +28,8 @@ var Tasks     = require('engine/prim/tasks');
 var AgentModel     = require('agentmodel');
 var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
-var StrictMath     = require('shim/strictmath');function setup(setupTask) {
+var StrictMath     = require('shim/strictmath');
+function setup(setupTask) {
   world.clearAll();
   world.observer.setGlobal('default-color', 105);
   world.observer.setGlobal('fired-color', 15);
@@ -42,7 +44,7 @@ var StrictMath     = require('shim/strictmath');function setup(setupTask) {
   world.patches().ask(function() {
     Call(recolor);
   }, true);
-  world.observer.setGlobal('total', Prims.sum(world.patches().projectionBy(function() {
+  world.observer.setGlobal('total', ListPrims.sum(world.patches().projectionBy(function() {
     return SelfPrims.getPatchVariable('n');
   })));
   world.observer.setGlobal('sizes', []);
@@ -72,11 +74,11 @@ function go() {
       Call(recolor);
     }, true);
     var results = Call(stabilize, world.observer.getGlobal('animate-avalanches?'));
-    var avalanchePatches = Prims.first(results);
-    var lifetime = Prims.last(results);
+    var avalanchePatches = ListPrims.first(results);
+    var lifetime = ListPrims.last(results);
     if (avalanchePatches.nonEmpty()) {
-      world.observer.setGlobal('sizes', Prims.lput(avalanchePatches.size(), world.observer.getGlobal('sizes')));
-      world.observer.setGlobal('lifetimes', Prims.lput(lifetime, world.observer.getGlobal('lifetimes')));
+      world.observer.setGlobal('sizes', ListPrims.lput(avalanchePatches.size(), world.observer.getGlobal('sizes')));
+      world.observer.setGlobal('lifetimes', ListPrims.lput(lifetime, world.observer.getGlobal('lifetimes')));
     }
     avalanchePatches.ask(function() {
       Call(recolor);
@@ -111,7 +113,7 @@ function explore() {
       SelfPrims.setPatchVariable('base-color', world.observer.getGlobal('default-color'));
       Call(recolor);
     }, true);
-    var avalanchePatches = Prims.first(results);
+    var avalanchePatches = ListPrims.first(results);
     avalanchePatches.ask(function() {
       SelfPrims.setPatchVariable('base-color', world.observer.getGlobal('selected-color'));
       Call(recolor);
@@ -162,7 +164,7 @@ function stabilize(animate_p) {
       return SelfPrims.getNeighbors4();
     }));
   }
-  return Prims.list(avalanchePatches, iters);
+  return ListPrims.list(avalanchePatches, iters);
 }
 function updateN(howMuch) {
   SelfPrims.setPatchVariable('n', (SelfPrims.getPatchVariable('n') + howMuch));
@@ -173,7 +175,7 @@ function dropPatch() {
     return world.getPatchAt(0, 0);
   }
   if (Prims.equality(world.observer.getGlobal('drop-location'), "random")) {
-    return Prims.oneOf(world.patches());
+    return ListPrims.oneOf(world.patches());
   }
   if ((Prims.equality(world.observer.getGlobal('drop-location'), "mouse-click") && notImplemented('mouse-down?', false)())) {
     Prims.every(0.3, function () {
@@ -183,11 +185,11 @@ function dropPatch() {
   return Nobody;
 }
 function pushN() {
-  SelfPrims.setPatchVariable('n-stack', Prims.fput(SelfPrims.getPatchVariable('n'), SelfPrims.getPatchVariable('n-stack')));
+  SelfPrims.setPatchVariable('n-stack', ListPrims.fput(SelfPrims.getPatchVariable('n'), SelfPrims.getPatchVariable('n-stack')));
 }
 function popN() {
-  Call(updateN, (Prims.first(SelfPrims.getPatchVariable('n-stack')) - SelfPrims.getPatchVariable('n')));
-  SelfPrims.setPatchVariable('n-stack', Prims.butLast(SelfPrims.getPatchVariable('n-stack')));
+  Call(updateN, (ListPrims.first(SelfPrims.getPatchVariable('n-stack')) - SelfPrims.getPatchVariable('n')));
+  SelfPrims.setPatchVariable('n-stack', ListPrims.butLast(SelfPrims.getPatchVariable('n-stack')));
 }
 world.observer.setGlobal('animate-avalanches?', false);
 world.observer.setGlobal('drop-location', "random");

@@ -2,6 +2,7 @@ var workspace     = require('engine/workspace')([])(['colors'], ['colors'], [], 
 var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
+var ListPrims     = workspace.listPrims;
 var Prims         = workspace.prims;
 var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
@@ -27,7 +28,8 @@ var Tasks     = require('engine/prim/tasks');
 var AgentModel     = require('agentmodel');
 var Denuller       = require('nashorn/denuller');
 var Random         = require('shim/random');
-var StrictMath     = require('shim/strictmath');function setup() {
+var StrictMath     = require('shim/strictmath');
+function setup() {
   world.clearAll();
   world.patches().ask(function() {
     SelfPrims.setPatchVariable('pcolor', ((Prims.random(world.observer.getGlobal('colors')) * 10) + 5));
@@ -39,7 +41,7 @@ var StrictMath     = require('shim/strictmath');function setup() {
 }
 function go() {
   world.patches().ask(function() {
-    SelfPrims.setPatchVariable('pcolor', Prims.oneOf(world.patches()).projectionBy(function() {
+    SelfPrims.setPatchVariable('pcolor', ListPrims.oneOf(world.patches()).projectionBy(function() {
       return SelfPrims.getPatchVariable('pcolor');
     }));
   }, true);
