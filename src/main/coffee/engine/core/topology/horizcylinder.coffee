@@ -111,13 +111,10 @@ define(['engine/core/topology/topology', 'shim/strictmath', 'util/exception'], (
 
     # (Number, Number) => Number
     _shortestX: (x1, x2) ->
-      Math.abs(x1 - x2) * (if x1 > x2 then -1 else 1)
+      @_shortestNotWrapped(x1, x2)
 
     # (Number, Number) => Number
     _shortestY: (y1, y2) ->
-      if StrictMath.abs(y1 - y2) > (1 + @maxPycor - @minPycor) / 2
-        (@height - Math.abs(y1 - y2)) * (if y2 > y1 then -1 else 1)
-      else
-        Math.abs(y1 - y2) * (if y1 > y2 then -1 else 1)
+      @_shortestYWrapped(y1, y2)
 
 )

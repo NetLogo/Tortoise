@@ -107,10 +107,10 @@ define(['engine/core/topology/topology', 'util/exception'], (Topology, Exception
 
     # (Number, Number) => Number
     _shortestX: (x1, x2) ->
-      Math.abs(x1 - x2) * (if x1 > x2 then -1 else 1)
+      @_shortestNotWrapped(x1, x2)
 
     # (Number, Number) => Number
     _shortestY: (y1, y2) ->
-      Math.abs(y1 - y2) * (if y1 > y2 then -1 else 1)
+      @_shortestNotWrapped(y1, y2)
 
 )

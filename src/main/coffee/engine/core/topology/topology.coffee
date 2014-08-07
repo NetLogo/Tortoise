@@ -119,6 +119,26 @@ define(['shim/lodash', 'shim/random', 'shim/strictmath', 'util/abstractmethoderr
     _refineScratchPads: (yy, xx, scratch, scratch2, coefficient) ->
       return # If you want to use `_sloppyDiffuse` in your topology, override this --JAB (8/6/14)
 
+    # (Number, Number) => Number
+    _shortestNotWrapped: (cor1, cor2) ->
+      Math.abs(cor1 - cor2) * (if cor1 > cor2 then -1 else 1)
+
+    # (Number, Number, Number) => Number
+    _shortestWrapped: (cor1, cor2, limit) ->
+      absDist = StrictMath.abs(cor1 - cor2)
+      if absDist > limit / 2
+        (limit - absDist) * (if cor2 > cor1 then -1 else 1)
+      else
+        @_shortestNotWrapped(cor1, cor2)
+
+    # (Number, Number) => Number
+    _shortestXWrapped: (cor1, cor2) ->
+      @_shortestWrapped(cor1, cor2, @width)
+
+    # (Number, Number) => Number
+    _shortestYWrapped: (cor1, cor2) ->
+      @_shortestWrapped(cor1, cor2, @height)
+
     # Used by most implementations of `diffuse`
     # (String, Number) => Unit
     _sloppyDiffuse: (varName, coefficient) ->
