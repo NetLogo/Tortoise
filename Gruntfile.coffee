@@ -31,7 +31,7 @@ module.exports = (grunt) ->
     closurecompiler: {
       pretty: {
         files: {
-          "./target/classes/js/tortoise-engine-cl.js": ["./target/classes/js/tortoise/**/*-gen.js", "./node_modules/closure-library/closure/goog/**/*.js"],
+          "./target/classes/js/tortoise-engine-cl.js": ["./target/classes/js/tortoise/**/*-iffy.js", "./node_modules/closure-library/closure/goog/**/*.js"],
         },
         options: {
           "closure_entry_point": "bootstrap",
@@ -67,6 +67,12 @@ module.exports = (grunt) ->
       },
       "closurificate": {
         command: "gulp closurify/all"
+      },
+      "cl-shiv": {
+        command: "gulp closurify/replace"
+      },
+      "unshiv": {
+        command: "git checkout src/main/coffee"
       }
     },
     copy: {
@@ -102,9 +108,10 @@ module.exports = (grunt) ->
       tasks.unshift('exec:cljs-clean')
     grunt.task.run(tasks)
   )
+
   grunt.registerTask('replace', ['cljs-compile', 'exec:replace-with-cljs', 'closurecompiler:pretty'])
   grunt.registerTask('replace-all', ['cljs-compile', 'copy:replace-all-with-cljs', 'closurecompiler:pretty'])
   grunt.registerTask('unreplace', ['cc'])
   grunt.registerTask('cljs-compile/auto', ['exec:cljs-compile-auto'])
-  grunt.registerTask('catchup', ['exec:closurificate', 'closurecompiler:pretty'])
+  grunt.registerTask('catchup', ['exec:cl-shiv', 'coffee:compile', 'exec:unshiv', 'exec:closurificate', 'closurecompiler:pretty'])
 
