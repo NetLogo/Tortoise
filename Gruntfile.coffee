@@ -16,20 +16,6 @@ module.exports = (grunt) ->
             ext: '.js'
           }
         ]
-      },
-      "cc-compile": {
-        options: {
-          bare: true
-        },
-        files : [
-          {
-            expand: true,
-            cwd: 'src/main/coffee',
-            src: ['**/*-cl.coffee']
-            dest: 'target/classes/js/tortoise',
-            ext: '-gen.js'
-          }
-        ]
       }
     },
     requirejs: {
