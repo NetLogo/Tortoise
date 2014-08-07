@@ -79,7 +79,7 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
       n * Random.nextDouble()
 
     # (Number) => Number
-    _int: (n) ->
+    toInt: (n) ->
       n|0
 
     # (Number, Number) => Number

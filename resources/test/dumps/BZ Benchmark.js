@@ -68,13 +68,13 @@ function findNewState() {
       return Prims.equality(SelfPrims.getPatchVariable('state'), world.observer.getGlobal('n'));
     }).size();
     if (Prims.equality(SelfPrims.getPatchVariable('state'), 0)) {
-      SelfPrims.setPatchVariable('new-state', (Prims._int((a / world.observer.getGlobal('k1'))) + Prims._int((b / world.observer.getGlobal('k2')))));
+      SelfPrims.setPatchVariable('new-state', (Prims.toInt((a / world.observer.getGlobal('k1'))) + Prims.toInt((b / world.observer.getGlobal('k2')))));
     }
     else {
       var s = (SelfPrims.getPatchVariable('state') + ListPrims.sum(SelfPrims.getNeighbors().projectionBy(function() {
         return SelfPrims.getPatchVariable('state');
       })));
-      SelfPrims.setPatchVariable('new-state', (Prims._int((s / ((a + b) + 1))) + world.observer.getGlobal('g')));
+      SelfPrims.setPatchVariable('new-state', (Prims.toInt((s / ((a + b) + 1))) + world.observer.getGlobal('g')));
     }
     if (Prims.gt(SelfPrims.getPatchVariable('new-state'), world.observer.getGlobal('n'))) {
       SelfPrims.setPatchVariable('new-state', world.observer.getGlobal('n'));

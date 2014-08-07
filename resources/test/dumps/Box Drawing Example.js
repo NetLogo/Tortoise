@@ -48,7 +48,7 @@ function setupCorner() {
 }
 function setupCenter() {
   world.clearAll();
-  world.observer.setGlobal('halfedge', Prims._int((world.observer.getGlobal('edge') / 2)));
+  world.observer.setGlobal('halfedge', Prims.toInt((world.observer.getGlobal('edge') / 2)));
   world.patches().ask(function() {
     if (((Prims.equality(SelfPrims.getPatchVariable('pxcor'),  -world.observer.getGlobal('halfedge')) && Prims.gte(SelfPrims.getPatchVariable('pycor'),  -world.observer.getGlobal('halfedge'))) && Prims.lte(SelfPrims.getPatchVariable('pycor'), (0 + world.observer.getGlobal('halfedge'))))) {
       SelfPrims.setPatchVariable('pcolor', 105);
