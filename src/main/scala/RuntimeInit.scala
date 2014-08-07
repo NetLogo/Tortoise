@@ -21,6 +21,7 @@ class RuntimeInit(program: Program, model: Model) {
        |var BreedManager  = workspace.breedManager;
        |var LayoutManager = workspace.layoutManager;
        |var LinkPrims     = workspace.linkPrims;
+       |var ListPrims     = workspace.listPrims;
        |var Prims         = workspace.prims;
        |var SelfPrims     = workspace.selfPrims;
        |var SelfManager   = workspace.selfManager;
@@ -46,7 +47,8 @@ class RuntimeInit(program: Program, model: Model) {
        |var AgentModel     = require('agentmodel');
        |var Denuller       = require('nashorn/denuller');
        |var Random         = require('shim/random');
-       |var StrictMath     = require('shim/strictmath');""".stripMargin
+       |var StrictMath     = require('shim/strictmath');
+       |""".stripMargin
 
   private def genBreedObjects: String = {
     val breedObjs =
