@@ -1,6 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['engine/core/topology/topology', 'shim/lodash', 'shim/strictmath'], (Topology, _, StrictMath) ->
+define(['engine/core/topology/topology', 'shim/lodash'], (Topology, _) ->
 
   class Torus extends Topology
 

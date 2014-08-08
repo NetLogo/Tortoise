@@ -1,6 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['engine/core/topology/topology', 'shim/strictmath'], (Topology, StrictMath) ->
+define(['engine/core/topology/topology'], (Topology) ->
 
   class HorizCylinder extends Topology
 
