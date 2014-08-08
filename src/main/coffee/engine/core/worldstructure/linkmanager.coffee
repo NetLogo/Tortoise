@@ -3,7 +3,7 @@
 # As far as dependencies and private access go, I'm treating this as if it's a part of `World` --JAB (8/5/14)
 
 define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine/core/structure/builtins'
-      , 'engine/core/world/idmanager', 'engine/core/world/sortedlinks']
+      , 'engine/core/worldstructure/idmanager', 'engine/core/worldstructure/sortedlinks']
      , ( Link,               LinkSet,               Nobody,               Builtins
       ,  IDManager,                     SortedLinks) ->
 
