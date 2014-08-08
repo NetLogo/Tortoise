@@ -15,6 +15,6 @@
           :output-to "target/classes/js/tortoise-engine-cljs.js"
           :optimizations :whitespace
           :pretty-print true
-          :libs ["./target/classes/js/tortoise/shim/lodash-cl-gen.js"
-                 "./target/classes/js/tortoise/shim/cloner-cl-gen.js"
-                 "./target/classes/js/tortoise/shim/strictmath-cl-gen.js"] }}}})
+          :libs ["./target/classes/js/tortoise/shim/lodash-cl.js"
+                 "./target/classes/js/tortoise/shim/cloner-cl.js"
+                 "./target/classes/js/tortoise/shim/strictmath-cl.js"] }}}})
