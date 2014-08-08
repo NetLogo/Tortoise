@@ -33,7 +33,7 @@ gulp.task('closurify/replace-bootstrap', () ->
 gulp.task('closurify/replace', ['closurify/replace-bootstrap', 'closurify/replace-shim'])
 
 gulp.task('closurify/all', ['closurify/clean'], () ->
-  gulp.src(['./target/classes/js/tortoise/**/*.js'])
+  gulp.src(['./target/classes/js/tortoise/**/*.js', '!./target/classes/js/tortoise/cljs/*.js'])
       .pipe(closurify({baseUrl: "./target/classes/js/tortoise"}))
       .pipe(replace(/\$\$([' ])/g, '$1'))
       .pipe(replace(/([A-z0-9])\$([A-z0-9])/g, '$1.$2'))
@@ -41,7 +41,7 @@ gulp.task('closurify/all', ['closurify/clean'], () ->
       .pipe(replace(/\$\$\./g, '.'))
       .pipe(replace(/\$\$/g, ''))
       .pipe(gulp.dest('./target/closurificated'))
-      .pipe(rename({suffix: "-iffy"}))
+      .pipe(rename({suffix: "-cl"}))
       .pipe(gulp.dest('./target/classes/js/tortoise'))
 )
 

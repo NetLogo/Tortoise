@@ -31,7 +31,7 @@ module.exports = (grunt) ->
     closurecompiler: {
       pretty: {
         files: {
-          "./target/classes/js/tortoise-engine-cl.js": ["./target/classes/js/tortoise/**/*-iffy.js", "./node_modules/closure-library/closure/goog/**/*.js"],
+          "./target/classes/js/tortoise-engine-cl.js": ["./target/classes/js/tortoise/**/*-cl.js", "./node_modules/closure-library/closure/goog/**/*.js"],
         },
         options: {
           "closure_entry_point": "bootstrap",
@@ -85,7 +85,15 @@ module.exports = (grunt) ->
             rename: (dest, src) ->
               src_ext = src.split('/cljsbuild-compiler-0/')[1].split('.')
               grunt.log.warn(src_ext)
-              dest + src_ext[0] + "-cl-gen" + "." + src_ext[1]
+              dest + src_ext[0] + "-cl" + "." + src_ext[1]
+          }
+        ]
+      },
+      "import-cljs-core": {
+        files: [
+          {
+            src: ["./target/cljsbuild-compiler-0/cljs/core.js"],
+            dest: "./target/classes/js/tortoise/cljs/core-cl.js"
           }
         ]
       }
@@ -100,7 +108,6 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks('grunt-exec')
 
   grunt.registerTask('default', ['coffee:compile', 'requirejs'])
-  grunt.registerTask('cc', ['coffee:cc-compile', 'closurecompiler:pretty'])
 
   grunt.registerTask('cljs-compile', () ->
     tasks = ['exec:cljs-compile']
@@ -109,9 +116,8 @@ module.exports = (grunt) ->
     grunt.task.run(tasks)
   )
 
-  grunt.registerTask('replace', ['cljs-compile', 'exec:replace-with-cljs', 'closurecompiler:pretty'])
-  grunt.registerTask('replace-all', ['cljs-compile', 'copy:replace-all-with-cljs', 'closurecompiler:pretty'])
-  grunt.registerTask('unreplace', ['cc'])
+  grunt.registerTask('replace', ['cljs-compile', 'exec:replace-with-cljs', "copy:import-cljs-core", 'closurecompiler:pretty'])
+  grunt.registerTask('replace-all', ['cljs-compile', 'copy:replace-all-with-cljs', "copy:import-cljs-core", 'closurecompiler:pretty'])
   grunt.registerTask('cljs-compile/auto', ['exec:cljs-compile-auto'])
   grunt.registerTask('catchup', ['exec:cl-shiv', 'coffee:compile', 'exec:unshiv', 'exec:closurificate', 'closurecompiler:pretty'])
 
