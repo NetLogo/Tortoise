@@ -11,10 +11,15 @@ define(['shim/lodash', 'shim/random', 'shim/strictmath', 'util/abstractmethoderr
     height: undefined # Number
     width:  undefined # Number
 
+    _neighborCache:  undefined
+    _neighbor4Cache: undefined
+
     # (Number, Number, Number, Number, () => PatchSet, (Number, Number) => Patch) => Topology
     constructor: (@minPxcor, @maxPxcor, @minPycor, @maxPycor, @_getPatches, @_getPatchAt) ->
-      @height = 1 + @maxPycor - @minPycor
-      @width  = 1 + @maxPxcor - @minPxcor
+      @height          = 1 + @maxPycor - @minPycor
+      @width           = 1 + @maxPxcor - @minPxcor
+      @_neighborCache  = {}
+      @_neighbor4Cache = {}
 
     # (String, Number) => Unit
     diffuse: (varName, coefficient) ->
@@ -23,11 +28,19 @@ define(['shim/lodash', 'shim/random', 'shim/strictmath', 'util/abstractmethoderr
 
     # (Number, Number) => Array[Patch]
     getNeighbors: (pxcor, pycor) ->
-      @_filterNeighbors(@_getNeighbors(pxcor, pycor))
+      key = "(#{pxcor}, #{pycor})"
+      if @_neighborCache.hasOwnProperty(key)
+        @_neighborCache[key]
+      else
+        @_neighborCache[key] = @_filterNeighbors(@_getNeighbors(pxcor, pycor))
 
     # (Number, Number) => Array[Patch]
     getNeighbors4: (pxcor, pycor) ->
-      @_filterNeighbors(@_getNeighbors4(pxcor, pycor))
+      key = "(#{pxcor}, #{pycor})"
+      if @_neighbor4Cache.hasOwnProperty(key)
+        @_neighbor4Cache[key]
+      else
+        @_neighbor4Cache[key] = @_filterNeighbors(@_getNeighbors4(pxcor, pycor))
 
     # Sadly, having topologies give out `false` and filtering it away seems to give the best balance between
     # NetLogo semantics, code clarity, and efficiency.  I tried to kill this `false`-based nonsense, but I
