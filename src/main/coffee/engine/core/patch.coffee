@@ -12,8 +12,9 @@ define(['engine/core/nobody', 'engine/core/turtle', 'engine/core/turtleset', 'en
 
     turtles: undefined # Array[Turtle]
 
-    # (Number, Number, Number, World, (Updatable) => (String*) => Unit, () => Unit, Number, String, Number) => Patch
-    constructor: (@id, @pxcor, @pycor, @world, genUpdate, @_declareNonBlackPatch, @_pcolor = 0.0, @_plabel = "", @_plabelcolor = 9.9) ->
+    # (Number, Number, Number, World, (Updatable) => (String*) => Unit, () => Unit, () => Unit, () => Unit, (String) => LinkSet, Number, String, Number) => Patch
+    constructor: (@id, @pxcor, @pycor, @world, genUpdate, @_declareNonBlackPatch, @_decrementPatchLabelCount
+                , @_incrementPatchLabelCount, @_pcolor = 0.0, @_plabel = "", @_plabelcolor = 9.9) ->
       @_updateVarsByName = genUpdate(this)
       @turtles = []
       @_varManager = @_genVarManager(@world.patchesOwnNames)
@@ -87,7 +88,7 @@ define(['engine/core/nobody', 'engine/core/turtle', 'engine/core/turtleset', 'en
 
     # (Number, String) => TurtleSet
     sprout: (n, breedName) ->
-      @world.createTurtles(n, breedName, @pxcor, @pycor)
+      @world.turtleManager.createTurtles(n, breedName, @pxcor, @pycor)
 
     # (String) => TurtleSet
     breedHere: (breedName) ->
@@ -169,9 +170,9 @@ define(['engine/core/nobody', 'engine/core/turtle', 'engine/core/turtleset', 'en
       @_genVarUpdate("plabel")
 
       if isEmpty and not wasEmpty
-        @world.decrementPatchLabelCount()
+        @_decrementPatchLabelCount()
       else if not isEmpty and wasEmpty
-        @world.incrementPatchLabelCount()
+        @_incrementPatchLabelCount()
 
       return
 

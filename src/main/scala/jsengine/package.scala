@@ -7,6 +7,6 @@ package object jsengine {
   private val locator = new org.webjars.WebJarAssetLocator
   private def getLib(jsFileName: String): String = s"/${locator.getFullPath(jsFileName)}"
 
-  val jsLibs = Seq(getLib("mori.js"), getLib("lodash.js"), getLib("require.js"), "/js/tortoise-engine-cl.js")
+  val jsLibs = Seq(getLib("mori.js"), getLib("lodash.js"), getLib("require.js"), "/js/tortoise-engine.js")
 
 }

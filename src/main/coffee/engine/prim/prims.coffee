@@ -2,92 +2,21 @@
 
 define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody', 'engine/core/patch'
       , 'engine/core/patchset', 'engine/core/turtle', 'engine/core/turtleset', 'shim/lodash', 'shim/printer'
-      , 'shim/random', 'shim/strictmath', 'util/comparator', 'util/exception', 'util/iterator', 'util/shufflerator'
-      , 'util/typechecker']
+      , 'shim/random', 'shim/strictmath', 'util/comparator', 'util/exception', 'util/typechecker']
      , ( AbstractAgentSet,               Link,               Nobody,               Patch
       ,  PatchSet,               Turtle,               TurtleSet,               _,             Printer
-      ,  Random,        StrictMath,        Comparator,        Exception,        Iterator,        Shufflerator
-      ,  Type) ->
+      ,  Random,        StrictMath,        Comparator,        Exception,        Type) ->
 
   class Prims
 
     # type ListOrSet[T] = Array[T]|AbstractAgentSet[T]
 
-    _getSelf: undefined # () => Agent
-
-    # (World) => Prims
-    constructor: (@_world, @_Dumper) ->
-      @_getSelf = @_world.selfManager.self
-
-    # (Number) => Unit
-    fd: (n) ->
-      @_getSelf().fd(n)
-      return
-
-    # (Number) => Unit
-    bk: (n) ->
-      @_getSelf().fd(-n)
-      return
-
-    # (Number) => Unit
-    jump: (n) ->
-      @_getSelf().jumpIfAble(n)
-
-    # (Number) => Unit
-    right: (n) ->
-      @_getSelf().right(n)
-      return
-
-    # (Number) => Unit
-    left: (n) ->
-      @_getSelf().right(-n)
-      return
-
-    # (Number, Number) => Unit
-    setXY: (x, y) ->
-      @_getSelf().setXY(x, y)
-      return
+    # (Dump, Hasher) => Prims
+    constructor: (@_dumper, @_hasher) ->
 
     # [T] @ (String|Array[T]) => Boolean
     empty: (xs) ->
       xs.length is 0
-
-    # () => PatchSet
-    getNeighbors: ->
-      @_getSelf().getNeighbors()
-
-    # () => PatchSet
-    getNeighbors4: ->
-      @_getSelf().getNeighbors4()
-
-    # (Number, String) => TurtleSet
-    sprout: (n, breedName) ->
-      @_getSelf().sprout(n, breedName)
-
-    # (Number, String) => TurtleSet
-    hatch: (n, breedName) ->
-      @_getSelf().hatch(n, breedName)
-
-    # (Number, Number) => Patch
-    patch: (x, y) ->
-      @_world.getPatchAt(x, y)
-
-    #@# This sort of thing should live on topologies and get called directly
-    # () => Number
-    randomXcor: ->
-      @_randomCor(@_world.topology.minPxcor, @_world.topology.maxPxcor)
-
-    # () => Number
-    randomYcor: ->
-      @_randomCor(@_world.topology.minPycor, @_world.topology.maxPycor)
-
-    # (Number, Number) => Number
-    _randomCor: (min, max) ->
-      min - 0.5 + Random.nextDouble() * (max - min + 1)
-
-    # (Number, Number) => Number
-    shadeOf: (color1, color2) ->
-      Math.floor(color1 / 10) is Math.floor(color2 / 10)
 
     # (String, Any) => Boolean
     isBreed: (breedName, x) ->
@@ -134,35 +63,6 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
     # (Any, Any) => Boolean
     lte: (a, b) -> @lt(a, b) or @equality(a, b)
     gte: (a, b) -> @gt(a, b) or @equality(a, b)
-
-    # (Number, Number, Number, Number) => Number
-    scaleColor: (color, number, min, max) -> #@# I don't know WTF this is, so it has to be wrong
-      color = Math.floor(color / 10) * 10
-      perc = 0.0
-      if min > max
-        if number < max
-          perc = 1.0
-        else if number > min
-          perc = 0.0
-        else
-          tempval = min - number
-          tempmax = min - max
-          perc = tempval / tempmax
-      else
-        if number > max
-          perc = 1.0
-        else if number < min
-          perc = 0.0
-        else
-          tempval = number - min
-          tempmax = max - min
-          perc = tempval / tempmax
-      perc *= 10
-      if perc >= 9.9999
-        perc = 9.9999
-      if perc < 0
-        perc = 0
-      color + perc
 
     # (Number) => Number
     random: (n) ->
@@ -221,11 +121,11 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
 
     # (Number) => Number
     _int: (n) ->
-      if n < 0 then Math.ceil(n) else Math.floor(n) #@# WTF is this?  Wouldn't `n|0` suffice?
+      n|0
 
     # (Number, Number) => Number
     mod: (a, b) ->
-      ((a % b) + b) % b
+      a %% b
 
     # (Array[Number]) => Number
     max: (xs) ->
@@ -282,37 +182,71 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
         throw new Exception.NetLogoException("can only sort lists and agentsets")
 
     # [T] @ (Array[T]) => Array[T]
-    removeDuplicates: (xs) -> #@# Good use of data structures and actually trying could get this into reasonable time complexity
+    removeDuplicates: (xs) ->
       if xs.length < 2
         xs
       else
-        xs.filter(
-          (elem, pos) => not _(xs.slice(0, pos)).some((x) => @equality(x, elem))
-        )
+        f =
+          ([accArr, accSet], x) =>
+            hash   = @_hasher(x)
+            values = accSet[hash]
+            if values?
+              if not _(values).some((y) => @equality(x, y))
+                accArr.push(x)
+                values.push(x)
+            else
+              accArr.push(x)
+              accSet[hash] = [x]
+            [accArr, accSet]
+        [out, []] = xs.reduce(f, [[], {}])
+        out
 
     # (Any) => Unit
     outputPrint: (x) ->
-      Printer(@_Dumper(x))
+      Printer(@_dumper(x))
       return
 
-    # [T <: (Array[T]|Patch|AbstractAgentSet[T])] @ (T*) => PatchSet
+    # [T <: (Array[Patch]|Patch|AbstractAgentSet[Patch])] @ (T*) => PatchSet
     patchSet: (inputs...) ->
-      #@# O(n^2) -- should be smarter (use hashing for contains check)
-      result = []
-      recurse = (inputs) ->
-        for input in inputs
-          if Type(input).isArray()
-            recurse(input)
-          else if input instanceof Patch
-            result.push(input)
-          else if input isnt Nobody
-            input.forEach((agent) ->
-              if not (agent in result)
-                result.push(agent)
-              return
-            )
-      recurse(inputs)
-      new PatchSet(result)
+      flattened = _(inputs).flatten().value()
+      if _(flattened).isEmpty()
+        new PatchSet([])
+      else if flattened.length is 1
+        head = flattened[0]
+        if head instanceof PatchSet
+          head
+        else if head instanceof Patch
+          new PatchSet([head])
+        else
+          new PatchSet([])
+      else
+        result  = []
+        hashSet = {}
+
+        hashIt = @_hasher
+
+        addPatch =
+          (p) ->
+            hash = hashIt(p)
+            if not hashSet.hasOwnProperty(hash)
+              result.push(p)
+              hashSet[hash] = true
+            return
+
+        buildFromAgentSet = (agentSet) -> agentSet.forEach(addPatch)
+
+        buildItems =
+          (inputs) =>
+            for input in inputs
+              if Type(input).isArray()
+                buildItems(input)
+              else if input instanceof Patch
+                addPatch(input)
+              else if input isnt Nobody
+                buildFromAgentSet(input)
+
+        buildItems(flattened)
+        new PatchSet(result)
 
     # (Number, FunctionN) => Unit
     repeat: (n, fn) ->
@@ -321,8 +255,9 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
       return
 
     # (Number, FunctionN) => Unit
-    #@# not a real implementation, always just runs body - ST 4/22/14
+    # not a real implementation, always just runs body - ST 4/22/14
     every: (time, fn) ->
+      Printer("Warning: The `every` primitive is not yet properly supported.")
       fn()
       return
 
@@ -452,38 +387,10 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
       else
         agentsOrAgent.turtlesHere()
 
-    # () => Unit
-    die: ->
-      @_getSelf().die()
-      return
-
-    # [T] @ (AbstractAgentSet[T]) => AbstractAgentSet[T]
-    other: (agentSet) ->
-      self = @_getSelf()
-      agentSet.filter((agent) => agent isnt self)
-
-    # (String) => Any
-    getVariable: (varName) ->
-      @_getSelf().getVariable(varName)
-
-    # (String, Any) => Unit
-    setVariable: (varName, value) ->
-      @_getSelf().setVariable(varName, value)
-      return
-
-    # (String) => Any
-    getPatchVariable: (varName) ->
-      @_getSelf().getPatchVariable(varName)
-
-    # (String, Any) => Unit
-    setPatchVariable: (varName, value) ->
-      @_getSelf().setPatchVariable(varName, value)
-      return
-
     # [Item] @ (ListOrSet[Item]) => Item
     oneOf: (agentsOrList) ->
       arr =
-        if agentsOrList instanceof AbstractAgentSet #@# Stop this nonsense.  This code gives me such anxiety...
+        if agentsOrList instanceof AbstractAgentSet
           agentsOrList.iterator().toArray()
         else
           agentsOrList
@@ -492,36 +399,41 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
       else
         arr[Random.nextInt(arr.length)]
 
-    # [Item] @ (ListOrSet[Item]) => Array[Item]
-    nOf: (resultSize, agentsOrList) ->
-      if not (agentsOrList instanceof AbstractAgentSet)
+    # [Item] @ (Number, ListOrSet[Item]) => ListOrSet[Item]
+    nOf: (n, agentsOrList) ->
+      if agentsOrList instanceof AbstractAgentSet
+        items    = agentsOrList.iterator().toArray()
+        newItems = @_nOfArray(n, items)
+        agentsOrList.copyWithNewAgents(newItems)
+      else
         throw new Exception.NetLogoException("n-of not implemented on lists yet")
-      items = agentsOrList.iterator().toArray()
-      agentsOrList.copyWithNewAgents( #@# Oh, FFS
-        switch resultSize
-          when 0
-            []
-          when 1
-            [items[Random.nextInt(items.length)]]
-          when 2
-            index1 = Random.nextInt(items.length)
-            index2 = Random.nextInt(items.length - 1)
-            [newIndex1, newIndex2] =
-            if index2 >= index1
-              [index1, index2 + 1]
-            else
-              [index2, index1]
-            [items[newIndex1], items[newIndex2]]
+
+    # Prodding at this code is like poking a beehive with a stick... --JAB (7/30/14)
+    # [Item] @ (Number, Array[Item]) => Array[Item]
+    _nOfArray: (n, items) ->
+      switch n
+        when 0
+          []
+        when 1
+          [items[Random.nextInt(items.length)]]
+        when 2
+          index1 = Random.nextInt(items.length)
+          index2 = Random.nextInt(items.length - 1)
+          [newIndex1, newIndex2] =
+          if index2 >= index1
+            [index1, index2 + 1]
           else
-            i = 0
-            j = 0
-            result = []
-            while j < resultSize #@# Lodash it!  And why not just use the general case?
-              if Random.nextInt(items.length - i) < resultSize - j
-                result.push(items[i])
-                j += 1
-              i += 1
-            result
-      )
+            [index2, index1]
+          [items[newIndex1], items[newIndex2]]
+        else
+          i = 0
+          j = 0
+          result = []
+          while j < n
+            if Random.nextInt(items.length - i) < n - j
+              result.push(items[i])
+              j += 1
+            i += 1
+          result
 
 )

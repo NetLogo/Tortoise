@@ -14,35 +14,36 @@ import
 class RuntimeInit(program: Program, model: Model) {
 
   def init: String =
-    s"""var workspace     = tortoise_engine.workspace($genBreedObjects)($genWorkspaceArgs);
+    s"""var workspace     = require('engine/workspace')($genBreedObjects)($genWorkspaceArgs);
        |var BreedManager  = workspace.breedManager;
        |var LayoutManager = workspace.layoutManager;
        |var LinkPrims     = workspace.linkPrims;
        |var Prims         = workspace.prims;
+       |var SelfPrims     = workspace.selfPrims;
        |var SelfManager   = workspace.selfManager;
        |var Updater       = workspace.updater;
        |var world         = workspace.world;
        |
-       |var Call           = util.call;
-       |var ColorModel     = util.colormodel;
-       |var Exception      = util.exception;
-       |var Trig           = util.trig;
-       |var Type           = util.typechecker;
-       |var notImplemented = util.notimplemented;
+       |var Call           = require('util/call');
+       |var ColorModel     = require('util/colormodel');
+       |var Exception      = require('util/exception');
+       |var Trig           = require('util/trig');
+       |var Type           = require('util/typechecker');
+       |var notImplemented = require('util/notimplemented');
        |
-       |var Dump      = tortoise_engine.dump;
-       |var Link      = tortoise_engine.core.link;
-       |var LinkSet   = tortoise_engine.core.linkset;
-       |var Nobody    = tortoise_engine.core.nobody;
-       |var PatchSet  = tortoise_engine.core.patchset;
-       |var Turtle    = tortoise_engine.core.turtle;
-       |var TurtleSet = tortoise_engine.core.turtleset;
-       |var Tasks     = tortoise_engine.prim.tasks;
+       |var Dump      = require('engine/dump');
+       |var Link      = require('engine/core/link');
+       |var LinkSet   = require('engine/core/linkset');
+       |var Nobody    = require('engine/core/nobody');
+       |var PatchSet  = require('engine/core/patchset');
+       |var Turtle    = require('engine/core/turtle');
+       |var TurtleSet = require('engine/core/turtleset');
+       |var Tasks     = require('engine/prim/tasks');
        |
-       |var AgentModel     = agentmodel;
-       |var Denuller       = nashorn.denuller;
-       |var Random         = shim.random;
-       |var StrictMath     = shim.strictmath;""".stripMargin
+       |var AgentModel     = require('agentmodel');
+       |var Denuller       = require('nashorn/denuller');
+       |var Random         = require('shim/random');
+       |var StrictMath     = require('shim/strictmath');""".stripMargin
 
   private def genBreedObjects: String = {
     val breedObjs =

@@ -20,7 +20,7 @@ define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtl
       @_updateVarsByName = genUpdate(this)
 
       varNames     = @world.turtlesOwnNames.concat(breed.varNames)
-      @_varManager = @_genVarManager(varNames)
+      @_varManager = @_genVarManager(varNames, world.turtleManager.turtlesOfBreed)
 
       @_links = []
       @_setBreed(breed)
@@ -278,7 +278,7 @@ define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtl
     die: ->
       @_breed.remove(this)
       if @id isnt -1
-        @world.removeTurtle(@id)
+        @world.turtleManager.removeTurtle(@id)
         @_seppuku()
         @world.links().forEach((link) =>
           if link.end1.id is @id or link.end2.id is @id
@@ -339,7 +339,7 @@ define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtl
 
     # (Breed) => Turtle
     _makeTurtleCopy: (breed) ->
-      turtle = @world.createTurtle(@_color, @_heading, @xcor, @ycor, breed, @_label, @_labelcolor, @_hidden, @_size, @penManager.clone())
+      turtle = @world.turtleManager.createTurtle(@_color, @_heading, @xcor, @ycor, breed, @_label, @_labelcolor, @_hidden, @_size, @penManager.clone())
       _(@world.turtlesOwnNames).forEach((varName) =>
         turtle.setVariable(varName, @getVariable(varName))
         return
@@ -385,9 +385,7 @@ define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtl
       if not _(@_links).isEmpty()
         linkTypes = [[true, true], [true, false], [false, false]]
         _(linkTypes).map(
-          (typePair) =>
-            [isDirected, isSource] = typePair
-            @connectedLinks(isDirected, isSource).toArray()
+          ([isDirected, isSource]) => @connectedLinks(isDirected, isSource).toArray()
         ).flatten().forEach(
           (link) -> link.updateEndRelatedVars(); return
         )
@@ -398,11 +396,10 @@ define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtl
       @_registerDeath(@id)
       return
 
-    # Array[String] => VariableManager
-    _genVarManager: (extraVarNames) ->
-
+    # (Array[String], (String) => TurtleSet) => VariableManager
+    _genVarManager: (extraVarNames, getTurtlesByBreedName) ->
       varBundles = [
-        { name: 'breed',       get: (=> @world.turtlesOfBreed(@_breed.name)), set: ((x) => @_setBreed(x))             },
+        { name: 'breed',       get: (=> getTurtlesByBreedName(@_breed.name)), set: ((x) => @_setBreed(x))             },
         { name: 'color',       get: (=> @_color),                             set: ((x) => @_setColor(x))             },
         { name: 'heading',     get: (=> @_heading),                           set: ((x) => @_setHeading(x))           },
         { name: 'hidden?',     get: (=> @_hidden),                            set: ((x) => @_setIsHidden(x))          },

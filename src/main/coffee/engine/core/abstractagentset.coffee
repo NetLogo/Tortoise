@@ -88,16 +88,20 @@ define(['engine/core/nobody', 'shim/random', 'util/abstractmethoderror', 'util/e
 
     # [U] @ (U, (U, U) => Boolean, () => U) => Agent
     _findBestOf: (worstPossible, findIsBetter, f) ->
-      winningValue = worstPossible #@# God awful.  Use `reduce` or _something_!
-      winners = []
-      for agent in @toArray()
-        result = @_selfManager.askAgent(f)(agent)
-        if result is winningValue
-          winners.push(agent)
-        else if findIsBetter(result, winningValue)
-          winningValue = result
-          winners = []
-          winners.push(agent)
+      foldFunc =
+        ([currentBest, currentWinners], agent) =>
+
+          result = @_selfManager.askAgent(f)(agent)
+
+          if result is currentBest
+            currentWinners.push(agent)
+            [currentBest, currentWinners]
+          else if findIsBetter(result, currentBest)
+            [result, [agent]]
+          else
+            [currentBest, currentWinners]
+
+      [[], winners] = @foldl(foldFunc, [worstPossible, []])
 
       if winners.length is 0
         Nobody
