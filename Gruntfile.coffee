@@ -72,7 +72,7 @@ module.exports = (grunt) ->
         command: "gulp closurify/replace"
       },
       "unshiv": {
-        command: "git checkout src/main/coffee"
+        command: "git checkout src/main/coffee/bootstrap.coffee & git checkout src/main/coffee/shim"
       }
     },
     copy: {
