@@ -33,7 +33,7 @@ gulp.task('closurify/replace-bootstrap', () ->
 gulp.task('closurify/replace', ['closurify/replace-bootstrap', 'closurify/replace-shim'])
 
 gulp.task('closurify/all', ['closurify/clean'], () ->
-  gulp.src(['./target/classes/js/tortoise/**/*.js', '!./target/classes/js/tortoise/cljs/*.js'])
+  gulp.src(['./target/classes/js/tortoise/**/*.js', '!./target/classes/js/tortoise/cljs/*.js', '!./target/classes/js/**/*-cl.js'])
       .pipe(closurify({baseUrl: "./target/classes/js/tortoise"}))
       .pipe(replace(/\$\$([' ])/g, '$1'))
       .pipe(replace(/([A-z0-9])\$([A-z0-9])/g, '$1.$2'))
