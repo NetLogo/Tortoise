@@ -1,7 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 define(['engine/core/observer', 'engine/core/patch', 'engine/core/patchset', 'engine/core/topology/factory'
-      , 'engine/core/world/linkmanager', 'engine/core/world/ticker', 'engine/core/world/turtlemanager',  'shim/strictmath'
+      , 'engine/core/worldstructure/linkmanager', 'engine/core/worldstructure/ticker', 'engine/core/worldstructure/turtlemanager',  'shim/strictmath'
       , 'util/exception']
      , ( Observer,               Patch,               PatchSet,               topologyFactory
       ,  LinkManager,                     Ticker,                     TurtleManager,                      StrictMath
