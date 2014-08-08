@@ -21,6 +21,7 @@
   "devDependencies": {
     "amd-to-closure": "^0.1.1",
     "closurify": "^0.1.5",
+    "grunt-contrib-watch": "^0.6.1",
     "grunt-exec": "^0.4.6",
     "gulp": "^3.8.7",
     "gulp-coffee": "^2.1.1",

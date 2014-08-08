@@ -97,6 +97,15 @@ module.exports = (grunt) ->
           }
         ]
       }
+    },
+    watch: {
+      cljs: {
+        files: ['src/tortoise_cljs/**/*.cljs'],
+        tasks: ['exec:cljs-clean', 'exec:cljs-compile'],
+        options: {
+          interrupt: true #this should stop the task if files change too rapidly and restart with the most recent changes
+        }
+      }
     }
   })
 
@@ -104,6 +113,7 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks('grunt-contrib-coffee')
   grunt.loadNpmTasks('grunt-contrib-copy')
   grunt.loadNpmTasks('grunt-contrib-rename')
+  grunt.loadNpmTasks('grunt-contrib-watch')
   grunt.loadNpmTasks('grunt-closurecompiler')
   grunt.loadNpmTasks('grunt-exec')
 
@@ -118,6 +128,7 @@ module.exports = (grunt) ->
 
   grunt.registerTask('replace', ['cljs-compile', 'exec:replace-with-cljs', "copy:import-cljs-core", 'closurecompiler:pretty'])
   grunt.registerTask('replace-all', ['cljs-compile', 'copy:replace-all-with-cljs', "copy:import-cljs-core", 'closurecompiler:pretty'])
-  grunt.registerTask('cljs-compile/auto', ['exec:cljs-compile-auto'])
+  # this is LOTS slower, but more useful, than just exec:cljs-compile-auto
+  grunt.registerTask('cljs-compile/auto', ['watch:cljs'])
   grunt.registerTask('catchup', ['exec:cl-shiv', 'coffee:compile', 'exec:unshiv', 'exec:closurificate', 'closurecompiler:pretty'])
 
