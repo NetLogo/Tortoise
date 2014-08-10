@@ -21,7 +21,7 @@ case class CompiledModel(compiledCode: String        = "",
   import CompiledModel.{ AskableKind, CompileResult, validate }
 
   def compileReporter(logo: String): CompileResult[String] = validate {
-    Compiler.compileReporter(logo, procedures, program)
+    _.compileReporter(logo, procedures, program)
   }
 
   def compileCommand(logo: String, kind: AgentKind = Observer): CompileResult[String] = {
@@ -35,7 +35,7 @@ case class CompiledModel(compiledCode: String        = "",
             |]""".stripMargin
 
     validate {
-      Compiler.compileCommands(command, procedures, program)
+      _.compileCommands(command, procedures, program)
     }
 
   }
@@ -48,7 +48,7 @@ object CompiledModel {
   private type CompiledModelV = CompileResult[CompiledModel]
 
   def fromModel(model: Model): CompiledModelV = validate {
-    (CompiledModel.apply _).tupled(Compiler.compileProcedures(model))
+    (c) => (CompiledModel.apply _).tupled(c.compileProcedures(model))
   }
 
   def fromNlogoContents(contents: String): CompiledModelV = {
@@ -59,8 +59,8 @@ object CompiledModel {
   def fromCode(netlogoCode: String): CompiledModelV =
     fromModel(Model(netlogoCode, List(View.square(16))))
 
-  private def validate[T](compilationStmt: => T): CompileResult[T] =
-    try compilationStmt.successNel
+  private def validate[T](compileFunc: (Compiler.type) => T): CompileResult[T] =
+    try compileFunc(Compiler).successNel
     catch {
       case ex: CompilerException => ex.failureNel
     }
