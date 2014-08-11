@@ -1,8 +1,10 @@
 package org.nlogo.tortoise
 
-import org.nlogo.api.Program
-import org.nlogo.nvm.FrontEndInterface._
-import org.nlogo.core.Model
+import
+  org.nlogo.{ api, core, nvm },
+    api.Program,
+    core.Model,
+    nvm.FrontEndInterface.ProceduresMap
 
 trait CompilerLike {
   def compileReporter(logo: String, oldProcedures: ProceduresMap, program: Program): String
