@@ -47,9 +47,6 @@ module.exports = (grunt) ->
     },
     exec: {
       "replace-with-cljs": {
-        #grunt.fail.warn("not enough information given\r\n" +
-        #                "please use flags \"--files=\"{files}\"" +
-        #                " and \"--to={output_directory\" to specify enough information."})
         command: "cp ./target/cljsbuild-compiler-0/" + (grunt.option('file') || '**/*.js') +
                  " ./target/classes/js/tortoise/" + (grunt.option('to') || "" + grunt.option('file')),
         stdout: true
