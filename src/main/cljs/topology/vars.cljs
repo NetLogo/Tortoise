@@ -1,17 +1,9 @@
 (ns topology.vars)
 
-;;(declare-dyn max_pxcor
-;;             min_pxcor
-;;             max_pycor
-;;             min_pycor
-;;             wrap_in_x?
-;;             wrap_in_y?)
-
 ;; declare-dyn doesn't work bc CLJS doesn't
 ;; allow vars to be declared;
-;; they just default to nil. Which is,
-;; I guess, arguably better than undefined. just
-;; not as descriptive.
+;; they just default to nil.
+;; -- JTT (8/11/2014)
 
 (def $UNBOUND "UNBOUND")
 

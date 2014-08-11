@@ -1,8 +1,5 @@
 (ns util.macros)
 
-(defmacro declare-dyn [& sym]
-  `(declare ~@(map #(vary-meta % assoc :dynamic true) sym)))
-
 (defn _to- [_] (->> _
                     str
                     rest
