@@ -1,5 +1,5 @@
 (ns topology.core
-  (:require [util.macros :refer [memoizer]]))
+  (:require [util.macros :refer [memoizer add-patch-math-fn]]))
 
 (defmacro def-width []
   '(def width (inc (- max-pxcor min-pxcor))))
@@ -41,4 +41,14 @@
      (memo-patch-math ~'_get_patch_southwest)
      (memo-get-neighbors-4)
      (memo-get-neighbors)
+     (add-patch-math-fn ~'wrap-x)
+     (add-patch-math-fn ~'wrap-y)
+     (add-patch-math-fn ~'distance-xy)
+     (add-patch-math-fn ~'distance)
+     (add-patch-math-fn ~'shortest-x)
+     (add-patch-math-fn ~'shortest-y)
+     (add-patch-math-fn ~'midpoint-x)
+     (add-patch-math-fn ~'midpoint-y)
+     (add-patch-math-fn ~'in-radius)
+     (add-patch-math-fn ~'towards)
      ~@body))
