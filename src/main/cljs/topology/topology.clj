@@ -51,4 +51,6 @@
      (add-patch-math-fn ~'midpoint-y)
      (add-patch-math-fn ~'in-radius)
      (add-patch-math-fn ~'towards)
+     (add-patch-math-fn ~'random-x)
+     (add-patch-math-fn ~'random-y)
      ~@body))

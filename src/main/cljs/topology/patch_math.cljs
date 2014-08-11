@@ -3,7 +3,8 @@
             [world :refer [get-patch-at]]
             [topology.vars :refer [min-pxcor min-pycor max-pxcor
                                    max-pycor wrap-in-x? wrap-in-y?]]
-            [shim.strictmath]))
+            [shim.strictmath]
+            [shim.random]))
 
 ;; TODO: make wrap-x/y macros and pass whether wrapping
 ;; should ever occur when created as fns in a topology
@@ -125,3 +126,14 @@
 
 (defn in-radius [x y agents radius]
   (filter #(<= (distance x y %) radius) agents))
+
+;; random cors
+
+(defn random-cor [mn  mx]
+  (-> mn (- 0.5) (+ (.nextDouble shim.random)) (* (inc (- mx mn)))))
+
+(defn random-x []
+  (random-cor min-pxcor max-pxcor))
+
+(defn random-y []
+  (random-cor min-pycor max-pycor))

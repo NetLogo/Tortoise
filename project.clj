@@ -17,4 +17,5 @@
           :pretty-print true
           :libs ["./target/classes/js/tortoise/shim/lodash-cl.js"
                  "./target/classes/js/tortoise/shim/cloner-cl.js"
-                 "./target/classes/js/tortoise/shim/strictmath-cl.js"] }}}})
+                 "./target/classes/js/tortoise/shim/strictmath-cl.js"
+                 "./target/classes/js/tortoise/shim/random-cl.js"] }}}})
