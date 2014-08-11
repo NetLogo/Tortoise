@@ -103,7 +103,10 @@ module.exports = (grunt) ->
         files: ['src/**/*.{cljs,clj}'],
         tasks: ['exec:cljs-clean', 'exec:cljs-compile'],
         options: {
-          interrupt: true #this should stop the task if files change too rapidly and restart with the most recent changes
+          interrupt: true # this should stop the task
+                          # if files change during compile and
+                          # restart with the most recent changes
+                          # -- JTT (8/8/14)
         }
       }
     }
@@ -128,7 +131,7 @@ module.exports = (grunt) ->
 
   grunt.registerTask('replace', ['cljs-compile', 'exec:replace-with-cljs', "copy:import-cljs-core", 'closurecompiler:pretty'])
   grunt.registerTask('replace-all', ['cljs-compile', 'copy:replace-all-with-cljs', "copy:import-cljs-core", 'closurecompiler:pretty'])
-  # this is LOTS slower, but more useful, than just exec:cljs-compile-auto
+  # this is LOTS slower, but more useful, than just exec:cljs-compile-auto -- JTT (8/8/14)
   grunt.registerTask('cljs-compile/auto', ['watch:cljs'])
   grunt.registerTask('catchup', ['exec:cl-shiv', 'coffee:compile', 'exec:unshiv', 'exec:closurificate', 'closurecompiler:pretty'])
 
