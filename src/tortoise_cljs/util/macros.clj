@@ -22,6 +22,6 @@
 
 (defmacro add-patch-math-fn
   ([f]
-   `(def ~f ~(symbol (str "world.topology.patch-math/" f))))
+   `(def ~f ~(symbol (str "topology.patch-math/" f))))
   ([f nm]
-    `(def ~nm ~(symbol (str "world.topology.patch-math/" f)))))
+    `(def ~nm ~(symbol (str "topology.patch-math/" f)))))
