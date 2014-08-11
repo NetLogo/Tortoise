@@ -7,21 +7,19 @@
 
 ;; TODO: make wrap-x/y macros and pass whether wrapping
 ;; should ever occur when created as fns in a topology
+;; -- JTT (8/11/14)
 
 (defn squash-4 [v mn]
   (squash v mn 1.0E-4))
 
-;; wrap is tentatively corrected from the version found in
-;;  topology.coffee (translated into clojure below).
-;;  justification also below.
 (defn wrap [p mn mx]
-  ;; squash so that -5.500001 != 5.5
+  ;; squash so that -5.500001 != 5.5 -- JTT (7/28/14)
   (let [pos (squash-4 p mn)]
   (cond
     ;; use >= to consistently return -5.5 for the "seam" of the
     ;; wrapped shape -- i.e., -5.5 = 5.5, so consistently
     ;; report -5.5 in order to have equality checks work
-    ;; correctly.
+    ;; correctly. -- JTT (7/23/14)
     (>= pos mx) (-> pos (- mx) (mod (- mx mn)) (+ mn))
     (< pos mn)  (- mx (-> (- mn pos)
                           (mod (- mx mn)))) ;; ((min - pos) % (max - min))
@@ -31,10 +29,6 @@
   (if wrap-in-y?
     (wrap y (- min-pycor 0.5) (+ max-pycor 0.5))
     y))
-
-;; check whether out of bounds
-
-;; topology wraps, but so does world.getPatchAt ??
 
 (defn wrap-x [x]
   (if wrap-in-x?
@@ -84,7 +78,7 @@
            (_get_patch_southeast x y)])))
 
 ;; shortest-x wraps a difference out of bounds.
-;; _shortestX does not.
+;; _shortestX does not. -- JTT (7/28/14)
 
 (defn shortest-x [x1 x2]
   (wrap-x (- x2 x1)))
@@ -100,7 +94,7 @@
     (.sqrt shim.strictmath (+ a2 b2))))
 
 (defn distance [x y agent]
-  ;; TODO: cl dependent (.getCoords agent)
+  ;; FIXME: cl dependent (.getCoords agent) -- JTT (8/11/14)
   (let [[ax ay] (.getCoords agent)]
     (distance-xy x y ax ay)))
 

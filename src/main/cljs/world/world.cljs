@@ -14,15 +14,9 @@
 (defn size [] @_size)
 (defn patches [] @patchset)
 
-;; information the world needs
-;;
-;; patchset
-;; turtleset
-;; and change those things each "tick" or whatever
-
 ;; this is now more difficult to reason about, but it
 ;; matches Tortoise proper's top-left to bottom-right
-;; list order. -- (8/8/14)
+;; list order. -- JTT (8/8/14)
 (defn _gen_patchset [mnx mxx mny mxy]
   (with-meta (vec (for [h (reverse (range mnx (inc mxx)))
                         w (range mny (inc mxy))]
