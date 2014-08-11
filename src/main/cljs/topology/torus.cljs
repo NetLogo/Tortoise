@@ -25,37 +25,27 @@
        max-pycor mxy ]
      (init))))
 
-;; diffuse sucks.
-
-(defn diffuse [var coefficient]
-  (for [p (world.patches)]
-    ((:get-variable p) var)))
-
 ;; js compat
 
 (defn diffuse-js [var coefficient]
-;;  (letfn [(get-source-patches []
-;;            (for [p (.patches engine.core.world)]
-;;              (.getVariable p var)))]
-;;     (let [source-patches (get-source-patches)]
-       (for [p (.patches engine.core.world)]
-         (let [x (.-pxcor p)
-               y (.-pycor p)
-               n [(get-patch-southwest x y)
-                  (get-patch-west x y)
-                  (get-patch-northwest x y)
-                  (get-patch-south x y)
-                  (get-patch-north x y)
-                  (get-patch-southeast x y)
-                  (get-patch-east x y)
-                  (get-patch-northeast x y)]
-               diffusal-sum (reduce +
-                              (map (fn [nb] (.getVariable nb var))
-                                   (.patches engine.core.world)))
-               own-amt* (* (.getVariable p var) (- 1.0 coefficient))
-               to-diffuse (-> diffusal-sum (/ 8) (* coefficient))
-               new-amt (+ own-amt* to-diffuse)]
-           (.setVariable p var new-amt))))
+  (for [p (.patches engine.core.world)]
+    (let [x (.-pxcor p)
+          y (.-pycor p)
+          n [(get-patch-southwest x y)
+             (get-patch-west x y)
+             (get-patch-northwest x y)
+             (get-patch-south x y)
+             (get-patch-north x y)
+             (get-patch-southeast x y)
+             (get-patch-east x y)
+             (get-patch-northeast x y)]
+          diffusal-sum (reduce +
+                               (map (fn [nb] (.getVariable nb var))
+                                    (.patches engine.core.world)))
+          own-amt* (* (.getVariable p var) (- 1.0 coefficient))
+          to-diffuse (-> diffusal-sum (/ 8) (* coefficient))
+          new-amt (+ own-amt* to-diffuse)]
+      (.setVariable p var new-amt))))
 
 ;; TODO: when more has been reimplemented, use the for-loop macro
 ;; to return either the new patchset or a list of updates to
