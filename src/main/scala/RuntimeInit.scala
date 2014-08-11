@@ -2,31 +2,36 @@
 
 package org.nlogo.tortoise
 
-import org.nlogo.{ core, api }
+import
+  org.nlogo.{ api, core, shape },
+    api.{ AgentVariables, Program, ShapeList, Version },
+    core.{ AgentKind, Model },
+    shape.{ LinkShape, VectorShape }
+
+import
+  org.nlogo.tortoise.json.JSONSerializer
 
 // RuntimeInit generates JavaScript code that does any initialization that needs to happen
 // before any user code runs, for example creating patches
 
-class RuntimeInit(program: api.Program, model: core.Model) {
+class RuntimeInit(program: Program, model: Model) {
 
-  import scala.collection.JavaConverters._
-  import org.nlogo.tortoise.json.JSONSerializer
 
   def init = {
 
-    def shapeList(shapes: api.ShapeList) =
-      if(shapes.getNames.isEmpty)
+    import scala.collection.JavaConverters._
+
+    def shapeList(shapes: ShapeList) =
+      if (shapes.getNames.isEmpty)
         "{}"
       else
         JSONSerializer.serialize(shapes)
 
-    def parseTurtleShapes(strings: Array[String]): api.ShapeList =
-      new api.ShapeList(core.AgentKind.Turtle,
-       org.nlogo.shape.VectorShape.parseShapes(strings, api.Version.version).asScala)
+    def parseTurtleShapes(strings: Array[String]): ShapeList =
+      new ShapeList(AgentKind.Turtle, VectorShape.parseShapes(strings, Version.version).asScala)
 
-    def parseLinkShapes(strings: Array[String]): api.ShapeList =
-      new api.ShapeList(core.AgentKind.Link,
-        org.nlogo.shape.LinkShape.parseShapes(strings, api.Version.version).asScala)
+    def parseLinkShapes(strings: Array[String]): ShapeList =
+      new ShapeList(AgentKind.Link, LinkShape.parseShapes(strings, Version.version).asScala)
 
     val turtleShapesJson = shapeList(parseTurtleShapes(model.turtleShapes.toArray))
     val linkShapesJson = shapeList(parseLinkShapes(model.linkShapes.toArray))
@@ -46,11 +51,11 @@ class RuntimeInit(program: api.Program, model: core.Model) {
 
   // tell the runtime how many *-own variables there are
   val turtleBuiltinCount =
-    api.AgentVariables.getImplicitTurtleVariables.size
+    AgentVariables.getImplicitTurtleVariables.size
   val patchBuiltinCount =
-    api.AgentVariables.getImplicitPatchVariables.size
+    AgentVariables.getImplicitPatchVariables.size
   val linkBuiltinCount =
-    api.AgentVariables.getImplicitLinkVariables.size
+    AgentVariables.getImplicitLinkVariables.size
   def turtlesOwn =
     vars(program.turtlesOwn.drop(turtleBuiltinCount), "TurtlesOwn")
   def patchesOwn =
