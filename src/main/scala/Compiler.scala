@@ -16,7 +16,7 @@ import collection.JavaConverters._
 // - Handlers calls Prims
 // - Prims calls back to Handlers
 
-object Compiler {
+object Compiler extends CompilerLike {
 
   val frontEnd: ast.FrontEndInterface = ast.front.FrontEnd
 
@@ -30,7 +30,6 @@ object Compiler {
     program: api.Program = api.Program.empty()): String =
     compile(logo, commands = true, oldProcedures, program)
 
-  def compileProcedures(code: String): (String, api.Program, ProceduresMap) = compileProcedures(core.Model(code = code))
   def compileProcedures(model: core.Model) : (String, api.Program, ProceduresMap) = {
     val (defs, results): (Seq[ast.ProcedureDefinition], nvm.StructureResults) =
       frontEnd.frontEnd(model.code,
