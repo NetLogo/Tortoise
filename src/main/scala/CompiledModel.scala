@@ -16,9 +16,12 @@ import
 
 case class CompiledModel(compiledCode: String        = "",
                          program:      Program       = Program.empty(),
-                         procedures:   ProceduresMap = NoProcedures) {
+                         procedures:   ProceduresMap = NoProcedures,
+                         compiler:     CompilerLike  = Compiler) {
 
-  import CompiledModel.{ AskableKind, CompileResult, validate }
+  import CompiledModel.{ AskableKind, CompileResult }
+
+  val validate: (CompilerLike => String) => CompileResult[String] = CompiledModel.validate(compiler)
 
   def compileReporter(logo: String): CompileResult[String] = validate {
     _.compileReporter(logo, procedures, program)
@@ -47,20 +50,21 @@ object CompiledModel {
 
   private type CompiledModelV = CompileResult[CompiledModel]
 
-  def fromModel(model: Model): CompiledModelV = validate {
-    (c) => (CompiledModel.apply _).tupled(c.compileProcedures(model))
+  def fromModel(model: Model, compiler: CompilerLike = Compiler): CompiledModelV = validate(compiler) { (c) =>
+    val (code, program, procedures) = c.compileProcedures(model)
+    CompiledModel(code, program, procedures, c)
   }
 
-  def fromNlogoContents(contents: String): CompiledModelV = {
+  def fromNlogoContents(contents: String, compiler: CompilerLike = Compiler): CompiledModelV = {
     val model = ModelReader.parseModel(contents, new DefaultParserServices(FrontEnd))
     fromModel(model)
   }
 
-  def fromCode(netlogoCode: String): CompiledModelV =
+  def fromCode(netlogoCode: String, compiler: CompilerLike = Compiler): CompiledModelV =
     fromModel(Model(netlogoCode, List(View.square(16))))
 
-  private def validate[T](compileFunc: (Compiler.type) => T): CompileResult[T] =
-    try compileFunc(Compiler).successNel
+  private def validate[T](compiler: CompilerLike)(compileFunc: (CompilerLike) => T): CompileResult[T] =
+    try compileFunc(compiler).successNel
     catch {
       case ex: CompilerException => ex.failureNel
     }
