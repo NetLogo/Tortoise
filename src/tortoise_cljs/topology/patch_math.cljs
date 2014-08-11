@@ -2,8 +2,11 @@
   (:require [util.math :refer [squash]]
             [world :refer [get-patch-at]]
             [topology.vars :refer [min-pxcor min-pycor max-pxcor
-                                         max-pycor wrap-in-x? wrap-in-y?]]
+                                   max-pycor wrap-in-x? wrap-in-y?]]
             [shim.strictmath]))
+
+;; TODO: make wrap-x/y macros and pass whether wrapping
+;; should ever occur when created as fns in a topology
 
 (defn squash-4 [v mn]
   (squash v mn 1.0E-4))
@@ -28,6 +31,8 @@
   (if wrap-in-y?
     (wrap y (- min-pycor 0.5) (+ max-pycor 0.5))
     y))
+
+;; check whether out of bounds
 
 ;; topology wraps, but so does world.getPatchAt ??
 
