@@ -64,13 +64,6 @@
 
 ;; height
 ;; width
-;; minPxcor maxPxcor minPycor maxPycor
 ;; diffuse
-;; wrapX wrapY
-;; distance
-;; distanceXY
-;; getNeighbors
-;; getNeighbors4
-;; inRadius
-;; midpointx/y
-;; towards
+
+(def diffuse #(diffuse-js %1 %2))
