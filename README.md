@@ -33,7 +33,11 @@ BUT: they’re pretty easy. (hooray?)
 
 #### Other useful stuff:
 
-If you want to replace only one file, look at `grunt replace`. It takes two parameters, of the form: `--file=”namespace/subns/subns/filename.js” --to=”/namespace/subns/subns/filename-cl.js”`. For example, `grunt replace --file=”engine/core/structure/builtins.js” --to=”engine/core/structure/builtins-cl.js”`.
+If you want to replace only one file, look at `grunt replace`. 
+
+   It takes two parameters, of the form: `--file=”namespace/subns/subns/filename.js” --to=”/namespace/subns/subns/filename-cl.js”`. 
+
+   For example, `grunt replace --file=”engine/core/structure/builtins.js” --to=”engine/core/structure/builtins-cl.js”`.
 
 If you want `grunt` to keep up with your changes as you work on your clojurescript build, run `grunt cljs-compile/auto`.
 
@@ -43,5 +47,7 @@ Every time grunt compiles your clojurescript sources, it also compiles a bundled
 It does something similar every time it compiles a ClosureCompiler or RequireJS version of the Tortoise source.
 
 If you want to load up RequireJS Tortoise in a browser, load `file://path/to/project/root/client/strapper.html`.
+
 If you want to load up ClosureCompiler Tortoise in a browser, load `file://path/to/project/root/client/strapper-cl.html`. Then, from the browser console. run `loadTortoise()`.
+
 And if you want to load up the standalone cljs written so far, either run a leiningen server (`lein trampoline cljsbuild repl-launch chromium` -- only works for chromium) or direct your browser to `path/to/project/root/index.html` (or just `path/to/project/root`).
