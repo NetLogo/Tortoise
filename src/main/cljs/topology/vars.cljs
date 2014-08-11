@@ -29,8 +29,7 @@
     max-pycor ])
 
 (def topologies
-  {:NONE "In the beginning, there was...",
-   :TORUS 'topology.torus})
+  {:TORUS 'topology.torus})
 
 (def terraformers
   {:TORUS (fn [] topology.torus.create)})

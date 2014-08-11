@@ -10,7 +10,7 @@
       {"chromium" ["chromium-browser" "http://localhost:9000"]}
     :builds {
       :default {
-        :source-paths ["src/tortoise_cljs/"]
+        :source-paths ["src/main/cljs/"]
         :compiler {
           :output-to "target/classes/js/tortoise-engine-cljs.js"
           :optimizations :whitespace
