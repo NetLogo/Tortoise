@@ -54,3 +54,48 @@
      (add-patch-math-fn ~'random-x)
      (add-patch-math-fn ~'random-y)
      ~@body))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Aliases                                                       ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmacro def-aliases []
+  '(do
+    (def minPxcor min-pxcor)
+    (def maxPxcor max-pxcor)
+    (def minPycor min-pycor)
+    (def maxPycor max-pycor)
+
+    (def wrapX wrap-x)
+    (def wrapY wrap-y)
+
+    (def distanceXY distance-xy)
+
+    (def inRadius in-radius)
+
+    (def shortestX shortest-x)
+    (def shortestY shortest-y)
+
+    (def midpointx midpoint-x)
+    (def midpointy midpoint-y)
+
+    ;; getNeighbors and getNeighbors4 and getPatchNESW-etc
+    ;; don't exist until memoization occurs in topology.topology,
+    ;; so... it's kinda gross, but these are all "null" by default.
+    ;; -- JTT (8/11/14)
+
+    (def getNeighbors4   get-neighbors-4)
+    (def getNeighbors    get-neighbors)
+
+    (def getPatchNorth   get-patch-north)
+    (def getPatchSouth   get-patch-south)
+    (def getPatchEast    get-patch-east)
+    (def getPatchWest    get-patch-west)
+
+    (def getPatchNortheast get-patch-northeast)
+    (def getPatchNorthwest get-patch-northwest)
+    (def getPatchSoutheast get-patch-southeast)
+    (def getPatchSouthwest get-patch-southwest)
+
+    (def randomXcor random-x)
+    (def randomYcor random-y)))

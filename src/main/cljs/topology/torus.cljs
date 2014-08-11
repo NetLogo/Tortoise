@@ -2,8 +2,10 @@
   (:require [topology.vars :refer [min-pycor min-pxcor
                                    max-pxcor max-pycor
                                    wrap-in-x? wrap-in-y?]]
-            [util.etc :refer [js-err]])
-  (:require-macros [topology.topology :refer [inheritant-bind]]
+            [util.etc :refer [js-err]]
+            [topology.patch-math])
+  (:require-macros [topology.topology :refer [inheritant-bind
+                                              def-aliases]]
                    [util.macros :refer [memoizer]]))
 
 (defn init []
@@ -12,18 +14,17 @@
 
 (defn create
   ([]
-    (inheritant-bind
-     [ ]
-     (if (some #(= % topology.vars.$UNBOUND) (topology.vars.bounds))
-       (js-err "$UNBOUND in world bounds")
-       (create min-pxcor max-pxcor min-pycor max-pycor))))
+    ;; create where bounds are already globally set -- JTT (8/11/14)
+    (if (some #(= % topology.vars.$UNBOUND) (topology.vars.bounds))
+      (js-err "$UNBOUND in world bounds")
+      (create min-pxcor max-pxcor min-pycor max-pycor)))
   ([mnx mxx mny mxy]
     (inheritant-bind
      [ min-pxcor mnx
        max-pxcor mxx
        min-pycor mny
        max-pycor mxy ]
-     (init))))
+     (def-aliases))))
 
 ;; js compat
 
