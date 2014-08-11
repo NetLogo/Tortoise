@@ -100,7 +100,7 @@ module.exports = (grunt) ->
     },
     watch: {
       cljs: {
-        files: ['src/tortoise_cljs/**/*.cljs'],
+        files: ['src/**/*.{cljs,clj}'],
         tasks: ['exec:cljs-clean', 'exec:cljs-compile'],
         options: {
           interrupt: true #this should stop the task if files change too rapidly and restart with the most recent changes
