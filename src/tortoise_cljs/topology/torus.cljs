@@ -1,12 +1,10 @@
 (ns topology.torus
-  (:require [topology.patch-math]
-            [topology.vars :refer [min-pycor min-pxcor max-pxcor max-pycor wrap-in-x? wrap-in-y?]]
+  (:require [topology.vars :refer [min-pycor min-pxcor
+                                   max-pxcor max-pycor
+                                   wrap-in-x? wrap-in-y?]]
             [util.etc :refer [js-err]])
   (:require-macros [topology.core :refer [inheritant-bind]]
                    [util.macros :refer [memoizer]]))
-
-;; get-patch-north = memoize _get_patch_north
-;; and so on...
 
 (defn init []
     (do (set! wrap-in-x? true)
