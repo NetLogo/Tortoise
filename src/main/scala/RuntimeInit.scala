@@ -13,13 +13,23 @@ class RuntimeInit(program: api.Program, model: core.Model) {
   import org.nlogo.tortoise.json.JSONSerializer
 
   def init = {
+
     def shapeList(shapes: api.ShapeList) =
       if(shapes.getNames.isEmpty)
         "{}"
       else
         JSONSerializer.serialize(shapes)
-    val turtleShapesJson = shapeList(CompilerService.parseTurtleShapes(model.turtleShapes.toArray))
-    val linkShapesJson = shapeList(CompilerService.parseLinkShapes(model.linkShapes.toArray))
+
+    def parseTurtleShapes(strings: Array[String]): api.ShapeList =
+      new api.ShapeList(core.AgentKind.Turtle,
+       org.nlogo.shape.VectorShape.parseShapes(strings, api.Version.version).asScala)
+
+    def parseLinkShapes(strings: Array[String]): api.ShapeList =
+      new api.ShapeList(core.AgentKind.Link,
+        org.nlogo.shape.LinkShape.parseShapes(strings, api.Version.version).asScala)
+
+    val turtleShapesJson = shapeList(parseTurtleShapes(model.turtleShapes.toArray))
+    val linkShapesJson = shapeList(parseLinkShapes(model.linkShapes.toArray))
     val view = model.view
     import view._
     globals + turtlesOwn + patchesOwn + linksOwn +
