@@ -27,7 +27,7 @@ Cool. There are, for now, three steps. (boo!)
 
 BUT: they’re pretty easy. (hooray?)
 
-  1 Do the dependency dance. (`npm install & lein deps`, probably, at the minimum)
+  1 Do the dependency dance. (`npm install && lein deps`, probably, at the minimum)
   2 Run `grunt catchup` to compile a ClosureCompiler compatible build of the Tortoise source (which lives in `src/main/coffee`).
   3 Write up the .clj and .cljs files you want, put them in `src/main/cljs`, and run `grunt replace-all` to replace the corresponding files in the existing engine (namespaces must match - e.g., you want to replace `engine/core/structure/idmanager` with your cljs version? The cljs `ns` declaration to look like `(ns engine.core.structure.idmanager)`.)
 
