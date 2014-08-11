@@ -32,6 +32,8 @@
   (for [p (.patches engine.core.world)]
     (let [x (.-pxcor p)
           y (.-pycor p)
+          ;; ordering has to match what headless expects
+          ;; so cannot use (get-neighbors) -- JTT (8/11/14)
           n [(get-patch-southwest x y)
              (get-patch-west x y)
              (get-patch-northwest x y)
