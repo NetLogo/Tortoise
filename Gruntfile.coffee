@@ -84,7 +84,7 @@ module.exports = (grunt) ->
             dest: "./target/classes/js/tortoise/",
             rename: (dest, src) ->
               src_ext = src.split('/cljsbuild-compiler-0/')[1].split('.')
-              dest + src_ext[0] + "-cl" + "." + src_ext[1]
+              dest + src_ext[0] + "-replaced-cl" + "." + src_ext[1]
           }
         ]
       },
