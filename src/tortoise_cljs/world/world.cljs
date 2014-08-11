@@ -12,6 +12,7 @@
 (def ^:private patchset (atom nil))
 
 (defn size [] @_size)
+(defn patches [] @patchset)
 
 ;; information the world needs
 ;;
@@ -19,10 +20,17 @@
 ;; turtleset
 ;; and change those things each "tick" or whatever
 
+;; this is now more difficult to reason about, but it
+;; matches Tortoise proper's top-left to bottom-right
+;; list order. -- (8/8/14)
 (defn _gen_patchset [mnx mxx mny mxy]
-  (with-meta (vec (for [w (range mnx (inc mxx))
-                        h (range mny (inc mxy))]
-                   {:idx (swap! _size inc) :x w :y h :inhabitants (atom nil)}))
+  (with-meta (vec (for [h (reverse (range mnx (inc mxx)))
+                        w (range mny (inc mxy))]
+                   {:idx (swap! _size inc)
+                    :x w
+                    :y h
+                    :variables {}
+                    :get-variable #(this-as this ((keyword %) (:variables this)))}))
     {:SHAPE _topology_type}))
 
 (defn init [tt mnx mxx mny mxy]
@@ -37,4 +45,4 @@
 (defn get-patch-at [x y]
   (if (not inited?)
     (js-err "World not initialized")
-    (nth (drop (* (inc (- max-pycor min-pycor)) (- x min-pxcor)) @patchset) (- y min-pycor))))
+    (nth (drop (* (inc (- max-pxcor min-pxcor)) (- (- y) min-pycor)) @patchset) (- x min-pxcor))))
