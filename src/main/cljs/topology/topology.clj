@@ -1,4 +1,4 @@
-(ns topology
+(ns topology.topology
   (:require [util.macros :refer [memoizer add-patch-math-fn]]))
 
 (defmacro def-width []

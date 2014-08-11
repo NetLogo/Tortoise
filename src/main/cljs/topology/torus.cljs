@@ -3,7 +3,7 @@
                                    max-pxcor max-pycor
                                    wrap-in-x? wrap-in-y?]]
             [util.etc :refer [js-err]])
-  (:require-macros [topology :refer [inheritant-bind]]
+  (:require-macros [topology.topology :refer [inheritant-bind]]
                    [util.macros :refer [memoizer]]))
 
 (defn init []
