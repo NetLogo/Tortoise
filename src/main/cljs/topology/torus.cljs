@@ -49,7 +49,7 @@
 
 ;; TODO: when more has been reimplemented, use the for-loop macro
 ;; to return either the new patchset or a list of updates to
-;; perform. -- JTT (8/11/14)
+;; perform. ie, don't mutate here. -- JTT (8/11/14)
 ;; TODO: take the patch-grabbing logic from world to reduce patch
 ;; arrays to one dimension -- JTT (8/11/14)
 
