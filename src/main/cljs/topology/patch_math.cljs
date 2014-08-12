@@ -38,13 +38,13 @@
 
 ;; direct neighbors (eg getNeighbors4 patches)
 
-(defn _get_patch_north [x y] (get-patch-at  x (wrap-y (inc y))))
+(defn _get_patch_north [x y] (.getPatchAt engine.core.world x (wrap-y (inc y))))
 
-(defn _get_patch_east  [x y] (get-patch-at (wrap-x (inc x)) y))
+(defn _get_patch_east  [x y] (.getPatchAt engine.core.world (wrap-x (inc x)) y))
 
-(defn _get_patch_south [x y] (get-patch-at  x (wrap-y (dec y))))
+(defn _get_patch_south [x y] (.getPatchAt engine.core.world  x (wrap-y (dec y))))
 
-(defn _get_patch_west  [x y] (get-patch-at (wrap-x (dec x)) y))
+(defn _get_patch_west  [x y] (.getPatchAt engine.core.world (wrap-x (dec x)) y))
 
 ;; corners
 
