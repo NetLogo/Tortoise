@@ -44,7 +44,7 @@
              (get-patch-northeast x y)]
           diffusal-sum (reduce +
                                (map (fn [nb] (.getVariable nb var))
-                                    (.patches engine.core.world)))
+                                    (.patches workspace.world)))
           own-amt* (* (.getVariable p var) (- 1.0 coefficient))
           to-diffuse (-> diffusal-sum (/ 8) (* coefficient))
           new-amt (+ own-amt* to-diffuse)]

@@ -39,27 +39,27 @@
 
 ;; direct neighbors (eg getNeighbors4 patches)
 
-(defn _get_patch_north [x y] (.getPatchAt engine.core.world x (wrap-y (inc y))))
+(defn _get_patch_north [x y] (.getPatchAt workspace.world x (wrap-y (inc y))))
 
-(defn _get_patch_east  [x y] (.getPatchAt engine.core.world (wrap-x (inc x)) y))
+(defn _get_patch_east  [x y] (.getPatchAt workspace.world (wrap-x (inc x)) y))
 
-(defn _get_patch_south [x y] (.getPatchAt engine.core.world  x (wrap-y (dec y))))
+(defn _get_patch_south [x y] (.getPatchAt workspace.world  x (wrap-y (dec y))))
 
-(defn _get_patch_west  [x y] (.getPatchAt engine.core.world (wrap-x (dec x)) y))
+(defn _get_patch_west  [x y] (.getPatchAt workspace.world (wrap-x (dec x)) y))
 
 ;; corners
 
 (defn _get_patch_northeast [x y]
-  (get-patch-at (wrap-x (inc x)) (wrap-y (inc y))))
+  (.getPatchAt workspace.world (wrap-x (inc x)) (wrap-y (inc y))))
 
 (defn _get_patch_southeast [x y]
-  (get-patch-at (wrap-x (inc x)) (wrap-y (dec y))))
+  (.getPatchAt workspace.world (wrap-x (inc x)) (wrap-y (dec y))))
 
 (defn _get_patch_southwest [x y]
-  (get-patch-at (wrap-x (dec x)) (wrap-y (dec y))))
+  (.getPatchAt workspace.world (wrap-x (dec x)) (wrap-y (dec y))))
 
 (defn _get_patch_northwest [x y]
-  (get-patch-at (wrap-x (dec x)) (wrap-y (inc y))))
+  (.getPatchAt workspace.world (wrap-x (dec x)) (wrap-y (inc y))))
 
 ;; get neighbors
 
@@ -109,9 +109,9 @@
      (= dx 0) (or (and (< dy 0) 180) 0)
      (= dy 0) (or (and (< dx 0) 270) 90)
      :default (-> (- dy)
-                  (.atan2 shim.strictmath dx)
+                  (shim.strictmath.atan2 dx)
                   (+ (.-PI js/Math))
-                  (.toDegrees shim.strictmath)
+                  (shim.strictmath.toDegrees)
                   (mod 360)
                   (+ 270)))))
 
