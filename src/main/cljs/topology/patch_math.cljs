@@ -1,8 +1,10 @@
 (ns topology.patch-math
-  (:require [util.math :refer [squash]]
+  (:require [util.math :refer [squash
+                               clamp]]
             [world :refer [get-patch-at]]
-            [topology.vars :refer [min-pxcor min-pycor max-pxcor
-                                   max-pycor wrap-in-x? wrap-in-y?]]
+            [topology.vars :refer [min-pxcor  max-pxcor
+                                   min-pycor  max-pycor
+                                   wrap-in-x? wrap-in-y?]]
             [shim.strictmath]
             [shim.random]))
 
@@ -26,15 +28,14 @@
                           (mod (- mx mn)))) ;; ((min - pos) % (max - min))
     :default pos)))
 
+;; these "stubs" are overwritten during instantiation
+;; if a topology wraps in either direction -- JTT (8/12/14)
+
 (defn wrap-y [y]
-  (if wrap-in-y?
-    (wrap y (- min-pycor 0.5) (+ max-pycor 0.5))
-    y))
+  (clamp y min-pycor max-pycor))
 
 (defn wrap-x [x]
-  (if wrap-in-x?
-    (wrap x (- min-pxcor 0.5) (+ max-pxcor 0.5))
-    x))
+  (clamp x min-pxcor max-pxcor))
 
 ;; direct neighbors (eg getNeighbors4 patches)
 
