@@ -15,6 +15,7 @@ import
     Scalaz.ToValidationV
 
 case class CompiledModel(compiledCode: String        = "",
+                         model:        Model,
                          program:      Program       = Program.empty(),
                          procedures:   ProceduresMap = NoProcedures,
                          private val compiler: CompilerLike = Compiler) {
@@ -54,7 +55,7 @@ object CompiledModel {
   def fromModel(model: Model, compiler: CompilerLike = Compiler): CompiledModelV = validate(compiler) {
     (c) =>
       val (code, program, procedures) = c.compileProcedures(model)
-      CompiledModel(code, program, procedures, c)
+      CompiledModel(code, model, program, procedures, c)
   }
 
   def fromNlogoContents(contents: String, compiler: CompilerLike = Compiler): CompiledModelV = {
@@ -64,6 +65,11 @@ object CompiledModel {
 
   def fromCode(netlogoCode: String, compiler: CompilerLike = Compiler): CompiledModelV =
     fromModel(Model(netlogoCode, List(View.square(16))))
+
+  def fromCompiledModel(netlogoCode: String, oldModel: CompiledModel): CompiledModelV = {
+    val CompiledModel(_, model, _, _, compiler) = oldModel
+    fromModel(model.copy(code = netlogoCode), compiler)
+  }
 
   private def validate[T](compiler: CompilerLike)(compileFunc: (CompilerLike) => T): CompileResult[T] =
     try compileFunc(compiler).successNel
