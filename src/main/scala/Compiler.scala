@@ -2,8 +2,10 @@
 
 package org.nlogo.tortoise
 
-import org.nlogo.{ core, api, compile => ast, nvm, workspace },
-   nvm.FrontEndInterface.{ ProceduresMap, NoProcedures }
+import
+  org.nlogo.{ api, compile => ast, core, nvm, workspace },
+    api.CompilerException,
+    nvm.FrontEndInterface.{ ProceduresMap, NoProcedures }
 
 import collection.JavaConverters._
 
@@ -41,7 +43,7 @@ object Compiler extends CompilerLike {
       compileCommands(model.interfaceGlobalCommands.mkString("\n"), program = results.program)
     val js = init.init + main + interface
     if (results.program.linkBreeds.nonEmpty)
-      throw new IllegalArgumentException("unknown language feature: link breeds")
+      throw new CompilerException("unknown language feature: link breeds", 1, 1, "")
     (js, results.program, results.procedures)
   }
 

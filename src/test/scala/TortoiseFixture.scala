@@ -2,7 +2,8 @@
 
 package org.nlogo.tortoise
 
-import org.nlogo.{ core, api, headless, nvm },
+import org.nlogo.{ api, core, headless, nvm },
+  api.CompilerException,
   nvm.FrontEndInterface.{ ProceduresMap, NoProcedures },
   headless.lang, lang._,
   org.scalatest.Assertions._,
@@ -196,7 +197,7 @@ extends AbstractFixture {
     "unknown language feature: ")
 
   val catcher: PartialFunction[Throwable, Nothing] = {
-    case ex: IllegalArgumentException
+    case ex: CompilerException
           if notImplementedMessages.exists(ex.getMessage.startsWith) =>
         notImplemented(ex.getMessage)
   }

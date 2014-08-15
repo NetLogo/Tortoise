@@ -2,7 +2,10 @@
 
 package org.nlogo.tortoise
 
-import org.nlogo.{ api, compile => ast, nvm, prim }
+import
+  org.nlogo.{ api, compile => ast, core, nvm, prim },
+    api.CompilerException,
+    core.Token
 
 object Prims {
 
@@ -76,8 +79,7 @@ object Prims {
         val taskInputs = args.tail.mkString(", ")
         s"(${arg(0)})($taskInputs)"
       case _ =>
-        throw new IllegalArgumentException(
-          "unknown primitive: " + r.reporter.getClass.getName)
+        failCompilation(s"unknown primitive: ${r.reporter.getClass.getName}", r.instruction.token)
     }
   }
 
@@ -125,8 +127,7 @@ object Prims {
         val lists = args.init.mkString(", ")
         s"Tasks.forEach(${arg(s.args.size - 1)}, $lists);"
       case _ =>
-        throw new IllegalArgumentException(
-          "unknown primitive: " + s.command.getClass.getName)
+        failCompilation(s"unknown primitive: ${s.command.getClass.getName}", s.instruction.token)
     }
   }
 
@@ -155,8 +156,7 @@ object Prims {
       case p: prim._procedurevariable =>
         s"${Handlers.ident(p.name)} = ${arg(1)};"
       case x =>
-        throw new IllegalArgumentException(
-          "unknown settable: " + x.getClass.getName)
+        failCompilation(s"unknown settable: ${x.getClass.getName}", s.instruction.token)
     }
   }
 
@@ -254,5 +254,8 @@ object Prims {
         |${Handlers.indented(body)}
         |});""".stripMargin
   }
+
+  private def failCompilation(msg: String, token: Token): Nothing =
+    throw new CompilerException(msg, token.start, token.end, token.filename)
 
 }
