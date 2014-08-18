@@ -1,4 +1,5 @@
-(ns lib.entity)
+(ns lib.entity
+  (:require-macros [lib.component :refer [compnt bounds]]))
 
 (defmacro entity [nm params & state]
   `(defn ~nm ~params
@@ -24,14 +25,6 @@
    :min-pycor (- mny 0.5)
    :max-pycor (+ mxy 0.5)})
 
-(defn bounds [mnx mxx mny mxy]
-  (fn bounds [_]
-    {:min-pxcor mnx
-     :max-pxcor mxx
-     :min-pycor mny
-     :max-pycor mxy
-     :edge-bounds (compute-edges mnx mxx mny mxy)}))
-
 ;; would like to be able to write
 ;; (comp bounds [blah blah...]
 ;;   :min-pxcor blah
@@ -50,6 +43,15 @@
                     mxy (get-in e [:edge-bounds :max-pycor])]
                 {:wrap-x (fn [x] (topology.patch-math/wrap x mnx mxx))
                  :wrap-y (fn [y] (topology.patch-math/wrap y mny mxy))}))))
+
+
+(compnt bounds [mnx mxx mny mxy]
+      :min-pxcor mnx
+      :max-pxcor mxx
+      :min-pycor mny
+      :max-pycor mxy
+      :edge-bounds (compute-edges mnx mxx
+                                  mny mxy))
 
 (defn torus [mnx mxx mny mxy]
   (entity* :torus

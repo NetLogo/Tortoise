@@ -16,11 +16,3 @@
          (persistent! c)))]
     `(defn ~nm ~params
        (fn [~'e] ~(czip 'e)))))
-
-(compnt bounds [mnx mxx mny mxy]
-      :min-pxcor mnx
-      :max-pxcor mxx
-      :min-pycor mny
-      :max-pycor mxy)
-
-(bounds -5 5 -5 5)
