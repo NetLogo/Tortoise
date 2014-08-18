@@ -18,16 +18,19 @@
     (conj! e (ifs e)))
   (persistent! (dissoc! e :init)))
 
+(defn compute-edges [mnx mxx mny mxy]
+  {:min-pxcor (- mnx 0.5)
+   :max-pxcor (+ mxx 0.5)
+   :min-pycor (- mny 0.5)
+   :max-pycor (+ mxy 0.5)})
+
 (defn bounds [mnx mxx mny mxy]
   (fn bounds [_]
     {:min-pxcor mnx
      :max-pxcor mxx
      :min-pycor mny
      :max-pycor mxy
-     :edge-bounds {:min-pxcor (- mnx 0.5)
-                   :max-pxcor (+ mxx 0.5)
-                   :min-pycor (- mny 0.5)
-                   :max-pycor (+ mxy 0.5)}}))
+     :edge-bounds (compute-edges mnx mxx mny mxy)}))
 
 ;; would like to be able to write
 ;; (comp bounds [blah blah...]
