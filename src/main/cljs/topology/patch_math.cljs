@@ -28,15 +28,6 @@
                           (mod (- mx mn)))) ;; ((min - pos) % (max - min))
     :default pos)))
 
-;; these "stubs" are overwritten during instantiation
-;; if a topology wraps in either direction -- JTT (8/12/14)
-
-(defn wrap-y [y]
-  (clamp y min-pycor max-pycor))
-
-(defn wrap-x [x]
-  (clamp x min-pxcor max-pxcor))
-
 ;; direct neighbors (eg getNeighbors4 patches)
 
 (defn _get_patch_north [x y] (.getPatchAt workspace.world x (wrap-y (inc y))))
@@ -81,6 +72,8 @@
 
 ;; shortest-x wraps a difference out of bounds.
 ;; _shortestX does not. -- JTT (7/28/14)
+;; _shortestX is also gibberish. This implementation
+;; completely fails tests. -- JTT (8/18/2014)
 
 (defn shortest-x [x1 x2]
   (wrap-x (- x2 x1)))
