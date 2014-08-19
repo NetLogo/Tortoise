@@ -16,3 +16,10 @@
          (persistent! c)))]
     `(defn ~nm ~params
        (fn [~'e] ~(czip 'e)))))
+
+(defmacro letc-in [e getblock & body]
+  (let [letblock (transient [])]
+    (doseq [[nm v] (partition-all 2 getblock)]
+      (conj! letblock nm)
+      (conj! letblock (get-in e (or (and (vector? v) v) [v]))))
+    `(let ~(persistent! letblock) ~@body)))
