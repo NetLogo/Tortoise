@@ -1,5 +1,5 @@
 (ns lib.entity
-  (:require-macros [lib.component :refer [compnt bounds]]))
+  (:require-macros [lib.component :refer [compnt bounds let-in]]))
 
 (defmacro entity [nm params & state]
   `(defn ~nm ~params
@@ -37,13 +37,11 @@
 ;; -- JTT (8/18/14)
 
 (defn wrap
-  ([] (fn [e] (let [mnx (get-in e [:edge-bounds :min-pxcor])
-                    mxx (get-in e [:edge-bounds :max-pxcor])
-                    mny (get-in e [:edge-bounds :min-pycor])
-                    mxy (get-in e [:edge-bounds :max-pycor])]
-                {:wrap-x (fn [x] (topology.patch-math/wrap x mnx mxx))
-                 :wrap-y (fn [y] (topology.patch-math/wrap y mny mxy))}))))
-
+  ([] (fn [e] (let-in e [eb :edge-bounds]
+                { :wrap-x (fn [x] (topology.patch-math/wrap x (:min-pxcor eb)
+                                                              (:max-pxcor eb)))
+                  :wrap-y (fn [y] (topology.patch-math/wrap y (:min-pycor eb)
+                                                              (:max-pycor eb)))}))))
 
 (compnt bounds [mnx mxx mny mxy]
       :min-pxcor mnx
