@@ -15,9 +15,10 @@
     (assoc! e :name (name nm))))
 
 (defn entity-init [e]
-  (doseq [ifs (:init e)]
-    (conj! e (ifs e)))
-  (persistent! (dissoc! e :init)))
+  (let [n (transient {})]
+    (doseq [ifs (:init e)]
+      (conj! n (ifs n)))
+    (persistent! n)))
 
 (defn compute-edges [mnx mxx mny mxy]
   {:min-pxcor (- mnx 0.5)
