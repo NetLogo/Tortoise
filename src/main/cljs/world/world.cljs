@@ -1,8 +1,5 @@
 (ns world
-  (:require [topology.vars :refer [min-pxcor max-pxcor
-                                         min-pycor max-pycor
-                                         _set_bounds! terraformers]]
-            [util.etc :refer [js-err]]))
+  (:require [util.etc :refer [js-err]]))
 
 (def _id (gensym "world_"))
 (def ^:dynamic inited? false)

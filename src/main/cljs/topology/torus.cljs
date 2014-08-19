@@ -1,12 +1,22 @@
 (ns topology.torus
-  (:require [topology.vars :refer [min-pycor min-pxcor
-                                   max-pxcor max-pycor
-                                   wrap-in-x? wrap-in-y?]]
-            [util.etc :refer [js-err]]
-            [topology.patch-math])
-  (:require-macros [topology.topology :refer [inheritant-bind
-                                              def-aliases]]
-                   [util.macros :refer [memoizer]]))
+  (:require [util.etc :refer [js-err]]
+            [topology.patch-math :refer [_get_patch_north
+                                         _get_patch_east
+                                         _get_patch_south
+                                         _get_patch_west
+                                         _get_patch_northeast
+                                         _get_patch_southeast
+                                         _get_patch_southwest
+                                         _get_patch_southeast]]
+            [lib.entity :refer [entity* entity-init]]
+            [topology.comps :refer [bounds
+                                    dimensions
+                                    wrap
+                                    patch-getter
+                                    compass-movement
+                                    neighborhood-finders
+                                    shortest-nonsense-finders]])
+  (:require-macros [lib.component :refer [compnt compnt-let]]))
 
 (defn init []
     (do (set! wrap-in-x? true)

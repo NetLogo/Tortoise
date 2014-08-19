@@ -1,10 +1,6 @@
 (ns topology.patch-math
   (:require [util.math :refer [squash
                                clamp]]
-            [world :refer [get-patch-at]]
-            [topology.vars :refer [min-pxcor  max-pxcor
-                                   min-pycor  max-pycor
-                                   wrap-in-x? wrap-in-y?]]
             [shim.strictmath]
             [shim.random]))
 
