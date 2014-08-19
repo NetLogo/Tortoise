@@ -26,17 +26,6 @@
    :min-pycor (- mny 0.5)
    :max-pycor (+ mxy 0.5)})
 
-;; would like to be able to write
-;; (comp bounds [blah blah...]
-;;   :min-pxcor blah
-;;   ... )
-;; (comp edge-bounds [blah blah ...]
-;;   :min-pxcor blah
-;;   ... )
-;;
-;; and be returned the fn.
-;; -- JTT (8/18/14)
-
 (defn wrap
   ([] (fn [e] (let-in e [eb :edge-bounds]
                 { :wrap-x (fn [x] (topology.patch-math/wrap x (:min-pxcor eb)
