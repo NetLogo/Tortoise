@@ -1,12 +1,4 @@
-(ns lib.entity
-  (:require-macros [lib.component :refer [compnt bounds let-in]]))
-
-(defmacro entity [nm params & state]
-  `(defn ~nm ~params
-     (let [~'e (transient {})]
-       (doseq [~'fs ~(get (conj {} (vec state)) :param-init)]
-         (conj! ~'e (~'fs ~'e)))
-     (persistent! ~'e))))
+(ns lib.entity)
 
 (defn entity* [nm & state]
   (let [e (transient {})]
