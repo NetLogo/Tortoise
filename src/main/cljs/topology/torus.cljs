@@ -18,23 +18,19 @@
                                     shortest-nonsense-finders]])
   (:require-macros [lib.component :refer [compnt compnt-let]]))
 
-(defn init []
-    (do (set! wrap-in-x? true)
-        (set! wrap-in-y? true)))
+(defn torus [mnx mxx mny mxy]
+  (entity* :torus
+           :init [(bounds mnx mxx mny mxy)
+                  (dimensions)
+                  (wrap)
+                  (patch-getter)
+                  (compass-movement)
+                  (neighborhood-finders)
+                  (shortest-nonsense-finders)]))
 
-(defn create
-  ([]
-    ;; create where bounds are already globally set -- JTT (8/11/14)
-    (if (some #(= % topology.vars.$UNBOUND) (topology.vars.bounds))
-      (js-err "$UNBOUND in world bounds")
-      (create min-pxcor max-pxcor min-pycor max-pycor)))
-  ([mnx mxx mny mxy]
-    (inheritant-bind
-     [ min-pxcor mnx
-       max-pxcor mxx
-       min-pycor mny
-       max-pycor mxy ]
-     (def-aliases))))
+(torus -5 5 -5 5)
+
+(((entity-init (torus -5 5 -5 5)) :wrap-x) 6)
 
 ;; js compat
 
