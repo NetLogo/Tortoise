@@ -7,15 +7,19 @@
   `(defn ~name ~params
      (clojure.core/js-obj "name" ~(keyword (clojure.core/name name)) ~@r)))
 
+(defn- czip [e kvs]
+  (let [c (transient {})]
+    (doseq [[k cfs] (partition-all 2 kvs)]
+      (conj! c [k cfs]))
+    (persistent! c)))
+
 (defmacro compnt [nm params & kvs]
-  (letfn
-    [(czip [e]
-       (let [c (transient {})]
-         (doseq [[k cfs] (partition-all 2 kvs)]
-           (conj! c [k cfs]))
-         (persistent! c)))]
-    `(defn ~nm ~params
-       (fn [~'e] ~(czip 'e)))))
+  `(defn ~nm ~params
+     (fn [~'e] ~(czip 'e kvs))))
+
+(defmacro compnt-let [nm params getblock & kvs]
+  `(defn ~nm ~params
+     (fn [~'e] (let-in ~'e ~getblock ~(czip 'e kvs)))))
 
 (defmacro let-in [e getblock & body]
   (let [letblock (transient [])]
