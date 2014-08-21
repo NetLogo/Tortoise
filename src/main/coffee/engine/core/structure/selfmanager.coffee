@@ -1,7 +1,8 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['util/exception'], (Exception) ->
+Exception = require('tortoise/util/exception')
 
+module.exports =
   class SelfManager
 
     # type SelfType = Number|Agent // The type that `self` or `myself` could be at any time
@@ -42,5 +43,3 @@ define(['util/exception'], (Exception) ->
       @_myself = oldMyself
 
       res
-
-)

@@ -2,17 +2,22 @@
 
 # As far as dependencies and private access go, I'm treating this as if it's a part of `World` --JAB (8/5/14)
 
-define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine/core/structure/builtins'
-      , 'engine/core/world/idmanager', 'engine/core/world/sortedlinks']
-     , ( Link,               LinkSet,               Nobody,               Builtins
-      ,  IDManager,                     SortedLinks) ->
+_           = require('lodash')
+Link        = require('../link')
+LinkSet     = require('../linkset')
+Nobody      = require('../nobody')
+Builtins    = require('../structure/builtins')
+IDManager   = require('./idmanager')
+SortedLinks = require('./sortedlinks')
 
-  _links:     undefined # SortedLinks
-  _linksFrom: undefined # Object[Number, Number]
-  _idManager: undefined # IDManager
-  _linksTo:   undefined # Object[Number, Number]
+module.exports =
 
   class LinkManager
+
+    _links:     undefined # SortedLinks
+    _linksFrom: undefined # Object[Number, Number]
+    _idManager: undefined # IDManager
+    _linksTo:   undefined # Object[Number, Number]
 
     # (World, BreedManager, Updater, () => Unit, () => Unit) => LinkManager
     constructor: (@_world, @_breedManager, @_updater, @_notifyIsDirected, @_notifyIsUndirected) ->
@@ -117,5 +122,3 @@ define(['engine/core/link', 'engine/core/linkset', 'engine/core/nobody', 'engine
     # (Number, Number, Boolean) => Boolean
     _linkExists: (id1, id2, isDirected) ->
       _(@_linksFrom[id1]).contains(id2) or (not isDirected and _(@_linksTo[id1]).contains(id2))
-
-)

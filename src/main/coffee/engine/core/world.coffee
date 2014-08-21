@@ -1,12 +1,16 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['engine/core/observer', 'engine/core/patch', 'engine/core/patchset', 'engine/core/topology/factory'
-      , 'engine/core/world/linkmanager', 'engine/core/world/ticker', 'engine/core/world/turtlemanager',  'shim/strictmath'
-      , 'util/exception']
-     , ( Observer,               Patch,               PatchSet,               topologyFactory
-      ,  LinkManager,                     Ticker,                     TurtleManager,                      StrictMath
-      ,  Exception) ->
+Observer        = require('./observer')
+Patch           = require('./patch')
+PatchSet        = require('./patchset')
+topologyFactory = require('./topology/factory')
+LinkManager     = require('./world/linkmanager')
+Ticker          = require('./world/ticker')
+TurtleManager   = require('./world/turtlemanager')
+StrictMath      = require('tortoise/shim/strictmath')
+Exception       = require('tortoise/util/exception')
 
+module.exports =
   class World
 
     id: 0 # Number
@@ -195,5 +199,3 @@ define(['engine/core/observer', 'engine/core/patch', 'engine/core/patchset', 'en
       @_patchesAllBlack = false
       @_updater.updated(this)("patchesAllBlack")
       return
-
-)

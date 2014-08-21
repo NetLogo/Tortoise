@@ -1,12 +1,20 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody', 'engine/core/patch'
-      , 'engine/core/patchset', 'engine/core/turtle', 'engine/core/turtleset', 'shim/lodash', 'shim/printer'
-      , 'shim/random', 'util/comparator', 'util/exception', 'util/typechecker']
-     , ( AbstractAgentSet,               Link,               Nobody,               Patch
-      ,  PatchSet,               Turtle,               TurtleSet,               _,             Printer
-      ,  Random,        Comparator,        Exception,        Type) ->
+_                = require('lodash')
+AbstractAgentSet = require('../core/abstractagentset')
+Link             = require('../core/link')
+Nobody           = require('../core/nobody')
+Patch            = require('../core/patch')
+PatchSet         = require('../core/patchset')
+Turtle           = require('../core/turtle')
+TurtleSet        = require('../core/turtleset')
+Printer          = require('tortoise/shim/printer')
+Random           = require('tortoise/shim/random')
+Comparator       = require('tortoise/util/comparator')
+Exception        = require('tortoise/util/exception')
+Type             = require('tortoise/util/typechecker')
 
+module.exports =
   class Prims
 
     # type ListOrSet[T] = Array[T]|AbstractAgentSet[T]
@@ -201,6 +209,3 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
         new TurtleSet(turtles)
       else
         agentsOrAgent.turtlesHere()
-
-
-)

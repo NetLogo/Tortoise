@@ -1,10 +1,16 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['engine/core/nobody', 'engine/core/turtle', 'engine/core/turtleset', 'engine/core/structure/builtins'
-      , 'engine/core/world/idmanager', 'shim/random', 'util/colormodel', 'util/exception']
-     , ( Nobody,               Turtle,               TurtleSet,               Builtins
-      ,  IDManager,                     Random,        ColorModel,        Exception) ->
+_          = require('lodash')
+Nobody     = require('../nobody')
+Turtle     = require('../turtle')
+TurtleSet  = require('../turtleset')
+Builtins   = require('../structure/builtins')
+IDManager  = require('./idmanager')
+Random     = require('tortoise/shim/random')
+ColorModel = require('tortoise/util/colormodel')
+Exception  = require('tortoise/util/exception')
 
+module.exports =
   class TurtleManager
 
     _idManager:   undefined # IDManager
@@ -89,5 +95,3 @@ define(['engine/core/nobody', 'engine/core/turtle', 'engine/core/turtleset', 'en
       @_turtles.splice(@_turtles.indexOf(turtle), 1)
       delete @_turtlesById[id]
       return
-
-)

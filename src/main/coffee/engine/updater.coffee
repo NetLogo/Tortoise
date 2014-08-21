@@ -1,23 +1,26 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['engine/core/link', 'engine/core/observer', 'engine/core/patch', 'engine/core/turtle', 'engine/core/world'
-      , 'util/exception']
-     , ( Link,               Observer,               Patch,               Turtle,               World
-      ,  Exception) ->
+Link      = require('./core/link')
+Observer  = require('./core/observer')
+Patch     = require('./core/patch')
+Turtle    = require('./core/turtle')
+World     = require('./core/world')
+Exception = require('tortoise/util/exception')
 
-  ignored = ["", ""]
+ignored = ["", ""]
 
-  # type ID          = String
-  # type Key         = String
-  # type Value       = Any
-  # type UpdateEntry = Object[Key, Value]
-  # type UpdateSet   = Object[ID, UpdateEntry]
-  # type _US         = UpdateSet
+# type ID          = String
+# type Key         = String
+# type Value       = Any
+# type UpdateEntry = Object[Key, Value]
+# type UpdateSet   = Object[ID, UpdateEntry]
+# type _US         = UpdateSet
 
-  # (_US, _US, _US, _US, _US) => Update
-  class Update
-    constructor: (@turtles = {}, @patches = {}, @links = {}, @observer = {}, @world = {}) ->
+# (_US, _US, _US, _US, _US) => Update
+class Update
+  constructor: (@turtles = {}, @patches = {}, @links = {}, @observer = {}, @world = {}) ->
 
+module.exports =
   class Updater
 
     # type Updatable   = Turtle|Patch|Link|World|Observer
@@ -171,5 +174,3 @@ define(['engine/core/link', 'engine/core/observer', 'engine/core/patch', 'engine
     _flushUpdates: ->
       @_updates = [new Update()]
       return
-
-)

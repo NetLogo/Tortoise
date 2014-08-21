@@ -1,7 +1,9 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['util/exception'], (Exception) ->
-  # (Link, Link) => Int
+Exception = require('tortoise/util/exception')
+
+# (Link, Link) => Number
+module.exports =
   (a, b) ->
     if a is b
       0
@@ -23,4 +25,3 @@ define(['util/exception'], (Exception) ->
       1
     else
       throw new Exception.NetLogoException("Unsure how Link #{a.id} differs from Link #{b.id}") # JVM NetLogo uses the order the breeds were declared in, but that incites my hatred --JAB (6/26/14)
-)

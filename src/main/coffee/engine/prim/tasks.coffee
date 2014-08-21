@@ -1,6 +1,10 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['shim/lodash', 'util/exception', 'util/typechecker'], (_, Exception, Type) -> {
+_         = require('lodash')
+Exception = require('tortoise/util/exception')
+Type      = require('tortoise/util/typechecker')
+
+module.exports = {
 
   # (Function) => Function
   commandTask: (fn) ->
@@ -44,4 +48,4 @@ define(['shim/lodash', 'util/exception', 'util/typechecker'], (_, Exception, Typ
     else
       throw new Exception.NetLogoException("All the list arguments to #{primName.toUpperCase()} must be the same length.")
 
-})
+}

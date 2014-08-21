@@ -6,7 +6,8 @@ we delegate to Math.random(), for speed.  we could swap in a JS
 implementation of the Mersenne Twister (code for it is googlable),
 but I fear (though have not measured) the performance impact --ST
 ###
-define(->
+
+module.exports =
   if Random?
     Random
   else
@@ -16,4 +17,3 @@ define(->
       nextDouble:         -> Math.random()
       setSeed:    (seed)  -> return # No-op!
     }
-)

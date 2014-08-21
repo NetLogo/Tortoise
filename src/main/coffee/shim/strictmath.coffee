@@ -1,6 +1,8 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['shim/cloner'], (Cloner) ->
+Cloner = require('./cloner')
+
+module.exports =
   if StrictMath? # Nashorn
     StrictMath
   else
@@ -9,4 +11,3 @@ define(['shim/cloner'], (Cloner) ->
     obj.toRadians = (degrees) -> degrees * Math.PI / 180
     obj.toDegrees = (radians) -> radians * 180 / Math.PI
     obj
-)

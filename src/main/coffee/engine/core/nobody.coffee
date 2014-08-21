@@ -5,7 +5,8 @@
   return `nobody`, and it can also take an initialization block for the to-be-created thing, either
   the init block must be branched against or `nobody` must ignore it  --JAB (7/18/14)
 ###
-define(-> {
+
+module.exports = {
   ask: -> return
   toString: -> "nobody"
-})
+}

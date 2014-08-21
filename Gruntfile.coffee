@@ -1,5 +1,14 @@
 module.exports = (grunt) ->
 
+  massAlias =
+    (glob, base) ->
+      files = grunt.file.expand({ filter: 'isFile' }, glob)
+      regex = new RegExp(".*?/" + base + "/(.*)\.js")
+      splitter = (file) ->
+        alias = file.match(regex)[1]
+        "#{file}:#{alias}"
+      files.map(splitter)
+
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     coffee: {
@@ -15,21 +24,27 @@ module.exports = (grunt) ->
         ]
       }
     },
-    requirejs: {
-      compile: {
+    browserify: {
+      main: {
+        src: ['target/classes/js/tortoise/bootstrap.js'],
+        dest: 'target/classes/js/tortoise-engine.js',
         options: {
-          baseUrl: "target/classes/js/tortoise",
-          mainConfigFile: "require-config.js",
-          out: "target/classes/js/tortoise-engine.js",
-          name: "bootstrap"
+          alias: ["./node_modules/lodash/lodash.js:lodash", "./node_modules/mori/mori.js:mori"].concat(massAlias('./target/classes/js/tortoise/**/*.js', 'tortoise'))
         }
       }
     }
   })
 
-  grunt.loadNpmTasks('grunt-contrib-requirejs')
+  grunt.loadNpmTasks('grunt-browserify');
   grunt.loadNpmTasks('grunt-contrib-coffee')
   grunt.loadNpmTasks('grunt-contrib-copy')
   grunt.loadNpmTasks('grunt-contrib-rename')
 
-  grunt.registerTask('default', ['coffee', 'requirejs'])
+  grunt.task.registerTask('fix_require', 'Changes "require" varname to "tortoise_require"', ->
+    filepath    = './target/classes/js/tortoise-engine.js'
+    strContents = grunt.file.read(filepath)
+    grunt.file.write(filepath, "tortoise_#{strContents}")
+    return
+  )
+
+  grunt.registerTask('default', ['coffee', 'browserify', 'fix_require'])

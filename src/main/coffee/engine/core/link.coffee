@@ -1,11 +1,15 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
+_                = require('lodash')
+AbstractAgentSet = require('./abstractagentset')
+linkCompare      = require('./structure/linkcompare')
+VariableManager  = require('./structure/variablemanager')
+TurtleSet        = require('./turtleset')
+ColorModel       = require('tortoise/util/colormodel')
+Comparator       = require('tortoise/util/comparator')
+Exception        = require('tortoise/util/exception')
 
-define(['engine/core/abstractagentset', 'engine/core/structure/linkcompare', 'engine/core/structure/variablemanager'
-      , 'engine/core/turtleset', 'shim/lodash', 'util/colormodel', 'util/comparator', 'util/exception']
-     , ( AbstractAgentSet,               linkCompare,                         VariableManager
-      ,  TurtleSet,               _,             ColorModel,        Comparator,        Exception) ->
-
+module.exports =
   class Link
 
     _breed:            undefined # Breed
@@ -226,5 +230,3 @@ define(['engine/core/abstractagentset', 'engine/core/structure/linkcompare', 'en
       @_tiemode = mode
       @_genVarUpdate("tie-mode")
       return
-
-)

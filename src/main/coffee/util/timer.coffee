@@ -1,7 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(->
-
+module.exports =
   class Timer
 
     # Number
@@ -19,5 +18,3 @@ define(->
     reset: ->
       @_startTime = Date.now()
       return
-
-)

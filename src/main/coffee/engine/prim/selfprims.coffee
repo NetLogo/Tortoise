@@ -1,7 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(->
-
+module.exports =
   class SelfPrims
 
     # (() => Agent) => Prims
@@ -79,5 +78,3 @@ define(->
     setPatchVariable: (varName, value) ->
       @_getSelf().setPatchVariable(varName, value)
       return
-
-)

@@ -1,7 +1,9 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['engine/core/structure/linkcompare', 'shim/mori'], (linkCompare, Mori) ->
+linkCompare = require('../structure/linkcompare')
+Mori        = require('mori')
 
+module.exports =
   class SortedLinks
 
     @_links: undefined # Mori.SortedSet[Link]
@@ -18,5 +20,3 @@ define(['engine/core/structure/linkcompare', 'shim/mori'], (linkCompare, Mori) -
     find:   (pred) -> Mori.first(Mori.filter(pred, @_links)) # Mori's `filter` is lazy, so it's all cool --JAB (3/26/14) # ((Link) => Boolean) => Link
     isEmpty:       -> Mori.is_empty(@_links)  # () => Boolean
     toArray:       -> Mori.clj_to_js(@_links) # () => Array[Link]
-
-)

@@ -1,47 +1,48 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['shim/lodash'], (_) ->
+_ = require('lodash')
 
-  class Breed
+class Breed
 
-    # (String, String, BreedManager, Array[String], String, Array[Agent]) => Breed
-    constructor: (@name, @singular, @_manager, @varNames = [], @_shape = undefined, @members = []) ->
+  # (String, String, BreedManager, Array[String], String, Array[Agent]) => Breed
+  constructor: (@name, @singular, @_manager, @varNames = [], @_shape = undefined, @members = []) ->
 
-    # We can't just set this in the constructor, because people can swoop into the manager and change the turtles'
-    # default shape --JAB (5/27/14)
-    # () => String
-    getShape: ->
-      if @_shape?
-        @_shape
+  # We can't just set this in the constructor, because people can swoop into the manager and change the turtles'
+  # default shape --JAB (5/27/14)
+  # () => String
+  getShape: ->
+    if @_shape?
+      @_shape
+    else
+      @_manager.turtles()._shape
+
+  # (String) => Unit
+  setShape: (newShape) ->
+    @_shape = newShape
+    return
+
+  # (Agent) => Unit
+  add: (newAgent) ->
+    index = _(@members).findIndex((agent) -> agent.id > newAgent.id)
+    indexToSplitAt =
+      if index >= 0
+        index
       else
-        @_manager.turtles()._shape
+        @members.length
+    howManyToThrowOut = 0
+    whatToInsert = newAgent
+    @members.splice(indexToSplitAt, howManyToThrowOut, whatToInsert)
+    return
 
-    # (String) => Unit
-    setShape: (newShape) ->
-      @_shape = newShape
-      return
-
-    # (Agent) => Unit
-    add: (newAgent) ->
-      index = _(@members).findIndex((agent) -> agent.id > newAgent.id)
-      indexToSplitAt =
-        if index >= 0
-          index
-        else
-          @members.length
-      howManyToThrowOut = 0
-      whatToInsert = newAgent
-      @members.splice(indexToSplitAt, howManyToThrowOut, whatToInsert)
-      return
-
-    # (Agent) => Unit
-    remove: (agent) ->
-      indexToSplitAt = @members.indexOf(agent)
-      howManyToThrowOut = 1
-      @members.splice(indexToSplitAt, howManyToThrowOut)
-      return
+  # (Agent) => Unit
+  remove: (agent) ->
+    indexToSplitAt = @members.indexOf(agent)
+    howManyToThrowOut = 1
+    @members.splice(indexToSplitAt, howManyToThrowOut)
+    return
 
 
+module.exports =
   class BreedManager
 
     # type BreedObj = { name: String, singular: String, varNames: Array[String] }
@@ -81,5 +82,3 @@ define(['shim/lodash'], (_) ->
     # () => Breed
     links: ->
       @get("LINKS")
-
-)

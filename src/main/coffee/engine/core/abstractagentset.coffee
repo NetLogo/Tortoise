@@ -1,11 +1,15 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-# Never instantiate this class directly --JAB (5/7/14)
-define(['engine/core/nobody', 'shim/random', 'util/abstractmethoderror', 'util/exception', 'util/iterator'
-      , 'util/seq', 'util/shufflerator']
-    ,  ( Nobody,               Random,        abstractMethod,             Exception,        Iterator
-      ,  Seq,        Shufflerator) ->
+Nobody         = require('./nobody')
+Random         = require('tortoise/shim/random')
+abstractMethod = require('tortoise/util/abstractmethoderror')
+Exception      = require('tortoise/util/exception')
+Iterator       = require('tortoise/util/iterator')
+Seq            = require('tortoise/util/seq')
+Shufflerator   = require('tortoise/util/shufflerator')
 
+# Never instantiate this class directly --JAB (5/7/14)
+module.exports =
   class AbstractAgentSet extends Seq
 
     @_selfManager: undefined # SelfManager
@@ -107,5 +111,3 @@ define(['engine/core/nobody', 'shim/random', 'util/abstractmethoderror', 'util/e
         Nobody
       else
         winners[Random.nextInt(winners.length)]
-
-)

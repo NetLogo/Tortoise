@@ -17,7 +17,7 @@ import
 class RuntimeInit(program: Program, model: Model) {
 
   def init: String =
-    s"""var workspace     = require('engine/workspace')($genBreedObjects)($genWorkspaceArgs);
+    s"""var workspace     = tortoise_require('engine/workspace')($genBreedObjects)($genWorkspaceArgs);
        |var BreedManager  = workspace.breedManager;
        |var LayoutManager = workspace.layoutManager;
        |var LinkPrims     = workspace.linkPrims;
@@ -28,26 +28,26 @@ class RuntimeInit(program: Program, model: Model) {
        |var Updater       = workspace.updater;
        |var world         = workspace.world;
        |
-       |var Call           = require('util/call');
-       |var ColorModel     = require('util/colormodel');
-       |var Exception      = require('util/exception');
-       |var Trig           = require('util/trig');
-       |var Type           = require('util/typechecker');
-       |var notImplemented = require('util/notimplemented');
+       |var Call           = tortoise_require('util/call');
+       |var ColorModel     = tortoise_require('util/colormodel');
+       |var Exception      = tortoise_require('util/exception');
+       |var Trig           = tortoise_require('util/trig');
+       |var Type           = tortoise_require('util/typechecker');
+       |var notImplemented = tortoise_require('util/notimplemented');
        |
-       |var Dump      = require('engine/dump');
-       |var Link      = require('engine/core/link');
-       |var LinkSet   = require('engine/core/linkset');
-       |var Nobody    = require('engine/core/nobody');
-       |var PatchSet  = require('engine/core/patchset');
-       |var Turtle    = require('engine/core/turtle');
-       |var TurtleSet = require('engine/core/turtleset');
-       |var Tasks     = require('engine/prim/tasks');
+       |var Dump      = tortoise_require('engine/dump');
+       |var Link      = tortoise_require('engine/core/link');
+       |var LinkSet   = tortoise_require('engine/core/linkset');
+       |var Nobody    = tortoise_require('engine/core/nobody');
+       |var PatchSet  = tortoise_require('engine/core/patchset');
+       |var Turtle    = tortoise_require('engine/core/turtle');
+       |var TurtleSet = tortoise_require('engine/core/turtleset');
+       |var Tasks     = tortoise_require('engine/prim/tasks');
        |
-       |var AgentModel     = require('agentmodel');
-       |var Denuller       = require('nashorn/denuller');
-       |var Random         = require('shim/random');
-       |var StrictMath     = require('shim/strictmath');
+       |var AgentModel     = tortoise_require('agentmodel');
+       |var Denuller       = tortoise_require('nashorn/denuller');
+       |var Random         = tortoise_require('shim/random');
+       |var StrictMath     = tortoise_require('shim/strictmath');
        |""".stripMargin
 
   private def genBreedObjects: String = {

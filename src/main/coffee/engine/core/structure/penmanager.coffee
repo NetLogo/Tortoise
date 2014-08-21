@@ -1,14 +1,13 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(->
+class PenStatus
+  constructor: (@_name) -> # (String) => PenStatus
+  toString: -> @_name # () => String
 
-  class PenStatus
-    constructor: (@_name) -> # (String) => PenStatus
-    toString: -> @_name # () => String
+Up   = new PenStatus("up")
+Down = new PenStatus("down")
 
-  Up   = new PenStatus("up")
-  Down = new PenStatus("down")
-
+module.exports =
   class PenManager
 
     # ((String*) => Unit, Number, PenStatus) => PenManager
@@ -61,5 +60,3 @@ define(->
       @_status = newStatus
       @_updateFunc("pen-mode")
       return
-
-)

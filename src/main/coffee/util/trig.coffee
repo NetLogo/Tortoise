@@ -1,6 +1,9 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['shim/strictmath', 'util/exception'], (StrictMath, Exception) -> {
+StrictMath = require('../shim/strictmath')
+Exception  = require('./exception')
+
+module.exports = {
 
   # (Number) => Number
   sin: (degrees) ->
@@ -36,4 +39,4 @@ define(['shim/strictmath', 'util/exception'], (StrictMath, Exception) -> {
     else
       x
 
-})
+}

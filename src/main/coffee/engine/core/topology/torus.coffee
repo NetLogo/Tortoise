@@ -1,7 +1,9 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['engine/core/topology/topology', 'shim/lodash'], (Topology, _) ->
+_        = require('lodash')
+Topology = require('./topology')
 
+module.exports =
   class Torus extends Topology
 
     _wrapInX: true # Boolean
@@ -124,5 +126,3 @@ define(['engine/core/topology/topology', 'shim/lodash'], (Topology, _) ->
     # (Number, Number) => Number
     _shortestY: (y1, y2) ->
       @_shortestYWrapped(y1, y2)
-
-)

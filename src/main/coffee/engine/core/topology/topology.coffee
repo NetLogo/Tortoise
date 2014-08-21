@@ -1,8 +1,13 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['shim/lodash', 'shim/random', 'shim/strictmath', 'util/abstractmethoderror', 'util/exception']
-     , ( _,             Random,        StrictMath,        abstractMethod,             Exception) ->
+_              = require('lodash')
+Topology       = require('./topology')
+Random         = require('tortoise/shim/random')
+StrictMath     = require('tortoise/shim/strictmath')
+abstractMethod = require('tortoise/util/abstractmethoderror')
+Exception      = require('tortoise/util/exception')
 
+module.exports =
   class Topology
 
     _wrapInX: undefined # Boolean
@@ -232,5 +237,3 @@ define(['shim/lodash', 'shim/random', 'shim/strictmath', 'util/abstractmethoderr
     _getPatchSouthEast: (x, y) -> abstractMethod('Topology._getPatchSouthEast')
     _getPatchSouthWest: (x, y) -> abstractMethod('Topology._getPatchSouthWest')
     _getPatchNorthWest: (x, y) -> abstractMethod('Topology._getPatchNorthWest')
-
-)

@@ -3,9 +3,14 @@
 package org.nlogo.tortoise.jsengine
 package nashorn
 
+import
+  java.io.{ PrintWriter, StringWriter }
+
+import
+  javax.script.{ ScriptContext, ScriptEngineManager }
+
 import org.nlogo.api, api.MersenneTwisterFast
 import org.nlogo.core.Resource
-import java.io.{ PrintWriter, StringWriter }
 
 // There are two main entry points here: run() and eval().  The former runs compiled commands and
 // collects all the lines of output and JSON updates generated.  The latter runs a compiled reporter
@@ -16,12 +21,12 @@ class Nashorn {
   // at some point we'll need to have separate instances instead of a singleton - ST 1/18/13
   // the (null) became necessary when we upgraded to sbt 0.13. I don't understand why.
   // classloaders, go figure! - ST 8/26/13
-  val engine =
-    new javax.script.ScriptEngineManager(null)
-      .getEngineByName("nashorn")
-      .ensuring(_ != null, "JavaScript engine unavailable")
+  val engine = new ScriptEngineManager(null).getEngineByName("nashorn").ensuring(_ != null, "JavaScript engine unavailable")
 
   val versionNumber: String = engine.getFactory.getEngineVersion
+
+  val engineScope = engine.getBindings(ScriptContext.ENGINE_SCOPE)
+  engineScope.put("window", engineScope) // Some libraries (e.g. lodash) expect to find a `window` object --JAB (8/21/14)
 
   // make a random number generator available
   engine.put("Random", new MersenneTwisterFast)

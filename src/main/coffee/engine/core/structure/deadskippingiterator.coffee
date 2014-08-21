@@ -1,7 +1,8 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['util/iterator'], (Iterator) ->
+Iterator = require('tortoise/util/iterator')
 
+module.exports =
   class DeadSkippingIterator extends Iterator
 
     _i: undefined # Number
@@ -50,5 +51,3 @@ define(['util/iterator'], (Iterator) ->
     # () => Boolean
     _isntEmpty: ->
       @_i < @_items.length
-
-)

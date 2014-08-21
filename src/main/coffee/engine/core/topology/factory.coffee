@@ -1,9 +1,12 @@
-define(['engine/core/topology/box', 'engine/core/topology/horizcylinder', 'engine/core/topology/torus'
-      , 'engine/core/topology/vertcylinder']
-    ,  ( Box,                        HorizCylinder,                        Torus
-      ,  VertCylinder) ->
+# (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-    # (Boolean, Boolean, Number, Number, Number, Number, () => PatchSet, (Number, Number) => Patch) => Topology
+Box           = require('./box')
+HorizCylinder = require('./horizcylinder')
+Torus         = require('./torus')
+VertCylinder  = require('./vertcylinder')
+
+# (Boolean, Boolean, Number, Number, Number, Number, () => PatchSet, (Number, Number) => Patch) => Topology
+module.exports =
     (wrapsInX, wrapsInY, minX, maxX, minY, maxY, getPatchesFunc, getPatchAtFunc) ->
       TopoClass =
         if wrapsInX and wrapsInY
@@ -15,5 +18,3 @@ define(['engine/core/topology/box', 'engine/core/topology/horizcylinder', 'engin
         else
           Box
       new TopoClass(minX, maxX, minY, maxY, getPatchesFunc, getPatchAtFunc)
-
-)

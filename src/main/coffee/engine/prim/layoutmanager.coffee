@@ -1,8 +1,11 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['shim/lodash', 'shim/random', 'shim/strictmath', 'util/trig']
-     , ( _,             Random,        StrictMath,        Trig) ->
+_          = require('lodash')
+Random     = require('tortoise/shim/random')
+StrictMath = require('tortoise/shim/strictmath')
+Trig       = require('tortoise/util/trig')
 
+module.exports =
   class LayoutManager
 
     # (World) => LayoutManager
@@ -185,5 +188,3 @@ define(['shim/lodash', 'shim/random', 'shim/strictmath', 'util/trig']
       )
 
       return
-
-)

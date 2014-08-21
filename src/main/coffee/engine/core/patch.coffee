@@ -1,10 +1,16 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['engine/core/nobody', 'engine/core/turtle', 'engine/core/turtleset', 'engine/core/structure/variablemanager'
-      , 'shim/lodash', 'shim/random', 'util/colormodel', 'util/comparator', 'util/exception']
-     , ( Nobody,               Turtle,               TurtleSet,               VariableManager
-      ,  _,             Random,        ColorModel,        Comparator,        Exception) ->
+_               = require('lodash')
+Nobody          = require('./nobody')
+Turtle          = require('./turtle')
+TurtleSet       = require('./turtleset')
+VariableManager = require('./structure/variablemanager')
+Random          = require('tortoise/shim/random')
+ColorModel      = require('tortoise/util/colormodel')
+Comparator      = require('tortoise/util/comparator')
+Exception       = require('tortoise/util/exception')
 
+module.exports =
   class Patch
 
     _updateVarsByName: undefined # (String*) => Unit
@@ -182,5 +188,3 @@ define(['engine/core/nobody', 'engine/core/turtle', 'engine/core/turtleset', 'en
       @_plabelcolor = ColorModel.wrapColor(color)
       @_genVarUpdate("plabel-color")
       return
-
-)

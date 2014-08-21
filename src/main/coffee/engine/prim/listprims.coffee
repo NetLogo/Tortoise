@@ -1,13 +1,18 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody', 'engine/core/patch'
-      , 'engine/core/turtle', 'shim/lodash', 'shim/random', 'shim/strictmath', 'util/comparator', 'util/exception'
-      , 'util/typechecker']
-     , ( AbstractAgentSet,               Link,               Nobody,               Patch
-      ,  Turtle,               _,             Random,        StrictMath,        Comparator,        Exception
-      ,  Type) ->
+_                = require('lodash')
+AbstractAgentSet = require('../core/abstractagentset')
+Link             = require('../core/link')
+Nobody           = require('../core/nobody')
+Patch            = require('../core/patch')
+Turtle           = require('../core/turtle')
+StrictMath       = require('tortoise/shim/strictmath')
+Comparator       = require('tortoise/util/comparator')
+Exception        = require('tortoise/util/exception')
+Type             = require('tortoise/util/typechecker')
 
-  # For most of this stuff, Lodashing it is no good, since Lodash doesn't handle strings correctly.  Could use Underscore.string... --JAB (5/5/14)
+# For most of this stuff, Lodashing it is no good, since Lodash doesn't handle strings correctly.  Could use Underscore.string... --JAB (5/5/14)
+module.exports =
   class ListPrims
 
     # (Hasher, (Any, Any) => Boolean) => ListPrims
@@ -250,5 +255,3 @@ define(['engine/core/abstractagentset', 'engine/core/link', 'engine/core/nobody'
               j += 1
             i += 1
           result
-
-)

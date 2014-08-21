@@ -1,7 +1,8 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['engine/core/topology/topology'], (Topology) ->
+Topology = require('./topology')
 
+module.exports =
   class HorizCylinder extends Topology
 
     _wrapInX: false # Boolean
@@ -111,5 +112,3 @@ define(['engine/core/topology/topology'], (Topology) ->
     # (Number, Number) => Number
     _shortestY: (y1, y2) ->
       @_shortestYWrapped(y1, y2)
-
-)

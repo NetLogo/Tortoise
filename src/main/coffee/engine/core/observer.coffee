@@ -1,8 +1,11 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['engine/core/patch', 'engine/core/turtle', 'engine/core/structure/variablemanager', 'shim/lodash']
-     , ( Patch,               Turtle,               VariableManager,                         _) ->
+_               = require('lodash')
+Patch           = require('./patch')
+Turtle          = require('./turtle')
+VariableManager = require('./structure/variablemanager')
 
+module.exports =
   class Observer
 
     id: 0 # Number
@@ -63,5 +66,3 @@ define(['engine/core/patch', 'engine/core/turtle', 'engine/core/structure/variab
     _updatePerspective: ->
       @_updateVarsByName("perspective", "targetAgent")
       return
-
-)

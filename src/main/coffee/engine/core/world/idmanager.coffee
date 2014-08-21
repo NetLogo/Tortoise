@@ -1,7 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(->
-
+module.exports =
   class IDManager
 
     # Number
@@ -26,5 +25,3 @@ define(->
       f()
       @_count = oldCount
       return
-
-)

@@ -1,6 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(-> {
+module.exports = {
 
   NOT_EQUALS: {}
 
@@ -17,4 +17,4 @@ define(-> {
     else
       @EQUALS
 
-})
+}

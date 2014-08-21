@@ -9,7 +9,7 @@ import
     nio.charset.StandardCharsets.UTF_8
 
 import
-  scala.{ sys, util} ,
+  scala.{ sys, util } ,
     sys.process.Process,
     util.Try
 

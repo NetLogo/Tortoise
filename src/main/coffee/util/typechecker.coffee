@@ -5,17 +5,14 @@ This class should be favored over Lodash when you want quick typechecking that n
 This was made specifically to compensate for the fact that Lodash's typechecking was swapped
 into the sorting code and caused a 25% performance hit in BZ Benchmark. --JAB (4/30/14)
 ###
-define(->
 
-  class Type
-    constructor: (@_x) -> # (Any) => Type
-    isArray:    -> Array.isArray(@_x)
-    isBoolean:  -> typeof(@_x) is "boolean"
-    isFunction: -> typeof(@_x) is "function"
-    isNumber:   -> typeof(@_x) is "number"
-    isObject:   -> typeof(@_x) is "object"
-    isString:   -> typeof(@_x) is "string"
+class Type
+  constructor: (@_x) -> # (Any) => Type
+  isArray:    -> Array.isArray(@_x)
+  isBoolean:  -> typeof(@_x) is "boolean"
+  isFunction: -> typeof(@_x) is "function"
+  isNumber:   -> typeof(@_x) is "number"
+  isObject:   -> typeof(@_x) is "object"
+  isString:   -> typeof(@_x) is "string"
 
-  (x) -> new Type(x)
-
-)
+module.exports = (x) -> new Type(x)

@@ -1,12 +1,16 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtleset'
-      , 'engine/core/structure/penmanager', 'engine/core/structure/variablemanager', 'shim/lodash', 'util/colormodel'
-      , 'util/comparator', 'util/exception', 'util/trig']
-     , ( AbstractAgentSet,               Nobody,               TurtleSet
-      ,  PenManager,                         VariableManager,                         _,             ColorModel
-      ,  Comparator,        Exception,        Trig) ->
+_                = require('lodash')
+AbstractAgentSet = require('./abstractagentset')
+Nobody           = require('./nobody')
+TurtleSet        = require('./turtleset')
+PenManager       = require('./structure/penmanager')
+VariableManager  = require('./structure/variablemanager')
+Comparator       = require('tortoise/util/comparator')
+Exception        = require('tortoise/util/exception')
+Trig             = require('tortoise/util/trig')
 
+module.exports =
   class Turtle
 
     _breed:            undefined # Breed
@@ -518,5 +522,3 @@ define(['engine/core/abstractagentset', 'engine/core/nobody', 'engine/core/turtl
       @_size = size
       @_genVarUpdate("size")
       return
-
-)

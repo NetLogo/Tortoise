@@ -1,10 +1,9 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(->
-
-  # type VariableBundle = { name: String, get: GetFunc, set: SetFunc }
-
+module.exports =
   class VariableManager
+
+    # type VariableBundle = { name: String, get: GetFunc, set: SetFunc }
 
     # (Array[String], Array[VariableBundle]) => VariableManager
     constructor: (@_varNames = [], @_getAndSetFuncs = []) ->
@@ -38,5 +37,3 @@ define(->
     _defineProperty: (propName, config) ->
       Object.defineProperty(this, propName, config)
       return
-
-)

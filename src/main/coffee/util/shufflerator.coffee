@@ -1,7 +1,9 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['shim/random', 'util/iterator'], (Random, Iterator) ->
+Iterator = require('./iterator')
+Random   = require('../shim/random')
 
+module.exports =
   class Shufflerator extends Iterator
 
     _i:       undefined # Number
@@ -71,5 +73,3 @@ define(['shim/random', 'util/iterator'], (Random, Iterator) ->
         @_nextOne = null
 
       return
-
-)

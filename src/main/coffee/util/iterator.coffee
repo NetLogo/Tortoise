@@ -1,7 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(->
-
+module.exports =
   class Iterator
 
     _items: undefined # [T] @ Array[T]
@@ -22,5 +21,3 @@ define(->
     # () => Array[T]
     toArray: ->
       @_items
-
-)

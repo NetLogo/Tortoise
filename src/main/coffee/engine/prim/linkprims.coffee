@@ -1,7 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(->
-
+module.exports =
   class LinkPrims
 
     @_linkManager: undefined # LinkManager
@@ -51,5 +50,3 @@ define(->
     # (Boolean, Boolean) => (Turtle) => Link
     findLinkViaNeighbor: (isDirected, isSource) ->
       ((otherTurtle) => @_self().findLinkViaNeighbor(isDirected, isSource, otherTurtle))
-
-)

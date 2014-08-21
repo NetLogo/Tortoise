@@ -13,6 +13,9 @@ import
     sys.process.Process,
     util.Try
 
+import
+  org.nlogo.core.Resource
+
 class V8 {
 
   private val ValidVersionRegex = """(v\d[\d.]*)""".r
@@ -48,16 +51,5 @@ class V8 {
 }
 
 object V8 {
-
-  // Implementation detail: Our V8 access is through Node, so it's actually easiest for us to load the deps through
-  // Node. --JAB (4/24/14)
-  private val nodeStr =
-    """var requirejs = require('requirejs');
-      |requirejs.config({ nodeRequire: requirejs, baseUrl: './target/classes/js/tortoise' });
-      |require_node = require;
-      |require = requirejs;
-      |""".stripMargin
-
-  private lazy val depsStr = nodeStr
-
+  private lazy val depsStr = jsLibs map Resource.asString mkString ";"
 }

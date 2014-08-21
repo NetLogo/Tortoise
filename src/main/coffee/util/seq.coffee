@@ -1,8 +1,9 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['shim/lodash'], (_) ->
+_ = require('lodash')
 
-  # If you want at the items, use `toArray`!  NO ONE BUT `toArray` SHOULD TOUCH `_items`! --JAB (7/21/14)
+# If you want at the items, use `toArray`!  NO ONE BUT `toArray` SHOULD TOUCH `_items`! --JAB (7/21/14)
+module.exports =
   class Seq
 
     # [T] @ (Array[T]) => Seq[T]
@@ -64,5 +65,3 @@ define(['shim/lodash'], (_) ->
     # (Array[T], Seq[T]) => Seq[T]
     _generateFrom: (newItems, oldSeq) ->
       new Seq(newItems)
-
-)

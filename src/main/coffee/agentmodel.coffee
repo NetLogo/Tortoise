@@ -1,6 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(->
+module.exports =
   class AgentModel
 
     # () => AgentModel
@@ -58,5 +58,3 @@ define(->
       for variable, value of updatedObject
         targetObject[variable.toLowerCase()] = value
       return
-
-)

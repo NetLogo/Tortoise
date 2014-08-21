@@ -1,8 +1,9 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['engine/core/abstractagentset', 'engine/core/structure/deadskippingiterator']
-     , ( AbstractAgentSet,               DeadSkippingIterator) ->
+AbstractAgentSet     = require('./abstractagentset')
+DeadSkippingIterator = require('./structure/deadskippingiterator')
 
+module.exports =
   class LinkSet extends AbstractAgentSet
 
     # [T <: Turtle] @ (Array[T], String) => TurtleSet
@@ -24,5 +25,3 @@ define(['engine/core/abstractagentset', 'engine/core/structure/deadskippingitera
     # (Array[T], LinkSet[T]) => LinkSet[T]
     _generateFrom: (newAgentArr, agents) ->
       new LinkSet(newAgentArr, agents.getBreedName())
-
-)

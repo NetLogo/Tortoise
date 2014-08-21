@@ -1,7 +1,8 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['util/exception'], (Exception) ->
+Exception = require('tortoise/util/exception')
 
+module.exports =
   class Ticker
 
     # Number
@@ -50,5 +51,3 @@ define(['util/exception'], (Exception) ->
       @_count = updateCountFunc(@_count)
       @_updateFunc("ticks")
       return
-
-)

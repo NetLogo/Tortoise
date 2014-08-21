@@ -1,7 +1,9 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-define(['engine/core/abstractagentset', 'util/iterator'], (AbstractAgentSet, Iterator) ->
+AbstractAgentSet = require('./abstractagentset')
+Iterator         = require('tortoise/util/iterator')
 
+module.exports =
   class PatchSet extends AbstractAgentSet
 
     # [T <: Patch] @ (Array[T]) => PatchSet
@@ -19,5 +21,3 @@ define(['engine/core/abstractagentset', 'util/iterator'], (AbstractAgentSet, Ite
     # (Array[T], PatchSet[T]) => PatchSet[T]
     _generateFrom: (newAgentArr, agents) ->
       new PatchSet(newAgentArr)
-
-)
