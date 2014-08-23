@@ -1,70 +1,34 @@
 (ns topology.patch-math
-  (:require [util.math :refer [squash
-                               clamp]]
-            [shim.strictmath]
+  (:require [shim.strictmath]
             [shim.random]))
 
-;; TODO: make wrap-x/y macros and pass whether wrapping
-;; should ever occur when created as fns in a topology
-;; -- JTT (8/11/14)
-
-(defn squash-4 [v mn]
-  (squash v mn 1.0E-4))
-
-(defn wrap [p mn mx]
-  ;; squash so that -5.500001 != 5.5 -- JTT (7/28/14)
-  (let [pos (squash-4 p mn)]
+(defn wrap [pos mn mx]
   (cond
     ;; use >= to consistently return -5.5 for the "seam" of the
     ;; wrapped shape -- i.e., -5.5 = 5.5, so consistently
     ;; report -5.5 in order to have equality checks work
     ;; correctly. -- JTT (7/23/14)
-    (>= pos mx) (-> pos (- mx) (mod (- mx mn)) (+ mn))
-    (< pos mn)  (- mx (-> (- mn pos)
-                          (mod (- mx mn)))) ;; ((min - pos) % (max - min))
-    :default pos)))
+    (>= pos mx) (+ mn (js-mod (- pos mx) (- mx mn)))
+    (< pos mn)  (let [result (- mx (js-mod (- mn pos)
+                                        (- mx mn)))]
+                  (if (< result mx)
+                    result
+                    mn))
+    :default pos))
 
-;; direct neighbors (eg getNeighbors4 patches)
+;; dimension converter
 
-(defn _get_patch_north [x y] (.getPatchAt workspace.world x (wrap-y (inc y))))
+(defn xy->1d [x y arr w mnx mny]
+  (nth (drop (* w (- (- y) mny)) arr) (- x mnx)))
 
-(defn _get_patch_east  [x y] (.getPatchAt workspace.world (wrap-x (inc x)) y))
 
-(defn _get_patch_south [x y] (.getPatchAt workspace.world  x (wrap-y (dec y))))
+;; edge-bounds helper
 
-(defn _get_patch_west  [x y] (.getPatchAt workspace.world (wrap-x (dec x)) y))
-
-;; corners
-
-(defn _get_patch_northeast [x y]
-  (.getPatchAt workspace.world (wrap-x (inc x)) (wrap-y (inc y))))
-
-(defn _get_patch_southeast [x y]
-  (.getPatchAt workspace.world (wrap-x (inc x)) (wrap-y (dec y))))
-
-(defn _get_patch_southwest [x y]
-  (.getPatchAt workspace.world (wrap-x (dec x)) (wrap-y (dec y))))
-
-(defn _get_patch_northwest [x y]
-  (.getPatchAt workspace.world (wrap-x (dec x)) (wrap-y (inc y))))
-
-;; get neighbors
-
-(defn _get_neighbors_4 [x y]
-   (filter #(not= % nil)
-          [(_get_patch_north x y)
-           (_get_patch_east x y)
-           (_get_patch_south x y)
-           (_get_patch_west x y)]))
-
-(defn _get_neighbors [x y]
-  (concat
-    (_get_neighbors_4 x y)
-    (filter #(not= % nil)
-          [(_get_patch_northeast x y)
-           (_get_patch_northwest x y)
-           (_get_patch_southwest x y)
-           (_get_patch_southeast x y)])))
+(defn compute-edges [mnx mxx mny mxy]
+  {:min-pxcor (- mnx 0.5)
+   :max-pxcor (+ mxx 0.5)
+   :min-pycor (- mny 0.5)
+   :max-pycor (+ mxy 0.5)})
 
 ;; shortest-x wraps a difference out of bounds.
 ;; _shortestX does not. -- JTT (7/28/14)
@@ -77,53 +41,51 @@
 (defn shortest-y [y1 y2]
   (wrap-y (- y2 y1)))
 
+;; _shortestX/Y equivalent
+
+(defn shortest-nonsense-helper [d1 d2 w-or-h]
+  "Madness, this."
+  (let [mag (.abs shim.strictmath (- d1 d2))
+        negmod (if (> d2 d1) -1 1)
+        negmod2 (if (> d1 d2) -1 1)]
+    (if (-> mag (> (/ w-or-h 2)))
+      (-> w-or-h (- mag) (* negmod))
+      (* (.abs js/Math (- d1 d2)) negmod2))))
+
 ;; distances
 
-(defn distance-xy [x1 y1 x2 y2]
-  (let [a2 (.pow shim.strictmath (shortest-x x1, x2) 2)
-        b2 (.pow shim.strictmath (shortest-y y1, y2) 2)]
+(defn distance-helper [x1 y1 x2 y2 sx sy]
+  (let [a2 (.pow shim.strictmath (sx x1 x2) 2)
+        b2 (.pow shim.strictmath (sy y1 y2) 2)]
     (.sqrt shim.strictmath (+ a2 b2))))
-
-(defn distance [x y agent]
-  ;; FIXME: cl dependent (.getCoords agent) -- JTT (8/11/14)
-  (let [[ax ay] (.getCoords agent)]
-    (distance-xy x y ax ay)))
 
 ;; towards
 
-(defn towards [x1 y1 x2 y2]
+(defn towards [x1 y1 x2 y2 shortest-x shortest-y]
   (let [dx (shortest-x x1 x2)
         dy (shortest-y y1 y2)]
     (cond
      (= dx 0) (or (and (< dy 0) 180) 0)
      (= dy 0) (or (and (< dx 0) 270) 90)
-     :default (-> (- dy)
-                  (shim.strictmath.atan2 dx)
-                  (+ (.-PI js/Math))
-                  (shim.strictmath.toDegrees)
-                  (mod 360)
-                  (+ 270)))))
+     :default (-> (->> (.atan2 shim.strictmath (- dy) dx)
+                       (+ (.-PI js/Math))
+                       (.toDegrees shim.strictmath)
+                       (+ 270))
+                  (js-mod 360)))))
 
 ;; midpoints
 
-(defn midpoint-x [x1 x2]
-  (wrap-x (-> (shortest-x x1 x2) (/ 2) (+ x1))))
-
-(defn midpoint-y [y1 y2]
-  (wrap-y (-> (shortest-y y1 y2) (/ 2) (+ y1))))
+(defn midpoint [d1 d2 shortest-fn]
+  (-> (+ d1 (+ d1 (shortest-fn d1 d2))) (/ 2)))
 
 ;; in-radius
 
-(defn in-radius [x y agents radius]
-  (filter #(<= (distance x y %) radius) agents))
+;; NOTE: interop issue: agentset not ISeqable (must use
+;;       existing topology in-radius)
+(defn in-radius [x y agents radius distance]
+  (filter #(<= (distance x y) radius) agents))
 
 ;; random cors
 
-(defn random-cor [mn  mx]
-  (-> mn (- 0.5) (+ (.nextDouble shim.random)) (* (inc (- mx mn)))))
-
-(defn random-x []
-  (random-cor min-pxcor max-pxcor))
-
-(defn random-y []
-  (random-cor min-pycor max-pycor))
+(defn random-cor [mn mx]
+  (-> mn (- 0.5) (+ (* (.nextDouble shim.random) (+ (- mx mn) 1)))))
