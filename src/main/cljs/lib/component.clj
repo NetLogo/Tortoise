@@ -7,11 +7,13 @@
   `(defn ~name ~params
      (clojure.core/js-obj "name" ~(keyword (clojure.core/name name)) ~@r)))
 
-(defn- czip [e kvs]
-  (let [c (transient {})]
-    (doseq [[k cfs] (partition-all 2 kvs)]
-      (conj! c [k cfs]))
-    (persistent! c)))
+(defn- czip [raw_kvs]
+  (loop [kvs (vec (partition-all 2 raw_kvs))
+         [k v] (first kvs)
+         c  {}]
+    (if (> (count kvs) 0)
+      (recur (drop 1 kvs) (second kvs) (assoc c k v))
+      c)))
 
 (defmacro compnt [nm params & kvs]
   `(defn ~nm ~params
