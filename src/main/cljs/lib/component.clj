@@ -27,5 +27,7 @@
   (let [letblock (transient [])]
     (doseq [[nm v] (partition-all 2 getblock)]
       (conj! letblock nm)
-      (conj! letblock `(get-in ~e (or (and (vector? ~v) ~v) [~v]))))
+      (if (and (not (keyword? v)) (not (vector? v)))
+        (conj! letblock `(~v))
+        (conj! letblock `(get-in ~e (or (and (vector? ~v) ~v) [~v])))))
     `(let ~(persistent! letblock) ~@body)))
