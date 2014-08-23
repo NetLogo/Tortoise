@@ -17,11 +17,11 @@
 
 (defmacro compnt [nm params & kvs]
   `(defn ~nm ~params
-     (fn [~'e] ~(czip 'e kvs))))
+     (fn [~'e] ~(czip kvs))))
 
 (defmacro compnt-let [nm params getblock & kvs]
   `(defn ~nm ~params
-     (fn [~'e] (let-in ~'e ~getblock ~(czip 'e kvs)))))
+     (fn [~'e] (let-in ~'e ~getblock ~(czip kvs)))))
 
 (defmacro let-in [e getblock & body]
   (let [letblock (transient [])]
