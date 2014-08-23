@@ -1,13 +1,5 @@
 (ns topology.torus
   (:require [util.etc :refer [js-err]]
-            [topology.patch-math :refer [_get_patch_north
-                                         _get_patch_east
-                                         _get_patch_south
-                                         _get_patch_west
-                                         _get_patch_northeast
-                                         _get_patch_southeast
-                                         _get_patch_southwest
-                                         _get_patch_southeast]]
             [lib.entity :refer [entity* entity-init]]
             [topology.comps :refer [bounds
                                     dimensions
@@ -15,18 +7,33 @@
                                     patch-getter
                                     compass-movement
                                     neighborhood-finders
-                                    shortest-nonsense-finders]])
-  (:require-macros [lib.component :refer [compnt compnt-let]]))
+                                    shortest-nonsense-finders
+                                    distance-finders
+                                    towards
+                                    midpoint-fns
+                                    in-radius
+                                    random-cor-generators
+                                    aliases
+                                    spliced-torus]])
+  (:require-macros [lib.component :refer [compnt-let]]))
 
 (defn torus [mnx mxx mny mxy]
-  (entity* :torus
+  (clj->js (entity-init (entity* :torus
            :init [(bounds mnx mxx mny mxy)
                   (dimensions)
+                  (spliced-torus)
                   (wrap)
                   (patch-getter)
                   (compass-movement)
                   (neighborhood-finders)
-                  (shortest-nonsense-finders)]))
+                  (shortest-nonsense-finders)
+                  (distance-finders)
+                  (towards)
+                  (midpoint-fns)
+                  (in-radius)
+                  (random-cor-generators)
+                  (torus-diffuse-js)
+                  (aliases)]))))
 
 (torus -5 5 -5 5)
 
@@ -61,15 +68,3 @@
 ;; perform. ie, don't mutate here. -- JTT (8/11/14)
 ;; TODO: take the patch-grabbing logic from world to reduce patch
 ;; arrays to one dimension -- JTT (8/11/14)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Aliases                                                       ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; tortoise proper expects
-
-;; height
-;; width
-;; diffuse
-
-(def diffuse #(diffuse-js %1 %2))
