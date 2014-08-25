@@ -42,7 +42,8 @@
         :wrap-y (fn [y] (pm/wrap y mnye mxye)))
 
 (compnt patch-getter []
-        :get-patch (fn [x y] (.getPatchAt workspace.world x y)))
+        :get-patch (fn [x y] (.getPatchAt js/workspace.world x y))
+        :get-patches (fn [] (.. js/workspace -world patches iterator toArray)))
 
 (compnt-let compass-movement []
 
