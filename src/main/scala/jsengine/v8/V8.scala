@@ -32,7 +32,7 @@ class V8 {
   // NOTE: Each call to `eval` creates a new `node` process; the environment is not persisted across processes --JAB (1/30/14)
   def eval(js: String): String = {
 
-    val is     = s"${V8.depsStr};$js".toIS
+    val is     = s"window=global;${V8.depsStr};$js".toIS
     val result = (process #< is).lines.toList.mkString("\n")
     is.close()
 
