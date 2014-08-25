@@ -11,17 +11,17 @@
                                     distance-finders
                                     towards
                                     midpoint-fns
-                                    in-radius
                                     random-cor-generators
                                     aliases
-                                    spliced-torus]])
+                                    spliced-torus
+                                    spliced-diffuse
+                                    spliced-in-radius]])
   (:require-macros [lib.component :refer [compnt-let]]))
 
 (defn torus [mnx mxx mny mxy]
   (clj->js (entity-init (entity* :torus
            :init [(bounds mnx mxx mny mxy)
                   (dimensions)
-                  (spliced-torus)
                   (wrap)
                   (patch-getter)
                   (compass-movement)
@@ -30,9 +30,10 @@
                   (distance-finders)
                   (towards)
                   (midpoint-fns)
-                  (in-radius)
                   (random-cor-generators)
-                  (torus-diffuse-js)
+                  (spliced-torus)
+                  (spliced-diffuse)
+                  (spliced-in-radius)
                   (aliases)]))))
 
 (torus -5 5 -5 5)

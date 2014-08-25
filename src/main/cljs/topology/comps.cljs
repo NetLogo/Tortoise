@@ -122,9 +122,9 @@
                          (wrap-y
                            (pm/midpoint y1 y2 shty))))
 
-(compnt-let in-radius []
+(compnt-let spliced-in-radius []
 
-            [t :topology]
+            [t :_spliced-topology]
 
             :in-radius (fn [x y agents radius]
                          (.inRadius t x y agents radius dist)))
@@ -146,9 +146,17 @@
         [mnx :min-pxcor
          mxx :max-pxcor
          mny :min-pycor
-         mxy :max-pycor]
+         mxy :max-pycor
+         gp  :get-patch
+         gps :get-patches]
 
-        :topology (engine.core.topology.torus. mnx mxx mny mxy))
+        :_spliced-topology (engine.core.topology.torus. mnx mxx mny mxy gps gp))
+
+(compnt-let spliced-diffuse []
+
+            [t :_spliced-topology]
+
+            :diffuse (fn [v c] (.diffuse t v c)))
 
 (compnt-let dimension-flattener []
 
@@ -179,9 +187,7 @@
              inr :in-radius
 
              rnx :random-x
-             rny :random-y
-
-             d   :diffuse-js]
+             rny :random-y]
 
             ;; Tortoise proper fns
 
@@ -201,6 +207,4 @@
             :inRadius inr
 
             :randomXcor rnx
-            :randomYcor rny
-
-            :diffuse (fn [v c] (clj->js (doall (d v c)))))
+            :randomYcor rny)
