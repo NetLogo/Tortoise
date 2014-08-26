@@ -19,7 +19,7 @@ module.exports =
     # (Number, Boolean, Turtle, Turtle, World, (Updatable) => (String*) => Unit, (Number) => Unit, (Link) => Unit, (String) => LinkSet, Breed, Number, Boolean, String, Number, String, Number, String) => Link
     constructor: (@id, @isDirected, @end1, @end2, @world, genUpdate, @_registerDeath, @_registerRemoval
                 , getLinksByBreedName, breed = @world.breedManager.links(), @_color = 5, @_isHidden = false
-                , @_label = "", @_labelcolor = 9.9, @_shape = "default", @_thickness = 0, @_tiemode = "none") ->
+                , @_label = "", @_labelcolor = 9.9, @_shape = "default", @_thickness = 0, @tiemode = "none") ->
       @_updateVarsByName = genUpdate(this)
       @_varManager = @_genVarManager(@world.linksOwnNames, getLinksByBreedName)
       @_setBreed(breed)
@@ -126,7 +126,7 @@ module.exports =
         { name: 'label-color', get: (=> @_labelcolor),                      set: ((x) => @_setLabelColor(x)) },
         { name: 'shape',       get: (=> @_shape),                           set: ((x) => @_setShape(x))      },
         { name: 'thickness',   get: (=> @_thickness),                       set: ((x) => @_setThickness(x))  },
-        { name: 'tie-mode',    get: (=> @_tiemode),                         set: ((x) => @_setTieMode(x))    }
+        { name: 'tie-mode',    get: (=> @tiemode),                          set: ((x) => @_setTieMode(x))    }
       ]
 
       new VariableManager(extraVarNames, varBundles)
@@ -227,6 +227,6 @@ module.exports =
 
     # (String) => Unit
     _setTieMode: (mode) ->
-      @_tiemode = mode
+      @tiemode = mode
       @_genVarUpdate("tie-mode")
       return

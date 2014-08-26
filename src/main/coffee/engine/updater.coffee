@@ -134,7 +134,7 @@ module.exports =
       shape:         ["SHAPE",       link._shape]
       size:          ["SIZE",        link.getSize()]
       thickness:     ["THICKNESS",   link._thickness]
-      'tie-mode':    ["TIE-MODE",    link._tiemode]
+      'tie-mode':    ["TIE-MODE",    link.tiemode]
       lcolor:        ignored
       llabel:        ignored
       llabelcolor:   ignored
