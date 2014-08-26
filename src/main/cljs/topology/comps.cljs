@@ -127,7 +127,7 @@
             [t :_spliced-topology]
 
             :in-radius (fn [x y agents radius]
-                         (.inRadius t x y agents radius dist)))
+                         (.inRadius t x y agents radius)))
 
 (compnt-let random-cor-generators []
 
@@ -164,7 +164,8 @@
              mny :min-pycor
              w   :width]
 
-            :xy->i (fn [x y] ))
+            :xy->i (fn [x y] (let [drop-offset (* w (- (- y) mny))]
+                               (+ (if (>= drop-offset 0) drop-offset 0) (- x mnx)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Aliases                                                       ;;
