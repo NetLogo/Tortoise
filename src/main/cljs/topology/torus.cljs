@@ -43,27 +43,43 @@
 
 ;; js compat
 
-(defn diffuse-js [var coefficient]
-  (for [p (.patches engine.core.world)]
-    (let [x (.-pxcor p)
-          y (.-pycor p)
-          ;; ordering has to match what headless expects
-          ;; so cannot use (get-neighbors) -- JTT (8/11/14)
-          n [(get-patch-southwest x y)
-             (get-patch-west x y)
-             (get-patch-northwest x y)
-             (get-patch-south x y)
-             (get-patch-north x y)
-             (get-patch-southeast x y)
-             (get-patch-east x y)
-             (get-patch-northeast x y)]
-          diffusal-sum (reduce +
-                               (map (fn [nb] (.getVariable nb var))
-                                    (.patches workspace.world)))
-          own-amt* (* (.getVariable p var) (- 1.0 coefficient))
-          to-diffuse (-> diffusal-sum (/ 8) (* coefficient))
-          new-amt (+ own-amt* to-diffuse)]
-      (.setVariable p var new-amt))))
+(compnt-let torus-diffuse-js []
+  [gpn :north
+   gpe :east
+   gps :south
+   gpw :west
+
+   gpne :northeast
+   gpse :southeast
+   gpsw :southwest
+   gpnw :northwest]
+
+  :diffuse-js
+           (fn [var coefficient]
+             (let [patches (.. js/workspace -world patches iterator toArray)]
+               (for [p patches]
+                 (let [x (.-pxcor p)
+                       y (.-pycor p)
+                       ;; ordering has to match what headless expects
+                       ;; so cannot use (get-neighbors) -- JTT (8/11/14)
+                       n [(gpsw x y)
+                          (gpw x y)
+                          (gpnw x y)
+                          (gps x y)
+                          (gpn x y)
+                          (gpse x y)
+                          (gpe x y)
+                          (gpne x y)]
+                       diffusal-sum (reduce +
+                                            (map (fn [nb] (.getVariable
+                                                           (topology.patch-math/xy->1d
+                                                            (.-pxcor nb)
+                                                            (.-pycor nb))
+                                                           var)) n))
+                       own-amt* (* (.getVariable p var) (- 1.0 coefficient))
+                       to-diffuse (-> diffusal-sum (/ 8) (* coefficient))
+                       new-amt (+ own-amt* to-diffuse)]
+                   (.setVariable p var new-amt))))))
 
 ;; TODO: when more has been reimplemented, use the for-loop macro
 ;; to return either the new patchset or a list of updates to
