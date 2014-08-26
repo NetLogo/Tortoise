@@ -19,7 +19,7 @@
   (:require-macros [lib.component :refer [compnt-let]]))
 
 (defn torus [mnx mxx mny mxy]
-  (clj->js (entity-init (entity* :torus
+  (entity-init (entity* :torus
            :init [(bounds mnx mxx mny mxy)
                   (dimensions)
                   (wrap)
@@ -34,9 +34,10 @@
                   (spliced-torus)
                   (spliced-diffuse)
                   (spliced-in-radius)
-                  (aliases)]))))
+                  (aliases)])))
 
-(torus -5 5 -5 5)
+(defn js-torus [mnx mxx mny mxy]
+  (clj->js (torus mnx mxx mny mxy)))
 
 (((entity-init (torus -5 5 -5 5)) :wrap-x) 6)
 
