@@ -18,4 +18,14 @@
           :libs ["./target/classes/js/tortoise/shim/lodash-cl.js"
                  "./target/classes/js/tortoise/shim/cloner-cl.js"
                  "./target/classes/js/tortoise/shim/strictmath-cl.js"
+                 "./target/classes/js/tortoise/shim/random-cl.js"] }}
+      :benchmark {
+        :source-paths ["src/main/cljs" "src/test/cljs"]
+        :compiler {
+          :output-to "target/classes/js/tortoise-engine-cljs-bench.js"
+          :optimizations :whitespace
+          :pretty-print true
+          :libs ["./target/classes/js/tortoise/shim/lodash-cl.js"
+                 "./target/classes/js/tortoise/shim/cloner-cl.js"
+                 "./target/classes/js/tortoise/shim/strictmath-cl.js"
                  "./target/classes/js/tortoise/shim/random-cl.js"] }}}})
