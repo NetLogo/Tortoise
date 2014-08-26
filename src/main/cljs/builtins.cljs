@@ -10,8 +10,7 @@
             :lbreed :thickness :lshape :tie-mode])
 
 ;; NOTE: this are fns on link; kept here for reference
-;; renderer expects these; might have to add them to an adapter
-;; if we even get to that point (7/18/2014)
+;; renderer expects these (7/18/2014)
 (def links-extra [:color :heading :shape :label :label-color
                   :breed :hidden? :size :midpointx :midpointy])
 
