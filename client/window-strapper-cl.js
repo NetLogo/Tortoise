@@ -4,6 +4,7 @@ window.loadTortoise = function () {
   window.LayoutManager = workspace.layoutManager;
   window.LinkPrims     = workspace.linkPrims;
   window.Prims         = workspace.prims;
+  window.SelfPrims     = workspace.selfPrims;
   window.SelfManager   = workspace.selfManager;
   window.Updater       = workspace.updater;
   window.world         = workspace.world;

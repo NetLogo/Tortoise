@@ -7,7 +7,7 @@ var t = (function(){
   __modulo = function(a, b) { return (a % b + +b) % b; };
 
   %output%
-  return [agentmodel, engine, shim, util, nashorn];
+  return [agentmodel, engine, shim, util, nashorn, test];
 }).call(this);
 
 var agentmodel = t[0];
@@ -15,4 +15,5 @@ var tortoise_engine = t[1];
 var shim   = t[2];
 var util   = t[3];
 var nashorn = t[4];
+var test    = t[5];
 
