@@ -58,6 +58,10 @@ module.exports = (grunt) ->
         command: "lein cljsbuild once default",
         stdout: true
       },
+      "cljs-bench-compile": {
+        command: "lein cljsbuild once benchmark"
+        stdout: true
+      },
       "cljs-compile-auto": {
         command: "lein cljsbuild auto default",
         stdout: true
@@ -81,6 +85,18 @@ module.exports = (grunt) ->
             dest: "./target/classes/js/tortoise/",
             rename: (dest, src) ->
               src_ext = src.split('/cljsbuild-compiler-0/')[1].split('.')
+              dest + src_ext[0] + "-replaced-cl" + "." + src_ext[1]
+          }
+        ]
+      },
+      "replace-all-with-cljs-bench": {
+        files: [
+          {
+            expand: true,
+            src: ["./target/cljsbuild-compiler-1/**/*.js"],
+            dest: "./target/classes/js/tortoise/",
+            rename: (dest, src) ->
+              src_ext = src.split('/cljsbuild-compiler-1/')[1].split('.')
               dest + src_ext[0] + "-replaced-cl" + "." + src_ext[1]
           }
         ]
@@ -130,4 +146,5 @@ module.exports = (grunt) ->
   # this is LOTS slower, but more useful, than just exec:cljs-compile-auto -- JTT (8/8/14)
   grunt.registerTask('cljs-compile/auto', ['watch:cljs'])
   grunt.registerTask('catchup', ['exec:cl-shiv', 'coffee:compile', 'exec:unshiv', 'exec:closurificate', 'closurecompiler:pretty'])
+  grunt.registerTask('cljs-bench', ['exec:cljs-bench-compile', 'copy:replace-all-with-cljs-bench', 'copy:import-cljs-core', 'closurecompiler:pretty'])
 
