@@ -3,6 +3,7 @@ var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
 var Prims         = workspace.prims;
+var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
 var Updater       = workspace.updater;
 var world         = workspace.world;
@@ -30,12 +31,12 @@ var StrictMath     = shim.strictmath;function setup() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
   Call(makeNode, Nobody);
-  Call(makeNode, world.getTurtle(0));
+  Call(makeNode, world.turtleManager.getTurtle(0));
   world.ticker.reset();
 }
 function go() {
   world.links().ask(function() {
-    Prims.setVariable('color', 5);
+    SelfPrims.setVariable('color', 5);
   }, true);
   Call(makeNode, Call(findPartner));
   world.ticker.tick();
@@ -44,14 +45,14 @@ function go() {
   }
 }
 function makeNode(oldNode) {
-  world.createTurtles(1, '').ask(function() {
-    Prims.setVariable('color', 15);
+  world.turtleManager.createTurtles(1, '').ask(function() {
+    SelfPrims.setVariable('color', 15);
     if (!Prims.equality(oldNode, Nobody)) {
       LinkPrims.createLinkWith(oldNode).ask(function() {
-        Prims.setVariable('color', 55);
+        SelfPrims.setVariable('color', 55);
       }, true);
       SelfManager.self().moveTo(oldNode);
-      Prims.fd(8);
+      SelfPrims.fd(8);
     }
   }, true);
 }
@@ -61,14 +62,14 @@ function findPartner() {
   });
 }
 function resizeNodes() {
-  if (world.turtles().agentAll(function(){ return Prims.lte(Prims.getVariable('size'), 1) })) {
+  if (world.turtles().agentAll(function(){ return Prims.lte(SelfPrims.getVariable('size'), 1) })) {
     world.turtles().ask(function() {
-      Prims.setVariable('size', StrictMath.sqrt(LinkPrims.linkNeighbors(false, false).size()));
+      SelfPrims.setVariable('size', StrictMath.sqrt(LinkPrims.linkNeighbors(false, false).size()));
     }, true);
   }
   else {
     world.turtles().ask(function() {
-      Prims.setVariable('size', 1);
+      SelfPrims.setVariable('size', 1);
     }, true);
   }
 }
@@ -79,19 +80,19 @@ function layout() {
     notImplemented('display', undefined)();
   });
   var xOffset = (Prims.max(world.turtles().projectionBy(function() {
-    return Prims.getVariable('xcor');
+    return SelfPrims.getVariable('xcor');
   })) + Prims.min(world.turtles().projectionBy(function() {
-    return Prims.getVariable('xcor');
+    return SelfPrims.getVariable('xcor');
   })));
   var yOffset = (Prims.max(world.turtles().projectionBy(function() {
-    return Prims.getVariable('ycor');
+    return SelfPrims.getVariable('ycor');
   })) + Prims.min(world.turtles().projectionBy(function() {
-    return Prims.getVariable('ycor');
+    return SelfPrims.getVariable('ycor');
   })));
   xOffset = Call(limitMagnitude, xOffset, 0.1);
   yOffset = Call(limitMagnitude, yOffset, 0.1);
   world.turtles().ask(function() {
-    Prims.setXY((Prims.getVariable('xcor') - (xOffset / 2)), (Prims.getVariable('ycor') - (yOffset / 2)));
+    SelfPrims.setXY((SelfPrims.getVariable('xcor') - (xOffset / 2)), (SelfPrims.getVariable('ycor') - (yOffset / 2)));
   }, true);
 }
 function limitMagnitude(number, limit) {

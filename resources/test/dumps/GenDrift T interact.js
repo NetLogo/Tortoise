@@ -3,6 +3,7 @@ var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
 var Prims         = workspace.prims;
+var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
 var Updater       = workspace.updater;
 var world         = workspace.world;
@@ -27,31 +28,31 @@ var AgentModel     = agentmodel;
 var Denuller       = nashorn.denuller;
 var Random         = shim.random;
 var StrictMath     = shim.strictmath;function setup() {
-  world.clearTurtles();
+  world.turtleManager.clearTurtles();
   notImplemented('clear-all-plots', undefined)();
-  world.createTurtles(world.observer.getGlobal('number'), '').ask(function() {
-    Prims.setVariable('color', Prims.item(Prims.random(world.observer.getGlobal('colors')), [5, 15, 25, 35, 45, 55, 65, 85, 95, 125]));
-    Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
+  world.turtleManager.createTurtles(world.observer.getGlobal('number'), '').ask(function() {
+    SelfPrims.setVariable('color', Prims.item(Prims.random(world.observer.getGlobal('colors')), [5, 15, 25, 35, 45, 55, 65, 85, 95, 125]));
+    SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
     Call(moveOffWall);
   }, true);
   world.ticker.reset();
 }
 function go() {
   if (Prims.equality(Prims.variance(world.turtles().projectionBy(function() {
-    return Prims.getVariable('color');
+    return SelfPrims.getVariable('color');
   })), 0)) {
     throw new Exception.StopInterrupt;
   }
   world.turtles().ask(function() {
-    Prims.right((Prims.random(50) - Prims.random(50)));
+    SelfPrims.right((Prims.random(50) - Prims.random(50)));
     Call(meet);
     if (Prims.equality(SelfManager.self().patchAhead(0.5).projectionBy(function() {
-      return Prims.getPatchVariable('pcolor');
+      return SelfPrims.getPatchVariable('pcolor');
     }), 0)) {
-      Prims.fd(0.5);
+      SelfPrims.fd(0.5);
     }
     else {
-      Prims.right(Prims.random(360));
+      SelfPrims.right(Prims.random(360));
     }
   }, true);
   Call(findTopSpecies);
@@ -60,8 +61,8 @@ function go() {
 function meet() {
   var candidate = Prims.oneOf(SelfManager.self().turtlesAt(1, 0));
   if (!Prims.equality(candidate, Nobody)) {
-    Prims.setVariable('color', candidate.projectionBy(function() {
-      return Prims.getVariable('color');
+    SelfPrims.setVariable('color', candidate.projectionBy(function() {
+      return SelfPrims.getVariable('color');
     }));
   }
 }
@@ -70,7 +71,7 @@ function findTopSpecies() {
   Tasks.forEach(Tasks.commandTask(function() {
     var taskArguments = arguments;
     var howMany = world.turtles().agentFilter(function() {
-      return Prims.equality(Prims.getVariable('color'), taskArguments[0]);
+      return Prims.equality(SelfPrims.getVariable('color'), taskArguments[0]);
     }).size();
     if (Prims.gt(howMany, winningAmount)) {
       winningAmount = howMany;
@@ -81,9 +82,9 @@ function findTopSpecies() {
 function placeWall() {
   if (notImplemented('mouse-down?', false)) {
     world.patches().agentFilter(function() {
-      return (Prims.equality(StrictMath.abs(Prims.getPatchVariable('pycor')), world.topology.maxPycor) || Prims.equality(Prims.getPatchVariable('pycor'), StrictMath.round(notImplemented('mouse-ycor', 0)())));
+      return (Prims.equality(StrictMath.abs(SelfPrims.getPatchVariable('pycor')), world.topology.maxPycor) || Prims.equality(SelfPrims.getPatchVariable('pycor'), StrictMath.round(notImplemented('mouse-ycor', 0)())));
     }).ask(function() {
-      Prims.setPatchVariable('pcolor', 9.9);
+      SelfPrims.setPatchVariable('pcolor', 9.9);
       SelfManager.self().turtlesHere().ask(function() {
         Call(moveOffWall);
       }, true);
@@ -94,9 +95,9 @@ function placeWall() {
 function removeWall() {
   if (notImplemented('mouse-down?', false)) {
     world.patches().agentFilter(function() {
-      return Prims.equality(Prims.getPatchVariable('pycor'), StrictMath.round(notImplemented('mouse-ycor', 0)()));
+      return Prims.equality(SelfPrims.getPatchVariable('pycor'), StrictMath.round(notImplemented('mouse-ycor', 0)()));
     }).ask(function() {
-      Prims.setPatchVariable('pcolor', 0);
+      SelfPrims.setPatchVariable('pcolor', 0);
     }, true);
     notImplemented('display', undefined)();
   }
@@ -105,8 +106,8 @@ function removeAllWalls() {
   world.clearPatches();
 }
 function moveOffWall() {
-  while (!Prims.equality(Prims.getPatchVariable('pcolor'), 0)) {
-    SelfManager.self().moveTo(Prims.oneOf(Prims.getNeighbors()));
+  while (!Prims.equality(SelfPrims.getPatchVariable('pcolor'), 0)) {
+    SelfManager.self().moveTo(Prims.oneOf(SelfPrims.getNeighbors()));
   }
 }
 world.observer.setGlobal('colors', 5);

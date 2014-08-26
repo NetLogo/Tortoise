@@ -3,6 +3,7 @@ var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
 var Prims         = workspace.prims;
+var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
 var Updater       = workspace.updater;
 var world         = workspace.world;
@@ -32,11 +33,11 @@ var StrictMath     = shim.strictmath;function setup() {
     return Call(groupSite_p);
   }));
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "person")
-  world.createTurtles(world.observer.getGlobal('number'), '').ask(function() {
+  world.turtleManager.createTurtles(world.observer.getGlobal('number'), '').ask(function() {
     Call(chooseSex);
-    Prims.setVariable('size', 3);
-    Prims.setVariable('my-group-site', Prims.oneOf(world.observer.getGlobal('group-sites')));
-    SelfManager.self().moveTo(Prims.getVariable('my-group-site'));
+    SelfPrims.setVariable('size', 3);
+    SelfPrims.setVariable('my-group-site', Prims.oneOf(world.observer.getGlobal('group-sites')));
+    SelfManager.self().moveTo(SelfPrims.getVariable('my-group-site'));
   }, true);
   world.turtles().ask(function() {
     Call(updateHappiness);
@@ -49,11 +50,11 @@ var StrictMath     = shim.strictmath;function setup() {
   world.ticker.reset();
 }
 function go() {
-  if (world.turtles().agentAll(function(){ return Prims.getVariable('happy?') })) {
+  if (world.turtles().agentAll(function(){ return SelfPrims.getVariable('happy?') })) {
     throw new Exception.StopInterrupt;
   }
   world.turtles().ask(function() {
-    SelfManager.self().moveTo(Prims.getVariable('my-group-site'));
+    SelfManager.self().moveTo(SelfPrims.getVariable('my-group-site'));
   }, true);
   world.turtles().ask(function() {
     Call(updateHappiness);
@@ -65,7 +66,7 @@ function go() {
   Call(updateLabels);
   Call(countBoringGroups);
   world.turtles().ask(function() {
-    Prims.setVariable('my-group-site', SelfManager.self().getPatchHere());
+    SelfPrims.setVariable('my-group-site', SelfManager.self().getPatchHere());
     Call(spreadOutVertically);
   }, true);
   world.ticker.tick();
@@ -73,17 +74,17 @@ function go() {
 function updateHappiness() {
   var total = SelfManager.self().turtlesHere().size();
   var same = SelfManager.self().turtlesHere().agentFilter(function() {
-    return Prims.equality(Prims.getVariable('color'), SelfManager.myself().projectionBy(function() {
-      return Prims.getVariable('color');
+    return Prims.equality(SelfPrims.getVariable('color'), SelfManager.myself().projectionBy(function() {
+      return SelfPrims.getVariable('color');
     }));
   }).size();
   var opposite = (total - same);
-  Prims.setVariable('happy?', Prims.lte((opposite / total), (world.observer.getGlobal('tolerance') / 100)));
+  SelfPrims.setVariable('happy?', Prims.lte((opposite / total), (world.observer.getGlobal('tolerance') / 100)));
 }
 function leaveIfUnhappy() {
-  if (!Prims.getVariable('happy?')) {
-    Prims.setVariable('heading', Prims.oneOf([90, 270]));
-    Prims.fd(1);
+  if (!SelfPrims.getVariable('happy?')) {
+    SelfPrims.setVariable('heading', Prims.oneOf([90, 270]));
+    SelfPrims.fd(1);
   }
 }
 function findNewGroups() {
@@ -95,61 +96,61 @@ function findNewGroups() {
     throw new Exception.StopInterrupt;
   }
   malcontents.ask(function() {
-    Prims.fd(1);
+    SelfPrims.fd(1);
   }, true);
   Call(findNewGroups);
 }
 function groupSite_p() {
   var groupInterval = StrictMath.floor((world.topology.width / world.observer.getGlobal('num-groups')));
-  return (((Prims.equality(Prims.getPatchVariable('pycor'), 0) && Prims.lte(Prims.getPatchVariable('pxcor'), 0)) && Prims.equality(Prims.mod(Prims.getPatchVariable('pxcor'), groupInterval), 0)) && Prims.lt(StrictMath.floor(( -Prims.getPatchVariable('pxcor') / groupInterval)), world.observer.getGlobal('num-groups')));
+  return (((Prims.equality(SelfPrims.getPatchVariable('pycor'), 0) && Prims.lte(SelfPrims.getPatchVariable('pxcor'), 0)) && Prims.equality(Prims.mod(SelfPrims.getPatchVariable('pxcor'), groupInterval), 0)) && Prims.lt(StrictMath.floor(( -SelfPrims.getPatchVariable('pxcor') / groupInterval)), world.observer.getGlobal('num-groups')));
 }
 function spreadOutVertically() {
   if (Call(woman_p)) {
-    Prims.setVariable('heading', 180);
+    SelfPrims.setVariable('heading', 180);
   }
   else {
-    Prims.setVariable('heading', 0);
+    SelfPrims.setVariable('heading', 0);
   }
-  Prims.fd(4);
-  while (Prims.other(SelfManager.self().turtlesHere()).nonEmpty()) {
+  SelfPrims.fd(4);
+  while (SelfPrims.other(SelfManager.self().turtlesHere()).nonEmpty()) {
     if (SelfManager.self().canMove(2)) {
-      Prims.fd(1);
+      SelfPrims.fd(1);
     }
     else {
-      Prims.setVariable('xcor', (Prims.getVariable('xcor') - 1));
-      Prims.setVariable('ycor', 0);
-      Prims.fd(4);
+      SelfPrims.setVariable('xcor', (SelfPrims.getVariable('xcor') - 1));
+      SelfPrims.setVariable('ycor', 0);
+      SelfPrims.fd(4);
     }
   }
 }
 function countBoringGroups() {
   world.observer.getGlobal('group-sites').ask(function() {
     if (Call(boring_p)) {
-      Prims.setPatchVariable('plabel-color', 5);
+      SelfPrims.setPatchVariable('plabel-color', 5);
     }
     else {
-      Prims.setPatchVariable('plabel-color', 9.9);
+      SelfPrims.setPatchVariable('plabel-color', 9.9);
     }
   }, true);
   world.observer.setGlobal('boring-groups', world.observer.getGlobal('group-sites').agentFilter(function() {
-    return Prims.equality(Prims.getPatchVariable('plabel-color'), 5);
+    return Prims.equality(SelfPrims.getPatchVariable('plabel-color'), 5);
   }).size());
 }
 function boring_p() {
   return Prims.equality(Prims.length(Prims.removeDuplicates(SelfManager.self().turtlesHere().projectionBy(function() {
-    return Prims.getVariable('color');
+    return SelfPrims.getVariable('color');
   }))), 1);
 }
 function updateLabels() {
   world.observer.getGlobal('group-sites').ask(function() {
-    Prims.setPatchVariable('plabel', SelfManager.self().turtlesHere().size());
+    SelfPrims.setPatchVariable('plabel', SelfManager.self().turtlesHere().size());
   }, true);
 }
 function chooseSex() {
-  Prims.setVariable('color', Prims.oneOf([135, 105]));
+  SelfPrims.setVariable('color', Prims.oneOf([135, 105]));
 }
 function woman_p() {
-  return Prims.equality(Prims.getVariable('color'), 135);
+  return Prims.equality(SelfPrims.getVariable('color'), 135);
 }
 world.observer.setGlobal('tolerance', 25);
 world.observer.setGlobal('number', 70);

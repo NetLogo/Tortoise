@@ -3,6 +3,7 @@ var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
 var Prims         = workspace.prims;
+var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
 var Updater       = workspace.updater;
 var world         = workspace.world;
@@ -30,12 +31,12 @@ var StrictMath     = shim.strictmath;function setup() {
   world.clearAll();
   world.observer.setGlobal('traps-triggered', 0);
   world.patches().ask(function() {
-    Prims.setPatchVariable('pcolor', (105 + 3));
+    SelfPrims.setPatchVariable('pcolor', (105 + 3));
   }, true);
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
-  world.createTurtles(1, '').ask(function() {
-    Prims.setVariable('color', 9.9);
-    Prims.setVariable('size', 1.5);
+  world.turtleManager.createTurtles(1, '').ask(function() {
+    SelfPrims.setVariable('color', 9.9);
+    SelfPrims.setVariable('size', 1.5);
   }, true);
   world.ticker.reset();
 }
@@ -44,13 +45,13 @@ function go() {
     throw new Exception.StopInterrupt;
   }
   world.turtles().ask(function() {
-    if (Prims.equality(Prims.getPatchVariable('pcolor'), 15)) {
-      Prims.die();
+    if (Prims.equality(SelfPrims.getPatchVariable('pcolor'), 15)) {
+      SelfPrims.die();
     }
     else {
-      Prims.setPatchVariable('pcolor', 15);
+      SelfPrims.setPatchVariable('pcolor', 15);
       world.observer.setGlobal('traps-triggered', (world.observer.getGlobal('traps-triggered') + 1));
-      Prims.hatch(1, '').ask(function() {
+      SelfPrims.hatch(1, '').ask(function() {
         Call(move);
       }, true);
       Call(move);
@@ -59,7 +60,7 @@ function go() {
   world.ticker.tick();
 }
 function move() {
-  Prims.right(Prims.randomFloat(360));
-  Prims.fd(Prims.randomFloat(world.observer.getGlobal('max-distance')));
+  SelfPrims.right(Prims.randomFloat(360));
+  SelfPrims.fd(Prims.randomFloat(world.observer.getGlobal('max-distance')));
 }
 world.observer.setGlobal('max-distance', 4.5);

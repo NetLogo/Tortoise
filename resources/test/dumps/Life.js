@@ -3,6 +3,7 @@ var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
 var Prims         = workspace.prims;
+var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
 var Updater       = workspace.updater;
 var world         = workspace.world;
@@ -46,25 +47,25 @@ function setupRandom() {
   world.ticker.reset();
 }
 function cellBirth() {
-  Prims.setPatchVariable('living?', true);
-  Prims.setPatchVariable('pcolor', world.observer.getGlobal('fgcolor'));
+  SelfPrims.setPatchVariable('living?', true);
+  SelfPrims.setPatchVariable('pcolor', world.observer.getGlobal('fgcolor'));
 }
 function cellDeath() {
-  Prims.setPatchVariable('living?', false);
-  Prims.setPatchVariable('pcolor', world.observer.getGlobal('bgcolor'));
+  SelfPrims.setPatchVariable('living?', false);
+  SelfPrims.setPatchVariable('pcolor', world.observer.getGlobal('bgcolor'));
 }
 function go() {
   world.patches().ask(function() {
-    Prims.setPatchVariable('live-neighbors', Prims.getNeighbors().agentFilter(function() {
-      return Prims.getPatchVariable('living?');
+    SelfPrims.setPatchVariable('live-neighbors', SelfPrims.getNeighbors().agentFilter(function() {
+      return SelfPrims.getPatchVariable('living?');
     }).size());
   }, true);
   world.patches().ask(function() {
-    if (Prims.equality(Prims.getPatchVariable('live-neighbors'), 3)) {
+    if (Prims.equality(SelfPrims.getPatchVariable('live-neighbors'), 3)) {
       Call(cellBirth);
     }
     else {
-      if (!Prims.equality(Prims.getPatchVariable('live-neighbors'), 2)) {
+      if (!Prims.equality(SelfPrims.getPatchVariable('live-neighbors'), 2)) {
         Call(cellDeath);
       }
     }
@@ -72,11 +73,11 @@ function go() {
   world.ticker.tick();
 }
 function drawCells() {
-  var erasing_p = Prims.patch(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)()).projectionBy(function() {
-    return Prims.getPatchVariable('living?');
+  var erasing_p = world.getPatchAt(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)()).projectionBy(function() {
+    return SelfPrims.getPatchVariable('living?');
   });
   while (notImplemented('mouse-down?', false)) {
-    Prims.patch(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)()).ask(function() {
+    world.getPatchAt(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)()).ask(function() {
       if (erasing_p) {
         Call(cellDeath);
       }

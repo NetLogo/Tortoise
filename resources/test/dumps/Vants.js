@@ -3,6 +3,7 @@ var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
 var Prims         = workspace.prims;
+var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
 var Updater       = workspace.updater;
 var world         = workspace.world;
@@ -29,12 +30,12 @@ var Random         = shim.random;
 var StrictMath     = shim.strictmath;function setup() {
   world.clearAll();
   world.patches().ask(function() {
-    Prims.setPatchVariable('pcolor', 9.9);
+    SelfPrims.setPatchVariable('pcolor', 9.9);
   }, true);
-  world.createTurtles(world.observer.getGlobal('num-vants'), '').ask(function() {
-    SelfManager.self().face(Prims.oneOf(Prims.getNeighbors4()));
-    Prims.setVariable('color', 15);
-    Prims.setVariable('size', 6);
+  world.turtleManager.createTurtles(world.observer.getGlobal('num-vants'), '').ask(function() {
+    SelfManager.self().face(Prims.oneOf(SelfPrims.getNeighbors4()));
+    SelfPrims.setVariable('color', 15);
+    SelfPrims.setVariable('size', 6);
   }, true);
   world.ticker.reset();
 }
@@ -42,7 +43,7 @@ function goForward() {
   Tasks.forEach(Tasks.commandTask(function() {
     var taskArguments = arguments;
     taskArguments[0].ask(function() {
-      Prims.fd(1);
+      SelfPrims.fd(1);
       Call(turn);
     }, true);
   }), Prims.sort(world.turtles()));
@@ -53,19 +54,19 @@ function goReverse() {
     var taskArguments = arguments;
     taskArguments[0].ask(function() {
       Call(turn);
-      Prims.bk(1);
+      SelfPrims.bk(1);
     }, true);
   }), Prims.reverse(Prims.sort(world.turtles())));
   world.ticker.tick();
 }
 function turn() {
-  if (Prims.equality(Prims.getPatchVariable('pcolor'), 9.9)) {
-    Prims.setPatchVariable('pcolor', 0);
-    Prims.right(90);
+  if (Prims.equality(SelfPrims.getPatchVariable('pcolor'), 9.9)) {
+    SelfPrims.setPatchVariable('pcolor', 0);
+    SelfPrims.right(90);
   }
   else {
-    Prims.setPatchVariable('pcolor', 9.9);
-    Prims.left(90);
+    SelfPrims.setPatchVariable('pcolor', 9.9);
+    SelfPrims.left(90);
   }
 }
 world.observer.setGlobal('num-vants', 1);

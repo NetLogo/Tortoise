@@ -3,6 +3,7 @@ var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
 var Prims         = workspace.prims;
+var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
 var Updater       = workspace.updater;
 var world         = workspace.world;
@@ -28,25 +29,25 @@ var Denuller       = nashorn.denuller;
 var Random         = shim.random;
 var StrictMath     = shim.strictmath;function setup() {
   world.clearAll();
-  world.createTurtles(world.observer.getGlobal('number'), '').ask(function() {
-    Prims.setVariable('color', (5 + (Prims.random(world.observer.getGlobal('colors')) * 10)));
-    if (Prims.equality(Prims.getVariable('color'), 75)) {
-      Prims.setVariable('color', 125);
+  world.turtleManager.createTurtles(world.observer.getGlobal('number'), '').ask(function() {
+    SelfPrims.setVariable('color', (5 + (Prims.random(world.observer.getGlobal('colors')) * 10)));
+    if (Prims.equality(SelfPrims.getVariable('color'), 75)) {
+      SelfPrims.setVariable('color', 125);
     }
-    Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
+    SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
   }, true);
   world.ticker.reset();
 }
 function go() {
   if (Prims.equality(Prims.variance(world.turtles().projectionBy(function() {
-    return Prims.getVariable('color');
+    return SelfPrims.getVariable('color');
   })), 0)) {
     throw new Exception.StopInterrupt;
   }
   world.turtles().ask(function() {
-    Prims.right(Prims.random(50));
-    Prims.left(Prims.random(50));
-    Prims.fd(1);
+    SelfPrims.right(Prims.random(50));
+    SelfPrims.left(Prims.random(50));
+    SelfPrims.fd(1);
   }, true);
   Call(birth);
   Call(death);
@@ -54,8 +55,8 @@ function go() {
 }
 function birth() {
   world.turtles().ask(function() {
-    Prims.hatch(Prims.random(5), '').ask(function() {
-      Prims.fd(1);
+    SelfPrims.hatch(Prims.random(5), '').ask(function() {
+      SelfPrims.fd(1);
     }, true);
   }, true);
 }
@@ -63,7 +64,7 @@ function death() {
   var totalTurtles = world.turtles().size();
   world.turtles().ask(function() {
     if (Prims.gt(Prims.random(totalTurtles), world.observer.getGlobal('number'))) {
-      Prims.die();
+      SelfPrims.die();
     }
   }, true);
 }

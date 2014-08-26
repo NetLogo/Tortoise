@@ -3,6 +3,7 @@ var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
 var Prims         = workspace.prims;
+var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
 var Updater       = workspace.updater;
 var world         = workspace.world;
@@ -28,10 +29,10 @@ var Denuller       = nashorn.denuller;
 var Random         = shim.random;
 var StrictMath     = shim.strictmath;function setupBlank() {
   world.clearAll();
-  BreedManager.setDefaultShape(world.turtlesOfBreed("CELLS").getBreedName(), "circle")
-  BreedManager.setDefaultShape(world.turtlesOfBreed("BABIES").getBreedName(), "dot")
+  BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("CELLS").getBreedName(), "circle")
+  BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("BABIES").getBreedName(), "dot")
   world.patches().ask(function() {
-    Prims.setPatchVariable('live-neighbors', 0);
+    SelfPrims.setPatchVariable('live-neighbors', 0);
   }, true);
   world.ticker.reset();
 }
@@ -39,52 +40,52 @@ function setupRandom() {
   Call(setupBlank);
   world.patches().ask(function() {
     if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal('initial-density'))) {
-      Prims.sprout(1, 'BABIES').ask(function() {}, true);
+      SelfPrims.sprout(1, 'BABIES').ask(function() {}, true);
     }
   }, true);
   Call(go);
   world.ticker.reset();
 }
 function birth() {
-  Prims.sprout(1, 'BABIES').ask(function() {
-    Prims.setVariable('color', (65 + 1));
+  SelfPrims.sprout(1, 'BABIES').ask(function() {
+    SelfPrims.setVariable('color', (65 + 1));
   }, true);
 }
 function go() {
-  world.turtlesOfBreed("CELLS").agentFilter(function() {
-    return Prims.equality(Prims.getVariable('color'), 5);
+  world.turtleManager.turtlesOfBreed("CELLS").agentFilter(function() {
+    return Prims.equality(SelfPrims.getVariable('color'), 5);
   }).ask(function() {
-    Prims.die();
+    SelfPrims.die();
   }, true);
-  world.turtlesOfBreed("BABIES").ask(function() {
-    Prims.setVariable('breed', world.turtlesOfBreed("CELLS"));
-    Prims.setVariable('color', 9.9);
+  world.turtleManager.turtlesOfBreed("BABIES").ask(function() {
+    SelfPrims.setVariable('breed', world.turtleManager.turtlesOfBreed("CELLS"));
+    SelfPrims.setVariable('color', 9.9);
   }, true);
-  world.turtlesOfBreed("CELLS").ask(function() {
-    Prims.getNeighbors().ask(function() {
-      Prims.setPatchVariable('live-neighbors', (Prims.getPatchVariable('live-neighbors') + 1));
+  world.turtleManager.turtlesOfBreed("CELLS").ask(function() {
+    SelfPrims.getNeighbors().ask(function() {
+      SelfPrims.setPatchVariable('live-neighbors', (SelfPrims.getPatchVariable('live-neighbors') + 1));
     }, true);
   }, true);
-  world.turtlesOfBreed("CELLS").ask(function() {
-    if ((Prims.equality(Prims.getPatchVariable('live-neighbors'), 2) || Prims.equality(Prims.getPatchVariable('live-neighbors'), 3))) {
-      Prims.setVariable('color', 9.9);
+  world.turtleManager.turtlesOfBreed("CELLS").ask(function() {
+    if ((Prims.equality(SelfPrims.getPatchVariable('live-neighbors'), 2) || Prims.equality(SelfPrims.getPatchVariable('live-neighbors'), 3))) {
+      SelfPrims.setVariable('color', 9.9);
     }
     else {
-      Prims.setVariable('color', 5);
+      SelfPrims.setVariable('color', 5);
     }
   }, true);
   world.patches().ask(function() {
-    if ((!SelfManager.self().breedHere("CELLS").nonEmpty() && Prims.equality(Prims.getPatchVariable('live-neighbors'), 3))) {
+    if ((!SelfManager.self().breedHere("CELLS").nonEmpty() && Prims.equality(SelfPrims.getPatchVariable('live-neighbors'), 3))) {
       Call(birth);
     }
-    Prims.setPatchVariable('live-neighbors', 0);
+    SelfPrims.setPatchVariable('live-neighbors', 0);
   }, true);
   world.ticker.tick();
 }
 function drawCells() {
-  var erasing_p = Prims.breedOn("CELLS", Prims.patch(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)())).nonEmpty();
+  var erasing_p = Prims.breedOn("CELLS", world.getPatchAt(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)())).nonEmpty();
   while (notImplemented('mouse-down?', false)) {
-    Prims.patch(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)()).ask(function() {
+    world.getPatchAt(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)()).ask(function() {
       if (erasing_p) {
         Call(erase);
       }
@@ -98,50 +99,50 @@ function drawCells() {
 function draw() {
   if (!SelfManager.self().breedHere("CELLS").nonEmpty()) {
     SelfManager.self().turtlesHere().ask(function() {
-      Prims.die();
+      SelfPrims.die();
     }, true);
-    Prims.sprout(1, 'CELLS').ask(function() {
-      Prims.setVariable('color', 9.9);
+    SelfPrims.sprout(1, 'CELLS').ask(function() {
+      SelfPrims.setVariable('color', 9.9);
     }, true);
     Call(update);
-    Prims.getNeighbors().ask(function() {
+    SelfPrims.getNeighbors().ask(function() {
       Call(update);
     }, true);
   }
 }
 function erase() {
   SelfManager.self().turtlesHere().ask(function() {
-    Prims.die();
+    SelfPrims.die();
   }, true);
   Call(update);
-  Prims.getNeighbors().ask(function() {
+  SelfPrims.getNeighbors().ask(function() {
     Call(update);
   }, true);
 }
 function update() {
   SelfManager.self().breedHere("BABIES").ask(function() {
-    Prims.die();
+    SelfPrims.die();
   }, true);
-  var n = Prims.breedOn("CELLS", Prims.getNeighbors()).size();
+  var n = Prims.breedOn("CELLS", SelfPrims.getNeighbors()).size();
   if (SelfManager.self().breedHere("CELLS").nonEmpty()) {
     if ((Prims.equality(n, 2) || Prims.equality(n, 3))) {
       SelfManager.self().breedHere("CELLS").ask(function() {
-        Prims.setVariable('color', 9.9);
+        SelfPrims.setVariable('color', 9.9);
       }, true);
     }
     else {
       SelfManager.self().breedHere("CELLS").ask(function() {
-        Prims.setVariable('color', 5);
+        SelfPrims.setVariable('color', 5);
       }, true);
     }
   }
   else {
     if (Prims.equality(n, 3)) {
-      Prims.sprout(1, 'BABIES').ask(function() {
-        Prims.setVariable('color', (65 + 1));
+      SelfPrims.sprout(1, 'BABIES').ask(function() {
+        SelfPrims.setVariable('color', (65 + 1));
       }, true);
     }
   }
-  Prims.setPatchVariable('live-neighbors', 0);
+  SelfPrims.setPatchVariable('live-neighbors', 0);
 }
 world.observer.setGlobal('initial-density', 35);

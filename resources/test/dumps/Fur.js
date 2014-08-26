@@ -3,6 +3,7 @@ var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
 var Prims         = workspace.prims;
+var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
 var Updater       = workspace.updater;
 var world         = workspace.world;
@@ -29,11 +30,11 @@ var Random         = shim.random;
 var StrictMath     = shim.strictmath;function setup() {
   world.clearAll();
   world.patches().ask(function() {
-    Prims.setPatchVariable('inner-neighbors', Call(ellipseIn, world.observer.getGlobal('inner-radius-x'), world.observer.getGlobal('inner-radius-y')));
-    Prims.setPatchVariable('outer-neighbors', Call(ellipseRing, world.observer.getGlobal('outer-radius-x'), world.observer.getGlobal('outer-radius-y'), world.observer.getGlobal('inner-radius-x'), world.observer.getGlobal('inner-radius-y')));
+    SelfPrims.setPatchVariable('inner-neighbors', Call(ellipseIn, world.observer.getGlobal('inner-radius-x'), world.observer.getGlobal('inner-radius-y')));
+    SelfPrims.setPatchVariable('outer-neighbors', Call(ellipseRing, world.observer.getGlobal('outer-radius-x'), world.observer.getGlobal('outer-radius-y'), world.observer.getGlobal('inner-radius-x'), world.observer.getGlobal('inner-radius-y')));
   }, true);
   if (world.patches().agentFilter(function() {
-    return Prims.equality(Prims.getPatchVariable('outer-neighbors').size(), 0);
+    return Prims.equality(SelfPrims.getPatchVariable('outer-neighbors').size(), 0);
   }).nonEmpty()) {
     notImplemented('user-message', undefined)((Dump("") + Dump("It doesn't make sense that 'outer' is equal to or smaller than 'inner.' ") + Dump(" Please reset the sliders and press Setup again.")));
     throw new Exception.StopInterrupt;
@@ -46,10 +47,10 @@ var StrictMath     = shim.strictmath;function setup() {
 function restart() {
   world.patches().ask(function() {
     if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal('initial-density'))) {
-      Prims.setPatchVariable('pcolor', 9.9);
+      SelfPrims.setPatchVariable('pcolor', 9.9);
     }
     else {
-      Prims.setPatchVariable('pcolor', 0);
+      SelfPrims.setPatchVariable('pcolor', 0);
     }
   }, true);
   world.ticker.reset();
@@ -59,24 +60,24 @@ function go() {
     Call(pickNewColor);
   }, true);
   world.patches().ask(function() {
-    Prims.setPatchVariable('pcolor', Prims.getPatchVariable('new-color'));
+    SelfPrims.setPatchVariable('pcolor', SelfPrims.getPatchVariable('new-color'));
   }, true);
   world.ticker.tick();
 }
 function pickNewColor() {
-  var activator = Prims.getPatchVariable('inner-neighbors').agentFilter(function() {
-    return Prims.equality(Prims.getPatchVariable('pcolor'), 9.9);
+  var activator = SelfPrims.getPatchVariable('inner-neighbors').agentFilter(function() {
+    return Prims.equality(SelfPrims.getPatchVariable('pcolor'), 9.9);
   }).size();
-  var inhibitor = Prims.getPatchVariable('outer-neighbors').agentFilter(function() {
-    return Prims.equality(Prims.getPatchVariable('pcolor'), 9.9);
+  var inhibitor = SelfPrims.getPatchVariable('outer-neighbors').agentFilter(function() {
+    return Prims.equality(SelfPrims.getPatchVariable('pcolor'), 9.9);
   }).size();
   var difference = (activator - (world.observer.getGlobal('ratio') * inhibitor));
   if (Prims.gt(difference, 0)) {
-    Prims.setPatchVariable('new-color', 9.9);
+    SelfPrims.setPatchVariable('new-color', 9.9);
   }
   else {
     if (Prims.lt(difference, 0)) {
-      Prims.setPatchVariable('new-color', 0);
+      SelfPrims.setPatchVariable('new-color', 0);
     }
   }
 }
@@ -92,12 +93,12 @@ function ellipseRing(outxRadius, outyRadius, inxRadius, inyRadius) {
 }
 function xdistance(otherPatch) {
   return SelfManager.self().distanceXY(otherPatch.projectionBy(function() {
-    return Prims.getPatchVariable('pxcor');
-  }), Prims.getPatchVariable('pycor'));
+    return SelfPrims.getPatchVariable('pxcor');
+  }), SelfPrims.getPatchVariable('pycor'));
 }
 function ydistance(otherPatch) {
-  return SelfManager.self().distanceXY(Prims.getPatchVariable('pxcor'), otherPatch.projectionBy(function() {
-    return Prims.getPatchVariable('pycor');
+  return SelfManager.self().distanceXY(SelfPrims.getPatchVariable('pxcor'), otherPatch.projectionBy(function() {
+    return SelfPrims.getPatchVariable('pycor');
   }));
 }
 world.observer.setGlobal('initial-density', 50);

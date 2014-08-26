@@ -3,6 +3,7 @@ var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
 var Prims         = workspace.prims;
+var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
 var Updater       = workspace.updater;
 var world         = workspace.world;
@@ -65,10 +66,10 @@ function initializeVariables() {
   world.observer.setGlobal('last100coop', []);
 }
 function createTurtle() {
-  Prims.sprout(1, 'TURTLES').ask(function() {
-    Prims.setVariable('color', Call(randomColor));
-    Prims.setVariable('cooperate-with-same?', Prims.lt(Prims.randomFloat(1), world.observer.getGlobal('immigrant-chance-cooperate-with-same')));
-    Prims.setVariable('cooperate-with-different?', Prims.lt(Prims.randomFloat(1), world.observer.getGlobal('immigrant-chance-cooperate-with-different')));
+  SelfPrims.sprout(1, 'TURTLES').ask(function() {
+    SelfPrims.setVariable('color', Call(randomColor));
+    SelfPrims.setVariable('cooperate-with-same?', Prims.lt(Prims.randomFloat(1), world.observer.getGlobal('immigrant-chance-cooperate-with-same')));
+    SelfPrims.setVariable('cooperate-with-different?', Prims.lt(Prims.randomFloat(1), world.observer.getGlobal('immigrant-chance-cooperate-with-different')));
     Call(updateShape);
   }, true);
 }
@@ -87,7 +88,7 @@ function go() {
   Call(clearStats);
   Call(immigrate);
   world.turtles().ask(function() {
-    Prims.setVariable('ptr', world.observer.getGlobal('initial-ptr'));
+    SelfPrims.setVariable('ptr', world.observer.getGlobal('initial-ptr'));
   }, true);
   world.turtles().ask(function() {
     Call(interact);
@@ -109,39 +110,39 @@ function immigrate() {
   }, true);
 }
 function interact() {
-  Prims.turtlesOn(Prims.getNeighbors4()).ask(function() {
+  Prims.turtlesOn(SelfPrims.getNeighbors4()).ask(function() {
     world.observer.setGlobal('meet', (world.observer.getGlobal('meet') + 1));
     world.observer.setGlobal('meet-agg', (world.observer.getGlobal('meet-agg') + 1));
-    if (Prims.equality(Prims.getVariable('color'), SelfManager.myself().projectionBy(function() {
-      return Prims.getVariable('color');
+    if (Prims.equality(SelfPrims.getVariable('color'), SelfManager.myself().projectionBy(function() {
+      return SelfPrims.getVariable('color');
     }))) {
       world.observer.setGlobal('meetown', (world.observer.getGlobal('meetown') + 1));
       world.observer.setGlobal('meetown-agg', (world.observer.getGlobal('meetown-agg') + 1));
       if (SelfManager.myself().projectionBy(function() {
-        return Prims.getVariable('cooperate-with-same?');
+        return SelfPrims.getVariable('cooperate-with-same?');
       })) {
         world.observer.setGlobal('coopown', (world.observer.getGlobal('coopown') + 1));
         world.observer.setGlobal('coopown-agg', (world.observer.getGlobal('coopown-agg') + 1));
         SelfManager.myself().ask(function() {
-          Prims.setVariable('ptr', (Prims.getVariable('ptr') - world.observer.getGlobal('cost-of-giving')));
+          SelfPrims.setVariable('ptr', (SelfPrims.getVariable('ptr') - world.observer.getGlobal('cost-of-giving')));
         }, true);
-        Prims.setVariable('ptr', (Prims.getVariable('ptr') + world.observer.getGlobal('gain-of-receiving')));
+        SelfPrims.setVariable('ptr', (SelfPrims.getVariable('ptr') + world.observer.getGlobal('gain-of-receiving')));
       }
     }
-    if (!Prims.equality(Prims.getVariable('color'), SelfManager.myself().projectionBy(function() {
-      return Prims.getVariable('color');
+    if (!Prims.equality(SelfPrims.getVariable('color'), SelfManager.myself().projectionBy(function() {
+      return SelfPrims.getVariable('color');
     }))) {
       world.observer.setGlobal('meetother', (world.observer.getGlobal('meetother') + 1));
       world.observer.setGlobal('meetother-agg', (world.observer.getGlobal('meetother-agg') + 1));
       if (SelfManager.myself().projectionBy(function() {
-        return Prims.getVariable('cooperate-with-different?');
+        return SelfPrims.getVariable('cooperate-with-different?');
       })) {
         world.observer.setGlobal('coopother', (world.observer.getGlobal('coopother') + 1));
         world.observer.setGlobal('coopother-agg', (world.observer.getGlobal('coopother-agg') + 1));
         SelfManager.myself().ask(function() {
-          Prims.setVariable('ptr', (Prims.getVariable('ptr') - world.observer.getGlobal('cost-of-giving')));
+          SelfPrims.setVariable('ptr', (SelfPrims.getVariable('ptr') - world.observer.getGlobal('cost-of-giving')));
         }, true);
-        Prims.setVariable('ptr', (Prims.getVariable('ptr') + world.observer.getGlobal('gain-of-receiving')));
+        SelfPrims.setVariable('ptr', (SelfPrims.getVariable('ptr') + world.observer.getGlobal('gain-of-receiving')));
       }
       else {
         world.observer.setGlobal('defother', (world.observer.getGlobal('defother') + 1));
@@ -151,12 +152,12 @@ function interact() {
   }, true);
 }
 function reproduce() {
-  if (Prims.lt(Prims.randomFloat(1), Prims.getVariable('ptr'))) {
-    var destination = Prims.oneOf(Prims.getNeighbors4().agentFilter(function() {
+  if (Prims.lt(Prims.randomFloat(1), SelfPrims.getVariable('ptr'))) {
+    var destination = Prims.oneOf(SelfPrims.getNeighbors4().agentFilter(function() {
       return !SelfManager.self().turtlesHere().nonEmpty();
     }));
     if (!Prims.equality(destination, Nobody)) {
-      Prims.hatch(1, '').ask(function() {
+      SelfPrims.hatch(1, '').ask(function() {
         SelfManager.self().moveTo(destination);
         Call(mutate);
       }, true);
@@ -165,56 +166,56 @@ function reproduce() {
 }
 function mutate() {
   if (Prims.lt(Prims.randomFloat(1), world.observer.getGlobal('mutation-rate'))) {
-    var oldColor = Prims.getVariable('color');
-    while (Prims.equality(Prims.getVariable('color'), oldColor)) {
-      Prims.setVariable('color', Call(randomColor));
+    var oldColor = SelfPrims.getVariable('color');
+    while (Prims.equality(SelfPrims.getVariable('color'), oldColor)) {
+      SelfPrims.setVariable('color', Call(randomColor));
     }
   }
   if (Prims.lt(Prims.randomFloat(1), world.observer.getGlobal('mutation-rate'))) {
-    Prims.setVariable('cooperate-with-same?', !Prims.getVariable('cooperate-with-same?'));
+    SelfPrims.setVariable('cooperate-with-same?', !SelfPrims.getVariable('cooperate-with-same?'));
   }
   if (Prims.lt(Prims.randomFloat(1), world.observer.getGlobal('mutation-rate'))) {
-    Prims.setVariable('cooperate-with-different?', !Prims.getVariable('cooperate-with-different?'));
+    SelfPrims.setVariable('cooperate-with-different?', !SelfPrims.getVariable('cooperate-with-different?'));
   }
   Call(updateShape);
 }
 function death() {
   world.turtles().ask(function() {
     if (Prims.lt(Prims.randomFloat(1), world.observer.getGlobal('death-rate'))) {
-      Prims.die();
+      SelfPrims.die();
     }
   }, true);
 }
 function updateShape() {
-  if (Prims.getVariable('cooperate-with-same?')) {
-    if (Prims.getVariable('cooperate-with-different?')) {
-      Prims.setVariable('shape', "circle");
+  if (SelfPrims.getVariable('cooperate-with-same?')) {
+    if (SelfPrims.getVariable('cooperate-with-different?')) {
+      SelfPrims.setVariable('shape', "circle");
     }
     else {
-      Prims.setVariable('shape', "circle 2");
+      SelfPrims.setVariable('shape', "circle 2");
     }
   }
   else {
-    if (Prims.getVariable('cooperate-with-different?')) {
-      Prims.setVariable('shape', "square");
+    if (SelfPrims.getVariable('cooperate-with-different?')) {
+      SelfPrims.setVariable('shape', "square");
     }
     else {
-      Prims.setVariable('shape', "square 2");
+      SelfPrims.setVariable('shape', "square 2");
     }
   }
 }
 function updateStats() {
   world.observer.setGlobal('last100dd', Call(shorten, Prims.lput(world.turtles().agentFilter(function() {
-    return Prims.equality(Prims.getVariable('shape'), "square 2");
+    return Prims.equality(SelfPrims.getVariable('shape'), "square 2");
   }).size(), world.observer.getGlobal('last100dd'))));
   world.observer.setGlobal('last100cc', Call(shorten, Prims.lput(world.turtles().agentFilter(function() {
-    return Prims.equality(Prims.getVariable('shape'), "circle");
+    return Prims.equality(SelfPrims.getVariable('shape'), "circle");
   }).size(), world.observer.getGlobal('last100cc'))));
   world.observer.setGlobal('last100cd', Call(shorten, Prims.lput(world.turtles().agentFilter(function() {
-    return Prims.equality(Prims.getVariable('shape'), "circle 2");
+    return Prims.equality(SelfPrims.getVariable('shape'), "circle 2");
   }).size(), world.observer.getGlobal('last100cd'))));
   world.observer.setGlobal('last100dc', Call(shorten, Prims.lput(world.turtles().agentFilter(function() {
-    return Prims.equality(Prims.getVariable('shape'), "square");
+    return Prims.equality(SelfPrims.getVariable('shape'), "square");
   }).size(), world.observer.getGlobal('last100dc'))));
   world.observer.setGlobal('last100coopown', Call(shorten, Prims.lput(world.observer.getGlobal('coopown'), world.observer.getGlobal('last100coopown'))));
   world.observer.setGlobal('last100defother', Call(shorten, Prims.lput(world.observer.getGlobal('defother'), world.observer.getGlobal('last100defother'))));

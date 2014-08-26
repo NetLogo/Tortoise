@@ -3,6 +3,7 @@ var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
 var Prims         = workspace.prims;
+var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
 var Updater       = workspace.updater;
 var world         = workspace.world;
@@ -33,18 +34,18 @@ var StrictMath     = shim.strictmath;function setup() {
     throw new Exception.StopInterrupt;
   }
   Prims.nOf(world.observer.getGlobal('number'), world.patches()).ask(function() {
-    Prims.sprout(1, 'TURTLES').ask(function() {
-      Prims.setVariable('color', 15);
+    SelfPrims.sprout(1, 'TURTLES').ask(function() {
+      SelfPrims.setVariable('color', 15);
     }, true);
   }, true);
   Prims.nOf((world.observer.getGlobal('number') / 2), world.turtles()).ask(function() {
-    Prims.setVariable('color', 55);
+    SelfPrims.setVariable('color', 55);
   }, true);
   Call(updateVariables);
   world.ticker.reset();
 }
 function go() {
-  if (world.turtles().agentAll(function(){ return Prims.getVariable('happy?') })) {
+  if (world.turtles().agentAll(function(){ return SelfPrims.getVariable('happy?') })) {
     throw new Exception.StopInterrupt;
   }
   Call(moveUnhappyTurtles);
@@ -53,15 +54,15 @@ function go() {
 }
 function moveUnhappyTurtles() {
   world.turtles().agentFilter(function() {
-    return !Prims.getVariable('happy?');
+    return !SelfPrims.getVariable('happy?');
   }).ask(function() {
     Call(findNewSpot);
   }, true);
 }
 function findNewSpot() {
-  Prims.right(Prims.randomFloat(360));
-  Prims.fd(Prims.randomFloat(10));
-  if (Prims.other(SelfManager.self().turtlesHere()).nonEmpty()) {
+  SelfPrims.right(Prims.randomFloat(360));
+  SelfPrims.fd(Prims.randomFloat(10));
+  if (SelfPrims.other(SelfManager.self().turtlesHere()).nonEmpty()) {
     Call(findNewSpot);
   }
   SelfManager.self().moveTo(SelfManager.self().getPatchHere());
@@ -72,30 +73,30 @@ function updateVariables() {
 }
 function updateTurtles() {
   world.turtles().ask(function() {
-    Prims.setVariable('similar-nearby', Prims.turtlesOn(Prims.getNeighbors()).agentFilter(function() {
-      return Prims.equality(Prims.getVariable('color'), SelfManager.myself().projectionBy(function() {
-        return Prims.getVariable('color');
+    SelfPrims.setVariable('similar-nearby', Prims.turtlesOn(SelfPrims.getNeighbors()).agentFilter(function() {
+      return Prims.equality(SelfPrims.getVariable('color'), SelfManager.myself().projectionBy(function() {
+        return SelfPrims.getVariable('color');
       }));
     }).size());
-    Prims.setVariable('other-nearby', Prims.turtlesOn(Prims.getNeighbors()).agentFilter(function() {
-      return !Prims.equality(Prims.getVariable('color'), SelfManager.myself().projectionBy(function() {
-        return Prims.getVariable('color');
+    SelfPrims.setVariable('other-nearby', Prims.turtlesOn(SelfPrims.getNeighbors()).agentFilter(function() {
+      return !Prims.equality(SelfPrims.getVariable('color'), SelfManager.myself().projectionBy(function() {
+        return SelfPrims.getVariable('color');
       }));
     }).size());
-    Prims.setVariable('total-nearby', (Prims.getVariable('similar-nearby') + Prims.getVariable('other-nearby')));
-    Prims.setVariable('happy?', Prims.gte(Prims.getVariable('similar-nearby'), ((world.observer.getGlobal('%-similar-wanted') * Prims.getVariable('total-nearby')) / 100)));
+    SelfPrims.setVariable('total-nearby', (SelfPrims.getVariable('similar-nearby') + SelfPrims.getVariable('other-nearby')));
+    SelfPrims.setVariable('happy?', Prims.gte(SelfPrims.getVariable('similar-nearby'), ((world.observer.getGlobal('%-similar-wanted') * SelfPrims.getVariable('total-nearby')) / 100)));
   }, true);
 }
 function updateGlobals() {
   var similarNeighbors = Prims.sum(world.turtles().projectionBy(function() {
-    return Prims.getVariable('similar-nearby');
+    return SelfPrims.getVariable('similar-nearby');
   }));
   var totalNeighbors = Prims.sum(world.turtles().projectionBy(function() {
-    return Prims.getVariable('total-nearby');
+    return SelfPrims.getVariable('total-nearby');
   }));
   world.observer.setGlobal('percent-similar', ((similarNeighbors / totalNeighbors) * 100));
   world.observer.setGlobal('percent-unhappy', ((world.turtles().agentFilter(function() {
-    return !Prims.getVariable('happy?');
+    return !SelfPrims.getVariable('happy?');
   }).size() / world.turtles().size()) * 100));
 }
 world.observer.setGlobal('number', 2000);

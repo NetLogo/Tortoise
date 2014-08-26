@@ -3,6 +3,7 @@ var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
 var Prims         = workspace.prims;
+var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
 var Updater       = workspace.updater;
 var world         = workspace.world;
@@ -41,20 +42,20 @@ function setupGlobals() {
   world.observer.setGlobal('slider-check-4', world.observer.getGlobal('average-test-frequency'));
 }
 function setupPeople() {
-  world.createTurtles(world.observer.getGlobal('initial-people'), '').ask(function() {
-    Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
-    Prims.setVariable('known?', false);
-    Prims.setVariable('coupled?', false);
-    Prims.setVariable('partner', Nobody);
+  world.turtleManager.createTurtles(world.observer.getGlobal('initial-people'), '').ask(function() {
+    SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
+    SelfPrims.setVariable('known?', false);
+    SelfPrims.setVariable('coupled?', false);
+    SelfPrims.setVariable('partner', Nobody);
     if (Prims.equality(Prims.random(2), 0)) {
-      Prims.setVariable('shape', "person righty");
+      SelfPrims.setVariable('shape', "person righty");
     }
     else {
-      Prims.setVariable('shape', "person lefty");
+      SelfPrims.setVariable('shape', "person lefty");
     }
-    Prims.setVariable('infected?', Prims.lt(Prims.getVariable('who'), (world.observer.getGlobal('initial-people') * 0.025)));
-    if (Prims.getVariable('infected?')) {
-      Prims.setVariable('infection-length', Prims.randomFloat(world.observer.getGlobal('symptoms-show')));
+    SelfPrims.setVariable('infected?', Prims.lt(SelfPrims.getVariable('who'), (world.observer.getGlobal('initial-people') * 0.025)));
+    if (SelfPrims.getVariable('infected?')) {
+      SelfPrims.setVariable('infection-length', Prims.randomFloat(world.observer.getGlobal('symptoms-show')));
     }
     Call(assignCommitment);
     Call(assignCouplingTendency);
@@ -64,29 +65,29 @@ function setupPeople() {
   }, true);
 }
 function assignColor() {
-  if (!Prims.getVariable('infected?')) {
-    Prims.setVariable('color', 55);
+  if (!SelfPrims.getVariable('infected?')) {
+    SelfPrims.setVariable('color', 55);
   }
   else {
-    if (Prims.getVariable('known?')) {
-      Prims.setVariable('color', 15);
+    if (SelfPrims.getVariable('known?')) {
+      SelfPrims.setVariable('color', 15);
     }
     else {
-      Prims.setVariable('color', 105);
+      SelfPrims.setVariable('color', 105);
     }
   }
 }
 function assignCommitment() {
-  Prims.setVariable('commitment', Call(randomNear, world.observer.getGlobal('average-commitment')));
+  SelfPrims.setVariable('commitment', Call(randomNear, world.observer.getGlobal('average-commitment')));
 }
 function assignCouplingTendency() {
-  Prims.setVariable('coupling-tendency', Call(randomNear, world.observer.getGlobal('average-coupling-tendency')));
+  SelfPrims.setVariable('coupling-tendency', Call(randomNear, world.observer.getGlobal('average-coupling-tendency')));
 }
 function assignCondomUse() {
-  Prims.setVariable('condom-use', Call(randomNear, world.observer.getGlobal('average-condom-use')));
+  SelfPrims.setVariable('condom-use', Call(randomNear, world.observer.getGlobal('average-condom-use')));
 }
 function assignTestFrequency() {
-  Prims.setVariable('test-frequency', Call(randomNear, world.observer.getGlobal('average-test-frequency')));
+  SelfPrims.setVariable('test-frequency', Call(randomNear, world.observer.getGlobal('average-test-frequency')));
 }
 function randomNear(center) {
   var result = 0;
@@ -96,25 +97,25 @@ function randomNear(center) {
   return (result / 20);
 }
 function go() {
-  if (world.turtles().agentAll(function(){ return Prims.getVariable('known?') })) {
+  if (world.turtles().agentAll(function(){ return SelfPrims.getVariable('known?') })) {
     throw new Exception.StopInterrupt;
   }
   Call(checkSliders);
   world.turtles().ask(function() {
-    if (Prims.getVariable('infected?')) {
-      Prims.setVariable('infection-length', (Prims.getVariable('infection-length') + 1));
+    if (SelfPrims.getVariable('infected?')) {
+      SelfPrims.setVariable('infection-length', (SelfPrims.getVariable('infection-length') + 1));
     }
-    if (Prims.getVariable('coupled?')) {
-      Prims.setVariable('couple-length', (Prims.getVariable('couple-length') + 1));
+    if (SelfPrims.getVariable('coupled?')) {
+      SelfPrims.setVariable('couple-length', (SelfPrims.getVariable('couple-length') + 1));
     }
   }, true);
   world.turtles().ask(function() {
-    if (!Prims.getVariable('coupled?')) {
+    if (!SelfPrims.getVariable('coupled?')) {
       Call(move);
     }
   }, true);
   world.turtles().ask(function() {
-    if (((!Prims.getVariable('coupled?') && Prims.equality(Prims.getVariable('shape'), "person righty")) && Prims.lt(Prims.randomFloat(10), Prims.getVariable('coupling-tendency')))) {
+    if (((!SelfPrims.getVariable('coupled?') && Prims.equality(SelfPrims.getVariable('shape'), "person righty")) && Prims.lt(Prims.randomFloat(10), SelfPrims.getVariable('coupling-tendency')))) {
       Call(couple);
     }
   }, true);
@@ -159,91 +160,91 @@ function checkSliders() {
   }
 }
 function move() {
-  Prims.right(Prims.randomFloat(360));
-  Prims.fd(1);
+  SelfPrims.right(Prims.randomFloat(360));
+  SelfPrims.fd(1);
 }
 function couple() {
   var potentialPartner = Prims.oneOf(SelfManager.self().turtlesAt(-1, 0).agentFilter(function() {
-    return (!Prims.getVariable('coupled?') && Prims.equality(Prims.getVariable('shape'), "person lefty"));
+    return (!SelfPrims.getVariable('coupled?') && Prims.equality(SelfPrims.getVariable('shape'), "person lefty"));
   }));
   if (!Prims.equality(potentialPartner, Nobody)) {
     if (Prims.lt(Prims.randomFloat(10), potentialPartner.projectionBy(function() {
-      return Prims.getVariable('coupling-tendency');
+      return SelfPrims.getVariable('coupling-tendency');
     }))) {
-      Prims.setVariable('partner', potentialPartner);
-      Prims.setVariable('coupled?', true);
-      Prims.getVariable('partner').ask(function() {
-        Prims.setVariable('coupled?', true);
+      SelfPrims.setVariable('partner', potentialPartner);
+      SelfPrims.setVariable('coupled?', true);
+      SelfPrims.getVariable('partner').ask(function() {
+        SelfPrims.setVariable('coupled?', true);
       }, true);
-      Prims.getVariable('partner').ask(function() {
-        Prims.setVariable('partner', SelfManager.myself());
+      SelfPrims.getVariable('partner').ask(function() {
+        SelfPrims.setVariable('partner', SelfManager.myself());
       }, true);
       SelfManager.self().moveTo(SelfManager.self().getPatchHere());
       potentialPartner.ask(function() {
         SelfManager.self().moveTo(SelfManager.self().getPatchHere());
       }, true);
-      Prims.setPatchVariable('pcolor', (5 - 3));
+      SelfPrims.setPatchVariable('pcolor', (5 - 3));
       SelfManager.self().patchAt(-1, 0).ask(function() {
-        Prims.setPatchVariable('pcolor', (5 - 3));
+        SelfPrims.setPatchVariable('pcolor', (5 - 3));
       }, true);
     }
   }
 }
 function uncouple() {
-  if ((Prims.getVariable('coupled?') && Prims.equality(Prims.getVariable('shape'), "person righty"))) {
-    if ((Prims.gt(Prims.getVariable('couple-length'), Prims.getVariable('commitment')) || Prims.gt(Prims.getVariable('partner').projectionBy(function() {
-      return Prims.getVariable('couple-length');
-    }), Prims.getVariable('partner').projectionBy(function() {
-      return Prims.getVariable('commitment');
+  if ((SelfPrims.getVariable('coupled?') && Prims.equality(SelfPrims.getVariable('shape'), "person righty"))) {
+    if ((Prims.gt(SelfPrims.getVariable('couple-length'), SelfPrims.getVariable('commitment')) || Prims.gt(SelfPrims.getVariable('partner').projectionBy(function() {
+      return SelfPrims.getVariable('couple-length');
+    }), SelfPrims.getVariable('partner').projectionBy(function() {
+      return SelfPrims.getVariable('commitment');
     })))) {
-      Prims.setVariable('coupled?', false);
-      Prims.setVariable('couple-length', 0);
-      Prims.getVariable('partner').ask(function() {
-        Prims.setVariable('couple-length', 0);
+      SelfPrims.setVariable('coupled?', false);
+      SelfPrims.setVariable('couple-length', 0);
+      SelfPrims.getVariable('partner').ask(function() {
+        SelfPrims.setVariable('couple-length', 0);
       }, true);
-      Prims.setPatchVariable('pcolor', 0);
+      SelfPrims.setPatchVariable('pcolor', 0);
       SelfManager.self().patchAt(-1, 0).ask(function() {
-        Prims.setPatchVariable('pcolor', 0);
+        SelfPrims.setPatchVariable('pcolor', 0);
       }, true);
-      Prims.getVariable('partner').ask(function() {
-        Prims.setVariable('partner', Nobody);
+      SelfPrims.getVariable('partner').ask(function() {
+        SelfPrims.setVariable('partner', Nobody);
       }, true);
-      Prims.getVariable('partner').ask(function() {
-        Prims.setVariable('coupled?', false);
+      SelfPrims.getVariable('partner').ask(function() {
+        SelfPrims.setVariable('coupled?', false);
       }, true);
-      Prims.setVariable('partner', Nobody);
+      SelfPrims.setVariable('partner', Nobody);
     }
   }
 }
 function infect() {
-  if (((Prims.getVariable('coupled?') && Prims.getVariable('infected?')) && !Prims.getVariable('known?'))) {
-    if ((Prims.gt(Prims.randomFloat(11), Prims.getVariable('condom-use')) || Prims.gt(Prims.randomFloat(11), Prims.getVariable('partner').projectionBy(function() {
-      return Prims.getVariable('condom-use');
+  if (((SelfPrims.getVariable('coupled?') && SelfPrims.getVariable('infected?')) && !SelfPrims.getVariable('known?'))) {
+    if ((Prims.gt(Prims.randomFloat(11), SelfPrims.getVariable('condom-use')) || Prims.gt(Prims.randomFloat(11), SelfPrims.getVariable('partner').projectionBy(function() {
+      return SelfPrims.getVariable('condom-use');
     })))) {
       if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal('infection-chance'))) {
-        Prims.getVariable('partner').ask(function() {
-          Prims.setVariable('infected?', true);
+        SelfPrims.getVariable('partner').ask(function() {
+          SelfPrims.setVariable('infected?', true);
         }, true);
       }
     }
   }
 }
 function test() {
-  if (Prims.lt(Prims.randomFloat(52), Prims.getVariable('test-frequency'))) {
-    if (Prims.getVariable('infected?')) {
-      Prims.setVariable('known?', true);
+  if (Prims.lt(Prims.randomFloat(52), SelfPrims.getVariable('test-frequency'))) {
+    if (SelfPrims.getVariable('infected?')) {
+      SelfPrims.setVariable('known?', true);
     }
   }
-  if (Prims.gt(Prims.getVariable('infection-length'), world.observer.getGlobal('symptoms-show'))) {
+  if (Prims.gt(SelfPrims.getVariable('infection-length'), world.observer.getGlobal('symptoms-show'))) {
     if (Prims.lt(Prims.randomFloat(100), 5)) {
-      Prims.setVariable('known?', true);
+      SelfPrims.setVariable('known?', true);
     }
   }
 }
 function _percent_infected() {
   if (world.turtles().nonEmpty()) {
     return ((world.turtles().agentFilter(function() {
-      return Prims.getVariable('infected?');
+      return SelfPrims.getVariable('infected?');
     }).size() / world.turtles().size()) * 100);
   }
   else {

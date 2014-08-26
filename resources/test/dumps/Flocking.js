@@ -3,6 +3,7 @@ var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
 var Prims         = workspace.prims;
+var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
 var Updater       = workspace.updater;
 var world         = workspace.world;
@@ -28,10 +29,10 @@ var Denuller       = nashorn.denuller;
 var Random         = shim.random;
 var StrictMath     = shim.strictmath;function setup() {
   world.clearAll();
-  world.createTurtles(world.observer.getGlobal('population'), '').ask(function() {
-    Prims.setVariable('color', ((45 - 2) + Prims.random(7)));
-    Prims.setVariable('size', 1.5);
-    Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
+  world.turtleManager.createTurtles(world.observer.getGlobal('population'), '').ask(function() {
+    SelfPrims.setVariable('color', ((45 - 2) + Prims.random(7)));
+    SelfPrims.setVariable('size', 1.5);
+    SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
   }, true);
   world.ticker.reset();
 }
@@ -41,7 +42,7 @@ function go() {
   }, true);
   Prims.repeat(5, function () {
     world.turtles().ask(function() {
-      Prims.fd(0.2);
+      SelfPrims.fd(0.2);
     }, true);
     notImplemented('display', undefined)();
   });
@@ -49,9 +50,9 @@ function go() {
 }
 function flock() {
   Call(findFlockmates);
-  if (Prims.getVariable('flockmates').nonEmpty()) {
+  if (SelfPrims.getVariable('flockmates').nonEmpty()) {
     Call(findNearestNeighbor);
-    if (Prims.lt(SelfManager.self().distance(Prims.getVariable('nearest-neighbor')), world.observer.getGlobal('minimum-separation'))) {
+    if (Prims.lt(SelfManager.self().distance(SelfPrims.getVariable('nearest-neighbor')), world.observer.getGlobal('minimum-separation'))) {
       Call(separate);
     }
     else {
@@ -61,30 +62,30 @@ function flock() {
   }
 }
 function findFlockmates() {
-  Prims.setVariable('flockmates', Prims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal('vision'))));
+  SelfPrims.setVariable('flockmates', SelfPrims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal('vision'))));
 }
 function findNearestNeighbor() {
-  Prims.setVariable('nearest-neighbor', Prims.getVariable('flockmates').minOneOf(function() {
+  SelfPrims.setVariable('nearest-neighbor', SelfPrims.getVariable('flockmates').minOneOf(function() {
     return SelfManager.self().distance(SelfManager.myself());
   }));
 }
 function separate() {
-  Call(turnAway, Prims.getVariable('nearest-neighbor').projectionBy(function() {
-    return Prims.getVariable('heading');
+  Call(turnAway, SelfPrims.getVariable('nearest-neighbor').projectionBy(function() {
+    return SelfPrims.getVariable('heading');
   }), world.observer.getGlobal('max-separate-turn'));
 }
 function align() {
   Call(turnTowards, Call(averageFlockmateHeading), world.observer.getGlobal('max-align-turn'));
 }
 function averageFlockmateHeading() {
-  var xComponent = Prims.sum(Prims.getVariable('flockmates').projectionBy(function() {
+  var xComponent = Prims.sum(SelfPrims.getVariable('flockmates').projectionBy(function() {
     return SelfManager.self().dx();
   }));
-  var yComponent = Prims.sum(Prims.getVariable('flockmates').projectionBy(function() {
+  var yComponent = Prims.sum(SelfPrims.getVariable('flockmates').projectionBy(function() {
     return SelfManager.self().dy();
   }));
   if ((Prims.equality(xComponent, 0) && Prims.equality(yComponent, 0))) {
-    return Prims.getVariable('heading');
+    return SelfPrims.getVariable('heading');
   }
   else {
     return Trig.atan(xComponent, yComponent);
@@ -94,36 +95,36 @@ function cohere() {
   Call(turnTowards, Call(averageHeadingTowardsFlockmates), world.observer.getGlobal('max-cohere-turn'));
 }
 function averageHeadingTowardsFlockmates() {
-  var xComponent = Prims.mean(Prims.getVariable('flockmates').projectionBy(function() {
+  var xComponent = Prims.mean(SelfPrims.getVariable('flockmates').projectionBy(function() {
     return Trig.unsquashedSin((SelfManager.self().towards(SelfManager.myself()) + 180));
   }));
-  var yComponent = Prims.mean(Prims.getVariable('flockmates').projectionBy(function() {
+  var yComponent = Prims.mean(SelfPrims.getVariable('flockmates').projectionBy(function() {
     return Trig.unsquashedCos((SelfManager.self().towards(SelfManager.myself()) + 180));
   }));
   if ((Prims.equality(xComponent, 0) && Prims.equality(yComponent, 0))) {
-    return Prims.getVariable('heading');
+    return SelfPrims.getVariable('heading');
   }
   else {
     return Trig.atan(xComponent, yComponent);
   }
 }
 function turnTowards(newHeading, maxTurn) {
-  Call(turnAtMost, Prims.subtractHeadings(newHeading, Prims.getVariable('heading')), maxTurn);
+  Call(turnAtMost, Prims.subtractHeadings(newHeading, SelfPrims.getVariable('heading')), maxTurn);
 }
 function turnAway(newHeading, maxTurn) {
-  Call(turnAtMost, Prims.subtractHeadings(Prims.getVariable('heading'), newHeading), maxTurn);
+  Call(turnAtMost, Prims.subtractHeadings(SelfPrims.getVariable('heading'), newHeading), maxTurn);
 }
 function turnAtMost(turn, maxTurn) {
   if (Prims.gt(StrictMath.abs(turn), maxTurn)) {
     if (Prims.gt(turn, 0)) {
-      Prims.right(maxTurn);
+      SelfPrims.right(maxTurn);
     }
     else {
-      Prims.left(maxTurn);
+      SelfPrims.left(maxTurn);
     }
   }
   else {
-    Prims.right(turn);
+    SelfPrims.right(turn);
   }
 }
 world.observer.setGlobal('population', 300);

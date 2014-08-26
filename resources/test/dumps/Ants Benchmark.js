@@ -3,6 +3,7 @@ var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
 var Prims         = workspace.prims;
+var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
 var Updater       = workspace.updater;
 var world         = workspace.world;
@@ -44,59 +45,59 @@ function benchmark() {
 }
 function setupTurtles() {
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "bug")
-  world.createOrderedTurtles(world.observer.getGlobal('ants'), '').ask(function() {
-    Prims.setVariable('size', 2);
-    Prims.right(Prims.randomFloat(360));
-    Prims.setVariable('color', 15);
-    Prims.setVariable('carrying-food?', false);
+  world.turtleManager.createOrderedTurtles(world.observer.getGlobal('ants'), '').ask(function() {
+    SelfPrims.setVariable('size', 2);
+    SelfPrims.right(Prims.randomFloat(360));
+    SelfPrims.setVariable('color', 15);
+    SelfPrims.setVariable('carrying-food?', false);
   }, true);
 }
 function setupPatches() {
   world.patches().ask(function() {
-    Prims.setPatchVariable('chemical', 0);
-    Prims.setPatchVariable('food', 0);
-    Prims.setPatchVariable('food-source-number', -1);
+    SelfPrims.setPatchVariable('chemical', 0);
+    SelfPrims.setPatchVariable('food', 0);
+    SelfPrims.setPatchVariable('food-source-number', -1);
     Call(setupNest);
     Call(setupFood);
     Call(updateDisplay);
   }, true);
 }
 function setupNest() {
-  Prims.setPatchVariable('nest?', Prims.lt(SelfManager.self().distanceXY(0, 0), 5));
-  Prims.setPatchVariable('nest-scent', (200 - SelfManager.self().distanceXY(0, 0)));
+  SelfPrims.setPatchVariable('nest?', Prims.lt(SelfManager.self().distanceXY(0, 0), 5));
+  SelfPrims.setPatchVariable('nest-scent', (200 - SelfManager.self().distanceXY(0, 0)));
 }
 function setupFood() {
   if (Prims.lt(SelfManager.self().distanceXY((0.6 * world.topology.maxPxcor), 0), 5)) {
-    Prims.setPatchVariable('food-source-number', 1);
+    SelfPrims.setPatchVariable('food-source-number', 1);
   }
   if (Prims.lt(SelfManager.self().distanceXY((-0.6 * world.topology.maxPxcor), (-0.6 * world.topology.maxPycor)), 5)) {
-    Prims.setPatchVariable('food-source-number', 2);
+    SelfPrims.setPatchVariable('food-source-number', 2);
   }
   if (Prims.lt(SelfManager.self().distanceXY((-0.8 * world.topology.maxPxcor), (0.8 * world.topology.maxPycor)), 5)) {
-    Prims.setPatchVariable('food-source-number', 3);
+    SelfPrims.setPatchVariable('food-source-number', 3);
   }
-  if (Prims.gt(Prims.getPatchVariable('food-source-number'), 0)) {
-    Prims.setPatchVariable('food', (1 + Prims.random(2)));
+  if (Prims.gt(SelfPrims.getPatchVariable('food-source-number'), 0)) {
+    SelfPrims.setPatchVariable('food', (1 + Prims.random(2)));
   }
 }
 function updateDisplay() {
-  if (Prims.getPatchVariable('nest?')) {
-    Prims.setPatchVariable('pcolor', 115);
+  if (SelfPrims.getPatchVariable('nest?')) {
+    SelfPrims.setPatchVariable('pcolor', 115);
   }
   else {
-    if (Prims.gt(Prims.getPatchVariable('food'), 0)) {
-      if (Prims.equality(Prims.getPatchVariable('food-source-number'), 1)) {
-        Prims.setPatchVariable('pcolor', 85);
+    if (Prims.gt(SelfPrims.getPatchVariable('food'), 0)) {
+      if (Prims.equality(SelfPrims.getPatchVariable('food-source-number'), 1)) {
+        SelfPrims.setPatchVariable('pcolor', 85);
       }
-      if (Prims.equality(Prims.getPatchVariable('food-source-number'), 2)) {
-        Prims.setPatchVariable('pcolor', 95);
+      if (Prims.equality(SelfPrims.getPatchVariable('food-source-number'), 2)) {
+        SelfPrims.setPatchVariable('pcolor', 95);
       }
-      if (Prims.equality(Prims.getPatchVariable('food-source-number'), 3)) {
-        Prims.setPatchVariable('pcolor', 105);
+      if (Prims.equality(SelfPrims.getPatchVariable('food-source-number'), 3)) {
+        SelfPrims.setPatchVariable('pcolor', 105);
       }
     }
     else {
-      Prims.setPatchVariable('pcolor', Prims.scaleColor(55, Prims.getPatchVariable('chemical'), 0.1, 5));
+      SelfPrims.setPatchVariable('pcolor', ColorModel.scaleColor(55, SelfPrims.getPatchVariable('chemical'), 0.1, 5));
     }
   }
 }
@@ -112,103 +113,103 @@ function go() {
   Call(doPlotting);
 }
 function goTurtles() {
-  if (Prims.lt(Prims.getVariable('who'), world.ticker.tickCount())) {
-    if (Prims.getVariable('carrying-food?')) {
-      Prims.setVariable('color', (25 + 1));
+  if (Prims.lt(SelfPrims.getVariable('who'), world.ticker.tickCount())) {
+    if (SelfPrims.getVariable('carrying-food?')) {
+      SelfPrims.setVariable('color', (25 + 1));
       Call(returnToNest);
     }
     else {
-      Prims.setVariable('color', 15);
+      SelfPrims.setVariable('color', 15);
       Call(lookForFood);
     }
   }
 }
 function goPatches() {
-  Prims.setPatchVariable('chemical', ((Prims.getPatchVariable('chemical') * (100 - world.observer.getGlobal('evaporation-rate'))) / 100));
+  SelfPrims.setPatchVariable('chemical', ((SelfPrims.getPatchVariable('chemical') * (100 - world.observer.getGlobal('evaporation-rate'))) / 100));
   Call(updateDisplay);
 }
 function returnToNest() {
-  if (Prims.getPatchVariable('nest?')) {
-    Prims.setVariable('carrying-food?', false);
-    Prims.right(180);
-    Prims.fd(1);
+  if (SelfPrims.getPatchVariable('nest?')) {
+    SelfPrims.setVariable('carrying-food?', false);
+    SelfPrims.right(180);
+    SelfPrims.fd(1);
   }
   else {
-    Prims.setPatchVariable('chemical', (Prims.getPatchVariable('chemical') + Prims.getVariable('drop-size')));
-    Prims.setVariable('drop-size', (Prims.getVariable('drop-size') - 1.5));
-    if (Prims.lt(Prims.getVariable('drop-size'), 1)) {
-      Prims.setVariable('drop-size', 1);
+    SelfPrims.setPatchVariable('chemical', (SelfPrims.getPatchVariable('chemical') + SelfPrims.getVariable('drop-size')));
+    SelfPrims.setVariable('drop-size', (SelfPrims.getVariable('drop-size') - 1.5));
+    if (Prims.lt(SelfPrims.getVariable('drop-size'), 1)) {
+      SelfPrims.setVariable('drop-size', 1);
     }
     Call(uphillNestScent);
     Call(wiggle);
-    Prims.fd(1);
+    SelfPrims.fd(1);
   }
 }
 function lookForFood() {
-  if (Prims.gt(Prims.getPatchVariable('food'), 0)) {
-    Prims.setVariable('carrying-food?', true);
-    Prims.setPatchVariable('food', (Prims.getPatchVariable('food') - 1));
-    Prims.setVariable('drop-size', 60);
-    Prims.right(180);
+  if (Prims.gt(SelfPrims.getPatchVariable('food'), 0)) {
+    SelfPrims.setVariable('carrying-food?', true);
+    SelfPrims.setPatchVariable('food', (SelfPrims.getPatchVariable('food') - 1));
+    SelfPrims.setVariable('drop-size', 60);
+    SelfPrims.right(180);
     throw new Exception.StopInterrupt;
   }
-  if (Prims.gt(Prims.getPatchVariable('chemical'), 2)) {
-    Prims.fd(1);
+  if (Prims.gt(SelfPrims.getPatchVariable('chemical'), 2)) {
+    SelfPrims.fd(1);
   }
   else {
-    if (Prims.lt(Prims.getPatchVariable('chemical'), 0.05)) {
+    if (Prims.lt(SelfPrims.getPatchVariable('chemical'), 0.05)) {
       Call(wiggle);
-      Prims.fd(1);
+      SelfPrims.fd(1);
     }
     else {
       Call(uphillChemical);
-      Prims.fd(1);
+      SelfPrims.fd(1);
     }
   }
 }
 function uphillChemical() {
   Call(wiggle);
   var scentAhead = SelfManager.self().patchAhead(1).projectionBy(function() {
-    return Prims.getPatchVariable('chemical');
+    return SelfPrims.getPatchVariable('chemical');
   });
   var scentRight = Call(chemicalScent, 45);
   var scentLeft = Call(chemicalScent, -45);
   if ((Prims.gt(scentRight, scentAhead) || Prims.gt(scentLeft, scentAhead))) {
     if (Prims.gt(scentRight, scentLeft)) {
-      Prims.right(45);
+      SelfPrims.right(45);
     }
     else {
-      Prims.left(45);
+      SelfPrims.left(45);
     }
   }
 }
 function uphillNestScent() {
   Call(wiggle);
   var scentAhead = SelfManager.self().patchAhead(1).projectionBy(function() {
-    return Prims.getPatchVariable('nest-scent');
+    return SelfPrims.getPatchVariable('nest-scent');
   });
   var scentRight = Call(getNestScent, 45);
   var scentLeft = Call(getNestScent, -45);
   if ((Prims.gt(scentRight, scentAhead) || Prims.gt(scentLeft, scentAhead))) {
     if (Prims.gt(scentRight, scentLeft)) {
-      Prims.right(45);
+      SelfPrims.right(45);
     }
     else {
-      Prims.left(45);
+      SelfPrims.left(45);
     }
   }
 }
 function wiggle() {
-  Prims.right((Prims.random(40) - Prims.random(40)));
+  SelfPrims.right((Prims.random(40) - Prims.random(40)));
   if (!SelfManager.self().canMove(1)) {
-    Prims.right(180);
+    SelfPrims.right(180);
   }
 }
 function getNestScent(angle) {
   var p = SelfManager.self().patchRightAndAhead(angle, 1);
   if (!Prims.equality(p, Nobody)) {
     return p.projectionBy(function() {
-      return Prims.getPatchVariable('nest-scent');
+      return SelfPrims.getPatchVariable('nest-scent');
     });
   }
   return 0;
@@ -217,7 +218,7 @@ function chemicalScent(angle) {
   var p = SelfManager.self().patchRightAndAhead(angle, 1);
   if (!Prims.equality(p, Nobody)) {
     return p.projectionBy(function() {
-      return Prims.getPatchVariable('chemical');
+      return SelfPrims.getPatchVariable('chemical');
     });
   }
   return 0;
@@ -229,15 +230,15 @@ function doPlotting() {
   notImplemented('set-current-plot', undefined)("Food in each pile");
   notImplemented('set-current-plot-pen', undefined)("food-in-pile1");
   notImplemented('plot', undefined)(world.patches().agentFilter(function() {
-    return Prims.equality(Prims.getPatchVariable('pcolor'), 85);
+    return Prims.equality(SelfPrims.getPatchVariable('pcolor'), 85);
   }).size());
   notImplemented('set-current-plot-pen', undefined)("food-in-pile2");
   notImplemented('plot', undefined)(world.patches().agentFilter(function() {
-    return Prims.equality(Prims.getPatchVariable('pcolor'), 95);
+    return Prims.equality(SelfPrims.getPatchVariable('pcolor'), 95);
   }).size());
   notImplemented('set-current-plot-pen', undefined)("food-in-pile3");
   notImplemented('plot', undefined)(world.patches().agentFilter(function() {
-    return Prims.equality(Prims.getPatchVariable('pcolor'), 105);
+    return Prims.equality(SelfPrims.getPatchVariable('pcolor'), 105);
   }).size());
 }
 world.observer.setGlobal('diffusion-rate', 53);

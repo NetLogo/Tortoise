@@ -3,6 +3,7 @@ var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
 var Prims         = workspace.prims;
+var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
 var Updater       = workspace.updater;
 var world         = workspace.world;
@@ -32,15 +33,15 @@ var StrictMath     = shim.strictmath;function setup() {
   world.patches().agentFilter(function() {
     return Prims.lt(Prims.randomFloat(100), world.observer.getGlobal('density'));
   }).ask(function() {
-    Prims.setPatchVariable('pcolor', 55);
+    SelfPrims.setPatchVariable('pcolor', 55);
   }, true);
   world.patches().agentFilter(function() {
-    return Prims.equality(Prims.getPatchVariable('pxcor'), world.topology.minPxcor);
+    return Prims.equality(SelfPrims.getPatchVariable('pxcor'), world.topology.minPxcor);
   }).ask(function() {
     Call(ignite);
   }, true);
   world.observer.setGlobal('initial-trees', world.patches().agentFilter(function() {
-    return Prims.equality(Prims.getPatchVariable('pcolor'), 55);
+    return Prims.equality(SelfPrims.getPatchVariable('pcolor'), 55);
   }).size());
   world.observer.setGlobal('burned-trees', 0);
   world.ticker.reset();
@@ -49,30 +50,30 @@ function go() {
   if (!world.turtles().nonEmpty()) {
     throw new Exception.StopInterrupt;
   }
-  world.turtlesOfBreed("FIRES").ask(function() {
-    Prims.getNeighbors4().agentFilter(function() {
-      return Prims.equality(Prims.getPatchVariable('pcolor'), 55);
+  world.turtleManager.turtlesOfBreed("FIRES").ask(function() {
+    SelfPrims.getNeighbors4().agentFilter(function() {
+      return Prims.equality(SelfPrims.getPatchVariable('pcolor'), 55);
     }).ask(function() {
       Call(ignite);
     }, true);
-    Prims.setVariable('breed', world.turtlesOfBreed("EMBERS"));
+    SelfPrims.setVariable('breed', world.turtleManager.turtlesOfBreed("EMBERS"));
   }, true);
   Call(fadeEmbers);
   world.ticker.tick();
 }
 function ignite() {
-  Prims.sprout(1, 'FIRES').ask(function() {
-    Prims.setVariable('color', 15);
+  SelfPrims.sprout(1, 'FIRES').ask(function() {
+    SelfPrims.setVariable('color', 15);
   }, true);
-  Prims.setPatchVariable('pcolor', 0);
+  SelfPrims.setPatchVariable('pcolor', 0);
   world.observer.setGlobal('burned-trees', (world.observer.getGlobal('burned-trees') + 1));
 }
 function fadeEmbers() {
-  world.turtlesOfBreed("EMBERS").ask(function() {
-    Prims.setVariable('color', (Prims.getVariable('color') - 0.3));
-    if (Prims.lt(Prims.getVariable('color'), (15 - 3.5))) {
-      Prims.setPatchVariable('pcolor', Prims.getVariable('color'));
-      Prims.die();
+  world.turtleManager.turtlesOfBreed("EMBERS").ask(function() {
+    SelfPrims.setVariable('color', (SelfPrims.getVariable('color') - 0.3));
+    if (Prims.lt(SelfPrims.getVariable('color'), (15 - 3.5))) {
+      SelfPrims.setPatchVariable('pcolor', SelfPrims.getVariable('color'));
+      SelfPrims.die();
     }
   }, true);
 }

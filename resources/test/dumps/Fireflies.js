@@ -3,6 +3,7 @@ var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
 var Prims         = workspace.prims;
+var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
 var Updater       = workspace.updater;
 var world         = workspace.world;
@@ -28,19 +29,19 @@ var Denuller       = nashorn.denuller;
 var Random         = shim.random;
 var StrictMath     = shim.strictmath;function setup() {
   world.clearAll();
-  world.createTurtles(world.observer.getGlobal('number'), '').ask(function() {
-    Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
-    Prims.setVariable('clock', Prims.random(StrictMath.round(world.observer.getGlobal('cycle-length'))));
-    Prims.setVariable('threshold', world.observer.getGlobal('flash-length'));
+  world.turtleManager.createTurtles(world.observer.getGlobal('number'), '').ask(function() {
+    SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
+    SelfPrims.setVariable('clock', Prims.random(StrictMath.round(world.observer.getGlobal('cycle-length'))));
+    SelfPrims.setVariable('threshold', world.observer.getGlobal('flash-length'));
     if (Prims.equality(world.observer.getGlobal('strategy'), "delay")) {
-      Prims.setVariable('reset-level', Prims.getVariable('threshold'));
-      Prims.setVariable('window', -1);
+      SelfPrims.setVariable('reset-level', SelfPrims.getVariable('threshold'));
+      SelfPrims.setVariable('window', -1);
     }
     else {
-      Prims.setVariable('reset-level', 0);
-      Prims.setVariable('window', (Prims.getVariable('threshold') + 1));
+      SelfPrims.setVariable('reset-level', 0);
+      SelfPrims.setVariable('window', (SelfPrims.getVariable('threshold') + 1));
     }
-    Prims.setVariable('size', 2);
+    SelfPrims.setVariable('size', 2);
     Call(recolor);
   }, true);
   world.ticker.reset();
@@ -49,7 +50,7 @@ function go() {
   world.turtles().ask(function() {
     Call(move);
     Call(incrementClock);
-    if ((Prims.gt(Prims.getVariable('clock'), Prims.getVariable('window')) && Prims.gte(Prims.getVariable('clock'), Prims.getVariable('threshold')))) {
+    if ((Prims.gt(SelfPrims.getVariable('clock'), SelfPrims.getVariable('window')) && Prims.gte(SelfPrims.getVariable('clock'), SelfPrims.getVariable('threshold')))) {
       Call(look);
     }
   }, true);
@@ -59,12 +60,12 @@ function go() {
   world.ticker.tick();
 }
 function recolor() {
-  if (Prims.lt(Prims.getVariable('clock'), Prims.getVariable('threshold'))) {
+  if (Prims.lt(SelfPrims.getVariable('clock'), SelfPrims.getVariable('threshold'))) {
     SelfManager.self().hideTurtle(false);;
-    Prims.setVariable('color', 45);
+    SelfPrims.setVariable('color', 45);
   }
   else {
-    Prims.setVariable('color', (5 - 2));
+    SelfPrims.setVariable('color', (5 - 2));
     if (world.observer.getGlobal('show-dark-fireflies?')) {
       SelfManager.self().hideTurtle(false);;
     }
@@ -74,20 +75,20 @@ function recolor() {
   }
 }
 function move() {
-  Prims.right((Prims.randomFloat(90) - Prims.randomFloat(90)));
-  Prims.fd(1);
+  SelfPrims.right((Prims.randomFloat(90) - Prims.randomFloat(90)));
+  SelfPrims.fd(1);
 }
 function incrementClock() {
-  Prims.setVariable('clock', (Prims.getVariable('clock') + 1));
-  if (Prims.equality(Prims.getVariable('clock'), world.observer.getGlobal('cycle-length'))) {
-    Prims.setVariable('clock', 0);
+  SelfPrims.setVariable('clock', (SelfPrims.getVariable('clock') + 1));
+  if (Prims.equality(SelfPrims.getVariable('clock'), world.observer.getGlobal('cycle-length'))) {
+    SelfPrims.setVariable('clock', 0);
   }
 }
 function look() {
   if (Prims.gte(SelfManager.self().inRadius(world.turtles(), 1).agentFilter(function() {
-    return Prims.equality(Prims.getVariable('color'), 45);
+    return Prims.equality(SelfPrims.getVariable('color'), 45);
   }).size(), world.observer.getGlobal('flashes-to-reset'))) {
-    Prims.setVariable('clock', Prims.getVariable('reset-level'));
+    SelfPrims.setVariable('clock', SelfPrims.getVariable('reset-level'));
   }
 }
 world.observer.setGlobal('number', 1500);

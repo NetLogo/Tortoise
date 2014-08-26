@@ -3,6 +3,7 @@ var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
 var Prims         = workspace.prims;
+var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
 var Updater       = workspace.updater;
 var world         = workspace.world;
@@ -49,19 +50,19 @@ function setupWorld() {
   world.observer.setGlobal('darkness', 0);
   world.observer.setGlobal('darkening?', true);
   world.patches().ask(function() {
-    Prims.setPatchVariable('pcolor', Call(envColor));
+    SelfPrims.setPatchVariable('pcolor', Call(envColor));
   }, true);
 }
 function setupMoths() {
-  world.createTurtles(world.observer.getGlobal('num-moths'), 'MOTHS').ask(function() {
-    Prims.setVariable('color', Call(randomColor));
+  world.turtleManager.createTurtles(world.observer.getGlobal('num-moths'), 'MOTHS').ask(function() {
+    SelfPrims.setVariable('color', Call(randomColor));
     Call(mothsPickShape);
-    Prims.setVariable('age', Prims.random(3));
-    Prims.setXY(Prims.randomXcor(), Prims.randomYcor());
+    SelfPrims.setVariable('age', Prims.random(3));
+    SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
   }, true);
 }
 function go() {
-  world.turtlesOfBreed("MOTHS").ask(function() {
+  world.turtleManager.turtlesOfBreed("MOTHS").ask(function() {
     Call(mothsMate);
     Call(mothsGrimReaper);
     Call(mothsGetEaten);
@@ -74,69 +75,69 @@ function go() {
   Call(updateMonitors);
 }
 function mothsMate() {
-  if ((Prims.equality(Prims.getVariable('age'), 2) || Prims.equality(Prims.getVariable('age'), 3))) {
-    Prims.hatch(2, '').ask(function() {
+  if ((Prims.equality(SelfPrims.getVariable('age'), 2) || Prims.equality(SelfPrims.getVariable('age'), 3))) {
+    SelfPrims.hatch(2, '').ask(function() {
       if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal('mutation'))) {
         if (Prims.equality(Prims.random(2), 0)) {
-          Prims.setVariable('color', StrictMath.round((Prims.getVariable('color') + (Prims.randomFloat(world.observer.getGlobal('mutation')) / 12.5))));
-          if (Prims.gte(Prims.getVariable('color'), 9)) {
-            Prims.setVariable('color', 9);
+          SelfPrims.setVariable('color', StrictMath.round((SelfPrims.getVariable('color') + (Prims.randomFloat(world.observer.getGlobal('mutation')) / 12.5))));
+          if (Prims.gte(SelfPrims.getVariable('color'), 9)) {
+            SelfPrims.setVariable('color', 9);
           }
         }
         else {
-          Prims.setVariable('color', StrictMath.round((Prims.getVariable('color') - (Prims.randomFloat(world.observer.getGlobal('mutation')) / 12.5))));
-          if ((Prims.lte(Prims.getVariable('color'), 1) || Prims.gte(Prims.getVariable('color'), 130))) {
-            Prims.setVariable('color', 1);
+          SelfPrims.setVariable('color', StrictMath.round((SelfPrims.getVariable('color') - (Prims.randomFloat(world.observer.getGlobal('mutation')) / 12.5))));
+          if ((Prims.lte(SelfPrims.getVariable('color'), 1) || Prims.gte(SelfPrims.getVariable('color'), 130))) {
+            SelfPrims.setVariable('color', 1);
           }
         }
       }
       Call(mothsPickShape);
-      Prims.setVariable('age', 0);
-      Prims.right(Prims.randomFloat(360));
-      Prims.fd(1);
+      SelfPrims.setVariable('age', 0);
+      SelfPrims.right(Prims.randomFloat(360));
+      SelfPrims.fd(1);
     }, true);
   }
 }
 function mothsGetEaten() {
-  if (Prims.lt(Prims.randomFloat(1000), ((world.observer.getGlobal('selection') * StrictMath.abs((Call(envColor) - Prims.getVariable('color')))) + 200))) {
-    Prims.die();
+  if (Prims.lt(Prims.randomFloat(1000), ((world.observer.getGlobal('selection') * StrictMath.abs((Call(envColor) - SelfPrims.getVariable('color')))) + 200))) {
+    SelfPrims.die();
   }
 }
 function mothsGrimReaper() {
   if (Prims.equality(Prims.random(13), 0)) {
-    Prims.die();
+    SelfPrims.die();
   }
-  if (Prims.gt(world.turtlesOfBreed("MOTHS").size(), Call(upperBound))) {
+  if (Prims.gt(world.turtleManager.turtlesOfBreed("MOTHS").size(), Call(upperBound))) {
     if (Prims.equality(Prims.random(2), 0)) {
-      Prims.die();
+      SelfPrims.die();
     }
   }
 }
 function mothsAge() {
-  Prims.setVariable('age', (Prims.getVariable('age') + 1));
+  SelfPrims.setVariable('age', (SelfPrims.getVariable('age') + 1));
 }
 function mothsPickShape() {
-  if (Prims.lt(Prims.getVariable('color'), 5)) {
-    Prims.setVariable('shape', "moth dark");
+  if (Prims.lt(SelfPrims.getVariable('color'), 5)) {
+    SelfPrims.setVariable('shape', "moth dark");
   }
   else {
-    Prims.setVariable('shape', "moth light");
+    SelfPrims.setVariable('shape', "moth light");
   }
 }
 function updateMonitors() {
-  world.observer.setGlobal('light-moths', world.turtlesOfBreed("MOTHS").agentFilter(function() {
-    return Prims.gte(Prims.getVariable('color'), 7);
+  world.observer.setGlobal('light-moths', world.turtleManager.turtlesOfBreed("MOTHS").agentFilter(function() {
+    return Prims.gte(SelfPrims.getVariable('color'), 7);
   }).size());
-  world.observer.setGlobal('dark-moths', world.turtlesOfBreed("MOTHS").agentFilter(function() {
-    return Prims.lte(Prims.getVariable('color'), 3);
+  world.observer.setGlobal('dark-moths', world.turtleManager.turtlesOfBreed("MOTHS").agentFilter(function() {
+    return Prims.lte(SelfPrims.getVariable('color'), 3);
   }).size());
-  world.observer.setGlobal('medium-moths', (world.turtlesOfBreed("MOTHS").size() - (world.observer.getGlobal('light-moths') + world.observer.getGlobal('dark-moths'))));
+  world.observer.setGlobal('medium-moths', (world.turtleManager.turtlesOfBreed("MOTHS").size() - (world.observer.getGlobal('light-moths') + world.observer.getGlobal('dark-moths'))));
 }
 function polluteWorld() {
   if (Prims.lte(world.observer.getGlobal('darkness'), (8 - Call(deltaEnv)))) {
     world.observer.setGlobal('darkness', (world.observer.getGlobal('darkness') + Call(deltaEnv)));
     world.patches().ask(function() {
-      Prims.setPatchVariable('pcolor', Call(envColor));
+      SelfPrims.setPatchVariable('pcolor', Call(envColor));
     }, true);
   }
   else {
@@ -147,7 +148,7 @@ function cleanUpWorld() {
   if (Prims.gte(world.observer.getGlobal('darkness'), (0 + Call(deltaEnv)))) {
     world.observer.setGlobal('darkness', (world.observer.getGlobal('darkness') - Call(deltaEnv)));
     world.patches().ask(function() {
-      Prims.setPatchVariable('pcolor', Call(envColor));
+      SelfPrims.setPatchVariable('pcolor', Call(envColor));
     }, true);
   }
   else {
