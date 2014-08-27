@@ -60,6 +60,16 @@ module.exports =
       if @end1 is @world.selfManager.myself() then @end2 else @end1
 
     # () => Unit
+    tie: ->
+      @_setTieMode("fixed")
+      return
+
+    # () => Unit
+    untie: ->
+      @_setTieMode("none")
+      return
+
+    # () => Unit
     updateEndRelatedVars: ->
       @_updateVarsByName("heading", "size", "midpointx", "midpointy")
       return

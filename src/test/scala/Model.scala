@@ -79,6 +79,11 @@ object Model {
       repetitions = 100
     ),
     Model(
+      path = "models/Code Examples/Tie System Example.nlogo",
+      repetitions = 20,
+      go = "ask suns [ rt 1 ] tick ask suns [ rt 1 ] tick ask suns [ fd 0.1 ] tick"
+    ),
+    Model(
       path = "models/Code Examples/Box Drawing Example.nlogo",
       setup = "set edge 2",
       go = "setup-corner",

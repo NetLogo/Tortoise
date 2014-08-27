@@ -57,7 +57,6 @@ class TestCommands extends lang.TestCommands with TortoiseFinder {
   override val freebies = Map[String, String](
     // requires features
     "Random::RandomNOfIsFairForAList" -> "`n-of` not implemented for lists",
-    "Tie::Tie2Nonrigid" -> "tie-mode link variable not implemented; ties not implemented at all",
     // requires handling of non-local exit (see in JVM NetLogo: `NonLocalExit`, `_report`, `_foreach`, `_run`)
     "Stop::ReportFromForeach" -> "no non-local exit from foreach",
     // Significant: Requires the optimizer to be turned on

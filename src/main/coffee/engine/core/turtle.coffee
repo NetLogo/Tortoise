@@ -35,26 +35,54 @@ module.exports =
     getBreedName: ->
       @_breed.name
 
-    # (Number) => Unit
-    _setXcor: (newX) ->
+    # (Number, Turtle) => Unit
+    _setXcor: (newX, tiedCaller = undefined) ->
+
       originPatch = @getPatchHere()
-      @xcor = @world.topology.wrapX(newX)
+      oldX        = @xcor
+      @xcor       = @world.topology.wrapX(newX)
       @_updateVarsByName("xcor")
+
       if originPatch isnt @getPatchHere()
         originPatch.untrackTurtle(this)
         @getPatchHere().trackTurtle(this)
+
       @_refreshLinks()
+
+      turtles = @_tiedTurtles()
+      dx      = @xcor - oldX
+      turtles.fixeds.concat(turtles.others).forEach(
+        (turtle) =>
+          if turtle isnt tiedCaller
+            turtle._setXcor(turtle.xcor + dx, this)
+          return
+      )
+
       return
 
-    # (Number) => Unit
-    _setYcor: (newY) ->
+    # (Number, Turtle) => Unit
+    _setYcor: (newY, tiedCaller = undefined) ->
+
       originPatch = @getPatchHere()
-      @ycor = @world.topology.wrapY(newY)
+      oldY        = @ycor
+      @ycor       = @world.topology.wrapY(newY)
       @_updateVarsByName("ycor")
+
       if originPatch isnt @getPatchHere()
         originPatch.untrackTurtle(this)
         @getPatchHere().trackTurtle(this)
+
       @_refreshLinks()
+
+      turtles = @_tiedTurtles()
+      dy      = @ycor - oldY
+      turtles.fixeds.concat(turtles.others).forEach(
+        (turtle) =>
+          if turtle isnt tiedCaller
+            turtle._setYcor(turtle.ycor + dy, this)
+          return
+      )
+
       return
 
     # (Link) => Unit
@@ -250,22 +278,22 @@ module.exports =
     dy: ->
       Trig.cos(@_heading)
 
-    # (Number) => Unit
-    right: (angle) ->
+    # (Number, Turtle) => Unit
+    right: (angle, tiedCaller = undefined) ->
       newHeading = @_heading + angle
-      @_setHeading(@_normalizeHeading(newHeading))
+      @_setHeading(@_normalizeHeading(newHeading), tiedCaller)
       return
 
-    # (Number, Number) => Unit
-    setXY: (x, y) ->
+    # (Number, Number, Turtle) => Unit
+    setXY: (x, y, tiedCaller = undefined) ->
       origXcor = @xcor
       origYcor = @ycor
       try
-        @_setXcor(x)
-        @_setYcor(y)
+        @_setXcor(x, tiedCaller)
+        @_setYcor(y, tiedCaller)
       catch error
-        @_setXcor(origXcor)
-        @_setYcor(origYcor)
+        @_setXcor(origXcor, tiedCaller)
+        @_setYcor(origYcor, tiedCaller)
         if error instanceof Exception.TopologyInterrupt
           throw new Exception.TopologyInterrupt("The point [ #{x} , #{y} ] is outside of the boundaries of the world and wrapping is not permitted in one or both directions.")
         else
@@ -410,6 +438,22 @@ module.exports =
       @_registerDeath(@id)
       return
 
+    # () => { "fixeds": Array[Turtle], "others": Array[Turtle] }
+    _tiedTurtles: ->
+      filterFunc = (link) => link.tiemode isnt "none" and ((link.end1 is this) or (link.end2 is this and not link.isDirected))
+      links      = @world.links().filter(filterFunc).toArray()
+      f =
+        ([fixeds, others], link) =>
+          turtle = if link.end1 is this then link.end2 else link.end1
+          if link.tiemode is "fixed"
+            [fixeds.concat([turtle]), others]
+          else
+            [fixeds, others.concat([turtle])]
+
+      [fixeds, others] = _(links).foldl(f, [[], []])
+
+      { fixeds: fixeds, others: others }
+
     # (Array[String], (String) => TurtleSet) => VariableManager
     _genVarManager: (extraVarNames, getTurtlesByBreedName) ->
       varBundles = [
@@ -487,10 +531,36 @@ module.exports =
       @_genVarUpdate("color")
       return
 
-    # (Number) => Unit
-    _setHeading: (heading) ->
-      @_heading = @_normalizeHeading(heading)
+    # (Number, Turtle) => Unit
+    _setHeading: (heading, tiedCaller = undefined) ->
+
+      oldHeading = @_heading
+      @_heading  = @_normalizeHeading(heading)
       @_genVarUpdate("heading")
+
+      dh      = @_heading - oldHeading
+      [x, y]  = @getCoords()
+      turtles = @_tiedTurtles()
+
+      turtles.fixeds.forEach(
+        (turtle) =>
+          if turtle isnt tiedCaller
+            turtle.right(dh, this)
+          return
+      )
+
+      turtles.fixeds.concat(turtles.others).forEach(
+        (turtle) =>
+          if turtle isnt tiedCaller
+            r        = @distance(turtle)
+            [tx, ty] = turtle.getCoords()
+            theta    = StrictMath.toDegrees(StrictMath.atan2(ty - y, x - tx)) - 90 + dh
+            newX     = x + r * Trig.sin(theta)
+            newY     = y + r * Trig.cos(theta)
+            turtle.setXY(newX, newY, this)
+          return
+      )
+
       return
 
     # (Boolean) => Unit

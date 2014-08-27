@@ -180,6 +180,8 @@ object SimplePrims {
         case _: prim.etc._facexy            => "SelfManager.self().faceXY"
         case _: prim.etc._pendown           => "SelfManager.self().penManager.lowerPen"
         case _: prim.etc._penup             => "SelfManager.self().penManager.raisePen"
+        case _: prim.etc._tie               => "SelfManager.self().tie"
+        case _: prim.etc._untie             => "SelfManager.self().untie"
         case _: prim._fd                    => "SelfPrims.fd"
         case _: prim._bk                    => "SelfPrims.bk"
         case _: prim._jump                  => "SelfPrims.jump"
