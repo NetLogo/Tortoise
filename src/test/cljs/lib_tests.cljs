@@ -11,7 +11,7 @@
 (defn partition-test
   ([nkvs] (partition-test nkvs 100))
   ([nkvs iters]
-    (let [kvs (n-kvs nkvs)
+    (let [kvs (doall (n-kvs nkvs)) ;; interleave returns a lazy seq -- JTT (8/28/14)
           partition-all_t (basic-bench iters #(doall (partition-all 2 kvs)))
           apply-hash-map_t (basic-bench iters #(apply hash-map kvs))]
       (report "apply-hash-map_t MINUS partition-all_t: " (- apply-hash-map_t partition-all_t)))))
