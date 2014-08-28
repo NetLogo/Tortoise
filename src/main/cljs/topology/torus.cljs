@@ -39,8 +39,6 @@
 (defn js-torus [mnx mxx mny mxy]
   (clj->js (torus mnx mxx mny mxy)))
 
-(((entity-init (torus -5 5 -5 5)) :wrap-x) 6)
-
 ;; js compat
 
 (compnt-let torus-diffuse-js []
