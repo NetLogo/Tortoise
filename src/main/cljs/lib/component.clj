@@ -1,7 +1,7 @@
 (ns lib.component)
 
 (defn- czip [raw_kvs]
-  (loop [kvs (vec (apply hash-map raw_kvs))
+  (loop [kvs (apply array-map raw_kvs)
          [k v] (first kvs)
          c  {}]
     (if (> (count kvs) 0)
