@@ -1,4 +1,5 @@
-(ns agents.turtle)
+(ns agents.turtle
+  (:require [lib.entity :refer [entity*]]))
 
 ;; Components and pieces -- JTT (8/26/14)
 ;;
