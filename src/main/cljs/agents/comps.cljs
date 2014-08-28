@@ -54,13 +54,18 @@
             :set-var! (fn [var-name val] (swap! _self_vars assoc (keyword var-name) val)))
 
 (compnt-let turtle-set []
-            [_turtle_set (fn [] (atom #{}))]
+
+            [_turtle_set #(atom #{})]
+
             :_turtle_set _turtle_set
             :turtles (fn [] @_turtle_set))
 
 (compnt-let turtle-getters []
+
             [turtles :turtles]
+
             :turtles-here (fn [] (turtles))
+            ;; TODO: cl-dependent (.getBreedName) -- JTT (8/28/14)
             :breed-here (fn [breed-name] (r/filter #(= (.getBreedName %) breed-name) (turtles))))
 
 (compnt-let turtles-at []
