@@ -13,9 +13,11 @@
         :id (id-manager/new-id! name))
 
 (compnt-let patch-reset []
-        [x :pxcor
-         y :pycor]
-        :reset (patch x y))
+
+            [x :pxcor
+             y :pycor]
+
+            :reset #(agents.patch.patch x y))
 
 (compnt ask []
         ;; may need to use this-as instead of referring to e -- JTT (8/27/14)
