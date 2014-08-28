@@ -6,7 +6,8 @@
 
 (compnt patch-coordinates [x y]
         :pxcor x
-        :pycor y)
+        :pycor y
+        :getCoords #(array x y))
 
 (compnt indexed [name]
         :id (id-manager/new-id! name))
