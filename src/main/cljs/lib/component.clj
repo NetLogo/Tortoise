@@ -8,7 +8,7 @@
      (clojure.core/js-obj "name" ~(keyword (clojure.core/name name)) ~@r)))
 
 (defn- czip [raw_kvs]
-  (loop [kvs (vec (partition-all 2 raw_kvs))
+  (loop [kvs (vec (apply hash-map raw_kvs))
          [k v] (first kvs)
          c  {}]
     (if (> (count kvs) 0)
@@ -25,7 +25,7 @@
 
 (defmacro let-in [e getblock & body]
   (let [letblock (transient [])]
-    (doseq [[nm v] (partition-all 2 getblock)]
+    (doseq [[nm v] (apply hash-map getblock)]
       (conj! letblock nm)
       (if (and (not (keyword? v)) (not (vector? v)))
         (conj! letblock `(~v))

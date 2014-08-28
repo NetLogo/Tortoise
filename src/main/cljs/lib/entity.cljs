@@ -2,7 +2,7 @@
 
 (defn entity* [nm & state]
   (let [e (transient {})]
-    (doseq [bit (partition-all 2 state)]
+    (doseq [bit (apply hash-map state)]
       (conj! e (vec bit)))
     (assoc! e :name (name nm))))
 
