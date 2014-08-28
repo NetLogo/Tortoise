@@ -69,12 +69,14 @@
             :breed-here (fn [breed-name] (r/filter #(= (.getBreedName %) breed-name) (turtles))))
 
 (compnt-let turtles-at []
-        [patch-at :patch-at]
-        :turtles-at (fn [x y] (((patch-at x y) :turtles-here))))
+
+            [patch-at :patch-at]
+
+            :turtles-at (fn [x y] (((patch-at x y) :turtles-here))))
 
 (compnt-let turtle-tracking []
+
             [_turtle_set :_turtle_set]
+
             :track-turtle   (fn [turtle] (swap! _turtle_set conj turtle))
             :untrack-turtle (fn [turtle] (swap! _turtle_set disj turtle)))
-
-
