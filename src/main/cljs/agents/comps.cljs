@@ -85,3 +85,22 @@
 
             :track-turtle   (fn [turtle] (swap! _turtle_set conj turtle))
             :untrack-turtle (fn [turtle] (swap! _turtle_set disj turtle)))
+
+(compnt-let compare-by-id []
+
+            [id :id]
+
+            :compare (fn [agent] (= id (.-id agent))))
+
+(compnt-let patch-to-string []
+
+            [pxcor :pxcor
+             pycor :pycor]
+
+            :to-string (fn [] (str "(patch " pxcor " " pycor ")")))
+
+(compnt-let cl-patch-update []
+
+            [cl-update-fn #((.. js/workspace -updater -updated) (clj->js e))]
+
+            :gen-update (fn [var-name] (cl-update-fn var-name)))

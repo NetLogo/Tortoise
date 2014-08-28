@@ -11,7 +11,10 @@
                                   patch-topology
                                   ask
                                   watch
-                                  patch-reset]]))
+                                  compare-by-id
+                                  patch-to-string
+                                  patch-reset
+                                  cl-patch-update]]))
 
 ;; Components and pieces -- JTT (8/26/14)
 ;;
@@ -60,4 +63,7 @@
                    (patch-topology)
                    (ask)
                    (watch)
-                   (patch-reset)])))
+                   (compare-by-id)
+                   (patch-to-string)
+                   (patch-reset)
+                   (cl-patch-update)])))
