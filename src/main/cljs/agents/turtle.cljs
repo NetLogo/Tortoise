@@ -50,7 +50,7 @@
    :ycor        0.0
    :size        1.0
    :heading     0.0
-   :label       ''
+   :label       ""
    :label-color 9.9
    :hidden      false})
 

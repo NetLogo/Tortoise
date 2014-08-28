@@ -30,7 +30,7 @@
 ;; SCAFFOLDING -- JTT (8/26/14)
 (def patch-defaults
   {:pcolor 0
-   :plabel ''
+   :plabel ""
    :plabel-color 9.9})
 
 (defn patch [x y]
