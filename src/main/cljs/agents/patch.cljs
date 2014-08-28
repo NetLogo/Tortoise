@@ -36,14 +36,10 @@
 (defn patch [x y]
   (entity* :patch
            :defaults patch-defaults
-           :init [(indexed)
-                  (self-vars :patch x y)
+           :init [(indexed :patch)
+                  (patch-coordinates x y)
                   (turtle-set)
-                  (life)
-                  (distance-finders)
-                  (towards)
-                  (neighborhood-finders)
-                  (spliced-in-radius)
+                  (patch-topology)
                   (ask)
                   (watch)
                   (patch-reset)]))
