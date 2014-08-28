@@ -1,7 +1,8 @@
 (ns topology.comps
   (:require [shim.strictmath]
             [topology.patch-math :as pm]
-            [engine.core.topology.torus])
+            [engine.core.topology.torus]
+            [clojure.core.reducers :as r])
   (:require-macros [lib.component :refer [compnt
                                           compnt-let]]))
 
@@ -73,11 +74,9 @@
              gpsw :southwest
              gpnw :northwest]
 
-            :get-neighbors-4 (fn [x y] (filter #(not= % nil)
-                                               ((juxt gpn gpe gps gpw) x y)))
-            :get-neighbors (fn [x y] (filter #(not= % nil)
-                                             ((juxt gpn gpe gps gpw
-                                                    gpne gpse gpsw gpnw) x y))))
+            :get-neighbors-4 (fn [x y] (into-array (r/filter #(not= nil %) ((juxt gpn gpe gps gpw) x y))))
+            :get-neighbors (fn [x y] (into-array (r/filter #(not= nil %) ((juxt gpn gpe gps gpw
+                                                           gpne gpse gpsw gpnw) x y)))))
 
 (compnt-let shortest-nonsense-finders []
 
@@ -202,8 +201,8 @@
 
             :distanceXY dxy
 
-            :getNeighbors  (fn [x y] (clj->js (doall (gn x y))))
-            :getNeighbors4 (fn [x y] (clj->js (doall (gn4 x y))))
+            :getNeighbors  (fn [x y] (gn x y))
+            :getNeighbors4 (fn [x y] (gn4 x y))
 
             :inRadius inr
 
