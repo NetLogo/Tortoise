@@ -18,7 +18,7 @@
 
 ;; dimension converter
 
-(defn xy->1d [x y arr w mnx mny]
+(defn xy->i [x y arr w mnx mny]
   (nth (drop (* w (- (- y) mny)) arr) (- x mnx)))
 
 
