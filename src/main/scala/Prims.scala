@@ -114,6 +114,7 @@ object Prims {
       case _: prim.etc._diffuse          => s"world.topology.diffuse('${arg(0)}', ${arg(1)})"
       case x: prim.etc._setdefaultshape  => s"BreedManager.setDefaultShape(${arg(0)}.getBreedName(), ${arg(1)})"
       case _: prim.etc._hidelink         => "SelfPrims.setVariable('hidden?', true)"
+      case _: prim.etc._showlink         => "SelfPrims.setVariable('hidden?', false)"
       case call: prim._call              =>
         (Handlers.ident(call.procedure.name) +: args)
           .mkString("Call(", ", ", ");")
