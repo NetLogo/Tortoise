@@ -1,12 +1,5 @@
 (ns lib.component)
 
-;; borrowed from https://github.com/ibdknox/ChromaShift/blob/master/cljs/game/lib/macros.clj
-;; -- JTT (8/18/14)
-
-(defmacro component [name params & r]
-  `(defn ~name ~params
-     (clojure.core/js-obj "name" ~(keyword (clojure.core/name name)) ~@r)))
-
 (defn- czip [raw_kvs]
   (loop [kvs (vec (apply hash-map raw_kvs))
          [k v] (first kvs)
