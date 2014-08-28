@@ -40,7 +40,8 @@
 ;; "reset" (return fresh empty patch)
 ;; getters and setters for builtins
 
-;; SCAFFOLDING -- JTT (8/26/14)
+(def PATCH_NAME "patch")
+
 (def patch-defaults
   {:pcolor 0
    :plabel ""
