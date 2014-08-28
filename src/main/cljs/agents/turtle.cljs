@@ -46,27 +46,29 @@
   {:breed       nil ;; "world.breedManager.turtles()" is the exact default -- JTT (8/26/14)
    :shape       nil
    :color       0.0
-   :xcor        0.0
-   :ycor        0.0
    :size        1.0
    :heading     0.0
    :label       ""
    :label-color 9.9
    :hidden      false})
 
-(defn turtle [x y]
-  (entity* :turtle
-           :defaults turtle-defaults
-           :init [(indexed)
-                  (self-vars :turtle)
-                  (life)
-                  (distance-finders)
-                  (towards)
-                  (face)
-                  (spliced-in-radius)
-                  (patch-getter)
-                  (movement)
-                  (patches-ahead)
-                  (ask)
-                  (watch)
-                  (links)]))
+(defn turtle
+  ([x y]
+    (entity* :turtle
+             :defaults turtle-defaults
+             :init [(indexed)
+                    (self-vars :turtle)
+                    (coordinates x y)
+                    (life)
+                    (distance-finders)
+                    (towards)
+                    (face)
+                    (spliced-in-radius)
+                    (patch-getter)
+                    (movement)
+                    (patches-ahead)
+                    (ask)
+                    (watch)
+                    (links)]))
+  ([]
+   (turtle 0 0)))
