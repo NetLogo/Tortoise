@@ -7,13 +7,15 @@ var t = (function(){
   __modulo = function(a, b) { return (a % b + +b) % b; };
 
   %output%
-  return [agentmodel, engine, shim, util, nashorn, test];
+  return [agentmodel, engine, shim, util, nashorn, test, agents, cljs.core.clj__GT_js];
 }).call(this);
 
 var agentmodel = t[0];
 var tortoise_engine = t[1];
-var shim   = t[2];
-var util   = t[3];
+var shim    = t[2];
+var util    = t[3];
 var nashorn = t[4];
 var test    = t[5];
+var agents  = t[6];
+var js      = t[7];
 
