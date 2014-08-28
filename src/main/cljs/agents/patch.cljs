@@ -1,4 +1,17 @@
-(ns agents.patch)
+(ns agents.patch
+  (:require [lib.entity :refer [entity*
+                                entity-init]]
+            [agents.comps :refer [indexed
+                                  self-vars
+                                  patch-coordinates
+                                  turtle-set
+                                  turtle-getters
+                                  turtles-at
+                                  turtle-tracking
+                                  patch-topology
+                                  ask
+                                  watch
+                                  patch-reset]]))
 
 ;; Components and pieces -- JTT (8/26/14)
 ;;
@@ -34,12 +47,16 @@
    :plabel-color 9.9})
 
 (defn patch [x y]
-  (entity* :patch
-           :defaults patch-defaults
-           :init [(indexed :patch)
-                  (patch-coordinates x y)
-                  (turtle-set)
-                  (patch-topology)
-                  (ask)
-                  (watch)
-                  (patch-reset)]))
+  (entity-init
+   (entity* :patch
+            :init [(indexed :patch)
+                   (self-vars patch-defaults)
+                   (patch-coordinates x y)
+                   (turtle-set)
+                   (turtle-getters)
+                   (turtles-at)
+                   (turtle-tracking)
+                   (patch-topology)
+                   (ask)
+                   (watch)
+                   (patch-reset)])))
