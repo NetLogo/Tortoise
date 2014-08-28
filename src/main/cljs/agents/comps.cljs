@@ -45,6 +45,13 @@
             ;; in Tortoise proper patchAt is contained in a try/catch? -- JTT (8/27/14)
             :patch-at (fn [dx dy] ((aget (.. js/workspace -world -topology) "get-patch") (+ px dx) (+ py dy))))
 
+(compnt-let self-vars [defaults]
+
+            [_self_vars #(atom defaults)]
+
+            :_self_vars _self_vars
+            :get-var  (fn [var-name] ((keyword var-name) @_self_vars))
+            :set-var! (fn [var-name val] (swap! _self_vars assoc (keyword var-name) val)))
 
 (compnt-let turtle-set []
             [_turtle_set (fn [] (atom #{}))]
