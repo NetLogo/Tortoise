@@ -28,11 +28,6 @@ module.exports =
     _patchesAllBlack:          undefined # Boolean
     _patchesWithLabels:        undefined # Number
 
-    # Optimization-related variables
-    unbreededLinksAreDirected: undefined # Boolean
-    _patchesAllBlack:          undefined # Boolean
-    _patchesWithLabels:        undefined # Number
-
     # (SelfManager, Updater, BreedManager, Array[String], Array[String], Array[String], Array[String], Array[String], Number, Number, Number, Number, Number, Boolean, Boolean, Array[Object], Array[Object]) => World
     constructor: (@selfManager, @_updater, @breedManager, globalNames, interfaceGlobalNames, @turtlesOwnNames
                 , @linksOwnNames, @patchesOwnNames, minPxcor, maxPxcor, minPycor, maxPycor, _patchSize

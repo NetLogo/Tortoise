@@ -11,6 +11,12 @@ module.exports = (grunt) ->
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
+    coffeelint: {
+      app: ['src/main/coffee/**/*.coffee'],
+      options: {
+        configFile: 'coffeelint.json'
+      }
+    },
     coffee: {
       compile: {
         files: [
@@ -36,6 +42,7 @@ module.exports = (grunt) ->
   })
 
   grunt.loadNpmTasks('grunt-browserify');
+  grunt.loadNpmTasks('grunt-coffeelint');
   grunt.loadNpmTasks('grunt-contrib-coffee')
   grunt.loadNpmTasks('grunt-contrib-copy')
   grunt.loadNpmTasks('grunt-contrib-rename')
@@ -56,4 +63,4 @@ module.exports = (grunt) ->
     return
   )
 
-  grunt.registerTask('default', ['coffee', 'gen_aliases', 'browserify', 'fix_require'])
+  grunt.registerTask('default', ['coffeelint', 'coffee', 'gen_aliases', 'browserify', 'fix_require'])

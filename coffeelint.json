@@ -1,0 +1,36 @@
+{
+  "arrow_spacing": {
+    "level": "error"
+  },
+  "indentation": {
+    "level": "ignore"
+  },
+  "line_endings": {
+    "level": "error"
+  },
+  "max_line_length": {
+    "value": 120,
+    "level": "ignore"
+  },
+  "no_backticks": {
+    "level": "ignore"
+  },
+  "no_implicit_braces": {
+    "level": "error"
+  },
+  "no_implicit_parens": {
+    "level": "error"
+  },
+  "no_interpolation_in_single_quotes": {
+    "level": "error"
+  },
+  "no_unnecessary_fat_arrows": {
+    "level": "ignore"
+  },
+  "no_stand_alone_at": {
+    "level": "error"
+  },
+  "space_operators": {
+    "level": "error"
+  }
+}

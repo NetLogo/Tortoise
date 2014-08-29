@@ -7,7 +7,7 @@ module.exports =
   class LinkSet extends AbstractAgentSet
 
     # [T <: Turtle] @ (Array[T], String) => TurtleSet
-    constructor: (@_agents, @_breedName ="LINKS") ->
+    constructor: (@_agents, @_breedName = "LINKS") ->
       super(@_agents)
 
     # () => String

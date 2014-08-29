@@ -116,7 +116,7 @@ module.exports =
 
     # WARNING: Mutates `ax` and `ay` --JAB (7/28/14)
     # (Array[Number], Array[Number], Array[Turtle], Array[Number], Number, Number) => Unit
-    _updateXYArraysForAll: (ax, ay, agents, degCounts, nodeCount, rep)->
+    _updateXYArraysForAll: (ax, ay, agents, degCounts, nodeCount, rep) ->
       for i in [0...nodeCount]
         t1 = agents[i]
         for j in [(i + 1)...nodeCount]

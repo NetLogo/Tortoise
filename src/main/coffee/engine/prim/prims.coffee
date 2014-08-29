@@ -200,7 +200,7 @@ module.exports =
 
     # (Number) => Number
     toInt: (n) ->
-      n|0
+      n | 0
 
     # (PatchSet|TurtleSet|Patch|Turtle) => TurtleSet
     turtlesOn: (agentsOrAgent) ->
