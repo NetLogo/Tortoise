@@ -9,6 +9,7 @@ Turtle           = require('../core/turtle')
 StrictMath       = require('tortoise/shim/strictmath')
 Comparator       = require('tortoise/util/comparator')
 Exception        = require('tortoise/util/exception')
+stableSort       = require('tortoise/util/stablesort')
 Type             = require('tortoise/util/typechecker')
 
 # For most of this stuff, Lodashing it is no good, since Lodash doesn't handle strings correctly.  Could use Underscore.string... --JAB (5/5/14)
@@ -195,7 +196,7 @@ module.exports =
         else if forAll((x) -> Type(x).isString())
           xs[..].sort()
         else if _(agentClasses).some((agentClass) -> forAll((x) -> x instanceof agentClass))
-          xs[..].sort((x, y) -> x.compare(y).toInt)
+          stableSort(xs[..])((x, y) -> x.compare(y).toInt)
         else
           throw new Exception.NetLogoException("We don't know how to sort your kind here!")
       else if xs instanceof AbstractAgentSet

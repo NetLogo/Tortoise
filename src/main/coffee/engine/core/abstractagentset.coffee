@@ -7,6 +7,7 @@ Exception      = require('tortoise/util/exception')
 Iterator       = require('tortoise/util/iterator')
 Seq            = require('tortoise/util/seq')
 Shufflerator   = require('tortoise/util/shufflerator')
+stableSort     = require('tortoise/util/stablesort')
 
 # Never instantiate this class directly --JAB (5/7/14)
 module.exports =
@@ -79,7 +80,7 @@ module.exports =
       if @isEmpty()
         @toArray()
       else
-        @toArray().sort((x, y) -> x.compare(y).toInt)
+        stableSort(@toArray())((x, y) -> x.compare(y).toInt)
 
     # () => Array[T]
     toArray: ->
