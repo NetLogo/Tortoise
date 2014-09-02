@@ -15,7 +15,8 @@
                                   compare-by-id
                                   patch-to-string
                                   patch-reset
-                                  cl-update]]))
+                                  cl-update]])
+  (:require-macros [lib.component :refer [compnt-let]]))
 
 ;; Persisting issues -- JTT (8/29/14)
 ;;
@@ -50,4 +51,53 @@
                    (compare-by-id)
                    (patch-to-string)
                    (patch-reset)
-                   (cl-update)])))
+                   (cl-update)
+                   (patch-aliases)])))
+
+(compnt-let patch-aliases []
+
+            [get-var :get-var
+             set-var! :set-var!
+
+             track-turtle :track-turtle
+             untrack-turtle :untrack-turtle
+
+             get-coords :get-coords
+
+             distance-xy :distance-xy
+             towards-xy :towards-xy
+             get-neighbors :get-neighbors
+             get-neighbors-4 :get-neighbors-4
+             in-radius :in-radius
+
+             turtles-at :turtles-at
+             turtles-here :turtles-here
+             breed-here :breed-here
+
+             projection-by :projection-by
+
+             to-string :to-string]
+
+            :getVariable get-var
+            :setVariable set-var!
+
+            :getPatchVariable get-var
+            :setPatchVariable set-var!
+
+            :untrackTurtle untrack-turtle
+            :trackTurtle track-turtle
+
+            :getCoords get-coords
+            :distanceXY distance-xy
+            :towardsXY towards-xy
+            :getNeighbors get-neighbors
+            :getNeighbors4 get-neighbors-4
+            :inRadius in-radius
+
+            :turtlesAt turtles-at
+            :turtlesHere turtles-here
+            :breedHere breed-here
+
+            :projectionBy projection-by
+
+            :toString to-string)
