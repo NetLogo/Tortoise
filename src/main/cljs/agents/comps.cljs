@@ -89,6 +89,17 @@
             :track-turtle   (fn [turtle] (swap! _turtle_set conj turtle))
             :untrack-turtle (fn [turtle] (swap! _turtle_set disj turtle)))
 
+(compnt-let sprout-turtles []
+
+            [track-turtle :track-turtle
+             px :pxcor
+             py :pycor
+             crt #(.. js/world -turtleManager -createTurtles)]
+
+            ;; TODO: cl-dependent
+            :sprout! (fn [n breed] (dorun track-turtle
+                                          (crt n breed px py))))
+
 (compnt-let compare-by-id []
 
             [id :id]

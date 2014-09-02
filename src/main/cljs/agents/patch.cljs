@@ -8,6 +8,7 @@
                                   turtle-getters
                                   turtles-at
                                   turtle-tracking
+                                  sprout-turtles
                                   patch-topology
                                   ask
                                   watch
