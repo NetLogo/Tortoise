@@ -11,6 +11,6 @@
         ;; Incomplete error handling. -- JTT (8/29/14)
         (catch js/Error error (throw error))))))
 
-(defn self [] @_self)
+(defn self [] _self)
 
-(defn myself [] @_myself)
+(defn myself [] _myself)
