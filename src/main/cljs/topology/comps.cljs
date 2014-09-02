@@ -65,21 +65,38 @@
             :southwest (fn [x y] (gp (wrap-x (dec x)) (wrap-y (dec y))))
             :northwest (fn [x y] (gp (wrap-x (dec x)) (wrap-y (inc y)))))
 
+(compnt-let _optimal-neighborhood-fn []
+
+        [gpn :north
+         gpe :east
+         gps :south
+         gpw :west
+
+         gpne :northeast
+         gpse :southeast
+         gpsw :southwest
+         gpnw :northwest
+
+         mxx :max-pxcor
+         mnx :min-pxcor
+         mxy :max-pycor
+         mny :min-pycor]
+
+         :_optimal_neighborhood_fn
+            (fn [x y] (if (= x mnx mxx)
+                        (or
+                         (and (= y mny mxy) [])
+                         ((juxt gpn gps) x y))
+                        (or
+                         (and (= y mxy mny) ((juxt gpe gpw) x y))
+                         ((juxt gpn gpe gps gpw) x y)))))
+
 (compnt-let neighborhood-finders []
 
-            [gpn :north
-             gpe :east
-             gps :south
-             gpw :west
+            [optimal-neighborhood-fn :_optimal_neighborhood_fn]
 
-             gpne :northeast
-             gpse :southeast
-             gpsw :southwest
-             gpnw :northwest]
-
-            :get-neighbors-4 (fn [x y] (into-array (r/filter #(not= nil %) ((juxt gpn gpe gps gpw) x y))))
-            :get-neighbors (fn [x y] (into-array (r/filter #(not= nil %) ((juxt gpn gpe gps gpw
-                                                           gpne gpse gpsw gpnw) x y)))))
+            :get-neighbors-4 (fn [x y] (into-array (r/filter #(not= nil %) (optimal-neighborhood-fn x y))))
+            :get-neighbors (fn [x y] (into-array (r/filter #(not= nil %) (optimal-neighborhood-fn x y)))))
 
 (compnt-let shortest-nonsense-finders []
 
