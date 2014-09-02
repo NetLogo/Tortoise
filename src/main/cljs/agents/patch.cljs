@@ -15,7 +15,7 @@
                                   compare-by-id
                                   patch-to-string
                                   patch-reset
-                                  cl-patch-update]]))
+                                  cl-update]]))
 
 ;; Components and pieces still remaining -- JTT (8/28/14)
 ;;

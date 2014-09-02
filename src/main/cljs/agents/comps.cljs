@@ -113,8 +113,12 @@
 
             :to-string (fn [] (str "(patch " pxcor " " pycor ")")))
 
-(compnt-let cl-patch-update []
+(compnt-let cl-update []
 
+            ;; this conversion shouldn't be too expensive because it only occurs
+            ;; at initialization time - even then, the updater really only
+            ;; needs the id, so it could be made faster by passing that value
+            ;; specifically. -- JTT 8/29/14
             [cl-update-fn #((.. js/workspace -updater -updated) (clj->js e))]
 
             :gen-update (fn [var-name] (cl-update-fn var-name)))
