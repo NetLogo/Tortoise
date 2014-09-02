@@ -30,17 +30,6 @@
    :min-pycor (- mny 0.5)
    :max-pycor (+ mxy 0.5)})
 
-;; shortest-x wraps a difference out of bounds.
-;; _shortestX does not. -- JTT (7/28/14)
-;; _shortestX is also gibberish. This implementation
-;; completely fails tests. -- JTT (8/18/2014)
-
-(defn shortest-x [x1 x2]
-  (wrap-x (- x2 x1)))
-
-(defn shortest-y [y1 y2]
-  (wrap-y (- y2 y1)))
-
 ;; _shortestX/Y equivalent
 
 (defn shortest-nonsense-helper [d1 d2 w-or-h]
