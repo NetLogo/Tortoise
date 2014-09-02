@@ -54,6 +54,8 @@
    :hidden      false})
 
 (defn turtle
+  ([]
+   (turtle 0 0))
   ([x y]
     (entity* :turtle
              :defaults turtle-defaults
@@ -70,6 +72,4 @@
                     (patches-ahead)
                     (ask)
                     (watch)
-                    (links)]))
-  ([]
-   (turtle 0 0)))
+                    (links)])))
