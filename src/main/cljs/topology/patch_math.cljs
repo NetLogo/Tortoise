@@ -18,8 +18,8 @@
 
 ;; dimension converter
 
-(defn xy->i [x y arr w mnx mny]
-  (nth (drop (* w (- (- y) mny)) arr) (- x mnx)))
+(defn xy->i [x y w mnx mxy]
+  (+ (* w (- mxy y)) arr) (- x mnx))
 
 
 ;; edge-bounds helper
