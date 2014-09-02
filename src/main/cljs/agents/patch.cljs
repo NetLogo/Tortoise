@@ -34,25 +34,30 @@
    :plabel ""
    :plabel-color 9.9})
 
+(defn- _patch_entity [x y]
+  (entity* :patch
+           :init [(indexed :patch)
+                  (self-vars patch-defaults)
+                  (patch-coordinates x y)
+                  (turtle-set)
+                  (turtle-getters)
+                  (turtles-at)
+                  (turtle-tracking)
+                  (sprout-turtles)
+                  (patch-topology)
+                  (ask)
+                  (watch)
+                  (compare-by-id)
+                  (patch-to-string)
+                  (patch-reset)
+                  (cl-update)
+                  (patch-aliases)]))
+
 (defn patch [x y]
-  (entity-init
-   (entity* :patch
-            :init [(indexed :patch)
-                   (self-vars patch-defaults)
-                   (patch-coordinates x y)
-                   (turtle-set)
-                   (turtle-getters)
-                   (turtles-at)
-                   (turtle-tracking)
-                   (sprout-turtles)
-                   (patch-topology)
-                   (ask)
-                   (watch)
-                   (compare-by-id)
-                   (patch-to-string)
-                   (patch-reset)
-                   (cl-update)
-                   (patch-aliases)])))
+  (entity-init (_patch_entity x y)))
+
+(defn js-patch [x y]
+  (clj->js (patch x y)))
 
 (compnt-let patch-aliases []
 
