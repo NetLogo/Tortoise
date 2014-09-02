@@ -36,19 +36,22 @@
 (compnt-let patch-topology []
 
             [px :pxcor
-             py :pycor]
+             py :pycor
+             topo #(.. js/workspace -world -topology)]
 
-            ;; TODO: basically cl-dependent
-            :distance (fn [agent] ((.. js/workspace -world -topology -distance) px py agent))
-            :distance-xy (fn [x y] ((.. js/workspace -world -topology -distanceXY) px py x y))
+            ;; TODO: basically cl-dependent -- JTT (8/2814)
+            :distance (fn [agent] ((.-distance topo) px py agent))
+            :distance-xy (fn [x y] ((.-distanceXY topo) px py x y))
 
-            :towards-xy (fn [x y] ((.. js/workspace -world -topology -towards) px py x y))
+            :towards-xy (fn [x y] ((.-towards topo) px py x y))
 
-            :get-neighbors (fn [] ((.. js/workspace -world -topology -getNeighbors) px py))
-            :get-neighbors-4 (fn [] ((.. js/workspace -world -topology -getNeighbors4) px py))
+            :get-neighbors (fn [] ((.-getNeighbors topo) px py))
+            :get-neighbors-4 (fn [] ((.-getNeighbors4 topo) px py))
+
+            :in-radius (fn [agents radius] ((.-inRadius topo) px py agents radius))
 
             ;; in Tortoise proper patchAt is contained in a try/catch? -- JTT (8/27/14)
-            :patch-at (fn [dx dy] ((aget (.. js/workspace -world -topology) "get-patch") (+ px dx) (+ py dy))))
+            :patch-at (fn [dx dy] ((aget topo "get-patch") (+ px dx) (+ py dy))))
 
 (compnt-let self-vars [defaults]
 
