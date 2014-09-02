@@ -40,7 +40,10 @@
          mxye [:edge-bounds :max-pycor]]
 
         :wrap-x (fn [x] (pm/wrap x mnxe mxxe))
-        :wrap-y (fn [y] (pm/wrap y mnye mxye)))
+        :wrap-y (fn [y] (pm/wrap y mnye mxye))
+
+        :_wrapInX true
+        :_wrapInY true)
 
 (compnt patch-getter []
         :get-patch (fn [x y] (.getPatchAt js/workspace.world x y))
