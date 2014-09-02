@@ -6,6 +6,7 @@
                                     wrap
                                     patch-getter
                                     compass-movement
+                                    _optimal-neighborhood-fn
                                     neighborhood-finders
                                     shortest-nonsense-finders
                                     distance-finders
@@ -25,6 +26,7 @@
                   (wrap)
                   (patch-getter)
                   (compass-movement)
+                  (_optimal-neighborhood-fn)
                   (neighborhood-finders)
                   (shortest-nonsense-finders)
                   (distance-finders)
