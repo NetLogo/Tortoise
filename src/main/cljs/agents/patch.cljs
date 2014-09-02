@@ -17,15 +17,16 @@
                                   patch-reset
                                   cl-update]]))
 
-;; Components and pieces still remaining -- JTT (8/28/14)
+;; Persisting issues -- JTT (8/29/14)
 ;;
-;; contains turtles
-;; - special turtle operations
-;; - - "sprout" turtle
-;; patch-math
-;; - in-radius (spliced-in-radius)
+;; * Can't pass a set of agents.patch-s to in-radius
+;;              (or to anything else taking an agentset)
+;; * Aliasing -> patchset of basically the same thing
+;;
 
 (def PATCH_NAME "patch")
+;; REFER: poorly spliced update mapping in
+;; cl-shiv/updater-hackpatch-cl.js -- 8/29/14
 
 (def patch-defaults
   {:pcolor 0
@@ -42,10 +43,11 @@
                    (turtle-getters)
                    (turtles-at)
                    (turtle-tracking)
+                   (sprout-turtles)
                    (patch-topology)
                    (ask)
                    (watch)
                    (compare-by-id)
                    (patch-to-string)
                    (patch-reset)
-                   (cl-patch-update)])))
+                   (cl-update)])))
