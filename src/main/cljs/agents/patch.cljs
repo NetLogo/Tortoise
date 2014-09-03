@@ -36,10 +36,11 @@
    :plabel ""
    :plabel-color 9.9})
 
-(defn- _patch_entity [x y]
+(defn- _patch_entity [id x y world]
   (entity* :patch
-           :init [(indexed :patch)
-                  (self-vars patch-defaults)
+           :id id
+           :world world
+           :init [;;(indexed :patch) ;; This is not working well with tortoise proper -- JTT 9/2/14
                   (patch-coordinates x y)
                   (turtle-set)
                   (turtle-getters)
@@ -58,11 +59,13 @@
                   (cl-update)
                   (patch-aliases)]))
 
-(defn patch [x y]
-  (entity-init (_patch_entity x y)))
+(defn patch [id x y world & others]
+  (entity-init (merge (_patch_entity id x y world) (apply hash-map others))))
 
-(defn js-patch [x y]
-  (clj->js (patch x y)))
+;; Must be able to pass UI optimizations (inc/dec PatchLabelCount, declarePatchesNotAllBlack, etc),
+;; and hence the new variadic constructor. -- JTT 9/3/14
+(defn js-patch [id x y world & optimizations]
+  (clj->js (apply (partial patch id x y world) optimizations)))
 
 (compnt-let patch-aliases []
 
