@@ -195,11 +195,11 @@ engine.updater = Updater = function () {
     Updater.prototype._cljsPatchMap = function(cljs_patch) {
       return {
         id:             [ 'WHO', cljs_patch.id ],
-        pcolor:         [ 'PCOLOR', cljs_patch['get-var']('pcolor') ],
-        plabel:         [ 'PLABEL', cljs_patch['get-var']('plabel').toString() ],
-        'plabel-color': [ 'PLABEL-COLOR', cljs_patch['get-var']('plabel-color') ],
-        pxcor:          [ 'PXCOR', cljs_patch.pxcor ],
-        pycor:          [ 'PYCOR', cljs_patch.pycor ]
+        pcolor:         [ 'PCOLOR', cljs_patch._self_vars.state['pcolor'] ],
+        plabel:         [ 'PLABEL', cljs_patch._self_vars.state['plabel'].toString() ],
+        'plabel-color': [ 'PLABEL-COLOR', cljs_patch._self_vars.state['plabel-color'] ],
+        pxcor:          [ 'PXCOR', cljs_patch._self_vars.state.pxcor ],
+        pycor:          [ 'PYCOR', cljs_patch._self_vars.state.pycor ]
       }
     }
     Updater.prototype._linkMap = function (link) {
