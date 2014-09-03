@@ -7,7 +7,7 @@ var t = (function(){
   __modulo = function(a, b) { return (a % b + +b) % b; };
 
   %output%
-  return [agentmodel, engine, shim, util, nashorn, test, agents, cljs.core.clj__GT_js];
+  return [agentmodel, engine, shim, util, nashorn, test, agents, cljs.core.clj__GT_js, cljs];
 }).call(this);
 
 var agentmodel = t[0];
@@ -18,4 +18,5 @@ var nashorn = t[4];
 var test    = t[5];
 var agents  = t[6];
 var js      = t[7];
+var cljs    = t[8];
 
