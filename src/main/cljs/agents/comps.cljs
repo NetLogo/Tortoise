@@ -22,13 +22,14 @@
 
 (compnt ask []
         ;; may need to use this-as instead of referring to e -- JTT (8/27/14)
-        :ask (fn [f] (do ((self-manager/ask-agent f) e)
-                         (if (= (:id (self-manager/self)) -1)
-                           ;; TODO: bad exception.
-                           (throw new js/Error "Death or something."))
-                         nil))
+        :ask (fn [f] (this-as me
+                              (do ((self-manager/ask-agent f) me)
+                                (if (= (:id (self-manager/self)) -1)
+                                  ;; TODO: bad exception.
+                                  (throw new js/Error "Death or something.")))))
         ;; @world.selfManager.askAgent(thing-to-do)(me) -- JS equiv. JTT (8/27/14)
-        :projection-by (fn [f] ((self-manager/ask-agent f) e)))
+        :projection-by (fn [f] (this-as me
+                                        ((self-manager/ask-agent f) me))))
 
 (compnt watch []
         ;; TODO: cl-dependent -- JTT (8/27/14)
