@@ -89,12 +89,11 @@
 
             [track-turtle :track-turtle
              px :pxcor
-             py :pycor
-             crt #(.. js/world -turtleManager -createTurtles)]
+             py :pycor]
 
             ;; TODO: cl-dependent
             :sprout! (fn [n breed] (dorun track-turtle
-                                          (crt n breed px py))))
+                                          ((.. js/world -turtleManager -createTurtles) n breed px py))))
 
 (compnt-let compare-by-id []
 
