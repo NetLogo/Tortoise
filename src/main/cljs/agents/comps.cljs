@@ -1,7 +1,8 @@
 (ns agents.comps
   (:require [agents.singletons.id-manager :as id-manager]
             [agents.singletons.self-manager :as self-manager]
-            [clojure.core.reducers :as r])
+            [clojure.core.reducers :as r]
+            [util.colormodel :as cm]) ;; TODO: cl-dependent -- JTT 9/3/14
   (:require-macros [lib.component :refer [compnt compnt-let]]))
 
 (compnt patch-coordinates [x y]
@@ -113,12 +114,80 @@
 
             :to-string (fn [] (str "(patch " pxcor " " pycor ")")))
 
-(compnt-let cl-update []
+(compnt-let self-vars [defaults]
+
+            [_self_vars #(atom defaults)]
+
+            :_self_vars _self_vars
+            :get-var  (fn [var-name] ((keyword var-name) @_self_vars))
+            :set-var! (fn [var-name val] (do
+                                           (swap! _self_vars assoc (keyword var-name) val)
+                                           ;; must lookup :get-update at fn runtime in order
+                                           ;; to add the self-vars component _before_ adding
+                                           ;; the cl-update component, which in turn allows
+                                           ;; cl-update to avoid using `this`, the usage of which results
+                                           ;; in broken-scope references to Window and
+                                           ;; other nonsense. -- JTT 9/3/14
+                                           ;; TODO: cl-interop nonsense - `this` refers to the JS
+                                           ;; converted version of `e`, so it has to be used as a
+                                           ;; js object even though it's the cljs entity...
+                                           ;; -- JTT 9/3/14
+                                           (this-as t ((aget t "gen-update") var-name)))))
+
+(compnt-let nuanced-set-var-and-update []
+            ;; Provides UI optimizations for tracking patch label count and declaring patches non-black.
+            ;; Basically a mapping from variable names to nuanced computations (like wrapping a color or
+            ;; checking that a label is non-empty) -- it's a special side-effects machine.
+            ;; -- JTT 9/3/14
+
+            [get-var :get-var
+             ipc     :_incrementPatchLabelCount
+             dpc     :_decrementPatchLabelCount
+             declare-non-black :_declareNonBlackPatch]
+
+            :_self-var-update-fn (fn [var-name val send-update set-val]
+                                   (let [is?    (partial = var-name)
+                                         !nil? #(not (nil? %))]
+                                     (cond
+                                      (is? "plabel") (let [plabel (get-var "plabel")]
+                                                       (do
+                                                         (set-val val)
+                                                         (send-update)
+                                                         (when (and (!nil? dpc) (not= plabel "") (= val "")) (dpc))
+                                                         (when (and (!nil? ipc) (= plabel "") (not= val "")) (ipc))))
+                                      ;; TODO: cl-dependent color wrapping
+                                      (is? "pcolor") (let [pcolor (get-var "pcolor")
+                                                           new-color (cm/wrapColor val)]
+                                                       (when (not= new-color pcolor)
+                                                         (set-val new-color)
+                                                         (send-update)
+                                                         (and (not= new-color 0) (declare-non-black))))
+                                      (is? "plabel-color") (do (set-val (cm/wrapColor val))
+                                                               (send-update))
+                                      :default (do (set-val val)
+                                                   (send-update))))))
+
+(compnt-let *nuanced-set-var! []
+            ;; Must be added after (self-vars) and (nuanced-set-var-and-update).
+            ;; Overwrites :set-var! to check the mappings in nuanced-set-var... and perform
+            ;; computations for wrapping color values and performing UI optimization function calls.
+            ;; Feels sorta gross, but hopefully it works. -- JTT 9/3/14
+
+            [_self_vars :_self_vars
+             var-update :_self-var-update-fn]
+
+            :set-var! (fn [var-name val] (this-as t
+                                                  (let [gen-update (aget t "gen-update")]
+                                                    (var-update var-name
+                                                                val
+                                                                #(gen-update var-name)
+                                                                (partial swap! _self_vars assoc (keyword var-name)))))))
+
+(compnt cl-update []
 
             ;; this conversion shouldn't be too expensive because it only occurs
             ;; at initialization time - even then, the updater really only
             ;; needs the id, so it could be made faster by passing that value
             ;; specifically. -- JTT 8/29/14
-            [cl-update-fn #((.. js/workspace -updater -updated) (clj->js e))]
 
-            :gen-update (fn [var-name] (cl-update-fn var-name)))
+            :gen-update (fn [var-name] (((.. js/workspace -updater -updated) (clj->js e)) var-name)))

@@ -2,7 +2,6 @@
   (:require [lib.entity :refer [entity*
                                 entity-init]]
             [agents.comps :refer [indexed
-                                  self-vars
                                   patch-coordinates
                                   turtle-set
                                   turtle-getters
@@ -15,6 +14,9 @@
                                   compare-by-id
                                   patch-to-string
                                   patch-reset
+                                  self-vars
+                                  nuanced-set-var-and-update
+                                  *nuanced-set-var!
                                   cl-update]])
   (:require-macros [lib.component :refer [compnt-let]]))
 
@@ -50,6 +52,9 @@
                   (compare-by-id)
                   (patch-to-string)
                   (patch-reset)
+                  (self-vars patch-defaults)
+                  (nuanced-set-var-and-update)
+                  (*nuanced-set-var!)
                   (cl-update)
                   (patch-aliases)]))
 
