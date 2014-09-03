@@ -197,12 +197,7 @@ module.exports =
         else
           throw new Exception.NetLogoException("LINKS is a directed breed.")
 
-      link = @world.links().find(findFunc)
-
-      if link?
-        link
-      else
-        Nobody
+      @world.links().find(findFunc) ? Nobody
 
     # () => Turtle
     otherEnd: ->

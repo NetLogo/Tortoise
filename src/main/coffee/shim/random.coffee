@@ -8,12 +8,9 @@ but I fear (though have not measured) the performance impact --ST
 ###
 
 module.exports =
-  if Random?
-    Random
-  else
-    {
-      nextInt:    (limit) -> Math.floor(Math.random() * limit)
-      nextLong:   (limit) -> @nextInt(limit)
-      nextDouble:         -> Math.random()
-      setSeed:    (seed)  -> return # No-op!
-    }
+  Random ? {
+    nextInt:    (limit) -> Math.floor(Math.random() * limit)
+    nextLong:   (limit) -> @nextInt(limit)
+    nextDouble:         -> Math.random()
+    setSeed:    (seed)  -> return # No-op!
+  }
