@@ -19,7 +19,7 @@
 ;; dimension converter
 
 (defn xy->i [x y w mnx mxy]
-  (+ (* w (- mxy y)) arr) (- x mnx))
+  (+ (* w (- mxy y)) (- x mnx)))
 
 
 ;; edge-bounds helper
