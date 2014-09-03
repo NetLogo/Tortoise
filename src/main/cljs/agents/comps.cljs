@@ -38,30 +38,24 @@
 (compnt-let patch-topology []
 
             [px :pxcor
-             py :pycor
-             topo #(.. js/workspace -world -topology)]
+             py :pycor]
+            ;; cannot 'let' world (and hence topology) because they are
+            ;; too co-dependent - it will not be defined before patch
+            ;; asks for it -- JTT 9/2/14
 
-            ;; TODO: basically cl-dependent -- JTT (8/2814)
-            :distance (fn [agent] ((.-distance topo) px py agent))
-            :distance-xy (fn [x y] ((.-distanceXY topo) px py x y))
+            ;; TODO: basically cl-dependent -- JTT (8/28/14)
+            :distance (fn [agent] ((.. js/world -topology -distance) px py agent))
+            :distance-xy (fn [x y] ((.. js/world -topology -distanceXY) px py x y))
 
-            :towards-xy (fn [x y] ((.-towards topo) px py x y))
+            :towards-xy (fn [x y] ((.. js/world -topology -towards) px py x y))
 
-            :get-neighbors (fn [] ((.-getNeighbors topo) px py))
-            :get-neighbors-4 (fn [] ((.-getNeighbors4 topo) px py))
+            :get-neighbors (fn [] ((.. js/world -topology -getNeighbors) px py))
+            :get-neighbors-4 (fn [] ((.. js/world -topology -getNeighbors4) px py))
 
-            :in-radius (fn [agents radius] ((.-inRadius topo) px py agents radius))
+            :in-radius (fn [agents radius] ((.. js/world -topology -inRadius) px py agents radius))
 
             ;; in Tortoise proper patchAt is contained in a try/catch? -- JTT (8/27/14)
-            :patch-at (fn [dx dy] ((aget topo "get-patch") (+ px dx) (+ py dy))))
-
-(compnt-let self-vars [defaults]
-
-            [_self_vars #(atom defaults)]
-
-            :_self_vars _self_vars
-            :get-var  (fn [var-name] ((keyword var-name) @_self_vars))
-            :set-var! (fn [var-name val] (swap! _self_vars assoc (keyword var-name) val)))
+            :patch-at (fn [dx dy] ((aget (.. js/world -topology) "get-patch") (+ px dx) (+ py dy))))
 
 (compnt-let turtle-set []
 
