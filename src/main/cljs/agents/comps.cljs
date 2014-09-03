@@ -33,7 +33,7 @@
 
 (compnt watch []
         ;; TODO: cl-dependent -- JTT (8/27/14)
-        :watchme (fn [] (.watch (.. js/workspace -world -observer) e)))
+        :watchme (fn [] (.watch (.. js/world -observer) e)))
 
 (compnt-let patch-topology []
 
