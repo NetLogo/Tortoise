@@ -49,8 +49,9 @@
 
             :towards-xy (fn [x y] ((.. js/world -topology -towards) px py x y))
 
-            :get-neighbors (fn [] ((.. js/world -topology -getNeighbors) px py))
-            :get-neighbors-4 (fn [] ((.. js/world -topology -getNeighbors4) px py))
+            ;; getNeighbors should reference world so it returns a patchset
+            :get-neighbors (fn [] (.getNeighbors js/world px py))
+            :get-neighbors-4 (fn [] (.getNeighbors4 js/world px py))
 
             :in-radius (fn [agents radius] ((.. js/world -topology -inRadius) px py agents radius))
 
