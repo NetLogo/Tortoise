@@ -51,11 +51,7 @@ module.exports =
 
     # (Number, Number) => Agent
     getLink: (fromId, toId) ->
-      link = @_links.find((link) -> link.end1.id is fromId and link.end2.id is toId)
-      if link?
-        link
-      else
-        Nobody
+      @_links.find((link) -> link.end1.id is fromId and link.end2.id is toId) ? Nobody
 
     # () => LinkSet
     links: ->
