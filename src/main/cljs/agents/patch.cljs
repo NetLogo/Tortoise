@@ -62,7 +62,7 @@
                   (compare-by-id)
                   (patch-to-string)
                   (patch-reset)
-                  (self-vars patch-defaults)
+                  (self-vars (merge patch-defaults {:pxcor x :pycor y}))
                   (nuanced-set-var-and-update)
                   (*nuanced-set-var!)
                   (cl-update)
