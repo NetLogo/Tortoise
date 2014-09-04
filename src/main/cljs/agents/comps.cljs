@@ -187,8 +187,6 @@
 (compnt cl-update []
 
             ;; this conversion shouldn't be too expensive because it only occurs
-            ;; at initialization time - even then, the updater really only
-            ;; needs the id, so it could be made faster by passing that value
-            ;; specifically. -- JTT 8/29/14
+            ;; at initialization time -- JTT 9/3/14
 
             :gen-update (fn [var-name] (((.. js/workspace -updater -updated) (clj->js e)) var-name)))
