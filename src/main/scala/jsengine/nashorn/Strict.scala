@@ -1,11 +1,11 @@
-// (C) Uri Wilensky. https://github.com/NetLogo/NetLogo
+// (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-package org.nlogo.tortoise.nashorn
+package org.nlogo.tortoise.jsengine.nashorn
 
 // ADDING SOMETHING TO THIS OBJECT?
 // WELL, ARE YA, PUNK?
 // If you are, open your browser's console and type in "Math.<the name of that thing>".
-// If it returns `undefined`, you need to add it to 'compat.coffee', too!
+// If it returns `undefined`, you need to add it to 'strictmath.coffee', too!
 // Or, maybe just consult this page to figure out if it's a part of the spec or not:
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math
 // --JAB (11/4/13)
@@ -21,5 +21,6 @@ object Strict {
   def ceil(x: Double) = StrictMath.ceil(x)
   def sqrt(x: Double) = StrictMath.sqrt(x)
   def pow(x: Double, y: Double) = StrictMath.pow(x, y)
+  def exp(x: Double) = StrictMath.exp(x)
   def toDegrees(x: Double) = StrictMath.toDegrees(x)
 }

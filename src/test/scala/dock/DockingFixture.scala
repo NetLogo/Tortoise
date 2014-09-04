@@ -10,7 +10,7 @@ import
   api.MersenneTwisterFast,
   org.scalatest.Assertions._,
   org.nlogo.shape.{LinkShape, VectorShape},
-  nashorn.Nashorn
+  jsengine.nashorn.Nashorn
 
 import collection.JavaConverters._
 
@@ -129,13 +129,13 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
       throw new IllegalStateException("Exception occurred in JS but not headless: " + actualOutput)
     } else if(exceptionOccurredInHeadless && exceptionOccurredInJS) {
       if(headlessException != actualOutput)
-        throw new IllegalStateException(s"""Exception in JS was "$actualOutput" but exception in headless was "${headlessException}" """)
+        throw new IllegalStateException(s"""Exception in JS was "$actualOutput" but exception in headless was "$headlessException" """)
     } else {
       //println(expectedJson)
       //println(actualJson)
       assertResult(expectedOutput)(actualOutput)
-      nashorn.eval(s"""expectedUpdates = Denuller.denull(JSON.parse("${expectedJson.replaceAll("\"", "\\\\\"")}"))""")
-      nashorn.eval(s"""actualUpdates   = Denuller.denull(JSON.parse("${actualJson.replaceAll("\"", "\\\\\"")}"))""")
+      nashorn.eval(s"""expectedUpdates = Denuller(JSON.parse("${expectedJson.replaceAll("\"", "\\\\\"")}"))""")
+      nashorn.eval(s"""actualUpdates   = Denuller(JSON.parse("${actualJson.replaceAll("\"", "\\\\\"")}"))""")
       nashorn.eval("expectedModel.updates(expectedUpdates)")
       nashorn.eval("actualModel.updates(actualUpdates)")
       val expectedModel = nashorn.eval("JSON.stringify(expectedModel)").asInstanceOf[String]

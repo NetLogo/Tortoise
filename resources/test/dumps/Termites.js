@@ -15,7 +15,7 @@ function setup() {
     AgentSet.setTurtleVariable(10, 1.5);
     AgentSet.setTurtleVariable(13, 1);
   });
-  world.resetTicks();
+  world.ticker.reset();
 }
 function go() {
   AgentSet.ask(world.turtles(), true, function() {
@@ -28,7 +28,7 @@ function go() {
     }
     Prims.fd(1);
   });
-  world.tick();
+  world.ticker.tick();
 }
 function wiggle() {
   Prims.right(Prims.random(50));

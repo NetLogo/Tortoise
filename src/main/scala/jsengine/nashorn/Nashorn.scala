@@ -1,10 +1,16 @@
-// (C) Uri Wilensky. https://github.com/NetLogo/NetLogo
+// (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-package org.nlogo.tortoise.nashorn
+package org.nlogo.tortoise.jsengine
+package nashorn
+
+import
+  java.io.{ PrintWriter, StringWriter }
+
+import
+  javax.script.{ ScriptContext, ScriptEngineManager }
 
 import org.nlogo.api, api.MersenneTwisterFast
-import org.nlogo.core.Resource 
-import java.io.{ PrintWriter, StringWriter }
+import org.nlogo.core.Resource
 
 // There are two main entry points here: run() and eval().  The former runs compiled commands and
 // collects all the lines of output and JSON updates generated.  The latter runs a compiled reporter
@@ -15,23 +21,12 @@ class Nashorn {
   // at some point we'll need to have separate instances instead of a singleton - ST 1/18/13
   // the (null) became necessary when we upgraded to sbt 0.13. I don't understand why.
   // classloaders, go figure! - ST 8/26/13
-  val engine =
-    (new javax.script.ScriptEngineManager(null))
-      .getEngineByName("nashorn")
-      .ensuring(_ != null, "JavaScript engine unavailable")
+  val engine = new ScriptEngineManager(null).getEngineByName("nashorn").ensuring(_ != null, "JavaScript engine unavailable")
 
   val versionNumber: String = engine.getFactory.getEngineVersion
 
-  val locator = new org.webjars.WebJarAssetLocator
-  val libs = Seq(
-    // from webjars
-    "/" + locator.getFullPath("lodash.js"),
-    "/" + locator.getFullPath("mori.js"),
-    // the original CoffeeScript for these are in src/main/coffee. sbt compiles
-    // them to JavaScript for us.
-    "/js/compat.js", "/js/engine.js", "/js/agentmodel.js")
-  for (lib <- libs)
-    engine.eval(Resource.asString(lib))
+  val engineScope = engine.getBindings(ScriptContext.ENGINE_SCOPE)
+  engineScope.put("window", engineScope) // Some libraries (e.g. lodash) expect to find a `window` object --JAB (8/21/14)
 
   // make a random number generator available
   engine.put("Random", new MersenneTwisterFast)
@@ -39,21 +34,24 @@ class Nashorn {
   // ensure exact matching results
   engine.put("StrictMath", Strict)
 
+  for (lib <- jsLibs)
+    engine.eval(Resource.asString(lib))
+
   // returns anything that got output-printed along the way, and any JSON
   // generated too
   def run(script: String): (String, String) = {
     val sw = new StringWriter
     engine.getContext.setWriter(new PrintWriter(sw))
     engine.eval(s"(function () {\n $script \n }).call(this);")
-    (sw.toString, engine.eval("JSON.stringify(collectUpdates())").toString)
+    (sw.toString, engine.eval("JSON.stringify(Updater.collectUpdates())").toString)
   }
 
   def eval(script: String): AnyRef =
     fromNashorn(engine.eval(script))
 
   // translate from Nashorn values to NetLogo values
-  def fromNashorn(x: AnyRef): AnyRef =
-    x match {
+  def fromNashorn(jsValue: AnyRef): AnyRef =
+    jsValue match {
       case a: jdk.nashorn.api.scripting.ScriptObjectMirror if a.isArray =>
         api.LogoList.fromIterator(
           Iterator.from(0)

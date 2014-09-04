@@ -1,14 +1,14 @@
-// (C) Uri Wilensky. https://github.com/NetLogo/NetLogo
+// (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 package org.nlogo.tortoise
 
-import org.nlogo.{ core, api, headless, nvm },
+import org.nlogo.{ api, core, headless, nvm },
+  api.CompilerException,
   nvm.FrontEndInterface.{ ProceduresMap, NoProcedures },
   headless.lang, lang._,
-  org.nlogo.api.Femto,
   org.scalatest.Assertions._,
   org.scalatest.exceptions.TestPendingException,
-  org.nlogo.tortoise.nashorn.Nashorn
+  org.nlogo.tortoise.jsengine.nashorn.Nashorn
 
 trait TortoiseFinder extends lang.Finder {
   val nashorn = new Nashorn
@@ -22,12 +22,14 @@ trait TortoiseFinder extends lang.Finder {
   override def withFixture[T](name: String)(body: AbstractFixture => T): T =
     freebies.get(name.stripSuffix(" (NormalMode)")) match {
       case None =>
-        body(new TortoiseFixture(name, nashorn, notImplemented _))
+        body(new TortoiseFixture(name, nashorn, notImplemented))
+      case Some(x) if x.contains("ASSUMES OPTIMIZATION") =>
+        notImplemented("Can only yield the correct answer if the optimizer is enabled")
       case Some(x) if x.contains("TOO SLOW") =>
         notImplemented("TOO SLOW")
       case Some(excuse) =>
         try
-          body(new TortoiseFixture(name, nashorn, notImplemented _))
+          body(new TortoiseFixture(name, nashorn, notImplemented))
         catch {
           case _: TestPendingException =>
             // ignore; we'll hit the fail() below
@@ -53,38 +55,22 @@ class TestReporters extends lang.TestReporters with TortoiseFinder {
 
 class TestCommands extends lang.TestCommands with TortoiseFinder {
   override val freebies = Map[String, String](
-    // egregious
-    "CommandTasks::allow-task-variable-access-inside-reporter-block" -> "fix is in e6247d2fc1882ef69220178834ce2f892b8cefd8 on flocking-aids-etc branch",
-    "ReporterTasks::allow-reporter-task-variable-access-inside-reporter-block" -> "fix is in e6247d2fc1882ef69220178834ce2f892b8cefd8 on flocking-aids-etc branch",
-    // should be handled in rewrite
-    "Agentsets::AgentSetEquality"      -> "Dead agents in agentsets are handled incorrectly",
-    "Agentsets::LinkAgentsetDeadLinks" -> "Dead agents in agentsets are handled incorrectly",
-    "Death::DeadLinks1"                -> "Dead agents in agentsets are handled incorrectly",
-    "Death::DeadTurtles10"             -> "Dead agents in agentsets are handled incorrectly",
-    "Death::DeadTurtles9"              -> "Dead agents in agentsets are handled incorrectly",
-    "OneOf::OneOfDyingTurtles"         -> "Dead agents in agentsets are handled incorrectly",
-    "Interaction::Interaction3b1"                                             -> "correct answer requires empty init block optimization",
-    "Interaction::Interaction3b2"                                             -> "correct answer requires empty init block optimization",
-    "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksFrom" -> "correct answer requires empty init block optimization",
-    "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksTo"   -> "correct answer requires empty init block optimization",
-    "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksWith" -> "correct answer requires empty init block optimization",
-    "TurtlesHere::TurtlesHereCheckOrder1"                                     -> "correct answer requires empty init block optimization",
-    "TurtlesHere::TurtlesHereCheckOrder2"                                     -> "correct answer requires empty init block optimization",
-    "TurtlesHere::TurtlesHereCheckOrder3"                                     -> "correct answer requires empty init block optimization",
-    "TurtlesHere::TurtlesHereCheckOrder4"                                     -> "correct answer requires empty init block optimization",
-    "Agentsets::Agentsets4" -> "TOO SLOW (because creating links requires looking up existing links)",
-    "Links::LinksInitBlock" -> "TOO SLOW (because creating links requires looking up existing links)",
-    // significant; uncertain how to solve (`RandomNOfIsFair<X>`s could possibly be solved by making it faster to write agent variables, but maybe not)
-    "Random::RandomNOfIsFairForABreed"                        -> "TOO SLOW",
-    "Random::RandomNOfIsFairForAList"                         -> "TOO SLOW",
-    "Random::RandomNOfIsFairForAnAgentsetConstructedOnTheFly" -> "TOO SLOW",
-    "Random::RandomNOfIsFairForLinks"                         -> "TOO SLOW",
-    "Random::RandomNOfIsFairForPatches"                       -> "TOO SLOW",
-    "Random::RandomNOfIsFairForTurtles"                       -> "TOO SLOW",
     // requires features
-    "Tie::Tie2Nonrigid" -> "tie-mode link variable not implemented; ties not implemented at all",
+    "Random::RandomNOfIsFairForAList" -> "`n-of` not implemented for lists",
     // requires handling of non-local exit (see in JVM NetLogo: `NonLocalExit`, `_report`, `_foreach`, `_run`)
     "Stop::ReportFromForeach" -> "no non-local exit from foreach",
+    // Significant: Requires the optimizer to be turned on
+    "Interaction::Interaction3b1"                                             -> "ASSUMES OPTIMIZATION: empty init block",
+    "Interaction::Interaction3b2"                                             -> "ASSUMES OPTIMIZATION: empty init block",
+    "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksFrom" -> "ASSUMES OPTIMIZATION: empty init block",
+    "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksTo"   -> "ASSUMES OPTIMIZATION: empty init block",
+    "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksWith" -> "ASSUMES OPTIMIZATION: empty init block",
+    "TurtlesHere::TurtlesHereCheckOrder1"                                     -> "ASSUMES OPTIMIZATION: empty init block",
+    "TurtlesHere::TurtlesHereCheckOrder2"                                     -> "ASSUMES OPTIMIZATION: empty init block",
+    "TurtlesHere::TurtlesHereCheckOrder3"                                     -> "ASSUMES OPTIMIZATION: empty init block",
+    "TurtlesHere::TurtlesHereCheckOrder4"                                     -> "ASSUMES OPTIMIZATION: empty init block",
+    // significant; uncertain how to solve
+    "Random::RandomNOfIsFairForLinks" -> "TOO SLOW",
     // requires Tortoise compiler changes
     "CommandTasks::*ToString3" -> "command task string representation doesn't match",
     "CommandTasks::*ToString4" -> "command task string representation doesn't match",
@@ -200,7 +186,7 @@ extends AbstractFixture {
     "unknown language feature: ")
 
   val catcher: PartialFunction[Throwable, Nothing] = {
-    case ex: IllegalArgumentException
+    case ex: CompilerException
           if notImplementedMessages.exists(ex.getMessage.startsWith) =>
         notImplemented(ex.getMessage)
   }

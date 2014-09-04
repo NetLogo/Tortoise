@@ -17,7 +17,7 @@ version := "0.1"
 scalaVersion := "2.11.1"
 
 scalacOptions ++=
-  "-deprecation -unchecked -feature -Xcheckinit -encoding us-ascii -target:jvm-1.7 -Xlint -Xfatal-warnings"
+  "-deprecation -unchecked -feature -Xcheckinit -encoding us-ascii -target:jvm-1.7 -Xlint -Xfatal-warnings -language:_"
   .split(" ").toSeq
 
 resourceDirectory in Test := baseDirectory.value / "resources" / "test"
@@ -32,9 +32,9 @@ ivyLoggingLevel := UpdateLogging.Quiet
 // we're not cross-building for different Scala versions
 crossPaths := false
 
-val nlDependencyVersion = "5.2.0-9b38de6"
-
 resolvers += bintray.Opts.resolver.repo("netlogo", "NetLogoHeadless")
+
+val nlDependencyVersion = "5.2.0-163d860"
 
 // NetLogoHeadlessTests depends on reflections; reflections depends on some extra jars.
 // but for some reason we need to explicitly list the transitive dependencies
@@ -42,16 +42,14 @@ libraryDependencies ++= Seq(
   "org.reflections" % "reflections" % "0.9.9-RC1" % "test",
   "com.google.code.findbugs" % "jsr305" % "2.0.1" % "test",
   "com.google.guava" % "guava" % "12.0"           % "test",
-  "org.javassist" % "javassist" % "3.16.1-GA"     % "test"
+  "org.javassist" % "javassist" % "3.16.1-GA"     % "test",
+  "org.slf4j" % "slf4j-nop" % "1.7.5"             % "test"
 )
 
 libraryDependencies ++= Seq(
   "org.nlogo" % "netlogoheadless" % nlDependencyVersion,
   "org.json4s" %% "json4s-native" % "3.2.10",
-  "org.slf4j" % "slf4j-nop" % "1.7.5",  // for webjars-locator
-  "org.webjars" % "webjars-locator" % "0.13",
-  "org.webjars" % "lodash" % "2.4.1-3",
-  "org.webjars" % "mori" % "0.2.6",
+  "org.scalaz" %% "scalaz-core" % "7.0.6",
   "org.scalacheck" %% "scalacheck" % "1.11.3" % "test",
   "org.scalatest" %% "scalatest" % "2.1.3" % "test",
   "org.skyscreamer" % "jsonassert" % "1.1.0" % "test",
@@ -68,8 +66,6 @@ bintray.Keys.bintrayOrganization in bintray.Keys.bintray := Some("netlogo")
 logBuffered in testOnly in Test := false
 
 FastMediumSlow.settings
-
-Coffee.settings
 
 PublishVersioned.settings
 

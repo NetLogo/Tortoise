@@ -1,9 +1,11 @@
-// (C) Uri Wilensky. https://github.com/NetLogo/NetLogo
+// (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 package org.nlogo.tortoise
 
-import org.nlogo.{ core, api, compile => ast, nvm, workspace },
-   nvm.FrontEndInterface.{ ProceduresMap, NoProcedures }
+import
+  org.nlogo.{ api, compile => ast, core, nvm, workspace },
+    api.CompilerException,
+    nvm.FrontEndInterface.{ ProceduresMap, NoProcedures }
 
 import collection.JavaConverters._
 
@@ -16,7 +18,7 @@ import collection.JavaConverters._
 // - Handlers calls Prims
 // - Prims calls back to Handlers
 
-object Compiler {
+object Compiler extends CompilerLike {
 
   val frontEnd: ast.FrontEndInterface = ast.front.FrontEnd
 
@@ -30,7 +32,6 @@ object Compiler {
     program: api.Program = api.Program.empty()): String =
     compile(logo, commands = true, oldProcedures, program)
 
-  def compileProcedures(code: String): (String, api.Program, ProceduresMap) = compileProcedures(core.Model(code = code))
   def compileProcedures(model: core.Model) : (String, api.Program, ProceduresMap) = {
     val (defs, results): (Seq[ast.ProcedureDefinition], nvm.StructureResults) =
       frontEnd.frontEnd(model.code,
@@ -42,7 +43,7 @@ object Compiler {
       compileCommands(model.interfaceGlobalCommands.mkString("\n"), program = results.program)
     val js = init.init + main + interface
     if (results.program.linkBreeds.nonEmpty)
-      throw new IllegalArgumentException("unknown language feature: link breeds")
+      throw new CompilerException("unknown language feature: link breeds", 1, 1, "")
     (js, results.program, results.procedures)
   }
 

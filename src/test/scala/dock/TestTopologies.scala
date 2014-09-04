@@ -17,7 +17,7 @@ class TestTopologies extends DockingSuite with SlowTest {
     val topos = Seq(
       Topo("torus", true, true),
       Topo("vertcyl", true, false),
-      Topo("horzcyl", false, true),
+      Topo("horizcyl", false, true),
       Topo("box", false, false)
     )
     for(topo <- topos)

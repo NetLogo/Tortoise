@@ -1,8 +1,8 @@
-// (C) Uri Wilensky. https://github.com/NetLogo/NetLogo
+// (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 package org.nlogo.tortoise
 
-import nashorn.Nashorn
+import jsengine.nashorn.Nashorn
 import org.scalatest.FunSuite
 
 // just basic smoke tests that basic Tortoise engine functionality is there,
@@ -19,10 +19,12 @@ class TestEngine extends FunSuite {
 
   test("empty world") {
     val nashorn = new Nashorn
-    nashorn.eval("world = new World(-1, 1, -1, 1)")
+    nashorn.eval("""var workspace   = tortoise_require('engine/workspace')([])([], [], [], [], [], -1, 1, -1, 1, 1, true, true);
+                   |var SelfManager = workspace.selfManager;
+                   |var world       = workspace.world;""".stripMargin)
     nashorn.eval("world.clearAll()")
     assertResult(Double.box(9)) {
-      nashorn.eval("AgentSet.count(world.patches())")
+      nashorn.eval("world.patches().size()")
     }
   }
 
@@ -30,8 +32,9 @@ class TestEngine extends FunSuite {
     val nashorn = new Nashorn
     val test = """[{"0":{"X":0},"2":{"X":0}}]"""
     val escaped = test.replaceAll("\"", "\\\\\"")
+    nashorn.eval("var Denuller = tortoise_require('nashorn/denuller');")
     assertResult(test) {
-      nashorn.eval(s"""JSON.stringify(Denuller.denull(JSON.parse("$escaped")))""")
+      nashorn.eval(s"""JSON.stringify(Denuller(JSON.parse("$escaped")))""")
     }
   }
 
