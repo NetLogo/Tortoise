@@ -27,6 +27,15 @@
 ;; * Aliasing -> patchset of basically the same thing
 ;;
 
+;; Currently failing tests as of 9/3/14 -- JTT
+;;
+;; Topologies, Links, Commands, Breeds, Models, Agents
+;;
+;; Fixed tests so far:
+;;
+;; Math
+;;
+
 (def PATCH_NAME "patch")
 ;; REFER: poorly spliced update mapping in
 ;; cl-shiv/updater-hackpatch-cl.js -- 8/29/14
