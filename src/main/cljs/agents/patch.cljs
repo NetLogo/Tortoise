@@ -98,7 +98,9 @@
 
              projection-by :projection-by
 
-             to-string :to-string]
+             to-string :to-string
+
+             sprout! :sprout!]
 
             :getVariable get-var
             :setVariable set-var!
@@ -122,4 +124,6 @@
 
             :projectionBy projection-by
 
-            :toString to-string)
+            :toString to-string
+
+            :sprout sprout!)
