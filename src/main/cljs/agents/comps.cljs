@@ -159,6 +159,12 @@
                                                          (and (not= new-color 0) (declare-non-black))))
                                       (is? "plabel-color") (do (set-val (cm/wrapColor val))
                                                                (send-update))
+                                      ;; refuse to allow updating of px/pycor. This is not the best fix,
+                                      ;; but it works well enough for now -- this way patch.pxcor can
+                                      ;; never be out of sync with patch.getVariable('pxcor') unless
+                                      ;; one of the variables is unsafely set using JS. -- JTT 9/3/14
+                                      (is? "pycor") (throw (js/Error. "Cannot change pycor of a patch."))
+                                      (is? "pxcor") (throw (js/Error. "Cannot change pxcor of a patch."))
                                       :default (do (set-val val)
                                                    (send-update))))))
 
