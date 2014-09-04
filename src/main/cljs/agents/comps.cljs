@@ -63,7 +63,8 @@
             [_turtle_set #(atom #{})]
 
             :_turtle_set _turtle_set
-            :turtles (fn [] @_turtle_set))
+            ;; into-array forces it to be a JS arr -- JTT 9/3/14
+            :turtles (fn [] (into-array @_turtle_set)))
 
 (compnt-let turtle-getters []
 
