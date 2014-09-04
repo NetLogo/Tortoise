@@ -94,8 +94,10 @@
              py :pycor]
 
             ;; TODO: cl-dependent
-            :sprout! (fn [n breed] (dorun track-turtle
-                                          ((.. js/world -turtleManager -createTurtles) n breed px py))))
+            :sprout! (fn [n breed]
+                       ;; Must provide correct context, otherwise this ends up calling things on Window.
+                       ;; -- JTT 9/4/13
+                       (.call (.. js/world -turtleManager -createTurtles) (.-turtleManager js/world) n breed px py)))
 
 (compnt-let compare-by-id []
 
