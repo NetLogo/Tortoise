@@ -166,10 +166,9 @@
                                       ;; but it works well enough for now -- this way patch.pxcor can
                                       ;; never be out of sync with patch.getVariable('pxcor') unless
                                       ;; one of the variables is unsafely set using JS. -- JTT 9/3/14
-                                      (is? "pycor") (throw (js/Error. "Cannot change pycor of a patch."))
-                                      (is? "pxcor") (throw (js/Error. "Cannot change pxcor of a patch."))
-                                      :default (do (set-val val)
-                                                   (send-update))))))
+                                      (is? "pycor") (throw (js/Error. "Cannot change pycor of a patch. Create new patch instead."))
+                                      (is? "pxcor") (throw (js/Error. "Cannot change pxcor of a patch. Create new patch instead."))
+                                      :default (set-val val))))) ;; only UI-related vars need to call updater. -- JTT 9/4/13
 
 (compnt-let *nuanced-set-var! []
             ;; Must be added after (self-vars) and (nuanced-set-var-and-update).
