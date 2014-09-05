@@ -7,6 +7,7 @@ Follow  = { toInt: 2 }
 Watch   = { toInt: 3 }
 
 _               = require('lodash')
+agentToInt      = require('./agenttoint')
 Nobody          = require('./nobody')
 Patch           = require('./patch')
 Turtle          = require('./turtle')
@@ -75,11 +76,7 @@ module.exports =
     # Used by `Updater` --JAB (9/4/14)
     # () => (Number, Number)
     _getTargetAgentUpdate: ->
-      if @_targetAgent instanceof Turtle
-        [1, @_targetAgent.id]
-      else if @_targetAgent instanceof Patch
-        [2, @_targetAgent.id]
-      else if @_targetAgent is Nobody
-        [0, -1]
+      if @_targetAgent?
+        [agentToInt(@_targetAgent), @_targetAgent.id]
       else
         null

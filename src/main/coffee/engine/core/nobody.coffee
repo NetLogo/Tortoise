@@ -7,6 +7,7 @@
 ###
 
 module.exports = {
-  ask: -> return
+  ask:      -> return
+  id:          -1
   toString: -> "nobody"
 }
