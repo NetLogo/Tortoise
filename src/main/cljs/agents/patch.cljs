@@ -29,11 +29,11 @@
 
 ;; Currently failing tests as of 9/3/14 -- JTT
 ;;
-;; Topologies, Links, Commands, Breeds, Models, Agents
+;; Commands, Models, Agents
 ;;
 ;; Fixed tests so far:
 ;;
-;; Math
+;; Breeds, Math, Topologies, Labels, Links
 ;;
 
 (def PATCH_NAME "patch")
