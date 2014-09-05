@@ -73,7 +73,7 @@
             [_turtle_set :_turtle_set
              turtles     :turtles]
 
-            :turtles-here (fn [] (turtles))
+            :turtles-here (fn [] (new engine.core.turtleset (turtles)))
             ;; TODO: cl-dependent (.getBreedName) -- JTT (8/28/14)
             ;; Must force the reduced values into a JS arr, same reasons as with (turtles) -- JTT 9/4/13
             ;;:breed-here (fn [breed-name] (into-array (r/filter #(= (.getBreedName %) breed-name) (into [] @_turtle_set))))
