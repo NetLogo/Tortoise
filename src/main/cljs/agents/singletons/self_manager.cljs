@@ -24,4 +24,6 @@
 
 (defn self [] _self)
 
-(defn myself [] _myself)
+(defn myself [] (if (= _myself 0)
+                  (throw (util.exception.NetLogoException. "There is no agent for MYSELF to refer to."))
+                  _myself))
