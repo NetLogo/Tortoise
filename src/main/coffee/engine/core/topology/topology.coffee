@@ -211,7 +211,7 @@ module.exports =
     _wrapCautiously: (minCor, maxCor, pos) ->
       min = minCor - 0.5
       max = maxCor + 0.5
-      if min < pos < max
+      if min <= pos < max
         pos
       else
         throw new Exception.TopologyInterrupt("Cannot move turtle beyond the world's edge.")
