@@ -167,6 +167,7 @@ object SimplePrims {
     def unapply(c: nvm.Command): Option[String] =
       PartialFunction.condOpt(c) {
         case _: prim.etc._outputprint       => "Prims.outputPrint"
+        case _: prim.etc._print             => "notImplemented('print', undefined)"
         case _: prim.etc._clearall          => "world.clearAll"
         case _: prim.etc._clearpatches      => "world.clearPatches"
         case _: prim.etc._clearturtles      => "world.turtleManager.clearTurtles"
