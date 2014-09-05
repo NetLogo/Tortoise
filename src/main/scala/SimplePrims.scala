@@ -207,6 +207,8 @@ object SimplePrims {
         case _: prim.etc._display           => "notImplemented('display', undefined)"
         case _: prim.etc._stamp             => "notImplemented('stamp', undefined)"
         case _: prim.etc._usermessage       => "notImplemented('user-message', undefined)"
+        case _: prim.etc._follow            => "world.observer.follow"
+        case _: prim.etc._ride              => "world.observer.ride"
         case _: prim.etc._watch             => "world.observer.watch"
         case _: prim.etc._watchme           => "SelfManager.self().watchme"
         case _: prim.etc._resetperspective  => "world.observer.resetPerspective"

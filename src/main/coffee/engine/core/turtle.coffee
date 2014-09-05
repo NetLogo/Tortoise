@@ -320,6 +320,7 @@ module.exports =
         )
         @id = -1
         @getPatchHere().untrackTurtle(this)
+        @world.observer.unfocus(this)
       throw new Exception.DeathInterrupt("Call only from inside an askAgent block")
 
     # (String) => Any

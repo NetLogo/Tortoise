@@ -41,6 +41,13 @@ module.exports =
       _(@_codeGlobalNames).forEach((name) => @_varManager[name] = 0; return)
       return
 
+    # (Turtle) => Unit
+    follow: (turtle) ->
+      @_perspective = Follow
+      @_targetAgent = turtle
+      @_updatePerspective()
+      return
+
     # (String) => Any
     getGlobal: (varName) ->
       @_varManager[varName]
@@ -52,6 +59,13 @@ module.exports =
       @_updatePerspective()
       return
 
+    # (Turtle) => Unit
+    ride: (turtle) ->
+      @_perspective = Ride
+      @_targetAgent = turtle
+      @_updatePerspective()
+      return
+
     # (String, Any) => Unit
     setGlobal: (varName, value) ->
       @_varManager[varName] = value
@@ -60,6 +74,12 @@ module.exports =
     # () => Agent
     subject: ->
       @_targetAgent or Nobody
+
+    # (Turtle) => Unit
+    unfocus: (turtle) ->
+      if @_targetAgent is turtle
+        @resetPerspective()
+      return
 
     # (Agent) => Unit
     watch: (agent) ->
