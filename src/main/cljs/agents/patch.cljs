@@ -30,11 +30,11 @@
 
 ;; Currently failing tests as of 9/3/14 -- JTT
 ;;
-;; Commands, Models, Agents
+;; Commands, Models
 ;;
 ;; Fixed tests so far:
 ;;
-;; Breeds, Math, Topologies, Labels, Links
+;; Agents, Breeds, Math, Topologies, Labels, Links
 ;;
 
 (def PATCH_NAME "patch")
@@ -52,17 +52,18 @@
            :world world
            :init [;;(indexed :patch) ;; This is not working well with tortoise proper -- JTT 9/2/14
                   (patch-coordinates x y)
+                  (patch-topology)
                   (turtle-set)
                   (turtle-getters)
                   (turtles-at)
                   (turtle-tracking)
                   (sprout-turtles)
-                  (patch-topology)
                   (ask)
                   (watch)
                   (compare-by-id)
                   (patch-to-string)
                   (patch-reset)
+                  (patches-own-vars)
                   (self-vars (merge patch-defaults {:pxcor x :pycor y}))
                   (nuanced-set-var-and-update)
                   (*nuanced-set-var!)
