@@ -215,6 +215,7 @@ object SimplePrims {
         case _: prim.etc._watchme           => "SelfManager.self().watchMe"
         case _: prim.etc._resetperspective  => "world.observer.resetPerspective"
         case _: prim.etc._layoutspring      => "LayoutManager.layoutSpring"
+        case _: prim.etc._changetopology    => "world.changeTopology"
       }
   }
 
