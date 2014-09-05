@@ -24,7 +24,7 @@ module.exports =
 
       # () => Nothing
     boom: ->
-      throw new Exception.NetLogoException("boom!")
+      throw new Error("boom!")
 
     # (String, Patch|Turtle|PatchSet|TurtleSet) => TurtleSet
     breedOn: (breedName, x) ->
@@ -38,7 +38,7 @@ module.exports =
         else if x instanceof TurtleSet
           _(x.iterator().toArray()).map((t) -> t.getPatchHere()).value()
         else
-          throw new Exception.NetLogoException("`breed-on` unsupported for class '#{typeof(x)}'")
+          throw new Error("`breed-on` unsupported for class '#{typeof(x)}'")
 
       turtles = _(patches).map((p) -> p.turtles).flatten().filter((t) -> t.getBreedName() is breedName).value()
       new TurtleSet(turtles, breedName)
@@ -61,7 +61,7 @@ module.exports =
               (a is Nobody and b.id is -1) or (b is Nobody and a.id is -1) or ((a instanceof Turtle or a instanceof Link) and a.compare(b) is Comparator.EQUALS)
         )
       else
-        throw new Exception.NetLogoException("Checking equality on undefined is an invalid condition")
+        throw new Error("Checking equality on undefined is an invalid condition")
 
     # (Number, FunctionN) => Unit
     # not a real implementation, always just runs body - ST 4/22/14
@@ -77,7 +77,7 @@ module.exports =
       else if typeof(a) is typeof(b) and a.compare? and b.compare?
         a.compare(b) is Comparator.GREATER_THAN
       else
-        throw new Exception.NetLogoException("Invalid operands to `gt`")
+        throw new Error("Invalid operands to `gt`")
 
     # (Any, Any) => Boolean
     gte: (a, b) ->
@@ -94,7 +94,7 @@ module.exports =
       else if typeof(a) is typeof(b) and a.compare? and b.compare?
         a.compare(b) is Comparator.LESS_THAN
       else
-        throw new Exception.NetLogoException("Invalid operands to `lt`")
+        throw new Error("Invalid operands to `lt`")
 
     # (Any, Any) => Boolean
     lte: (a, b) ->

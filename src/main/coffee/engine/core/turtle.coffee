@@ -195,7 +195,7 @@ module.exports =
             isToMe   = (not link.isDirected and link.end2 is this and link.end1 is otherTurtle)
             isFromMe or isToMe
         else
-          throw new Exception.NetLogoException("LINKS is a directed breed.")
+          throw new Error("LINKS is a directed breed.")
 
       @world.links().find(findFunc) ? Nobody
 
@@ -236,7 +236,7 @@ module.exports =
       if not @_isDead()
         @world.selfManager.askAgent(f)(this)
       else
-        throw new Exception.NetLogoException("That #{@_breed.singular} is dead.")
+        throw new Error("That #{@_breed.singular} is dead.")
 
     # Unfortunately, further attempts to streamline this code are very likely to lead to
     # floating point arithmetic mismatches with JVM NetLogo....  Beware. --JAB (7/28/14)

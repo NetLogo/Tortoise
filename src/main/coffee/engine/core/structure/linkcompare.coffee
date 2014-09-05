@@ -24,4 +24,4 @@ module.exports =
     else if b.getBreedName() is "LINKS"
       1
     else
-      throw new Exception.NetLogoException("Unsure how Link #{a.id} differs from Link #{b.id}") # JVM NetLogo uses the order the breeds were declared in, but that incites my hatred --JAB (6/26/14)
+      throw new Error("Unsure how Link #{a.id} differs from Link #{b.id}") # JVM NetLogo uses the order the breeds were declared in, but that incites my hatred --JAB (6/26/14)

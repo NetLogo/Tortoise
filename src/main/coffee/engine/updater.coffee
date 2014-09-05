@@ -69,7 +69,7 @@ module.exports =
         else if obj instanceof Observer
           [update.observer, @_observerMap(obj)]
         else
-          throw new Exception.NetLogoException("Unrecognized update type")
+          throw new Error("Unrecognized update type")
 
       entryUpdate = entry[obj.id] or {}
 
@@ -86,7 +86,7 @@ module.exports =
             entryUpdate[varName] = value
             entry[obj.id]        = entryUpdate
         else
-          throw new Exception.NetLogoException("Unknown #{obj.constructor.name} variable for update: #{v}")
+          throw new Error("Unknown #{obj.constructor.name} variable for update: #{v}")
 
       return
 

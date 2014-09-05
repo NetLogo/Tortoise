@@ -109,7 +109,7 @@ module.exports =
       if not @_isDead()
         @world.selfManager.askAgent(f)(this)
       else
-        throw new Exception.NetLogoException("That #{@_breed.singular} is dead.")
+        throw new Error("That #{@_breed.singular} is dead.")
 
     # (Any) => { toInt: Number }
     compare: (x) ->
@@ -117,7 +117,7 @@ module.exports =
         when -1 then Comparator.LESS_THAN
         when  0 then Comparator.EQUALS
         when  1 then Comparator.GREATER_THAN
-        else throw new Exception.NetLogoException("Comparison should only yield an integer within the interval [-1,1]")
+        else throw new Error("Comparison should only yield an integer within the interval [-1,1]")
 
     # () => Unit
     _seppuku: ->

@@ -46,6 +46,6 @@ module.exports = {
     else if _(lists).all((l) -> l.length is head.length)
       _.zip(lists...).map((tuple) -> fn(tuple...))
     else
-      throw new Exception.NetLogoException("All the list arguments to #{primName.toUpperCase()} must be the same length.")
+      throw new Error("All the list arguments to #{primName.toUpperCase()} must be the same length.")
 
 }

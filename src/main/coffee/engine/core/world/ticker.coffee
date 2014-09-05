@@ -25,7 +25,7 @@ module.exports =
     # () => Unit
     tick: ->
       if @_count is -1
-        throw new Exception.NetLogoException("The tick counter has not been started yet. Use RESET-TICKS.")
+        throw new Error("The tick counter has not been started yet. Use RESET-TICKS.")
       else
         @_updateTicks((counter) -> counter + 1)
       return
@@ -33,9 +33,9 @@ module.exports =
     # (Number) => Unit
     tickAdvance: (n) ->
       if @_count is -1
-        throw new Exception.NetLogoException("The tick counter has not been started yet. Use RESET-TICKS.")
+        throw new Error("The tick counter has not been started yet. Use RESET-TICKS.")
       else if n < 0
-        throw new Exception.NetLogoException("Cannot advance the tick counter by a negative amount.")
+        throw new Error("Cannot advance the tick counter by a negative amount.")
       else
         @_updateTicks((counter) -> counter + n)
       return
@@ -43,7 +43,7 @@ module.exports =
     # () => Number
     tickCount: ->
       if @_count is -1
-        throw new Exception.NetLogoException("The tick counter has not been started yet. Use RESET-TICKS.")
+        throw new Error("The tick counter has not been started yet. Use RESET-TICKS.")
       @_count
 
     # ((Number) => Number) => Unit

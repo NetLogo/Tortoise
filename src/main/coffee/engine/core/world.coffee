@@ -103,7 +103,7 @@ module.exports =
     resize: (minPxcor, maxPxcor, minPycor, maxPycor, wrapsInX = @topology._wrapInX, wrapsInY = @topology._wrapInY) ->
 
       if not (minPxcor <= 0 <= maxPxcor and minPycor <= 0 <= maxPycor)
-        throw new Exception.NetLogoException("You must include the point (0, 0) in the world.")
+        throw new Error("You must include the point (0, 0) in the world.")
 
       # For some reason, JVM NetLogo doesn't restart `who` ordering after `resize-world`; even the test for this is existentially confused. --JAB (4/3/14)
       @turtleManager._clearTurtlesSuspended()
