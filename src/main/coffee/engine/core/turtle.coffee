@@ -384,7 +384,7 @@ module.exports =
       return
 
     # () => Unit
-    watchme: ->
+    watchMe: ->
       @world.observer.watch(this)
       return
 
