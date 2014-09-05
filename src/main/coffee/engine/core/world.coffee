@@ -127,6 +127,7 @@ module.exports =
     # () => Unit
     clearAll: ->
       @observer.clearCodeGlobals()
+      @observer.resetPerspective()
       @turtleManager.clearTurtles()
       @createPatches()
       @linkManager._resetIDs()
