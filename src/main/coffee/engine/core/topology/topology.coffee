@@ -52,7 +52,7 @@ module.exports =
     # couldn't strike a better balance. --JAB (7/30/14)
     # (Array[Patch]) => Array[Patch]
     _filterNeighbors: (neighbors) ->
-      _(neighbors).filter((patch) -> patch isnt false).value()
+      _(neighbors).filter((patch) -> patch isnt false).uniq().value()
 
     # (Number, Number, Number, Number) => Number
     distanceXY: (x1, y1, x2, y2) ->
