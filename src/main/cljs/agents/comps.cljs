@@ -118,9 +118,17 @@
 
             :to-string (fn [] (str "(patch " pxcor " " pycor ")")))
 
+(compnt-let patches-own-vars []
+
+            [world :world]
+
+            :__patches_own_vars (when (> (count (.-patchesOwnNames world)) 0)
+                                  (interleave (map keyword (.-patchesOwnNames world)) (repeat 0))))
+
 (compnt-let self-vars [defaults]
 
-            [_self_vars #(atom defaults)]
+            [patches-own :__patches_own_vars
+             _self_vars #(atom (apply assoc defaults patches-own))]
 
             :_self_vars _self_vars
             :get-var  (fn [var-name] ((keyword var-name) @_self_vars))
@@ -132,7 +140,7 @@
                                            ;; cl-update to avoid using `this`, the usage of which results
                                            ;; in broken-scope references to Window and
                                            ;; other nonsense. -- JTT 9/3/14
-                                           ;; TODO: cl-interop nonsense - `this` refers to the JS
+                                           ;; NOTE: cl-interop nonsense - `this` refers to the JS
                                            ;; converted version of `e`, so it has to be used as a
                                            ;; js object even though it's the cljs entity...
                                            ;; -- JTT 9/3/14

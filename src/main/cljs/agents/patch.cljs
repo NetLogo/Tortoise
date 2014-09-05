@@ -15,6 +15,7 @@
                                   patch-to-string
                                   patch-reset
                                   self-vars
+                                  patches-own-vars
                                   nuanced-set-var-and-update
                                   *nuanced-set-var!
                                   cl-update]])
