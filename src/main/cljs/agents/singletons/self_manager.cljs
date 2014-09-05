@@ -1,4 +1,5 @@
-(ns agents.singletons.self-manager)
+(ns agents.singletons.self-manager
+  (:require [util.exception]))
 
 ;; REFER: cl-shiv/workspace-shiv-cl.js contains a hacked
 ;; modification to use the agents.singletons.self-manager
@@ -13,8 +14,10 @@
     (binding [_myself _self
               _self   agent]
       (try (f)
-        ;; Incomplete error handling. -- JTT (8/29/14)
-        (catch js/Error error (throw error))))))
+        ;; catch DeathInterrupt and StopInterrupt from util.exception -- JTT 9/4/14
+        (catch :default error (when (not (or (instance? util.exception.DeathInterrupt error)
+                                             (instance? util.exception.StopInterrupt error)))
+                                (throw error)))))))
 
 ;; cl-alias -- JTT 9/3/14
 (defn askAgent [f] (ask-agent f))
