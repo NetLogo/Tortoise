@@ -83,7 +83,8 @@
 
             [patch-at :patch-at]
 
-            :turtles-at (fn [x y] (((patch-at x y) :turtles-here))))
+            ;; TODO: js-call when could be cljs -- JTT 9/5/14
+            :turtles-at (fn [x y] (.turtlesHere (patch-at x y))))
 
 (compnt-let turtle-tracking []
 
