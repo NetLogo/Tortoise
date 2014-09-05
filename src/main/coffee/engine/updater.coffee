@@ -162,7 +162,7 @@ module.exports =
     _observerMap: (observer) -> {
       id:          ["WHO",         observer.id]
       perspective: ["perspective", observer._perspective]
-      targetAgent: ["targetAgent", observer._targetAgent]
+      targetAgent: ["targetAgent", observer._getTargetAgentUpdate()]
     }
 
     # (String, Number, UpdateEntry) => Unit

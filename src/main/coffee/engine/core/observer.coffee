@@ -1,6 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 _               = require('lodash')
+Nobody          = require('./nobody')
 Patch           = require('./patch')
 Turtle          = require('./turtle')
 VariableManager = require('./structure/variablemanager')
@@ -13,7 +14,7 @@ module.exports =
     _varManager: undefined # VariableManager
 
     _perspective: undefined # Number
-    _targetAgent: undefined # (Number, Number)
+    _targetAgent: undefined # Agent
 
     _codeGlobalNames: undefined # Array[String]
 
@@ -32,12 +33,10 @@ module.exports =
     watch: (agent) ->
       @_perspective = 3
       @_targetAgent =
-        if agent instanceof Turtle
-          [1, agent.id]
-        else if agent instanceof Patch
-          [2, agent.id]
+        if agent instanceof Turtle or agent instanceof Patch
+          agent
         else
-          [0, -1]
+          Nobody
       @_updatePerspective()
       return
 
@@ -66,3 +65,15 @@ module.exports =
     _updatePerspective: ->
       @_updateVarsByName("perspective", "targetAgent")
       return
+
+    # Used by `Updater` --JAB (9/4/14)
+    # () => (Number, Number)
+    _getTargetAgentUpdate: ->
+      if @_targetAgent instanceof Turtle
+        [1, @_targetAgent.id]
+      else if @_targetAgent instanceof Patch
+        [2, @_targetAgent.id]
+      else if @_targetAgent is Nobody
+        [0, -1]
+      else
+        null
