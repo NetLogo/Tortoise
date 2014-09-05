@@ -35,6 +35,27 @@ module.exports =
       @_varManager      = new VariableManager(@_globalNames)
       @_codeGlobalNames = _(@_globalNames).difference(@_interfaceGlobalNames)
 
+    # () => Unit
+    clearCodeGlobals: ->
+      _(@_codeGlobalNames).forEach((name) => @_varManager[name] = 0; return)
+      return
+
+    # (String) => Any
+    getGlobal: (varName) ->
+      @_varManager[varName]
+
+    # () => Unit
+    resetPerspective: ->
+      @_perspective = Observe
+      @_targetAgent = null
+      @_updatePerspective()
+      return
+
+    # (String, Any) => Unit
+    setGlobal: (varName, value) ->
+      @_varManager[varName] = value
+      return
+
     # (Agent) => Unit
     watch: (agent) ->
       @_perspective = Watch
@@ -44,27 +65,6 @@ module.exports =
         else
           Nobody
       @_updatePerspective()
-      return
-
-    # () => Unit
-    resetPerspective: ->
-      @_perspective = Observe
-      @_targetAgent = null
-      @_updatePerspective()
-      return
-
-    # (String) => Any
-    getGlobal: (varName) ->
-      @_varManager[varName]
-
-    # (String, Any) => Unit
-    setGlobal: (varName, value) ->
-      @_varManager[varName] = value
-      return
-
-    # () => Unit
-    clearCodeGlobals: ->
-      _(@_codeGlobalNames).forEach((name) => @_varManager[name] = 0; return)
       return
 
     # () => Unit
