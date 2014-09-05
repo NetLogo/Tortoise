@@ -2,7 +2,8 @@
   (:require [agents.singletons.id-manager :as id-manager]
             [agents.singletons.self-manager :as self-manager]
             [clojure.core.reducers :as r]
-            [util.colormodel :as cm]) ;; TODO: cl-dependent -- JTT 9/3/14
+            [util.colormodel :as cm]
+            [engine.core.turtleset]) ;; TODO: cl-dependent -- JTT 9/3/14
   (:require-macros [lib.component :refer [compnt compnt-let]]))
 
 (compnt patch-coordinates [x y]
@@ -44,23 +45,23 @@
             ;; asks for it -- JTT 9/2/14
 
             ;; TODO: basically cl-dependent -- JTT (8/28/14)
-            :distance (fn [agent] ((.. js/world -topology -distance) px py agent))
-            :distance-xy (fn [x y] ((.. js/world -topology -distanceXY) px py x y))
+            :distance (fn [agent] (.distance (.-topology js/world) px py agent))
+            :distance-xy (fn [x y] (.distanceXY (.-topology js/world) px py x y))
 
-            :towards-xy (fn [x y] ((.. js/world -topology -towards) px py x y))
+            :towards-xy (fn [x y] (.towards (.-topology js/world) px py x y))
 
             ;; getNeighbors should reference world so it returns a patchset
             :get-neighbors (fn [] (.getNeighbors js/world px py))
             :get-neighbors-4 (fn [] (.getNeighbors4 js/world px py))
 
-            :in-radius (fn [agents radius] ((.. js/world -topology -inRadius) px py agents radius))
+            :in-radius (fn [agents radius] (.inRadius (.-topology js/world) px py agents radius))
 
             ;; in Tortoise proper patchAt is contained in a try/catch? -- JTT (8/27/14)
             :patch-at (fn [dx dy] ((aget (.. js/world -topology) "get-patch") (+ px dx) (+ py dy))))
 
 (compnt-let turtle-set []
 
-            [_turtle_set #(atom #{})]
+            [_turtle_set #(atom [])]
 
             :_turtle_set _turtle_set
             ;; into-array forces it to be a JS arr -- JTT 9/3/14
@@ -68,11 +69,14 @@
 
 (compnt-let turtle-getters []
 
-            [turtles :turtles]
+            [_turtle_set :_turtle_set
+             turtles     :turtles]
 
             :turtles-here (fn [] (turtles))
             ;; TODO: cl-dependent (.getBreedName) -- JTT (8/28/14)
-            :breed-here (fn [breed-name] (r/filter #(= (.getBreedName %) breed-name) (turtles))))
+            ;; Must force the reduced values into a JS arr, same reasons as with (turtles) -- JTT 9/4/13
+            ;;:breed-here (fn [breed-name] (into-array (r/filter #(= (.getBreedName %) breed-name) (into [] @_turtle_set))))
+            :breed-here (fn [breed-name] (new engine.core.turtleset (.filter (turtles) #(= (.getBreedName %) breed-name)) breed-name)))
 
 (compnt-let turtles-at []
 
@@ -85,7 +89,7 @@
             [_turtle_set :_turtle_set]
 
             :track-turtle   (fn [turtle] (swap! _turtle_set conj turtle))
-            :untrack-turtle (fn [turtle] (swap! _turtle_set disj turtle)))
+            :untrack-turtle (fn [turtle] (reset! _turtle_set (vec (r/filter #(not= % turtle) @_turtle_set)))))
 
 (compnt-let sprout-turtles []
 
