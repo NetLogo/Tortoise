@@ -384,6 +384,16 @@ module.exports =
       return
 
     # () => Unit
+    followMe: ->
+      @world.observer.follow(this)
+      return
+
+    # () => Unit
+    rideMe: ->
+      @world.observer.ride(this)
+      return
+
+    # () => Unit
     watchMe: ->
       @world.observer.watch(this)
       return

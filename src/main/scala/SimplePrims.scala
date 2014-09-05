@@ -210,6 +210,8 @@ object SimplePrims {
         case _: prim.etc._follow            => "world.observer.follow"
         case _: prim.etc._ride              => "world.observer.ride"
         case _: prim.etc._watch             => "world.observer.watch"
+        case _: prim.etc._followme          => "SelfManager.self().followMe"
+        case _: prim.etc._rideme            => "SelfManager.self().rideMe"
         case _: prim.etc._watchme           => "SelfManager.self().watchMe"
         case _: prim.etc._resetperspective  => "world.observer.resetPerspective"
         case _: prim.etc._layoutspring      => "LayoutManager.layoutSpring"
