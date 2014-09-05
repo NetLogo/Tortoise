@@ -34,7 +34,8 @@
 
 (compnt watch []
         ;; TODO: cl-dependent -- JTT (8/27/14)
-        :watchme (fn [] (.watch (.. js/world -observer) e)))
+        ;; REFER: observer-hackpatch-cl.js in cl-shiv -- JTT (9/5/14)
+        :watchme (fn [] (this-as me (.watch (.. js/world -observer) me))))
 
 (compnt-let patch-topology []
 
