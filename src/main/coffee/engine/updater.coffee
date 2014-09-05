@@ -161,7 +161,7 @@ module.exports =
     # (Observer) => Object[EngineKey, (Key, Value)]
     _observerMap: (observer) -> {
       id:          ["WHO",         observer.id]
-      perspective: ["perspective", observer._perspective]
+      perspective: ["perspective", observer._perspective.toInt]
       targetAgent: ["targetAgent", observer._getTargetAgentUpdate()]
     }
 

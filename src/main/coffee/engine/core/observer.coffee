@@ -1,5 +1,11 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
+# data Perspective =
+Observe = { toInt: 0 }
+Ride    = { toInt: 1 }
+Follow  = { toInt: 2 }
+Watch   = { toInt: 3 }
+
 _               = require('lodash')
 Nobody          = require('./nobody')
 Patch           = require('./patch')
@@ -13,7 +19,7 @@ module.exports =
 
     _varManager: undefined # VariableManager
 
-    _perspective: undefined # Number
+    _perspective: undefined # Perspective
     _targetAgent: undefined # Agent
 
     _codeGlobalNames: undefined # Array[String]
@@ -31,7 +37,7 @@ module.exports =
 
     # (Agent) => Unit
     watch: (agent) ->
-      @_perspective = 3
+      @_perspective = Watch
       @_targetAgent =
         if agent instanceof Turtle or agent instanceof Patch
           agent
@@ -42,7 +48,7 @@ module.exports =
 
     # () => Unit
     resetPerspective: ->
-      @_perspective = 0
+      @_perspective = Observe
       @_targetAgent = null
       @_updatePerspective()
       return
