@@ -1,5 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
+Nobody          = require('./nobody')
 Observer        = require('./observer')
 Patch           = require('./patch')
 PatchSet        = require('./patchset')
@@ -119,10 +120,16 @@ module.exports =
 
     # (Number, Number) => Patch
     getPatchAt: (x, y) =>
-      trueX  = (x - @topology.minPxcor) % @topology.width  + @topology.minPxcor # Handle negative coordinates and wrapping
-      trueY  = (y - @topology.minPycor) % @topology.height + @topology.minPycor
-      index  = (@topology.maxPycor - StrictMath.round(trueY)) * @topology.width + (StrictMath.round(trueX) - @topology.minPxcor)
-      @_patches[index]
+      try
+        trueX  = @topology.wrapX(x)
+        trueY  = @topology.wrapY(y)
+        index  = (@topology.maxPycor - StrictMath.round(trueY)) * @topology.width + (StrictMath.round(trueX) - @topology.minPxcor)
+        @_patches[index]
+      catch error
+        if error instanceof Exception.TopologyInterrupt
+          Nobody
+        else
+          throw error
 
     # () => Unit
     clearAll: ->
