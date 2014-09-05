@@ -57,6 +57,10 @@ module.exports =
       @_varManager[varName] = value
       return
 
+    # () => Agent
+    subject: ->
+      @_targetAgent or Nobody
+
     # (Agent) => Unit
     watch: (agent) ->
       @_perspective = Watch

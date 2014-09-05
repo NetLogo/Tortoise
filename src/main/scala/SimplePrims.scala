@@ -148,6 +148,7 @@ object SimplePrims {
         case _: prim.etc._substring          => "ListPrims.substring"
         case _: prim.etc._exp                => "StrictMath.exp"
         case _: prim.etc._variance           => "ListPrims.variance"
+        case _: prim.etc._subject            => "world.observer.subject"
       }
   }
 
