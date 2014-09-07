@@ -2,9 +2,7 @@
 
 Nobody         = require('./nobody')
 Random         = require('tortoise/shim/random')
-abstractMethod = require('tortoise/util/abstractmethoderror')
 Exception      = require('tortoise/util/exception')
-Iterator       = require('tortoise/util/iterator')
 Seq            = require('tortoise/util/seq')
 Shufflerator   = require('tortoise/util/shufflerator')
 stableSort     = require('tortoise/util/stablesort')
@@ -54,10 +52,6 @@ module.exports =
     # [Result] @ (() => Result) => Array[Result]
     projectionBy: (f) ->
       @shufflerator().map(@_selfManager.askAgent(f))
-
-    # () => Iterator
-    iterator: ->
-      abstractMethod('AbstractAgentSet.iterator')
 
     # (() => Double) => Agent
     maxOneOf: (f) ->

@@ -7,12 +7,8 @@ module.exports =
   class PatchSet extends AbstractAgentSet
 
     # [T <: Patch] @ (Array[T], String) => PatchSet
-    constructor: (@_agents, @_specialName) ->
-      super(@_agents)
-
-    # () => Iterator
-    iterator: ->
-      new Iterator(@_agents)
+    constructor: (agents, @_specialName) ->
+      super(agents)
 
     # () => String
     toString: ->

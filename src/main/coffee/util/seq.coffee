@@ -1,6 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_ = require('lodash')
+_        = require('lodash')
+Iterator = require('./iterator')
 
 # If you want at the items, use `toArray`!  NO ONE BUT `toArray` SHOULD TOUCH `_items`! --JAB (7/21/14)
 module.exports =
@@ -54,9 +55,13 @@ module.exports =
     foldl: (f, initial) ->
       _(@toArray()).foldl(f, initial)
 
+    # () => Iterator
+    iterator: ->
+      new Iterator(@_items)
+
     # () => Array[T]
     toArray: ->
-      @_items[..]
+      @iterator().toArray() # Calls `iterator` because turtlesets and linksets need to prune dead agents --JAB (9/7/14)
 
     # () => String
     toString: ->
