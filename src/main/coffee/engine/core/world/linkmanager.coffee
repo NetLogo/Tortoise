@@ -28,17 +28,17 @@ module.exports =
 
     # (Turtle, Turtle, String) => Link
     createDirectedLink: (from, to, breedName) ->
-      @_notifyIsDirected()
+      if (breedName.toUpperCase() is "LINKS") then @_notifyIsDirected()
       @_createLink(true, from, to, breedName)
 
     # (Turtle, TurtleSet, String) => LinkSet
     createDirectedLinks: (source, others, breedName) ->
-      @_notifyIsDirected()
+      if (breedName.toUpperCase() is "LINKS") then @_notifyIsDirected()
       @_createLinksBy((turtle) => @_createLink(true, source, turtle, breedName))(others)
 
     # (Turtle, TurtleSet, String) => LinkSet
     createReverseDirectedLinks: (source, others, breedName) ->
-      @_notifyIsDirected()
+      if (breedName.toUpperCase() is "LINKS") then @_notifyIsDirected()
       @_createLinksBy((turtle) => @_createLink(true, turtle, source, breedName))(others)
 
     # (Turtle, Turtle, String) => Link
