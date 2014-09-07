@@ -54,10 +54,11 @@ class RuntimeInit(program: Program, model: Model) {
     val breedObjs =
       program.breeds.values.map {
         b =>
-          val name     = s"'${b.name}'"
-          val singular = s"'${b.singular.toLowerCase}'"
-          val varNames = mkJSArrStr(b.owns map (_.toLowerCase) map wrapInQuotes)
-          s"""{ name: $name, singular: $singular, varNames: $varNames }"""
+          val name        = s"'${b.name}'"
+          val singular    = s"'${b.singular.toLowerCase}'"
+          val varNames    = mkJSArrStr(b.owns map (_.toLowerCase) map wrapInQuotes)
+          val directedStr = if (b.isLinkBreed) s", isDirected: ${b.isDirected}" else ""
+          s"""{ name: $name, singular: $singular, varNames: $varNames$directedStr }"""
       }
     mkJSArrStr(breedObjs)
   }

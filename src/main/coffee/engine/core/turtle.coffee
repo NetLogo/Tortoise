@@ -189,7 +189,7 @@ module.exports =
             isDirectedFromMe = (link.isDirected and link.end1 is this and link.end2 is otherTurtle and isSource)
             isDirectedToMe   = (link.isDirected and link.end1 is otherTurtle and link.end2 is this and not isSource)
             isDirectedFromMe or isDirectedToMe
-        else if not isDirected and not @world.unbreededLinksAreDirected
+        else if not isDirected and not @world.breedManager.links().isDirected()
           (link) =>
             isFromMe = (not link.isDirected and link.end1 is this and link.end2 is otherTurtle)
             isToMe   = (not link.isDirected and link.end2 is this and link.end1 is otherTurtle)

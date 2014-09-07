@@ -25,7 +25,6 @@ module.exports =
     _patches: undefined # Array[Patch]
 
     # Optimization-related variables
-    unbreededLinksAreDirected: undefined # Boolean
     _patchesAllBlack:          undefined # Boolean
     _patchesWithLabels:        undefined # Number
 
@@ -62,9 +61,8 @@ module.exports =
 
       @_patches = []
 
-      @unbreededLinksAreDirected = false
-      @_patchesAllBlack          = true
-      @_patchesWithLabels        = 0
+      @_patchesAllBlack   = true
+      @_patchesWithLabels = 0
 
       @resize(minPxcor, maxPxcor, minPycor, maxPycor, wrappingAllowedInX, wrappingAllowedInY)
 
@@ -181,13 +179,13 @@ module.exports =
 
     # () => Unit
     _setUnbreededLinksDirected: =>
-      @unbreededLinksAreDirected = true
+      @breedManager.setUnbreededLinksDirected()
       @_updater.updated(this)("unbreededLinksAreDirected")
       return
 
     # () => Unit
     _setUnbreededLinksUndirected: =>
-      @unbreededLinksAreDirected = false
+      @breedManager.setUnbreededLinksUndirected()
       @_updater.updated(this)("unbreededLinksAreDirected")
       return
 

@@ -154,7 +154,7 @@ module.exports =
       minPxcor:                   ["MINPXCOR",                  world.topology.minPxcor]
       minPycor:                   ["MINPYCOR",                  world.topology.minPycor]
       ticks:                      ["ticks",                     world.ticker._count]
-      unbreededLinksAreDirected:  ["unbreededLinksAreDirected", world.unbreededLinksAreDirected]
+      unbreededLinksAreDirected:  ["unbreededLinksAreDirected", world.breedManager.links().isDirected()]
       width:                      ["worldWidth",                world.topology.width]
     }
 
