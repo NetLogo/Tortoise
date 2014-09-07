@@ -31,6 +31,11 @@ module.exports =
     getBreedName: ->
       @_breed.name
 
+    # Tragically needed by `LinkCompare` for compliance with NetLogo's insane means of sorting links --JAB (9/6/14)
+    # () => Number
+    getBreedOrdinal: ->
+      @_breed.ordinal
+
     # (String) => Any
     getVariable: (varName) ->
       @_varManager[varName]

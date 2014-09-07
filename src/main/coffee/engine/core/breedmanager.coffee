@@ -2,10 +2,16 @@
 
 _ = require('lodash')
 
+count = 0
+getNextOrdinal = -> count++
+
 class Breed
+
+  ordinal: undefined # Number
 
   # (String, String, BreedManager, Array[String], String, Array[Agent]) => Breed
   constructor: (@name, @singular, @_manager, @varNames = [], @_shape = undefined, @members = []) ->
+    @ordinal = getNextOrdinal()
 
   # We can't just set this in the constructor, because people can swoop into the manager and change the turtles'
   # default shape --JAB (5/27/14)
