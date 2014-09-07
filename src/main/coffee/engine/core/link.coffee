@@ -21,7 +21,10 @@ module.exports =
                 , getLinksByBreedName, breed = @world.breedManager.links(), @_color = 5, @_isHidden = false
                 , @_label = "", @_labelcolor = 9.9, @_shape = "default", @_thickness = 0, @tiemode = "none") ->
       @_updateVarsByName = genUpdate(this)
-      @_varManager = @_genVarManager(@world.linksOwnNames, getLinksByBreedName)
+
+      varNames     = @world.linksOwnNames.concat(breed.varNames)
+      @_varManager = @_genVarManager(varNames, getLinksByBreedName)
+
       @_setBreed(breed)
       @end1.addLink(this)
       @end2.addLink(this)
