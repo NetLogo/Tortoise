@@ -7,8 +7,10 @@ Link        = require('../link')
 LinkSet     = require('../linkset')
 Nobody      = require('../nobody')
 Builtins    = require('../structure/builtins')
+linkCompare = require('../structure/linkcompare')
 IDManager   = require('./idmanager')
 SortedLinks = require('./sortedlinks')
+stableSort  = require('tortoise/util/stablesort')
 
 module.exports =
 
@@ -64,12 +66,13 @@ module.exports =
 
     # () => LinkSet
     links: ->
-      new LinkSet(@_links.toArray(), "LINKS", "links")
+      thunk = (=> @_links.toArray())
+      new LinkSet(thunk, "LINKS", "links")
 
     # (String) => LinkSet
     linksOfBreed: (breedName) =>
-      breed = @_breedManager.get(breedName)
-      new LinkSet(breed.members, breedName, breedName)
+      thunk = (=> stableSort(@_breedManager.get(breedName).members)(linkCompare))
+      new LinkSet(thunk, breedName, breedName)
 
     # (Link) => Unit
     _removeLink: (link) =>
