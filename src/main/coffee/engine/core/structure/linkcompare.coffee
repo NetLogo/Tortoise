@@ -1,7 +1,5 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-Exception = require('tortoise/util/exception')
-
 # (Link, Link) => Number
 module.exports =
   (a, b) ->

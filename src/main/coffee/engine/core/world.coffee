@@ -60,11 +60,7 @@ module.exports =
       @topology      = null
       @turtleManager = new TurtleManager(this, breedManager, _updater, )
 
-      @_patches         = []
-
-      @unbreededLinksAreDirected = false
-      @_patchesAllBlack          = true
-      @_patchesWithLabels        = 0
+      @_patches = []
 
       @unbreededLinksAreDirected = false
       @_patchesAllBlack          = true
