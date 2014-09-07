@@ -22,6 +22,7 @@ object Prims {
       case SimplePrims.NormalReporter(op)   => s"$op($commaArgs)"
       case x: prim.etc._isbreed             => s"""Prims.isBreed("${x.breedName}", ${arg(0)})"""
       case b: prim._breed                   => s"""world.turtleManager.turtlesOfBreed("${b.getBreedName}")"""
+      case b: prim.etc._linkbreed           => s"""world.linkManager.linksOfBreed("${b.getBreedName}")"""
       case b: prim.etc._breedsingular       => s"""world.turtleManager.getTurtleOfBreed("${b.breedName}", ${arg(0)})"""
       case b: prim.etc._breedhere           => s"""SelfManager.self().breedHere("${b.getBreedName}")"""
       case b: prim.etc._breedon             => s"""Prims.breedOn("${b.getBreedName}", ${arg(0)})"""
@@ -35,6 +36,7 @@ object Prims {
       case _: prim._unaryminus              => s" -${arg(0)}" // The space is important, because these can be nested --JAB (6/12/14)
       case _: prim._not                     => s"!${arg(0)}"
       case bv: prim._breedvariable          => s"SelfPrims.getVariable('${bv.name.toLowerCase}')"
+      case bv: prim._linkbreedvariable      => s"SelfPrims.getVariable('${bv.name.toLowerCase}')"
       case tv: prim._turtlevariable         => s"SelfPrims.getVariable('${tv.displayName.toLowerCase}')"
       case tv: prim._linkvariable           => s"SelfPrims.getVariable('${tv.displayName.toLowerCase}')"
       case tv: prim._turtleorlinkvariable   => s"SelfPrims.getVariable('${tv.varName.toLowerCase}')"
@@ -158,6 +160,8 @@ object Prims {
       case p: prim._observervariable =>
         s"world.observer.setGlobal('${p.displayName.toLowerCase}', ${arg(1)});"
       case bv: prim._breedvariable =>
+        s"SelfPrims.setVariable('${bv.name.toLowerCase}', ${arg(1)});"
+      case bv: prim._linkbreedvariable =>
         s"SelfPrims.setVariable('${bv.name.toLowerCase}', ${arg(1)});"
       case p: prim._linkvariable =>
         s"SelfPrims.setVariable('${p.displayName.toLowerCase}', ${arg(1)});"

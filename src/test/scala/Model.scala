@@ -66,6 +66,11 @@ object Model {
       repetitions = 20
     ),
     Model(
+      path = "models/Code Examples/Link Breeds Example.nlogo",
+      dimensions = Some((-6, 6, -6, 6)),
+      repetitions = 0
+    ),
+    Model(
       path = "models/Code Examples/Link Lattice Example.nlogo",
       dimensions = Some((-6, 6, -6, 6)),
       setup = "setup-square",
