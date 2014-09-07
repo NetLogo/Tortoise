@@ -163,8 +163,6 @@ object Prims {
         s"SelfPrims.setVariable('${p.displayName.toLowerCase}', ${arg(1)});"
       case p: prim._turtlevariable =>
         s"SelfPrims.setVariable('${p.displayName.toLowerCase}', ${arg(1)});"
-      case p: prim._turtleorlinkvariable if p.varName == "BREED" =>
-        s"SelfPrims.setVariable('breed', ${arg(1)});"
       case p: prim._turtleorlinkvariable =>
         s"SelfPrims.setVariable('${p.varName.toLowerCase}', ${arg(1)});"
       case p: prim._patchvariable =>
