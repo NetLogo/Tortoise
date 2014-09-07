@@ -14,7 +14,7 @@ module.exports =
     getBreedName: ->
       @_breedName
 
-    # () => Iterator
+    # () => Iterator[T]
     iterator: ->
       new DeadSkippingIterator(@_agents)
 
