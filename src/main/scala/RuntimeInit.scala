@@ -52,7 +52,7 @@ class RuntimeInit(program: Program, model: Model) {
 
   private def genBreedObjects: String = {
     val breedObjs =
-      program.breeds.values.map {
+      (program.breeds.values ++ program.linkBreeds.values).map {
         b =>
           val name        = s"'${b.name}'"
           val singular    = s"'${b.singular.toLowerCase}'"

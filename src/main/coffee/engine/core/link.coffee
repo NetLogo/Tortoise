@@ -158,7 +158,10 @@ module.exports =
         if _(breed).isString()
           @world.breedManager.get(breed)
         else if breed instanceof AbstractAgentSet
-          @world.breedManager.get(breed.getBreedName())
+          if breed.getBreedName?
+            @world.breedManager.get(breed.getBreedName())
+          else
+            throw new Error("You can't set BREED to a non-breed agentset.")
         else
           breed
 

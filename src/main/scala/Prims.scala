@@ -41,6 +41,7 @@ object Prims {
       case pv: prim._patchvariable          => s"SelfPrims.getPatchVariable('${pv.displayName.toLowerCase}')"
       case r: prim._reference               => s"${r.reference.original.displayName.toLowerCase}"
       case ov: prim._observervariable       => s"world.observer.getGlobal('${ov.displayName.toLowerCase}')"
+      case p: prim.etc._linkbreedsingular   => s"world.linkManager.getLink(${arg(0)}, ${arg(1)}, '${p.getBreedName}')"
       case _: prim._count                   => s"${arg(0)}.size()"
       case _: prim._any                     => s"${arg(0)}.nonEmpty()"
       case _: prim._word                    =>
@@ -69,6 +70,18 @@ object Prims {
       case _: prim.etc._filter              => s"${arg(1)}.filter(${arg(0)})"
       case _: prim.etc._nvalues             => s"Tasks.nValues(${arg(0)}, ${arg(1)})"
       case _: prim.etc._basecolors          => "ColorModel.BASE_COLORS"
+      case p: prim.etc._linkneighbors       => s"LinkPrims.linkNeighbors(false, false, '${fixBN(p.getBreedName)}')"
+      case p: prim.etc._inlinkneighbors     => s"LinkPrims.linkNeighbors(true, false, '${fixBN(p.breedName)}')"
+      case p: prim.etc._outlinkneighbors    => s"LinkPrims.linkNeighbors(true, true, '${fixBN(p.breedName)}')"
+      case p: prim.etc._mylinks             => s"LinkPrims.connectedLinks(false, false, '${fixBN(p.breedName)}')"
+      case p: prim.etc._myinlinks           => s"LinkPrims.connectedLinks(true, false, '${fixBN(p.breedName)}')"
+      case p: prim.etc._myoutlinks          => s"LinkPrims.connectedLinks(true, true, '${fixBN(p.breedName)}')"
+      case p: prim.etc._linkneighbor        => s"LinkPrims.isLinkNeighbor(false, false, '${fixBN(p.getBreedName)}')(${arg(0)})"
+      case p: prim.etc._inlinkneighbor      => s"LinkPrims.isLinkNeighbor(true, false, '${fixBN(p.breedName)}')(${arg(0)})"
+      case p: prim.etc._outlinkneighbor     => s"LinkPrims.isLinkNeighbor(true, true, '${fixBN(p.breedName)}')(${arg(0)})"
+      case p: prim.etc._inlinkfrom          => s"LinkPrims.findLinkViaNeighbor(true, false, '${fixBN(p.breedName)}')(${arg(0)})"
+      case p: prim.etc._outlinkto           => s"LinkPrims.findLinkViaNeighbor(true, true, '${fixBN(p.breedName)}')(${arg(0)})"
+      case p: prim.etc._linkwith            => s"LinkPrims.findLinkViaNeighbor(false, false, '${fixBN(p.breedName)}')(${arg(0)})"
       case tv: prim._taskvariable           => s"taskArguments[${tv.varNumber - 1}]"
       case _: prim._task                    => arg(0)
       case _: prim._reportertask =>
@@ -103,12 +116,12 @@ object Prims {
       case _: prim._createturtles        => generateCreateTurtles(s, ordered = false)
       case _: prim._createorderedturtles => generateCreateTurtles(s, ordered = true)
       case _: prim._sprout               => generateSprout(s)
-      case _: prim.etc._createlinkfrom   => generateCreateLink(s, "createLinkFrom")
-      case _: prim.etc._createlinksfrom  => generateCreateLink(s, "createLinksFrom")
-      case _: prim.etc._createlinkto     => generateCreateLink(s, "createLinkTo")
-      case _: prim.etc._createlinksto    => generateCreateLink(s, "createLinksTo")
-      case _: prim.etc._createlinkwith   => generateCreateLink(s, "createLinkWith")
-      case _: prim.etc._createlinkswith  => generateCreateLink(s, "createLinksWith")
+      case p: prim.etc._createlinkfrom   => generateCreateLink(s, "createLinkFrom",  p.breedName)
+      case p: prim.etc._createlinksfrom  => generateCreateLink(s, "createLinksFrom", p.breedName)
+      case p: prim.etc._createlinkto     => generateCreateLink(s, "createLinkTo",    p.breedName)
+      case p: prim.etc._createlinksto    => generateCreateLink(s, "createLinksTo",   p.breedName)
+      case p: prim.etc._createlinkwith   => generateCreateLink(s, "createLinkWith",  p.breedName)
+      case p: prim.etc._createlinkswith  => generateCreateLink(s, "createLinksWith", p.breedName)
       case _: prim.etc._every            => generateEvery(s)
       case h: prim._hatch                => generateHatch(s, h.breedName)
       case _: prim.etc._diffuse          => s"world.topology.diffuse('${arg(0)}', ${arg(1)})"
@@ -212,14 +225,14 @@ object Prims {
     genAsk(agents, shuffle, body)
   }
 
-  def generateCreateLink(s: ast.Statement, name: String): String = {
+  def generateCreateLink(s: ast.Statement, name: String, breedName: String): String = {
     val other = Handlers.reporter(s.args(0))
     // This is so that we don't shuffle unnecessarily.  FD 10/31/2013
     val nonEmptyCommandBlock =
       s.args(1).asInstanceOf[ast.CommandBlock]
         .statements.stmts.nonEmpty
     val body = Handlers.fun(s.args(1))
-    genAsk(s"LinkPrims.$name($other)", nonEmptyCommandBlock, body)
+    genAsk(s"LinkPrims.$name($other, '${fixBN(breedName)}')", nonEmptyCommandBlock, body)
   }
 
   def generateCreateTurtles(s: ast.Statement, ordered: Boolean): String = {
@@ -261,6 +274,9 @@ object Prims {
 
   private def failCompilation(msg: String, token: Token): Nothing =
     throw new CompilerException(msg, token.start, token.end, token.filename)
+
+  private def fixBN(breedName: String): String =
+    Option(breedName) filter (_.nonEmpty) getOrElse "LINKS"
 
   def genAsk(agents: String, shouldShuffle: Boolean, body: String): String =
     s"""$agents.ask($body, $shouldShuffle);"""
