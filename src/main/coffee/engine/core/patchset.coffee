@@ -6,8 +6,8 @@ Iterator         = require('tortoise/util/iterator')
 module.exports =
   class PatchSet extends AbstractAgentSet
 
-    # [T <: Patch] @ (Array[T]) => PatchSet
-    constructor: (@_agents) ->
+    # [T <: Patch] @ (Array[T], String) => PatchSet
+    constructor: (@_agents, @_specialName) ->
       super(@_agents)
 
     # () => Iterator
@@ -16,7 +16,7 @@ module.exports =
 
     # () => String
     toString: ->
-      "(agentset, #{@size()} patches)"
+      @_specialName.toLowerCase() ? "(agentset, #{@size()} patches)"
 
     # (Array[T], PatchSet[T]) => PatchSet[T]
     _generateFrom: (newAgentArr, agents) ->

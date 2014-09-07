@@ -55,12 +55,12 @@ module.exports =
 
     # () => LinkSet
     links: ->
-      new LinkSet(@_links.toArray())
+      new LinkSet(@_links.toArray(), "LINKS", "links")
 
     # (String) => LinkSet
     _linksOfBreed: (breedName) =>
       breed = @_breedManager.get(breedName)
-      new LinkSet(breed.members, breedName)
+      new LinkSet(breed.members, breedName, breedName)
 
     # (Link) => Unit
     _removeLink: (link) =>

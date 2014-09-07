@@ -98,7 +98,7 @@ module.exports =
 
     # () => PatchSet
     patches: =>
-      new PatchSet(@_patches)
+      new PatchSet(@_patches, "patches")
 
     # (Number, Number, Number, Number, Boolean, Boolean) => Unit
     resize: (minPxcor, maxPxcor, minPycor, maxPycor, wrapsInX = @topology._wrapInX, wrapsInY = @topology._wrapInY) ->
