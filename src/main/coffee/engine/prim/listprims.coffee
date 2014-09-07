@@ -187,16 +187,17 @@ module.exports =
     # [T] @ (ListOrSet[T]) => ListOrSet[T]
     sort: (xs) ->
       if Type(xs).isArray()
-        forAll       = (f) -> _.all(xs, f)
+        filtered     = _.filter(xs, (x) -> x isnt Nobody)
+        forAll       = (f) -> _.all(filtered, f)
         agentClasses = [Turtle, Patch, Link]
-        if _(xs).isEmpty()
-          xs
+        if _(filtered).isEmpty()
+          filtered
         else if forAll((x) -> Type(x).isNumber())
-          xs[..].sort((x, y) -> Comparator.numericCompare(x, y).toInt)
+          filtered.sort((x, y) -> Comparator.numericCompare(x, y).toInt)
         else if forAll((x) -> Type(x).isString())
-          xs[..].sort()
+          filtered.sort()
         else if _(agentClasses).some((agentClass) -> forAll((x) -> x instanceof agentClass))
-          stableSort(xs[..])((x, y) -> x.compare(y).toInt)
+          stableSort(filtered)((x, y) -> x.compare(y).toInt)
         else
           throw new Error("We don't know how to sort your kind here!")
       else if xs instanceof AbstractAgentSet
