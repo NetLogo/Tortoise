@@ -3,6 +3,7 @@
 _                = require('lodash')
 AbstractAgentSet = require('../core/abstractagentset')
 Link             = require('../core/link')
+LinkSet          = require('../core/linkset')
 Nobody           = require('../core/nobody')
 Patch            = require('../core/patch')
 PatchSet         = require('../core/patchset')
@@ -87,6 +88,10 @@ module.exports =
     isBreed: (breedName, x) ->
       if x.isBreed? and x.id isnt -1 then x.isBreed(breedName) else false
 
+    # [T <: (Array[Link]|Link|AbstractAgentSet[Link])] @ (T*) => LinkSet
+    linkSet: (inputs...) ->
+      @_createAgentSet(inputs, Link, LinkSet)
+
     # (Any, Any) => Boolean
     lt: (a, b) ->
       if (Type(a).isString() and Type(b).isString()) or (Type(a).isNumber() and Type(b).isNumber())
@@ -111,45 +116,7 @@ module.exports =
 
     # [T <: (Array[Patch]|Patch|AbstractAgentSet[Patch])] @ (T*) => PatchSet
     patchSet: (inputs...) ->
-      flattened = _(inputs).flatten().value()
-      if _(flattened).isEmpty()
-        new PatchSet([])
-      else if flattened.length is 1
-        head = flattened[0]
-        if head instanceof PatchSet
-          head
-        else if head instanceof Patch
-          new PatchSet([head])
-        else
-          new PatchSet([])
-      else
-        result  = []
-        hashSet = {}
-
-        hashIt = @_hasher
-
-        addPatch =
-          (p) ->
-            hash = hashIt(p)
-            if not hashSet.hasOwnProperty(hash)
-              result.push(p)
-              hashSet[hash] = true
-            return
-
-        buildFromAgentSet = (agentSet) -> agentSet.forEach(addPatch)
-
-        buildItems =
-          (inputs) =>
-            for input in inputs
-              if Type(input).isArray()
-                buildItems(input)
-              else if input instanceof Patch
-                addPatch(input)
-              else if input isnt Nobody
-                buildFromAgentSet(input)
-
-        buildItems(flattened)
-        new PatchSet(result)
+      @_createAgentSet(inputs, Patch, PatchSet)
 
     # (Number, Number) => Number
     precision: (n, places) ->
@@ -202,6 +169,10 @@ module.exports =
     toInt: (n) ->
       n | 0
 
+    # [T <: (Array[Turtle]|Turtle|AbstractAgentSet[Turtle])] @ (T*) => TurtleSet
+    turtleSet: (inputs...) ->
+      @_createAgentSet(inputs, Turtle, TurtleSet)
+
     # (PatchSet|TurtleSet|Patch|Turtle) => TurtleSet
     turtlesOn: (agentsOrAgent) ->
       if agentsOrAgent instanceof AbstractAgentSet
@@ -209,3 +180,45 @@ module.exports =
         new TurtleSet(turtles)
       else
         agentsOrAgent.turtlesHere()
+
+    # [T <: Agent, U <: AbstractAgentSet[T], V <: (Array[T]|T|AbstractAgentSet[T])] @ (Array[V], T.Class, U.Class) => Array[Agent]
+    _createAgentSet: (inputs, tClass, outClass) ->
+      flattened = _(inputs).flatten().value()
+      if _(flattened).isEmpty()
+        new outClass([])
+      else if flattened.length is 1
+        head = flattened[0]
+        if head instanceof outClass
+          head
+        else if head instanceof tClass
+          new outClass([head])
+        else
+          new outClass([])
+      else
+        result  = []
+        hashSet = {}
+
+        hashIt = @_hasher
+
+        addT =
+          (p) ->
+            hash = hashIt(p)
+            if not hashSet.hasOwnProperty(hash)
+              result.push(p)
+              hashSet[hash] = true
+            return
+
+        buildFromAgentSet = (agentSet) -> agentSet.forEach(addT)
+
+        buildItems =
+          (inputs) =>
+            for input in inputs
+              if Type(input).isArray()
+                buildItems(input)
+              else if input instanceof tClass
+                addT(input)
+              else if input isnt Nobody
+                buildFromAgentSet(input)
+
+        buildItems(flattened)
+        new outClass(result)
