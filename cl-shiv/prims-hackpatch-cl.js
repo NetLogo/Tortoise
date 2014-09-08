@@ -250,7 +250,7 @@ engine.prim.prims = Prims = function () {
             head = flattened[0];
             if (head instanceof engine.core.patchset) {
                 return head;
-            } else if (head instanceof engine.core.patch) {
+            } else if (head instanceof engine.core.patch || head.name === agents.patch.PATCH_NAME) {
                 return new engine.core.patchset([head]);
             } else {
                 return new engine.core.patchset([]);
@@ -278,7 +278,7 @@ engine.prim.prims = Prims = function () {
                         input = inputs[_i];
                         if (util.typechecker(input).isArray()) {
                             _results.push(buildItems(input));
-                        } else if (input instanceof engine.core.patch) {
+                        } else if (input instanceof engine.core.patch || input.name === agents.patch.PATCH_NAME) {
                             _results.push(addPatch(input));
                         } else if (input !== engine.core.nobody) {
                             _results.push(buildFromAgentSet(input));

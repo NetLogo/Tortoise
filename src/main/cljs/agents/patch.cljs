@@ -31,6 +31,8 @@
 ;; Currently failing tests as of 9/3/14 -- JTT
 ;;
 ;; Commands, Models
+;; Failing in *Commands:
+;; PatchSetNestedLists, AnyAll::All3, ComparingAgents::ComparingPatches, PatchAt::PatchAt, Sort::SortingListOfAgents
 ;;
 ;; Fixed tests so far:
 ;;
@@ -94,6 +96,7 @@
              get-neighbors :get-neighbors
              get-neighbors-4 :get-neighbors-4
              in-radius :in-radius
+             patch-at :patch-at
 
              turtles-at :turtles-at
              turtles-here :turtles-here
@@ -120,6 +123,7 @@
             :getNeighbors get-neighbors
             :getNeighbors4 get-neighbors-4
             :inRadius in-radius
+            :patchAt patch-at
 
             :turtlesAt turtles-at
             :turtlesHere turtles-here

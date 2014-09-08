@@ -3,7 +3,9 @@
             [agents.singletons.self-manager :as self-manager]
             [clojure.core.reducers :as r]
             [util.colormodel :as cm]
-            [engine.core.turtleset]) ;; TODO: cl-dependent -- JTT 9/3/14
+            [engine.core.turtleset]
+            [util.exception]
+            [engine.core.nobody]) ;; TODO: cl-dependent -- JTT 9/3/14
   (:require-macros [lib.component :refer [compnt compnt-let]]))
 
 (compnt patch-coordinates [x y]
@@ -59,8 +61,9 @@
 
             :in-radius (fn [agents radius] (.inRadius (.-topology js/world) px py agents radius))
 
-            ;; in Tortoise proper patchAt is contained in a try/catch? -- JTT (8/27/14)
-            :patch-at (fn [dx dy] ((aget (.. js/world -topology) "get-patch") (+ px dx) (+ py dy))))
+            ;; cl-dependent -- JTT 9/8/14
+            :patch-at (fn [dx dy] (try ((aget (.. js/world -topology) "get-patch") (+ px dx) (+ py dy))
+                                    (catch util.exception.TopologyInterrupt error engine.core.nobody))))
 
 (compnt-let turtle-set []
 
