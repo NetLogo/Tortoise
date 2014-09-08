@@ -13,6 +13,7 @@ goog.require('shim.strictmath');
 goog.require('util.comparator');
 goog.require('util.exception');
 goog.require('util.typechecker');
+goog.require('agents.patch');
 var Prims;
 engine.prim.prims = Prims = function () {
     function Prims(_dumper, _hasher) {
@@ -425,7 +426,7 @@ engine.prim.prims = Prims = function () {
     Prims.prototype.breedOn = function (breedName, x) {
         var patches, turtles;
         patches = function () {
-            if (x instanceof engine.core.patch) {
+            if (x instanceof engine.core.patch || x.name === agents.patch.PATCH_NAME) {
                 return [x];
             } else if (x instanceof engine.core.turtle) {
                 return [x.getPatchHere()];
