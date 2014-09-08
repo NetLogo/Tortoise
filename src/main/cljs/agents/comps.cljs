@@ -68,6 +68,8 @@
 
             :_turtle_set _turtle_set
             ;; into-array forces it to be a JS arr -- JTT 9/3/14
+            ;; REFER: cl-shiv/prims-hackpatch-cl.js, breed-on had to be modified b/c turtles
+            ;; is not a static array but a function -- JTT 9/8/14
             :turtles (fn [] (into-array @_turtle_set)))
 
 (compnt-let turtle-getters []
@@ -75,7 +77,7 @@
             [_turtle_set :_turtle_set
              turtles     :turtles]
 
-            :turtles-here (fn [] (new engine.core.turtleset (turtles)))
+            :turtles-here (fn [] (engine.core.turtleset. (turtles)))
             ;; TODO: cl-dependent (.getBreedName) -- JTT (8/28/14)
             ;; Must force the reduced values into a JS arr, same reasons as with (turtles) -- JTT 9/4/13
             ;;:breed-here (fn [breed-name] (into-array (r/filter #(= (.getBreedName %) breed-name) (into [] @_turtle_set))))
@@ -136,7 +138,7 @@
             :get-var  (fn [var-name] ((keyword var-name) @_self_vars))
             :set-var! (fn [var-name val] (do
                                            (swap! _self_vars assoc (keyword var-name) val)
-                                           ;; must lookup :get-update at fn runtime in order
+                                           ;; must lookup :gen-update at fn runtime in order
                                            ;; to add the self-vars component _before_ adding
                                            ;; the cl-update component, which in turn allows
                                            ;; cl-update to avoid using `this`, the usage of which results
@@ -188,7 +190,7 @@
 
 (compnt-let *nuanced-set-var! []
             ;; Must be added after (self-vars) and (nuanced-set-var-and-update).
-            ;; Overwrites :set-var! to check the mappings in nuanced-set-var... and perform
+            ;; Overwrites :set-var! to check the mappings in nuanced-set-[...] and perform
             ;; computations for wrapping color values and performing UI optimization function calls.
             ;; Feels sorta gross, but hopefully it works. -- JTT 9/3/14
 
