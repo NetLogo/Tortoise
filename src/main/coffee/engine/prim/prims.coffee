@@ -153,12 +153,8 @@ module.exports =
 
     # (Number, Number) => Number
     subtractHeadings: (h1, h2) ->
-      if h1 < 0 || h1 >= 360
-        h1 = (h1 % 360 + 360) % 360
-      if h2 < 0 || h2 >= 360
-        h2 = (h2 % 360 + 360) % 360
-      diff = h1 - h2
-      if diff > -180 && diff <= 180
+      diff = (h1 %% 360) - (h2 %% 360)
+      if -180 < diff <= 180
         diff
       else if diff > 0
         diff - 360
