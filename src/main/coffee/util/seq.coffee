@@ -61,7 +61,7 @@ module.exports =
 
     # () => Array[T]
     toArray: ->
-      @iterator().toArray() # Calls `iterator` because turtlesets and linksets need to prune dead agents --JAB (9/7/14)
+      @_items[..]
 
     # () => String
     toString: ->
