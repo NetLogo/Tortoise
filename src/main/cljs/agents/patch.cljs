@@ -49,6 +49,7 @@
 (defn- _patch_entity [id x y world]
   (entity* :patch
            :id id
+           ;; REFER: world-hackpatch-cl.js in cl-shiv
            :world world
            :init [;;(indexed :patch) ;; This is not working well with tortoise proper -- JTT 9/2/14
                   (patch-coordinates x y)
