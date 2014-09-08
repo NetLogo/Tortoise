@@ -17,9 +17,11 @@
 (compnt-let patch-reset []
 
             [x :pxcor
-             y :pycor]
+             y :pycor
+             id :id
+             world :world]
 
-            :reset #(agents.patch.patch x y))
+            :reset #(agents.patch.patch id x y world))
 
 (compnt ask []
         ;; may need to use this-as instead of referring to e -- JTT (8/27/14)
