@@ -117,7 +117,8 @@ module.exports =
         false
 
     # [T] @ (Array[T]) => Array[T]
-    removeDuplicates: (xs) -> if xs.length < 2
+    removeDuplicates: (xs) ->
+      if xs.length < 2
         xs
       else
         f =
