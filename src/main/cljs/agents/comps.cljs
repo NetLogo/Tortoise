@@ -5,7 +5,8 @@
             [util.colormodel :as cm]
             [engine.core.turtleset]
             [util.exception]
-            [engine.core.nobody]) ;; TODO: cl-dependent -- JTT 9/3/14
+            [engine.core.nobody]
+            [util.comparator]) ;; TODO: cl-dependent -- JTT 9/3/14
   (:require-macros [lib.component :refer [compnt compnt-let]]))
 
 (compnt patch-coordinates [x y]
@@ -116,7 +117,11 @@
 
             [id :id]
 
-            :compare (fn [agent] (= id (.-id agent))))
+            :compare (fn [agent] (let [other-id (.-id agent)]
+                                   (cond
+                                    (> id other-id) util.comparator.GREATER_THAN
+                                    (= id other-id) util.comparator.EQUALS
+                                    :default        util.comparator.LESS_THAN))))
 
 (compnt-let patch-to-string []
 

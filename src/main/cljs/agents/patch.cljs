@@ -32,7 +32,7 @@
 ;;
 ;; Commands, Models
 ;; Failing in *Commands:
-;; PatchSetNestedLists, AnyAll::All3, ComparingAgents::ComparingPatches, PatchAt::PatchAt, Sort::SortingListOfAgents
+;; ComparingAgents::ComparingPatches, Sort::SortingListOfAgents
 ;;
 ;; Fixed tests so far:
 ;;
