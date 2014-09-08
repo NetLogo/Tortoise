@@ -117,6 +117,7 @@
 
             [id :id]
 
+            ;; REFER: cl-shiv/prims-hackpatch-cl.js modified sort -- JTT 9/8/14
             :compare (fn [agent] (let [other-id (.-id agent)]
                                    (cond
                                     (> id other-id) util.comparator.GREATER_THAN

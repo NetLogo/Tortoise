@@ -187,7 +187,7 @@ engine.prim.prims = Prims = function () {
                 return xs.slice(0).sort();
             } else if (shim.lodash(agentClasses).some(function (agentClass) {
                     return forAll(function (x) {
-                        return x instanceof agentClass;
+                        return x instanceof agentClass || x.name === agents.patch.PATCH_NAME;
                     });
                 })) {
                 return xs.slice(0).sort(function (x, y) {

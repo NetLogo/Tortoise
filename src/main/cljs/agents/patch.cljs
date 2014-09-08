@@ -31,8 +31,6 @@
 ;; Currently failing tests as of 9/3/14 -- JTT
 ;;
 ;; Commands, Models
-;; Failing in *Commands:
-;; ComparingAgents::ComparingPatches, Sort::SortingListOfAgents
 ;;
 ;; Fixed tests so far:
 ;;
