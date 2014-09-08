@@ -17,7 +17,7 @@ class Breed
   # default shape --JAB (5/27/14)
   # () => String
   getShape: ->
-    @_shape ? @_manager.turtles()._shape
+    @_shape ? (if @isLinky() then @_manager.links()._shape else @_manager.turtles()._shape)
 
   # (String) => Unit
   setShape: (newShape) ->
