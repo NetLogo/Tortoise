@@ -51,6 +51,10 @@ object Model {
       repetitions = 50
     ),
     Model(
+      path = "models/Sample Models/Networks/Diffusion on a Directed Network.nlogo",
+      repetitions = 20
+    ),
+    Model(
       path = "models/test/benchmarks/GasLabNew Benchmark.nlogo",
       repetitions = 25
     ),
