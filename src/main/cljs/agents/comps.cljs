@@ -79,7 +79,7 @@
             ;; TODO: cl-dependent (.getBreedName) -- JTT (8/28/14)
             ;; Must force the reduced values into a JS arr, same reasons as with (turtles) -- JTT 9/4/13
             ;;:breed-here (fn [breed-name] (into-array (r/filter #(= (.getBreedName %) breed-name) (into [] @_turtle_set))))
-            :breed-here (fn [breed-name] (.filter (turtles) #(= (.getBreedName %) breed-name))))
+            :breed-here (fn [breed-name] (engine.core.turtleset. (.filter (turtles) #(= (.getBreedName %) breed-name)))))
 
 (compnt-let turtles-at []
 
