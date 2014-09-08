@@ -181,7 +181,7 @@ module.exports =
       else
         agentsOrAgent.turtlesHere()
 
-    # [T <: Agent, U <: AbstractAgentSet[T], V <: (Array[T]|T|AbstractAgentSet[T])] @ (Array[V], T.Class, U.Class) => Array[Agent]
+    # [T <: Agent, U <: AbstractAgentSet[T], V <: (Array[T]|T|AbstractAgentSet[T])] @ (Array[V], T.Class, U.Class) => U
     _createAgentSet: (inputs, tClass, outClass) ->
       flattened = _(inputs).flatten().value()
       if _(flattened).isEmpty()
