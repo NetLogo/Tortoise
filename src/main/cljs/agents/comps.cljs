@@ -97,8 +97,7 @@
 
 (compnt-let sprout-turtles []
 
-            [track-turtle :track-turtle
-             px :pxcor
+            [px :pxcor
              py :pycor]
 
             ;; TODO: cl-dependent
