@@ -233,7 +233,7 @@ engine.prim.prims = Prims = function () {
             _ref = xs.reduce(f, [
                 [],
                 {}
-            ]), out = _ref[0], _ref[1];
+            ]), out = _ref[0];
             return out;
         }
     };
