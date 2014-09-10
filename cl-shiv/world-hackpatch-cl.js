@@ -140,8 +140,9 @@ engine.core.world = World = function () {
         this.ticker.clear();
     };
     World.prototype.clearPatches = function () {
-        this.patches().forEach(function (patch) {
-            patch = patch.reset();
+        var world_this = this;
+        this.patches().forEach(function (patch, i) {
+            world_this._patches[i] = patch.reset();
         });
         this._declarePatchesAllBlack();
         this._resetPatchLabelCount();
