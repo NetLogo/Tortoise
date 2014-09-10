@@ -210,7 +210,9 @@
              inr :in-radius
 
              rnx :random-x
-             rny :random-y]
+             rny :random-y
+
+             gp  :get-patch]
 
             ;; Tortoise proper fns
 
@@ -230,4 +232,6 @@
             :inRadius inr
 
             :randomXcor rnx
-            :randomYcor rny)
+            :randomYcor rny
+
+            :_getPatchAt gp)
