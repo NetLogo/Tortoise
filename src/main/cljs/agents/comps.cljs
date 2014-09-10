@@ -24,7 +24,7 @@
                               (do ((self-manager/ask-agent f) me)
                                 (if (= (:id (self-manager/self)) -1)
                                   ;; TODO: bad exception.
-                                  (throw new js/Error "Death or something.")))))
+                                  (throw (js/Error "Death or something."))))))
         ;; @world.selfManager.askAgent(thing-to-do)(me) -- JS equiv. JTT (8/27/14)
         :projection-by (fn [f] (this-as me
                                         ((self-manager/ask-agent f) me))))
@@ -186,8 +186,8 @@
                                       ;; but it works well enough for now -- this way patch.pxcor can
                                       ;; never be out of sync with patch.getVariable('pxcor') unless
                                       ;; one of the variables is unsafely set using JS. -- JTT 9/3/14
-                                      (is? :pycor) (throw (js/Error. "Cannot change pycor of a patch. Create new patch instead."))
-                                      (is? :pxcor) (throw (js/Error. "Cannot change pxcor of a patch. Create new patch instead."))
+                                      (is? :pycor) (throw (js/Error "Cannot change pycor of a patch. Create new patch instead."))
+                                      (is? :pxcor) (throw (js/Error "Cannot change pxcor of a patch. Create new patch instead."))
                                       :default (set-val val))))) ;; only UI-related vars need to call updater. -- JTT 9/4/13
 
 (compnt-let *nuanced-set-var! []
