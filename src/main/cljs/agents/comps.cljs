@@ -6,7 +6,8 @@
             [engine.core.turtleset]
             [util.exception]
             [engine.core.nobody]
-            [util.comparator]) ;; TODO: cl-dependent -- JTT 9/3/14
+            [util.comparator]
+            [engine.core.structure.builtins]) ;; TODO: cl-dependent -- JTT 9/3/14
   (:require-macros [lib.component :refer [compnt compnt-let]]))
 
 (compnt patch-coordinates [x y]
@@ -219,3 +220,26 @@
             ;; at initialization time -- JTT 9/3/14
 
             :gen-update (fn [var-name] (((.. js/workspace -updater -updated) (clj->js e)) var-name)))
+
+(compnt-let patch-reset []
+
+            [x :pxcor
+             y :pycor
+             id :id
+             world :world
+             ipc :_incrementPatchLabelCount
+             dpc :_decrementPatchLabelCount
+             declare-non-black :_declareNonBlackPatch
+             gen-update :gen-update
+             defaults :defaults]
+
+            :reset! (fn []
+                      (let [new-patch (agents.patch.js-patch id x y world
+                                                             :_declareNonBlackPatch declare-non-black
+                                                             :_decrementPatchLabelCount dpc
+                                                             :_incrementPatchLabelCount ipc)]
+                        (doseq [field engine.core.structure.builtins.patches]
+                          ;; eventually it would be nice if updater used keywords -- JTT 9/10/14
+                          ;; js call -- JTT 9/10/14
+                          ((aget new-patch "gen-update") (name field)))
+                        new-patch)))

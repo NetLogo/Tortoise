@@ -51,6 +51,7 @@
            :id id
            ;; REFER: world-hackpatch-cl.js in cl-shiv
            :world world
+           :defaults patch-defaults
            :init [;;(indexed :patch) ;; This is not working well with tortoise proper -- JTT 9/2/14
                   (patch-coordinates x y)
                   (patch-topology)
@@ -63,12 +64,12 @@
                   (watch)
                   (compare-by-id)
                   (patch-to-string)
-                  (patch-reset)
                   (patches-own-vars)
-                  (self-vars (merge patch-defaults {:pxcor x :pycor y}))
+                  (self-vars (assoc patch-defaults :pxcor x :pycor y))
                   (nuanced-set-var-and-update)
                   (*nuanced-set-var!)
                   (cl-update)
+                  (patch-reset)
                   (patch-aliases)]))
 
 (defn patch [id x y world & others]
@@ -104,7 +105,9 @@
 
              to-string :to-string
 
-             sprout! :sprout!]
+             sprout! :sprout!
+
+             reset! :reset!]
 
             :getVariable get-var
             :setVariable set-var!
@@ -131,4 +134,6 @@
 
             :toString to-string
 
-            :sprout sprout!)
+            :sprout sprout!
+
+            :reset reset!)
