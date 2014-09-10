@@ -18,15 +18,6 @@
 (compnt indexed [name]
         :id (id-manager/new-id! name))
 
-(compnt-let patch-reset []
-
-            [x :pxcor
-             y :pycor
-             id :id
-             world :world]
-
-            :reset #(agents.patch.patch id x y world))
-
 (compnt ask []
         ;; may need to use this-as instead of referring to e -- JTT (8/27/14)
         :ask (fn [f] (this-as me
