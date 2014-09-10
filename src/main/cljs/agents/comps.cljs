@@ -55,7 +55,9 @@
             :in-radius (fn [agents radius] (.inRadius (.-topology js/world) px py agents radius))
 
             ;; cl-dependent -- JTT 9/8/14
-            :patch-at (fn [dx dy] (try ((aget (.. js/world -topology) "get-patch") (+ px dx) (+ py dy))
+            :patch-at (fn [dx dy] (try ((aget (.. js/world -topology) "get-patch")
+                                        (.wrapX (.-topology js/world) (+ px dx))
+                                        (.wrapY (.-topology js/world) (+ py dy)))
                                     (catch util.exception.TopologyInterrupt error engine.core.nobody))))
 
 (compnt-let turtle-set []
