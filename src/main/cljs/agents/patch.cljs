@@ -39,7 +39,8 @@
 
 (def PATCH_NAME "patch")
 ;; REFER: poorly spliced update mapping in
-;; cl-shiv/updater-hackpatch-cl.js -- 8/29/14
+;; cl-shiv/updater-hackpatch-cl.js -- JTT 8/29/14
+;; Now used across multiple files in cl-shiv. -- JTT 9/8/14
 
 (def patch-defaults
   {:pcolor 0
