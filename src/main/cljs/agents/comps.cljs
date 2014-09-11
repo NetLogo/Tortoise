@@ -152,7 +152,7 @@
                                            ;; -- JTT 9/3/14
                                            (this-as t ((aget t "gen-update") var-name)))))
 
-(compnt-let nuanced-set-var-and-update []
+(compnt-let nuanced-set-var-update-fn []
             ;; Provides UI optimizations for tracking patch label count and declaring patches non-black.
             ;; Basically a mapping from variable names to nuanced computations (like wrapping a color or
             ;; checking that a label is non-empty) -- it's a special side-effects machine.

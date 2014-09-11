@@ -1,8 +1,7 @@
 (ns agents.patch
   (:require [lib.entity :refer [entity*
                                 entity-init]]
-            [agents.comps :refer [indexed
-                                  patch-coordinates
+            [agents.comps :refer [patch-coordinates
                                   turtle-set
                                   turtle-getters
                                   turtles-at
@@ -16,7 +15,7 @@
                                   patch-reset
                                   self-vars
                                   patches-own-vars
-                                  nuanced-set-var-and-update
+                                  nuanced-set-var-update-fn
                                   *nuanced-set-var!
                                   cl-update]])
   (:require-macros [lib.component :refer [compnt-let]]))
@@ -53,8 +52,7 @@
            ;; REFER: world-hackpatch-cl.js in cl-shiv
            :world world
            :defaults patch-defaults
-           :init [;;(indexed :patch) ;; This is not working well with tortoise proper -- JTT 9/2/14
-                  (patch-coordinates x y)
+           :init [(patch-coordinates x y)
                   (patch-topology)
                   (turtle-set)
                   (turtle-getters)
@@ -67,7 +65,7 @@
                   (patch-to-string)
                   (patches-own-vars)
                   (self-vars (assoc patch-defaults :pxcor x :pycor y))
-                  (nuanced-set-var-and-update)
+                  (nuanced-set-var-update-fn)
                   (*nuanced-set-var!)
                   (cl-update)
                   (patch-reset)
