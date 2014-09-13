@@ -13,6 +13,7 @@ Printer          = require('tortoise/shim/printer')
 Random           = require('tortoise/shim/random')
 Comparator       = require('tortoise/util/comparator')
 Exception        = require('tortoise/util/exception')
+Timer            = require('tortoise/util/timer')
 Type             = require('tortoise/util/typechecker')
 
 module.exports =
@@ -20,8 +21,11 @@ module.exports =
 
     # type ListOrSet[T] = Array[T]|AbstractAgentSet[T]
 
+    _everyMap: undefined # Object[String, Timer]
+
     # (Dump, Hasher) => Prims
     constructor: (@_dumper, @_hasher) ->
+      @_everyMap = {}
 
       # () => Nothing
     boom: ->
@@ -64,11 +68,25 @@ module.exports =
       else
         throw new Error("Checking equality on undefined is an invalid condition")
 
-    # (Number, FunctionN) => Unit
-    # not a real implementation, always just runs body - ST 4/22/14
-    every: (time, fn) ->
-      Printer("Warning: The `every` primitive is not yet properly supported.")
-      fn()
+    ###
+
+      This implementation is closer than our original implementation, but still wrong. `every`'s dictionary entry claims:
+
+      "Runs the given commands only if it's been more than number seconds since the last time this agent ran them in this context."
+
+      But a more-accurate description of this implementation would be:
+
+      "Runs the given commands only if it's been more than number seconds since the last time they were run in this context."
+
+      Basically, there's no agent-checking yet. --JAB (9/12/14)
+
+    ###
+    # (Number, FunctionN, String) => Unit
+    every: (time, fn, fid) ->
+      existingEntry = @_everyMap[fid]
+      if not existingEntry? or existingEntry.elapsed() >= time
+        @_everyMap[fid] = new Timer()
+        fn()
       return
 
     # (Any, Any) => Boolean

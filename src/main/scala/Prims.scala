@@ -9,6 +9,8 @@ import
 
 object Prims {
 
+  private var everyCounter = 0
+
   def reporter(r: ast.ReporterApp): String = {
     def arg(i: Int) = Handlers.reporter(r.args(i))
     def commaArgs = argsSep(", ")
@@ -267,11 +269,16 @@ object Prims {
   }
 
   def generateEvery(w: ast.Statement): String = {
+
+    val count = everyCounter
+    everyCounter += 1
+
     val time = Handlers.reporter(w.args(0))
     val body = Handlers.commands(w.args(1))
     s"""|Prims.every($time, function () {
         |${Handlers.indented(body)}
-        |});""".stripMargin
+        |}, 'auto-every-$count');""".stripMargin
+
   }
 
   private def failCompilation(msg: String, token: Token): Nothing =
