@@ -18,7 +18,7 @@ module.exports =
       return
 
     # (Updater.Update) => Boolean
-    update: (modelUpdate) ->
+    update: ({ links: links, observer: observer, patches: patches, turtles: turtles, world: world }) ->
       anyUpdates = false
 
       # the 'when varUpdates' checks below only seem to be
@@ -27,23 +27,23 @@ module.exports =
       # the fix for http://bugs.java.com/bugdatabase/view_bug.do?bug_id=8038119
       # we should re-test and see if this got fixed as well, or
       # whether we need to file a second bug report at bugs.java.com - ST 3/16/14
-      turtleBundle = { updates: modelUpdate.turtles, coll: @turtles, typeCanDie: true }
-      patchBundle  = { updates: modelUpdate.patches, coll: @patches, typeCanDie: false }
-      linkBundle   = { updates: modelUpdate.links,   coll: @links,   typeCanDie: true }
+      turtleBundle = { updates: turtles, coll: @turtles, typeCanDie: true }
+      patchBundle  = { updates: patches, coll: @patches, typeCanDie: false }
+      linkBundle   = { updates: links,   coll: @links,   typeCanDie: true }
 
-      for bundle in [turtleBundle, patchBundle, linkBundle]
-        for id, varUpdates of bundle.updates when varUpdates?
+      for { coll: coll, typeCanDie: typeCanDie, updates: updates } in [turtleBundle, patchBundle, linkBundle]
+        for id, varUpdates of updates when varUpdates?
           anyUpdates = true
-          if bundle.typeCanDie and varUpdates.WHO is -1
-            delete bundle.coll[id]
+          if typeCanDie and varUpdates.WHO is -1
+            delete coll[id]
           else
-            mergeObjectInto(varUpdates, @_itemById(bundle.coll, id))
+            mergeObjectInto(varUpdates, @_itemById(coll, id))
 
-      if modelUpdate.observer? and modelUpdate.observer[0]?
-        mergeObjectInto(modelUpdate.observer[0], @observer)
+      if observer? and observer[0]?
+        mergeObjectInto(observer[0], @observer)
 
-      if modelUpdate.world? and modelUpdate.world[0]?
-        mergeObjectInto(modelUpdate.world[0], @world)
+      if world? and world[0]?
+        mergeObjectInto(world[0], @world)
 
       anyUpdates
 

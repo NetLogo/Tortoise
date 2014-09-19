@@ -29,8 +29,8 @@ module.exports =
 
     # (Array[VariableBundle]) => Unit
     _addVarsByBundle: (bundles) ->
-      for obj in bundles
-        @_defineProperty(obj.name, { get: obj.get, set: obj.set, configurable: true })
+      for { name: name, get: get, set: set } in bundles
+        @_defineProperty(name, { get: get, set: set, configurable: true })
       return
 
     # (String, Object) => Unit

@@ -5,7 +5,8 @@ Topology       = require('./topology')
 Random         = require('tortoise/shim/random')
 StrictMath     = require('tortoise/shim/strictmath')
 abstractMethod = require('tortoise/util/abstractmethoderror')
-Exception      = require('tortoise/util/exception')
+
+{ TopologyInterrupt: TopologyInterrupt } = require('tortoise/util/exception')
 
 module.exports =
   class Topology
@@ -214,7 +215,7 @@ module.exports =
       if min <= pos < max
         pos
       else
-        throw new Exception.TopologyInterrupt("Cannot move turtle beyond the world's edge.")
+        throw new TopologyInterrupt("Cannot move turtle beyond the world's edge.")
 
     # (Number, Number, Number) => Number
     _wrapLeniently:  (minCor, maxCor, pos) ->

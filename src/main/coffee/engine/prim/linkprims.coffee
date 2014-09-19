@@ -7,9 +7,9 @@ module.exports =
     @_self:        undefined # () => Turtle
 
     # (World) => LinkPrims
-    constructor: (@_world) ->
-      @_linkManager = @_world.linkManager
-      @_self        = @_world.selfManager.self
+    constructor: ({ linkManager: lm, selfManager: sm }) ->
+      @_linkManager = lm
+      @_self        = sm.self
 
     # (Turtle, String) => Link
     createLinkFrom: (otherTurtle, breedName) ->

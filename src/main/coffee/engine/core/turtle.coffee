@@ -8,8 +8,9 @@ PenManager       = require('./structure/penmanager')
 VariableManager  = require('./structure/variablemanager')
 ColorModel       = require('tortoise/util/colormodel')
 Comparator       = require('tortoise/util/comparator')
-Exception        = require('tortoise/util/exception')
 Trig             = require('tortoise/util/trig')
+
+{ DeathInterrupt: Death, TopologyInterrupt: TopologyInterrupt } = require('tortoise/util/exception')
 
 module.exports =
   class Turtle
@@ -139,7 +140,7 @@ module.exports =
         y = @world.topology.wrapY(@ycor + dy)
         @world.getPatchAt(x, y)
       catch error
-        if error instanceof Exception.TopologyInterrupt
+        if error instanceof TopologyInterrupt
           Nobody
         else
           throw error
@@ -153,9 +154,9 @@ module.exports =
       breedNameMatches = @_linkBreedMatches(breedName)
       filterFunc =
         if isDirected
-          (link) => (link.isDirected and link.end1 is this and isSource) or (link.isDirected and link.end2 is this and not isSource)
+          ({ isDirected: isD, end1: end1, end2: end2 }) => (isD and end1 is this and isSource) or (isD and end2 is this and not isSource)
         else
-          (link) => (not link.isDirected and link.end1 is this) or (not link.isDirected and link.end2 is this)
+          ({ isDirected: isD, end1: end1, end2: end2 }) => (not isD and end1 is this) or (not isD and end2 is this)
       @world.links().filter((x) => breedNameMatches(x) and filterFunc(x))
 
     # (Boolean, Boolean, String) => TurtleSet
@@ -220,7 +221,7 @@ module.exports =
         newY = @world.topology.wrapY(@ycor + distance * Trig.cos(heading))
         @world.getPatchAt(newX, newY)
       catch error
-        if error instanceof Exception.TopologyInterrupt then Nobody else throw error
+        if error instanceof TopologyInterrupt then Nobody else throw error
 
     # (Number, Number) => Agent
     patchLeftAndAhead: (angle, distance) ->
@@ -234,7 +235,7 @@ module.exports =
     ask: (f) ->
       @world.selfManager.askAgent(f)(this)
       if @world.selfManager.self().id is -1
-        throw new Exception.DeathInterrupt
+        throw new Death
       return
 
     # [Result] @ (() => Result) => Result
@@ -295,8 +296,8 @@ module.exports =
       catch error
         @_setXcor(origXcor, tiedCaller)
         @_setYcor(origYcor, tiedCaller)
-        if error instanceof Exception.TopologyInterrupt
-          throw new Exception.TopologyInterrupt("The point [ #{x} , #{y} ] is outside of the boundaries of the world and wrapping is not permitted in one or both directions.")
+        if error instanceof TopologyInterrupt
+          throw new TopologyInterrupt("The point [ #{x} , #{y} ] is outside of the boundaries of the world and wrapping is not permitted in one or both directions.")
         else
           throw error
       return
@@ -321,13 +322,13 @@ module.exports =
             try
               link.die()
             catch error
-              throw error if not (error instanceof Exception.DeathInterrupt)
+              throw error if not (error instanceof Death)
           return
         )
         @id = -1
         @getPatchHere().untrackTurtle(this)
         @world.observer.unfocus(this)
-      throw new Exception.DeathInterrupt("Call only from inside an askAgent block")
+      throw new Death("Call only from inside an askAgent block")
 
     # (String) => Any
     getVariable: (varName) ->
@@ -456,12 +457,12 @@ module.exports =
 
     # () => { "fixeds": Array[Turtle], "others": Array[Turtle] }
     _tiedTurtles: ->
-      filterFunc = (link) => link.tiemode isnt "none" and ((link.end1 is this) or (link.end2 is this and not link.isDirected))
+      filterFunc = ({ isDirected: isD, end1: end1, end2: end2, tiemode: tiemode }) => tiemode isnt "none" and ((end1 is this) or (end2 is this and not isD))
       links      = @world.links().filter(filterFunc).toArray()
       f =
-        ([fixeds, others], link) =>
-          turtle = if link.end1 is this then link.end2 else link.end1
-          if link.tiemode is "fixed"
+        ([fixeds, others], { end1: end1, end2: end2, tiemode: tiemode }) =>
+          turtle = if end1 is this then end2 else end1
+          if tiemode is "fixed"
             [fixeds.concat([turtle]), others]
           else
             [fixeds, others.concat([turtle])]

@@ -11,10 +11,11 @@ Turtle           = require('../core/turtle')
 TurtleSet        = require('../core/turtleset')
 Printer          = require('tortoise/shim/printer')
 Random           = require('tortoise/shim/random')
-Comparator       = require('tortoise/util/comparator')
 Exception        = require('tortoise/util/exception')
 Timer            = require('tortoise/util/timer')
 Type             = require('tortoise/util/typechecker')
+
+{ EQUALS: EQ, GREATER_THAN: GT, LESS_THAN: LT, } = require('tortoise/util/comparator')
 
 module.exports =
   class Prims
@@ -63,7 +64,7 @@ module.exports =
             a.size() is b.size() and Object.getPrototypeOf(a) is Object.getPrototypeOf(b) and subsumes(a.sort(), b.sort())
           else
             (a instanceof AbstractAgentSet and a.getBreedName? and a.getBreedName() is b.name) or (b instanceof AbstractAgentSet and b.getBreedName? and b.getBreedName() is a.name) or
-              (a is Nobody and b.id is -1) or (b is Nobody and a.id is -1) or ((a instanceof Turtle or a instanceof Link) and a.compare(b) is Comparator.EQUALS)
+              (a is Nobody and b.id is -1) or (b is Nobody and a.id is -1) or ((a instanceof Turtle or a instanceof Link) and a.compare(b) is EQ)
         )
       else
         throw new Error("Checking equality on undefined is an invalid condition")
@@ -94,7 +95,7 @@ module.exports =
       if (Type(a).isString() and Type(b).isString()) or (Type(a).isNumber() and Type(b).isNumber())
         a > b
       else if typeof(a) is typeof(b) and a.compare? and b.compare?
-        a.compare(b) is Comparator.GREATER_THAN
+        a.compare(b) is GT
       else
         throw new Error("Invalid operands to `gt`")
 
@@ -115,7 +116,7 @@ module.exports =
       if (Type(a).isString() and Type(b).isString()) or (Type(a).isNumber() and Type(b).isNumber())
         a < b
       else if typeof(a) is typeof(b) and a.compare? and b.compare?
-        a.compare(b) is Comparator.LESS_THAN
+        a.compare(b) is LT
       else
         throw new Error("Invalid operands to `lt`")
 

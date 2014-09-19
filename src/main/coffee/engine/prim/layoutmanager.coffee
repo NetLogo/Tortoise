@@ -52,10 +52,8 @@ module.exports =
     _calcDegreeCounts: (links, idToIndexMap, nodeCount) ->
       baseCounts = _(0).range(nodeCount).map(-> 0).value()
       links.forEach(
-        (link) ->
-          t1 = link.end1
-          t2 = link.end2
-          f  = (turtle) ->
+        ({ end1: t1, end2: t2 }) ->
+          f = (turtle) ->
             index = idToIndexMap[turtle.id]
             if index? then baseCounts[index]++
           f(t1)
@@ -77,10 +75,7 @@ module.exports =
             [-1, 0]
 
       links.forEach(
-        (link) ->
-
-          t1 = link.end1
-          t2 = link.end2
+        ({ end1: t1, end2: t2 }) ->
 
           [t1Index, degCount1] = indexAndCountOf(t1)
           [t2Index, degCount2] = indexAndCountOf(t2)

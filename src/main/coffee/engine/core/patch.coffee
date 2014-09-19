@@ -8,7 +8,8 @@ VariableManager = require('./structure/variablemanager')
 Random          = require('tortoise/shim/random')
 ColorModel      = require('tortoise/util/colormodel')
 Comparator      = require('tortoise/util/comparator')
-Exception       = require('tortoise/util/exception')
+
+{ DeathInterrupt: Death, TopologyInterrupt: TopologyInterrupt } = require('tortoise/util/exception')
 
 module.exports =
   class Patch
@@ -77,7 +78,7 @@ module.exports =
     ask: (f) ->
       @world.selfManager.askAgent(f)(this)
       if @world.selfManager.self().id is -1
-        throw new Exception.DeathInterrupt
+        throw new Death
       return
 
     # [Result] @ (() => Result) => Result
@@ -112,7 +113,7 @@ module.exports =
         newY = @world.topology.wrapY(@pycor + dy)
         @world.getPatchAt(newX, newY)
       catch error
-        if error instanceof Exception.TopologyInterrupt then Nobody else throw error
+        if error instanceof TopologyInterrupt then Nobody else throw error
 
     # () => Unit
     watchMe: ->

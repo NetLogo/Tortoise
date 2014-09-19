@@ -9,7 +9,8 @@ LinkManager     = require('./world/linkmanager')
 Ticker          = require('./world/ticker')
 TurtleManager   = require('./world/turtlemanager')
 StrictMath      = require('tortoise/shim/strictmath')
-Exception       = require('tortoise/util/exception')
+
+{ TopologyInterrupt: TopologyInterrupt } = require('tortoise/util/exception')
 
 module.exports =
   class World
@@ -124,7 +125,7 @@ module.exports =
         index  = (@topology.maxPycor - StrictMath.round(trueY)) * @topology.width + (StrictMath.round(trueX) - @topology.minPxcor)
         @_patches[index]
       catch error
-        if error instanceof Exception.TopologyInterrupt
+        if error instanceof TopologyInterrupt
           Nobody
         else
           throw error

@@ -8,7 +8,8 @@ Builtins   = require('../structure/builtins')
 IDManager  = require('./idmanager')
 Random     = require('tortoise/shim/random')
 ColorModel = require('tortoise/util/colormodel')
-Exception  = require('tortoise/util/exception')
+
+{ DeathInterrupt: Death }  = require('tortoise/util/exception')
 
 module.exports =
   class TurtleManager
@@ -29,7 +30,7 @@ module.exports =
         try
           turtle.die()
         catch error
-          throw error if not (error instanceof Exception.DeathInterrupt)
+          throw error if not (error instanceof Death)
         return
       )
       @_idManager.reset()

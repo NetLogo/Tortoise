@@ -6,8 +6,10 @@ linkCompare      = require('./structure/linkcompare')
 VariableManager  = require('./structure/variablemanager')
 TurtleSet        = require('./turtleset')
 ColorModel       = require('tortoise/util/colormodel')
-Comparator       = require('tortoise/util/comparator')
-Exception        = require('tortoise/util/exception')
+
+{ EQUALS: EQ, GREATER_THAN: GT, LESS_THAN: LT, } = require('tortoise/util/comparator')
+
+{ DeathInterrupt: Death } = require('tortoise/util/exception')
 
 module.exports =
   class Link
@@ -57,7 +59,7 @@ module.exports =
         @_registerRemoval(this)
         @_seppuku()
         @id = -1
-      throw new Exception.DeathInterrupt("Call only from inside an askAgent block")
+      throw new Death("Call only from inside an askAgent block")
 
     # () => TurtleSet
     bothEnds: ->
@@ -109,7 +111,7 @@ module.exports =
     ask: (f) ->
       @world.selfManager.askAgent(f)(this)
       if @world.selfManager.self().id is -1
-        throw new Exception.DeathInterrupt
+        throw new Death
       return
 
     # [Result] @ (() => Result) => Result
@@ -122,9 +124,9 @@ module.exports =
     # (Any) => { toInt: Number }
     compare: (x) ->
       switch linkCompare(this, x)
-        when -1 then Comparator.LESS_THAN
-        when  0 then Comparator.EQUALS
-        when  1 then Comparator.GREATER_THAN
+        when -1 then LT
+        when  0 then EQ
+        when  1 then GT
         else throw new Error("Comparison should only yield an integer within the interval [-1,1]")
 
     # () => Unit

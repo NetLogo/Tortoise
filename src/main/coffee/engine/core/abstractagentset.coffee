@@ -2,10 +2,11 @@
 
 Nobody         = require('./nobody')
 Random         = require('tortoise/shim/random')
-Exception      = require('tortoise/util/exception')
 Seq            = require('tortoise/util/seq')
 Shufflerator   = require('tortoise/util/shufflerator')
 stableSort     = require('tortoise/util/stablesort')
+
+{ DeathInterrupt: Death } = require('tortoise/util/exception')
 
 # Never instantiate this class directly --JAB (5/7/14)
 module.exports =
@@ -45,7 +46,7 @@ module.exports =
       iter.forEach(@_selfManager.askAgent(f))
 
       if @_selfManager.self().id is -1
-        throw new Exception.DeathInterrupt
+        throw new Death
 
       return
 

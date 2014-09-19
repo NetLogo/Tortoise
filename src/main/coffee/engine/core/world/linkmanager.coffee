@@ -75,10 +75,9 @@ module.exports =
 
     # (Link) => Unit
     _removeLink: (link) =>
-      l = @_links.find((l) -> l.id is link.id)
+      l = @_links.find(({id: id}) -> id is link.id)
       @_links = @_links.remove(l)
       if @_links.isEmpty() then @_notifyIsUndirected()
-
 
       remove = (set, id1, id2) -> if set? then set[id1] = _(set[id1]).without(id2).value()
       remove(@_linksFrom[link.getBreedName()], link.end1.id, link.end2.id)
