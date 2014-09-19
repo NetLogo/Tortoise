@@ -27,7 +27,7 @@ module.exports =
     constructor: (@_dumper, @_hasher) ->
       @_everyMap = {}
 
-      # () => Nothing
+    # () => Nothing
     boom: ->
       throw new Error("boom!")
 
