@@ -10,7 +10,7 @@ ColorModel       = require('tortoise/util/colormodel')
 Comparator       = require('tortoise/util/comparator')
 Trig             = require('tortoise/util/trig')
 
-{ DeathInterrupt: Death, TopologyInterrupt: TopologyInterrupt } = require('tortoise/util/exception')
+{ DeathInterrupt: Death, TopologyInterrupt } = require('tortoise/util/exception')
 
 module.exports =
   class Turtle
@@ -154,9 +154,9 @@ module.exports =
       breedNameMatches = @_linkBreedMatches(breedName)
       filterFunc =
         if isDirected
-          ({ isDirected: isD, end1: end1, end2: end2 }) => (isD and end1 is this and isSource) or (isD and end2 is this and not isSource)
+          ({ isDirected, end1, end2 }) => (isDirected and end1 is this and isSource) or (isDirected and end2 is this and not isSource)
         else
-          ({ isDirected: isD, end1: end1, end2: end2 }) => (not isD and end1 is this) or (not isD and end2 is this)
+          ({ isDirected, end1, end2 }) => (not isDirected and end1 is this) or (not isDirected and end2 is this)
       @world.links().filter((x) => breedNameMatches(x) and filterFunc(x))
 
     # (Boolean, Boolean, String) => TurtleSet
@@ -457,10 +457,10 @@ module.exports =
 
     # () => { "fixeds": Array[Turtle], "others": Array[Turtle] }
     _tiedTurtles: ->
-      filterFunc = ({ isDirected: isD, end1: end1, end2: end2, tiemode: tiemode }) => tiemode isnt "none" and ((end1 is this) or (end2 is this and not isD))
+      filterFunc = ({ isDirected, end1, end2, tiemode }) => tiemode isnt "none" and ((end1 is this) or (end2 is this and not isDirected))
       links      = @world.links().filter(filterFunc).toArray()
       f =
-        ([fixeds, others], { end1: end1, end2: end2, tiemode: tiemode }) =>
+        ([fixeds, others], { end1, end2, tiemode }) =>
           turtle = if end1 is this then end2 else end1
           if tiemode is "fixed"
             [fixeds.concat([turtle]), others]

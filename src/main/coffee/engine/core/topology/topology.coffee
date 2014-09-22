@@ -6,7 +6,7 @@ Random         = require('tortoise/shim/random')
 StrictMath     = require('tortoise/shim/strictmath')
 abstractMethod = require('tortoise/util/abstractmethoderror')
 
-{ TopologyInterrupt: TopologyInterrupt } = require('tortoise/util/exception')
+{ TopologyInterrupt } = require('tortoise/util/exception')
 
 module.exports =
   class Topology

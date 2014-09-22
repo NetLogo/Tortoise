@@ -18,7 +18,7 @@ module.exports =
       return
 
     # (Updater.Update) => Boolean
-    update: ({ links: links, observer: observer, patches: patches, turtles: turtles, world: world }) ->
+    update: ({ links, observer, patches, turtles, world }) ->
       anyUpdates = false
 
       # the 'when varUpdates' checks below only seem to be
@@ -31,7 +31,7 @@ module.exports =
       patchBundle  = { updates: patches, coll: @patches, typeCanDie: false }
       linkBundle   = { updates: links,   coll: @links,   typeCanDie: true }
 
-      for { coll: coll, typeCanDie: typeCanDie, updates: updates } in [turtleBundle, patchBundle, linkBundle]
+      for { coll, typeCanDie, updates } in [turtleBundle, patchBundle, linkBundle]
         for id, varUpdates of updates when varUpdates?
           anyUpdates = true
           if typeCanDie and varUpdates.WHO is -1

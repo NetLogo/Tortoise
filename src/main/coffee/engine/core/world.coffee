@@ -10,7 +10,7 @@ Ticker          = require('./world/ticker')
 TurtleManager   = require('./world/turtlemanager')
 StrictMath      = require('tortoise/shim/strictmath')
 
-{ TopologyInterrupt: TopologyInterrupt } = require('tortoise/util/exception')
+{ TopologyInterrupt } = require('tortoise/util/exception')
 
 module.exports =
   class World

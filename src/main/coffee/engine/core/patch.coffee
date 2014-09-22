@@ -9,7 +9,7 @@ Random          = require('tortoise/shim/random')
 ColorModel      = require('tortoise/util/colormodel')
 Comparator      = require('tortoise/util/comparator')
 
-{ DeathInterrupt: Death, TopologyInterrupt: TopologyInterrupt } = require('tortoise/util/exception')
+{ DeathInterrupt: Death, TopologyInterrupt } = require('tortoise/util/exception')
 
 module.exports =
   class Patch
