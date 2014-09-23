@@ -6,7 +6,7 @@ Random = require('../shim/random')
 
 # type RGB = (Number, Number, Number)
 
-ColorMax   = 140
+ColorMax = 140
 
 # Array[Number]
 BaseColors = _(0).range(ColorMax / 10).map((n) -> (n * 10) + 5).value()
