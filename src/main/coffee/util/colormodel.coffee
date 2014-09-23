@@ -11,6 +11,10 @@ module.exports = {
   COLOR_MAX:   ColorMax   # Number
   BASE_COLORS: BaseColors # Array[Number]
 
+  # (Number, Number) => Boolean
+  areRelatedByShade: (color1, color2) ->
+    @_colorIntegral(color1) is @_colorIntegral(color2)
+
   # (Number) => Number
   nthColor: (n) ->
     index = n % BaseColors.length
@@ -31,10 +35,6 @@ module.exports = {
         modColor
       else
         ColorMax + modColor
-
-  # (Number, Number) => Boolean
-  areRelatedByShade: (color1, color2) ->
-    @_colorIntegral(color1) is @_colorIntegral(color2)
 
   # (Number, Number, Number, Number) => Number
   scaleColor: (color, number, min, max) ->
