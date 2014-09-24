@@ -7,15 +7,17 @@ import
     api.CompilerException,
     core.Token
 
-object Prims {
+trait Prims {
+
+  def handlers: Handlers
 
   private var everyCounter = 0
 
   def reporter(r: ast.ReporterApp): String = {
-    def arg(i: Int) = Handlers.reporter(r.args(i))
+    def arg(i: Int) = handlers.reporter(r.args(i))
     def commaArgs = argsSep(", ")
     def args =
-      r.args.collect{ case x: ast.ReporterApp => Handlers.reporter(x) }
+      r.args.collect{ case x: ast.ReporterApp => handlers.reporter(x) }
     def argsSep(sep: String) =
       args.mkString(sep)
     r.reporter match {
@@ -29,11 +31,11 @@ object Prims {
       case b: prim.etc._breedhere           => s"""SelfManager.self().breedHere("${b.getBreedName}")"""
       case b: prim.etc._breedon             => s"""Prims.breedOn("${b.getBreedName}", ${arg(0)})"""
       case x: prim.etc._isstring            => s"Type(${arg(0)}).isString()"
-      case pure: nvm.Pure if r.args.isEmpty => Handlers.literal(pure.report(null))
-      case lv: prim._letvariable            => Handlers.ident(lv.let.name)
-      case pv: prim._procedurevariable      => Handlers.ident(pv.name)
+      case pure: nvm.Pure if r.args.isEmpty => handlers.literal(pure.report(null))
+      case lv: prim._letvariable            => handlers.ident(lv.let.name)
+      case pv: prim._procedurevariable      => handlers.ident(pv.name)
       case call: prim._callreport           =>
-        (Handlers.ident(call.procedure.name) +: args)
+        (handlers.ident(call.procedure.name) +: args)
           .mkString("Call(", ", ", ")")
       case _: prim._unaryminus              => s" -${arg(0)}" // The space is important, because these can be nested --JAB (6/12/14)
       case _: prim._not                     => s"!${arg(0)}"
@@ -52,19 +54,19 @@ object Prims {
         ("\"\"" +: args).map(arg => "Dump(" + arg + ")").mkString("(", " + ", ")")
       case _: prim._with =>
         val agents = arg(0)
-        val filter = Handlers.reporter(r.args(1))
-        s"$agents.agentFilter(${Handlers.fun(r.args(1), true)})"
+        val filter = handlers.reporter(r.args(1))
+        s"$agents.agentFilter(${handlers.fun(r.args(1), true)})"
       case _: prim.etc._maxoneof =>
         val agents = arg(0)
-        val metric = Handlers.reporter(r.args(1))
-        s"$agents.maxOneOf(${Handlers.fun(r.args(1), true)})"
+        val metric = handlers.reporter(r.args(1))
+        s"$agents.maxOneOf(${handlers.fun(r.args(1), true)})"
       case _: prim.etc._minoneof =>
         val agents = arg(0)
-        val metric = Handlers.reporter(r.args(1))
-        s"$agents.minOneOf(${Handlers.fun(r.args(1), true)})"
+        val metric = handlers.reporter(r.args(1))
+        s"$agents.minOneOf(${handlers.fun(r.args(1), true)})"
       case o: prim.etc._all =>
         val agents = arg(0)
-        val body = Handlers.reporter(r.args(1))
+        val body = handlers.reporter(r.args(1))
         s"$agents.agentAll(function(){ return $body })"
       case _: prim._of                      => generateOf(r)
       case _: prim.etc._islink              => s"(${arg(0)} instanceof Link)"
@@ -89,9 +91,9 @@ object Prims {
       case tv: prim._taskvariable           => s"taskArguments[${tv.varNumber - 1}]"
       case _: prim._task                    => arg(0)
       case _: prim._reportertask =>
-        s"Tasks.reporterTask(${Handlers.fun(r.args(0), isReporter = true, isTask = true)})"
+        s"Tasks.reporterTask(${handlers.fun(r.args(0), isReporter = true, isTask = true)})"
       case _: prim._commandtask =>
-        s"Tasks.commandTask(${Handlers.fun(r.args(0), isReporter = false, isTask = true)})"
+        s"Tasks.commandTask(${handlers.fun(r.args(0), isReporter = false, isTask = true)})"
       case rr: prim.etc._runresult =>
         val taskInputs = args.tail.mkString(", ")
         s"(${arg(0)})($taskInputs)"
@@ -101,10 +103,10 @@ object Prims {
   }
 
   def generateCommand(s: ast.Statement): String = {
-    def arg(i: Int) = Handlers.reporter(s.args(i))
+    def arg(i: Int) = handlers.reporter(s.args(i))
     def commaArgs = argsSep(", ")
     def args =
-      s.args.collect{ case x: ast.ReporterApp => Handlers.reporter(x) }
+      s.args.collect{ case x: ast.ReporterApp => handlers.reporter(x) }
     def argsSep(sep: String) =
       args.mkString(sep)
     s.command match {
@@ -133,14 +135,14 @@ object Prims {
       case _: prim.etc._hidelink         => "SelfPrims.setVariable('hidden?', true)"
       case _: prim.etc._showlink         => "SelfPrims.setVariable('hidden?', false)"
       case call: prim._call              =>
-        (Handlers.ident(call.procedure.name) +: args)
+        (handlers.ident(call.procedure.name) +: args)
           .mkString("Call(", ", ", ");")
       case _: prim.etc._report           => s"return ${arg(0)};"
       case _: prim.etc._ignore           => s"${arg(0)};"
       case l: prim._let                  =>
         // arg 0 is the name but we don't access it because LetScoper took care of it.
         // arg 1 is the value.
-        s"var ${Handlers.ident(l.let.name)} = ${arg(1)};"
+        s"var ${handlers.ident(l.let.name)} = ${arg(1)};"
       case _: prim.etc._run =>
         val taskInputs = args.tail.mkString(", ")
         s"(${arg(0)})($taskInputs);"
@@ -155,10 +157,10 @@ object Prims {
   /// custom generators for particular Commands
 
   def generateSet(s: ast.Statement): String = {
-    def arg(i: Int) = Handlers.reporter(s.args(i))
+    def arg(i: Int) = handlers.reporter(s.args(i))
     s.args(0).asInstanceOf[ast.ReporterApp].reporter match {
       case p: prim._letvariable =>
-        s"${Handlers.ident(p.let.name)} = ${arg(1)};"
+        s"${handlers.ident(p.let.name)} = ${arg(1)};"
       case p: prim._observervariable =>
         s"world.observer.setGlobal('${p.displayName.toLowerCase}', ${arg(1)});"
       case bv: prim._breedvariable =>
@@ -174,74 +176,74 @@ object Prims {
       case p: prim._patchvariable =>
         s"SelfPrims.setPatchVariable('${p.displayName.toLowerCase}', ${arg(1)});"
       case p: prim._procedurevariable =>
-        s"${Handlers.ident(p.name)} = ${arg(1)};"
+        s"${handlers.ident(p.name)} = ${arg(1)};"
       case x =>
         failCompilation(s"unknown settable: ${x.getClass.getName}", s.instruction.token)
     }
   }
 
   def generateLoop(w: ast.Statement): String = {
-    val body = Handlers.commands(w.args(0))
+    val body = handlers.commands(w.args(0))
     s"""|while (true) {
-        |${Handlers.indented(body)}
+        |${handlers.indented(body)}
         |};""".stripMargin
   }
 
   def generateRepeat(w: ast.Statement): String = {
-    val count = Handlers.reporter(w.args(0))
-    val body = Handlers.commands(w.args(1))
+    val count = handlers.reporter(w.args(0))
+    val body = handlers.commands(w.args(1))
     s"""|Prims.repeat($count, function () {
-        |${Handlers.indented(body)}
+        |${handlers.indented(body)}
         |});""".stripMargin
   }
 
   def generateWhile(w: ast.Statement): String = {
-    val pred = Handlers.reporter(w.args(0))
-    val body = Handlers.commands(w.args(1))
+    val pred = handlers.reporter(w.args(0))
+    val body = handlers.commands(w.args(1))
     s"""|while ($pred) {
-        |${Handlers.indented(body)}
+        |${handlers.indented(body)}
         |}""".stripMargin
   }
 
   def generateIf(s: ast.Statement): String = {
-    val pred = Handlers.reporter(s.args(0))
-    val body = Handlers.commands(s.args(1))
+    val pred = handlers.reporter(s.args(0))
+    val body = handlers.commands(s.args(1))
     s"""|if ($pred) {
-        |${Handlers.indented(body)}
+        |${handlers.indented(body)}
         |}""".stripMargin
   }
 
   def generateIfElse(s: ast.Statement): String = {
-    val pred      = Handlers.reporter(s.args(0))
-    val thenBlock = Handlers.commands(s.args(1))
-    val elseBlock = Handlers.commands(s.args(2))
+    val pred      = handlers.reporter(s.args(0))
+    val thenBlock = handlers.commands(s.args(1))
+    val elseBlock = handlers.commands(s.args(2))
     s"""|if ($pred) {
-        |${Handlers.indented(thenBlock)}
+        |${handlers.indented(thenBlock)}
         |}
         |else {
-        |${Handlers.indented(elseBlock)}
+        |${handlers.indented(elseBlock)}
         |}""".stripMargin
   }
 
   def generateAsk(s: ast.Statement, shuffle: Boolean): String = {
-    val agents = Handlers.reporter(s.args(0))
-    val body = Handlers.fun(s.args(1))
+    val agents = handlers.reporter(s.args(0))
+    val body = handlers.fun(s.args(1))
     genAsk(agents, shuffle, body)
   }
 
   def generateCreateLink(s: ast.Statement, name: String, breedName: String): String = {
-    val other = Handlers.reporter(s.args(0))
+    val other = handlers.reporter(s.args(0))
     // This is so that we don't shuffle unnecessarily.  FD 10/31/2013
     val nonEmptyCommandBlock =
       s.args(1).asInstanceOf[ast.CommandBlock]
         .statements.stmts.nonEmpty
-    val body = Handlers.fun(s.args(1))
+    val body = handlers.fun(s.args(1))
     genAsk(s"LinkPrims.$name($other, '${fixBN(breedName)}')", nonEmptyCommandBlock, body)
   }
 
   def generateCreateTurtles(s: ast.Statement, ordered: Boolean): String = {
     import org.nlogo.prim._
-    val n = Handlers.reporter(s.args(0))
+    val n = handlers.reporter(s.args(0))
     val name = if (ordered) "createOrderedTurtles" else "createTurtles"
     val breed =
       s.command match {
@@ -249,13 +251,13 @@ object Prims {
         case x: _createorderedturtles => x.breedName
         case x => throw new IllegalArgumentException("How did you get here with class of type " + x.getClass.getName)
       }
-    val body = Handlers.fun(s.args(1))
+    val body = handlers.fun(s.args(1))
     genAsk(s"world.turtleManager.$name($n, '$breed')", true, body)
   }
 
   def generateSprout(s: ast.Statement): String = {
-    val n = Handlers.reporter(s.args(0))
-    val body = Handlers.fun(s.args(1))
+    val n = handlers.reporter(s.args(0))
+    val body = handlers.fun(s.args(1))
     val breedName = s.command.asInstanceOf[prim._sprout].breedName
     val trueBreedName = if (breedName.nonEmpty) breedName else "TURTLES"
     val sprouted = s"SelfPrims.sprout($n, '$trueBreedName')"
@@ -263,20 +265,17 @@ object Prims {
   }
 
   def generateHatch(s: ast.Statement, breedName: String): String = {
-    val n = Handlers.reporter(s.args(0))
-    val body = Handlers.fun(s.args(1))
+    val n = handlers.reporter(s.args(0))
+    val body = handlers.fun(s.args(1))
     genAsk(s"SelfPrims.hatch($n, '$breedName')", true, body)
   }
 
   def generateEvery(w: ast.Statement): String = {
 
-    val count = everyCounter
-    everyCounter += 1
-
-    val time = Handlers.reporter(w.args(0))
-    val body = Handlers.commands(w.args(1))
+    val time = handlers.reporter(w.args(0))
+    val body = handlers.commands(w.args(1))
     s"""|Prims.every($time, function () {
-        |${Handlers.indented(body)}
+        |${handlers.indented(body)}
         |}, 'auto-every-$count');""".stripMargin
 
   }
@@ -291,8 +290,8 @@ object Prims {
     s"""$agents.ask($body, $shouldShuffle);"""
 
   def generateOf(r: ast.ReporterApp): String = {
-    val agents = Handlers.reporter(r.args(1))
-    val func   = Handlers.fun(r.args(0), isReporter = true)
+    val agents = handlers.reporter(r.args(1))
+    val func   = handlers.fun(r.args(0), isReporter = true)
     s"$agents.projectionBy($func)"
   }
 

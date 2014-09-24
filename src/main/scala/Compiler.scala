@@ -20,6 +20,11 @@ import collection.JavaConverters._
 
 object Compiler extends CompilerLike {
 
+  self =>
+
+  private lazy val prims:    Prims    = new Prims    { override lazy val handlers = self.handlers }
+  private lazy val handlers: Handlers = new Handlers { override lazy val prims    = self.prims }
+
   val frontEnd: ast.FrontEndInterface = ast.front.FrontEnd
 
   def compileReporter(logo: String,
@@ -46,11 +51,11 @@ object Compiler extends CompilerLike {
   }
 
   private def compileProcedureDef(pd: ast.ProcedureDefinition): String = {
-    val name = Handlers.ident(pd.procedure.name)
-    val body = Handlers.commands(pd.statements)
-    val args = pd.procedure.args.map(Handlers.ident).mkString(", ")
+    val name = handlers.ident(pd.procedure.name)
+    val body = handlers.commands(pd.statements)
+    val args = pd.procedure.args.map(handlers.ident).mkString(", ")
     s"""|function $name($args) {
-        |${Handlers.indented(body)}
+        |${handlers.indented(body)}
         |}""".stripMargin
   }
 
@@ -70,9 +75,9 @@ object Compiler extends CompilerLike {
         logo + workspace.Evaluator.getFooter(commands)
     val (defs, _) = frontEnd.frontEnd(wrapped, oldProcedures, program)
     if (commands)
-      Handlers.commands(defs.head.statements)
+      handlers.commands(defs.head.statements)
     else
-      Handlers.reporter(defs.head.statements.stmts(1).args(0))
+      handlers.reporter(defs.head.statements.stmts(1).args(0))
   }
 
 }

@@ -4,7 +4,9 @@ package org.nlogo.tortoise
 
 import org.nlogo.{ api, compile => ast, nvm }
 
-object Handlers {
+trait Handlers {
+
+  def prims: Prims
 
   def fun(node: ast.AstNode, isReporter: Boolean = false, isTask: Boolean = false): String = {
     val taskHeader =
@@ -46,7 +48,7 @@ object Handlers {
       case block: ast.CommandBlock =>
         commands(block.statements)
       case statements: ast.Statements =>
-        statements.stmts.map(Prims.generateCommand)
+        statements.stmts.map(prims.generateCommand)
           .filter(_.nonEmpty)
           .mkString("\n")
     }
@@ -55,7 +57,7 @@ object Handlers {
     case block: ast.ReporterBlock =>
       reporter(block.app)
     case app: ast.ReporterApp =>
-      Prims.reporter(app)
+    prims.reporter(app)
   }
 
   def literal(obj: AnyRef): String = obj match {
