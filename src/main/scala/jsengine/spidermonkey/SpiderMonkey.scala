@@ -54,7 +54,7 @@ class SpiderMonkey {
   // Pretty nice, huh?  --JAB (2/5/14)
   def eval(js: String): String = {
     val is = s"window=this;${SpiderMonkey.depsStr};$js".toIS
-    val ValidResultRegex(result) = (process #< is).lines.toList.init.last
+    val ValidResultRegex(result) = (process #< is).lineStream.toList.init.last
     is.close()
     result
   }

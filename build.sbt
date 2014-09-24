@@ -14,7 +14,7 @@ isSnapshot := true
 
 version := "0.1"
 
-scalaVersion := "2.10.4"
+scalaVersion := "2.11.2"
 
 scalacOptions ++=
   "-deprecation -unchecked -feature -Xcheckinit -encoding us-ascii -target:jvm-1.7 -Xlint -Xfatal-warnings -language:_"
@@ -32,7 +32,7 @@ ivyLoggingLevel := UpdateLogging.Quiet
 // we're not cross-building for different Scala versions
 crossPaths := false
 
-val nlDependencyVersion = "5.2.0-de8f894"
+val nlDependencyVersion = "5.2.0-017a5a4"
 
 // NetLogoHeadlessTests depends on reflections; reflections depends on some extra jars.
 // but for some reason we need to explicitly list the transitive dependencies
@@ -46,11 +46,10 @@ libraryDependencies ++= Seq(
 
 libraryDependencies ++= Seq(
   "org.nlogo" % "netlogoheadless" % nlDependencyVersion,
+  "org.json4s" %% "json4s-native" % "3.2.10",
   "org.scalaz" %% "scalaz-core" % "7.0.6",
-  "org.json4s" %% "json4s-native" % "3.1.0",
-  "org.slf4j" % "slf4j-nop" % "1.7.5", // for webjars-locator
   "org.scalacheck" %% "scalacheck" % "1.11.3" % "test",
-  "org.scalatest" %% "scalatest" % "2.1.1" % "test",
+  "org.scalatest" %% "scalatest" % "2.1.3" % "test",
   "org.skyscreamer" % "jsonassert" % "1.1.0" % "test",
   // Bring in headless test code/framework for our tests
   "org.nlogo" % "netlogoheadless" % nlDependencyVersion % "test" classifier "tests"

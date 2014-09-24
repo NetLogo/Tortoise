@@ -5,6 +5,7 @@ tmp/
 
 # common filenames
 .DS_Store
+npm-debug.log
 
 # wildcards
 *.tmp

@@ -57,7 +57,7 @@ object Benchmarker extends App {
   val versionStr = {
     val isClean  = Process("git diff --quiet --exit-code HEAD").! == 0
     val dirtyStr = if (isClean) "" else "-dirty"
-    val sha      = Process("git rev-parse HEAD").lines.head take 7
+    val sha      = Process("git rev-parse HEAD").lineStream.head take 7
     s"$sha$dirtyStr"
   }
 

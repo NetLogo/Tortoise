@@ -20,7 +20,7 @@ class V8 {
 
   private val ValidVersionRegex = """(v\d[\d.]*)""".r
 
-  val versionNumber = Try(Process(Seq("node", "--version")).lines.toList.last).flatMap {
+  val versionNumber = Try(Process(Seq("node", "--version")).lineStream.toList.last).flatMap {
     case ValidVersionRegex(x) => Try(s"Node.js $x")
     case x                    => Try(throw new Exception(s"'$x' is not a proper version number"))
   }.transform(Try(_), {
@@ -33,7 +33,7 @@ class V8 {
   def eval(js: String): String = {
 
     val is     = s"window=global;${V8.depsStr};$js".toIS
-    val result = (process #< is).lines.toList.mkString("\n")
+    val result = (process #< is).lineStream.toList.mkString("\n")
     is.close()
 
     // It's a hack, but... whatevs for now. --JAB (1/30/14)
