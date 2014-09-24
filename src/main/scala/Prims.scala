@@ -276,7 +276,7 @@ trait Prims {
     val body = handlers.commands(w.args(1))
     s"""|Prims.every($time, function () {
         |${handlers.indented(body)}
-        |}, 'auto-every-$count');""".stripMargin
+        |}, '${handlers.nextEveryID()}');""".stripMargin
 
   }
 

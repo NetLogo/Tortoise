@@ -180,7 +180,7 @@ function dropPatch() {
   if ((Prims.equality(world.observer.getGlobal('drop-location'), "mouse-click") && notImplemented('mouse-down?', false)())) {
     Prims.every(0.3, function () {
       return world.getPatchAt(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)());
-    }, 'auto-every-1');
+    }, 'dropPatch-0');
   }
   return Nobody;
 }

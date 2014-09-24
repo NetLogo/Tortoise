@@ -52,6 +52,7 @@ object Compiler extends CompilerLike {
 
   private def compileProcedureDef(pd: ast.ProcedureDefinition): String = {
     val name = handlers.ident(pd.procedure.name)
+    handlers.resetEveryID(name)
     val body = handlers.commands(pd.statements)
     val args = pd.procedure.args.map(handlers.ident).mkString(", ")
     s"""|function $name($args) {

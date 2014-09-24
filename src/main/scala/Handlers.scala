@@ -4,7 +4,7 @@ package org.nlogo.tortoise
 
 import org.nlogo.{ api, compile => ast, nvm }
 
-trait Handlers {
+trait Handlers extends EveryIDProvider {
 
   def prims: Prims
 
