@@ -35,7 +35,7 @@ function setupSquare() {
     SelfPrims.sprout(1, 'TURTLES').ask(function() {}, true);
   }, true);
   world.turtles().ask(function() {
-    LinkPrims.createLinksWith(Prims.turtlesOn(SelfPrims.getNeighbors4())).ask(function() {}, false);
+    LinkPrims.createLinksWith(Prims.turtlesOn(SelfPrims.getNeighbors4()), 'LINKS').ask(function() {}, false);
   }, true);
 }
 function setupHex() {
@@ -44,11 +44,11 @@ function setupHex() {
     SelfPrims.sprout(1, 'TURTLES').ask(function() {}, true);
   }, true);
   world.turtles().ask(function() {
-    LinkPrims.createLinksWith(SelfManager.self().turtlesAt(0, 1)).ask(function() {}, false);
-    LinkPrims.createLinksWith(SelfManager.self().turtlesAt(1, 0)).ask(function() {}, false);
+    LinkPrims.createLinksWith(SelfManager.self().turtlesAt(0, 1), 'LINKS').ask(function() {}, false);
+    LinkPrims.createLinksWith(SelfManager.self().turtlesAt(1, 0), 'LINKS').ask(function() {}, false);
     if (Prims.equality(Prims.mod(SelfPrims.getPatchVariable('pxcor'), 2), 0)) {
-      LinkPrims.createLinksWith(SelfManager.self().turtlesAt(1, -1)).ask(function() {}, false);
-      LinkPrims.createLinksWith(SelfManager.self().turtlesAt(-1, -1)).ask(function() {}, false);
+      LinkPrims.createLinksWith(SelfManager.self().turtlesAt(1, -1), 'LINKS').ask(function() {}, false);
+      LinkPrims.createLinksWith(SelfManager.self().turtlesAt(-1, -1), 'LINKS').ask(function() {}, false);
       SelfPrims.setVariable('ycor', (SelfPrims.getVariable('ycor') - 0.5));
     }
   }, true);

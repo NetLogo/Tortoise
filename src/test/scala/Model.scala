@@ -51,6 +51,10 @@ object Model {
       repetitions = 50
     ),
     Model(
+      path = "models/Sample Models/Networks/Diffusion on a Directed Network.nlogo",
+      repetitions = 20
+    ),
+    Model(
       path = "models/test/benchmarks/GasLabNew Benchmark.nlogo",
       repetitions = 25
     ),
@@ -64,6 +68,11 @@ object Model {
       path = "models/test/benchmarks/GridWalk Benchmark.nlogo",
       dimensions = Some((-10, 10, -10, 10)),
       repetitions = 20
+    ),
+    Model(
+      path = "models/Code Examples/Link Breeds Example.nlogo",
+      dimensions = Some((-6, 6, -6, 6)),
+      repetitions = 0
     ),
     Model(
       path = "models/Code Examples/Link Lattice Example.nlogo",

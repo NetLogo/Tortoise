@@ -40,7 +40,7 @@ function setup() {
     SelfPrims.setVariable('size', 2);
     SelfPrims.setVariable('color', (105 + Prims.random(3)));
     SelfPrims.fd((6 + Prims.randomFloat(12)));
-    LinkPrims.createLinkFrom(ListPrims.oneOf(world.turtleManager.turtlesOfBreed("SUNS"))).ask(function() {
+    LinkPrims.createLinkFrom(ListPrims.oneOf(world.turtleManager.turtlesOfBreed("SUNS")), 'LINKS').ask(function() {
       SelfManager.self().tie();
       SelfPrims.setVariable('hidden?', true)
     }, true);
@@ -48,7 +48,7 @@ function setup() {
       SelfPrims.setVariable('size', 0.5);
       SelfPrims.setVariable('color', (5 + Prims.random(3)));
       SelfPrims.fd((1 + Prims.randomFloat(3)));
-      LinkPrims.createLinkFrom(SelfManager.myself()).ask(function() {
+      LinkPrims.createLinkFrom(SelfManager.myself(), 'LINKS').ask(function() {
         SelfManager.self().tie();
         SelfPrims.setVariable('hidden?', true)
       }, true);

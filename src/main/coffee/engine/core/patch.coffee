@@ -115,7 +115,7 @@ module.exports =
         if error instanceof Exception.TopologyInterrupt then Nobody else throw error
 
     # () => Unit
-    watchme: ->
+    watchMe: ->
       @world.observer.watch(this)
       return
 

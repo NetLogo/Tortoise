@@ -6,21 +6,21 @@ DeadSkippingIterator = require('./structure/deadskippingiterator')
 module.exports =
   class TurtleSet extends AbstractAgentSet
 
-    # [T <: Turtle] @ (Array[T], String) => TurtleSet
-    constructor: (@_agents, @_breedName = "TURTLES") ->
+    # [T <: Turtle] @ (Array[T], String, String) => TurtleSet
+    constructor: (@_agents, @_breedName = "TURTLES", @_specialName) ->
       super(@_agents)
 
     # () => String
     getBreedName: ->
       @_breedName
 
-    # () => Iterator
+    # () => Iterator[T]
     iterator: ->
       new DeadSkippingIterator(@_agents)
 
     # () => String
     toString: ->
-      "(agentset, #{@size()} #{@getBreedName().toLowerCase()})"
+      @_specialName ? "(agentset, #{@size()} #{@getBreedName().toLowerCase()})"
 
     # (Array[T], TurtleSet[T]) => TurtleSet[T]
     _generateFrom: (newAgentArr, agents) ->

@@ -2,16 +2,22 @@
 
 _ = require('lodash')
 
+count = 0
+getNextOrdinal = -> count++
+
 class Breed
 
-  # (String, String, BreedManager, Array[String], String, Array[Agent]) => Breed
-  constructor: (@name, @singular, @_manager, @varNames = [], @_shape = undefined, @members = []) ->
+  ordinal: undefined # Number
+
+  # (String, String, BreedManager, Array[String], Boolean, String, Array[Agent]) => Breed
+  constructor: (@name, @singular, @_manager, @varNames = [], @_isDirectedLinkBreed, @_shape = undefined, @members = []) ->
+    @ordinal = getNextOrdinal()
 
   # We can't just set this in the constructor, because people can swoop into the manager and change the turtles'
   # default shape --JAB (5/27/14)
   # () => String
   getShape: ->
-    @_shape ? @_manager.turtles()._shape
+    @_shape ? (if @isLinky() then @_manager.links()._shape else @_manager.turtles()._shape)
 
   # (String) => Unit
   setShape: (newShape) ->
@@ -38,11 +44,23 @@ class Breed
     @members.splice(indexToSplitAt, howManyToThrowOut)
     return
 
+  # () => Boolean
+  isLinky: ->
+    @_isDirectedLinkBreed?
+
+  # () => Boolean
+  isUndirected: ->
+    @_isDirectedLinkBreed is false
+
+  # () => Boolean
+  isDirected: ->
+    @_isDirectedLinkBreed is true
+
 
 module.exports =
   class BreedManager
 
-    # type BreedObj = { name: String, singular: String, varNames: Array[String] }
+    # type BreedObj = { name: String, singular: String, varNames: Array[String], isDirected: Boolean }
 
     # Object[String, Breed]
     _breeds: undefined
@@ -50,15 +68,15 @@ module.exports =
     # (Array[BreedObj]) => BreedManager
     constructor: (breedObjs) ->
       defaultBreeds = {
-        TURTLES: new Breed("TURTLES", "turtle", this, [], "default"),
-        LINKS:   new Breed("LINKS",   "link",   this, [], "default")
+        TURTLES: new Breed("TURTLES", "turtle", this, [], undefined, "default"),
+        LINKS:   new Breed("LINKS",   "link",   this, [], false,     "default")
       }
       @_breeds = _(breedObjs).foldl(
         (acc, breedObj) =>
           trueName      = breedObj.name.toUpperCase()
           trueSingular  = breedObj.singular.toLowerCase()
           trueVarNames  = breedObj.varNames or []
-          acc[trueName] = new Breed(trueName, trueSingular, this, trueVarNames)
+          acc[trueName] = new Breed(trueName, trueSingular, this, trueVarNames, breedObj.isDirected)
           acc
         , defaultBreeds
       )
@@ -70,6 +88,16 @@ module.exports =
     # (String, String) => Unit
     setDefaultShape: (breedName, shape) ->
       @get(breedName).setShape(shape.toLowerCase())
+      return
+
+    # () => Unit
+    setUnbreededLinksUndirected: ->
+      @links()._isDirectedLinkBreed = false
+      return
+
+    # () => Unit
+    setUnbreededLinksDirected: ->
+      @links()._isDirectedLinkBreed = true
       return
 
     # () => Breed

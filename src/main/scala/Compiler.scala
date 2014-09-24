@@ -42,8 +42,6 @@ object Compiler extends CompilerLike {
     val interface =
       compileCommands(model.interfaceGlobalCommands.mkString("\n"), program = results.program)
     val js = init.init + main + interface
-    if (results.program.linkBreeds.nonEmpty)
-      throw new CompilerException("unknown language feature: link breeds", 1, 1, "")
     (js, results.program, results.procedures)
   }
 

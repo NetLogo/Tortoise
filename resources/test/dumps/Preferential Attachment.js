@@ -50,7 +50,7 @@ function makeNode(oldNode) {
   world.turtleManager.createTurtles(1, '').ask(function() {
     SelfPrims.setVariable('color', 15);
     if (!Prims.equality(oldNode, Nobody)) {
-      LinkPrims.createLinkWith(oldNode).ask(function() {
+      LinkPrims.createLinkWith(oldNode, 'LINKS').ask(function() {
         SelfPrims.setVariable('color', 55);
       }, true);
       SelfManager.self().moveTo(oldNode);
@@ -66,7 +66,7 @@ function findPartner() {
 function resizeNodes() {
   if (world.turtles().agentAll(function(){ return Prims.lte(SelfPrims.getVariable('size'), 1) })) {
     world.turtles().ask(function() {
-      SelfPrims.setVariable('size', StrictMath.sqrt(LinkPrims.linkNeighbors(false, false).size()));
+      SelfPrims.setVariable('size', StrictMath.sqrt(LinkPrims.linkNeighbors(false, false, 'LINKS').size()));
     }, true);
   }
   else {

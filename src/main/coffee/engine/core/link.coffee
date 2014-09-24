@@ -21,7 +21,10 @@ module.exports =
                 , getLinksByBreedName, breed = @world.breedManager.links(), @_color = 5, @_isHidden = false
                 , @_label = "", @_labelcolor = 9.9, @_shape = "default", @_thickness = 0, @tiemode = "none") ->
       @_updateVarsByName = genUpdate(this)
-      @_varManager = @_genVarManager(@world.linksOwnNames, getLinksByBreedName)
+
+      varNames     = @world.linksOwnNames.concat(breed.varNames)
+      @_varManager = @_genVarManager(varNames, getLinksByBreedName)
+
       @_setBreed(breed)
       @end1.addLink(this)
       @end2.addLink(this)
@@ -30,6 +33,11 @@ module.exports =
     # () => String
     getBreedName: ->
       @_breed.name
+
+    # Tragically needed by `LinkCompare` for compliance with NetLogo's insane means of sorting links --JAB (9/6/14)
+    # () => Number
+    getBreedOrdinal: ->
+      @_breed.ordinal
 
     # (String) => Any
     getVariable: (varName) ->
@@ -109,7 +117,7 @@ module.exports =
       if not @_isDead()
         @world.selfManager.askAgent(f)(this)
       else
-        throw new Exception.NetLogoException("That #{@_breed.singular} is dead.")
+        throw new Error("That #{@_breed.singular} is dead.")
 
     # (Any) => { toInt: Number }
     compare: (x) ->
@@ -117,7 +125,7 @@ module.exports =
         when -1 then Comparator.LESS_THAN
         when  0 then Comparator.EQUALS
         when  1 then Comparator.GREATER_THAN
-        else throw new Exception.NetLogoException("Comparison should only yield an integer within the interval [-1,1]")
+        else throw new Error("Comparison should only yield an integer within the interval [-1,1]")
 
     # () => Unit
     _seppuku: ->
@@ -153,7 +161,10 @@ module.exports =
         if _(breed).isString()
           @world.breedManager.get(breed)
         else if breed instanceof AbstractAgentSet
-          @world.breedManager.get(breed.getBreedName())
+          if breed.getBreedName?
+            @world.breedManager.get(breed.getBreedName())
+          else
+            throw new Error("You can't set BREED to a non-breed agentset.")
         else
           breed
 

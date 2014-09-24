@@ -24,7 +24,7 @@ module.exports =
       if @_myself isnt 0
         @_myself
       else
-        throw new Exception.NetLogoException("There is no agent for MYSELF to refer to.")
+        throw new Error("There is no agent for MYSELF to refer to.")
 
     # [T] @ (() => T) => (Agent) => T
     askAgent: (f) => (agent) =>

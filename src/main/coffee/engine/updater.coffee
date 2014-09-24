@@ -69,7 +69,7 @@ module.exports =
         else if obj instanceof Observer
           [update.observer, @_observerMap(obj)]
         else
-          throw new Exception.NetLogoException("Unrecognized update type")
+          throw new Error("Unrecognized update type")
 
       entryUpdate = entry[obj.id] or {}
 
@@ -86,7 +86,7 @@ module.exports =
             entryUpdate[varName] = value
             entry[obj.id]        = entryUpdate
         else
-          throw new Exception.NetLogoException("Unknown #{obj.constructor.name} variable for update: #{v}")
+          throw new Error("Unknown #{obj.constructor.name} variable for update: #{v}")
 
       return
 
@@ -154,15 +154,15 @@ module.exports =
       minPxcor:                   ["MINPXCOR",                  world.topology.minPxcor]
       minPycor:                   ["MINPYCOR",                  world.topology.minPycor]
       ticks:                      ["ticks",                     world.ticker._count]
-      unbreededLinksAreDirected:  ["unbreededLinksAreDirected", world.unbreededLinksAreDirected]
+      unbreededLinksAreDirected:  ["unbreededLinksAreDirected", world.breedManager.links().isDirected()]
       width:                      ["worldWidth",                world.topology.width]
     }
 
     # (Observer) => Object[EngineKey, (Key, Value)]
     _observerMap: (observer) -> {
       id:          ["WHO",         observer.id]
-      perspective: ["perspective", observer._perspective]
-      targetAgent: ["targetAgent", observer._targetAgent]
+      perspective: ["perspective", observer._perspective.toInt]
+      targetAgent: ["targetAgent", observer._getTargetAgentUpdate()]
     }
 
     # (String, Number, UpdateEntry) => Unit

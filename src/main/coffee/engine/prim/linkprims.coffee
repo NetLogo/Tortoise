@@ -11,42 +11,42 @@ module.exports =
       @_linkManager = @_world.linkManager
       @_self        = @_world.selfManager.self
 
-    # (Turtle) => Link
-    createLinkFrom: (otherTurtle) ->
-      @_linkManager.createDirectedLink(otherTurtle, @_self())
+    # (Turtle, String) => Link
+    createLinkFrom: (otherTurtle, breedName) ->
+      @_linkManager.createDirectedLink(otherTurtle, @_self(), breedName)
 
-    # (TurtleSet) => LinkSet
-    createLinksFrom: (otherTurtles) ->
-      @_linkManager.createReverseDirectedLinks(@_self(), otherTurtles.shuffled())
+    # (TurtleSet, String) => LinkSet
+    createLinksFrom: (otherTurtles, breedName) ->
+      @_linkManager.createReverseDirectedLinks(@_self(), otherTurtles.shuffled(), breedName)
 
-    # (Turtle) => Link
-    createLinkTo: (otherTurtle) ->
-      @_linkManager.createDirectedLink(@_self(), otherTurtle)
+    # (Turtle, String) => Link
+    createLinkTo: (otherTurtle, breedName) ->
+      @_linkManager.createDirectedLink(@_self(), otherTurtle, breedName)
 
-    # (TurtleSet) => LinkSet
-    createLinksTo: (otherTurtles) ->
-      @_linkManager.createDirectedLinks(@_self(), otherTurtles.shuffled())
+    # (TurtleSet, String) => LinkSet
+    createLinksTo: (otherTurtles, breedName) ->
+      @_linkManager.createDirectedLinks(@_self(), otherTurtles.shuffled(), breedName)
 
-    # (Turtle) => Link
-    createLinkWith: (otherTurtle) ->
-      @_linkManager.createUndirectedLink(@_self(), otherTurtle)
+    # (Turtle, String) => Link
+    createLinkWith: (otherTurtle, breedName) ->
+      @_linkManager.createUndirectedLink(@_self(), otherTurtle, breedName)
 
-    # (TurtleSet) => LinkSet
-    createLinksWith: (otherTurtles) ->
-      @_linkManager.createUndirectedLinks(@_self(), otherTurtles.shuffled())
+    # (TurtleSet, String) => LinkSet
+    createLinksWith: (otherTurtles, breedName) ->
+      @_linkManager.createUndirectedLinks(@_self(), otherTurtles.shuffled(), breedName)
 
-    # (Boolean, Boolean) => Array[Link]
-    connectedLinks: (isDirected, isSource) ->
-      @_self().connectedLinks(isDirected, isSource)
+    # (Boolean, Boolean, String) => Array[Link]
+    connectedLinks: (isDirected, isSource, breedName) ->
+      @_self().connectedLinks(isDirected, isSource, breedName)
 
-    # (Boolean, Boolean) => Array[Turtle]
-    linkNeighbors: (isDirected, isSource) ->
-      @_self().linkNeighbors(isDirected, isSource)
+    # (Boolean, Boolean, String) => Array[Turtle]
+    linkNeighbors: (isDirected, isSource, breedName) ->
+      @_self().linkNeighbors(isDirected, isSource, breedName)
 
-    # (Boolean, Boolean) => (Turtle) => Boolean
-    isLinkNeighbor: (isDirected, isSource) ->
-      ((otherTurtle) => @_self().isLinkNeighbor(isDirected, isSource, otherTurtle))
+    # (Boolean, Boolean, String) => (Turtle) => Boolean
+    isLinkNeighbor: (isDirected, isSource, breedName) ->
+      ((otherTurtle) => @_self().isLinkNeighbor(isDirected, isSource, breedName, otherTurtle))
 
-    # (Boolean, Boolean) => (Turtle) => Link
-    findLinkViaNeighbor: (isDirected, isSource) ->
-      ((otherTurtle) => @_self().findLinkViaNeighbor(isDirected, isSource, otherTurtle))
+    # (Boolean, Boolean, String) => (Turtle) => Link
+    findLinkViaNeighbor: (isDirected, isSource, breedName) ->
+      ((otherTurtle) => @_self().findLinkViaNeighbor(isDirected, isSource, breedName, otherTurtle))

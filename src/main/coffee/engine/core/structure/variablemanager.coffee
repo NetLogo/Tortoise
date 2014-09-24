@@ -12,7 +12,7 @@ module.exports =
 
     # (Array[String]) => (Array[String], Array[VariableBundle]) => Unit
     refineBy: (obsoleteVarNames = []) => (varNames = [], getAndSetFuncs = []) =>
-      invalidatedSetter = -> throw new Exception.NetLogoException("#{name} is no longer a valid variable.")
+      invalidatedSetter = -> throw new Error("#{name} is no longer a valid variable.")
       for name in obsoleteVarNames
         @_defineProperty(name, { get: undefined, set: invalidatedSetter, configurable: true })
 

@@ -17,12 +17,6 @@ object SimplePrims {
         case _: prim.etc._minpycor         => "world.topology.minPycor"
         case _: prim.etc._maxpxcor         => "world.topology.maxPxcor"
         case _: prim.etc._maxpycor         => "world.topology.maxPycor"
-        case _: prim.etc._linkneighbors    => "LinkPrims.linkNeighbors(false, false)"
-        case _: prim.etc._inlinkneighbors  => "LinkPrims.linkNeighbors(true, false)"
-        case _: prim.etc._outlinkneighbors => "LinkPrims.linkNeighbors(true, true)"
-        case _: prim.etc._mylinks          => "LinkPrims.connectedLinks(false, false)"
-        case _: prim.etc._myinlinks        => "LinkPrims.connectedLinks(true, false)"
-        case _: prim.etc._myoutlinks       => "LinkPrims.connectedLinks(true, true)"
         case _: prim.etc._mousedown        => "notImplemented('mouse-down?', false)()"
         case _: prim.etc._mouseinside      => "notImplemented('mouse-inside?', false)()"
         case _: prim.etc._plotxmin         => "notImplemented('plot-x-min', 0)()"
@@ -94,7 +88,9 @@ object SimplePrims {
         case _: prim._oneof                  => "ListPrims.oneOf"
         case _: prim.etc._nof                => "ListPrims.nOf"
         case _: prim.etc._removeduplicates   => "ListPrims.removeDuplicates"
+        case _: prim.etc._linkset            => "Prims.linkSet"
         case _: prim.etc._patchset           => "Prims.patchSet"
+        case _: prim.etc._turtleset          => "Prims.turtleSet"
         case _: prim.etc._distance           => "SelfManager.self().distance"
         case _: prim.etc._distancexy         => "SelfManager.self().distanceXY"
         case _: prim._inradius               => "SelfManager.self().inRadius"
@@ -121,12 +117,6 @@ object SimplePrims {
         case _: prim.etc._round              => "StrictMath.round"
         case _: prim.etc._precision          => "Prims.precision"
         case _: prim.etc._link               => "world.linkManager.getLink"
-        case _: prim.etc._linkneighbor       => "LinkPrims.isLinkNeighbor(false, false)"
-        case _: prim.etc._inlinkneighbor     => "LinkPrims.isLinkNeighbor(true, false)"
-        case _: prim.etc._outlinkneighbor    => "LinkPrims.isLinkNeighbor(true, true)"
-        case _: prim.etc._inlinkfrom         => "LinkPrims.findLinkViaNeighbor(true, false)"
-        case _: prim.etc._outlinkto          => "LinkPrims.findLinkViaNeighbor(true, true)"
-        case _: prim.etc._linkwith           => "LinkPrims.findLinkViaNeighbor(false, false)"
         case _: prim.etc._bothends           => "SelfManager.self().bothEnds"
         case _: prim.etc._otherend           => "SelfManager.self().otherEnd"
         case _: prim.etc._sqrt               => "StrictMath.sqrt"
@@ -148,6 +138,7 @@ object SimplePrims {
         case _: prim.etc._substring          => "ListPrims.substring"
         case _: prim.etc._exp                => "StrictMath.exp"
         case _: prim.etc._variance           => "ListPrims.variance"
+        case _: prim.etc._subject            => "world.observer.subject"
       }
   }
 
@@ -166,6 +157,7 @@ object SimplePrims {
     def unapply(c: nvm.Command): Option[String] =
       PartialFunction.condOpt(c) {
         case _: prim.etc._outputprint       => "Prims.outputPrint"
+        case _: prim.etc._print             => "notImplemented('print', undefined)"
         case _: prim.etc._clearall          => "world.clearAll"
         case _: prim.etc._clearpatches      => "world.clearPatches"
         case _: prim.etc._clearturtles      => "world.turtleManager.clearTurtles"
@@ -206,10 +198,15 @@ object SimplePrims {
         case _: prim.etc._display           => "notImplemented('display', undefined)"
         case _: prim.etc._stamp             => "notImplemented('stamp', undefined)"
         case _: prim.etc._usermessage       => "notImplemented('user-message', undefined)"
+        case _: prim.etc._follow            => "world.observer.follow"
+        case _: prim.etc._ride              => "world.observer.ride"
         case _: prim.etc._watch             => "world.observer.watch"
-        case _: prim.etc._watchme           => "SelfManager.self().watchme"
+        case _: prim.etc._followme          => "SelfManager.self().followMe"
+        case _: prim.etc._rideme            => "SelfManager.self().rideMe"
+        case _: prim.etc._watchme           => "SelfManager.self().watchMe"
         case _: prim.etc._resetperspective  => "world.observer.resetPerspective"
         case _: prim.etc._layoutspring      => "LayoutManager.layoutSpring"
+        case _: prim.etc._changetopology    => "world.changeTopology"
       }
   }
 

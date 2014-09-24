@@ -1,5 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
+Nobody          = require('./nobody')
 Observer        = require('./observer')
 Patch           = require('./patch')
 PatchSet        = require('./patchset')
@@ -24,7 +25,6 @@ module.exports =
     _patches: undefined # Array[Patch]
 
     # Optimization-related variables
-    unbreededLinksAreDirected: undefined # Boolean
     _patchesAllBlack:          undefined # Boolean
     _patchesWithLabels:        undefined # Number
 
@@ -59,15 +59,10 @@ module.exports =
       @topology      = null
       @turtleManager = new TurtleManager(this, breedManager, _updater, )
 
-      @_patches         = []
+      @_patches = []
 
-      @unbreededLinksAreDirected = false
-      @_patchesAllBlack          = true
-      @_patchesWithLabels        = 0
-
-      @unbreededLinksAreDirected = false
-      @_patchesAllBlack          = true
-      @_patchesWithLabels        = 0
+      @_patchesAllBlack   = true
+      @_patchesWithLabels = 0
 
       @resize(minPxcor, maxPxcor, minPycor, maxPycor, wrappingAllowedInX, wrappingAllowedInY)
 
@@ -97,19 +92,18 @@ module.exports =
 
     # () => PatchSet
     patches: =>
-      new PatchSet(@_patches)
+      new PatchSet(@_patches, "patches")
 
     # (Number, Number, Number, Number, Boolean, Boolean) => Unit
     resize: (minPxcor, maxPxcor, minPycor, maxPycor, wrapsInX = @topology._wrapInX, wrapsInY = @topology._wrapInY) ->
 
       if not (minPxcor <= 0 <= maxPxcor and minPycor <= 0 <= maxPycor)
-        throw new Exception.NetLogoException("You must include the point (0, 0) in the world.")
+        throw new Error("You must include the point (0, 0) in the world.")
 
       # For some reason, JVM NetLogo doesn't restart `who` ordering after `resize-world`; even the test for this is existentially confused. --JAB (4/3/14)
       @turtleManager._clearTurtlesSuspended()
 
-      @topology = topologyFactory(wrapsInX, wrapsInY, minPxcor, maxPxcor, minPycor, maxPycor, @patches, @getPatchAt)
-
+      @changeTopology(wrapsInX, wrapsInY, minPxcor, maxPxcor, minPycor, maxPycor)
       @createPatches()
       @_declarePatchesAllBlack()
       @_resetPatchLabelCount()
@@ -117,16 +111,28 @@ module.exports =
 
       return
 
+    # (Boolean, Boolean, Number, Number, Number, Number) => Unit
+    changeTopology: (wrapsInX, wrapsInY, minX = @topology.minPxcor, maxX = @topology.maxPxcor, minY = @topology.minPycor, maxY = @topology.maxPycor) ->
+      @topology = topologyFactory(wrapsInX, wrapsInY, minX, maxX, minY, maxY, @patches, @getPatchAt)
+      return
+
     # (Number, Number) => Patch
     getPatchAt: (x, y) =>
-      trueX  = (x - @topology.minPxcor) % @topology.width  + @topology.minPxcor # Handle negative coordinates and wrapping
-      trueY  = (y - @topology.minPycor) % @topology.height + @topology.minPycor
-      index  = (@topology.maxPycor - StrictMath.round(trueY)) * @topology.width + (StrictMath.round(trueX) - @topology.minPxcor)
-      @_patches[index]
+      try
+        trueX  = @topology.wrapX(x)
+        trueY  = @topology.wrapY(y)
+        index  = (@topology.maxPycor - StrictMath.round(trueY)) * @topology.width + (StrictMath.round(trueX) - @topology.minPxcor)
+        @_patches[index]
+      catch error
+        if error instanceof Exception.TopologyInterrupt
+          Nobody
+        else
+          throw error
 
     # () => Unit
     clearAll: ->
       @observer.clearCodeGlobals()
+      @observer.resetPerspective()
       @turtleManager.clearTurtles()
       @createPatches()
       @linkManager._resetIDs()
@@ -173,13 +179,13 @@ module.exports =
 
     # () => Unit
     _setUnbreededLinksDirected: =>
-      @unbreededLinksAreDirected = true
+      @breedManager.setUnbreededLinksDirected()
       @_updater.updated(this)("unbreededLinksAreDirected")
       return
 
     # () => Unit
     _setUnbreededLinksUndirected: =>
-      @unbreededLinksAreDirected = false
+      @breedManager.setUnbreededLinksUndirected()
       @_updater.updated(this)("unbreededLinksAreDirected")
       return
 

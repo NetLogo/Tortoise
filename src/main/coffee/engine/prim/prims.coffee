@@ -3,6 +3,7 @@
 _                = require('lodash')
 AbstractAgentSet = require('../core/abstractagentset')
 Link             = require('../core/link')
+LinkSet          = require('../core/linkset')
 Nobody           = require('../core/nobody')
 Patch            = require('../core/patch')
 PatchSet         = require('../core/patchset')
@@ -12,6 +13,7 @@ Printer          = require('tortoise/shim/printer')
 Random           = require('tortoise/shim/random')
 Comparator       = require('tortoise/util/comparator')
 Exception        = require('tortoise/util/exception')
+Timer            = require('tortoise/util/timer')
 Type             = require('tortoise/util/typechecker')
 
 module.exports =
@@ -19,12 +21,15 @@ module.exports =
 
     # type ListOrSet[T] = Array[T]|AbstractAgentSet[T]
 
+    _everyMap: undefined # Object[String, Timer]
+
     # (Dump, Hasher) => Prims
     constructor: (@_dumper, @_hasher) ->
+      @_everyMap = {}
 
       # () => Nothing
     boom: ->
-      throw new Exception.NetLogoException("boom!")
+      throw new Error("boom!")
 
     # (String, Patch|Turtle|PatchSet|TurtleSet) => TurtleSet
     breedOn: (breedName, x) ->
@@ -38,7 +43,7 @@ module.exports =
         else if x instanceof TurtleSet
           _(x.iterator().toArray()).map((t) -> t.getPatchHere()).value()
         else
-          throw new Exception.NetLogoException("`breed-on` unsupported for class '#{typeof(x)}'")
+          throw new Error("`breed-on` unsupported for class '#{typeof(x)}'")
 
       turtles = _(patches).map((p) -> p.turtles).flatten().filter((t) -> t.getBreedName() is breedName).value()
       new TurtleSet(turtles, breedName)
@@ -55,19 +60,33 @@ module.exports =
                 if not @equality(ys[index], x)
                   return false
               true
-            a.size() is b.size() and Object.getPrototypeOf(a) is Object.getPrototypeOf(b) and subsumes(a.toArray(), b.toArray())
+            a.size() is b.size() and Object.getPrototypeOf(a) is Object.getPrototypeOf(b) and subsumes(a.sort(), b.sort())
           else
             (a instanceof AbstractAgentSet and a.getBreedName? and a.getBreedName() is b.name) or (b instanceof AbstractAgentSet and b.getBreedName? and b.getBreedName() is a.name) or
               (a is Nobody and b.id is -1) or (b is Nobody and a.id is -1) or ((a instanceof Turtle or a instanceof Link) and a.compare(b) is Comparator.EQUALS)
         )
       else
-        throw new Exception.NetLogoException("Checking equality on undefined is an invalid condition")
+        throw new Error("Checking equality on undefined is an invalid condition")
 
-    # (Number, FunctionN) => Unit
-    # not a real implementation, always just runs body - ST 4/22/14
-    every: (time, fn) ->
-      Printer("Warning: The `every` primitive is not yet properly supported.")
-      fn()
+    ###
+
+      This implementation is closer than our original implementation, but still wrong. `every`'s dictionary entry claims:
+
+      "Runs the given commands only if it's been more than number seconds since the last time this agent ran them in this context."
+
+      But a more-accurate description of this implementation would be:
+
+      "Runs the given commands only if it's been more than number seconds since the last time they were run in this context."
+
+      Basically, there's no agent-checking yet. --JAB (9/12/14)
+
+    ###
+    # (Number, FunctionN, String) => Unit
+    every: (time, fn, fid) ->
+      existingEntry = @_everyMap[fid]
+      if not existingEntry? or existingEntry.elapsed() >= time
+        @_everyMap[fid] = new Timer()
+        fn()
       return
 
     # (Any, Any) => Boolean
@@ -77,7 +96,7 @@ module.exports =
       else if typeof(a) is typeof(b) and a.compare? and b.compare?
         a.compare(b) is Comparator.GREATER_THAN
       else
-        throw new Exception.NetLogoException("Invalid operands to `gt`")
+        throw new Error("Invalid operands to `gt`")
 
     # (Any, Any) => Boolean
     gte: (a, b) ->
@@ -87,6 +106,10 @@ module.exports =
     isBreed: (breedName, x) ->
       if x.isBreed? and x.id isnt -1 then x.isBreed(breedName) else false
 
+    # [T <: (Array[Link]|Link|AbstractAgentSet[Link])] @ (T*) => LinkSet
+    linkSet: (inputs...) ->
+      @_createAgentSet(inputs, Link, LinkSet)
+
     # (Any, Any) => Boolean
     lt: (a, b) ->
       if (Type(a).isString() and Type(b).isString()) or (Type(a).isNumber() and Type(b).isNumber())
@@ -94,7 +117,7 @@ module.exports =
       else if typeof(a) is typeof(b) and a.compare? and b.compare?
         a.compare(b) is Comparator.LESS_THAN
       else
-        throw new Exception.NetLogoException("Invalid operands to `lt`")
+        throw new Error("Invalid operands to `lt`")
 
     # (Any, Any) => Boolean
     lte: (a, b) ->
@@ -111,45 +134,7 @@ module.exports =
 
     # [T <: (Array[Patch]|Patch|AbstractAgentSet[Patch])] @ (T*) => PatchSet
     patchSet: (inputs...) ->
-      flattened = _(inputs).flatten().value()
-      if _(flattened).isEmpty()
-        new PatchSet([])
-      else if flattened.length is 1
-        head = flattened[0]
-        if head instanceof PatchSet
-          head
-        else if head instanceof Patch
-          new PatchSet([head])
-        else
-          new PatchSet([])
-      else
-        result  = []
-        hashSet = {}
-
-        hashIt = @_hasher
-
-        addPatch =
-          (p) ->
-            hash = hashIt(p)
-            if not hashSet.hasOwnProperty(hash)
-              result.push(p)
-              hashSet[hash] = true
-            return
-
-        buildFromAgentSet = (agentSet) -> agentSet.forEach(addPatch)
-
-        buildItems =
-          (inputs) =>
-            for input in inputs
-              if Type(input).isArray()
-                buildItems(input)
-              else if input instanceof Patch
-                addPatch(input)
-              else if input isnt Nobody
-                buildFromAgentSet(input)
-
-        buildItems(flattened)
-        new PatchSet(result)
+      @_createAgentSet(inputs, Patch, PatchSet)
 
     # (Number, Number) => Number
     precision: (n, places) ->
@@ -186,12 +171,8 @@ module.exports =
 
     # (Number, Number) => Number
     subtractHeadings: (h1, h2) ->
-      if h1 < 0 || h1 >= 360
-        h1 = (h1 % 360 + 360) % 360
-      if h2 < 0 || h2 >= 360
-        h2 = (h2 % 360 + 360) % 360
-      diff = h1 - h2
-      if diff > -180 && diff <= 180
+      diff = (h1 % 360) - (h2 % 360)
+      if -180 < diff <= 180
         diff
       else if diff > 0
         diff - 360
@@ -202,6 +183,10 @@ module.exports =
     toInt: (n) ->
       n | 0
 
+    # [T <: (Array[Turtle]|Turtle|AbstractAgentSet[Turtle])] @ (T*) => TurtleSet
+    turtleSet: (inputs...) ->
+      @_createAgentSet(inputs, Turtle, TurtleSet)
+
     # (PatchSet|TurtleSet|Patch|Turtle) => TurtleSet
     turtlesOn: (agentsOrAgent) ->
       if agentsOrAgent instanceof AbstractAgentSet
@@ -209,3 +194,45 @@ module.exports =
         new TurtleSet(turtles)
       else
         agentsOrAgent.turtlesHere()
+
+    # [T <: Agent, U <: AbstractAgentSet[T], V <: (Array[T]|T|AbstractAgentSet[T])] @ (Array[V], T.Class, U.Class) => U
+    _createAgentSet: (inputs, tClass, outClass) ->
+      flattened = _(inputs).flatten().value()
+      if _(flattened).isEmpty()
+        new outClass([])
+      else if flattened.length is 1
+        head = flattened[0]
+        if head instanceof outClass
+          head
+        else if head instanceof tClass
+          new outClass([head])
+        else
+          new outClass([])
+      else
+        result  = []
+        hashSet = {}
+
+        hashIt = @_hasher
+
+        addT =
+          (p) ->
+            hash = hashIt(p)
+            if not hashSet.hasOwnProperty(hash)
+              result.push(p)
+              hashSet[hash] = true
+            return
+
+        buildFromAgentSet = (agentSet) -> agentSet.forEach(addT)
+
+        buildItems =
+          (inputs) =>
+            for input in inputs
+              if Type(input).isArray()
+                buildItems(input)
+              else if input instanceof tClass
+                addT(input)
+              else if input isnt Nobody
+                buildFromAgentSet(input)
+
+        buildItems(flattened)
+        new outClass(result)

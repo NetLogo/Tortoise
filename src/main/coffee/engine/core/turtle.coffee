@@ -147,55 +147,60 @@ module.exports =
     turtlesAt: (dx, dy) ->
       @getPatchHere().turtlesAt(dx, dy)
 
-    # (Boolean, Boolean) => LinkSet
-    connectedLinks: (isDirected, isSource) ->
+    # (Boolean, Boolean, String) => LinkSet
+    connectedLinks: (isDirected, isSource, breedName = "LINKS") ->
+      breedNameMatches = @_linkBreedMatches(breedName)
       filterFunc =
         if isDirected
           (link) => (link.isDirected and link.end1 is this and isSource) or (link.isDirected and link.end2 is this and not isSource)
         else
           (link) => (not link.isDirected and link.end1 is this) or (not link.isDirected and link.end2 is this)
-      @world.links().filter(filterFunc)
+      @world.links().filter((x) => breedNameMatches(x) and filterFunc(x))
 
-    # (Boolean, Boolean) => TurtleSet
-    linkNeighbors: (isDirected, isSource) ->
+    # (Boolean, Boolean, String) => TurtleSet
+    linkNeighbors: (isDirected, isSource, breedName) ->
+      breedNameMatches = @_linkBreedMatches(breedName)
       reductionFunc =
         if isDirected
           (acc, link) =>
-            if link.isDirected and link.end1 is this and isSource
-              acc.push(link.end2)
-            else if link.isDirected and link.end2 is this and not isSource
-              acc.push(link.end1)
+            if breedNameMatches(link)
+              if link.isDirected and link.end1 is this and isSource
+                acc.push(link.end2)
+              else if link.isDirected and link.end2 is this and not isSource
+                acc.push(link.end1)
             acc
         else
           (acc, link) =>
-            if not link.isDirected and link.end1 is this
-              acc.push(link.end2)
-            else if not link.isDirected and link.end2 is this
-              acc.push(link.end1)
+            if breedNameMatches(link)
+              if not link.isDirected and link.end1 is this
+                acc.push(link.end2)
+              else if not link.isDirected and link.end2 is this
+                acc.push(link.end1)
             acc
 
       turtles = world.links().toArray().reduce(reductionFunc, [])
       new TurtleSet(turtles)
 
-    # (Boolean, Boolean, Turtle) => Boolean
-    isLinkNeighbor: (isDirected, isSource, otherTurtle) ->
-      @linkNeighbors(isDirected, isSource).contains(otherTurtle)
+    # (Boolean, Boolean, String, Turtle) => Boolean
+    isLinkNeighbor: (isDirected, isSource, breedName, otherTurtle) ->
+      @linkNeighbors(isDirected, isSource, breedName).contains(otherTurtle)
 
-    # (Boolean, Boolean, Turtle) => Link
-    findLinkViaNeighbor: (isDirected, isSource, otherTurtle) ->
+    # (Boolean, Boolean, String, Turtle) => Link
+    findLinkViaNeighbor: (isDirected, isSource, breedName, otherTurtle) ->
+      breedNameMatches = @_linkBreedMatches(breedName)
       findFunc =
         if isDirected
           (link) =>
             isDirectedFromMe = (link.isDirected and link.end1 is this and link.end2 is otherTurtle and isSource)
             isDirectedToMe   = (link.isDirected and link.end1 is otherTurtle and link.end2 is this and not isSource)
-            isDirectedFromMe or isDirectedToMe
-        else if not isDirected and not @world.unbreededLinksAreDirected
+            breedNameMatches(link) and (isDirectedFromMe or isDirectedToMe)
+        else if not isDirected and not @world.breedManager.links().isDirected()
           (link) =>
             isFromMe = (not link.isDirected and link.end1 is this and link.end2 is otherTurtle)
             isToMe   = (not link.isDirected and link.end2 is this and link.end1 is otherTurtle)
-            isFromMe or isToMe
+            breedNameMatches(link) and (isFromMe or isToMe)
         else
-          throw new Exception.NetLogoException("LINKS is a directed breed.")
+          throw new Error("LINKS is a directed breed.")
 
       @world.links().find(findFunc) ? Nobody
 
@@ -236,7 +241,7 @@ module.exports =
       if not @_isDead()
         @world.selfManager.askAgent(f)(this)
       else
-        throw new Exception.NetLogoException("That #{@_breed.singular} is dead.")
+        throw new Error("That #{@_breed.singular} is dead.")
 
     # Unfortunately, further attempts to streamline this code are very likely to lead to
     # floating point arithmetic mismatches with JVM NetLogo....  Beware. --JAB (7/28/14)
@@ -320,6 +325,7 @@ module.exports =
         )
         @id = -1
         @getPatchHere().untrackTurtle(this)
+        @world.observer.unfocus(this)
       throw new Exception.DeathInterrupt("Call only from inside an askAgent block")
 
     # (String) => Any
@@ -383,7 +389,17 @@ module.exports =
       return
 
     # () => Unit
-    watchme: ->
+    followMe: ->
+      @world.observer.follow(this)
+      return
+
+    # () => Unit
+    rideMe: ->
+      @world.observer.ride(this)
+      return
+
+    # () => Unit
+    watchMe: ->
       @world.observer.watch(this)
       return
 
@@ -409,6 +425,10 @@ module.exports =
     # () => Boolean
     _isDead: ->
       @id is -1
+
+    # (String) => (Link) => Boolean
+    _linkBreedMatches: (breedName) -> (link) ->
+      breedName is "LINKS" or breedName is link.getBreedName()
 
     # (Number) => Number
     _normalizeHeading: (heading) ->
@@ -489,7 +509,10 @@ module.exports =
         if _(breed).isString()
           @world.breedManager.get(breed)
         else if breed instanceof AbstractAgentSet
-          @world.breedManager.get(breed.getBreedName())
+          if breed.getBreedName?
+            @world.breedManager.get(breed.getBreedName())
+          else
+            throw new Error("You can't set BREED to a non-breed agentset.")
         else
           breed
 

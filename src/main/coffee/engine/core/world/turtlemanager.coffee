@@ -68,12 +68,12 @@ module.exports =
 
     # () => TurtleSet
     turtles: ->
-      new TurtleSet(@_turtles)
+      new TurtleSet(@_turtles, "TURTLES", "turtles")
 
     # (String) => TurtleSet
     turtlesOfBreed: (breedName) =>
       breed = @_breedManager.get(breedName)
-      new TurtleSet(breed.members, breedName)
+      new TurtleSet(breed.members, breedName, breedName)
 
     # () => Unit
     _clearTurtlesSuspended: ->
