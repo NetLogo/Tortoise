@@ -32,7 +32,7 @@ ivyLoggingLevel := UpdateLogging.Quiet
 // we're not cross-building for different Scala versions
 crossPaths := false
 
-val nlDependencyVersion = "5.2.0-8675d3a"
+val nlDependencyVersion = "5.2.0-017a5a4"
 
 // NetLogoHeadlessTests depends on reflections; reflections depends on some extra jars.
 // but for some reason we need to explicitly list the transitive dependencies
