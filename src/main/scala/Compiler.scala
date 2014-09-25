@@ -22,8 +22,8 @@ object Compiler extends CompilerLike {
 
   self =>
 
-  private lazy val prims:    Prims    = new Prims    { override lazy val handlers = self.handlers }
-  private lazy val handlers: Handlers = new Handlers { override lazy val prims    = self.prims }
+  private val prims:    Prims    = new Prims    { override lazy val handlers = self.handlers }
+  private val handlers: Handlers = new Handlers { override lazy val prims    = self.prims }
 
   val frontEnd: ast.FrontEndInterface = ast.front.FrontEnd
 
