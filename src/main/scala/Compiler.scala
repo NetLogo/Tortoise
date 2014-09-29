@@ -4,10 +4,7 @@ package org.nlogo.tortoise
 
 import
   org.nlogo.{ api, compile => ast, core, nvm, workspace },
-    api.CompilerException,
     nvm.FrontEndInterface.{ ProceduresMap, NoProcedures }
-
-import collection.JavaConverters._
 
 // there are three main entry points here:
 //   compile{Reporter, Commands, Procedures}

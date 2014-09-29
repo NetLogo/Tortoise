@@ -6,7 +6,7 @@ import org.json4s._
 import org.json4s.native.JsonMethods._
 
 import
-  org.nlogo.{ api, mirror, shape },
+  org.nlogo.{ api, mirror },
     api.{ AgentVariables, ShapeList, LogoList, Shape },
     mirror._
 import Mirrorables._
