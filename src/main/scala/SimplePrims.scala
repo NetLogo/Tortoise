@@ -113,6 +113,7 @@ object SimplePrims {
         case _: prim.etc._atan               => "Trig.atan"
         case _: prim.etc._floor              => "StrictMath.floor"
         case _: prim.etc._ceil               => "StrictMath.ceil"
+        case _: prim.etc._log                => "Prims.log"
         case _: prim.etc._int                => "Prims.toInt"
         case _: prim.etc._round              => "StrictMath.round"
         case _: prim.etc._precision          => "Prims.precision"

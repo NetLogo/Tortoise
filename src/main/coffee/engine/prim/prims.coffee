@@ -125,6 +125,10 @@ module.exports =
       @lt(a, b) or @equality(a, b)
 
     # (Number, Number) => Number
+    log: (num, base) ->
+      Math.log(num) / Math.log(base)
+
+    # (Number, Number) => Number
     mod: (a, b) ->
       a %% b
 
