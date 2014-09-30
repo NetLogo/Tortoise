@@ -11,8 +11,6 @@ trait Prims {
 
   def handlers: Handlers
 
-  private var everyCounter = 0
-
   def reporter(r: ast.ReporterApp): String = {
     def arg(i: Int) = handlers.reporter(r.args(i))
     def commaArgs = argsSep(", ")
