@@ -2,10 +2,8 @@
 
 _               = require('lodash')
 Nobody          = require('./nobody')
-Turtle          = require('./turtle')
 TurtleSet       = require('./turtleset')
 VariableManager = require('./structure/variablemanager')
-Random          = require('tortoise/shim/random')
 ColorModel      = require('tortoise/util/colormodel')
 Comparator      = require('tortoise/util/comparator')
 

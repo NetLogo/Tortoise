@@ -9,6 +9,7 @@ Turtle           = require('../core/turtle')
 StrictMath       = require('tortoise/shim/strictmath')
 Comparator       = require('tortoise/util/comparator')
 Exception        = require('tortoise/util/exception')
+Random           = require('tortoise/util/random')
 stableSort       = require('tortoise/util/stablesort')
 Type             = require('tortoise/util/typechecker')
 
