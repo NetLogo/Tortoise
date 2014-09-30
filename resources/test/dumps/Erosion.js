@@ -48,7 +48,7 @@ function setup() {
     SelfPrims.setPatchVariable('drain?', false);
   }, true);
   if (world.observer.getGlobal('bumpy?')) {
-    Prims.repeat(world.observer.getGlobal('terrain-smoothness'), function () {
+    Prims.repeat(world.observer.getGlobal('terrain-smoothness'), function() {
       world.topology.diffuse('elevation', 0.5)
     });
   }

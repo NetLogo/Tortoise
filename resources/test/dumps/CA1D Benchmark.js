@@ -38,7 +38,7 @@ function benchmark() {
   Random.setSeed(4378);
   Call(setupRandom);
   workspace.timer.reset();
-  Prims.repeat((10 * world.topology.height), function () {
+  Prims.repeat((10 * world.topology.height), function() {
     Call(go);
   });
   world.observer.setGlobal('result', workspace.timer.elapsed());
@@ -238,7 +238,7 @@ function printBlock(state) {
     SelfPrims.setVariable('color', world.observer.getGlobal('background'));
   }
   SelfPrims.setVariable('heading', 90);
-  Prims.repeat(4, function () {
+  Prims.repeat(4, function() {
     SelfPrims.setPatchVariable('pcolor', SelfPrims.getVariable('color'));
     SelfPrims.right(90);
     SelfPrims.fd(1);

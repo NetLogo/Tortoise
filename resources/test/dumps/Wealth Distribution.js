@@ -45,7 +45,7 @@ function setupPatches() {
       SelfPrims.setPatchVariable('grain-here', SelfPrims.getPatchVariable('max-grain-here'));
     }
   }, true);
-  Prims.repeat(5, function () {
+  Prims.repeat(5, function() {
     world.patches().agentFilter(function() {
       return !Prims.equality(SelfPrims.getPatchVariable('max-grain-here'), 0);
     }).ask(function() {
@@ -53,7 +53,7 @@ function setupPatches() {
     }, true);
     world.topology.diffuse('grain-here', 0.25)
   });
-  Prims.repeat(10, function () {
+  Prims.repeat(10, function() {
     world.topology.diffuse('grain-here', 0.25)
   });
   world.patches().ask(function() {
@@ -142,7 +142,7 @@ function turnTowardsGrain() {
 function grainAhead() {
   var total = 0;
   var howFar = 1;
-  Prims.repeat(SelfPrims.getVariable('vision'), function () {
+  Prims.repeat(SelfPrims.getVariable('vision'), function() {
     total = (total + SelfManager.self().patchAhead(howFar).projectionBy(function() {
       return SelfPrims.getPatchVariable('grain-here');
     }));
@@ -185,7 +185,7 @@ function updateLorenzAndGini() {
   var index = 0;
   world.observer.setGlobal('gini-index-reserve', 0);
   world.observer.setGlobal('lorenz-points', []);
-  Prims.repeat(world.observer.getGlobal('num-people'), function () {
+  Prims.repeat(world.observer.getGlobal('num-people'), function() {
     wealthSumSoFar = (wealthSumSoFar + ListPrims.item(index, sortedWealths));
     world.observer.setGlobal('lorenz-points', ListPrims.lput(((wealthSumSoFar / totalWealth) * 100), world.observer.getGlobal('lorenz-points')));
     index = (index + 1);

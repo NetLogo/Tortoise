@@ -42,7 +42,7 @@ function go() {
   world.turtles().ask(function() {
     Call(flock);
   }, true);
-  Prims.repeat(5, function () {
+  Prims.repeat(5, function() {
     world.turtles().ask(function() {
       SelfPrims.fd(0.2);
     }, true);

@@ -43,7 +43,7 @@ function makeNewcomer() {
 function setup() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
-  Prims.repeat(world.observer.getGlobal('team-size'), function () {
+  Prims.repeat(world.observer.getGlobal('team-size'), function() {
     Call(makeNewcomer);
   });
   world.turtles().ask(function() {
@@ -87,7 +87,7 @@ function go() {
 }
 function pickTeamMembers() {
   var newTeamMember = Nobody;
-  Prims.repeat(world.observer.getGlobal('team-size'), function () {
+  Prims.repeat(world.observer.getGlobal('team-size'), function() {
     if (Prims.gte(Prims.randomFloat(100), world.observer.getGlobal('p'))) {
       Call(makeNewcomer);
       newTeamMember = world.observer.getGlobal('newcomer');
@@ -165,7 +165,7 @@ function colorCollaborations() {
   }, true);
 }
 function layout() {
-  Prims.repeat(12, function () {
+  Prims.repeat(12, function() {
     LayoutManager.layoutSpring(world.turtles(), world.links(), 0.18, 0.01, 1.2);
     notImplemented('display', undefined)();
   });

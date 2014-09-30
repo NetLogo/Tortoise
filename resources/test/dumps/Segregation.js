@@ -47,7 +47,9 @@ function setup() {
   world.ticker.reset();
 }
 function go() {
-  if (world.turtles().agentAll(function(){ return SelfPrims.getVariable('happy?') })) {
+  if (world.turtles().agentAll(function() {
+    return SelfPrims.getVariable('happy?');
+  })) {
     throw new Exception.StopInterrupt;
   }
   Call(moveUnhappyTurtles);

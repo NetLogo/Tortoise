@@ -64,7 +64,9 @@ function findPartner() {
   });
 }
 function resizeNodes() {
-  if (world.turtles().agentAll(function(){ return Prims.lte(SelfPrims.getVariable('size'), 1) })) {
+  if (world.turtles().agentAll(function() {
+    return Prims.lte(SelfPrims.getVariable('size'), 1);
+  })) {
     world.turtles().ask(function() {
       SelfPrims.setVariable('size', StrictMath.sqrt(LinkPrims.linkNeighbors(false, false, 'LINKS').size()));
     }, true);
@@ -76,7 +78,7 @@ function resizeNodes() {
   }
 }
 function layout() {
-  Prims.repeat(3, function () {
+  Prims.repeat(3, function() {
     var factor = StrictMath.sqrt(world.turtles().size());
     LayoutManager.layoutSpring(world.turtles(), world.links(), (1 / factor), (7 / factor), (1 / factor));
     notImplemented('display', undefined)();

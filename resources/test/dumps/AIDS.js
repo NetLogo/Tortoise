@@ -93,13 +93,15 @@ function assignTestFrequency() {
 }
 function randomNear(center) {
   var result = 0;
-  Prims.repeat(40, function () {
+  Prims.repeat(40, function() {
     result = (result + Prims.randomFloat(center));
   });
   return (result / 20);
 }
 function go() {
-  if (world.turtles().agentAll(function(){ return SelfPrims.getVariable('known?') })) {
+  if (world.turtles().agentAll(function() {
+    return SelfPrims.getVariable('known?');
+  })) {
     throw new Exception.StopInterrupt;
   }
   Call(checkSliders);

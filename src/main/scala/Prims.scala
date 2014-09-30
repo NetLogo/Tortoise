@@ -52,20 +52,16 @@ trait Prims {
         ("\"\"" +: args).map(arg => "Dump(" + arg + ")").mkString("(", " + ", ")")
       case _: prim._with =>
         val agents = arg(0)
-        val filter = handlers.reporter(r.args(1))
         s"$agents.agentFilter(${handlers.fun(r.args(1), true)})"
       case _: prim.etc._maxoneof =>
         val agents = arg(0)
-        val metric = handlers.reporter(r.args(1))
         s"$agents.maxOneOf(${handlers.fun(r.args(1), true)})"
       case _: prim.etc._minoneof =>
         val agents = arg(0)
-        val metric = handlers.reporter(r.args(1))
         s"$agents.minOneOf(${handlers.fun(r.args(1), true)})"
       case o: prim.etc._all =>
         val agents = arg(0)
-        val body = handlers.reporter(r.args(1))
-        s"$agents.agentAll(function(){ return $body })"
+        s"$agents.agentAll(${handlers.fun(r.args(1), true)})"
       case _: prim._of                      => generateOf(r)
       case _: prim.etc._islink              => s"(${arg(0)} instanceof Link)"
       case _: prim.etc._isturtle            => s"(${arg(0)} instanceof Turtle)"
@@ -190,9 +186,7 @@ trait Prims {
   def generateRepeat(w: ast.Statement): String = {
     val count = handlers.reporter(w.args(0))
     val body = handlers.commands(w.args(1))
-    s"""|Prims.repeat($count, function () {
-        |${handlers.indented(body)}
-        |});""".stripMargin
+    s"""Prims.repeat($count, ${handlers.fun(w.args(1))});"""
   }
 
   def generateWhile(w: ast.Statement): String = {
@@ -269,13 +263,8 @@ trait Prims {
   }
 
   def generateEvery(w: ast.Statement): String = {
-
     val time = handlers.reporter(w.args(0))
-    val body = handlers.commands(w.args(1))
-    s"""|Prims.every($time, function () {
-        |${handlers.indented(body)}
-        |}, '${handlers.nextEveryID()}');""".stripMargin
-
+    s"""Prims.every($time, ${handlers.fun(w.args(1))}, '${handlers.nextEveryID()}');"""
   }
 
   private def failCompilation(msg: String, token: Token): Nothing =

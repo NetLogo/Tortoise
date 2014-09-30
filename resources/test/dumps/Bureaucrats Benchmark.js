@@ -33,7 +33,7 @@ function benchmark() {
   Random.setSeed(0);
   workspace.timer.reset();
   Call(setup);
-  Prims.repeat(5000, function () {
+  Prims.repeat(5000, function() {
     Call(go);
   });
   world.observer.setGlobal('result', workspace.timer.elapsed());

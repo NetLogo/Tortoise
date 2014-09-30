@@ -34,7 +34,7 @@ function benchmark() {
   workspace.timer.reset();
   Call(setup);
   world.observer.setGlobal('manage-view-updates?', false);
-  Prims.repeat(3500, function () {
+  Prims.repeat(3500, function() {
     Call(go);
   });
   world.observer.setGlobal('result', workspace.timer.elapsed());

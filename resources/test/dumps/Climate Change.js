@@ -196,7 +196,7 @@ function addCo2() {
   }, true);
 }
 function removeCo2() {
-  Prims.repeat(25, function () {
+  Prims.repeat(25, function() {
     if (world.turtleManager.turtlesOfBreed("CO2S").nonEmpty()) {
       ListPrims.oneOf(world.turtleManager.turtlesOfBreed("CO2S")).ask(function() {
         SelfPrims.die();
