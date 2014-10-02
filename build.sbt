@@ -34,16 +34,6 @@ crossPaths := false
 
 val nlDependencyVersion = "5.2.0-017a5a4"
 
-// NetLogoHeadlessTests depends on reflections; reflections depends on some extra jars.
-// but for some reason we need to explicitly list the transitive dependencies
-libraryDependencies ++= Seq(
-  "org.reflections" % "reflections" % "0.9.9-RC1" % "test",
-  "com.google.code.findbugs" % "jsr305" % "2.0.1" % "test",
-  "com.google.guava" % "guava" % "12.0"           % "test",
-  "org.javassist" % "javassist" % "3.16.1-GA"     % "test",
-  "org.slf4j" % "slf4j-nop" % "1.7.5"             % "test"
-)
-
 libraryDependencies ++= Seq(
   "org.nlogo" % "netlogoheadless" % nlDependencyVersion,
   "org.json4s" %% "json4s-native" % "3.2.10",
@@ -51,6 +41,7 @@ libraryDependencies ++= Seq(
   "org.scalacheck" %% "scalacheck" % "1.11.3" % "test",
   "org.scalatest" %% "scalatest" % "2.1.3" % "test",
   "org.skyscreamer" % "jsonassert" % "1.1.0" % "test",
+  "org.reflections" % "reflections" % "0.9.9-RC1" % "test",
   // Bring in headless test code/framework for our tests
   "org.nlogo" % "netlogoheadless" % nlDependencyVersion % "test" classifier "tests"
 )
