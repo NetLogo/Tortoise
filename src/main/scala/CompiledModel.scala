@@ -12,7 +12,7 @@ import
 
 import
   scalaz.{ Scalaz, ValidationNel },
-    Scalaz.ToValidationV
+    Scalaz.ToValidationOps
 
 case class CompiledModel(compiledCode: String        = "",
                          model:        Model,

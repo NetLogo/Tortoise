@@ -14,7 +14,8 @@ import
     sys.process.Process
 
 import
-  scalaz.NonEmptyList
+  scalaz.{ NonEmptyList, Validation },
+    Validation.FlatMap.ValidationFlatMapRequested
 
 import
   org.nlogo.tortoise.jsengine.JSEngineCompanion
