@@ -32,16 +32,16 @@ ivyLoggingLevel := UpdateLogging.Quiet
 // we're not cross-building for different Scala versions
 crossPaths := false
 
-val nlDependencyVersion = "5.2.0-017a5a4"
+val nlDependencyVersion = "5.2.0-28ea9fe"
 
 libraryDependencies ++= Seq(
   "org.nlogo" % "netlogoheadless" % nlDependencyVersion,
   "org.json4s" %% "json4s-native" % "3.2.10",
   "org.scalaz" %% "scalaz-core" % "7.1.0",
-  "org.scalacheck" %% "scalacheck" % "1.11.3" % "test",
-  "org.scalatest" %% "scalatest" % "2.1.3" % "test",
-  "org.skyscreamer" % "jsonassert" % "1.1.0" % "test",
-  "org.reflections" % "reflections" % "0.9.9-RC1" % "test",
+  "org.scalacheck" %% "scalacheck" % "1.11.6" % "test",
+  "org.scalatest" %% "scalatest" % "2.2.1" % "test",
+  "org.skyscreamer" % "jsonassert" % "1.2.3" % "test",
+  "org.reflections" % "reflections" % "0.9.9" % "test",
   // Bring in headless test code/framework for our tests
   "org.nlogo" % "netlogoheadless" % nlDependencyVersion % "test" classifier "tests"
 )
