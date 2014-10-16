@@ -54,6 +54,12 @@ bintray.Keys.bintrayOrganization in bintray.Keys.bintray := Some("netlogo")
 
 logBuffered in testOnly in Test := false
 
+(test in Test) <<= (test in Test).dependsOn {
+  Def.task[Unit] {
+    sbt.IO.delete(target.value / "last-test-run-reports")
+  }
+}
+
 FastMediumSlow.settings
 
 PublishVersioned.settings
