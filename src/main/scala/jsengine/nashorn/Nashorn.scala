@@ -29,7 +29,8 @@ class Nashorn {
   engineScope.put("window", engineScope) // Some libraries (e.g. lodash) expect to find a `window` object --JAB (8/21/14)
 
   // make a random number generator available
-  engine.put("Random", new MersenneTwisterFast)
+  engine.put("Random",    new MersenneTwisterFast)
+  engine.put("AuxRandom", new MersenneTwisterFast)
 
   // ensure exact matching results
   engine.put("StrictMath", Strict)

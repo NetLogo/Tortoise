@@ -1,7 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 Iterator = require('./iterator')
-Random   = require('../shim/random')
 
 module.exports =
   class Shufflerator extends Iterator
@@ -9,8 +8,8 @@ module.exports =
     _i:       undefined # Number
     _nextOne: undefined # T
 
-    # [T] @ (Array[T]) => Shufflerator
-    constructor: (items) ->
+    # [T] @ (Array[T], (Number) => Number) => Shufflerator
+    constructor: (items, @_nextInt) ->
       super(items)
       @_i       = 0
       @_nextOne = null
@@ -63,7 +62,7 @@ module.exports =
     _fetch: ->
       if @_hasNext()
         if @_i < @_items.length - 1
-          randNum = @_i + Random.nextInt(@_items.length - @_i)
+          randNum = @_i + @_nextInt(@_items.length - @_i)
           @_nextOne = @_items[randNum]
           @_items[randNum] = @_items[@_i]
         else

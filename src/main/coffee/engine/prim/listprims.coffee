@@ -6,7 +6,6 @@ Link             = require('../core/link')
 Nobody           = require('../core/nobody')
 Patch            = require('../core/patch')
 Turtle           = require('../core/turtle')
-Random           = require('tortoise/shim/random')
 StrictMath       = require('tortoise/shim/strictmath')
 Comparator       = require('tortoise/util/comparator')
 Exception        = require('tortoise/util/exception')
@@ -17,8 +16,8 @@ Type             = require('tortoise/util/typechecker')
 module.exports =
   class ListPrims
 
-    # (Hasher, (Any, Any) => Boolean) => ListPrims
-    constructor: (@_hasher, @_equality) ->
+    # (Hasher, (Any, Any) => Boolean, (Number) => Number) => ListPrims
+    constructor: (@_hasher, @_equality, @_nextInt) ->
 
     # [T] @ (Array[T]|String) => Array[T]|String
     butFirst: (xs) ->
@@ -102,7 +101,7 @@ module.exports =
       if arr.length is 0
         Nobody
       else
-        arr[Random.nextInt(arr.length)]
+        arr[@_nextInt(arr.length)]
 
     # [Item, Container <: (Array[Item]|String|AbstractAgentSet[Item])] @ (Item, Container) => Number|Boolean
     position: (x, xs) ->
@@ -239,10 +238,10 @@ module.exports =
         when 0
           []
         when 1
-          [items[Random.nextInt(items.length)]]
+          [items[@_nextInt(items.length)]]
         when 2
-          index1 = Random.nextInt(items.length)
-          index2 = Random.nextInt(items.length - 1)
+          index1 = @_nextInt(items.length)
+          index2 = @_nextInt(items.length - 1)
           [newIndex1, newIndex2] =
           if index2 >= index1
             [index1, index2 + 1]
@@ -254,7 +253,7 @@ module.exports =
           j = 0
           result = []
           while j < n
-            if Random.nextInt(items.length - i) < n - j
+            if @_nextInt(items.length - i) < n - j
               result.push(items[i])
               j += 1
             i += 1

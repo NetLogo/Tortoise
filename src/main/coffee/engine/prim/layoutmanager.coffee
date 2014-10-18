@@ -1,15 +1,14 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 _          = require('lodash')
-Random     = require('tortoise/shim/random')
 StrictMath = require('tortoise/shim/strictmath')
 Trig       = require('tortoise/util/trig')
 
 module.exports =
   class LayoutManager
 
-    # (World) => LayoutManager
-    constructor: (@_world) ->
+    # (World, () => Number) => LayoutManager
+    constructor: (@_world, @_nextDouble) ->
 
     # (TurtleSet, LinkSet, Number, Number, Number) => Unit
     layoutSpring: (nodeSet, linkSet, spr, len, rep) ->
@@ -120,7 +119,7 @@ module.exports =
 
           [dx, dy] =
           if t2.xcor is t1.xcor and t2.ycor is t1.ycor
-            ang   = 360 * Random.nextDouble()
+            ang   = 360 * @_nextDouble()
             newDX = -(rep / div * Trig.sin(StrictMath.toRadians(ang)))
             newDY = -(rep / div * Trig.cos(StrictMath.toRadians(ang)))
             [newDX, newDY]
@@ -153,8 +152,8 @@ module.exports =
       # are stuck on a single line --FD
       if nodeCount > 1
         perturbment = (width + height) / 1.0e10
-        ax[0] += Random.nextDouble() * perturbment - perturbment / 2.0
-        ay[0] += Random.nextDouble() * perturbment - perturbment / 2.0
+        ax[0] += @_nextDouble() * perturbment - perturbment / 2.0
+        ay[0] += @_nextDouble() * perturbment - perturbment / 2.0
 
       # try to choose something that's reasonable perceptually --
       # for temporal aliasing, don't want to jump too far on any given timestep. --FD

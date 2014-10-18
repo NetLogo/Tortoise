@@ -10,7 +10,6 @@ PatchSet         = require('../core/patchset')
 Turtle           = require('../core/turtle')
 TurtleSet        = require('../core/turtleset')
 Printer          = require('tortoise/shim/printer')
-Random           = require('tortoise/shim/random')
 Exception        = require('tortoise/util/exception')
 Timer            = require('tortoise/util/timer')
 Type             = require('tortoise/util/typechecker')
@@ -24,8 +23,8 @@ module.exports =
 
     _everyMap: undefined # Object[String, Timer]
 
-    # (Dump, Hasher) => Prims
-    constructor: (@_dumper, @_hasher) ->
+    # (Dump, Hasher, RNG) => Prims
+    constructor: (@_dumper, @_hasher, @_rng) ->
       @_everyMap = {}
 
     # () => Nothing
@@ -160,13 +159,13 @@ module.exports =
       if truncated is 0
         0
       else if truncated > 0
-        Random.nextLong(truncated)
+        @_rng.nextLong(truncated)
       else
-        -Random.nextLong(-truncated)
+        -@_rng.nextLong(-truncated)
 
     # (Number) => Number
     randomFloat: (n) ->
-      n * Random.nextDouble()
+      n * @_rng.nextDouble()
 
     # (Number, FunctionN) => Unit
     repeat: (n, fn) ->

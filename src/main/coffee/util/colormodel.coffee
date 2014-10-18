@@ -2,7 +2,6 @@
 
 _      = require('lodash')
 Type   = require('./typechecker')
-Random = require('../shim/random')
 
 # type RGB = (Number, Number, Number)
 
@@ -77,9 +76,9 @@ module.exports = {
     index = n % BaseColors.length
     BaseColors[index]
 
-  # () => Number
-  randomColor: ->
-    index = Random.nextInt(BaseColors.length)
+  # ((Number) => Number) => Number
+  randomColor: (nextInt) ->
+    index = nextInt(BaseColors.length)
     BaseColors[index]
 
   # (Number) => Number

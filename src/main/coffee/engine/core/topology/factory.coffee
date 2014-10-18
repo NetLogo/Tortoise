@@ -5,9 +5,9 @@ HorizCylinder = require('./horizcylinder')
 Torus         = require('./torus')
 VertCylinder  = require('./vertcylinder')
 
-# (Boolean, Boolean, Number, Number, Number, Number, () => PatchSet, (Number, Number) => Patch) => Topology
+# (Boolean, Boolean, Number, Number, Number, Number, () => PatchSet, (Number, Number) => Patch, () => Number) => Topology
 module.exports =
-    (wrapsInX, wrapsInY, minX, maxX, minY, maxY, getPatchesFunc, getPatchAtFunc) ->
+    (wrapsInX, wrapsInY, minX, maxX, minY, maxY, getPatchesFunc, getPatchAtFunc, nextDouble) ->
       TopoClass =
         if wrapsInX and wrapsInY
           Torus
@@ -17,4 +17,4 @@ module.exports =
           HorizCylinder
         else
           Box
-      new TopoClass(minX, maxX, minY, maxY, getPatchesFunc, getPatchAtFunc)
+      new TopoClass(minX, maxX, minY, maxY, getPatchesFunc, getPatchAtFunc, nextDouble)

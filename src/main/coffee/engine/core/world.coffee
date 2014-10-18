@@ -20,6 +20,7 @@ module.exports =
     breedManager:  undefined # BreedManager
     linkManager:   undefined # LinkManager
     observer:      undefined # Observer
+    rng:           undefined # RNG
     selfManager:   undefined # SelfManager
     ticker:        undefined # Ticker
     topology:      undefined # Topology
@@ -36,7 +37,7 @@ module.exports =
     constructor: (miniWorkspace, globalNames, interfaceGlobalNames, @turtlesOwnNames, @linksOwnNames, @patchesOwnNames
                 , minPxcor, maxPxcor, minPycor, maxPycor, _patchSize, wrappingAllowedInX, wrappingAllowedInY
                 , turtleShapeList, linkShapeList) ->
-      { selfManager: @selfManager, updater: @_updater, breedManager: @breedManager } = miniWorkspace
+      { selfManager: @selfManager, updater: @_updater, rng: @rng, breedManager: @breedManager } = miniWorkspace
       @_updater.collectUpdates()
       @_updater.registerWorldState({
         worldWidth: maxPxcor - minPxcor + 1,
@@ -62,7 +63,7 @@ module.exports =
       @observer      = new Observer(@_updater.updated, globalNames, interfaceGlobalNames)
       @ticker        = new Ticker(@_updater.updated(this))
       @topology      = null
-      @turtleManager = new TurtleManager(this, @breedManager, @_updater)
+      @turtleManager = new TurtleManager(this, @breedManager, @_updater, @rng.nextInt)
 
       @_patches = []
 
@@ -118,7 +119,7 @@ module.exports =
 
     # (Boolean, Boolean, Number, Number, Number, Number) => Unit
     changeTopology: (wrapsInX, wrapsInY, minX = @topology.minPxcor, maxX = @topology.maxPxcor, minY = @topology.minPycor, maxY = @topology.maxPycor) ->
-      @topology = topologyFactory(wrapsInX, wrapsInY, minX, maxX, minY, maxY, @patches, @getPatchAt)
+      @topology = topologyFactory(wrapsInX, wrapsInY, minX, maxX, minY, maxY, @patches, @getPatchAt, @rng.nextDouble)
       return
 
     # (Number, Number) => Patch

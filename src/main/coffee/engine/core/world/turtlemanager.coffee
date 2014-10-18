@@ -6,7 +6,6 @@ Turtle     = require('../turtle')
 TurtleSet  = require('../turtleset')
 Builtins   = require('../structure/builtins')
 IDManager  = require('./idmanager')
-Random     = require('tortoise/shim/random')
 ColorModel = require('tortoise/util/colormodel')
 
 { DeathInterrupt: Death }  = require('tortoise/util/exception')
@@ -18,8 +17,8 @@ module.exports =
     _turtles:     undefined # Array[Turtle]
     _turtlesById: undefined # Object[Number, Turtle]
 
-    # (World, Updater, BreedManager) => TurtleManager
-    constructor: (@_world, @_breedManager, @_updater) ->
+    # (World, Updater, BreedManager, (Number) => Number) => TurtleManager
+    constructor: (@_world, @_breedManager, @_updater, @_nextInt) ->
       @_idManager   = new IDManager
       @_turtles     = []
       @_turtlesById = {}
@@ -49,8 +48,8 @@ module.exports =
     # (Number, String, Number, Number) => TurtleSet
     createTurtles: (n, breedName, xcor = 0, ycor = 0) ->
       turtles = _(0).range(n).map(=>
-        color   = ColorModel.randomColor()
-        heading = Random.nextInt(360)
+        color   = ColorModel.randomColor(@_nextInt)
+        heading = @_nextInt(360)
         @_createTurtle(color, heading, xcor, ycor, @_breedManager.get(breedName))
       ).value()
       new TurtleSet(turtles, breedName)

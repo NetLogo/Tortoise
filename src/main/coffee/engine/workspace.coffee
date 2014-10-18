@@ -11,38 +11,42 @@ LinkPrims     = require('./prim/linkprims')
 ListPrims     = require('./prim/listprims')
 Prims         = require('./prim/prims')
 SelfPrims     = require('./prim/selfprims')
+RNG           = require('tortoise/util/rng')
 Timer         = require('tortoise/util/timer')
 
 class MiniWorkspace
-  # (SelfManager, @Updater, @BreedManager) => MiniWorkspace
-  constructor: (@selfManager, @updater, @breedManager) ->
+  # (SelfManager, Updater, BreedManager, RNG) => MiniWorkspace
+  constructor: (@selfManager, @updater, @breedManager, @rng) ->
 
 module.exports =
   (breedObjs) -> () -> # World args; see constructor for `World` --JAB (4/17/14)
 
     worldArgs = arguments # If you want `Workspace` to take more parameters--parameters not related to `World`--just keep returning new functions
 
+    rng = new RNG
+
     selfManager  = new SelfManager
     breedManager = new BreedManager(breedObjs)
-    prims        = new Prims(Dump, Hasher)
+    prims        = new Prims(Dump, Hasher, rng)
     selfPrims    = new SelfPrims(selfManager.self)
     timer        = new Timer
     updater      = new Updater
 
-    world         = new World(new MiniWorkspace(selfManager, updater, breedManager), worldArgs...)
-    layoutManager = new LayoutManager(world)
+    world         = new World(new MiniWorkspace(selfManager, updater, breedManager, rng), worldArgs...)
+    layoutManager = new LayoutManager(world, rng.nextDouble)
     linkPrims     = new LinkPrims(world)
-    listPrims     = new ListPrims(Hasher, prims.equality.bind(prims))
+    listPrims     = new ListPrims(Hasher, prims.equality.bind(prims), rng.nextInt)
 
     {
-      selfManager   : selfManager
-      breedManager  : breedManager
-      layoutManager : layoutManager
-      linkPrims     : linkPrims
-      listPrims     : listPrims
-      prims         : prims
-      selfPrims     : selfPrims
-      timer         : timer
-      updater       : updater
-      world         : world
+      selfManager
+      breedManager
+      layoutManager
+      linkPrims
+      listPrims
+      prims
+      rng
+      selfPrims
+      timer
+      updater
+      world
     }

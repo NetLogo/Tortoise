@@ -1,7 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 Nobody         = require('./nobody')
-Random         = require('tortoise/shim/random')
 Seq            = require('tortoise/util/seq')
 Shufflerator   = require('tortoise/util/shufflerator')
 stableSort     = require('tortoise/util/stablesort')
@@ -12,19 +11,21 @@ stableSort     = require('tortoise/util/stablesort')
 module.exports =
   class AbstractAgentSet extends Seq
 
+    @_nextInt:     undefined # (Number) => Number
     @_selfManager: undefined # SelfManager
 
     # [T <: Agent] @ (Array[T]) => AbstractAgentSet[T]
     constructor: (agents) ->
       super(agents)
+
+      @_nextInt =
+        agents[0]?.world.rng.nextInt ? (-> throw new Error("How/why are you calling the RNG in an empty agentset?"))
+
       @_selfManager =
-        if agents[0]?
-          agents[0].world.selfManager
-        else
-          {
-            askAgent: () -> () -> undefined
-            self: -> { id: undefined }
-          }
+        agents[0]?.world.selfManager ? {
+          askAgent: () -> () -> undefined
+          self: -> { id: undefined }
+        }
 
     # (() => Boolean) => AbstractAgentSet[T]
     agentFilter: (f) ->
@@ -68,7 +69,7 @@ module.exports =
 
     # () => Shufflerator[T]
     shufflerator: ->
-      new Shufflerator(@toArray())
+      new Shufflerator(@toArray(), @_nextInt)
 
     # () => Array[T]
     sort: ->
@@ -106,4 +107,4 @@ module.exports =
       if winners.length is 0
         Nobody
       else
-        winners[Random.nextInt(winners.length)]
+        winners[@_nextInt(winners.length)]

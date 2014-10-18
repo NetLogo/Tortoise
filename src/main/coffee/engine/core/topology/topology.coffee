@@ -2,7 +2,6 @@
 
 _              = require('lodash')
 Topology       = require('./topology')
-Random         = require('tortoise/shim/random')
 StrictMath     = require('tortoise/shim/strictmath')
 abstractMethod = require('tortoise/util/abstractmethoderror')
 
@@ -20,8 +19,8 @@ module.exports =
     _neighborCache:  undefined
     _neighbor4Cache: undefined
 
-    # (Number, Number, Number, Number, () => PatchSet, (Number, Number) => Patch) => Topology
-    constructor: (@minPxcor, @maxPxcor, @minPycor, @maxPycor, @_getPatches, @_getPatchAt) ->
+    # (Number, Number, Number, Number, () => PatchSet, (Number, Number) => Patch, () => Number) => Topology
+    constructor: (@minPxcor, @maxPxcor, @minPycor, @maxPycor, @_getPatches, @_getPatchAt, @_nextDouble) ->
       @height          = 1 + @maxPycor - @minPycor
       @width           = 1 + @maxPxcor - @minPxcor
       @_neighborCache  = {}
@@ -104,7 +103,7 @@ module.exports =
 
     # (Number, Number) => Number
     _randomCor: (min, max) ->
-      min - 0.5 + Random.nextDouble() * (max - min + 1)
+      min - 0.5 + @_nextDouble() * (max - min + 1)
 
     # (Number, Number) => Array[Patch]
     _getNeighbors: (pxcor, pycor) ->
