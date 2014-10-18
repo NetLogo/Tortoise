@@ -13,6 +13,10 @@ Prims         = require('./prim/prims')
 SelfPrims     = require('./prim/selfprims')
 Timer         = require('tortoise/util/timer')
 
+class MiniWorkspace
+  # (SelfManager, @Updater, @BreedManager) => MiniWorkspace
+  constructor: (@selfManager, @updater, @breedManager) ->
+
 module.exports =
   (breedObjs) -> () -> # World args; see constructor for `World` --JAB (4/17/14)
 
@@ -25,7 +29,7 @@ module.exports =
     timer        = new Timer
     updater      = new Updater
 
-    world         = new World(selfManager, updater, breedManager, worldArgs...)
+    world         = new World(new MiniWorkspace(selfManager, updater, breedManager), worldArgs...)
     layoutManager = new LayoutManager(world)
     linkPrims     = new LinkPrims(world)
     listPrims     = new ListPrims(Hasher, prims.equality.bind(prims))

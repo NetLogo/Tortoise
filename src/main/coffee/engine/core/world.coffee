@@ -17,22 +17,26 @@ module.exports =
 
     id: 0 # Number
 
+    breedManager:  undefined # BreedManager
     linkManager:   undefined # LinkManager
     observer:      undefined # Observer
+    selfManager:   undefined # SelfManager
     ticker:        undefined # Ticker
     topology:      undefined # Topology
     turtleManager: undefined # TurtleManager
 
     _patches: undefined # Array[Patch]
+    _updater: undefined # Updater
 
     # Optimization-related variables
     _patchesAllBlack:          undefined # Boolean
     _patchesWithLabels:        undefined # Number
 
-    # (SelfManager, Updater, BreedManager, Array[String], Array[String], Array[String], Array[String], Array[String], Number, Number, Number, Number, Number, Boolean, Boolean, Array[Object], Array[Object]) => World
-    constructor: (@selfManager, @_updater, @breedManager, globalNames, interfaceGlobalNames, @turtlesOwnNames
-                , @linksOwnNames, @patchesOwnNames, minPxcor, maxPxcor, minPycor, maxPycor, _patchSize
-                , wrappingAllowedInX, wrappingAllowedInY, turtleShapeList, linkShapeList) ->
+    # (MiniWorkspace, Array[String], Array[String], Array[String], Array[String], Array[String], Number, Number, Number, Number, Number, Boolean, Boolean, Array[Object], Array[Object]) => World
+    constructor: (miniWorkspace, globalNames, interfaceGlobalNames, @turtlesOwnNames, @linksOwnNames, @patchesOwnNames
+                , minPxcor, maxPxcor, minPycor, maxPycor, _patchSize, wrappingAllowedInX, wrappingAllowedInY
+                , turtleShapeList, linkShapeList) ->
+      { selfManager: @selfManager, updater: @_updater, breedManager: @breedManager } = miniWorkspace
       @_updater.collectUpdates()
       @_updater.registerWorldState({
         worldWidth: maxPxcor - minPxcor + 1,
@@ -54,11 +58,11 @@ module.exports =
         wrappingAllowedInY: wrappingAllowedInY
       })
 
-      @linkManager   = new LinkManager(this, breedManager, _updater, @_setUnbreededLinksDirected, @_setUnbreededLinksUndirected)
+      @linkManager   = new LinkManager(this, @breedManager, @_updater, @_setUnbreededLinksDirected, @_setUnbreededLinksUndirected)
       @observer      = new Observer(@_updater.updated, globalNames, interfaceGlobalNames)
       @ticker        = new Ticker(@_updater.updated(this))
       @topology      = null
-      @turtleManager = new TurtleManager(this, breedManager, _updater, )
+      @turtleManager = new TurtleManager(this, @breedManager, @_updater)
 
       @_patches = []
 
