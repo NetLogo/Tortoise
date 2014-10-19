@@ -17,11 +17,13 @@ import
 class RuntimeInit(program: Program, model: Model) {
 
   def init: String =
-    s"""var workspace     = tortoise_require('engine/workspace')($genBreedObjects)($genWorkspaceArgs);
+    s"""var workspace = tortoise_require('engine/workspace')(modelConfig)($genBreedObjects)($genWorkspaceArgs);
+       |
        |var BreedManager  = workspace.breedManager;
        |var LayoutManager = workspace.layoutManager;
        |var LinkPrims     = workspace.linkPrims;
        |var ListPrims     = workspace.listPrims;
+       |var plotManager   = workspace.plotManager;
        |var Prims         = workspace.prims;
        |var SelfPrims     = workspace.selfPrims;
        |var SelfManager   = workspace.selfManager;
@@ -44,10 +46,10 @@ class RuntimeInit(program: Program, model: Model) {
        |var TurtleSet = tortoise_require('engine/core/turtleset');
        |var Tasks     = tortoise_require('engine/prim/tasks');
        |
-       |var AgentModel     = tortoise_require('agentmodel');
-       |var Denuller       = tortoise_require('nashorn/denuller');
-       |var Random         = tortoise_require('shim/random');
-       |var StrictMath     = tortoise_require('shim/strictmath');
+       |var AgentModel = tortoise_require('agentmodel');
+       |var Denuller   = tortoise_require('nashorn/denuller');
+       |var Random     = tortoise_require('shim/random');
+       |var StrictMath = tortoise_require('shim/strictmath');
        |""".stripMargin
 
   private def genBreedObjects: String = {

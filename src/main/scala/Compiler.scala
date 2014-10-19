@@ -15,7 +15,7 @@ import
 // - Handlers calls Prims
 // - Prims calls back to Handlers
 
-object Compiler extends CompilerLike {
+object Compiler extends CompilerLike with ModelConfigGenerator {
 
   self =>
 
@@ -25,16 +25,16 @@ object Compiler extends CompilerLike {
   val frontEnd: ast.FrontEndInterface = ast.front.FrontEnd
 
   def compileReporter(logo: String,
-    oldProcedures: ProceduresMap = NoProcedures,
-    program: api.Program = api.Program.empty()): String =
+                      oldProcedures: ProceduresMap = NoProcedures,
+                      program: api.Program = api.Program.empty()): String =
     compile(logo, commands = false, oldProcedures, program)
 
   def compileCommands(logo: String,
-    oldProcedures: ProceduresMap = NoProcedures,
-    program: api.Program = api.Program.empty()): String =
+                      oldProcedures: ProceduresMap = NoProcedures,
+                      program: api.Program = api.Program.empty()): String =
     compile(logo, commands = true, oldProcedures, program)
 
-  def compileProcedures(model: core.Model) : (String, api.Program, ProceduresMap) = {
+  def compileProcedures(model: core.Model): (String, api.Program, ProceduresMap) = {
     val (defs, results): (Seq[ast.ProcedureDefinition], nvm.StructureResults) =
       frontEnd.frontEnd(model.code,
         program = api.Program.empty.copy(interfaceGlobals = model.interfaceGlobals))
@@ -43,7 +43,9 @@ object Compiler extends CompilerLike {
       defs.map(compileProcedureDef).mkString("", "\n", "\n")
     val interface =
       compileCommands(model.interfaceGlobalCommands.mkString("\n"), program = results.program)
-    val js = init.init + main + interface
+
+    val modelConfig = genModelConfig(model)(compileCommands(_, results.procedures, results.program))
+    val js = modelConfig + init.init + main + interface
     (js, results.program, results.procedures)
   }
 

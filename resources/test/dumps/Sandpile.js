@@ -1,8 +1,74 @@
-var workspace     = tortoise_require('engine/workspace')([])(['animate-avalanches?', 'drop-location', 'grains-per-patch', 'total', 'total-on-tick', 'sizes', 'last-size', 'lifetimes', 'last-lifetime', 'selected-patch', 'default-color', 'fired-color', 'selected-color'], ['animate-avalanches?', 'drop-location', 'grains-per-patch'], [], [], ['n', 'n-stack', 'base-color'], -50, 50, -50, 50, 4.0, false, false, {"default":{"rotate":true,"elements":[{"xcors":[150,40,150,260],"ycors":[5,250,205,250],"type":"polygon","color":"rgba(141, 141, 141, 1.0)","filled":true,"marked":true}]}}, {"default":{}});
+var modelConfig  = (typeof window.modelConfig !== "undefined" && window.modelConfig !== null) ? window.modelConfig : {};
+var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.plotOps !== null) ? modelConfig.plotOps : {};
+
+var PenBundle = tortoise_require('engine/plot/pen');
+var Plot      = tortoise_require('engine/plot/plot');
+var PlotOps   = tortoise_require('engine/plot/plotops');
+
+modelConfig.plots = [(function() {
+  var name    = 'Average grain count';
+  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
+  var pens    = [new PenBundle.Pen('average', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Average grain count', 'average')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Average grain count', 'average')(function() { plotManager.plotValue((world.observer.getGlobal('total') / world.patches().size()));; }); }); })];
+  var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Average grain count', undefined)(function() {}); }); };
+  var update  = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Average grain count', undefined)(function() {}); }); };
+  return new Plot(name, pens, plotOps, 0.0, 1.0, 2.0, 2.1, setup, update);
+})(), (function() {
+  var name    = 'Avalanche sizes';
+  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
+  var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Avalanche sizes', 'default')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Avalanche sizes', 'default')(function() { if ((Prims.equality(Prims.mod(world.ticker.tickCount(), 100), 0) && !ListPrims.empty(world.observer.getGlobal('sizes')))) {
+  plotManager.resetPen();
+  var counts = Tasks.nValues((1 + ListPrims.max(world.observer.getGlobal('sizes'))), Tasks.reporterTask(function() { var taskArguments = arguments;
+  return 0; }));
+  Tasks.forEach(Tasks.commandTask(function() {
+    var taskArguments = arguments;
+    counts = ListPrims.replaceItem(taskArguments[0], counts, (1 + ListPrims.item(taskArguments[0], counts)));
+  }), world.observer.getGlobal('sizes'));
+  var s = 0;
+  Tasks.forEach(Tasks.commandTask(function() {
+    var taskArguments = arguments;
+    var c = taskArguments[0];
+    if ((Prims.gt(s, 0) && Prims.gt(c, 0))) {
+      plotManager.plotPoint(Prims.log(s, 10), Prims.log(c, 10));
+    }
+    s = (s + 1);
+  }), counts);
+}; }); }); })];
+  var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Avalanche sizes', undefined)(function() {}); }); };
+  var update  = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Avalanche sizes', undefined)(function() {}); }); };
+  return new Plot(name, pens, plotOps, 0.0, 1.0, 0.0, 1.0, setup, update);
+})(), (function() {
+  var name    = 'Avalanche lifetimes';
+  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
+  var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Avalanche lifetimes', 'default')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Avalanche lifetimes', 'default')(function() { if ((Prims.equality(Prims.mod(world.ticker.tickCount(), 100), 0) && !ListPrims.empty(world.observer.getGlobal('lifetimes')))) {
+  plotManager.resetPen();
+  var counts = Tasks.nValues((1 + ListPrims.max(world.observer.getGlobal('lifetimes'))), Tasks.reporterTask(function() { var taskArguments = arguments;
+  return 0; }));
+  Tasks.forEach(Tasks.commandTask(function() {
+    var taskArguments = arguments;
+    counts = ListPrims.replaceItem(taskArguments[0], counts, (1 + ListPrims.item(taskArguments[0], counts)));
+  }), world.observer.getGlobal('lifetimes'));
+  var l = 0;
+  Tasks.forEach(Tasks.commandTask(function() {
+    var taskArguments = arguments;
+    var c = taskArguments[0];
+    if ((Prims.gt(l, 0) && Prims.gt(c, 0))) {
+      plotManager.plotPoint(Prims.log(l, 10), Prims.log(c, 10));
+    }
+    l = (l + 1);
+  }), counts);
+}; }); }); })];
+  var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Avalanche lifetimes', undefined)(function() {}); }); };
+  var update  = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Avalanche lifetimes', undefined)(function() {}); }); };
+  return new Plot(name, pens, plotOps, 0.0, 1.0, 0.0, 1.0, setup, update);
+})()];
+
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])(['animate-avalanches?', 'drop-location', 'grains-per-patch', 'total', 'total-on-tick', 'sizes', 'last-size', 'lifetimes', 'last-lifetime', 'selected-patch', 'default-color', 'fired-color', 'selected-color'], ['animate-avalanches?', 'drop-location', 'grains-per-patch'], [], [], ['n', 'n-stack', 'base-color'], -50, 50, -50, 50, 4.0, false, false, {"default":{"rotate":true,"elements":[{"xcors":[150,40,150,260],"ycors":[5,250,205,250],"type":"polygon","color":"rgba(141, 141, 141, 1.0)","filled":true,"marked":true}]}}, {"default":{}});
+
 var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
 var ListPrims     = workspace.listPrims;
+var plotManager   = workspace.plotManager;
 var Prims         = workspace.prims;
 var SelfPrims     = workspace.selfPrims;
 var SelfManager   = workspace.selfManager;
@@ -25,10 +91,10 @@ var Turtle    = tortoise_require('engine/core/turtle');
 var TurtleSet = tortoise_require('engine/core/turtleset');
 var Tasks     = tortoise_require('engine/prim/tasks');
 
-var AgentModel     = tortoise_require('agentmodel');
-var Denuller       = tortoise_require('nashorn/denuller');
-var Random         = tortoise_require('shim/random');
-var StrictMath     = tortoise_require('shim/strictmath');
+var AgentModel = tortoise_require('agentmodel');
+var Denuller   = tortoise_require('nashorn/denuller');
+var Random     = tortoise_require('shim/random');
+var StrictMath = tortoise_require('shim/strictmath');
 function setup(setupTask) {
   world.clearAll();
   world.observer.setGlobal('default-color', 105);

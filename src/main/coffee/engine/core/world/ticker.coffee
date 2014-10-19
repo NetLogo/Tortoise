@@ -8,13 +8,15 @@ module.exports =
     # Number
     _count: undefined
 
-    # ((String*) => Unit) => Ticker
-    constructor: (@_updateFunc) ->
+    # (() => Unit, () => Unit, (String*) => Unit) => Ticker
+    constructor: (@_onReset, @_onTick, @_updateFunc) ->
       @_count = -1
 
     # () => Unit
     reset: ->
       @_updateTicks(-> 0)
+      @_onReset()
+      @_onTick()
       return
 
     # () => Unit
@@ -28,6 +30,7 @@ module.exports =
         throw new Error("The tick counter has not been started yet. Use RESET-TICKS.")
       else
         @_updateTicks((counter) -> counter + 1)
+      @_onTick()
       return
 
     # (Number) => Unit

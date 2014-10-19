@@ -26,8 +26,9 @@ module.exports =
     topology:      undefined # Topology
     turtleManager: undefined # TurtleManager
 
-    _patches: undefined # Array[Patch]
-    _updater: undefined # Updater
+    _patches:     undefined # Array[Patch]
+    _plotManager: undefined # PlotManager
+    _updater:     undefined # Updater
 
     # Optimization-related variables
     _patchesAllBlack:          undefined # Boolean
@@ -37,7 +38,8 @@ module.exports =
     constructor: (miniWorkspace, globalNames, interfaceGlobalNames, @turtlesOwnNames, @linksOwnNames, @patchesOwnNames
                 , minPxcor, maxPxcor, minPycor, maxPycor, _patchSize, wrappingAllowedInX, wrappingAllowedInY
                 , turtleShapeList, linkShapeList) ->
-      { selfManager: @selfManager, updater: @_updater, rng: @rng, breedManager: @breedManager } = miniWorkspace
+      { selfManager: @selfManager, updater: @_updater, rng: @rng
+      , breedManager: @breedManager, plotManager: @_plotManager } = miniWorkspace
       @_updater.collectUpdates()
       @_updater.registerWorldState({
         worldWidth: maxPxcor - minPxcor + 1,
@@ -61,7 +63,7 @@ module.exports =
 
       @linkManager   = new LinkManager(this, @breedManager, @_updater, @_setUnbreededLinksDirected, @_setUnbreededLinksUndirected)
       @observer      = new Observer(@_updater.updated, globalNames, interfaceGlobalNames)
-      @ticker        = new Ticker(@_updater.updated(this))
+      @ticker        = new Ticker(@_plotManager.setupPlots, @_plotManager.updatePlots, @_updater.updated(this))
       @topology      = null
       @turtleManager = new TurtleManager(this, @breedManager, @_updater, @rng.nextInt)
 
@@ -145,6 +147,7 @@ module.exports =
       @_declarePatchesAllBlack()
       @_resetPatchLabelCount()
       @ticker.clear()
+      @_plotManager.clearAllPlots()
       return
 
     # () => Unit
