@@ -44,11 +44,11 @@ BaseRGBs = [
 # Array[RGB]
 RGBCache =
   for colorTimesTen in [0..1400]
-    baseIndex  = Math.floor(colorTimesTen / 100)
-    rgb        = BaseRGBs[baseIndex]
-    step       = (colorTimesTen % 100 - 50) / 50.48 + 0.012
-    attenuator = if step < 0 then 0 else 0xFF
-    rgb.map((x) -> x + Math.floor((attenuator - x) * step))
+    baseIndex = Math.floor(colorTimesTen / 100)
+    rgb       = BaseRGBs[baseIndex]
+    step      = (colorTimesTen % 100 - 50) / 50.48 + 0.012
+    attenuate = if step < 0 then (x) -> x else (x) -> 0xFF - x
+    rgb.map((x) -> x + Math.floor(attenuate(x) * step))
 
 module.exports = {
 
