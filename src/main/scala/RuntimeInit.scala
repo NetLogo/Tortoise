@@ -23,6 +23,7 @@ class RuntimeInit(program: Program, model: Model) {
        |var LayoutManager = workspace.layoutManager;
        |var LinkPrims     = workspace.linkPrims;
        |var ListPrims     = workspace.listPrims;
+       |var MousePrims    = workspace.mousePrims;
        |var plotManager   = workspace.plotManager;
        |var Prims         = workspace.prims;
        |var SelfPrims     = workspace.selfPrims;

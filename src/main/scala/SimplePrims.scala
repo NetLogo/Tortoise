@@ -17,10 +17,6 @@ object SimplePrims {
         case _: prim.etc._minpycor         => "world.topology.minPycor"
         case _: prim.etc._maxpxcor         => "world.topology.maxPxcor"
         case _: prim.etc._maxpycor         => "world.topology.maxPycor"
-        case _: prim.etc._mousedown        => "notImplemented('mouse-down?', false)()"
-        case _: prim.etc._mouseinside      => "notImplemented('mouse-inside?', false)()"
-        case _: prim.etc._mousexcor        => "notImplemented('mouse-xcor', 0)()"
-        case _: prim.etc._mouseycor        => "notImplemented('mouse-ycor', 0)()"
         case _: prim.etc._worldwidth       => "world.topology.width"
         case _: prim.etc._worldheight      => "world.topology.height"
       }
@@ -143,6 +139,10 @@ object SimplePrims {
         case _: prim.etc._plotymin           => "plotManager.getPlotYMin"
         case _: prim.etc._plotymax           => "plotManager.getPlotYMax"
         case _: prim.etc._plotpenexists      => "plotManager.hasPenWithName"
+        case _: prim.etc._mousedown          => "MousePrims.isDown"
+        case _: prim.etc._mouseinside        => "MousePrims.isInside"
+        case _: prim.etc._mousexcor          => "MousePrims.getX"
+        case _: prim.etc._mouseycor          => "MousePrims.getY"
       }
   }
 

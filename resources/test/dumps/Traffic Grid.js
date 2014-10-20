@@ -38,6 +38,7 @@ var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
 var ListPrims     = workspace.listPrims;
+var MousePrims    = workspace.mousePrims;
 var plotManager   = workspace.plotManager;
 var Prims         = workspace.prims;
 var SelfPrims     = workspace.selfPrims;
@@ -172,9 +173,9 @@ function go() {
   world.ticker.tick();
 }
 function chooseCurrent() {
-  if (notImplemented('mouse-down?', false)()) {
-    var xMouse = notImplemented('mouse-xcor', 0)();
-    var yMouse = notImplemented('mouse-ycor', 0)();
+  if (MousePrims.isDown()) {
+    var xMouse = MousePrims.getX();
+    var yMouse = MousePrims.getY();
     if (world.getPatchAt(xMouse, yMouse).projectionBy(function() {
       return SelfPrims.getPatchVariable('intersection?');
     })) {

@@ -49,6 +49,7 @@ var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
 var ListPrims     = workspace.listPrims;
+var MousePrims    = workspace.mousePrims;
 var plotManager   = workspace.plotManager;
 var Prims         = workspace.prims;
 var SelfPrims     = workspace.selfPrims;
@@ -129,9 +130,9 @@ function findTopSpecies() {
   world.observer.setGlobal('max-percent', ((100 * winningAmount) / world.turtles().size()));
 }
 function placeWall() {
-  if (notImplemented('mouse-down?', false)()) {
+  if (MousePrims.isDown()) {
     world.patches().agentFilter(function() {
-      return (Prims.equality(StrictMath.abs(SelfPrims.getPatchVariable('pycor')), world.topology.maxPycor) || Prims.equality(SelfPrims.getPatchVariable('pycor'), StrictMath.round(notImplemented('mouse-ycor', 0)())));
+      return (Prims.equality(StrictMath.abs(SelfPrims.getPatchVariable('pycor')), world.topology.maxPycor) || Prims.equality(SelfPrims.getPatchVariable('pycor'), StrictMath.round(MousePrims.getY())));
     }).ask(function() {
       SelfPrims.setPatchVariable('pcolor', 9.9);
       SelfManager.self().turtlesHere().ask(function() {
@@ -142,9 +143,9 @@ function placeWall() {
   }
 }
 function removeWall() {
-  if (notImplemented('mouse-down?', false)()) {
+  if (MousePrims.isDown()) {
     world.patches().agentFilter(function() {
-      return Prims.equality(SelfPrims.getPatchVariable('pycor'), StrictMath.round(notImplemented('mouse-ycor', 0)()));
+      return Prims.equality(SelfPrims.getPatchVariable('pycor'), StrictMath.round(MousePrims.getY()));
     }).ask(function() {
       SelfPrims.setPatchVariable('pcolor', 0);
     }, true);

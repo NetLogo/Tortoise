@@ -68,6 +68,7 @@ var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
 var ListPrims     = workspace.listPrims;
+var MousePrims    = workspace.mousePrims;
 var plotManager   = workspace.plotManager;
 var Prims         = workspace.prims;
 var SelfPrims     = workspace.selfPrims;
@@ -162,8 +163,8 @@ function go() {
   }
 }
 function explore() {
-  if (notImplemented('mouse-inside?', false)()) {
-    var p = world.getPatchAt(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)());
+  if (MousePrims.isInside()) {
+    var p = world.getPatchAt(MousePrims.getX(), MousePrims.getY());
     world.observer.setGlobal('selected-patch', p);
     world.patches().ask(function() {
       Call(pushN);
@@ -243,9 +244,9 @@ function dropPatch() {
   if (Prims.equality(world.observer.getGlobal('drop-location'), "random")) {
     return ListPrims.oneOf(world.patches());
   }
-  if ((Prims.equality(world.observer.getGlobal('drop-location'), "mouse-click") && notImplemented('mouse-down?', false)())) {
+  if ((Prims.equality(world.observer.getGlobal('drop-location'), "mouse-click") && MousePrims.isDown())) {
     Prims.every(0.3, function() {
-      return world.getPatchAt(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)());
+      return world.getPatchAt(MousePrims.getX(), MousePrims.getY());
     }, 'dropPatch-0');
   }
   return Nobody;

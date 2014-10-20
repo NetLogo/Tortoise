@@ -13,6 +13,7 @@ var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims     = workspace.linkPrims;
 var ListPrims     = workspace.listPrims;
+var MousePrims    = workspace.mousePrims;
 var plotManager   = workspace.plotManager;
 var Prims         = workspace.prims;
 var SelfPrims     = workspace.selfPrims;
@@ -96,9 +97,9 @@ function go() {
   world.ticker.tick();
 }
 function drawCells() {
-  var erasing_p = Prims.breedOn("CELLS", world.getPatchAt(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)())).nonEmpty();
-  while (notImplemented('mouse-down?', false)()) {
-    world.getPatchAt(notImplemented('mouse-xcor', 0)(), notImplemented('mouse-ycor', 0)()).ask(function() {
+  var erasing_p = Prims.breedOn("CELLS", world.getPatchAt(MousePrims.getX(), MousePrims.getY())).nonEmpty();
+  while (MousePrims.isDown()) {
+    world.getPatchAt(MousePrims.getX(), MousePrims.getY()).ask(function() {
       if (erasing_p) {
         Call(erase);
       }
