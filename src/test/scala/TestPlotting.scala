@@ -433,7 +433,7 @@ trait PlottingHelpers {
   protected def assertPenDoesntExist(penName: String) (implicit n: Nashorn) = assertResult(Boolean.box(false))(evalNLReporter(s"""plot-pen-exists? "$penName""""))
   protected def assertPenModeIs(penMode: PenMode)     (implicit n: Nashorn) = assertResult(evalJS(s"PenBundle.PenMode.${penMode.toPenModeStr}"))(evalJS(s"$pathToState.mode"))
   protected def assertPenNameIs(name: String)         (implicit n: Nashorn) = assertResult(name)(evalJS(s"$pathToPen.name"))
-  protected def assertPlotNameIs(name: String)        (implicit n: Nashorn) = assertResult(name.toUpperCase)(evalNLReporter("plot-name"))
+  protected def assertPlotNameIs(name: String)        (implicit n: Nashorn) = assertResult(name)(evalNLReporter("plot-name"))
   protected def assertYs(ys: Int*)                    (implicit n: Nashorn) = assertXYs(ys.zipWithIndex map (_.swap): _*)
 
   protected def assertAxisRangeIs(min: Double, max: Double)(implicit n: Nashorn, axis: Axis) = {

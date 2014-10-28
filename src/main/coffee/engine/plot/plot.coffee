@@ -14,10 +14,9 @@ module.exports = class Plot
   isAutoplotting: undefined # Boolean
   name:           undefined # String
 
-  # (String, Array[Pen], PlotOps, Number, Number, Number, Number, () => Unit, () => Unit) => Plot
-  constructor: (name, pens = [], @_ops, @xMin = 0, @xMax = 10, @yMin = 0, @yMax = 10, @_setupThis = (->), @_updateThis = (->)) ->
+  # (String, Array[Pen], PlotOps, String, String, Boolean, Number, Number, Number, Number, () => Unit, () => Unit) => Plot
+  constructor: (@name, pens = [], @_ops, @xLabel, @yLabel, @isLegendEnabled = true, @xMin = 0, @xMax = 10, @yMin = 0, @yMax = 10, @_setupThis = (->), @_updateThis = (->)) ->
     @isAutoplotting  = true
-    @name            = name.toUpperCase()
     @_currentPen     = pens[0]
     @_originalBounds = [@xMin, @xMax, @yMin, @yMax]
     @_penMap         = _(pens).map((p) -> p.name.toUpperCase()).zipObject(pens).value()

@@ -55,7 +55,7 @@ private[tortoise] trait ModelConfigGenerator {
            |  var pens    = $plotPens;
            |  var setup   = $setup;
            |  var update  = $update;
-           |  return new Plot(name, pens, plotOps, $xmin, $xmax, $ymin, $ymax, setup, update);
+           |  return new Plot(name, pens, plotOps, '$xAxis', '$yAxis', $legendOn, $xmin, $xmax, $ymin, $ymax, setup, update);
            |})()""".stripMargin
     }
   }
