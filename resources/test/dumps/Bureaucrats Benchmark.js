@@ -13,7 +13,7 @@ modelConfig.plots = [(function() {
   var update  = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Average', undefined)(function() { if (!world.observer.getGlobal('plot?')) {
   throw new Exception.StopInterrupt;
 }; }); }); };
-  return new Plot(name, pens, plotOps, 0.0, 1.0, 2.0, 2.1, setup, update);
+  return new Plot(name, pens, plotOps, 'NIL', 'NIL', true, 0.0, 1.0, 2.0, 2.1, setup, update);
 })()];
 
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])(['plot?', 'total', 'result'], ['plot?'], [], [], ['n'], 0, 99, 0, 99, 3.0, false, false, {"default":{"rotate":true,"elements":[{"xcors":[150,40,150,260],"ycors":[5,250,205,250],"type":"polygon","color":"rgba(141, 141, 141, 1.0)","filled":true,"marked":true}]}}, {"default":{}});
