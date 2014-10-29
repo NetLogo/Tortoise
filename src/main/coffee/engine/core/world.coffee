@@ -142,7 +142,7 @@ module.exports =
       @observer.clearCodeGlobals()
       @observer.resetPerspective()
       @turtleManager.clearTurtles()
-      @createPatches()
+      @clearPatches()
       @linkManager._resetIDs()
       @_declarePatchesAllBlack()
       @_resetPatchLabelCount()
