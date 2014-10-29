@@ -15,6 +15,8 @@ module.exports =
 
   class LinkManager
 
+    _linkArrCache: undefined # Array[Link]
+
     _links:     undefined # SortedLinks
     _linksFrom: undefined # Object[String, Object[Number, Number]]
     _idManager: undefined # IDManager
@@ -65,7 +67,7 @@ module.exports =
 
     # () => LinkSet
     links: ->
-      thunk = (=> @_links.toArray())
+      thunk = (=> @_linkArray())
       new LinkSet(thunk, "LINKS", "links")
 
     # (String) => LinkSet
@@ -73,10 +75,17 @@ module.exports =
       thunk = (=> stableSort(@_breedManager.get(breedName).members)((x, y) -> x.compare(y).toInt))
       new LinkSet(thunk, breedName, breedName)
 
+    # () => Array[Link]
+    _linkArray: ->
+      if not @_linkArrCache?
+        @_linkArrCache = @_links.toArray()
+      @_linkArrCache
+
     # (Link) => Unit
     _removeLink: (link) =>
       l = @_links.find(({id}) -> id is link.id)
       @_links = @_links.remove(l)
+      @_linkArrCache = undefined
       if @_links.isEmpty() then @_notifyIsUndirected()
 
       remove = (set, id1, id2) -> if set? then set[id1] = _(set[id1]).without(id2).value()
@@ -103,6 +112,7 @@ module.exports =
         @_updater.updated(link)(Builtins.linkBuiltins...)
         @_updater.updated(link)(Builtins.linkExtras...)
         @_links.insert(link)
+        @_linkArrCache = undefined
         @_insertIntoSets(end1.id, end2.id, isDirected, breedName)
         link
       else
