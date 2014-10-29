@@ -75,21 +75,6 @@ module.exports =
       @resize(minPxcor, maxPxcor, minPycor, maxPycor, wrappingAllowedInX, wrappingAllowedInY)
 
 
-    # () => Unit
-    createPatches: ->
-      nested =
-        for y in [@topology.maxPycor..@topology.minPycor]
-          for x in [@topology.minPxcor..@topology.maxPxcor]
-            id = (@topology.width * (@topology.maxPycor - y)) + x - @topology.minPxcor
-            new Patch(id, x, y, this, @_updater.updated, @_declarePatchesNotAllBlack, @_decrementPatchLabelCount, @_incrementPatchLabelCount)
-
-      @_patches = [].concat(nested...)
-
-      for patch in @_patches
-        @_updater.updated(patch)("pxcor", "pycor", "pcolor", "plabel", "plabel-color")
-
-      return
-
     # () => LinkSet
     links: ->
       @linkManager.links()
@@ -112,7 +97,7 @@ module.exports =
       @turtleManager._clearTurtlesSuspended()
 
       @changeTopology(wrapsInX, wrapsInY, minPxcor, maxPxcor, minPycor, maxPycor)
-      @createPatches()
+      @_createPatches()
       @_declarePatchesAllBlack()
       @_resetPatchLabelCount()
       @_updater.updated(this)("width", "height", "minPxcor", "minPycor", "maxPxcor", "maxPycor")
@@ -164,6 +149,21 @@ module.exports =
     # (Number, Number) => PatchSet
     getNeighbors4: (pxcor, pycor) ->
       new PatchSet(@topology.getNeighbors4(pxcor, pycor))
+
+    # () => Unit
+    _createPatches: ->
+      nested =
+        for y in [@topology.maxPycor..@topology.minPycor]
+          for x in [@topology.minPxcor..@topology.maxPxcor]
+            id = (@topology.width * (@topology.maxPycor - y)) + x - @topology.minPxcor
+            new Patch(id, x, y, this, @_updater.updated, @_declarePatchesNotAllBlack, @_decrementPatchLabelCount, @_incrementPatchLabelCount)
+
+      @_patches = [].concat(nested...)
+
+      for patch in @_patches
+        @_updater.updated(patch)("pxcor", "pycor", "pcolor", "plabel", "plabel-color")
+
+      return
 
     # () => Unit
     _incrementPatchLabelCount: =>
