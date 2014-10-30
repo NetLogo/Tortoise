@@ -18,7 +18,7 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Wall Hits per Particle', 'default')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Wall Hits per Particle', 'default')(function() {}); }); })];
   var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Wall Hits per Particle', undefined)(function() {}); }); };
   var update  = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Wall Hits per Particle', undefined)(function() {}); }); };
-  return new Plot(name, pens, plotOps, 'NIL', 'NIL', false, 0.0, 20.0, 0.0, 1.0, setup, update);
+  return new Plot(name, pens, plotOps, '', '', false, 0.0, 20.0, 0.0, 1.0, setup, update);
 })(), (function() {
   var name    = 'Energy Histogram';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
