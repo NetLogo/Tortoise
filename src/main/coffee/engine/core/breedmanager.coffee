@@ -26,22 +26,15 @@ class Breed
 
   # (Agent) => Unit
   add: (newAgent) ->
-    index = _(@members).findIndex((agent) -> agent.id > newAgent.id)
-    indexToSplitAt =
-      if index >= 0
-        index
-      else
-        @members.length
-    howManyToThrowOut = 0
-    whatToInsert = newAgent
-    @members.splice(indexToSplitAt, howManyToThrowOut, whatToInsert)
+    if _(@members).isEmpty() or _(@members).last().id < newAgent.id
+      @members.push(newAgent)
+    else
+      @members.splice(@_agentIndex(newAgent), howManyToThrowOut = 0, whatToInsert = newAgent)
     return
 
   # (Agent) => Unit
   remove: (agent) ->
-    indexToSplitAt = @members.indexOf(agent)
-    howManyToThrowOut = 1
-    @members.splice(indexToSplitAt, howManyToThrowOut)
+    @members.splice(@_agentIndex(agent), howManyToThrowOut = 1)
     return
 
   # () => Boolean
@@ -55,6 +48,10 @@ class Breed
   # () => Boolean
   isDirected: ->
     @_isDirectedLinkBreed is true
+
+  # (Agent) -> Number
+  _agentIndex: (agent) ->
+    _(@members).sortedIndex(agent, getAgentId = (a) -> a.id)
 
 
 module.exports =
