@@ -29,12 +29,12 @@ class Breed
     if _(@members).isEmpty() or _(@members).last().id < newAgent.id
       @members.push(newAgent)
     else
-      @members.splice(@_agentIndex(newAgent), howManyToThrowOut = 0, whatToInsert = newAgent)
+      @members.splice(@_getAgentIndex(newAgent), howManyToThrowOut = 0, whatToInsert = newAgent)
     return
 
   # (Agent) => Unit
   remove: (agent) ->
-    @members.splice(@_agentIndex(agent), howManyToThrowOut = 1)
+    @members.splice(@_getAgentIndex(agent), howManyToThrowOut = 1)
     return
 
   # () => Boolean
@@ -49,10 +49,9 @@ class Breed
   isDirected: ->
     @_isDirectedLinkBreed is true
 
-  # (Agent) -> Number
-  _agentIndex: (agent) ->
-    _(@members).sortedIndex(agent, getAgentId = (a) -> a.id)
-
+  # (Agent) => Number
+  _getAgentIndex: (agent) ->
+    _(@members).sortedIndex(agent, (a) -> a.id)
 
 module.exports =
   class BreedManager
