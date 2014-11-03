@@ -2,8 +2,8 @@ package org.nlogo.tortoise
 
 import
   org.nlogo.{ api, core },
-   api.Color,
-   core.{ Model, Pen, Plot }
+   api.{ Color, CompilerException },
+   core.{ Model, Pen, Plot, Token }
 
 private[tortoise] trait ModelConfigGenerator {
 
@@ -13,6 +13,13 @@ private[tortoise] trait ModelConfigGenerator {
 
     // Janky, but I wrap it in a dummy class in order to avoid implicit resolution errors. --JAB (10/17/14)
     implicit val compile = compileCommand andThen CompileString.apply
+
+    val invalidPlots = model.plots.groupBy(_.display).filter(_._2.size > 1)
+    if (invalidPlots.nonEmpty) {
+      import Token.Eof
+      val message = s"Having multiple plots with same display name is not supported.  Duplicate names detected: ${invalidPlots.keys.mkString(", ")}"
+      throw new CompilerException(message, Eof.start, Eof.end, Eof.filename)
+    }
 
     s"""var modelConfig  = ${getOrElse("window.modelConfig")("{}")};
        |var modelPlotOps = ${getOrElse("modelConfig.plotOps")("{}")};
