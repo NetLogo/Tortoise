@@ -36,7 +36,7 @@ val nlDependencyVersion = "5.2.0-3dde6c5"
 
 libraryDependencies ++= Seq(
   "org.nlogo" % "netlogoheadless" % nlDependencyVersion,
-  "org.json4s" %% "json4s-native" % "3.2.10",
+  "org.json4s" %% "json4s-native" % "3.2.11",
   "org.scalaz" %% "scalaz-core" % "7.1.0",
   "org.scalacheck" %% "scalacheck" % "1.11.6" % "test",
   "org.scalatest" %% "scalatest" % "2.2.1" % "test",
