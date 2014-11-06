@@ -1,8 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_          = require('lodash')
-StrictMath = require('tortoise/shim/strictmath')
-Trig       = require('tortoise/util/trig')
+_    = require('lodash')
+Trig = require('tortoise/util/trig')
 
 module.exports =
   class LayoutManager
@@ -120,8 +119,8 @@ module.exports =
           [dx, dy] =
           if t2.xcor is t1.xcor and t2.ycor is t1.ycor
             ang   = 360 * @_nextDouble()
-            newDX = -(rep / div * Trig.sin(StrictMath.toRadians(ang)))
-            newDY = -(rep / div * Trig.cos(StrictMath.toRadians(ang)))
+            newDX = -(rep / div * Trig.sin(ang))
+            newDY = -(rep / div * Trig.cos(ang))
             [newDX, newDY]
           else
             dist  = t1.distance(t2)

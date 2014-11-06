@@ -313,9 +313,7 @@ object Model {
     ),
     Model(
       path = "models/Sample Models/Networks/Team Assembly.nlogo",
-      // fails if layout? is true; don't know why. it's #94 - ST 4/22/14
-      setup = "set layout? false  setup",
-      repetitions = 20
+      repetitions = 10
     )
   )
 }
