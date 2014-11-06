@@ -1,0 +1,22 @@
+#!/bin/sh
+exec scala "$0" "$@"
+!#
+
+import
+  java.{ awt, io, net },
+    awt.Desktop,
+    io.File,
+    net.URI
+
+val fileArg = args(0)
+
+def openInBrowser(filepath: String): Unit = {
+  val uri = new URI(s"file://$fileArg")
+  println(uri)
+  Desktop.getDesktop.browse(uri)
+}
+
+if (new File(fileArg).exists())
+  openInBrowser(fileArg)
+else
+  System.err.println(s"Cannot open failure list in browser.  The file '$fileArg' does not exist.")

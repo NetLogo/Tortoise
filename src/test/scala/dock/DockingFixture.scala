@@ -7,21 +7,27 @@ import
   org.nlogo.{ core, api, headless, mirror, nvm },
   headless.lang._,
   core.Model,
-  api.MersenneTwisterFast,
   org.scalatest.Assertions._,
-  org.nlogo.shape.{LinkShape, VectorShape},
+  org.scalatest.exceptions.TestFailedException,
   jsengine.nashorn.Nashorn
-
-import collection.JavaConverters._
 
 import json.JSONSerializer
 
-trait DockingSuite extends org.scalatest.fixture.FunSuite {
-  val nashorn = new Nashorn
+trait DockingSuite extends org.scalatest.fixture.FunSuite with TestLogger {
   type FixtureParam = DockingFixture
+
   override def withFixture(test: OneArgTest) = {
     val fixture = new DockingFixture(test.name, nashorn)
-    try withFixture(test.toNoArgTest(fixture))
+    try {
+      loggingFailures(suiteName, test.name, {
+        val outcome = withFixture(test.toNoArgTest(fixture))
+        if (outcome.isFailed || outcome.isExceptional) {
+          noteAtStart(s"NetLogo Code:${fixture.netLogoCode}")
+          testFailed(this.getClass.getName, test.name)
+        }
+        outcome
+      })
+    }
     finally fixture.workspace.dispose()
   }
 }
@@ -32,6 +38,7 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
     mirror.Mirrorables.allMirrorables(workspace.world)
   var state: mirror.Mirroring.State = Map()
   var opened = false
+  val netLogoCode = new StringBuilder
 
   workspace.flags =
     nvm.CompilerFlags(
@@ -53,6 +60,7 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
 
   override def runReporter(reporter: Reporter, mode: TestMode) {
     if (!opened) declare(Model())
+    netLogoCode ++= s"${reporter.reporter}\n"
     val compiledJS = Compiler.compileReporter(
       reporter.reporter, workspace.procedures, workspace.world.program)
     reporter.result match {
@@ -66,24 +74,24 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
       case _: RuntimeError =>
         try {
           evalJS(compiledJS)
-          throw new IllegalStateException("Error in headless, not in JS")
+          throw new TestFailedException("Error in headless, not in JS", 7)
         } catch {
-          case ex: IllegalStateException => throw ex
+          case ex: TestFailedException => throw ex
           case _: Exception =>
         }
       case _ =>
-        throw new IllegalStateException
+        throw new TestFailedException("Unexpected error", 7)
     }
   }
 
-  def viewResult(reporter: String) {
+  def viewResult(reporter: String) = {
     println("[View Result] " + api.Dump.logoObject(workspace.report(reporter)))
   }
 
-  override def runCommand(command: Command, mode: TestMode) {
+  override def runCommand(command: Command, mode: TestMode) = {
     if (!opened) declare(Model())
-    import command.{ command => logo }
-    // println(s"logo = $logo")
+    val logo = command.command
+    netLogoCode ++= s"$logo\n"
     workspace.clearOutput()
 
     val (headlessException, exceptionOccurredInHeadless) =
@@ -96,10 +104,7 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
       }
     val (newState, update) = mirror.Mirroring.diffs(state, mirrorables)
     state = newState
-    // println(s"state = $state")
-    // println(s"update = $update")
     val expectedJson = "[" + JSONSerializer.serialize(update) + "]"
-    // println(s"expectedJson = $expectedJson")
     val expectedOutput = workspace.outputAreaBuffer.toString
     val compiledJS = Compiler.compileCommands(logo, workspace.procedures, workspace.world.program)
     val (exceptionOccurredInJS, (actualOutput, actualJson)) =
@@ -124,32 +129,31 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
           }
       }
     if(exceptionOccurredInHeadless && !exceptionOccurredInJS) {
-      throw new IllegalStateException("Exception occurred in headless but not JS: " + headlessException)
+      throw new TestFailedException("Exception occurred in headless but not JS: " + headlessException, 7)
     } else if(!exceptionOccurredInHeadless && exceptionOccurredInJS) {
-      throw new IllegalStateException("Exception occurred in JS but not headless: " + actualOutput)
+      throw new TestFailedException("Exception occurred in JS but not headless: " + actualOutput, 7)
     } else if(exceptionOccurredInHeadless && exceptionOccurredInJS) {
       if(headlessException != actualOutput)
-        throw new IllegalStateException(s"""Exception in JS was "$actualOutput" but exception in headless was "$headlessException" """)
+        throw new TestFailedException(s"""Exception in JS was "$actualOutput" but exception in headless was "$headlessException" """, 7)
     } else {
-      //println(expectedJson)
-      //println(actualJson)
       assertResult(expectedOutput)(actualOutput)
-      nashorn.eval(s"""expectedUpdates = Denuller(JSON.parse("${expectedJson.replaceAll("\"", "\\\\\"")}"))""")
-      nashorn.eval(s"""actualUpdates   = Denuller(JSON.parse("${actualJson.replaceAll("\"", "\\\\\"")}"))""")
-      nashorn.eval("expectedModel.updates(expectedUpdates)")
-      nashorn.eval("actualModel.updates(actualUpdates)")
-      val expectedModel = nashorn.eval("JSON.stringify(expectedModel)").asInstanceOf[String]
-      val actualModel = nashorn.eval("JSON.stringify(actualModel)").asInstanceOf[String]
-      // println(" exp upt = " + expectedJson)
-      // println(" act upt = " + actualJson)
-      // println("expected = " + expectedModel)
-      // println("  actual = " + actualModel)
+      val (expectedModel, actualModel) = updatedJsonModels(expectedJson, actualJson)
       org.skyscreamer.jsonassert.JSONAssert.assertEquals(
         expectedModel, actualModel, true)  // strict = true
-      assert(workspace.world.mainRNG.save == nashorn.eval("Random.save()"),
+      assert(workspace.world.mainRNG.save == nashorn.eval(
+        """if (typeof Random == "undefined" || typeof Random.save == "undefined") { [] } else { Random.save() }"""),
         "divergent RNG state")
     }
-    // println()
+  }
+
+  private def updatedJsonModels(expectedJson: String, actualJson: String) : (String, String) = {
+    nashorn.eval(s"""expectedUpdates = Denuller(JSON.parse("${expectedJson.replaceAll("\"", "\\\\\"")}"))""")
+    nashorn.eval(s"""actualUpdates   = Denuller(JSON.parse("${actualJson.replaceAll("\"", "\\\\\"")}"))""")
+    nashorn.eval("expectedModel.updates(expectedUpdates)")
+    nashorn.eval("actualModel.updates(actualUpdates)")
+    val expectedModel = nashorn.eval("JSON.stringify(expectedModel)").asInstanceOf[String]
+    val actualModel = nashorn.eval("JSON.stringify(actualModel)").asInstanceOf[String]
+    (expectedModel, actualModel)
   }
 
   // use single-patch world by default to keep generated JSON to a minimum
@@ -189,6 +193,7 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
   }
 
   def declareHelper(model: Model) {
+    netLogoCode ++= s"${model.code}\n"
     val (js, _, _) = Compiler.compileProcedures(model)
     evalJS(js)
     state = Map()

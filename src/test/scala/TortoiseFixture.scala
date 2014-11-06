@@ -2,193 +2,93 @@
 
 package org.nlogo.tortoise
 
-import org.nlogo.{ api, core, headless, nvm },
-  api.CompilerException,
-  nvm.FrontEndInterface.{ ProceduresMap, NoProcedures },
-  headless.lang, lang._,
-  org.scalatest.Assertions._,
-  org.scalatest.exceptions.TestPendingException,
-  org.nlogo.tortoise.jsengine.nashorn.Nashorn
+import
+  org.scalatest.Assertions.{ assertResult, fail }
 
-trait TortoiseFinder extends lang.Finder {
-  val nashorn = new Nashorn
-  def freebies: Map[String, String]
-  def notImplemented(s: String) = {
-    info(s)
-    throw new TestPendingException
-  }
-  override def shouldRun(t: LanguageTest, mode: TestMode) =
-    mode == NormalMode && super.shouldRun(t, mode)
-  override def withFixture[T](name: String)(body: AbstractFixture => T): T =
-    freebies.get(name.stripSuffix(" (NormalMode)")) match {
-      case None =>
-        body(new TortoiseFixture(name, nashorn, notImplemented))
-      case Some(x) if x.contains("ASSUMES OPTIMIZATION") =>
-        notImplemented("Can only yield the correct answer if the optimizer is enabled")
-      case Some(x) if x.contains("TOO SLOW") =>
-        notImplemented("TOO SLOW")
-      case Some(excuse) =>
-        try
-          body(new TortoiseFixture(name, nashorn, notImplemented))
-        catch {
-          case _: TestPendingException =>
-            // ignore; we'll hit the fail() below
-          case ex: Exception =>
-            notImplemented(ex + ": LAME EXCUSE: " + excuse)
-        }
-        fail("LAME EXCUSE WASN'T NEEDED: " + excuse)
-    }
-}
+import
+  org.nlogo.{ api, core, headless, nvm, tortoise },
+    api.{ CompilerException, Program },
+    core.{ AgentKind, Model => CModel, View },
+    headless.lang.{ AbstractFixture, Command, CompileError, Reporter, Success, TestMode },
+    nvm.FrontEndInterface.{ ProceduresMap, NoProcedures },
+    tortoise.jsengine.nashorn.Nashorn
 
-class TestReporters extends lang.TestReporters with TortoiseFinder {
-  override val freebies = Map[String, String](
-      // obscure
-      "Lists::Sort2" -> "sorting heterogeneous lists doesn't work",
-      "Lists::Sort3" -> "sorting heterogeneous lists doesn't work",
-      "Lists::Sort5" -> "sorting heterogeneous lists doesn't work",
-      // perhaps never to be supported
-      "RunResult::RunResult1" -> "run/runresult on strings not supported",
-      "RunResult::RunResult2" -> "run/runresult on strings not supported",
-      "RunResult::RunResult3" -> "run/runresult on strings not supported"
-    )
-}
+class TortoiseFixture(name: String, nashorn: Nashorn, notImplemented: (String) => Nothing) extends Fixture {
 
-class TestCommands extends lang.TestCommands with TortoiseFinder {
-  override val freebies = Map[String, String](
-    // requires features
-    "Random::RandomNOfIsFairForAList" -> "`n-of` not implemented for lists",
-    // requires handling of non-local exit (see in JVM NetLogo: `NonLocalExit`, `_report`, `_foreach`, `_run`)
-    "Stop::ReportFromForeach" -> "no non-local exit from foreach",
-    // Significant: Requires the optimizer to be turned on
-    "Interaction::Interaction3b1"                                             -> "ASSUMES OPTIMIZATION: empty init block",
-    "Interaction::Interaction3b2"                                             -> "ASSUMES OPTIMIZATION: empty init block",
-    "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksFrom" -> "ASSUMES OPTIMIZATION: empty init block",
-    "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksTo"   -> "ASSUMES OPTIMIZATION: empty init block",
-    "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksWith" -> "ASSUMES OPTIMIZATION: empty init block",
-    "TurtlesHere::TurtlesHereCheckOrder1"                                     -> "ASSUMES OPTIMIZATION: empty init block",
-    "TurtlesHere::TurtlesHereCheckOrder2"                                     -> "ASSUMES OPTIMIZATION: empty init block",
-    "TurtlesHere::TurtlesHereCheckOrder3"                                     -> "ASSUMES OPTIMIZATION: empty init block",
-    "TurtlesHere::TurtlesHereCheckOrder4"                                     -> "ASSUMES OPTIMIZATION: empty init block",
-    // significant; uncertain how to solve
-    "Random::RandomNOfIsFairForLinks" -> "TOO SLOW",
-    // requires Tortoise compiler changes
-    "CommandTasks::*ToString3" -> "command task string representation doesn't match",
-    "CommandTasks::*ToString4" -> "command task string representation doesn't match",
-    "CommandTasks::*ToString5" -> "command task string representation doesn't match",
-    "CommandTasks::*ToString6" -> "command task string representation doesn't match",
-    // needs 'headless' compiler changes
-    "ReporterTasks::CloseOverLocal1" -> "Creates a function named 'const', which is a reserved keyword in JavaScript",
-    "CommandTasks::command-task-body-gets-agent-type-check" -> "Necessary check must be moved up into the front-end of the compiler",
-    "Errors::task-variable-not-in-task"                     -> "Necessary check must be moved up into the front-end of the compiler",
-    "Let::LetOfVarToItself1"                                -> "Necessary check must be moved up into the front-end of the compiler",
-    "Let::LetOfVarToItself2"                                -> "Necessary check must be moved up into the front-end of the compiler",
-    "Let::LetOfVarToItself3"                                -> "Necessary check must be moved up into the front-end of the compiler",
-    "Let::LetOfVarToItselfInsideAsk"                        -> "Necessary check must be moved up into the front-end of the compiler",
-    "TypeChecking::SetVariable"                             -> "Necessary check must be moved up into the front-end of the compiler",
-    // perhaps never to be supported
-    "ControlStructures::Run1"                  -> "run/runresult on strings not supported",
-    "ControlStructures::Run2"                  -> "run/runresult on strings not supported",
-    "ControlStructures::Run3"                  -> "run/runresult on strings not supported",
-    "ControlStructures::Run4"                  -> "run/runresult on strings not supported",
-    "ControlStructures::Run5"                  -> "run/runresult on strings not supported",
-    "ControlStructures::Run6"                  -> "run/runresult on strings not supported",
-    "ControlStructures::Run7"                  -> "run/runresult on strings not supported",
-    "ControlStructures::Run8"                  -> "run/runresult on strings not supported",
-    "Run::LuisIzquierdoRun1"                   -> "run/runresult on strings not supported",
-    "Run::LuisIzquierdoRun2"                   -> "run/runresult on strings not supported",
-    "Run::LuisIzquierdoRunResult1"             -> "run/runresult on strings not supported",
-    "Run::LuisIzquierdoRunResult2"             -> "run/runresult on strings not supported",
-    "Run::run-evaluate-string-input-only-once" -> "run/runresult on strings not supported"
-  )
-}
+  private var program: Program = Program.empty
+  private var procs: ProceduresMap = NoProcedures
 
-class TortoiseFixture(name: String, nashorn: Nashorn, notImplemented: String => Nothing)
-extends AbstractFixture {
-
-  var program: api.Program = api.Program.empty
-  var procs: ProceduresMap = NoProcedures
-
-  override def defaultView: core.View = core.View.square(5)
-
-  override def declare(model: core.Model) {
-    val (js, p, m) =
-      try Compiler.compileProcedures(model)
-      catch catcher
+  override def declare(model: CModel) {
+    val (js, p, m) = cautiously(Compiler.compileProcedures(model))
     program = p
     procs = m
     nashorn.eval(js)
   }
 
   override def readFromString(literal: String): AnyRef =
-    try nashorn.eval(Compiler.compileReporter(literal))
-    catch catcher
+    cautiously(nashorn.eval(Compiler.compileReporter(literal)))
 
-  override def open(path: String) = ???
-
-  override def open(model: core.Model) {
-    declare(model)
-  }
-
-  override def runCommand(command: Command, mode: TestMode) {
-    val wrappedCommand = command.kind match {
-      case core.AgentKind.Observer =>
-        command.command
-      case core.AgentKind.Turtle =>
-        "ask turtles [ " + command.command + "\n]"
-      case core.AgentKind.Patch =>
-        "ask patches [ " + command.command + "\n]"
-      case core.AgentKind.Link =>
-        "ask links [ " + command.command + "\n]"
-    }
-    def js = Compiler.compileCommands(wrappedCommand, procs, program)
+  override def runCommand(command: Command, mode: TestMode): Unit = {
+    lazy val js = Compiler.compileCommands(wrapCommand(command), procs, program)
     command.result match {
       case Success(_) =>
-        try nashorn.run(js)
-        catch catcher
+        cautiously(nashorn.run(js))
       case CompileError(msg) =>
         expectCompileError(js, msg)
       case r =>
-        notImplemented("unknown result type: " + r.getClass.getSimpleName)
+        notImplemented(s"unknown result type: ${r.getClass.getSimpleName}")
     }
   }
 
-  private def expectCompileError(js: => String, msg: String) {
-    try {
-      try js catch catcher
-      fail("no CompilerException occurred")
-    }
-    catch {
-      case ex: api.CompilerException =>
-        assertResult(msg)(ex.getMessage)
-    }
-  }
-
-  override def runReporter(reporter: Reporter, mode: TestMode) {
-    def js = Compiler.compileReporter(reporter.reporter, procs, program)
+  override def runReporter(reporter: Reporter, mode: TestMode): Unit = {
+    lazy val js = Compiler.compileReporter(reporter.reporter, procs, program)
     reporter.result match {
       case Success(expectedResult) =>
-        val actualResult =
-          try nashorn.eval(js)
-          catch catcher
+        val actualResult = cautiously(nashorn.eval(js))
         checkResult(mode, reporter.reporter, expectedResult, actualResult)
       case CompileError(msg) =>
         expectCompileError(js, msg)
       case r =>
-        notImplemented("unknown result type: " + r.getClass.getSimpleName)
+        notImplemented(s"unknown result type: ${r.getClass.getSimpleName}")
     }
   }
 
-  // kludginess ahead - ST 8/28/13
-
-  val notImplementedMessages = Seq(
-    "unknown primitive: ",
-    "unknown settable: ",
-    "unknown language feature: ")
-
-  val catcher: PartialFunction[Throwable, Nothing] = {
-    case ex: CompilerException
-          if notImplementedMessages.exists(ex.getMessage.startsWith) =>
-        notImplemented(ex.getMessage)
+  private def expectCompileError(js: => String, msg: String): Unit = {
+    try {
+      cautiously(js)
+      fail("no CompilerException occurred")
+    }
+    catch {
+      case ex: CompilerException =>
+        assertResult(msg)(ex.getMessage)
+    }
   }
+
+  private def cautiously[T](t: => T): T = {
+    val notImplementedMessages = Seq("unknown primitive: ", "unknown settable: ", "unknown language feature: ")
+    try t
+    catch {
+      case ex: CompilerException if notImplementedMessages.exists(ex.getMessage.startsWith) =>
+        notImplemented(ex.getMessage)
+    }
+  }
+
+}
+
+private[tortoise] trait Fixture extends AbstractFixture {
+
+  override def defaultView = View.square(5)
+
+  override def open(path: String): Unit = ???
+
+  override def open(model: CModel): Unit = declare(model)
+
+  protected def wrapCommand(command: Command): String =
+    command.kind match {
+      case AgentKind.Observer => command.command
+      case AgentKind.Turtle   => s"ask turtles [ ${command.command}\n]"
+      case AgentKind.Patch    => s"ask patches [ ${command.command}\n]"
+      case AgentKind.Link     => s"ask links [ ${command.command}\n]"
+    }
 
 }
