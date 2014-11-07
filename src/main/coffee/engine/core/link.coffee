@@ -24,7 +24,7 @@ module.exports =
                 , @_label = "", @_labelcolor = 9.9, @_shape = "default", @_thickness = 0, @tiemode = "none") ->
       @_updateVarsByName = genUpdate(this)
 
-      varNames     = @world.linksOwnNames.concat(breed.varNames)
+      varNames     = @_varNamesForBreed(breed)
       @_varManager = @_genVarManager(varNames, getLinksByBreedName)
 
       @_setBreed(breed)
@@ -128,6 +128,11 @@ module.exports =
         when  0 then EQ
         when  1 then GT
         else throw new Error("Comparison should only yield an integer within the interval [-1,1]")
+
+    # (Breed) => Array[String]
+    _varNamesForBreed: (breed) ->
+      extras = if breed is @world.breedManager.links() then [] else breed.varNames
+      @world.linksOwnNames.concat(extras)
 
     # () => Unit
     _seppuku: ->
