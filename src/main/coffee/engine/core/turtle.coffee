@@ -25,7 +25,7 @@ module.exports =
     constructor: (@world, @id, genUpdate, @_registerDeath, @_createTurtle, @_removeTurtle, @_color = 0, @_heading = 0, @xcor = 0, @ycor = 0, breed = @world.breedManager.turtles(), @_label = "", @_labelcolor = 9.9, @_hidden = false, @_size = 1.0, @penManager = new PenManager(genUpdate(this))) ->
       @_updateVarsByName = genUpdate(this)
 
-      varNames     = @world.turtlesOwnNames.concat(breed.varNames)
+      varNames     = @_varNamesForBreed(breed)
       @_varManager = @_genVarManager(varNames, world.turtleManager.turtlesOfBreed)
 
       @_links = []
@@ -377,12 +377,18 @@ module.exports =
 
     # (Breed) => Turtle
     _makeTurtleCopy: (breed) ->
-      turtle = @_createTurtle(@_color, @_heading, @xcor, @ycor, breed, @_label, @_labelcolor, @_hidden, @_size, @penManager.clone())
-      _(breed.varNames).forEach((varName) =>
+      turtle   = @_createTurtle(@_color, @_heading, @xcor, @ycor, breed, @_label, @_labelcolor, @_hidden, @_size, @penManager.clone())
+      varNames = @_varNamesForBreed(breed)
+      _(varNames).forEach((varName) =>
         turtle.setVariable(varName, @getVariable(varName))
         return
       )
       turtle
+
+    # (Breed) => Array[String]
+    _varNamesForBreed: (breed) ->
+      extras = if breed is @world.breedManager.turtles() then [] else breed.varNames
+      @world.turtlesOwnNames.concat(extras)
 
     # (Turtle|Patch) => Unit
     moveTo: (agent) ->
