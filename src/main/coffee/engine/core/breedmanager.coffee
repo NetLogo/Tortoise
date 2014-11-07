@@ -71,7 +71,7 @@ module.exports =
         (acc, breedObj) =>
           trueName      = breedObj.name.toUpperCase()
           trueSingular  = breedObj.singular.toLowerCase()
-          trueVarNames  = breedObj.varNames or []
+          trueVarNames  = breedObj.varNames ? []
           acc[trueName] = new Breed(trueName, trueSingular, this, trueVarNames, breedObj.isDirected)
           acc
         , defaultBreeds

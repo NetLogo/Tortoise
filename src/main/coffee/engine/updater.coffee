@@ -71,7 +71,7 @@ module.exports =
         else
           throw new Error("Unrecognized update type")
 
-      entryUpdate = entry[obj.id] or {}
+      entryUpdate = entry[obj.id] ? {}
 
       # Receiving updates for a turtle that's about to die means the turtle was
       # reborn, so we revive it in the update - BH 1/13/2014

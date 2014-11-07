@@ -73,7 +73,7 @@ module.exports =
 
     # () => Agent
     subject: ->
-      @_targetAgent or Nobody
+      @_targetAgent ? Nobody
 
     # (Turtle) => Unit
     unfocus: (turtle) ->

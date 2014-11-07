@@ -56,7 +56,7 @@ module.exports =
 
     # (Number) => Agent
     getTurtle: (id) ->
-      @_turtlesById[id] or Nobody
+      @_turtlesById[id] ? Nobody
 
     # (String, Number) => Agent
     getTurtleOfBreed: (breedName, id) ->
