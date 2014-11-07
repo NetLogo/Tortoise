@@ -378,7 +378,7 @@ module.exports =
     # (Breed) => Turtle
     _makeTurtleCopy: (breed) ->
       turtle = @_createTurtle(@_color, @_heading, @xcor, @ycor, breed, @_label, @_labelcolor, @_hidden, @_size, @penManager.clone())
-      _(@world.turtlesOwnNames).forEach((varName) =>
+      _(breed.varNames).forEach((varName) =>
         turtle.setVariable(varName, @getVariable(varName))
         return
       )

@@ -314,6 +314,10 @@ object Model {
     Model(
       path = "models/Sample Models/Networks/Team Assembly.nlogo",
       repetitions = 10
+    ),
+    Model(
+      path = "models/Sample Models/Biology/Rabbits Grass Weeds.nlogo",
+      repetitions = 25
     )
   )
 }
