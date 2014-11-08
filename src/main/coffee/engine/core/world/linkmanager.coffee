@@ -24,10 +24,15 @@ module.exports =
 
     # (World, BreedManager, Updater, () => Unit, () => Unit) => LinkManager
     constructor: (@_world, @_breedManager, @_updater, @_notifyIsDirected, @_notifyIsUndirected) ->
-      @_links     = new SortedLinks
-      @_linksFrom = {}
-      @_idManager = new IDManager
-      @_linksTo   = {}
+      @clear()
+
+    # () => Unit
+    clear: ->
+      @_linkArrCache = undefined
+      @_links        = new SortedLinks
+      @_linksFrom    = {}
+      @_idManager    = new IDManager
+      @_linksTo      = {}
 
     # (Turtle, Turtle, String) => Link
     createDirectedLink: (from, to, breedName) ->
@@ -93,10 +98,6 @@ module.exports =
       if not link.isDirected then remove(@_linksTo[link.getBreedName()], link.end2.id, link.end1.id)
 
       return
-
-    # () => Unit
-    _resetIDs: ->
-      @_idManager.reset()
 
     # (Boolean, Turtle, Turtle, String) => Link
     _createLink: (isDirected, from, to, breedName) ->

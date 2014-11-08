@@ -128,7 +128,7 @@ module.exports =
       @observer.resetPerspective()
       @turtleManager.clearTurtles()
       @clearPatches()
-      @linkManager._resetIDs()
+      @linkManager.clear()
       @_declarePatchesAllBlack()
       @_resetPatchLabelCount()
       @ticker.clear()
