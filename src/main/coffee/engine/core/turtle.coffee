@@ -2,6 +2,7 @@
 
 _                = require('lodash')
 AbstractAgentSet = require('./abstractagentset')
+LinkSet          = require('./linkset')
 Nobody           = require('./nobody')
 TurtleSet        = require('./turtleset')
 PenManager       = require('./structure/penmanager')
@@ -157,7 +158,7 @@ module.exports =
           ({ isDirected, end1, end2 }) => (isDirected and end1 is this and isSource) or (isDirected and end2 is this and not isSource)
         else
           ({ isDirected, end1, end2 }) => (not isDirected and end1 is this) or (not isDirected and end2 is this)
-      @world.links().filter((x) => breedNameMatches(x) and filterFunc(x))
+      new LinkSet(@_links.filter((x) => breedNameMatches(x) and filterFunc(x)))
 
     # (Boolean, Boolean, String) => TurtleSet
     linkNeighbors: (isDirected, isSource, breedName) ->
@@ -180,7 +181,7 @@ module.exports =
                 acc.push(link.end1)
             acc
 
-      turtles = world.links().toArray().reduce(reductionFunc, [])
+      turtles = @_links.reduce(reductionFunc, [])
       new TurtleSet(turtles)
 
     # (Boolean, Boolean, String, Turtle) => Boolean
@@ -204,7 +205,7 @@ module.exports =
         else
           throw new Error("LINKS is a directed breed.")
 
-      @world.links().find(findFunc) ? Nobody
+      _(@_links).find(findFunc) ? Nobody
 
     # () => Turtle
     otherEnd: ->
@@ -317,13 +318,12 @@ module.exports =
       if @id isnt -1
         @_removeTurtle(@id)
         @_seppuku()
-        @world.links().forEach((link) =>
-          if link.end1.id is @id or link.end2.id is @id
-            try
-              link.die()
+        @_links.forEach(
+          (link) ->
+            try link.die()
             catch error
               throw error if not (error instanceof Death)
-          return
+            return
         )
         @id = -1
         @getPatchHere().untrackTurtle(this)
@@ -464,7 +464,7 @@ module.exports =
     # () => { "fixeds": Array[Turtle], "others": Array[Turtle] }
     _tiedTurtles: ->
       filterFunc = ({ isDirected, end1, end2, tiemode }) => tiemode isnt "none" and ((end1 is this) or (end2 is this and not isDirected))
-      links      = @world.links().filter(filterFunc).toArray()
+      links      = @_links.filter(filterFunc)
       f =
         ([fixeds, others], { end1, end2, tiemode }) =>
           turtle = if end1 is this then end2 else end1
