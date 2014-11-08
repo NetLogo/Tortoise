@@ -413,7 +413,7 @@ module.exports =
 
     # (Link) => Unit
     removeLink: (link) ->
-      @_links.splice(@_links.indexOf(link))
+      @_links.splice(@_links.indexOf(link), 1)
       return
 
     # (Any) => Comparator
