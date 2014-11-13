@@ -26,7 +26,8 @@ module.exports =
     # type Updatable   = Turtle|Patch|Link|World|Observer
     # type EngineKey   = String
 
-    _updates: undefined # Array[Update]
+    _hasUpdates: undefined # Boolean
+    _updates:    undefined # Array[Update]
 
     # () => Updater
     constructor: ->
@@ -37,6 +38,10 @@ module.exports =
       temp = @_updates
       @_flushUpdates()
       temp
+
+    # () => Boolean
+    hasUpdates: ->
+      @_hasUpdates
 
     # (Number) => Unit
     registerDeadLink: (id) =>
@@ -55,6 +60,8 @@ module.exports =
 
     # (Updatable) => (EngineKey*) => Unit
     updated: (obj) => (vars...) =>
+      @_hasUpdates = true
+
       update = @_updates[0]
 
       [entry, objMap] =
@@ -167,10 +174,12 @@ module.exports =
 
     # (String, Number, UpdateEntry) => Unit
     _update: (agentType, id, newAgent) ->
+      @_hasUpdates = true
       @_updates[0][agentType][id] = newAgent
       return
 
     # () => Unit
     _flushUpdates: ->
-      @_updates = [new Update()]
+      @_hasUpdates = false
+      @_updates    = [new Update()]
       return
