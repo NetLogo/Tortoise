@@ -35,11 +35,11 @@ module.exports =
     createLinksWith: (otherTurtles, breedName) ->
       @_linkManager.createUndirectedLinks(@_self(), otherTurtles.shuffled(), breedName)
 
-    # (Boolean, Boolean, String) => Array[Link]
+    # (Boolean, Boolean, String) => LinkSet
     connectedLinks: (isDirected, isSource, breedName) ->
       @_self().connectedLinks(isDirected, isSource, breedName)
 
-    # (Boolean, Boolean, String) => Array[Turtle]
+    # (Boolean, Boolean, String) => TurtleSet
     linkNeighbors: (isDirected, isSource, breedName) ->
       @_self().linkNeighbors(isDirected, isSource, breedName)
 
