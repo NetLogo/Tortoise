@@ -1,5 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
+Dump      = require('./dump')
 Link      = require('./core/link')
 Observer  = require('./core/observer')
 Patch     = require('./core/patch')
@@ -106,7 +107,7 @@ module.exports =
       id:            ["WHO",         turtle.id]
       'label-color': ["LABEL-COLOR", turtle._labelcolor]
       'hidden?':     ["HIDDEN?",     turtle._hidden]
-      label:         ["LABEL",       turtle._label.toString()]
+      label:         ["LABEL",       Dump(turtle._label)]
       'pen-size':    ["PEN-SIZE",    turtle.penManager.getSize()]
       'pen-mode':    ["PEN-MODE",    turtle.penManager.getMode().toString()]
       shape:         ["SHAPE",       turtle._shape]
@@ -119,7 +120,7 @@ module.exports =
     _patchMap: (patch) -> {
       id:             ["WHO",          patch.id]
       pcolor:         ["PCOLOR",       patch._pcolor]
-      plabel:         ["PLABEL",       patch._plabel.toString()]
+      plabel:         ["PLABEL",       Dump(patch._plabel)]
       'plabel-color': ["PLABEL-COLOR", patch._plabelcolor]
       pxcor:          ["PXCOR",        patch.pxcor]
       pycor:          ["PYCOR",        patch.pycor]
@@ -134,7 +135,7 @@ module.exports =
       heading:       ["HEADING",     link.getHeading()]
       'hidden?':     ["HIDDEN?",     link._isHidden]
       id:            ["ID",          link.id]
-      label:         ["LABEL",       link._label.toString()]
+      label:         ["LABEL",       Dump(link._label)]
       'label-color': ["LABEL-COLOR", link._labelcolor]
       midpointx:     ["MIDPOINTX",   link.getMidpointX()]
       midpointy:     ["MIDPOINTY",   link.getMidpointY()]
