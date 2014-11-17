@@ -385,8 +385,11 @@ module.exports =
 
     # (Breed) => Array[String]
     _varNamesForBreed: (breed) ->
-      extras = if breed is @world.breedManager.turtles() then [] else breed.varNames
-      @world.turtlesOwnNames.concat(extras)
+      turtlesBreed = @world.breedManager.turtles()
+      if breed is turtlesBreed
+        turtlesBreed.varNames
+      else
+        turtlesBreed.varNames.concat(breed.varNames)
 
     # (Turtle|Patch) => Unit
     moveTo: (agent) ->

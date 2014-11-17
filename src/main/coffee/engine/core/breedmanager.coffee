@@ -61,11 +61,11 @@ module.exports =
     # Object[String, Breed]
     _breeds: undefined
 
-    # (Array[BreedObj]) => BreedManager
-    constructor: (breedObjs) ->
+    # (Array[BreedObj], Array[String], Array[String]) => BreedManager
+    constructor: (breedObjs, turtlesOwns = [], linksOwns = []) ->
       defaultBreeds = {
-        TURTLES: new Breed("TURTLES", "turtle", this, [], undefined, "default"),
-        LINKS:   new Breed("LINKS",   "link",   this, [], false,     "default")
+        TURTLES: new Breed("TURTLES", "turtle", this, turtlesOwns, undefined, "default"),
+        LINKS:   new Breed("LINKS",   "link",   this, linksOwns,   false,     "default")
       }
       @_breeds = _(breedObjs).foldl(
         (acc, breedObj) =>

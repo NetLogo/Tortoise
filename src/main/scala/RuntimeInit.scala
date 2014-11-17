@@ -17,7 +17,7 @@ import
 class RuntimeInit(program: Program, model: Model) {
 
   def init: String =
-    s"""var workspace = tortoise_require('engine/workspace')(modelConfig)($genBreedObjects)($genWorkspaceArgs);
+    s"""var workspace = tortoise_require('engine/workspace')(modelConfig)($genBreedObjects)($genBreedsOwnArgs)($genWorkspaceArgs);
        |
        |var BreedManager  = workspace.breedManager;
        |var LayoutManager = workspace.layoutManager;
@@ -66,6 +66,21 @@ class RuntimeInit(program: Program, model: Model) {
     mkJSArrStr(breedObjs)
   }
 
+  private def genBreedsOwnArgs: String = {
+
+    // The turtle varnames information is only used by the `Turtle` class, which already has intrinsic knowledge of many
+    // variables (often in special-cased form, e.g. `color`), so we should only bother passing in turtles-own variables
+    // that aren't intrinsic to the class. --JAB (5/29/14)
+    val linkVarNames   = program.linksOwn   diff AgentVariables.getImplicitLinkVariables
+    val turtleVarNames = program.turtlesOwn diff AgentVariables.getImplicitTurtleVariables
+
+    val linksOwnNames   = mkJSArrStr(linkVarNames   map (_.toLowerCase) map wrapInQuotes)
+    val turtlesOwnNames = mkJSArrStr(turtleVarNames map (_.toLowerCase) map wrapInQuotes)
+
+    s"$turtlesOwnNames, $linksOwnNames"
+
+  }
+
   private def genWorkspaceArgs: String = {
 
     import scala.collection.JavaConverters.asScalaBufferConverter
@@ -84,18 +99,11 @@ class RuntimeInit(program: Program, model: Model) {
     def parseLinkShapes(strings: Array[String]): ShapeList =
       new ShapeList(AgentKind.Link, LinkShape.parseShapes(strings, Version.version).asScala)
 
-    // The turtle varnames information is only used by the `Turtle` class, which already has intrinsic knowledge of many
-    // variables (often in special-cased form, e.g. `color`), so we should only bother passing in turtles-own variables
-    // that aren't intrinsic to the class. --JAB (5/29/14)
-    val linkVarNames   = program.linksOwn   diff AgentVariables.getImplicitLinkVariables
     val patchVarNames  = program.patchesOwn diff AgentVariables.getImplicitPatchVariables
-    val turtleVarNames = program.turtlesOwn diff AgentVariables.getImplicitTurtleVariables
 
     val globalNames          = mkJSArrStr(program.globals          map (_.toLowerCase) map wrapInQuotes)
     val interfaceGlobalNames = mkJSArrStr(program.interfaceGlobals map (_.toLowerCase) map wrapInQuotes)
-    val linksOwnNames        = mkJSArrStr(linkVarNames             map (_.toLowerCase) map wrapInQuotes)
     val patchesOwnNames      = mkJSArrStr(patchVarNames            map (_.toLowerCase) map wrapInQuotes)
-    val turtlesOwnNames      = mkJSArrStr(turtleVarNames           map (_.toLowerCase) map wrapInQuotes)
 
     val turtleShapesJson = shapeList(parseTurtleShapes(model.turtleShapes.toArray))
     val linkShapesJson   = shapeList(parseLinkShapes(model.linkShapes.toArray))
@@ -103,8 +111,8 @@ class RuntimeInit(program: Program, model: Model) {
     val view = model.view
     import view._
 
-    s"$globalNames, $interfaceGlobalNames, $turtlesOwnNames, $linksOwnNames, $patchesOwnNames, $minPxcor, $maxPxcor, " +
-      s"$minPycor, $maxPycor, $patchSize, $wrappingAllowedInX, $wrappingAllowedInY, $turtleShapesJson, $linkShapesJson"
+    s"$globalNames, $interfaceGlobalNames, $patchesOwnNames, $minPxcor, $maxPxcor, $minPycor, $maxPycor, $patchSize, " +
+      s"$wrappingAllowedInX, $wrappingAllowedInY, $turtleShapesJson, $linkShapesJson"
 
   }
 

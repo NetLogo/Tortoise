@@ -34,10 +34,9 @@ module.exports =
     _patchesAllBlack:          undefined # Boolean
     _patchesWithLabels:        undefined # Number
 
-    # (MiniWorkspace, Array[String], Array[String], Array[String], Array[String], Array[String], Number, Number, Number, Number, Number, Boolean, Boolean, Array[Object], Array[Object]) => World
-    constructor: (miniWorkspace, globalNames, interfaceGlobalNames, @turtlesOwnNames, @linksOwnNames, @patchesOwnNames
-                , minPxcor, maxPxcor, minPycor, maxPycor, _patchSize, wrappingAllowedInX, wrappingAllowedInY
-                , turtleShapeList, linkShapeList) ->
+    # (MiniWorkspace, Array[String], Array[String], Array[String], Number, Number, Number, Number, Number, Boolean, Boolean, Array[Object], Array[Object]) => World
+    constructor: (miniWorkspace, globalNames, interfaceGlobalNames, @patchesOwnNames, minPxcor, maxPxcor, minPycor
+                , maxPycor, _patchSize, wrappingAllowedInX, wrappingAllowedInY, turtleShapeList, linkShapeList) ->
       { selfManager: @selfManager, updater: @_updater, rng: @rng
       , breedManager: @breedManager, plotManager: @_plotManager } = miniWorkspace
       @_updater.collectUpdates()

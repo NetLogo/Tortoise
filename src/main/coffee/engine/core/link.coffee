@@ -131,8 +131,11 @@ module.exports =
 
     # (Breed) => Array[String]
     _varNamesForBreed: (breed) ->
-      extras = if breed is @world.breedManager.links() then [] else breed.varNames
-      @world.linksOwnNames.concat(extras)
+      linksBreed = @world.breedManager.links()
+      if breed is linksBreed
+        linksBreed.varNames
+      else
+        linksBreed.varNames.concat(breed.varNames)
 
     # () => Unit
     _seppuku: ->

@@ -22,7 +22,7 @@ class MiniWorkspace
   constructor: (@selfManager, @updater, @breedManager, @rng, @plotManager) ->
 
 module.exports =
-  (modelConfig) -> (breedObjs) -> () -> # World args; see constructor for `World` --JAB (4/17/14)
+  (modelConfig) -> (breedObjs) -> (turtlesOwns, linksOwns) -> () -> # World args; see constructor for `World` --JAB (4/17/14)
 
     worldArgs = arguments # If you want `Workspace` to take more parameters--parameters not related to `World`--just keep returning new functions
 
@@ -31,7 +31,7 @@ module.exports =
     rng         = new RNG
 
     selfManager  = new SelfManager
-    breedManager = new BreedManager(breedObjs)
+    breedManager = new BreedManager(breedObjs, turtlesOwns, linksOwns)
     plotManager  = new PlotManager(plots)
     prims        = new Prims(Dump, Hasher, rng)
     selfPrims    = new SelfPrims(selfManager.self)
