@@ -16,7 +16,7 @@ modelConfig.plots = [(function() {
   return new Plot(name, pens, plotOps, '', '', true, 0.0, 1.0, 2.0, 2.1, setup, update);
 })()];
 
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])(['plot?', 'total', 'result'], ['plot?'], [], [], ['n'], 0, 99, 0, 99, 3.0, false, false, {"default":{"rotate":true,"elements":[{"xcors":[150,40,150,260],"ycors":[5,250,205,250],"type":"polygon","color":"rgba(141, 141, 141, 1.0)","filled":true,"marked":true}]}}, {"default":{}});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])(['plot?', 'total', 'result'], ['plot?'], ['n'], 0, 99, 0, 99, 3.0, false, false, {"default":{"rotate":true,"elements":[{"xcors":[150,40,150,260],"ycors":[5,250,205,250],"type":"polygon","color":"rgba(141, 141, 141, 1.0)","filled":true,"marked":true}]}}, {"default":{}});
 
 var BreedManager  = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
