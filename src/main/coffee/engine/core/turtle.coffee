@@ -52,9 +52,8 @@ module.exports =
 
       @_refreshLinks()
 
-      turtles = @_tiedTurtles()
-      dx      = @xcor - oldX
-      turtles.fixeds.concat(turtles.others).forEach(
+      dx = @xcor - oldX
+      @_tiedTurtles().forEach(
         (turtle) =>
           if turtle isnt tiedCaller
             turtle._setXcor(turtle.xcor + dx, this)
@@ -77,9 +76,8 @@ module.exports =
 
       @_refreshLinks()
 
-      turtles = @_tiedTurtles()
-      dy      = @ycor - oldY
-      turtles.fixeds.concat(turtles.others).forEach(
+      dy = @ycor - oldY
+      @_tiedTurtles().forEach(
         (turtle) =>
           if turtle isnt tiedCaller
             turtle._setYcor(turtle.ycor + dy, this)
@@ -462,7 +460,7 @@ module.exports =
       return
 
     # () => { "fixeds": Array[Turtle], "others": Array[Turtle] }
-    _tiedTurtles: ->
+    _tiedTurtlesRaw: ->
       filterFunc = ({ isDirected, end1, end2, tiemode }) => tiemode isnt "none" and ((end1 is this) or (end2 is this and not isDirected))
       links      = @_links.filter(filterFunc)
       f =
@@ -476,6 +474,14 @@ module.exports =
       [fixeds, others] = _(links).foldl(f, [[], []])
 
       { fixeds: fixeds, others: others }
+
+    # () => Array[Turtle]
+    _tiedTurtles: ->
+      { fixeds, others } = @_tiedTurtlesRaw()
+      _(fixeds.concat(others)).unique(false, (x) -> x.id).value()
+
+    _fixedTiedTurtles: ->
+      _(@_tiedTurtlesRaw().fixeds).unique(false, (x) -> x.id).value()
 
     # (Array[String], (String) => TurtleSet) => VariableManager
     _genVarManager: (extraVarNames, getTurtlesByBreedName) ->
@@ -566,16 +572,15 @@ module.exports =
 
       dh      = @_heading - oldHeading
       [x, y]  = @getCoords()
-      turtles = @_tiedTurtles()
 
-      turtles.fixeds.forEach(
+      @_fixedTiedTurtles().forEach(
         (turtle) =>
           if turtle isnt tiedCaller
             turtle.right(dh, this)
           return
       )
 
-      turtles.fixeds.concat(turtles.others).forEach(
+      @_tiedTurtles().forEach(
         (turtle) =>
           if turtle isnt tiedCaller
             r        = @distance(turtle)
