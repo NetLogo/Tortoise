@@ -2,12 +2,6 @@
 
 package org.nlogo.tortoise.jsengine
 
-import
-  nashorn.{ Nashorn => NNashorn },
-  spidermonkey.{ SpiderMonkey => NSpiderMonkey },
-  v8.{ V8 => NV8 }
-
-
 trait JSEngine {
   type T
   def engine: T
@@ -28,36 +22,36 @@ trait JSEngineCompanion {
 
 object JSEngine {
 
-  implicit class NashornEngine(override val engine: NNashorn) extends JSEngine {
-    override type T = NNashorn
+  implicit class NashornEngine(override val engine: Nashorn) extends JSEngine {
+    override type T = Nashorn
     override def eval(js: String): String = engine.eval(js).toString
   }
 
-  implicit class V8Engine(override val engine: NV8) extends JSEngine {
-    override type T = NV8
+  implicit class V8Engine(override val engine: V8) extends JSEngine {
+    override type T = V8
     override def eval(js: String): String = engine.eval(js).toString
   }
 
-  implicit class SpiderMonkeyEngine(override val engine: NSpiderMonkey) extends JSEngine {
-    override type T = NSpiderMonkey
+  implicit class SpiderMonkeyEngine(override val engine: SpiderMonkey) extends JSEngine {
+    override type T = SpiderMonkey
     override def eval(js: String): String = engine.eval(js).toString
   }
 
   object Nashorn extends JSEngineCompanion {
     override protected type T = NashornEngine
-    override def cleanSlate = new NNashorn
+    override def cleanSlate = new Nashorn
     override def version    = cleanSlate.engine.versionNumber
   }
 
   object SpiderMonkey extends JSEngineCompanion {
     override protected type T = SpiderMonkeyEngine
-    override def cleanSlate = new NSpiderMonkey
+    override def cleanSlate = new SpiderMonkey
     override def version    = cleanSlate.engine.versionNumber
   }
 
   object V8 extends JSEngineCompanion {
     override protected type T = V8Engine
-    override def cleanSlate = new NV8
+    override def cleanSlate = new V8
     override def version    = cleanSlate.engine.versionNumber
   }
 

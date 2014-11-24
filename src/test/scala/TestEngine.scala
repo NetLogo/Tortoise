@@ -2,7 +2,7 @@
 
 package org.nlogo.tortoise
 
-import jsengine.nashorn.Nashorn
+import jsengine.Nashorn
 import org.scalatest.FunSuite
 
 // just basic smoke tests that basic Tortoise engine functionality is there,

@@ -6,12 +6,13 @@ import
   org.scalatest.Assertions.{ assertResult, fail }
 
 import
-  org.nlogo.{ api, core, headless, nvm, tortoise },
+  org.nlogo.{ api, core, headless, nvm },
     api.{ CompilerException, Program },
     core.{ AgentKind, Model => CModel, View },
     headless.lang.{ AbstractFixture, Command, CompileError, Reporter, Success, TestMode },
-    nvm.FrontEndInterface.{ ProceduresMap, NoProcedures },
-    tortoise.jsengine.nashorn.Nashorn
+    nvm.FrontEndInterface.{ ProceduresMap, NoProcedures }
+
+import jsengine.Nashorn
 
 class TortoiseFixture(name: String, nashorn: Nashorn, notImplemented: (String) => Nothing) extends Fixture {
 

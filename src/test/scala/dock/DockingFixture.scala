@@ -8,8 +8,9 @@ import
   headless.lang._,
   core.Model,
   org.scalatest.Assertions._,
-  org.scalatest.exceptions.TestFailedException,
-  jsengine.nashorn.Nashorn
+  org.scalatest.exceptions.TestFailedException
+
+import jsengine.Nashorn
 
 import json.JSONSerializer
 

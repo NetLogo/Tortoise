@@ -9,7 +9,7 @@ import
   org.scalatest.exceptions.TestFailedException
 
 import
-  org.nlogo.tortoise.jsengine.nashorn.Nashorn
+  jsengine.Nashorn
 
 import
   scala.collection.mutable.ArrayBuffer

@@ -2,6 +2,8 @@
 
 package org.nlogo.tortoise
 
+import jsengine.Nashorn
+
 import
   scala.{ io, util },
     io.Source,
@@ -9,9 +11,6 @@ import
 
 import
   org.scalatest.{ FunSuite, Tag }
-
-import
-  jsengine.nashorn.Nashorn
 
 class TestPlotting extends FunSuite with PlottingHelpers {
 

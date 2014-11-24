@@ -1,20 +1,14 @@
 // (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 package org.nlogo.tortoise.jsengine
-package v8
 
-import
-  java.{ io, nio },
-    io.{ ByteArrayInputStream, InputStream },
-    nio.charset.StandardCharsets.UTF_8
+import java.io.{ByteArrayInputStream, InputStream}
+import java.nio.charset.StandardCharsets.UTF_8
 
-import
-  scala.{ sys, util },
-    sys.process.Process,
-    util.Try
+import org.nlogo.core.Resource
 
-import
-  org.nlogo.core.Resource
+import scala.sys.process.Process
+import scala.util.Try
 
 class V8 {
 

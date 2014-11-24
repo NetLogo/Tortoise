@@ -72,8 +72,8 @@ object Depend {
       "workspace" -> List("nvm"),
       "headless" -> List("workspace"),
       "headless/lang" -> List("headless"),
-      "tortoise" -> List("tortoise/json", "tortoise/nashorn", "workspace", "compile/front", "prim/etc", "headless/lang", "api/model"),
-      "tortoise/nashorn" -> List("workspace"),
+      "tortoise" -> List("tortoise/json", "tortoise/jsengine", "workspace", "compile/front", "prim/etc", "headless/lang", "api/model"),
+      "tortoise/jsengine" -> List("api"),
       "tortoise/json" -> List("mirror")
     )
     case class Package(val dir: String, var depends: Set[Package]) {
@@ -95,9 +95,9 @@ check absenceOfPackageCycles > 1 in org.nlogo.tortoise.*
 
 [headless-AWT] = java.awt.geom.* java.awt.image.* java.awt.Color java.awt.Image java.awt.Shape java.awt.Graphics2D java.awt.Graphics java.awt.Stroke java.awt.Composite java.awt.BasicStroke java.awt.Point java.awt.Font java.awt.AlphaComposite java.awt.RenderingHints java.awt.Rectangle java.awt.FontMetrics java.awt.color.ColorSpace java.awt.Polygon java.awt.RenderingHints$Key javax.imageio.* javax.swing.tree.MutableTreeNode javax.swing.tree.DefaultMutableTreeNode
 
-[stdlib-j] = java.lang.* java.util.* java.io.* java.text.* java.net.* java.security.*
+[stdlib-j] = java.lang.* java.util.* java.io.* java.nio.* java.text.* java.net.* java.security.*
 
-[stdlib-s] = scala.Serializable scala.Predef* scala.collection.* scala.reflect.* scala.Function* scala.UninitializedFieldError scala.util.control.Exception* scala.Array* scala.LowPriorityImplicits scala.package$ scala.util.Properties$ scala.Option* scala.Tuple* scala.Product* scala.util.DynamicVariable scala.runtime.* scala.math.* scala.None* scala.Some* scala.MatchError scala.util.Left* scala.util.Right* scala.util.Either* scala.io.* scala.sys.package* scala.Console* scala.PartialFunction* scala.util.matching.Regex* scala.Enumeration* scala.Proxy* scala.FallbackArrayBuilding scala.util.Sorting* scala.StringContext scala.text.Document scala.util.Try*
+[stdlib-s] = scala.App* scala.Serializable scala.Predef* scala.collection.* scala.reflect.* scala.Function* scala.UninitializedFieldError scala.util.control.Exception* scala.Array* scala.LowPriorityImplicits scala.package$ scala.util.Properties$ scala.Option* scala.Tuple* scala.Product* scala.util.DynamicVariable scala.runtime.* scala.math.* scala.None* scala.Some* scala.MatchError scala.util.Left* scala.util.Right* scala.util.Either* scala.io.* scala.sys.package* scala.sys.process* scala.Console* scala.PartialFunction* scala.util.matching.Regex* scala.Enumeration* scala.Proxy* scala.FallbackArrayBuilding scala.util.Sorting* scala.StringContext scala.text.Document scala.util.Try*
 
 [json4s] = org.json4s.*
 
