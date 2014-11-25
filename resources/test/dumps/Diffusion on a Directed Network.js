@@ -88,14 +88,14 @@ function go() {
     SelfPrims.setVariable('new-val', 0);
   }, true);
   world.turtles().ask(function() {
-    var recipients = LinkPrims.linkNeighbors(true, true, 'ACTIVE-LINKS');
+    var recipients = LinkPrims.outLinkNeighbors('ACTIVE-LINKS');
     if (recipients.nonEmpty()) {
       var valToKeep = (SelfPrims.getVariable('val') * (1 - (world.observer.getGlobal('diffusion-rate') / 100)));
       SelfPrims.setVariable('new-val', (SelfPrims.getVariable('new-val') + valToKeep));
       var valIncrement = ((SelfPrims.getVariable('val') - valToKeep) / recipients.size());
       recipients.ask(function() {
         SelfPrims.setVariable('new-val', (SelfPrims.getVariable('new-val') + valIncrement));
-        LinkPrims.findLinkViaNeighbor(true, false, 'ACTIVE-LINKS')(SelfManager.myself()).ask(function() {
+        LinkPrims.inLinkFrom('ACTIVE-LINKS', SelfManager.myself()).ask(function() {
           SelfPrims.setVariable('current-flow', valIncrement);
         }, true);
       }, true);

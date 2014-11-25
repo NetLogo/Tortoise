@@ -10,7 +10,7 @@ modelConfig.plots = [(function() {
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('ratio', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Hydrophobic Isolation', 'ratio')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Hydrophobic Isolation', 'ratio')(function() { plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed("OILS").projectionBy(function() {
   return (SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("OILS"), world.observer.getGlobal('interaction-distance')).size() / SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal('interaction-distance')).agentFilter(function() {
-    return !LinkPrims.isLinkNeighbor(false, false, 'LINKS')(SelfManager.myself());
+    return !LinkPrims.isLinkNeighbor('LINKS', SelfManager.myself());
   }).size());
 })));; }); }); })];
   var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Hydrophobic Isolation', undefined)(function() {}); }); };
@@ -64,7 +64,7 @@ function setup() {
   }, true);
   world.turtleManager.createTurtles(world.observer.getGlobal('num-lipids'), 'OILS').ask(function() {
     var partner = ListPrims.oneOf(world.turtleManager.turtlesOfBreed("WATERS").agentFilter(function() {
-      return !LinkPrims.connectedLinks(false, false, 'LINKS').nonEmpty();
+      return !LinkPrims.myLinks('LINKS').nonEmpty();
     }));
     SelfManager.self().moveTo(partner);
     SelfPrims.fd(world.observer.getGlobal('lipid-length'));
@@ -86,7 +86,7 @@ function go() {
 }
 function interactWithNeighbor() {
   var near = ListPrims.oneOf(SelfPrims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal('interaction-distance')).agentFilter(function() {
-    return !LinkPrims.isLinkNeighbor(false, false, 'LINKS')(SelfManager.myself());
+    return !LinkPrims.isLinkNeighbor('LINKS', SelfManager.myself());
   })));
   if (!Prims.equality(near, Nobody)) {
     SelfManager.self().face(near);
@@ -108,7 +108,7 @@ function repelTooCloseNeighbor() {
   }
 }
 function interactWithPartner() {
-  var partner = ListPrims.oneOf(LinkPrims.linkNeighbors(false, false, 'LINKS'));
+  var partner = ListPrims.oneOf(LinkPrims.linkNeighbors('LINKS'));
   if (!Prims.equality(partner, Nobody)) {
     SelfManager.self().face(partner);
     SelfPrims.fd((SelfManager.self().distance(partner) - world.observer.getGlobal('lipid-length')));

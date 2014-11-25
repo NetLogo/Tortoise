@@ -1,15 +1,15 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_                = require('lodash')
-AbstractAgentSet = require('./abstractagentset')
-LinkSet          = require('./linkset')
-Nobody           = require('./nobody')
-TurtleSet        = require('./turtleset')
-PenManager       = require('./structure/penmanager')
-VariableManager  = require('./structure/variablemanager')
-ColorModel       = require('tortoise/util/colormodel')
-Comparator       = require('tortoise/util/comparator')
-Trig             = require('tortoise/util/trig')
+_                 = require('lodash')
+AbstractAgentSet  = require('./abstractagentset')
+Nobody            = require('./nobody')
+TurtleLinkManager = require('./turtlelinkmanager')
+TurtleSet         = require('./turtleset')
+PenManager        = require('./structure/penmanager')
+VariableManager   = require('./structure/variablemanager')
+ColorModel        = require('tortoise/util/colormodel')
+Comparator        = require('tortoise/util/comparator')
+Trig              = require('tortoise/util/trig')
 
 { DeathInterrupt: Death, TopologyInterrupt } = require('tortoise/util/exception')
 
@@ -17,19 +17,21 @@ module.exports =
   class Turtle
 
     _breed:            undefined # Breed
-    _links:            undefined # Array[Link]
     _shape:            undefined # String
     _updateVarsByName: undefined # (String*) => Unit
     _varManager:       undefined # VariableManager
+
+    linkManager: undefined # TurtleLinkManager
 
     # (World, Number, (Updatable) => (String*) => Unit, (Number) => Unit, (Number, Number, Number, Number, Breed, String, Number, Boolean, Number, PenManager) => Turtle, (Number) => Unit, Number, Number, Number, Number, Breed, String, Number, Boolean, Number, PenManager) => Turtle
     constructor: (@world, @id, genUpdate, @_registerDeath, @_createTurtle, @_removeTurtle, @_color = 0, @_heading = 0, @xcor = 0, @ycor = 0, breed = @world.breedManager.turtles(), @_label = "", @_labelcolor = 9.9, @_hidden = false, @_size = 1.0, @penManager = new PenManager(genUpdate(this))) ->
       @_updateVarsByName = genUpdate(this)
 
+      @linkManager = new TurtleLinkManager(id, world.breedManager)
+
       varNames     = @_varNamesForBreed(breed)
       @_varManager = @_genVarManager(varNames, world.turtleManager.turtlesOfBreed)
 
-      @_links = []
       @_setBreed(breed)
 
       @getPatchHere().trackTurtle(this)
@@ -50,7 +52,7 @@ module.exports =
         originPatch.untrackTurtle(this)
         @getPatchHere().trackTurtle(this)
 
-      @_refreshLinks()
+      @linkManager._refresh()
 
       dx = @xcor - oldX
       @_tiedTurtles().forEach(
@@ -74,7 +76,7 @@ module.exports =
         originPatch.untrackTurtle(this)
         @getPatchHere().trackTurtle(this)
 
-      @_refreshLinks()
+      @linkManager._refresh()
 
       dy = @ycor - oldY
       @_tiedTurtles().forEach(
@@ -84,11 +86,6 @@ module.exports =
           return
       )
 
-      return
-
-    # (Link) => Unit
-    addLink: (link) =>
-      @_links.push(link)
       return
 
     # (Number) => Boolean
@@ -147,63 +144,6 @@ module.exports =
     # (Number, Number) => TurtleSet
     turtlesAt: (dx, dy) ->
       @getPatchHere().turtlesAt(dx, dy)
-
-    # (Boolean, Boolean, String) => LinkSet
-    connectedLinks: (isDirected, isSource, breedName = "LINKS") ->
-      breedNameMatches = @_linkBreedMatches(breedName)
-      filterFunc =
-        if isDirected
-          ({ isDirected, end1, end2 }) => (isDirected and end1 is this and isSource) or (isDirected and end2 is this and not isSource)
-        else
-          ({ isDirected, end1, end2 }) => (not isDirected and end1 is this) or (not isDirected and end2 is this)
-      new LinkSet(@_links.filter((x) => breedNameMatches(x) and filterFunc(x)))
-
-    # (Boolean, Boolean, String) => TurtleSet
-    linkNeighbors: (isDirected, isSource, breedName) ->
-      breedNameMatches = @_linkBreedMatches(breedName)
-      reductionFunc =
-        if isDirected
-          (acc, link) =>
-            if breedNameMatches(link)
-              if link.isDirected and link.end1 is this and isSource
-                acc.push(link.end2)
-              else if link.isDirected and link.end2 is this and not isSource
-                acc.push(link.end1)
-            acc
-        else
-          (acc, link) =>
-            if breedNameMatches(link)
-              if not link.isDirected and link.end1 is this
-                acc.push(link.end2)
-              else if not link.isDirected and link.end2 is this
-                acc.push(link.end1)
-            acc
-
-      turtles = @_links.reduce(reductionFunc, [])
-      new TurtleSet(turtles)
-
-    # (Boolean, Boolean, String, Turtle) => Boolean
-    isLinkNeighbor: (isDirected, isSource, breedName, otherTurtle) ->
-      @linkNeighbors(isDirected, isSource, breedName).contains(otherTurtle)
-
-    # (Boolean, Boolean, String, Turtle) => Link
-    findLinkViaNeighbor: (isDirected, isSource, breedName, otherTurtle) ->
-      breedNameMatches = @_linkBreedMatches(breedName)
-      findFunc =
-        if isDirected
-          (link) =>
-            isDirectedFromMe = (link.isDirected and link.end1 is this and link.end2 is otherTurtle and isSource)
-            isDirectedToMe   = (link.isDirected and link.end1 is otherTurtle and link.end2 is this and not isSource)
-            breedNameMatches(link) and (isDirectedFromMe or isDirectedToMe)
-        else if not isDirected and not @world.breedManager.links().isDirected()
-          (link) =>
-            isFromMe = (not link.isDirected and link.end1 is this and link.end2 is otherTurtle)
-            isToMe   = (not link.isDirected and link.end2 is this and link.end1 is otherTurtle)
-            breedNameMatches(link) and (isFromMe or isToMe)
-        else
-          throw new Error("LINKS is a directed breed.")
-
-      _(@_links).find(findFunc) ? Nobody
 
     # () => Turtle
     otherEnd: ->
@@ -316,13 +256,7 @@ module.exports =
       if @id isnt -1
         @_removeTurtle(@id)
         @_seppuku()
-        @_links.forEach(
-          (link) ->
-            try link.die()
-            catch error
-              throw error if not (error instanceof Death)
-            return
-        )
+        @linkManager._clear()
         @id = -1
         @getPatchHere().untrackTurtle(this)
         @world.observer.unfocus(this)
@@ -412,11 +346,6 @@ module.exports =
       @world.observer.watch(this)
       return
 
-    # (Link) => Unit
-    removeLink: (link) ->
-      @_links.splice(@_links.indexOf(link), 1)
-      return
-
     # (Any) => Comparator
     compare: (x) ->
       if x instanceof Turtle
@@ -447,25 +376,13 @@ module.exports =
         ((heading % 360) + 360) % 360
 
     # () => Unit
-    _refreshLinks: ->
-      if not _(@_links).isEmpty()
-        linkTypes = [[true, true], [true, false], [false, false]]
-        _(linkTypes).map(
-          ([isDirected, isSource]) => @connectedLinks(isDirected, isSource).toArray()
-        ).flatten().forEach(
-          (link) -> link.updateEndRelatedVars(); return
-        )
-      return
-
-    # () => Unit
     _seppuku: ->
       @_registerDeath(@id)
       return
 
     # () => { "fixeds": Array[Turtle], "others": Array[Turtle] }
     _tiedTurtlesRaw: ->
-      filterFunc = ({ isDirected, end1, end2, tiemode }) => tiemode isnt "none" and ((end1 is this) or (end2 is this and not isDirected))
-      links      = @_links.filter(filterFunc)
+      links = @linkManager.tieLinks().filter((l) -> l.tiemode isnt "none")
       f =
         ([fixeds, others], { end1, end2, tiemode }) =>
           turtle = if end1 is this then end2 else end1

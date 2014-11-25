@@ -28,8 +28,8 @@ module.exports =
       @_varManager = @_genVarManager(varNames, getLinksByBreedName)
 
       @_setBreed(breed)
-      @end1.addLink(this)
-      @end2.addLink(this)
+      @end1.linkManager.add(this)
+      @end2.linkManager.add(this)
       @updateEndRelatedVars()
 
     # () => String
@@ -54,8 +54,8 @@ module.exports =
     die: ->
       @_breed.remove(this)
       if @id isnt -1
-        @end1.removeLink(this)
-        @end2.removeLink(this)
+        @end1.linkManager.remove(this)
+        @end2.linkManager.remove(this)
         @_registerRemoval(this)
         @_seppuku()
         @id = -1

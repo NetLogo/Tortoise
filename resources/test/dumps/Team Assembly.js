@@ -162,12 +162,12 @@ function pickTeamMembers() {
     }
     else {
       if ((Prims.lt(Prims.randomFloat(100), world.observer.getGlobal('q')) && world.turtles().agentFilter(function() {
-        return (SelfPrims.getVariable('in-team?') && LinkPrims.linkNeighbors(false, false, 'LINKS').agentFilter(function() {
+        return (SelfPrims.getVariable('in-team?') && LinkPrims.linkNeighbors('LINKS').agentFilter(function() {
           return !SelfPrims.getVariable('in-team?');
         }).nonEmpty());
       }).nonEmpty())) {
         newTeamMember = ListPrims.oneOf(world.turtles().agentFilter(function() {
-          return (!SelfPrims.getVariable('in-team?') && LinkPrims.linkNeighbors(false, false, 'LINKS').agentFilter(function() {
+          return (!SelfPrims.getVariable('in-team?') && LinkPrims.linkNeighbors('LINKS').agentFilter(function() {
             return SelfPrims.getVariable('in-team?');
           }).nonEmpty());
         }));
@@ -267,7 +267,7 @@ function explore() {
   }
   SelfPrims.setVariable('explored?', true);
   world.observer.setGlobal('component-size', (world.observer.getGlobal('component-size') + 1));
-  LinkPrims.linkNeighbors(false, false, 'LINKS').ask(function() {
+  LinkPrims.linkNeighbors('LINKS').ask(function() {
     Call(explore);
   }, true);
 }

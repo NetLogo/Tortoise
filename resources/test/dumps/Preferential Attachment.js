@@ -12,13 +12,13 @@ modelConfig.plots = [(function() {
   throw new Exception.StopInterrupt;
 }
 var maxDegree = ListPrims.max(world.turtles().projectionBy(function() {
-  return LinkPrims.linkNeighbors(false, false, 'LINKS').size();
+  return LinkPrims.linkNeighbors('LINKS').size();
 }));
 plotManager.resetPen();
 var degree = 1;
 while (Prims.lte(degree, maxDegree)) {
   var matches = world.turtles().agentFilter(function() {
-    return Prims.equality(LinkPrims.linkNeighbors(false, false, 'LINKS').size(), degree);
+    return Prims.equality(LinkPrims.linkNeighbors('LINKS').size(), degree);
   });
   if (matches.nonEmpty()) {
     plotManager.plotPoint(Prims.log(degree, 10), Prims.log(matches.size(), 10));
@@ -35,12 +35,12 @@ while (Prims.lte(degree, maxDegree)) {
   throw new Exception.StopInterrupt;
 }
 var maxDegree = ListPrims.max(world.turtles().projectionBy(function() {
-  return LinkPrims.linkNeighbors(false, false, 'LINKS').size();
+  return LinkPrims.linkNeighbors('LINKS').size();
 }));
 plotManager.resetPen();
 plotManager.setXRange(1, (maxDegree + 1));
 plotManager.drawHistogramFrom(world.turtles().projectionBy(function() {
-  return LinkPrims.linkNeighbors(false, false, 'LINKS').size();
+  return LinkPrims.linkNeighbors('LINKS').size();
 }));; }); }); })];
   var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Degree Distribution', undefined)(function() {}); }); };
   var update  = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Degree Distribution', undefined)(function() {}); }); };
@@ -120,7 +120,7 @@ function resizeNodes() {
     return Prims.lte(SelfPrims.getVariable('size'), 1);
   })) {
     world.turtles().ask(function() {
-      SelfPrims.setVariable('size', StrictMath.sqrt(LinkPrims.linkNeighbors(false, false, 'LINKS').size()));
+      SelfPrims.setVariable('size', StrictMath.sqrt(LinkPrims.linkNeighbors('LINKS').size()));
     }, true);
   }
   else {
