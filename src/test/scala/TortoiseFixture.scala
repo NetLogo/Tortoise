@@ -6,11 +6,11 @@ import
   org.scalatest.Assertions.{ assertResult, fail }
 
 import
-  org.nlogo.{ api, core, headless, nvm },
-    api.{ CompilerException, Program },
-    core.{ AgentKind, Model => CModel, View },
-    headless.lang.{ AbstractFixture, Command, CompileError, Reporter, Success, TestMode },
-    nvm.FrontEndInterface.{ ProceduresMap, NoProcedures }
+  org.nlogo.{ core, headless },
+    core.{ AgentKind, CompilerException, FrontEndInterface, Model => CModel, Program, View },
+      FrontEndInterface.{ ProceduresMap, NoProcedures },
+    headless.lang.{ AbstractFixture, Command, CompileError, Reporter, Success, TestMode }
+
 
 import jsengine.Nashorn
 

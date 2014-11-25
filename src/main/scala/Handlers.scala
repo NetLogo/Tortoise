@@ -2,13 +2,16 @@
 
 package org.nlogo.tortoise
 
-import org.nlogo.{ api, compile => ast, nvm }
+import
+  org.nlogo.{ api, core },
+    api.Dump,
+    core.{ AstNode, CommandBlock, LogoList, Nobody, Pure, ReporterApp, ReporterBlock, Statements }
 
 trait Handlers extends EveryIDProvider {
 
   def prims: Prims
 
-  def fun(node: ast.AstNode, isReporter: Boolean = false, isTask: Boolean = false): String = {
+  def fun(node: AstNode, isReporter: Boolean = false, isTask: Boolean = false): String = {
     val taskHeader =
       if (isTask)
         "var taskArguments = arguments;\n"
@@ -19,12 +22,12 @@ trait Handlers extends EveryIDProvider {
          "return " + reporter(node) + ";"
        else
          commands(node))
-    def isTrivialReporter(node: ast.AstNode): Boolean =
+    def isTrivialReporter(node: AstNode): Boolean =
       node match {
-        case block: ast.ReporterBlock =>
+        case block: ReporterBlock =>
           isTrivialReporter(block.app)
-        case app: ast.ReporterApp =>
-          app.args.isEmpty && app.reporter.isInstanceOf[nvm.Pure]
+        case app: ReporterApp =>
+          app.args.isEmpty && app.reporter.isInstanceOf[Pure]
         case _ =>
           false
       }
@@ -43,40 +46,42 @@ trait Handlers extends EveryIDProvider {
   // objects, representing the concrete syntax of square brackets, but at this stage of compilation
   // the brackets are irrelevant.  So when we see a block we just immediately recurse into it.
 
-  def commands(node: ast.AstNode): String =
+  def commands(node: AstNode): String =
     node match {
-      case block: ast.CommandBlock =>
+      case block: CommandBlock =>
         commands(block.statements)
-      case statements: ast.Statements =>
+      case statements: Statements =>
         statements.stmts.map(prims.generateCommand)
           .filter(_.nonEmpty)
           .mkString("\n")
     }
 
-  def reporter(node: ast.AstNode): String = node match {
-    case block: ast.ReporterBlock =>
+  def reporter(node: AstNode): String = node match {
+    case block: ReporterBlock =>
       reporter(block.app)
-    case app: ast.ReporterApp =>
+    case app: ReporterApp =>
     prims.reporter(app)
   }
 
   def literal(obj: AnyRef): String = obj match {
-    case ll: api.LogoList =>
+    case ll: LogoList =>
       ll.map(literal).mkString("[", ", ", "]")
+    case Nobody =>
+      "Nobody"
     case x =>
-      api.Dump.logoObject(x, readable = true, exporting = false)
+      Dump.logoObject(x, readable = true, exporting = false)
   }
 
   def indented(s: String): String =
     s.lines.map("  " + _).mkString("\n")
 
   // bogus, will need work - ST 9/13/13
-  def ident(s: String): String = {
+  def ident(name: String): String = {
     def initialUpper(s: String): String =
       java.lang.Character.toUpperCase(s.head) + s.tail
     def initialLower(s: String): String =
       java.lang.Character.toLowerCase(s.head) + s.tail
-    val camel = initialLower(s.toLowerCase.split('-').map(initialUpper).mkString)
+    val camel = initialLower(name.toLowerCase.split('-').map(initialUpper).mkString)
     camel
       .replaceAll("\\?", "_p")
       .replaceAll("%", "_percent_")

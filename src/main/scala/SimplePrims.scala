@@ -2,12 +2,13 @@
 
 package org.nlogo.tortoise
 
-import org.nlogo.{ nvm, prim }
+import
+  org.nlogo.core.{ Command, prim, Reporter }
 
 object SimplePrims {
 
   object SimpleReporter {
-    def unapply(r: nvm.Reporter): Option[String] =
+    def unapply(r: Reporter): Option[String] =
       PartialFunction.condOpt(r) {
         case _: prim._nobody               => "Nobody"
         case _: prim.etc._nopatches        => "new PatchSet([])"
@@ -23,7 +24,7 @@ object SimplePrims {
   }
 
   object InfixReporter {
-    def unapply(r: nvm.Reporter): Option[String] =
+    def unapply(r: Reporter): Option[String] =
       PartialFunction.condOpt(r) {
         case _: prim.etc._plus           => "+"
         case _: prim._minus              => "-"
@@ -36,13 +37,13 @@ object SimplePrims {
   }
 
   object NormalReporter {
-    def unapply(r: nvm.Reporter): Option[String] =
+    def unapply(r: Reporter): Option[String] =
       PartialFunction.condOpt(r) {
         case _: prim._lessthan               => "Prims.lt"
         case _: prim._greaterthan            => "Prims.gt"
         case _: prim.etc._greaterorequal     => "Prims.gte"
         case _: prim.etc._lessorequal        => "Prims.lte"
-        case _: prim.etc._turtle             => "world.turtleManager.getTurtle"
+        case _: prim._turtle                 => "world.turtleManager.getTurtle"
         case _: prim.etc._patch              => "world.getPatchAt"
         case _: prim._neighbors              => "SelfPrims.getNeighbors"
         case _: prim._neighbors4             => "SelfPrims.getNeighbors4"
@@ -147,7 +148,7 @@ object SimplePrims {
   }
 
   object SimpleCommand {
-    def unapply(c: nvm.Command): Option[String] =
+    def unapply(c: Command): Option[String] =
       PartialFunction.condOpt(c) {
         case _: prim._done             => ""
         case _: prim.etc._observercode => ""
@@ -158,7 +159,7 @@ object SimplePrims {
   }
 
   object NormalCommand {
-    def unapply(c: nvm.Command): Option[String] =
+    def unapply(c: Command): Option[String] =
       PartialFunction.condOpt(c) {
         case _: prim.etc._autoploton        => "plotManager.enableAutoplotting"
         case _: prim.etc._autoplotoff       => "plotManager.disableAutoplotting"

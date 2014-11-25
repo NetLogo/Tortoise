@@ -4,8 +4,8 @@ package org.nlogo.tortoise
 
 import
   org.nlogo.{ api, core, shape },
-    api.{ AgentVariables, Program, ShapeList, Version },
-    core.{ AgentKind, Model },
+    api.{ ShapeList, Version },
+    core.{ AgentKind, AgentVariables, Model, Program },
     shape.{ LinkShape, VectorShape }
 
 import
