@@ -3,8 +3,10 @@
 package org.nlogo.tortoise
 
 import
-  org.nlogo.{ api, compile => ast, core, nvm, workspace },
-    nvm.FrontEndInterface.{ ProceduresMap, NoProcedures }
+  org.nlogo.{ api, core, parse },
+    core.{ AgentKind, FrontEndInterface, Model, ProcedureDefinition, Program, SourceWrapping, StructureResults },
+      FrontEndInterface.{ ProceduresMap, NoProcedures },
+    parse.FrontEnd
 
 // there are three main entry points here:
 //   compile{Reporter, Commands, Procedures}
@@ -22,22 +24,22 @@ object Compiler extends CompilerLike with ModelConfigGenerator {
   private val prims:    Prims    = new Prims    { override lazy val handlers = self.handlers }
   private val handlers: Handlers = new Handlers { override lazy val prims    = self.prims }
 
-  val frontEnd: ast.FrontEndInterface = ast.front.FrontEnd
+  val frontEnd: FrontEndInterface = FrontEnd
 
   def compileReporter(logo: String,
                       oldProcedures: ProceduresMap = NoProcedures,
-                      program: api.Program = api.Program.empty()): String =
+                      program: Program = Program.empty()): String =
     compile(logo, commands = false, oldProcedures, program)
 
   def compileCommands(logo: String,
                       oldProcedures: ProceduresMap = NoProcedures,
-                      program: api.Program = api.Program.empty()): String =
+                      program: Program = Program.empty()): String =
     compile(logo, commands = true, oldProcedures, program)
 
-  def compileProcedures(model: core.Model): (String, api.Program, ProceduresMap) = {
-    val (defs, results): (Seq[ast.ProcedureDefinition], nvm.StructureResults) =
+  def compileProcedures(model: Model): (String, Program, ProceduresMap) = {
+    val (defs, results): (Seq[ProcedureDefinition], StructureResults) =
       frontEnd.frontEnd(model.code,
-        program = api.Program.empty.copy(interfaceGlobals = model.interfaceGlobals))
+        program = Program.empty.copy(interfaceGlobals = model.interfaceGlobals))
     val init = new RuntimeInit(results.program, model)
     val main =
       defs.map(compileProcedureDef).mkString("", "\n", "\n")
@@ -49,11 +51,11 @@ object Compiler extends CompilerLike with ModelConfigGenerator {
     (js, results.program, results.procedures)
   }
 
-  private def compileProcedureDef(pd: ast.ProcedureDefinition): String = {
-    val name = handlers.ident(pd.procedure.name)
+  private def compileProcedureDef(pd: ProcedureDefinition): String = {
+    val name = handlers.ident(pd.procedure.name.name)
     handlers.resetEveryID(name)
     val body = handlers.commands(pd.statements)
-    val args = pd.procedure.args.map(handlers.ident).mkString(", ")
+    val args = pd.procedure.inputs.map((i) => handlers.ident(i.name)).mkString(", ")
     s"""|function $name($args) {
         |${handlers.indented(body)}
         |}""".stripMargin
@@ -69,11 +71,11 @@ object Compiler extends CompilerLike with ModelConfigGenerator {
 
   private def compile(logo: String, commands: Boolean,
       oldProcedures: ProceduresMap = NoProcedures,
-      program: api.Program = api.Program.empty()): String = {
-    val wrapped =
-      workspace.Evaluator.getHeader(core.AgentKind.Observer, commands) +
-        logo + workspace.Evaluator.getFooter(commands)
-    val (defs, _) = frontEnd.frontEnd(wrapped, oldProcedures, program)
+      program: Program = Program.empty()): String = {
+    val header  = SourceWrapping.getHeader(AgentKind.Observer, commands)
+    val footer  = SourceWrapping.getFooter(commands)
+    val wrapped = s"$header$logo$footer"
+    val (defs, _) = frontEnd.frontEnd(wrapped, oldProcedures = oldProcedures, program = program)
     if (commands)
       handlers.commands(defs.head.statements)
     else

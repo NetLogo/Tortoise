@@ -2,12 +2,13 @@
 
 package org.nlogo.tortoise.jsengine
 
-import java.io.{PrintWriter, StringWriter}
-import javax.script.{ScriptContext, ScriptEngineManager}
+import java.io.{ PrintWriter, StringWriter }
+import javax.script.{ ScriptContext, ScriptEngineManager }
 
-import org.nlogo.api
-import org.nlogo.api.MersenneTwisterFast
-import org.nlogo.core.Resource
+import
+  org.nlogo.{ api, core },
+    api.MersenneTwisterFast,
+    core.{ LogoList, Nobody, Resource }
 
 // There are two main entry points here: run() and eval().  The former runs compiled commands and
 // collects all the lines of output and JSON updates generated.  The latter runs a compiled reporter
@@ -51,7 +52,7 @@ class Nashorn {
   def fromNashorn(jsValue: AnyRef): AnyRef =
     jsValue match {
       case a: jdk.nashorn.api.scripting.ScriptObjectMirror if a.isArray =>
-        api.LogoList.fromIterator(
+        LogoList.fromIterator(
           Iterator.from(0)
             .map(x => fromNashorn(a.get(x)))
             .take(a.get("length").asInstanceOf[Number].intValue))
@@ -62,7 +63,7 @@ class Nashorn {
       case i: java.lang.Integer =>
         i.toDouble : java.lang.Double
       case x if x == engine.get("Nobody") =>
-        api.Nobody
+        Nobody
       case x =>
         x
     }

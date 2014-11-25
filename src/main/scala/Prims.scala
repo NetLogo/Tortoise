@@ -3,19 +3,17 @@
 package org.nlogo.tortoise
 
 import
-  org.nlogo.{ api, compile => ast, core, nvm, prim },
-    api.CompilerException,
-    core.Token
+  org.nlogo.core.{ CommandBlock, CompilerException, prim, ReporterApp, Statement, Token }
 
 trait Prims {
 
   def handlers: Handlers
 
-  def reporter(r: ast.ReporterApp): String = {
+  def reporter(r: ReporterApp): String = {
     def arg(i: Int) = handlers.reporter(r.args(i))
     def commaArgs = argsSep(", ")
     def args =
-      r.args.collect{ case x: ast.ReporterApp => handlers.reporter(x) }
+      r.args.collect{ case x: ReporterApp => handlers.reporter(x) }
     def argsSep(sep: String) =
       args.mkString(sep)
     r.reporter match {
@@ -23,17 +21,17 @@ trait Prims {
       case SimplePrims.InfixReporter(op)    => s"(${arg(0)} $op ${arg(1)})"
       case SimplePrims.NormalReporter(op)   => s"$op($commaArgs)"
       case x: prim.etc._isbreed             => s"""Prims.isBreed("${x.breedName}", ${arg(0)})"""
-      case b: prim._breed                   => s"""world.turtleManager.turtlesOfBreed("${b.getBreedName}")"""
-      case b: prim.etc._linkbreed           => s"""world.linkManager.linksOfBreed("${b.getBreedName}")"""
+      case b: prim._breed                   => s"""world.turtleManager.turtlesOfBreed("${b.breedName}")"""
+      case b: prim.etc._linkbreed           => s"""world.linkManager.linksOfBreed("${b.breedName}")"""
       case b: prim.etc._breedsingular       => s"""world.turtleManager.getTurtleOfBreed("${b.breedName}", ${arg(0)})"""
-      case b: prim.etc._breedhere           => s"""SelfManager.self().breedHere("${b.getBreedName}")"""
-      case b: prim.etc._breedon             => s"""Prims.breedOn("${b.getBreedName}", ${arg(0)})"""
+      case b: prim.etc._breedhere           => s"""SelfManager.self().breedHere("${b.breedName}")"""
+      case b: prim.etc._breedon             => s"""Prims.breedOn("${b.breedName}", ${arg(0)})"""
       case x: prim.etc._isstring            => s"Type(${arg(0)}).isString()"
-      case pure: nvm.Pure if r.args.isEmpty => handlers.literal(pure.report(null))
+      case p: prim._const                   => handlers.literal(p.value)
       case lv: prim._letvariable            => handlers.ident(lv.let.name)
       case pv: prim._procedurevariable      => handlers.ident(pv.name)
       case call: prim._callreport           =>
-        (handlers.ident(call.procedure.name) +: args)
+        (handlers.ident(call.name) +: args)
           .mkString("Call(", ", ", ")")
       case _: prim._unaryminus              => s" -${arg(0)}" // The space is important, because these can be nested --JAB (6/12/14)
       case _: prim._not                     => s"!${arg(0)}"
@@ -43,9 +41,8 @@ trait Prims {
       case tv: prim._linkvariable           => s"SelfPrims.getVariable('${tv.displayName.toLowerCase}')"
       case tv: prim._turtleorlinkvariable   => s"SelfPrims.getVariable('${tv.varName.toLowerCase}')"
       case pv: prim._patchvariable          => s"SelfPrims.getPatchVariable('${pv.displayName.toLowerCase}')"
-      case r: prim._reference               => s"${r.reference.original.displayName.toLowerCase}"
       case ov: prim._observervariable       => s"world.observer.getGlobal('${ov.displayName.toLowerCase}')"
-      case p: prim.etc._linkbreedsingular   => s"world.linkManager.getLink(${arg(0)}, ${arg(1)}, '${p.getBreedName}')"
+      case p: prim.etc._linkbreedsingular   => s"world.linkManager.getLink(${arg(0)}, ${arg(1)}, '${p.breedName}')"
       case _: prim._count                   => s"${arg(0)}.size()"
       case _: prim._any                     => s"${arg(0)}.nonEmpty()"
       case _: prim._word                    =>
@@ -73,8 +70,8 @@ trait Prims {
       case p: prim.etc._inlinkfrom          => s"LinkPrims.inLinkFrom('${fixBN(p.breedName)}', ${arg(0)})"
       case p: prim.etc._inlinkneighbor      => s"LinkPrims.isInLinkNeighbor('${fixBN(p.breedName)}', ${arg(0)})"
       case p: prim.etc._inlinkneighbors     => s"LinkPrims.inLinkNeighbors('${fixBN(p.breedName)}')"
-      case p: prim.etc._linkneighbor        => s"LinkPrims.isLinkNeighbor('${fixBN(p.getBreedName)}', ${arg(0)})"
-      case p: prim.etc._linkneighbors       => s"LinkPrims.linkNeighbors('${fixBN(p.getBreedName)}')"
+      case p: prim.etc._linkneighbor        => s"LinkPrims.isLinkNeighbor('${fixBN(p.breedName)}', ${arg(0)})"
+      case p: prim.etc._linkneighbors       => s"LinkPrims.linkNeighbors('${fixBN(p.breedName)}')"
       case p: prim.etc._linkwith            => s"LinkPrims.linkWith('${fixBN(p.breedName)}', ${arg(0)})"
       case p: prim.etc._myinlinks           => s"LinkPrims.myInLinks('${fixBN(p.breedName)}')"
       case p: prim.etc._mylinks             => s"LinkPrims.myLinks('${fixBN(p.breedName)}')"
@@ -82,7 +79,7 @@ trait Prims {
       case p: prim.etc._outlinkneighbor     => s"LinkPrims.isOutLinkNeighbor('${fixBN(p.breedName)}', ${arg(0)})"
       case p: prim.etc._outlinkneighbors    => s"LinkPrims.outLinkNeighbors('${fixBN(p.breedName)}')"
       case p: prim.etc._outlinkto           => s"LinkPrims.outLinkTo('${fixBN(p.breedName)}', ${arg(0)})"
-      case tv: prim._taskvariable           => s"taskArguments[${tv.varNumber - 1}]"
+      case tv: prim._taskvariable           => s"taskArguments[${tv.vn - 1}]"
       case _: prim._task                    => arg(0)
       case _: prim._reportertask =>
         s"Tasks.reporterTask(${handlers.fun(r.args(0), isReporter = true, isTask = true)})"
@@ -96,11 +93,11 @@ trait Prims {
     }
   }
 
-  def generateCommand(s: ast.Statement): String = {
+  def generateCommand(s: Statement): String = {
     def arg(i: Int) = handlers.reporter(s.args(i))
     def commaArgs = argsSep(", ")
     def args =
-      s.args.collect{ case x: ast.ReporterApp => handlers.reporter(x) }
+      s.args.collect{ case x: ReporterApp => handlers.reporter(x) }
     def argsSep(sep: String) =
       args.mkString(sep)
     s.command match {
@@ -124,12 +121,12 @@ trait Prims {
       case p: prim.etc._createlinkswith  => generateCreateLink(s, "createLinksWith", p.breedName)
       case _: prim.etc._every            => generateEvery(s)
       case h: prim._hatch                => generateHatch(s, h.breedName)
-      case _: prim.etc._diffuse          => s"world.topology.diffuse('${arg(0)}', ${arg(1)})"
+      case _: prim.etc._diffuse          => s"world.topology.diffuse('${getReferenceName(s)}', ${arg(1)})"
       case x: prim.etc._setdefaultshape  => s"BreedManager.setDefaultShape(${arg(0)}.getBreedName(), ${arg(1)})"
       case _: prim.etc._hidelink         => "SelfPrims.setVariable('hidden?', true)"
       case _: prim.etc._showlink         => "SelfPrims.setVariable('hidden?', false)"
       case call: prim._call              =>
-        (handlers.ident(call.procedure.name) +: args)
+        (handlers.ident(call.name) +: args)
           .mkString("Call(", ", ", ");")
       case _: prim.etc._report           => s"return ${arg(0)};"
       case _: prim.etc._ignore           => s"${arg(0)};"
@@ -148,11 +145,17 @@ trait Prims {
     }
   }
 
+  def getReferenceName(s: Statement): String =
+    s.args(0).asInstanceOf[ReporterApp].reporter match {
+      case p: prim._patchvariable => p.displayName.toLowerCase
+      case x                      => failCompilation(s"unknown reference: ${x.getClass.getName}", s.instruction.token)
+    }
+
   /// custom generators for particular Commands
 
-  def generateSet(s: ast.Statement): String = {
+  def generateSet(s: Statement): String = {
     def arg(i: Int) = handlers.reporter(s.args(i))
-    s.args(0).asInstanceOf[ast.ReporterApp].reporter match {
+    s.args(0).asInstanceOf[ReporterApp].reporter match {
       case p: prim._letvariable =>
         s"${handlers.ident(p.let.name)} = ${arg(1)};"
       case p: prim._observervariable =>
@@ -176,20 +179,20 @@ trait Prims {
     }
   }
 
-  def generateLoop(w: ast.Statement): String = {
+  def generateLoop(w: Statement): String = {
     val body = handlers.commands(w.args(0))
     s"""|while (true) {
         |${handlers.indented(body)}
         |};""".stripMargin
   }
 
-  def generateRepeat(w: ast.Statement): String = {
+  def generateRepeat(w: Statement): String = {
     val count = handlers.reporter(w.args(0))
     val body = handlers.commands(w.args(1))
     s"""Prims.repeat($count, ${handlers.fun(w.args(1))});"""
   }
 
-  def generateWhile(w: ast.Statement): String = {
+  def generateWhile(w: Statement): String = {
     val pred = handlers.reporter(w.args(0))
     val body = handlers.commands(w.args(1))
     s"""|while ($pred) {
@@ -197,7 +200,7 @@ trait Prims {
         |}""".stripMargin
   }
 
-  def generateIf(s: ast.Statement): String = {
+  def generateIf(s: Statement): String = {
     val pred = handlers.reporter(s.args(0))
     val body = handlers.commands(s.args(1))
     s"""|if ($pred) {
@@ -205,7 +208,7 @@ trait Prims {
         |}""".stripMargin
   }
 
-  def generateIfElse(s: ast.Statement): String = {
+  def generateIfElse(s: Statement): String = {
     val pred      = handlers.reporter(s.args(0))
     val thenBlock = handlers.commands(s.args(1))
     val elseBlock = handlers.commands(s.args(2))
@@ -217,37 +220,36 @@ trait Prims {
         |}""".stripMargin
   }
 
-  def generateAsk(s: ast.Statement, shuffle: Boolean): String = {
+  def generateAsk(s: Statement, shuffle: Boolean): String = {
     val agents = handlers.reporter(s.args(0))
     val body = handlers.fun(s.args(1))
     genAsk(agents, shuffle, body)
   }
 
-  def generateCreateLink(s: ast.Statement, name: String, breedName: String): String = {
+  def generateCreateLink(s: Statement, name: String, breedName: String): String = {
     val other = handlers.reporter(s.args(0))
     // This is so that we don't shuffle unnecessarily.  FD 10/31/2013
     val nonEmptyCommandBlock =
-      s.args(1).asInstanceOf[ast.CommandBlock]
+      s.args(1).asInstanceOf[CommandBlock]
         .statements.stmts.nonEmpty
     val body = handlers.fun(s.args(1))
     genAsk(s"LinkPrims.$name($other, '${fixBN(breedName)}')", nonEmptyCommandBlock, body)
   }
 
-  def generateCreateTurtles(s: ast.Statement, ordered: Boolean): String = {
-    import org.nlogo.prim._
+  def generateCreateTurtles(s: Statement, ordered: Boolean): String = {
     val n = handlers.reporter(s.args(0))
     val name = if (ordered) "createOrderedTurtles" else "createTurtles"
     val breed =
       s.command match {
-        case x: _createturtles => x.breedName
-        case x: _createorderedturtles => x.breedName
+        case x: prim._createturtles => x.breedName
+        case x: prim._createorderedturtles => x.breedName
         case x => throw new IllegalArgumentException("How did you get here with class of type " + x.getClass.getName)
       }
     val body = handlers.fun(s.args(1))
     genAsk(s"world.turtleManager.$name($n, '$breed')", true, body)
   }
 
-  def generateSprout(s: ast.Statement): String = {
+  def generateSprout(s: Statement): String = {
     val n = handlers.reporter(s.args(0))
     val body = handlers.fun(s.args(1))
     val breedName = s.command.asInstanceOf[prim._sprout].breedName
@@ -256,13 +258,13 @@ trait Prims {
     genAsk(sprouted, true, body)
   }
 
-  def generateHatch(s: ast.Statement, breedName: String): String = {
+  def generateHatch(s: Statement, breedName: String): String = {
     val n = handlers.reporter(s.args(0))
     val body = handlers.fun(s.args(1))
     genAsk(s"SelfPrims.hatch($n, '$breedName')", true, body)
   }
 
-  def generateEvery(w: ast.Statement): String = {
+  def generateEvery(w: Statement): String = {
     val time = handlers.reporter(w.args(0))
     s"""Prims.every($time, ${handlers.fun(w.args(1))}, '${handlers.nextEveryID()}');"""
   }
@@ -276,7 +278,7 @@ trait Prims {
   def genAsk(agents: String, shouldShuffle: Boolean, body: String): String =
     s"""$agents.ask($body, $shouldShuffle);"""
 
-  def generateOf(r: ast.ReporterApp): String = {
+  def generateOf(r: ReporterApp): String = {
     val agents = handlers.reporter(r.args(1))
     val func   = handlers.fun(r.args(0), isReporter = true)
     s"$agents.projectionBy($func)"
