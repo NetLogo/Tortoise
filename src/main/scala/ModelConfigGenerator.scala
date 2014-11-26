@@ -50,22 +50,27 @@ private[tortoise] trait ModelConfigGenerator {
   private implicit class EnhancedPlot(plot: Plot) {
     def toJS(implicit compileCommand: CompileFunc): String = {
       import plot._
+
       val noop       = thunkifyProcedure("")
       val arity2Noop = thunkifyFunction(noop)
       val plotOps    = s"new PlotOps($noop, $noop, $noop, $arity2Noop, $arity2Noop, $arity2Noop)"
-      val plotPens   = pens.map(_.toJS(display)).mkString("[", ",\n", "]")
-      val setup      = compileInContext(setupCode,  display)
-      val update     = compileInContext(updateCode, display)
+
+      val cleanDisplay = sanitize(display)
+      val plotPens     = pens.map(_.toJS(cleanDisplay)).mkString("[", ",\n", "]")
+      val setup        = compileInContext(setupCode,  cleanDisplay)
+      val update       = compileInContext(updateCode, cleanDisplay)
+
       s"""(function() {
-           |  var name    = '$display';
+           |  var name    = '$cleanDisplay';
            |  var plotOps = ${getOrElse("modelPlotOps[name]")(plotOps)};
            |  var pens    = $plotPens;
            |  var setup   = $setup;
            |  var update  = $update;
            |  return new Plot(name, pens, plotOps, '${sanitize(xAxis)}', '${sanitize(yAxis)}', $legendOn, $xmin, $xmax, $ymin, $ymax, setup, update);
            |})()""".stripMargin
+
     }
-    private def sanitize(s: String): String = if (s != "NIL") s else ""
+    private def sanitize(s: String): String = if (s != "NIL") s.replaceAllLiterally("'", "\\'") else ""
   }
 
   private implicit class EnhancedPen(pen: Pen) {
