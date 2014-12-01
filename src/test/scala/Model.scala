@@ -322,6 +322,10 @@ object Model {
     Model(
       path = "models/Sample Models/Networks/Virus on a Network.nlogo",
       repetitions = 25
+    ),
+    Model(
+      path = "models/Sample Models/Computer Science/PageRank.nlogo",
+      repetitions = 20
     )
   )
 }
