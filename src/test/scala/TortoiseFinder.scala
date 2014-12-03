@@ -39,8 +39,6 @@ private[tortoise] trait TortoiseFinder extends Finder with BeforeAndAfterAll wit
         body(genFixture(name))
       case Some(x) if x.contains("ASSUMES OPTIMIZATION") =>
         notImplemented("Can only yield the correct answer if the optimizer is enabled")
-      case Some(x) if x.contains("TOO SLOW") =>
-        notImplemented("TOO SLOW")
       case Some(excuse) =>
         try body(genFixture(name))
         catch {
@@ -87,8 +85,6 @@ class TestCommands extends TCommands with TortoiseFinder {
     "TurtlesHere::TurtlesHereCheckOrder2"                                     -> "ASSUMES OPTIMIZATION: empty init block",
     "TurtlesHere::TurtlesHereCheckOrder3"                                     -> "ASSUMES OPTIMIZATION: empty init block",
     "TurtlesHere::TurtlesHereCheckOrder4"                                     -> "ASSUMES OPTIMIZATION: empty init block",
-    // significant; uncertain how to solve
-    "Random::RandomNOfIsFairForLinks" -> "TOO SLOW",
     // requires Tortoise compiler changes
     "CommandTasks::*ToString3" -> "command task string representation doesn't match",
     "CommandTasks::*ToString4" -> "command task string representation doesn't match",
