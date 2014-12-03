@@ -79,6 +79,7 @@ class TestCommands extends TCommands with TortoiseFinder {
     // requires handling of non-local exit (see in JVM NetLogo: `NonLocalExit`, `_report`, `_foreach`, `_run`)
     "Stop::ReportFromForeach" -> "no non-local exit from foreach",
     // Significant: Requires the optimizer to be turned on
+    "Death::TurtleDiesWhileIteratingOverItsSet"                               -> "ASSUMES OPTIMIZATION: empty init block",
     "Interaction::Interaction3b1"                                             -> "ASSUMES OPTIMIZATION: empty init block",
     "Interaction::Interaction3b2"                                             -> "ASSUMES OPTIMIZATION: empty init block",
     "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksFrom" -> "ASSUMES OPTIMIZATION: empty init block",

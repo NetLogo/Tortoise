@@ -69,7 +69,7 @@ module.exports =
 
     # () => Shufflerator[T]
     shufflerator: ->
-      new Shufflerator(@toArray(), @_nextInt)
+      new Shufflerator(@toArray(), ((agent) -> agent?.id >= 0), @_nextInt)
 
     # () => Array[T]
     sort: ->

@@ -8,8 +8,8 @@ module.exports =
     _i:       undefined # Number
     _nextOne: undefined # T
 
-    # [T] @ (Array[T], (Number) => Number) => Shufflerator
-    constructor: (items, @_nextInt) ->
+    # [T] @ (Array[T], (T) => Boolean, (Number) => Number) => Shufflerator
+    constructor: (items, @_itemIsValid, @_nextInt) ->
       super(items)
       @_i       = 0
       @_nextOne = null
@@ -19,21 +19,21 @@ module.exports =
     # [U] @ ((T) => U) => Array[U]
     map: (f) ->
       acc = []
-      while @_hasNext()
-        acc.push(f(@_next()))
+      @forEach((x) -> acc.push(f(x)))
       acc
 
     # ((T) => Unit) => Unit
     forEach: (f) ->
       while @_hasNext()
-        f(@_next())
+        next = @_next()
+        if @_itemIsValid(next)
+          f(next)
       return
 
     # () => Array[T]
     toArray: ->
       acc = []
-      while @_hasNext()
-        acc.push(@_next())
+      @forEach((x) -> acc.push(x))
       acc
 
     # () => Boolean
