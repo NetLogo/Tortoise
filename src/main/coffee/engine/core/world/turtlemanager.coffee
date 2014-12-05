@@ -80,10 +80,10 @@ module.exports =
       @_idManager.suspendDuring(() => @clearTurtles())
       return
 
-    # (Number, Number, Number, Number, Breed, String, Number, Boolean, Number, PenManager) => Turtle
-    _createTurtle: (color, heading, xcor, ycor, breed, label, lcolor, isHidden, size, penManager) =>
+    # (Number, Number, Number, Number, Breed, String, Number, Boolean, Number, String, PenManager) => Turtle
+    _createTurtle: (color, heading, xcor, ycor, breed, label, lcolor, isHidden, size, shape, penManager) =>
       id     = @_idManager.next()
-      turtle = new Turtle(@_world, id, @_updater.updated, @_updater.registerDeadTurtle, @_createTurtle, @_removeTurtle, color, heading, xcor, ycor, breed, label, lcolor, isHidden, size, penManager)
+      turtle = new Turtle(@_world, id, @_updater.updated, @_updater.registerDeadTurtle, @_createTurtle, @_removeTurtle, color, heading, xcor, ycor, breed, label, lcolor, isHidden, size, shape, penManager)
       @_updater.updated(turtle)(Builtins.turtleBuiltins...)
       @_turtles.push(turtle)
       @_turtlesById[id] = turtle

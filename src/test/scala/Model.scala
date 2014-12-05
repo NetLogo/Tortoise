@@ -119,6 +119,10 @@ object Model {
       metrics = Seq("count wolves", "count sheep", "grass")
     ),
     Model(
+      path = "models/test/benchmarks/Wolf Benchmark.nlogo",
+      repetitions = 20
+    ),
+    Model(
       path = "models/Sample Models/Chemistry & Physics/Heat/Boiling.nlogo",
       dimensions = Some((-15, 15, -15, 15)),
       repetitions = 5

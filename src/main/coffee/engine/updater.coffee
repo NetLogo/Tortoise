@@ -110,7 +110,7 @@ module.exports =
       label:         ["LABEL",       Dump(turtle._label)]
       'pen-size':    ["PEN-SIZE",    turtle.penManager.getSize()]
       'pen-mode':    ["PEN-MODE",    turtle.penManager.getMode().toString()]
-      shape:         ["SHAPE",       turtle._shape]
+      shape:         ["SHAPE",       turtle._getShape()]
       size:          ["SIZE",        turtle._size]
       xcor:          ["XCOR",        turtle.xcor]
       ycor:          ["YCOR",        turtle.ycor]

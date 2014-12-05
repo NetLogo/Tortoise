@@ -17,14 +17,14 @@ module.exports =
   class Turtle
 
     _breed:            undefined # Breed
-    _shape:            undefined # String
+    _breedShape:       undefined # String
     _updateVarsByName: undefined # (String*) => Unit
     _varManager:       undefined # VariableManager
 
     linkManager: undefined # TurtleLinkManager
 
-    # (World, Number, (Updatable) => (String*) => Unit, (Number) => Unit, (Number, Number, Number, Number, Breed, String, Number, Boolean, Number, PenManager) => Turtle, (Number) => Unit, Number, Number, Number, Number, Breed, String, Number, Boolean, Number, PenManager) => Turtle
-    constructor: (@world, @id, genUpdate, @_registerDeath, @_createTurtle, @_removeTurtle, @_color = 0, @_heading = 0, @xcor = 0, @ycor = 0, breed = @world.breedManager.turtles(), @_label = "", @_labelcolor = 9.9, @_hidden = false, @_size = 1.0, @penManager = new PenManager(genUpdate(this))) ->
+    # (World, Number, (Updatable) => (String*) => Unit, (Number) => Unit, (Number, Number, Number, Number, Breed, String, Number, Boolean, Number, String, PenManager) => Turtle, (Number) => Unit, Number, Number, Number, Number, Breed, String, Number, Boolean, Number, String, PenManager) => Turtle
+    constructor: (@world, @id, genUpdate, @_registerDeath, @_createTurtle, @_removeTurtle, @_color = 0, @_heading = 0, @xcor = 0, @ycor = 0, breed = @world.breedManager.turtles(), @_label = "", @_labelcolor = 9.9, @_hidden = false, @_size = 1.0, @_givenShape, @penManager = new PenManager(genUpdate(this))) ->
       @_updateVarsByName = genUpdate(this)
 
       @linkManager = new TurtleLinkManager(id, world.breedManager)
@@ -33,6 +33,9 @@ module.exports =
       @_varManager = @_genVarManager(varNames, world.turtleManager.turtlesOfBreed)
 
       @_setBreed(breed)
+
+      if @_givenShape?
+        @_setShape(@_givenShape)
 
       @getPatchHere().trackTurtle(this)
 
@@ -309,7 +312,7 @@ module.exports =
 
     # (Breed) => Turtle
     _makeTurtleCopy: (breed) ->
-      turtle   = @_createTurtle(@_color, @_heading, @xcor, @ycor, breed, @_label, @_labelcolor, @_hidden, @_size, @penManager.clone())
+      turtle   = @_createTurtle(@_color, @_heading, @xcor, @ycor, breed, @_label, @_labelcolor, @_hidden, @_size, @_givenShape, @penManager.clone())
       varNames = @_varNamesForBreed(breed)
       _(varNames).forEach((varName) =>
         turtle.setVariable(varName, @getVariable(varName))
@@ -359,6 +362,15 @@ module.exports =
         "(#{@_breed.singular} #{@id})"
       else
         "nobody"
+
+    # Unfortunately, we can't just throw out `_breedShape` and grab the shape from our
+    # `Breed` object.  It would be pretty nice if we could, but the problem is that
+    # `set-default-shape` only affects turtles created after its use, so turtles that
+    # were using breed shape <X> before `set-default-shape` set the breed's shape to <Y>
+    # still need to be using <X>. --JAB (12/5/14)
+    # () => String
+    _getShape: ->
+      @_givenShape ? @_breedShape
 
     # () => Boolean
     _isDead: ->
@@ -414,7 +426,7 @@ module.exports =
         { name: 'label-color', get: (=> @_labelcolor),                        set: ((x) => @_setLabelColor(x))        },
         { name: 'pen-mode',    get: (=> @penManager.getMode().toString()),    set: ((x) => @penManager.setPenMode(x)) },
         { name: 'pen-size',    get: (=> @penManager.getSize()),               set: ((x) => @penManager.setSize(x))    },
-        { name: 'shape',       get: (=> @_shape),                             set: ((x) => @_setShape(x))             },
+        { name: 'shape',       get: (=> @_getShape()),                        set: ((x) => @_setShape(x))             },
         { name: 'size',        get: (=> @_size),                              set: ((x) => @_setSize(x))              },
         { name: 'who',         get: (=> @id),                                 set: (->)                               },
         { name: 'xcor',        get: (=> @xcor),                               set: ((x) => @_setXcor(x))              },
@@ -469,13 +481,19 @@ module.exports =
       @_breed = trueBreed
       @_genVarUpdate("breed")
 
-      @_setShape(trueBreed.getShape())
+      @_setBreedShape(trueBreed.getShape())
 
       if trueBreed isnt @world.breedManager.turtles()
         @world.breedManager.turtles().add(this)
 
       return
 
+    # (String) => Unit
+    _setBreedShape: (shape) ->
+      @_breedShape = shape.toLowerCase()
+      if not @_givenShape?
+        @_genVarUpdate("shape")
+      return
 
     # (Number) => Unit
     _setColor: (color) ->
@@ -534,7 +552,7 @@ module.exports =
 
     # (String) => Unit
     _setShape: (shape) ->
-      @_shape = shape.toLowerCase()
+      @_givenShape = shape.toLowerCase()
       @_genVarUpdate("shape")
       return
 
