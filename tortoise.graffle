@@ -166,8 +166,8 @@
 			<integer>478</integer>
 			<key>Points</key>
 			<array>
-				<string>{301.6694797736339, 413.0500142817678}</string>
-				<string>{293.89625151023813, 444.46438179494379}</string>
+				<string>{309.71456217645658, 417.50237788500903}</string>
+				<string>{296.81956812248484, 444.49753334521398}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -195,7 +195,7 @@
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{261.79533408975027, 395.56465231479837}, {84.194999999999993, 17}}</string>
+			<string>{{271.89283959201214, 400.05120849609375}, {84.194999999999993, 17}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FontInfo</key>
@@ -355,8 +355,8 @@
 			<integer>464</integer>
 			<key>Points</key>
 			<array>
-				<string>{312.93200615851237, 310.13277873885238}</string>
-				<string>{304.75862593379293, 395.06695109761631}</string>
+				<string>{313.9877840635333, 310.13507790946176}</string>
+				<string>{313.96703802181423, 399.55121016597752}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -545,11 +545,11 @@
 					<key>Color</key>
 					<dict>
 						<key>b</key>
-						<string>0.710283</string>
-						<key>g</key>
 						<string>1</string>
+						<key>g</key>
+						<string>0.759011</string>
 						<key>r</key>
-						<string>0.993242</string>
+						<string>0.452428</string>
 					</dict>
 				</dict>
 			</dict>
@@ -776,9 +776,9 @@
 						<key>b</key>
 						<string>1</string>
 						<key>g</key>
-						<string>0.757165</string>
+						<string>0.587049</string>
 						<key>r</key>
-						<string>0.631693</string>
+						<string>0.762178</string>
 					</dict>
 				</dict>
 			</dict>
@@ -1172,11 +1172,11 @@ December 4, 2014}</string>
 					<key>Color</key>
 					<dict>
 						<key>b</key>
-						<string>0.710283</string>
-						<key>g</key>
 						<string>1</string>
+						<key>g</key>
+						<string>0.759011</string>
 						<key>r</key>
-						<string>0.993242</string>
+						<string>0.452428</string>
 					</dict>
 				</dict>
 			</dict>
@@ -1216,11 +1216,11 @@ December 4, 2014}</string>
 					<key>Color</key>
 					<dict>
 						<key>b</key>
-						<string>0.710283</string>
-						<key>g</key>
 						<string>1</string>
+						<key>g</key>
+						<string>0.759011</string>
 						<key>r</key>
-						<string>0.993242</string>
+						<string>0.452428</string>
 					</dict>
 				</dict>
 			</dict>
@@ -1262,9 +1262,9 @@ December 4, 2014}</string>
 						<key>b</key>
 						<string>1</string>
 						<key>g</key>
-						<string>0.757165</string>
+						<string>0.587049</string>
 						<key>r</key>
-						<string>0.631693</string>
+						<string>0.762178</string>
 					</dict>
 				</dict>
 			</dict>
@@ -1329,7 +1329,7 @@ December 4, 2014}</string>
 	<key>MasterSheets</key>
 	<array/>
 	<key>ModificationDate</key>
-	<string>2014-12-05 01:49:04 +0000</string>
+	<string>2014-12-05 01:53:01 +0000</string>
 	<key>Modifier</key>
 	<string>Seth Tisue</string>
 	<key>NotesVisible</key>
