@@ -37,14 +37,17 @@ private[tortoise] trait TortoiseFinder extends Finder with BeforeAndAfterAll wit
     freebies.get(name.stripSuffix(" (NormalMode)")) match {
       case None =>
         body(genFixture(name))
-      case Some(x) if x.contains("ASSUMES OPTIMIZATION") =>
-        notImplemented("Can only yield the correct answer if the optimizer is enabled")
       case Some(excuse) =>
         try body(genFixture(name))
         catch {
           case _: TestPendingException => // ignore; we'll hit the fail() below
           case ex: Exception =>
-            notImplemented(s"$ex: LAME EXCUSE: $excuse")
+            val message =
+              if (excuse.contains("ASSUMES OPTIMIZATION"))
+                excuse
+              else
+                s"$ex: LAME EXCUSE: $excuse"
+            notImplemented(message)
         }
         fail(s"LAME EXCUSE WASN'T NEEDED: $excuse")
     }
