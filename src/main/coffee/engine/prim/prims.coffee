@@ -45,7 +45,7 @@ module.exports =
         else
           throw new Error("`breed-on` unsupported for class '#{typeof(x)}'")
 
-      turtles = _(patches).map((p) -> p.turtles).flatten().filter((t) -> t.getBreedName() is breedName).value()
+      turtles = _(patches).map((p) -> p.breedHereArray(breedName)).flatten().value()
       new TurtleSet(turtles, breedName)
 
     # (Any, Any) => Boolean
