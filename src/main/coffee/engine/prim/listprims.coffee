@@ -1,6 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 _                = require('lodash')
+Dump             = require('../dump')
 AbstractAgentSet = require('../core/abstractagentset')
 Link             = require('../core/link')
 Nobody           = require('../core/nobody')
@@ -84,12 +85,14 @@ module.exports =
 
     # [Item] @ (Number, ListOrSet[Item]) => ListOrSet[Item]
     nOf: (n, agentsOrList) ->
-      if agentsOrList instanceof AbstractAgentSet
+      if Type(agentsOrList).isArray()
+        @_nOfArray(n, agentsOrList)
+      else if agentsOrList instanceof AbstractAgentSet
         items    = agentsOrList.iterator().toArray()
         newItems = @_nOfArray(n, items)
         agentsOrList.copyWithNewAgents(newItems)
       else
-        throw new Error("n-of not implemented on lists yet")
+        throw new Error("N-OF expected input to be a list or agentset but got #{Dump(agentsOrList)} instead.")
 
     # [Item] @ (ListOrSet[Item]) => Item
     oneOf: (agentsOrList) ->
