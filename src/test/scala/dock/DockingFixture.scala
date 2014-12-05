@@ -45,7 +45,11 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
     nvm.CompilerFlags(
       useOptimizer = false, // since the Tortoise compiler sees the unoptimized code
                             //   and some optimizations may affect results ordering
-                            //   and/or RNG interaction
+                            //   and/or RNG interaction -ST
+                            // When the optimizer goes on, the code for `create-turtle*`
+                            //  (and probably, `hatch`, `sprout` `create-link*`) needs to
+                            //  stop shuffling through the agentset when the given block
+                            //  is empty --JAB (12/5/14)
       useGenerator = false  // so we don't need ASM. also to save time
     )
 
