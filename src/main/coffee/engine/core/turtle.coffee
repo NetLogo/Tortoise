@@ -323,7 +323,7 @@ module.exports =
     # (Breed) => Array[String]
     _varNamesForBreed: (breed) ->
       turtlesBreed = @world.breedManager.turtles()
-      if breed is turtlesBreed
+      if breed is turtlesBreed or not breed?
         turtlesBreed.varNames
       else
         turtlesBreed.varNames.concat(breed.varNames)
@@ -464,14 +464,10 @@ module.exports =
 
       if @_breed isnt trueBreed
         trueBreed.add(this)
+        @_breed?.remove(this)
 
-        newNames = trueBreed.varNames
-        oldNames =
-          if @_breed?
-            @_breed.remove(this)
-            @_breed.varNames
-          else
-            []
+        newNames = @_varNamesForBreed(trueBreed)
+        oldNames = @_varNamesForBreed(@_breed)
 
         obsoletedNames = _(oldNames).difference(newNames).value()
         freshNames     = _(newNames).difference(oldNames).value()
