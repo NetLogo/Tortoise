@@ -334,6 +334,10 @@ object Model {
     Model(
       path = "models/Sample Models/Biology/Evolution/Cooperation.nlogo",
       repetitions = 20
+    ),
+    Model(
+      path = "models/Code Examples/Patch Coordinates Example.nlogo",
+      repetitions = 20
     )
   )
 }
