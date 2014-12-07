@@ -338,6 +338,10 @@ object Model {
     Model(
       path = "models/Code Examples/Patch Coordinates Example.nlogo",
       repetitions = 20
+    ),
+    Model(
+      path = "models/Sample Models/Mathematics/Fractals/Tree Simple.nlogo",
+      repetitions = 10
     )
   )
 }

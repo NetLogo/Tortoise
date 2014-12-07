@@ -45,9 +45,9 @@ module.exports =
       @_updateSize(size)
       return
 
-    # () => PenManager
-    clone: ->
-      new PenManager(@_updateFunc, @_size, @_status)
+    # ((String*) => Unit) => PenManager
+    clone: (updateFunc) ->
+      new PenManager(updateFunc, @_size, @_status)
 
     # (Number) => Unit
     _updateSize: (newSize) ->
