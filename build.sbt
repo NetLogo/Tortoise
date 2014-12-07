@@ -32,7 +32,7 @@ ivyLoggingLevel := UpdateLogging.Quiet
 // we're not cross-building for different Scala versions
 crossPaths := false
 
-val nlDependencyVersion = "5.2.0-fb64569"
+val nlDependencyVersion = "5.2.0-cf7fa41"
 
 libraryDependencies ++= Seq(
   "org.nlogo" % "netlogoheadless" % nlDependencyVersion,

@@ -342,6 +342,12 @@ object Model {
     Model(
       path = "models/Sample Models/Mathematics/Fractals/Tree Simple.nlogo",
       repetitions = 10
+    ),
+    Model(
+      path = "models/Sample Models/Chemistry & Physics/Radioactivity/Unverified/Reactor X-Section.nlogo",
+      setup = "setup release-neutron",
+      go = "auto-react",
+      repetitions = 20
     )
   )
 }

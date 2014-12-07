@@ -169,7 +169,7 @@ module.exports =
 
     # (Number, FunctionN) => Unit
     repeat: (n, fn) ->
-      for [0...n]
+      for [0...Math.floor(n)]
         fn()
       return
 
