@@ -99,7 +99,6 @@ class TestCommands extends TCommands with TortoiseFinder {
     "Let::LetOfVarToItself2"                                -> "Necessary check must be moved up into the front-end of the compiler",
     "Let::LetOfVarToItself3"                                -> "Necessary check must be moved up into the front-end of the compiler",
     "Let::LetOfVarToItselfInsideAsk"                        -> "Necessary check must be moved up into the front-end of the compiler",
-    "TypeChecking::SetVariable"                             -> "Necessary check must be moved up into the front-end of the compiler",
     // perhaps never to be supported
     "ControlStructures::Run1"                  -> "run/runresult on strings not supported",
     "ControlStructures::Run2"                  -> "run/runresult on strings not supported",
