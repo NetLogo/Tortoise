@@ -52,7 +52,7 @@ object Compiler extends CompilerLike with ModelConfigGenerator {
   }
 
   private def compileProcedureDef(pd: ProcedureDefinition): String = {
-    val name = handlers.ident(pd.procedure.name.name)
+    val name = handlers.ident(pd.procedure.name)
     handlers.resetEveryID(name)
     val body = handlers.commands(pd.statements)
     val args = pd.procedure.inputs.map((i) => handlers.ident(i.name)).mkString(", ")
