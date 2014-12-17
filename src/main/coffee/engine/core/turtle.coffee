@@ -364,6 +364,10 @@ module.exports =
       else
         "nobody"
 
+    # () => Array[String]
+    varNames: ->
+      @_varManager.names()
+
     # Unfortunately, we can't just throw out `_breedShape` and grab the shape from our
     # `Breed` object.  It would be pretty nice if we could, but the problem is that
     # `set-default-shape` only affects turtles created after its use, so turtles that

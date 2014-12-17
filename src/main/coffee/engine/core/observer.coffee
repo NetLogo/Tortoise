@@ -81,6 +81,10 @@ module.exports =
         @resetPerspective()
       return
 
+    # () => Array[String]
+    varNames: ->
+      @_varManager.names()
+
     # (Agent) => Unit
     watch: (agent) ->
       @_perspective = Watch

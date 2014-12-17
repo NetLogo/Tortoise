@@ -129,6 +129,10 @@ module.exports =
         when  1 then GT
         else throw new Error("Comparison should only yield an integer within the interval [-1,1]")
 
+    # () => Array[String]
+    varNames: ->
+      @_varManager.names()
+
     # (Breed) => Array[String]
     _varNamesForBreed: (breed) ->
       linksBreed = @world.breedManager.links()

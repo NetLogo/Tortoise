@@ -141,6 +141,10 @@ module.exports =
       @_setPlabelColor(9.9)
       return
 
+    # () => Array[String]
+    varNames: ->
+      @_varManager.names()
+
     # Array[String] => VariableManager
     _genVarManager: (extraVarNames) ->
       varBundles = [
