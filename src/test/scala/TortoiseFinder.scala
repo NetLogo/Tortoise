@@ -93,7 +93,6 @@ class TestCommands extends TCommands with TortoiseFinder {
     "CommandTasks::*ToString5" -> "command task string representation doesn't match",
     "CommandTasks::*ToString6" -> "command task string representation doesn't match",
     // needs 'headless' compiler changes
-    "ReporterTasks::CloseOverLocal1" -> "Creates a function named 'const', which is a reserved keyword in JavaScript",
     "CommandTasks::command-task-body-gets-agent-type-check" -> "Necessary check must be moved up into the front-end of the compiler",
     "Errors::task-variable-not-in-task"                     -> "Necessary check must be moved up into the front-end of the compiler",
     "Let::LetOfVarToItself1"                                -> "Necessary check must be moved up into the front-end of the compiler",
