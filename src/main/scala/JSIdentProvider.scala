@@ -2,24 +2,28 @@
 
 package org.nlogo.tortoise
 
-object JavascriptSafe {
-  def apply(ident: String): String = {
-    val camel = initialLower(ident.toLowerCase.split('-').map(_.capitalize).mkString)
-    val charSafeIdent = CharReplacementList.foldLeft(camel) {
-      case (s, (char, replacement)) => s.replaceAll(char, replacement)
-    }
-    val idSafeIdent = KeywordReplacementList.foldLeft(charSafeIdent) {
-      case (s, kw) => s.replaceAll( s"""^$kw$$""", s"_${kw}_")
-    }
-    SpecialReplacementList.foldLeft(idSafeIdent) {
-      case (s, pat) => pat.r.replaceAllIn(s, m => s"${m.group(1)}_${m.group(2)}")
-    }
+object JSIdentProvider {
+
+  def apply(ident: String): String =
+    (performCamelCasing _ andThen sanitizeInvalidChars andThen sanitizeKeywords andThen sanitizePrefixes)(ident)
+
+  private def performCamelCasing(ident: String): String = {
+    val performTitleCasing = (s: String) => s.toLowerCase.split('-').map(_.capitalize).mkString
+    val lowercaseFirstChar = (s: String) => s.head.toLower + s.tail
+    (performTitleCasing andThen lowercaseFirstChar)(ident)
   }
 
-  private def initialLower(s: String): String =
-    java.lang.Character.toLowerCase(s.head) + s.tail
+  private def sanitizeInvalidChars(ident: String): String =
+    InvalidCharToValid.foldLeft(ident) { case (id, (char, replacement)) => id.replaceAll(char, replacement) }
 
-  val CharReplacementList: Map[String, String] = Map(
+  private def sanitizeKeywords(ident: String): String =
+    Keywords.foldLeft(ident) { case (id, kw) => if (id != kw) id else s"_${id}_" }
+
+
+  private def sanitizePrefixes(ident: String): String =
+    RiskyPrefixes.foldLeft(ident) { case (s, pat) => pat.r.replaceAllIn(s, m => s"${m.group(1)}_${m.group(2)}") }
+
+  private val InvalidCharToValid = Map(
     "!" -> "_exclamation_",
     "#" -> "_pound_",
     "\\$" -> "_dollar_",
@@ -38,7 +42,7 @@ object JavascriptSafe {
     "'" -> "_prime_"
   )
 
-  val SpecialReplacementList: Seq[String] = Seq(
+  private val RiskyPrefixes = Seq(
     """^(is)([A-Z].*)$""",
     """^(on)([a-z].*)$""",
     """^(screen)([A-Z].*)$""",
@@ -48,7 +52,7 @@ object JavascriptSafe {
     """^(ms)([A-Z].*)$"""
   )
 
-  val KeywordReplacementList: Seq[String] = Seq(
+  private val Keywords = Seq(
     "alert",
     "atob",
     "break",
@@ -159,4 +163,5 @@ object JavascriptSafe {
     "with",
     "yield"
   )
+
 }

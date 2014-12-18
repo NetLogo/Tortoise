@@ -16,7 +16,7 @@ trait Handlers extends EveryIDProvider {
         ""
     val body = taskHeader +
       (if (isReporter)
-        "return " + reporter(node) + ";"
+        s"return ${reporter(node)};"
       else
         commands(node))
     def isTrivialReporter(node: ast.AstNode): Boolean =
@@ -70,5 +70,6 @@ trait Handlers extends EveryIDProvider {
   def indented(s: String): String =
     s.lines.map("  " + _).mkString("\n")
 
-  def ident(s: String): String = JavascriptSafe(s)
+  def ident(s: String): String = JSIdentProvider(s)
+
 }

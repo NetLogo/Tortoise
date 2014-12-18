@@ -254,10 +254,6 @@ object Model {
       repetitions = 50
     ),
     Model(
-      path = "models/Sample Models/Social Science/Unverified/Traffic Intersection.nlogo",
-      repetitions = 10
-    ),
-    Model(
       path = "models/Sample Models/Biology/Flocking.nlogo",
       repetitions = 50
     ),
@@ -296,10 +292,6 @@ object Model {
     Model(
       path = "models/Sample Models/Biology/Evolution/Genetic Drift/GenDrift T reproduce.nlogo",
       repetitions = 20
-    ),
-    Model(
-      path = "models/Sample Models/Games/Minesweeper.nlogo",
-      repetitions = 10
     ),
     Model(
       path = "models/Sample Models/Social Science/Ethnocentrism.nlogo",
