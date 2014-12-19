@@ -81,13 +81,14 @@ module.exports =
       Basically, there's no agent-checking yet. --JAB (9/12/14)
 
     ###
-    # (Number, FunctionN, String) => Unit
-    every: (time, fn, fid) ->
+    # (Number, String) => Boolean
+    shouldRunEvery: (time, fid) ->
       existingEntry = @_everyMap[fid]
       if not existingEntry? or existingEntry.elapsed() >= time
         @_everyMap[fid] = new Timer()
-        fn()
-      return
+        true
+      else
+        false
 
     # (Any, Any) => Boolean
     gt: (a, b) ->
