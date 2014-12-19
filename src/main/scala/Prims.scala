@@ -80,7 +80,6 @@ trait Prims {
       case p: prim.etc._outlinkneighbors    => s"LinkPrims.outLinkNeighbors('${fixBN(p.breedName)}')"
       case p: prim.etc._outlinkto           => s"LinkPrims.outLinkTo('${fixBN(p.breedName)}', ${arg(0)})"
       case tv: prim._taskvariable           => s"taskArguments[${tv.vn - 1}]"
-      case _: prim._task                    => arg(0)
       case _: prim._reportertask =>
         s"Tasks.reporterTask(${handlers.fun(r.args(0), isReporter = true, isTask = true)})"
       case _: prim._commandtask =>
@@ -131,9 +130,7 @@ trait Prims {
       case _: prim.etc._report           => s"return ${arg(0)};"
       case _: prim.etc._ignore           => s"${arg(0)};"
       case l: prim._let                  =>
-        // arg 0 is the name but we don't access it because LetScoper took care of it.
-        // arg 1 is the value.
-        s"var ${handlers.ident(l.let.name)} = ${arg(1)};"
+        s"var ${handlers.ident(l.let.name)} = ${arg(0)};"
       case _: prim.etc._run =>
         val taskInputs = args.tail.mkString(", ")
         s"(${arg(0)})($taskInputs);"
