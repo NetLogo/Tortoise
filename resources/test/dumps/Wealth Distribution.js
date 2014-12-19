@@ -113,17 +113,19 @@ function setupPatches() {
       SelfPrims.setPatchVariable('grain-here', SelfPrims.getPatchVariable('max-grain-here'));
     }
   }, true);
-  Prims.repeat(5, function() {
+  var _index_1278_1284, _repeatcount_1278_1284;
+  for (_index_1278_1284 = 0, _repeatcount_1278_1284 = Math.floor(5); _index_1278_1284 < _repeatcount_1278_1284; _index_1278_1284++){
     world.patches().agentFilter(function() {
       return !Prims.equality(SelfPrims.getPatchVariable('max-grain-here'), 0);
     }).ask(function() {
       SelfPrims.setPatchVariable('grain-here', SelfPrims.getPatchVariable('max-grain-here'));
     }, true);
     world.topology.diffuse('grain-here', 0.25)
-  });
-  Prims.repeat(10, function() {
+  }
+  var _index_1408_1414, _repeatcount_1408_1414;
+  for (_index_1408_1414 = 0, _repeatcount_1408_1414 = Math.floor(10); _index_1408_1414 < _repeatcount_1408_1414; _index_1408_1414++){
     world.topology.diffuse('grain-here', 0.25)
-  });
+  }
   world.patches().ask(function() {
     SelfPrims.setPatchVariable('grain-here', StrictMath.floor(SelfPrims.getPatchVariable('grain-here')));
     SelfPrims.setPatchVariable('max-grain-here', SelfPrims.getPatchVariable('grain-here'));
@@ -210,12 +212,13 @@ function turnTowardsGrain() {
 function grainAhead() {
   var total = 0;
   var howFar = 1;
-  Prims.repeat(SelfPrims.getVariable('vision'), function() {
+  var _index_3994_4000, _repeatcount_3994_4000;
+  for (_index_3994_4000 = 0, _repeatcount_3994_4000 = Math.floor(SelfPrims.getVariable('vision')); _index_3994_4000 < _repeatcount_3994_4000; _index_3994_4000++){
     total = (total + SelfManager.self().patchAhead(howFar).projectionBy(function() {
       return SelfPrims.getPatchVariable('grain-here');
     }));
     howFar = (howFar + 1);
-  });
+  }
   return total;
 }
 function growGrain() {
@@ -253,12 +256,13 @@ function updateLorenzAndGini() {
   var index = 0;
   world.observer.setGlobal('gini-index-reserve', 0);
   world.observer.setGlobal('lorenz-points', []);
-  Prims.repeat(world.observer.getGlobal('num-people'), function() {
+  var _index_6020_6026, _repeatcount_6020_6026;
+  for (_index_6020_6026 = 0, _repeatcount_6020_6026 = Math.floor(world.observer.getGlobal('num-people')); _index_6020_6026 < _repeatcount_6020_6026; _index_6020_6026++){
     wealthSumSoFar = (wealthSumSoFar + ListPrims.item(index, sortedWealths));
     world.observer.setGlobal('lorenz-points', ListPrims.lput(((wealthSumSoFar / totalWealth) * 100), world.observer.getGlobal('lorenz-points')));
     index = (index + 1);
     world.observer.setGlobal('gini-index-reserve', ((world.observer.getGlobal('gini-index-reserve') + (index / world.observer.getGlobal('num-people'))) - (wealthSumSoFar / totalWealth)));
-  });
+  }
 }
 world.observer.setGlobal('max-vision', 5);
 world.observer.setGlobal('grain-growth-interval', 1);

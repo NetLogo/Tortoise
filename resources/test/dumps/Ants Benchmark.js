@@ -61,9 +61,10 @@ function benchmark() {
   Random.setSeed(337);
   workspace.timer.reset();
   Call(setup);
-  Prims.repeat(800, function() {
+  var _index_332_338, _repeatcount_332_338;
+  for (_index_332_338 = 0, _repeatcount_332_338 = Math.floor(800); _index_332_338 < _repeatcount_332_338; _index_332_338++){
     Call(go);
-  });
+  }
   world.observer.setGlobal('result', workspace.timer.elapsed());
 }
 function setupTurtles() {
