@@ -9,7 +9,7 @@ import
   org.nlogo.{ core, headless },
     core.{ AgentKind, CompilerException, FrontEndInterface, Model => CModel, Program, View },
       FrontEndInterface.{ ProceduresMap, NoProcedures },
-    headless.lang.{ AbstractFixture, Command, CompileError, Reporter, Success, TestMode }
+    headless.lang.{ AbstractFixture, Command, CompileError, RuntimeError, Reporter, Success, TestMode }
 
 
 import jsengine.Nashorn
@@ -36,6 +36,8 @@ class TortoiseFixture(name: String, nashorn: Nashorn, notImplemented: (String) =
         cautiously(nashorn.run(js))
       case CompileError(msg) =>
         expectCompileError(js, msg)
+      case RuntimeError(msg) =>
+        expectRuntimeError(nashorn.run(js), msg)
       case r =>
         notImplemented(s"unknown result type: ${r.getClass.getSimpleName}")
     }
@@ -62,6 +64,17 @@ class TortoiseFixture(name: String, nashorn: Nashorn, notImplemented: (String) =
     catch {
       case ex: CompilerException =>
         assertResult(msg)(ex.getMessage)
+    }
+  }
+
+  private def expectRuntimeError(res: => (String, String), msg: String): Unit = {
+    try {
+      assertResult(res._2)(msg)
+      fail("no RuntimeError occurred")
+    }
+    catch {
+      case ex: javax.script.ScriptException =>
+        assertResult(msg)(ex.getCause.getMessage.split(": ")(1)) // Nashorn doesn't make JS Exceptions easy
     }
   }
 
