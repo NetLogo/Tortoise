@@ -54,12 +54,13 @@ function go() {
   world.turtles().ask(function() {
     Call(flock);
   }, true);
-  Prims.repeat(5, function() {
+  var _index_432_438, _repeatcount_432_438;
+  for (_index_432_438 = 0, _repeatcount_432_438 = Math.floor(5); _index_432_438 < _repeatcount_432_438; _index_432_438++){
     world.turtles().ask(function() {
       SelfPrims.fd(0.2);
     }, true);
     notImplemented('display', undefined)();
-  });
+  }
   world.ticker.tick();
 }
 function flock() {

@@ -45,9 +45,10 @@ function benchmark() {
   Random.setSeed(362);
   Call(setup);
   workspace.timer.reset();
-  Prims.repeat(20000, function() {
+  var _index_73_79, _repeatcount_73_79;
+  for (_index_73_79 = 0, _repeatcount_73_79 = Math.floor(20000); _index_73_79 < _repeatcount_73_79; _index_73_79++){
     Call(go);
-  });
+  }
   world.observer.setGlobal('result', workspace.timer.elapsed());
 }
 function setup() {

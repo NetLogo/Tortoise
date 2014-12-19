@@ -60,9 +60,10 @@ function setup() {
     SelfPrims.setPatchVariable('drain?', false);
   }, true);
   if (world.observer.getGlobal('bumpy?')) {
-    Prims.repeat(world.observer.getGlobal('terrain-smoothness'), function() {
+    var _index_729_735, _repeatcount_729_735;
+    for (_index_729_735 = 0, _repeatcount_729_735 = Math.floor(world.observer.getGlobal('terrain-smoothness')); _index_729_735 < _repeatcount_729_735; _index_729_735++){
       world.topology.diffuse('elevation', 0.5)
-    });
+    }
   }
   world.patches().agentFilter(function() {
     return !Prims.equality(SelfPrims.getNeighbors().size(), 8);
