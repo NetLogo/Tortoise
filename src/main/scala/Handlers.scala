@@ -5,7 +5,7 @@ package org.nlogo.tortoise
 import
   org.nlogo.{ api, core },
     api.Dump,
-    core.{ AstNode, CommandBlock, LogoList, Nobody, Pure, ReporterApp, ReporterBlock, Statements }
+    core.{ AstNode, CommandBlock, LogoList, Nobody, Pure, ReporterApp, ReporterBlock, Statements, Token }
 
 trait Handlers extends EveryIDProvider {
 
@@ -77,4 +77,7 @@ trait Handlers extends EveryIDProvider {
 
   def ident(s: String): String = JSIdentProvider(s)
 
+  def unusedVarname(token: Token, hint: String = ""): String = {
+    s"_${hint}_${token.start}_${token.end}"
+  }
 }

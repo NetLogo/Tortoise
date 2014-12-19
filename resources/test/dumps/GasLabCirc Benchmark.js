@@ -46,9 +46,10 @@ function benchmark() {
   workspace.timer.reset();
   Call(setup);
   world.observer.setGlobal('manage-view-updates?', false);
-  Prims.repeat(3500, function() {
+  var _index_664_670, _repeatcount_664_670;
+  for (_index_664_670 = 0, _repeatcount_664_670 = Math.floor(3500); _index_664_670 < _repeatcount_664_670; _index_664_670++){
     Call(go);
-  });
+  }
   world.observer.setGlobal('result', workspace.timer.elapsed());
 }
 function setup() {
