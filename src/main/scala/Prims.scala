@@ -80,6 +80,7 @@ trait Prims {
       case p: prim.etc._outlinkneighbors    => s"LinkPrims.outLinkNeighbors('${fixBN(p.breedName)}')"
       case p: prim.etc._outlinkto           => s"LinkPrims.outLinkTo('${fixBN(p.breedName)}', ${arg(0)})"
       case tv: prim._taskvariable           => s"taskArguments[${tv.vn - 1}]"
+      case prim._errormessage(Some(l))      => s"_error_${l.hashCode()}.message"
       case _: prim._reportertask =>
         s"Tasks.reporterTask(${handlers.fun(r.args(0), isReporter = true, isTask = true)})"
       case _: prim._commandtask =>
@@ -109,6 +110,7 @@ trait Prims {
       case _: prim.etc._if               => generateIf(s)
       case _: prim.etc._ifelse           => generateIfElse(s)
       case _: prim._ask                  => generateAsk(s, shuffle = true)
+      case p: prim._carefully            => generateCarefully(s, p)
       case _: prim._createturtles        => generateCreateTurtles(s, ordered = false)
       case _: prim._createorderedturtles => generateCreateTurtles(s, ordered = true)
       case _: prim._sprout               => generateSprout(s)
@@ -225,6 +227,19 @@ trait Prims {
     val agents = handlers.reporter(s.args(0))
     val body = handlers.fun(s.args(1))
     genAsk(agents, shuffle, body)
+  }
+
+  def generateCarefully(s: Statement, c: prim._carefully): String = {
+    val errorName   = handlers.unusedVarname(s.command.token, "error")
+    val doCarefully = handlers.commands(s.args(0))
+    val handleError = handlers.commands(s.args(1)).replaceAll(s"_error_${c.let.hashCode()}", errorName)
+    s"""
+       |try {
+       |${handlers.indented(doCarefully)}
+       |} catch ($errorName) {
+       |${handlers.indented(handleError)}
+       |}
+     """.stripMargin
   }
 
   def generateCreateLink(s: Statement, name: String, breedName: String): String = {
