@@ -87,6 +87,8 @@ trait Prims {
       case rr: prim.etc._runresult =>
         val taskInputs = args.tail.mkString(", ")
         s"(${arg(0)})($taskInputs)"
+      case _: prim._errormessage =>
+        s"_currentError.message"
       case _ =>
         failCompilation(s"unknown primitive: ${r.reporter.getClass.getName}", r.instruction.token)
     }
@@ -109,6 +111,7 @@ trait Prims {
       case _: prim.etc._if               => generateIf(s)
       case _: prim.etc._ifelse           => generateIfElse(s)
       case _: prim._ask                  => generateAsk(s, shuffle = true)
+      case _: prim._carefully            => generateCarefully(s)
       case _: prim._createturtles        => generateCreateTurtles(s, ordered = false)
       case _: prim._createorderedturtles => generateCreateTurtles(s, ordered = true)
       case _: prim._sprout               => generateSprout(s)
@@ -221,6 +224,18 @@ trait Prims {
     val agents = handlers.reporter(s.args(0))
     val body = handlers.fun(s.args(1))
     genAsk(agents, shuffle, body)
+  }
+
+  def generateCarefully(s: Statement): String = {
+    val doCarefully = handlers.commands(s.args(0))
+    val handleError = handlers.commands(s.args(1))
+    s"""
+       |try {
+       |${handlers.indented(doCarefully)}
+       |} catch (_currentError) {
+       |${handlers.indented(handleError)}
+       |}
+     """.stripMargin
   }
 
   def generateCreateLink(s: Statement, name: String, breedName: String): String = {
