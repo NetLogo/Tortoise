@@ -284,8 +284,11 @@ trait Prims {
   def generateEvery(w: Statement): String = {
     val time = handlers.reporter(w.args(0))
     val body = handlers.commands(w.args(1))
-    s"""|if (Prims.shouldRunEvery($time, '${handlers.nextEveryID()}')) {
+    val timer = handlers.nextEveryID()
+    s"""|var $timer;
+        |if (Prims.everyTimerElapsed($time, $timer)) {
         |${handlers.indented(body)}
+        |  $timer = new Prims.everyTimer();
         |}""".stripMargin
   }
 
