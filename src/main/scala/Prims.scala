@@ -284,7 +284,12 @@ trait Prims {
 
   def generateEvery(w: Statement): String = {
     val time = handlers.reporter(w.args(0))
-    s"""Prims.every($time, ${handlers.fun(w.args(1))}, '${handlers.nextEveryID()}');"""
+    val body = handlers.commands(w.args(1))
+    val everyId = handlers.nextEveryID()
+    s"""|if (Prims.everyTimerElapsed("$everyId", workspace.selfManager.selfId(), $time)) {
+        |  Prims.everyBlockRun("$everyId", workspace.selfManager.selfId());
+        |${handlers.indented(body)}
+        |}""".stripMargin
   }
 
   private def failCompilation(msg: String, token: Token): Nothing =

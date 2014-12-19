@@ -21,7 +21,7 @@ module.exports =
 
     # type ListOrSet[T] = Array[T]|AbstractAgentSet[T]
 
-    _everyMap: undefined # Object[String, Timer]
+    _everyMap: undefined # Object[String, Object[String, Timer]]
 
     # (Dump, Hasher, RNG) => Prims
     constructor: (@_dumper, @_hasher, @_rng) ->
@@ -68,26 +68,18 @@ module.exports =
       else
         throw new Error("Checking equality on undefined is an invalid condition")
 
-    ###
+    # (String, String, Number) => Boolean
+    everyTimerElapsed: (commandId, agentId, timeLimit) ->
+      if @_everyMap[commandId]? and @_everyMap[commandId][agentId]?
+        @_everyMap[commandId][agentId].elapsed() >= timeLimit
+      else
+        true
 
-      This implementation is closer than our original implementation, but still wrong. `every`'s dictionary entry claims:
-
-      "Runs the given commands only if it's been more than number seconds since the last time this agent ran them in this context."
-
-      But a more-accurate description of this implementation would be:
-
-      "Runs the given commands only if it's been more than number seconds since the last time they were run in this context."
-
-      Basically, there's no agent-checking yet. --JAB (9/12/14)
-
-    ###
-    # (Number, FunctionN, String) => Unit
-    every: (time, fn, fid) ->
-      existingEntry = @_everyMap[fid]
-      if not existingEntry? or existingEntry.elapsed() >= time
-        @_everyMap[fid] = new Timer()
-        fn()
-      return
+    # (String, String) => ()
+    everyBlockRun: (commandId, agentId) ->
+      if not @_everyMap[commandId]?
+        @_everyMap[commandId] = {}
+      @_everyMap[commandId][agentId] = new Timer()
 
     # (Any, Any) => Boolean
     gt: (a, b) ->
