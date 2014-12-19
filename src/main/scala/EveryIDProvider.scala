@@ -9,7 +9,7 @@ trait EveryIDProvider {
   private[tortoise] def nextEveryID(): String = {
     val (num, str) = everyIDComponents
     everyIDComponents = (num + 1, str)
-    s"$str-$num"
+    s"${str}_${num}"
   }
 
   private[tortoise] def resetEveryID(owner: String): Unit =
