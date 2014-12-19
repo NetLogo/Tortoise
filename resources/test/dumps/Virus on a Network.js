@@ -90,9 +90,9 @@ function setupSpatiallyClusteredNetwork() {
       }
     }, true);
   }
-  Prims.repeat(10, function() {
+  for (var _index_1086_1092 = 0, _repeatcount_1086_1092 = StrictMath.floor(10); _index_1086_1092 < _repeatcount_1086_1092; _index_1086_1092++){
     LayoutManager.layoutSpring(world.turtles(), world.links(), 0.3, (world.topology.width / StrictMath.sqrt(world.observer.getGlobal('number-of-nodes'))), 1);
-  });
+  }
 }
 function go() {
   if (world.turtles().agentAll(function() {

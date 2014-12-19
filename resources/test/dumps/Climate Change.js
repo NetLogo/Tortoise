@@ -215,13 +215,13 @@ function addCo2() {
   }, true);
 }
 function removeCo2() {
-  Prims.repeat(25, function() {
+  for (var _index_5794_5800 = 0, _repeatcount_5794_5800 = StrictMath.floor(25); _index_5794_5800 < _repeatcount_5794_5800; _index_5794_5800++){
     if (world.turtleManager.turtlesOfBreed("CO2S").nonEmpty()) {
       ListPrims.oneOf(world.turtleManager.turtlesOfBreed("CO2S")).ask(function() {
         SelfPrims.die();
       }, true);
     }
-  });
+  }
 }
 function runCo2() {
   world.turtleManager.turtlesOfBreed("CO2S").ask(function() {

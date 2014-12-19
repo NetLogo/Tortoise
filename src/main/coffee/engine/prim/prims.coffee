@@ -167,12 +167,6 @@ module.exports =
     randomFloat: (n) ->
       n * @_rng.nextDouble()
 
-    # (Number, FunctionN) => Unit
-    repeat: (n, fn) ->
-      for [0...Math.floor(n)]
-        fn()
-      return
-
     # (Number, Number) => Number
     subtractHeadings: (h1, h2) ->
       diff = (h1 % 360) - (h2 % 360)

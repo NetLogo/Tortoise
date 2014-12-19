@@ -186,7 +186,11 @@ trait Prims {
   def generateRepeat(w: Statement): String = {
     val count = handlers.reporter(w.args(0))
     val body = handlers.commands(w.args(1))
-    s"""Prims.repeat($count, ${handlers.fun(w.args(1))});"""
+    val i = handlers.unusedVarname(w.command.token, "index")
+    val j = handlers.unusedVarname(w.command.token, "repeatcount")
+    s"""|for (var $i = 0, $j = StrictMath.floor($count); $i < $j; $i++){
+        |${handlers.indented(body)}
+        |}""".stripMargin
   }
 
   def generateWhile(w: Statement): String = {

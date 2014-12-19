@@ -54,9 +54,9 @@ function benchmark() {
   Random.setSeed(579);
   Call(setup);
   workspace.timer.reset();
-  Prims.repeat(10000, function() {
+  for (var _index_175_181 = 0, _repeatcount_175_181 = StrictMath.floor(10000); _index_175_181 < _repeatcount_175_181; _index_175_181++){
     Call(go);
-  });
+  }
   world.observer.setGlobal('result', workspace.timer.elapsed());
 }
 function setup() {

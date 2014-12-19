@@ -90,9 +90,9 @@ function benchmark() {
   Random.setSeed(361);
   workspace.timer.reset();
   Call(setup);
-  Prims.repeat(17000, function() {
+  for (var _index_1113_1119 = 0, _repeatcount_1113_1119 = StrictMath.floor(17000); _index_1113_1119 < _repeatcount_1113_1119; _index_1113_1119++){
     Call(go);
-  });
+  }
   world.observer.setGlobal('result', workspace.timer.elapsed());
 }
 function setup() {
