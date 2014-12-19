@@ -68,27 +68,13 @@ module.exports =
       else
         throw new Error("Checking equality on undefined is an invalid condition")
 
-    ###
+    # (Number, Timer) => Boolean
+    everyTimerElapsed: (time, timer) ->
+      not timer? or timer.elapsed() >= time
 
-      This implementation is closer than our original implementation, but still wrong. `every`'s dictionary entry claims:
-
-      "Runs the given commands only if it's been more than number seconds since the last time this agent ran them in this context."
-
-      But a more-accurate description of this implementation would be:
-
-      "Runs the given commands only if it's been more than number seconds since the last time they were run in this context."
-
-      Basically, there's no agent-checking yet. --JAB (9/12/14)
-
-    ###
-    # (Number, String) => Boolean
-    shouldRunEvery: (time, fid) ->
-      existingEntry = @_everyMap[fid]
-      if not existingEntry? or existingEntry.elapsed() >= time
-        @_everyMap[fid] = new Timer()
-        true
-      else
-        false
+    # () => Boolean
+    everyTimer: ->
+      new Timer()
 
     # (Any, Any) => Boolean
     gt: (a, b) ->
