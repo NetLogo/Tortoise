@@ -122,6 +122,7 @@ trait Prims {
       case p: prim.etc._createlinkwith   => generateCreateLink(s, "createLinkWith",  p.breedName)
       case p: prim.etc._createlinkswith  => generateCreateLink(s, "createLinksWith", p.breedName)
       case _: prim.etc._every            => generateEvery(s)
+      case _: prim.etc._error            => s"throw new Error(${arg(0)});"
       case h: prim._hatch                => generateHatch(s, h.breedName)
       case _: prim.etc._diffuse          => s"world.topology.diffuse('${getReferenceName(s)}', ${arg(1)})"
       case x: prim.etc._setdefaultshape  => s"BreedManager.setDefaultShape(${arg(0)}.getBreedName(), ${arg(1)})"
