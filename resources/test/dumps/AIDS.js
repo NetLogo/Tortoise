@@ -122,9 +122,10 @@ function assignTestFrequency() {
 }
 function randomNear(center) {
   var result = 0;
-  Prims.repeat(40, function() {
+  var _index_3693_3699, _repeatcount_3693_3699;
+  for (_index_3693_3699 = 0, _repeatcount_3693_3699 = Math.floor(40); _index_3693_3699 < _repeatcount_3693_3699; _index_3693_3699++){
     result = (result + Prims.randomFloat(center));
-  });
+  }
   return (result / 20);
 }
 function go() {

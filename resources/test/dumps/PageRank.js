@@ -72,9 +72,10 @@ function setup() {
     SelfPrims.setVariable('label-color', 0);
     Call(updatePageAppearance);
   }, true);
-  Prims.repeat(300, function() {
+  var _index_827_833, _repeatcount_827_833;
+  for (_index_827_833 = 0, _repeatcount_827_833 = Math.floor(300); _index_827_833 < _repeatcount_827_833; _index_827_833++){
     Call(doLayout);
-  });
+  }
   world.links().ask(function() {
     SelfPrims.setVariable('shape', "curved");
   }, true);
@@ -167,7 +168,8 @@ function linkPreferentially(nodeset, k) {
     var taskArguments = arguments;
     taskArguments[0].ask(function() {
       var tempNeighborList = neighborChoiceList;
-      Prims.repeat(k, function() {
+      var _index_3025_3031, _repeatcount_3025_3031;
+      for (_index_3025_3031 = 0, _repeatcount_3025_3031 = Math.floor(k); _index_3025_3031 < _repeatcount_3025_3031; _index_3025_3031++){
         var neighbor = ListPrims.oneOf(tempNeighborList);
         tempNeighborList = ListPrims.remove(neighbor, tempNeighborList);
         neighborChoiceList = ListPrims.fput(neighbor, neighborChoiceList);
@@ -177,7 +179,7 @@ function linkPreferentially(nodeset, k) {
         else {
           LinkPrims.createLinkFrom(neighbor, 'LINKS').ask(function() {}, false);
         }
-      });
+      }
       neighborChoiceList = ListPrims.sentence(Tasks.nValues(k, Tasks.reporterTask(function() {
         var taskArguments = arguments;
         return SelfManager.self();

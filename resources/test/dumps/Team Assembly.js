@@ -111,9 +111,10 @@ function makeNewcomer() {
 function setup() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
-  Prims.repeat(world.observer.getGlobal('team-size'), function() {
+  var _index_1053_1059, _repeatcount_1053_1059;
+  for (_index_1053_1059 = 0, _repeatcount_1053_1059 = Math.floor(world.observer.getGlobal('team-size')); _index_1053_1059 < _repeatcount_1053_1059; _index_1053_1059++){
     Call(makeNewcomer);
-  });
+  }
   world.turtles().ask(function() {
     SelfPrims.setVariable('in-team?', true);
     SelfPrims.setVariable('incumbent?', true);
@@ -155,7 +156,8 @@ function go() {
 }
 function pickTeamMembers() {
   var newTeamMember = Nobody;
-  Prims.repeat(world.observer.getGlobal('team-size'), function() {
+  var _index_2105_2111, _repeatcount_2105_2111;
+  for (_index_2105_2111 = 0, _repeatcount_2105_2111 = Math.floor(world.observer.getGlobal('team-size')); _index_2105_2111 < _repeatcount_2105_2111; _index_2105_2111++){
     if (Prims.gte(Prims.randomFloat(100), world.observer.getGlobal('p'))) {
       Call(makeNewcomer);
       newTeamMember = world.observer.getGlobal('newcomer');
@@ -184,7 +186,7 @@ function pickTeamMembers() {
       SelfPrims.setVariable('size', 1.8);
       SelfPrims.setVariable('color', (SelfPrims.getVariable('incumbent?') ? (45 + 2) : (105 + 1)));
     }, true);
-  });
+  }
 }
 function tieCollaborators() {
   world.turtles().agentFilter(function() {
@@ -233,10 +235,11 @@ function colorCollaborations() {
   }, true);
 }
 function layout() {
-  Prims.repeat(12, function() {
+  var _index_4155_4161, _repeatcount_4155_4161;
+  for (_index_4155_4161 = 0, _repeatcount_4155_4161 = Math.floor(12); _index_4155_4161 < _repeatcount_4155_4161; _index_4155_4161++){
     LayoutManager.layoutSpring(world.turtles(), world.links(), 0.18, 0.01, 1.2);
     notImplemented('display', undefined)();
-  });
+  }
 }
 function findAllComponents() {
   world.observer.setGlobal('components', []);

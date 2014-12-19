@@ -130,11 +130,12 @@ function resizeNodes() {
   }
 }
 function layout() {
-  Prims.repeat(3, function() {
+  var _index_2014_2020, _repeatcount_2014_2020;
+  for (_index_2014_2020 = 0, _repeatcount_2014_2020 = Math.floor(3); _index_2014_2020 < _repeatcount_2014_2020; _index_2014_2020++){
     var factor = StrictMath.sqrt(world.turtles().size());
     LayoutManager.layoutSpring(world.turtles(), world.links(), (1 / factor), (7 / factor), (1 / factor));
     notImplemented('display', undefined)();
-  });
+  }
   var xOffset = (ListPrims.max(world.turtles().projectionBy(function() {
     return SelfPrims.getVariable('xcor');
   })) + ListPrims.min(world.turtles().projectionBy(function() {
