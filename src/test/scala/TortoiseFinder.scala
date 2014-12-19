@@ -76,6 +76,7 @@ class TestCommands extends TCommands with TortoiseFinder {
   override val freebies = Map[String, String](
     // requires handling of non-local exit (see in JVM NetLogo: `NonLocalExit`, `_report`, `_foreach`, `_run`)
     "Stop::ReportFromForeach" -> "no non-local exit from foreach",
+    "Every::EveryLosesScope"  -> "every does not honor scope",
     // Significant: Requires the optimizer to be turned on
     "Death::TurtleDiesWhileIteratingOverItsSet"                               -> "ASSUMES OPTIMIZATION: empty init block",
     "Interaction::Interaction3b1"                                             -> "ASSUMES OPTIMIZATION: empty init block",
