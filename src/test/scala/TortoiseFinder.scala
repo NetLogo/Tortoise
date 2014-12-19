@@ -61,7 +61,7 @@ private[tortoise] trait TortoiseFinder extends Finder with BeforeAndAfterAll wit
 
 class TestReporters extends TReporters with TortoiseFinder {
   import Freebies._
-  override val freebies = sortingHeteroListReporters ++ evalNotSupportedReporters
+  override val freebies = sortingHeteroListReporters ++ evalNotSupportedReporters ++ incErrorDetectReporters
 }
 
 class TestCommands extends TCommands with TortoiseFinder {
@@ -69,15 +69,17 @@ class TestCommands extends TCommands with TortoiseFinder {
   override val freebies = Map[String, String](
     // requires handling of non-local exit (see in JVM NetLogo: `NonLocalExit`, `_report`, `_foreach`, `_run`)
     "Stop::ReportFromForeach" -> "no non-local exit from foreach"
-  ) ++ emptyInitBlockCommands ++ evalNotSupportedCommands ++ cmdTaskRepMismatchCommands
+  ) ++ incErrorDetectCommands ++ emptyInitBlockCommands ++ evalNotSupportedCommands ++ cmdTaskRepMismatchCommands
 }
 
 private[tortoise] object Freebies {
 
+  def incErrorDetectCommands     = asFreebieMap(incErrorDetectCommandNames,     incErrorDetectStr)
   def emptyInitBlockCommands     = asFreebieMap(emptyInitBlockCommandNames,     emptyInitBlockStr)
   def evalNotSupportedCommands   = asFreebieMap(evalNotSupportedCommandNames,   evalNotSupportedStr)
   def cmdTaskRepMismatchCommands = asFreebieMap(cmdTaskRepMismatchCommandNames, cmdTaskRepMismatchStr)
 
+  def incErrorDetectReporters    = asFreebieMap(incErrorDetectReporterNames,    incErrorDetectStr)
   def evalNotSupportedReporters  = asFreebieMap(evalNotSupportedReporterNames,  evalNotSupportedStr)
   def sortingHeteroListReporters = asFreebieMap(sortingHeteroListReporterNames, sortingHeteroListStr)
 
@@ -97,6 +99,120 @@ private[tortoise] object Freebies {
     "TurtlesHere::TurtlesHereCheckOrder3",
     "TurtlesHere::TurtlesHereCheckOrder4"
   )
+
+  // Significant: Real errors could be hiding behind this (mostly) low-hanging fruit
+  private val incErrorDetectStr = "Tortoise error detection and reporting not complete"
+  private val incErrorDetectReporterNames = Seq(
+    "Lists::Lput5",
+    "Lists::ListFirst1",
+    "Lists::ListReplaceIt2",
+    "Lists::ReduceEmpty",
+    "Lists::MapNotEnoughInputs",
+    "Lists::ListItem1",
+    "Lists::ListItem2",
+    "Lists::ListLast1",
+    "Lists::ListLength3",
+    "Lists::ListRemoveItem4",
+    "Lists::ListRemoveItem5",
+    "Lists::ListRemoveItem6",
+    "Lists::ListReplItem2",
+    "Lists::ListReplItem3",
+    "Lists::ListButFirst3",
+    "Lists::ListButLast3",
+    "Lists::ListSubList6",
+    "Lists::ListSubList8",
+    "Lists::ListSubList9",
+    "Lists::ListSubList12",
+    "Numbers::Sqrt1",
+    "Numbers::Sqrt4",
+    "Numbers::DivByZero1",
+    "Numbers::DivByZero2",
+    "Numbers::DivByZero3",
+    "Numbers::DivByZero4",
+    "Numbers::DivByZero5",
+    "Numbers::DivByZero6",
+    "Numbers::Atan4",
+    "Numbers::Exponentiation3",
+    "Numbers::Log5",
+    "Numbers::Log6",
+    "Numbers::Max1",
+    "Numbers::Min1",
+    "Numbers::Mean1",
+    "Numbers::Variance1",
+    "Numbers::Variance2",
+    "RunResult::RunResult4",
+    "RunResult::RunResult5",
+    "Strings::StrButFirst2",
+    "Strings::StrButLast2",
+    "Strings::StrRemoveItem4",
+    "Strings::StrRemoveItem5",
+    "Strings::StrRemoveItem6"
+  )
+  private val incErrorDetectCommandNames = Seq(
+    "Agentsets::Agentsets2",
+    "Agentsets::Agentsets3",
+    "Agentsets::Agentsets4",
+    "Agentsets::LinkAgentsetDeadLinks",
+    "AgentsetBuilding::TurtleSet",
+    "AgentsetBuilding::PatchSet2",
+    "AgentsetBuilding::LinkSet",
+    "AnyAll::All5",
+    "Ask::AskAllTurtles",
+    "Ask::AskAllPatches",
+    "BooleanOperators::ShortCircuitAnd",
+    "BooleanOperators::ShortCircuitOr",
+    "Breeds::SetBreedToNonBreed",
+    "CommandTasks::*WrongTypeOfTask1",
+    "CommandTasks::WrongTypeOfTask2",
+    "CommandTasks::NotEnoughInputs",
+    "CommandTasks::NotEnoughInputsForeach",
+    "ComparingAgents::ComparingLinks",
+    "Death::DeadTurtles1",
+    "Death::DeadTurtles2",
+    "Death::DeadTurtles5",
+    "Death::DeadTurtles6",
+    "Face::FaceAgentset",
+    "Interaction::Interaction5",
+    "Interaction::Interaction13",
+    "Interaction::PatchTriesTurtleReporter",
+    "Links::CreateLinksTo",
+    "Links::CreateLinksFrom",
+    "Links::CreateLinksWith",
+    "Links::LinkFromToWith1",
+    "Links::LinkCantChangeBreeds",
+    "Links::LinksNotAllowed",
+    "Links::LinkNotAllowed",
+    "Links::BadLinkBreeds",
+    "Links::LinkNeighborIsUndirectedOnly1",
+    "Links::LinkCreationTypeChecking",
+    "Lists::RemoveBug997FirstArgMustBeStringIfSecondArgIsString",
+    "Lists::FilterTypeError",
+    "Math::CatchNumbersOutsideDoubleRangeOfIntegers",
+    "Math::DivideByZero",
+    "MoveTo::MoveTo",
+    "Patch::SetVariableRuntime",
+    "RGB::PatchesRGBColor",
+    "RGB::TurtlesRGBColor",
+    "RGB::LinksRGBColor",
+    "Random::RandomOneOfWithLists",
+    "Random::RandomNOfWithLists",
+    "Random::OneOfWithAgentSets",
+    "Random::RejectBadSeeds",
+    "ReporterTasks::NotEnoughInputs",
+    "Run::RunRejectExtraArgumentsIfFirstArgIsString",
+    "Run::RunResultRejectExtraArgumentsIfFirstArgIsString",
+    "Sort::SortingTypeErrors",
+    "Stop::ReportFromDynamicallyNestedForeach",
+    "Stop::StopFromForeach1",
+    "Stop::StopFromForeachInsideReporterProcedure",
+    "Stop::StopFromNestedForeachInsideReporterProcedure",
+    "Stop::FallOffEndOfReporterProcedure",
+    "Turtles::Turtles1a",
+    "TurtlesOn::TurtlesOn1",
+    "TypeChecking::AgentClassChecking1",
+    "TypeChecking::AgentClassChecking3a",
+    "TypeChecking::AgentClassChecking3b"
+    )
 
   // perhaps never to be supported
   private val evalNotSupportedStr = "run/runresult on strings not supported"
@@ -139,4 +255,3 @@ private[tortoise] object Freebies {
   )
 
 }
-
