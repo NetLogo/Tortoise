@@ -3,7 +3,9 @@
 package org.nlogo.tortoise
 
 import
-  org.scalatest.Assertions.{ assertResult, fail }
+  org.scalatest.{ exceptions, Assertions },
+    Assertions.{ assertResult, fail },
+    exceptions.{ TestPendingException, TestFailedException }
 
 import
   org.nlogo.{ core, headless },
@@ -37,7 +39,7 @@ class TortoiseFixture(name: String, nashorn: Nashorn, notImplemented: (String) =
       case CompileError(msg) =>
         expectCompileError(js, msg)
       case RuntimeError(msg) =>
-        expectRuntimeError(nashorn.run(js), msg)
+        expectRuntimeError(cautiously(nashorn.run(js)), msg)
       case r =>
         notImplemented(s"unknown result type: ${r.getClass.getSimpleName}")
     }
@@ -51,6 +53,8 @@ class TortoiseFixture(name: String, nashorn: Nashorn, notImplemented: (String) =
         checkResult(mode, reporter.reporter, expectedResult, actualResult)
       case CompileError(msg) =>
         expectCompileError(js, msg)
+      case RuntimeError(msg) =>
+        expectRuntimeError(cautiously(nashorn.run(js)), msg)
       case r =>
         notImplemented(s"unknown result type: ${r.getClass.getSimpleName}")
     }
@@ -67,14 +71,17 @@ class TortoiseFixture(name: String, nashorn: Nashorn, notImplemented: (String) =
     }
   }
 
-  private def expectRuntimeError(res: => (String, String), msg: String): Unit = {
+  private def expectRuntimeError(res: => Any, msg: String): Unit = {
     try {
-      assertResult(res._2)(msg)
+      res
       fail("no RuntimeError occurred")
     }
     catch {
       case ex: javax.script.ScriptException =>
         assertResult(msg)(ex.getCause.getMessage.split(": ")(1)) // Nashorn doesn't make JS Exceptions easy
+      case e: TestFailedException => throw e
+      case e: TestPendingException => throw e
+      case e: Exception => fail(s"expected RuntimeError, but got ${e.getClass.getSimpleName}")
     }
   }
 
