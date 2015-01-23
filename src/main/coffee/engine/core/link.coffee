@@ -129,10 +129,14 @@ module.exports =
         when  1 then GT
         else throw new Error("Comparison should only yield an integer within the interval [-1,1]")
 
+    # () => Array[String]
+    varNames: ->
+      @_varManager.names()
+
     # (Breed) => Array[String]
     _varNamesForBreed: (breed) ->
       linksBreed = @world.breedManager.links()
-      if breed is linksBreed
+      if breed is linksBreed or not breed?
         linksBreed.varNames
       else
         linksBreed.varNames.concat(breed.varNames)
@@ -180,14 +184,10 @@ module.exports =
 
       if @_breed isnt trueBreed
         trueBreed.add(this)
+        @_breed?.remove(this)
 
-        newNames = trueBreed.varNames
-        oldNames =
-          if @_breed?
-            @_breed.remove(this)
-            @_breed.varNames
-          else
-            []
+        newNames = @_varNamesForBreed(trueBreed)
+        oldNames = @_varNamesForBreed(@_breed)
 
         obsoletedNames = _(oldNames).difference(newNames).value()
         freshNames     = _(newNames).difference(oldNames).value()

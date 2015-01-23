@@ -3,12 +3,16 @@
 module.exports =
   class VariableManager
 
-    # type VariableBundle = { name: String, get: GetFunc, set: SetFunc }
+    # type VariableBundle[T] = { name: String, get: () => T, set: (T) => Unit }
 
     # (Array[String], Array[VariableBundle]) => VariableManager
     constructor: (@_varNames = [], @_getAndSetFuncs = []) ->
       @_addVarsByName(@_varNames)
       @_addVarsByBundle(@_getAndSetFuncs)
+
+    # () => Array[String]
+    names: ->
+      @_getAndSetFuncs.map(({ name }) -> name).concat(@_varNames)
 
     # (Array[String]) => (Array[String], Array[VariableBundle]) => Unit
     refineBy: (obsoleteVarNames = []) => (varNames = [], getAndSetFuncs = []) =>

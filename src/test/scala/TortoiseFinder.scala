@@ -118,8 +118,6 @@ class TestReporters extends TReporters with TortoiseFinder {
 
 class TestCommands extends TCommands with TortoiseFinder {
   override val freebies = Map[String, String](
-    // requires features
-    "Random::RandomNOfIsFairForAList" -> "`n-of` not implemented for lists",
     // requires handling of non-local exit (see in JVM NetLogo: `NonLocalExit`, `_report`, `_foreach`, `_run`)
     "Stop::ReportFromForeach" -> "no non-local exit from foreach",
     // Significant: Requires the optimizer to be turned on
@@ -139,7 +137,6 @@ class TestCommands extends TCommands with TortoiseFinder {
     "CommandTasks::*ToString5" -> "command task string representation doesn't match",
     "CommandTasks::*ToString6" -> "command task string representation doesn't match",
     // needs 'headless' compiler changes
-    "ReporterTasks::CloseOverLocal1" -> "Creates a function named 'const', which is a reserved keyword in JavaScript",
     // perhaps never to be supported
     "ControlStructures::Run1"                  -> "run/runresult on strings not supported",
     "ControlStructures::Run2"                  -> "run/runresult on strings not supported",

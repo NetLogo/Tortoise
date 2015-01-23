@@ -111,9 +111,9 @@ module.exports =
     # (Number, Number) => Patch
     getPatchAt: (x, y) =>
       try
-        trueX  = @topology.wrapX(x)
-        trueY  = @topology.wrapY(y)
-        index  = (@topology.maxPycor - StrictMath.round(trueY)) * @topology.width + (StrictMath.round(trueX) - @topology.minPxcor)
+        roundedX  = @_roundXCor(x)
+        roundedY  = @_roundYCor(y)
+        index     = (@topology.maxPycor - roundedY) * @topology.width + (roundedX - @topology.minPxcor)
         @_patches[index]
       catch error
         if error instanceof TopologyInterrupt
@@ -148,6 +148,43 @@ module.exports =
     # (Number, Number) => PatchSet
     getNeighbors4: (pxcor, pycor) ->
       new PatchSet(@topology.getNeighbors4(pxcor, pycor))
+
+    # (Number) => Number
+    _roundXCor: (x) ->
+      @_roundCoordinate(x, (s) => @topology.wrapX(s))
+
+      # (Number) => Number
+    _roundYCor: (y) ->
+      @_roundCoordinate(y, (s) => @topology.wrapY(s))
+
+    # Boy, oh, boy!  Headless has only this to say about this code: "floor() is slow so we
+    # don't use it".  I have a lot more to say!  This code is kind of nuts, but we can't
+    # live without it unless something is done about Headless' uses of `World.roundX` and
+    # and `World.roundY`.  The previous Tortoise code was somewhat sensible about patch
+    # boundaries, but had to be supplanted by this in order to become compliant with NL
+    # Headless, which interprets `0.4999999999999999167333` as being one patch over from
+    # `0` (whereas, sensically, we should only do that starting at `0.5`).  But... we
+    # don't live in an ideal world, so I'll just replicate Headless' silly behavior here.
+    # --JAB (12/6/14)
+    # (Number, (Number) => Number) => Number
+    _roundCoordinate: (c, wrapFunc) ->
+      wrappedC =
+        try
+          wrapFunc(c)
+        catch error
+          trueError =
+            if error instanceof TopologyInterrupt
+              new TopologyInterrupt("Cannot access patches beyond the limits of current world.")
+            else
+              error
+          throw trueError
+
+      if wrappedC > 0
+        (wrappedC + 0.5) | 0
+      else
+        integral   = wrappedC | 0
+        fractional = integral - wrappedC
+        if fractional > 0.5 then integral - 1 else integral
 
     # () => Unit
     _createPatches: ->

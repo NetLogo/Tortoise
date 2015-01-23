@@ -15,14 +15,14 @@ module.exports =
     _updateVarsByName: undefined # (String*) => Unit
     _varManager:       undefined # VariableManager
 
-    turtles: undefined # Array[Turtle]
+    _turtles: undefined # Array[Turtle]
 
     # (Number, Number, Number, World, (Updatable) => (String*) => Unit, () => Unit, () => Unit, () => Unit, (String) => LinkSet, Number, String, Number) => Patch
     constructor: (@id, @pxcor, @pycor, @world, genUpdate, @_declareNonBlackPatch, @_decrementPatchLabelCount
                 , @_incrementPatchLabelCount, @_pcolor = 0.0, @_plabel = "", @_plabelcolor = 9.9) ->
       @_updateVarsByName = genUpdate(this)
-      @turtles = []
-      @_varManager = @_genVarManager(@world.patchesOwnNames)
+      @_turtles          = []
+      @_varManager       = @_genVarManager(@world.patchesOwnNames)
 
     # (String) => Any
     getVariable: (varName) ->
@@ -44,12 +44,12 @@ module.exports =
 
     # (Turtle) => Unit
     untrackTurtle: (turtle) ->
-      @turtles.splice(@turtles.indexOf(turtle, 0), 1)
+      @_turtles.splice(@_turtles.indexOf(turtle, 0), 1)
       return
 
     # (Turtle) => Unit
     trackTurtle: (turtle) ->
-      @turtles.push(turtle)
+      @_turtles.push(turtle)
       return
 
     # () => (Number, Number)
@@ -70,7 +70,7 @@ module.exports =
 
     # () => TurtleSet
     turtlesHere: ->
-      new TurtleSet(@turtles[..])
+      new TurtleSet(@_turtles[..])
 
     # (() => Any) => Unit
     ask: (f) ->
@@ -97,8 +97,11 @@ module.exports =
 
     # (String) => TurtleSet
     breedHere: (breedName) ->
-      turtles = _(@turtles).filter((turtle) -> turtle.getBreedName() is breedName).value()
-      new TurtleSet(turtles, breedName)
+      new TurtleSet(@breedHereArray(breedName), breedName)
+
+    # (String) => Array[Turtle]
+    breedHereArray: (breedName) ->
+      _(@_turtles).filter((turtle) -> turtle.getBreedName() is breedName).value()
 
     # (Number, Number) => TurtleSet
     turtlesAt: (dx, dy) ->
@@ -137,6 +140,10 @@ module.exports =
       @_setPlabel('')
       @_setPlabelColor(9.9)
       return
+
+    # () => Array[String]
+    varNames: ->
+      @_varManager.names()
 
     # Array[String] => VariableManager
     _genVarManager: (extraVarNames) ->

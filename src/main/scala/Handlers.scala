@@ -19,9 +19,10 @@ trait Handlers extends EveryIDProvider {
         ""
     val body = taskHeader +
       (if (isReporter)
-         "return " + reporter(node) + ";"
-       else
-         commands(node))
+        s"return ${reporter(node)};"
+      else
+        commands(node))
+
     def isTrivialReporter(node: AstNode): Boolean =
       node match {
         case block: ReporterBlock =>
@@ -60,7 +61,7 @@ trait Handlers extends EveryIDProvider {
     case block: ReporterBlock =>
       reporter(block.app)
     case app: ReporterApp =>
-    prims.reporter(app)
+      prims.reporter(app)
   }
 
   def literal(obj: AnyRef): String = obj match {
@@ -75,17 +76,7 @@ trait Handlers extends EveryIDProvider {
   def indented(s: String): String =
     s.lines.map("  " + _).mkString("\n")
 
-  // bogus, will need work - ST 9/13/13
-  def ident(name: String): String = {
-    def initialUpper(s: String): String =
-      java.lang.Character.toUpperCase(s.head) + s.tail
-    def initialLower(s: String): String =
-      java.lang.Character.toLowerCase(s.head) + s.tail
-    val camel = initialLower(name.toLowerCase.split('-').map(initialUpper).mkString)
-    camel
-      .replaceAll("\\?", "_p")
-      .replaceAll("%", "_percent_")
-  }
+  def ident(s: String): String = JSIdentProvider(s)
 
   def unusedVarname(token: Token, hint: String = ""): String = {
     s"_${hint}_${token.start}_${token.end}"

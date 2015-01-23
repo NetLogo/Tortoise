@@ -23,10 +23,11 @@ module.exports =
 
     linkManager: undefined # TurtleLinkManager
 
-    # (World, Number, (Updatable) => (String*) => Unit, (Number) => Unit, (Number, Number, Number, Number, Breed, String, Number, Boolean, Number, String, PenManager) => Turtle, (Number) => Unit, Number, Number, Number, Number, Breed, String, Number, Boolean, Number, String, PenManager) => Turtle
-    constructor: (@world, @id, genUpdate, @_registerDeath, @_createTurtle, @_removeTurtle, @_color = 0, @_heading = 0, @xcor = 0, @ycor = 0, breed = @world.breedManager.turtles(), @_label = "", @_labelcolor = 9.9, @_hidden = false, @_size = 1.0, @_givenShape, @penManager = new PenManager(genUpdate(this))) ->
-      @_updateVarsByName = genUpdate(this)
+    # (World, Number, (Updatable) => (String*) => Unit, (Number) => Unit, (Number, Number, Number, Number, Breed, String, Number, Boolean, Number, String, PenManager) => Turtle, (Number) => Unit, Number, Number, Number, Number, Breed, String, Number, Boolean, Number, String, (Updatable) => PenManager) => Turtle
+    constructor: (@world, @id, @_genUpdate, @_registerDeath, @_createTurtle, @_removeTurtle, @_color = 0, @_heading = 0, @xcor = 0, @ycor = 0, breed = @world.breedManager.turtles(), @_label = "", @_labelcolor = 9.9, @_hidden = false, @_size = 1.0, @_givenShape, genPenManager = (self) => new PenManager(@_genUpdate(self))) ->
+      @_updateVarsByName = @_genUpdate(this)
 
+      @penManager  = genPenManager(this)
       @linkManager = new TurtleLinkManager(id, world.breedManager)
 
       varNames     = @_varNamesForBreed(breed)
@@ -312,7 +313,7 @@ module.exports =
 
     # (Breed) => Turtle
     _makeTurtleCopy: (breed) ->
-      turtle   = @_createTurtle(@_color, @_heading, @xcor, @ycor, breed, @_label, @_labelcolor, @_hidden, @_size, @_givenShape, @penManager.clone())
+      turtle   = @_createTurtle(@_color, @_heading, @xcor, @ycor, breed, @_label, @_labelcolor, @_hidden, @_size, @_givenShape, (self) => @penManager.clone(@_genUpdate(self)))
       varNames = @_varNamesForBreed(breed)
       _(varNames).forEach((varName) =>
         turtle.setVariable(varName, @getVariable(varName))
@@ -323,7 +324,7 @@ module.exports =
     # (Breed) => Array[String]
     _varNamesForBreed: (breed) ->
       turtlesBreed = @world.breedManager.turtles()
-      if breed is turtlesBreed
+      if breed is turtlesBreed or not breed?
         turtlesBreed.varNames
       else
         turtlesBreed.varNames.concat(breed.varNames)
@@ -362,6 +363,10 @@ module.exports =
         "(#{@_breed.singular} #{@id})"
       else
         "nobody"
+
+    # () => Array[String]
+    varNames: ->
+      @_varManager.names()
 
     # Unfortunately, we can't just throw out `_breedShape` and grab the shape from our
     # `Breed` object.  It would be pretty nice if we could, but the problem is that
@@ -464,14 +469,10 @@ module.exports =
 
       if @_breed isnt trueBreed
         trueBreed.add(this)
+        @_breed?.remove(this)
 
-        newNames = trueBreed.varNames
-        oldNames =
-          if @_breed?
-            @_breed.remove(this)
-            @_breed.varNames
-          else
-            []
+        newNames = @_varNamesForBreed(trueBreed)
+        oldNames = @_varNamesForBreed(@_breed)
 
         obsoletedNames = _(oldNames).difference(newNames).value()
         freshNames     = _(newNames).difference(oldNames).value()
