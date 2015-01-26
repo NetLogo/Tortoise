@@ -1,9 +1,10 @@
 // (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-package org.nlogo.tortoise
+package org.nlogo.run
 
-import jsengine.Nashorn
-import org.nlogo.{ core, workspace }
+import org.nlogo.{ core, workspace, tortoise },
+  tortoise.{ Compiler, jsengine },
+    jsengine.Nashorn
 
 object Shell extends workspace.Shell {
 

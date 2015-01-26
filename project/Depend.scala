@@ -76,7 +76,8 @@ object Depend {
       "parse" -> List("api", "core/prim", "core/prim/etc"),
       "tortoise" -> List("api/model", "parse", "tortoise/json", "tortoise/jsengine"),
       "tortoise/jsengine" -> List("api"),
-      "tortoise/json" -> List("mirror")
+      "tortoise/json" -> List("mirror"),
+      "run" -> List("tortoise", "tortoise/jsengine", "workspace")
     )
     case class Package(val dir: String, var depends: Set[Package]) {
       def ancestors:Set[Package] = depends ++ depends.flatMap(_.ancestors)
