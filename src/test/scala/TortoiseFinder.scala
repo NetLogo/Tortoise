@@ -7,7 +7,7 @@ import
     exceptions.TestPendingException
 
 import
-  org.nlogo.headless.lang.{ AbstractFixture, Command, Finder, LanguageTest, NormalMode, TestCommands => TCommands, TestMode, TestReporters => TReporters }
+  org.nlogo.headless.test.{ AbstractFixture, Command, Finder, LanguageTest, NormalMode, CommandTests, TestMode, ReporterTests }
 
 private[tortoise] trait TortoiseFinder extends Finder with BeforeAndAfterAll with BrowserReporter with TestLogger {
 
@@ -59,7 +59,7 @@ private[tortoise] trait TortoiseFinder extends Finder with BeforeAndAfterAll wit
 
 }
 
-class TestReporters extends TReporters with TortoiseFinder {
+class TestReporters extends ReporterTests with TortoiseFinder {
   override val freebies = Map[String, String](
     // obscure
     "Lists::Sort2" -> "sorting heterogeneous lists doesn't work",
@@ -116,7 +116,7 @@ class TestReporters extends TReporters with TortoiseFinder {
   )
 }
 
-class TestCommands extends TCommands with TortoiseFinder {
+class TestCommands extends CommandTests with TortoiseFinder {
   override val freebies = Map[String, String](
     // requires handling of non-local exit (see in JVM NetLogo: `NonLocalExit`, `_report`, `_foreach`, `_run`)
     "Stop::ReportFromForeach" -> "no non-local exit from foreach",
