@@ -73,8 +73,9 @@ object Depend {
       "workspace" -> List("nvm"),
       "headless" -> List("workspace"),
       "headless/lang" -> List("headless"),
+      "headless/test" -> List("api/model"),
       "parse" -> List("api", "core/prim", "core/prim/etc"),
-      "tortoise" -> List("api/model", "parse", "tortoise/json", "tortoise/jsengine"),
+      "tortoise" -> List("api/model", "parse", "tortoise/json", "tortoise/jsengine", "headless/test"),
       "tortoise/jsengine" -> List("api"),
       "tortoise/json" -> List("mirror"),
       "run" -> List("tortoise", "tortoise/jsengine", "workspace")
