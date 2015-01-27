@@ -11,7 +11,7 @@ import
   org.nlogo.{ core, headless },
     core.{ AgentKind, CompilerException, FrontEndInterface, Model => CModel, Program, View },
       FrontEndInterface.{ ProceduresMap, NoProcedures },
-    headless.lang.{ AbstractFixture, Command, CompileError, RuntimeError, Reporter, Success, TestMode }
+    headless.test.{ AbstractFixture, Command, CompileError, RuntimeError, Reporter, Success, TestMode }
 
 
 import jsengine.Nashorn

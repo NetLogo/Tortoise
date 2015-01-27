@@ -6,6 +6,7 @@ package dock
 import
   org.nlogo.{ core, api, headless, mirror, nvm },
   headless.lang._,
+  headless.test.{ RuntimeError, TestMode, Command, Reporter, CompileError, Success },
   core.Model,
   org.scalatest.Assertions._,
   org.scalatest.exceptions.TestFailedException
