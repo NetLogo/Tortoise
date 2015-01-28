@@ -1,9 +1,8 @@
 package org.nlogo.tortoise
 
 import
-  org.nlogo.{ api, core },
-   api.Color,
-   core.{ CompilerException, Model, Pen, Plot, Token }
+  org.nlogo.core,
+   core.{ Color, CompilerException, Model, Pen, Plot, Token }
 
 private[tortoise] trait ModelConfigGenerator {
 
