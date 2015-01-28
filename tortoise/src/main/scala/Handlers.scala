@@ -4,7 +4,7 @@ package org.nlogo.tortoise
 
 import
   org.nlogo.{ api, core },
-    api.Dump,
+    core.Dump,
     core.{ AstNode, CommandBlock, LogoList, Nobody, Pure, ReporterApp, ReporterBlock, Statements, Token }
 
 trait Handlers extends EveryIDProvider {
@@ -65,7 +65,7 @@ trait Handlers extends EveryIDProvider {
 
   def literal(obj: AnyRef): String = obj match {
     case ll: LogoList =>
-      ll.map(literal).mkString("[", ", ", "]")
+      ll.scalaIterator.map(literal).mkString("[", ", ", "]")
     case Nobody =>
       "Nobody"
     case x =>
