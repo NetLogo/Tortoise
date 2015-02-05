@@ -245,10 +245,9 @@ function dropPatch() {
     return ListPrims.oneOf(world.patches());
   }
   if ((Prims.equality(world.observer.getGlobal('drop-location'), "mouse-click") && MousePrims.isDown())) {
-    var dropPatch_0;
-    if (Prims.everyTimerElapsed(0.3, dropPatch_0)) {
+    if (Prims.everyTimerElapsed("dropPatch_0", workspace.selfManager.selfId(), 0.3)) {
+      Prims.everyBlockRun("dropPatch_0", workspace.selfManager.selfId());
       return world.getPatchAt(MousePrims.getX(), MousePrims.getY());
-      dropPatch_0 = new Prims.everyTimer();
     }
   }
   return Nobody;

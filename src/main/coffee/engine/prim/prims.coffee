@@ -21,7 +21,7 @@ module.exports =
 
     # type ListOrSet[T] = Array[T]|AbstractAgentSet[T]
 
-    _everyMap: undefined # Object[String, Timer]
+    _everyMap: undefined # Object[String, Object[String, Timer]]
 
     # (Dump, Hasher, RNG) => Prims
     constructor: (@_dumper, @_hasher, @_rng) ->
@@ -68,13 +68,18 @@ module.exports =
       else
         throw new Error("Checking equality on undefined is an invalid condition")
 
-    # (Number, Timer) => Boolean
-    everyTimerElapsed: (time, timer) ->
-      not timer? or timer.elapsed() >= time
+    # (String, String, Number) => Boolean
+    everyTimerElapsed: (commandId, agentId, timeLimit) ->
+      if @_everyMap[commandId]? and @_everyMap[commandId][agentId]?
+        @_everyMap[commandId][agentId].elapsed() >= timeLimit
+      else
+        true
 
-    # () => Boolean
-    everyTimer: ->
-      new Timer()
+    # (String, String) => ()
+    everyBlockRun: (commandId, agentId) ->
+      if not @_everyMap[commandId]?
+        @_everyMap[commandId] = {}
+      @_everyMap[commandId][agentId] = new Timer()
 
     # (Any, Any) => Boolean
     gt: (a, b) ->

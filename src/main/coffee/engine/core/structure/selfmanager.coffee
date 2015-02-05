@@ -19,6 +19,13 @@ module.exports =
     self: =>
       @_self
 
+    # () => String
+    selfId: =>
+      if typeof(@_self) == "number"
+        @_self.toString()
+      else
+        @_self.id.toString()
+
     # () => SelfType
     myself: ->
       if @_myself isnt 0

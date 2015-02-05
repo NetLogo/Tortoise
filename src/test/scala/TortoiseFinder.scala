@@ -138,6 +138,7 @@ class TestCommands extends CommandTests with TortoiseFinder {
     "CommandTasks::*ToString6" -> "command task string representation doesn't match",
     // needs 'headless' compiler changes
     // perhaps never to be supported
+    "Every::EveryLosesScope"                   -> "NetLogo web does not support distinct jobs",
     "ControlStructures::Run1"                  -> "run/runresult on strings not supported",
     "ControlStructures::Run2"                  -> "run/runresult on strings not supported",
     "ControlStructures::Run3"                  -> "run/runresult on strings not supported",
