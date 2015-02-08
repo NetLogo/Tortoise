@@ -1,12 +1,12 @@
 // (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-package org.nlogo.run
+package org.nlogo
 
-import org.nlogo.{ core, workspace, tortoise },
+import
   tortoise.{ Compiler, jsengine },
     jsengine.Nashorn
 
-object Shell extends workspace.Shell {
+object TortoiseShell extends workspace.Shell {
 
   val defaultModel = core.Model(code = "", widgets = List(core.View.square(16)))
 
