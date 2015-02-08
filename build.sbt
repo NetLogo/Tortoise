@@ -47,6 +47,8 @@ libraryDependencies ++= Seq(
 
 onLoadMessage := ""
 
+unmanagedSourceDirectories in Compile += baseDirectory.value / "scripts"
+
 bintray.Keys.repository in bintray.Keys.bintray := "Tortoise"
 
 bintray.Keys.bintrayOrganization in bintray.Keys.bintray := Some("netlogo")
