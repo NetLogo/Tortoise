@@ -60,160 +60,199 @@ private[tortoise] trait TortoiseFinder extends Finder with BeforeAndAfterAll wit
 }
 
 class TestReporters extends ReporterTests with TortoiseFinder {
-  override val freebies = Map[String, String](
-    // obscure
-    "Lists::Sort2" -> "sorting heterogeneous lists doesn't work",
-    "Lists::Sort3" -> "sorting heterogeneous lists doesn't work",
-    "Lists::Sort5" -> "sorting heterogeneous lists doesn't work",
-    // perhaps never to be supported
-    "RunResult::RunResult1" -> "run/runresult on strings not supported",
-    "RunResult::RunResult2" -> "run/runresult on strings not supported",
-    "RunResult::RunResult3" -> "run/runresult on strings not supported",
-    "Lists::Lput5"                -> "Tortoise error detection and reporting not complete",
-    "Lists::ListFirst1"           -> "Tortoise error detection and reporting not complete",
-    "Lists::ListReplaceIt2"       -> "Tortoise error detection and reporting not complete",
-    "Lists::ReduceEmpty"          -> "Tortoise error detection and reporting not complete",
-    "Lists::MapNotEnoughInputs"   -> "Tortoise error detection and reporting not complete",
-    "Lists::ListItem1"            -> "Tortoise error detection and reporting not complete",
-    "Lists::ListItem2"            -> "Tortoise error detection and reporting not complete",
-    "Lists::ListLast1"            -> "Tortoise error detection and reporting not complete",
-    "Lists::ListLength3"          -> "Tortoise error detection and reporting not complete",
-    "Lists::ListRemoveItem4"      -> "Tortoise error detection and reporting not complete",
-    "Lists::ListRemoveItem5"      -> "Tortoise error detection and reporting not complete",
-    "Lists::ListRemoveItem6"      -> "Tortoise error detection and reporting not complete",
-    "Lists::ListReplItem2"        -> "Tortoise error detection and reporting not complete",
-    "Lists::ListReplItem3"        -> "Tortoise error detection and reporting not complete",
-    "Lists::ListButFirst3"        -> "Tortoise error detection and reporting not complete",
-    "Lists::ListButLast3"         -> "Tortoise error detection and reporting not complete",
-    "Lists::ListSubList6"         -> "Tortoise error detection and reporting not complete",
-    "Lists::ListSubList8"         -> "Tortoise error detection and reporting not complete",
-    "Lists::ListSubList9"         -> "Tortoise error detection and reporting not complete",
-    "Lists::ListSubList12"        -> "Tortoise error detection and reporting not complete",
-    "Numbers::Sqrt1"              -> "Tortoise error detection and reporting not complete",
-    "Numbers::Sqrt4"              -> "Tortoise error detection and reporting not complete",
-    "Numbers::DivByZero1"         -> "Tortoise error detection and reporting not complete",
-    "Numbers::DivByZero2"         -> "Tortoise error detection and reporting not complete",
-    "Numbers::DivByZero3"         -> "Tortoise error detection and reporting not complete",
-    "Numbers::DivByZero4"         -> "Tortoise error detection and reporting not complete",
-    "Numbers::DivByZero5"         -> "Tortoise error detection and reporting not complete",
-    "Numbers::DivByZero6"         -> "Tortoise error detection and reporting not complete",
-    "Numbers::Atan4"              -> "Tortoise error detection and reporting not complete",
-    "Numbers::Exponentiation3"    -> "Tortoise error detection and reporting not complete",
-    "Numbers::Log5"               -> "Tortoise error detection and reporting not complete",
-    "Numbers::Log6"               -> "Tortoise error detection and reporting not complete",
-    "Numbers::Max1"               -> "Tortoise error detection and reporting not complete",
-    "Numbers::Min1"               -> "Tortoise error detection and reporting not complete",
-    "Numbers::Mean1"              -> "Tortoise error detection and reporting not complete",
-    "Numbers::Variance1"          -> "Tortoise error detection and reporting not complete",
-    "Numbers::Variance2"          -> "Tortoise error detection and reporting not complete",
-    "RunResult::RunResult4"       -> "Tortoise error detection and reporting not complete",
-    "RunResult::RunResult5"       -> "Tortoise error detection and reporting not complete",
-    "Strings::StrButFirst2"       -> "Tortoise error detection and reporting not complete",
-    "Strings::StrButLast2"        -> "Tortoise error detection and reporting not complete",
-    "Strings::StrRemoveItem4"     -> "Tortoise error detection and reporting not complete",
-    "Strings::StrRemoveItem5"     -> "Tortoise error detection and reporting not complete",
-    "Strings::StrRemoveItem6"     -> "Tortoise error detection and reporting not complete"
-  )
+  import Freebies._
+  override val freebies = sortingHeteroListReporters ++ evalNotSupportedReporters ++ incErrorDetectReporters
 }
 
 class TestCommands extends CommandTests with TortoiseFinder {
+  import Freebies._
   override val freebies = Map[String, String](
     // requires handling of non-local exit (see in JVM NetLogo: `NonLocalExit`, `_report`, `_foreach`, `_run`)
     "Stop::ReportFromForeach" -> "no non-local exit from foreach",
+    "Every::EveryLosesScope"  -> "NetLogo Web does not support distinct jobs"
+  ) ++ incErrorDetectCommands ++ emptyInitBlockCommands ++ evalNotSupportedCommands ++ cmdTaskRepMismatchCommands
+}
+
+private[tortoise] object Freebies {
+
+  def incErrorDetectCommands     = asFreebieMap(incErrorDetectCommandNames,     incErrorDetectStr)
+  def emptyInitBlockCommands     = asFreebieMap(emptyInitBlockCommandNames,     emptyInitBlockStr)
+  def evalNotSupportedCommands   = asFreebieMap(evalNotSupportedCommandNames,   evalNotSupportedStr)
+  def cmdTaskRepMismatchCommands = asFreebieMap(cmdTaskRepMismatchCommandNames, cmdTaskRepMismatchStr)
+
+  def incErrorDetectReporters    = asFreebieMap(incErrorDetectReporterNames,    incErrorDetectStr)
+  def evalNotSupportedReporters  = asFreebieMap(evalNotSupportedReporterNames,  evalNotSupportedStr)
+  def sortingHeteroListReporters = asFreebieMap(sortingHeteroListReporterNames, sortingHeteroListStr)
+
+  private def asFreebieMap(names: Seq[String], msg: String) = names.map(_ -> msg).toMap
+
     // Significant: Requires the optimizer to be turned on
-    "Death::TurtleDiesWhileIteratingOverItsSet"                               -> "ASSUMES OPTIMIZATION: empty init block",
-    "Interaction::Interaction3b1"                                             -> "ASSUMES OPTIMIZATION: empty init block",
-    "Interaction::Interaction3b2"                                             -> "ASSUMES OPTIMIZATION: empty init block",
-    "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksFrom" -> "ASSUMES OPTIMIZATION: empty init block",
-    "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksTo"   -> "ASSUMES OPTIMIZATION: empty init block",
-    "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksWith" -> "ASSUMES OPTIMIZATION: empty init block",
-    "TurtlesHere::TurtlesHereCheckOrder1"                                     -> "ASSUMES OPTIMIZATION: empty init block",
-    "TurtlesHere::TurtlesHereCheckOrder2"                                     -> "ASSUMES OPTIMIZATION: empty init block",
-    "TurtlesHere::TurtlesHereCheckOrder3"                                     -> "ASSUMES OPTIMIZATION: empty init block",
-    "TurtlesHere::TurtlesHereCheckOrder4"                                     -> "ASSUMES OPTIMIZATION: empty init block",
-    // requires Tortoise compiler changes
-    "CommandTasks::*ToString3" -> "command task string representation doesn't match",
-    "CommandTasks::*ToString4" -> "command task string representation doesn't match",
-    "CommandTasks::*ToString5" -> "command task string representation doesn't match",
-    "CommandTasks::*ToString6" -> "command task string representation doesn't match",
-    // needs 'headless' compiler changes
-    // perhaps never to be supported
-    "Every::EveryLosesScope"                   -> "NetLogo web does not support distinct jobs",
-    "ControlStructures::Run1"                  -> "run/runresult on strings not supported",
-    "ControlStructures::Run2"                  -> "run/runresult on strings not supported",
-    "ControlStructures::Run3"                  -> "run/runresult on strings not supported",
-    "ControlStructures::Run4"                  -> "run/runresult on strings not supported",
-    "ControlStructures::Run5"                  -> "run/runresult on strings not supported",
-    "ControlStructures::Run6"                  -> "run/runresult on strings not supported",
-    "ControlStructures::Run7"                  -> "run/runresult on strings not supported",
-    "ControlStructures::Run8"                  -> "run/runresult on strings not supported",
-    "Run::LuisIzquierdoRun1"                   -> "run/runresult on strings not supported",
-    "Run::LuisIzquierdoRun2"                   -> "run/runresult on strings not supported",
-    "Run::LuisIzquierdoRunResult1"             -> "run/runresult on strings not supported",
-    "Run::LuisIzquierdoRunResult2"             -> "run/runresult on strings not supported",
-    "Run::run-evaluate-string-input-only-once" -> "run/runresult on strings not supported",
-    "Agentsets::Agentsets2"                 -> "Tortoise error detection and reporting not complete",
-    "Agentsets::Agentsets3"                 -> "Tortoise error detection and reporting not complete",
-    "Agentsets::Agentsets4"                 -> "Tortoise error detection and reporting not complete",
-    "Agentsets::LinkAgentsetDeadLinks"      -> "Tortoise error detection and reporting not complete",
-    "AgentsetBuilding::TurtleSet"           -> "Tortoise error detection and reporting not complete",
-    "AgentsetBuilding::PatchSet2"           -> "Tortoise error detection and reporting not complete",
-    "AgentsetBuilding::LinkSet"             -> "Tortoise error detection and reporting not complete",
-    "AnyAll::All5"                          -> "Tortoise error detection and reporting not complete",
-    "Ask::AskAllTurtles"                    -> "Tortoise error detection and reporting not complete",
-    "Ask::AskAllPatches"                    -> "Tortoise error detection and reporting not complete",
-    "BooleanOperators::ShortCircuitAnd"     -> "Tortoise error detection and reporting not complete",
-    "BooleanOperators::ShortCircuitOr"      -> "Tortoise error detection and reporting not complete",
-    "Breeds::SetBreedToNonBreed"            -> "Tortoise error detection and reporting not complete",
-    "CommandTasks::*WrongTypeOfTask1"       -> "Tortoise error detection and reporting not complete",
-    "CommandTasks::WrongTypeOfTask2"        -> "Tortoise error detection and reporting not complete",
-    "CommandTasks::NotEnoughInputs"         -> "Tortoise error detection and reporting not complete",
-    "CommandTasks::NotEnoughInputsForeach"  -> "Tortoise error detection and reporting not complete",
-    "ComparingAgents::ComparingLinks"       -> "Tortoise error detection and reporting not complete",
-    "Death::DeadTurtles1"                   -> "Tortoise error detection and reporting not complete",
-    "Death::DeadTurtles2"                   -> "Tortoise error detection and reporting not complete",
-    "Death::DeadTurtles5"                   -> "Tortoise error detection and reporting not complete",
-    "Death::DeadTurtles6"                   -> "Tortoise error detection and reporting not complete",
-    "Face::FaceAgentset"                    -> "Tortoise error detection and reporting not complete",
-    "Interaction::Interaction5"             -> "Tortoise error detection and reporting not complete",
-    "Interaction::Interaction13"            -> "Tortoise error detection and reporting not complete",
-    "Interaction::PatchTriesTurtleReporter" -> "Tortoise error detection and reporting not complete",
-    "Links::CreateLinksTo"                  -> "Tortoise error detection and reporting not complete",
-    "Links::CreateLinksFrom"                -> "Tortoise error detection and reporting not complete",
-    "Links::CreateLinksWith"                -> "Tortoise error detection and reporting not complete",
-    "Links::LinkFromToWith1"                -> "Tortoise error detection and reporting not complete",
-    "Links::LinkCantChangeBreeds"           -> "Tortoise error detection and reporting not complete",
-    "Links::LinksNotAllowed"                -> "Tortoise error detection and reporting not complete",
-    "Links::LinkNotAllowed"                 -> "Tortoise error detection and reporting not complete",
-    "Links::BadLinkBreeds"                  -> "Tortoise error detection and reporting not complete",
-    "Links::LinkNeighborIsUndirectedOnly1"  -> "Tortoise error detection and reporting not complete",
-    "Links::LinkCreationTypeChecking"       -> "Tortoise error detection and reporting not complete",
-    "Lists::RemoveBug997FirstArgMustBeStringIfSecondArgIsString" -> "Tortoise error detection and reporting not complete",
-    "Lists::FilterTypeError"                -> "Tortoise error detection and reporting not complete",
-    "Math::CatchNumbersOutsideDoubleRangeOfIntegers" -> "Tortoise error detection and reporting not complete",
-    "Math::DivideByZero"                    -> "Tortoise error detection and reporting not complete",
-    "MoveTo::MoveTo"                        -> "Tortoise error detection and reporting not complete",
-    "Patch::SetVariableRuntime"             -> "Tortoise error detection and reporting not complete",
-    "RGB::PatchesRGBColor"                  -> "Tortoise error detection and reporting not complete",
-    "RGB::TurtlesRGBColor"                  -> "Tortoise error detection and reporting not complete",
-    "RGB::LinksRGBColor"                    -> "Tortoise error detection and reporting not complete",
-    "Random::RandomOneOfWithLists"          -> "Tortoise error detection and reporting not complete",
-    "Random::RandomNOfWithLists"            -> "Tortoise error detection and reporting not complete",
-    "Random::OneOfWithAgentSets"            -> "Tortoise error detection and reporting not complete",
-    "Random::RejectBadSeeds"                -> "Tortoise error detection and reporting not complete",
-    "ReporterTasks::NotEnoughInputs"        -> "Tortoise error detection and reporting not complete",
-    "Run::RunRejectExtraArgumentsIfFirstArgIsString" -> "Tortoise error detection and reporting not complete",
-    "Run::RunResultRejectExtraArgumentsIfFirstArgIsString" -> "Tortoise error detection and reporting not complete",
-    "Sort::SortingTypeErrors"                  -> "Tortoise error detection and reporting not complete",
-    "Stop::ReportFromDynamicallyNestedForeach" -> "Tortoise error detection and reporting not complete",
-    "Stop::StopFromForeach1"                   -> "Tortoise error detection and reporting not complete",
-    "Stop::StopFromForeachInsideReporterProcedure" -> "Tortoise error detection and reporting not complete",
-    "Stop::StopFromNestedForeachInsideReporterProcedure" -> "Tortoise error detection and reporting not complete",
-    "Stop::FallOffEndOfReporterProcedure" -> "Tortoise error detection and reporting not complete",
-    "Turtles::Turtles1a"                  -> "Tortoise error detection and reporting not complete",
-    "TurtlesOn::TurtlesOn1"               -> "Tortoise error detection and reporting not complete",
-    "TypeChecking::AgentClassChecking1"   -> "Tortoise error detection and reporting not complete",
-    "TypeChecking::AgentClassChecking3a"  -> "Tortoise error detection and reporting not complete",
-    "TypeChecking::AgentClassChecking3b"  -> "Tortoise error detection and reporting not complete"
+  private val emptyInitBlockStr = "ASSUMES OPTIMIZATION: empty init block"
+  private val emptyInitBlockCommandNames = Seq(
+    "Death::TurtleDiesWhileIteratingOverItsSet",
+    "Interaction::Interaction3b1",
+    "Interaction::Interaction3b2",
+    "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksFrom",
+    "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksTo",
+    "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksWith",
+    "TurtlesHere::TurtlesHereCheckOrder1",
+    "TurtlesHere::TurtlesHereCheckOrder2",
+    "TurtlesHere::TurtlesHereCheckOrder3",
+    "TurtlesHere::TurtlesHereCheckOrder4"
   )
+
+  // Significant: Real errors could be hiding behind this (mostly) low-hanging fruit
+  private val incErrorDetectStr = "Tortoise error detection and reporting not complete"
+  private val incErrorDetectReporterNames = Seq(
+    "Lists::Lput5",
+    "Lists::ListFirst1",
+    "Lists::ListReplaceIt2",
+    "Lists::ReduceEmpty",
+    "Lists::MapNotEnoughInputs",
+    "Lists::ListItem1",
+    "Lists::ListItem2",
+    "Lists::ListLast1",
+    "Lists::ListLength3",
+    "Lists::ListRemoveItem4",
+    "Lists::ListRemoveItem5",
+    "Lists::ListRemoveItem6",
+    "Lists::ListReplItem2",
+    "Lists::ListReplItem3",
+    "Lists::ListButFirst3",
+    "Lists::ListButLast3",
+    "Lists::ListSubList6",
+    "Lists::ListSubList8",
+    "Lists::ListSubList9",
+    "Lists::ListSubList12",
+    "Numbers::Sqrt1",
+    "Numbers::Sqrt4",
+    "Numbers::DivByZero1",
+    "Numbers::DivByZero2",
+    "Numbers::DivByZero3",
+    "Numbers::DivByZero4",
+    "Numbers::DivByZero5",
+    "Numbers::DivByZero6",
+    "Numbers::Atan4",
+    "Numbers::Exponentiation3",
+    "Numbers::Log5",
+    "Numbers::Log6",
+    "Numbers::Max1",
+    "Numbers::Min1",
+    "Numbers::Mean1",
+    "Numbers::Variance1",
+    "Numbers::Variance2",
+    "RunResult::RunResult4",
+    "RunResult::RunResult5",
+    "Strings::StrButFirst2",
+    "Strings::StrButLast2",
+    "Strings::StrRemoveItem4",
+    "Strings::StrRemoveItem5",
+    "Strings::StrRemoveItem6"
+  )
+  private val incErrorDetectCommandNames = Seq(
+    "Agentsets::Agentsets2",
+    "Agentsets::Agentsets3",
+    "Agentsets::Agentsets4",
+    "Agentsets::LinkAgentsetDeadLinks",
+    "AgentsetBuilding::TurtleSet",
+    "AgentsetBuilding::PatchSet2",
+    "AgentsetBuilding::LinkSet",
+    "AnyAll::All5",
+    "Ask::AskAllTurtles",
+    "Ask::AskAllPatches",
+    "BooleanOperators::ShortCircuitAnd",
+    "BooleanOperators::ShortCircuitOr",
+    "Breeds::SetBreedToNonBreed",
+    "CommandTasks::*WrongTypeOfTask1",
+    "CommandTasks::WrongTypeOfTask2",
+    "CommandTasks::NotEnoughInputs",
+    "CommandTasks::NotEnoughInputsForeach",
+    "ComparingAgents::ComparingLinks",
+    "Death::DeadTurtles1",
+    "Death::DeadTurtles2",
+    "Death::DeadTurtles5",
+    "Death::DeadTurtles6",
+    "Face::FaceAgentset",
+    "Interaction::Interaction5",
+    "Interaction::Interaction13",
+    "Interaction::PatchTriesTurtleReporter",
+    "Links::CreateLinksTo",
+    "Links::CreateLinksFrom",
+    "Links::CreateLinksWith",
+    "Links::LinkFromToWith1",
+    "Links::LinkCantChangeBreeds",
+    "Links::LinksNotAllowed",
+    "Links::LinkNotAllowed",
+    "Links::BadLinkBreeds",
+    "Links::LinkNeighborIsUndirectedOnly1",
+    "Links::LinkCreationTypeChecking",
+    "Lists::RemoveBug997FirstArgMustBeStringIfSecondArgIsString",
+    "Lists::FilterTypeError",
+    "Math::CatchNumbersOutsideDoubleRangeOfIntegers",
+    "Math::DivideByZero",
+    "MoveTo::MoveTo",
+    "Patch::SetVariableRuntime",
+    "RGB::PatchesRGBColor",
+    "RGB::TurtlesRGBColor",
+    "RGB::LinksRGBColor",
+    "Random::RandomOneOfWithLists",
+    "Random::RandomNOfWithLists",
+    "Random::OneOfWithAgentSets",
+    "Random::RejectBadSeeds",
+    "ReporterTasks::NotEnoughInputs",
+    "Run::RunRejectExtraArgumentsIfFirstArgIsString",
+    "Run::RunResultRejectExtraArgumentsIfFirstArgIsString",
+    "Sort::SortingTypeErrors",
+    "Stop::ReportFromDynamicallyNestedForeach",
+    "Stop::StopFromForeach1",
+    "Stop::StopFromForeachInsideReporterProcedure",
+    "Stop::StopFromNestedForeachInsideReporterProcedure",
+    "Stop::FallOffEndOfReporterProcedure",
+    "Turtles::Turtles1a",
+    "TurtlesOn::TurtlesOn1",
+    "TypeChecking::AgentClassChecking1",
+    "TypeChecking::AgentClassChecking3a",
+    "TypeChecking::AgentClassChecking3b"
+    )
+
+  // perhaps never to be supported
+  private val evalNotSupportedStr = "run/runresult on strings not supported"
+  private val evalNotSupportedReporterNames = Seq(
+    "RunResult::RunResult1",
+    "RunResult::RunResult2",
+    "RunResult::RunResult3"
+  )
+  private val evalNotSupportedCommandNames = Seq(
+    "ControlStructures::Run1",
+    "ControlStructures::Run2",
+    "ControlStructures::Run3",
+    "ControlStructures::Run4",
+    "ControlStructures::Run5",
+    "ControlStructures::Run6",
+    "ControlStructures::Run7",
+    "ControlStructures::Run8",
+    "Run::LuisIzquierdoRun1",
+    "Run::LuisIzquierdoRun2",
+    "Run::LuisIzquierdoRunResult1",
+    "Run::LuisIzquierdoRunResult2",
+    "Run::run-evaluate-string-input-only-once"
+  )
+
+  // requires Tortoise compiler changes
+  private val cmdTaskRepMismatchStr = "command task string representation doesn't match"
+  private val cmdTaskRepMismatchCommandNames = Seq(
+    "CommandTasks::*ToString3",
+    "CommandTasks::*ToString4",
+    "CommandTasks::*ToString5",
+    "CommandTasks::*ToString6"
+  )
+
+  // obscure
+  private val sortingHeteroListStr = "sorting heterogeneous lists doesn't work"
+  private val sortingHeteroListReporterNames = Seq(
+    "Lists::Sort2",
+    "Lists::Sort3",
+    "Lists::Sort5"
+  )
+
 }
