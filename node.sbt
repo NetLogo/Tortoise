@@ -1,8 +1,8 @@
 import scala.util.Try
 
 // If you get an error like this: 'java.io.IOException: Cannot run program "npm": error=2, No such file or directory',
-// install NPM onto your path (`apt install node npm` for Linux users), and then install the Grunt command line tools
-// (`sudo npm install -g grunt-cli`).  Ensure that NodeJS is runnable by typing `node`, or Grunt will fail.  If Node
+// install NPM onto your path (`apt install node npm` for Linux users), and then install the Gulp command line tools
+// (`sudo npm install -g gulp-cli`).  Ensure that NodeJS is runnable by typing `node`, or Gulp will fail.  If Node
 // Node isn't there, try something like `sudo ln -s /usr/bin/nodejs /usr/local/bin/node` and then try again. --JAB (7/21/14)
 
 lazy val npm = inputKey[Unit]("Runs NPM commands from within SBT")
@@ -26,28 +26,28 @@ watchSources += packageJson.value
 
 
 
-lazy val grunt = taskKey[Seq[File]]("Runs `grunt` from within SBT")
+lazy val gulp = taskKey[Seq[File]]("Runs `gulp` from within SBT")
 
-grunt := {
+gulp := {
   val targetJS = (classDirectory in Compile).value / "js" / "tortoise-engine.js"
-  installGrunt.value
+  installGulp.value
   if (coffeeSources.value exists (_.newerThan(targetJS)))
-    Process("grunt").!(streams.value.log)
+    Process(Seq("gulp", "build")).!(streams.value.log)
   Seq() // Wrong, but it works how I want it to...
 }
 
-grunt <<= grunt.dependsOn(npmInstall)
+gulp <<= gulp.dependsOn(npmInstall)
 
-resourceGenerators in Compile <+= grunt
+resourceGenerators in Compile <+= gulp
 
 watchSources ++= coffeeSources.value
 
 
 
-lazy val installGrunt = Def.task[Unit] {
-  val versionStr = Try(Process(Seq("grunt", "--version")).!!).toOption getOrElse "Grunt's not there"
-  if (!versionStr.contains("grunt-cli"))
-    Process(Seq("npm", "install", "-g", "grunt-cli")).!(streams.value.log)
+lazy val installGulp = Def.task[Unit] {
+  val versionStr = Try(Process(Seq("gulp", "--version")).!!).toOption getOrElse "Gulp's not there"
+  if (!versionStr.contains("CLI version"))
+    Process(Seq("npm", "install", "-g", "gulp-cli")).!(streams.value.log)
 }
 
 lazy val packageJson = Def.task[File] {
@@ -66,7 +66,7 @@ lazy val coffeeSources = Def.task[Seq[File]] {
   listFilesRecursively(baseDirectory.value / "src" / "main" / "coffee")
 }
 
-lazy val gruntSources = Def.task[Seq[File]] {
+lazy val gulpSources = Def.task[Seq[File]] {
   listFilesRecursively((classDirectory in Compile).value / "js")
 }
 

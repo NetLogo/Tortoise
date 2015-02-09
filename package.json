@@ -5,14 +5,19 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
+    "browserify":              "9.0.4",
+    "del":                     "1.1.1",
+    "gulp":                    "3.8.11",
+    "gulp-coffeelint":         "0.4.0",
+    "gulp-coffee":             "2.3.1",
+    "gulp-insert":             "0.4.0",
+    "gulp-rename":             "1.2.2",
+    "gulp-sourcemaps":         "1.5.1",
+    "gulp-util":               "3.0.4",
     "lodash":                  "3.6.0",
-    "grunt":                   "0.4.5",
-    "grunt-browserify":        "2.1.4",
-    "grunt-coffeelint":        "0.0.13",
-    "grunt-contrib-coffee":    "0.13.0",
-    "grunt-contrib-copy":      "0.8.0",
-    "grunt-contrib-rename":    "0.0.3",
-    "grunt-contrib-uglify":    "0.8.1",
-    "mori":                    "0.3.2"
+    "mori":                    "0.3.2",
+    "remapify":                "2.0.0",
+    "vinyl-buffer":            "1.0.0",
+    "vinyl-source-stream":     "1.1.0"
   }
 }
