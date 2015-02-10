@@ -60,52 +60,83 @@ private[tortoise] trait TortoiseFinder extends Finder with BeforeAndAfterAll wit
 }
 
 class TestReporters extends TReporters with TortoiseFinder {
-  override val freebies = Map[String, String](
-    // obscure
-    "Lists::Sort2" -> "sorting heterogeneous lists doesn't work",
-    "Lists::Sort3" -> "sorting heterogeneous lists doesn't work",
-    "Lists::Sort5" -> "sorting heterogeneous lists doesn't work",
-    // perhaps never to be supported
-    "RunResult::RunResult1" -> "run/runresult on strings not supported",
-    "RunResult::RunResult2" -> "run/runresult on strings not supported",
-    "RunResult::RunResult3" -> "run/runresult on strings not supported"
-  )
+  import Freebies._
+  override val freebies = sortingHeteroListReporters ++ evalNotSupportedReporters
 }
 
 class TestCommands extends TCommands with TortoiseFinder {
+  import Freebies._
   override val freebies = Map[String, String](
     // requires handling of non-local exit (see in JVM NetLogo: `NonLocalExit`, `_report`, `_foreach`, `_run`)
-    "Stop::ReportFromForeach" -> "no non-local exit from foreach",
-    // Significant: Requires the optimizer to be turned on
-    "Death::TurtleDiesWhileIteratingOverItsSet"                               -> "ASSUMES OPTIMIZATION: empty init block",
-    "Interaction::Interaction3b1"                                             -> "ASSUMES OPTIMIZATION: empty init block",
-    "Interaction::Interaction3b2"                                             -> "ASSUMES OPTIMIZATION: empty init block",
-    "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksFrom" -> "ASSUMES OPTIMIZATION: empty init block",
-    "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksTo"   -> "ASSUMES OPTIMIZATION: empty init block",
-    "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksWith" -> "ASSUMES OPTIMIZATION: empty init block",
-    "TurtlesHere::TurtlesHereCheckOrder1"                                     -> "ASSUMES OPTIMIZATION: empty init block",
-    "TurtlesHere::TurtlesHereCheckOrder2"                                     -> "ASSUMES OPTIMIZATION: empty init block",
-    "TurtlesHere::TurtlesHereCheckOrder3"                                     -> "ASSUMES OPTIMIZATION: empty init block",
-    "TurtlesHere::TurtlesHereCheckOrder4"                                     -> "ASSUMES OPTIMIZATION: empty init block",
-    // requires Tortoise compiler changes
-    "CommandTasks::*ToString3" -> "command task string representation doesn't match",
-    "CommandTasks::*ToString4" -> "command task string representation doesn't match",
-    "CommandTasks::*ToString5" -> "command task string representation doesn't match",
-    "CommandTasks::*ToString6" -> "command task string representation doesn't match",
-    // perhaps never to be supported
-    "ControlStructures::Run1"                  -> "run/runresult on strings not supported",
-    "ControlStructures::Run2"                  -> "run/runresult on strings not supported",
-    "ControlStructures::Run3"                  -> "run/runresult on strings not supported",
-    "ControlStructures::Run4"                  -> "run/runresult on strings not supported",
-    "ControlStructures::Run5"                  -> "run/runresult on strings not supported",
-    "ControlStructures::Run6"                  -> "run/runresult on strings not supported",
-    "ControlStructures::Run7"                  -> "run/runresult on strings not supported",
-    "ControlStructures::Run8"                  -> "run/runresult on strings not supported",
-    "Run::LuisIzquierdoRun1"                   -> "run/runresult on strings not supported",
-    "Run::LuisIzquierdoRun2"                   -> "run/runresult on strings not supported",
-    "Run::LuisIzquierdoRunResult1"             -> "run/runresult on strings not supported",
-    "Run::LuisIzquierdoRunResult2"             -> "run/runresult on strings not supported",
-    "Run::run-evaluate-string-input-only-once" -> "run/runresult on strings not supported"
+    "Stop::ReportFromForeach" -> "no non-local exit from foreach"
+  ) ++ emptyInitBlockCommands ++ evalNotSupportedCommands ++ cmdTaskRepMismatchCommands
+}
+
+private[tortoise] object Freebies {
+
+  def emptyInitBlockCommands     = asFreebieMap(emptyInitBlockCommandNames,     emptyInitBlockStr)
+  def evalNotSupportedCommands   = asFreebieMap(evalNotSupportedCommandNames,   evalNotSupportedStr)
+  def cmdTaskRepMismatchCommands = asFreebieMap(cmdTaskRepMismatchCommandNames, cmdTaskRepMismatchStr)
+
+  def evalNotSupportedReporters  = asFreebieMap(evalNotSupportedReporterNames,  evalNotSupportedStr)
+  def sortingHeteroListReporters = asFreebieMap(sortingHeteroListReporterNames, sortingHeteroListStr)
+
+  private def asFreebieMap(names: Seq[String], msg: String) = names.map(_ -> msg).toMap
+
+  // Significant: Requires the optimizer to be turned on
+  private val emptyInitBlockStr = "ASSUMES OPTIMIZATION: empty init block"
+  private val emptyInitBlockCommandNames = Seq(
+    "Death::TurtleDiesWhileIteratingOverItsSet",
+    "Interaction::Interaction3b1",
+    "Interaction::Interaction3b2",
+    "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksFrom",
+    "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksTo",
+    "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksWith",
+    "TurtlesHere::TurtlesHereCheckOrder1",
+    "TurtlesHere::TurtlesHereCheckOrder2",
+    "TurtlesHere::TurtlesHereCheckOrder3",
+    "TurtlesHere::TurtlesHereCheckOrder4"
   )
+
+  // perhaps never to be supported
+  private val evalNotSupportedStr = "run/runresult on strings not supported"
+  private val evalNotSupportedReporterNames = Seq(
+    "RunResult::RunResult1",
+    "RunResult::RunResult2",
+    "RunResult::RunResult3"
+  )
+  private val evalNotSupportedCommandNames = Seq(
+    "ControlStructures::Run1",
+    "ControlStructures::Run2",
+    "ControlStructures::Run3",
+    "ControlStructures::Run4",
+    "ControlStructures::Run5",
+    "ControlStructures::Run6",
+    "ControlStructures::Run7",
+    "ControlStructures::Run8",
+    "Run::LuisIzquierdoRun1",
+    "Run::LuisIzquierdoRun2",
+    "Run::LuisIzquierdoRunResult1",
+    "Run::LuisIzquierdoRunResult2",
+    "Run::run-evaluate-string-input-only-once"
+  )
+
+  // requires Tortoise compiler changes
+  private val cmdTaskRepMismatchStr = "command task string representation doesn't match"
+  private val cmdTaskRepMismatchCommandNames = Seq(
+    "CommandTasks::*ToString3",
+    "CommandTasks::*ToString4",
+    "CommandTasks::*ToString5",
+    "CommandTasks::*ToString6"
+  )
+
+  // obscure
+  private val sortingHeteroListStr = "sorting heterogeneous lists doesn't work"
+  private val sortingHeteroListReporterNames = Seq(
+    "Lists::Sort2",
+    "Lists::Sort3",
+    "Lists::Sort5"
+  )
+
 }
 
