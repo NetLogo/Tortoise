@@ -80,6 +80,7 @@ trait Prims {
       case p: prim.etc._outlinkneighbors    => s"LinkPrims.outLinkNeighbors('${fixBN(p.breedName)}')"
       case p: prim.etc._outlinkto           => s"LinkPrims.outLinkTo('${fixBN(p.breedName)}', ${arg(0)})"
       case tv: prim._taskvariable           => s"taskArguments[${tv.vn - 1}]"
+      case prim._errormessage(Some(l))      => s"_error_${l.hashCode()}.message"
       case _: prim._reportertask =>
         s"Tasks.reporterTask(${handlers.fun(r.args(0), isReporter = true, isTask = true)})"
       case _: prim._commandtask =>
@@ -109,6 +110,7 @@ trait Prims {
       case _: prim.etc._if               => generateIf(s)
       case _: prim.etc._ifelse           => generateIfElse(s)
       case _: prim._ask                  => generateAsk(s, shuffle = true)
+      case p: prim._carefully            => generateCarefully(s, p)
       case _: prim._createturtles        => generateCreateTurtles(s, ordered = false)
       case _: prim._createorderedturtles => generateCreateTurtles(s, ordered = true)
       case _: prim._sprout               => generateSprout(s)
@@ -119,6 +121,7 @@ trait Prims {
       case p: prim.etc._createlinkwith   => generateCreateLink(s, "createLinkWith",  p.breedName)
       case p: prim.etc._createlinkswith  => generateCreateLink(s, "createLinksWith", p.breedName)
       case _: prim.etc._every            => generateEvery(s)
+      case _: prim.etc._error            => s"throw new Error(${arg(0)});"
       case h: prim._hatch                => generateHatch(s, h.breedName)
       case _: prim.etc._diffuse          => s"world.topology.diffuse('${getReferenceName(s)}', ${arg(1)})"
       case x: prim.etc._setdefaultshape  => s"BreedManager.setDefaultShape(${arg(0)}.getBreedName(), ${arg(1)})"
@@ -186,7 +189,11 @@ trait Prims {
   def generateRepeat(w: Statement): String = {
     val count = handlers.reporter(w.args(0))
     val body = handlers.commands(w.args(1))
-    s"""Prims.repeat($count, ${handlers.fun(w.args(1))});"""
+    val i = handlers.unusedVarname(w.command.token, "index")
+    val j = handlers.unusedVarname(w.command.token, "repeatcount")
+    s"""|for (var $i = 0, $j = StrictMath.floor($count); $i < $j; $i++){
+        |${handlers.indented(body)}
+        |}""".stripMargin
   }
 
   def generateWhile(w: Statement): String = {
@@ -221,6 +228,19 @@ trait Prims {
     val agents = handlers.reporter(s.args(0))
     val body = handlers.fun(s.args(1))
     genAsk(agents, shuffle, body)
+  }
+
+  def generateCarefully(s: Statement, c: prim._carefully): String = {
+    val errorName   = handlers.unusedVarname(s.command.token, "error")
+    val doCarefully = handlers.commands(s.args(0))
+    val handleError = handlers.commands(s.args(1)).replaceAll(s"_error_${c.let.hashCode()}", errorName)
+    s"""
+       |try {
+       |${handlers.indented(doCarefully)}
+       |} catch ($errorName) {
+       |${handlers.indented(handleError)}
+       |}
+     """.stripMargin
   }
 
   def generateCreateLink(s: Statement, name: String, breedName: String): String = {
@@ -263,7 +283,12 @@ trait Prims {
 
   def generateEvery(w: Statement): String = {
     val time = handlers.reporter(w.args(0))
-    s"""Prims.every($time, ${handlers.fun(w.args(1))}, '${handlers.nextEveryID()}');"""
+    val body = handlers.commands(w.args(1))
+    val everyId = handlers.nextEveryID()
+    s"""|if (Prims.isThrottleTimeElapsed("$everyId", workspace.selfManager.self(), $time)) {
+        |  Prims.resetThrottleTimerFor("$everyId", workspace.selfManager.self());
+        |${handlers.indented(body)}
+        |}""".stripMargin
   }
 
   private def failCompilation(msg: String, token: Token): Nothing =
