@@ -38,7 +38,7 @@ module.exports =
 
     # () => Unit
     clearCodeGlobals: ->
-      _(@_codeGlobalNames).forEach((name) => @_varManager[name] = 0; return)
+      _(@_codeGlobalNames).forEach((name) => @_varManager[name] = 0; return).value()
       return
 
     # (Turtle) => Unit

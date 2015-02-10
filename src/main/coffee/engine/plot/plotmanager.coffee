@@ -15,7 +15,7 @@ module.exports = class PlotManager
 
   # () => Unit
   clearAllPlots: ->
-    _(@_plotMap).forEach((plot) -> plot.clear(); return)
+    _(@_plotMap).forEach((plot) -> plot.clear(); return).value()
     return
 
   # () => Unit
@@ -145,7 +145,7 @@ module.exports = class PlotManager
 
   # () => Unit
   setupPlots: =>
-    _(@_plotMap).forEach((plot) -> plot.setup(); return)
+    _(@_plotMap).forEach((plot) -> plot.setup(); return).value()
     return
 
   # (Number, Number) => Unit
@@ -160,7 +160,7 @@ module.exports = class PlotManager
 
   # () => Unit
   updatePlots: =>
-    _(@_plotMap).forEach((plot) -> plot.update(); return)
+    _(@_plotMap).forEach((plot) -> plot.update(); return).value()
     return
 
   # (String, String) => (() => Unit) => Unit

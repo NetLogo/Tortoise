@@ -58,7 +58,7 @@ module.exports = (grunt) ->
   # be evaluated before any of the tasks are run, but we need to wait until
   # `coffee` runs for this to work --JAB (8/21/14)
   grunt.task.registerTask('gen_aliases', 'Find aliases, then run browserify', ->
-    aliases = ["./node_modules/lodash/lodash.js:lodash", "./node_modules/mori/mori.js:mori"].concat(massAlias('./target/classes/js/tortoise/**/*.js', 'tortoise'))
+    aliases = ["./node_modules/lodash/index.js:lodash", "./node_modules/mori/mori.js:mori"].concat(massAlias('./target/classes/js/tortoise/**/*.js', 'tortoise'))
     grunt.config(['browserify', 'main', 'options', 'alias'], aliases);
     return
   )

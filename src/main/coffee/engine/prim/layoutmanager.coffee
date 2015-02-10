@@ -42,7 +42,7 @@ module.exports =
           ax[i]           = 0.0
           ay[i]           = 0.0
           return
-      )
+      ).value()
 
       [ax, ay, tMap, agt]
 
@@ -178,6 +178,6 @@ module.exports =
           newY = calculateYCor(turtle.ycor + calculateLimit(ay[i]))
           turtle.setXY(newX, newY)
           return
-      )
+      ).value()
 
       return

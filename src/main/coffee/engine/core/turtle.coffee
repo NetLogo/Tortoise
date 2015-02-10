@@ -318,7 +318,7 @@ module.exports =
       _(varNames).forEach((varName) =>
         turtle.setVariable(varName, @getVariable(varName))
         return
-      )
+      ).value()
       turtle
 
     # (Breed) => Array[String]

@@ -192,7 +192,7 @@ module.exports =
 
     # [T <: Agent, U <: AbstractAgentSet[T], V <: (Array[T]|T|AbstractAgentSet[T])] @ (Array[V], T.Class, U.Class) => U
     _createAgentSet: (inputs, tClass, outClass) ->
-      flattened = _(inputs).flatten().value()
+      flattened = _(inputs).flattenDeep().value()
       if _(flattened).isEmpty()
         new outClass([])
       else if flattened.length is 1

@@ -28,8 +28,8 @@ module.exports = class Plot
     @_ops.reset(this)
     @_resize()
 
-    _(@_penMap).filter((x) -> x.isTemp).forEach((x) => delete @_penMap[x.name.toUpperCase()]; return)
-    _(@_penMap).forEach((pen) => pen.reset(); @_ops.registerPen(pen); return)
+    _(@_penMap).filter((x) -> x.isTemp).forEach((x) => delete @_penMap[x.name.toUpperCase()]; return).value()
+    _(@_penMap).forEach((pen) => pen.reset(); @_ops.registerPen(pen); return).value()
 
     if @_currentPen?.isTemp
       @_currentPen =
@@ -135,7 +135,7 @@ module.exports = class Plot
     catch e
       if not (e instanceof Stop)
         throw e
-    _(@_penMap).forEach((pen) -> pen.setup(); return)
+    _(@_penMap).forEach((pen) -> pen.setup(); return).value()
     return
 
   # (Number, Number) => Unit
@@ -162,7 +162,7 @@ module.exports = class Plot
     catch e
       if not (e instanceof Stop)
         throw e
-    _(@_penMap).forEach((pen) -> pen.update(); return)
+    _(@_penMap).forEach((pen) -> pen.update(); return).value()
     return
 
   # () => Unit

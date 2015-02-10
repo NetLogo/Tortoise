@@ -48,7 +48,7 @@ module.exports =
 
     # ((T) => Unit) => Unit
     forEach: (f) ->
-      _(@toArray()).forEach(f)
+      _(@toArray()).forEach(f).value()
       return
 
     # [U] @ ((U, T) => U, U) => U
