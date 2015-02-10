@@ -8,51 +8,59 @@ import
 import
   scala.collection.mutable.ArrayBuffer
 
+import
+  scalatags.Text.TypedTag
+
 trait BrowserReporter {
-  protected def writeReportDocument(filename: String, failedTestReports: Map[String, Seq[String]]): Unit = {
-    val str = s"""|<!DOCTYPE html>
-                  |<html>
-                  |  <head><title>Tortoise Test Failures</title></head>
-                  |  <body>
-                  |    ${failedSuites(failedTestReports).mkString("\n")}
-                  |  </body>
-                  |</html>""".stripMargin
-    writeToFile(filename, str)
-  }
 
-  protected def writeFixtureDocument(filename: String, fixture: ArrayBuffer[String]): Unit = {
-    val str = s"""|<!DOCTYPE html>
-                  |<html>
-                  |  <head>
-                  |    <script type="text/javascript" src="../classes/js/tortoise-engine.js"></script>
-                  |    <script type="text/javascript">
-                  |      ${fixture.mkString("\n")}
-                  |    </script>
-                  |  </head>
-                  |</html>""".stripMargin
-    writeToFile(filename, str)
-  }
+  import scalatags.Text.all.raw
+  import scalatags.Text.attrs.{ href, src, `type` }
+  import scalatags.Text.implicits.{ stringAttr, stringFrag }
+  import scalatags.Text.tags.{ a, body, div, h3, head, html, li, script, ul }
+  import scalatags.Text.tags2.title
 
-  private def writeToFile(name: String, contents: String): Unit = {
+  private type HTML = TypedTag[String]
+
+  protected def writeReportDocument(filename: String, failedTestReports: Map[String, Seq[String]]): Unit =
+    writeToFile(filename) (
+      html(
+        head(title("Tortoise Test Failures")),
+        body(failedSuites(failedTestReports): _*)
+      )
+    )
+
+  protected def writeFixtureDocument(filename: String, fixture: ArrayBuffer[String]): Unit =
+    writeToFile(filename) (
+      html(head(
+        script(`type` :=  "text/javascript", src := "../classes/js/tortoise-engine.js"),
+        script(`type` :=  "text/javascript", raw(fixture.mkString("\n")))
+      ))
+    )
+
+  private def writeToFile(name: String)(html: HTML): Unit = {
+
     val parent = new File("./target/last-test-run-reports")
     val file   = new File(parent, genFileName(name))
     parent.mkdirs()
 
+
     val fileWriter = new PrintWriter(file)
-    fileWriter.write(contents)
+    fileWriter.write(html.toString)
     fileWriter.close()
+
   }
 
-  private def failedSuites(suite: Map[String, Seq[String]]): Iterable[String] =
+  private def failedSuites(suite: Map[String, Seq[String]]): Seq[HTML] =
     suite.map {
       case (suiteName: String, testNames: Seq[String]) =>
-        s"""|<h3>$suiteName</h3>
-            |<ul>${reportElements(testNames).mkString("\n")}</ul>""".stripMargin
-    }
+        div(
+          h3(suiteName),
+          ul(reportElements(testNames): _*)
+        )
+    }.toSeq
 
-  private def reportElements(failedTestNames: Seq[String]): Seq[String] =
-    failedTestNames.map(s => s"""<li><a href="${genFileName(s)}">$s</a></li>""")
-
+  private def reportElements(failedTestNames: Seq[String]): Seq[HTML] =
+    failedTestNames.map(s => li(a(href := genFileName(s), s)))
 
   private def genFileName(s: String): String =
     s.replaceAll("::", "_")
