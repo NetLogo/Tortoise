@@ -10,7 +10,7 @@ module.exports =
 
     # () => SortedLinks
     constructor: ->
-      @_links = Mori.sorted_set_by(linkCompare)
+      @_links = Mori.sortedSetBy(linkCompare)
 
     # Side-effecting ops
     insert: (link) -> @_links = Mori.conj(@_links, link); this # (Link) => SortedLinks
@@ -18,5 +18,5 @@ module.exports =
 
     # Pure ops
     find:   (pred) -> Mori.first(Mori.filter(pred, @_links)) # Mori's `filter` is lazy, so it's all cool --JAB (3/26/14) # ((Link) => Boolean) => Link
-    isEmpty:       -> Mori.is_empty(@_links)  # () => Boolean
-    toArray:       -> Mori.clj_to_js(@_links) # () => Array[Link]
+    isEmpty:       -> Mori.isEmpty(@_links)  # () => Boolean
+    toArray:       -> Mori.toJs(@_links) # () => Array[Link]
