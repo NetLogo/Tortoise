@@ -43,7 +43,6 @@ trait BrowserReporter {
     val file   = new File(parent, genFileName(name))
     parent.mkdirs()
 
-
     val fileWriter = new PrintWriter(file)
     fileWriter.write(html.toString)
     fileWriter.close()
