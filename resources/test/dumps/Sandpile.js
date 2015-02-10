@@ -245,9 +245,10 @@ function dropPatch() {
     return ListPrims.oneOf(world.patches());
   }
   if ((Prims.equality(world.observer.getGlobal('drop-location'), "mouse-click") && MousePrims.isDown())) {
-    Prims.every(0.3, function() {
+    if (Prims.isThrottleTimeElapsed("dropPatch_0", workspace.selfManager.self(), 0.3)) {
+      Prims.resetThrottleTimerFor("dropPatch_0", workspace.selfManager.self());
       return world.getPatchAt(MousePrims.getX(), MousePrims.getY());
-    }, 'dropPatch-0');
+    }
   }
   return Nobody;
 }

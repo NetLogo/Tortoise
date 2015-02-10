@@ -68,26 +68,14 @@ module.exports =
       else
         throw new Error("Checking equality on undefined is an invalid condition")
 
-    ###
+    # (String, Agent|Number, Number) => Boolean
+    isThrottleTimeElapsed: (commandID, agent, timeLimit) ->
+      entry = @_everyMap[@_genEveryKey(commandID, agent)]
+      (not entry?) or entry.elapsed() >= timeLimit
 
-      This implementation is closer than our original implementation, but still wrong. `every`'s dictionary entry claims:
-
-      "Runs the given commands only if it's been more than number seconds since the last time this agent ran them in this context."
-
-      But a more-accurate description of this implementation would be:
-
-      "Runs the given commands only if it's been more than number seconds since the last time they were run in this context."
-
-      Basically, there's no agent-checking yet. --JAB (9/12/14)
-
-    ###
-    # (Number, FunctionN, String) => Unit
-    every: (time, fn, fid) ->
-      existingEntry = @_everyMap[fid]
-      if not existingEntry? or existingEntry.elapsed() >= time
-        @_everyMap[fid] = new Timer()
-        fn()
-      return
+    # (String, Agent|Number) => Unit
+    resetThrottleTimerFor: (commandID, agent) ->
+      @_everyMap[@_genEveryKey(commandID, agent)] = new Timer()
 
     # (Any, Any) => Boolean
     gt: (a, b) ->
@@ -167,12 +155,6 @@ module.exports =
     randomFloat: (n) ->
       n * @_rng.nextDouble()
 
-    # (Number, FunctionN) => Unit
-    repeat: (n, fn) ->
-      for [0...Math.floor(n)]
-        fn()
-      return
-
     # (Number, Number) => Number
     subtractHeadings: (h1, h2) ->
       diff = (h1 % 360) - (h2 % 360)
@@ -198,6 +180,15 @@ module.exports =
         new TurtleSet(turtles)
       else
         agentsOrAgent.turtlesHere()
+
+    # (String, Agent|Number) => String
+    _genEveryKey: (commandID, agent) ->
+      agentID =
+        if agent is 0
+          "observer"
+        else
+          @_dumper(agent)
+      "#{commandID}__#{agentID}"
 
     # [T <: Agent, U <: AbstractAgentSet[T], V <: (Array[T]|T|AbstractAgentSet[T])] @ (Array[V], T.Class, U.Class) => U
     _createAgentSet: (inputs, tClass, outClass) ->

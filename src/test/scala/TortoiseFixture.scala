@@ -3,14 +3,16 @@
 package org.nlogo.tortoise
 
 import
-  org.scalatest.Assertions.{ assertResult, fail }
+  org.scalatest.{ exceptions, Assertions },
+    Assertions.{ assertResult, fail },
+    exceptions.{ TestPendingException, TestFailedException }
 
 import
-  org.nlogo.{ api, core, headless, nvm },
-    api.{ CompilerException, Program },
-    core.{ AgentKind, Model => CModel, View },
-    headless.lang.{ AbstractFixture, Command, CompileError, Reporter, Success, TestMode },
-    nvm.FrontEndInterface.{ ProceduresMap, NoProcedures }
+  org.nlogo.{ core, headless },
+    core.{ AgentKind, CompilerException, FrontEndInterface, Model => CModel, Program, View },
+      FrontEndInterface.{ ProceduresMap, NoProcedures },
+    headless.test.{ AbstractFixture, Command, CompileError, RuntimeError, Reporter, Success, TestMode }
+
 
 import jsengine.Nashorn
 
@@ -36,6 +38,8 @@ class TortoiseFixture(name: String, nashorn: Nashorn, notImplemented: (String) =
         cautiously(nashorn.run(js))
       case CompileError(msg) =>
         expectCompileError(js, msg)
+      case RuntimeError(msg) =>
+        expectRuntimeError(cautiously(nashorn.run(js)), msg)
       case r =>
         notImplemented(s"unknown result type: ${r.getClass.getSimpleName}")
     }
@@ -49,6 +53,8 @@ class TortoiseFixture(name: String, nashorn: Nashorn, notImplemented: (String) =
         checkResult(mode, reporter.reporter, expectedResult, actualResult)
       case CompileError(msg) =>
         expectCompileError(js, msg)
+      case RuntimeError(msg) =>
+        expectRuntimeError(cautiously(nashorn.run(js)), msg)
       case r =>
         notImplemented(s"unknown result type: ${r.getClass.getSimpleName}")
     }
@@ -62,6 +68,20 @@ class TortoiseFixture(name: String, nashorn: Nashorn, notImplemented: (String) =
     catch {
       case ex: CompilerException =>
         assertResult(msg)(ex.getMessage)
+    }
+  }
+
+  private def expectRuntimeError(res: => Any, msg: String): Unit = {
+    try {
+      res
+      fail("no RuntimeError occurred")
+    }
+    catch {
+      case ex: javax.script.ScriptException =>
+        assertResult(msg)(ex.getCause.getMessage.split(": ")(1)) // Nashorn doesn't make JS Exceptions easy
+      case e: TestFailedException => throw e
+      case e: TestPendingException => throw e
+      case e: Exception => fail(s"expected RuntimeError, but got ${e.getClass.getSimpleName}")
     }
   }
 

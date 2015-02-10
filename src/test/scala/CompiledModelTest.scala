@@ -7,9 +7,7 @@ import
   scalaz.NonEmptyList
 
 import
-  org.nlogo.{ api, core },
-    api.CompilerException,
-    core.{ Model => CModel, View }
+  org.nlogo.core.{ CompilerException, Model => CModel, View }
 
 import
   CompiledModel.CompileResult

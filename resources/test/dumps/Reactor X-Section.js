@@ -118,14 +118,14 @@ function setupControlRods() {
       rodX = (rodX - 1);
     }
   }
-  Prims.repeat(world.observer.getGlobal('n-rods'), function() {
+  for (var _index_1937_1943 = 0, _repeatcount_1937_1943 = StrictMath.floor(world.observer.getGlobal('n-rods')); _index_1937_1943 < _repeatcount_1937_1943; _index_1937_1943++){
     world.patches().agentFilter(function() {
       return Prims.equality(SelfPrims.getPatchVariable('pxcor'), rodX);
     }).ask(function() {
       SelfPrims.setPatchVariable('rod?', true);
     }, true);
     rodX = ((rodX + world.observer.getGlobal('rod-spacing')) + 1);
-  });
+  }
   world.patches().ask(function() {
     Call(buildReactor);
   }, true);

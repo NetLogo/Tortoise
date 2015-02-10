@@ -14,7 +14,7 @@ isSnapshot := true
 
 version := "0.1"
 
-scalaVersion := "2.11.4"
+scalaVersion := "2.11.5"
 
 scalacOptions ++=
   "-deprecation -unchecked -feature -Xcheckinit -encoding us-ascii -target:jvm-1.7 -Xlint -Xfatal-warnings -language:_"
@@ -32,7 +32,7 @@ ivyLoggingLevel := UpdateLogging.Quiet
 // we're not cross-building for different Scala versions
 crossPaths := false
 
-val nlDependencyVersion = "5.2.0-cf7fa41"
+val nlDependencyVersion = "5.2.0-8afedf5"
 
 libraryDependencies ++= Seq(
   "org.nlogo" % "netlogoheadless" % nlDependencyVersion,
@@ -47,6 +47,8 @@ libraryDependencies ++= Seq(
 )
 
 onLoadMessage := ""
+
+unmanagedSourceDirectories in Compile += baseDirectory.value / "scripts"
 
 bintray.Keys.repository in bintray.Keys.bintray := "Tortoise"
 

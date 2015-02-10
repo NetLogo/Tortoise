@@ -50,9 +50,9 @@ function benchmark() {
   Random.setSeed(4378);
   Call(setupRandom);
   workspace.timer.reset();
-  Prims.repeat((10 * world.topology.height), function() {
+  for (var _index_415_421 = 0, _repeatcount_415_421 = StrictMath.floor((10 * world.topology.height)); _index_415_421 < _repeatcount_415_421; _index_415_421++){
     Call(go);
-  });
+  }
   world.observer.setGlobal('result', workspace.timer.elapsed());
 }
 function setupGeneral() {
@@ -250,11 +250,11 @@ function printBlock(state) {
     SelfPrims.setVariable('color', world.observer.getGlobal('background'));
   }
   SelfPrims.setVariable('heading', 90);
-  Prims.repeat(4, function() {
+  for (var _index_5599_5605 = 0, _repeatcount_5599_5605 = StrictMath.floor(4); _index_5599_5605 < _repeatcount_5599_5605; _index_5599_5605++){
     SelfPrims.setPatchVariable('pcolor', SelfPrims.getVariable('color'));
     SelfPrims.right(90);
     SelfPrims.fd(1);
-  });
+  }
 }
 function listRules() {
   var rules = [];
