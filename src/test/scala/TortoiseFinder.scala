@@ -68,7 +68,8 @@ class TestCommands extends TCommands with TortoiseFinder {
   import Freebies._
   override val freebies = Map[String, String](
     // requires handling of non-local exit (see in JVM NetLogo: `NonLocalExit`, `_report`, `_foreach`, `_run`)
-    "Stop::ReportFromForeach" -> "no non-local exit from foreach"
+    "Stop::ReportFromForeach" -> "no non-local exit from foreach",
+    "Every::EveryLosesScope"  -> "NetLogo Web does not support distinct jobs"
   ) ++ incErrorDetectCommands ++ emptyInitBlockCommands ++ evalNotSupportedCommands ++ cmdTaskRepMismatchCommands
 }
 
