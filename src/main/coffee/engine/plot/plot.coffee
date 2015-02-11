@@ -115,8 +115,14 @@ module.exports = class Plot
 
   # (Number) => Unit
   setHistogramBarCount: (num) ->
-    interval = (@xMax - @xMin) / num
-    @_withPen((pen) => pen.setInterval(interval))
+    @_withPen(
+      (pen) =>
+        if num >= 1
+          interval = (@xMax - @xMin) / num
+          pen.setInterval(interval)
+        else
+          throw new Error("You cannot make a histogram with #{num} bars.")
+    )
     return
 
   # (Number) => Unit
