@@ -65,6 +65,7 @@ module.exports = class Plot
       (pen) =>
         if pen.getInterval() > 0
           pen.drawHistogramFrom(list)
+          @_verifyHistogramSize(pen)
         else
           throw new Error("You cannot histogram with a plot-pen-interval of #{pen.interval}.")
     )
@@ -202,10 +203,21 @@ module.exports = class Plot
   _resize: ->
     @_ops.resize(@xMin, @xMax, @yMin, @yMax)
 
+  # Histograms can only change the size of the plot by increasing the maximum Y value
+  # (and only when autoplotting is on). --JAB (2/11/15)
+  #
+  # (Pen) => Unit
+  _verifyHistogramSize: (pen) ->
+    penYMax = _(pen.getPoints()).filter(({ x }) => x >= @xMin and x <= @xMax).max((p) -> p.y).y
+    if penYMax > @yMax and @isAutoplotting
+      @yMax = penYMax
+    @_resize()
+    return
+
   # (Pen) => Unit
   _verifySize: (pen) ->
 
-    if pen.bounds?
+    if pen.bounds()?
 
       bounds        = pen.bounds()
       currentBounds = [@xMin, @xMax, @yMin, @yMax]

@@ -98,10 +98,10 @@ module.exports.Pen = class Pen
     @_bounds
 
   # (Array[Number]) => Unit
-  drawHistogramFrom: (nums) ->
-    @_points = []
-    @_state.resetCounter()
-    nums.filter((x) -> Type(x).isNumber()).forEach((n) => @addValue(n); return)
+  drawHistogramFrom: (ys) ->
+    @reset(true)
+    nums = ys.filter((y) -> Type(y).isNumber())
+    _(nums).countBy().forEach((n, key) => @addPoint(Number(key), n); return).value()
     return
 
   # () => Number
@@ -130,10 +130,10 @@ module.exports.Pen = class Pen
     @_state.mode = Up
     return
 
-  # () => Unit
-  reset: ->
+  # (Boolean) => Unit
+  reset: (isSoftResetting = false) ->
     @_bounds = undefined
-    @_state  = if @isTemp and @_state? then @_state.partiallyReset() else @_defaultState.clone()
+    @_state  = if @_state? and (isSoftResetting or @isTemp) then @_state.partiallyReset() else @_defaultState.clone()
     @_points = []
     @_ops.reset()
     @_ops.updateMode(@_state.displayMode)

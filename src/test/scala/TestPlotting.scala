@@ -154,13 +154,13 @@ class TestPlotting extends FunSuite with PlottingHelpers {
     // Test `histogram`
     clearPlot()
     histogram(5, 19, 2, 107, -123, 2, 2, 2, 0, 1, 93)
-    assertYs(5, 19, 2, 107, -123, 2, 2, 2, 0, 1, 93)
+    assertXYs(2 -> 4, 5 -> 1, 1 -> 1, 0 -> 1, 19 -> 1, 107 -> 1, -123 -> 1, 93 -> 1)
     histogram()
-    assertYs()
+    assertXYs()
     histogram(12, 9, -12, 5)
-    assertYs(12, 9, -12, 5)
+    assertXYs(12 -> 1, 9 -> 1, -12 -> 1, 5 -> 1)
     histogram(5, 19, 2, 107, -123, 2, 2, 2, 0, 1, 93)
-    assertYs(5, 19, 2, 107, -123, 2, 2, 2, 0, 1, 93)
+    assertXYs(2 -> 4, 5 -> 1, 1 -> 1, 0 -> 1, 19 -> 1, 107 -> 1, -123 -> 1, 93 -> 1)
 
   }
 
@@ -450,8 +450,8 @@ trait PlottingHelpers {
   }
 
   protected def assertXYs(xys: (Int, Int)*)(implicit n: Nashorn) = {
-    val expectedStr = xys.mkString(",")
-    val actualStr   = evalJS(s"$pathToPen._points.map(function(p){ return '(' + p.x + ',' + p.y + ')'; }).toString()")
+    val expectedStr = xys.map(_.toString).sorted.mkString(",")
+    val actualStr   = evalJS(s"$pathToPen._points.map(function(p){ return '(' + p.x + ',' + p.y + ')'; }).sort().toString()")
     assertResult(expectedStr)(actualStr)
   }
 
