@@ -23,3 +23,5 @@ resolvers += Resolver.url(
         Resolver.ivyStylePatterns)
 
 addSbtPlugin("org.nlogo" % "publish-versioned-plugin" % "1.1")
+
+addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.2")

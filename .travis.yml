@@ -14,12 +14,16 @@ install:
   - sbt update
 script:
   - cat /usr/lib/jvm/java-8-oracle/release
-  - mv .travis.sbt travis.sbt
-  - ./nightly.sh sbt_task test:compile "ensime generate"
-  - ./nightly.sh sbt_test fast
-  - ./nightly.sh sbt_test language
-  - ./nightly.sh sbt_test crawl
-  - ./nightly.sh sbt_task depend
+  - rm -rf tmp/nightly
+  - mkdir -p tmp/nightly
+  - cp .travis.sbt jvm/travis.sbt
+  - ./nightly.sh sbt_task tortoiseJVM/test:compile "ensime generate"
+  - ./nightly.sh sbt_test tortoiseJVM fast
+  - ./nightly.sh sbt_test tortoiseJVM language
+  - ./nightly.sh sbt_test tortoiseJS test
+  - ./nightly.sh sbt_test tortoiseJVM crawl
+  - travis_wait ./nightly.sh sbt_test netLogoWeb test
+  - ./nightly.sh sbt_task tortoiseJVM/depend
 
 after_failure:
   - dmesg | tail -100
