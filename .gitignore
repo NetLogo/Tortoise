@@ -10,6 +10,7 @@ npm-debug.log
 # wildcards
 *.tmp
 *.swp
+*.iml
 *~
 .#*
 \#*
@@ -28,7 +29,7 @@ npm-debug.log
 # other
 /.ensime
 /.ensime_lucene/
-/node_modules/
+/tortoise/node_modules/
 /build/
 /engine-benchmarks.txt
 /.projections.json
