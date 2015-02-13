@@ -1,12 +1,11 @@
-val nlDependencyVersion = "5.2.0-c7f7146"
+val nlDependencyVersion = "5.2.0-242b0c5"
 
-val parserJsDependencyVersion = "0.0.1-945885e"
+val parserJsDependencyVersion = "0.0.1-242b0c5"
 
 val commonSettings =
   // Keep this up here so things get published to the correct places
   bintraySettings ++
   Seq(
-    name := "Tortoise",
     organization := "org.nlogo",
     licenses += ("GPL-2.0", url("http://opensource.org/licenses/GPL-2.0")),
     // Used by the publish-versioned plugin
@@ -15,10 +14,11 @@ val commonSettings =
     scalaVersion := "2.11.5",
     scalacOptions ++=
       "-deprecation -unchecked -feature -Xcheckinit -encoding us-ascii -target:jvm-1.7 -Xlint -Xfatal-warnings -language:_".split(" ").toSeq,
-    resourceDirectory in Test := baseDirectory.value / "resources" / "test",
+    resourceDirectory in Compile := (baseDirectory in root).value / "resources" / "main",
+    resourceDirectory in Test := (baseDirectory in root).value / "resources" / "test",
     // show test failures again at end, after all tests complete.
     // T gives truncated stack traces; change to G if you need full.
-    testOptions in Test += Tests.Argument("-oT"),
+    testOptions in Test += Tests.Argument("-oG"),
     // only log problems plz
     ivyLoggingLevel := UpdateLogging.Quiet,
     // we're not cross-building for different Scala versions
@@ -47,21 +47,24 @@ val commonSettings =
   }
 }
 
-val root = (project in file (".")).
+lazy val root = (project in file("."))
+
+lazy val tortoise = (project in file ("tortoise")).
   configs(FastMediumSlow.configs: _*).
   settings(FastMediumSlow.settings: _*).
   settings(PublishVersioned.settings: _*).
   settings(Depend.settings: _*).
-  settings(commonSettings: _*)
+  settings(commonSettings: _*).
+  settings(name := "Tortoise")
 
-val tortoiseJs = (project in file("js")).
+lazy val tortoiseJs = (project in file("js")).
   settings(commonSettings: _*).
   settings(scalaJSSettings: _*).
   settings(
+    name := "TortoiseJS",
     libraryDependencies ++= Seq(
       "org.nlogo" %%% "parser-js" % parserJsDependencyVersion,
       "com.github.japgolly.fork.scalaz" %%% "scalaz-core" % "7.1.0-4"),
     unmanagedSources in Compile ++=
       ((baseDirectory in root).value / "src" / "main" / "scala" / "tortoise" * "*.scala").get
   )
-
