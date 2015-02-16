@@ -2,12 +2,13 @@
 
 _     = require('lodash')
 Tasks = require('./prim/tasks')
+Type  = require('tortoise/util/typechecker')
 
 # Needs a name here since it's recursive --JAB (4/16/14)
 # (Any) => String
 Dump =
   (x) ->
-    if _(x).isArray()
+    if Type(x).isArray()
       itemStr = _(x).map(Dump).value().join(" ")
       "[#{itemStr}]"
     else if Tasks.isReporterTask(x)

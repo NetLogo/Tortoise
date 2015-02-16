@@ -10,15 +10,16 @@ Java 8 version at the moment, so let's give it a little time to disseminate
 before throwing `Denuller` out. --JAB (9/8/14)
 ###
 
-_ = require('lodash')
+_    = require('lodash')
+Type = require('tortoise/util/typechecker')
 
 # [T] @ (T) => T
 denull =
   (x) ->
-    if _(x).isArray()
+    if Type(x).isArray()
       _(x).map(denull).value()
 
-    else if _(x).isObject()
+    else if Type(x).isObject()
       transformFunc =
         (acc, value, key) ->
           if value? or isNaN(key)

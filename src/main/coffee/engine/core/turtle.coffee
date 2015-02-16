@@ -9,6 +9,7 @@ PenManager        = require('./structure/penmanager')
 VariableManager   = require('./structure/variablemanager')
 ColorModel        = require('tortoise/util/colormodel')
 Comparator        = require('tortoise/util/comparator')
+Type              = require('tortoise/util/typechecker')
 Trig              = require('tortoise/util/trig')
 
 { DeathInterrupt: Death, TopologyInterrupt } = require('tortoise/util/exception')
@@ -457,7 +458,7 @@ module.exports =
     _setBreed: (breed) ->
 
       trueBreed =
-        if _(breed).isString()
+        if Type(breed).isString()
           @world.breedManager.get(breed)
         else if breed instanceof AbstractAgentSet
           if breed.getBreedName?

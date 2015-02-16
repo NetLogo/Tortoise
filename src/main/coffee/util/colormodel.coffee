@@ -83,7 +83,7 @@ module.exports = {
 
   # (Number) => Number
   wrapColor: (color) ->
-    if _(color).isArray()
+    if Type(color).isArray()
       color
     else # Bah!  This branch ought to be equivalent to `color %% ColorMax`, but that causes floating-point discrepencies. --JAB (7/30/14)
       modColor = color % ColorMax
