@@ -1,14 +1,15 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_      = require('lodash')
-Type   = require('./typechecker')
+Type = require('./typechecker')
+
+{ fromInterval } = require('super/superarray')
 
 # type RGB = (Number, Number, Number)
 
 ColorMax = 140
 
 # Array[Number]
-BaseColors = _(0).range(ColorMax / 10).map((n) -> (n * 10) + 5).value()
+BaseColors = fromInterval(0, ColorMax / 10).map((n) -> (n * 10) + 5).value()
 
 # Object[String, Number]
 NamesToIndicesMap =
@@ -83,7 +84,7 @@ module.exports = {
 
   # (Number) => Number
   wrapColor: (color) ->
-    if _(color).isArray()
+    if Type(color).isArray()
       color
     else # Bah!  This branch ought to be equivalent to `color %% ColorMax`, but that causes floating-point discrepencies. --JAB (7/30/14)
       modColor = color % ColorMax

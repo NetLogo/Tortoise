@@ -1,8 +1,9 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_         = require('lodash')
-Exception = require('tortoise/util/exception')
-Type      = require('tortoise/util/typechecker')
+Exception  = require('tortoise/util/exception')
+Type       = require('tortoise/util/typechecker')
+
+{ SuperArray, fromInterval, zip } = require('super/superarray')
 
 module.exports = {
 
@@ -30,7 +31,7 @@ module.exports = {
 
   # [Result] @ (Number, (Number) => Result) => Array[Result]
   nValues: (n, fn) ->
-    _(0).range(n).map(fn).value()
+    fromInterval(0, n).map(fn).value()
 
   # [Result] @ (Product => Result, Array[Any]*) => Unit
   forEach: (fn, lists...) ->
@@ -43,8 +44,8 @@ module.exports = {
     head     = lists[0]
     if numLists is 1
       head.map(fn)
-    else if _(lists).all((l) -> l.length is head.length)
-      _.zip(lists...).map((tuple) -> fn(tuple...))
+    else if SuperArray(lists).all((l) -> l.length is head.length)
+      zip(lists...).map((tuple) -> fn(tuple...)).value()
     else
       throw new Error("All the list arguments to #{primName.toUpperCase()} must be the same length.")
 

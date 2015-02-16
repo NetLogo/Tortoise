@@ -1,7 +1,8 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_        = require('lodash')
 Iterator = require('./iterator')
+
+{ SuperArray } = require('super/superarray')
 
 # If you want at the items, use `toArray`!  NO ONE BUT `toArray` SHOULD TOUCH `_items`! --JAB (7/21/14)
 module.exports =
@@ -28,32 +29,32 @@ module.exports =
 
     # (T) => Boolean
     contains: (item) ->
-      _(@toArray()).contains(item)
+      SuperArray(@toArray()).contains(item)
 
     # ((T) => Boolean) => Boolean
     exists: (pred) ->
-      _(@toArray()).some(pred)
+      SuperArray(@toArray()).exists(pred)
 
     # ((T) => Boolean) => Boolean
     every: (pred) ->
-      _(@toArray()).every(pred)
+      SuperArray(@toArray()).all(pred)
 
     # ((T) => Boolean) => Seq[T]
     filter: (pred) ->
-      @_generateFrom(_(@toArray()).filter(pred).value(), this)
+      @_generateFrom(SuperArray(@toArray()).filter(pred).value(), this)
 
     # ((T) => Boolean) => T
     find: (pred) ->
-      _(@toArray()).find(pred)
+      SuperArray(@toArray()).findMaybe(pred).getOrElse(-> undefined)
 
     # ((T) => Unit) => Unit
     forEach: (f) ->
-      _(@toArray()).forEach(f).value()
+      SuperArray(@toArray()).forEach(f)
       return
 
     # [U] @ ((U, T) => U, U) => U
     foldl: (f, initial) ->
-      _(@toArray()).foldl(f, initial)
+      SuperArray(@toArray()).foldl(initial)(f)
 
     # () => Iterator
     iterator: ->

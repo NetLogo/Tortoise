@@ -1,6 +1,5 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_          = require('lodash')
 Nobody     = require('../nobody')
 Turtle     = require('../turtle')
 TurtleSet  = require('../turtleset')
@@ -8,7 +7,8 @@ Builtins   = require('../structure/builtins')
 IDManager  = require('./idmanager')
 ColorModel = require('tortoise/util/colormodel')
 
-{ DeathInterrupt: Death }  = require('tortoise/util/exception')
+{ fromInterval }          = require('super/superarray')
+{ DeathInterrupt: Death } = require('tortoise/util/exception')
 
 module.exports =
   class TurtleManager
@@ -37,7 +37,7 @@ module.exports =
 
     # (Number, String) => TurtleSet
     createOrderedTurtles: (n, breedName) ->
-      turtles = _(0).range(n).map(
+      turtles = fromInterval(0, n).map(
         (num) =>
           color   = ColorModel.nthColor(num)
           heading = (360 * num) / n
@@ -47,7 +47,7 @@ module.exports =
 
     # (Number, String, Number, Number) => TurtleSet
     createTurtles: (n, breedName, xcor = 0, ycor = 0) ->
-      turtles = _(0).range(n).map(=>
+      turtles = fromInterval(0, n).map(=>
         color   = ColorModel.randomColor(@_nextInt)
         heading = @_nextInt(360)
         @_createTurtle(color, heading, xcor, ycor, @_breedManager.get(breedName))

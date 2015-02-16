@@ -1,7 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_              = require('lodash')
 Topology       = require('./topology')
+{ SuperArray } = require('super/superarray')
 StrictMath     = require('tortoise/shim/strictmath')
 abstractMethod = require('tortoise/util/abstractmethoderror')
 
@@ -52,7 +52,7 @@ module.exports =
     # couldn't strike a better balance. --JAB (7/30/14)
     # (Array[Patch]) => Array[Patch]
     _filterNeighbors: (neighbors) ->
-      _(neighbors).filter((patch) -> patch isnt false).uniq().value()
+      SuperArray(neighbors).filter((patch) -> patch isnt false).distinct().value()
 
     # (Number, Number, Number, Number) => Number
     distanceXY: (x1, y1, x2, y2) ->

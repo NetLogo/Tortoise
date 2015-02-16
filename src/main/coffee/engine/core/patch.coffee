@@ -1,9 +1,9 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_               = require('lodash')
 Nobody          = require('./nobody')
 TurtleSet       = require('./turtleset')
 VariableManager = require('./structure/variablemanager')
+{ SuperArray }  = require('super/superarray')
 ColorModel      = require('tortoise/util/colormodel')
 Comparator      = require('tortoise/util/comparator')
 
@@ -101,7 +101,7 @@ module.exports =
 
     # (String) => Array[Turtle]
     breedHereArray: (breedName) ->
-      _(@_turtles).filter((turtle) -> turtle.getBreedName() is breedName).value()
+      SuperArray(@_turtles).filter((turtle) -> turtle.getBreedName() is breedName).value()
 
     # (Number, Number) => TurtleSet
     turtlesAt: (dx, dy) ->

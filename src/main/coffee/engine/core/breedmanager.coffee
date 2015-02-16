@@ -1,6 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_ = require('lodash')
+{ SuperArray } = require('super/superarray')
 
 count = 0
 getNextOrdinal = -> count++
@@ -26,7 +26,7 @@ class Breed
 
   # (Agent) => Unit
   add: (newAgent) ->
-    if _(@members).isEmpty() or _(@members).last().id < newAgent.id
+    if SuperArray(@members).isEmpty() or SuperArray(@members).last().id < newAgent.id
       @members.push(newAgent)
     else
       @members.splice(@_getAgentIndex(newAgent), howManyToThrowOut = 0, whatToInsert = newAgent)
@@ -51,7 +51,7 @@ class Breed
 
   # (Agent) => Number
   _getAgentIndex: (agent) ->
-    _(@members).sortedIndex(agent, (a) -> a.id)
+    SuperArray(@members).sortedIndexForOneBy(agent, (a) -> a.id)
 
 module.exports =
   class BreedManager
@@ -67,14 +67,13 @@ module.exports =
         TURTLES: new Breed("TURTLES", "turtle", this, turtlesOwns, undefined, "default"),
         LINKS:   new Breed("LINKS",   "link",   this, linksOwns,   false,     "default")
       }
-      @_breeds = _(breedObjs).foldl(
+      @_breeds = SuperArray(breedObjs).foldl(defaultBreeds)(
         (acc, breedObj) =>
           trueName      = breedObj.name.toUpperCase()
           trueSingular  = breedObj.singular.toLowerCase()
           trueVarNames  = breedObj.varNames ? []
           acc[trueName] = new Breed(trueName, trueSingular, this, trueVarNames, breedObj.isDirected)
           acc
-        , defaultBreeds
       )
 
     # (String) => Breed

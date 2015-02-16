@@ -1,16 +1,17 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_                 = require('lodash')
 AbstractAgentSet  = require('./abstractagentset')
 Nobody            = require('./nobody')
 TurtleLinkManager = require('./turtlelinkmanager')
 TurtleSet         = require('./turtleset')
 PenManager        = require('./structure/penmanager')
 VariableManager   = require('./structure/variablemanager')
+Checker           = require('super/_typechecker')
 ColorModel        = require('tortoise/util/colormodel')
 Comparator        = require('tortoise/util/comparator')
 Trig              = require('tortoise/util/trig')
 
+{ SuperArray, fromInterval }                 = require('super/superarray')
 { DeathInterrupt: Death, TopologyInterrupt } = require('tortoise/util/exception')
 
 module.exports =
@@ -306,19 +307,16 @@ module.exports =
 
     # (Number, String) => TurtleSet
     hatch: (n, breedName) ->
-      isNameValid = breedName? and not _(breedName).isEmpty()
+      isNameValid = breedName? and breedName.length isnt 0
       breed       = if isNameValid then @world.breedManager.get(breedName) else @_breed
-      newTurtles  = _(0).range(n).map(=> @_makeTurtleCopy(breed)).value()
+      newTurtles  = fromInterval(0, n).map(=> @_makeTurtleCopy(breed)).value()
       new TurtleSet(newTurtles, breed)
 
     # (Breed) => Turtle
     _makeTurtleCopy: (breed) ->
       turtle   = @_createTurtle(@_color, @_heading, @xcor, @ycor, breed, @_label, @_labelcolor, @_hidden, @_size, @_givenShape, (self) => @penManager.clone(@_genUpdate(self)))
       varNames = @_varNamesForBreed(breed)
-      _(varNames).forEach((varName) =>
-        turtle.setVariable(varName, @getVariable(varName))
-        return
-      ).value()
+      SuperArray(varNames).forEach((varName) => turtle.setVariable(varName, @getVariable(varName)))
       turtle
 
     # (Breed) => Array[String]
@@ -408,17 +406,17 @@ module.exports =
           else
             [fixeds, others.concat([turtle])]
 
-      [fixeds, others] = _(links).foldl(f, [[], []])
+      [fixeds, others] = SuperArray(links).foldl([[], []])(f)
 
       { fixeds: fixeds, others: others }
 
     # () => Array[Turtle]
     _tiedTurtles: ->
       { fixeds, others } = @_tiedTurtlesRaw()
-      _(fixeds.concat(others)).unique(false, (x) -> x.id).value()
+      SuperArray(fixeds.concat(others)).distinctBy((x) -> x.id).value()
 
     _fixedTiedTurtles: ->
-      _(@_tiedTurtlesRaw().fixeds).unique(false, (x) -> x.id).value()
+      SuperArray(@_tiedTurtlesRaw().fixeds).distinctBy((x) -> x.id).value()
 
     # (Array[String], (String) => TurtleSet) => VariableManager
     _genVarManager: (extraVarNames, getTurtlesByBreedName) ->
@@ -457,7 +455,7 @@ module.exports =
     _setBreed: (breed) ->
 
       trueBreed =
-        if _(breed).isString()
+        if Checker.isString(breed)
           @world.breedManager.get(breed)
         else if breed instanceof AbstractAgentSet
           if breed.getBreedName?
@@ -474,8 +472,8 @@ module.exports =
         newNames = @_varNamesForBreed(trueBreed)
         oldNames = @_varNamesForBreed(@_breed)
 
-        obsoletedNames = _(oldNames).difference(newNames).value()
-        freshNames     = _(newNames).difference(oldNames).value()
+        obsoletedNames = SuperArray(oldNames).difference(newNames).value()
+        freshNames     = SuperArray(newNames).difference(oldNames).value()
 
         @_varManager.refineBy(obsoletedNames)(freshNames)
 

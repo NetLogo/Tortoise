@@ -10,23 +10,22 @@ Java 8 version at the moment, so let's give it a little time to disseminate
 before throwing `Denuller` out. --JAB (9/8/14)
 ###
 
-_ = require('lodash')
+{ SuperArray } = require('super/superarray')
+SuperObject    = require('super/superobject')
+Checker        = require('super/_typechecker')
 
 # [T] @ (T) => T
 denull =
   (x) ->
-    if _(x).isArray()
-      _(x).map(denull).value()
-
-    else if _(x).isObject()
+    if Checker.isArray(x)
+      SuperArray(x).map(denull).value()
+    else if Checker.isObject(x)
       transformFunc =
         (acc, value, key) ->
           if value? or isNaN(key)
             acc[key] = denull(value)
           acc
-
-      _(x).transform(transformFunc, {}).value()
-
+      SuperObject(x).foldl({})(transformFunc)
     else
       x
 

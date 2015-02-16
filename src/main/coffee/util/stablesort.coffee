@@ -1,6 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_ = require('lodash')
+{ fromInterval } = require('super/superarray')
 
 # [T] @ (Array[T]) => ((T, T) => Int) => Array[T]
 module.exports =
@@ -14,4 +14,4 @@ module.exports =
           -1
         else
           1
-    _(0).range(arr.length).zip(arr).value().sort(sortFunc).map((pair) -> pair[1])
+    fromInterval(0, arr.length).zip(arr).value().sort(sortFunc).map((pair) -> pair[1])

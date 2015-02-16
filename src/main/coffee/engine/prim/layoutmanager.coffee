@@ -1,7 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_    = require('lodash')
-Trig = require('tortoise/util/trig')
+{ fromInterval } = require('super/superarray')
+Trig             = require('tortoise/util/trig')
 
 module.exports =
   class LayoutManager
@@ -34,21 +34,20 @@ module.exports =
 
       turtles = nodeSet.shuffled().toArray()
 
-      _(0).range(turtles.length).forEach(
+      fromInterval(0, turtles.length).forEach(
         (i) ->
           turtle          = turtles[i]
           agt[i]          = turtle
           tMap[turtle.id] = i
           ax[i]           = 0.0
           ay[i]           = 0.0
-          return
-      ).value()
+      )
 
       [ax, ay, tMap, agt]
 
     # (LinkSet, Object[Number, Number], Number) => Array[Number]
     _calcDegreeCounts: (links, idToIndexMap, nodeCount) ->
-      baseCounts = _(0).range(nodeCount).map(-> 0).value()
+      baseCounts = fromInterval(0, nodeCount).map(-> 0).value()
       links.forEach(
         ({ end1: t1, end2: t2 }) ->
           f = (turtle) ->
@@ -171,13 +170,12 @@ module.exports =
       calculateXCor  = bounded(minX, maxX)
       calculateYCor  = bounded(minY, maxY)
 
-      _(0).range(nodeCount).forEach(
+      fromInterval(0, nodeCount).forEach(
         (i) ->
           turtle = agt[i]
           newX = calculateXCor(turtle.xcor + calculateLimit(ax[i]))
           newY = calculateYCor(turtle.ycor + calculateLimit(ay[i]))
           turtle.setXY(newX, newY)
-          return
-      ).value()
+      )
 
       return

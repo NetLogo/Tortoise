@@ -1,7 +1,9 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_    = require('lodash')
-Type = require('tortoise/util/typechecker')
+{ SuperArray } = require('super/superarray')
+SuperObject    = require('super/superobject')
+{ identity }   = require('super/util')
+Type           = require('tortoise/util/typechecker')
 
 { StopInterrupt: Stop } = require('tortoise/util/exception')
 
@@ -100,8 +102,9 @@ module.exports.Pen = class Pen
   # (Array[Number]) => Unit
   drawHistogramFrom: (ys) ->
     @reset(true)
-    nums = ys.filter((y) -> Type(y).isNumber())
-    _(nums).countBy().forEach((n, key) => @addPoint(Number(key), n); return).value()
+    nums     = ys.filter((y) -> Type(y).isNumber())
+    histoMap = SuperArray(nums).countBy(identity)
+    SuperObject(histoMap).forEach((n, key) => @addPoint(Number(key), n))
     return
 
   # () => Number

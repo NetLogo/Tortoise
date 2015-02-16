@@ -1,10 +1,11 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_                = require('lodash')
 AbstractAgentSet = require('./abstractagentset')
 linkCompare      = require('./structure/linkcompare')
 VariableManager  = require('./structure/variablemanager')
 TurtleSet        = require('./turtleset')
+{ SuperArray }   = require('super/superarray')
+Checker          = require('super/_typechecker')
 ColorModel       = require('tortoise/util/colormodel')
 
 { EQUALS: EQ, GREATER_THAN: GT, LESS_THAN: LT, } = require('tortoise/util/comparator')
@@ -172,7 +173,7 @@ module.exports =
     _setBreed: (breed) ->
 
       trueBreed =
-        if _(breed).isString()
+        if Checker.isString(breed)
           @world.breedManager.get(breed)
         else if breed instanceof AbstractAgentSet
           if breed.getBreedName?
@@ -189,8 +190,8 @@ module.exports =
         newNames = @_varNamesForBreed(trueBreed)
         oldNames = @_varNamesForBreed(@_breed)
 
-        obsoletedNames = _(oldNames).difference(newNames).value()
-        freshNames     = _(newNames).difference(oldNames).value()
+        obsoletedNames = SuperArray(oldNames).difference(newNames).value()
+        freshNames     = SuperArray(newNames).difference(oldNames).value()
 
         @_varManager.refineBy(obsoletedNames)(freshNames)
 

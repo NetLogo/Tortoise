@@ -2,14 +2,14 @@
 
 # As far as dependencies and private access go, I'm treating this as if it's a part of `World` --JAB (8/5/14)
 
-_           = require('lodash')
-Link        = require('../link')
-LinkSet     = require('../linkset')
-Nobody      = require('../nobody')
-Builtins    = require('../structure/builtins')
-IDManager   = require('./idmanager')
-SortedLinks = require('./sortedlinks')
-stableSort  = require('tortoise/util/stablesort')
+Link           = require('../link')
+LinkSet        = require('../linkset')
+Nobody         = require('../nobody')
+Builtins       = require('../structure/builtins')
+IDManager      = require('./idmanager')
+SortedLinks    = require('./sortedlinks')
+{ SuperArray } = require('super/superarray')
+stableSort     = require('tortoise/util/stablesort')
 
 module.exports =
 
@@ -93,7 +93,7 @@ module.exports =
       @_linkArrCache = undefined
       if @_links.isEmpty() then @_notifyIsUndirected()
 
-      remove = (set, id1, id2) -> if set? then set[id1] = _(set[id1]).without(id2).value()
+      remove = (set, id1, id2) -> if set? then set[id1] = SuperArray(set[id1]).filter((x) -> x isnt id2).value()
       remove(@_linksFrom[link.getBreedName()], link.end1.id, link.end2.id)
       if not link.isDirected then remove(@_linksTo[link.getBreedName()], link.end2.id, link.end1.id)
 
@@ -145,4 +145,4 @@ module.exports =
 
     # (Number, Number, Boolean, String) => Boolean
     _linkExists: (id1, id2, isDirected, breedName) ->
-      _(@_linksFrom[breedName]?[id1]).contains(id2) or (not isDirected and _(@_linksTo[breedName]?[id1]).contains(id2))
+      SuperArray(@_linksFrom[breedName]?[id1] ? []).contains(id2) or (not isDirected and SuperArray(@_linksTo[breedName]?[id1] ? []).contains(id2))

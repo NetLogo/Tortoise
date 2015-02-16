@@ -1,12 +1,12 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_                = require('lodash')
 Dump             = require('../dump')
 AbstractAgentSet = require('../core/abstractagentset')
 Link             = require('../core/link')
 Nobody           = require('../core/nobody')
 Patch            = require('../core/patch')
 Turtle           = require('../core/turtle')
+{ SuperArray }   = require('super/superarray')
 StrictMath       = require('tortoise/shim/strictmath')
 Comparator       = require('tortoise/util/comparator')
 Exception        = require('tortoise/util/exception')
@@ -73,7 +73,7 @@ module.exports =
     # [Item, Container <: (Array[Item]|String|AbstractAgentSet[Item])] @ (Item, Container) => Boolean
     member: (x, xs) ->
       if Type(xs).isArray()
-        _(xs).some((y) => @_equality(x, y))
+        SuperArray(xs).exists((y) => @_equality(x, y))
       else if Type(x).isString()
         xs.indexOf(x) isnt -1
       else # agentset
@@ -108,16 +108,11 @@ module.exports =
 
     # [Item, Container <: (Array[Item]|String|AbstractAgentSet[Item])] @ (Item, Container) => Number|Boolean
     position: (x, xs) ->
-      index =
-        if Type(xs).isArray()
-          _(xs).findIndex((y) => @_equality(x, y))
-        else
-          xs.indexOf(x)
-
-      if index isnt -1
-        index
+      if Type(xs).isArray()
+        SuperArray(xs).findIndexMaybe((y) => @_equality(x, y)).getOrElse(-> false)
       else
-        false
+        i = xs.indexOf(x)
+        if i isnt -1 then i else false
 
     # [T] @ (Array[T]) => Array[T]
     removeDuplicates: (xs) ->
@@ -129,7 +124,7 @@ module.exports =
             hash   = @_hasher(x)
             values = accSet[hash]
             if values?
-              if not _(values).some((y) => @_equality(x, y))
+              if not SuperArray(values).exists((y) => @_equality(x, y))
                 accArr.push(x)
                 values.push(x)
             else
@@ -151,7 +146,7 @@ module.exports =
     # [Item, Container <: (Array[Item]|String)] @ (Item, Container) => Container
     remove: (x, xs) ->
       if Type(xs).isArray()
-        _(xs).filter((y) => not @_equality(x, y)).value()
+        SuperArray(xs).filter((y) => not @_equality(x, y)).value()
       else
         xs.replace(new RegExp(x, "g"), "") # Replace all occurences of `x` --JAB (5/26/14)
 
@@ -186,21 +181,21 @@ module.exports =
           else
             acc.push(x)
             acc
-      _(xs).foldl(f, [])
+      SuperArray(xs).foldl([])(f)
 
     # [T] @ (ListOrSet[T]) => ListOrSet[T]
     sort: (xs) ->
       if Type(xs).isArray()
-        filtered     = _.filter(xs, (x) -> x isnt Nobody)
-        forAll       = (f) -> _.all(filtered, f)
+        filtered     = xs.filter((x) -> x isnt Nobody)
+        forAll       = (f) -> SuperArray(filtered).all(f)
         agentClasses = [Turtle, Patch, Link]
-        if _(filtered).isEmpty()
+        if SuperArray(filtered).isEmpty()
           filtered
         else if forAll((x) -> Type(x).isNumber())
           filtered.sort((x, y) -> Comparator.numericCompare(x, y).toInt)
         else if forAll((x) -> Type(x).isString())
           filtered.sort()
-        else if _(agentClasses).some((agentClass) -> forAll((x) -> x instanceof agentClass))
+        else if SuperArray(agentClasses).exists((agentClass) -> forAll((x) -> x instanceof agentClass))
           stableSort(filtered)((x, y) -> x.compare(y).toInt)
         else
           throw new Error("We don't know how to sort your kind here!")
@@ -223,15 +218,15 @@ module.exports =
 
     # [T] @ (Array[T]) => Number
     variance: (xs) ->
-      numbers = _(xs).filter((x) -> Type(x).isNumber())
+      numbers = SuperArray(xs).filter((x) -> Type(x).isNumber())
       count   = numbers.size()
 
       if count < 2
         throw new Error("Can't find the variance of a list without at least two numbers")
 
-      sum  = numbers.foldl(((acc, x) -> acc + x), 0)
+      sum  = numbers.foldl(0)((acc, x) -> acc + x)
       mean = sum / count
-      squareOfDifference = numbers.foldl(((acc, x) -> acc + StrictMath.pow(x - mean, 2)), 0)
+      squareOfDifference = numbers.foldl(0)((acc, x) -> acc + StrictMath.pow(x - mean, 2))
       squareOfDifference / (count - 1)
 
     # Prodding at this code is like poking a beehive with a stick... --JAB (7/30/14)

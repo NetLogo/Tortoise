@@ -6,12 +6,12 @@ Ride    = { toInt: 1 }
 Follow  = { toInt: 2 }
 Watch   = { toInt: 3 }
 
-_               = require('lodash')
 agentToInt      = require('./agenttoint')
 Nobody          = require('./nobody')
 Patch           = require('./patch')
 Turtle          = require('./turtle')
 VariableManager = require('./structure/variablemanager')
+{ SuperArray }  = require('super/superarray')
 
 module.exports =
   class Observer
@@ -34,11 +34,11 @@ module.exports =
       @resetPerspective()
 
       @_varManager      = new VariableManager(@_globalNames)
-      @_codeGlobalNames = _(@_globalNames).difference(@_interfaceGlobalNames)
+      @_codeGlobalNames = SuperArray(@_globalNames).difference(@_interfaceGlobalNames).value()
 
     # () => Unit
     clearCodeGlobals: ->
-      _(@_codeGlobalNames).forEach((name) => @_varManager[name] = 0; return).value()
+      SuperArray(@_codeGlobalNames).forEach((name) => @_varManager[name] = 0)
       return
 
     # (Turtle) => Unit

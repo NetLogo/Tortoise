@@ -1,7 +1,8 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_           = require('lodash')
-{ Pen }     = require('./pen')
+{ Pen }        = require('./pen')
+{ SuperArray } = require('super/superarray')
+SuperObject    = require('super/superobject')
 
 { StopInterrupt: Stop } = require('tortoise/util/exception')
 
@@ -19,7 +20,7 @@ module.exports = class Plot
     @isAutoplotting  = true
     @_currentPen     = pens[0]
     @_originalBounds = [@xMin, @xMax, @yMin, @yMax]
-    @_penMap         = _(pens).map((p) -> p.name.toUpperCase()).zipObject(pens).value()
+    @_penMap         = SuperArray(pens).map((p) -> p.name.toUpperCase()).zipToObject(pens)
     @clear()
 
   # () => Unit
@@ -28,16 +29,16 @@ module.exports = class Plot
     @_ops.reset(this)
     @_resize()
 
-    _(@_penMap).filter((x) -> x.isTemp).forEach((x) => delete @_penMap[x.name.toUpperCase()]; return).value()
-    _(@_penMap).forEach((pen) => pen.reset(); @_ops.registerPen(pen); return).value()
+    SuperObject(@_penMap).values().filter((x) -> x.isTemp).forEach((x) => delete @_penMap[x.name.toUpperCase()])
+    SuperObject(@_penMap).values().forEach((pen) => pen.reset(); @_ops.registerPen(pen))
 
     if @_currentPen?.isTemp
       @_currentPen =
-        if _(@_penMap).size() is 0
+        if SuperObject(@_penMap).isEmpty()
           @_penMap.DEFAULT = new Pen("DEFAULT", @_ops.makePenOps)
           @_penMap.DEFAULT
         else
-          _(@_penMap).toArray().value()[0]
+          SuperObject(@_penMap).values()[0]
 
     return
 
@@ -142,7 +143,7 @@ module.exports = class Plot
     catch e
       if not (e instanceof Stop)
         throw e
-    _(@_penMap).forEach((pen) -> pen.setup(); return).value()
+    SuperObject(@_penMap).values().forEach((pen) -> pen.setup())
     return
 
   # (Number, Number) => Unit
@@ -169,7 +170,7 @@ module.exports = class Plot
     catch e
       if not (e instanceof Stop)
         throw e
-    _(@_penMap).forEach((pen) -> pen.update(); return).value()
+    SuperObject(@_penMap).values().forEach((pen) -> pen.update())
     return
 
   # () => Unit
@@ -208,7 +209,7 @@ module.exports = class Plot
   #
   # (Pen) => Unit
   _verifyHistogramSize: (pen) ->
-    penYMax = _(pen.getPoints()).filter(({ x }) => x >= @xMin and x <= @xMax).max((p) -> p.y).y
+    penYMax = SuperArray(pen.getPoints()).filter(({ x }) => x >= @xMin and x <= @xMax).maxMaybeBy((p) -> p.y).map((p) -> p.y).getOrElse(=> @yMax)
     if penYMax > @yMax and @isAutoplotting
       @yMax = penYMax
     @_resize()
@@ -221,7 +222,7 @@ module.exports = class Plot
 
       bounds        = pen.bounds()
       currentBounds = [@xMin, @xMax, @yMin, @yMax]
-      [minXs, maxXs, minYs, maxYs] = _(bounds).zip(currentBounds).value()
+      [minXs, maxXs, minYs, maxYs] = SuperArray(bounds).zip(currentBounds).value()
 
       bumpMin = ([newMin, currentMin], currentMax) ->
         if newMin < currentMin

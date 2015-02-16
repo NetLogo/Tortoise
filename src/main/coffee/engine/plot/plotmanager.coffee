@@ -1,7 +1,8 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_    = require('lodash')
-Type = require('tortoise/util/typechecker')
+{ SuperArray } = require('super/superarray')
+SuperObject    = require('super/superobject')
+Type           = require('tortoise/util/typechecker')
 
 module.exports = class PlotManager
 
@@ -11,11 +12,11 @@ module.exports = class PlotManager
   # (Array[Plot]) => PlotManager
   constructor: (plots) ->
     @_currentPlot = plots[plots.length - 1]
-    @_plotMap     = _(plots.map((p) -> p.name.toUpperCase())).zipObject(plots).value()
+    @_plotMap     = SuperArray(plots.map((p) -> p.name.toUpperCase())).zipToObject(plots)
 
   # () => Unit
   clearAllPlots: ->
-    _(@_plotMap).forEach((plot) -> plot.clear(); return).value()
+    SuperObject(@_plotMap).values().forEach((plot) -> plot.clear())
     return
 
   # () => Unit
@@ -37,7 +38,7 @@ module.exports = class PlotManager
   drawHistogramFrom: (list) ->
     @_withPlot(
       (plot) ->
-        numbers = _(list).filter((x) -> Type(x).isNumber()).value()
+        numbers = SuperArray(list).filter((x) -> Type(x).isNumber()).value()
         plot.drawHistogramFrom(numbers)
     )
     return
@@ -145,7 +146,7 @@ module.exports = class PlotManager
 
   # () => Unit
   setupPlots: =>
-    _(@_plotMap).forEach((plot) -> plot.setup(); return).value()
+    SuperObject(@_plotMap).values().forEach((plot) -> plot.setup())
     return
 
   # (Number, Number) => Unit
@@ -160,7 +161,7 @@ module.exports = class PlotManager
 
   # () => Unit
   updatePlots: =>
-    _(@_plotMap).forEach((plot) -> plot.update(); return).value()
+    SuperObject(@_plotMap).values().forEach((plot) -> plot.update())
     return
 
   # (String, String) => (() => Unit) => Unit

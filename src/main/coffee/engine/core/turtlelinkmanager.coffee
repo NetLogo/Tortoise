@@ -1,7 +1,7 @@
-_                         = require('lodash')
 LinkSet                   = require('./linkset')
 Nobody                    = require('./nobody')
 TurtleSet                 = require('./turtleset')
+{ SuperArray }            = require('super/superarray')
 { DeathInterrupt: Death } = require('tortoise/util/exception')
 
 # (Breed) => String
@@ -20,7 +20,7 @@ mustNotBeUndirected = (breed) ->
 
 # [T] @ (Array[T]) => Array[T]
 uniques = (ls) ->
-  _(ls).unique().value()
+  SuperArray(ls).distinct().value()
 
 # (Array[Link]) => Array[Link]
 uniqueLinks = uniques
@@ -60,7 +60,7 @@ module.exports =
 
     # (String, Turtle) => Link
     inLinkFrom: (breedName, otherTurtle) ->
-      _(@_linksIn).find((l) -> l.end1 is otherTurtle and linkBreedMatches(breedName)(l)) ? Nobody
+      SuperArray(@_linksIn).findMaybe((l) -> l.end1 is otherTurtle and linkBreedMatches(breedName)(l)).getOrElse(-> Nobody)
 
     # (String) => TurtleSet
     inLinkNeighbors: (breedName) ->
@@ -108,7 +108,7 @@ module.exports =
 
     # (String, Turtle) => Link
     outLinkTo: (breedName, otherTurtle) ->
-      _(@_linksOut).find((l) -> l.end2 is otherTurtle and linkBreedMatches(breedName)(l)) ? Nobody
+      SuperArray(@_linksOut).findMaybe((l) -> l.end2 is otherTurtle and linkBreedMatches(breedName)(l)).getOrElse(-> Nobody)
 
     # (Link) => Unit
     remove: (link) ->

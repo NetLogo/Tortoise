@@ -1,6 +1,5 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_                = require('lodash')
 AbstractAgentSet = require('../core/abstractagentset')
 Link             = require('../core/link')
 LinkSet          = require('../core/linkset')
@@ -9,6 +8,7 @@ Patch            = require('../core/patch')
 PatchSet         = require('../core/patchset')
 Turtle           = require('../core/turtle')
 TurtleSet        = require('../core/turtleset')
+{ SuperArray }   = require('super/superarray')
 Printer          = require('tortoise/shim/printer')
 Exception        = require('tortoise/util/exception')
 Timer            = require('tortoise/util/timer')
@@ -41,11 +41,11 @@ module.exports =
         else if x instanceof PatchSet
           x.toArray()
         else if x instanceof TurtleSet
-          _(x.iterator().toArray()).map((t) -> t.getPatchHere()).value()
+          SuperArray(x.iterator().toArray()).map((t) -> t.getPatchHere()).value()
         else
           throw new Error("`breed-on` unsupported for class '#{typeof(x)}'")
 
-      turtles = _(patches).map((p) -> p.breedHereArray(breedName)).flatten().value()
+      turtles = SuperArray(patches).map((p) -> p.breedHereArray(breedName)).flatten().value()
       new TurtleSet(turtles, breedName)
 
     # (Any, Any) => Boolean
@@ -176,7 +176,7 @@ module.exports =
     # (PatchSet|TurtleSet|Patch|Turtle) => TurtleSet
     turtlesOn: (agentsOrAgent) ->
       if agentsOrAgent instanceof AbstractAgentSet
-        turtles = _(agentsOrAgent.iterator().toArray()).map((agent) -> agent.turtlesHere().toArray()).flatten().value()
+        turtles = SuperArray(agentsOrAgent.iterator().toArray()).map((agent) -> agent.turtlesHere().toArray()).flatten().value()
         new TurtleSet(turtles)
       else
         agentsOrAgent.turtlesHere()
@@ -192,11 +192,11 @@ module.exports =
 
     # [T <: Agent, U <: AbstractAgentSet[T], V <: (Array[T]|T|AbstractAgentSet[T])] @ (Array[V], T.Class, U.Class) => U
     _createAgentSet: (inputs, tClass, outClass) ->
-      flattened = _(inputs).flattenDeep().value()
-      if _(flattened).isEmpty()
+      flattened = SuperArray(inputs).flattenDeep()
+      if flattened.isEmpty()
         new outClass([])
-      else if flattened.length is 1
-        head = flattened[0]
+      else if flattened.size() is 1
+        head = flattened.head()
         if head instanceof outClass
           head
         else if head instanceof tClass
@@ -229,5 +229,5 @@ module.exports =
               else if input isnt Nobody
                 buildFromAgentSet(input)
 
-        buildItems(flattened)
+        buildItems(flattened.value())
         new outClass(result)
