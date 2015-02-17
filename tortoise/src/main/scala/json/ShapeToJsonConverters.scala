@@ -3,11 +3,9 @@
 package org.nlogo.tortoise.json
 
 import
-  org.nlogo.{ api, shape },
-    api.Shape,
-    shape.{ LinkShape, VectorShape }
+  org.nlogo.core.Shape, Shape.{ VectorShape, LinkShape, LinkLine }
 
-import org.json4s._
+import TortoiseJson._
 import scala.language.implicitConversions
 
 sealed trait ShapeConverter[T <: Shape] extends JsonConverter[T]
@@ -21,34 +19,28 @@ object ShapeToJsonConverters {
     }
 
   class VectorShapeConverter(override protected val target: VectorShape) extends ShapeConverter[VectorShape] {
-    import scala.collection.JavaConverters._
     import org.nlogo.tortoise.json.ElemToJsonConverters.elem2Json
-    override protected val extraProps = JObject(
-      "rotate"   -> JBool(target.isRotatable),
-      "elements" -> JArray((target.getElements.asScala map (_.toJsonObj)).toList)
-    )
+    override protected val extraProps = JsObject(fields(
+      "rotate"   -> JsBool(target.rotatable),
+      "elements" -> JsArray((target.elements map (_.toJsonObj)).toList)
+    ))
   }
 
   class LinkShapeConverter(override protected val target: LinkShape) extends ShapeConverter[LinkShape] {
-
-    private def lineToJS(index: Int): JObject = {
-      val line = target.getLine(index)
-      JObject(
-        "x-offset"   -> JDecimal(line.xcor),
-        "is-visible" -> JBool(line.isVisible),
-        "dashes"     -> JArray(line.getDashes.toList.map(x => JDecimal(x)))
-      )
+    private def lineToJS(line: LinkLine): JsObject = {
+      JsObject(fields(
+        "x-offset"   -> JsDouble(line.xcor),
+        "is-visible" -> JsBool(line.isVisible),
+        "dashes"     -> JsArray(line.dashChoices.toList.map(x => JsDouble(x)))
+      ))
     }
 
-    override protected val extraProps: JObject = {
-      val dirIndicator = target.getDirectionIndicator.asInstanceOf[VectorShape]
-      JObject(
-        "direction-indicator" -> new VectorShapeConverter(dirIndicator).toJsonObj,
-        "curviness"           -> JDecimal(target.curviness),
-        "lines"               -> JArray(0 until 3 map lineToJS toList)
-      )
+    override protected val extraProps: JsObject = {
+      JsObject(fields(
+        "direction-indicator" -> new VectorShapeConverter(target.indicator).toJsonObj,
+        "curviness"           -> JsDouble(target.curviness),
+        "lines"               -> JsArray(target.linkLines.map(lineToJS).toList)
+      ))
     }
-
   }
-
 }

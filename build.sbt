@@ -1,6 +1,6 @@
-val nlDependencyVersion = "5.2.0-242b0c5"
+val nlDependencyVersion = "5.2.0-fbd8014"
 
-val parserJsDependencyVersion = "0.0.1-242b0c5"
+val parserJsDependencyVersion = "0.0.1-fbd8014"
 
 val commonSettings =
   // Keep this up here so things get published to the correct places
@@ -66,5 +66,7 @@ lazy val tortoiseJs = (project in file("js")).
       "org.nlogo" %%% "parser-js" % parserJsDependencyVersion,
       "com.github.japgolly.fork.scalaz" %%% "scalaz-core" % "7.1.0-4"),
     unmanagedSources in Compile ++=
-      ((baseDirectory in root).value / "src" / "main" / "scala" / "tortoise" * "*.scala").get
+      ((baseDirectory in tortoise).value / "src" / "main" / "scala" * "*.scala" +++
+        (baseDirectory in tortoise).value / "src" / "main" / "scala" / "json"  * "*.scala" ---
+        (baseDirectory in tortoise).value / "src" / "main" / "scala" / "json" / "JsonLibrary.scala").get
   )

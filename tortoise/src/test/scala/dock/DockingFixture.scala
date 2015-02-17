@@ -13,7 +13,7 @@ import
 
 import jsengine.Nashorn
 
-import json.JSONSerializer
+import json.JsonSerializer
 
 trait DockingSuite extends org.scalatest.fixture.FunSuite with TestLogger {
   type FixtureParam = DockingFixture
@@ -110,7 +110,7 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
       }
     val (newState, update) = mirror.Mirroring.diffs(state, mirrorables)
     state = newState
-    val expectedJson = "[" + JSONSerializer.serialize(update) + "]"
+    val expectedJson = "[" + JsonSerializer.serialize(update) + "]"
     val expectedOutput = workspace.outputAreaBuffer.toString
     val compiledJS = Compiler.compileCommands(logo, workspace.procedures, workspace.world.program)
     val (exceptionOccurredInJS, (actualOutput, actualJson)) =
