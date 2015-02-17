@@ -4,12 +4,12 @@ package org.nlogo.tortoise
 
 import
   org.nlogo.{ api, core, shape },
-    api.{ ShapeList, Version },
-    core.{ AgentKind, AgentVariables, Model, Program },
+    api.{ Version },
+    core.{ AgentKind, AgentVariables, Model, Program, ShapeList, ShapeParser },
     shape.{ LinkShape, VectorShape }
 
 import
-  org.nlogo.tortoise.json.JSONSerializer
+  org.nlogo.tortoise.json.JsonSerializer
 
 // RuntimeInit generates JavaScript code that does any initialization that needs to happen
 // before any user code runs, for example creating patches
@@ -87,23 +87,21 @@ class RuntimeInit(program: Program, model: Model) {
 
     import scala.collection.JavaConverters.asScalaBufferConverter
 
-    def shapeList(shapes: ShapeList): String = {
-      import scala.collection.JavaConverters.asScalaSetConverter
-      if (shapes.getNames.asScala.nonEmpty)
-        JSONSerializer.serialize(shapes)
+    def shapeList(shapes: ShapeList): String =
+      if (shapes.names.nonEmpty)
+        JsonSerializer.serialize(shapes)
       else
         "{}"
-    }
 
     def parseTurtleShapes(strings: Array[String]): ShapeList =
-      new ShapeList(AgentKind.Turtle, VectorShape.parseShapes(strings, Version.version).asScala)
+      new ShapeList(AgentKind.Turtle, ShapeParser.parseVectorShapes(strings))
 
     def parseLinkShapes(strings: Array[String]): ShapeList =
-      new ShapeList(AgentKind.Link, LinkShape.parseShapes(strings, Version.version).asScala)
+      new ShapeList(AgentKind.Link, ShapeParser.parseLinkShapes(strings))
 
     val patchVarNames  = program.patchesOwn diff AgentVariables.getImplicitPatchVariables
 
-    val globalNames          = mkJSArrStr(program.globals          map (_.toLowerCase) map wrapInQuotes)
+    val globalNames    = mkJSArrStr(program.globals          map (_.toLowerCase) map wrapInQuotes)
     val interfaceGlobalNames = mkJSArrStr(program.interfaceGlobals map (_.toLowerCase) map wrapInQuotes)
     val patchesOwnNames      = mkJSArrStr(patchVarNames            map (_.toLowerCase) map wrapInQuotes)
 

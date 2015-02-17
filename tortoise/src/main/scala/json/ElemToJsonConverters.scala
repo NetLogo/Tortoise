@@ -3,29 +3,29 @@
 package org.nlogo.tortoise.json
 
 import
-  java.awt.Color
+  org.nlogo.core.Shape.{ Circle, Element, Line, Polygon, Rectangle, RgbColor }
 
 import
-  org.nlogo.shape.{ Circle, Element, Line, Polygon, Rectangle }
+  TortoiseJson._
 
-import org.json4s._
-import scala.language.implicitConversions
+import
+  scala.language.implicitConversions
 
 sealed trait ElemConverter[T <: Element] extends JsonConverter[T] {
 
   protected def typ: String = target.toString
 
-  final override protected def baseProps: JObject =
-    JObject(List(
-      "type"   -> JString(typ),
-      "color"  -> serializeColor(target.getColor),
-      "filled" -> JBool(target.filled),
-      "marked" -> JBool(target.marked)
+  final override protected def baseProps: JsObject =
+    JsObject(fields(
+      "type"   -> JsString(typ),
+      "color"  -> serializeColor(target.color),
+      "filled" -> JsBool(target.filled),
+      "marked" -> JsBool(target.marked)
     ))
 
-  private def serializeColor(c: Color): JValue = {
-    val (r, g, b, a) = (c.getRed, c.getGreen, c.getBlue, c.getAlpha / 255.0)
-    JString(s"rgba($r, $g, $b, $a)")
+  private def serializeColor(c: RgbColor): TortoiseJson = {
+    val (r, g, b, a) = (c.red, c.green, c.blue, c.alpha / 255.0)
+    JsString(s"rgba($r, $g, $b, $a)")
   }
 
 }
@@ -42,45 +42,44 @@ object ElemToJsonConverters {
     }
 
   class PolygonConverter(override protected val target: Polygon) extends ElemConverter[Polygon] {
-    import scala.collection.JavaConverters._
     override protected val typ        = "polygon"
-    override protected val extraProps = JObject(List(
-      "xcors" -> JArray((target.getXcoords.asScala map (x => JInt(x.intValue))).toList),
-      "ycors" -> JArray((target.getYcoords.asScala map (x => JInt(x.intValue))).toList)
+    override protected val extraProps = JsObject(fields(
+      "xcors" -> JsArray((target.xCoords map (JsInt(_))).toList),
+      "ycors" -> JsArray((target.yCoords map (JsInt(_))).toList)
     ))
   }
 
   class RectangleConverter(override protected val target: Rectangle) extends ElemConverter[Rectangle] {
     override protected val typ        = "rectangle"
-    override protected val extraProps = JObject(List(
-      "xmin" -> JInt(target.getX.toInt),
-      "ymin" -> JInt(target.getY.toInt),
-      "xmax" -> JInt((target.getX + target.getWidth).toInt),
-      "ymax" -> JInt((target.getY + target.getHeight).toInt)
+    override protected val extraProps = JsObject(fields(
+      "xmin" -> JsInt(target.upperLeftCorner._1),
+      "ymin" -> JsInt(target.upperLeftCorner._2),
+      "xmax" -> JsInt(target.lowerRightCorner._1),
+      "ymax" -> JsInt(target.lowerRightCorner._2)
     ))
   }
 
   class CircleConverter(override protected val target: Circle) extends ElemConverter[Circle] {
     override protected val typ        = "circle"
-    override protected val extraProps = JObject(List(
-      "x"    -> JInt(target.getBounds.getX.toInt),
-      "y"    -> JInt(target.getBounds.getY.toInt),
-      "diam" -> JInt(target.getBounds.getWidth.toInt)
+    override protected val extraProps = JsObject(fields(
+      "x"    -> JsInt(target.x),
+      "y"    -> JsInt(target.y),
+      "diam" -> JsInt(target.diameter)
     ))
   }
 
   class LineConverter(override protected val target: Line) extends ElemConverter[Line] {
     override protected val typ        = "line"
-    override protected val extraProps = JObject(List(
-      "x1" -> JInt(target.getStart.getX.toInt),
-      "y1" -> JInt(target.getStart.getY.toInt),
-      "x2" -> JInt(target.getEnd.getX.toInt),
-      "y2" -> JInt(target.getEnd.getY.toInt)
+    override protected val extraProps = JsObject(fields(
+      "x1" -> JsInt(target.startPoint._1),
+      "y1" -> JsInt(target.startPoint._2),
+      "x2" -> JsInt(target.endPoint._1),
+      "y2" -> JsInt(target.endPoint._2)
     ))
   }
 
   class OtherConverter(override protected val target: Element) extends ElemConverter[Element] {
-    override protected val extraProps = JObject(List())
+    override protected val extraProps = JsObject(fields())
   }
 
 }
