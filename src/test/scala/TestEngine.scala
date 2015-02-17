@@ -32,9 +32,8 @@ class TestEngine extends FunSuite {
     val nashorn = new Nashorn
     val test = """[{"0":{"X":0},"2":{"X":0}}]"""
     val escaped = test.replaceAll("\"", "\\\\\"")
-    nashorn.eval("var Denuller = tortoise_require('nashorn/denuller');")
     assertResult(test) {
-      nashorn.eval(s"""JSON.stringify(Denuller(JSON.parse("$escaped")))""")
+      nashorn.eval(s"""JSON.stringify(JSON.parse("$escaped"))""")
     }
   }
 
