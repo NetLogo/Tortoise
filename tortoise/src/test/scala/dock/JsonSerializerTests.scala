@@ -4,22 +4,22 @@ import org.json4s.JsonDSL.string2jvalue
 import org.json4s.native.JsonMethods.{ compact, pretty, parse, render => jsRender }
 import org.json4s.string2JsonInput
 import org.nlogo.mirror._, Mirroring._, Mirrorables._
-import org.nlogo.{ core, api }, api.Version
+import org.nlogo.{ core, api },
+  core.{ ShapeList, ShapeParser },
+  api.Version
 import org.scalatest.FunSuite
 import org.scalatest.Matchers
 import org.nlogo.nvm
 import org.nlogo.headless._, lang._
 import org.nlogo.shape.VectorShape
-import org.nlogo.tortoise.json.JSONSerializer
+import org.nlogo.tortoise.json.JsonSerializer
 
-import collection.JavaConverters._
-
-class JSONSerializerTests extends FixtureSuite with Matchers {
+class JsonSerializerTests extends FixtureSuite with Matchers {
 
   def mirrorables(implicit fixture: Fixture): Iterable[Mirrorable] =
     Mirrorables.allMirrorables(fixture.workspace.world)
 
-  test("JSONSerializer basic commands") { implicit fixture =>
+  test("JsonSerializer basic commands") { implicit fixture =>
     val commands = Seq(
       "cro 1" ->
         """|{
@@ -112,17 +112,17 @@ class JSONSerializerTests extends FixtureSuite with Matchers {
       case (previousState, (cmd, expectedJSON)) =>
         fixture.workspace.command(cmd)
         val (nextState, update) = Mirroring.diffs(previousState, mirrorables)
-        val json = jsRender(parse(JSONSerializer.serialize(update)))
+        val json = jsRender(parse(JsonSerializer.serialize(update)))
         val format = compact _
         format(json) should equal(format(expectedJSON))
         nextState
     }
   }
 
-  test("JSONSerializer shapes") { implicit fixture =>
-    val shapeList = new api.ShapeList(
+  test("JsonSerializer shapes") { implicit fixture =>
+    val shapeList = new ShapeList(
       core.AgentKind.Turtle,
-      VectorShape.parseShapes(core.Model.defaultShapes.toArray, api.Version.version).asScala
+      ShapeParser.parseVectorShapes(core.Model.defaultShapes)
     )
 
     val shapes = Seq(
@@ -188,7 +188,7 @@ class JSONSerializerTests extends FixtureSuite with Matchers {
 
     shapes foreach {
       case (shape, expectedJSON) =>
-        val json = jsRender(parse(JSONSerializer.serialize(shape)))
+        val json = jsRender(parse(JsonSerializer.serialize(shape)))
         pretty(json) should equal(pretty(expectedJSON))
     }
   }
