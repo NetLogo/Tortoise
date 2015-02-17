@@ -4,12 +4,12 @@ package org.nlogo.tortoise
 
 import
   org.nlogo.{ api, core, shape },
-    api.{ ShapeList, Version },
-    core.{ AgentKind, AgentVariables, Model, Program },
+    api.{ Version },
+    core.{ AgentKind, AgentVariables, Model, Program, ShapeList, ShapeParser },
     shape.{ LinkShape, VectorShape }
 
 import
-  org.nlogo.tortoise.json.JSONSerializer
+  org.nlogo.tortoise.json.JsonSerializer
 
 // RuntimeInit generates JavaScript code that does any initialization that needs to happen
 // before any user code runs, for example creating patches
@@ -59,8 +59,8 @@ class RuntimeInit(program: Program, model: Model) {
     val breedObjs =
       (program.breeds.values ++ program.linkBreeds.values).map {
         b =>
-          val name        = s"'${b.name}'"
-          val singular    = s"'${b.singular.toLowerCase}'"
+          val name        = '"' + b.name + '"'
+          val singular    = '"' + b.singular.toLowerCase + '"'
           val varNames    = mkJSArrStr(b.owns map (_.toLowerCase) map wrapInQuotes)
           val directedStr = if (b.isLinkBreed) s", isDirected: ${b.isDirected}" else ""
           s"""{ name: $name, singular: $singular, varNames: $varNames$directedStr }"""
@@ -87,19 +87,17 @@ class RuntimeInit(program: Program, model: Model) {
 
     import scala.collection.JavaConverters.asScalaBufferConverter
 
-    def shapeList(shapes: ShapeList): String = {
-      import scala.collection.JavaConverters.asScalaSetConverter
-      if (shapes.getNames.asScala.nonEmpty)
-        JSONSerializer.serialize(shapes)
+    def shapeList(shapes: ShapeList): String =
+      if (shapes.names.nonEmpty)
+        JsonSerializer.serialize(shapes)
       else
         "{}"
-    }
 
     def parseTurtleShapes(strings: Array[String]): ShapeList =
-      new ShapeList(AgentKind.Turtle, VectorShape.parseShapes(strings, Version.version).asScala)
+      new ShapeList(AgentKind.Turtle, ShapeParser.parseVectorShapes(strings))
 
     def parseLinkShapes(strings: Array[String]): ShapeList =
-      new ShapeList(AgentKind.Link, LinkShape.parseShapes(strings, Version.version).asScala)
+      new ShapeList(AgentKind.Link, ShapeParser.parseLinkShapes(strings))
 
     val patchVarNames  = program.patchesOwn diff AgentVariables.getImplicitPatchVariables
 
@@ -119,7 +117,7 @@ class RuntimeInit(program: Program, model: Model) {
   }
 
   private def wrapInQuotes(str: String): String =
-    s"'$str'"
+    '"' + str + '"'
 
   private def mkJSArrStr(arrayValues: Iterable[String]): String =
     if (arrayValues.nonEmpty)

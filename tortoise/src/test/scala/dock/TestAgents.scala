@@ -344,7 +344,7 @@ class TestAgents extends DockingSuite with SlowTest {
   }
 
   test("shape downcasing") { implicit fixture => import fixture._
-    workspace.world.turtleShapeList.add(new DummyShape("turtle"))
+    workspace.world.turtleShapeList.add(DummyShape("turtle"))
     testCommand("""crt 1 [ set shape "TURTLE" output-print shape ]""")
   }
 
