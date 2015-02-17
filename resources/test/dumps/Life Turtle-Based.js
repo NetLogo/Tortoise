@@ -38,7 +38,6 @@ var TurtleSet = tortoise_require('engine/core/turtleset');
 var Tasks     = tortoise_require('engine/prim/tasks');
 
 var AgentModel = tortoise_require('agentmodel');
-var Denuller   = tortoise_require('nashorn/denuller');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
 function setupBlank() {
