@@ -71,7 +71,7 @@ module.exports =
       @_patchesAllBlack   = true
       @_patchesWithLabels = 0
 
-      @resize(minPxcor, maxPxcor, minPycor, maxPycor, wrappingAllowedInX, wrappingAllowedInY)
+      @_resizeHelper(minPxcor, maxPxcor, minPycor, maxPycor, wrappingAllowedInX, wrappingAllowedInY)
 
 
     # () => LinkSet
@@ -88,6 +88,11 @@ module.exports =
 
     # (Number, Number, Number, Number, Boolean, Boolean) => Unit
     resize: (minPxcor, maxPxcor, minPycor, maxPycor, wrapsInX = @topology._wrapInX, wrapsInY = @topology._wrapInY) ->
+      @_resizeHelper(minPxcor, maxPxcor, minPycor, maxPycor, wrapsInX, wrapsInY)
+      @_updater.clearDrawing()
+
+    # (Number, Number, Number, Number, Boolean, Boolean) => Unit
+    _resizeHelper: (minPxcor, maxPxcor, minPycor, maxPycor, wrapsInX = @topology._wrapInX, wrapsInY = @topology._wrapInY) ->
 
       if not (minPxcor <= 0 <= maxPxcor and minPycor <= 0 <= maxPycor)
         throw new Error("You must include the point (0, 0) in the world.")
@@ -133,6 +138,7 @@ module.exports =
       @_resetPatchLabelCount()
       @ticker.clear()
       @_plotManager.clearAllPlots()
+      @_updater.clearDrawing()
       return
 
     # () => Unit

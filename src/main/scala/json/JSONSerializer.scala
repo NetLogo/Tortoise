@@ -6,19 +6,37 @@ import org.json4s._
 import org.json4s.native.JsonMethods._
 
 import
-  org.nlogo.{ api, core, mirror },
+  org.nlogo.{ api, core, mirror, drawing },
     api.{ Shape, ShapeList },
     core.{ AgentVariables, LogoList },
+    drawing.DrawingAction,
     mirror._
 import Mirrorables._
 
 import scala.collection.JavaConverters._
 
 import ShapeToJsonConverters._
+import DrawingActionToJsonConverters._
 
 object JSONSerializer {
 
-  def serialize(update: Update): String = {
+  def serialize(u: Update): String =
+    compact(render(serializeToJObject(u)))
+
+  def serialize(v: AnyRef): String =
+    compact(render(toJValue(v)))
+
+  def serializeWithViewUpdates(update: Update, viewUpdates: Seq[DrawingAction] = Seq()) = {
+    val serializedUpdate = serializeToJObject(update)
+
+    val jsonViewUpdates =
+      ("drawingEvents" -> JArray(viewUpdates.map(_.toJsonObj).toList))
+
+    val withViewUpdates: Seq[(String, JValue)] = serializedUpdate.obj :+ jsonViewUpdates
+    compact(render(JObject(withViewUpdates: _*)))
+  }
+
+  private def serializeToJObject(update: Update): JObject = {
 
     def births: Seq[(Kind, JField)] =
       for {
@@ -61,11 +79,7 @@ object JSONSerializer {
         fields = fieldsByKind.getOrElse(kind, Seq())
       } yield key -> JObject(fields: _*)
 
-    compact(render(JObject(objectsByKey: _*)))
-  }
-
-  def serialize(v: AnyRef): String = {
-    compact(render(toJValue(v)))
+    JObject(objectsByKey: _*)
   }
 
   def toJValue(v: AnyRef): JValue = v match {

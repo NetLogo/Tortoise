@@ -10,16 +10,17 @@ Exception = require('tortoise/util/exception')
 
 ignored = ["", ""]
 
-# type ID          = String
-# type Key         = String
-# type Value       = Any
-# type UpdateEntry = Object[Key, Value]
-# type UpdateSet   = Object[ID, UpdateEntry]
-# type _US         = UpdateSet
+# type ID           = String
+# type Key          = String
+# type Value        = Any
+# type UpdateEntry  = Object[Key, Value]
+# type UpdateSet    = Object[ID, UpdateEntry]
+# type _US          = UpdateSet
+# type DrawingEvent = Object[String, Any]
 
-# (_US, _US, _US, _US, _US) => Update
+# (_US, _US, _US, _US, _US, Array[DrawingEvent]) => Update
 class Update
-  constructor: (@turtles = {}, @patches = {}, @links = {}, @observer = {}, @world = {}) ->
+  constructor: (@turtles = {}, @patches = {}, @links = {}, @observer = {}, @world = {}, @drawingEvents = []) ->
 
 module.exports =
   class Updater
@@ -33,6 +34,11 @@ module.exports =
     # () => Updater
     constructor: ->
       @_flushUpdates()
+
+    # () => Unit
+    clearDrawing: ->
+      @_reportDrawingEvent({ type: "clear-drawing" })
+      return
 
     # () => Array[Update]
     collectUpdates: ->
@@ -53,6 +59,10 @@ module.exports =
     registerDeadTurtle: (id) =>
       @_update("turtles", id, { WHO: -1 })
       return
+
+    # (Number, Number, Number, Number, RGB, Number, String) => Unit
+    registerPenTrail: (fromX, fromY, toX, toY, rgb, size, penMode) =>
+      @_reportDrawingEvent({ type: "line", fromX, fromY, toX, toY, rgb, size, penMode })
 
     # (UpdateEntry, Number) => Unit
     registerWorldState: (state, id = 0) ->
@@ -180,6 +190,11 @@ module.exports =
     _update: (agentType, id, newAgent) ->
       @_hasUpdates = true
       @_updates[0][agentType][id] = newAgent
+      return
+
+    # (Object[String, Any]) => Unit
+    _reportDrawingEvent: (event) ->
+      @_updates[0].drawingEvents.push(event)
       return
 
     # () => Unit

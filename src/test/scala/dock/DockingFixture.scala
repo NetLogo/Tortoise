@@ -100,6 +100,7 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
     netLogoCode ++= s"$logo\n"
     workspace.clearOutput()
 
+    drawingActionBuffer.clear()
     val (headlessException, exceptionOccurredInHeadless) =
       try {
         workspace.command(logo)
@@ -110,7 +111,7 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
       }
     val (newState, update) = mirror.Mirroring.diffs(state, mirrorables)
     state = newState
-    val expectedJson = "[" + JSONSerializer.serialize(update) + "]"
+    val expectedJson = "[" + JSONSerializer.serializeWithViewUpdates(update, drawingActionBuffer.grab()) + "]"
     val expectedOutput = workspace.outputAreaBuffer.toString
     val compiledJS = Compiler.compileCommands(logo, workspace.procedures, workspace.world.program)
     val (exceptionOccurredInJS, (actualOutput, actualJson)) =
@@ -244,15 +245,13 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
   }
 
   // these two are super helpful when running failing tests
-  // the show the javascript before it gets executed.
+  // to show the javascript before it gets executed.
   // TODO: what is the difference between eval and run?
   def evalJS(javascript: String) = {
-    //println(javascript)
     nashorn.eval(javascript)
   }
 
   def runJS(javascript: String): (String, String) = {
-    //println(javascript)
     nashorn.run(javascript)
   }
 

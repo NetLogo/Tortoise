@@ -11,7 +11,7 @@ VariableManager   = require('./structure/variablemanager')
 Comparator        = require('tortoise/util/comparator')
 NLMath            = require('tortoise/util/nlmath')
 
-{ PenManager }                               = require('./structure/penmanager')
+{ PenManager, PenStatus: { Down, Erase } }   = require('./structure/penmanager')
 { DeathInterrupt: Death, TopologyInterrupt } = require('tortoise/util/exception')
 
 module.exports =
@@ -24,8 +24,11 @@ module.exports =
 
     linkManager: undefined # TurtleLinkManager
 
-    # (World, Number, (Updatable) => (String*) => Unit, (Number) => Unit, (Number, Number, Number, Number, Breed, String, Number, Boolean, Number, String, PenManager) => Turtle, (Number) => Unit, Number, Number, Number, Number, Breed, String, Number, Boolean, Number, String, (Updatable) => PenManager) => Turtle
-    constructor: (@world, @id, @_genUpdate, @_registerDeath, @_createTurtle, @_removeTurtle, @_color = 0, @_heading = 0, @xcor = 0, @ycor = 0, breed = @world.breedManager.turtles(), @_label = "", @_labelcolor = 9.9, @_hidden = false, @_size = 1.0, @_givenShape, genPenManager = (self) => new PenManager(@_genUpdate(self))) ->
+    # The type signatures here can be found to the right of the parameters. --JAB (4/13/15)
+    constructor: (@world, @id, @_genUpdate, @_registerLineDraw, @_registerDeath, @_createTurtle, @_removeTurtle          # (World, Number, (Updatable) => (String*) => Unit, (Number, Number, Number, Number, RGB, Number) => Unit, (Number) => Unit, (Number, Number, Number, Number, Breed, String, Number, Boolean, Number, String, PenManager) => Turtle, (Number) => Unit
+                , @_color = 0, @_heading = 0, @xcor = 0, @ycor = 0, breed = @world.breedManager.turtles(), @_label = ""  # Number, Number, Number, Number, Breed, String
+                , @_labelcolor = 9.9, @_hidden = false, @_size = 1.0, @_givenShape                                       # Number, Boolean, Number, String
+                , genPenManager = (self) => new PenManager(@_genUpdate(self))) ->                                        # (Updatable) => PenManager
       @_updateVarsByName = @_genUpdate(this)
 
       @penManager  = genPenManager(this)
@@ -52,6 +55,7 @@ module.exports =
       oldX        = @xcor
       @xcor       = @world.topology.wrapX(newX)
       @_updateVarsByName("xcor")
+      @_drawLine(oldX, @ycor, newX, @ycor)
 
       if originPatch isnt @getPatchHere()
         originPatch.untrackTurtle(this)
@@ -76,6 +80,7 @@ module.exports =
       oldY        = @ycor
       @ycor       = @world.topology.wrapY(newY)
       @_updateVarsByName("ycor")
+      @_drawLine(@xcor, oldY, @xcor, newY)
 
       if originPatch isnt @getPatchHere()
         originPatch.untrackTurtle(this)
@@ -88,6 +93,34 @@ module.exports =
         (turtle) =>
           if turtle isnt tiedCaller
             turtle._setYcor(turtle.ycor + dy, this)
+          return
+      )
+
+      return
+
+    # (Number, Number, Turtle) => Unit
+    _setXandY: (newX, newY, tiedCaller = undefined) ->
+
+      originPatch = @getPatchHere()
+      oldX        = @xcor
+      oldY        = @ycor
+      @xcor       = @world.topology.wrapX(newX)
+      @ycor       = @world.topology.wrapY(newY)
+      @_updateVarsByName("xcor", "ycor")
+      @_drawLine(oldX, oldY, newX, newY)
+
+      if originPatch isnt @getPatchHere()
+        originPatch.untrackTurtle(this)
+        @getPatchHere().trackTurtle(this)
+
+      @linkManager._refresh()
+
+      dx = @xcor - oldX
+      dy = @ycor - oldY
+      @_tiedTurtles().forEach(
+        (turtle) =>
+          if turtle isnt tiedCaller
+            turtle._setXandY(turtle.xcor + dx, turtle.ycor + dy, this)
           return
       )
 
@@ -212,8 +245,7 @@ module.exports =
 
     # (Number) => Unit
     _jump: (distance) ->
-      @_setXcor(@xcor + distance * @dx())
-      @_setYcor(@ycor + distance * @dy())
+      @_setXandY(@xcor + distance * @dx(), @ycor + distance * @dy())
       return
 
     # () => Number
@@ -235,11 +267,9 @@ module.exports =
       origXcor = @xcor
       origYcor = @ycor
       try
-        @_setXcor(x, tiedCaller)
-        @_setYcor(y, tiedCaller)
+        @_setXandY(x, y, tiedCaller)
       catch error
-        @_setXcor(origXcor, tiedCaller)
-        @_setYcor(origYcor, tiedCaller)
+        @_setXandY(origXcor, origYcor, tiedCaller)
         if error instanceof TopologyInterrupt
           throw new TopologyInterrupt("The point [ #{x} , #{y} ] is outside of the boundaries of the world and wrapping is not permitted in one or both directions.")
         else
@@ -372,6 +402,13 @@ module.exports =
     # () => Array[String]
     varNames: ->
       @_varManager.names()
+
+    # (Number, Number, Number, Number) => Unit
+    _drawLine: (oldX, oldY, newX, newY) ->
+      penMode = @penManager.getMode()
+      if (penMode is Down or penMode is Erase) and (oldX isnt newX or oldY isnt newY)
+         @_registerLineDraw(oldX, oldY, newX, newY, ColorModel.colorToRGB(@_color), @penManager.getSize(), @penManager.getMode().toString())
+      return
 
     # Unfortunately, we can't just throw out `_breedShape` and grab the shape from our
     # `Breed` object.  It would be pretty nice if we could, but the problem is that

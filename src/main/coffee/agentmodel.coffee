@@ -5,11 +5,12 @@ module.exports =
 
     # () => AgentModel
     constructor: ->
-      @turtles  = {}
-      @patches  = {}
-      @links    = {}
-      @observer = {}
-      @world    = {}
+      @turtles       = {}
+      @patches       = {}
+      @links         = {}
+      @observer      = {}
+      @world         = {}
+      @drawingEvents = []
 
     # (Array[Updater.Update]) => Unit
     updates: (modelUpdates) ->
@@ -17,9 +18,8 @@ module.exports =
         @update(u)
       return
 
-    # (Updater.Update) => Boolean
-    update: ({ links, observer, patches, turtles, world }) ->
-      anyUpdates = false
+    # (Updater.Update) => Unit
+    update: ({ links, observer, patches, turtles, world, drawingEvents }) ->
 
       # the 'when varUpdates' checks below only seem to be
       # necessary on Nashorn, which apparently has trouble iterating
@@ -33,19 +33,21 @@ module.exports =
 
       for { coll, typeCanDie, updates } in [turtleBundle, patchBundle, linkBundle]
         for id, varUpdates of updates when varUpdates?
-          anyUpdates = true
           if typeCanDie and varUpdates.WHO is -1
             delete coll[id]
           else
             mergeObjectInto(varUpdates, @_itemById(coll, id))
 
-      if observer? and observer[0]?
+      if observer?[0]?
         mergeObjectInto(observer[0], @observer)
 
-      if world? and world[0]?
+      if world?[0]?
         mergeObjectInto(world[0], @world)
 
-      anyUpdates
+      if drawingEvents?
+        @drawingEvents = @drawingEvents.concat(drawingEvents)
+
+      return
 
     # (Object, String) => Object
     _itemById: (coll, id) ->
