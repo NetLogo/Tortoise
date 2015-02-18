@@ -75,7 +75,7 @@ module.exports =
         else if dy is 0
           if dx >= 0 then 90 else 270
         else
-          (270 + StrictMath.toDegrees(Math.PI + StrictMath.atan2(-dy, dx))) % 360
+          (270 + StrictMath.toDegrees(StrictMath.PI() + StrictMath.atan2(-dy, dx))) % 360
       else
         throw new AgentException("No heading is defined from a point (#{x1},#{x2}) to that same point.")
 
@@ -142,7 +142,7 @@ module.exports =
 
     # (Number, Number) => Number
     _shortestNotWrapped: (cor1, cor2) ->
-      Math.abs(cor1 - cor2) * (if cor1 > cor2 then -1 else 1)
+      StrictMath.abs(cor1 - cor2) * (if cor1 > cor2 then -1 else 1)
 
     # (Number, Number, Number) => Number
     _shortestWrapped: (cor1, cor2, limit) ->

@@ -10,6 +10,7 @@ PatchSet         = require('../core/patchset')
 Turtle           = require('../core/turtle')
 TurtleSet        = require('../core/turtleset')
 NLType           = require('../core/typechecker')
+StrictMath       = require('tortoise/shim/strictmath')
 Exception        = require('tortoise/util/exception')
 Timer            = require('tortoise/util/timer')
 
@@ -121,9 +122,9 @@ module.exports =
     random: (n) ->
       truncated =
         if n >= 0
-          Math.ceil(n)
+          StrictMath.ceil(n)
         else
-          Math.floor(n)
+          StrictMath.floor(n)
       if truncated is 0
         0
       else if truncated > 0

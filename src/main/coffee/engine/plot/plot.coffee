@@ -1,7 +1,8 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_           = require('lodash')
-{ Pen }     = require('./pen')
+_          = require('lodash')
+{ Pen }    = require('./pen')
+StrictMath = require('tortoise/shim/strictmath')
 
 { StopInterrupt: Stop } = require('tortoise/util/exception')
 
@@ -228,7 +229,7 @@ module.exports = class Plot
           range         = currentMax - newMin
           expandedRange = range * 1.2
           newValue      = currentMax - expandedRange
-          Math.floor(newValue)
+          StrictMath.floor(newValue)
         else
           currentMin
 
@@ -237,7 +238,7 @@ module.exports = class Plot
           range         = newMax - currentMin
           expandedRange = range * 1.2
           newValue      = currentMin + expandedRange
-          Math.ceil(newValue)
+          StrictMath.ceil(newValue)
         else
           currentMax
 

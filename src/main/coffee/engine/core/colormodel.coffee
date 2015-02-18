@@ -1,7 +1,8 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_      = require('lodash')
-JSType = require('tortoise/util/typechecker')
+_          = require('lodash')
+JSType     = require('tortoise/util/typechecker')
+StrictMath = require('../shim/strictmath')
 
 # type RGB = (Number, Number, Number)
 
@@ -44,11 +45,11 @@ BaseRGBs = [
 # Array[RGB]
 RGBCache =
   for colorTimesTen in [0..1400]
-    baseIndex = Math.floor(colorTimesTen / 100)
+    baseIndex = StrictMath.floor(colorTimesTen / 100)
     rgb       = BaseRGBs[baseIndex]
     step      = (colorTimesTen % 100 - 50) / 50.48 + 0.012
     attenuate = if step < 0 then (x) -> x else (x) -> 0xFF - x
-    rgb.map((x) -> x + Math.floor(attenuate(x) * step))
+    rgb.map((x) -> x + StrictMath.floor(attenuate(x) * step))
 
 module.exports = {
 
@@ -63,9 +64,9 @@ module.exports = {
   colorToRGB: (color) ->
     type = JSType(color)
     if type.isNumber()
-      RGBCache[Math.floor(color * 10)]
+      RGBCache[StrictMath.floor(color * 10)]
     else if type.isArray()
-      color.map(Math.round)
+      color.map(StrictMath.round)
     else if type.isString()
       @_nameToRGB(color)
     else
@@ -129,7 +130,7 @@ module.exports = {
 
   # (Number) => Number
   _colorIntegral: (color) ->
-    Math.floor(color / 10)
+    StrictMath.floor(color / 10)
 
   # (String) => RGB
   _nameToRGB: (name) ->
