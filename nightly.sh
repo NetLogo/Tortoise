@@ -19,11 +19,11 @@ mkdir -p tmp/nightly
 # maybe there's an easier way, than I've done it below, I don't know.
 # I suck at shell scripting - ST 2/15/11
 
-./sbt test:compile "ensime generate" 2>&1 | tee tmp/nightly/compile.txt
+./sbt tortoise/test:compile "ensime generate" 2>&1 | tee tmp/nightly/compile.txt
 if [ ${PIPESTATUS[0]} -ne 0 ] ; then echo "*** FAILED: test:compile"; exit 1; fi
 echo "*** done: test:compile"
 
-./sbt fast:test 2>&1 | tee tmp/nightly/fast-test.txt
+./sbt tortoise/fast:test 2>&1 | tee tmp/nightly/fast-test.txt
 if [ ${PIPESTATUS[0]} -ne 0 ] ; then echo "*** FAILED: fast:test"; exit 1; fi
 echo "*** done: fast:test"
 
@@ -31,9 +31,17 @@ echo "*** done: fast:test"
 # minutes without producing any output.  the tests from different
 # suites get scrambled together in the output, but oh well. - ST 4/1/14
 
-./sbt 'set logBuffered in test := false' slow:test 2>&1 | tee tmp/nightly/slow-test.txt
+./sbt 'set logBuffered in test := false' tortoise/slow:test 2>&1 | tee tmp/nightly/slow-test.txt
 if [ ${PIPESTATUS[0]} -ne 0 ] ; then echo "*** FAILED: slow:test"; exit 1; fi
 echo "*** done: slow:test"
+
+./sbt 'set logBuffered in test := false' tortoiseJs/test 2>&1 | tee tmp/nightly/slow-test.txt
+if [ ${PIPESTATUS[0]} -ne 0 ] ; then echo "*** FAILED: tortoiseJs/test"; exit 1; fi
+echo "*** done: tortoiseJs/test"
+
+./sbt 'set logBuffered in test := false' netLogoWeb/test 2>&1 | tee tmp/nightly/slow-test.txt
+if [ ${PIPESTATUS[0]} -ne 0 ] ; then echo "*** FAILED: netLogoWeb/test"; exit 1; fi
+echo "*** done: netLogoWeb/test"
 
 ./sbt depend 2>&1 | tee tmp/nightly/depend.txt
 if [ ${PIPESTATUS[0]} -ne 0 ] ; then echo "*** FAILED: depend"; exit 1; fi
