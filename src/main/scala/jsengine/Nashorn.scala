@@ -80,7 +80,7 @@ class Nashorn {
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math
 // --JAB (11/4/13)
 object Strict {
-  val PI = StrictMath.PI
+  val PI                          = StrictMath.PI
   def abs(x: Double)              = StrictMath.abs(x)
   def acos(x: Double)             = StrictMath.acos(x)
   def asin(x: Double)             = StrictMath.asin(x)
@@ -90,6 +90,8 @@ object Strict {
   def exp(x: Double)              = StrictMath.exp(x)
   def floor(x: Double)            = StrictMath.floor(x)
   def log(x: Double)              = StrictMath.log(x)
+  // Don't bother trying to add `max` or `min`.  They're variadic in JS and binary on the JVM.
+  // Doesn't translate well. --JAB (2/18/15)
   def pow(x: Double, y: Double)   = StrictMath.pow(x, y)
   def round(x: Double)            = StrictMath.round(x)
   def sin(x: Double)              = StrictMath.sin(x)
