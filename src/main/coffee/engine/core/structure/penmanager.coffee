@@ -21,6 +21,10 @@ module.exports =
     getMode: ->
       @_status
 
+    # () => Boolean
+    isDown: ->
+      @getMode() is Down
+
     # This is (tragically) JVM NetLogo's idea of sanity... --JAB (5/26/14)
     # (String) => Unit
     setPenMode: (position) ->
