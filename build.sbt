@@ -32,7 +32,9 @@ ivyLoggingLevel := UpdateLogging.Quiet
 // we're not cross-building for different Scala versions
 crossPaths := false
 
-val nlDependencyVersion = "5.2.0-8afedf5"
+val nlDependencyVersion = "5.2.0-f06ba0c"
+
+resolvers += bintray.Opts.resolver.repo("netlogo", "NetLogoHeadless")
 
 libraryDependencies ++= Seq(
   "org.nlogo" % "netlogoheadless" % nlDependencyVersion,
@@ -50,7 +52,7 @@ onLoadMessage := ""
 
 unmanagedSourceDirectories in Compile += baseDirectory.value / "scripts"
 
-bintray.Keys.repository in bintray.Keys.bintray := "Tortoise"
+bintray.Keys.repository in bintray.Keys.bintray := "TortoiseAux"
 
 bintray.Keys.bintrayOrganization in bintray.Keys.bintray := Some("netlogo")
 
