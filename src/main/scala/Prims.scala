@@ -17,34 +17,31 @@ trait Prims {
     def argsSep(sep: String) =
       args.mkString(sep)
     r.reporter match {
-      case SimplePrims.SimpleReporter(op)   => op
-      case SimplePrims.InfixReporter(op)    => s"(${arg(0)} $op ${arg(1)})"
-      case SimplePrims.NormalReporter(op)   => s"$op($commaArgs)"
-      case b: prim._breed                   => s"""world.turtleManager.turtlesOfBreed("${b.breedName}")"""
-      case b: prim.etc._linkbreed           => s"""world.linkManager.linksOfBreed("${b.breedName}")"""
-      case b: prim.etc._breedsingular       => s"""world.turtleManager.getTurtleOfBreed("${b.breedName}", ${arg(0)})"""
-      case b: prim.etc._breedhere           => s"""SelfManager.self().breedHere("${b.breedName}")"""
-      case b: prim.etc._breedon             => s"""Prims.breedOn("${b.breedName}", ${arg(0)})"""
-      case p: prim._const                   => handlers.literal(p.value)
-      case lv: prim._letvariable            => handlers.ident(lv.let.name)
-      case pv: prim._procedurevariable      => handlers.ident(pv.name)
-      case call: prim._callreport           =>
-        (handlers.ident(call.name) +: args)
-          .mkString("Call(", ", ", ")")
-      case _: prim._unaryminus              => s" -${arg(0)}" // The space is important, because these can be nested --JAB (6/12/14)
-      case _: prim._not                     => s"!${arg(0)}"
-      case bv: prim._breedvariable          => s"SelfPrims.getVariable('${bv.name.toLowerCase}')"
-      case bv: prim._linkbreedvariable      => s"SelfPrims.getVariable('${bv.name.toLowerCase}')"
-      case tv: prim._turtlevariable         => s"SelfPrims.getVariable('${tv.displayName.toLowerCase}')"
-      case tv: prim._linkvariable           => s"SelfPrims.getVariable('${tv.displayName.toLowerCase}')"
-      case tv: prim._turtleorlinkvariable   => s"SelfPrims.getVariable('${tv.varName.toLowerCase}')"
-      case pv: prim._patchvariable          => s"SelfPrims.getPatchVariable('${pv.displayName.toLowerCase}')"
-      case ov: prim._observervariable       => s"world.observer.getGlobal('${ov.displayName.toLowerCase}')"
-      case p: prim.etc._linkbreedsingular   => s"world.linkManager.getLink(${arg(0)}, ${arg(1)}, '${p.breedName}')"
-      case _: prim._count                   => s"${arg(0)}.size()"
-      case _: prim._any                     => s"${arg(0)}.nonEmpty()"
-      case _: prim._word                    =>
-        ("\"\"" +: args).map(arg => "Dump(" + arg + ")").mkString("(", " + ", ")")
+
+      // Basics stuff
+      case SimplePrims.SimpleReporter(op) => op
+      case SimplePrims.InfixReporter(op)  => s"(${arg(0)} $op ${arg(1)})"
+      case SimplePrims.NormalReporter(op) => s"$op($commaArgs)"
+      case p: prim._const                 => handlers.literal(p.value)
+      case lv: prim._letvariable          => handlers.ident(lv.let.name)
+      case pv: prim._procedurevariable    => handlers.ident(pv.name)
+      case call: prim._callreport         => (handlers.ident(call.name) +: args).mkString("Call(", ", ", ")")
+
+      // Blarg
+      case _: prim._unaryminus         => s" -${arg(0)}" // The space is important, because these can be nested --JAB (6/12/14)
+      case _: prim._not                => s"!${arg(0)}"
+      case _: prim._count              => s"${arg(0)}.size()"
+      case _: prim._any                => s"${arg(0)}.nonEmpty()"
+      case _: prim._word               => ("\"\"" +: args).map(arg => s"Dump($arg)").mkString("(", " + ", ")")
+      case _: prim._of                 => generateOf(r)
+      case _: prim.etc._ifelsevalue    => s"(${arg(0)} ? ${arg(1)} : ${arg(2)})"
+      case _: prim.etc._reduce         => s"${arg(1)}.reduce(${arg(0)})"
+      case _: prim.etc._filter         => s"${arg(1)}.filter(${arg(0)})"
+      case _: prim.etc._nvalues        => s"Tasks.nValues(${arg(0)}, ${arg(1)})"
+      case _: prim.etc._basecolors     => "ColorModel.BASE_COLORS"
+      case prim._errormessage(Some(l)) => s"_error_${l.hashCode()}.message"
+
+      // Agentset filtering
       case _: prim._with =>
         val agents = arg(0)
         s"$agents.agentFilter(${handlers.fun(r.args(1), true)})"
@@ -57,51 +54,67 @@ trait Prims {
       case o: prim.etc._all =>
         val agents = arg(0)
         s"$agents.agentAll(${handlers.fun(r.args(1), true)})"
-      case _: prim._of                      => generateOf(r)
-      case _: prim.etc._isagent             => s"NLType(${arg(0)}).isValidAgent()"
-      case _: prim.etc._isagentset          => s"NLType(${arg(0)}).isAgentSet()"
-      case x: prim.etc._isbreed             => s"""NLType(${arg(0)}).isBreed("${x.breedName}")""" // No, you *can't* use single-quotes here; they're actually valid characters in NetLogo breed names!  --JAB (2/26/15)
-      case _: prim.etc._iscommandtask       => s"NLType(${arg(0)}).isCommandTask()"
-      case _: prim.etc._isdirectedlink      => s"NLType(${arg(0)}).isValidDirectedLink()"
-      case _: prim.etc._islink              => s"NLType(${arg(0)}).isValidLink()"
-      case _: prim.etc._islinkset           => s"NLType(${arg(0)}).isLinkSet()"
-      case _: prim.etc._islist              => s"NLType(${arg(0)}).isList()"
-      case _: prim.etc._isnumber            => s"NLType(${arg(0)}).isNumber()"
-      case _: prim.etc._ispatch             => s"NLType(${arg(0)}).isPatch()"
-      case _: prim.etc._ispatchset          => s"NLType(${arg(0)}).isPatchSet()"
-      case _: prim.etc._isreportertask      => s"NLType(${arg(0)}).isReporterTask()"
-      case _: prim.etc._isstring            => s"NLType(${arg(0)}).isString()"
-      case _: prim.etc._isturtle            => s"NLType(${arg(0)}).isValidTurtle()"
-      case _: prim.etc._isturtleset         => s"NLType(${arg(0)}).isTurtleSet()"
-      case _: prim.etc._isundirectedlink    => s"NLType(${arg(0)}).isValidUndirectedLink()"
-      case _: prim.etc._ifelsevalue         => s"(${arg(0)} ? ${arg(1)} : ${arg(2)})"
-      case _: prim.etc._reduce              => s"${arg(1)}.reduce(${arg(0)})"
-      case _: prim.etc._filter              => s"${arg(1)}.filter(${arg(0)})"
-      case _: prim.etc._nvalues             => s"Tasks.nValues(${arg(0)}, ${arg(1)})"
-      case _: prim.etc._basecolors          => "ColorModel.BASE_COLORS"
-      case p: prim.etc._inlinkfrom          => s"LinkPrims.inLinkFrom('${fixBN(p.breedName)}', ${arg(0)})"
-      case p: prim.etc._inlinkneighbor      => s"LinkPrims.isInLinkNeighbor('${fixBN(p.breedName)}', ${arg(0)})"
-      case p: prim.etc._inlinkneighbors     => s"LinkPrims.inLinkNeighbors('${fixBN(p.breedName)}')"
-      case p: prim.etc._linkneighbor        => s"LinkPrims.isLinkNeighbor('${fixBN(p.breedName)}', ${arg(0)})"
-      case p: prim.etc._linkneighbors       => s"LinkPrims.linkNeighbors('${fixBN(p.breedName)}')"
-      case p: prim.etc._linkwith            => s"LinkPrims.linkWith('${fixBN(p.breedName)}', ${arg(0)})"
-      case p: prim.etc._myinlinks           => s"LinkPrims.myInLinks('${fixBN(p.breedName)}')"
-      case p: prim.etc._mylinks             => s"LinkPrims.myLinks('${fixBN(p.breedName)}')"
-      case p: prim.etc._myoutlinks          => s"LinkPrims.myOutLinks('${fixBN(p.breedName)}')"
-      case p: prim.etc._outlinkneighbor     => s"LinkPrims.isOutLinkNeighbor('${fixBN(p.breedName)}', ${arg(0)})"
-      case p: prim.etc._outlinkneighbors    => s"LinkPrims.outLinkNeighbors('${fixBN(p.breedName)}')"
-      case p: prim.etc._outlinkto           => s"LinkPrims.outLinkTo('${fixBN(p.breedName)}', ${arg(0)})"
-      case tv: prim._taskvariable           => s"taskArguments[${tv.vn - 1}]"
-      case prim._errormessage(Some(l))      => s"_error_${l.hashCode()}.message"
-      case _: prim._reportertask =>
-        s"Tasks.reporterTask(${handlers.fun(r.args(0), isReporter = true, isTask = true)})"
-      case _: prim._commandtask =>
-        s"Tasks.commandTask(${handlers.fun(r.args(0), isReporter = false, isTask = true)})"
+
+      // Lookup by breed
+      case b: prim._breed                 => s"""world.turtleManager.turtlesOfBreed("${b.breedName}")"""
+      case b: prim.etc._breedsingular     => s"""world.turtleManager.getTurtleOfBreed("${b.breedName}", ${arg(0)})"""
+      case b: prim.etc._linkbreed         => s"""world.linkManager.linksOfBreed("${b.breedName}")"""
+      case p: prim.etc._linkbreedsingular => s"world.linkManager.getLink(${arg(0)}, ${arg(1)}, '${p.breedName}')"
+      case b: prim.etc._breedhere         => s"""SelfManager.self().breedHere("${b.breedName}")"""
+      case b: prim.etc._breedon           => s"""Prims.breedOn("${b.breedName}", ${arg(0)})"""
+
+      // Variable fetching
+      case bv: prim._breedvariable        => s"SelfPrims.getVariable('${bv.name.toLowerCase}')"
+      case bv: prim._linkbreedvariable    => s"SelfPrims.getVariable('${bv.name.toLowerCase}')"
+      case tv: prim._turtlevariable       => s"SelfPrims.getVariable('${tv.displayName.toLowerCase}')"
+      case tv: prim._linkvariable         => s"SelfPrims.getVariable('${tv.displayName.toLowerCase}')"
+      case tv: prim._turtleorlinkvariable => s"SelfPrims.getVariable('${tv.varName.toLowerCase}')"
+      case pv: prim._patchvariable        => s"SelfPrims.getPatchVariable('${pv.displayName.toLowerCase}')"
+      case ov: prim._observervariable     => s"world.observer.getGlobal('${ov.displayName.toLowerCase}')"
+
+      // Typechecking
+      case _: prim.etc._isagent          => s"NLType(${arg(0)}).isValidAgent()"
+      case _: prim.etc._isagentset       => s"NLType(${arg(0)}).isAgentSet()"
+      case x: prim.etc._isbreed          => s"NLType(${arg(0)}).isBreed(${jsString(x.breedName)})"
+      case _: prim.etc._iscommandtask    => s"NLType(${arg(0)}).isCommandTask()"
+      case _: prim.etc._isdirectedlink   => s"NLType(${arg(0)}).isDirectedLink()"
+      case _: prim.etc._islink           => s"NLType(${arg(0)}).isValidLink()"
+      case _: prim.etc._islinkset        => s"NLType(${arg(0)}).isLinkSet()"
+      case _: prim.etc._islist           => s"NLType(${arg(0)}).isList()"
+      case _: prim.etc._isnumber         => s"NLType(${arg(0)}).isNumber()"
+      case _: prim.etc._ispatch          => s"NLType(${arg(0)}).isPatch()"
+      case _: prim.etc._ispatchset       => s"NLType(${arg(0)}).isPatchSet()"
+      case _: prim.etc._isreportertask   => s"NLType(${arg(0)}).isReporterTask()"
+      case _: prim.etc._isstring         => s"NLType(${arg(0)}).isString()"
+      case _: prim.etc._isturtle         => s"NLType(${arg(0)}).isValidTurtle()"
+      case _: prim.etc._isturtleset      => s"NLType(${arg(0)}).isTurtleSet()"
+      case _: prim.etc._isundirectedlink => s"NLType(${arg(0)}).isUndirectedLink()"
+
+      // Link finding
+      case p: prim.etc._inlinkfrom       => s"LinkPrims.inLinkFrom('${fixBN(p.breedName)}', ${arg(0)})"
+      case p: prim.etc._inlinkneighbor   => s"LinkPrims.isInLinkNeighbor('${fixBN(p.breedName)}', ${arg(0)})"
+      case p: prim.etc._inlinkneighbors  => s"LinkPrims.inLinkNeighbors('${fixBN(p.breedName)}')"
+      case p: prim.etc._linkneighbor     => s"LinkPrims.isLinkNeighbor('${fixBN(p.breedName)}', ${arg(0)})"
+      case p: prim.etc._linkneighbors    => s"LinkPrims.linkNeighbors('${fixBN(p.breedName)}')"
+      case p: prim.etc._linkwith         => s"LinkPrims.linkWith('${fixBN(p.breedName)}', ${arg(0)})"
+      case p: prim.etc._myinlinks        => s"LinkPrims.myInLinks('${fixBN(p.breedName)}')"
+      case p: prim.etc._mylinks          => s"LinkPrims.myLinks('${fixBN(p.breedName)}')"
+      case p: prim.etc._myoutlinks       => s"LinkPrims.myOutLinks('${fixBN(p.breedName)}')"
+      case p: prim.etc._outlinkneighbor  => s"LinkPrims.isOutLinkNeighbor('${fixBN(p.breedName)}', ${arg(0)})"
+      case p: prim.etc._outlinkneighbors => s"LinkPrims.outLinkNeighbors('${fixBN(p.breedName)}')"
+      case p: prim.etc._outlinkto        => s"LinkPrims.outLinkTo('${fixBN(p.breedName)}', ${arg(0)})"
+
+      // Tasks
+      case tv: prim._taskvariable => s"taskArguments[${tv.vn - 1}]"
+      case _:  prim._reportertask => s"Tasks.reporterTask(${handlers.fun(r.args(0), isReporter = true, isTask = true)})"
+      case _:  prim._commandtask  => s"Tasks.commandTask(${handlers.fun(r.args(0), isReporter = false, isTask = true)})"
       case rr: prim.etc._runresult =>
         val taskInputs = args.tail.mkString(", ")
         s"(${arg(0)})($taskInputs)"
+
       case _ =>
         failCompilation(s"unknown primitive: ${r.reporter.getClass.getName}", r.instruction.token)
+
     }
   }
 
@@ -302,6 +315,12 @@ trait Prims {
         |${handlers.indented(body)}
         |}""".stripMargin
   }
+
+  // Intended to take in a NetLogo identifier (e.g. breed names, varnames, `turtles-own` varnames) and give back a
+  // string for use in JavaScript.  We cannot simply wrap the string in single quotes, since single quotes are
+  // actually valid characters in NetLogo identifiers!  --JAB (2/26/15)
+  private def jsString(ident: String): String =
+    '"' + ident + '"'
 
   private def failCompilation(msg: String, token: Token): Nothing =
     throw new CompilerException(msg, token.start, token.end, token.filename)

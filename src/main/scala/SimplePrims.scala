@@ -26,23 +26,19 @@ object SimplePrims {
   object InfixReporter {
     def unapply(r: Reporter): Option[String] =
       PartialFunction.condOpt(r) {
-        case _: prim.etc._plus           => "+"
-        case _: prim._minus              => "-"
-        case _: prim.etc._mult           => "*"
-        case _: prim.etc._div            => "/"
-        case _: prim._and                => "&&"
-        case _: prim._or                 => "||"
-        case _: prim.etc._xor            => "!="
+        case _: prim.etc._plus      => "+"
+        case _: prim._minus         => "-"
+        case _: prim.etc._mult      => "*"
+        case _: prim.etc._div       => "/"
+        case _: prim._and           => "&&"
+        case _: prim._or            => "||"
+        case _: prim.etc._xor       => "!="
       }
   }
 
   object NormalReporter {
     def unapply(r: Reporter): Option[String] =
       PartialFunction.condOpt(r) {
-        case _: prim._lessthan               => "Prims.lt"
-        case _: prim._greaterthan            => "Prims.gt"
-        case _: prim.etc._greaterorequal     => "Prims.gte"
-        case _: prim.etc._lessorequal        => "Prims.lte"
         case _: prim._turtle                 => "world.turtleManager.getTurtle"
         case _: prim.etc._patch              => "world.getPatchAt"
         case _: prim._neighbors              => "SelfPrims.getNeighbors"
@@ -72,8 +68,6 @@ object SimplePrims {
         case _: prim.etc._mean               => "ListPrims.mean"
         case _: prim._sum                    => "ListPrims.sum"
         case _: prim.etc._map                => "Tasks.map"
-        case _: prim.etc._abs                => "StrictMath.abs"
-        case _: prim.etc._pow                => "StrictMath.pow"
         case _: prim._random                 => "Prims.random"
         case _: prim.etc._randomfloat        => "Prims.randomFloat"
         case _: prim.etc._randomxcor         => "world.topology.randomXcor"
@@ -101,20 +95,31 @@ object SimplePrims {
         case _: prim.etc._turtleson          => "Prims.turtlesOn"
         case _: prim.etc._turtlesat          => "SelfManager.self().turtlesAt"
         case _: prim._other                  => "SelfPrims.other"
-        case _: prim.etc._sin                => "Trig.unsquashedSin"
-        case _: prim.etc._cos                => "Trig.unsquashedCos"
-        case _: prim.etc._atan               => "Trig.atan"
-        case _: prim.etc._floor              => "StrictMath.floor"
-        case _: prim.etc._ceil               => "StrictMath.ceil"
-        case _: prim.etc._log                => "Prims.log"
-        case _: prim.etc._int                => "Prims.toInt"
-        case _: prim.etc._round              => "StrictMath.round"
-        case _: prim.etc._precision          => "Prims.precision"
+
+        // Trig
+        case _: prim.etc._atan => "Trig.atan"
+        case _: prim.etc._cos  => "Trig.unsquashedCos"
+        case _: prim.etc._sin  => "Trig.unsquashedSin"
+
+        // Math
+        case _: prim.etc._abs            => "StrictMath.abs"
+        case _: prim.etc._ceil           => "StrictMath.ceil"
+        case _: prim.etc._floor          => "StrictMath.floor"
+        case _: prim._greaterthan        => "Prims.gt"
+        case _: prim._lessthan           => "Prims.lt"
+        case _: prim.etc._greaterorequal => "Prims.gte"
+        case _: prim.etc._lessorequal    => "Prims.lte"
+        case _: prim.etc._int            => "Prims.toInt"
+        case _: prim.etc._log            => "Prims.log"
+        case _: prim.etc._mod            => "Prims.mod"
+        case _: prim.etc._pow            => "StrictMath.pow"
+        case _: prim.etc._precision      => "Prims.precision"
+        case _: prim.etc._round          => "StrictMath.round"
+        case _: prim.etc._sqrt           => "StrictMath.sqrt"
+
         case _: prim.etc._link               => "world.linkManager.getLink"
         case _: prim.etc._bothends           => "SelfManager.self().bothEnds"
         case _: prim.etc._otherend           => "SelfManager.self().otherEnd"
-        case _: prim.etc._sqrt               => "StrictMath.sqrt"
-        case _: prim.etc._mod                => "Prims.mod"
         case _: prim.etc._empty              => "ListPrims.empty"
         case _: prim.etc._dx                 => "SelfManager.self().dx"
         case _: prim.etc._dy                 => "SelfManager.self().dy"
