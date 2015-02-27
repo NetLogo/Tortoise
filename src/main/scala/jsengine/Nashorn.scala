@@ -56,6 +56,8 @@ class Nashorn {
           Iterator.from(0)
             .map(x => fromNashorn(a.get(x)))
             .take(a.get("length").asInstanceOf[Number].intValue))
+      case a: jdk.nashorn.api.scripting.ScriptObjectMirror if a.get("id") == -1 =>
+        Nobody
       // this should probably reject unknown types instead of passing them through.
       // known types: java.lang.Double, java.lang.Boolean, String
       case l: java.lang.Long =>
