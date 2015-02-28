@@ -21,6 +21,14 @@ module.exports = {
   unsquashedCos: (degrees) ->
     StrictMath.cos(StrictMath.toRadians(degrees))
 
+  # (Number) => Number
+  acos: (radians) ->
+    @_validateNumber(StrictMath.toDegrees(StrictMath.acos(radians)))
+
+  # (Number) => Number
+  asin: (radians) ->
+    @_validateNumber(StrictMath.toDegrees(StrictMath.asin(radians)))
+
   # (Number, Number) => Number
   atan: (d1, d2) ->
     if d1 is 0 and d2 is 0
@@ -33,9 +41,22 @@ module.exports = {
       (StrictMath.toDegrees(StrictMath.atan2(d1, d2)) + 360) % 360
 
   # (Number) => Number
+  tan: (degrees) ->
+    StrictMath.tan(StrictMath.toRadians(degrees))
+
+  # (Number) => Number
   _squash: (x) ->
     if StrictMath.abs(x) < 3.2e-15
       0
+    else
+      x
+
+  # (Number) => Number
+  _validateNumber: (x) ->
+    if not isFinite(x)
+      throw new Error("math operation produced a non-number")
+    else if isNaN(x)
+      throw new Error("math operation produced a number too large for NetLogo")
     else
       x
 

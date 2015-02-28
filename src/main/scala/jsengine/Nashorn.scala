@@ -82,15 +82,19 @@ class Nashorn {
 object Strict {
   val PI = StrictMath.PI
   def abs(x: Double)              = StrictMath.abs(x)
+  def acos(x: Double)             = StrictMath.acos(x)
+  def asin(x: Double)             = StrictMath.asin(x)
   def atan2(x: Double, y: Double) = StrictMath.atan2(x, y)
   def ceil(x: Double)             = StrictMath.ceil(x)
   def cos(x: Double)              = StrictMath.cos(x)
   def exp(x: Double)              = StrictMath.exp(x)
   def floor(x: Double)            = StrictMath.floor(x)
+  def log(x: Double)              = StrictMath.log(x)
   def pow(x: Double, y: Double)   = StrictMath.pow(x, y)
   def round(x: Double)            = StrictMath.round(x)
   def sin(x: Double)              = StrictMath.sin(x)
   def sqrt(x: Double)             = StrictMath.sqrt(x)
+  def tan(x: Double)              = StrictMath.tan(x)
   def toDegrees(x: Double)        = StrictMath.toDegrees(x)
   def toRadians(x: Double)        = StrictMath.toRadians(x)
 }

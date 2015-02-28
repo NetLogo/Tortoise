@@ -30,6 +30,7 @@ object SimplePrims {
         case _: prim._minus         => "-"
         case _: prim.etc._mult      => "*"
         case _: prim.etc._div       => "/"
+        case _: prim.etc._remainder => "%"
         case _: prim._and           => "&&"
         case _: prim._or            => "||"
         case _: prim.etc._xor       => "!="
@@ -97,9 +98,12 @@ object SimplePrims {
         case _: prim._other                  => "SelfPrims.other"
 
         // Trig
+        case _: prim.etc._acos => "Trig.acos"
+        case _: prim.etc._asin => "Trig.asin"
         case _: prim.etc._atan => "Trig.atan"
         case _: prim.etc._cos  => "Trig.unsquashedCos"
         case _: prim.etc._sin  => "Trig.unsquashedSin"
+        case _: prim.etc._tan  => "Trig.tan"
 
         // Math
         case _: prim.etc._abs            => "StrictMath.abs"
@@ -110,6 +114,7 @@ object SimplePrims {
         case _: prim.etc._greaterorequal => "Prims.gte"
         case _: prim.etc._lessorequal    => "Prims.lte"
         case _: prim.etc._int            => "Prims.toInt"
+        case _: prim.etc._ln             => "StrictMath.log"
         case _: prim.etc._log            => "Prims.log"
         case _: prim.etc._mod            => "Prims.mod"
         case _: prim.etc._pow            => "StrictMath.pow"
