@@ -50,6 +50,7 @@ class RuntimeInit(program: Program, model: Model) {
        |var Tasks     = tortoise_require('engine/prim/tasks');
        |
        |var AgentModel = tortoise_require('agentmodel');
+       |var Meta       = tortoise_require('meta');
        |var Random     = tortoise_require('shim/random');
        |var StrictMath = tortoise_require('shim/strictmath');
        |""".stripMargin

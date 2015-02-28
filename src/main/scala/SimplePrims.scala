@@ -20,6 +20,8 @@ object SimplePrims {
         case _: prim.etc._maxpycor         => "world.topology.maxPycor"
         case _: prim.etc._worldwidth       => "world.topology.width"
         case _: prim.etc._worldheight      => "world.topology.height"
+        case _: prim.etc._netlogoapplet    => "Meta.isApplet"
+        case _: prim.etc._netlogoversion   => "Meta.version"
       }
   }
 
