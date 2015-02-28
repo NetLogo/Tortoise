@@ -15,8 +15,9 @@ Dump =
       "(reporter task)"
     else if Tasks.isCommandTask(x)
       "(command task)"
+    else if Type(x).isString()
+      if isReadable then '"' + x + '"' else x
     else
-      str = String(x)
-      if isReadable then '"' + str + '"' else str
+      String(x)
 
 module.exports = Dump

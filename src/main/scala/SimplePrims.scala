@@ -164,7 +164,6 @@ object SimplePrims {
         case _: prim.etc._autoploton        => "plotManager.enableAutoplotting"
         case _: prim.etc._autoplotoff       => "plotManager.disableAutoplotting"
         case _: prim.etc._outputprint       => "Prims.outputPrint"
-        case _: prim.etc._print             => "notImplemented('print', undefined)"
         case _: prim.etc._clearall          => "world.clearAll"
         case _: prim.etc._clearallplots     => "plotManager.clearAllPlots"
         case _: prim.etc._clearplot         => "plotManager.clearPlot"
@@ -220,6 +219,13 @@ object SimplePrims {
         case _: prim.etc._resetperspective  => "world.observer.resetPerspective"
         case _: prim.etc._layoutspring      => "LayoutManager.layoutSpring"
         case _: prim.etc._changetopology    => "world.changeTopology"
+
+        // Text-printing
+        case _: prim.etc._print => "PrintPrims.print"
+        case _: prim.etc._show  => "PrintPrims.show(SelfManager.self)"
+        case _: prim.etc._type  => "PrintPrims.type"
+        case _: prim.etc._write => "PrintPrims.write"
+
       }
   }
 

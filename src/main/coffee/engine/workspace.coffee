@@ -11,11 +11,13 @@ LayoutManager = require('./prim/layoutmanager')
 LinkPrims     = require('./prim/linkprims')
 ListPrims     = require('./prim/listprims')
 Prims         = require('./prim/prims')
+PrintPrims    = require('./prim/printprims')
 SelfPrims     = require('./prim/selfprims')
 RNG           = require('tortoise/util/rng')
 Timer         = require('tortoise/util/timer')
 
 { Config: MouseConfig, Prims: MousePrims } = require('./prim/mouseprims')
+{ Config: PrintConfig, Prims: PrintPrims } = require('./prim/printprims')
 
 class MiniWorkspace
   # (SelfManager, Updater, BreedManager, RNG, PlotManager) => MiniWorkspace
@@ -28,6 +30,8 @@ module.exports =
 
     mouseConfig = modelConfig?.mouse ? new MouseConfig
     plots       = modelConfig?.plots ? []
+    printConfig = modelConfig?.print ? new PrintConfig
+
     rng         = new RNG
 
     selfManager  = new SelfManager
@@ -43,6 +47,7 @@ module.exports =
     linkPrims     = new LinkPrims(world)
     listPrims     = new ListPrims(Hasher, prims.equality.bind(prims), rng.nextInt)
     mousePrims    = new MousePrims(mouseConfig)
+    printPrims    = new PrintPrims(printConfig, Dump)
 
     {
       selfManager
@@ -53,6 +58,7 @@ module.exports =
       mousePrims
       plotManager
       prims
+      printPrims
       rng
       selfPrims
       timer

@@ -26,6 +26,7 @@ class RuntimeInit(program: Program, model: Model) {
        |var MousePrims    = workspace.mousePrims;
        |var plotManager   = workspace.plotManager;
        |var Prims         = workspace.prims;
+       |var PrintPrims    = workspace.printPrims;
        |var SelfPrims     = workspace.selfPrims;
        |var SelfManager   = workspace.selfManager;
        |var Updater       = workspace.updater;
