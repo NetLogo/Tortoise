@@ -21,6 +21,7 @@ private[tortoise] trait ModelConfigGenerator {
       throw new CompilerException(message, Eof.start, Eof.end, Eof.filename)
     }
 
+    // If `javax` exists, we're in Nashorn, and, therefore, testing --JAB (3/2/15)
     s"""var modelConfig  = ${getOrElse("window.modelConfig")("{}")};
        |var modelPlotOps = ${getOrElse("modelConfig.plotOps")("{}")};
        |
@@ -29,6 +30,7 @@ private[tortoise] trait ModelConfigGenerator {
        |var PlotOps   = tortoise_require('engine/plot/plotops');
        |
        |modelConfig.plots = ${model.plots.map(_.toJS).mkString("[", ", ", "]")};
+       |if (javax !== undefined) { modelConfig.output = { clear: function(){}, write: function(str) { context.getWriter().print(str); } } }
        |
        |""".stripMargin
 
@@ -40,7 +42,8 @@ private[tortoise] trait ModelConfigGenerator {
   private val getOrElse = (expr: String) => (`default`: String) =>
     s"""(typeof $expr !== "undefined" && $expr !== null) ? $expr : ${`default`}"""
 
-  private def compileInContext(code: String, plotNameRaw: String, penNameOpt: Option[String] = None)(implicit compileCommand: CompileFunc) = {
+  private def compileInContext(code: String, plotNameRaw: String, penNameOpt: Option[String] = None)
+                              (implicit compileCommand: CompileFunc): String = {
     val penName     = penNameOpt map (name => s"'$name'") getOrElse "undefined"
     val f           = (compileCommand andThen (_.value) andThen thunkifyProcedure)(code)
     val withContext = thunkifyProcedure(s"plotManager.withTemporaryContext('$plotNameRaw', $penName)($f)")

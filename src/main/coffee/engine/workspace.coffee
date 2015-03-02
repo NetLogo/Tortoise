@@ -12,12 +12,14 @@ LinkPrims     = require('./prim/linkprims')
 ListPrims     = require('./prim/listprims')
 Prims         = require('./prim/prims')
 PrintPrims    = require('./prim/printprims')
+OutputPrims   = require('./prim/outputprims')
 SelfPrims     = require('./prim/selfprims')
 RNG           = require('tortoise/util/rng')
 Timer         = require('tortoise/util/timer')
 
-{ Config: MouseConfig, Prims: MousePrims } = require('./prim/mouseprims')
-{ Config: PrintConfig, Prims: PrintPrims } = require('./prim/printprims')
+{ Config: MouseConfig,  Prims: MousePrims }  = require('./prim/mouseprims')
+{ Config: PrintConfig,  Prims: PrintPrims }  = require('./prim/printprims')
+{ Config: OutputConfig, Prims: OutputPrims } = require('./prim/outputprims')
 
 class MiniWorkspace
   # (SelfManager, Updater, BreedManager, RNG, PlotManager) => MiniWorkspace
@@ -28,9 +30,10 @@ module.exports =
 
     worldArgs = arguments # If you want `Workspace` to take more parameters--parameters not related to `World`--just keep returning new functions
 
-    mouseConfig = modelConfig?.mouse ? new MouseConfig
-    plots       = modelConfig?.plots ? []
-    printConfig = modelConfig?.print ? new PrintConfig
+    mouseConfig  = modelConfig?.mouse  ? new MouseConfig
+    plots        = modelConfig?.plots  ? []
+    printConfig  = modelConfig?.print  ? new PrintConfig
+    outputConfig = modelConfig?.output ? new OutputConfig
 
     rng         = new RNG
 
@@ -48,6 +51,7 @@ module.exports =
     listPrims     = new ListPrims(Hasher, prims.equality.bind(prims), rng.nextInt)
     mousePrims    = new MousePrims(mouseConfig)
     printPrims    = new PrintPrims(printConfig, Dump)
+    outputPrims   = new OutputPrims(outputConfig, Dump)
 
     {
       selfManager
@@ -59,6 +63,7 @@ module.exports =
       plotManager
       prims
       printPrims
+      outputPrims
       rng
       selfPrims
       timer

@@ -163,7 +163,6 @@ object SimplePrims {
       PartialFunction.condOpt(c) {
         case _: prim.etc._autoploton        => "plotManager.enableAutoplotting"
         case _: prim.etc._autoplotoff       => "plotManager.disableAutoplotting"
-        case _: prim.etc._outputprint       => "Prims.outputPrint"
         case _: prim.etc._clearall          => "world.clearAll"
         case _: prim.etc._clearallplots     => "plotManager.clearAllPlots"
         case _: prim.etc._clearplot         => "plotManager.clearPlot"
@@ -225,6 +224,13 @@ object SimplePrims {
         case _: prim.etc._show  => "PrintPrims.show(SelfManager.self)"
         case _: prim.etc._type  => "PrintPrims.type"
         case _: prim.etc._write => "PrintPrims.write"
+
+        // Output
+        case _: prim.etc._clearoutput => "OutputPrims.clear"
+        case _: prim.etc._outputprint => "OutputPrims.print"
+        case _: prim.etc._outputshow  => "OutputPrims.show(SelfManager.self)"
+        case _: prim.etc._outputtype  => "OutputPrims.type"
+        case _: prim.etc._outputwrite => "OutputPrims.write"
 
       }
   }

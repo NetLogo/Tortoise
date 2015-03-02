@@ -9,7 +9,6 @@ Patch            = require('../core/patch')
 PatchSet         = require('../core/patchset')
 Turtle           = require('../core/turtle')
 TurtleSet        = require('../core/turtleset')
-Printer          = require('tortoise/shim/printer')
 Exception        = require('tortoise/util/exception')
 Timer            = require('tortoise/util/timer')
 Type             = require('tortoise/util/typechecker')
@@ -118,11 +117,6 @@ module.exports =
     # (Number, Number) => Number
     mod: (a, b) ->
       a %% b
-
-    # (Any) => Unit
-    outputPrint: (x) ->
-      Printer(@_dumper(x))
-      return
 
     # [T <: (Array[Patch]|Patch|AbstractAgentSet[Patch])] @ (T*) => PatchSet
     patchSet: (inputs...) ->

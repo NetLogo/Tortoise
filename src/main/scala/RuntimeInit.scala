@@ -27,6 +27,7 @@ class RuntimeInit(program: Program, model: Model) {
        |var plotManager   = workspace.plotManager;
        |var Prims         = workspace.prims;
        |var PrintPrims    = workspace.printPrims;
+       |var OutputPrims   = workspace.outputPrims;
        |var SelfPrims     = workspace.selfPrims;
        |var SelfManager   = workspace.selfManager;
        |var Updater       = workspace.updater;
