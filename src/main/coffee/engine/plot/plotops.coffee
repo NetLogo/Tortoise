@@ -1,6 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-ColorModel = require('tortoise/util/colormodel')
+ColorModel = require('../core/colormodel')
 
 class PenOps
 

@@ -1,12 +1,12 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 _          = require('lodash')
+ColorModel = require('../colormodel')
 Nobody     = require('../nobody')
 Turtle     = require('../turtle')
 TurtleSet  = require('../turtleset')
 Builtins   = require('../structure/builtins')
 IDManager  = require('./idmanager')
-ColorModel = require('tortoise/util/colormodel')
 
 { DeathInterrupt: Death }  = require('tortoise/util/exception')
 

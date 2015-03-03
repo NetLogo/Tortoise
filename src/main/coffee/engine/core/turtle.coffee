@@ -2,12 +2,12 @@
 
 _                 = require('lodash')
 AbstractAgentSet  = require('./abstractagentset')
+ColorModel        = require('./colormodel')
 Nobody            = require('./nobody')
 TurtleLinkManager = require('./turtlelinkmanager')
 TurtleSet         = require('./turtleset')
 PenManager        = require('./structure/penmanager')
 VariableManager   = require('./structure/variablemanager')
-ColorModel        = require('tortoise/util/colormodel')
 Comparator        = require('tortoise/util/comparator')
 JSType            = require('tortoise/util/typechecker')
 Trig              = require('tortoise/util/trig')

@@ -2,10 +2,10 @@
 
 _                = require('lodash')
 AbstractAgentSet = require('./abstractagentset')
+ColorModel       = require('./colormodel')
 linkCompare      = require('./structure/linkcompare')
 VariableManager  = require('./structure/variablemanager')
 TurtleSet        = require('./turtleset')
-ColorModel       = require('tortoise/util/colormodel')
 JSType           = require('tortoise/util/typechecker')
 
 { EQUALS: EQ, GREATER_THAN: GT, LESS_THAN: LT, } = require('tortoise/util/comparator')

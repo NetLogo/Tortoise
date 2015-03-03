@@ -1,7 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 _      = require('lodash')
-JSType = require('./typechecker')
+JSType = require('tortoise/util/typechecker')
 
 # type RGB = (Number, Number, Number)
 
