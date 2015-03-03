@@ -1,7 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 _      = require('lodash')
-Type   = require('./typechecker')
+JSType = require('./typechecker')
 
 # type RGB = (Number, Number, Number)
 
@@ -61,7 +61,7 @@ module.exports = {
 
   # (Number) => RGB
   colorToRGB: (color) ->
-    type = Type(color)
+    type = JSType(color)
     if type.isNumber()
       RGBCache[Math.floor(color * 10)]
     else if type.isArray()
@@ -83,7 +83,7 @@ module.exports = {
 
   # (Number) => Number
   wrapColor: (color) ->
-    if Type(color).isArray()
+    if JSType(color).isArray()
       color
     else # Bah!  This branch ought to be equivalent to `color %% ColorMax`, but that causes floating-point discrepencies. --JAB (7/30/14)
       modColor = color % ColorMax

@@ -1,7 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_    = require('lodash')
-Type = require('tortoise/util/typechecker')
+_      = require('lodash')
+JSType = require('tortoise/util/typechecker')
 
 { StopInterrupt: Stop } = require('tortoise/util/exception')
 
@@ -100,7 +100,7 @@ module.exports.Pen = class Pen
   # (Array[Number]) => Unit
   drawHistogramFrom: (ys) ->
     @reset(true)
-    nums = ys.filter((y) -> Type(y).isNumber())
+    nums = ys.filter((y) -> JSType(y).isNumber())
     _(nums).countBy().forEach((n, key) => @addPoint(Number(key), n); return).value()
     return
 

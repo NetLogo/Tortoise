@@ -11,7 +11,7 @@ StrictMath       = require('tortoise/shim/strictmath')
 Comparator       = require('tortoise/util/comparator')
 Exception        = require('tortoise/util/exception')
 stableSort       = require('tortoise/util/stablesort')
-Type             = require('tortoise/util/typechecker')
+JSType           = require('tortoise/util/typechecker')
 
 # For most of this stuff, Lodashing it is no good, since Lodash doesn't handle strings correctly.  Could use Underscore.string... --JAB (5/5/14)
 module.exports =
@@ -72,9 +72,9 @@ module.exports =
 
     # [Item, Container <: (Array[Item]|String|AbstractAgentSet[Item])] @ (Item, Container) => Boolean
     member: (x, xs) ->
-      if Type(xs).isArray()
+      if JSType(xs).isArray()
         _(xs).some((y) => @_equality(x, y))
-      else if Type(x).isString()
+      else if JSType(x).isString()
         xs.indexOf(x) isnt -1
       else # agentset
         xs.exists((a) -> x is a)
@@ -85,7 +85,7 @@ module.exports =
 
     # [Item] @ (Number, ListOrSet[Item]) => ListOrSet[Item]
     nOf: (n, agentsOrList) ->
-      if Type(agentsOrList).isArray()
+      if JSType(agentsOrList).isArray()
         @_nOfArray(n, agentsOrList)
       else if agentsOrList instanceof AbstractAgentSet
         items    = agentsOrList.iterator().toArray()
@@ -109,7 +109,7 @@ module.exports =
     # [Item, Container <: (Array[Item]|String|AbstractAgentSet[Item])] @ (Item, Container) => Number|Boolean
     position: (x, xs) ->
       index =
-        if Type(xs).isArray()
+        if JSType(xs).isArray()
           _(xs).findIndex((y) => @_equality(x, y))
         else
           xs.indexOf(x)
@@ -141,7 +141,7 @@ module.exports =
 
     # [T] @ (Array[T]|String) => Array[T]|String
     reverse: (xs) ->
-      if Type(xs).isArray()
+      if JSType(xs).isArray()
         xs[..].reverse()
       else if typeof(xs) is "string"
         xs.split("").reverse().join("")
@@ -150,14 +150,14 @@ module.exports =
 
     # [Item, Container <: (Array[Item]|String)] @ (Item, Container) => Container
     remove: (x, xs) ->
-      if Type(xs).isArray()
+      if JSType(xs).isArray()
         _(xs).filter((y) => not @_equality(x, y)).value()
       else
         xs.replace(new RegExp(x, "g"), "") # Replace all occurences of `x` --JAB (5/26/14)
 
     # [Item, Container <: (Array[Item]|String)] @ (Number, Container) => Container
     removeItem: (n, xs) ->
-      if Type(xs).isArray()
+      if JSType(xs).isArray()
         temp = xs[..]
         temp.splice(n, 1) # Cryptic, but effective --JAB (5/26/14)
         temp
@@ -168,7 +168,7 @@ module.exports =
 
     # [Item, Container <: (Array[Item]|String)] @ (Number, Container, Item) => Container
     replaceItem: (n, xs, x) ->
-      if Type(xs).isArray()
+      if JSType(xs).isArray()
         temp = xs[..]
         temp.splice(n, 1, x)
         temp
@@ -181,7 +181,7 @@ module.exports =
     sentence: (xs...) ->
       f =
         (acc, x) ->
-          if Type(x).isArray()
+          if JSType(x).isArray()
             acc.concat(x)
           else
             acc.push(x)
@@ -190,15 +190,15 @@ module.exports =
 
     # [T] @ (ListOrSet[T]) => ListOrSet[T]
     sort: (xs) ->
-      if Type(xs).isArray()
+      if JSType(xs).isArray()
         filtered     = _.filter(xs, (x) -> x isnt Nobody)
         forAll       = (f) -> _.all(filtered, f)
         agentClasses = [Turtle, Patch, Link]
         if _(filtered).isEmpty()
           filtered
-        else if forAll((x) -> Type(x).isNumber())
+        else if forAll((x) -> JSType(x).isNumber())
           filtered.sort((x, y) -> Comparator.numericCompare(x, y).toInt)
-        else if forAll((x) -> Type(x).isString())
+        else if forAll((x) -> JSType(x).isString())
           filtered.sort()
         else if _(agentClasses).some((agentClass) -> forAll((x) -> x instanceof agentClass))
           stableSort(filtered)((x, y) -> x.compare(y).toInt)
@@ -223,7 +223,7 @@ module.exports =
 
     # [T] @ (Array[T]) => Number
     variance: (xs) ->
-      numbers = _(xs).filter((x) -> Type(x).isNumber())
+      numbers = _(xs).filter((x) -> JSType(x).isNumber())
       count   = numbers.size()
 
       if count < 2

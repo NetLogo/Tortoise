@@ -1,7 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_    = require('lodash')
-Type = require('tortoise/util/typechecker')
+_      = require('lodash')
+JSType = require('tortoise/util/typechecker')
 
 module.exports = class PlotManager
 
@@ -37,7 +37,7 @@ module.exports = class PlotManager
   drawHistogramFrom: (list) ->
     @_withPlot(
       (plot) ->
-        numbers = _(list).filter((x) -> Type(x).isNumber()).value()
+        numbers = _(list).filter((x) -> JSType(x).isNumber()).value()
         plot.drawHistogramFrom(numbers)
     )
     return

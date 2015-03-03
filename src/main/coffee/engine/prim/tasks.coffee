@@ -2,7 +2,7 @@
 
 _         = require('lodash')
 Exception = require('tortoise/util/exception')
-Type      = require('tortoise/util/typechecker')
+JSType    = require('tortoise/util/typechecker')
 
 module.exports = {
 
@@ -18,11 +18,11 @@ module.exports = {
 
   # (Function) => Boolean
   isReporterTask: (x) ->
-    Type(x).isFunction() and x.isReporter
+    JSType(x).isFunction() and x.isReporter
 
   # (Function) => Boolean
   isCommandTask: (x) ->
-    Type(x).isFunction() and not x.isReporter
+    JSType(x).isFunction() and not x.isReporter
 
   # [Result] @ (Product => Result, Array[Any]*) => Array[Result]
   map: (fn, lists...) ->

@@ -26,7 +26,7 @@ trait Prims {
       case b: prim.etc._breedsingular       => s"""world.turtleManager.getTurtleOfBreed("${b.breedName}", ${arg(0)})"""
       case b: prim.etc._breedhere           => s"""SelfManager.self().breedHere("${b.breedName}")"""
       case b: prim.etc._breedon             => s"""Prims.breedOn("${b.breedName}", ${arg(0)})"""
-      case x: prim.etc._isstring            => s"Type(${arg(0)}).isString()"
+      case x: prim.etc._isstring            => s"JSType(${arg(0)}).isString()"
       case p: prim._const                   => handlers.literal(p.value)
       case lv: prim._letvariable            => handlers.ident(lv.let.name)
       case pv: prim._procedurevariable      => handlers.ident(pv.name)

@@ -37,7 +37,7 @@ class RuntimeInit(program: Program, model: Model) {
        |var ColorModel     = tortoise_require('util/colormodel');
        |var Exception      = tortoise_require('util/exception');
        |var Trig           = tortoise_require('util/trig');
-       |var Type           = tortoise_require('util/typechecker');
+       |var JSType         = tortoise_require('util/typechecker');
        |var notImplemented = tortoise_require('util/notimplemented');
        |
        |var Dump      = tortoise_require('engine/dump');

@@ -6,8 +6,8 @@ This was made specifically to compensate for the fact that Lodash's typechecking
 into the sorting code and caused a 25% performance hit in BZ Benchmark. --JAB (4/30/14)
 ###
 
-class Type
-  constructor: (@_x) -> # (Any) => Type
+class JSType
+  constructor: (@_x) -> # (Any) => JSType
   isArray:    -> Array.isArray(@_x)
   isBoolean:  -> typeof(@_x) is "boolean"
   isFunction: -> typeof(@_x) is "function"
@@ -15,4 +15,4 @@ class Type
   isObject:   -> typeof(@_x) is "object"
   isString:   -> typeof(@_x) is "string"
 
-module.exports = (x) -> new Type(x)
+module.exports = (x) -> new JSType(x)

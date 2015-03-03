@@ -11,7 +11,7 @@ Turtle           = require('../core/turtle')
 TurtleSet        = require('../core/turtleset')
 Exception        = require('tortoise/util/exception')
 Timer            = require('tortoise/util/timer')
-Type             = require('tortoise/util/typechecker')
+JSType           = require('tortoise/util/typechecker')
 
 { EQUALS: EQ, GREATER_THAN: GT, LESS_THAN: LT, } = require('tortoise/util/comparator')
 
@@ -51,7 +51,7 @@ module.exports =
     equality: (a, b) ->
       if a? and b?
         (a is b) or ( # This code has been purposely rewritten into a crude, optimized form --JAB (3/19/14)
-          if Type(a).isArray() and Type(b).isArray()
+          if JSType(a).isArray() and JSType(b).isArray()
             a.length is b.length and a.every((elem, i) => @equality(elem, b[i]))
           else if a instanceof AbstractAgentSet and b instanceof AbstractAgentSet
             subsumes = (xs, ys) =>
@@ -78,7 +78,7 @@ module.exports =
 
     # (Any, Any) => Boolean
     gt: (a, b) ->
-      if (Type(a).isString() and Type(b).isString()) or (Type(a).isNumber() and Type(b).isNumber())
+      if (JSType(a).isString() and JSType(b).isString()) or (JSType(a).isNumber() and JSType(b).isNumber())
         a > b
       else if typeof(a) is typeof(b) and a.compare? and b.compare?
         a.compare(b) is GT
@@ -99,7 +99,7 @@ module.exports =
 
     # (Any, Any) => Boolean
     lt: (a, b) ->
-      if (Type(a).isString() and Type(b).isString()) or (Type(a).isNumber() and Type(b).isNumber())
+      if (JSType(a).isString() and JSType(b).isString()) or (JSType(a).isNumber() and JSType(b).isNumber())
         a < b
       else if typeof(a) is typeof(b) and a.compare? and b.compare?
         a.compare(b) is LT
@@ -216,7 +216,7 @@ module.exports =
         buildItems =
           (inputs) =>
             for input in inputs
-              if Type(input).isArray()
+              if JSType(input).isArray()
                 buildItems(input)
               else if input instanceof tClass
                 addT(input)

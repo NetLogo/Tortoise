@@ -36,4 +36,4 @@ module.exports =
     # we can pass around that array.  Passing thunks seems to be the better option to me.  --JAB (9/7/14)
     # [T] @ ((() => Array[T])|Array[T]) => Array[T]
     _unwrap: (agents) ->
-      if Type(agents).isFunction() then agents() else agents[..]
+      if JSType(agents).isFunction() then agents() else agents[..]
