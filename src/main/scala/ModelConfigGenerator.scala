@@ -30,7 +30,7 @@ private[tortoise] trait ModelConfigGenerator {
        |var PlotOps   = tortoise_require('engine/plot/plotops');
        |
        |modelConfig.plots = ${model.plots.map(_.toJS).mkString("[", ", ", "]")};
-       |if (javax !== undefined) { modelConfig.output = { clear: function(){}, write: function(str) { context.getWriter().print(str); } } }
+       |if (typeof javax !== "undefined") { modelConfig.output = { clear: function(){}, write: function(str) { context.getWriter().print(str); } } }
        |
        |""".stripMargin
 
