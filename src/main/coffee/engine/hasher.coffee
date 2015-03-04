@@ -5,20 +5,21 @@ AbstractAgentSet = require('./core/abstractagentset')
 Link             = require('./core/link')
 Nobody           = require('./core/nobody')
 Turtle           = require('./core/turtle')
-JSType           = require('tortoise/util/typechecker')
+NLType           = require('./core/typechecker')
 
 # Function given a name for the sake of recursion --JAB (7/31/14)
 # (Any) => String
 Hasher =
   (x) ->
-    if x instanceof Turtle or x instanceof Link
+    type = NLType(x)
+    if type.isTurtle() or type.isLink()
       x.id
     else if x is Nobody
       -1
-    else if JSType(x).isArray()
+    else if type.isList()
       f = (acc, x) -> 31 * acc + (if x? then Hasher(x) else 0)
       _(x).foldl(f, 1)
-    else if x instanceof AbstractAgentSet
+    else if type.isAgentSet()
       Hasher(x.toArray())
     else
       x.toString()

@@ -9,9 +9,9 @@ Patch            = require('../core/patch')
 PatchSet         = require('../core/patchset')
 Turtle           = require('../core/turtle')
 TurtleSet        = require('../core/turtleset')
+NLType           = require('../core/typechecker')
 Exception        = require('tortoise/util/exception')
 Timer            = require('tortoise/util/timer')
-JSType           = require('tortoise/util/typechecker')
 
 { EQUALS: EQ, GREATER_THAN: GT, LESS_THAN: LT, } = require('tortoise/util/comparator')
 
@@ -32,14 +32,15 @@ module.exports =
 
     # (String, Patch|Turtle|PatchSet|TurtleSet) => TurtleSet
     breedOn: (breedName, x) ->
+      type = NLType(x)
       patches =
-        if x instanceof Patch
+        if type.isPatch()
           [x]
-        else if x instanceof Turtle
+        else if type.isTurtle()
           [x.getPatchHere()]
-        else if x instanceof PatchSet
+        else if type.isPatchSet()
           x.toArray()
-        else if x instanceof TurtleSet
+        else if type.isTurtleSet()
           _(x.iterator().toArray()).map((t) -> t.getPatchHere()).value()
         else
           throw new Error("`breed-on` unsupported for class '#{typeof(x)}'")
@@ -50,10 +51,12 @@ module.exports =
     # (Any, Any) => Boolean
     equality: (a, b) ->
       if a? and b?
+        typeA = NLType(a)
+        typeB = NLType(b)
         (a is b) or ( # This code has been purposely rewritten into a crude, optimized form --JAB (3/19/14)
-          if JSType(a).isArray() and JSType(b).isArray()
+          if typeA.isList() and typeB.isList()
             a.length is b.length and a.every((elem, i) => @equality(elem, b[i]))
-          else if a instanceof AbstractAgentSet and b instanceof AbstractAgentSet
+          else if typeA.isAgentSet() and typeB.isAgentSet()
             subsumes = (xs, ys) =>
               for x, index in xs
                 if not @equality(ys[index], x)
@@ -61,8 +64,8 @@ module.exports =
               true
             a.size() is b.size() and Object.getPrototypeOf(a) is Object.getPrototypeOf(b) and subsumes(a.sort(), b.sort())
           else
-            (a instanceof AbstractAgentSet and a.getBreedName? and a.getBreedName() is b.name) or (b instanceof AbstractAgentSet and b.getBreedName? and b.getBreedName() is a.name) or
-              (a is Nobody and b.id is -1) or (b is Nobody and a.id is -1) or ((a instanceof Turtle or (a instanceof Link and b isnt Nobody)) and a.compare(b) is EQ)
+            typeA.isBreedSet(b.name) or typeB.isBreedSet(a.name) or
+              (a is Nobody and b.id is -1) or (b is Nobody and a.id is -1) or ((typeA.isTurtle() or (typeA.isLink() and b isnt Nobody)) and a.compare(b) is EQ)
         )
       else
         throw new Error("Checking equality on undefined is an invalid condition")
@@ -78,7 +81,9 @@ module.exports =
 
     # (Any, Any) => Boolean
     gt: (a, b) ->
-      if (JSType(a).isString() and JSType(b).isString()) or (JSType(a).isNumber() and JSType(b).isNumber())
+      typeA = NLType(a)
+      typeB = NLType(b)
+      if (typeA.isString() and typeB.isString()) or (typeA.isNumber() and typeB.isNumber())
         a > b
       else if typeof(a) is typeof(b) and a.compare? and b.compare?
         a.compare(b) is GT
@@ -89,17 +94,15 @@ module.exports =
     gte: (a, b) ->
       @gt(a, b) or @equality(a, b)
 
-    # (String, Any) => Boolean
-    isBreed: (breedName, x) ->
-      if x.isBreed? and x.id isnt -1 then x.isBreed(breedName) else false
-
     # [T <: (Array[Link]|Link|AbstractAgentSet[Link])] @ (T*) => LinkSet
     linkSet: (inputs...) ->
       @_createAgentSet(inputs, Link, LinkSet)
 
     # (Any, Any) => Boolean
     lt: (a, b) ->
-      if (JSType(a).isString() and JSType(b).isString()) or (JSType(a).isNumber() and JSType(b).isNumber())
+      typeA = NLType(a)
+      typeB = NLType(b)
+      if (typeA.isString() and typeB.isString()) or (typeA.isNumber() and typeB.isNumber())
         a < b
       else if typeof(a) is typeof(b) and a.compare? and b.compare?
         a.compare(b) is LT
@@ -169,7 +172,8 @@ module.exports =
 
     # (PatchSet|TurtleSet|Patch|Turtle) => TurtleSet
     turtlesOn: (agentsOrAgent) ->
-      if agentsOrAgent instanceof AbstractAgentSet
+      type = NLType(agentsOrAgent)
+      if type.isAgentSet()
         turtles = _(agentsOrAgent.iterator().toArray()).map((agent) -> agent.turtlesHere().toArray()).flatten().value()
         new TurtleSet(turtles)
       else
@@ -216,7 +220,7 @@ module.exports =
         buildItems =
           (inputs) =>
             for input in inputs
-              if JSType(input).isArray()
+              if NLType(input).isList()
                 buildItems(input)
               else if input instanceof tClass
                 addT(input)

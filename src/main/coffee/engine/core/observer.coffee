@@ -9,8 +9,7 @@ Watch   = { toInt: 3 }
 _               = require('lodash')
 agentToInt      = require('./agenttoint')
 Nobody          = require('./nobody')
-Patch           = require('./patch')
-Turtle          = require('./turtle')
+NLType          = require('./typechecker')
 VariableManager = require('./structure/variablemanager')
 
 module.exports =
@@ -87,12 +86,9 @@ module.exports =
 
     # (Agent) => Unit
     watch: (agent) ->
+      type = NLType(agent)
       @_perspective = Watch
-      @_targetAgent =
-        if agent instanceof Turtle or agent instanceof Patch
-          agent
-        else
-          Nobody
+      @_targetAgent = if type.isTurtle() or type.isPatch() then agent else Nobody
       @_updatePerspective()
       return
 

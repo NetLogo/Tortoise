@@ -1,16 +1,15 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-Link   = require('./link')
-Patch  = require('./patch')
-Turtle = require('./turtle')
+NLType = require('./typechecker')
 
 module.exports =
   (agent) ->
-    if agent instanceof Turtle
+    type = NLType(agent)
+    if type.isTurtle()
       1
-    else if agent instanceof Patch
+    else if type.isPatch()
       2
-    else if agent instanceof Link
+    else if type.isLink()
       3
     else
       0

@@ -2,6 +2,7 @@
 
 AbstractAgentSet     = require('./abstractagentset')
 DeadSkippingIterator = require('./structure/deadskippingiterator')
+JSType               = require('tortoise/util/typechecker')
 
 module.exports =
   class LinkSet extends AbstractAgentSet

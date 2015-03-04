@@ -6,10 +6,10 @@ ColorModel        = require('./colormodel')
 Nobody            = require('./nobody')
 TurtleLinkManager = require('./turtlelinkmanager')
 TurtleSet         = require('./turtleset')
+NLType            = require('./typechecker')
 PenManager        = require('./structure/penmanager')
 VariableManager   = require('./structure/variablemanager')
 Comparator        = require('tortoise/util/comparator')
-JSType            = require('tortoise/util/typechecker')
 Trig              = require('tortoise/util/trig')
 
 { DeathInterrupt: Death, TopologyInterrupt } = require('tortoise/util/exception')
@@ -353,7 +353,7 @@ module.exports =
 
     # (Any) => Comparator
     compare: (x) ->
-      if x instanceof Turtle
+      if NLType(x).isTurtle()
         Comparator.numericCompare(@id, x.id)
       else
         Comparator.NOT_EQUALS
@@ -457,10 +457,12 @@ module.exports =
     # (AbstractAgentSet|Breed|String) => Unit
     _setBreed: (breed) ->
 
+      type = NLType(breed)
+
       trueBreed =
-        if JSType(breed).isString()
+        if type.isString()
           @world.breedManager.get(breed)
-        else if breed instanceof AbstractAgentSet
+        else if type.isAgentSet()
           if breed.getBreedName?
             @world.breedManager.get(breed.getBreedName())
           else

@@ -6,7 +6,7 @@ ColorModel       = require('./colormodel')
 linkCompare      = require('./structure/linkcompare')
 VariableManager  = require('./structure/variablemanager')
 TurtleSet        = require('./turtleset')
-JSType           = require('tortoise/util/typechecker')
+NLType           = require('./typechecker')
 
 { EQUALS: EQ, GREATER_THAN: GT, LESS_THAN: LT, } = require('tortoise/util/comparator')
 
@@ -172,10 +172,12 @@ module.exports =
     # (AbstractAgentSet|Breed|String) => Unit
     _setBreed: (breed) ->
 
+      type = NLType(breed)
+
       trueBreed =
-        if JSType(breed).isString()
+        if type.isString()
           @world.breedManager.get(breed)
-        else if breed instanceof AbstractAgentSet
+        else if type.isAgentSet()
           if breed.getBreedName?
             @world.breedManager.get(breed.getBreedName())
           else
