@@ -9,5 +9,6 @@
 module.exports = {
   ask:      -> return
   id:          -1
+  isDead:   -> true
   toString: -> "nobody"
 }

@@ -13,7 +13,7 @@ class NLType
   isAgentSet:             -> @_x instanceof AbstractAgentSet
   isCommandTask:          -> JSType(@_x).isFunction() and not @_x.isReporter
   isDirectedLink:         -> @isLink() and @_x.isDirected
-  isBreed:    (breedName) -> @_x.id isnt -1 and @_x.isBreed?(breedName) is true
+  isBreed:    (breedName) -> not @_x.isDead?() and @_x.isBreed?(breedName) is true
   isBreedSet: (breedName) -> @isAgentSet() and @_x.getBreedName? and @_x.getBreedName() is breedName
   isLinkSet:              -> @_x instanceof LinkSet
   isList:                 -> JSType(@_x).isArray()
@@ -26,10 +26,10 @@ class NLType
   isUndirectedLink:       -> @isLink() and not @_x.isDirected
 
   isValidAgent:          -> @isValidTurtle() or @isPatch() or @isValidLink()
-  isValidDirectedLink:   -> @isDirectedLink()   and @_x.id isnt -1
-  isValidLink:           -> @isLink()           and @_x.id isnt -1
-  isValidTurtle:         -> @isTurtle()         and @_x.id isnt -1
-  isValidUndirectedLink: -> @isUndirectedLink() and @_x.id isnt -1
+  isValidDirectedLink:   -> @isDirectedLink()   and not @_x.isDead()
+  isValidLink:           -> @isLink()           and not @_x.isDead()
+  isValidTurtle:         -> @isTurtle()         and not @_x.isDead()
+  isValidUndirectedLink: -> @isUndirectedLink() and not @_x.isDead()
 
 module.exports = (x) -> new NLType(x)
 

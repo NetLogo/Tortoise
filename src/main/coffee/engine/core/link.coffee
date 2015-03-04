@@ -54,7 +54,7 @@ module.exports =
     # () => Nothing
     die: ->
       @_breed.remove(this)
-      if @id isnt -1
+      if not @isDead()
         @end1.linkManager.remove(this)
         @end2.linkManager.remove(this)
         @_registerRemoval(this)
@@ -87,7 +87,7 @@ module.exports =
 
     # () => String
     toString: ->
-      if not @_isDead()
+      if not @isDead()
         "(#{@_breed.singular} #{@end1.id} #{@end2.id})"
       else
         "nobody"
@@ -108,16 +108,20 @@ module.exports =
     getSize: ->
       @world.topology.distanceXY(@end1.xcor, @end1.ycor, @end2.xcor, @end2.ycor)
 
+    # () => Boolean
+    isDead: ->
+      @id is -1
+
     # (() => Any) => Unit
     ask: (f) ->
       @world.selfManager.askAgent(f)(this)
-      if @world.selfManager.self().id is -1
+      if @world.selfManager.self().isDead?()
         throw new Death
       return
 
     # [Result] @ (() => Result) => Result
     projectionBy: (f) ->
-      if not @_isDead()
+      if not @isDead()
         @world.selfManager.askAgent(f)(this)
       else
         throw new Error("That #{@_breed.singular} is dead.")
@@ -206,10 +210,6 @@ module.exports =
         @world.breedManager.links().add(this)
 
       return
-
-    # () => Boolean
-    _isDead: ->
-      @id is -1
 
     # (Number) => Unit
     _setColor: (color) ->

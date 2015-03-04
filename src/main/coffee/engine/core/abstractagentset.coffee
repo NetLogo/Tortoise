@@ -46,7 +46,7 @@ module.exports =
 
       iter.forEach(@_selfManager.askAgent(f))
 
-      if @_selfManager.self().id is -1
+      if @_selfManager.self().isDead?()
         throw new Death
 
       return

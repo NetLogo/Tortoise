@@ -75,7 +75,7 @@ module.exports =
     # (() => Any) => Unit
     ask: (f) ->
       @world.selfManager.askAgent(f)(this)
-      if @world.selfManager.self().id is -1
+      if @world.selfManager.self().isDead?()
         throw new Death
       return
 

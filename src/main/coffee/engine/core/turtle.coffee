@@ -178,13 +178,13 @@ module.exports =
     # (() => Any) => Unit
     ask: (f) ->
       @world.selfManager.askAgent(f)(this)
-      if @world.selfManager.self().id is -1
+      if @world.selfManager.self().isDead?()
         throw new Death
       return
 
     # [Result] @ (() => Result) => Result
     projectionBy: (f) ->
-      if not @_isDead()
+      if not @isDead()
         @world.selfManager.askAgent(f)(this)
       else
         throw new Error("That #{@_breed.singular} is dead.")
@@ -255,10 +255,14 @@ module.exports =
     isBreed: (breedName) ->
       @_breed.name.toUpperCase() is breedName.toUpperCase()
 
+    # () => Boolean
+    isDead: ->
+      @id is -1
+
     # () => Nothing
     die: ->
       @_breed.remove(this)
-      if @id isnt -1
+      if not @isDead()
         @_removeTurtle(@id)
         @_seppuku()
         @linkManager._clear()
@@ -360,7 +364,7 @@ module.exports =
 
     # () => String
     toString: ->
-      if not @_isDead()
+      if not @isDead()
         "(#{@_breed.singular} #{@id})"
       else
         "nobody"
@@ -377,10 +381,6 @@ module.exports =
     # () => String
     _getShape: ->
       @_givenShape ? @_breedShape
-
-    # () => Boolean
-    _isDead: ->
-      @id is -1
 
     # (String) => (Link) => Boolean
     _linkBreedMatches: (breedName) -> (link) ->

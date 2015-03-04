@@ -44,7 +44,7 @@ module.exports =
 
     # () => Unit
     _skipToNext: ->
-      while (@_isntEmpty() and @_items[@_i].id is -1)
+      while @_isntEmpty() and @_items[@_i].isDead()
         @_i++
       return
 

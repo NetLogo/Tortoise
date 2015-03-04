@@ -5,7 +5,7 @@ module.exports =
   (a, b) ->
     if a is b
       0
-    else if a.id is -1 and b.id is -1
+    else if a.isDead() and b.isDead()
       0
     else if a.end1.id < b.end1.id
       -1
