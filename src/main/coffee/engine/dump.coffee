@@ -1,21 +1,22 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 _      = require('lodash')
+NLType = require('./core/typechecker')
 Tasks  = require('./prim/tasks')
-JSType = require('tortoise/util/typechecker')
 
 # Needs a name here since it's recursive --JAB (4/16/14)
 # (Any, Boolean) => String
 Dump =
   (x, isReadable = false) ->
-    if JSType(x).isArray()
+    type = NLType(x)
+    if type.isList()
       itemStr = _(x).map((y) -> Dump(y, isReadable)).value().join(" ")
       "[#{itemStr}]"
-    else if Tasks.isReporterTask(x)
+    else if type.isReporterTask()
       "(reporter task)"
-    else if Tasks.isCommandTask(x)
+    else if type.isCommandTask()
       "(command task)"
-    else if JSType(x).isString()
+    else if type.isString()
       if isReadable then '"' + x + '"' else x
     else
       String(x)

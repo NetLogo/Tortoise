@@ -116,8 +116,6 @@ object SimplePrims {
         case _: prim.etc._sqrt               => "StrictMath.sqrt"
         case _: prim.etc._mod                => "Prims.mod"
         case _: prim.etc._empty              => "ListPrims.empty"
-        case _: prim.etc._isreportertask     => "Tasks.isReporterTask"
-        case _: prim.etc._iscommandtask      => "Tasks.isCommandTask"
         case _: prim.etc._dx                 => "SelfManager.self().dx"
         case _: prim.etc._dy                 => "SelfManager.self().dy"
         case _: prim.etc._subtractheadings   => "Prims.subtractHeadings"

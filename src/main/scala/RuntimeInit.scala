@@ -36,18 +36,18 @@ class RuntimeInit(program: Program, model: Model) {
        |var Call           = tortoise_require('util/call');
        |var Exception      = tortoise_require('util/exception');
        |var Trig           = tortoise_require('util/trig');
-       |var JSType         = tortoise_require('util/typechecker');
        |var notImplemented = tortoise_require('util/notimplemented');
        |
-       |var Dump       = tortoise_require('engine/dump');
+       |var Dump      = tortoise_require('engine/dump');
        |var ColorModel = tortoise_require('engine/core/colormodel');
-       |var Link       = tortoise_require('engine/core/link');
-       |var LinkSet    = tortoise_require('engine/core/linkset');
-       |var Nobody     = tortoise_require('engine/core/nobody');
-       |var PatchSet   = tortoise_require('engine/core/patchset');
-       |var Turtle     = tortoise_require('engine/core/turtle');
-       |var TurtleSet  = tortoise_require('engine/core/turtleset');
-       |var Tasks      = tortoise_require('engine/prim/tasks');
+       |var Link      = tortoise_require('engine/core/link');
+       |var LinkSet   = tortoise_require('engine/core/linkset');
+       |var Nobody    = tortoise_require('engine/core/nobody');
+       |var PatchSet  = tortoise_require('engine/core/patchset');
+       |var Turtle    = tortoise_require('engine/core/turtle');
+       |var TurtleSet = tortoise_require('engine/core/turtleset');
+       |var NLType    = tortoise_require('engine/core/typechecker');
+       |var Tasks     = tortoise_require('engine/prim/tasks');
        |
        |var AgentModel = tortoise_require('agentmodel');
        |var Random     = tortoise_require('shim/random');
