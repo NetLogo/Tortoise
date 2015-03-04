@@ -29,10 +29,10 @@ module.exports =
       @_updateVarsByName = @_genUpdate(this)
 
       @penManager  = genPenManager(this)
-      @linkManager = new TurtleLinkManager(id, world.breedManager)
+      @linkManager = new TurtleLinkManager(@id, @world.breedManager)
 
       varNames     = @_varNamesForBreed(breed)
-      @_varManager = @_genVarManager(varNames, world.turtleManager.turtlesOfBreed)
+      @_varManager = @_genVarManager(varNames, @world.turtleManager.turtlesOfBreed)
 
       @_setBreed(breed)
 

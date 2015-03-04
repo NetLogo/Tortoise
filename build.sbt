@@ -32,14 +32,14 @@ ivyLoggingLevel := UpdateLogging.Quiet
 // we're not cross-building for different Scala versions
 crossPaths := false
 
-val nlDependencyVersion = "5.2.0-f06ba0c"
+val nlDependencyVersion = "5.2.0-9e93a96"
 
 resolvers += bintray.Opts.resolver.repo("netlogo", "NetLogoHeadless")
 
 libraryDependencies ++= Seq(
   "org.nlogo" % "netlogoheadless" % nlDependencyVersion,
   "org.json4s" %% "json4s-native" % "3.2.11",
-  "org.scalaz" %% "scalaz-core" % "7.1.0",
+  "org.scalaz" %% "scalaz-core" % "7.1.1",
   "com.lihaoyi" %% "scalatags" % "0.4.5" % "test",
   "org.scalatest" %% "scalatest" % "2.2.1" % "test",
   "org.skyscreamer" % "jsonassert" % "1.2.3" % "test",
