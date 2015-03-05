@@ -111,8 +111,8 @@ class CompiledModelTest extends FunSuite {
       case expectedEx: CompilerException =>
         genActualValidation(code).fold(
           {
-            case NonEmptyList(head) => assertSameException(expectedEx, head)
-            case nel                => fail(codeGaveMoreThanOneError(code, nel))
+            case NonEmptyList(head, _*) => assertSameException(expectedEx, head)
+            case nel                    => fail(codeGaveMoreThanOneError(code, nel))
           },
           result => fail(badCodeCompiledTo(code, result))
         )
