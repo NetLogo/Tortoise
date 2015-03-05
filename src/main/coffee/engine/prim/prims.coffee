@@ -113,26 +113,9 @@ module.exports =
     lte: (a, b) ->
       @lt(a, b) or @equality(a, b)
 
-    # (Number, Number) => Number
-    log: (num, base) ->
-      Math.log(num) / Math.log(base)
-
-    # (Number, Number) => Number
-    mod: (a, b) ->
-      a %% b
-
     # [T <: (Array[Patch]|Patch|AbstractAgentSet[Patch])] @ (T*) => PatchSet
     patchSet: (inputs...) ->
       @_createAgentSet(inputs, Patch, PatchSet)
-
-    # (Number, Number) => Number
-    precision: (n, places) ->
-      multiplier = Math.pow(10, places)
-      result = Math.floor(n * multiplier + .5) / multiplier
-      if places > 0
-        result
-      else
-        Math.round(result)
 
     # (Number) => Number
     random: (n) ->
@@ -151,20 +134,6 @@ module.exports =
     # (Number) => Number
     randomFloat: (n) ->
       n * @_rng.nextDouble()
-
-    # (Number, Number) => Number
-    subtractHeadings: (h1, h2) ->
-      diff = (h1 % 360) - (h2 % 360)
-      if -180 < diff <= 180
-        diff
-      else if diff > 0
-        diff - 360
-      else
-        diff + 360
-
-    # (Number) => Number
-    toInt: (n) ->
-      n | 0
 
     # [T <: (Array[Turtle]|Turtle|AbstractAgentSet[Turtle])] @ (T*) => TurtleSet
     turtleSet: (inputs...) ->

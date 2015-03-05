@@ -10,7 +10,7 @@ NLType            = require('./typechecker')
 PenManager        = require('./structure/penmanager')
 VariableManager   = require('./structure/variablemanager')
 Comparator        = require('tortoise/util/comparator')
-Trig              = require('tortoise/util/trig')
+NLMath            = require('tortoise/util/nlmath')
 
 { DeathInterrupt: Death, TopologyInterrupt } = require('tortoise/util/exception')
 
@@ -161,8 +161,8 @@ module.exports =
     patchRightAndAhead: (angle, distance) ->
       heading = @_normalizeHeading(@_heading + angle)
       try
-        newX = @world.topology.wrapX(@xcor + distance * Trig.sin(heading))
-        newY = @world.topology.wrapY(@ycor + distance * Trig.cos(heading))
+        newX = @world.topology.wrapX(@xcor + distance * NLMath.squash(NLMath.sin(heading)))
+        newY = @world.topology.wrapY(@ycor + distance * NLMath.squash(NLMath.cos(heading)))
         @world.getPatchAt(newX, newY)
       catch error
         if error instanceof TopologyInterrupt then Nobody else throw error
@@ -218,11 +218,11 @@ module.exports =
 
     # () => Number
     dx: ->
-      Trig.sin(@_heading)
+      NLMath.squash(NLMath.sin(@_heading))
 
     # () => Number
     dy: ->
-      Trig.cos(@_heading)
+      NLMath.squash(NLMath.cos(@_heading))
 
     # (Number, Turtle) => Unit
     right: (angle, tiedCaller = undefined) ->
@@ -528,8 +528,8 @@ module.exports =
             r        = @distance(turtle)
             [tx, ty] = turtle.getCoords()
             theta    = StrictMath.toDegrees(StrictMath.atan2(ty - y, x - tx)) - 90 + dh
-            newX     = x + r * Trig.sin(theta)
-            newY     = y + r * Trig.cos(theta)
+            newX     = x + r * NLMath.squash(NLMath.sin(theta))
+            newY     = y + r * NLMath.squash(NLMath.cos(theta))
             turtle.setXY(newX, newY, this)
           return
       )

@@ -35,7 +35,7 @@ class RuntimeInit(program: Program, model: Model) {
        |
        |var Call           = tortoise_require('util/call');
        |var Exception      = tortoise_require('util/exception');
-       |var Trig           = tortoise_require('util/trig');
+       |var NLMath         = tortoise_require('util/nlmath');
        |var notImplemented = tortoise_require('util/notimplemented');
        |
        |var Dump      = tortoise_require('engine/dump');
