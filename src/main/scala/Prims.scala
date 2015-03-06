@@ -32,7 +32,7 @@ trait Prims {
       case _: prim._not                => s"!${arg(0)}"
       case _: prim._count              => s"${arg(0)}.size()"
       case _: prim._any                => s"${arg(0)}.nonEmpty()"
-      case _: prim._word               => ("\"\"" +: args).map(arg => s"Dump($arg)").mkString("(", " + ", ")")
+      case _: prim._word               => ("''" +: args).map(arg => s"Dump($arg)").mkString("(", " + ", ")")
       case _: prim._of                 => generateOf(r)
       case _: prim.etc._ifelsevalue    => s"(${arg(0)} ? ${arg(1)} : ${arg(2)})"
       case _: prim.etc._reduce         => s"${arg(1)}.reduce(${arg(0)})"
@@ -56,21 +56,21 @@ trait Prims {
         s"$agents.agentAll(${handlers.fun(r.args(1), true)})"
 
       // Lookup by breed
-      case b: prim._breed                 => s"""world.turtleManager.turtlesOfBreed("${b.breedName}")"""
-      case b: prim.etc._breedsingular     => s"""world.turtleManager.getTurtleOfBreed("${b.breedName}", ${arg(0)})"""
-      case b: prim.etc._linkbreed         => s"""world.linkManager.linksOfBreed("${b.breedName}")"""
-      case p: prim.etc._linkbreedsingular => s"world.linkManager.getLink(${arg(0)}, ${arg(1)}, '${p.breedName}')"
-      case b: prim.etc._breedhere         => s"""SelfManager.self().breedHere("${b.breedName}")"""
-      case b: prim.etc._breedon           => s"""Prims.breedOn("${b.breedName}", ${arg(0)})"""
+      case b: prim._breed                 => s"world.turtleManager.turtlesOfBreed(${jsString(b.breedName)})"
+      case b: prim.etc._breedsingular     => s"world.turtleManager.getTurtleOfBreed(${jsString(b.breedName)}, ${arg(0)})"
+      case b: prim.etc._linkbreed         => s"world.linkManager.linksOfBreed(${jsString(b.breedName)})"
+      case p: prim.etc._linkbreedsingular => s"world.linkManager.getLink(${arg(0)}, ${arg(1)}, ${jsString(p.breedName)})"
+      case b: prim.etc._breedhere         => s"SelfManager.self().breedHere(${jsString(b.breedName)})"
+      case b: prim.etc._breedon           => s"Prims.breedOn(${jsString(b.breedName)}, ${arg(0)})"
 
       // Variable fetching
-      case bv: prim._breedvariable        => s"SelfPrims.getVariable('${bv.name.toLowerCase}')"
-      case bv: prim._linkbreedvariable    => s"SelfPrims.getVariable('${bv.name.toLowerCase}')"
-      case tv: prim._turtlevariable       => s"SelfPrims.getVariable('${tv.displayName.toLowerCase}')"
-      case tv: prim._linkvariable         => s"SelfPrims.getVariable('${tv.displayName.toLowerCase}')"
-      case tv: prim._turtleorlinkvariable => s"SelfPrims.getVariable('${tv.varName.toLowerCase}')"
-      case pv: prim._patchvariable        => s"SelfPrims.getPatchVariable('${pv.displayName.toLowerCase}')"
-      case ov: prim._observervariable     => s"world.observer.getGlobal('${ov.displayName.toLowerCase}')"
+      case bv: prim._breedvariable        => s"SelfPrims.getVariable(${jsString(bv.name.toLowerCase)})"
+      case bv: prim._linkbreedvariable    => s"SelfPrims.getVariable(${jsString(bv.name.toLowerCase)})"
+      case tv: prim._turtlevariable       => s"SelfPrims.getVariable(${jsString(tv.displayName.toLowerCase)})"
+      case tv: prim._linkvariable         => s"SelfPrims.getVariable(${jsString(tv.displayName.toLowerCase)})"
+      case tv: prim._turtleorlinkvariable => s"SelfPrims.getVariable(${jsString(tv.varName.toLowerCase)})"
+      case pv: prim._patchvariable        => s"SelfPrims.getPatchVariable(${jsString(pv.displayName.toLowerCase)})"
+      case ov: prim._observervariable     => s"world.observer.getGlobal(${jsString(ov.displayName.toLowerCase)})"
 
       // Typechecking
       case _: prim.etc._isagent          => s"NLType(${arg(0)}).isValidAgent()"
@@ -91,18 +91,18 @@ trait Prims {
       case _: prim.etc._isundirectedlink => s"NLType(${arg(0)}).isUndirectedLink()"
 
       // Link finding
-      case p: prim.etc._inlinkfrom       => s"LinkPrims.inLinkFrom('${fixBN(p.breedName)}', ${arg(0)})"
-      case p: prim.etc._inlinkneighbor   => s"LinkPrims.isInLinkNeighbor('${fixBN(p.breedName)}', ${arg(0)})"
-      case p: prim.etc._inlinkneighbors  => s"LinkPrims.inLinkNeighbors('${fixBN(p.breedName)}')"
-      case p: prim.etc._linkneighbor     => s"LinkPrims.isLinkNeighbor('${fixBN(p.breedName)}', ${arg(0)})"
-      case p: prim.etc._linkneighbors    => s"LinkPrims.linkNeighbors('${fixBN(p.breedName)}')"
-      case p: prim.etc._linkwith         => s"LinkPrims.linkWith('${fixBN(p.breedName)}', ${arg(0)})"
-      case p: prim.etc._myinlinks        => s"LinkPrims.myInLinks('${fixBN(p.breedName)}')"
-      case p: prim.etc._mylinks          => s"LinkPrims.myLinks('${fixBN(p.breedName)}')"
-      case p: prim.etc._myoutlinks       => s"LinkPrims.myOutLinks('${fixBN(p.breedName)}')"
-      case p: prim.etc._outlinkneighbor  => s"LinkPrims.isOutLinkNeighbor('${fixBN(p.breedName)}', ${arg(0)})"
-      case p: prim.etc._outlinkneighbors => s"LinkPrims.outLinkNeighbors('${fixBN(p.breedName)}')"
-      case p: prim.etc._outlinkto        => s"LinkPrims.outLinkTo('${fixBN(p.breedName)}', ${arg(0)})"
+      case p: prim.etc._inlinkfrom       => s"LinkPrims.inLinkFrom(${jsString(fixBN(p.breedName))}, ${arg(0)})"
+      case p: prim.etc._inlinkneighbor   => s"LinkPrims.isInLinkNeighbor(${jsString(fixBN(p.breedName))}, ${arg(0)})"
+      case p: prim.etc._inlinkneighbors  => s"LinkPrims.inLinkNeighbors(${jsString(fixBN(p.breedName))})"
+      case p: prim.etc._linkneighbor     => s"LinkPrims.isLinkNeighbor(${jsString(fixBN(p.breedName))}, ${arg(0)})"
+      case p: prim.etc._linkneighbors    => s"LinkPrims.linkNeighbors(${jsString(fixBN(p.breedName))})"
+      case p: prim.etc._linkwith         => s"LinkPrims.linkWith(${jsString(fixBN(p.breedName))}, ${arg(0)})"
+      case p: prim.etc._myinlinks        => s"LinkPrims.myInLinks(${jsString(fixBN(p.breedName))})"
+      case p: prim.etc._mylinks          => s"LinkPrims.myLinks(${jsString(fixBN(p.breedName))})"
+      case p: prim.etc._myoutlinks       => s"LinkPrims.myOutLinks(${jsString(fixBN(p.breedName))})"
+      case p: prim.etc._outlinkneighbor  => s"LinkPrims.isOutLinkNeighbor(${jsString(fixBN(p.breedName))}, ${arg(0)})"
+      case p: prim.etc._outlinkneighbors => s"LinkPrims.outLinkNeighbors(${jsString(fixBN(p.breedName))})"
+      case p: prim.etc._outlinkto        => s"LinkPrims.outLinkTo(${jsString(fixBN(p.breedName))}, ${arg(0)})"
 
       // Tasks
       case tv: prim._taskvariable => s"taskArguments[${tv.vn - 1}]"
@@ -148,7 +148,7 @@ trait Prims {
       case _: prim.etc._every            => generateEvery(s)
       case _: prim.etc._error            => s"throw new Error(${arg(0)});"
       case h: prim._hatch                => generateHatch(s, h.breedName)
-      case _: prim.etc._diffuse          => s"world.topology.diffuse('${getReferenceName(s)}', ${arg(1)})"
+      case _: prim.etc._diffuse          => s"world.topology.diffuse(${jsString(getReferenceName(s))}, ${arg(1)})"
       case x: prim.etc._setdefaultshape  => s"BreedManager.setDefaultShape(${arg(0)}.getBreedName(), ${arg(1)})"
       case _: prim.etc._hidelink         => "SelfPrims.setVariable('hidden?', true)"
       case _: prim.etc._showlink         => "SelfPrims.setVariable('hidden?', false)"
@@ -184,19 +184,19 @@ trait Prims {
       case p: prim._letvariable =>
         s"${handlers.ident(p.let.name)} = ${arg(1)};"
       case p: prim._observervariable =>
-        s"world.observer.setGlobal('${p.displayName.toLowerCase}', ${arg(1)});"
+        s"world.observer.setGlobal(${jsString(p.displayName.toLowerCase)}, ${arg(1)});"
       case bv: prim._breedvariable =>
-        s"SelfPrims.setVariable('${bv.name.toLowerCase}', ${arg(1)});"
+        s"SelfPrims.setVariable(${jsString(bv.name.toLowerCase)}, ${arg(1)});"
       case bv: prim._linkbreedvariable =>
-        s"SelfPrims.setVariable('${bv.name.toLowerCase}', ${arg(1)});"
+        s"SelfPrims.setVariable(${jsString(bv.name.toLowerCase)}, ${arg(1)});"
       case p: prim._linkvariable =>
-        s"SelfPrims.setVariable('${p.displayName.toLowerCase}', ${arg(1)});"
+        s"SelfPrims.setVariable(${jsString(p.displayName.toLowerCase)}, ${arg(1)});"
       case p: prim._turtlevariable =>
-        s"SelfPrims.setVariable('${p.displayName.toLowerCase}', ${arg(1)});"
+        s"SelfPrims.setVariable(${jsString(p.displayName.toLowerCase)}, ${arg(1)});"
       case p: prim._turtleorlinkvariable =>
-        s"SelfPrims.setVariable('${p.varName.toLowerCase}', ${arg(1)});"
+        s"SelfPrims.setVariable(${jsString(p.varName.toLowerCase)}, ${arg(1)});"
       case p: prim._patchvariable =>
-        s"SelfPrims.setPatchVariable('${p.displayName.toLowerCase}', ${arg(1)});"
+        s"SelfPrims.setPatchVariable(${jsString(p.displayName.toLowerCase)}, ${arg(1)});"
       case p: prim._procedurevariable =>
         s"${handlers.ident(p.name)} = ${arg(1)};"
       case x =>
@@ -275,7 +275,7 @@ trait Prims {
       s.args(1).asInstanceOf[CommandBlock]
         .statements.stmts.nonEmpty
     val body = handlers.fun(s.args(1))
-    genAsk(s"LinkPrims.$name($other, '${fixBN(breedName)}')", nonEmptyCommandBlock, body)
+    genAsk(s"LinkPrims.$name($other, ${jsString(fixBN(breedName))})", nonEmptyCommandBlock, body)
   }
 
   def generateCreateTurtles(s: Statement, ordered: Boolean): String = {
@@ -288,7 +288,7 @@ trait Prims {
         case x => throw new IllegalArgumentException("How did you get here with class of type " + x.getClass.getName)
       }
     val body = handlers.fun(s.args(1))
-    genAsk(s"world.turtleManager.$name($n, '$breed')", true, body)
+    genAsk(s"world.turtleManager.$name($n, ${jsString(breed)})", true, body)
   }
 
   def generateSprout(s: Statement): String = {
@@ -296,14 +296,14 @@ trait Prims {
     val body = handlers.fun(s.args(1))
     val breedName = s.command.asInstanceOf[prim._sprout].breedName
     val trueBreedName = if (breedName.nonEmpty) breedName else "TURTLES"
-    val sprouted = s"SelfPrims.sprout($n, '$trueBreedName')"
+    val sprouted = s"SelfPrims.sprout($n, ${jsString(trueBreedName)})"
     genAsk(sprouted, true, body)
   }
 
   def generateHatch(s: Statement, breedName: String): String = {
     val n = handlers.reporter(s.args(0))
     val body = handlers.fun(s.args(1))
-    genAsk(s"SelfPrims.hatch($n, '$breedName')", true, body)
+    genAsk(s"SelfPrims.hatch($n, ${jsString(breedName)})", true, body)
   }
 
   def generateEvery(w: Statement): String = {
