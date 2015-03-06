@@ -132,7 +132,7 @@ module.exports =
       color:         ["COLOR",       link._color]
       end1:          ["END1",        link.end1.id]
       end2:          ["END2",        link.end2.id]
-      heading:       ["HEADING",     link.getHeading()]
+      heading:       ["HEADING",     @_withDefault(link.getHeading.bind(link))(0)]
       'hidden?':     ["HIDDEN?",     link._isHidden]
       id:            ["ID",          link.id]
       label:         ["LABEL",       Dump(link._label)]
@@ -184,3 +184,9 @@ module.exports =
       @_hasUpdates = false
       @_updates    = [new Update()]
       return
+
+    # [T] @ (() => T) => (T) => T
+    _withDefault: (thunk) -> (defaultValue) ->
+      try thunk()
+      catch ex
+        defaultValue

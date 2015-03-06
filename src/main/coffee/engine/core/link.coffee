@@ -10,7 +10,7 @@ NLType           = require('./typechecker')
 
 { EQUALS: EQ, GREATER_THAN: GT, LESS_THAN: LT, } = require('tortoise/util/comparator')
 
-{ DeathInterrupt: Death } = require('tortoise/util/exception')
+{ AgentException, DeathInterrupt: Death } = require('tortoise/util/exception')
 
 module.exports =
   class Link
@@ -94,7 +94,12 @@ module.exports =
 
     # () => Number
     getHeading: ->
-      @world.topology.towards(@end1.xcor, @end1.ycor, @end2.xcor, @end2.ycor)
+      try @world.topology.towards(@end1.xcor, @end1.ycor, @end2.xcor, @end2.ycor)
+      catch error
+        if error instanceof AgentException
+          throw new Error("there is no heading of a link whose endpoints are in the same position")
+        else
+          throw error
 
     # () => Number
     getMidpointX: ->

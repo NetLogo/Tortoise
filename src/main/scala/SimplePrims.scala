@@ -44,9 +44,11 @@ object SimplePrims {
       PartialFunction.condOpt(r) {
 
         // SelfPrims
-        case _: prim._neighbors4 => "SelfPrims.getNeighbors4"
-        case _: prim._neighbors  => "SelfPrims.getNeighbors"
-        case _: prim._other      => "SelfPrims.other"
+        case _: prim.etc._linkheading => "SelfPrims.linkHeading"
+        case _: prim.etc._linklength  => "SelfPrims.linkLength"
+        case _: prim._neighbors4      => "SelfPrims.getNeighbors4"
+        case _: prim._neighbors       => "SelfPrims.getNeighbors"
+        case _: prim._other           => "SelfPrims.other"
 
         // SelfManager
         case _: prim.etc._bothends           => "SelfManager.self().bothEnds"
@@ -243,6 +245,7 @@ object SimplePrims {
         case _: prim.etc._clearpatches     => "world.clearPatches"
         case _: prim.etc._clearturtles     => "world.turtleManager.clearTurtles"
         case _: prim.etc._clearticks       => "world.ticker.clear"
+        case _: prim.etc._clearlinks       => "world.linkManager.clear"
         case _: prim.etc._resizeworld      => "world.resize"
         case _: prim.etc._resetticks       => "world.ticker.reset"
         case _: prim.etc._tick             => "world.ticker.tick"

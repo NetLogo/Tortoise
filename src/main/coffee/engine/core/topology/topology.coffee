@@ -5,7 +5,7 @@ Topology       = require('./topology')
 StrictMath     = require('tortoise/shim/strictmath')
 abstractMethod = require('tortoise/util/abstractmethoderror')
 
-{ TopologyInterrupt } = require('tortoise/util/exception')
+{ AgentException, TopologyInterrupt } = require('tortoise/util/exception')
 
 module.exports =
   class Topology
@@ -67,14 +67,17 @@ module.exports =
 
     # (Number, Number, Number, Number) => Number
     towards: (x1, y1, x2, y2) ->
-      dx = @_shortestX(x1, x2)
-      dy = @_shortestY(y1, y2)
-      if dx is 0
-        if dy >= 0 then 0 else 180
-      else if dy is 0
-        if dx >= 0 then 90 else 270
+      if (x1 isnt x2) or (y1 isnt y2)
+        dx = @_shortestX(x1, x2)
+        dy = @_shortestY(y1, y2)
+        if dx is 0
+          if dy >= 0 then 0 else 180
+        else if dy is 0
+          if dx >= 0 then 90 else 270
+        else
+          (270 + StrictMath.toDegrees(Math.PI + StrictMath.atan2(-dy, dx))) % 360
       else
-        (270 + StrictMath.toDegrees(Math.PI + StrictMath.atan2(-dy, dx))) % 360
+        throw new AgentException("No heading is defined from a point (#{x1},#{x2}) to that same point.")
 
     # (Number, Number) => Number
     midpointx: (x1, x2) ->

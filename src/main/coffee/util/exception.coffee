@@ -3,14 +3,16 @@
 class NetLogoException
   constructor: (@message) ->
 
+class AgentException    extends NetLogoException
 class DeathInterrupt    extends NetLogoException
 class TopologyInterrupt extends NetLogoException
 class StopInterrupt     extends NetLogoException
 
 module.exports = {
-  NetLogoException  : NetLogoException
-  DeathInterrupt    : DeathInterrupt
-  TopologyInterrupt : TopologyInterrupt
-  StopInterrupt     : StopInterrupt
+  AgentException
+  NetLogoException
+  DeathInterrupt
+  TopologyInterrupt
+  StopInterrupt
 }
 
