@@ -25,52 +25,53 @@ var Updater       = workspace.updater;
 var world         = workspace.world;
 
 var Call           = tortoise_require('util/call');
-var ColorModel     = tortoise_require('util/colormodel');
 var Exception      = tortoise_require('util/exception');
-var Trig           = tortoise_require('util/trig');
-var Type           = tortoise_require('util/typechecker');
+var NLMath         = tortoise_require('util/nlmath');
 var notImplemented = tortoise_require('util/notimplemented');
 
 var Dump      = tortoise_require('engine/dump');
+var ColorModel = tortoise_require('engine/core/colormodel');
 var Link      = tortoise_require('engine/core/link');
 var LinkSet   = tortoise_require('engine/core/linkset');
 var Nobody    = tortoise_require('engine/core/nobody');
 var PatchSet  = tortoise_require('engine/core/patchset');
 var Turtle    = tortoise_require('engine/core/turtle');
 var TurtleSet = tortoise_require('engine/core/turtleset');
+var NLType    = tortoise_require('engine/core/typechecker');
 var Tasks     = tortoise_require('engine/prim/tasks');
 
 var AgentModel = tortoise_require('agentmodel');
+var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
 function setup() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
-  world.turtleManager.createTurtles(world.topology.width, '').ask(function() {
-    SelfPrims.setVariable('xcor', SelfPrims.getVariable('who'));
-    SelfPrims.setVariable('color', 15);
-    SelfPrims.setVariable('size', 1.5);
-    if (Prims.equality(SelfPrims.getPatchVariable('pxcor'), world.topology.maxPxcor)) {
-      SelfPrims.setVariable('color', 105);
+  world.turtleManager.createTurtles(world.topology.width, "").ask(function() {
+    SelfPrims.setVariable("xcor", SelfPrims.getVariable("who"));
+    SelfPrims.setVariable("color", 15);
+    SelfPrims.setVariable("size", 1.5);
+    if (Prims.equality(SelfPrims.getPatchVariable("pxcor"), world.topology.maxPxcor)) {
+      SelfPrims.setVariable("color", 105);
     }
-    if (Prims.equality(SelfPrims.getPatchVariable('pxcor'), world.topology.minPxcor)) {
-      SelfPrims.setVariable('color', 55);
+    if (Prims.equality(SelfPrims.getPatchVariable("pxcor"), world.topology.minPxcor)) {
+      SelfPrims.setVariable("color", 55);
     }
   }, true);
   world.ticker.reset();
 }
 function go() {
   world.turtles().agentFilter(function() {
-    return Prims.equality(SelfPrims.getVariable('color'), 55);
+    return Prims.equality(SelfPrims.getVariable("color"), 55);
   }).ask(function() {
     if (Prims.gt(world.ticker.tickCount(), 100)) {
-      SelfPrims.setVariable('ypos', (world.observer.getGlobal('amplitude') * Trig.unsquashedSin((world.observer.getGlobal('frequency') * world.ticker.tickCount()))));
+      SelfPrims.setVariable("ypos", (world.observer.getGlobal("amplitude") * NLMath.sin((world.observer.getGlobal("frequency") * world.ticker.tickCount()))));
     }
     else {
-      SelfPrims.setVariable('ypos', (((world.ticker.tickCount() / 100) * world.observer.getGlobal('amplitude')) * Trig.unsquashedSin((world.observer.getGlobal('frequency') * world.ticker.tickCount()))));
+      SelfPrims.setVariable("ypos", (((world.ticker.tickCount() / 100) * world.observer.getGlobal("amplitude")) * NLMath.sin((world.observer.getGlobal("frequency") * world.ticker.tickCount()))));
     }
-    if (!Prims.equality(SelfManager.self().patchAt(0, (SelfPrims.getVariable('ypos') - SelfPrims.getVariable('ycor'))), Nobody)) {
-      SelfPrims.setVariable('ycor', SelfPrims.getVariable('ypos'));
+    if (!Prims.equality(SelfManager.self().patchAt(0, (SelfPrims.getVariable("ypos") - SelfPrims.getVariable("ycor"))), Nobody)) {
+      SelfPrims.setVariable("ycor", SelfPrims.getVariable("ypos"));
       SelfManager.self().hideTurtle(false);;
     }
     else {
@@ -78,21 +79,21 @@ function go() {
     }
   }, true);
   world.turtles().agentFilter(function() {
-    return Prims.equality(SelfPrims.getVariable('color'), 15);
+    return Prims.equality(SelfPrims.getVariable("color"), 15);
   }).ask(function() {
-    SelfPrims.setVariable('yvel', (SelfPrims.getVariable('yvel') + ((world.turtleManager.getTurtle((SelfPrims.getVariable('who') - 1)).projectionBy(function() {
-      return SelfPrims.getVariable('ypos');
-    }) - SelfPrims.getVariable('ypos')) + (world.turtleManager.getTurtle((SelfPrims.getVariable('who') + 1)).projectionBy(function() {
-      return SelfPrims.getVariable('ypos');
-    }) - SelfPrims.getVariable('ypos')))));
-    SelfPrims.setVariable('yvel', (((1000 - world.observer.getGlobal('friction')) / 1000) * SelfPrims.getVariable('yvel')));
+    SelfPrims.setVariable("yvel", (SelfPrims.getVariable("yvel") + ((world.turtleManager.getTurtle((SelfPrims.getVariable("who") - 1)).projectionBy(function() {
+      return SelfPrims.getVariable("ypos");
+    }) - SelfPrims.getVariable("ypos")) + (world.turtleManager.getTurtle((SelfPrims.getVariable("who") + 1)).projectionBy(function() {
+      return SelfPrims.getVariable("ypos");
+    }) - SelfPrims.getVariable("ypos")))));
+    SelfPrims.setVariable("yvel", (((1000 - world.observer.getGlobal("friction")) / 1000) * SelfPrims.getVariable("yvel")));
   }, true);
   world.turtles().agentFilter(function() {
-    return Prims.equality(SelfPrims.getVariable('color'), 15);
+    return Prims.equality(SelfPrims.getVariable("color"), 15);
   }).ask(function() {
-    SelfPrims.setVariable('ypos', (SelfPrims.getVariable('ypos') + SelfPrims.getVariable('yvel')));
-    if (!Prims.equality(SelfManager.self().patchAt(0, (SelfPrims.getVariable('ypos') - SelfPrims.getVariable('ycor'))), Nobody)) {
-      SelfPrims.setVariable('ycor', SelfPrims.getVariable('ypos'));
+    SelfPrims.setVariable("ypos", (SelfPrims.getVariable("ypos") + SelfPrims.getVariable("yvel")));
+    if (!Prims.equality(SelfManager.self().patchAt(0, (SelfPrims.getVariable("ypos") - SelfPrims.getVariable("ycor"))), Nobody)) {
+      SelfPrims.setVariable("ycor", SelfPrims.getVariable("ypos"));
       SelfManager.self().hideTurtle(false);;
     }
     else {
@@ -101,6 +102,6 @@ function go() {
   }, true);
   world.ticker.tick();
 }
-world.observer.setGlobal('friction', 24);
-world.observer.setGlobal('frequency', 10);
-world.observer.setGlobal('amplitude', 30);
+world.observer.setGlobal("friction", 24);
+world.observer.setGlobal("frequency", 10);
+world.observer.setGlobal("amplitude", 30);

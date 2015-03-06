@@ -8,10 +8,10 @@ var PlotOps   = tortoise_require('engine/plot/plotops');
 modelConfig.plots = [(function() {
   var name    = 'Histogram';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Bar), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Histogram', 'default')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Histogram', 'default')(function() { plotManager.setXRange(0, StrictMath.ceil((world.observer.getGlobal('max-val') + 0.5)));
-plotManager.setHistogramBarCount(StrictMath.ceil(StrictMath.sqrt(world.turtles().size())));
+  var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Bar), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Histogram', 'default')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Histogram', 'default')(function() { plotManager.setXRange(0, NLMath.ceil((world.observer.getGlobal("max-val") + 0.5)));
+plotManager.setHistogramBarCount(NLMath.ceil(NLMath.sqrt(world.turtles().size())));
 plotManager.drawHistogramFrom(world.turtles().projectionBy(function() {
-  return SelfPrims.getVariable('val');
+  return SelfPrims.getVariable("val");
 }));; }); }); })];
   var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Histogram', undefined)(function() {}); }); };
   var update  = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Histogram', undefined)(function() {}); }); };
@@ -36,22 +36,23 @@ var Updater       = workspace.updater;
 var world         = workspace.world;
 
 var Call           = tortoise_require('util/call');
-var ColorModel     = tortoise_require('util/colormodel');
 var Exception      = tortoise_require('util/exception');
-var Trig           = tortoise_require('util/trig');
-var Type           = tortoise_require('util/typechecker');
+var NLMath         = tortoise_require('util/nlmath');
 var notImplemented = tortoise_require('util/notimplemented');
 
 var Dump      = tortoise_require('engine/dump');
+var ColorModel = tortoise_require('engine/core/colormodel');
 var Link      = tortoise_require('engine/core/link');
 var LinkSet   = tortoise_require('engine/core/linkset');
 var Nobody    = tortoise_require('engine/core/nobody');
 var PatchSet  = tortoise_require('engine/core/patchset');
 var Turtle    = tortoise_require('engine/core/turtle');
 var TurtleSet = tortoise_require('engine/core/turtleset');
+var NLType    = tortoise_require('engine/core/typechecker');
 var Tasks     = tortoise_require('engine/prim/tasks');
 
 var AgentModel = tortoise_require('agentmodel');
+var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
 function setup() {
@@ -59,27 +60,27 @@ function setup() {
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
   BreedManager.setDefaultShape(world.links().getBreedName(), "small-arrow-link")
   world.patches().agentFilter(function() {
-    return (Prims.lt(StrictMath.abs(SelfPrims.getPatchVariable('pxcor')), (world.observer.getGlobal('grid-size') / 2)) && Prims.lt(StrictMath.abs(SelfPrims.getPatchVariable('pycor')), (world.observer.getGlobal('grid-size') / 2)));
+    return (Prims.lt(NLMath.abs(SelfPrims.getPatchVariable("pxcor")), (world.observer.getGlobal("grid-size") / 2)) && Prims.lt(NLMath.abs(SelfPrims.getPatchVariable("pycor")), (world.observer.getGlobal("grid-size") / 2)));
   }).ask(function() {
-    SelfPrims.sprout(1, 'TURTLES').ask(function() {
-      SelfPrims.setVariable('color', 105);
+    SelfPrims.sprout(1, "TURTLES").ask(function() {
+      SelfPrims.setVariable("color", 105);
     }, true);
   }, true);
   world.turtles().ask(function() {
-    SelfPrims.setVariable('val', 1);
+    SelfPrims.setVariable("val", 1);
     var neighborNodes = Prims.turtleSet(SelfPrims.getNeighbors4().projectionBy(function() {
       return SelfManager.self().turtlesHere();
     }));
-    LinkPrims.createLinksTo(neighborNodes, 'ACTIVE-LINKS').ask(function() {
-      SelfPrims.setVariable('current-flow', 0);
-      if (Prims.gt(Prims.randomFloat(100), world.observer.getGlobal('link-chance'))) {
-        SelfPrims.setVariable('breed', world.linkManager.linksOfBreed("INACTIVE-LINKS"));
+    LinkPrims.createLinksTo(neighborNodes, "ACTIVE-LINKS").ask(function() {
+      SelfPrims.setVariable("current-flow", 0);
+      if (Prims.gt(Prims.randomFloat(100), world.observer.getGlobal("link-chance"))) {
+        SelfPrims.setVariable("breed", world.linkManager.linksOfBreed("INACTIVE-LINKS"));
         SelfPrims.setVariable('hidden?', true)
       }
     }, true);
   }, true);
   world.turtles().ask(function() {
-    SelfPrims.setXY(((SelfPrims.getVariable('xcor') * (world.topology.maxPxcor - 1)) / ((world.observer.getGlobal('grid-size') / 2) - 0.5)), ((SelfPrims.getVariable('ycor') * (world.topology.maxPycor - 1)) / ((world.observer.getGlobal('grid-size') / 2) - 0.5)));
+    SelfPrims.setXY(((SelfPrims.getVariable("xcor") * (world.topology.maxPxcor - 1)) / ((world.observer.getGlobal("grid-size") / 2) - 0.5)), ((SelfPrims.getVariable("ycor") * (world.topology.maxPycor - 1)) / ((world.observer.getGlobal("grid-size") / 2) - 0.5)));
   }, true);
   Call(updateGlobals);
   Call(updateVisuals);
@@ -87,27 +88,27 @@ function setup() {
 }
 function go() {
   world.turtles().ask(function() {
-    SelfPrims.setVariable('new-val', 0);
+    SelfPrims.setVariable("new-val", 0);
   }, true);
   world.turtles().ask(function() {
-    var recipients = LinkPrims.outLinkNeighbors('ACTIVE-LINKS');
+    var recipients = LinkPrims.outLinkNeighbors("ACTIVE-LINKS");
     if (recipients.nonEmpty()) {
-      var valToKeep = (SelfPrims.getVariable('val') * (1 - (world.observer.getGlobal('diffusion-rate') / 100)));
-      SelfPrims.setVariable('new-val', (SelfPrims.getVariable('new-val') + valToKeep));
-      var valIncrement = ((SelfPrims.getVariable('val') - valToKeep) / recipients.size());
+      var valToKeep = (SelfPrims.getVariable("val") * (1 - (world.observer.getGlobal("diffusion-rate") / 100)));
+      SelfPrims.setVariable("new-val", (SelfPrims.getVariable("new-val") + valToKeep));
+      var valIncrement = ((SelfPrims.getVariable("val") - valToKeep) / recipients.size());
       recipients.ask(function() {
-        SelfPrims.setVariable('new-val', (SelfPrims.getVariable('new-val') + valIncrement));
-        LinkPrims.inLinkFrom('ACTIVE-LINKS', SelfManager.myself()).ask(function() {
-          SelfPrims.setVariable('current-flow', valIncrement);
+        SelfPrims.setVariable("new-val", (SelfPrims.getVariable("new-val") + valIncrement));
+        LinkPrims.inLinkFrom("ACTIVE-LINKS", SelfManager.myself()).ask(function() {
+          SelfPrims.setVariable("current-flow", valIncrement);
         }, true);
       }, true);
     }
     else {
-      SelfPrims.setVariable('new-val', (SelfPrims.getVariable('new-val') + SelfPrims.getVariable('val')));
+      SelfPrims.setVariable("new-val", (SelfPrims.getVariable("new-val") + SelfPrims.getVariable("val")));
     }
   }, true);
   world.turtles().ask(function() {
-    SelfPrims.setVariable('val', SelfPrims.getVariable('new-val'));
+    SelfPrims.setVariable("val", SelfPrims.getVariable("new-val"));
   }, true);
   Call(updateGlobals);
   Call(updateVisuals);
@@ -116,28 +117,28 @@ function go() {
 function rewireALink() {
   if (world.linkManager.linksOfBreed("ACTIVE-LINKS").nonEmpty()) {
     ListPrims.oneOf(world.linkManager.linksOfBreed("ACTIVE-LINKS")).ask(function() {
-      SelfPrims.setVariable('breed', world.linkManager.linksOfBreed("INACTIVE-LINKS"));
+      SelfPrims.setVariable("breed", world.linkManager.linksOfBreed("INACTIVE-LINKS"));
       SelfPrims.setVariable('hidden?', true)
     }, true);
     ListPrims.oneOf(world.linkManager.linksOfBreed("INACTIVE-LINKS")).ask(function() {
-      SelfPrims.setVariable('breed', world.linkManager.linksOfBreed("ACTIVE-LINKS"));
+      SelfPrims.setVariable("breed", world.linkManager.linksOfBreed("ACTIVE-LINKS"));
       SelfPrims.setVariable('hidden?', false)
     }, true);
   }
 }
 function updateGlobals() {
-  world.observer.setGlobal('total-val', ListPrims.sum(world.turtles().projectionBy(function() {
-    return SelfPrims.getVariable('val');
+  world.observer.setGlobal("total-val", ListPrims.sum(world.turtles().projectionBy(function() {
+    return SelfPrims.getVariable("val");
   })));
-  world.observer.setGlobal('max-val', ListPrims.max(world.turtles().projectionBy(function() {
-    return SelfPrims.getVariable('val');
+  world.observer.setGlobal("max-val", ListPrims.max(world.turtles().projectionBy(function() {
+    return SelfPrims.getVariable("val");
   })));
   if (world.linkManager.linksOfBreed("ACTIVE-LINKS").nonEmpty()) {
-    world.observer.setGlobal('max-flow', ListPrims.max(world.linkManager.linksOfBreed("ACTIVE-LINKS").projectionBy(function() {
-      return SelfPrims.getVariable('current-flow');
+    world.observer.setGlobal("max-flow", ListPrims.max(world.linkManager.linksOfBreed("ACTIVE-LINKS").projectionBy(function() {
+      return SelfPrims.getVariable("current-flow");
     })));
-    world.observer.setGlobal('mean-flow', ListPrims.mean(world.linkManager.linksOfBreed("ACTIVE-LINKS").projectionBy(function() {
-      return SelfPrims.getVariable('current-flow');
+    world.observer.setGlobal("mean-flow", ListPrims.mean(world.linkManager.linksOfBreed("ACTIVE-LINKS").projectionBy(function() {
+      return SelfPrims.getVariable("current-flow");
     })));
   }
 }
@@ -150,11 +151,11 @@ function updateVisuals() {
   }, true);
 }
 function updateNodeAppearance() {
-  SelfPrims.setVariable('size', (0.1 + (5 * StrictMath.sqrt((SelfPrims.getVariable('val') / world.observer.getGlobal('total-val'))))));
+  SelfPrims.setVariable("size", (0.1 + (5 * NLMath.sqrt((SelfPrims.getVariable("val") / world.observer.getGlobal("total-val"))))));
 }
 function updateLinkAppearance() {
-  SelfPrims.setVariable('color', ColorModel.scaleColor(5, (SelfPrims.getVariable('current-flow') / ((2 * world.observer.getGlobal('mean-flow')) + 1.0E-5)), -0.4, 1));
+  SelfPrims.setVariable("color", ColorModel.scaleColor(5, (SelfPrims.getVariable("current-flow") / ((2 * world.observer.getGlobal("mean-flow")) + 1.0E-5)), -0.4, 1));
 }
-world.observer.setGlobal('link-chance', 50);
-world.observer.setGlobal('grid-size', 9);
-world.observer.setGlobal('diffusion-rate', 10);
+world.observer.setGlobal("link-chance", 50);
+world.observer.setGlobal("grid-size", 9);
+world.observer.setGlobal("diffusion-rate", 10);

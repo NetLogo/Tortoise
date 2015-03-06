@@ -9,15 +9,15 @@ modelConfig.plots = [(function() {
   var name    = 'Class Plot';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('low', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Class Plot', 'low')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Class Plot', 'low')(function() { plotManager.plotValue(world.turtles().agentFilter(function() {
-  return Prims.equality(SelfPrims.getVariable('color'), 15);
+  return Prims.equality(SelfPrims.getVariable("color"), 15);
 }).size());; }); }); }),
 new PenBundle.Pen('mid', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Class Plot', 'mid')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Class Plot', 'mid')(function() { plotManager.plotValue(world.turtles().agentFilter(function() {
-  return Prims.equality(SelfPrims.getVariable('color'), 55);
+  return Prims.equality(SelfPrims.getVariable("color"), 55);
 }).size());; }); }); }),
 new PenBundle.Pen('up', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Class Plot', 'up')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Class Plot', 'up')(function() { plotManager.plotValue(world.turtles().agentFilter(function() {
-  return Prims.equality(SelfPrims.getVariable('color'), 105);
+  return Prims.equality(SelfPrims.getVariable("color"), 105);
 }).size());; }); }); })];
-  var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Class Plot', undefined)(function() { plotManager.setYRange(0, world.observer.getGlobal('num-people'));; }); }); };
+  var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Class Plot', undefined)(function() { plotManager.setYRange(0, world.observer.getGlobal("num-people"));; }); }); };
   var update  = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Class Plot', undefined)(function() {}); }); };
   return new Plot(name, pens, plotOps, 'Time', 'Turtles', true, 0.0, 50.0, 0.0, 250.0, setup, update);
 })(), (function() {
@@ -26,29 +26,29 @@ new PenBundle.Pen('up', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.
   var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Bar), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Class Histogram', 'default')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Class Histogram', 'default')(function() { plotManager.resetPen();
 plotManager.setPenColor(15);
 plotManager.plotValue(world.turtles().agentFilter(function() {
-  return Prims.equality(SelfPrims.getVariable('color'), 15);
+  return Prims.equality(SelfPrims.getVariable("color"), 15);
 }).size());
 plotManager.setPenColor(55);
 plotManager.plotValue(world.turtles().agentFilter(function() {
-  return Prims.equality(SelfPrims.getVariable('color'), 55);
+  return Prims.equality(SelfPrims.getVariable("color"), 55);
 }).size());
 plotManager.setPenColor(105);
 plotManager.plotValue(world.turtles().agentFilter(function() {
-  return Prims.equality(SelfPrims.getVariable('color'), 105);
+  return Prims.equality(SelfPrims.getVariable("color"), 105);
 }).size());; }); }); })];
-  var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Class Histogram', undefined)(function() { plotManager.setYRange(0, world.observer.getGlobal('num-people'));; }); }); };
+  var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Class Histogram', undefined)(function() { plotManager.setYRange(0, world.observer.getGlobal("num-people"));; }); }); };
   var update  = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Class Histogram', undefined)(function() {}); }); };
   return new Plot(name, pens, plotOps, 'Classes', 'Turtles', false, 0.0, 3.0, 0.0, 250.0, setup, update);
 })(), (function() {
   var name    = 'Lorenz Curve';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('lorenz', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Lorenz Curve', 'lorenz')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Lorenz Curve', 'lorenz')(function() { plotManager.resetPen();
-plotManager.setPenInterval((100 / world.observer.getGlobal('num-people')));
+plotManager.setPenInterval((100 / world.observer.getGlobal("num-people")));
 plotManager.plotValue(0);
 Tasks.forEach(Tasks.commandTask(function() {
   var taskArguments = arguments;
   plotManager.plotValue(taskArguments[0]);
-}), world.observer.getGlobal('lorenz-points'));; }); }); }),
+}), world.observer.getGlobal("lorenz-points"));; }); }); }),
 new PenBundle.Pen('equal', plotOps.makePenOps, false, new PenBundle.State(0.0, 100.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Lorenz Curve', 'equal')(function() { plotManager.plotValue(0);
 plotManager.plotValue(100);; }); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Lorenz Curve', 'equal')(function() {}); }); })];
   var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Lorenz Curve', undefined)(function() {}); }); };
@@ -57,7 +57,7 @@ plotManager.plotValue(100);; }); }); }, function() { workspace.rng.withAux(funct
 })(), (function() {
   var name    = 'Gini-Index v. Time';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Gini-Index v. Time', 'default')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Gini-Index v. Time', 'default')(function() { plotManager.plotValue(((world.observer.getGlobal('gini-index-reserve') / world.observer.getGlobal('num-people')) / 0.5));; }); }); })];
+  var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Gini-Index v. Time', 'default')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Gini-Index v. Time', 'default')(function() { plotManager.plotValue(((world.observer.getGlobal("gini-index-reserve") / world.observer.getGlobal("num-people")) / 0.5));; }); }); })];
   var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Gini-Index v. Time', undefined)(function() {}); }); };
   var update  = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Gini-Index v. Time', undefined)(function() {}); }); };
   return new Plot(name, pens, plotOps, 'Time', 'Gini', false, 0.0, 50.0, 0.0, 1.0, setup, update);
@@ -81,27 +81,28 @@ var Updater       = workspace.updater;
 var world         = workspace.world;
 
 var Call           = tortoise_require('util/call');
-var ColorModel     = tortoise_require('util/colormodel');
 var Exception      = tortoise_require('util/exception');
-var Trig           = tortoise_require('util/trig');
-var Type           = tortoise_require('util/typechecker');
+var NLMath         = tortoise_require('util/nlmath');
 var notImplemented = tortoise_require('util/notimplemented');
 
 var Dump      = tortoise_require('engine/dump');
+var ColorModel = tortoise_require('engine/core/colormodel');
 var Link      = tortoise_require('engine/core/link');
 var LinkSet   = tortoise_require('engine/core/linkset');
 var Nobody    = tortoise_require('engine/core/nobody');
 var PatchSet  = tortoise_require('engine/core/patchset');
 var Turtle    = tortoise_require('engine/core/turtle');
 var TurtleSet = tortoise_require('engine/core/turtleset');
+var NLType    = tortoise_require('engine/core/typechecker');
 var Tasks     = tortoise_require('engine/prim/tasks');
 
 var AgentModel = tortoise_require('agentmodel');
+var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
 function setup() {
   world.clearAll();
-  world.observer.setGlobal('max-grain', 50);
+  world.observer.setGlobal("max-grain", 50);
   Call(setupPatches);
   Call(setupTurtles);
   Call(updateLorenzAndGini);
@@ -109,64 +110,64 @@ function setup() {
 }
 function setupPatches() {
   world.patches().ask(function() {
-    SelfPrims.setPatchVariable('max-grain-here', 0);
-    if (Prims.lte(Prims.randomFloat(100), world.observer.getGlobal('percent-best-land'))) {
-      SelfPrims.setPatchVariable('max-grain-here', world.observer.getGlobal('max-grain'));
-      SelfPrims.setPatchVariable('grain-here', SelfPrims.getPatchVariable('max-grain-here'));
+    SelfPrims.setPatchVariable("max-grain-here", 0);
+    if (Prims.lte(Prims.randomFloat(100), world.observer.getGlobal("percent-best-land"))) {
+      SelfPrims.setPatchVariable("max-grain-here", world.observer.getGlobal("max-grain"));
+      SelfPrims.setPatchVariable("grain-here", SelfPrims.getPatchVariable("max-grain-here"));
     }
   }, true);
   for (var _index_1278_1284 = 0, _repeatcount_1278_1284 = StrictMath.floor(5); _index_1278_1284 < _repeatcount_1278_1284; _index_1278_1284++){
     world.patches().agentFilter(function() {
-      return !Prims.equality(SelfPrims.getPatchVariable('max-grain-here'), 0);
+      return !Prims.equality(SelfPrims.getPatchVariable("max-grain-here"), 0);
     }).ask(function() {
-      SelfPrims.setPatchVariable('grain-here', SelfPrims.getPatchVariable('max-grain-here'));
+      SelfPrims.setPatchVariable("grain-here", SelfPrims.getPatchVariable("max-grain-here"));
     }, true);
-    world.topology.diffuse('grain-here', 0.25)
+    world.topology.diffuse("grain-here", 0.25)
   }
   for (var _index_1408_1414 = 0, _repeatcount_1408_1414 = StrictMath.floor(10); _index_1408_1414 < _repeatcount_1408_1414; _index_1408_1414++){
-    world.topology.diffuse('grain-here', 0.25)
+    world.topology.diffuse("grain-here", 0.25)
   }
   world.patches().ask(function() {
-    SelfPrims.setPatchVariable('grain-here', StrictMath.floor(SelfPrims.getPatchVariable('grain-here')));
-    SelfPrims.setPatchVariable('max-grain-here', SelfPrims.getPatchVariable('grain-here'));
+    SelfPrims.setPatchVariable("grain-here", NLMath.floor(SelfPrims.getPatchVariable("grain-here")));
+    SelfPrims.setPatchVariable("max-grain-here", SelfPrims.getPatchVariable("grain-here"));
     Call(recolorPatch);
   }, true);
 }
 function recolorPatch() {
-  SelfPrims.setPatchVariable('pcolor', ColorModel.scaleColor(45, SelfPrims.getPatchVariable('grain-here'), 0, world.observer.getGlobal('max-grain')));
+  SelfPrims.setPatchVariable("pcolor", ColorModel.scaleColor(45, SelfPrims.getPatchVariable("grain-here"), 0, world.observer.getGlobal("max-grain")));
 }
 function setupTurtles() {
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "person")
-  world.turtleManager.createTurtles(world.observer.getGlobal('num-people'), '').ask(function() {
+  world.turtleManager.createTurtles(world.observer.getGlobal("num-people"), "").ask(function() {
     SelfManager.self().moveTo(ListPrims.oneOf(world.patches()));
-    SelfPrims.setVariable('size', 1.5);
+    SelfPrims.setVariable("size", 1.5);
     Call(setInitialTurtleVars);
-    SelfPrims.setVariable('age', Prims.random(SelfPrims.getVariable('life-expectancy')));
+    SelfPrims.setVariable("age", Prims.random(SelfPrims.getVariable("life-expectancy")));
   }, true);
   Call(recolorTurtles);
 }
 function setInitialTurtleVars() {
-  SelfPrims.setVariable('age', 0);
+  SelfPrims.setVariable("age", 0);
   SelfManager.self().face(ListPrims.oneOf(SelfPrims.getNeighbors4()));
-  SelfPrims.setVariable('life-expectancy', (world.observer.getGlobal('life-expectancy-min') + Prims.random(((world.observer.getGlobal('life-expectancy-max') - world.observer.getGlobal('life-expectancy-min')) + 1))));
-  SelfPrims.setVariable('metabolism', (1 + Prims.random(world.observer.getGlobal('metabolism-max'))));
-  SelfPrims.setVariable('wealth', (SelfPrims.getVariable('metabolism') + Prims.random(50)));
-  SelfPrims.setVariable('vision', (1 + Prims.random(world.observer.getGlobal('max-vision'))));
+  SelfPrims.setVariable("life-expectancy", (world.observer.getGlobal("life-expectancy-min") + Prims.random(((world.observer.getGlobal("life-expectancy-max") - world.observer.getGlobal("life-expectancy-min")) + 1))));
+  SelfPrims.setVariable("metabolism", (1 + Prims.random(world.observer.getGlobal("metabolism-max"))));
+  SelfPrims.setVariable("wealth", (SelfPrims.getVariable("metabolism") + Prims.random(50)));
+  SelfPrims.setVariable("vision", (1 + Prims.random(world.observer.getGlobal("max-vision"))));
 }
 function recolorTurtles() {
   var maxWealth = ListPrims.max(world.turtles().projectionBy(function() {
-    return SelfPrims.getVariable('wealth');
+    return SelfPrims.getVariable("wealth");
   }));
   world.turtles().ask(function() {
-    if (Prims.lte(SelfPrims.getVariable('wealth'), (maxWealth / 3))) {
-      SelfPrims.setVariable('color', 15);
+    if (Prims.lte(SelfPrims.getVariable("wealth"), (maxWealth / 3))) {
+      SelfPrims.setVariable("color", 15);
     }
     else {
-      if (Prims.lte(SelfPrims.getVariable('wealth'), ((maxWealth * 2) / 3))) {
-        SelfPrims.setVariable('color', 55);
+      if (Prims.lte(SelfPrims.getVariable("wealth"), ((maxWealth * 2) / 3))) {
+        SelfPrims.setVariable("color", 55);
       }
       else {
-        SelfPrims.setVariable('color', 105);
+        SelfPrims.setVariable("color", 105);
       }
     }
   }, true);
@@ -180,7 +181,7 @@ function go() {
     Call(moveEatAgeDie);
   }, true);
   Call(recolorTurtles);
-  if (Prims.equality(Prims.mod(world.ticker.tickCount(), world.observer.getGlobal('grain-growth-interval')), 0)) {
+  if (Prims.equality(NLMath.mod(world.ticker.tickCount(), world.observer.getGlobal("grain-growth-interval")), 0)) {
     world.patches().ask(function() {
       Call(growGrain);
     }, true);
@@ -189,84 +190,84 @@ function go() {
   world.ticker.tick();
 }
 function turnTowardsGrain() {
-  SelfPrims.setVariable('heading', 0);
+  SelfPrims.setVariable("heading", 0);
   var bestDirection = 0;
   var bestAmount = Call(grainAhead);
-  SelfPrims.setVariable('heading', 90);
+  SelfPrims.setVariable("heading", 90);
   if (Prims.gt(Call(grainAhead), bestAmount)) {
     bestDirection = 90;
     bestAmount = Call(grainAhead);
   }
-  SelfPrims.setVariable('heading', 180);
+  SelfPrims.setVariable("heading", 180);
   if (Prims.gt(Call(grainAhead), bestAmount)) {
     bestDirection = 180;
     bestAmount = Call(grainAhead);
   }
-  SelfPrims.setVariable('heading', 270);
+  SelfPrims.setVariable("heading", 270);
   if (Prims.gt(Call(grainAhead), bestAmount)) {
     bestDirection = 270;
     bestAmount = Call(grainAhead);
   }
-  SelfPrims.setVariable('heading', bestDirection);
+  SelfPrims.setVariable("heading", bestDirection);
 }
 function grainAhead() {
   var total = 0;
   var howFar = 1;
-  for (var _index_3994_4000 = 0, _repeatcount_3994_4000 = StrictMath.floor(SelfPrims.getVariable('vision')); _index_3994_4000 < _repeatcount_3994_4000; _index_3994_4000++){
+  for (var _index_3994_4000 = 0, _repeatcount_3994_4000 = StrictMath.floor(SelfPrims.getVariable("vision")); _index_3994_4000 < _repeatcount_3994_4000; _index_3994_4000++){
     total = (total + SelfManager.self().patchAhead(howFar).projectionBy(function() {
-      return SelfPrims.getPatchVariable('grain-here');
+      return SelfPrims.getPatchVariable("grain-here");
     }));
     howFar = (howFar + 1);
   }
   return total;
 }
 function growGrain() {
-  if (Prims.lt(SelfPrims.getPatchVariable('grain-here'), SelfPrims.getPatchVariable('max-grain-here'))) {
-    SelfPrims.setPatchVariable('grain-here', (SelfPrims.getPatchVariable('grain-here') + world.observer.getGlobal('num-grain-grown')));
-    if (Prims.gt(SelfPrims.getPatchVariable('grain-here'), SelfPrims.getPatchVariable('max-grain-here'))) {
-      SelfPrims.setPatchVariable('grain-here', SelfPrims.getPatchVariable('max-grain-here'));
+  if (Prims.lt(SelfPrims.getPatchVariable("grain-here"), SelfPrims.getPatchVariable("max-grain-here"))) {
+    SelfPrims.setPatchVariable("grain-here", (SelfPrims.getPatchVariable("grain-here") + world.observer.getGlobal("num-grain-grown")));
+    if (Prims.gt(SelfPrims.getPatchVariable("grain-here"), SelfPrims.getPatchVariable("max-grain-here"))) {
+      SelfPrims.setPatchVariable("grain-here", SelfPrims.getPatchVariable("max-grain-here"));
     }
     Call(recolorPatch);
   }
 }
 function harvest() {
   world.turtles().ask(function() {
-    SelfPrims.setVariable('wealth', StrictMath.floor((SelfPrims.getVariable('wealth') + (SelfPrims.getPatchVariable('grain-here') / SelfManager.self().turtlesHere().size()))));
+    SelfPrims.setVariable("wealth", NLMath.floor((SelfPrims.getVariable("wealth") + (SelfPrims.getPatchVariable("grain-here") / SelfManager.self().turtlesHere().size()))));
   }, true);
   world.turtles().ask(function() {
-    SelfPrims.setPatchVariable('grain-here', 0);
+    SelfPrims.setPatchVariable("grain-here", 0);
     Call(recolorPatch);
   }, true);
 }
 function moveEatAgeDie() {
   SelfPrims.fd(1);
-  SelfPrims.setVariable('wealth', (SelfPrims.getVariable('wealth') - SelfPrims.getVariable('metabolism')));
-  SelfPrims.setVariable('age', (SelfPrims.getVariable('age') + 1));
-  if ((Prims.lt(SelfPrims.getVariable('wealth'), 0) || Prims.gte(SelfPrims.getVariable('age'), SelfPrims.getVariable('life-expectancy')))) {
+  SelfPrims.setVariable("wealth", (SelfPrims.getVariable("wealth") - SelfPrims.getVariable("metabolism")));
+  SelfPrims.setVariable("age", (SelfPrims.getVariable("age") + 1));
+  if ((Prims.lt(SelfPrims.getVariable("wealth"), 0) || Prims.gte(SelfPrims.getVariable("age"), SelfPrims.getVariable("life-expectancy")))) {
     Call(setInitialTurtleVars);
   }
 }
 function updateLorenzAndGini() {
   var sortedWealths = ListPrims.sort(world.turtles().projectionBy(function() {
-    return SelfPrims.getVariable('wealth');
+    return SelfPrims.getVariable("wealth");
   }));
   var totalWealth = ListPrims.sum(sortedWealths);
   var wealthSumSoFar = 0;
   var index = 0;
-  world.observer.setGlobal('gini-index-reserve', 0);
-  world.observer.setGlobal('lorenz-points', []);
-  for (var _index_6020_6026 = 0, _repeatcount_6020_6026 = StrictMath.floor(world.observer.getGlobal('num-people')); _index_6020_6026 < _repeatcount_6020_6026; _index_6020_6026++){
+  world.observer.setGlobal("gini-index-reserve", 0);
+  world.observer.setGlobal("lorenz-points", []);
+  for (var _index_6020_6026 = 0, _repeatcount_6020_6026 = StrictMath.floor(world.observer.getGlobal("num-people")); _index_6020_6026 < _repeatcount_6020_6026; _index_6020_6026++){
     wealthSumSoFar = (wealthSumSoFar + ListPrims.item(index, sortedWealths));
-    world.observer.setGlobal('lorenz-points', ListPrims.lput(((wealthSumSoFar / totalWealth) * 100), world.observer.getGlobal('lorenz-points')));
+    world.observer.setGlobal("lorenz-points", ListPrims.lput(((wealthSumSoFar / totalWealth) * 100), world.observer.getGlobal("lorenz-points")));
     index = (index + 1);
-    world.observer.setGlobal('gini-index-reserve', ((world.observer.getGlobal('gini-index-reserve') + (index / world.observer.getGlobal('num-people'))) - (wealthSumSoFar / totalWealth)));
+    world.observer.setGlobal("gini-index-reserve", ((world.observer.getGlobal("gini-index-reserve") + (index / world.observer.getGlobal("num-people"))) - (wealthSumSoFar / totalWealth)));
   }
 }
-world.observer.setGlobal('max-vision', 5);
-world.observer.setGlobal('grain-growth-interval', 1);
-world.observer.setGlobal('metabolism-max', 15);
-world.observer.setGlobal('num-people', 250);
-world.observer.setGlobal('percent-best-land', 10);
-world.observer.setGlobal('life-expectancy-max', 83);
-world.observer.setGlobal('num-grain-grown', 4);
-world.observer.setGlobal('life-expectancy-min', 1);
+world.observer.setGlobal("max-vision", 5);
+world.observer.setGlobal("grain-growth-interval", 1);
+world.observer.setGlobal("metabolism-max", 15);
+world.observer.setGlobal("num-people", 250);
+world.observer.setGlobal("percent-best-land", 10);
+world.observer.setGlobal("life-expectancy-max", 83);
+world.observer.setGlobal("num-grain-grown", 4);
+world.observer.setGlobal("life-expectancy-min", 1);

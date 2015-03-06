@@ -18,7 +18,7 @@ plotManager.setCurrentPen("previous collaborators");
 plotManager.raisePen();
 plotManager.plotPoint(world.ticker.tickCount(), total);
 total = (total + world.links().agentFilter(function() {
-  return Prims.equality(SelfPrims.getVariable('color'), 15);
+  return Prims.equality(SelfPrims.getVariable("color"), 15);
 }).size());
 plotManager.lowerPen();
 plotManager.plotPoint(world.ticker.tickCount(), total);
@@ -26,7 +26,7 @@ plotManager.setCurrentPen("incumbent-incumbent");
 plotManager.raisePen();
 plotManager.plotPoint(world.ticker.tickCount(), total);
 total = (total + world.links().agentFilter(function() {
-  return Prims.equality(SelfPrims.getVariable('color'), 45);
+  return Prims.equality(SelfPrims.getVariable("color"), 45);
 }).size());
 plotManager.lowerPen();
 plotManager.plotPoint(world.ticker.tickCount(), total);
@@ -34,7 +34,7 @@ plotManager.setCurrentPen("newcomer-incumbent");
 plotManager.raisePen();
 plotManager.plotPoint(world.ticker.tickCount(), total);
 total = (total + world.links().agentFilter(function() {
-  return Prims.equality(SelfPrims.getVariable('color'), 55);
+  return Prims.equality(SelfPrims.getVariable("color"), 55);
 }).size());
 plotManager.lowerPen();
 plotManager.plotPoint(world.ticker.tickCount(), total);
@@ -42,7 +42,7 @@ plotManager.setCurrentPen("newcomer-newcomer");
 plotManager.raisePen();
 plotManager.plotPoint(world.ticker.tickCount(), total);
 total = (total + world.links().agentFilter(function() {
-  return Prims.equality(SelfPrims.getVariable('color'), 105);
+  return Prims.equality(SelfPrims.getVariable("color"), 105);
 }).size());
 plotManager.lowerPen();
 plotManager.plotPoint(world.ticker.tickCount(), total);; }); }); };
@@ -50,14 +50,14 @@ plotManager.plotPoint(world.ticker.tickCount(), total);; }); }); };
 })(), (function() {
   var name    = '% of agents in the giant component';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('% of agents in the giant component', 'default')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('% of agents in the giant component', 'default')(function() { plotManager.plotPoint(world.ticker.tickCount(), (world.observer.getGlobal('giant-component-size') / world.turtles().size()));; }); }); })];
+  var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('% of agents in the giant component', 'default')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('% of agents in the giant component', 'default')(function() { plotManager.plotPoint(world.ticker.tickCount(), (world.observer.getGlobal("giant-component-size") / world.turtles().size()));; }); }); })];
   var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('% of agents in the giant component', undefined)(function() {}); }); };
   var update  = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('% of agents in the giant component', undefined)(function() {}); }); };
   return new Plot(name, pens, plotOps, 'Time', '% of all agents', false, 0.0, 10.0, 0.0, 1.0, setup, update);
 })(), (function() {
   var name    = 'Average component size';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Average component size', 'default')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Average component size', 'default')(function() { plotManager.plotPoint(world.ticker.tickCount(), ListPrims.mean(world.observer.getGlobal('components')));; }); }); })];
+  var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Average component size', 'default')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Average component size', 'default')(function() { plotManager.plotPoint(world.ticker.tickCount(), ListPrims.mean(world.observer.getGlobal("components")));; }); }); })];
   var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Average component size', undefined)(function() {}); }); };
   var update  = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Average component size', undefined)(function() {}); }); };
   return new Plot(name, pens, plotOps, 'Time', 'Number of agents', false, 0.0, 10.0, 0.0, 1.0, setup, update);
@@ -81,75 +81,76 @@ var Updater       = workspace.updater;
 var world         = workspace.world;
 
 var Call           = tortoise_require('util/call');
-var ColorModel     = tortoise_require('util/colormodel');
 var Exception      = tortoise_require('util/exception');
-var Trig           = tortoise_require('util/trig');
-var Type           = tortoise_require('util/typechecker');
+var NLMath         = tortoise_require('util/nlmath');
 var notImplemented = tortoise_require('util/notimplemented');
 
 var Dump      = tortoise_require('engine/dump');
+var ColorModel = tortoise_require('engine/core/colormodel');
 var Link      = tortoise_require('engine/core/link');
 var LinkSet   = tortoise_require('engine/core/linkset');
 var Nobody    = tortoise_require('engine/core/nobody');
 var PatchSet  = tortoise_require('engine/core/patchset');
 var Turtle    = tortoise_require('engine/core/turtle');
 var TurtleSet = tortoise_require('engine/core/turtleset');
+var NLType    = tortoise_require('engine/core/typechecker');
 var Tasks     = tortoise_require('engine/prim/tasks');
 
 var AgentModel = tortoise_require('agentmodel');
+var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
 function makeNewcomer() {
-  world.turtleManager.createTurtles(1, '').ask(function() {
-    SelfPrims.setVariable('color', (105 + 1));
-    SelfPrims.setVariable('size', 1.8);
-    SelfPrims.setVariable('incumbent?', false);
-    SelfPrims.setVariable('in-team?', false);
-    world.observer.setGlobal('newcomer', SelfManager.self());
-    SelfPrims.setVariable('downtime', 0);
-    SelfPrims.setVariable('explored?', false);
+  world.turtleManager.createTurtles(1, "").ask(function() {
+    SelfPrims.setVariable("color", (105 + 1));
+    SelfPrims.setVariable("size", 1.8);
+    SelfPrims.setVariable("incumbent?", false);
+    SelfPrims.setVariable("in-team?", false);
+    world.observer.setGlobal("newcomer", SelfManager.self());
+    SelfPrims.setVariable("downtime", 0);
+    SelfPrims.setVariable("explored?", false);
   }, true);
 }
 function setup() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
-  for (var _index_1053_1059 = 0, _repeatcount_1053_1059 = StrictMath.floor(world.observer.getGlobal('team-size')); _index_1053_1059 < _repeatcount_1053_1059; _index_1053_1059++){
+  for (var _index_1053_1059 = 0, _repeatcount_1053_1059 = StrictMath.floor(world.observer.getGlobal("team-size")); _index_1053_1059 < _repeatcount_1053_1059; _index_1053_1059++){
     Call(makeNewcomer);
   }
   world.turtles().ask(function() {
-    SelfPrims.setVariable('in-team?', true);
-    SelfPrims.setVariable('incumbent?', true);
+    SelfPrims.setVariable("in-team?", true);
+    SelfPrims.setVariable("incumbent?", true);
   }, true);
   Call(tieCollaborators);
   Call(colorCollaborations);
   world.turtles().ask(function() {
-    SelfPrims.setVariable('heading', ((360 / world.observer.getGlobal('team-size')) * SelfPrims.getVariable('who')));
+    SelfPrims.setVariable("heading", ((360 / world.observer.getGlobal("team-size")) * SelfPrims.getVariable("who")));
     SelfPrims.fd(1.75);
-    SelfPrims.setVariable('in-team?', false);
+    SelfPrims.setVariable("in-team?", false);
   }, true);
   Call(findAllComponents);
   world.ticker.reset();
 }
 function go() {
   world.turtles().ask(function() {
-    SelfPrims.setVariable('incumbent?', true);
-    SelfPrims.setVariable('color', (5 - 1.5));
-    SelfPrims.setVariable('size', 0.9);
+    SelfPrims.setVariable("incumbent?", true);
+    SelfPrims.setVariable("color", (5 - 1.5));
+    SelfPrims.setVariable("size", 0.9);
   }, true);
   world.links().ask(function() {
-    SelfPrims.setVariable('new-collaboration?', false);
+    SelfPrims.setVariable("new-collaboration?", false);
   }, true);
   Call(pickTeamMembers);
   Call(tieCollaborators);
   Call(colorCollaborations);
   world.turtles().ask(function() {
-    if (Prims.gt(SelfPrims.getVariable('downtime'), world.observer.getGlobal('max-downtime'))) {
+    if (Prims.gt(SelfPrims.getVariable("downtime"), world.observer.getGlobal("max-downtime"))) {
       SelfPrims.die();
     }
-    SelfPrims.setVariable('in-team?', false);
-    SelfPrims.setVariable('downtime', (SelfPrims.getVariable('downtime') + 1));
+    SelfPrims.setVariable("in-team?", false);
+    SelfPrims.setVariable("downtime", (SelfPrims.getVariable("downtime") + 1));
   }, true);
-  if (world.observer.getGlobal('layout?')) {
+  if (world.observer.getGlobal("layout?")) {
     Call(layout);
   }
   Call(findAllComponents);
@@ -157,80 +158,80 @@ function go() {
 }
 function pickTeamMembers() {
   var newTeamMember = Nobody;
-  for (var _index_2105_2111 = 0, _repeatcount_2105_2111 = StrictMath.floor(world.observer.getGlobal('team-size')); _index_2105_2111 < _repeatcount_2105_2111; _index_2105_2111++){
-    if (Prims.gte(Prims.randomFloat(100), world.observer.getGlobal('p'))) {
+  for (var _index_2105_2111 = 0, _repeatcount_2105_2111 = StrictMath.floor(world.observer.getGlobal("team-size")); _index_2105_2111 < _repeatcount_2105_2111; _index_2105_2111++){
+    if (Prims.gte(Prims.randomFloat(100), world.observer.getGlobal("p"))) {
       Call(makeNewcomer);
-      newTeamMember = world.observer.getGlobal('newcomer');
+      newTeamMember = world.observer.getGlobal("newcomer");
     }
     else {
-      if ((Prims.lt(Prims.randomFloat(100), world.observer.getGlobal('q')) && world.turtles().agentFilter(function() {
-        return (SelfPrims.getVariable('in-team?') && LinkPrims.linkNeighbors('LINKS').agentFilter(function() {
-          return !SelfPrims.getVariable('in-team?');
+      if ((Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("q")) && world.turtles().agentFilter(function() {
+        return (SelfPrims.getVariable("in-team?") && LinkPrims.linkNeighbors("LINKS").agentFilter(function() {
+          return !SelfPrims.getVariable("in-team?");
         }).nonEmpty());
       }).nonEmpty())) {
         newTeamMember = ListPrims.oneOf(world.turtles().agentFilter(function() {
-          return (!SelfPrims.getVariable('in-team?') && LinkPrims.linkNeighbors('LINKS').agentFilter(function() {
-            return SelfPrims.getVariable('in-team?');
+          return (!SelfPrims.getVariable("in-team?") && LinkPrims.linkNeighbors("LINKS").agentFilter(function() {
+            return SelfPrims.getVariable("in-team?");
           }).nonEmpty());
         }));
       }
       else {
         newTeamMember = ListPrims.oneOf(world.turtles().agentFilter(function() {
-          return !SelfPrims.getVariable('in-team?');
+          return !SelfPrims.getVariable("in-team?");
         }));
       }
     }
     newTeamMember.ask(function() {
-      SelfPrims.setVariable('in-team?', true);
-      SelfPrims.setVariable('downtime', 0);
-      SelfPrims.setVariable('size', 1.8);
-      SelfPrims.setVariable('color', (SelfPrims.getVariable('incumbent?') ? (45 + 2) : (105 + 1)));
+      SelfPrims.setVariable("in-team?", true);
+      SelfPrims.setVariable("downtime", 0);
+      SelfPrims.setVariable("size", 1.8);
+      SelfPrims.setVariable("color", (SelfPrims.getVariable("incumbent?") ? (45 + 2) : (105 + 1)));
     }, true);
   }
 }
 function tieCollaborators() {
   world.turtles().agentFilter(function() {
-    return SelfPrims.getVariable('in-team?');
+    return SelfPrims.getVariable("in-team?");
   }).ask(function() {
     LinkPrims.createLinksWith(SelfPrims.other(world.turtles().agentFilter(function() {
-      return SelfPrims.getVariable('in-team?');
-    })), 'LINKS').ask(function() {
-      SelfPrims.setVariable('new-collaboration?', true);
-      SelfPrims.setVariable('thickness', 0.3);
+      return SelfPrims.getVariable("in-team?");
+    })), "LINKS").ask(function() {
+      SelfPrims.setVariable("new-collaboration?", true);
+      SelfPrims.setVariable("thickness", 0.3);
     }, true);
   }, true);
 }
 function colorCollaborations() {
   world.links().agentFilter(function() {
-    return (SelfPrims.getVariable('end1').projectionBy(function() {
-      return SelfPrims.getVariable('in-team?');
-    }) && SelfPrims.getVariable('end2').projectionBy(function() {
-      return SelfPrims.getVariable('in-team?');
+    return (SelfPrims.getVariable("end1").projectionBy(function() {
+      return SelfPrims.getVariable("in-team?");
+    }) && SelfPrims.getVariable("end2").projectionBy(function() {
+      return SelfPrims.getVariable("in-team?");
     }));
   }).ask(function() {
-    if (SelfPrims.getVariable('new-collaboration?')) {
-      if ((SelfPrims.getVariable('end1').projectionBy(function() {
-        return SelfPrims.getVariable('incumbent?');
-      }) && SelfPrims.getVariable('end2').projectionBy(function() {
-        return SelfPrims.getVariable('incumbent?');
+    if (SelfPrims.getVariable("new-collaboration?")) {
+      if ((SelfPrims.getVariable("end1").projectionBy(function() {
+        return SelfPrims.getVariable("incumbent?");
+      }) && SelfPrims.getVariable("end2").projectionBy(function() {
+        return SelfPrims.getVariable("incumbent?");
       }))) {
-        SelfPrims.setVariable('color', 45);
+        SelfPrims.setVariable("color", 45);
       }
       else {
-        if ((SelfPrims.getVariable('end1').projectionBy(function() {
-          return SelfPrims.getVariable('incumbent?');
-        }) || SelfPrims.getVariable('end2').projectionBy(function() {
-          return SelfPrims.getVariable('incumbent?');
+        if ((SelfPrims.getVariable("end1").projectionBy(function() {
+          return SelfPrims.getVariable("incumbent?");
+        }) || SelfPrims.getVariable("end2").projectionBy(function() {
+          return SelfPrims.getVariable("incumbent?");
         }))) {
-          SelfPrims.setVariable('color', 55);
+          SelfPrims.setVariable("color", 55);
         }
         else {
-          SelfPrims.setVariable('color', 105);
+          SelfPrims.setVariable("color", 105);
         }
       }
     }
     else {
-      SelfPrims.setVariable('color', 15);
+      SelfPrims.setVariable("color", 15);
     }
   }, true);
 }
@@ -241,41 +242,41 @@ function layout() {
   }
 }
 function findAllComponents() {
-  world.observer.setGlobal('components', []);
-  world.observer.setGlobal('giant-component-size', 0);
+  world.observer.setGlobal("components", []);
+  world.observer.setGlobal("giant-component-size", 0);
   world.turtles().ask(function() {
-    SelfPrims.setVariable('explored?', false);
+    SelfPrims.setVariable("explored?", false);
   }, true);
   while (true) {
     var start = ListPrims.oneOf(world.turtles().agentFilter(function() {
-      return !SelfPrims.getVariable('explored?');
+      return !SelfPrims.getVariable("explored?");
     }));
     if (Prims.equality(start, Nobody)) {
       throw new Exception.StopInterrupt;
     }
-    world.observer.setGlobal('component-size', 0);
+    world.observer.setGlobal("component-size", 0);
     start.ask(function() {
       Call(explore);
     }, true);
-    if (Prims.gt(world.observer.getGlobal('component-size'), world.observer.getGlobal('giant-component-size'))) {
-      world.observer.setGlobal('giant-component-size', world.observer.getGlobal('component-size'));
+    if (Prims.gt(world.observer.getGlobal("component-size"), world.observer.getGlobal("giant-component-size"))) {
+      world.observer.setGlobal("giant-component-size", world.observer.getGlobal("component-size"));
     }
-    world.observer.setGlobal('components', ListPrims.lput(world.observer.getGlobal('component-size'), world.observer.getGlobal('components')));
+    world.observer.setGlobal("components", ListPrims.lput(world.observer.getGlobal("component-size"), world.observer.getGlobal("components")));
   };
 }
 function explore() {
-  if (SelfPrims.getVariable('explored?')) {
+  if (SelfPrims.getVariable("explored?")) {
     throw new Exception.StopInterrupt;
   }
-  SelfPrims.setVariable('explored?', true);
-  world.observer.setGlobal('component-size', (world.observer.getGlobal('component-size') + 1));
-  LinkPrims.linkNeighbors('LINKS').ask(function() {
+  SelfPrims.setVariable("explored?", true);
+  world.observer.setGlobal("component-size", (world.observer.getGlobal("component-size") + 1));
+  LinkPrims.linkNeighbors("LINKS").ask(function() {
     Call(explore);
   }, true);
 }
-world.observer.setGlobal('layout?', true);
-world.observer.setGlobal('p', 40);
-world.observer.setGlobal('q', 65);
-world.observer.setGlobal('team-size', 4);
-world.observer.setGlobal('plot?', true);
-world.observer.setGlobal('max-downtime', 40);
+world.observer.setGlobal("layout?", true);
+world.observer.setGlobal("p", 40);
+world.observer.setGlobal("q", 65);
+world.observer.setGlobal("team-size", 4);
+world.observer.setGlobal("plot?", true);
+world.observer.setGlobal("max-downtime", 40);

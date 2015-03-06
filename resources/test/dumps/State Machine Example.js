@@ -25,50 +25,51 @@ var Updater       = workspace.updater;
 var world         = workspace.world;
 
 var Call           = tortoise_require('util/call');
-var ColorModel     = tortoise_require('util/colormodel');
 var Exception      = tortoise_require('util/exception');
-var Trig           = tortoise_require('util/trig');
-var Type           = tortoise_require('util/typechecker');
+var NLMath         = tortoise_require('util/nlmath');
 var notImplemented = tortoise_require('util/notimplemented');
 
 var Dump      = tortoise_require('engine/dump');
+var ColorModel = tortoise_require('engine/core/colormodel');
 var Link      = tortoise_require('engine/core/link');
 var LinkSet   = tortoise_require('engine/core/linkset');
 var Nobody    = tortoise_require('engine/core/nobody');
 var PatchSet  = tortoise_require('engine/core/patchset');
 var Turtle    = tortoise_require('engine/core/turtle');
 var TurtleSet = tortoise_require('engine/core/turtleset');
+var NLType    = tortoise_require('engine/core/typechecker');
 var Tasks     = tortoise_require('engine/prim/tasks');
 
 var AgentModel = tortoise_require('agentmodel');
+var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
 function setup() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "bug")
   world.patches().ask(function() {
-    if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal('density'))) {
-      SelfPrims.setPatchVariable('pcolor', 45);
+    if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("density"))) {
+      SelfPrims.setPatchVariable("pcolor", 45);
     }
   }, true);
-  world.turtleManager.createTurtles(world.observer.getGlobal('number'), '').ask(function() {
-    SelfPrims.setVariable('color', 9.9);
+  world.turtleManager.createTurtles(world.observer.getGlobal("number"), "").ask(function() {
+    SelfPrims.setVariable("color", 9.9);
     SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
-    SelfPrims.setVariable('next-task', Tasks.commandTask(function() {
+    SelfPrims.setVariable("next-task", Tasks.commandTask(function() {
       var taskArguments = arguments;
       Call(searchForChip);
     }));
-    SelfPrims.setVariable('size', 5);
+    SelfPrims.setVariable("size", 5);
   }, true);
   world.ticker.reset();
 }
 function go() {
   world.turtles().ask(function() {
-    if (Prims.gt(SelfPrims.getVariable('steps'), 0)) {
-      SelfPrims.setVariable('steps', (SelfPrims.getVariable('steps') - 1));
+    if (Prims.gt(SelfPrims.getVariable("steps"), 0)) {
+      SelfPrims.setVariable("steps", (SelfPrims.getVariable("steps") - 1));
     }
     else {
-      (SelfPrims.getVariable('next-task'))();
+      (SelfPrims.getVariable("next-task"))();
       Call(wiggle);
     }
     SelfPrims.fd(1);
@@ -80,42 +81,42 @@ function wiggle() {
   SelfPrims.left(Prims.random(50));
 }
 function searchForChip() {
-  if (Prims.equality(SelfPrims.getPatchVariable('pcolor'), 45)) {
-    SelfPrims.setPatchVariable('pcolor', 0);
-    SelfPrims.setVariable('color', 25);
-    SelfPrims.setVariable('steps', 20);
-    SelfPrims.setVariable('next-task', Tasks.commandTask(function() {
+  if (Prims.equality(SelfPrims.getPatchVariable("pcolor"), 45)) {
+    SelfPrims.setPatchVariable("pcolor", 0);
+    SelfPrims.setVariable("color", 25);
+    SelfPrims.setVariable("steps", 20);
+    SelfPrims.setVariable("next-task", Tasks.commandTask(function() {
       var taskArguments = arguments;
       Call(findNewPile);
     }));
   }
 }
 function findNewPile() {
-  if (Prims.equality(SelfPrims.getPatchVariable('pcolor'), 45)) {
-    SelfPrims.setVariable('next-task', Tasks.commandTask(function() {
+  if (Prims.equality(SelfPrims.getPatchVariable("pcolor"), 45)) {
+    SelfPrims.setVariable("next-task", Tasks.commandTask(function() {
       var taskArguments = arguments;
       Call(putDownChip);
     }));
   }
 }
 function putDownChip() {
-  if (Prims.equality(SelfPrims.getPatchVariable('pcolor'), 0)) {
-    SelfPrims.setPatchVariable('pcolor', 45);
-    SelfPrims.setVariable('color', 9.9);
-    SelfPrims.setVariable('steps', 20);
-    SelfPrims.setVariable('next-task', Tasks.commandTask(function() {
+  if (Prims.equality(SelfPrims.getPatchVariable("pcolor"), 0)) {
+    SelfPrims.setPatchVariable("pcolor", 45);
+    SelfPrims.setVariable("color", 9.9);
+    SelfPrims.setVariable("steps", 20);
+    SelfPrims.setVariable("next-task", Tasks.commandTask(function() {
       var taskArguments = arguments;
       Call(getAway);
     }));
   }
 }
 function getAway() {
-  if (Prims.equality(SelfPrims.getPatchVariable('pcolor'), 0)) {
-    SelfPrims.setVariable('next-task', Tasks.commandTask(function() {
+  if (Prims.equality(SelfPrims.getPatchVariable("pcolor"), 0)) {
+    SelfPrims.setVariable("next-task", Tasks.commandTask(function() {
       var taskArguments = arguments;
       Call(searchForChip);
     }));
   }
 }
-world.observer.setGlobal('number', 400);
-world.observer.setGlobal('density', 20);
+world.observer.setGlobal("number", 400);
+world.observer.setGlobal("density", 20);

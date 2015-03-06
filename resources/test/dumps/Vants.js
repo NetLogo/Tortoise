@@ -25,33 +25,34 @@ var Updater       = workspace.updater;
 var world         = workspace.world;
 
 var Call           = tortoise_require('util/call');
-var ColorModel     = tortoise_require('util/colormodel');
 var Exception      = tortoise_require('util/exception');
-var Trig           = tortoise_require('util/trig');
-var Type           = tortoise_require('util/typechecker');
+var NLMath         = tortoise_require('util/nlmath');
 var notImplemented = tortoise_require('util/notimplemented');
 
 var Dump      = tortoise_require('engine/dump');
+var ColorModel = tortoise_require('engine/core/colormodel');
 var Link      = tortoise_require('engine/core/link');
 var LinkSet   = tortoise_require('engine/core/linkset');
 var Nobody    = tortoise_require('engine/core/nobody');
 var PatchSet  = tortoise_require('engine/core/patchset');
 var Turtle    = tortoise_require('engine/core/turtle');
 var TurtleSet = tortoise_require('engine/core/turtleset');
+var NLType    = tortoise_require('engine/core/typechecker');
 var Tasks     = tortoise_require('engine/prim/tasks');
 
 var AgentModel = tortoise_require('agentmodel');
+var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
 function setup() {
   world.clearAll();
   world.patches().ask(function() {
-    SelfPrims.setPatchVariable('pcolor', 9.9);
+    SelfPrims.setPatchVariable("pcolor", 9.9);
   }, true);
-  world.turtleManager.createTurtles(world.observer.getGlobal('num-vants'), '').ask(function() {
+  world.turtleManager.createTurtles(world.observer.getGlobal("num-vants"), "").ask(function() {
     SelfManager.self().face(ListPrims.oneOf(SelfPrims.getNeighbors4()));
-    SelfPrims.setVariable('color', 15);
-    SelfPrims.setVariable('size', 6);
+    SelfPrims.setVariable("color", 15);
+    SelfPrims.setVariable("size", 6);
   }, true);
   world.ticker.reset();
 }
@@ -76,13 +77,13 @@ function goReverse() {
   world.ticker.tick();
 }
 function turn() {
-  if (Prims.equality(SelfPrims.getPatchVariable('pcolor'), 9.9)) {
-    SelfPrims.setPatchVariable('pcolor', 0);
+  if (Prims.equality(SelfPrims.getPatchVariable("pcolor"), 9.9)) {
+    SelfPrims.setPatchVariable("pcolor", 0);
     SelfPrims.right(90);
   }
   else {
-    SelfPrims.setPatchVariable('pcolor', 9.9);
+    SelfPrims.setPatchVariable("pcolor", 9.9);
     SelfPrims.left(90);
   }
 }
-world.observer.setGlobal('num-vants', 1);
+world.observer.setGlobal("num-vants", 1);

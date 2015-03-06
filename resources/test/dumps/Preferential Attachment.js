@@ -8,20 +8,20 @@ var PlotOps   = tortoise_require('engine/plot/plotops');
 modelConfig.plots = [(function() {
   var name    = 'Degree Distribution (log-log)';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Point), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Degree Distribution (log-log)', 'default')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Degree Distribution (log-log)', 'default')(function() { if (!world.observer.getGlobal('plot?')) {
+  var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Point), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Degree Distribution (log-log)', 'default')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Degree Distribution (log-log)', 'default')(function() { if (!world.observer.getGlobal("plot?")) {
   throw new Exception.StopInterrupt;
 }
 var maxDegree = ListPrims.max(world.turtles().projectionBy(function() {
-  return LinkPrims.linkNeighbors('LINKS').size();
+  return LinkPrims.linkNeighbors("LINKS").size();
 }));
 plotManager.resetPen();
 var degree = 1;
 while (Prims.lte(degree, maxDegree)) {
   var matches = world.turtles().agentFilter(function() {
-    return Prims.equality(LinkPrims.linkNeighbors('LINKS').size(), degree);
+    return Prims.equality(LinkPrims.linkNeighbors("LINKS").size(), degree);
   });
   if (matches.nonEmpty()) {
-    plotManager.plotPoint(Prims.log(degree, 10), Prims.log(matches.size(), 10));
+    plotManager.plotPoint(NLMath.log(degree, 10), NLMath.log(matches.size(), 10));
   }
   degree = (degree + 1);
 }; }); }); })];
@@ -31,16 +31,16 @@ while (Prims.lte(degree, maxDegree)) {
 })(), (function() {
   var name    = 'Degree Distribution';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Bar), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Degree Distribution', 'default')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Degree Distribution', 'default')(function() { if (!world.observer.getGlobal('plot?')) {
+  var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Bar), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Degree Distribution', 'default')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Degree Distribution', 'default')(function() { if (!world.observer.getGlobal("plot?")) {
   throw new Exception.StopInterrupt;
 }
 var maxDegree = ListPrims.max(world.turtles().projectionBy(function() {
-  return LinkPrims.linkNeighbors('LINKS').size();
+  return LinkPrims.linkNeighbors("LINKS").size();
 }));
 plotManager.resetPen();
 plotManager.setXRange(1, (maxDegree + 1));
 plotManager.drawHistogramFrom(world.turtles().projectionBy(function() {
-  return LinkPrims.linkNeighbors('LINKS').size();
+  return LinkPrims.linkNeighbors("LINKS").size();
 }));; }); }); })];
   var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Degree Distribution', undefined)(function() {}); }); };
   var update  = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Degree Distribution', undefined)(function() {}); }); };
@@ -65,22 +65,23 @@ var Updater       = workspace.updater;
 var world         = workspace.world;
 
 var Call           = tortoise_require('util/call');
-var ColorModel     = tortoise_require('util/colormodel');
 var Exception      = tortoise_require('util/exception');
-var Trig           = tortoise_require('util/trig');
-var Type           = tortoise_require('util/typechecker');
+var NLMath         = tortoise_require('util/nlmath');
 var notImplemented = tortoise_require('util/notimplemented');
 
 var Dump      = tortoise_require('engine/dump');
+var ColorModel = tortoise_require('engine/core/colormodel');
 var Link      = tortoise_require('engine/core/link');
 var LinkSet   = tortoise_require('engine/core/linkset');
 var Nobody    = tortoise_require('engine/core/nobody');
 var PatchSet  = tortoise_require('engine/core/patchset');
 var Turtle    = tortoise_require('engine/core/turtle');
 var TurtleSet = tortoise_require('engine/core/turtleset');
+var NLType    = tortoise_require('engine/core/typechecker');
 var Tasks     = tortoise_require('engine/prim/tasks');
 
 var AgentModel = tortoise_require('agentmodel');
+var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
 function setup() {
@@ -92,20 +93,20 @@ function setup() {
 }
 function go() {
   world.links().ask(function() {
-    SelfPrims.setVariable('color', 5);
+    SelfPrims.setVariable("color", 5);
   }, true);
   Call(makeNode, Call(findPartner));
   world.ticker.tick();
-  if (world.observer.getGlobal('layout?')) {
+  if (world.observer.getGlobal("layout?")) {
     Call(layout);
   }
 }
 function makeNode(oldNode) {
-  world.turtleManager.createTurtles(1, '').ask(function() {
-    SelfPrims.setVariable('color', 15);
+  world.turtleManager.createTurtles(1, "").ask(function() {
+    SelfPrims.setVariable("color", 15);
     if (!Prims.equality(oldNode, Nobody)) {
-      LinkPrims.createLinkWith(oldNode, 'LINKS').ask(function() {
-        SelfPrims.setVariable('color', 55);
+      LinkPrims.createLinkWith(oldNode, "LINKS").ask(function() {
+        SelfPrims.setVariable("color", 55);
       }, true);
       SelfManager.self().moveTo(oldNode);
       SelfPrims.fd(8);
@@ -119,38 +120,38 @@ function findPartner() {
 }
 function resizeNodes() {
   if (world.turtles().agentAll(function() {
-    return Prims.lte(SelfPrims.getVariable('size'), 1);
+    return Prims.lte(SelfPrims.getVariable("size"), 1);
   })) {
     world.turtles().ask(function() {
-      SelfPrims.setVariable('size', StrictMath.sqrt(LinkPrims.linkNeighbors('LINKS').size()));
+      SelfPrims.setVariable("size", NLMath.sqrt(LinkPrims.linkNeighbors("LINKS").size()));
     }, true);
   }
   else {
     world.turtles().ask(function() {
-      SelfPrims.setVariable('size', 1);
+      SelfPrims.setVariable("size", 1);
     }, true);
   }
 }
 function layout() {
   for (var _index_2014_2020 = 0, _repeatcount_2014_2020 = StrictMath.floor(3); _index_2014_2020 < _repeatcount_2014_2020; _index_2014_2020++){
-    var factor = StrictMath.sqrt(world.turtles().size());
+    var factor = NLMath.sqrt(world.turtles().size());
     LayoutManager.layoutSpring(world.turtles(), world.links(), (1 / factor), (7 / factor), (1 / factor));
     notImplemented('display', undefined)();
   }
   var xOffset = (ListPrims.max(world.turtles().projectionBy(function() {
-    return SelfPrims.getVariable('xcor');
+    return SelfPrims.getVariable("xcor");
   })) + ListPrims.min(world.turtles().projectionBy(function() {
-    return SelfPrims.getVariable('xcor');
+    return SelfPrims.getVariable("xcor");
   })));
   var yOffset = (ListPrims.max(world.turtles().projectionBy(function() {
-    return SelfPrims.getVariable('ycor');
+    return SelfPrims.getVariable("ycor");
   })) + ListPrims.min(world.turtles().projectionBy(function() {
-    return SelfPrims.getVariable('ycor');
+    return SelfPrims.getVariable("ycor");
   })));
   xOffset = Call(limitMagnitude, xOffset, 0.1);
   yOffset = Call(limitMagnitude, yOffset, 0.1);
   world.turtles().ask(function() {
-    SelfPrims.setXY((SelfPrims.getVariable('xcor') - (xOffset / 2)), (SelfPrims.getVariable('ycor') - (yOffset / 2)));
+    SelfPrims.setXY((SelfPrims.getVariable("xcor") - (xOffset / 2)), (SelfPrims.getVariable("ycor") - (yOffset / 2)));
   }, true);
 }
 function limitMagnitude(number, limit) {
@@ -162,5 +163,5 @@ function limitMagnitude(number, limit) {
   }
   return number;
 }
-world.observer.setGlobal('plot?', true);
-world.observer.setGlobal('layout?', true);
+world.observer.setGlobal("plot?", true);
+world.observer.setGlobal("layout?", true);

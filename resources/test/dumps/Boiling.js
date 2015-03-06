@@ -32,42 +32,43 @@ var Updater       = workspace.updater;
 var world         = workspace.world;
 
 var Call           = tortoise_require('util/call');
-var ColorModel     = tortoise_require('util/colormodel');
 var Exception      = tortoise_require('util/exception');
-var Trig           = tortoise_require('util/trig');
-var Type           = tortoise_require('util/typechecker');
+var NLMath         = tortoise_require('util/nlmath');
 var notImplemented = tortoise_require('util/notimplemented');
 
 var Dump      = tortoise_require('engine/dump');
+var ColorModel = tortoise_require('engine/core/colormodel');
 var Link      = tortoise_require('engine/core/link');
 var LinkSet   = tortoise_require('engine/core/linkset');
 var Nobody    = tortoise_require('engine/core/nobody');
 var PatchSet  = tortoise_require('engine/core/patchset');
 var Turtle    = tortoise_require('engine/core/turtle');
 var TurtleSet = tortoise_require('engine/core/turtleset');
+var NLType    = tortoise_require('engine/core/typechecker');
 var Tasks     = tortoise_require('engine/prim/tasks');
 
 var AgentModel = tortoise_require('agentmodel');
+var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
 function setup() {
   world.clearAll();
   world.patches().ask(function() {
-    SelfPrims.setPatchVariable('heat', Prims.random(212));
-    SelfPrims.setPatchVariable('pcolor', ColorModel.scaleColor(15, SelfPrims.getPatchVariable('heat'), 0, 212));
+    SelfPrims.setPatchVariable("heat", Prims.random(212));
+    SelfPrims.setPatchVariable("pcolor", ColorModel.scaleColor(15, SelfPrims.getPatchVariable("heat"), 0, 212));
   }, true);
   world.ticker.reset();
 }
 function go() {
-  world.topology.diffuse('heat', 1)
+  world.topology.diffuse("heat", 1)
   world.patches().ask(function() {
-    SelfPrims.setPatchVariable('heat', Prims.mod((SelfPrims.getPatchVariable('heat') + 5), 212));
-    SelfPrims.setPatchVariable('pcolor', ColorModel.scaleColor(15, SelfPrims.getPatchVariable('heat'), 0, 212));
+    SelfPrims.setPatchVariable("heat", NLMath.mod((SelfPrims.getPatchVariable("heat") + 5), 212));
+    SelfPrims.setPatchVariable("pcolor", ColorModel.scaleColor(15, SelfPrims.getPatchVariable("heat"), 0, 212));
   }, true);
   world.ticker.tick();
 }
 function averageHeat() {
   return ListPrims.mean(world.patches().projectionBy(function() {
-    return SelfPrims.getPatchVariable('heat');
+    return SelfPrims.getPatchVariable("heat");
   }));
 }

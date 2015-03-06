@@ -8,7 +8,7 @@ var PlotOps   = tortoise_require('engine/plot/plotops');
 modelConfig.plots = [(function() {
   var name    = 'Traps triggered';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Traps triggered', 'default')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Traps triggered', 'default')(function() { plotManager.plotValue(world.observer.getGlobal('traps-triggered'));; }); }); })];
+  var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Traps triggered', 'default')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Traps triggered', 'default')(function() { plotManager.plotValue(world.observer.getGlobal("traps-triggered"));; }); }); })];
   var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Traps triggered', undefined)(function() {}); }); };
   var update  = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Traps triggered', undefined)(function() {}); }); };
   return new Plot(name, pens, plotOps, '', '', false, 0.0, 10.0, 0.0, 100.0, setup, update);
@@ -39,34 +39,35 @@ var Updater       = workspace.updater;
 var world         = workspace.world;
 
 var Call           = tortoise_require('util/call');
-var ColorModel     = tortoise_require('util/colormodel');
 var Exception      = tortoise_require('util/exception');
-var Trig           = tortoise_require('util/trig');
-var Type           = tortoise_require('util/typechecker');
+var NLMath         = tortoise_require('util/nlmath');
 var notImplemented = tortoise_require('util/notimplemented');
 
 var Dump      = tortoise_require('engine/dump');
+var ColorModel = tortoise_require('engine/core/colormodel');
 var Link      = tortoise_require('engine/core/link');
 var LinkSet   = tortoise_require('engine/core/linkset');
 var Nobody    = tortoise_require('engine/core/nobody');
 var PatchSet  = tortoise_require('engine/core/patchset');
 var Turtle    = tortoise_require('engine/core/turtle');
 var TurtleSet = tortoise_require('engine/core/turtleset');
+var NLType    = tortoise_require('engine/core/typechecker');
 var Tasks     = tortoise_require('engine/prim/tasks');
 
 var AgentModel = tortoise_require('agentmodel');
+var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
 function setup() {
   world.clearAll();
-  world.observer.setGlobal('traps-triggered', 0);
+  world.observer.setGlobal("traps-triggered", 0);
   world.patches().ask(function() {
-    SelfPrims.setPatchVariable('pcolor', (105 + 3));
+    SelfPrims.setPatchVariable("pcolor", (105 + 3));
   }, true);
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
-  world.turtleManager.createTurtles(1, '').ask(function() {
-    SelfPrims.setVariable('color', 9.9);
-    SelfPrims.setVariable('size', 1.5);
+  world.turtleManager.createTurtles(1, "").ask(function() {
+    SelfPrims.setVariable("color", 9.9);
+    SelfPrims.setVariable("size", 1.5);
   }, true);
   world.ticker.reset();
 }
@@ -75,13 +76,13 @@ function go() {
     throw new Exception.StopInterrupt;
   }
   world.turtles().ask(function() {
-    if (Prims.equality(SelfPrims.getPatchVariable('pcolor'), 15)) {
+    if (Prims.equality(SelfPrims.getPatchVariable("pcolor"), 15)) {
       SelfPrims.die();
     }
     else {
-      SelfPrims.setPatchVariable('pcolor', 15);
-      world.observer.setGlobal('traps-triggered', (world.observer.getGlobal('traps-triggered') + 1));
-      SelfPrims.hatch(1, '').ask(function() {
+      SelfPrims.setPatchVariable("pcolor", 15);
+      world.observer.setGlobal("traps-triggered", (world.observer.getGlobal("traps-triggered") + 1));
+      SelfPrims.hatch(1, "").ask(function() {
         Call(move);
       }, true);
       Call(move);
@@ -91,6 +92,6 @@ function go() {
 }
 function move() {
   SelfPrims.right(Prims.randomFloat(360));
-  SelfPrims.fd(Prims.randomFloat(world.observer.getGlobal('max-distance')));
+  SelfPrims.fd(Prims.randomFloat(world.observer.getGlobal("max-distance")));
 }
-world.observer.setGlobal('max-distance', 4.5);
+world.observer.setGlobal("max-distance", 4.5);

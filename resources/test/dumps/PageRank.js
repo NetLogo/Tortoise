@@ -25,125 +25,126 @@ var Updater       = workspace.updater;
 var world         = workspace.world;
 
 var Call           = tortoise_require('util/call');
-var ColorModel     = tortoise_require('util/colormodel');
 var Exception      = tortoise_require('util/exception');
-var Trig           = tortoise_require('util/trig');
-var Type           = tortoise_require('util/typechecker');
+var NLMath         = tortoise_require('util/nlmath');
 var notImplemented = tortoise_require('util/notimplemented');
 
 var Dump      = tortoise_require('engine/dump');
+var ColorModel = tortoise_require('engine/core/colormodel');
 var Link      = tortoise_require('engine/core/link');
 var LinkSet   = tortoise_require('engine/core/linkset');
 var Nobody    = tortoise_require('engine/core/nobody');
 var PatchSet  = tortoise_require('engine/core/patchset');
 var Turtle    = tortoise_require('engine/core/turtle');
 var TurtleSet = tortoise_require('engine/core/turtleset');
+var NLType    = tortoise_require('engine/core/typechecker');
 var Tasks     = tortoise_require('engine/prim/tasks');
 
 var AgentModel = tortoise_require('agentmodel');
+var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
 function setup() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("PAGES").getBreedName(), "circle")
-  if (Prims.equality(world.observer.getGlobal('network-choice'), "Example 1")) {
+  if (Prims.equality(world.observer.getGlobal("network-choice"), "Example 1")) {
     Call(createNetworkExample1);
   }
   else {
-    if (Prims.equality(world.observer.getGlobal('network-choice'), "Example 2")) {
+    if (Prims.equality(world.observer.getGlobal("network-choice"), "Example 2")) {
       Call(createNetworkExample2);
     }
     else {
-      if (Prims.equality(world.observer.getGlobal('network-choice'), "Preferential Attachment")) {
+      if (Prims.equality(world.observer.getGlobal("network-choice"), "Preferential Attachment")) {
         Call(createNetworkPreferential, 100, 2);
       }
       else {
-        notImplemented('user-message', undefined)((Dump("") + Dump("Error: unknown network-choice: ") + Dump(world.observer.getGlobal('network-choice'))));
+        notImplemented('user-message', undefined)((Dump('') + Dump("Error: unknown network-choice: ") + Dump(world.observer.getGlobal("network-choice"))));
       }
     }
   }
   world.patches().ask(function() {
-    SelfPrims.setPatchVariable('pcolor', 9.9);
+    SelfPrims.setPatchVariable("pcolor", 9.9);
   }, true);
   world.turtleManager.turtlesOfBreed("PAGES").ask(function() {
-    SelfPrims.setVariable('rank', (1 / world.turtleManager.turtlesOfBreed("PAGES").size()));
+    SelfPrims.setVariable("rank", (1 / world.turtleManager.turtlesOfBreed("PAGES").size()));
   }, true);
   Call(updateGlobals);
   world.turtleManager.turtlesOfBreed("PAGES").ask(function() {
     SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
-    SelfPrims.setVariable('label-color', 0);
+    SelfPrims.setVariable("label-color", 0);
     Call(updatePageAppearance);
   }, true);
   for (var _index_827_833 = 0, _repeatcount_827_833 = StrictMath.floor(300); _index_827_833 < _repeatcount_827_833; _index_827_833++){
     Call(doLayout);
   }
   world.links().ask(function() {
-    SelfPrims.setVariable('shape', "curved");
+    SelfPrims.setVariable("shape", "curved");
   }, true);
   world.ticker.reset();
 }
 function createNetworkExample1() {
-  world.turtleManager.createTurtles(11, 'PAGES').ask(function() {}, true);
+  world.turtleManager.createTurtles(11, "PAGES").ask(function() {}, true);
   world.turtleManager.getTurtleOfBreed("PAGES", 0).ask(function() {
-    SelfPrims.setVariable('color', 105);
-    LinkPrims.createLinkFrom(world.turtleManager.getTurtleOfBreed("PAGES", 3), 'LINKS').ask(function() {}, false);
+    SelfPrims.setVariable("color", 105);
+    LinkPrims.createLinkFrom(world.turtleManager.getTurtleOfBreed("PAGES", 3), "LINKS").ask(function() {}, false);
   }, true);
   world.turtleManager.getTurtleOfBreed("PAGES", 1).ask(function() {
-    SelfPrims.setVariable('color', 15);
-    LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 2), world.turtleManager.getTurtleOfBreed("PAGES", 3), world.turtleManager.getTurtleOfBreed("PAGES", 4), world.turtleManager.getTurtleOfBreed("PAGES", 5), world.turtleManager.getTurtleOfBreed("PAGES", 6), world.turtleManager.getTurtleOfBreed("PAGES", 7), world.turtleManager.getTurtleOfBreed("PAGES", 8)), 'LINKS').ask(function() {}, false);
+    SelfPrims.setVariable("color", 15);
+    LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 2), world.turtleManager.getTurtleOfBreed("PAGES", 3), world.turtleManager.getTurtleOfBreed("PAGES", 4), world.turtleManager.getTurtleOfBreed("PAGES", 5), world.turtleManager.getTurtleOfBreed("PAGES", 6), world.turtleManager.getTurtleOfBreed("PAGES", 7), world.turtleManager.getTurtleOfBreed("PAGES", 8)), "LINKS").ask(function() {}, false);
   }, true);
   world.turtleManager.getTurtleOfBreed("PAGES", 2).ask(function() {
-    SelfPrims.setVariable('color', 25);
-    LinkPrims.createLinkFrom(world.turtleManager.getTurtleOfBreed("PAGES", 1), 'LINKS').ask(function() {}, false);
+    SelfPrims.setVariable("color", 25);
+    LinkPrims.createLinkFrom(world.turtleManager.getTurtleOfBreed("PAGES", 1), "LINKS").ask(function() {}, false);
   }, true);
   world.turtleManager.getTurtleOfBreed("PAGES", 3).ask(function() {
-    SelfPrims.setVariable('color', 55);
-    LinkPrims.createLinkFrom(world.turtleManager.getTurtleOfBreed("PAGES", 4), 'LINKS').ask(function() {}, false);
+    SelfPrims.setVariable("color", 55);
+    LinkPrims.createLinkFrom(world.turtleManager.getTurtleOfBreed("PAGES", 4), "LINKS").ask(function() {}, false);
   }, true);
   world.turtleManager.getTurtleOfBreed("PAGES", 4).ask(function() {
-    SelfPrims.setVariable('color', 45);
-    LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 5), world.turtleManager.getTurtleOfBreed("PAGES", 6), world.turtleManager.getTurtleOfBreed("PAGES", 7), world.turtleManager.getTurtleOfBreed("PAGES", 8), world.turtleManager.getTurtleOfBreed("PAGES", 9), world.turtleManager.getTurtleOfBreed("PAGES", 10)), 'LINKS').ask(function() {}, false);
+    SelfPrims.setVariable("color", 45);
+    LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 5), world.turtleManager.getTurtleOfBreed("PAGES", 6), world.turtleManager.getTurtleOfBreed("PAGES", 7), world.turtleManager.getTurtleOfBreed("PAGES", 8), world.turtleManager.getTurtleOfBreed("PAGES", 9), world.turtleManager.getTurtleOfBreed("PAGES", 10)), "LINKS").ask(function() {}, false);
   }, true);
   world.turtleManager.getTurtleOfBreed("PAGES", 5).ask(function() {
-    SelfPrims.setVariable('color', 55);
-    LinkPrims.createLinkFrom(world.turtleManager.getTurtleOfBreed("PAGES", 4), 'LINKS').ask(function() {}, false);
+    SelfPrims.setVariable("color", 55);
+    LinkPrims.createLinkFrom(world.turtleManager.getTurtleOfBreed("PAGES", 4), "LINKS").ask(function() {}, false);
   }, true);
   world.turtleManager.turtlesOfBreed("PAGES").agentFilter(function() {
-    return Prims.gt(SelfPrims.getVariable('who'), 5);
+    return Prims.gt(SelfPrims.getVariable("who"), 5);
   }).ask(function() {
-    SelfPrims.setVariable('color', 115);
+    SelfPrims.setVariable("color", 115);
   }, true);
 }
 function createNetworkExample2() {
-  world.turtleManager.createTurtles(8, 'PAGES').ask(function() {}, true);
+  world.turtleManager.createTurtles(8, "PAGES").ask(function() {}, true);
   world.turtleManager.getTurtleOfBreed("PAGES", 0).ask(function() {
     SelfPrims.die();
   }, true);
   world.turtleManager.getTurtleOfBreed("PAGES", 1).ask(function() {
-    LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 2), world.turtleManager.getTurtleOfBreed("PAGES", 3), world.turtleManager.getTurtleOfBreed("PAGES", 5), world.turtleManager.getTurtleOfBreed("PAGES", 6)), 'LINKS').ask(function() {}, false);
+    LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 2), world.turtleManager.getTurtleOfBreed("PAGES", 3), world.turtleManager.getTurtleOfBreed("PAGES", 5), world.turtleManager.getTurtleOfBreed("PAGES", 6)), "LINKS").ask(function() {}, false);
   }, true);
   world.turtleManager.getTurtleOfBreed("PAGES", 2).ask(function() {
-    LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 1), world.turtleManager.getTurtleOfBreed("PAGES", 3), world.turtleManager.getTurtleOfBreed("PAGES", 4)), 'LINKS').ask(function() {}, false);
+    LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 1), world.turtleManager.getTurtleOfBreed("PAGES", 3), world.turtleManager.getTurtleOfBreed("PAGES", 4)), "LINKS").ask(function() {}, false);
   }, true);
   world.turtleManager.getTurtleOfBreed("PAGES", 3).ask(function() {
-    LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 1), world.turtleManager.getTurtleOfBreed("PAGES", 4), world.turtleManager.getTurtleOfBreed("PAGES", 5)), 'LINKS').ask(function() {}, false);
+    LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 1), world.turtleManager.getTurtleOfBreed("PAGES", 4), world.turtleManager.getTurtleOfBreed("PAGES", 5)), "LINKS").ask(function() {}, false);
   }, true);
   world.turtleManager.getTurtleOfBreed("PAGES", 4).ask(function() {
-    LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 1), world.turtleManager.getTurtleOfBreed("PAGES", 5)), 'LINKS').ask(function() {}, false);
+    LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 1), world.turtleManager.getTurtleOfBreed("PAGES", 5)), "LINKS").ask(function() {}, false);
   }, true);
   world.turtleManager.getTurtleOfBreed("PAGES", 5).ask(function() {
-    LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 1), world.turtleManager.getTurtleOfBreed("PAGES", 4), world.turtleManager.getTurtleOfBreed("PAGES", 6), world.turtleManager.getTurtleOfBreed("PAGES", 7)), 'LINKS').ask(function() {}, false);
+    LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 1), world.turtleManager.getTurtleOfBreed("PAGES", 4), world.turtleManager.getTurtleOfBreed("PAGES", 6), world.turtleManager.getTurtleOfBreed("PAGES", 7)), "LINKS").ask(function() {}, false);
   }, true);
   world.turtleManager.getTurtleOfBreed("PAGES", 6).ask(function() {
-    LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 5)), 'LINKS').ask(function() {}, false);
+    LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 5)), "LINKS").ask(function() {}, false);
   }, true);
   world.turtleManager.getTurtleOfBreed("PAGES", 7).ask(function() {
-    LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 1)), 'LINKS').ask(function() {}, false);
+    LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 1)), "LINKS").ask(function() {}, false);
   }, true);
 }
 function createNetworkPreferential(n, k) {
-  world.turtleManager.createTurtles(n, 'PAGES').ask(function() {
-    SelfPrims.setVariable('color', 95);
+  world.turtleManager.createTurtles(n, "PAGES").ask(function() {
+    SelfPrims.setVariable("color", 95);
   }, true);
   Call(linkPreferentially, world.turtleManager.turtlesOfBreed("PAGES"), k);
 }
@@ -154,10 +155,10 @@ function linkPreferentially(nodeset, k) {
     Tasks.forEach(Tasks.commandTask(function() {
       var taskArguments = arguments;
       if (Prims.equality(Prims.random(2), 0)) {
-        LinkPrims.createLinkTo(taskArguments[0], 'LINKS').ask(function() {}, false);
+        LinkPrims.createLinkTo(taskArguments[0], "LINKS").ask(function() {}, false);
       }
       else {
-        LinkPrims.createLinkFrom(taskArguments[0], 'LINKS').ask(function() {}, false);
+        LinkPrims.createLinkFrom(taskArguments[0], "LINKS").ask(function() {}, false);
       }
     }), neighborChoiceList);
     neighborChoiceList = ListPrims.sentence(Tasks.nValues(k, Tasks.reporterTask(function() {
@@ -174,10 +175,10 @@ function linkPreferentially(nodeset, k) {
         tempNeighborList = ListPrims.remove(neighbor, tempNeighborList);
         neighborChoiceList = ListPrims.fput(neighbor, neighborChoiceList);
         if (Prims.equality(Prims.random(2), 0)) {
-          LinkPrims.createLinkTo(neighbor, 'LINKS').ask(function() {}, false);
+          LinkPrims.createLinkTo(neighbor, "LINKS").ask(function() {}, false);
         }
         else {
-          LinkPrims.createLinkFrom(neighbor, 'LINKS').ask(function() {}, false);
+          LinkPrims.createLinkFrom(neighbor, "LINKS").ask(function() {}, false);
         }
       }
       neighborChoiceList = ListPrims.sentence(Tasks.nValues(k, Tasks.reporterTask(function() {
@@ -188,45 +189,45 @@ function linkPreferentially(nodeset, k) {
   }), ListPrims.sublist(nodeList, (k + 1), ListPrims.length(nodeList)));
 }
 function doLayout() {
-  LayoutManager.layoutSpring(world.turtleManager.turtlesOfBreed("PAGES"), world.links(), 0.2, (20 / StrictMath.sqrt(world.turtleManager.turtlesOfBreed("PAGES").size())), 0.5);
+  LayoutManager.layoutSpring(world.turtleManager.turtlesOfBreed("PAGES"), world.links(), 0.2, (20 / NLMath.sqrt(world.turtleManager.turtlesOfBreed("PAGES").size())), 0.5);
 }
 function go() {
-  if (Prims.equality(world.observer.getGlobal('calculation-method'), "diffusion")) {
+  if (Prims.equality(world.observer.getGlobal("calculation-method"), "diffusion")) {
     if (world.turtleManager.turtlesOfBreed("SURFERS").nonEmpty()) {
       world.turtleManager.turtlesOfBreed("SURFERS").ask(function() {
         SelfPrims.die();
       }, true);
     }
     world.links().ask(function() {
-      SelfPrims.setVariable('color', 5);
-      SelfPrims.setVariable('thickness', 0);
+      SelfPrims.setVariable("color", 5);
+      SelfPrims.setVariable("thickness", 0);
     }, true);
     world.turtleManager.turtlesOfBreed("PAGES").ask(function() {
-      SelfPrims.setVariable('new-rank', 0);
+      SelfPrims.setVariable("new-rank", 0);
     }, true);
     world.turtleManager.turtlesOfBreed("PAGES").ask(function() {
-      if (LinkPrims.outLinkNeighbors('LINKS').nonEmpty()) {
-        var rankIncrement = (SelfPrims.getVariable('rank') / LinkPrims.outLinkNeighbors('LINKS').size());
-        LinkPrims.outLinkNeighbors('LINKS').ask(function() {
-          SelfPrims.setVariable('new-rank', (SelfPrims.getVariable('new-rank') + rankIncrement));
+      if (LinkPrims.outLinkNeighbors("LINKS").nonEmpty()) {
+        var rankIncrement = (SelfPrims.getVariable("rank") / LinkPrims.outLinkNeighbors("LINKS").size());
+        LinkPrims.outLinkNeighbors("LINKS").ask(function() {
+          SelfPrims.setVariable("new-rank", (SelfPrims.getVariable("new-rank") + rankIncrement));
         }, true);
       }
       else {
-        var rankIncrement = (SelfPrims.getVariable('rank') / world.turtleManager.turtlesOfBreed("PAGES").size());
+        var rankIncrement = (SelfPrims.getVariable("rank") / world.turtleManager.turtlesOfBreed("PAGES").size());
         world.turtleManager.turtlesOfBreed("PAGES").ask(function() {
-          SelfPrims.setVariable('new-rank', (SelfPrims.getVariable('new-rank') + rankIncrement));
+          SelfPrims.setVariable("new-rank", (SelfPrims.getVariable("new-rank") + rankIncrement));
         }, true);
       }
     }, true);
     world.turtleManager.turtlesOfBreed("PAGES").ask(function() {
-      SelfPrims.setVariable('rank', (((1 - world.observer.getGlobal('damping-factor')) / world.turtleManager.turtlesOfBreed("PAGES").size()) + (world.observer.getGlobal('damping-factor') * SelfPrims.getVariable('new-rank'))));
+      SelfPrims.setVariable("rank", (((1 - world.observer.getGlobal("damping-factor")) / world.turtleManager.turtlesOfBreed("PAGES").size()) + (world.observer.getGlobal("damping-factor") * SelfPrims.getVariable("new-rank"))));
     }, true);
   }
   else {
-    if (Prims.lt(world.turtleManager.turtlesOfBreed("SURFERS").size(), world.observer.getGlobal('number-of-surfers'))) {
-      world.turtleManager.createTurtles((world.observer.getGlobal('number-of-surfers') - world.turtleManager.turtlesOfBreed("SURFERS").size()), 'SURFERS').ask(function() {
-        SelfPrims.setVariable('current-page', ListPrims.oneOf(world.turtleManager.turtlesOfBreed("PAGES")));
-        if (world.observer.getGlobal('watch-surfers?')) {
+    if (Prims.lt(world.turtleManager.turtlesOfBreed("SURFERS").size(), world.observer.getGlobal("number-of-surfers"))) {
+      world.turtleManager.createTurtles((world.observer.getGlobal("number-of-surfers") - world.turtleManager.turtlesOfBreed("SURFERS").size()), "SURFERS").ask(function() {
+        SelfPrims.setVariable("current-page", ListPrims.oneOf(world.turtleManager.turtlesOfBreed("PAGES")));
+        if (world.observer.getGlobal("watch-surfers?")) {
           Call(moveSurfer);
         }
         else {
@@ -234,42 +235,42 @@ function go() {
         }
       }, true);
     }
-    if (Prims.gt(world.turtleManager.turtlesOfBreed("SURFERS").size(), world.observer.getGlobal('number-of-surfers'))) {
-      ListPrims.nOf((world.turtleManager.turtlesOfBreed("SURFERS").size() - world.observer.getGlobal('number-of-surfers')), world.turtleManager.turtlesOfBreed("SURFERS")).ask(function() {
+    if (Prims.gt(world.turtleManager.turtlesOfBreed("SURFERS").size(), world.observer.getGlobal("number-of-surfers"))) {
+      ListPrims.nOf((world.turtleManager.turtlesOfBreed("SURFERS").size() - world.observer.getGlobal("number-of-surfers")), world.turtleManager.turtlesOfBreed("SURFERS")).ask(function() {
         SelfPrims.die();
       }, true);
     }
     world.links().ask(function() {
-      SelfPrims.setVariable('color', 5);
-      SelfPrims.setVariable('thickness', 0);
+      SelfPrims.setVariable("color", 5);
+      SelfPrims.setVariable("thickness", 0);
     }, true);
     world.turtleManager.turtlesOfBreed("SURFERS").ask(function() {
-      var oldPage = SelfPrims.getVariable('current-page');
-      SelfPrims.getVariable('current-page').ask(function() {
-        SelfPrims.setVariable('visits', (SelfPrims.getVariable('visits') + 1));
+      var oldPage = SelfPrims.getVariable("current-page");
+      SelfPrims.getVariable("current-page").ask(function() {
+        SelfPrims.setVariable("visits", (SelfPrims.getVariable("visits") + 1));
       }, true);
-      if ((Prims.lte(Prims.randomFloat(1), world.observer.getGlobal('damping-factor')) && SelfPrims.getVariable('current-page').projectionBy(function() {
-        return LinkPrims.myOutLinks('LINKS');
+      if ((Prims.lte(Prims.randomFloat(1), world.observer.getGlobal("damping-factor")) && SelfPrims.getVariable("current-page").projectionBy(function() {
+        return LinkPrims.myOutLinks("LINKS");
       }).nonEmpty())) {
-        SelfPrims.setVariable('current-page', ListPrims.oneOf(SelfPrims.getVariable('current-page').projectionBy(function() {
-          return LinkPrims.outLinkNeighbors('LINKS');
+        SelfPrims.setVariable("current-page", ListPrims.oneOf(SelfPrims.getVariable("current-page").projectionBy(function() {
+          return LinkPrims.outLinkNeighbors("LINKS");
         })));
       }
       else {
-        SelfPrims.setVariable('current-page', ListPrims.oneOf(world.turtleManager.turtlesOfBreed("PAGES")));
+        SelfPrims.setVariable("current-page", ListPrims.oneOf(world.turtleManager.turtlesOfBreed("PAGES")));
       }
-      if (world.observer.getGlobal('watch-surfers?')) {
+      if (world.observer.getGlobal("watch-surfers?")) {
         SelfManager.self().hideTurtle(false);;
         Call(moveSurfer);
-        var surferColor = SelfPrims.getVariable('color');
+        var surferColor = SelfPrims.getVariable("color");
         oldPage.ask(function() {
-          var traveledLink = LinkPrims.outLinkTo('LINKS', SelfManager.myself().projectionBy(function() {
-            return SelfPrims.getVariable('current-page');
+          var traveledLink = LinkPrims.outLinkTo("LINKS", SelfManager.myself().projectionBy(function() {
+            return SelfPrims.getVariable("current-page");
           }));
           if (!Prims.equality(traveledLink, Nobody)) {
             traveledLink.ask(function() {
-              SelfPrims.setVariable('color', surferColor);
-              SelfPrims.setVariable('thickness', 0.08);
+              SelfPrims.setVariable("color", surferColor);
+              SelfPrims.setVariable("thickness", 0.08);
             }, true);
           }
         }, true);
@@ -279,10 +280,10 @@ function go() {
       }
     }, true);
     var totalVisits = ListPrims.sum(world.turtleManager.turtlesOfBreed("PAGES").projectionBy(function() {
-      return SelfPrims.getVariable('visits');
+      return SelfPrims.getVariable("visits");
     }));
     world.turtleManager.turtlesOfBreed("PAGES").ask(function() {
-      SelfPrims.setVariable('rank', (SelfPrims.getVariable('visits') / totalVisits));
+      SelfPrims.setVariable("rank", (SelfPrims.getVariable("visits") / totalVisits));
     }, true);
   }
   Call(updateGlobals);
@@ -292,29 +293,29 @@ function go() {
   world.ticker.tick();
 }
 function moveSurfer() {
-  SelfManager.self().face(SelfPrims.getVariable('current-page'));
-  SelfManager.self().moveTo(SelfPrims.getVariable('current-page'));
+  SelfManager.self().face(SelfPrims.getVariable("current-page"));
+  SelfManager.self().moveTo(SelfPrims.getVariable("current-page"));
 }
 function updateGlobals() {
-  world.observer.setGlobal('total-rank', ListPrims.sum(world.turtleManager.turtlesOfBreed("PAGES").projectionBy(function() {
-    return SelfPrims.getVariable('rank');
+  world.observer.setGlobal("total-rank", ListPrims.sum(world.turtleManager.turtlesOfBreed("PAGES").projectionBy(function() {
+    return SelfPrims.getVariable("rank");
   })));
-  world.observer.setGlobal('max-rank', ListPrims.max(world.turtleManager.turtlesOfBreed("PAGES").projectionBy(function() {
-    return SelfPrims.getVariable('rank');
+  world.observer.setGlobal("max-rank", ListPrims.max(world.turtleManager.turtlesOfBreed("PAGES").projectionBy(function() {
+    return SelfPrims.getVariable("rank");
   })));
 }
 function updatePageAppearance() {
-  SelfPrims.setVariable('size', (0.2 + (4 * StrictMath.sqrt((SelfPrims.getVariable('rank') / world.observer.getGlobal('total-rank'))))));
-  if (world.observer.getGlobal('show-page-ranks?')) {
-    SelfPrims.setVariable('label', (Dump("") + Dump(Prims.precision(SelfPrims.getVariable('rank'), 3)) + Dump("     ")));
+  SelfPrims.setVariable("size", (0.2 + (4 * NLMath.sqrt((SelfPrims.getVariable("rank") / world.observer.getGlobal("total-rank"))))));
+  if (world.observer.getGlobal("show-page-ranks?")) {
+    SelfPrims.setVariable("label", (Dump('') + Dump(NLMath.precision(SelfPrims.getVariable("rank"), 3)) + Dump("     ")));
   }
   else {
-    SelfPrims.setVariable('label', "");
+    SelfPrims.setVariable("label", "");
   }
 }
-world.observer.setGlobal('damping-factor', 0.85);
-world.observer.setGlobal('calculation-method', "random-surfer");
-world.observer.setGlobal('watch-surfers?', true);
-world.observer.setGlobal('number-of-surfers', 5);
-world.observer.setGlobal('network-choice', "Example 1");
-world.observer.setGlobal('show-page-ranks?', true);
+world.observer.setGlobal("damping-factor", 0.85);
+world.observer.setGlobal("calculation-method", "random-surfer");
+world.observer.setGlobal("watch-surfers?", true);
+world.observer.setGlobal("number-of-surfers", 5);
+world.observer.setGlobal("network-choice", "Example 1");
+world.observer.setGlobal("show-page-ranks?", true);

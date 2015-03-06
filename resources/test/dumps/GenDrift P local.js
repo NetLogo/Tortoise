@@ -9,34 +9,34 @@ modelConfig.plots = [(function() {
   var name    = 'Patch Colors';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('color5', plotOps.makePenOps, false, new PenBundle.State(5.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Patch Colors', 'color5')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Patch Colors', 'color5')(function() { plotManager.plotValue(world.patches().agentFilter(function() {
-  return Prims.equality(SelfPrims.getPatchVariable('pcolor'), 5);
+  return Prims.equality(SelfPrims.getPatchVariable("pcolor"), 5);
 }).size());; }); }); }),
 new PenBundle.Pen('color15', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Patch Colors', 'color15')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Patch Colors', 'color15')(function() { plotManager.plotValue(world.patches().agentFilter(function() {
-  return Prims.equality(SelfPrims.getPatchVariable('pcolor'), 15);
+  return Prims.equality(SelfPrims.getPatchVariable("pcolor"), 15);
 }).size());; }); }); }),
 new PenBundle.Pen('color25', plotOps.makePenOps, false, new PenBundle.State(25.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Patch Colors', 'color25')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Patch Colors', 'color25')(function() { plotManager.plotValue(world.patches().agentFilter(function() {
-  return Prims.equality(SelfPrims.getPatchVariable('pcolor'), 25);
+  return Prims.equality(SelfPrims.getPatchVariable("pcolor"), 25);
 }).size());; }); }); }),
 new PenBundle.Pen('color35', plotOps.makePenOps, false, new PenBundle.State(35.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Patch Colors', 'color35')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Patch Colors', 'color35')(function() { plotManager.plotValue(world.patches().agentFilter(function() {
-  return Prims.equality(SelfPrims.getPatchVariable('pcolor'), 35);
+  return Prims.equality(SelfPrims.getPatchVariable("pcolor"), 35);
 }).size());; }); }); }),
 new PenBundle.Pen('color45', plotOps.makePenOps, false, new PenBundle.State(45.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Patch Colors', 'color45')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Patch Colors', 'color45')(function() { plotManager.plotValue(world.patches().agentFilter(function() {
-  return Prims.equality(SelfPrims.getPatchVariable('pcolor'), 45);
+  return Prims.equality(SelfPrims.getPatchVariable("pcolor"), 45);
 }).size());; }); }); }),
 new PenBundle.Pen('color55', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Patch Colors', 'color55')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Patch Colors', 'color55')(function() { plotManager.plotValue(world.patches().agentFilter(function() {
-  return Prims.equality(SelfPrims.getPatchVariable('pcolor'), 55);
+  return Prims.equality(SelfPrims.getPatchVariable("pcolor"), 55);
 }).size());; }); }); }),
 new PenBundle.Pen('color65', plotOps.makePenOps, false, new PenBundle.State(65.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Patch Colors', 'color65')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Patch Colors', 'color65')(function() { plotManager.plotValue(world.patches().agentFilter(function() {
-  return Prims.equality(SelfPrims.getPatchVariable('pcolor'), 65);
+  return Prims.equality(SelfPrims.getPatchVariable("pcolor"), 65);
 }).size());; }); }); }),
 new PenBundle.Pen('color125', plotOps.makePenOps, false, new PenBundle.State(125.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Patch Colors', 'color125')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Patch Colors', 'color125')(function() { plotManager.plotValue(world.patches().agentFilter(function() {
-  return Prims.equality(SelfPrims.getPatchVariable('pcolor'), 125);
+  return Prims.equality(SelfPrims.getPatchVariable("pcolor"), 125);
 }).size());; }); }); }),
 new PenBundle.Pen('color85', plotOps.makePenOps, false, new PenBundle.State(85.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Patch Colors', 'color85')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Patch Colors', 'color85')(function() { plotManager.plotValue(world.patches().agentFilter(function() {
-  return Prims.equality(SelfPrims.getPatchVariable('pcolor'), 85);
+  return Prims.equality(SelfPrims.getPatchVariable("pcolor"), 85);
 }).size());; }); }); }),
 new PenBundle.Pen('color95', plotOps.makePenOps, false, new PenBundle.State(95.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Patch Colors', 'color95')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Patch Colors', 'color95')(function() { plotManager.plotValue(world.patches().agentFilter(function() {
-  return Prims.equality(SelfPrims.getPatchVariable('pcolor'), 95);
+  return Prims.equality(SelfPrims.getPatchVariable("pcolor"), 95);
 }).size());; }); }); })];
   var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Patch Colors', undefined)(function() {}); }); };
   var update  = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Patch Colors', undefined)(function() {}); }); };
@@ -61,45 +61,46 @@ var Updater       = workspace.updater;
 var world         = workspace.world;
 
 var Call           = tortoise_require('util/call');
-var ColorModel     = tortoise_require('util/colormodel');
 var Exception      = tortoise_require('util/exception');
-var Trig           = tortoise_require('util/trig');
-var Type           = tortoise_require('util/typechecker');
+var NLMath         = tortoise_require('util/nlmath');
 var notImplemented = tortoise_require('util/notimplemented');
 
 var Dump      = tortoise_require('engine/dump');
+var ColorModel = tortoise_require('engine/core/colormodel');
 var Link      = tortoise_require('engine/core/link');
 var LinkSet   = tortoise_require('engine/core/linkset');
 var Nobody    = tortoise_require('engine/core/nobody');
 var PatchSet  = tortoise_require('engine/core/patchset');
 var Turtle    = tortoise_require('engine/core/turtle');
 var TurtleSet = tortoise_require('engine/core/turtleset');
+var NLType    = tortoise_require('engine/core/typechecker');
 var Tasks     = tortoise_require('engine/prim/tasks');
 
 var AgentModel = tortoise_require('agentmodel');
+var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
 function setup() {
   world.clearAll();
   world.patches().ask(function() {
-    SelfPrims.setPatchVariable('pcolor', ((Prims.random(world.observer.getGlobal('colors')) * 10) + 5));
-    if (Prims.equality(SelfPrims.getPatchVariable('pcolor'), 75)) {
-      SelfPrims.setPatchVariable('pcolor', 125);
+    SelfPrims.setPatchVariable("pcolor", ((Prims.random(world.observer.getGlobal("colors")) * 10) + 5));
+    if (Prims.equality(SelfPrims.getPatchVariable("pcolor"), 75)) {
+      SelfPrims.setPatchVariable("pcolor", 125);
     }
   }, true);
   world.ticker.reset();
 }
 function go() {
   if (Prims.equality(ListPrims.variance(world.patches().projectionBy(function() {
-    return SelfPrims.getPatchVariable('pcolor');
+    return SelfPrims.getPatchVariable("pcolor");
   })), 0)) {
     throw new Exception.StopInterrupt;
   }
   world.patches().ask(function() {
-    SelfPrims.setPatchVariable('pcolor', ListPrims.oneOf(SelfPrims.getNeighbors()).projectionBy(function() {
-      return SelfPrims.getPatchVariable('pcolor');
+    SelfPrims.setPatchVariable("pcolor", ListPrims.oneOf(SelfPrims.getNeighbors()).projectionBy(function() {
+      return SelfPrims.getPatchVariable("pcolor");
     }));
   }, true);
   world.ticker.tick();
 }
-world.observer.setGlobal('colors', 5);
+world.observer.setGlobal("colors", 5);

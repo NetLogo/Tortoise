@@ -8,7 +8,7 @@ var PlotOps   = tortoise_require('engine/plot/plotops');
 modelConfig.plots = [(function() {
   var name    = 'Magnetization';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('average spin', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Magnetization', 'average spin')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Magnetization', 'average spin')(function() { if (Prims.equality(Prims.mod(world.ticker.tickCount(), world.observer.getGlobal('plotting-interval')), 0)) {
+  var pens    = [new PenBundle.Pen('average spin', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Magnetization', 'average spin')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Magnetization', 'average spin')(function() { if (Prims.equality(NLMath.mod(world.ticker.tickCount(), world.observer.getGlobal("plotting-interval")), 0)) {
   plotManager.plotPoint(world.ticker.tickCount(), Call(magnetization));
 }; }); }); }),
 new PenBundle.Pen('axis', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Magnetization', 'axis')(function() { plotManager.disableAutoplotting();
@@ -38,37 +38,38 @@ var Updater       = workspace.updater;
 var world         = workspace.world;
 
 var Call           = tortoise_require('util/call');
-var ColorModel     = tortoise_require('util/colormodel');
 var Exception      = tortoise_require('util/exception');
-var Trig           = tortoise_require('util/trig');
-var Type           = tortoise_require('util/typechecker');
+var NLMath         = tortoise_require('util/nlmath');
 var notImplemented = tortoise_require('util/notimplemented');
 
 var Dump      = tortoise_require('engine/dump');
+var ColorModel = tortoise_require('engine/core/colormodel');
 var Link      = tortoise_require('engine/core/link');
 var LinkSet   = tortoise_require('engine/core/linkset');
 var Nobody    = tortoise_require('engine/core/nobody');
 var PatchSet  = tortoise_require('engine/core/patchset');
 var Turtle    = tortoise_require('engine/core/turtle');
 var TurtleSet = tortoise_require('engine/core/turtleset');
+var NLType    = tortoise_require('engine/core/typechecker');
 var Tasks     = tortoise_require('engine/prim/tasks');
 
 var AgentModel = tortoise_require('agentmodel');
+var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
 function setup(initialMagnetization) {
   world.clearAll();
   world.patches().ask(function() {
     if (Prims.equality(initialMagnetization, 0)) {
-      SelfPrims.setPatchVariable('spin', ListPrims.oneOf([-1, 1]));
+      SelfPrims.setPatchVariable("spin", ListPrims.oneOf([-1, 1]));
     }
     else {
-      SelfPrims.setPatchVariable('spin', initialMagnetization);
+      SelfPrims.setPatchVariable("spin", initialMagnetization);
     }
     Call(recolor);
   }, true);
-  world.observer.setGlobal('sum-of-spins', ListPrims.sum(world.patches().projectionBy(function() {
-    return SelfPrims.getPatchVariable('spin');
+  world.observer.setGlobal("sum-of-spins", ListPrims.sum(world.patches().projectionBy(function() {
+    return SelfPrims.getPatchVariable("spin");
   })));
   world.ticker.reset();
 }
@@ -79,25 +80,25 @@ function go() {
   world.ticker.tick();
 }
 function update() {
-  var ediff = ((2 * SelfPrims.getPatchVariable('spin')) * ListPrims.sum(SelfPrims.getNeighbors4().projectionBy(function() {
-    return SelfPrims.getPatchVariable('spin');
+  var ediff = ((2 * SelfPrims.getPatchVariable("spin")) * ListPrims.sum(SelfPrims.getNeighbors4().projectionBy(function() {
+    return SelfPrims.getPatchVariable("spin");
   })));
-  if ((Prims.lte(ediff, 0) || (Prims.gt(world.observer.getGlobal('temperature'), 0) && Prims.lt(Prims.randomFloat(1), StrictMath.exp(( -ediff / world.observer.getGlobal('temperature'))))))) {
-    SelfPrims.setPatchVariable('spin',  -SelfPrims.getPatchVariable('spin'));
-    world.observer.setGlobal('sum-of-spins', (world.observer.getGlobal('sum-of-spins') + (2 * SelfPrims.getPatchVariable('spin'))));
+  if ((Prims.lte(ediff, 0) || (Prims.gt(world.observer.getGlobal("temperature"), 0) && Prims.lt(Prims.randomFloat(1), NLMath.exp(( -ediff / world.observer.getGlobal("temperature"))))))) {
+    SelfPrims.setPatchVariable("spin",  -SelfPrims.getPatchVariable("spin"));
+    world.observer.setGlobal("sum-of-spins", (world.observer.getGlobal("sum-of-spins") + (2 * SelfPrims.getPatchVariable("spin"))));
     Call(recolor);
   }
 }
 function recolor() {
-  if (Prims.equality(SelfPrims.getPatchVariable('spin'), 1)) {
-    SelfPrims.setPatchVariable('pcolor', (105 + 2));
+  if (Prims.equality(SelfPrims.getPatchVariable("spin"), 1)) {
+    SelfPrims.setPatchVariable("pcolor", (105 + 2));
   }
   else {
-    SelfPrims.setPatchVariable('pcolor', (105 - 2));
+    SelfPrims.setPatchVariable("pcolor", (105 - 2));
   }
 }
 function magnetization() {
-  return (world.observer.getGlobal('sum-of-spins') / world.patches().size());
+  return (world.observer.getGlobal("sum-of-spins") / world.patches().size());
 }
-world.observer.setGlobal('temperature', 2.24);
-world.observer.setGlobal('plotting-interval', 100);
+world.observer.setGlobal("temperature", 2.24);
+world.observer.setGlobal("plotting-interval", 100);

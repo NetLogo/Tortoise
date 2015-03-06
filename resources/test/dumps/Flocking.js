@@ -25,29 +25,30 @@ var Updater       = workspace.updater;
 var world         = workspace.world;
 
 var Call           = tortoise_require('util/call');
-var ColorModel     = tortoise_require('util/colormodel');
 var Exception      = tortoise_require('util/exception');
-var Trig           = tortoise_require('util/trig');
-var Type           = tortoise_require('util/typechecker');
+var NLMath         = tortoise_require('util/nlmath');
 var notImplemented = tortoise_require('util/notimplemented');
 
 var Dump      = tortoise_require('engine/dump');
+var ColorModel = tortoise_require('engine/core/colormodel');
 var Link      = tortoise_require('engine/core/link');
 var LinkSet   = tortoise_require('engine/core/linkset');
 var Nobody    = tortoise_require('engine/core/nobody');
 var PatchSet  = tortoise_require('engine/core/patchset');
 var Turtle    = tortoise_require('engine/core/turtle');
 var TurtleSet = tortoise_require('engine/core/turtleset');
+var NLType    = tortoise_require('engine/core/typechecker');
 var Tasks     = tortoise_require('engine/prim/tasks');
 
 var AgentModel = tortoise_require('agentmodel');
+var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
 function setup() {
   world.clearAll();
-  world.turtleManager.createTurtles(world.observer.getGlobal('population'), '').ask(function() {
-    SelfPrims.setVariable('color', ((45 - 2) + Prims.random(7)));
-    SelfPrims.setVariable('size', 1.5);
+  world.turtleManager.createTurtles(world.observer.getGlobal("population"), "").ask(function() {
+    SelfPrims.setVariable("color", ((45 - 2) + Prims.random(7)));
+    SelfPrims.setVariable("size", 1.5);
     SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
   }, true);
   world.ticker.reset();
@@ -66,9 +67,9 @@ function go() {
 }
 function flock() {
   Call(findFlockmates);
-  if (SelfPrims.getVariable('flockmates').nonEmpty()) {
+  if (SelfPrims.getVariable("flockmates").nonEmpty()) {
     Call(findNearestNeighbor);
-    if (Prims.lt(SelfManager.self().distance(SelfPrims.getVariable('nearest-neighbor')), world.observer.getGlobal('minimum-separation'))) {
+    if (Prims.lt(SelfManager.self().distance(SelfPrims.getVariable("nearest-neighbor")), world.observer.getGlobal("minimum-separation"))) {
       Call(separate);
     }
     else {
@@ -78,60 +79,60 @@ function flock() {
   }
 }
 function findFlockmates() {
-  SelfPrims.setVariable('flockmates', SelfPrims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal('vision'))));
+  SelfPrims.setVariable("flockmates", SelfPrims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("vision"))));
 }
 function findNearestNeighbor() {
-  SelfPrims.setVariable('nearest-neighbor', SelfPrims.getVariable('flockmates').minOneOf(function() {
+  SelfPrims.setVariable("nearest-neighbor", SelfPrims.getVariable("flockmates").minOneOf(function() {
     return SelfManager.self().distance(SelfManager.myself());
   }));
 }
 function separate() {
-  Call(turnAway, SelfPrims.getVariable('nearest-neighbor').projectionBy(function() {
-    return SelfPrims.getVariable('heading');
-  }), world.observer.getGlobal('max-separate-turn'));
+  Call(turnAway, SelfPrims.getVariable("nearest-neighbor").projectionBy(function() {
+    return SelfPrims.getVariable("heading");
+  }), world.observer.getGlobal("max-separate-turn"));
 }
 function align() {
-  Call(turnTowards, Call(averageFlockmateHeading), world.observer.getGlobal('max-align-turn'));
+  Call(turnTowards, Call(averageFlockmateHeading), world.observer.getGlobal("max-align-turn"));
 }
 function averageFlockmateHeading() {
-  var xComponent = ListPrims.sum(SelfPrims.getVariable('flockmates').projectionBy(function() {
+  var xComponent = ListPrims.sum(SelfPrims.getVariable("flockmates").projectionBy(function() {
     return SelfManager.self().dx();
   }));
-  var yComponent = ListPrims.sum(SelfPrims.getVariable('flockmates').projectionBy(function() {
+  var yComponent = ListPrims.sum(SelfPrims.getVariable("flockmates").projectionBy(function() {
     return SelfManager.self().dy();
   }));
   if ((Prims.equality(xComponent, 0) && Prims.equality(yComponent, 0))) {
-    return SelfPrims.getVariable('heading');
+    return SelfPrims.getVariable("heading");
   }
   else {
-    return Trig.atan(xComponent, yComponent);
+    return NLMath.atan(xComponent, yComponent);
   }
 }
 function cohere() {
-  Call(turnTowards, Call(averageHeadingTowardsFlockmates), world.observer.getGlobal('max-cohere-turn'));
+  Call(turnTowards, Call(averageHeadingTowardsFlockmates), world.observer.getGlobal("max-cohere-turn"));
 }
 function averageHeadingTowardsFlockmates() {
-  var xComponent = ListPrims.mean(SelfPrims.getVariable('flockmates').projectionBy(function() {
-    return Trig.unsquashedSin((SelfManager.self().towards(SelfManager.myself()) + 180));
+  var xComponent = ListPrims.mean(SelfPrims.getVariable("flockmates").projectionBy(function() {
+    return NLMath.sin((SelfManager.self().towards(SelfManager.myself()) + 180));
   }));
-  var yComponent = ListPrims.mean(SelfPrims.getVariable('flockmates').projectionBy(function() {
-    return Trig.unsquashedCos((SelfManager.self().towards(SelfManager.myself()) + 180));
+  var yComponent = ListPrims.mean(SelfPrims.getVariable("flockmates").projectionBy(function() {
+    return NLMath.cos((SelfManager.self().towards(SelfManager.myself()) + 180));
   }));
   if ((Prims.equality(xComponent, 0) && Prims.equality(yComponent, 0))) {
-    return SelfPrims.getVariable('heading');
+    return SelfPrims.getVariable("heading");
   }
   else {
-    return Trig.atan(xComponent, yComponent);
+    return NLMath.atan(xComponent, yComponent);
   }
 }
 function turnTowards(newHeading, maxTurn) {
-  Call(turnAtMost, Prims.subtractHeadings(newHeading, SelfPrims.getVariable('heading')), maxTurn);
+  Call(turnAtMost, NLMath.subtractHeadings(newHeading, SelfPrims.getVariable("heading")), maxTurn);
 }
 function turnAway(newHeading, maxTurn) {
-  Call(turnAtMost, Prims.subtractHeadings(SelfPrims.getVariable('heading'), newHeading), maxTurn);
+  Call(turnAtMost, NLMath.subtractHeadings(SelfPrims.getVariable("heading"), newHeading), maxTurn);
 }
 function turnAtMost(turn, maxTurn) {
-  if (Prims.gt(StrictMath.abs(turn), maxTurn)) {
+  if (Prims.gt(NLMath.abs(turn), maxTurn)) {
     if (Prims.gt(turn, 0)) {
       SelfPrims.right(maxTurn);
     }
@@ -143,9 +144,9 @@ function turnAtMost(turn, maxTurn) {
     SelfPrims.right(turn);
   }
 }
-world.observer.setGlobal('population', 300);
-world.observer.setGlobal('max-align-turn', 5);
-world.observer.setGlobal('max-cohere-turn', 3);
-world.observer.setGlobal('max-separate-turn', 1.5);
-world.observer.setGlobal('vision', 3);
-world.observer.setGlobal('minimum-separation', 1);
+world.observer.setGlobal("population", 300);
+world.observer.setGlobal("max-align-turn", 5);
+world.observer.setGlobal("max-cohere-turn", 3);
+world.observer.setGlobal("max-separate-turn", 1.5);
+world.observer.setGlobal("vision", 3);
+world.observer.setGlobal("minimum-separation", 1);

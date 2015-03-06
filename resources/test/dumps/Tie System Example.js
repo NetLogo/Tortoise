@@ -25,44 +25,45 @@ var Updater       = workspace.updater;
 var world         = workspace.world;
 
 var Call           = tortoise_require('util/call');
-var ColorModel     = tortoise_require('util/colormodel');
 var Exception      = tortoise_require('util/exception');
-var Trig           = tortoise_require('util/trig');
-var Type           = tortoise_require('util/typechecker');
+var NLMath         = tortoise_require('util/nlmath');
 var notImplemented = tortoise_require('util/notimplemented');
 
 var Dump      = tortoise_require('engine/dump');
+var ColorModel = tortoise_require('engine/core/colormodel');
 var Link      = tortoise_require('engine/core/link');
 var LinkSet   = tortoise_require('engine/core/linkset');
 var Nobody    = tortoise_require('engine/core/nobody');
 var PatchSet  = tortoise_require('engine/core/patchset');
 var Turtle    = tortoise_require('engine/core/turtle');
 var TurtleSet = tortoise_require('engine/core/turtleset');
+var NLType    = tortoise_require('engine/core/typechecker');
 var Tasks     = tortoise_require('engine/prim/tasks');
 
 var AgentModel = tortoise_require('agentmodel');
+var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
 function setup() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "planet")
-  world.turtleManager.createTurtles(1, 'SUNS').ask(function() {
-    SelfPrims.setVariable('size', 6);
-    SelfPrims.setVariable('color', 45);
+  world.turtleManager.createTurtles(1, "SUNS").ask(function() {
+    SelfPrims.setVariable("size", 6);
+    SelfPrims.setVariable("color", 45);
   }, true);
-  world.turtleManager.createTurtles(5, 'PLANETS').ask(function() {
-    SelfPrims.setVariable('size', 2);
-    SelfPrims.setVariable('color', (105 + Prims.random(3)));
+  world.turtleManager.createTurtles(5, "PLANETS").ask(function() {
+    SelfPrims.setVariable("size", 2);
+    SelfPrims.setVariable("color", (105 + Prims.random(3)));
     SelfPrims.fd((6 + Prims.randomFloat(12)));
-    LinkPrims.createLinkFrom(ListPrims.oneOf(world.turtleManager.turtlesOfBreed("SUNS")), 'LINKS').ask(function() {
+    LinkPrims.createLinkFrom(ListPrims.oneOf(world.turtleManager.turtlesOfBreed("SUNS")), "LINKS").ask(function() {
       SelfManager.self().tie();
       SelfPrims.setVariable('hidden?', true)
     }, true);
-    SelfPrims.hatch(2, 'MOONS').ask(function() {
-      SelfPrims.setVariable('size', 0.5);
-      SelfPrims.setVariable('color', (5 + Prims.random(3)));
+    SelfPrims.hatch(2, "MOONS").ask(function() {
+      SelfPrims.setVariable("size", 0.5);
+      SelfPrims.setVariable("color", (5 + Prims.random(3)));
       SelfPrims.fd((1 + Prims.randomFloat(3)));
-      LinkPrims.createLinkFrom(SelfManager.myself(), 'LINKS').ask(function() {
+      LinkPrims.createLinkFrom(SelfManager.myself(), "LINKS").ask(function() {
         SelfManager.self().tie();
         SelfPrims.setVariable('hidden?', true)
       }, true);

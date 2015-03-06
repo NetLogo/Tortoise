@@ -9,33 +9,33 @@ modelConfig.plots = [(function() {
   var name    = 'Energy Histogram';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('fast', plotOps.makePenOps, false, new PenBundle.State(15.0, 10.0, PenBundle.DisplayMode.Bar), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Energy Histogram', 'fast')(function() { plotManager.setHistogramBarCount(40);; }); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Energy Histogram', 'fast')(function() { plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() {
-  return Prims.equality(SelfPrims.getVariable('color'), 15);
+  return Prims.equality(SelfPrims.getVariable("color"), 15);
 }).projectionBy(function() {
-  return SelfPrims.getVariable('energy');
+  return SelfPrims.getVariable("energy");
 }));; }); }); }),
 new PenBundle.Pen('medium', plotOps.makePenOps, false, new PenBundle.State(55.0, 10.0, PenBundle.DisplayMode.Bar), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Energy Histogram', 'medium')(function() { plotManager.setHistogramBarCount(40);; }); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Energy Histogram', 'medium')(function() { plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() {
-  return Prims.equality(SelfPrims.getVariable('color'), 55);
+  return Prims.equality(SelfPrims.getVariable("color"), 55);
 }).projectionBy(function() {
-  return SelfPrims.getVariable('energy');
+  return SelfPrims.getVariable("energy");
 }));; }); }); }),
 new PenBundle.Pen('slow', plotOps.makePenOps, false, new PenBundle.State(105.0, 10.0, PenBundle.DisplayMode.Bar), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Energy Histogram', 'slow')(function() { plotManager.setHistogramBarCount(40);; }); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Energy Histogram', 'slow')(function() { plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() {
-  return Prims.equality(SelfPrims.getVariable('color'), 105);
+  return Prims.equality(SelfPrims.getVariable("color"), 105);
 }).projectionBy(function() {
-  return SelfPrims.getVariable('energy');
+  return SelfPrims.getVariable("energy");
 }));; }); }); }),
 new PenBundle.Pen('avg-energy', plotOps.makePenOps, false, new PenBundle.State(5.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Energy Histogram', 'avg-energy')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Energy Histogram', 'avg-energy')(function() { plotManager.resetPen();
-Call(drawVertLine, world.observer.getGlobal('avg-energy'));; }); }); }),
-new PenBundle.Pen('init-avg-energy', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Energy Histogram', 'init-avg-energy')(function() { Call(drawVertLine, world.observer.getGlobal('init-avg-energy'));; }); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Energy Histogram', 'init-avg-energy')(function() {}); }); })];
+Call(drawVertLine, world.observer.getGlobal("avg-energy"));; }); }); }),
+new PenBundle.Pen('init-avg-energy', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Energy Histogram', 'init-avg-energy')(function() { Call(drawVertLine, world.observer.getGlobal("init-avg-energy"));; }); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Energy Histogram', 'init-avg-energy')(function() {}); }); })];
   var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Energy Histogram', undefined)(function() {}); }); };
-  var update  = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Energy Histogram', undefined)(function() { plotManager.setXRange(0, (((0.5 * (world.observer.getGlobal('init-particle-speed') * 2)) * (world.observer.getGlobal('init-particle-speed') * 2)) * world.observer.getGlobal('particle-mass')));
-plotManager.setYRange(0, StrictMath.ceil((world.observer.getGlobal('number-of-particles') / 6)));; }); }); };
+  var update  = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Energy Histogram', undefined)(function() { plotManager.setXRange(0, (((0.5 * (world.observer.getGlobal("init-particle-speed") * 2)) * (world.observer.getGlobal("init-particle-speed") * 2)) * world.observer.getGlobal("particle-mass")));
+plotManager.setYRange(0, NLMath.ceil((world.observer.getGlobal("number-of-particles") / 6)));; }); }); };
   return new Plot(name, pens, plotOps, 'Energy', 'Number', true, 0.0, 400.0, 0.0, 10.0, setup, update);
 })(), (function() {
   var name    = 'Speed Counts';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('fast', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Counts', 'fast')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Counts', 'fast')(function() { plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal('percent-fast'));; }); }); }),
-new PenBundle.Pen('medium', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Counts', 'medium')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Counts', 'medium')(function() { plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal('percent-medium'));; }); }); }),
-new PenBundle.Pen('slow', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Counts', 'slow')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Counts', 'slow')(function() { plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal('percent-slow'));; }); }); })];
+  var pens    = [new PenBundle.Pen('fast', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Counts', 'fast')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Counts', 'fast')(function() { plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("percent-fast"));; }); }); }),
+new PenBundle.Pen('medium', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Counts', 'medium')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Counts', 'medium')(function() { plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("percent-medium"));; }); }); }),
+new PenBundle.Pen('slow', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Counts', 'slow')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Counts', 'slow')(function() { plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("percent-slow"));; }); }); })];
   var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Counts', undefined)(function() {}); }); };
   var update  = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Counts', undefined)(function() { plotManager.setYRange(0, 100);; }); }); };
   return new Plot(name, pens, plotOps, 'time', 'count (%)', true, 0.0, 20.0, 0.0, 100.0, setup, update);
@@ -43,26 +43,26 @@ new PenBundle.Pen('slow', plotOps.makePenOps, false, new PenBundle.State(105.0, 
   var name    = 'Speed Histogram';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('fast', plotOps.makePenOps, false, new PenBundle.State(15.0, 5.0, PenBundle.DisplayMode.Bar), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Histogram', 'fast')(function() { plotManager.setHistogramBarCount(40);; }); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Histogram', 'fast')(function() { plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() {
-  return Prims.equality(SelfPrims.getVariable('color'), 15);
+  return Prims.equality(SelfPrims.getVariable("color"), 15);
 }).projectionBy(function() {
-  return SelfPrims.getVariable('speed');
+  return SelfPrims.getVariable("speed");
 }));; }); }); }),
 new PenBundle.Pen('medium', plotOps.makePenOps, false, new PenBundle.State(55.0, 5.0, PenBundle.DisplayMode.Bar), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Histogram', 'medium')(function() { plotManager.setHistogramBarCount(40);; }); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Histogram', 'medium')(function() { plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() {
-  return Prims.equality(SelfPrims.getVariable('color'), 55);
+  return Prims.equality(SelfPrims.getVariable("color"), 55);
 }).projectionBy(function() {
-  return SelfPrims.getVariable('speed');
+  return SelfPrims.getVariable("speed");
 }));; }); }); }),
 new PenBundle.Pen('slow', plotOps.makePenOps, false, new PenBundle.State(105.0, 5.0, PenBundle.DisplayMode.Bar), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Histogram', 'slow')(function() { plotManager.setHistogramBarCount(40);; }); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Histogram', 'slow')(function() { plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() {
-  return Prims.equality(SelfPrims.getVariable('color'), 105);
+  return Prims.equality(SelfPrims.getVariable("color"), 105);
 }).projectionBy(function() {
-  return SelfPrims.getVariable('speed');
+  return SelfPrims.getVariable("speed");
 }));; }); }); }),
 new PenBundle.Pen('avg-speed', plotOps.makePenOps, false, new PenBundle.State(5.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Histogram', 'avg-speed')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Histogram', 'avg-speed')(function() { plotManager.resetPen();
-Call(drawVertLine, world.observer.getGlobal('avg-speed'));; }); }); }),
-new PenBundle.Pen('init-avg-speed', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Histogram', 'init-avg-speed')(function() { Call(drawVertLine, world.observer.getGlobal('init-avg-speed'));; }); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Histogram', 'init-avg-speed')(function() {}); }); })];
+Call(drawVertLine, world.observer.getGlobal("avg-speed"));; }); }); }),
+new PenBundle.Pen('init-avg-speed', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Histogram', 'init-avg-speed')(function() { Call(drawVertLine, world.observer.getGlobal("init-avg-speed"));; }); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Histogram', 'init-avg-speed')(function() {}); }); })];
   var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Histogram', undefined)(function() {}); }); };
-  var update  = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Histogram', undefined)(function() { plotManager.setXRange(0, (world.observer.getGlobal('init-particle-speed') * 2));
-plotManager.setYRange(0, StrictMath.ceil((world.observer.getGlobal('number-of-particles') / 6)));; }); }); };
+  var update  = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Histogram', undefined)(function() { plotManager.setXRange(0, (world.observer.getGlobal("init-particle-speed") * 2));
+plotManager.setYRange(0, NLMath.ceil((world.observer.getGlobal("number-of-particles") / 6)));; }); }); };
   return new Plot(name, pens, plotOps, 'Speed', 'Number', true, 0.0, 50.0, 0.0, 100.0, setup, update);
 })()];
 if (typeof javax !== "undefined") { modelConfig.output = { clear: function(){}, write: function(str) { context.getWriter().print(str); } } }
@@ -84,32 +84,33 @@ var Updater       = workspace.updater;
 var world         = workspace.world;
 
 var Call           = tortoise_require('util/call');
-var ColorModel     = tortoise_require('util/colormodel');
 var Exception      = tortoise_require('util/exception');
-var Trig           = tortoise_require('util/trig');
-var Type           = tortoise_require('util/typechecker');
+var NLMath         = tortoise_require('util/nlmath');
 var notImplemented = tortoise_require('util/notimplemented');
 
 var Dump      = tortoise_require('engine/dump');
+var ColorModel = tortoise_require('engine/core/colormodel');
 var Link      = tortoise_require('engine/core/link');
 var LinkSet   = tortoise_require('engine/core/linkset');
 var Nobody    = tortoise_require('engine/core/nobody');
 var PatchSet  = tortoise_require('engine/core/patchset');
 var Turtle    = tortoise_require('engine/core/turtle');
 var TurtleSet = tortoise_require('engine/core/turtleset');
+var NLType    = tortoise_require('engine/core/typechecker');
 var Tasks     = tortoise_require('engine/prim/tasks');
 
 var AgentModel = tortoise_require('agentmodel');
+var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
 function setup() {
   world.clearAll();
   BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("PARTICLES").getBreedName(), "circle")
-  world.observer.setGlobal('max-tick-delta', 0.1073);
+  world.observer.setGlobal("max-tick-delta", 0.1073);
   Call(makeParticles);
   Call(updateVariables);
-  world.observer.setGlobal('init-avg-speed', world.observer.getGlobal('avg-speed'));
-  world.observer.setGlobal('init-avg-energy', world.observer.getGlobal('avg-energy'));
+  world.observer.setGlobal("init-avg-speed", world.observer.getGlobal("avg-speed"));
+  world.observer.setGlobal("init-avg-energy", world.observer.getGlobal("avg-energy"));
   world.ticker.reset();
 }
 function go() {
@@ -117,11 +118,11 @@ function go() {
     Call(move);
   }, true);
   world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() {
-    if (world.observer.getGlobal('collide?')) {
+    if (world.observer.getGlobal("collide?")) {
       Call(checkForCollision);
     }
   }, true);
-  if (world.observer.getGlobal('trace?')) {
+  if (world.observer.getGlobal("trace?")) {
     world.turtleManager.getTurtleOfBreed("PARTICLES", 0).ask(function() {
       SelfManager.self().penManager.lowerPen();
     }, true);
@@ -131,8 +132,8 @@ function go() {
       SelfManager.self().penManager.raisePen();
     }, true);
   }
-  world.ticker.tickAdvance(world.observer.getGlobal('tick-delta'));
-  if (Prims.gt(StrictMath.floor(world.ticker.tickCount()), StrictMath.floor((world.ticker.tickCount() - world.observer.getGlobal('tick-delta'))))) {
+  world.ticker.tickAdvance(world.observer.getGlobal("tick-delta"));
+  if (Prims.gt(NLMath.floor(world.ticker.tickCount()), NLMath.floor((world.ticker.tickCount() - world.observer.getGlobal("tick-delta"))))) {
     Call(updateVariables);
     plotManager.updatePlots();
   }
@@ -140,89 +141,89 @@ function go() {
   notImplemented('display', undefined)();
 }
 function updateVariables() {
-  world.observer.setGlobal('medium', world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() {
-    return Prims.equality(SelfPrims.getVariable('color'), 55);
+  world.observer.setGlobal("medium", world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() {
+    return Prims.equality(SelfPrims.getVariable("color"), 55);
   }).size());
-  world.observer.setGlobal('slow', world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() {
-    return Prims.equality(SelfPrims.getVariable('color'), 105);
+  world.observer.setGlobal("slow", world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() {
+    return Prims.equality(SelfPrims.getVariable("color"), 105);
   }).size());
-  world.observer.setGlobal('fast', world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() {
-    return Prims.equality(SelfPrims.getVariable('color'), 15);
+  world.observer.setGlobal("fast", world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() {
+    return Prims.equality(SelfPrims.getVariable("color"), 15);
   }).size());
-  world.observer.setGlobal('percent-medium', ((world.observer.getGlobal('medium') / world.turtleManager.turtlesOfBreed("PARTICLES").size()) * 100));
-  world.observer.setGlobal('percent-slow', ((world.observer.getGlobal('slow') / world.turtleManager.turtlesOfBreed("PARTICLES").size()) * 100));
-  world.observer.setGlobal('percent-fast', ((world.observer.getGlobal('fast') / world.turtleManager.turtlesOfBreed("PARTICLES").size()) * 100));
-  world.observer.setGlobal('avg-speed', ListPrims.mean(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() {
-    return SelfPrims.getVariable('speed');
+  world.observer.setGlobal("percent-medium", ((world.observer.getGlobal("medium") / world.turtleManager.turtlesOfBreed("PARTICLES").size()) * 100));
+  world.observer.setGlobal("percent-slow", ((world.observer.getGlobal("slow") / world.turtleManager.turtlesOfBreed("PARTICLES").size()) * 100));
+  world.observer.setGlobal("percent-fast", ((world.observer.getGlobal("fast") / world.turtleManager.turtlesOfBreed("PARTICLES").size()) * 100));
+  world.observer.setGlobal("avg-speed", ListPrims.mean(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() {
+    return SelfPrims.getVariable("speed");
   })));
-  world.observer.setGlobal('avg-energy', ListPrims.mean(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() {
-    return SelfPrims.getVariable('energy');
+  world.observer.setGlobal("avg-energy", ListPrims.mean(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() {
+    return SelfPrims.getVariable("energy");
   })));
 }
 function calculateTickDelta() {
   if (world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() {
-    return Prims.gt(SelfPrims.getVariable('speed'), 0);
+    return Prims.gt(SelfPrims.getVariable("speed"), 0);
   }).nonEmpty()) {
-    world.observer.setGlobal('tick-delta', ListPrims.min(ListPrims.list((1 / StrictMath.ceil(ListPrims.max(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() {
-      return SelfPrims.getVariable('speed');
-    })))), world.observer.getGlobal('max-tick-delta'))));
+    world.observer.setGlobal("tick-delta", ListPrims.min(ListPrims.list((1 / NLMath.ceil(ListPrims.max(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() {
+      return SelfPrims.getVariable("speed");
+    })))), world.observer.getGlobal("max-tick-delta"))));
   }
   else {
-    world.observer.setGlobal('tick-delta', world.observer.getGlobal('max-tick-delta'));
+    world.observer.setGlobal("tick-delta", world.observer.getGlobal("max-tick-delta"));
   }
 }
 function move() {
-  if (!Prims.equality(SelfManager.self().patchAhead((SelfPrims.getVariable('speed') * world.observer.getGlobal('tick-delta'))), SelfManager.self().getPatchHere())) {
-    SelfPrims.setVariable('last-collision', Nobody);
+  if (!Prims.equality(SelfManager.self().patchAhead((SelfPrims.getVariable("speed") * world.observer.getGlobal("tick-delta"))), SelfManager.self().getPatchHere())) {
+    SelfPrims.setVariable("last-collision", Nobody);
   }
-  SelfPrims.jump((SelfPrims.getVariable('speed') * world.observer.getGlobal('tick-delta')));
+  SelfPrims.jump((SelfPrims.getVariable("speed") * world.observer.getGlobal("tick-delta")));
 }
 function checkForCollision() {
   if (Prims.equality(SelfPrims.other(SelfManager.self().breedHere("PARTICLES")).size(), 1)) {
     var candidate = ListPrims.oneOf(SelfPrims.other(SelfManager.self().breedHere("PARTICLES").agentFilter(function() {
-      return (Prims.lt(SelfPrims.getVariable('who'), SelfManager.myself().projectionBy(function() {
-        return SelfPrims.getVariable('who');
-      })) && !Prims.equality(SelfManager.myself(), SelfPrims.getVariable('last-collision')));
+      return (Prims.lt(SelfPrims.getVariable("who"), SelfManager.myself().projectionBy(function() {
+        return SelfPrims.getVariable("who");
+      })) && !Prims.equality(SelfManager.myself(), SelfPrims.getVariable("last-collision")));
     })));
-    if ((!Prims.equality(candidate, Nobody) && (Prims.gt(SelfPrims.getVariable('speed'), 0) || Prims.gt(candidate.projectionBy(function() {
-      return SelfPrims.getVariable('speed');
+    if ((!Prims.equality(candidate, Nobody) && (Prims.gt(SelfPrims.getVariable("speed"), 0) || Prims.gt(candidate.projectionBy(function() {
+      return SelfPrims.getVariable("speed");
     }), 0)))) {
       Call(collideWith, candidate);
-      SelfPrims.setVariable('last-collision', candidate);
+      SelfPrims.setVariable("last-collision", candidate);
       candidate.ask(function() {
-        SelfPrims.setVariable('last-collision', SelfManager.myself());
+        SelfPrims.setVariable("last-collision", SelfManager.myself());
       }, true);
     }
   }
 }
 function collideWith(otherParticle) {
   var mass2 = otherParticle.projectionBy(function() {
-    return SelfPrims.getVariable('mass');
+    return SelfPrims.getVariable("mass");
   });
   var speed2 = otherParticle.projectionBy(function() {
-    return SelfPrims.getVariable('speed');
+    return SelfPrims.getVariable("speed");
   });
   var heading2 = otherParticle.projectionBy(function() {
-    return SelfPrims.getVariable('heading');
+    return SelfPrims.getVariable("heading");
   });
   var theta = Prims.randomFloat(360);
-  var v1t = (SelfPrims.getVariable('speed') * Trig.unsquashedCos((theta - SelfPrims.getVariable('heading'))));
-  var v1l = (SelfPrims.getVariable('speed') * Trig.unsquashedSin((theta - SelfPrims.getVariable('heading'))));
-  var v2t = (speed2 * Trig.unsquashedCos((theta - heading2)));
-  var v2l = (speed2 * Trig.unsquashedSin((theta - heading2)));
-  var vcm = (((SelfPrims.getVariable('mass') * v1t) + (mass2 * v2t)) / (SelfPrims.getVariable('mass') + mass2));
+  var v1t = (SelfPrims.getVariable("speed") * NLMath.cos((theta - SelfPrims.getVariable("heading"))));
+  var v1l = (SelfPrims.getVariable("speed") * NLMath.sin((theta - SelfPrims.getVariable("heading"))));
+  var v2t = (speed2 * NLMath.cos((theta - heading2)));
+  var v2l = (speed2 * NLMath.sin((theta - heading2)));
+  var vcm = (((SelfPrims.getVariable("mass") * v1t) + (mass2 * v2t)) / (SelfPrims.getVariable("mass") + mass2));
   v1t = ((2 * vcm) - v1t);
   v2t = ((2 * vcm) - v2t);
-  SelfPrims.setVariable('speed', StrictMath.sqrt((StrictMath.pow(v1t, 2) + StrictMath.pow(v1l, 2))));
-  SelfPrims.setVariable('energy', ((0.5 * SelfPrims.getVariable('mass')) * StrictMath.pow(SelfPrims.getVariable('speed'), 2)));
+  SelfPrims.setVariable("speed", NLMath.sqrt((NLMath.pow(v1t, 2) + NLMath.pow(v1l, 2))));
+  SelfPrims.setVariable("energy", ((0.5 * SelfPrims.getVariable("mass")) * NLMath.pow(SelfPrims.getVariable("speed"), 2)));
   if ((!Prims.equality(v1l, 0) || !Prims.equality(v1t, 0))) {
-    SelfPrims.setVariable('heading', (theta - Trig.atan(v1l, v1t)));
+    SelfPrims.setVariable("heading", (theta - NLMath.atan(v1l, v1t)));
   }
   otherParticle.ask(function() {
-    SelfPrims.setVariable('speed', StrictMath.sqrt((StrictMath.pow(v2t, 2) + StrictMath.pow(v2l, 2))));
-    SelfPrims.setVariable('energy', ((0.5 * SelfPrims.getVariable('mass')) * StrictMath.pow(SelfPrims.getVariable('speed'), 2)));
+    SelfPrims.setVariable("speed", NLMath.sqrt((NLMath.pow(v2t, 2) + NLMath.pow(v2l, 2))));
+    SelfPrims.setVariable("energy", ((0.5 * SelfPrims.getVariable("mass")) * NLMath.pow(SelfPrims.getVariable("speed"), 2)));
     if ((!Prims.equality(v2l, 0) || !Prims.equality(v2t, 0))) {
-      SelfPrims.setVariable('heading', (theta - Trig.atan(v2l, v2t)));
+      SelfPrims.setVariable("heading", (theta - NLMath.atan(v2l, v2t)));
     }
   }, true);
   Call(recolor);
@@ -231,20 +232,20 @@ function collideWith(otherParticle) {
   }, true);
 }
 function recolor() {
-  if (Prims.lt(SelfPrims.getVariable('speed'), (0.5 * 10))) {
-    SelfPrims.setVariable('color', 105);
+  if (Prims.lt(SelfPrims.getVariable("speed"), (0.5 * 10))) {
+    SelfPrims.setVariable("color", 105);
   }
   else {
-    if (Prims.gt(SelfPrims.getVariable('speed'), (1.5 * 10))) {
-      SelfPrims.setVariable('color', 15);
+    if (Prims.gt(SelfPrims.getVariable("speed"), (1.5 * 10))) {
+      SelfPrims.setVariable("color", 15);
     }
     else {
-      SelfPrims.setVariable('color', 55);
+      SelfPrims.setVariable("color", 55);
     }
   }
 }
 function makeParticles() {
-  world.turtleManager.createTurtles(world.observer.getGlobal('number-of-particles'), 'PARTICLES').ask(function() {
+  world.turtleManager.createTurtles(world.observer.getGlobal("number-of-particles"), "PARTICLES").ask(function() {
     Call(setupParticle);
     Call(randomPosition);
     Call(recolor);
@@ -252,10 +253,10 @@ function makeParticles() {
   Call(calculateTickDelta);
 }
 function setupParticle() {
-  SelfPrims.setVariable('speed', world.observer.getGlobal('init-particle-speed'));
-  SelfPrims.setVariable('mass', world.observer.getGlobal('particle-mass'));
-  SelfPrims.setVariable('energy', ((0.5 * SelfPrims.getVariable('mass')) * StrictMath.pow(SelfPrims.getVariable('speed'), 2)));
-  SelfPrims.setVariable('last-collision', Nobody);
+  SelfPrims.setVariable("speed", world.observer.getGlobal("init-particle-speed"));
+  SelfPrims.setVariable("mass", world.observer.getGlobal("particle-mass"));
+  SelfPrims.setVariable("energy", ((0.5 * SelfPrims.getVariable("mass")) * NLMath.pow(SelfPrims.getVariable("speed"), 2)));
+  SelfPrims.setVariable("last-collision", Nobody);
 }
 function randomPosition() {
   SelfPrims.setXY(((1 + world.topology.minPxcor) + Prims.randomFloat(((2 * world.topology.maxPxcor) - 2))), ((1 + world.topology.minPycor) + Prims.randomFloat(((2 * world.topology.maxPycor) - 2))));
@@ -274,8 +275,8 @@ function drawVertLine(xval) {
   plotManager.plotPoint(xval, plotManager.getPlotYMax());
   plotManager.raisePen();
 }
-world.observer.setGlobal('number-of-particles', 100);
-world.observer.setGlobal('collide?', true);
-world.observer.setGlobal('trace?', true);
-world.observer.setGlobal('init-particle-speed', 10);
-world.observer.setGlobal('particle-mass', 1);
+world.observer.setGlobal("number-of-particles", 100);
+world.observer.setGlobal("collide?", true);
+world.observer.setGlobal("trace?", true);
+world.observer.setGlobal("init-particle-speed", 10);
+world.observer.setGlobal("particle-mass", 1);

@@ -25,45 +25,46 @@ var Updater       = workspace.updater;
 var world         = workspace.world;
 
 var Call           = tortoise_require('util/call');
-var ColorModel     = tortoise_require('util/colormodel');
 var Exception      = tortoise_require('util/exception');
-var Trig           = tortoise_require('util/trig');
-var Type           = tortoise_require('util/typechecker');
+var NLMath         = tortoise_require('util/nlmath');
 var notImplemented = tortoise_require('util/notimplemented');
 
 var Dump      = tortoise_require('engine/dump');
+var ColorModel = tortoise_require('engine/core/colormodel');
 var Link      = tortoise_require('engine/core/link');
 var LinkSet   = tortoise_require('engine/core/linkset');
 var Nobody    = tortoise_require('engine/core/nobody');
 var PatchSet  = tortoise_require('engine/core/patchset');
 var Turtle    = tortoise_require('engine/core/turtle');
 var TurtleSet = tortoise_require('engine/core/turtleset');
+var NLType    = tortoise_require('engine/core/typechecker');
 var Tasks     = tortoise_require('engine/prim/tasks');
 
 var AgentModel = tortoise_require('agentmodel');
+var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
 function setupSquare() {
   world.clearAll();
   world.patches().ask(function() {
-    SelfPrims.sprout(1, 'TURTLES').ask(function() {}, true);
+    SelfPrims.sprout(1, "TURTLES").ask(function() {}, true);
   }, true);
   world.turtles().ask(function() {
-    LinkPrims.createLinksWith(Prims.turtlesOn(SelfPrims.getNeighbors4()), 'LINKS').ask(function() {}, false);
+    LinkPrims.createLinksWith(Prims.turtlesOn(SelfPrims.getNeighbors4()), "LINKS").ask(function() {}, false);
   }, true);
 }
 function setupHex() {
   world.clearAll();
   world.patches().ask(function() {
-    SelfPrims.sprout(1, 'TURTLES').ask(function() {}, true);
+    SelfPrims.sprout(1, "TURTLES").ask(function() {}, true);
   }, true);
   world.turtles().ask(function() {
-    LinkPrims.createLinksWith(SelfManager.self().turtlesAt(0, 1), 'LINKS').ask(function() {}, false);
-    LinkPrims.createLinksWith(SelfManager.self().turtlesAt(1, 0), 'LINKS').ask(function() {}, false);
-    if (Prims.equality(Prims.mod(SelfPrims.getPatchVariable('pxcor'), 2), 0)) {
-      LinkPrims.createLinksWith(SelfManager.self().turtlesAt(1, -1), 'LINKS').ask(function() {}, false);
-      LinkPrims.createLinksWith(SelfManager.self().turtlesAt(-1, -1), 'LINKS').ask(function() {}, false);
-      SelfPrims.setVariable('ycor', (SelfPrims.getVariable('ycor') - 0.5));
+    LinkPrims.createLinksWith(SelfManager.self().turtlesAt(0, 1), "LINKS").ask(function() {}, false);
+    LinkPrims.createLinksWith(SelfManager.self().turtlesAt(1, 0), "LINKS").ask(function() {}, false);
+    if (Prims.equality(NLMath.mod(SelfPrims.getPatchVariable("pxcor"), 2), 0)) {
+      LinkPrims.createLinksWith(SelfManager.self().turtlesAt(1, -1), "LINKS").ask(function() {}, false);
+      LinkPrims.createLinksWith(SelfManager.self().turtlesAt(-1, -1), "LINKS").ask(function() {}, false);
+      SelfPrims.setVariable("ycor", (SelfPrims.getVariable("ycor") - 0.5));
     }
   }, true);
 }

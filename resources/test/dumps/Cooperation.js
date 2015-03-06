@@ -33,45 +33,46 @@ var Updater       = workspace.updater;
 var world         = workspace.world;
 
 var Call           = tortoise_require('util/call');
-var ColorModel     = tortoise_require('util/colormodel');
 var Exception      = tortoise_require('util/exception');
-var Trig           = tortoise_require('util/trig');
-var Type           = tortoise_require('util/typechecker');
+var NLMath         = tortoise_require('util/nlmath');
 var notImplemented = tortoise_require('util/notimplemented');
 
 var Dump      = tortoise_require('engine/dump');
+var ColorModel = tortoise_require('engine/core/colormodel');
 var Link      = tortoise_require('engine/core/link');
 var LinkSet   = tortoise_require('engine/core/linkset');
 var Nobody    = tortoise_require('engine/core/nobody');
 var PatchSet  = tortoise_require('engine/core/patchset');
 var Turtle    = tortoise_require('engine/core/turtle');
 var TurtleSet = tortoise_require('engine/core/turtleset');
+var NLType    = tortoise_require('engine/core/typechecker');
 var Tasks     = tortoise_require('engine/prim/tasks');
 
 var AgentModel = tortoise_require('agentmodel');
+var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
 function setup() {
   world.clearAll();
   Call(setupCows);
   world.patches().ask(function() {
-    SelfPrims.setPatchVariable('grass', world.observer.getGlobal('max-grass-height'));
+    SelfPrims.setPatchVariable("grass", world.observer.getGlobal("max-grass-height"));
     Call(colorGrass);
   }, true);
   world.ticker.reset();
 }
 function setupCows() {
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "cow")
-  world.turtleManager.createTurtles(world.observer.getGlobal('initial-cows'), '').ask(function() {
+  world.turtleManager.createTurtles(world.observer.getGlobal("initial-cows"), "").ask(function() {
     SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
-    SelfPrims.setVariable('energy', (world.observer.getGlobal('metabolism') * 4));
-    if (Prims.lt(Prims.randomFloat(1), world.observer.getGlobal('cooperative-probability'))) {
-      SelfPrims.setVariable('breed', world.turtleManager.turtlesOfBreed("COOPERATIVE-COWS"));
-      SelfPrims.setVariable('color', (15 - 1.5));
+    SelfPrims.setVariable("energy", (world.observer.getGlobal("metabolism") * 4));
+    if (Prims.lt(Prims.randomFloat(1), world.observer.getGlobal("cooperative-probability"))) {
+      SelfPrims.setVariable("breed", world.turtleManager.turtlesOfBreed("COOPERATIVE-COWS"));
+      SelfPrims.setVariable("color", (15 - 1.5));
     }
     else {
-      SelfPrims.setVariable('breed', world.turtleManager.turtlesOfBreed("GREEDY-COWS"));
-      SelfPrims.setVariable('color', (95 - 2));
+      SelfPrims.setVariable("breed", world.turtleManager.turtlesOfBreed("GREEDY-COWS"));
+      SelfPrims.setVariable("color", (95 - 2));
     }
   }, true);
 }
@@ -88,67 +89,67 @@ function go() {
   world.ticker.tick();
 }
 function reproduce() {
-  if (Prims.gt(SelfPrims.getVariable('energy'), world.observer.getGlobal('reproduction-threshold'))) {
-    SelfPrims.setVariable('energy', (SelfPrims.getVariable('energy') - world.observer.getGlobal('reproduction-cost')));
-    SelfPrims.hatch(1, '').ask(function() {}, true);
+  if (Prims.gt(SelfPrims.getVariable("energy"), world.observer.getGlobal("reproduction-threshold"))) {
+    SelfPrims.setVariable("energy", (SelfPrims.getVariable("energy") - world.observer.getGlobal("reproduction-cost")));
+    SelfPrims.hatch(1, "").ask(function() {}, true);
   }
 }
 function growGrass() {
-  if (Prims.gte(SelfPrims.getPatchVariable('grass'), world.observer.getGlobal('low-high-threshold'))) {
-    if (Prims.gte(world.observer.getGlobal('high-growth-chance'), Prims.randomFloat(100))) {
-      SelfPrims.setPatchVariable('grass', (SelfPrims.getPatchVariable('grass') + 1));
+  if (Prims.gte(SelfPrims.getPatchVariable("grass"), world.observer.getGlobal("low-high-threshold"))) {
+    if (Prims.gte(world.observer.getGlobal("high-growth-chance"), Prims.randomFloat(100))) {
+      SelfPrims.setPatchVariable("grass", (SelfPrims.getPatchVariable("grass") + 1));
     }
   }
   else {
-    if (Prims.gte(world.observer.getGlobal('low-growth-chance'), Prims.randomFloat(100))) {
-      SelfPrims.setPatchVariable('grass', (SelfPrims.getPatchVariable('grass') + 1));
+    if (Prims.gte(world.observer.getGlobal("low-growth-chance"), Prims.randomFloat(100))) {
+      SelfPrims.setPatchVariable("grass", (SelfPrims.getPatchVariable("grass") + 1));
     }
   }
-  if (Prims.gt(SelfPrims.getPatchVariable('grass'), world.observer.getGlobal('max-grass-height'))) {
-    SelfPrims.setPatchVariable('grass', world.observer.getGlobal('max-grass-height'));
+  if (Prims.gt(SelfPrims.getPatchVariable("grass"), world.observer.getGlobal("max-grass-height"))) {
+    SelfPrims.setPatchVariable("grass", world.observer.getGlobal("max-grass-height"));
   }
 }
 function colorGrass() {
-  SelfPrims.setPatchVariable('pcolor', ColorModel.scaleColor((55 - 1), SelfPrims.getPatchVariable('grass'), 0, (2 * world.observer.getGlobal('max-grass-height'))));
+  SelfPrims.setPatchVariable("pcolor", ColorModel.scaleColor((55 - 1), SelfPrims.getPatchVariable("grass"), 0, (2 * world.observer.getGlobal("max-grass-height"))));
 }
 function move() {
   SelfPrims.right(Prims.random(360));
-  SelfPrims.fd(world.observer.getGlobal('stride-length'));
-  SelfPrims.setVariable('energy', (SelfPrims.getVariable('energy') - world.observer.getGlobal('metabolism')));
-  if (Prims.lt(SelfPrims.getVariable('energy'), 0)) {
+  SelfPrims.fd(world.observer.getGlobal("stride-length"));
+  SelfPrims.setVariable("energy", (SelfPrims.getVariable("energy") - world.observer.getGlobal("metabolism")));
+  if (Prims.lt(SelfPrims.getVariable("energy"), 0)) {
     SelfPrims.die();
   }
 }
 function eat() {
-  if (Prims.equality(SelfPrims.getVariable('breed'), world.turtleManager.turtlesOfBreed("COOPERATIVE-COWS"))) {
+  if (Prims.equality(SelfPrims.getVariable("breed"), world.turtleManager.turtlesOfBreed("COOPERATIVE-COWS"))) {
     Call(eatCooperative);
   }
   else {
-    if (Prims.equality(SelfPrims.getVariable('breed'), world.turtleManager.turtlesOfBreed("GREEDY-COWS"))) {
+    if (Prims.equality(SelfPrims.getVariable("breed"), world.turtleManager.turtlesOfBreed("GREEDY-COWS"))) {
       Call(eatGreedy);
     }
   }
 }
 function eatCooperative() {
-  if (Prims.gt(SelfPrims.getPatchVariable('grass'), world.observer.getGlobal('low-high-threshold'))) {
-    SelfPrims.setPatchVariable('grass', (SelfPrims.getPatchVariable('grass') - 1));
-    SelfPrims.setVariable('energy', (SelfPrims.getVariable('energy') + world.observer.getGlobal('grass-energy')));
+  if (Prims.gt(SelfPrims.getPatchVariable("grass"), world.observer.getGlobal("low-high-threshold"))) {
+    SelfPrims.setPatchVariable("grass", (SelfPrims.getPatchVariable("grass") - 1));
+    SelfPrims.setVariable("energy", (SelfPrims.getVariable("energy") + world.observer.getGlobal("grass-energy")));
   }
 }
 function eatGreedy() {
-  if (Prims.gt(SelfPrims.getPatchVariable('grass'), 0)) {
-    SelfPrims.setPatchVariable('grass', (SelfPrims.getPatchVariable('grass') - 1));
-    SelfPrims.setVariable('energy', (SelfPrims.getVariable('energy') + world.observer.getGlobal('grass-energy')));
+  if (Prims.gt(SelfPrims.getPatchVariable("grass"), 0)) {
+    SelfPrims.setPatchVariable("grass", (SelfPrims.getPatchVariable("grass") - 1));
+    SelfPrims.setVariable("energy", (SelfPrims.getVariable("energy") + world.observer.getGlobal("grass-energy")));
   }
 }
-world.observer.setGlobal('cooperative-probability', 0.5);
-world.observer.setGlobal('initial-cows', 20);
-world.observer.setGlobal('low-high-threshold', 5);
-world.observer.setGlobal('high-growth-chance', 77);
-world.observer.setGlobal('stride-length', 0.08);
-world.observer.setGlobal('max-grass-height', 10);
-world.observer.setGlobal('reproduction-threshold', 102);
-world.observer.setGlobal('grass-energy', 51);
-world.observer.setGlobal('metabolism', 6);
-world.observer.setGlobal('low-growth-chance', 30);
-world.observer.setGlobal('reproduction-cost', 54);
+world.observer.setGlobal("cooperative-probability", 0.5);
+world.observer.setGlobal("initial-cows", 20);
+world.observer.setGlobal("low-high-threshold", 5);
+world.observer.setGlobal("high-growth-chance", 77);
+world.observer.setGlobal("stride-length", 0.08);
+world.observer.setGlobal("max-grass-height", 10);
+world.observer.setGlobal("reproduction-threshold", 102);
+world.observer.setGlobal("grass-energy", 51);
+world.observer.setGlobal("metabolism", 6);
+world.observer.setGlobal("low-growth-chance", 30);
+world.observer.setGlobal("reproduction-cost", 54);

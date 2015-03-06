@@ -25,73 +25,74 @@ var Updater       = workspace.updater;
 var world         = workspace.world;
 
 var Call           = tortoise_require('util/call');
-var ColorModel     = tortoise_require('util/colormodel');
 var Exception      = tortoise_require('util/exception');
-var Trig           = tortoise_require('util/trig');
-var Type           = tortoise_require('util/typechecker');
+var NLMath         = tortoise_require('util/nlmath');
 var notImplemented = tortoise_require('util/notimplemented');
 
 var Dump      = tortoise_require('engine/dump');
+var ColorModel = tortoise_require('engine/core/colormodel');
 var Link      = tortoise_require('engine/core/link');
 var LinkSet   = tortoise_require('engine/core/linkset');
 var Nobody    = tortoise_require('engine/core/nobody');
 var PatchSet  = tortoise_require('engine/core/patchset');
 var Turtle    = tortoise_require('engine/core/turtle');
 var TurtleSet = tortoise_require('engine/core/turtleset');
+var NLType    = tortoise_require('engine/core/typechecker');
 var Tasks     = tortoise_require('engine/prim/tasks');
 
 var AgentModel = tortoise_require('agentmodel');
+var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
 function setup() {
   world.clearAll();
-  world.turtleManager.createTurtles(world.observer.getGlobal('population'), '').ask(function() {
-    SelfPrims.setVariable('color', 15);
-    SelfPrims.setVariable('size', 2);
+  world.turtleManager.createTurtles(world.observer.getGlobal("population"), "").ask(function() {
+    SelfPrims.setVariable("color", 15);
+    SelfPrims.setVariable("size", 2);
     SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
   }, true);
   world.patches().ask(function() {
-    SelfPrims.setPatchVariable('chemical', 0);
+    SelfPrims.setPatchVariable("chemical", 0);
   }, true);
   world.ticker.reset();
 }
 function go() {
   world.turtles().ask(function() {
-    if (Prims.gt(SelfPrims.getPatchVariable('chemical'), world.observer.getGlobal('sniff-threshold'))) {
+    if (Prims.gt(SelfPrims.getPatchVariable("chemical"), world.observer.getGlobal("sniff-threshold"))) {
       Call(turnTowardChemical);
     }
-    SelfPrims.right(((Prims.randomFloat(world.observer.getGlobal('wiggle-angle')) - Prims.randomFloat(world.observer.getGlobal('wiggle-angle'))) + world.observer.getGlobal('wiggle-bias')));
+    SelfPrims.right(((Prims.randomFloat(world.observer.getGlobal("wiggle-angle")) - Prims.randomFloat(world.observer.getGlobal("wiggle-angle"))) + world.observer.getGlobal("wiggle-bias")));
     SelfPrims.fd(1);
-    SelfPrims.setPatchVariable('chemical', (SelfPrims.getPatchVariable('chemical') + 2));
+    SelfPrims.setPatchVariable("chemical", (SelfPrims.getPatchVariable("chemical") + 2));
   }, true);
-  world.topology.diffuse('chemical', 1)
+  world.topology.diffuse("chemical", 1)
   world.patches().ask(function() {
-    SelfPrims.setPatchVariable('chemical', (SelfPrims.getPatchVariable('chemical') * 0.9));
-    SelfPrims.setPatchVariable('pcolor', ColorModel.scaleColor(55, SelfPrims.getPatchVariable('chemical'), 0.1, 3));
+    SelfPrims.setPatchVariable("chemical", (SelfPrims.getPatchVariable("chemical") * 0.9));
+    SelfPrims.setPatchVariable("pcolor", ColorModel.scaleColor(55, SelfPrims.getPatchVariable("chemical"), 0.1, 3));
   }, true);
   world.ticker.tick();
 }
 function turnTowardChemical() {
   var ahead = SelfManager.self().patchAhead(1).projectionBy(function() {
-    return SelfPrims.getPatchVariable('chemical');
+    return SelfPrims.getPatchVariable("chemical");
   });
-  var myright = SelfManager.self().patchRightAndAhead(world.observer.getGlobal('sniff-angle'), 1).projectionBy(function() {
-    return SelfPrims.getPatchVariable('chemical');
+  var myright = SelfManager.self().patchRightAndAhead(world.observer.getGlobal("sniff-angle"), 1).projectionBy(function() {
+    return SelfPrims.getPatchVariable("chemical");
   });
-  var myleft = SelfManager.self().patchLeftAndAhead(world.observer.getGlobal('sniff-angle'), 1).projectionBy(function() {
-    return SelfPrims.getPatchVariable('chemical');
+  var myleft = SelfManager.self().patchLeftAndAhead(world.observer.getGlobal("sniff-angle"), 1).projectionBy(function() {
+    return SelfPrims.getPatchVariable("chemical");
   });
   if ((Prims.gte(myright, ahead) && Prims.gte(myright, myleft))) {
-    SelfPrims.right(world.observer.getGlobal('sniff-angle'));
+    SelfPrims.right(world.observer.getGlobal("sniff-angle"));
   }
   else {
     if (Prims.gte(myleft, ahead)) {
-      SelfPrims.left(world.observer.getGlobal('sniff-angle'));
+      SelfPrims.left(world.observer.getGlobal("sniff-angle"));
     }
   }
 }
-world.observer.setGlobal('population', 400);
-world.observer.setGlobal('sniff-threshold', 1);
-world.observer.setGlobal('sniff-angle', 45);
-world.observer.setGlobal('wiggle-angle', 40);
-world.observer.setGlobal('wiggle-bias', 0);
+world.observer.setGlobal("population", 400);
+world.observer.setGlobal("sniff-threshold", 1);
+world.observer.setGlobal("sniff-angle", 45);
+world.observer.setGlobal("wiggle-angle", 40);
+world.observer.setGlobal("wiggle-bias", 0);

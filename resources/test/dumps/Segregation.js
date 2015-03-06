@@ -8,14 +8,14 @@ var PlotOps   = tortoise_require('engine/plot/plotops');
 modelConfig.plots = [(function() {
   var name    = 'Percent Similar';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('percent', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Percent Similar', 'percent')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Percent Similar', 'percent')(function() { plotManager.plotValue(world.observer.getGlobal('percent-similar'));; }); }); })];
+  var pens    = [new PenBundle.Pen('percent', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Percent Similar', 'percent')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Percent Similar', 'percent')(function() { plotManager.plotValue(world.observer.getGlobal("percent-similar"));; }); }); })];
   var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Percent Similar', undefined)(function() {}); }); };
   var update  = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Percent Similar', undefined)(function() {}); }); };
   return new Plot(name, pens, plotOps, 'time', '%', false, 0.0, 5.0, 0.0, 100.0, setup, update);
 })(), (function() {
   var name    = 'Percent Unhappy';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('percent', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Percent Unhappy', 'percent')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Percent Unhappy', 'percent')(function() { plotManager.plotValue(world.observer.getGlobal('percent-unhappy'));; }); }); })];
+  var pens    = [new PenBundle.Pen('percent', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Percent Unhappy', 'percent')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Percent Unhappy', 'percent')(function() { plotManager.plotValue(world.observer.getGlobal("percent-unhappy"));; }); }); })];
   var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Percent Unhappy', undefined)(function() {}); }); };
   var update  = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Percent Unhappy', undefined)(function() {}); }); };
   return new Plot(name, pens, plotOps, 'time', '%', false, 0.0, 5.0, 0.0, 100.0, setup, update);
@@ -39,44 +39,45 @@ var Updater       = workspace.updater;
 var world         = workspace.world;
 
 var Call           = tortoise_require('util/call');
-var ColorModel     = tortoise_require('util/colormodel');
 var Exception      = tortoise_require('util/exception');
-var Trig           = tortoise_require('util/trig');
-var Type           = tortoise_require('util/typechecker');
+var NLMath         = tortoise_require('util/nlmath');
 var notImplemented = tortoise_require('util/notimplemented');
 
 var Dump      = tortoise_require('engine/dump');
+var ColorModel = tortoise_require('engine/core/colormodel');
 var Link      = tortoise_require('engine/core/link');
 var LinkSet   = tortoise_require('engine/core/linkset');
 var Nobody    = tortoise_require('engine/core/nobody');
 var PatchSet  = tortoise_require('engine/core/patchset');
 var Turtle    = tortoise_require('engine/core/turtle');
 var TurtleSet = tortoise_require('engine/core/turtleset');
+var NLType    = tortoise_require('engine/core/typechecker');
 var Tasks     = tortoise_require('engine/prim/tasks');
 
 var AgentModel = tortoise_require('agentmodel');
+var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
 function setup() {
   world.clearAll();
-  if (Prims.gt(world.observer.getGlobal('number'), world.patches().size())) {
-    notImplemented('user-message', undefined)((Dump("") + Dump("This pond only has room for ") + Dump(world.patches().size()) + Dump(" turtles.")));
+  if (Prims.gt(world.observer.getGlobal("number"), world.patches().size())) {
+    notImplemented('user-message', undefined)((Dump('') + Dump("This pond only has room for ") + Dump(world.patches().size()) + Dump(" turtles.")));
     throw new Exception.StopInterrupt;
   }
-  ListPrims.nOf(world.observer.getGlobal('number'), world.patches()).ask(function() {
-    SelfPrims.sprout(1, 'TURTLES').ask(function() {
-      SelfPrims.setVariable('color', 15);
+  ListPrims.nOf(world.observer.getGlobal("number"), world.patches()).ask(function() {
+    SelfPrims.sprout(1, "TURTLES").ask(function() {
+      SelfPrims.setVariable("color", 15);
     }, true);
   }, true);
-  ListPrims.nOf((world.observer.getGlobal('number') / 2), world.turtles()).ask(function() {
-    SelfPrims.setVariable('color', 55);
+  ListPrims.nOf((world.observer.getGlobal("number") / 2), world.turtles()).ask(function() {
+    SelfPrims.setVariable("color", 55);
   }, true);
   Call(updateVariables);
   world.ticker.reset();
 }
 function go() {
   if (world.turtles().agentAll(function() {
-    return SelfPrims.getVariable('happy?');
+    return SelfPrims.getVariable("happy?");
   })) {
     throw new Exception.StopInterrupt;
   }
@@ -86,7 +87,7 @@ function go() {
 }
 function moveUnhappyTurtles() {
   world.turtles().agentFilter(function() {
-    return !SelfPrims.getVariable('happy?');
+    return !SelfPrims.getVariable("happy?");
   }).ask(function() {
     Call(findNewSpot);
   }, true);
@@ -105,31 +106,31 @@ function updateVariables() {
 }
 function updateTurtles() {
   world.turtles().ask(function() {
-    SelfPrims.setVariable('similar-nearby', Prims.turtlesOn(SelfPrims.getNeighbors()).agentFilter(function() {
-      return Prims.equality(SelfPrims.getVariable('color'), SelfManager.myself().projectionBy(function() {
-        return SelfPrims.getVariable('color');
+    SelfPrims.setVariable("similar-nearby", Prims.turtlesOn(SelfPrims.getNeighbors()).agentFilter(function() {
+      return Prims.equality(SelfPrims.getVariable("color"), SelfManager.myself().projectionBy(function() {
+        return SelfPrims.getVariable("color");
       }));
     }).size());
-    SelfPrims.setVariable('other-nearby', Prims.turtlesOn(SelfPrims.getNeighbors()).agentFilter(function() {
-      return !Prims.equality(SelfPrims.getVariable('color'), SelfManager.myself().projectionBy(function() {
-        return SelfPrims.getVariable('color');
+    SelfPrims.setVariable("other-nearby", Prims.turtlesOn(SelfPrims.getNeighbors()).agentFilter(function() {
+      return !Prims.equality(SelfPrims.getVariable("color"), SelfManager.myself().projectionBy(function() {
+        return SelfPrims.getVariable("color");
       }));
     }).size());
-    SelfPrims.setVariable('total-nearby', (SelfPrims.getVariable('similar-nearby') + SelfPrims.getVariable('other-nearby')));
-    SelfPrims.setVariable('happy?', Prims.gte(SelfPrims.getVariable('similar-nearby'), ((world.observer.getGlobal('%-similar-wanted') * SelfPrims.getVariable('total-nearby')) / 100)));
+    SelfPrims.setVariable("total-nearby", (SelfPrims.getVariable("similar-nearby") + SelfPrims.getVariable("other-nearby")));
+    SelfPrims.setVariable("happy?", Prims.gte(SelfPrims.getVariable("similar-nearby"), ((world.observer.getGlobal("%-similar-wanted") * SelfPrims.getVariable("total-nearby")) / 100)));
   }, true);
 }
 function updateGlobals() {
   var similarNeighbors = ListPrims.sum(world.turtles().projectionBy(function() {
-    return SelfPrims.getVariable('similar-nearby');
+    return SelfPrims.getVariable("similar-nearby");
   }));
   var totalNeighbors = ListPrims.sum(world.turtles().projectionBy(function() {
-    return SelfPrims.getVariable('total-nearby');
+    return SelfPrims.getVariable("total-nearby");
   }));
-  world.observer.setGlobal('percent-similar', ((similarNeighbors / totalNeighbors) * 100));
-  world.observer.setGlobal('percent-unhappy', ((world.turtles().agentFilter(function() {
-    return !SelfPrims.getVariable('happy?');
+  world.observer.setGlobal("percent-similar", ((similarNeighbors / totalNeighbors) * 100));
+  world.observer.setGlobal("percent-unhappy", ((world.turtles().agentFilter(function() {
+    return !SelfPrims.getVariable("happy?");
   }).size() / world.turtles().size()) * 100));
 }
-world.observer.setGlobal('number', 2000);
-world.observer.setGlobal('%-similar-wanted', 30);
+world.observer.setGlobal("number", 2000);
+world.observer.setGlobal("%-similar-wanted", 30);

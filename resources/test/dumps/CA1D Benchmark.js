@@ -25,28 +25,29 @@ var Updater       = workspace.updater;
 var world         = workspace.world;
 
 var Call           = tortoise_require('util/call');
-var ColorModel     = tortoise_require('util/colormodel');
 var Exception      = tortoise_require('util/exception');
-var Trig           = tortoise_require('util/trig');
-var Type           = tortoise_require('util/typechecker');
+var NLMath         = tortoise_require('util/nlmath');
 var notImplemented = tortoise_require('util/notimplemented');
 
 var Dump      = tortoise_require('engine/dump');
+var ColorModel = tortoise_require('engine/core/colormodel');
 var Link      = tortoise_require('engine/core/link');
 var LinkSet   = tortoise_require('engine/core/linkset');
 var Nobody    = tortoise_require('engine/core/nobody');
 var PatchSet  = tortoise_require('engine/core/patchset');
 var Turtle    = tortoise_require('engine/core/turtle');
 var TurtleSet = tortoise_require('engine/core/turtleset');
+var NLType    = tortoise_require('engine/core/typechecker');
 var Tasks     = tortoise_require('engine/prim/tasks');
 
 var AgentModel = tortoise_require('agentmodel');
+var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
 function startup() {
-  world.observer.setGlobal('rules-shown?', false);
-  world.observer.setGlobal('gone?', false);
-  world.observer.setGlobal('old-rule', world.observer.getGlobal('rule'));
+  world.observer.setGlobal("rules-shown?", false);
+  world.observer.setGlobal("gone?", false);
+  world.observer.setGlobal("old-rule", world.observer.getGlobal("rule"));
 }
 function benchmark() {
   Random.setSeed(4378);
@@ -55,68 +56,68 @@ function benchmark() {
   for (var _index_415_421 = 0, _repeatcount_415_421 = StrictMath.floor((10 * world.topology.height)); _index_415_421 < _repeatcount_415_421; _index_415_421++){
     Call(go);
   }
-  world.observer.setGlobal('result', workspace.timer.elapsed());
+  world.observer.setGlobal("result", workspace.timer.elapsed());
 }
 function setupGeneral() {
   world.clearPatches();
   world.turtleManager.clearTurtles();
-  world.observer.setGlobal('row', world.topology.maxPycor);
+  world.observer.setGlobal("row", world.topology.maxPycor);
   Call(refreshRules);
-  world.observer.setGlobal('gone?', false);
-  world.observer.setGlobal('rules-shown?', false);
+  world.observer.setGlobal("gone?", false);
+  world.observer.setGlobal("rules-shown?", false);
 }
 function singleCell() {
   Call(setupGeneral);
   world.patches().agentFilter(function() {
-    return Prims.equality(SelfPrims.getPatchVariable('pycor'), world.observer.getGlobal('row'));
+    return Prims.equality(SelfPrims.getPatchVariable("pycor"), world.observer.getGlobal("row"));
   }).ask(function() {
-    SelfPrims.setPatchVariable('on?', false);
-    SelfPrims.setPatchVariable('pcolor', world.observer.getGlobal('background'));
+    SelfPrims.setPatchVariable("on?", false);
+    SelfPrims.setPatchVariable("pcolor", world.observer.getGlobal("background"));
   }, true);
-  world.getPatchAt(0, world.observer.getGlobal('row')).ask(function() {
-    SelfPrims.setPatchVariable('pcolor', world.observer.getGlobal('foreground'));
-    SelfPrims.setPatchVariable('on?', true);
+  world.getPatchAt(0, world.observer.getGlobal("row")).ask(function() {
+    SelfPrims.setPatchVariable("pcolor", world.observer.getGlobal("foreground"));
+    SelfPrims.setPatchVariable("on?", true);
   }, true);
   world.ticker.reset();
 }
 function setupRandom() {
   Call(setupGeneral);
   world.patches().agentFilter(function() {
-    return Prims.equality(SelfPrims.getPatchVariable('pycor'), world.observer.getGlobal('row'));
+    return Prims.equality(SelfPrims.getPatchVariable("pycor"), world.observer.getGlobal("row"));
   }).ask(function() {
-    SelfPrims.setPatchVariable('on?', Prims.lt(Prims.random(100), world.observer.getGlobal('density')));
+    SelfPrims.setPatchVariable("on?", Prims.lt(Prims.random(100), world.observer.getGlobal("density")));
     Call(colorPatch);
   }, true);
   world.ticker.reset();
 }
 function setupContinue() {
   var on_pList = [];
-  if (!world.observer.getGlobal('gone?')) {
+  if (!world.observer.getGlobal("gone?")) {
     throw new Exception.StopInterrupt;
   }
   on_pList = Tasks.map(Tasks.reporterTask(function() {
     var taskArguments = arguments;
     return taskArguments[0].projectionBy(function() {
-      return SelfPrims.getPatchVariable('on?');
+      return SelfPrims.getPatchVariable("on?");
     });
   }), ListPrims.sort(world.patches().agentFilter(function() {
-    return Prims.equality(SelfPrims.getPatchVariable('pycor'), world.observer.getGlobal('row'));
+    return Prims.equality(SelfPrims.getPatchVariable("pycor"), world.observer.getGlobal("row"));
   })));
   Call(setupGeneral);
   world.patches().agentFilter(function() {
-    return Prims.equality(SelfPrims.getPatchVariable('pycor'), world.observer.getGlobal('row'));
+    return Prims.equality(SelfPrims.getPatchVariable("pycor"), world.observer.getGlobal("row"));
   }).ask(function() {
-    SelfPrims.setPatchVariable('on?', ListPrims.item((SelfPrims.getPatchVariable('pxcor') + world.topology.maxPxcor), on_pList));
+    SelfPrims.setPatchVariable("on?", ListPrims.item((SelfPrims.getPatchVariable("pxcor") + world.topology.maxPxcor), on_pList));
     Call(colorPatch);
   }, true);
-  world.observer.setGlobal('gone?', true);
+  world.observer.setGlobal("gone?", true);
 }
 function go() {
-  if (world.observer.getGlobal('rules-shown?')) {
+  if (world.observer.getGlobal("rules-shown?")) {
     throw new Exception.StopInterrupt;
   }
-  if (Prims.equality(world.observer.getGlobal('row'), world.topology.minPycor)) {
-    if (world.observer.getGlobal('auto-continue?')) {
+  if (Prims.equality(world.observer.getGlobal("row"), world.topology.minPycor)) {
+    if (world.observer.getGlobal("auto-continue?")) {
       notImplemented('display', undefined)();
       Call(setupContinue);
     }
@@ -125,92 +126,92 @@ function go() {
     }
   }
   world.patches().agentFilter(function() {
-    return Prims.equality(SelfPrims.getPatchVariable('pycor'), world.observer.getGlobal('row'));
+    return Prims.equality(SelfPrims.getPatchVariable("pycor"), world.observer.getGlobal("row"));
   }).ask(function() {
     Call(doRule);
   }, true);
-  world.observer.setGlobal('row', (world.observer.getGlobal('row') - 1));
+  world.observer.setGlobal("row", (world.observer.getGlobal("row") - 1));
   world.patches().agentFilter(function() {
-    return Prims.equality(SelfPrims.getPatchVariable('pycor'), world.observer.getGlobal('row'));
+    return Prims.equality(SelfPrims.getPatchVariable("pycor"), world.observer.getGlobal("row"));
   }).ask(function() {
     Call(colorPatch);
   }, true);
-  world.observer.setGlobal('gone?', true);
+  world.observer.setGlobal("gone?", true);
   world.ticker.tick();
 }
 function doRule() {
   var leftOn_p = SelfManager.self().patchAt(-1, 0).projectionBy(function() {
-    return SelfPrims.getPatchVariable('on?');
+    return SelfPrims.getPatchVariable("on?");
   });
   var rightOn_p = SelfManager.self().patchAt(1, 0).projectionBy(function() {
-    return SelfPrims.getPatchVariable('on?');
+    return SelfPrims.getPatchVariable("on?");
   });
-  var newValue = ((((((((((world.observer.getGlobal('iii') && leftOn_p) && SelfPrims.getPatchVariable('on?')) && rightOn_p) || (((world.observer.getGlobal('iio') && leftOn_p) && SelfPrims.getPatchVariable('on?')) && !rightOn_p)) || (((world.observer.getGlobal('ioi') && leftOn_p) && !SelfPrims.getPatchVariable('on?')) && rightOn_p)) || (((world.observer.getGlobal('ioo') && leftOn_p) && !SelfPrims.getPatchVariable('on?')) && !rightOn_p)) || (((world.observer.getGlobal('oii') && !leftOn_p) && SelfPrims.getPatchVariable('on?')) && rightOn_p)) || (((world.observer.getGlobal('oio') && !leftOn_p) && SelfPrims.getPatchVariable('on?')) && !rightOn_p)) || (((world.observer.getGlobal('ooi') && !leftOn_p) && !SelfPrims.getPatchVariable('on?')) && rightOn_p)) || (((world.observer.getGlobal('ooo') && !leftOn_p) && !SelfPrims.getPatchVariable('on?')) && !rightOn_p));
+  var newValue = ((((((((((world.observer.getGlobal("iii") && leftOn_p) && SelfPrims.getPatchVariable("on?")) && rightOn_p) || (((world.observer.getGlobal("iio") && leftOn_p) && SelfPrims.getPatchVariable("on?")) && !rightOn_p)) || (((world.observer.getGlobal("ioi") && leftOn_p) && !SelfPrims.getPatchVariable("on?")) && rightOn_p)) || (((world.observer.getGlobal("ioo") && leftOn_p) && !SelfPrims.getPatchVariable("on?")) && !rightOn_p)) || (((world.observer.getGlobal("oii") && !leftOn_p) && SelfPrims.getPatchVariable("on?")) && rightOn_p)) || (((world.observer.getGlobal("oio") && !leftOn_p) && SelfPrims.getPatchVariable("on?")) && !rightOn_p)) || (((world.observer.getGlobal("ooi") && !leftOn_p) && !SelfPrims.getPatchVariable("on?")) && rightOn_p)) || (((world.observer.getGlobal("ooo") && !leftOn_p) && !SelfPrims.getPatchVariable("on?")) && !rightOn_p));
   SelfManager.self().patchAt(0, -1).ask(function() {
-    SelfPrims.setPatchVariable('on?', newValue);
+    SelfPrims.setPatchVariable("on?", newValue);
   }, true);
 }
 function colorPatch() {
-  if (SelfPrims.getPatchVariable('on?')) {
-    SelfPrims.setPatchVariable('pcolor', world.observer.getGlobal('foreground'));
+  if (SelfPrims.getPatchVariable("on?")) {
+    SelfPrims.setPatchVariable("pcolor", world.observer.getGlobal("foreground"));
   }
   else {
-    SelfPrims.setPatchVariable('pcolor', world.observer.getGlobal('background'));
+    SelfPrims.setPatchVariable("pcolor", world.observer.getGlobal("background"));
   }
 }
 function bindigit(number, powerOfTwo) {
   if (Prims.equality(powerOfTwo, 0)) {
-    return Prims.mod(StrictMath.floor(number), 2);
+    return NLMath.mod(NLMath.floor(number), 2);
   }
   else {
-    return Call(bindigit, (StrictMath.floor(number) / 2), (powerOfTwo - 1));
+    return Call(bindigit, (NLMath.floor(number) / 2), (powerOfTwo - 1));
   }
 }
 function refreshRules() {
-  if (Prims.equality(world.observer.getGlobal('rule'), world.observer.getGlobal('old-rule'))) {
-    if (!Prims.equality(world.observer.getGlobal('rule'), Call(calculateRule))) {
-      world.observer.setGlobal('rule', Call(calculateRule));
+  if (Prims.equality(world.observer.getGlobal("rule"), world.observer.getGlobal("old-rule"))) {
+    if (!Prims.equality(world.observer.getGlobal("rule"), Call(calculateRule))) {
+      world.observer.setGlobal("rule", Call(calculateRule));
     }
   }
   else {
     Call(extrapolateSwitches);
   }
-  world.observer.setGlobal('old-rule', world.observer.getGlobal('rule'));
+  world.observer.setGlobal("old-rule", world.observer.getGlobal("rule"));
 }
 function extrapolateSwitches() {
-  world.observer.setGlobal('ooo', Prims.equality(Call(bindigit, world.observer.getGlobal('rule'), 0), 1));
-  world.observer.setGlobal('ooi', Prims.equality(Call(bindigit, world.observer.getGlobal('rule'), 1), 1));
-  world.observer.setGlobal('oio', Prims.equality(Call(bindigit, world.observer.getGlobal('rule'), 2), 1));
-  world.observer.setGlobal('oii', Prims.equality(Call(bindigit, world.observer.getGlobal('rule'), 3), 1));
-  world.observer.setGlobal('ioo', Prims.equality(Call(bindigit, world.observer.getGlobal('rule'), 4), 1));
-  world.observer.setGlobal('ioi', Prims.equality(Call(bindigit, world.observer.getGlobal('rule'), 5), 1));
-  world.observer.setGlobal('iio', Prims.equality(Call(bindigit, world.observer.getGlobal('rule'), 6), 1));
-  world.observer.setGlobal('iii', Prims.equality(Call(bindigit, world.observer.getGlobal('rule'), 7), 1));
+  world.observer.setGlobal("ooo", Prims.equality(Call(bindigit, world.observer.getGlobal("rule"), 0), 1));
+  world.observer.setGlobal("ooi", Prims.equality(Call(bindigit, world.observer.getGlobal("rule"), 1), 1));
+  world.observer.setGlobal("oio", Prims.equality(Call(bindigit, world.observer.getGlobal("rule"), 2), 1));
+  world.observer.setGlobal("oii", Prims.equality(Call(bindigit, world.observer.getGlobal("rule"), 3), 1));
+  world.observer.setGlobal("ioo", Prims.equality(Call(bindigit, world.observer.getGlobal("rule"), 4), 1));
+  world.observer.setGlobal("ioi", Prims.equality(Call(bindigit, world.observer.getGlobal("rule"), 5), 1));
+  world.observer.setGlobal("iio", Prims.equality(Call(bindigit, world.observer.getGlobal("rule"), 6), 1));
+  world.observer.setGlobal("iii", Prims.equality(Call(bindigit, world.observer.getGlobal("rule"), 7), 1));
 }
 function calculateRule() {
   var rresult = 0;
-  if (world.observer.getGlobal('ooo')) {
+  if (world.observer.getGlobal("ooo")) {
     rresult = (rresult + 1);
   }
-  if (world.observer.getGlobal('ooi')) {
+  if (world.observer.getGlobal("ooi")) {
     rresult = (rresult + 2);
   }
-  if (world.observer.getGlobal('oio')) {
+  if (world.observer.getGlobal("oio")) {
     rresult = (rresult + 4);
   }
-  if (world.observer.getGlobal('oii')) {
+  if (world.observer.getGlobal("oii")) {
     rresult = (rresult + 8);
   }
-  if (world.observer.getGlobal('ioo')) {
+  if (world.observer.getGlobal("ioo")) {
     rresult = (rresult + 16);
   }
-  if (world.observer.getGlobal('ioi')) {
+  if (world.observer.getGlobal("ioi")) {
     rresult = (rresult + 32);
   }
-  if (world.observer.getGlobal('iio')) {
+  if (world.observer.getGlobal("iio")) {
     rresult = (rresult + 64);
   }
-  if (world.observer.getGlobal('iii')) {
+  if (world.observer.getGlobal("iii")) {
     rresult = (rresult + 128);
   }
   return rresult;
@@ -219,67 +220,67 @@ function showRules() {
   Call(setupGeneral);
   var rules = Call(listRules);
   world.patches().agentFilter(function() {
-    return Prims.gt(SelfPrims.getPatchVariable('pycor'), (world.topology.maxPycor - 5));
+    return Prims.gt(SelfPrims.getPatchVariable("pycor"), (world.topology.maxPycor - 5));
   }).ask(function() {
-    SelfPrims.setPatchVariable('pcolor', 5);
+    SelfPrims.setPatchVariable("pcolor", 5);
   }, true);
   world.patches().agentFilter(function() {
-    return (Prims.equality(SelfPrims.getPatchVariable('pycor'), world.topology.maxPycor) && Prims.equality(Prims.mod((SelfPrims.getPatchVariable('pxcor') + 1), StrictMath.floor((world.topology.width / 8))), 0));
+    return (Prims.equality(SelfPrims.getPatchVariable("pycor"), world.topology.maxPycor) && Prims.equality(NLMath.mod((SelfPrims.getPatchVariable("pxcor") + 1), NLMath.floor((world.topology.width / 8))), 0));
   }).ask(function() {
-    SelfPrims.sprout(1, 'TURTLES').ask(function() {
-      SelfPrims.setVariable('heading', 270);
+    SelfPrims.sprout(1, "TURTLES").ask(function() {
+      SelfPrims.setVariable("heading", 270);
       SelfPrims.fd(18);
-      Call(printBlock, ListPrims.item(0, ListPrims.item(SelfPrims.getVariable('who'), rules)));
+      Call(printBlock, ListPrims.item(0, ListPrims.item(SelfPrims.getVariable("who"), rules)));
       SelfPrims.fd(2);
-      Call(printBlock, ListPrims.item(1, ListPrims.item(SelfPrims.getVariable('who'), rules)));
+      Call(printBlock, ListPrims.item(1, ListPrims.item(SelfPrims.getVariable("who"), rules)));
       SelfPrims.fd(2);
-      Call(printBlock, ListPrims.item(2, ListPrims.item(SelfPrims.getVariable('who'), rules)));
+      Call(printBlock, ListPrims.item(2, ListPrims.item(SelfPrims.getVariable("who"), rules)));
       SelfPrims.bk(2);
-      SelfPrims.setVariable('heading', 180);
+      SelfPrims.setVariable("heading", 180);
       SelfPrims.fd(2);
-      SelfPrims.setVariable('heading', 90);
-      Call(printBlock, ListPrims.item(3, ListPrims.item(SelfPrims.getVariable('who'), rules)));
+      SelfPrims.setVariable("heading", 90);
+      Call(printBlock, ListPrims.item(3, ListPrims.item(SelfPrims.getVariable("who"), rules)));
       SelfPrims.die();
     }, true);
   }, true);
-  world.observer.setGlobal('rules-shown?', true);
+  world.observer.setGlobal("rules-shown?", true);
 }
 function printBlock(state) {
   if (state) {
-    SelfPrims.setVariable('color', world.observer.getGlobal('foreground'));
+    SelfPrims.setVariable("color", world.observer.getGlobal("foreground"));
   }
   else {
-    SelfPrims.setVariable('color', world.observer.getGlobal('background'));
+    SelfPrims.setVariable("color", world.observer.getGlobal("background"));
   }
-  SelfPrims.setVariable('heading', 90);
+  SelfPrims.setVariable("heading", 90);
   for (var _index_5599_5605 = 0, _repeatcount_5599_5605 = StrictMath.floor(4); _index_5599_5605 < _repeatcount_5599_5605; _index_5599_5605++){
-    SelfPrims.setPatchVariable('pcolor', SelfPrims.getVariable('color'));
+    SelfPrims.setPatchVariable("pcolor", SelfPrims.getVariable("color"));
     SelfPrims.right(90);
     SelfPrims.fd(1);
   }
 }
 function listRules() {
   var rules = [];
-  rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal('ooo'), [false, false, false]), rules);
-  rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal('ooi'), [false, false, true]), rules);
-  rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal('oio'), [false, true, false]), rules);
-  rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal('oii'), [false, true, true]), rules);
-  rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal('ioo'), [true, false, false]), rules);
-  rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal('ioi'), [true, false, true]), rules);
-  rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal('iio'), [true, true, false]), rules);
-  rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal('iii'), [true, true, true]), rules);
+  rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("ooo"), [false, false, false]), rules);
+  rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("ooi"), [false, false, true]), rules);
+  rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("oio"), [false, true, false]), rules);
+  rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("oii"), [false, true, true]), rules);
+  rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("ioo"), [true, false, false]), rules);
+  rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("ioi"), [true, false, true]), rules);
+  rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("iio"), [true, true, false]), rules);
+  rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("iii"), [true, true, true]), rules);
   return rules;
 }
-world.observer.setGlobal('ooo', true);
-world.observer.setGlobal('ooi', false);
-world.observer.setGlobal('oio', false);
-world.observer.setGlobal('oii', true);
-world.observer.setGlobal('ioo', false);
-world.observer.setGlobal('ioi', true);
-world.observer.setGlobal('iio', true);
-world.observer.setGlobal('iii', false);
-world.observer.setGlobal('foreground', 55);
-world.observer.setGlobal('background', 0);
-world.observer.setGlobal('rule', 105);
-world.observer.setGlobal('density', 10);
-world.observer.setGlobal('auto-continue?', true);
+world.observer.setGlobal("ooo", true);
+world.observer.setGlobal("ooi", false);
+world.observer.setGlobal("oio", false);
+world.observer.setGlobal("oii", true);
+world.observer.setGlobal("ioo", false);
+world.observer.setGlobal("ioi", true);
+world.observer.setGlobal("iio", true);
+world.observer.setGlobal("iii", false);
+world.observer.setGlobal("foreground", 55);
+world.observer.setGlobal("background", 0);
+world.observer.setGlobal("rule", 105);
+world.observer.setGlobal("density", 10);
+world.observer.setGlobal("auto-continue?", true);

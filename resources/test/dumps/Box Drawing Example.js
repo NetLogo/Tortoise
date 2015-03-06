@@ -25,57 +25,58 @@ var Updater       = workspace.updater;
 var world         = workspace.world;
 
 var Call           = tortoise_require('util/call');
-var ColorModel     = tortoise_require('util/colormodel');
 var Exception      = tortoise_require('util/exception');
-var Trig           = tortoise_require('util/trig');
-var Type           = tortoise_require('util/typechecker');
+var NLMath         = tortoise_require('util/nlmath');
 var notImplemented = tortoise_require('util/notimplemented');
 
 var Dump      = tortoise_require('engine/dump');
+var ColorModel = tortoise_require('engine/core/colormodel');
 var Link      = tortoise_require('engine/core/link');
 var LinkSet   = tortoise_require('engine/core/linkset');
 var Nobody    = tortoise_require('engine/core/nobody');
 var PatchSet  = tortoise_require('engine/core/patchset');
 var Turtle    = tortoise_require('engine/core/turtle');
 var TurtleSet = tortoise_require('engine/core/turtleset');
+var NLType    = tortoise_require('engine/core/typechecker');
 var Tasks     = tortoise_require('engine/prim/tasks');
 
 var AgentModel = tortoise_require('agentmodel');
+var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
 function setupCorner() {
   world.clearAll();
   world.patches().ask(function() {
-    if (((Prims.equality(SelfPrims.getPatchVariable('pxcor'), 0) && Prims.gte(SelfPrims.getPatchVariable('pycor'), 0)) && Prims.lte(SelfPrims.getPatchVariable('pycor'), world.observer.getGlobal('edge')))) {
-      SelfPrims.setPatchVariable('pcolor', 15);
+    if (((Prims.equality(SelfPrims.getPatchVariable("pxcor"), 0) && Prims.gte(SelfPrims.getPatchVariable("pycor"), 0)) && Prims.lte(SelfPrims.getPatchVariable("pycor"), world.observer.getGlobal("edge")))) {
+      SelfPrims.setPatchVariable("pcolor", 15);
     }
-    if (((Prims.equality(SelfPrims.getPatchVariable('pxcor'), world.observer.getGlobal('edge')) && Prims.gte(SelfPrims.getPatchVariable('pycor'), 0)) && Prims.lte(SelfPrims.getPatchVariable('pycor'), world.observer.getGlobal('edge')))) {
-      SelfPrims.setPatchVariable('pcolor', 15);
+    if (((Prims.equality(SelfPrims.getPatchVariable("pxcor"), world.observer.getGlobal("edge")) && Prims.gte(SelfPrims.getPatchVariable("pycor"), 0)) && Prims.lte(SelfPrims.getPatchVariable("pycor"), world.observer.getGlobal("edge")))) {
+      SelfPrims.setPatchVariable("pcolor", 15);
     }
-    if (((Prims.equality(SelfPrims.getPatchVariable('pycor'), 0) && Prims.gte(SelfPrims.getPatchVariable('pxcor'), 0)) && Prims.lte(SelfPrims.getPatchVariable('pxcor'), world.observer.getGlobal('edge')))) {
-      SelfPrims.setPatchVariable('pcolor', 15);
+    if (((Prims.equality(SelfPrims.getPatchVariable("pycor"), 0) && Prims.gte(SelfPrims.getPatchVariable("pxcor"), 0)) && Prims.lte(SelfPrims.getPatchVariable("pxcor"), world.observer.getGlobal("edge")))) {
+      SelfPrims.setPatchVariable("pcolor", 15);
     }
-    if (((Prims.equality(SelfPrims.getPatchVariable('pycor'), world.observer.getGlobal('edge')) && Prims.gte(SelfPrims.getPatchVariable('pxcor'), 0)) && Prims.lte(SelfPrims.getPatchVariable('pxcor'), world.observer.getGlobal('edge')))) {
-      SelfPrims.setPatchVariable('pcolor', 15);
+    if (((Prims.equality(SelfPrims.getPatchVariable("pycor"), world.observer.getGlobal("edge")) && Prims.gte(SelfPrims.getPatchVariable("pxcor"), 0)) && Prims.lte(SelfPrims.getPatchVariable("pxcor"), world.observer.getGlobal("edge")))) {
+      SelfPrims.setPatchVariable("pcolor", 15);
     }
   }, true);
 }
 function setupCenter() {
   world.clearAll();
-  world.observer.setGlobal('halfedge', Prims.toInt((world.observer.getGlobal('edge') / 2)));
+  world.observer.setGlobal("halfedge", NLMath.toInt((world.observer.getGlobal("edge") / 2)));
   world.patches().ask(function() {
-    if (((Prims.equality(SelfPrims.getPatchVariable('pxcor'),  -world.observer.getGlobal('halfedge')) && Prims.gte(SelfPrims.getPatchVariable('pycor'),  -world.observer.getGlobal('halfedge'))) && Prims.lte(SelfPrims.getPatchVariable('pycor'), (0 + world.observer.getGlobal('halfedge'))))) {
-      SelfPrims.setPatchVariable('pcolor', 105);
+    if (((Prims.equality(SelfPrims.getPatchVariable("pxcor"),  -world.observer.getGlobal("halfedge")) && Prims.gte(SelfPrims.getPatchVariable("pycor"),  -world.observer.getGlobal("halfedge"))) && Prims.lte(SelfPrims.getPatchVariable("pycor"), (0 + world.observer.getGlobal("halfedge"))))) {
+      SelfPrims.setPatchVariable("pcolor", 105);
     }
-    if (((Prims.equality(SelfPrims.getPatchVariable('pxcor'), (0 + world.observer.getGlobal('halfedge'))) && Prims.gte(SelfPrims.getPatchVariable('pycor'),  -world.observer.getGlobal('halfedge'))) && Prims.lte(SelfPrims.getPatchVariable('pycor'), (0 + world.observer.getGlobal('halfedge'))))) {
-      SelfPrims.setPatchVariable('pcolor', 105);
+    if (((Prims.equality(SelfPrims.getPatchVariable("pxcor"), (0 + world.observer.getGlobal("halfedge"))) && Prims.gte(SelfPrims.getPatchVariable("pycor"),  -world.observer.getGlobal("halfedge"))) && Prims.lte(SelfPrims.getPatchVariable("pycor"), (0 + world.observer.getGlobal("halfedge"))))) {
+      SelfPrims.setPatchVariable("pcolor", 105);
     }
-    if (((Prims.equality(SelfPrims.getPatchVariable('pycor'),  -world.observer.getGlobal('halfedge')) && Prims.gte(SelfPrims.getPatchVariable('pxcor'),  -world.observer.getGlobal('halfedge'))) && Prims.lte(SelfPrims.getPatchVariable('pxcor'), (0 + world.observer.getGlobal('halfedge'))))) {
-      SelfPrims.setPatchVariable('pcolor', 105);
+    if (((Prims.equality(SelfPrims.getPatchVariable("pycor"),  -world.observer.getGlobal("halfedge")) && Prims.gte(SelfPrims.getPatchVariable("pxcor"),  -world.observer.getGlobal("halfedge"))) && Prims.lte(SelfPrims.getPatchVariable("pxcor"), (0 + world.observer.getGlobal("halfedge"))))) {
+      SelfPrims.setPatchVariable("pcolor", 105);
     }
-    if (((Prims.equality(SelfPrims.getPatchVariable('pycor'), (0 + world.observer.getGlobal('halfedge'))) && Prims.gte(SelfPrims.getPatchVariable('pxcor'),  -world.observer.getGlobal('halfedge'))) && Prims.lte(SelfPrims.getPatchVariable('pxcor'), (0 + world.observer.getGlobal('halfedge'))))) {
-      SelfPrims.setPatchVariable('pcolor', 105);
+    if (((Prims.equality(SelfPrims.getPatchVariable("pycor"), (0 + world.observer.getGlobal("halfedge"))) && Prims.gte(SelfPrims.getPatchVariable("pxcor"),  -world.observer.getGlobal("halfedge"))) && Prims.lte(SelfPrims.getPatchVariable("pxcor"), (0 + world.observer.getGlobal("halfedge"))))) {
+      SelfPrims.setPatchVariable("pcolor", 105);
     }
   }, true);
 }
-world.observer.setGlobal('edge', 8);
+world.observer.setGlobal("edge", 8);

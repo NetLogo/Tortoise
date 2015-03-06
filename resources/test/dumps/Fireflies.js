@@ -9,9 +9,9 @@ modelConfig.plots = [(function() {
   var name    = 'Flashing Fireflies';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('flashing', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Flashing Fireflies', 'flashing')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Flashing Fireflies', 'flashing')(function() { plotManager.plotValue(world.turtles().agentFilter(function() {
-  return Prims.equality(SelfPrims.getVariable('color'), 45);
+  return Prims.equality(SelfPrims.getVariable("color"), 45);
 }).size());; }); }); })];
-  var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Flashing Fireflies', undefined)(function() { plotManager.setYRange(0, world.observer.getGlobal('number'));; }); }); };
+  var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Flashing Fireflies', undefined)(function() { plotManager.setYRange(0, world.observer.getGlobal("number"));; }); }); };
   var update  = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Flashing Fireflies', undefined)(function() {}); }); };
   return new Plot(name, pens, plotOps, 'Time', 'Number', false, 0.0, 100.0, 0.0, 1500.0, setup, update);
 })()];
@@ -34,39 +34,40 @@ var Updater       = workspace.updater;
 var world         = workspace.world;
 
 var Call           = tortoise_require('util/call');
-var ColorModel     = tortoise_require('util/colormodel');
 var Exception      = tortoise_require('util/exception');
-var Trig           = tortoise_require('util/trig');
-var Type           = tortoise_require('util/typechecker');
+var NLMath         = tortoise_require('util/nlmath');
 var notImplemented = tortoise_require('util/notimplemented');
 
 var Dump      = tortoise_require('engine/dump');
+var ColorModel = tortoise_require('engine/core/colormodel');
 var Link      = tortoise_require('engine/core/link');
 var LinkSet   = tortoise_require('engine/core/linkset');
 var Nobody    = tortoise_require('engine/core/nobody');
 var PatchSet  = tortoise_require('engine/core/patchset');
 var Turtle    = tortoise_require('engine/core/turtle');
 var TurtleSet = tortoise_require('engine/core/turtleset');
+var NLType    = tortoise_require('engine/core/typechecker');
 var Tasks     = tortoise_require('engine/prim/tasks');
 
 var AgentModel = tortoise_require('agentmodel');
+var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
 function setup() {
   world.clearAll();
-  world.turtleManager.createTurtles(world.observer.getGlobal('number'), '').ask(function() {
+  world.turtleManager.createTurtles(world.observer.getGlobal("number"), "").ask(function() {
     SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
-    SelfPrims.setVariable('clock', Prims.random(StrictMath.round(world.observer.getGlobal('cycle-length'))));
-    SelfPrims.setVariable('threshold', world.observer.getGlobal('flash-length'));
-    if (Prims.equality(world.observer.getGlobal('strategy'), "delay")) {
-      SelfPrims.setVariable('reset-level', SelfPrims.getVariable('threshold'));
-      SelfPrims.setVariable('window', -1);
+    SelfPrims.setVariable("clock", Prims.random(NLMath.round(world.observer.getGlobal("cycle-length"))));
+    SelfPrims.setVariable("threshold", world.observer.getGlobal("flash-length"));
+    if (Prims.equality(world.observer.getGlobal("strategy"), "delay")) {
+      SelfPrims.setVariable("reset-level", SelfPrims.getVariable("threshold"));
+      SelfPrims.setVariable("window", -1);
     }
     else {
-      SelfPrims.setVariable('reset-level', 0);
-      SelfPrims.setVariable('window', (SelfPrims.getVariable('threshold') + 1));
+      SelfPrims.setVariable("reset-level", 0);
+      SelfPrims.setVariable("window", (SelfPrims.getVariable("threshold") + 1));
     }
-    SelfPrims.setVariable('size', 2);
+    SelfPrims.setVariable("size", 2);
     Call(recolor);
   }, true);
   world.ticker.reset();
@@ -75,7 +76,7 @@ function go() {
   world.turtles().ask(function() {
     Call(move);
     Call(incrementClock);
-    if ((Prims.gt(SelfPrims.getVariable('clock'), SelfPrims.getVariable('window')) && Prims.gte(SelfPrims.getVariable('clock'), SelfPrims.getVariable('threshold')))) {
+    if ((Prims.gt(SelfPrims.getVariable("clock"), SelfPrims.getVariable("window")) && Prims.gte(SelfPrims.getVariable("clock"), SelfPrims.getVariable("threshold")))) {
       Call(look);
     }
   }, true);
@@ -85,13 +86,13 @@ function go() {
   world.ticker.tick();
 }
 function recolor() {
-  if (Prims.lt(SelfPrims.getVariable('clock'), SelfPrims.getVariable('threshold'))) {
+  if (Prims.lt(SelfPrims.getVariable("clock"), SelfPrims.getVariable("threshold"))) {
     SelfManager.self().hideTurtle(false);;
-    SelfPrims.setVariable('color', 45);
+    SelfPrims.setVariable("color", 45);
   }
   else {
-    SelfPrims.setVariable('color', (5 - 2));
-    if (world.observer.getGlobal('show-dark-fireflies?')) {
+    SelfPrims.setVariable("color", (5 - 2));
+    if (world.observer.getGlobal("show-dark-fireflies?")) {
       SelfManager.self().hideTurtle(false);;
     }
     else {
@@ -104,21 +105,21 @@ function move() {
   SelfPrims.fd(1);
 }
 function incrementClock() {
-  SelfPrims.setVariable('clock', (SelfPrims.getVariable('clock') + 1));
-  if (Prims.equality(SelfPrims.getVariable('clock'), world.observer.getGlobal('cycle-length'))) {
-    SelfPrims.setVariable('clock', 0);
+  SelfPrims.setVariable("clock", (SelfPrims.getVariable("clock") + 1));
+  if (Prims.equality(SelfPrims.getVariable("clock"), world.observer.getGlobal("cycle-length"))) {
+    SelfPrims.setVariable("clock", 0);
   }
 }
 function look() {
   if (Prims.gte(SelfManager.self().inRadius(world.turtles(), 1).agentFilter(function() {
-    return Prims.equality(SelfPrims.getVariable('color'), 45);
-  }).size(), world.observer.getGlobal('flashes-to-reset'))) {
-    SelfPrims.setVariable('clock', SelfPrims.getVariable('reset-level'));
+    return Prims.equality(SelfPrims.getVariable("color"), 45);
+  }).size(), world.observer.getGlobal("flashes-to-reset"))) {
+    SelfPrims.setVariable("clock", SelfPrims.getVariable("reset-level"));
   }
 }
-world.observer.setGlobal('number', 1500);
-world.observer.setGlobal('cycle-length', 10);
-world.observer.setGlobal('flash-length', 1);
-world.observer.setGlobal('flashes-to-reset', 1);
-world.observer.setGlobal('show-dark-fireflies?', true);
-world.observer.setGlobal('strategy', "delay");
+world.observer.setGlobal("number", 1500);
+world.observer.setGlobal("cycle-length", 10);
+world.observer.setGlobal("flash-length", 1);
+world.observer.setGlobal("flashes-to-reset", 1);
+world.observer.setGlobal("show-dark-fireflies?", true);
+world.observer.setGlobal("strategy", "delay");

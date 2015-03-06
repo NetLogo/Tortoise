@@ -25,66 +25,67 @@ var Updater       = workspace.updater;
 var world         = workspace.world;
 
 var Call           = tortoise_require('util/call');
-var ColorModel     = tortoise_require('util/colormodel');
 var Exception      = tortoise_require('util/exception');
-var Trig           = tortoise_require('util/trig');
-var Type           = tortoise_require('util/typechecker');
+var NLMath         = tortoise_require('util/nlmath');
 var notImplemented = tortoise_require('util/notimplemented');
 
 var Dump      = tortoise_require('engine/dump');
+var ColorModel = tortoise_require('engine/core/colormodel');
 var Link      = tortoise_require('engine/core/link');
 var LinkSet   = tortoise_require('engine/core/linkset');
 var Nobody    = tortoise_require('engine/core/nobody');
 var PatchSet  = tortoise_require('engine/core/patchset');
 var Turtle    = tortoise_require('engine/core/turtle');
 var TurtleSet = tortoise_require('engine/core/turtleset');
+var NLType    = tortoise_require('engine/core/typechecker');
 var Tasks     = tortoise_require('engine/prim/tasks');
 
 var AgentModel = tortoise_require('agentmodel');
+var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
 function setup() {
   world.clearAll();
-  world.turtleManager.createTurtles(1, '').ask(function() {
-    SelfPrims.setVariable('shape', "line");
-    SelfPrims.setVariable('color', world.observer.getGlobal('init-color'));
-    SelfPrims.setXY(world.observer.getGlobal('init-x'), world.observer.getGlobal('init-y'));
-    SelfPrims.setVariable('heading', 0);
+  world.turtleManager.createTurtles(1, "").ask(function() {
+    SelfPrims.setVariable("shape", "line");
+    SelfPrims.setVariable("color", world.observer.getGlobal("init-color"));
+    SelfPrims.setXY(world.observer.getGlobal("init-x"), world.observer.getGlobal("init-y"));
+    SelfPrims.setVariable("heading", 0);
     SelfManager.self().penManager.lowerPen();
   }, true);
   world.ticker.reset();
 }
 function go() {
   world.turtles().ask(function() {
-    SelfPrims.setVariable('new?', false);
+    SelfPrims.setVariable("new?", false);
     SelfManager.self().penManager.lowerPen();
   }, true);
   world.turtles().agentFilter(function() {
-    return !SelfPrims.getVariable('new?');
+    return !SelfPrims.getVariable("new?");
   }).ask(function() {
     SelfPrims.fd(4);
     SelfPrims.right(15);
     SelfPrims.fd(8);
-    SelfPrims.hatch(1, '').ask(function() {
-      SelfPrims.setVariable('new?', true);
+    SelfPrims.hatch(1, "").ask(function() {
+      SelfPrims.setVariable("new?", true);
     }, true);
-    SelfPrims.setVariable('color', (SelfPrims.getVariable('color') + world.observer.getGlobal('color-inc')));
+    SelfPrims.setVariable("color", (SelfPrims.getVariable("color") + world.observer.getGlobal("color-inc")));
     SelfPrims.right(180);
     SelfPrims.jump(8);
     SelfPrims.right(180);
     SelfPrims.left(15);
     SelfPrims.fd(4);
     SelfPrims.left(15);
-    SelfPrims.hatch(1, '').ask(function() {
-      SelfPrims.setVariable('new?', true);
+    SelfPrims.hatch(1, "").ask(function() {
+      SelfPrims.setVariable("new?", true);
     }, true);
-    SelfPrims.setVariable('color', (SelfPrims.getVariable('color') + world.observer.getGlobal('color-inc')));
+    SelfPrims.setVariable("color", (SelfPrims.getVariable("color") + world.observer.getGlobal("color-inc")));
     SelfPrims.fd(8);
     SelfPrims.die();
   }, true);
   world.ticker.tick();
 }
-world.observer.setGlobal('color-inc', 7);
-world.observer.setGlobal('init-color', 45);
-world.observer.setGlobal('init-x', 0);
-world.observer.setGlobal('init-y', -50);
+world.observer.setGlobal("color-inc", 7);
+world.observer.setGlobal("init-color", 45);
+world.observer.setGlobal("init-x", 0);
+world.observer.setGlobal("init-y", -50);

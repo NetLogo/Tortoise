@@ -25,22 +25,23 @@ var Updater       = workspace.updater;
 var world         = workspace.world;
 
 var Call           = tortoise_require('util/call');
-var ColorModel     = tortoise_require('util/colormodel');
 var Exception      = tortoise_require('util/exception');
-var Trig           = tortoise_require('util/trig');
-var Type           = tortoise_require('util/typechecker');
+var NLMath         = tortoise_require('util/nlmath');
 var notImplemented = tortoise_require('util/notimplemented');
 
 var Dump      = tortoise_require('engine/dump');
+var ColorModel = tortoise_require('engine/core/colormodel');
 var Link      = tortoise_require('engine/core/link');
 var LinkSet   = tortoise_require('engine/core/linkset');
 var Nobody    = tortoise_require('engine/core/nobody');
 var PatchSet  = tortoise_require('engine/core/patchset');
 var Turtle    = tortoise_require('engine/core/turtle');
 var TurtleSet = tortoise_require('engine/core/turtleset');
+var NLType    = tortoise_require('engine/core/typechecker');
 var Tasks     = tortoise_require('engine/prim/tasks');
 
 var AgentModel = tortoise_require('agentmodel');
+var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
 function setupBlank() {
@@ -53,7 +54,7 @@ function setupBlank() {
 function setupRandom() {
   world.clearAll();
   world.patches().ask(function() {
-    if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal('initial-density'))) {
+    if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("initial-density"))) {
       Call(cellBirth);
     }
     else {
@@ -63,25 +64,25 @@ function setupRandom() {
   world.ticker.reset();
 }
 function cellBirth() {
-  SelfPrims.setPatchVariable('living?', true);
-  SelfPrims.setPatchVariable('pcolor', world.observer.getGlobal('fgcolor'));
+  SelfPrims.setPatchVariable("living?", true);
+  SelfPrims.setPatchVariable("pcolor", world.observer.getGlobal("fgcolor"));
 }
 function cellDeath() {
-  SelfPrims.setPatchVariable('living?', false);
-  SelfPrims.setPatchVariable('pcolor', world.observer.getGlobal('bgcolor'));
+  SelfPrims.setPatchVariable("living?", false);
+  SelfPrims.setPatchVariable("pcolor", world.observer.getGlobal("bgcolor"));
 }
 function go() {
   world.patches().ask(function() {
-    SelfPrims.setPatchVariable('live-neighbors', SelfPrims.getNeighbors().agentFilter(function() {
-      return SelfPrims.getPatchVariable('living?');
+    SelfPrims.setPatchVariable("live-neighbors", SelfPrims.getNeighbors().agentFilter(function() {
+      return SelfPrims.getPatchVariable("living?");
     }).size());
   }, true);
   world.patches().ask(function() {
-    if (Prims.equality(SelfPrims.getPatchVariable('live-neighbors'), 3)) {
+    if (Prims.equality(SelfPrims.getPatchVariable("live-neighbors"), 3)) {
       Call(cellBirth);
     }
     else {
-      if (!Prims.equality(SelfPrims.getPatchVariable('live-neighbors'), 2)) {
+      if (!Prims.equality(SelfPrims.getPatchVariable("live-neighbors"), 2)) {
         Call(cellDeath);
       }
     }
@@ -90,7 +91,7 @@ function go() {
 }
 function drawCells() {
   var erasing_p = world.getPatchAt(MousePrims.getX(), MousePrims.getY()).projectionBy(function() {
-    return SelfPrims.getPatchVariable('living?');
+    return SelfPrims.getPatchVariable("living?");
   });
   while (MousePrims.isDown()) {
     world.getPatchAt(MousePrims.getX(), MousePrims.getY()).ask(function() {
@@ -104,6 +105,6 @@ function drawCells() {
     notImplemented('display', undefined)();
   }
 }
-world.observer.setGlobal('initial-density', 35);
-world.observer.setGlobal('fgcolor', 123);
-world.observer.setGlobal('bgcolor', 79);
+world.observer.setGlobal("initial-density", 35);
+world.observer.setGlobal("fgcolor", 123);
+world.observer.setGlobal("bgcolor", 79);

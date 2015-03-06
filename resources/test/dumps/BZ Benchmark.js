@@ -25,22 +25,23 @@ var Updater       = workspace.updater;
 var world         = workspace.world;
 
 var Call           = tortoise_require('util/call');
-var ColorModel     = tortoise_require('util/colormodel');
 var Exception      = tortoise_require('util/exception');
-var Trig           = tortoise_require('util/trig');
-var Type           = tortoise_require('util/typechecker');
+var NLMath         = tortoise_require('util/nlmath');
 var notImplemented = tortoise_require('util/notimplemented');
 
 var Dump      = tortoise_require('engine/dump');
+var ColorModel = tortoise_require('engine/core/colormodel');
 var Link      = tortoise_require('engine/core/link');
 var LinkSet   = tortoise_require('engine/core/linkset');
 var Nobody    = tortoise_require('engine/core/nobody');
 var PatchSet  = tortoise_require('engine/core/patchset');
 var Turtle    = tortoise_require('engine/core/turtle');
 var TurtleSet = tortoise_require('engine/core/turtleset');
+var NLType    = tortoise_require('engine/core/typechecker');
 var Tasks     = tortoise_require('engine/prim/tasks');
 
 var AgentModel = tortoise_require('agentmodel');
+var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
 function benchmark() {
@@ -50,14 +51,14 @@ function benchmark() {
   for (var _index_105_111 = 0, _repeatcount_105_111 = StrictMath.floor(20); _index_105_111 < _repeatcount_105_111; _index_105_111++){
     Call(go);
   }
-  world.observer.setGlobal('result', workspace.timer.elapsed());
+  world.observer.setGlobal("result", workspace.timer.elapsed());
 }
 function setup() {
   world.clearAll();
   world.ticker.reset();
   world.patches().ask(function() {
-    SelfPrims.setPatchVariable('state', Prims.random((world.observer.getGlobal('n') + 1)));
-    SelfPrims.setPatchVariable('pcolor', ColorModel.scaleColor(15, SelfPrims.getPatchVariable('state'), 0, world.observer.getGlobal('n')));
+    SelfPrims.setPatchVariable("state", Prims.random((world.observer.getGlobal("n") + 1)));
+    SelfPrims.setPatchVariable("pcolor", ColorModel.scaleColor(15, SelfPrims.getPatchVariable("state"), 0, world.observer.getGlobal("n")));
   }, true);
 }
 function go() {
@@ -65,37 +66,37 @@ function go() {
     Call(findNewState);
   }, true);
   world.patches().ask(function() {
-    SelfPrims.setPatchVariable('state', SelfPrims.getPatchVariable('new-state'));
-    SelfPrims.setPatchVariable('pcolor', ColorModel.scaleColor(15, SelfPrims.getPatchVariable('state'), 0, world.observer.getGlobal('n')));
+    SelfPrims.setPatchVariable("state", SelfPrims.getPatchVariable("new-state"));
+    SelfPrims.setPatchVariable("pcolor", ColorModel.scaleColor(15, SelfPrims.getPatchVariable("state"), 0, world.observer.getGlobal("n")));
   }, true);
   world.ticker.tick();
 }
 function findNewState() {
-  if (Prims.equality(SelfPrims.getPatchVariable('state'), world.observer.getGlobal('n'))) {
-    SelfPrims.setPatchVariable('new-state', 0);
+  if (Prims.equality(SelfPrims.getPatchVariable("state"), world.observer.getGlobal("n"))) {
+    SelfPrims.setPatchVariable("new-state", 0);
   }
   else {
     var a = SelfPrims.getNeighbors().agentFilter(function() {
-      return (Prims.gt(SelfPrims.getPatchVariable('state'), 0) && Prims.lt(SelfPrims.getPatchVariable('state'), world.observer.getGlobal('n')));
+      return (Prims.gt(SelfPrims.getPatchVariable("state"), 0) && Prims.lt(SelfPrims.getPatchVariable("state"), world.observer.getGlobal("n")));
     }).size();
     var b = SelfPrims.getNeighbors().agentFilter(function() {
-      return Prims.equality(SelfPrims.getPatchVariable('state'), world.observer.getGlobal('n'));
+      return Prims.equality(SelfPrims.getPatchVariable("state"), world.observer.getGlobal("n"));
     }).size();
-    if (Prims.equality(SelfPrims.getPatchVariable('state'), 0)) {
-      SelfPrims.setPatchVariable('new-state', (Prims.toInt((a / world.observer.getGlobal('k1'))) + Prims.toInt((b / world.observer.getGlobal('k2')))));
+    if (Prims.equality(SelfPrims.getPatchVariable("state"), 0)) {
+      SelfPrims.setPatchVariable("new-state", (NLMath.toInt((a / world.observer.getGlobal("k1"))) + NLMath.toInt((b / world.observer.getGlobal("k2")))));
     }
     else {
-      var s = (SelfPrims.getPatchVariable('state') + ListPrims.sum(SelfPrims.getNeighbors().projectionBy(function() {
-        return SelfPrims.getPatchVariable('state');
+      var s = (SelfPrims.getPatchVariable("state") + ListPrims.sum(SelfPrims.getNeighbors().projectionBy(function() {
+        return SelfPrims.getPatchVariable("state");
       })));
-      SelfPrims.setPatchVariable('new-state', (Prims.toInt((s / ((a + b) + 1))) + world.observer.getGlobal('g')));
+      SelfPrims.setPatchVariable("new-state", (NLMath.toInt((s / ((a + b) + 1))) + world.observer.getGlobal("g")));
     }
-    if (Prims.gt(SelfPrims.getPatchVariable('new-state'), world.observer.getGlobal('n'))) {
-      SelfPrims.setPatchVariable('new-state', world.observer.getGlobal('n'));
+    if (Prims.gt(SelfPrims.getPatchVariable("new-state"), world.observer.getGlobal("n"))) {
+      SelfPrims.setPatchVariable("new-state", world.observer.getGlobal("n"));
     }
   }
 }
-world.observer.setGlobal('n', 200);
-world.observer.setGlobal('k1', 3);
-world.observer.setGlobal('k2', 3);
-world.observer.setGlobal('g', 28);
+world.observer.setGlobal("n", 200);
+world.observer.setGlobal("k1", 3);
+world.observer.setGlobal("k2", 3);
+world.observer.setGlobal("g", 28);

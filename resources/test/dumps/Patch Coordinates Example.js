@@ -25,63 +25,64 @@ var Updater       = workspace.updater;
 var world         = workspace.world;
 
 var Call           = tortoise_require('util/call');
-var ColorModel     = tortoise_require('util/colormodel');
 var Exception      = tortoise_require('util/exception');
-var Trig           = tortoise_require('util/trig');
-var Type           = tortoise_require('util/typechecker');
+var NLMath         = tortoise_require('util/nlmath');
 var notImplemented = tortoise_require('util/notimplemented');
 
 var Dump      = tortoise_require('engine/dump');
+var ColorModel = tortoise_require('engine/core/colormodel');
 var Link      = tortoise_require('engine/core/link');
 var LinkSet   = tortoise_require('engine/core/linkset');
 var Nobody    = tortoise_require('engine/core/nobody');
 var PatchSet  = tortoise_require('engine/core/patchset');
 var Turtle    = tortoise_require('engine/core/turtle');
 var TurtleSet = tortoise_require('engine/core/turtleset');
+var NLType    = tortoise_require('engine/core/typechecker');
 var Tasks     = tortoise_require('engine/prim/tasks');
 
 var AgentModel = tortoise_require('agentmodel');
+var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
 function setup() {
   world.clearAll();
   world.patches().ask(function() {
-    SelfPrims.setPatchVariable('pcolor', 5);
+    SelfPrims.setPatchVariable("pcolor", 5);
   }, true);
-  world.getPatchAt(world.observer.getGlobal('start-x'), world.observer.getGlobal('start-y')).ask(function() {
-    SelfPrims.setPatchVariable('pcolor', 55);
+  world.getPatchAt(world.observer.getGlobal("start-x"), world.observer.getGlobal("start-y")).ask(function() {
+    SelfPrims.setPatchVariable("pcolor", 55);
   }, true);
-  world.turtleManager.createTurtles(1, 'SEARCHERS').ask(function() {
-    SelfPrims.setVariable('heading', 0);
-    SelfPrims.setVariable('color', 15);
-    SelfPrims.setVariable('size', 0.2);
-    SelfPrims.setVariable('shape', "circle");
-    SelfPrims.setXY(world.observer.getGlobal('start-x'), world.observer.getGlobal('start-y'));
+  world.turtleManager.createTurtles(1, "SEARCHERS").ask(function() {
+    SelfPrims.setVariable("heading", 0);
+    SelfPrims.setVariable("color", 15);
+    SelfPrims.setVariable("size", 0.2);
+    SelfPrims.setVariable("shape", "circle");
+    SelfPrims.setXY(world.observer.getGlobal("start-x"), world.observer.getGlobal("start-y"));
   }, true);
-  world.turtleManager.createTurtles(1, 'CENTERS').ask(function() {
-    SelfPrims.setVariable('color', 105);
-    SelfPrims.setVariable('size', 0.1);
-    SelfPrims.setVariable('shape', "circle");
-    SelfPrims.setXY(world.observer.getGlobal('start-x'), world.observer.getGlobal('start-y'));
+  world.turtleManager.createTurtles(1, "CENTERS").ask(function() {
+    SelfPrims.setVariable("color", 105);
+    SelfPrims.setVariable("size", 0.1);
+    SelfPrims.setVariable("shape", "circle");
+    SelfPrims.setXY(world.observer.getGlobal("start-x"), world.observer.getGlobal("start-y"));
   }, true);
   world.ticker.reset();
 }
 function go() {
   world.patches().ask(function() {
-    SelfPrims.setPatchVariable('pcolor', 5);
+    SelfPrims.setPatchVariable("pcolor", 5);
   }, true);
   world.turtleManager.turtlesOfBreed("CENTERS").ask(function() {
-    SelfPrims.setXY(world.observer.getGlobal('start-x'), world.observer.getGlobal('start-y'));
+    SelfPrims.setXY(world.observer.getGlobal("start-x"), world.observer.getGlobal("start-y"));
   }, true);
   world.turtleManager.turtlesOfBreed("SEARCHERS").ask(function() {
-    SelfPrims.setXY(world.observer.getGlobal('start-x'), world.observer.getGlobal('start-y'));
-    SelfPrims.setPatchVariable('pcolor', 55);
+    SelfPrims.setXY(world.observer.getGlobal("start-x"), world.observer.getGlobal("start-y"));
+    SelfPrims.setPatchVariable("pcolor", 55);
     SelfPrims.right(5);
-    SelfPrims.fd(world.observer.getGlobal('distance-of-travel'));
-    SelfPrims.setPatchVariable('pcolor', 0);
+    SelfPrims.fd(world.observer.getGlobal("distance-of-travel"));
+    SelfPrims.setPatchVariable("pcolor", 0);
   }, true);
   world.ticker.tick();
 }
-world.observer.setGlobal('distance-of-travel', 1);
-world.observer.setGlobal('start-y', 0);
-world.observer.setGlobal('start-x', 0);
+world.observer.setGlobal("distance-of-travel", 1);
+world.observer.setGlobal("start-y", 0);
+world.observer.setGlobal("start-x", 0);

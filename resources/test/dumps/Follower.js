@@ -9,18 +9,18 @@ modelConfig.plots = [(function() {
   var name    = 'Turtle Count';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('unattached', plotOps.makePenOps, false, new PenBundle.State(125.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Count', 'unattached')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Count', 'unattached')(function() { plotManager.plotValue(world.turtles().agentFilter(function() {
-  return Prims.equality(SelfPrims.getVariable('color'), 125);
+  return Prims.equality(SelfPrims.getVariable("color"), 125);
 }).size());; }); }); }),
 new PenBundle.Pen('heads', plotOps.makePenOps, false, new PenBundle.State(45.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Count', 'heads')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Count', 'heads')(function() { plotManager.plotValue(world.turtles().agentFilter(function() {
-  return Prims.equality(SelfPrims.getVariable('color'), 45);
+  return Prims.equality(SelfPrims.getVariable("color"), 45);
 }).size());; }); }); }),
 new PenBundle.Pen('bodies', plotOps.makePenOps, false, new PenBundle.State(95.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Count', 'bodies')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Count', 'bodies')(function() { plotManager.plotValue(world.turtles().agentFilter(function() {
-  return Prims.equality(SelfPrims.getVariable('color'), 95);
+  return Prims.equality(SelfPrims.getVariable("color"), 95);
 }).size());; }); }); }),
 new PenBundle.Pen('tails', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Count', 'tails')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Count', 'tails')(function() { plotManager.plotValue(world.turtles().agentFilter(function() {
-  return Prims.equality(SelfPrims.getVariable('color'), 65);
+  return Prims.equality(SelfPrims.getVariable("color"), 65);
 }).size());; }); }); })];
-  var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Count', undefined)(function() { plotManager.setYRange(0, world.observer.getGlobal('population'));; }); }); };
+  var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Count', undefined)(function() { plotManager.setYRange(0, world.observer.getGlobal("population"));; }); }); };
   var update  = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Count', undefined)(function() {}); }); };
   return new Plot(name, pens, plotOps, 'time', '#', true, 0.0, 50.0, 0.0, 350.0, setup, update);
 })()];
@@ -43,37 +43,38 @@ var Updater       = workspace.updater;
 var world         = workspace.world;
 
 var Call           = tortoise_require('util/call');
-var ColorModel     = tortoise_require('util/colormodel');
 var Exception      = tortoise_require('util/exception');
-var Trig           = tortoise_require('util/trig');
-var Type           = tortoise_require('util/typechecker');
+var NLMath         = tortoise_require('util/nlmath');
 var notImplemented = tortoise_require('util/notimplemented');
 
 var Dump      = tortoise_require('engine/dump');
+var ColorModel = tortoise_require('engine/core/colormodel');
 var Link      = tortoise_require('engine/core/link');
 var LinkSet   = tortoise_require('engine/core/linkset');
 var Nobody    = tortoise_require('engine/core/nobody');
 var PatchSet  = tortoise_require('engine/core/patchset');
 var Turtle    = tortoise_require('engine/core/turtle');
 var TurtleSet = tortoise_require('engine/core/turtleset');
+var NLType    = tortoise_require('engine/core/typechecker');
 var Tasks     = tortoise_require('engine/prim/tasks');
 
 var AgentModel = tortoise_require('agentmodel');
+var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
 function setup() {
   world.clearAll();
-  world.turtleManager.createTurtles(world.observer.getGlobal('population'), '').ask(function() {
-    SelfPrims.setVariable('color', 125);
+  world.turtleManager.createTurtles(world.observer.getGlobal("population"), "").ask(function() {
+    SelfPrims.setVariable("color", 125);
     SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
-    SelfPrims.setVariable('leader', Nobody);
-    SelfPrims.setVariable('follower', Nobody);
+    SelfPrims.setVariable("leader", Nobody);
+    SelfPrims.setVariable("follower", Nobody);
   }, true);
   world.ticker.reset();
 }
 function go() {
   world.turtles().ask(function() {
-    if (Prims.equality(SelfPrims.getVariable('leader'), Nobody)) {
+    if (Prims.equality(SelfPrims.getVariable("leader"), Nobody)) {
       Call(attachTurtle);
     }
   }, true);
@@ -86,8 +87,8 @@ function go() {
   world.ticker.tick();
 }
 function attachTurtle() {
-  var xd = (world.observer.getGlobal('near-radius') + Prims.random((world.observer.getGlobal('far-radius') - world.observer.getGlobal('near-radius'))));
-  var yd = (world.observer.getGlobal('near-radius') + Prims.random((world.observer.getGlobal('far-radius') - world.observer.getGlobal('near-radius'))));
+  var xd = (world.observer.getGlobal("near-radius") + Prims.random((world.observer.getGlobal("far-radius") - world.observer.getGlobal("near-radius"))));
+  var yd = (world.observer.getGlobal("near-radius") + Prims.random((world.observer.getGlobal("far-radius") - world.observer.getGlobal("near-radius"))));
   if (Prims.equality(Prims.random(2), 0)) {
     xd =  -xd;
   }
@@ -95,41 +96,41 @@ function attachTurtle() {
     yd =  -yd;
   }
   var candidate = ListPrims.oneOf(SelfManager.self().turtlesAt(xd, yd).agentFilter(function() {
-    return Prims.equality(SelfPrims.getVariable('follower'), Nobody);
+    return Prims.equality(SelfPrims.getVariable("follower"), Nobody);
   }));
   if (Prims.equality(candidate, Nobody)) {
     throw new Exception.StopInterrupt;
   }
   candidate.ask(function() {
-    SelfPrims.setVariable('follower', SelfManager.myself());
+    SelfPrims.setVariable("follower", SelfManager.myself());
   }, true);
-  SelfPrims.setVariable('leader', candidate);
-  if (Prims.equality(SelfPrims.getVariable('follower'), Nobody)) {
-    SelfPrims.setVariable('color', 65);
+  SelfPrims.setVariable("leader", candidate);
+  if (Prims.equality(SelfPrims.getVariable("follower"), Nobody)) {
+    SelfPrims.setVariable("color", 65);
   }
   else {
-    SelfPrims.setVariable('color', 95);
-    SelfPrims.setVariable('shape', "line");
+    SelfPrims.setVariable("color", 95);
+    SelfPrims.setVariable("shape", "line");
   }
   candidate.ask(function() {
-    if (Prims.equality(SelfPrims.getVariable('leader'), Nobody)) {
-      SelfPrims.setVariable('color', 45);
+    if (Prims.equality(SelfPrims.getVariable("leader"), Nobody)) {
+      SelfPrims.setVariable("color", 45);
     }
     else {
-      SelfPrims.setVariable('color', 95);
-      SelfPrims.setVariable('shape', "line");
+      SelfPrims.setVariable("color", 95);
+      SelfPrims.setVariable("shape", "line");
     }
   }, true);
 }
 function turnTurtle() {
-  if (Prims.equality(SelfPrims.getVariable('leader'), Nobody)) {
-    SelfPrims.right((Prims.randomFloat(world.observer.getGlobal('waver')) - Prims.randomFloat(world.observer.getGlobal('waver'))));
+  if (Prims.equality(SelfPrims.getVariable("leader"), Nobody)) {
+    SelfPrims.right((Prims.randomFloat(world.observer.getGlobal("waver")) - Prims.randomFloat(world.observer.getGlobal("waver"))));
   }
   else {
-    SelfManager.self().face(SelfPrims.getVariable('leader'));
+    SelfManager.self().face(SelfPrims.getVariable("leader"));
   }
 }
-world.observer.setGlobal('waver', 70);
-world.observer.setGlobal('far-radius', 10);
-world.observer.setGlobal('population', 1500);
-world.observer.setGlobal('near-radius', 5);
+world.observer.setGlobal("waver", 70);
+world.observer.setGlobal("far-radius", 10);
+world.observer.setGlobal("population", 1500);
+world.observer.setGlobal("near-radius", 5);

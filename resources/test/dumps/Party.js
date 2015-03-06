@@ -9,15 +9,15 @@ modelConfig.plots = [(function() {
   var name    = 'Number Happy';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('Happy', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Number Happy', 'Happy')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Number Happy', 'Happy')(function() { plotManager.plotValue(world.turtles().agentFilter(function() {
-  return SelfPrims.getVariable('happy?');
+  return SelfPrims.getVariable("happy?");
 }).size());; }); }); })];
-  var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Number Happy', undefined)(function() { plotManager.setYRange(0, world.observer.getGlobal('number'));; }); }); };
+  var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Number Happy', undefined)(function() { plotManager.setYRange(0, world.observer.getGlobal("number"));; }); }); };
   var update  = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Number Happy', undefined)(function() {}); }); };
   return new Plot(name, pens, plotOps, 'clock', '', false, 0.0, 10.0, 0.0, 150.0, setup, update);
 })(), (function() {
   var name    = 'Single Sex Groups';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('Single Sex', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Single Sex Groups', 'Single Sex')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Single Sex Groups', 'Single Sex')(function() { plotManager.plotValue(world.observer.getGlobal('boring-groups'));; }); }); })];
+  var pens    = [new PenBundle.Pen('Single Sex', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Single Sex Groups', 'Single Sex')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Single Sex Groups', 'Single Sex')(function() { plotManager.plotValue(world.observer.getGlobal("boring-groups"));; }); }); })];
   var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Single Sex Groups', undefined)(function() {}); }); };
   var update  = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Single Sex Groups', undefined)(function() {}); }); };
   return new Plot(name, pens, plotOps, 'clock', '', false, 0.0, 10.0, 0.0, 12.0, setup, update);
@@ -41,35 +41,36 @@ var Updater       = workspace.updater;
 var world         = workspace.world;
 
 var Call           = tortoise_require('util/call');
-var ColorModel     = tortoise_require('util/colormodel');
 var Exception      = tortoise_require('util/exception');
-var Trig           = tortoise_require('util/trig');
-var Type           = tortoise_require('util/typechecker');
+var NLMath         = tortoise_require('util/nlmath');
 var notImplemented = tortoise_require('util/notimplemented');
 
 var Dump      = tortoise_require('engine/dump');
+var ColorModel = tortoise_require('engine/core/colormodel');
 var Link      = tortoise_require('engine/core/link');
 var LinkSet   = tortoise_require('engine/core/linkset');
 var Nobody    = tortoise_require('engine/core/nobody');
 var PatchSet  = tortoise_require('engine/core/patchset');
 var Turtle    = tortoise_require('engine/core/turtle');
 var TurtleSet = tortoise_require('engine/core/turtleset');
+var NLType    = tortoise_require('engine/core/typechecker');
 var Tasks     = tortoise_require('engine/prim/tasks');
 
 var AgentModel = tortoise_require('agentmodel');
+var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
 function setup() {
   world.clearAll();
-  world.observer.setGlobal('group-sites', world.patches().agentFilter(function() {
+  world.observer.setGlobal("group-sites", world.patches().agentFilter(function() {
     return Call(groupSite_p);
   }));
   BreedManager.setDefaultShape(world.turtles().getBreedName(), "person")
-  world.turtleManager.createTurtles(world.observer.getGlobal('number'), '').ask(function() {
+  world.turtleManager.createTurtles(world.observer.getGlobal("number"), "").ask(function() {
     Call(chooseSex);
-    SelfPrims.setVariable('size', 3);
-    SelfPrims.setVariable('my-group-site', ListPrims.oneOf(world.observer.getGlobal('group-sites')));
-    SelfManager.self().moveTo(SelfPrims.getVariable('my-group-site'));
+    SelfPrims.setVariable("size", 3);
+    SelfPrims.setVariable("my-group-site", ListPrims.oneOf(world.observer.getGlobal("group-sites")));
+    SelfManager.self().moveTo(SelfPrims.getVariable("my-group-site"));
   }, true);
   world.turtles().ask(function() {
     Call(updateHappiness);
@@ -83,12 +84,12 @@ function setup() {
 }
 function go() {
   if (world.turtles().agentAll(function() {
-    return SelfPrims.getVariable('happy?');
+    return SelfPrims.getVariable("happy?");
   })) {
     throw new Exception.StopInterrupt;
   }
   world.turtles().ask(function() {
-    SelfManager.self().moveTo(SelfPrims.getVariable('my-group-site'));
+    SelfManager.self().moveTo(SelfPrims.getVariable("my-group-site"));
   }, true);
   world.turtles().ask(function() {
     Call(updateHappiness);
@@ -100,7 +101,7 @@ function go() {
   Call(updateLabels);
   Call(countBoringGroups);
   world.turtles().ask(function() {
-    SelfPrims.setVariable('my-group-site', SelfManager.self().getPatchHere());
+    SelfPrims.setVariable("my-group-site", SelfManager.self().getPatchHere());
     Call(spreadOutVertically);
   }, true);
   world.ticker.tick();
@@ -108,23 +109,23 @@ function go() {
 function updateHappiness() {
   var total = SelfManager.self().turtlesHere().size();
   var same = SelfManager.self().turtlesHere().agentFilter(function() {
-    return Prims.equality(SelfPrims.getVariable('color'), SelfManager.myself().projectionBy(function() {
-      return SelfPrims.getVariable('color');
+    return Prims.equality(SelfPrims.getVariable("color"), SelfManager.myself().projectionBy(function() {
+      return SelfPrims.getVariable("color");
     }));
   }).size();
   var opposite = (total - same);
-  SelfPrims.setVariable('happy?', Prims.lte((opposite / total), (world.observer.getGlobal('tolerance') / 100)));
+  SelfPrims.setVariable("happy?", Prims.lte((opposite / total), (world.observer.getGlobal("tolerance") / 100)));
 }
 function leaveIfUnhappy() {
-  if (!SelfPrims.getVariable('happy?')) {
-    SelfPrims.setVariable('heading', ListPrims.oneOf([90, 270]));
+  if (!SelfPrims.getVariable("happy?")) {
+    SelfPrims.setVariable("heading", ListPrims.oneOf([90, 270]));
     SelfPrims.fd(1);
   }
 }
 function findNewGroups() {
   notImplemented('display', undefined)();
   var malcontents = world.turtles().agentFilter(function() {
-    return !ListPrims.member(SelfManager.self().getPatchHere(), world.observer.getGlobal('group-sites'));
+    return !ListPrims.member(SelfManager.self().getPatchHere(), world.observer.getGlobal("group-sites"));
   });
   if (!malcontents.nonEmpty()) {
     throw new Exception.StopInterrupt;
@@ -135,15 +136,15 @@ function findNewGroups() {
   Call(findNewGroups);
 }
 function groupSite_p() {
-  var groupInterval = StrictMath.floor((world.topology.width / world.observer.getGlobal('num-groups')));
-  return (((Prims.equality(SelfPrims.getPatchVariable('pycor'), 0) && Prims.lte(SelfPrims.getPatchVariable('pxcor'), 0)) && Prims.equality(Prims.mod(SelfPrims.getPatchVariable('pxcor'), groupInterval), 0)) && Prims.lt(StrictMath.floor(( -SelfPrims.getPatchVariable('pxcor') / groupInterval)), world.observer.getGlobal('num-groups')));
+  var groupInterval = NLMath.floor((world.topology.width / world.observer.getGlobal("num-groups")));
+  return (((Prims.equality(SelfPrims.getPatchVariable("pycor"), 0) && Prims.lte(SelfPrims.getPatchVariable("pxcor"), 0)) && Prims.equality(NLMath.mod(SelfPrims.getPatchVariable("pxcor"), groupInterval), 0)) && Prims.lt(NLMath.floor(( -SelfPrims.getPatchVariable("pxcor") / groupInterval)), world.observer.getGlobal("num-groups")));
 }
 function spreadOutVertically() {
   if (Call(woman_p)) {
-    SelfPrims.setVariable('heading', 180);
+    SelfPrims.setVariable("heading", 180);
   }
   else {
-    SelfPrims.setVariable('heading', 0);
+    SelfPrims.setVariable("heading", 0);
   }
   SelfPrims.fd(4);
   while (SelfPrims.other(SelfManager.self().turtlesHere()).nonEmpty()) {
@@ -151,41 +152,41 @@ function spreadOutVertically() {
       SelfPrims.fd(1);
     }
     else {
-      SelfPrims.setVariable('xcor', (SelfPrims.getVariable('xcor') - 1));
-      SelfPrims.setVariable('ycor', 0);
+      SelfPrims.setVariable("xcor", (SelfPrims.getVariable("xcor") - 1));
+      SelfPrims.setVariable("ycor", 0);
       SelfPrims.fd(4);
     }
   }
 }
 function countBoringGroups() {
-  world.observer.getGlobal('group-sites').ask(function() {
+  world.observer.getGlobal("group-sites").ask(function() {
     if (Call(boring_p)) {
-      SelfPrims.setPatchVariable('plabel-color', 5);
+      SelfPrims.setPatchVariable("plabel-color", 5);
     }
     else {
-      SelfPrims.setPatchVariable('plabel-color', 9.9);
+      SelfPrims.setPatchVariable("plabel-color", 9.9);
     }
   }, true);
-  world.observer.setGlobal('boring-groups', world.observer.getGlobal('group-sites').agentFilter(function() {
-    return Prims.equality(SelfPrims.getPatchVariable('plabel-color'), 5);
+  world.observer.setGlobal("boring-groups", world.observer.getGlobal("group-sites").agentFilter(function() {
+    return Prims.equality(SelfPrims.getPatchVariable("plabel-color"), 5);
   }).size());
 }
 function boring_p() {
   return Prims.equality(ListPrims.length(ListPrims.removeDuplicates(SelfManager.self().turtlesHere().projectionBy(function() {
-    return SelfPrims.getVariable('color');
+    return SelfPrims.getVariable("color");
   }))), 1);
 }
 function updateLabels() {
-  world.observer.getGlobal('group-sites').ask(function() {
-    SelfPrims.setPatchVariable('plabel', SelfManager.self().turtlesHere().size());
+  world.observer.getGlobal("group-sites").ask(function() {
+    SelfPrims.setPatchVariable("plabel", SelfManager.self().turtlesHere().size());
   }, true);
 }
 function chooseSex() {
-  SelfPrims.setVariable('color', ListPrims.oneOf([135, 105]));
+  SelfPrims.setVariable("color", ListPrims.oneOf([135, 105]));
 }
 function woman_p() {
-  return Prims.equality(SelfPrims.getVariable('color'), 135);
+  return Prims.equality(SelfPrims.getVariable("color"), 135);
 }
-world.observer.setGlobal('tolerance', 25);
-world.observer.setGlobal('number', 70);
-world.observer.setGlobal('num-groups', 10);
+world.observer.setGlobal("tolerance", 25);
+world.observer.setGlobal("number", 70);
+world.observer.setGlobal("num-groups", 10);

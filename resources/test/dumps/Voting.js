@@ -25,64 +25,65 @@ var Updater       = workspace.updater;
 var world         = workspace.world;
 
 var Call           = tortoise_require('util/call');
-var ColorModel     = tortoise_require('util/colormodel');
 var Exception      = tortoise_require('util/exception');
-var Trig           = tortoise_require('util/trig');
-var Type           = tortoise_require('util/typechecker');
+var NLMath         = tortoise_require('util/nlmath');
 var notImplemented = tortoise_require('util/notimplemented');
 
 var Dump      = tortoise_require('engine/dump');
+var ColorModel = tortoise_require('engine/core/colormodel');
 var Link      = tortoise_require('engine/core/link');
 var LinkSet   = tortoise_require('engine/core/linkset');
 var Nobody    = tortoise_require('engine/core/nobody');
 var PatchSet  = tortoise_require('engine/core/patchset');
 var Turtle    = tortoise_require('engine/core/turtle');
 var TurtleSet = tortoise_require('engine/core/turtleset');
+var NLType    = tortoise_require('engine/core/typechecker');
 var Tasks     = tortoise_require('engine/prim/tasks');
 
 var AgentModel = tortoise_require('agentmodel');
+var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
 function setup() {
   world.clearAll();
   world.patches().ask(function() {
-    SelfPrims.setPatchVariable('vote', Prims.random(2));
+    SelfPrims.setPatchVariable("vote", Prims.random(2));
     Call(recolorPatch);
   }, true);
   world.ticker.reset();
 }
 function go() {
   world.patches().ask(function() {
-    SelfPrims.setPatchVariable('total', ListPrims.sum(SelfPrims.getNeighbors().projectionBy(function() {
-      return SelfPrims.getPatchVariable('vote');
+    SelfPrims.setPatchVariable("total", ListPrims.sum(SelfPrims.getNeighbors().projectionBy(function() {
+      return SelfPrims.getPatchVariable("vote");
     })));
   }, true);
   world.patches().ask(function() {
-    if (Prims.gt(SelfPrims.getPatchVariable('total'), 5)) {
-      SelfPrims.setPatchVariable('vote', 1);
+    if (Prims.gt(SelfPrims.getPatchVariable("total"), 5)) {
+      SelfPrims.setPatchVariable("vote", 1);
     }
-    if (Prims.lt(SelfPrims.getPatchVariable('total'), 3)) {
-      SelfPrims.setPatchVariable('vote', 0);
+    if (Prims.lt(SelfPrims.getPatchVariable("total"), 3)) {
+      SelfPrims.setPatchVariable("vote", 0);
     }
-    if (Prims.equality(SelfPrims.getPatchVariable('total'), 4)) {
-      if (world.observer.getGlobal('change-vote-if-tied?')) {
-        SelfPrims.setPatchVariable('vote', (1 - SelfPrims.getPatchVariable('vote')));
+    if (Prims.equality(SelfPrims.getPatchVariable("total"), 4)) {
+      if (world.observer.getGlobal("change-vote-if-tied?")) {
+        SelfPrims.setPatchVariable("vote", (1 - SelfPrims.getPatchVariable("vote")));
       }
     }
-    if (Prims.equality(SelfPrims.getPatchVariable('total'), 5)) {
-      if (world.observer.getGlobal('award-close-calls-to-loser?')) {
-        SelfPrims.setPatchVariable('vote', 0);
-      }
-      else {
-        SelfPrims.setPatchVariable('vote', 1);
-      }
-    }
-    if (Prims.equality(SelfPrims.getPatchVariable('total'), 3)) {
-      if (world.observer.getGlobal('award-close-calls-to-loser?')) {
-        SelfPrims.setPatchVariable('vote', 1);
+    if (Prims.equality(SelfPrims.getPatchVariable("total"), 5)) {
+      if (world.observer.getGlobal("award-close-calls-to-loser?")) {
+        SelfPrims.setPatchVariable("vote", 0);
       }
       else {
-        SelfPrims.setPatchVariable('vote', 0);
+        SelfPrims.setPatchVariable("vote", 1);
+      }
+    }
+    if (Prims.equality(SelfPrims.getPatchVariable("total"), 3)) {
+      if (world.observer.getGlobal("award-close-calls-to-loser?")) {
+        SelfPrims.setPatchVariable("vote", 1);
+      }
+      else {
+        SelfPrims.setPatchVariable("vote", 0);
       }
     }
     Call(recolorPatch);
@@ -90,12 +91,12 @@ function go() {
   world.ticker.tick();
 }
 function recolorPatch() {
-  if (Prims.equality(SelfPrims.getPatchVariable('vote'), 0)) {
-    SelfPrims.setPatchVariable('pcolor', 55);
+  if (Prims.equality(SelfPrims.getPatchVariable("vote"), 0)) {
+    SelfPrims.setPatchVariable("pcolor", 55);
   }
   else {
-    SelfPrims.setPatchVariable('pcolor', 105);
+    SelfPrims.setPatchVariable("pcolor", 105);
   }
 }
-world.observer.setGlobal('change-vote-if-tied?', false);
-world.observer.setGlobal('award-close-calls-to-loser?', false);
+world.observer.setGlobal("change-vote-if-tied?", false);
+world.observer.setGlobal("award-close-calls-to-loser?", false);

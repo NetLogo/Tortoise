@@ -9,34 +9,34 @@ modelConfig.plots = [(function() {
   var name    = 'Turtle Populations';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('color5', plotOps.makePenOps, false, new PenBundle.State(5.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Populations', 'color5')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Populations', 'color5')(function() { plotManager.plotValue(world.turtles().agentFilter(function() {
-  return Prims.equality(SelfPrims.getVariable('color'), 5);
+  return Prims.equality(SelfPrims.getVariable("color"), 5);
 }).size());; }); }); }),
 new PenBundle.Pen('color15', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Populations', 'color15')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Populations', 'color15')(function() { plotManager.plotValue(world.turtles().agentFilter(function() {
-  return Prims.equality(SelfPrims.getVariable('color'), 15);
+  return Prims.equality(SelfPrims.getVariable("color"), 15);
 }).size());; }); }); }),
 new PenBundle.Pen('color25', plotOps.makePenOps, false, new PenBundle.State(25.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Populations', 'color25')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Populations', 'color25')(function() { plotManager.plotValue(world.turtles().agentFilter(function() {
-  return Prims.equality(SelfPrims.getVariable('color'), 25);
+  return Prims.equality(SelfPrims.getVariable("color"), 25);
 }).size());; }); }); }),
 new PenBundle.Pen('color35', plotOps.makePenOps, false, new PenBundle.State(35.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Populations', 'color35')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Populations', 'color35')(function() { plotManager.plotValue(world.turtles().agentFilter(function() {
-  return Prims.equality(SelfPrims.getVariable('color'), 35);
+  return Prims.equality(SelfPrims.getVariable("color"), 35);
 }).size());; }); }); }),
 new PenBundle.Pen('color45', plotOps.makePenOps, false, new PenBundle.State(45.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Populations', 'color45')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Populations', 'color45')(function() { plotManager.plotValue(world.turtles().agentFilter(function() {
-  return Prims.equality(SelfPrims.getVariable('color'), 45);
+  return Prims.equality(SelfPrims.getVariable("color"), 45);
 }).size());; }); }); }),
 new PenBundle.Pen('color55', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Populations', 'color55')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Populations', 'color55')(function() { plotManager.plotValue(world.turtles().agentFilter(function() {
-  return Prims.equality(SelfPrims.getVariable('color'), 55);
+  return Prims.equality(SelfPrims.getVariable("color"), 55);
 }).size());; }); }); }),
 new PenBundle.Pen('color65', plotOps.makePenOps, false, new PenBundle.State(65.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Populations', 'color65')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Populations', 'color65')(function() { plotManager.plotValue(world.turtles().agentFilter(function() {
-  return Prims.equality(SelfPrims.getVariable('color'), 65);
+  return Prims.equality(SelfPrims.getVariable("color"), 65);
 }).size());; }); }); }),
 new PenBundle.Pen('color125', plotOps.makePenOps, false, new PenBundle.State(125.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Populations', 'color125')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Populations', 'color125')(function() { plotManager.plotValue(world.turtles().agentFilter(function() {
-  return Prims.equality(SelfPrims.getVariable('color'), 75);
+  return Prims.equality(SelfPrims.getVariable("color"), 75);
 }).size());; }); }); }),
 new PenBundle.Pen('color85', plotOps.makePenOps, false, new PenBundle.State(85.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Populations', 'color85')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Populations', 'color85')(function() { plotManager.plotValue(world.turtles().agentFilter(function() {
-  return Prims.equality(SelfPrims.getVariable('color'), 85);
+  return Prims.equality(SelfPrims.getVariable("color"), 85);
 }).size());; }); }); }),
 new PenBundle.Pen('color95', plotOps.makePenOps, false, new PenBundle.State(95.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Populations', 'color95')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Populations', 'color95')(function() { plotManager.plotValue(world.turtles().agentFilter(function() {
-  return Prims.equality(SelfPrims.getVariable('color'), 95);
+  return Prims.equality(SelfPrims.getVariable("color"), 95);
 }).size());; }); }); })];
   var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Populations', undefined)(function() { plotManager.setYRange(0, world.turtles().size());; }); }); };
   var update  = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Populations', undefined)(function() {}); }); };
@@ -61,30 +61,31 @@ var Updater       = workspace.updater;
 var world         = workspace.world;
 
 var Call           = tortoise_require('util/call');
-var ColorModel     = tortoise_require('util/colormodel');
 var Exception      = tortoise_require('util/exception');
-var Trig           = tortoise_require('util/trig');
-var Type           = tortoise_require('util/typechecker');
+var NLMath         = tortoise_require('util/nlmath');
 var notImplemented = tortoise_require('util/notimplemented');
 
 var Dump      = tortoise_require('engine/dump');
+var ColorModel = tortoise_require('engine/core/colormodel');
 var Link      = tortoise_require('engine/core/link');
 var LinkSet   = tortoise_require('engine/core/linkset');
 var Nobody    = tortoise_require('engine/core/nobody');
 var PatchSet  = tortoise_require('engine/core/patchset');
 var Turtle    = tortoise_require('engine/core/turtle');
 var TurtleSet = tortoise_require('engine/core/turtleset');
+var NLType    = tortoise_require('engine/core/typechecker');
 var Tasks     = tortoise_require('engine/prim/tasks');
 
 var AgentModel = tortoise_require('agentmodel');
+var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
 function setup() {
   world.clearAll();
-  world.turtleManager.createTurtles(world.observer.getGlobal('number'), '').ask(function() {
-    SelfPrims.setVariable('color', (5 + (Prims.random(world.observer.getGlobal('colors')) * 10)));
-    if (Prims.equality(SelfPrims.getVariable('color'), 75)) {
-      SelfPrims.setVariable('color', 125);
+  world.turtleManager.createTurtles(world.observer.getGlobal("number"), "").ask(function() {
+    SelfPrims.setVariable("color", (5 + (Prims.random(world.observer.getGlobal("colors")) * 10)));
+    if (Prims.equality(SelfPrims.getVariable("color"), 75)) {
+      SelfPrims.setVariable("color", 125);
     }
     SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
   }, true);
@@ -92,7 +93,7 @@ function setup() {
 }
 function go() {
   if (Prims.equality(ListPrims.variance(world.turtles().projectionBy(function() {
-    return SelfPrims.getVariable('color');
+    return SelfPrims.getVariable("color");
   })), 0)) {
     throw new Exception.StopInterrupt;
   }
@@ -107,7 +108,7 @@ function go() {
 }
 function birth() {
   world.turtles().ask(function() {
-    SelfPrims.hatch(Prims.random(5), '').ask(function() {
+    SelfPrims.hatch(Prims.random(5), "").ask(function() {
       SelfPrims.fd(1);
     }, true);
   }, true);
@@ -115,10 +116,10 @@ function birth() {
 function death() {
   var totalTurtles = world.turtles().size();
   world.turtles().ask(function() {
-    if (Prims.gt(Prims.random(totalTurtles), world.observer.getGlobal('number'))) {
+    if (Prims.gt(Prims.random(totalTurtles), world.observer.getGlobal("number"))) {
       SelfPrims.die();
     }
   }, true);
 }
-world.observer.setGlobal('colors', 5);
-world.observer.setGlobal('number', 500);
+world.observer.setGlobal("colors", 5);
+world.observer.setGlobal("number", 500);

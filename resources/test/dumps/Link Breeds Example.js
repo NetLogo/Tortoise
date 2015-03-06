@@ -25,41 +25,42 @@ var Updater       = workspace.updater;
 var world         = workspace.world;
 
 var Call           = tortoise_require('util/call');
-var ColorModel     = tortoise_require('util/colormodel');
 var Exception      = tortoise_require('util/exception');
-var Trig           = tortoise_require('util/trig');
-var Type           = tortoise_require('util/typechecker');
+var NLMath         = tortoise_require('util/nlmath');
 var notImplemented = tortoise_require('util/notimplemented');
 
 var Dump      = tortoise_require('engine/dump');
+var ColorModel = tortoise_require('engine/core/colormodel');
 var Link      = tortoise_require('engine/core/link');
 var LinkSet   = tortoise_require('engine/core/linkset');
 var Nobody    = tortoise_require('engine/core/nobody');
 var PatchSet  = tortoise_require('engine/core/patchset');
 var Turtle    = tortoise_require('engine/core/turtle');
 var TurtleSet = tortoise_require('engine/core/turtleset');
+var NLType    = tortoise_require('engine/core/typechecker');
 var Tasks     = tortoise_require('engine/prim/tasks');
 
 var AgentModel = tortoise_require('agentmodel');
+var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
 function setup() {
   world.clearAll();
-  world.turtleManager.createOrderedTurtles(10, '').ask(function() {
+  world.turtleManager.createOrderedTurtles(10, "").ask(function() {
     SelfPrims.fd(5);
-    SelfPrims.setVariable('color', 5);
+    SelfPrims.setVariable("color", 5);
   }, true);
   ListPrims.nOf(5, world.turtles()).ask(function() {
-    LinkPrims.createLinkWith(ListPrims.oneOf(SelfPrims.other(world.turtles())), 'BLUE-LINKS').ask(function() {
-      SelfPrims.setVariable('color', 105);
-      SelfPrims.setVariable('weight', Prims.random(10));
-      SelfPrims.setVariable('label', SelfPrims.getVariable('weight'));
+    LinkPrims.createLinkWith(ListPrims.oneOf(SelfPrims.other(world.turtles())), "BLUE-LINKS").ask(function() {
+      SelfPrims.setVariable("color", 105);
+      SelfPrims.setVariable("weight", Prims.random(10));
+      SelfPrims.setVariable("label", SelfPrims.getVariable("weight"));
     }, true);
   }, true);
   BreedManager.setDefaultShape(world.linkManager.linksOfBreed("RED-LINKS").getBreedName(), "curved link")
   ListPrims.nOf(5, world.turtles()).ask(function() {
-    LinkPrims.createLinkTo(ListPrims.oneOf(SelfPrims.other(world.turtles())), 'RED-LINKS').ask(function() {
-      SelfPrims.setVariable('color', 15);
+    LinkPrims.createLinkTo(ListPrims.oneOf(SelfPrims.other(world.turtles())), "RED-LINKS").ask(function() {
+      SelfPrims.setVariable("color", 15);
     }, true);
   }, true);
 }
