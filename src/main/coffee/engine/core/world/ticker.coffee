@@ -2,6 +2,8 @@
 
 Exception = require('tortoise/util/exception')
 
+EvilSentinel = -1
+
 module.exports =
   class Ticker
 
@@ -10,7 +12,7 @@ module.exports =
 
     # (() => Unit, () => Unit, (String*) => Unit) => Ticker
     constructor: (@_onReset, @_onTick, @_updateFunc) ->
-      @_count = -1
+      @_count = EvilSentinel
 
     # () => Unit
     reset: ->
@@ -21,33 +23,37 @@ module.exports =
 
     # () => Unit
     clear: ->
-      @_updateTicks(-> -1)
+      @_updateTicks(-> EvilSentinel)
       return
 
     # () => Unit
     tick: ->
-      if @_count is -1
-        throw new Error("The tick counter has not been started yet. Use RESET-TICKS.")
-      else
+      if @ticksAreStarted()
         @_updateTicks((counter) -> counter + 1)
+      else
+        throw new Error("The tick counter has not been started yet. Use RESET-TICKS.")
       @_onTick()
       return
 
     # (Number) => Unit
     tickAdvance: (n) ->
-      if @_count is -1
-        throw new Error("The tick counter has not been started yet. Use RESET-TICKS.")
-      else if n < 0
+      if n < 0
         throw new Error("Cannot advance the tick counter by a negative amount.")
-      else
+      else if @ticksAreStarted()
         @_updateTicks((counter) -> counter + n)
-      return
+      else
+        throw new Error("The tick counter has not been started yet. Use RESET-TICKS.")
+
+    # () => Boolean
+    ticksAreStarted: ->
+      @_count isnt EvilSentinel
 
     # () => Number
     tickCount: ->
-      if @_count is -1
+      if @ticksAreStarted()
+        @_count
+      else
         throw new Error("The tick counter has not been started yet. Use RESET-TICKS.")
-      @_count
 
     # ((Number) => Number) => Unit
     _updateTicks: (updateCountFunc) ->
