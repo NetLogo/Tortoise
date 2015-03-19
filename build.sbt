@@ -1,11 +1,14 @@
-val nlDependencyVersion = "5.2.0-fbd8014"
+import scala.scalajs.sbtplugin.ScalaJSPlugin.ScalaJSKeys.fullOptJS
 
-val parserJsDependencyVersion = "0.0.1-fbd8014"
+val nlDependencyVersion = "5.2.0-051b1b8"
+
+val parserJsDependencyVersion = "0.0.1-051b1b8"
 
 val commonSettings =
   // Keep this up here so things get published to the correct places
   bintraySettings ++
   Seq(
+    ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) },
     organization := "org.nlogo",
     licenses += ("GPL-2.0", url("http://opensource.org/licenses/GPL-2.0")),
     // Used by the publish-versioned plugin
@@ -18,7 +21,7 @@ val commonSettings =
     resourceDirectory in Test := (baseDirectory in root).value / "resources" / "test",
     // show test failures again at end, after all tests complete.
     // T gives truncated stack traces; change to G if you need full.
-    testOptions in Test += Tests.Argument("-oG"),
+    testOptions in Test += Tests.Argument("-oT"),
     // only log problems plz
     ivyLoggingLevel := UpdateLogging.Quiet,
     // we're not cross-building for different Scala versions
@@ -50,17 +53,22 @@ val commonSettings =
 lazy val root = (project in file("."))
 
 lazy val tortoise = (project in file ("tortoise")).
+  dependsOn(macros % "compile->compile;test->test").
   configs(FastMediumSlow.configs: _*).
   settings(FastMediumSlow.settings: _*).
   settings(PublishVersioned.settings: _*).
   settings(Depend.settings: _*).
   settings(commonSettings: _*).
-  settings(name := "Tortoise")
+  settings(name := "Tortoise",
+    ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) }
+    )
 
 lazy val tortoiseJs = (project in file("js")).
+  dependsOn(macros % "compile->compile;test->test").
   settings(commonSettings: _*).
   settings(scalaJSSettings: _*).
   settings(
+    ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) },
     name := "TortoiseJS",
     libraryDependencies ++= Seq(
       "org.nlogo" %%% "parser-js" % parserJsDependencyVersion,
@@ -69,4 +77,11 @@ lazy val tortoiseJs = (project in file("js")).
       ((baseDirectory in tortoise).value / "src" / "main" / "scala" * "*.scala" +++
         (baseDirectory in tortoise).value / "src" / "main" / "scala" / "json"  * "*.scala" ---
         (baseDirectory in tortoise).value / "src" / "main" / "scala" / "json" / "JsonLibrary.scala").get
+  )
+
+lazy val macros = (project in file ("macros")).
+  settings(commonSettings: _*).
+  settings(
+    libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+    ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) }
   )
