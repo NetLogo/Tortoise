@@ -1,12 +1,11 @@
 package org.nlogo.tortoise
 
 import
-  org.nlogo.{ agent, api, core, parse },
-    api.{ DefaultParserServices, model },
-      model.ModelReader,
-    core.{ AgentKind, CompilerException, FrontEndInterface, Model, Program, View },
+  org.nlogo.{ agent, core, parse },
+    core.{ model, AgentKind, CompilerException, FrontEndInterface, Model, Program, View },
       AgentKind._,
       FrontEndInterface.{ ProceduresMap, NoProcedures },
+      model.ModelReader,
     parse.CompilerUtilities
 
 import
@@ -58,7 +57,7 @@ object CompiledModel {
   }
 
   def fromNlogoContents(contents: String, compiler: CompilerLike = Compiler): CompiledModelV = {
-    val model = ModelReader.parseModel(contents, new DefaultParserServices(CompilerUtilities))
+    val model = ModelReader.parseModel(contents, CompilerUtilities)
     fromModel(model)
   }
 
