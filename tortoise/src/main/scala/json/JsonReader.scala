@@ -73,4 +73,15 @@ trait JsonReader[T <: TortoiseJson, S] extends (T => Either[String, S]) {
 
 object JsonReader extends LowPriorityImplicitReaders {
   def readField[A](o: JsObject, key: String)(implicit ev: JsonReader[TortoiseJson, A]): Either[String, A] = ev.read(key, o.props.get(key))
+  def read[A](t: TortoiseJson)(implicit ev: JsonReader[TortoiseJson, A]): Either[String, A] = ev(t)
+
+  implicit def jsObject2RichJsObject(json: JsObject) = new {
+    def apply[A](s: String)(implicit ev: JsonReader[TortoiseJson, A]): A =
+      JsonReader.readField(json, s)(ev).right.get
+  }
+
+  implicit def jsArray2RichJsArray(json: JsArray) = new {
+    def apply[A](i: Int)(implicit ev: JsonReader[TortoiseJson, A]): A =
+      JsonReader.read(json.elems(i))(ev).right.get
+  }
 }

@@ -25,7 +25,7 @@ trait JsonWriter[T] extends (T => TortoiseJson) {
 }
 
 object JsonWriter extends LowPriorityWriterImplicits {
-  def convert[T](target: T)(implicit ev: JsonWriter[T]): JsonWritable = {
+  implicit def convert[T](target: T)(implicit ev: JsonWriter[T]): JsonWritable = {
     new JsonWritable {
       def toJsonObj = ev(target)
     }
@@ -47,5 +47,9 @@ trait LowPriorityWriterImplicits {
 
   implicit object bool2TortoiseJs extends JsonWriter[Boolean] {
     def apply(b: Boolean): TortoiseJson = JsBool(b)
+  }
+
+  class ListConversion[A](implicit ev: JsonWriter[A]) extends JsonWriter[List[A]] {
+    def apply(l: List[A]) = JsArray(l.map(ev).toList)
   }
 }
