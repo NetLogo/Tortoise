@@ -1,4 +1,4 @@
-import scala.scalajs.sbtplugin.ScalaJSPlugin.ScalaJSKeys.fullOptJS
+import scala.scalajs.sbtplugin.ScalaJSPlugin.ScalaJSKeys.{ fullOptJS, packageJSDependencies }
 
 val nlDependencyVersion = "5.2.0-051b1b8"
 
@@ -29,6 +29,7 @@ val commonSettings =
     resolvers += bintray.Opts.resolver.repo("netlogo", "NetLogoHeadless"),
     libraryDependencies ++= Seq(
       "org.nlogo" % "netlogoheadless" % nlDependencyVersion,
+      "org.mozilla" % "rhino" % "1.7R5",
       "org.json4s" %% "json4s-native" % "3.2.11",
       "org.scalaz" %% "scalaz-core" % "7.1.0",
       "com.lihaoyi" %% "scalatags" % "0.4.5" % "test",
@@ -67,9 +68,13 @@ lazy val tortoiseJs = (project in file("js")).
   dependsOn(macros % "compile->compile;test->test").
   settings(commonSettings: _*).
   settings(scalaJSSettings: _*).
+  settings(utest.jsrunner.Plugin.utestJsSettings: _*).
   settings(
     ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) },
+    artifactPath in (Compile, fullOptJS) := ((crossTarget in (Compile, fullOptJS)).value / "tortoise.js"),
+    skip in packageJSDependencies := false,
     name := "TortoiseJS",
+    testFrameworks += new TestFramework("utest.jsrunner.JsFramework"),
     libraryDependencies ++= Seq(
       "org.nlogo" %%% "parser-js" % parserJsDependencyVersion,
       "com.github.japgolly.fork.scalaz" %%% "scalaz-core" % "7.1.0-4"),
@@ -84,4 +89,20 @@ lazy val macros = (project in file ("macros")).
   settings(
     libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value,
     ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) }
+  )
+
+lazy val netLogoWeb: Project = (project in file("netlogo-web")).
+  dependsOn(tortoise % "compile->compile;test->test").
+  settings(commonSettings: _*).
+  settings(
+    resourceGenerators in Compile += Def.task {
+      IO.copy(Seq(((artifactPath in fullOptJS in Compile in tortoiseJs).value, resourceManaged.value / "tortoise.js")))
+      Seq(resourceManaged.value / "tortoise.js")
+    }.taskValue,
+    compile <<= (compile in Compile) dependsOn (fullOptJS in Compile in tortoiseJs),
+    name := "NetLogoWebJS",
+    libraryDependencies ++= Seq(
+      "org.nlogo" % "netlogoheadless" % nlDependencyVersion % "test",
+      "org.scalatest" %% "scalatest" % "2.2.1" % "test"
+    )
   )
