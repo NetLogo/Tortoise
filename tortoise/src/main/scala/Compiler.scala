@@ -36,19 +36,25 @@ object Compiler extends CompilerLike with ModelConfigGenerator {
                       program: Program = Program.empty()): String =
     compile(logo, commands = true, oldProcedures, program)
 
-  def compileProcedures(model: Model): (String, Program, ProceduresMap) = {
+  def compileMoreProcedures(model: Model, program: Program, oldProcedures: ProceduresMap): (String, Program, ProceduresMap) = {
     val (defs, results): (Seq[ProcedureDefinition], StructureResults) =
-      frontEnd.frontEnd(model.code,
-        program = Program.empty.copy(interfaceGlobals = model.interfaceGlobals))
-    val init = new RuntimeInit(results.program, model)
+      frontEnd.frontEnd(model.code, program = program, oldProcedures = oldProcedures)
     val main =
       defs.map(compileProcedureDef).mkString("", "\n", "\n")
-    val interface =
-      compileCommands(model.interfaceGlobalCommands.mkString("\n"), program = results.program)
+    (main, results.program, results.procedures)
+  }
 
-    val modelConfig = genModelConfig(model)(compileCommands(_, results.procedures, results.program))
+  def compileProcedures(model: Model): (String, Program, ProceduresMap) = {
+    val (main, program, procedures) = compileMoreProcedures(
+      model,
+      Program.empty.copy(interfaceGlobals = model.interfaceGlobals),
+      FrontEndInterface.NoProcedures)
+    val init = new RuntimeInit(program, model)
+    val interface =
+      compileCommands(model.interfaceGlobalCommands.mkString("\n"), program = program)
+    val modelConfig = genModelConfig(model)(compileCommands(_, procedures, program))
     val js = modelConfig + init.init + main + interface
-    (js, results.program, results.procedures)
+    (js, program, procedures)
   }
 
   private def compileProcedureDef(pd: ProcedureDefinition): String = {
