@@ -12,3 +12,13 @@ The following lists the libraries used by Tortoise and the licenses that they ar
 
   * **lodash** [[source](https://github.com/lodash/lodash)] [[info](http://lodash.com/)] [[license](https://raw.githubusercontent.com/dojo/dojo/c84bf39e40acb310e63ebd7802ce3773b8525abb/LICENSE)]
   * **Mori** [[source](https://github.com/swannodette/mori)] [[info](http://swannodette.github.io/mori/)] [[license](http://www.eclipse.org/legal/epl-v10.html)]
+
+## Compiling
+
+There are several sbt builds within the Tortoise project.
+* `tortoiseJVM` builds the JVM tortoise project.
+* `tortoiseJS` build the scala.js tortoise project.
+* `netLogoWeb` contains a JVM project which runs an end-to-end test against the artifact of `tortoiseJS`, using Rhino. It also contains the task to publish the finished javascript as a package.
+* `macrosJS/JVM` contain macros used by Tortoise in widget serialization/deserialization.
+
+For more information see the [Tortoise architecture wiki page](https://github.com/NetLogo/Tortoise/wiki/Architecture)
