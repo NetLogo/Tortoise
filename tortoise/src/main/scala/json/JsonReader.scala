@@ -7,7 +7,6 @@ import scala.reflect.ClassTag
 import TortoiseJson._
 
 trait LowPriorityImplicitReaders {
-
   implicit object boolean2TortoiseJs extends JsonReader[TortoiseJson, Boolean] {
     def apply(t: TortoiseJson) = t match {
       case JsBool(b) => Right(b)
@@ -46,6 +45,19 @@ trait LowPriorityImplicitReaders {
       case other       => Left(s"could not convert ${other.getClass.getSimpleName} to String")
     }
   }
+  implicit object tortoiseJsAsJsObject extends JsonReader[TortoiseJson, JsObject] {
+    def apply(json: TortoiseJson): Either[String, JsObject] = json match {
+      case o: JsObject => Right(o)
+      case x           => Left(s"Expected JsObject, found $x")
+    }
+  }
+
+  implicit object tortoiseJsAsJsArray extends JsonReader[TortoiseJson, JsArray] {
+    def apply(json: TortoiseJson): Either[String, JsArray] = json match {
+      case a: JsArray => Right(a)
+      case x          => Left(s"Expected JsArray, found $x")
+    }
+  }
 }
 
 trait JsonReader[T <: TortoiseJson, S] extends (T => Either[String, S]) {
@@ -59,4 +71,14 @@ trait JsonReader[T <: TortoiseJson, S] extends (T => Either[String, S]) {
 
 object JsonReader extends LowPriorityImplicitReaders {
   def readField[A](o: JsObject, key: String)(implicit ev: JsonReader[TortoiseJson, A]): Either[String, A] = ev.read(key, o.props.get(key))
+  def read[A](o: JsObject, key: String)(implicit ev: JsonReader[TortoiseJson, A]):  A = ev.read(key, o.props.get(key)).right.get
+
+  implicit def jsObject2RichJsObject(json: JsObject) = new {
+    def apply[A](s: String)(implicit ev: JsonReader[TortoiseJson, A]): A = JsonReader.read(json, s)(ev)
+  }
+
+  implicit def jsArray2RichJsArray(json: JsArray) = new {
+    def apply[A](i: Int)(implicit ev: JsonReader[TortoiseJson, A]): A =
+      ev.apply(json.elems(i)).right.get
+  }
 }
