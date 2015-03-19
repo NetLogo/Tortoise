@@ -42,11 +42,12 @@ object JsonLibrary {
         JsArray(n.asInstanceOf[JArray[Native]].map { (x: Native) =>
           toTortoise(x)
         }.toList)
-      case "object"    =>
+      case "object"   =>
         val dict = n.asInstanceOf[Dictionary[Native]]
         val fieldValues = JObject.keys(dict).toList.map(
           k => (k, toTortoise(dict(k))))
         JsObject(fields(fieldValues: _*))
+      case "function" => JsNull
     }
 
   def nativeToString(n: Native): String =

@@ -7,7 +7,6 @@ import scala.reflect.ClassTag
 import TortoiseJson._
 
 trait LowPriorityImplicitReaders {
-
   implicit object boolean2TortoiseJs extends JsonReader[TortoiseJson, Boolean] {
     def apply(t: TortoiseJson) = t match {
       case JsBool(b) => Right(b)
@@ -82,6 +81,6 @@ object JsonReader extends LowPriorityImplicitReaders {
 
   implicit def jsArray2RichJsArray(json: JsArray) = new {
     def apply[A](i: Int)(implicit ev: JsonReader[TortoiseJson, A]): A =
-      JsonReader.read(json.elems(i))(ev).right.get
+      ev(json.elems(i)).right.get
   }
 }
