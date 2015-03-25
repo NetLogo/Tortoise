@@ -57,7 +57,6 @@ lazy val tortoise = (project in file ("tortoise")).
   dependsOn(macros % "compile-internal->compile;test-internal->test").
   configs(FastMediumSlow.configs: _*).
   settings(FastMediumSlow.settings: _*).
-  settings(PublishVersioned.settings: _*).
   settings(Depend.settings: _*).
   settings(commonSettings: _*).
   settings(name := "Tortoise",
