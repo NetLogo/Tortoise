@@ -22,6 +22,6 @@ resolvers += Resolver.url(
     url("http://dl.bintray.com/content/netlogo/publish-versioned"))(
         Resolver.ivyStylePatterns)
 
-addSbtPlugin("org.nlogo" % "publish-versioned-plugin" % "1.1")
+addSbtPlugin("org.nlogo" % "publish-versioned-plugin" % "2.0")
 
 addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.2")
