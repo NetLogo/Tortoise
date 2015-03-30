@@ -5,10 +5,35 @@ package org.nlogo.tortoise
 import
   org.nlogo.core.{ CommandBlock, CompilerException, prim, ReporterApp, Statement, Token }
 
-trait Prims {
-
+// The Prim traits are split apart as follows
+//      +----> PrimUtils <------+
+//      |            |          |
+//  ReporterPrims<-+ | +--> CommandPrims
+//                 | | |
+//                 Prim
+//
+// The reason for this split is that (as of v0.5.5), scala.js will not compile
+// a single Prim trait that handles both command and reporter prims.
+// Having two separate traits makes the code a bit easier to manage, but
+// the decision of whether there are separate traits or not could be revisited
+// in the future after a scala.js upgrade shows that it won't break stuff (RG 3/30/2015)
+trait PrimUtils {
   def handlers: Handlers
 
+  // Intended to take in a NetLogo identifier (e.g. breed names, varnames, `turtles-own` varnames) and give back a
+  // string for use in JavaScript.  We cannot simply wrap the string in single quotes, since single quotes are
+  // actually valid characters in NetLogo identifiers!  --JAB (2/26/15)
+  protected def jsString(ident: String): String =
+    '"' + ident + '"'
+
+  protected def failCompilation(msg: String, token: Token): Nothing =
+    throw new CompilerException(msg, token.start, token.end, token.filename)
+
+  protected def fixBN(breedName: String): String =
+    Option(breedName) filter (_.nonEmpty) getOrElse "LINKS"
+}
+
+trait ReporterPrims extends PrimUtils {
   def reporter(r: ReporterApp): String = {
     def arg(i: Int) = handlers.reporter(r.args(i))
     def commaArgs = argsSep(", ")
@@ -118,6 +143,14 @@ trait Prims {
     }
   }
 
+  def generateOf(r: ReporterApp): String = {
+    val agents = handlers.reporter(r.args(1))
+    val func   = handlers.fun(r.args(0), isReporter = true)
+    s"$agents.projectionBy($func)"
+  }
+}
+
+trait CommandPrims extends PrimUtils {
   def generateCommand(s: Statement): String = {
     def arg(i: Int) = handlers.reporter(s.args(i))
     def commaArgs = argsSep(", ")
@@ -316,25 +349,8 @@ trait Prims {
         |}""".stripMargin
   }
 
-  // Intended to take in a NetLogo identifier (e.g. breed names, varnames, `turtles-own` varnames) and give back a
-  // string for use in JavaScript.  We cannot simply wrap the string in single quotes, since single quotes are
-  // actually valid characters in NetLogo identifiers!  --JAB (2/26/15)
-  private def jsString(ident: String): String =
-    '"' + ident + '"'
-
-  private def failCompilation(msg: String, token: Token): Nothing =
-    throw new CompilerException(msg, token.start, token.end, token.filename)
-
-  private def fixBN(breedName: String): String =
-    Option(breedName) filter (_.nonEmpty) getOrElse "LINKS"
-
   def genAsk(agents: String, shouldShuffle: Boolean, body: String): String =
     s"""$agents.ask($body, $shouldShuffle);"""
-
-  def generateOf(r: ReporterApp): String = {
-    val agents = handlers.reporter(r.args(1))
-    val func   = handlers.fun(r.args(0), isReporter = true)
-    s"$agents.projectionBy($func)"
-  }
-
 }
+
+trait Prims extends PrimUtils with CommandPrims with ReporterPrims
