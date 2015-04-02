@@ -43,7 +43,21 @@ trait LowPriorityImplicitReaders {
   implicit object tortoiseJs2String extends JsonReader[TortoiseJson, String] {
     def apply(json: TortoiseJson): Either[String, String] = json match {
       case JsString(s) => Right(s)
-      case other       => Left(s"could not convert ${other.getClass.getSimpleName} to String")
+      case other       => Left(s"could not convert $other to String")
+    }
+  }
+
+  implicit object tortoiseJsAsJsObject extends JsonReader[TortoiseJson, JsObject] {
+    def apply(json: TortoiseJson): Either[String, JsObject] = json match {
+      case o: JsObject => Right(o)
+      case x           => Left(s"Expected Javascript Object, found $x")
+    }
+  }
+
+  implicit object tortoiseJsAsJsArray extends JsonReader[TortoiseJson, JsArray] {
+    def apply(json: TortoiseJson): Either[String, JsArray] = json match {
+      case a: JsArray => Right(a)
+      case x          => Left(s"Expected Javascript Array, found $x")
     }
   }
 }
