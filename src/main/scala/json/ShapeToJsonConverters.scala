@@ -34,9 +34,9 @@ object ShapeToJsonConverters {
     private def lineToJS(index: Int): JObject = {
       val line = target.getLine(index)
       JObject(
-        "x-offset"   -> JDecimal(line.xcor),
-        "is-visible" -> JBool(line.isVisible),
-        "dashes"     -> JArray(line.getDashes.toList.map(x => JDecimal(x)))
+        "x-offset"     -> JDecimal(line.xcor),
+        "is-visible"   -> JBool(line.isVisible),
+        "dash-pattern" -> JArray(line.getDashes.toList.map(x => JDecimal(x)))
       )
     }
 
