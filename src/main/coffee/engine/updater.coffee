@@ -135,6 +135,7 @@ module.exports =
       heading:       ["HEADING",     @_withDefault(link.getHeading.bind(link))(0)]
       'hidden?':     ["HIDDEN?",     link._isHidden]
       id:            ["ID",          link.id]
+      isDirected:    ["IS-DIRECTED?", link.isDirected]
       label:         ["LABEL",       Dump(link._label)]
       'label-color': ["LABEL-COLOR", link._labelcolor]
       midpointx:     ["MIDPOINTX",   link.getMidpointX()]
