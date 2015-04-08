@@ -12,4 +12,5 @@ module.exports =
     obj.min       = Math.min
     obj.toRadians = (degrees) -> degrees * Math.PI / 180
     obj.toDegrees = (radians) -> radians * 180 / Math.PI
+    obj.PI        = -> Math.PI # Scala forces it to be a function in Nashorn, so it's a function here --JAB (4/8/15)
     obj
