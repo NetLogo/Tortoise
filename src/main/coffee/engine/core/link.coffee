@@ -32,6 +32,7 @@ module.exports =
       @end1.linkManager.add(this)
       @end2.linkManager.add(this)
       @updateEndRelatedVars()
+      @_updateVarsByName("directed?")
 
     # () => String
     getBreedName: ->
