@@ -11,6 +11,7 @@ NLType           = require('../core/typechecker')
 StrictMath       = require('tortoise/shim/strictmath')
 Comparator       = require('tortoise/util/comparator')
 Exception        = require('tortoise/util/exception')
+NLMath           = require('tortoise/util/nlmath')
 stableSort       = require('tortoise/util/stablesort')
 
 # For most of this stuff, Lodashing it is no good, since Lodash doesn't handle strings correctly.  Could use Underscore.string... --JAB (5/5/14)

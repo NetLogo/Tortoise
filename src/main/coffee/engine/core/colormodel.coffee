@@ -2,7 +2,7 @@
 
 _          = require('lodash')
 JSType     = require('tortoise/util/typechecker')
-StrictMath = require('../shim/strictmath')
+StrictMath = require('tortoise/shim/strictmath')
 
 # type RGB = (Number, Number, Number)
 
