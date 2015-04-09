@@ -91,7 +91,7 @@ object JSONSerializer {
     kind match {
       case Turtle => AgentVariables.getImplicitTurtleVariables
       case Patch  => AgentVariables.getImplicitPatchVariables
-      case Link   => AgentVariables.getImplicitLinkVariables ++ Array("SIZE", "HEADING", "MIDPOINTX", "MIDPOINTY")
+      case Link   => AgentVariables.getImplicitLinkVariables ++ Array("SIZE", "HEADING", "MIDPOINTX", "MIDPOINTY", "DIRECTED?")
       // Note that all cases can be replaced by _. However, we don't deal with linethickness yet, need to address that.
       case _      => 0 until kind.Variables.maxId map (kind.Variables.apply(_).toString)
     }
