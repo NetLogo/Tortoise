@@ -12,11 +12,11 @@ module.exports = {
 
   # (Number) => Number
   acos: (radians) ->
-    @_validateNumber(StrictMath.toDegrees(StrictMath.acos(radians)))
+    @validateNumber(StrictMath.toDegrees(StrictMath.acos(radians)))
 
   # (Number) => Number
   asin: (radians) ->
-    @_validateNumber(StrictMath.toDegrees(StrictMath.asin(radians)))
+    @validateNumber(StrictMath.toDegrees(StrictMath.asin(radians)))
 
   # (Number, Number) => Number
   atan: (d1, d2) ->
@@ -108,7 +108,7 @@ module.exports = {
     n | 0
 
   # (Number) => Number
-  _validateNumber: (x) ->
+  validateNumber: (x) ->
     if not isFinite(x)
       throw new Error("math operation produced a non-number")
     else if isNaN(x)

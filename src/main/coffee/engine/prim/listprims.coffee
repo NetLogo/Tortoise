@@ -71,6 +71,22 @@ module.exports =
     mean: (xs) ->
       @sum(xs) / xs.length
 
+    # (Array[Number]) => Number
+    median: (xs) ->
+      nums   = _(xs).filter((x) -> NLType(x).isNumber()).sortBy().value()
+      length = nums.length
+
+      if length isnt 0
+        middleIndex = StrictMath.floor(length / 2)
+        middleNum   = nums[middleIndex]
+        if length % 2 is 1
+          middleNum
+        else
+          subMiddleNum = nums[middleIndex - 1]
+          NLMath.validateNumber((middleNum + subMiddleNum) / 2)
+      else
+        throw new Error("Can't find the median of a list with no numbers: #{Dump(xs)}.")
+
     # [Item, Container <: (Array[Item]|String|AbstractAgentSet[Item])] @ (Item, Container) => Boolean
     member: (x, xs) ->
       type = NLType(xs)
@@ -221,6 +237,17 @@ module.exports =
         xs.sort()
       else
         throw new Error("can only sort lists and agentsets")
+
+    # (Array[Any]) => Number
+    standardDeviation: (xs) ->
+      nums = xs.filter((x) -> NLType(x).isNumber())
+      if nums.length > 1
+        mean       = @sum(xs) / xs.length
+        squareDiff = _(xs).foldl(((acc, x) -> acc + StrictMath.pow(x - mean, 2)), 0)
+        stdDev     = StrictMath.sqrt(squareDiff / (nums.length - 1))
+        NLMath.validateNumber(stdDev)
+      else
+        throw new Error("Can't find the standard deviation of a list without at least two numbers: #{Dump(xs)}")
 
     # [T] @ (Array[T], Number, Number) => Array[T]
     sublist: (xs, n1, n2) ->
