@@ -2,6 +2,7 @@
 
 AbstractAgentSet = require('./abstractagentset')
 LinkSet          = require('./linkset')
+Nobody           = require('./nobody')
 Patch            = require('./patch')
 PatchSet         = require('./patchset')
 TurtleSet        = require('./turtleset')
@@ -17,6 +18,7 @@ class NLType
   isBreedSet: (breedName) -> @isAgentSet() and @_x.getBreedName? and @_x.getBreedName() is breedName
   isLinkSet:              -> @_x instanceof LinkSet
   isList:                 -> JSType(@_x).isArray()
+  isNobody:               -> @_x is Nobody
   isNumber:               -> JSType(@_x).isNumber()
   isPatch:                -> @_x instanceof Patch
   isPatchSet:             -> @_x instanceof PatchSet
