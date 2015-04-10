@@ -78,7 +78,9 @@ class TortoiseFixture(name: String, nashorn: Nashorn, notImplemented: (String) =
     }
     catch {
       case ex: javax.script.ScriptException =>
-        assertResult(msg)(ex.getCause.getMessage.split(": ")(1)) // Nashorn doesn't make JS Exceptions easy
+        val AfterFirstColonRegex        = "^.*?: (.*)".r // Nashorn doesn't make JS Exceptions easy
+        val AfterFirstColonRegex(exMsg) = ex.getCause.getMessage
+        assertResult(msg)(exMsg)
       case e: TestFailedException => throw e
       case e: TestPendingException => throw e
       case e: Exception => fail(s"expected RuntimeError, but got ${e.getClass.getSimpleName}")
