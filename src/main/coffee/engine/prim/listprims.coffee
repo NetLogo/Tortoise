@@ -65,7 +65,7 @@ module.exports =
 
     # (Array[Number]) => Number
     max: (xs) ->
-      Math.max(xs...)
+      StrictMath.max(xs...)
 
     # (Array[Number]) => Number
     mean: (xs) ->
@@ -83,7 +83,7 @@ module.exports =
 
     # (Array[Number]) => Number
     min: (xs) ->
-      Math.min(xs...)
+      StrictMath.min(xs...)
 
     # [Item] @ (Number, ListOrSet[Item]) => ListOrSet[Item]
     nOf: (n, agentsOrList) ->
