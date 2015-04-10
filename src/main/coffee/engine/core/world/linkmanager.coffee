@@ -109,7 +109,7 @@ module.exports =
 
       if not @_linkExists(end1.id, end2.id, isDirected, breedName)
         breed = @_breedManager.get(breedName)
-        link  = new Link(@_idManager.next(), isDirected, end1, end2, @_world, @_updater.updated, @_updater.registerDeadLink, @_removeLink, @linksOfBreed, breed)
+        link  = new Link(@_idManager.next(), isDirected, end1, end2, @_world, @_updater.updated, @_updater.registerDeadLink, @_removeLink, @_updater.registerLinkStamp, @linksOfBreed, breed)
         @_updater.updated(link)(Builtins.linkBuiltins...)
         @_updater.updated(link)(Builtins.linkExtras...)
         @_links.insert(link)

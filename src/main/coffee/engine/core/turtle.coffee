@@ -17,6 +17,10 @@ NLMath            = require('tortoise/util/nlmath')
 module.exports =
   class Turtle
 
+    # type GenTurtleFunc      = (Number, Number, Number, Number, Breed, String, Number, Boolean, Number, String, PenManager) => Turtle
+    # type RegLineDrawFunc    = (Number, Number, Number, Number, RGB, Number, String) => Unit
+    # type RegTurtleStampFunc = (Number, Number, Number, Number, RGB, String) => Unit
+
     _breed:            undefined # Breed
     _breedShape:       undefined # String
     _updateVarsByName: undefined # (String*) => Unit
@@ -25,10 +29,10 @@ module.exports =
     linkManager: undefined # TurtleLinkManager
 
     # The type signatures here can be found to the right of the parameters. --JAB (4/13/15)
-    constructor: (@world, @id, @_genUpdate, @_registerLineDraw, @_registerDeath, @_createTurtle, @_removeTurtle          # (World, Number, (Updatable) => (String*) => Unit, (Number, Number, Number, Number, RGB, Number) => Unit, (Number) => Unit, (Number, Number, Number, Number, Breed, String, Number, Boolean, Number, String, PenManager) => Turtle, (Number) => Unit
-                , @_color = 0, @_heading = 0, @xcor = 0, @ycor = 0, breed = @world.breedManager.turtles(), @_label = ""  # Number, Number, Number, Number, Breed, String
-                , @_labelcolor = 9.9, @_hidden = false, @_size = 1.0, @_givenShape                                       # Number, Boolean, Number, String
-                , genPenManager = (self) => new PenManager(@_genUpdate(self))) ->                                        # (Updatable) => PenManager
+    constructor: (@world, @id, @_genUpdate, @_registerLineDraw, @_registerTurtleStamp, @_registerDeath, @_createTurtle   # World, Number, (Updatable) => (String*) => Unit, RegLinkDrawFunc, RegTurtleStampFunc, (Number) => Unit, GenTurtleType
+                , @_removeTurtle, @_color = 0, @_heading = 0, @xcor = 0, @ycor = 0                                       # (Number) => Unit, Number, Number, Number, Number
+                , breed = @world.breedManager.turtles(), @_label = "", @_labelcolor = 9.9, @_hidden = false              # Breed, String, Number, Boolean
+                , @_size = 1.0, @_givenShape, genPenManager = (self) => new PenManager(@_genUpdate(self))) ->            # Number, Boolean, Number, String, (Updatable) => PenManager
       @_updateVarsByName = @_genUpdate(this)
 
       @penManager  = genPenManager(this)
@@ -383,6 +387,11 @@ module.exports =
     # () => Unit
     watchMe: ->
       @world.observer.watch(this)
+      return
+
+    # () => Unit
+    stamp: ->
+      @_registerTurtleStamp(@xcor, @ycor, @_size, @_heading, ColorModel.colorToRGB(@_color), @_getShape())
       return
 
     # (Any) => Comparator

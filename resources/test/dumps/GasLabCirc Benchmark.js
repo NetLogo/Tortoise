@@ -388,7 +388,7 @@ function reverseTime() {
 function testTimeReversal(n) {
   Call(setup);
   world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() {
-    notImplemented('stamp', undefined)();
+    SelfPrims.stamp();
   }, true);
   while (Prims.lt(world.ticker.tickCount(), n)) {
     Call(go);

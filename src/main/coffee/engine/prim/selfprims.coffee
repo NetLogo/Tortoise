@@ -85,6 +85,11 @@ module.exports =
       @_getSelf().die()
       return
 
+    # () => Unit
+    stamp: ->
+      @_getSelf().stamp()
+      return
+
     # [T] @ (AbstractAgentSet[T]) => AbstractAgentSet[T]
     other: (agentSet) ->
       self = @_getSelf()

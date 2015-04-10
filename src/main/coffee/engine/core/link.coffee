@@ -15,14 +15,17 @@ NLType           = require('./typechecker')
 module.exports =
   class Link
 
+    # type RegLinkStampFunc = (Number, Number, Number, Number, Number, Number, Number, RGB, String, Number) => Unit
+
     _breed:            undefined # Breed
     _updateVarsByName: undefined # (String*) => Unit
     _varManager:       undefined # VariableManager
 
-    # (Number, Boolean, Turtle, Turtle, World, (Updatable) => (String*) => Unit, (Number) => Unit, (Link) => Unit, (String) => LinkSet, Breed, Number, Boolean, String, Number, String, Number, String) => Link
-    constructor: (@id, @isDirected, @end1, @end2, @world, genUpdate, @_registerDeath, @_registerRemoval
-                , getLinksByBreedName, breed = @world.breedManager.links(), @_color = 5, @_isHidden = false
-                , @_label = "", @_labelcolor = 9.9, @_shape = "default", @_thickness = 0, @tiemode = "none") ->
+    # The type signatures here can be found to the right of the parameters. --JAB (4/21/15)
+    constructor: (@id, @isDirected, @end1, @end2, @world, genUpdate, @_registerDeath, @_registerRemoval        # Number, Boolean, Turtle, Turtle, World, (Updatable) => (String*) => Unit, (Number) => Unit, (Link) => Unit
+                , @_registerLinkStamp, getLinksByBreedName, breed = @world.breedManager.links(), @_color = 5   # RegLinkStampFunc, (String) => LinkSet, Breed, Number
+                , @_isHidden = false, @_label = "", @_labelcolor = 9.9, @_shape = "default", @_thickness = 0   # Boolean, String, Number, String, Number
+                , @tiemode = "none") ->                                                                        # String
       @_updateVarsByName = genUpdate(this)
 
       varNames     = @_varNamesForBreed(breed)
@@ -62,6 +65,26 @@ module.exports =
         @_seppuku()
         @id = -1
       throw new Death("Call only from inside an askAgent block")
+
+    # () => Unit
+    stamp: ->
+
+      { xcor: e1x, ycor: e1y } = @end1
+      { xcor: e2x, ycor: e2y } = @end2
+
+      stampHeading =
+        try @world.topology.towards(e1x, e1y, e2x, e2y)
+        catch error
+          if error instanceof AgentException
+            0
+          else
+            throw error
+
+      color = ColorModel.colorToRGB(@_color)
+      midX  = @getMidpointX()
+      midY  = @getMidpointY()
+
+      @_registerLinkStamp(e1x, e1y, e2x, e2y, midX, midY, stampHeading, color, @_shape, @thickness)
 
     # () => TurtleSet
     bothEnds: ->

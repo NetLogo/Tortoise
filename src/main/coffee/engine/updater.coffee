@@ -64,6 +64,14 @@ module.exports =
     registerPenTrail: (fromX, fromY, toX, toY, rgb, size, penMode) =>
       @_reportDrawingEvent({ type: "line", fromX, fromY, toX, toY, rgb, size, penMode })
 
+    # (Number, Number, Number, Number, RGB, String) => Unit
+    registerTurtleStamp: (x, y, size, heading, color, shapeName) =>
+      @_reportDrawingEvent({ type: "stamp-image", agentType: "turtle", stamp: {x, y, size, heading, color, shapeName}})
+
+    # (Number, Number, Number, Number, Number, Number, Number, RGB, String, Number) => Unit
+    registerLinkStamp: (x1, y1, x2, y2, midpointX, midpointY, heading, color, shapeName, thickness) =>
+      @_reportDrawingEvent({ type: "stamp-image", agentType: "link", stamp: {x1, y1, x2, y2, midpointX, midpointY, heading, color, shapeName, thickness}})
+
     # (UpdateEntry, Number) => Unit
     registerWorldState: (state, id = 0) ->
       @_update("world", id, state)

@@ -216,6 +216,7 @@ object SimplePrims {
         case _: prim.etc._left  => "SelfPrims.left"
         case _: prim.etc._right => "SelfPrims.right"
         case _: prim.etc._setxy => "SelfPrims.setXY"
+        case _: prim.etc._stamp => "SelfPrims.stamp"
         case _: prim._fd        => "SelfPrims.fd"
         case _: prim._jump      => "SelfPrims.jump"
 
@@ -263,7 +264,6 @@ object SimplePrims {
 
         // Unimplemented
         case _: prim.etc._display     => "notImplemented('display', undefined)"
-        case _: prim.etc._stamp       => "notImplemented('stamp', undefined)"
         case _: prim.etc._usermessage => "notImplemented('user-message', undefined)"
 
       }
