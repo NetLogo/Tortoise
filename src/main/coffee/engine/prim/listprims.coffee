@@ -127,6 +127,14 @@ module.exports =
       else
         false
 
+    # [Item, Container <: (Array[Item]|String)] @ (Item, Container) => Container
+    remove: (x, xs) ->
+      type = NLType(xs)
+      if type.isList()
+        _(xs).filter((y) => not @_equality(x, y)).value()
+      else
+        xs.replace(new RegExp(x, "g"), "")
+
     # [T] @ (Array[T]) => Array[T]
     removeDuplicates: (xs) ->
       if xs.length < 2
@@ -146,24 +154,6 @@ module.exports =
             [accArr, accSet]
         [out, []] = xs.reduce(f, [[], {}])
         out
-
-    # [T] @ (Array[T]|String) => Array[T]|String
-    reverse: (xs) ->
-      type = NLType(xs)
-      if type.isList()
-        xs[..].reverse()
-      else if type.isString()
-        xs.split("").reverse().join("")
-      else
-        throw new Error("can only reverse lists and strings")
-
-    # [Item, Container <: (Array[Item]|String)] @ (Item, Container) => Container
-    remove: (x, xs) ->
-      type = NLType(xs)
-      if type.isList()
-        _(xs).filter((y) => not @_equality(x, y)).value()
-      else
-        xs.replace(new RegExp(x, "g"), "") # Replace all occurences of `x` --JAB (5/26/14)
 
     # [Item, Container <: (Array[Item]|String)] @ (Number, Container) => Container
     removeItem: (n, xs) ->
@@ -188,6 +178,16 @@ module.exports =
         pre  = xs.slice(0, n)
         post = xs.slice(n + 1)
         pre + x + post
+
+    # [T] @ (Array[T]|String) => Array[T]|String
+    reverse: (xs) ->
+      type = NLType(xs)
+      if type.isList()
+        xs[..].reverse()
+      else if type.isString()
+        xs.split("").reverse().join("")
+      else
+        throw new Error("can only reverse lists and strings")
 
     # [T] @ (Array[Array[T]|T]) => Array[T]
     sentence: (xs...) ->
