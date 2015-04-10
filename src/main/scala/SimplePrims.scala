@@ -158,6 +158,7 @@ object SimplePrims {
         case _: prim.etc._turtleset      => "Prims.turtleSet"
         case _: prim.etc._shadeof        => "ColorModel.areRelatedByShade"
         case _: prim.etc._scalecolor     => "ColorModel.scaleColor"
+        case _: prim.etc._extractrgb     => "ColorModel.colorToRGB"
         case _: prim.etc._turtleson      => "Prims.turtlesOn"
         case _: prim._greaterthan        => "Prims.gt"
         case _: prim._lessthan           => "Prims.lt"

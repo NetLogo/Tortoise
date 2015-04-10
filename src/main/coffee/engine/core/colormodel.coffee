@@ -48,8 +48,8 @@ RGBCache =
     baseIndex = StrictMath.floor(colorTimesTen / 100)
     rgb       = BaseRGBs[baseIndex]
     step      = (colorTimesTen % 100 - 50) / 50.48 + 0.012
-    attenuate = if step < 0 then (x) -> x else (x) -> 0xFF - x
-    rgb.map((x) -> x + StrictMath.floor(attenuate(x) * step))
+    attenuate = if step <= 0 then (x) -> x else (x) -> 0xFF - x
+    rgb.map((x) -> x + StrictMath.truncate(attenuate(x) * step))
 
 module.exports = {
 

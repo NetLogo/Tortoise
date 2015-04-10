@@ -7,7 +7,8 @@ import
   org.nlogo.{ core, api, headless, mirror, nvm },
   headless.lang._,
   headless.test.{ RuntimeError, TestMode, Command, Reporter, CompileError, Success },
-  core.Model,
+  core.{ model, Model },
+    model.ModelReader,
   org.scalatest.Assertions._,
   org.scalatest.exceptions.TestFailedException
 
@@ -208,7 +209,7 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
   def open(path: String, dimensions: Option[(Int, Int, Int, Int)]) {
     require(!opened)
     super.open(path)
-    val model = api.model.ModelReader.parseModel(api.FileIO.file2String(path), workspace)
+    val model = ModelReader.parseModel(api.FileIO.file2String(path), workspace)
 
     val finalModel = dimensions match {
       case None => model

@@ -4,8 +4,8 @@ package org.nlogo.tortoise
 
 import
   org.nlogo.{ api, core, shape },
-    api.{ ShapeList, Version },
-    core.{ AgentKind, AgentVariables, Model, Program },
+    api.Version,
+    core.{ ShapeList, AgentKind, AgentVariables, Model, Program, ShapeParser },
     shape.{ LinkShape, VectorShape }
 
 import
@@ -89,17 +89,17 @@ class RuntimeInit(program: Program, model: Model) {
 
     def shapeList(shapes: ShapeList): String = {
       import scala.collection.JavaConverters.asScalaSetConverter
-      if (shapes.getNames.asScala.nonEmpty)
+      if (shapes.names.nonEmpty)
         JSONSerializer.serialize(shapes)
       else
         "{}"
     }
 
     def parseTurtleShapes(strings: Array[String]): ShapeList =
-      new ShapeList(AgentKind.Turtle, VectorShape.parseShapes(strings, Version.version).asScala)
+      new ShapeList(AgentKind.Turtle, ShapeParser.parseVectorShapes(strings))
 
     def parseLinkShapes(strings: Array[String]): ShapeList =
-      new ShapeList(AgentKind.Link, LinkShape.parseShapes(strings, Version.version).asScala)
+      new ShapeList(AgentKind.Link, ShapeParser.parseLinkShapes(strings))
 
     val patchVarNames  = program.patchesOwn diff AgentVariables.getImplicitPatchVariables
 

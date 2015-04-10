@@ -7,8 +7,7 @@ import org.json4s.native.JsonMethods._
 
 import
   org.nlogo.{ api, core, mirror, drawing },
-    api.{ Shape, ShapeList },
-    core.{ AgentVariables, LogoList },
+    core.{ AgentVariables, LogoList, Shape, ShapeList },
     drawing.DrawingAction,
     mirror._
 import Mirrorables._
@@ -92,7 +91,7 @@ object JSONSerializer {
     case i: java.lang.Long       => JInt(i.intValue)
     case b: java.lang.Boolean    => JBool(b)
     case s: java.lang.String     => JString(s)
-    case s: ShapeList            => JObject((s.getShapes.asScala map (shape => shape.getName -> shape.toJsonObj)).toList)
+    case s: ShapeList            => JObject((s.shapes map (shape => shape.name -> shape.toJsonObj)).toList)
     case s: Shape                => s.toJsonObj
     case l: LogoList             => JArray((l.toVector map toJValue).toList)
     case (x: AnyRef, y: AnyRef)  => JArray(List(toJValue(x), toJValue(y)))

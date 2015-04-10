@@ -3,9 +3,9 @@
 package org.nlogo.tortoise.json
 
 import
-  org.nlogo.{ api, shape },
-    api.Shape,
-    shape.{ LinkShape, VectorShape }
+  org.nlogo.{ core, shape },
+    core.Shape,
+      Shape.{ LinkShape, VectorShape }
 
 import org.json4s._
 import scala.language.implicitConversions
@@ -24,24 +24,24 @@ object ShapeToJsonConverters {
     import scala.collection.JavaConverters._
     import org.nlogo.tortoise.json.ElemToJsonConverters.elem2Json
     override protected val extraProps = JObject(
-      "rotate"   -> JBool(target.isRotatable),
-      "elements" -> JArray((target.getElements.asScala map (_.toJsonObj)).toList)
+      "rotate"   -> JBool(target.rotatable),
+      "elements" -> JArray((target.elements.map (_.toJsonObj)).toList)
     )
   }
 
   class LinkShapeConverter(override protected val target: LinkShape) extends ShapeConverter[LinkShape] {
 
     private def lineToJS(index: Int): JObject = {
-      val line = target.getLine(index)
+      val line = target.linkLines(index)
       JObject(
         "x-offset"     -> JDecimal(line.xcor),
         "is-visible"   -> JBool(line.isVisible),
-        "dash-pattern" -> JArray(line.getDashes.toList.map(x => JDecimal(x)))
+        "dash-pattern" -> JArray(line.dashChoices.toList.map(x => JDecimal(x)))
       )
     }
 
     override protected val extraProps: JObject = {
-      val dirIndicator = target.getDirectionIndicator.asInstanceOf[VectorShape]
+      val dirIndicator = target.indicator.asInstanceOf[VectorShape]
       JObject(
         "direction-indicator" -> new VectorShapeConverter(dirIndicator).toJsonObj,
         "curviness"           -> JDecimal(target.curviness),
