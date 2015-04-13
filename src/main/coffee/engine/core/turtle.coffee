@@ -7,11 +7,11 @@ Nobody            = require('./nobody')
 TurtleLinkManager = require('./turtlelinkmanager')
 TurtleSet         = require('./turtleset')
 NLType            = require('./typechecker')
-PenManager        = require('./structure/penmanager')
 VariableManager   = require('./structure/variablemanager')
 Comparator        = require('tortoise/util/comparator')
 NLMath            = require('tortoise/util/nlmath')
 
+{ PenManager }                               = require('./structure/penmanager')
 { DeathInterrupt: Death, TopologyInterrupt } = require('tortoise/util/exception')
 
 module.exports =
