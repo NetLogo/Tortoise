@@ -82,7 +82,7 @@ module.exports = {
     index = nextInt(BaseColors.length)
     BaseColors[index]
 
-  # (Number) => Number
+  # (Number|RGB) => Number|RGB
   wrapColor: (color) ->
     if JSType(color).isArray()
       color
