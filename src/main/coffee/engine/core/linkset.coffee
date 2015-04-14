@@ -21,7 +21,7 @@ module.exports =
 
     # () => String
     toString: ->
-      @_specialName.toLowerCase() ? "(agentset, #{@size()} #{@getBreedName().toLowerCase()})"
+      @_specialName?.toLowerCase() ? "(agentset, #{@size()} #{@getBreedName().toLowerCase()})"
 
     # (Array[T], LinkSet[T]) => LinkSet[T]
     _generateFrom: (newAgentArr, agents) ->

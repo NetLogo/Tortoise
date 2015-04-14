@@ -9,3 +9,18 @@
 
 Smoke
   2 + 2 => 4
+
+Derp2
+  breed [ woLVes wolf ]
+  O> error (link-set)   => ERROR (agentset, 0 links)
+  O> error (patch-set)  => ERROR (agentset, 0 patches)
+  O> error (turtle-set) => ERROR (agentset, 0 turtles)
+  O> error links        => ERROR links
+  O> error patches      => ERROR patches
+  O> error turtles      => ERROR turtles
+  O> error lINKs        => ERROR links
+  O> error paTches      => ERROR patches
+  O> error turTLes      => ERROR turtles
+  O> error wolves       => ERROR wolves
+  O> error woLVes       => ERROR wolves
+  O> error Wolves       => ERROR wolves

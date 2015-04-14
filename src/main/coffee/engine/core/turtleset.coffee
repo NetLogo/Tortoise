@@ -20,7 +20,7 @@ module.exports =
 
     # () => String
     toString: ->
-      @_specialName ? "(agentset, #{@size()} #{@getBreedName().toLowerCase()})"
+      @_specialName?.toLowerCase() ? "(agentset, #{@size()} #{@getBreedName().toLowerCase()})"
 
     # (Array[T], TurtleSet[T]) => TurtleSet[T]
     _generateFrom: (newAgentArr, agents) ->

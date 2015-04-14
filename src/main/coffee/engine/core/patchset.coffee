@@ -12,7 +12,7 @@ module.exports =
 
     # () => String
     toString: ->
-      @_specialName.toLowerCase() ? "(agentset, #{@size()} patches)"
+      @_specialName?.toLowerCase() ? "(agentset, #{@size()} patches)"
 
     # (Array[T], PatchSet[T]) => PatchSet[T]
     _generateFrom: (newAgentArr, agents) ->
