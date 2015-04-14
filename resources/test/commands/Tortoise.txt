@@ -10,6 +10,16 @@
 Smoke
   2 + 2 => 4
 
+Derp
+  globals [x]
+  O> set x 5
+  replace-item -14 []  1  => ERROR -14 isn't greater than or equal to zero.
+  replace-item   0 [1] 5  => [5]
+  replace-item   0 []  5  => ERROR Can't find element 0 of the list [], which is only of length 0.
+  replace-item   0 ""  "" => ERROR Can't find element 0 of the string , which is only of length 0.
+  replace-item   0 ""  5  => ERROR REPLACE-ITEM expected input to be a string but got the number 5 instead.
+  replace-item   0 x   2  => ERROR REPLACE-ITEM expected input to be a string or list but got the number 5 instead.
+
 Derp2
   breed [ woLVes wolf ]
   O> error (link-set)   => ERROR (agentset, 0 links)

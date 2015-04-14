@@ -14,6 +14,7 @@ class NLType
   isAgentSet:             -> @_x instanceof AbstractAgentSet
   isCommandTask:          -> JSType(@_x).isFunction() and not @_x.isReporter
   isDirectedLink:         -> @isLink() and @_x.isDirected
+  isBoolean:              -> JSType(@_x).isBoolean()
   isBreed:    (breedName) -> not @_x.isDead?() and @_x.isBreed?(breedName) is true
   isBreedSet: (breedName) -> @isAgentSet() and @_x.getBreedName? and @_x.getBreedName() is breedName
   isLinkSet:              -> @_x instanceof LinkSet

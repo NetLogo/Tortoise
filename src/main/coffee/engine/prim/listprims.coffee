@@ -1,18 +1,21 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_                = require('lodash')
-Dump             = require('../dump')
-AbstractAgentSet = require('../core/abstractagentset')
-Link             = require('../core/link')
-Nobody           = require('../core/nobody')
-Patch            = require('../core/patch')
-Turtle           = require('../core/turtle')
-NLType           = require('../core/typechecker')
-StrictMath       = require('tortoise/shim/strictmath')
-Comparator       = require('tortoise/util/comparator')
-Exception        = require('tortoise/util/exception')
-NLMath           = require('tortoise/util/nlmath')
-stableSort       = require('tortoise/util/stablesort')
+_                 = require('lodash')
+Dump              = require('../dump')
+AbstractAgentSet  = require('../core/abstractagentset')
+ArgumentTypeError = require('../core/argumenttypeerror')
+Link              = require('../core/link')
+Nobody            = require('../core/nobody')
+Patch             = require('../core/patch')
+Turtle            = require('../core/turtle')
+NLType            = require('../core/typechecker')
+StrictMath        = require('tortoise/shim/strictmath')
+Comparator        = require('tortoise/util/comparator')
+Exception         = require('tortoise/util/exception')
+NLMath            = require('tortoise/util/nlmath')
+stableSort        = require('tortoise/util/stablesort')
+
+{ Type: { ListType, StringType }, TypeSet } = require('../core/typeinfo')
 
 # For most of this stuff, Lodashing it is no good, since Lodash doesn't handle strings correctly.  Could use Underscore.string... --JAB (5/5/14)
 module.exports =
@@ -183,17 +186,26 @@ module.exports =
         post = xs.slice(n + 1)
         pre + post
 
-    # [Item, Container <: (Array[Item]|String)] @ (Number, Container, Item) => Container
-    replaceItem: (n, xs, x) ->
-      type = NLType(xs)
-      if type.isList()
-        temp = xs[..]
-        temp.splice(n, 1, x)
-        temp
+    # [T, U >: T] @ (Number, Array[T]|String, U|String) => Array[U]|String
+    replaceItem: (index, xs, newItem) ->
+      instructionName = "replace-item"
+      if index < 0
+        throw new Error("#{index} isn't greater than or equal to zero.")
+      else if NLType(xs).isList()
+        if index < xs.length
+          @_replaceItemInValidList(index, xs, newItem)
+        else
+          throw new Error("Can't find element #{index} of the list #{Dump(xs)}, which is only of length #{xs.length}.")
+      else if NLType(xs).isString()
+        if NLType(newItem).isString()
+          if index < xs.length
+            @_replaceItemInValidString(index, xs, newItem)
+          else
+            throw new Error("Can't find element #{index} of the string #{Dump(xs)}, which is only of length #{xs.length}.")
+        else
+          throw new ArgumentTypeError(instructionName, new TypeSet([StringType]), newItem)
       else
-        pre  = xs.slice(0, n)
-        post = xs.slice(n + 1)
-        pre + x + post
+        throw new ArgumentTypeError(instructionName, new TypeSet([StringType, ListType]), xs)
 
     # [T] @ (Array[T]|String) => Array[T]|String
     reverse: (xs) ->
@@ -301,3 +313,15 @@ module.exports =
               j += 1
             i += 1
           result
+
+    # [T, U >: T] @ (Number, Array[T]. U) => Array[U]
+    _replaceItemInValidList: (index, xs, newItem) ->
+      copy = xs[..]
+      copy.splice(index, 1, newItem)
+      copy
+
+    # (Number, String, String) => String
+    _replaceItemInValidString: (index, xs, newItem) ->
+      pre  = xs.substr(0, index)
+      post = xs.substr(index + newItem.length)
+      "#{pre}#{newItem}#{post}"

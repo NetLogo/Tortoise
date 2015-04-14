@@ -108,7 +108,6 @@ private[tortoise] object Freebies {
   private val incErrorDetectReporterNames = Seq(
     "Lists::Lput5",
     "Lists::ListFirst1",
-    "Lists::ListReplaceIt2",
     "Lists::ReduceEmpty",
     "Lists::MapNotEnoughInputs",
     "Lists::ListItem1",
@@ -118,8 +117,6 @@ private[tortoise] object Freebies {
     "Lists::ListRemoveItem4",
     "Lists::ListRemoveItem5",
     "Lists::ListRemoveItem6",
-    "Lists::ListReplItem2",
-    "Lists::ListReplItem3",
     "Lists::ListButFirst3",
     "Lists::ListButLast3",
     "Lists::ListSubList6",
