@@ -19,6 +19,7 @@ class RuntimeInit(program: Program, model: Model) {
   def init: String =
     s"""var workspace = tortoise_require('engine/workspace')(modelConfig)($genBreedObjects)($genBreedsOwnArgs)($genWorkspaceArgs);
        |
+       |var AgentSetPrims = workspace.agentSetPrims;
        |var BreedManager  = workspace.breedManager;
        |var LayoutManager = workspace.layoutManager;
        |var LinkPrims     = workspace.linkPrims;

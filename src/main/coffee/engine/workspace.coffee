@@ -7,6 +7,7 @@ BreedManager  = require('./core/breedmanager')
 World         = require('./core/world')
 SelfManager   = require('./core/structure/selfmanager')
 PlotManager   = require('./plot/plotmanager')
+AgentSetPrims = require('./prim/agentsetprims')
 LayoutManager = require('./prim/layoutmanager')
 LinkPrims     = require('./prim/linkprims')
 ListPrims     = require('./prim/listprims')
@@ -37,13 +38,14 @@ module.exports =
 
     rng         = new RNG
 
-    selfManager  = new SelfManager
-    breedManager = new BreedManager(breedObjs, turtlesOwns, linksOwns)
-    plotManager  = new PlotManager(plots)
-    prims        = new Prims(Dump, Hasher, rng)
-    selfPrims    = new SelfPrims(selfManager.self)
-    timer        = new Timer
-    updater      = new Updater
+    agentSetPrims = new AgentSetPrims(Hasher)
+    selfManager   = new SelfManager
+    breedManager  = new BreedManager(breedObjs, turtlesOwns, linksOwns)
+    plotManager   = new PlotManager(plots)
+    prims         = new Prims(Dump, Hasher, rng)
+    selfPrims     = new SelfPrims(selfManager.self)
+    timer         = new Timer
+    updater       = new Updater
 
     world         = new World(new MiniWorkspace(selfManager, updater, breedManager, rng, plotManager), worldArgs...)
     layoutManager = new LayoutManager(world, rng.nextDouble)
@@ -54,6 +56,7 @@ module.exports =
     outputPrims   = new OutputPrims(outputConfig, Dump)
 
     {
+      agentSetPrims
       selfManager
       breedManager
       layoutManager

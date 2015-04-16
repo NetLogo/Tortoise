@@ -1,5 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
+{ AgentException } = require('tortoise/util/exception')
+
 class TypeSet
 
   # (Boolean, Boolean, Boolean, Boolean) => TypeSet
@@ -96,7 +98,7 @@ module.exports =
 
     # (String, Any) => Unit
     setVariable: (varName, value) ->
-      @_getSelf().setVariable(varName, value)
+      @_rethrowingAgentExceptions(=> @_getSelf().setVariable(varName, value))
       return
 
     # (String) => Any
@@ -105,8 +107,18 @@ module.exports =
 
     # (String, Any) => Unit
     setPatchVariable: (varName, value) ->
-      @_getSelf().setPatchVariable(varName, value)
+      @_rethrowingAgentExceptions(=> @_getSelf().setPatchVariable(varName, value))
       return
+
+    # [T] @ (() => T) => T
+    _rethrowingAgentExceptions: (f) ->
+      try
+        f()
+      catch error
+        if error instanceof AgentException
+          throw new Error(error.message)
+        else
+          throw error
 
     # (TypeSet) => Agent
     _getSelfSafe: (typeSet) ->

@@ -334,7 +334,7 @@ trait Prims {
   def generateOf(r: ReporterApp): String = {
     val agents = handlers.reporter(r.args(1))
     val func   = handlers.fun(r.args(0), isReporter = true)
-    s"$agents.projectionBy($func)"
+    s"AgentSetPrims.of($agents, $func)"
   }
 
 }

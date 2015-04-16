@@ -60,11 +60,15 @@ module.exports =
 
     # (String, Number) => Agent
     getTurtleOfBreed: (breedName, id) ->
-      turtle = @getTurtle(id)
-      if turtle.getBreedName().toUpperCase() is breedName.toUpperCase()
-        turtle
+      if Number(id) is id and id % 1 is 0
+        turtle = @getTurtle(id)
+        if turtle.getBreedName().toUpperCase() is breedName.toUpperCase()
+          turtle
+        else
+          breedSingular = @_breedManager.get(breedName).singular
+          throw new Error("#{turtle.toString()} is not a #{breedSingular}")
       else
-        Nobody
+        throw new Error("#{id} is not an integer")
 
     # () => TurtleSet
     turtles: ->

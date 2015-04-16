@@ -1,7 +1,8 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_      = require('lodash')
-NLType = require('./typechecker')
+_                 = require('lodash')
+ArgumentTypeError = require('./argumenttypeerror')
+NLType            = require('./typechecker')
 
 # Generally, the argument to the constructor is expected to be the result of
 # `typeof <that for which you want to create a type>` --JAB (3/13/15)
@@ -10,33 +11,37 @@ class OutsideType
   # (String) => OutsideType
   constructor: (@_x) ->
 
+  # (Any) => Boolean
+  isTheTypeOf: (x) ->
+    typeof(@_x) is @toString()
+
   # () => String
   toString: ->
     @_x
 
 Type = {
-  AgentSetType:      { toString: -> "agentset" },
-  AgentType:         { toString: -> "agent" },
-  BooleanBlockType:  { toString: -> "TRUE/FALSE block" },
-  BooleanType:       { toString: -> "TRUE/FALSE" },
-  CommandBlockType:  { toString: -> "command block" },
-  CommandTaskType:   { toString: -> "command task" },
-  LinkSetType:       { toString: -> "link agentset" },
-  LinkType:          { toString: -> "link" },
-  ListType:          { toString: -> "list" },
-  NobodyType:        { toString: -> "NOBODY" },
-  NumberBlockType:   { toString: -> "number block" },
-  NumberType:        { toString: -> "number" },
-  OtherBlockType:    { toString: -> "different kind of block" },
-  PatchSetType:      { toString: -> "patch agentset" },
-  PatchType:         { toString: -> "patch" },
-  ReferenceType:     { toString: -> "variable" },
-  ReporterBlockType: { toString: -> "reporter block" },
-  ReporterTaskType:  { toString: -> "reporter task" },
-  StringType:        { toString: -> "string" },
-  TurtleSetType:     { toString: -> "turtle agentset" },
-  TurtleType:        { toString: -> "turtle" },
-  WildcardType:      { toString: -> "anything" },
+  AgentSetType:      { isTheTypeOf: ((x) -> NLType(x).isAgentSet()    ), toString: -> "agentset"                },
+  AgentType:         { isTheTypeOf: ((x) -> NLType(x).isAgent()       ), toString: -> "agent"                   },
+  BooleanBlockType:  { isTheTypeOf: ((x) -> false                     ), toString: -> "TRUE/FALSE block"        },
+  BooleanType:       { isTheTypeOf: ((x) -> NLType(x).isBoolean()     ), toString: -> "TRUE/FALSE"              },
+  CommandBlockType:  { isTheTypeOf: ((x) -> false                     ), toString: -> "command block"           },
+  CommandTaskType:   { isTheTypeOf: ((x) -> NLType(x).isCommandTask() ), toString: -> "command task"            },
+  LinkSetType:       { isTheTypeOf: ((x) -> NLType(x).isLinkSet()     ), toString: -> "link agentset"           },
+  LinkType:          { isTheTypeOf: ((x) -> NLType(x).isLink()        ), toString: -> "link"                    },
+  ListType:          { isTheTypeOf: ((x) -> NLType(x).isList()        ), toString: -> "list"                    },
+  NobodyType:        { isTheTypeOf: ((x) -> NLType(x).isNobody()      ), toString: -> "NOBODY"                  },
+  NumberBlockType:   { isTheTypeOf: ((x) -> false                     ), toString: -> "number block"            },
+  NumberType:        { isTheTypeOf: ((x) -> NLType(x).isNumber()      ), toString: -> "number"                  },
+  OtherBlockType:    { isTheTypeOf: ((x) -> false                     ), toString: -> "different kind of block" },
+  PatchSetType:      { isTheTypeOf: ((x) -> NLType(x).isPatchSet()    ), toString: -> "patch agentset"          },
+  PatchType:         { isTheTypeOf: ((x) -> NLType(x).isPatch()       ), toString: -> "patch"                   },
+  ReferenceType:     { isTheTypeOf: ((x) -> false                     ), toString: -> "variable"                },
+  ReporterBlockType: { isTheTypeOf: ((x) -> false                     ), toString: -> "reporter block"          },
+  ReporterTaskType:  { isTheTypeOf: ((x) -> NLType(x).isReporterTask()), toString: -> "reporter task"           },
+  StringType:        { isTheTypeOf: ((x) -> NLType(x).isString()      ), toString: -> "string"                  },
+  TurtleSetType:     { isTheTypeOf: ((x) -> NLType(x).isTurtleSet()   ), toString: -> "turtle agentset"         },
+  TurtleType:        { isTheTypeOf: ((x) -> NLType(x).isTurtle()      ), toString: -> "turtle"                  },
+  WildcardType:      { isTheTypeOf: ((x) -> true                      ), toString: -> "anything"                },
   OutsideType
 }
 
@@ -84,6 +89,12 @@ Types = {
       else
         new Type.OtherType(typeof x)
     new TypeSet([nlType])
+
+  # (String, TypeSet, Any) => Unit
+  throwIfNotCompatible: (primName, typeSet, target) ->
+    if not _(typeSet.toList()).any((x) -> x.isTheTypeOf(target))
+      throw new ArgumentTypeError(primName.toUpperCase(), typeSet, target)
+    return
 
 }
 

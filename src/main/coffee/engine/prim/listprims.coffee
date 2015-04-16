@@ -26,35 +26,39 @@ module.exports =
 
     # [T] @ (Array[T]|String) => Array[T]|String
     butFirst: (xs) ->
-      xs[1..]
+      type = NLType(xs)
+      if type.isList() or type.isString()
+        xs[1..]
+      else
+        new ArgumentTypeError('BUT-FIRST', [ListType, StringType], xs)
 
     # [T] @ (Array[T]|String) => Array[T]|String
     butLast: (xs) ->
-      xs[0...xs.length - 1]
+      @_ifListOrString(-> xs[0...xs.length - 1])
 
-    # [T] @ (String|Array[T]) => Boolean
+    # [T] @ (Array[T]|String) => Boolean
     empty: (xs) ->
-      xs.length is 0
+      @_ifListOrString(-> xs.length is 0)
 
-    # [Item] @ (Array[Item]) => Item
+    # [Item] @ (Array[Item]|String) => Item|String
     first: (xs) ->
-      xs[0]
+      @_ifListOrString(-> xs[0])
 
     # [Item] @ (Item, Array[Item]) => Array[Item]
     fput: (x, xs) ->
       [x].concat(xs)
 
-    # [Item] @ (Number, Array[Item]) => Item
+    # [Item] @ (Number, Array[Item]|String) => Item|String
     item: (n, xs) ->
-      xs[n]
+      @_ifListOrString(-> xs[n])
 
-    # [Item] @ (Array[Item]) => Item
+    # [Item] @ (Array[Item]|String) => Item|String
     last: (xs) ->
-      xs[xs.length - 1]
+      @_ifListOrString(-> xs[xs.length - 1])
 
-    # [T] @ (Array[T]) => Number
+    # [T] @ (Array[T]|String) => Number
     length: (xs) ->
-      xs.length
+      @_ifListOrString(-> xs.length)
 
     # [T] @ (T*) => Array[T]
     list: (xs...) ->
@@ -271,7 +275,7 @@ module.exports =
 
     # (Array[Number]) => Number
     sum: (xs) ->
-      xs.reduce(((a, b) -> a + b), 0)
+      NLMath.validateNumber(xs.reduce(((a, b) -> a + b), 0))
 
     # [T] @ (Array[T]) => Number
     variance: (xs) ->

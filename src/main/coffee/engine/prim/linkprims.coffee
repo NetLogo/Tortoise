@@ -1,5 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
+{ Type: { TurtleSetType }, TypeSet } = require('../core/typeinfo')
+
 module.exports =
   class LinkPrims
 
@@ -17,6 +19,7 @@ module.exports =
 
     # (TurtleSet, String) => LinkSet
     createLinksFrom: (otherTurtles, breedName) ->
+      @_ensureTurtleSet("create-#{breedName}-with", otherTurtles)
       @_linkManager.createReverseDirectedLinks(@_self(), otherTurtles.shuffled(), breedName)
 
     # (Turtle, String) => Link
@@ -25,6 +28,7 @@ module.exports =
 
     # (TurtleSet, String) => LinkSet
     createLinksTo: (otherTurtles, breedName) ->
+      @_ensureTurtleSet("create-#{breedName}-to", otherTurtles)
       @_linkManager.createDirectedLinks(@_self(), otherTurtles.shuffled(), breedName)
 
     # (Turtle, String) => Link
@@ -33,6 +37,7 @@ module.exports =
 
     # (TurtleSet, String) => LinkSet
     createLinksWith: (otherTurtles, breedName) ->
+      @_ensureTurtleSet("create-#{breedName}-with", otherTurtles)
       @_linkManager.createUndirectedLinks(@_self(), otherTurtles.shuffled(), breedName)
 
     # (String, Turtle) => Boolean
@@ -82,3 +87,9 @@ module.exports =
     # (String) => LinkSet
     myOutLinks: (breedName) ->
       @_self().linkManager.myOutLinks(breedName)
+
+    # (String, Any) => Unit
+    _ensureTurtleSet: (primName, ts) ->
+      if not NLType(ts).isTurtleSet()
+        throw new ArgumentTypeError(primName.toUpperCase(), new TypeSet([TurtleSetType]), ts)
+      return

@@ -120,15 +120,22 @@ module.exports =
 
     # (() => Any) => Unit
     ask: (f) ->
-      @world.selfManager.askAgent(f)(this)
-      if @world.selfManager.self().isDead?()
-        throw new Death
+      @askIfNotDead(
+        ->
+          @world.selfManager.askAgent(f)(this)
+          if @world.selfManager.self().isDead?()
+            throw new Death
+      )
       return
 
     # [Result] @ (() => Result) => Result
     projectionBy: (f) ->
+      @askIfNotDead(-> @world.selfManager.askAgent(f)(this))
+
+    # [Result] @ (() => Result) => Result
+    askIfNotDead: (f) ->
       if not @isDead()
-        @world.selfManager.askAgent(f)(this)
+        f()
       else
         throw new Error("That #{@_breed.singular} is dead.")
 

@@ -101,6 +101,10 @@ module.exports =
 
     # (Boolean, Turtle, Turtle, String) => Link
     _createLink: (isDirected, from, to, breedName) ->
+
+      if from.id is to.id
+        throw new Error("A turtle cannot link to itself.")
+
       [end1, end2] =
         if from.id < to.id or isDirected
           [from, to]

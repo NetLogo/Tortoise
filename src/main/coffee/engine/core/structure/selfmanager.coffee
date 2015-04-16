@@ -28,6 +28,7 @@ module.exports =
 
     # [T] @ (() => T) => (Agent) => T
     askAgent: (f) => (agent) =>
+
       oldMyself = @_myself
       oldAgent  = @_self
 

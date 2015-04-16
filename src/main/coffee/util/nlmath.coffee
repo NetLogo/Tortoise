@@ -59,16 +59,18 @@ module.exports = {
 
   # (Number, Number) => Number
   precision: (n, places) ->
-    multiplier = StrictMath.pow(10, places)
-    result = StrictMath.floor(n * multiplier + .5) / multiplier
-    if places > 0
-      result
-    else
-      StrictMath.round(result)
+    multiplier  = StrictMath.pow(10, places)
+    result      = StrictMath.floor(n * multiplier + .5) / multiplier
+    unvalidated =
+      if places > 0
+        result
+      else
+        StrictMath.round(result)
+    @validateNumber(unvalidated)
 
   # (Number, Number) => Number
   pow: (base, exponent) ->
-    StrictMath.pow(base, exponent)
+    @validateNumber(StrictMath.pow(base, exponent))
 
   # (Number) => Number
   round: (n) ->
@@ -101,7 +103,7 @@ module.exports = {
 
   # (Number) => Number
   tan: (degrees) ->
-    StrictMath.tan(StrictMath.toRadians(degrees))
+    @validateNumber(StrictMath.tan(StrictMath.toRadians(degrees)))
 
   # (Number) => Number
   toInt: (n) ->
