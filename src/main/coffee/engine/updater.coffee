@@ -165,6 +165,8 @@ module.exports =
       ticks:                      ["ticks",                     world.ticker._count]
       unbreededLinksAreDirected:  ["unbreededLinksAreDirected", world.breedManager.links().isDirected()]
       width:                      ["worldWidth",                world.topology.width]
+      wrappingAllowedInX:         ["wrappingAllowedInX",        world.topology._wrapInX]
+      wrappingAllowedInY:         ["wrappingAllowedInY",        world.topology._wrapInY]
     }
 
     # (Observer) => Object[EngineKey, (Key, Value)]
