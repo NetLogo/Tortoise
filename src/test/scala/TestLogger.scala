@@ -38,6 +38,7 @@ private[tortoise] trait TestLogger extends BrowserReporter {
 
   protected def noteAtStart(note: String): Unit = {
     s"/* $note */" +=: jsBlobs
+    ()
   }
 
   protected def annotatePrevious(note: String): Unit = {

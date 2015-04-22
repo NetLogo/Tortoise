@@ -21,11 +21,12 @@ class TortoiseFixture(name: String, nashorn: Nashorn, notImplemented: (String) =
   private var program: Program = Program.empty
   private var procs: ProceduresMap = NoProcedures
 
-  override def declare(model: CModel) {
+  override def declare(model: CModel): Unit = {
     val (js, p, m) = cautiously(Compiler.compileProcedures(model))
     program = p
     procs = m
     nashorn.eval(js)
+    ()
   }
 
   override def readFromString(literal: String): AnyRef =
@@ -35,7 +36,7 @@ class TortoiseFixture(name: String, nashorn: Nashorn, notImplemented: (String) =
     lazy val js = Compiler.compileCommands(wrapCommand(command), procs, program)
     command.result match {
       case Success(_) =>
-        cautiously(nashorn.run(js))
+        cautiously{ nashorn.run(js); () }
       case CompileError(msg) =>
         expectCompileError(js, msg)
       case RuntimeError(msg) =>
