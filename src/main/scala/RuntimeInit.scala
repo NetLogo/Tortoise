@@ -85,15 +85,11 @@ class RuntimeInit(program: Program, model: Model) {
 
   private def genWorkspaceArgs: String = {
 
-    import scala.collection.JavaConverters.asScalaBufferConverter
-
-    def shapeList(shapes: ShapeList): String = {
-      import scala.collection.JavaConverters.asScalaSetConverter
+    def shapeList(shapes: ShapeList): String =
       if (shapes.names.nonEmpty)
         JSONSerializer.serialize(shapes)
       else
         "{}"
-    }
 
     def parseTurtleShapes(strings: Array[String]): ShapeList =
       new ShapeList(AgentKind.Turtle, ShapeParser.parseVectorShapes(strings))

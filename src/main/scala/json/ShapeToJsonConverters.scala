@@ -3,12 +3,11 @@
 package org.nlogo.tortoise.json
 
 import
-  org.nlogo.{ core, shape },
-    core.Shape,
-      Shape.{ LinkShape, VectorShape }
+  org.json4s.{ JArray, JBool, JDecimal, JObject }
 
-import org.json4s._
-import scala.language.implicitConversions
+import
+  org.nlogo.core.Shape,
+    Shape.{ LinkShape, VectorShape }
 
 sealed trait ShapeConverter[T <: Shape] extends JsonConverter[T]
 
@@ -21,11 +20,10 @@ object ShapeToJsonConverters {
     }
 
   class VectorShapeConverter(override protected val target: VectorShape) extends ShapeConverter[VectorShape] {
-    import scala.collection.JavaConverters._
     import org.nlogo.tortoise.json.ElemToJsonConverters.elem2Json
     override protected val extraProps = JObject(
       "rotate"   -> JBool(target.rotatable),
-      "elements" -> JArray((target.elements.map (_.toJsonObj)).toList)
+      "elements" -> JArray(target.elements.map(_.toJsonObj).toList)
     )
   }
 
@@ -41,7 +39,7 @@ object ShapeToJsonConverters {
     }
 
     override protected val extraProps: JObject = {
-      val dirIndicator = target.indicator.asInstanceOf[VectorShape]
+      val dirIndicator = target.indicator
       JObject(
         "direction-indicator" -> new VectorShapeConverter(dirIndicator).toJsonObj,
         "curviness"           -> JDecimal(target.curviness),

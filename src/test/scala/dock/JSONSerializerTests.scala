@@ -1,26 +1,25 @@
 package org.nlogo.tortoise.dock
 
-import org.json4s.JsonDSL.string2jvalue
-import org.json4s.native.JsonMethods.{ compact, pretty, parse, render => jsRender }
-import org.json4s.string2JsonInput
+import
+  org.json4s.{ native, string2JsonInput },
+    native.JsonMethods.{ compact, pretty, parse, render => jsRender }
 
-import org.nlogo.tortoise.json.JSONSerializer
-import org.nlogo.mirror._, Mirroring._, Mirrorables._
-import org.nlogo.{ core, nvm },
-  core.{ Shape, ShapeList, ShapeParser },
-    Shape.VectorShape,
-  nvm.CompilerFlags
+import
+  org.nlogo.{ core, mirror, nvm, tortoise },
+    core.{ AgentKind, Model, ShapeList, ShapeParser, View },
+    mirror.{ Mirrorable, Mirrorables, Mirroring },
+    nvm.CompilerFlags,
+    tortoise.json.JSONSerializer
 
-import org.nlogo.headless._
-import org.nlogo.headless.lang._
+import
+  org.nlogo.headless.lang.{ Fixture, FixtureSuite }
 
-import org.scalatest.{ FunSuite, Matchers }
-
-import collection.JavaConverters._
+import
+  org.scalatest.Matchers
 
 class JSONSerializerTests extends FixtureSuite with Matchers {
 
-  def mirrorables(implicit fixture: Fixture): Iterable[Mirrorable] =
+  private def mirrorables(implicit fixture: Fixture): Iterable[Mirrorable] =
     Mirrorables.allMirrorables(fixture.workspace.world)
 
   test("JSONSerializer basic commands") { implicit fixture =>
@@ -105,28 +104,35 @@ class JSONSerializerTests extends FixtureSuite with Matchers {
           |  }
           |}""".stripMargin)
       .map {
-        case (cmd, json) => // prettify:
-          (cmd, jsRender(parse(json)))
+        case (cmd, json) => (cmd, jsRender(parse(json)))
       }
+
     // so we don't need ASM, and to save time - ST 11/14/13
-    fixture.workspace.openModel(core.Model(widgets = List(core.View.square(5))))
+    fixture.workspace.openModel(Model(widgets = List(View.square(5))))
     fixture.workspace.flags = CompilerFlags(useGenerator = false)
+
     val (initialState, _) = Mirroring.diffs(Map(), mirrorables)
+
     commands.foldLeft(initialState) {
       case (previousState, (cmd, expectedJSON)) =>
+
         fixture.workspace.command(cmd)
+
         val (nextState, update) = Mirroring.diffs(previousState, mirrorables)
-        val json = jsRender(parse(JSONSerializer.serialize(update)))
-        val format = compact _
-        format(json) should equal(format(expectedJSON))
+        val json                = jsRender(parse(JSONSerializer.serialize(update)))
+
+        compact(json) should equal(compact(expectedJSON))
+
         nextState
+
     }
+
   }
 
   test("JSONSerializer shapes") { implicit fixture =>
-    val shapeList = new ShapeList(
-      core.AgentKind.Turtle,
-      ShapeParser.parseVectorShapes(core.Model.defaultShapes))
+
+    val defShapes = ShapeParser.parseVectorShapes(Model.defaultShapes)
+    val shapeList = new ShapeList(AgentKind.Turtle, defShapes)
 
     val shapes = Seq(
         "default" ->
@@ -185,8 +191,7 @@ class JSONSerializerTests extends FixtureSuite with Matchers {
              |  }]
              |}""".stripMargin
       ) map {
-        case (shapeName, json) =>
-          (shapeList.shape(shapeName), jsRender(parse(json)))
+        case (shapeName, json) => (shapeList.shape(shapeName), jsRender(parse(json)))
       }
 
     shapes foreach {
@@ -194,6 +199,7 @@ class JSONSerializerTests extends FixtureSuite with Matchers {
         val json = jsRender(parse(JSONSerializer.serialize(shape)))
         pretty(json) should equal(pretty(expectedJSON))
     }
+
   }
 
 }

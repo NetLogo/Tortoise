@@ -2,36 +2,33 @@
 
 package org.nlogo.tortoise.json
 
-import org.json4s._
-import org.json4s.native.JsonMethods._
+import
+  java.lang.{ Boolean => JavaBoolean, Double => JavaDouble, Integer => JavaInt, Long => JavaLong, String => JavaString }
 
 import
-  org.nlogo.{ api, core, mirror, drawing },
+  org.nlogo.{ core, mirror, drawing },
     core.{ AgentVariables, LogoList, Shape, ShapeList },
     drawing.DrawingAction,
-    mirror._
-import Mirrorables._
+    mirror.{ AgentKey, Birth, Change, Death, Kind, Mirrorables, Update },
+      Mirrorables.{ Link, Observer, Patch, Turtle, World }
 
-import scala.collection.JavaConverters._
-
-import ShapeToJsonConverters._
-import DrawingActionToJsonConverters._
+import
+  org.json4s.{ JArray, JBool, JDouble, JField, JInt, JNull, JObject, JString, JValue, native },
+    native.JsonMethods.{ compact, render }
 
 object JSONSerializer {
 
   def serialize(u: Update): String =
-    compact(render(serializeToJObject(u)))
+    (serializeToJObject _ andThen render andThen compact)(u)
 
   def serialize(v: AnyRef): String =
-    compact(render(toJValue(v)))
+    (toJValue _ andThen render andThen compact)(v)
 
   def serializeWithViewUpdates(update: Update, viewUpdates: Seq[DrawingAction] = Seq()) = {
+    import DrawingActionToJsonConverters.drawingAction2Json
     val serializedUpdate = serializeToJObject(update)
-
-    val jsonViewUpdates =
-      ("drawingEvents" -> JArray(viewUpdates.map(_.toJsonObj).toList))
-
-    val withViewUpdates: Seq[(String, JValue)] = serializedUpdate.obj :+ jsonViewUpdates
+    val jsonViewUpdates  = "drawingEvents" -> JArray(viewUpdates.map(_.toJsonObj).toList)
+    val withViewUpdates  = serializedUpdate.obj :+ jsonViewUpdates
     compact(render(JObject(withViewUpdates: _*)))
   }
 
@@ -59,10 +56,7 @@ object JSONSerializer {
         Death(AgentKey(kind, id)) <- update.deaths if kind != Patch
       } yield kind -> JField(id.toString, JObject(JField("WHO", JInt(-1))))
 
-    val fieldsByKind: Map[Kind, Seq[JField]] =
-      (births ++ changes ++ deaths)
-        .groupBy(_._1) // group by kinds
-        .mapValues(_.map(_._2)) // remove kind from pairs
+    val fieldsByKind = (births ++ changes ++ deaths).groupBy(_._1).mapValues(_.map(_._2))
 
     val keysToKind = Seq(
       "turtles" -> Turtle,
@@ -81,26 +75,29 @@ object JSONSerializer {
     JObject(objectsByKey: _*)
   }
 
-  def toJValue(v: AnyRef): JValue = v match {
-    case d: java.lang.Double  =>
-      if (d.intValue == d.doubleValue)
-        JInt(d.intValue)
-      else
-        JDouble(d.doubleValue)
-    case i: java.lang.Integer    => JInt(i.intValue)
-    case i: java.lang.Long       => JInt(i.intValue)
-    case b: java.lang.Boolean    => JBool(b)
-    case s: java.lang.String     => JString(s)
-    case s: ShapeList            => JObject((s.shapes map (shape => shape.name -> shape.toJsonObj)).toList)
-    case s: Shape                => s.toJsonObj
-    case l: LogoList             => JArray((l.toVector map toJValue).toList)
-    case (x: AnyRef, y: AnyRef)  => JArray(List(toJValue(x), toJValue(y)))
-    case Some(x: AnyRef)         => toJValue(x)
-    case None                    => JNull
-    case x                       => JString("XXX IMPLEMENT ME") // JString(v.toString)
+  private def toJValue(v: AnyRef): JValue = {
+    import ShapeToJsonConverters.shape2Json
+    v match {
+      case d: JavaDouble  =>
+        if (d.intValue == d.doubleValue)
+          JInt(d.intValue)
+        else
+          JDouble(d.doubleValue)
+      case i: JavaInt             => JInt(i.intValue)
+      case i: JavaLong            => JInt(i.intValue)
+      case b: JavaBoolean         => JBool(b)
+      case s: JavaString          => JString(s)
+      case s: ShapeList           => JObject((s.shapes map (shape => shape.name -> shape.toJsonObj)).toList)
+      case s: Shape               => s.toJsonObj
+      case l: LogoList            => JArray((l.toVector map toJValue).toList)
+      case (x: AnyRef, y: AnyRef) => JArray(List(toJValue(x), toJValue(y)))
+      case Some(x: AnyRef)        => toJValue(x)
+      case None                   => JNull
+      case x                      => JString("XXX IMPLEMENT ME") // JString(v.toString)
+    }
   }
 
-  def getImplicitVariables(kind: Kind): Seq[String] =
+  private def getImplicitVariables(kind: Kind): Seq[String] =
     kind match {
       case Turtle => AgentVariables.getImplicitTurtleVariables
       case Patch  => AgentVariables.getImplicitPatchVariables
