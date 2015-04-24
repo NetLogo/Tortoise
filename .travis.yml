@@ -14,6 +14,7 @@ install:
   - sbt update
 script:
   - cat /usr/lib/jvm/java-8-oracle/release
+  - mv .travis.sbt travis.sbt
   - ./nightly.sh
 
 after_failure:
