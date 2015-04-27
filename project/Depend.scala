@@ -59,6 +59,7 @@ object Depend {
       "" -> Nil,
       "util" -> Nil,
       "core" -> Nil,
+      "tortoise/tags" -> Nil,
       "core/model" -> List("core"),
       "core/prim" -> List("core"),
       "core/prim/etc" -> List("core"),
@@ -76,7 +77,7 @@ object Depend {
       "headless/lang" -> List("headless"),
       "headless/test" -> List("core/model"),
       "parse" -> List("api", "core/prim", "core/prim/etc"),
-      "tortoise" -> List("core/model", "parse", "tortoise/json", "tortoise/jsengine", "headless/test"),
+      "tortoise" -> List("core/model", "parse", "tortoise/json", "tortoise/jsengine", "tortoise/tags", "headless/test"),
       "tortoise/jsengine" -> List("api"),
       "tortoise/json" -> List("mirror", "drawing")
     )

@@ -15,7 +15,11 @@ install:
 script:
   - cat /usr/lib/jvm/java-8-oracle/release
   - mv .travis.sbt travis.sbt
-  - ./nightly.sh
+  - ./nightly.sh sbt_task test:compile "ensime generate"
+  - ./nightly.sh sbt_test fast
+  - ./nightly.sh sbt_test language
+  - ./nightly.sh sbt_test crawl
+  - ./nightly.sh sbt_task depend
 
 after_failure:
   - dmesg | tail -100
