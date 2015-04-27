@@ -4,12 +4,20 @@ sudo: false
 jdk: oraclejdk8
 language: scala
 scala: 2.11.6
+env:
+  global:
+    - TRAVIS=true
+    - TRAVIS_JVM_OPTS="-Xss6m -Xmx1560M -Xms1560M -client -Xverify:none -XX:MaxMetaspaceSize=512M"
 before_install:
   - git submodule update --init --recursive
 install:
   - sbt update
 script:
+  - cat /usr/lib/jvm/java-8-oracle/release
   - ./nightly.sh
+
+after_failure:
+  - dmesg | tail -100
 
 notifications:
   hipchat:
