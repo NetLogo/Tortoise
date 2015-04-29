@@ -1,3 +1,5 @@
+# (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
+
 _                         = require('lodash')
 LinkSet                   = require('./linkset')
 Nobody                    = require('./nobody')
