@@ -52,21 +52,29 @@ object CompiledModel {
 
   private type CompiledModelV = CompileResult[CompiledModel]
 
-  def fromModel(model: Model, compiler: CompilerLike = Compiler): CompiledModelV = validate(compiler) {
+  def fromModel(model:         Model,
+                compiler:      CompilerLike = Compiler)
+      (implicit compilerFlags: CompilerFlags): CompiledModelV = validate(compiler) {
     (c) =>
       val (code, program, procedures) = c.compileProcedures(model)
       CompiledModel(code, model, program, procedures, c)
   }
 
-  def fromNlogoContents(contents: String, compiler: CompilerLike = Compiler): CompiledModelV = {
+  def fromNlogoContents(contents:      String,
+                        compiler:      CompilerLike  = Compiler)
+              (implicit compilerFlags: CompilerFlags): CompiledModelV = {
     val model = ModelReader.parseModel(contents, CompilerUtilities)
     fromModel(model)
   }
 
-  def fromCode(netlogoCode: String, compiler: CompilerLike = Compiler): CompiledModelV =
+  def fromCode(netlogoCode:   String,
+               compiler:      CompilerLike = Compiler)
+     (implicit compilerFlags: CompilerFlags): CompiledModelV =
     fromModel(Model(netlogoCode, List(View.square(16))))
 
-  def fromCompiledModel(netlogoCode: String, oldModel: CompiledModel): CompiledModelV = {
+  def fromCompiledModel(netlogoCode:   String,
+                        oldModel:      CompiledModel)
+              (implicit compilerFlags: CompilerFlags): CompiledModelV = {
     val CompiledModel(_, model, _, _, compiler) = oldModel
     fromModel(model.copy(code = netlogoCode), compiler)
   }

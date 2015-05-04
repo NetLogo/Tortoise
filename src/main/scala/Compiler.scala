@@ -26,17 +26,20 @@ object Compiler extends CompilerLike with ModelConfigGenerator {
 
   val frontEnd: FrontEndInterface = FrontEnd
 
-  def compileReporter(logo: String,
+  def compileReporter(logo:          String,
                       oldProcedures: ProceduresMap = NoProcedures,
-                      program: Program = Program.empty()): String =
+                      program:       Program       = Program.empty())
+            (implicit compilerFlags: CompilerFlags = CompilerFlags.Default): String =
     compile(logo, commands = false, oldProcedures, program)
 
-  def compileCommands(logo: String,
+  def compileCommands(logo:          String,
                       oldProcedures: ProceduresMap = NoProcedures,
-                      program: Program = Program.empty()): String =
+                      program:       Program       = Program.empty())
+            (implicit compilerFlags: CompilerFlags = CompilerFlags.Default): String =
     compile(logo, commands = true, oldProcedures, program)
 
-  def compileProcedures(model: Model): (String, Program, ProceduresMap) = {
+  def compileProcedures(model:         Model)
+              (implicit compilerFlags: CompilerFlags = CompilerFlags.Default): (String, Program, ProceduresMap) = {
     val (defs, results): (Seq[ProcedureDefinition], StructureResults) =
       frontEnd.frontEnd(model.code,
         program = Program.empty.copy(interfaceGlobals = model.interfaceGlobals))
@@ -51,10 +54,10 @@ object Compiler extends CompilerLike with ModelConfigGenerator {
     (js, results.program, results.procedures)
   }
 
-  private def compileProcedureDef(pd: ProcedureDefinition): String = {
+  private def compileProcedureDef(pd: ProcedureDefinition)(implicit compilerFlags: CompilerFlags): String = {
     val name = handlers.ident(pd.procedure.name)
     handlers.resetEveryID(name)
-    val body = handlers.commands(pd.statements)
+    val body = handlers.commands(pd.statements)(compilerFlags)
     val args = pd.procedure.args.map(handlers.ident).mkString(", ")
     s"""|function $name($args) {
         |${handlers.indented(body)}
@@ -69,17 +72,19 @@ object Compiler extends CompilerLike with ModelConfigGenerator {
   //   `__observer-code` command followed by the `report` command, so the
   //   actual reporter is the first (and only) argument to `report`
 
-  private def compile(logo: String, commands: Boolean,
-      oldProcedures: ProceduresMap = NoProcedures,
-      program: Program = Program.empty()): String = {
+  private def compile(logo:          String,
+                      commands:      Boolean,
+                      oldProcedures: ProceduresMap = NoProcedures,
+                      program:       Program       = Program.empty())
+            (implicit compilerFlags: CompilerFlags = CompilerFlags.Default): String = {
     val header  = SourceWrapping.getHeader(AgentKind.Observer, commands)
     val footer  = SourceWrapping.getFooter(commands)
     val wrapped = s"$header$logo$footer"
     val (defs, _) = frontEnd.frontEnd(wrapped, oldProcedures = oldProcedures, program = program)
     if (commands)
-      handlers.commands(defs.head.statements)
+      handlers.commands(defs.head.statements)(compilerFlags)
     else
-      handlers.reporter(defs.head.statements.stmts(1).args(0))
+      handlers.reporter(defs.head.statements.stmts(1).args(0))(compilerFlags)
   }
 
 }

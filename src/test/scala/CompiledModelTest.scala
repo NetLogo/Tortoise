@@ -27,7 +27,7 @@ class CompiledModelTest extends FunSuite {
   private val goodModel  = unsafeGenModelFromCode(goodModelCode)
 
   test("model from code") {
-    testModelCode(goodModelCode, shouldBeValid = true)
+    testModelCode(goodModelCode, isValid)
   }
 
   test("invalid model from code") {
@@ -35,7 +35,16 @@ class CompiledModelTest extends FunSuite {
       s"""|to go
           |  foobar
           |end""".stripMargin
-    testModelCode(badModelCode, shouldBeValid = false)
+    testModelCode(badModelCode, isInvalid)
+  }
+
+  test("model with unimplemented primitives can be compiled") {
+    val unimplemented =
+      s"""|to go
+          |  beep
+          |end""".stripMargin
+    testModelCode(unimplemented, isInvalid, CompilerFlags(generateUnimplemented = false))
+    testModelCode(unimplemented, isValid,   CompilerFlags(generateUnimplemented = true))
   }
 
   test("custom procedures valid") {
@@ -63,18 +72,23 @@ class CompiledModelTest extends FunSuite {
   }
 
   private def testValidCommand(code: String)(implicit model: CompiledModel) =
-    testSnippet(code, isReporter = false, shouldBeValid = true)
+    testSnippet(code, isReporter = false, isValid)
 
   private def testValidReporter(code: String)(implicit model: CompiledModel) =
-    testSnippet(code, isReporter = true, shouldBeValid = true)
+    testSnippet(code, isReporter = true, isValid)
 
   private def testInvalidCommand(code: String)(implicit model: CompiledModel) =
-    testSnippet(code, isReporter = false, shouldBeValid = false)
+    testSnippet(code, isReporter = false, isInvalid)
 
   private def testInvalidReporter(code: String)(implicit model: CompiledModel) =
-    testSnippet(code, isReporter = true, shouldBeValid = false)
+    testSnippet(code, isReporter = true, isInvalid)
 
-  private def testSnippet(code: String, isReporter: Boolean, shouldBeValid: Boolean)(implicit model: CompiledModel): Unit = {
+  type TestFunc = (String, (String) => String, (String) => CompileResult[String]) => Unit
+
+  private def testSnippet(code:       String,
+                          isReporter: Boolean,
+                          runTest:    TestFunc)
+                (implicit model:      CompiledModel): Unit = {
 
     val (compileFunc, modelCompileFunc) =
       if (isReporter)
@@ -84,30 +98,33 @@ class CompiledModelTest extends FunSuite {
 
     val genJS = compileFunc(_: String, model.procedures, model.program)
 
-    val testFunc = if (shouldBeValid) testValid _ else testInvalid _
-
-    testFunc(code, genJS, modelCompileFunc)
+    runTest(code, genJS, modelCompileFunc)
 
   }
 
-  private def testModelCode(modelCode: String, shouldBeValid: Boolean): Unit = {
+  private def testModelCode(modelCode:     String,
+                            runTest:       TestFunc,
+                            compilerFlags: CompilerFlags = CompilerFlags.Default): Unit = {
 
-    val genJS         = (code: String) => (codeToModel andThen Compiler.compileProcedures)(code)._1
-    val genValidation = (code: String) => CompiledModel.fromCode(code) map (_.compiledCode)
+    val genJS         = (code: String) => (codeToModel andThen ((m: CModel) => Compiler.compileProcedures(m)(compilerFlags)))(code)._1
+    val genValidation = (code: String) => CompiledModel.fromCode(code)(compilerFlags) map (_.compiledCode)
 
-    val testFunc = if (shouldBeValid) testValid _ else testInvalid _
-
-    testFunc(modelCode, genJS, genValidation)
+    runTest(modelCode, genJS, genValidation)
 
   }
 
-  private def testValid(code: String, genExpectedStr: (String) => String, genActualValidation: (String) => CompileResult[String]): Unit = {
+  private def isValid(code:                String,
+                      genExpectedStr:      (String) => String,
+                      genActualValidation: (String) => CompileResult[String]): Unit = {
     val expectedCode = genExpectedStr(code)
-    val actualCode   = genActualValidation(code) valueOr { case NonEmptyList(head, _*) => fail(codeFailedWithError(code, head)) }
+    val actualCode   =
+      genActualValidation(code) valueOr { case NonEmptyList(head, _*) => fail(codeFailedWithError(code, head)) }
     assertResult(expectedCode)(actualCode)
   }
 
-  private def testInvalid(code: String, throwOrGetStr: (String) => String, genActualValidation: (String) => CompileResult[String]): Unit =
+  private def isInvalid(code:                String,
+                        throwOrGetStr:       (String) => String,
+                        genActualValidation: (String) => CompileResult[String]): Unit =
     try fail(badCodeCompiled(code, throwOrGetStr(code)))
     catch {
       case expectedEx: CompilerException =>
