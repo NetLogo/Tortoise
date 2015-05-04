@@ -9,7 +9,7 @@ trait Prims {
 
   def handlers: Handlers
 
-  def reporter(r: ReporterApp): String = {
+  def reporter(r: ReporterApp)(implicit compilerFlags: CompilerFlags): String = {
     def arg(i: Int) = handlers.reporter(r.args(i))
     def commaArgs = argsSep(", ")
     def args =
@@ -112,13 +112,15 @@ trait Prims {
         val taskInputs = args.tail.mkString(", ")
         s"(${arg(0)})($taskInputs)"
 
-      case _ =>
+      case _ if compilerFlags.generateUnimplemented =>
+        generateNotImplementedStub(r.reporter.getClass.getName.drop(1))
+      case _                                        =>
         failCompilation(s"unknown primitive: ${r.reporter.getClass.getName}", r.instruction.token)
 
     }
   }
 
-  def generateCommand(s: Statement): String = {
+  def generateCommand(s: Statement)(implicit compilerFlags: CompilerFlags): String = {
     def arg(i: Int) = handlers.reporter(s.args(i))
     def commaArgs = argsSep(", ")
     def args =
@@ -159,18 +161,20 @@ trait Prims {
       case _: prim.etc._ignore           => s"${arg(0)};"
       case l: prim._let                  =>
         s"var ${handlers.ident(l.let.name)} = ${arg(0)};"
-      case _: prim.etc._run =>
+      case _: prim.etc._run              =>
         val taskInputs = args.tail.mkString(", ")
         s"(${arg(0)})($taskInputs);"
-      case _: prim.etc._foreach =>
+      case _: prim.etc._foreach          =>
         val lists = args.init.mkString(", ")
         s"Tasks.forEach(${arg(s.args.size - 1)}, $lists);"
-      case _ =>
+      case _ if compilerFlags.generateUnimplemented =>
+        s"${generateNotImplementedStub(s.command.getClass.getName.drop(1))};"
+      case _                                        =>
         failCompilation(s"unknown primitive: ${s.command.getClass.getName}", s.instruction.token)
     }
   }
 
-  def getReferenceName(s: Statement): String =
+  def getReferenceName(s: Statement)(implicit compilerFlags: CompilerFlags): String =
     s.args(0).asInstanceOf[ReporterApp].reporter match {
       case p: prim._patchvariable => p.displayName.toLowerCase
       case x                      => failCompilation(s"unknown reference: ${x.getClass.getName}", s.instruction.token)
@@ -178,7 +182,7 @@ trait Prims {
 
   /// custom generators for particular Commands
 
-  def generateSet(s: Statement): String = {
+  def generateSet(s: Statement)(implicit compilerFlags: CompilerFlags): String = {
     def arg(i: Int) = handlers.reporter(s.args(i))
     s.args(0).asInstanceOf[ReporterApp].reporter match {
       case p: prim._letvariable =>
@@ -204,14 +208,14 @@ trait Prims {
     }
   }
 
-  def generateLoop(w: Statement): String = {
+  def generateLoop(w: Statement)(implicit compilerFlags: CompilerFlags): String = {
     val body = handlers.commands(w.args(0))
     s"""|while (true) {
         |${handlers.indented(body)}
         |};""".stripMargin
   }
 
-  def generateRepeat(w: Statement): String = {
+  def generateRepeat(w: Statement)(implicit compilerFlags: CompilerFlags): String = {
     val count = handlers.reporter(w.args(0))
     val body = handlers.commands(w.args(1))
     val i = handlers.unusedVarname(w.command.token, "index")
@@ -221,7 +225,7 @@ trait Prims {
         |}""".stripMargin
   }
 
-  def generateWhile(w: Statement): String = {
+  def generateWhile(w: Statement)(implicit compilerFlags: CompilerFlags): String = {
     val pred = handlers.reporter(w.args(0))
     val body = handlers.commands(w.args(1))
     s"""|while ($pred) {
@@ -229,7 +233,7 @@ trait Prims {
         |}""".stripMargin
   }
 
-  def generateIf(s: Statement): String = {
+  def generateIf(s: Statement)(implicit compilerFlags: CompilerFlags): String = {
     val pred = handlers.reporter(s.args(0))
     val body = handlers.commands(s.args(1))
     s"""|if ($pred) {
@@ -237,7 +241,7 @@ trait Prims {
         |}""".stripMargin
   }
 
-  def generateIfElse(s: Statement): String = {
+  def generateIfElse(s: Statement)(implicit compilerFlags: CompilerFlags): String = {
     val pred      = handlers.reporter(s.args(0))
     val thenBlock = handlers.commands(s.args(1))
     val elseBlock = handlers.commands(s.args(2))
@@ -249,13 +253,13 @@ trait Prims {
         |}""".stripMargin
   }
 
-  def generateAsk(s: Statement, shuffle: Boolean): String = {
+  def generateAsk(s: Statement, shuffle: Boolean)(implicit compilerFlags: CompilerFlags): String = {
     val agents = handlers.reporter(s.args(0))
     val body = handlers.fun(s.args(1))
     genAsk(agents, shuffle, body)
   }
 
-  def generateCarefully(s: Statement, c: prim._carefully): String = {
+  def generateCarefully(s: Statement, c: prim._carefully)(implicit compilerFlags: CompilerFlags): String = {
     val errorName   = handlers.unusedVarname(s.command.token, "error")
     val doCarefully = handlers.commands(s.args(0))
     val handleError = handlers.commands(s.args(1)).replaceAll(s"_error_${c.let.hashCode()}", errorName)
@@ -268,7 +272,7 @@ trait Prims {
      """.stripMargin
   }
 
-  def generateCreateLink(s: Statement, name: String, breedName: String): String = {
+  def generateCreateLink(s: Statement, name: String, breedName: String)(implicit compilerFlags: CompilerFlags): String = {
     val other = handlers.reporter(s.args(0))
     // This is so that we don't shuffle unnecessarily.  FD 10/31/2013
     val nonEmptyCommandBlock =
@@ -278,7 +282,7 @@ trait Prims {
     genAsk(s"LinkPrims.$name($other, ${jsString(fixBN(breedName))})", nonEmptyCommandBlock, body)
   }
 
-  def generateCreateTurtles(s: Statement, ordered: Boolean): String = {
+  def generateCreateTurtles(s: Statement, ordered: Boolean)(implicit compilerFlags: CompilerFlags): String = {
     val n = handlers.reporter(s.args(0))
     val name = if (ordered) "createOrderedTurtles" else "createTurtles"
     val breed =
@@ -291,7 +295,7 @@ trait Prims {
     genAsk(s"world.turtleManager.$name($n, ${jsString(breed)})", true, body)
   }
 
-  def generateSprout(s: Statement): String = {
+  def generateSprout(s: Statement)(implicit compilerFlags: CompilerFlags): String = {
     val n = handlers.reporter(s.args(0))
     val body = handlers.fun(s.args(1))
     val breedName = s.command.asInstanceOf[prim._sprout].breedName
@@ -300,13 +304,13 @@ trait Prims {
     genAsk(sprouted, true, body)
   }
 
-  def generateHatch(s: Statement, breedName: String): String = {
+  def generateHatch(s: Statement, breedName: String)(implicit compilerFlags: CompilerFlags): String = {
     val n = handlers.reporter(s.args(0))
     val body = handlers.fun(s.args(1))
     genAsk(s"SelfPrims.hatch($n, ${jsString(breedName)})", true, body)
   }
 
-  def generateEvery(w: Statement): String = {
+  def generateEvery(w: Statement)(implicit compilerFlags: CompilerFlags): String = {
     val time = handlers.reporter(w.args(0))
     val body = handlers.commands(w.args(1))
     val everyId = handlers.nextEveryID()
@@ -315,6 +319,9 @@ trait Prims {
         |${handlers.indented(body)}
         |}""".stripMargin
   }
+
+  private def generateNotImplementedStub(primName: String): String =
+    s"notImplemented(${jsString(primName)}, undefined)"
 
   // Intended to take in a NetLogo identifier (e.g. breed names, varnames, `turtles-own` varnames) and give back a
   // string for use in JavaScript.  We cannot simply wrap the string in single quotes, since single quotes are
@@ -328,10 +335,10 @@ trait Prims {
   private def fixBN(breedName: String): String =
     Option(breedName) filter (_.nonEmpty) getOrElse "LINKS"
 
-  def genAsk(agents: String, shouldShuffle: Boolean, body: String): String =
+  def genAsk(agents: String, shouldShuffle: Boolean, body: String)(implicit compilerFlags: CompilerFlags): String =
     s"""$agents.ask($body, $shouldShuffle);"""
 
-  def generateOf(r: ReporterApp): String = {
+  def generateOf(r: ReporterApp)(implicit compilerFlags: CompilerFlags): String = {
     val agents = handlers.reporter(r.args(1))
     val func   = handlers.fun(r.args(0), isReporter = true)
     s"$agents.projectionBy($func)"

@@ -7,8 +7,21 @@ import
     FrontEndInterface.ProceduresMap
 
 trait CompilerLike {
-  def compileReporter(logo: String, oldProcedures: ProceduresMap, program: Program): String
-  def compileCommands(logo: String, oldProcedures: ProceduresMap, program: Program): String
-  def compileProcedures(model: Model): (String, Program, ProceduresMap)
-  def compileProcedures(code: String): (String, Program, ProceduresMap) = compileProcedures(Model(code))
+  def compileReporter(logo: String, oldProcedures: ProceduresMap, program: Program)
+    (implicit compilerFlags: CompilerFlags): String
+
+  def compileCommands(logo: String, oldProcedures: ProceduresMap, program: Program)
+    (implicit compilerFlags: CompilerFlags): String
+
+  def compileProcedures(model: Model)
+    (implicit compilerFlags: CompilerFlags): (String, Program, ProceduresMap)
+
+  def compileProcedures(code: String)
+    (implicit compilerFlags: CompilerFlags): (String, Program, ProceduresMap) = compileProcedures(Model(code))
+}
+
+case class CompilerFlags(generateUnimplemented: Boolean)
+
+object CompilerFlags {
+  implicit val Default = CompilerFlags(generateUnimplemented = false)
 }

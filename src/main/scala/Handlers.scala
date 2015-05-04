@@ -11,7 +11,10 @@ trait Handlers extends EveryIDProvider {
 
   def prims: Prims
 
-  def fun(node: AstNode, isReporter: Boolean = false, isTask: Boolean = false): String = {
+  def fun(    node:          AstNode,
+              isReporter:    Boolean = false,
+              isTask:        Boolean = false)
+    (implicit compilerFlags: CompilerFlags): String = {
     val taskHeader =
       if (isTask)
         "var taskArguments = arguments;\n"
@@ -46,7 +49,7 @@ trait Handlers extends EveryIDProvider {
   // objects, representing the concrete syntax of square brackets, but at this stage of compilation
   // the brackets are irrelevant.  So when we see a block we just immediately recurse into it.
 
-  def commands(node: AstNode): String =
+  def commands(node: AstNode)(implicit compilerFlags: CompilerFlags): String =
     node match {
       case block: CommandBlock =>
         commands(block.statements)
@@ -56,7 +59,7 @@ trait Handlers extends EveryIDProvider {
           .mkString("\n")
     }
 
-  def reporter(node: AstNode): String = node match {
+  def reporter(node: AstNode)(implicit compilerFlags: CompilerFlags): String = node match {
     case block: ReporterBlock =>
       reporter(block.app)
     case app: ReporterApp =>
