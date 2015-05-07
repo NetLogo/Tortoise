@@ -12,6 +12,13 @@ module.exports =
     # (ListPrims) => PrimsMiddle
     constructor: (@_listPrims) ->
 
+    # (Number, Number) => Number
+    divide_number_number: (a, b) ->
+      if b isnt 0
+        a / b
+      else
+        throw new Error("Division by zero.")
+
     # (Array[Any]) => Number
     median_list: (xs) ->
       nums = justTheNumbersFrom(xs)
@@ -20,6 +27,13 @@ module.exports =
         NLMath.validateNumber(median)
       else
         throw new Error("Can't find the median of a list with no numbers: #{Dump(xs)}.")
+
+    # (Number, Number) => Number
+    remainder_number_number: (a, b) ->
+      if b isnt 0
+        a % b
+      else
+        throw new Error("Division by zero.")
 
     # [T, U >: T] @ (Number, Array[T], U) => Array[U]
     replaceItem_number_list_t: (index, xs, newItem) ->

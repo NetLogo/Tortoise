@@ -43,6 +43,20 @@ module.exports =
       @_middle         = new PrimsMiddle(@_listPrims)
       @primTypechecker = new PrimTypechecker
 
+    # (Any, Any) => Number
+    add: (a, b) ->
+      options = [
+        [[NumberType, NumberType], -> a + b]
+      ]
+      perform(options, "+", [a, b])
+
+    # (Any, Any) => Boolean
+    and: (a, b) ->
+      options = [
+        [[BooleanType, BooleanType], -> a && b]
+      ]
+      perform(options, "and", [a, b])
+
     # () => Nothing
     boom: ->
       SimplePrims.boom()
@@ -72,6 +86,13 @@ module.exports =
           [[TurtleSetType], -> SimplePrims.breedOn_string_turtleset(breedName, x)]
         ]
       perform(options, "#{breedName}-on", [x])
+
+    # (Any, Any) => Number
+    divide: (a, b) ->
+      options = [
+        [[NumberType, NumberType], => @_middle.divide_number_number(a, b)]
+      ]
+      perform(options, "/", [a, b])
 
     # (Any) => Boolean
     empty: (xs) ->
@@ -214,6 +235,13 @@ module.exports =
       ]
       perform(options, "min", [xs])
 
+    # (Any, Any) => Number
+    multiply: (a, b) ->
+      options = [
+        [[NumberType, NumberType], -> a * b]
+      ]
+      perform(options, "*", [a, b])
+
     # (Any, Any) => Array[_]|AbstractAgentSet[_]
     nOf: (n, xs) ->
       options = [
@@ -229,6 +257,13 @@ module.exports =
         [[ListType],     => @_listPrims.oneOf_list(xs)]
       ]
       perform(options, "one-of", [xs])
+
+    # (Any, Any) => Boolean
+    or: (a, b) ->
+      options = [
+        [[BooleanType, BooleanType], -> a || b]
+      ]
+      perform(options, "or", [a, b])
 
     # (Any, Any) => Number|Boolean
     position: (x, xs) ->
@@ -251,6 +286,13 @@ module.exports =
         [[NumberType], => @_rngPrims.randomFloat_number(n)]
       ]
       perform(options, "random-float", [n])
+
+    # (Any, Any) => Number
+    remainder: (a, b) ->
+      options = [
+        [[NumberType, NumberType], => @_middle.remainder_number_number(a, b)]
+      ]
+      perform(options, "remainder", [a, b])
 
     # (Any, Any) => Array[_]|String
     remove: (x, xs) ->
@@ -317,6 +359,13 @@ module.exports =
       ]
       perform(options, "substring", [str, n1, n2])
 
+    # (Any, Any) => Boolean
+    subtract: (a, b) ->
+      options = [
+        [[NumberType, NumberType], -> a - b]
+      ]
+      perform(options, "-", [a, b])
+
     # (Any) => Number
     sum: (xs) ->
       options = [
@@ -341,3 +390,9 @@ module.exports =
       ]
       perform(options, "variance", [xs])
 
+    # (Any, Any) => Boolean
+    xor: (a, b) ->
+      options = [
+        [[BooleanType, BooleanType], -> a != b]
+      ]
+      perform(options, "xor", [a, b])
