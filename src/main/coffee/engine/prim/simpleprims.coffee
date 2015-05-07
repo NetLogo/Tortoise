@@ -173,9 +173,26 @@ module.exports = {
       subMiddleNum = sortedNums[middleIndex - 1]
       (middleNum + subMiddleNum) / 2
 
+# [T <: Agent] @ (T, AbstractAgentSet[_]) => Boolean
+  member_agent_agentset: (agent, agents) ->
+    agents.exists((a) -> agent is a)
+
+  # (String, String) => Boolean
+  member_string_string: (x, str) ->
+    str.indexOf(x) isnt -1
+
   # (Array[Number]) => Number
   min_list: (xs) ->
     Math.min(xs...)
+
+  # (String, String) => Number|Boolean
+  position_string_string: (x, str) ->
+    index = str.indexOf(x)
+    if index isnt -1 then index else false
+
+  # (String, String) => String
+  remove_string_string: (x, str) ->
+    str.replace(new RegExp(x, "g"), "")
 
   # [T] @ (Number, Array[T]) => Array[T]
   removeItem_number_list: (i, xs) ->

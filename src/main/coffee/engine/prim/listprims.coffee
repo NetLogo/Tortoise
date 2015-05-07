@@ -1,90 +1,54 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_                 = require('lodash')
-Dump              = require('../dump')
-AbstractAgentSet  = require('../core/abstractagentset')
-ArgumentTypeError = require('../core/argumenttypeerror')
-Link              = require('../core/link')
-Nobody            = require('../core/nobody')
-Patch             = require('../core/patch')
-Turtle            = require('../core/turtle')
-NLType            = require('../core/typechecker')
-StrictMath        = require('tortoise/shim/strictmath')
-Comparator        = require('tortoise/util/comparator')
-Exception         = require('tortoise/util/exception')
-NLMath            = require('tortoise/util/nlmath')
+_      = require('lodash')
+Nobody = require('../core/nobody')
 
-{ Type: { ListType, StringType }, TypeSet } = require('../core/typeinfo')
-
-# For most of this stuff, Lodashing it is no good, since Lodash doesn't handle strings correctly.  Could use Underscore.string... --JAB (5/5/14)
 module.exports =
   class ListPrims
 
     # (Hasher, (Any, Any) => Boolean, (Number) => Number) => ListPrims
     constructor: (@_hasher, @_equality, @_nextInt) ->
 
-    # [Item, Container <: (Array[Item]|String|AbstractAgentSet[Item])] @ (Item, Container) => Boolean
-    member: (x, xs) ->
-      type = NLType(xs)
-      if type.isList()
-        _(xs).some((y) => @_equality(x, y))
-      else if type.isString()
-        xs.indexOf(x) isnt -1
-      else # agentset
-        xs.exists((a) -> x is a)
+    # [T, U] @ (T, Array[U]) => Boolean
+    member_t_list: (x, xs) ->
+      _(xs).some((y) => @_equality(x, y))
 
-    # [Item] @ (Number, ListOrSet[Item]) => ListOrSet[Item]
-    nOf: (n, agentsOrList) ->
-      type = NLType(agentsOrList)
-      if type.isList()
-        @_nOfArray(n, agentsOrList)
-      else if type.isAgentSet()
-        items    = agentsOrList.iterator().toArray()
-        newItems = @_nOfArray(n, items)
-        agentsOrList.copyWithNewAgents(newItems)
-      else
-        throw new Error("N-OF expected input to be a list or agentset but got #{Dump(agentsOrList)} instead.")
+    # [T <: Agent, U <: AbstractAgentSet[T]] @ (Number, U) => U
+    nOf_number_agentset: (n, agents) ->
+      items    = agents.iterator().toArray()
+      newItems = @_nOfArray(n, items)
+      agents.copyWithNewAgents(newItems)
 
-    # [Item] @ (ListOrSet[Item]) => Item
-    oneOf: (agentsOrList) ->
-      type = NLType(agentsOrList)
+    # [T] @ (Number, Array[T]) => Array[T]
+    nOf_number_list: (n, agentsOrList) ->
+      @_nOfArray(n, agentsOrList)
 
-      arr =
-        if type.isAgentSet()
-          agentsOrList.iterator().toArray()
-        else
-          agentsOrList
-
+    # [T] @ (AbstractAgentSet[T]) => T
+    oneOf_agentset: (agents) ->
+      arr = agents.iterator().toArray()
       if arr.length is 0
         Nobody
       else
         arr[@_nextInt(arr.length)]
 
-    # [Item, Container <: (Array[Item]|String|AbstractAgentSet[Item])] @ (Item, Container) => Number|Boolean
-    position: (x, xs) ->
-      type = NLType(xs)
-
-      index =
-        if type.isList()
-          _(xs).findIndex((y) => @_equality(x, y))
-        else
-          xs.indexOf(x)
-
-      if index isnt -1
-        index
+    # [T] @ (Array[T]) => T
+    oneOf_list: (xs) ->
+      if xs.length is 0
+        Nobody
       else
-        false
+        xs[@_nextInt(xs.length)]
 
-    # [Item, Container <: (Array[Item]|String)] @ (Item, Container) => Container
-    remove: (x, xs) ->
-      type = NLType(xs)
-      if type.isList()
-        _(xs).filter((y) => not @_equality(x, y)).value()
-      else
-        xs.replace(new RegExp(x, "g"), "")
+    # [T, U] @ (T, Array[U]) => Number|Boolean
+    position_t_list: (x, xs) ->
+      index = _(xs).findIndex((y) => @_equality(x, y))
+      if index isnt -1 then index else false
+
+    # [T, U] @ (T, Array[U]) => Array[U]
+    remove_t_list: (x, xs) ->
+      _(xs).filter((y) => not @_equality(x, y)).value()
 
     # [T] @ (Array[T]) => Array[T]
-    removeDuplicates: (xs) ->
+    removeDuplicates_list: (xs) ->
       if xs.length < 2
         xs
       else

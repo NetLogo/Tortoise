@@ -2,7 +2,7 @@
 
 NLType = require('../core/typechecker')
 
-Middle      = require('./primsmiddle')
+PrimsMiddle = require('./primsmiddle')
 SimplePrims = require('./simpleprims')
 
 
@@ -28,16 +28,19 @@ equality = (a, b) ->
         (a is Nobody and b.isDead?()) or (b is Nobody and a.isDead?()) or ((typeA.isTurtle() or (typeA.isLink() and b isnt Nobody)) and a.compare(b) is EQ)
   )
 
-perform = (options, primName, args) -> throw new Error("unimplemented")
+perform = (options, primName, args) -> throw new Error("unimplemented perform stuff")
 
 module.exports =
 
   class PrimsOuter
 
+    _middle: undefined # PrimsMiddle
+
     primTypechecker: undefined
 
-    # (EveryPrims, RNGPrims) => PrimsOuter
-    constructor: (@_rngPrims) ->
+    # (RNGPrims, ListPrims) => PrimsOuter
+    constructor: (@_rngPrims, @_listPrims) ->
+      @_middle         = new PrimsMiddle(@_listPrims)
       @primTypechecker = new PrimTypechecker
 
     # () => Nothing
@@ -191,9 +194,18 @@ module.exports =
     # (Any) => Number
     median: (xs) ->
       options = [
-        [[ListType], -> Middle.median_list(xs)]
+        [[ListType], => @_middle.median_list(xs)]
       ]
       perform(options, "median", [xs])
+
+    # (Any, Any) => Boolean
+    member: (x, xs) ->
+      options = [
+        [[WildcardType, ListType],     => @_listPrims.member_t_list(x, xs)],
+        [[AgentType,    AgentSetType], -> SimplePrims.member_agent_agentset(x, xs)],
+        [[StringType,   StringType],   -> SimplePrims.member_string_string(x, xs)]
+      ]
+      perform(options, "member?", [x, xs])
 
     # (Any) => Number
     min: (xs) ->
@@ -201,6 +213,30 @@ module.exports =
         [[ListType], -> SimplePrims.min_list(xs)]
       ]
       perform(options, "min", [xs])
+
+    # (Any, Any) => Array[_]|AbstractAgentSet[_]
+    nOf: (n, xs) ->
+      options = [
+        [[NumberType, AgentSetType], => @_listPrims.nOf_number_agentset(n, xs)],
+        [[NumberType, ListType],     => @_listPrims.nOf_number_list(n, xs)]
+      ]
+      perform(options, "n-of", [n, xs])
+
+    # (Any) => Any
+    oneOf: (xs) ->
+      options = [
+        [[AgentSetType], => @_listPrims.oneOf_agentset(xs)],
+        [[ListType],     => @_listPrims.oneOf_list(xs)]
+      ]
+      perform(options, "one-of", [xs])
+
+    # (Any, Any) => Number|Boolean
+    position: (x, xs) ->
+      options = [
+        [[WildcardType, ListType],   => @_listPrims.position_t_list(x, xs)],
+        [[StringType,   StringType], -> SimplePrims.position_string_string(x, xs)]
+      ]
+      perform(options, "position", [x, xs])
 
     # (Any) => Number
     random: (n) ->
@@ -215,6 +251,21 @@ module.exports =
         [[NumberType], => @_rngPrims.randomFloat_number(n)]
       ]
       perform(options, "random-float", [n])
+
+    # (Any, Any) => Array[_]|String
+    remove: (x, xs) ->
+      options = [
+        [[WildcardType, ListType],   => @_listPrims.remove_t_list(x, xs)],
+        [[StringType,   StringType], -> SimplePrims.remove_string_string(x, xs)]
+      ]
+      perform(options, "remove", [x, xs])
+
+    # (Any) => Array[_]
+    removeDuplicates: (xs) ->
+      options = [
+        [[ListType], => @_listPrims.removeDuplicates_list(xs)]
+      ]
+      perform(options, "remove-duplicates", [xs])
 
     # (Any, Any) => Array[_]|String
     removeItem: (i, xs) ->
@@ -241,14 +292,14 @@ module.exports =
     # (Any) => Array[_]
     sort: (xs) ->
       options = [
-        [[ListType], -> Middle.sort_list(xs)]
+        [[ListType], => @_middle.sort_list(xs)]
       ]
       perform(options, "sort", [xs])
 
     # (Any) => Number
     standardDeviation: (xs) ->
       options = [
-        [[ListType], -> Middle.standardDeviation_list(xs)]
+        [[ListType], => @_middle.standardDeviation_list(xs)]
       ]
       perform(options, "standard-deviation", [xs])
 
@@ -269,7 +320,7 @@ module.exports =
     # (Any) => Number
     sum: (xs) ->
       options = [
-        [[ListType], -> Middle.sum_list(xs)]
+        [[ListType], => @_middle.sum_list(xs)]
       ]
       perform(options, "sum", [xs])
 
@@ -286,7 +337,7 @@ module.exports =
     # (Any) => Number
     variance: (xs) ->
       options = [
-        [[ListType], -> Middle.variance_list(xs)]
+        [[ListType], => @_middle.variance_list(xs)]
       ]
       perform(options, "variance", [xs])
 
