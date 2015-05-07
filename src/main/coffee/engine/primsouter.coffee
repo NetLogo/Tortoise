@@ -1,33 +1,11 @@
-// (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
+# (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-package org.nlogo.tortoise
+# DEATH TO `SimplePrims.SimpleReporter` AND `SimplePrims.InfixReporter`!
 
-import
-  org.nlogo.core.{ CommandBlock, CompilerException, prim, ReporterApp, Statement, Token }
+module.exports = {
 
-trait Prims {
-
-  def handlers: Handlers
-
-  def reporter(r: ReporterApp): String = {
-    def arg(i: Int) = handlers.reporter(r.args(i))
-    def commaArgs = argsSep(", ")
-    def args =
-      r.args.collect{ case x: ReporterApp => handlers.reporter(x) }
-    def argsSep(sep: String) =
-      args.mkString(sep)
-    r.reporter match {
-
-      // Basics stuff
-      case SimplePrims.SimpleReporter(op) => op
-      case SimplePrims.InfixReporter(op)  => s"(${arg(0)} $op ${arg(1)})"
-      case SimplePrims.NormalReporter(op) => s"$op($commaArgs)"
-      case p: prim._const                 => handlers.literal(p.value)
-      case lv: prim._letvariable          => handlers.ident(lv.let.name)
-      case pv: prim._procedurevariable    => handlers.ident(pv.name)
       case call: prim._callreport         => (handlers.ident(call.name) +: args).mkString("Call(", ", ", ")")
 
-      // Blarg
       case _: prim._unaryminus         => s" -${arg(0)}" // The space is important, because these can be nested --JAB (6/12/14)
       case _: prim._not                => s"!${arg(0)}"
       case _: prim._count              => s"${arg(0)}.size()"
@@ -41,21 +19,11 @@ trait Prims {
       case _: prim.etc._basecolors     => "ColorModel.BASE_COLORS"
       case prim._errormessage(Some(l)) => s"_error_${l.hashCode()}.message"
 
-      // Agentset filtering
-      case _: prim._with =>
-        val agents = arg(0)
-        s"$agents.agentFilter(${handlers.fun(r.args(1), true)})"
-      case _: prim.etc._maxoneof =>
-        val agents = arg(0)
-        s"$agents.maxOneOf(${handlers.fun(r.args(1), true)})"
-      case _: prim.etc._minoneof =>
-        val agents = arg(0)
-        s"$agents.minOneOf(${handlers.fun(r.args(1), true)})"
-      case o: prim.etc._all =>
-        val agents = arg(0)
-        s"$agents.agentAll(${handlers.fun(r.args(1), true)})"
+      case _: prim._with => s"$agents.agentFilter(${handlers.fun(r.args(1), true)})"
+      case _: prim.etc._maxoneof => s"$agents.maxOneOf(${handlers.fun(r.args(1), true)})"
+      case _: prim.etc._minoneof => s"$agents.minOneOf(${handlers.fun(r.args(1), true)})"
+      case o: prim.etc._all => s"$agents.agentAll(${handlers.fun(r.args(1), true)})"
 
-      // Lookup by breed
       case b: prim._breed                 => s"world.turtleManager.turtlesOfBreed(${jsString(b.breedName)})"
       case b: prim.etc._breedsingular     => s"world.turtleManager.getTurtleOfBreed(${jsString(b.breedName)}, ${arg(0)})"
       case b: prim.etc._linkbreed         => s"world.linkManager.linksOfBreed(${jsString(b.breedName)})"
@@ -63,7 +31,6 @@ trait Prims {
       case b: prim.etc._breedhere         => s"SelfManager.self().breedHere(${jsString(b.breedName)})"
       case b: prim.etc._breedon           => s"Prims.breedOn(${jsString(b.breedName)}, ${arg(0)})"
 
-      // Variable fetching
       case bv: prim._breedvariable        => s"SelfPrims.getVariable(${jsString(bv.name.toLowerCase)})"
       case bv: prim._linkbreedvariable    => s"SelfPrims.getVariable(${jsString(bv.name.toLowerCase)})"
       case tv: prim._turtlevariable       => s"SelfPrims.getVariable(${jsString(tv.displayName.toLowerCase)})"
@@ -72,7 +39,6 @@ trait Prims {
       case pv: prim._patchvariable        => s"SelfPrims.getPatchVariable(${jsString(pv.displayName.toLowerCase)})"
       case ov: prim._observervariable     => s"world.observer.getGlobal(${jsString(ov.displayName.toLowerCase)})"
 
-      // Typechecking
       case _: prim.etc._isagent          => s"NLType(${arg(0)}).isValidAgent()"
       case _: prim.etc._isagentset       => s"NLType(${arg(0)}).isAgentSet()"
       case x: prim.etc._isbreed          => s"NLType(${arg(0)}).isBreed(${jsString(x.breedName)})"
@@ -90,7 +56,6 @@ trait Prims {
       case _: prim.etc._isturtleset      => s"NLType(${arg(0)}).isTurtleSet()"
       case _: prim.etc._isundirectedlink => s"NLType(${arg(0)}).isUndirectedLink()"
 
-      // Link finding
       case p: prim.etc._inlinkfrom       => s"LinkPrims.inLinkFrom(${jsString(fixBN(p.breedName))}, ${arg(0)})"
       case p: prim.etc._inlinkneighbor   => s"LinkPrims.isInLinkNeighbor(${jsString(fixBN(p.breedName))}, ${arg(0)})"
       case p: prim.etc._inlinkneighbors  => s"LinkPrims.inLinkNeighbors(${jsString(fixBN(p.breedName))})"
@@ -104,32 +69,12 @@ trait Prims {
       case p: prim.etc._outlinkneighbors => s"LinkPrims.outLinkNeighbors(${jsString(fixBN(p.breedName))})"
       case p: prim.etc._outlinkto        => s"LinkPrims.outLinkTo(${jsString(fixBN(p.breedName))}, ${arg(0)})"
 
-      // Tasks
       case tv: prim._taskvariable => s"taskArguments[${tv.vn - 1}]"
       case _:  prim._reportertask => s"Tasks.reporterTask(${handlers.fun(r.args(0), isReporter = true, isTask = true)})"
       case _:  prim._commandtask  => s"Tasks.commandTask(${handlers.fun(r.args(0), isReporter = false, isTask = true)})"
-      case rr: prim.etc._runresult =>
-        val taskInputs = args.tail.mkString(", ")
-        s"(${arg(0)})($taskInputs)"
+      case rr: prim.etc._runresult => s"(${arg(0)})($taskInputs)"
 
-      case _ =>
-        failCompilation(s"unknown primitive: ${r.reporter.getClass.getName}", r.instruction.token)
-
-    }
-  }
-
-  def generateCommand(s: Statement): String = {
-    def arg(i: Int) = handlers.reporter(s.args(i))
-    def commaArgs = argsSep(", ")
-    def args =
-      s.args.collect{ case x: ReporterApp => handlers.reporter(x) }
-    def argsSep(sep: String) =
-      args.mkString(sep)
-    s.command match {
-      case SimplePrims.SimpleCommand(op) => if (op.isEmpty) "" else s"$op;"
-      case SimplePrims.NormalCommand(op) => s"$op($commaArgs);"
       case _: prim._set                  => generateSet(s)
-      case _: prim.etc._loop             => generateLoop(s)
       case _: prim._repeat               => generateRepeat(s)
       case _: prim.etc._while            => generateWhile(s)
       case _: prim.etc._if               => generateIf(s)
@@ -152,64 +97,22 @@ trait Prims {
       case x: prim.etc._setdefaultshape  => s"BreedManager.setDefaultShape(${arg(0)}.getBreedName(), ${arg(1)})"
       case _: prim.etc._hidelink         => "SelfPrims.setVariable('hidden?', true)"
       case _: prim.etc._showlink         => "SelfPrims.setVariable('hidden?', false)"
-      case call: prim._call              =>
-        (handlers.ident(call.name) +: args)
-          .mkString("Call(", ", ", ");")
+      case call: prim._call              => (handlers.ident(call.name) +: args).mkString("Call(", ", ", ");")
       case _: prim.etc._report           => s"return ${arg(0)};"
       case _: prim.etc._ignore           => s"${arg(0)};"
-      case l: prim._let                  =>
-        s"var ${handlers.ident(l.let.name)} = ${arg(0)};"
-      case _: prim.etc._run =>
-        val taskInputs = args.tail.mkString(", ")
-        s"(${arg(0)})($taskInputs);"
-      case _: prim.etc._foreach =>
-        val lists = args.init.mkString(", ")
-        s"Tasks.forEach(${arg(s.args.size - 1)}, $lists);"
-      case _ =>
-        failCompilation(s"unknown primitive: ${s.command.getClass.getName}", s.instruction.token)
-    }
-  }
+      case l: prim._let                  => s"var ${handlers.ident(l.let.name)} = ${arg(0)};"
+      case _: prim.etc._run => s"(${arg(0)})($taskInputs);"
+      case _: prim.etc._foreach => s"Tasks.forEach(${arg(s.args.size - 1)}, $lists);"
 
-  def getReferenceName(s: Statement): String =
-    s.args(0).asInstanceOf[ReporterApp].reporter match {
-      case p: prim._patchvariable => p.displayName.toLowerCase
-      case x                      => failCompilation(s"unknown reference: ${x.getClass.getName}", s.instruction.token)
-    }
-
-  /// custom generators for particular Commands
-
-  def generateSet(s: Statement): String = {
-    def arg(i: Int) = handlers.reporter(s.args(i))
-    s.args(0).asInstanceOf[ReporterApp].reporter match {
-      case p: prim._letvariable =>
-        s"${handlers.ident(p.let.name)} = ${arg(1)};"
-      case p: prim._observervariable =>
-        s"world.observer.setGlobal(${jsString(p.displayName.toLowerCase)}, ${arg(1)});"
-      case bv: prim._breedvariable =>
-        s"SelfPrims.setVariable(${jsString(bv.name.toLowerCase)}, ${arg(1)});"
-      case bv: prim._linkbreedvariable =>
-        s"SelfPrims.setVariable(${jsString(bv.name.toLowerCase)}, ${arg(1)});"
-      case p: prim._linkvariable =>
-        s"SelfPrims.setVariable(${jsString(p.displayName.toLowerCase)}, ${arg(1)});"
-      case p: prim._turtlevariable =>
-        s"SelfPrims.setVariable(${jsString(p.displayName.toLowerCase)}, ${arg(1)});"
-      case p: prim._turtleorlinkvariable =>
-        s"SelfPrims.setVariable(${jsString(p.varName.toLowerCase)}, ${arg(1)});"
-      case p: prim._patchvariable =>
-        s"SelfPrims.setPatchVariable(${jsString(p.displayName.toLowerCase)}, ${arg(1)});"
-      case p: prim._procedurevariable =>
-        s"${handlers.ident(p.name)} = ${arg(1)};"
-      case x =>
-        failCompilation(s"unknown settable: ${x.getClass.getName}", s.instruction.token)
-    }
-  }
-
-  def generateLoop(w: Statement): String = {
-    val body = handlers.commands(w.args(0))
-    s"""|while (true) {
-        |${handlers.indented(body)}
-        |};""".stripMargin
-  }
+      case p: prim._letvariable => s"${handlers.ident(p.let.name)} = ${arg(1)};"
+      case p: prim._observervariable => s"world.observer.setGlobal(${jsString(p.displayName.toLowerCase)}, ${arg(1)});"
+      case bv: prim._breedvariable => s"SelfPrims.setVariable(${jsString(bv.name.toLowerCase)}, ${arg(1)});"
+      case bv: prim._linkbreedvariable => s"SelfPrims.setVariable(${jsString(bv.name.toLowerCase)}, ${arg(1)});"
+      case p: prim._linkvariable => s"SelfPrims.setVariable(${jsString(p.displayName.toLowerCase)}, ${arg(1)});"
+      case p: prim._turtlevariable => s"SelfPrims.setVariable(${jsString(p.displayName.toLowerCase)}, ${arg(1)});"
+      case p: prim._turtleorlinkvariable => s"SelfPrims.setVariable(${jsString(p.varName.toLowerCase)}, ${arg(1)});"
+      case p: prim._patchvariable => s"SelfPrims.setPatchVariable(${jsString(p.displayName.toLowerCase)}, ${arg(1)});"
+      case p: prim._procedurevariable => s"${handlers.ident(p.name)} = ${arg(1)};"
 
   def generateRepeat(w: Statement): String = {
     val count = handlers.reporter(w.args(0))
@@ -310,24 +213,11 @@ trait Prims {
     val time = handlers.reporter(w.args(0))
     val body = handlers.commands(w.args(1))
     val everyId = handlers.nextEveryID()
-    s"""|PrimsOuter.primTypechecker.every($time);
-        |if (EveryPrims.isThrottleTimeElapsed("$everyId", workspace.selfManager.self(), $time)) {
-        |  EveryPrims.resetThrottleTimerFor("$everyId", workspace.selfManager.self());
+    s"""|if (Prims.isThrottleTimeElapsed("$everyId", workspace.selfManager.self(), $time)) {
+        |  Prims.resetThrottleTimerFor("$everyId", workspace.selfManager.self());
         |${handlers.indented(body)}
         |}""".stripMargin
   }
-
-  // Intended to take in a NetLogo identifier (e.g. breed names, varnames, `turtles-own` varnames) and give back a
-  // string for use in JavaScript.  We cannot simply wrap the string in single quotes, since single quotes are
-  // actually valid characters in NetLogo identifiers!  --JAB (2/26/15)
-  private def jsString(ident: String): String =
-    '"' + ident + '"'
-
-  private def failCompilation(msg: String, token: Token): Nothing =
-    throw new CompilerException(msg, token.start, token.end, token.filename)
-
-  private def fixBN(breedName: String): String =
-    Option(breedName) filter (_.nonEmpty) getOrElse "LINKS"
 
   def genAsk(agents: String, shouldShuffle: Boolean, body: String): String =
     s"""$agents.ask($body, $shouldShuffle);"""
@@ -337,5 +227,213 @@ trait Prims {
     val func   = handlers.fun(r.args(0), isReporter = true)
     s"AgentSetPrims.of($agents, $func)"
   }
+
+
+
+
+
+
+
+
+  abs: -> # NLMath.abs
+  acos: -> # NLMath.acos
+  and: -> # &&
+  asin: -> # NLMath.asin
+  atan: -> # NLMath.atan
+  autoplotoff: -> # plotManager.disableAutoplotting
+  autoploton: -> # plotManager.enableAutoplotting
+  autoplot: -> # plotManager.isAutoplotting
+  bk: -> # SelfPrims.bk
+  boom: -> # Prims.boom
+  bothends: -> # SelfManager.self().bothEnds
+  butfirst: -> # ListPrims.butFirst
+  butlast: -> # ListPrims.butLast
+  canmove: -> # SelfManager.self().canMove
+  ceil: -> # NLMath.ceil
+  changetopology: -> # world.changeTopology
+  clearallplots: -> # plotManager.clearAllPlots
+  clearall: -> # world.clearAll
+  clearlinks: -> # world.linkManager.clear
+  clearoutput: -> # OutputPrims.clear
+  clearpatches: -> # world.clearPatches
+  clearplot: -> # plotManager.clearPlot
+  clearticks: -> # world.ticker.clear
+  clearturtles: -> # world.turtleManager.clearTurtles
+  cos: -> # NLMath.cos
+  createtemporaryplotpen: -> # plotManager.createTemporaryPen
+  die: -> # SelfPrims.die
+  distance: -> # SelfManager.self().distance
+  distancexy: -> # SelfManager.self().distanceXY
+  div: -> # /
+  done: -> # 
+  dx: -> # SelfManager.self().dx
+  dy: -> # SelfManager.self().dy
+  empty: -> # ListPrims.empty
+  equal: -> # Prims.equality
+  exp: -> # NLMath.exp
+  face: -> # SelfManager.self().face
+  facexy: -> # SelfManager.self().faceXY
+  fd: -> # SelfPrims.fd
+  first: -> # ListPrims.first
+  floor: -> # NLMath.floor
+  followme: -> # SelfManager.self().followMe
+  follow: -> # world.observer.follow
+  fput: -> # ListPrims.fput
+  greaterorequal: -> # Prims.gte
+  greaterthan: -> # Prims.gt
+  hideturtle: -> # SelfManager.self().hideTurtle(true);
+  histogram: -> # plotManager.drawHistogramFrom
+  inradius: -> # SelfManager.self().inRadius
+  int: -> # NLMath.toInt
+  item: -> # ListPrims.item
+  jump: -> # SelfPrims.jump
+  last: -> # ListPrims.last
+  layoutspring: -> # LayoutManager.layoutSpring
+  left: -> # SelfPrims.left
+  length: -> # ListPrims.length
+  lessorequal: -> # Prims.lte
+  lessthan: -> # Prims.lt
+  linkheading: -> # SelfPrims.linkHeading
+  linklength: -> # SelfPrims.linkLength
+  linkset: -> # AgentSetPrims.linkSet
+  links: -> # world.links
+  link: -> # world.linkManager.getLink
+  list: -> # ListPrims.list
+  ln: -> # NLMath.ln
+  log: -> # NLMath.log
+  lput: -> # ListPrims.lput
+  map: -> # Tasks.map
+  max: -> # ListPrims.max
+  maxpxcor: -> # world.topology.maxPxcor
+  maxpycor: -> # world.topology.maxPycor
+  mean: -> # ListPrims.mean
+  median: -> # ListPrims.median
+  member: -> # ListPrims.member
+  min: -> # ListPrims.min
+  minpxcor: -> # world.topology.minPxcor
+  minpycor: -> # world.topology.minPycor
+  minus: -> # -
+  mod: -> # NLMath.mod
+  mousedown: -> # MousePrims.isDown
+  mouseinside: -> # MousePrims.isInside
+  mousexcor: -> # MousePrims.getX
+  mouseycor: -> # MousePrims.getY
+  moveto: -> # SelfManager.self().moveTo
+  mult: -> # *
+  myself: -> # SelfManager.myself
+  neighbors4: -> # SelfPrims.getNeighbors4
+  neighbors: -> # SelfPrims.getNeighbors
+  netlogoapplet: -> # Meta.isApplet
+  netlogoversion: -> # Meta.version
+  nobody: -> # "Nobody"
+  nof: -> # ListPrims.nOf
+  nolinks: -> # new LinkSet([])
+  nopatches: -> # new PatchSet([])
+  notequal: -> # !Prims.equality
+  noturtles: -> # new TurtleSet([])
+  observercode: -> # 
+  oneof: -> # ListPrims.oneOf
+  or: -> # ||
+  otherend: -> # SelfManager.self().otherEnd
+  other: -> # SelfPrims.other
+  outputprint: -> # OutputPrims.print
+  outputshow: -> # OutputPrims.show(SelfManager.self)
+  outputtype: -> # OutputPrims.type
+  outputwrite: -> # OutputPrims.write
+  patchahead: -> # SelfManager.self().patchAhead
+  patchat: -> # SelfManager.self().patchAt
+  patches: -> # world.patches
+  patchhere: -> # SelfManager.self().getPatchHere
+  patchleftandahead: -> # SelfManager.self().patchLeftAndAhead
+  patchrightandahead: -> # SelfManager.self().patchRightAndAhead
+  patchset: -> # AgentSetPrims.patchSet
+  patch: -> # world.getPatchAt
+  pendown: -> # SelfManager.self().penManager.lowerPen
+  penup: -> # SelfManager.self().penManager.raisePen
+  plotname: -> # plotManager.getPlotName
+  plotpendown: -> # plotManager.lowerPen
+  plotpenexists: -> # plotManager.hasPenWithName
+  plotpenreset: -> # plotManager.resetPen
+  plotpenup: -> # plotManager.raisePen
+  plot: -> # plotManager.plotValue
+  plotxmax: -> # plotManager.getPlotXMax
+  plotxmin: -> # plotManager.getPlotXMin
+  plotxy: -> # plotManager.plotPoint
+  plotymax: -> # plotManager.getPlotYMax
+  plotymin: -> # plotManager.getPlotYMin
+  plus: -> # +
+  position: -> # ListPrims.position
+  pow: -> # NLMath.pow
+  precision: -> # NLMath.precision
+  print: -> # PrintPrims.print
+  randomfloat: -> # Prims.randomFloat
+  random: -> # Prims.random
+  randomseed: -> # Random.setSeed
+  randomxcor: -> # world.topology.randomXcor
+  randomycor: -> # world.topology.randomYcor
+  remainder: -> # %
+  removeduplicates: -> # ListPrims.removeDuplicates
+  removeitem: -> # ListPrims.removeItem
+  remove: -> # ListPrims.remove
+  replaceitem: -> # ListPrims.replaceItem
+  resetperspective: -> # world.observer.resetPerspective
+  resetticks: -> # world.ticker.reset
+  resettimer: -> # workspace.timer.reset
+  resizeworld: -> # world.resize
+  reverse: -> # ListPrims.reverse
+  rideme: -> # SelfManager.self().rideMe
+  ride: -> # world.observer.ride
+  right: -> # SelfPrims.right
+  round: -> # NLMath.round
+  scalecolor: -> # ColorModel.scaleColor
+  self: -> # SelfManager.self
+  sentence: -> # ListPrims.sentence
+  setcurrentplotpen: -> # plotManager.setCurrentPen
+  setcurrentplot: -> # plotManager.setCurrentPlot
+  sethistogramnumbars: -> # plotManager.setHistogramBarCount
+  setplotpencolor: -> # plotManager.setPenColor
+  setplotpeninterval: -> # plotManager.setPenInterval
+  setplotpenmode: -> # plotManager.setPenMode
+  setplotxrange: -> # plotManager.setXRange
+  setplotyrange: -> # plotManager.setYRange
+  setupplots: -> # plotManager.setupPlots
+  setxy: -> # SelfPrims.setXY
+  shadeof: -> # ColorModel.areRelatedByShade
+  show: -> # PrintPrims.show(SelfManager.self)
+  showturtle: -> # SelfManager.self().hideTurtle(false);
+  sin: -> # NLMath.sin
+  sort: -> # ListPrims.sort
+  sqrt: -> # NLMath.sqrt
+  standarddeviation: -> # ListPrims.standardDeviation
+  stop: -> # throw new Exception.StopInterrupt
+  subject: -> # world.observer.subject
+  sublist: -> # ListPrims.sublist
+  substring: -> # ListPrims.substring
+  subtractheadings: -> # NLMath.subtractHeadings
+  sum: -> # ListPrims.sum
+  tan: -> # NLMath.tan
+  tickadvance: -> # world.ticker.tickAdvance
+  ticks: -> # world.ticker.tickCount
+  tick: -> # world.ticker.tick
+  tie: -> # SelfManager.self().tie
+  timer: -> # workspace.timer.elapsed
+  towards: -> # SelfManager.self().towards
+  towardsxy: -> # SelfManager.self().towardsXY
+  turtlesat: -> # SelfManager.self().turtlesAt
+  turtleset: -> # AgentSetPrims.turtleSet
+  turtleshere: -> # SelfManager.self().turtlesHere
+  turtleson: -> # Prims.turtlesOn
+  turtles: -> # world.turtles
+  turtle: -> # world.turtleManager.getTurtle
+  type: -> # PrintPrims.type
+  untie: -> # SelfManager.self().untie
+  updateplots: -> # plotManager.updatePlots
+  variance: -> # ListPrims.variance
+  watchme: -> # SelfManager.self().watchMe
+  watch: -> # world.observer.watch
+  worldheight: -> # world.topology.height
+  worldwidth: -> # world.topology.width
+  write: -> # PrintPrims.write
+  xor: -> # !=
 
 }

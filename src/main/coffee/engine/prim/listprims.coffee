@@ -13,7 +13,6 @@ StrictMath        = require('tortoise/shim/strictmath')
 Comparator        = require('tortoise/util/comparator')
 Exception         = require('tortoise/util/exception')
 NLMath            = require('tortoise/util/nlmath')
-stableSort        = require('tortoise/util/stablesort')
 
 { Type: { ListType, StringType }, TypeSet } = require('../core/typeinfo')
 
@@ -24,76 +23,6 @@ module.exports =
     # (Hasher, (Any, Any) => Boolean, (Number) => Number) => ListPrims
     constructor: (@_hasher, @_equality, @_nextInt) ->
 
-    # [T] @ (Array[T]|String) => Array[T]|String
-    butFirst: (xs) ->
-      type = NLType(xs)
-      if type.isList() or type.isString()
-        xs[1..]
-      else
-        new ArgumentTypeError('BUT-FIRST', [ListType, StringType], xs)
-
-    # [T] @ (Array[T]|String) => Array[T]|String
-    butLast: (xs) ->
-      @_ifListOrString(-> xs[0...xs.length - 1])
-
-    # [T] @ (Array[T]|String) => Boolean
-    empty: (xs) ->
-      @_ifListOrString(-> xs.length is 0)
-
-    # [Item] @ (Array[Item]|String) => Item|String
-    first: (xs) ->
-      @_ifListOrString(-> xs[0])
-
-    # [Item] @ (Item, Array[Item]) => Array[Item]
-    fput: (x, xs) ->
-      [x].concat(xs)
-
-    # [Item] @ (Number, Array[Item]|String) => Item|String
-    item: (n, xs) ->
-      @_ifListOrString(-> xs[n])
-
-    # [Item] @ (Array[Item]|String) => Item|String
-    last: (xs) ->
-      @_ifListOrString(-> xs[xs.length - 1])
-
-    # [T] @ (Array[T]|String) => Number
-    length: (xs) ->
-      @_ifListOrString(-> xs.length)
-
-    # [T] @ (T*) => Array[T]
-    list: (xs...) ->
-      xs
-
-    # [Item] @ (Item, Array[Item]) => Array[Item]
-    lput: (x, xs) ->
-      result = xs[..]
-      result.push(x)
-      result
-
-    # (Array[Number]) => Number
-    max: (xs) ->
-      Math.max(xs...)
-
-    # (Array[Number]) => Number
-    mean: (xs) ->
-      @sum(xs) / xs.length
-
-    # (Array[Number]) => Number
-    median: (xs) ->
-      nums   = _(xs).filter((x) -> NLType(x).isNumber()).sortBy().value()
-      length = nums.length
-
-      if length isnt 0
-        middleIndex = StrictMath.floor(length / 2)
-        middleNum   = nums[middleIndex]
-        if length % 2 is 1
-          middleNum
-        else
-          subMiddleNum = nums[middleIndex - 1]
-          NLMath.validateNumber((middleNum + subMiddleNum) / 2)
-      else
-        throw new Error("Can't find the median of a list with no numbers: #{Dump(xs)}.")
-
     # [Item, Container <: (Array[Item]|String|AbstractAgentSet[Item])] @ (Item, Container) => Boolean
     member: (x, xs) ->
       type = NLType(xs)
@@ -103,10 +32,6 @@ module.exports =
         xs.indexOf(x) isnt -1
       else # agentset
         xs.exists((a) -> x is a)
-
-    # (Array[Number]) => Number
-    min: (xs) ->
-      Math.min(xs...)
 
     # [Item] @ (Number, ListOrSet[Item]) => ListOrSet[Item]
     nOf: (n, agentsOrList) ->
@@ -178,118 +103,6 @@ module.exports =
         [out, []] = xs.reduce(f, [[], {}])
         out
 
-    # [Item, Container <: (Array[Item]|String)] @ (Number, Container) => Container
-    removeItem: (n, xs) ->
-      type = NLType(xs)
-      if type.isList()
-        temp = xs[..]
-        temp.splice(n, 1) # Cryptic, but effective --JAB (5/26/14)
-        temp
-      else
-        pre  = xs.slice(0, n)
-        post = xs.slice(n + 1)
-        pre + post
-
-    # [T, U >: T] @ (Number, Array[T]|String, U|String) => Array[U]|String
-    replaceItem: (index, xs, newItem) ->
-      instructionName = "replace-item"
-      if index < 0
-        throw new Error("#{index} isn't greater than or equal to zero.")
-      else if NLType(xs).isList()
-        if index < xs.length
-          @_replaceItemInValidList(index, xs, newItem)
-        else
-          throw new Error("Can't find element #{index} of the list #{Dump(xs)}, which is only of length #{xs.length}.")
-      else if NLType(xs).isString()
-        if NLType(newItem).isString()
-          if index < xs.length
-            @_replaceItemInValidString(index, xs, newItem)
-          else
-            throw new Error("Can't find element #{index} of the string #{Dump(xs)}, which is only of length #{xs.length}.")
-        else
-          throw new ArgumentTypeError(instructionName, new TypeSet([StringType]), newItem)
-      else
-        throw new ArgumentTypeError(instructionName, new TypeSet([StringType, ListType]), xs)
-
-    # [T] @ (Array[T]|String) => Array[T]|String
-    reverse: (xs) ->
-      type = NLType(xs)
-      if type.isList()
-        xs[..].reverse()
-      else if type.isString()
-        xs.split("").reverse().join("")
-      else
-        throw new Error("can only reverse lists and strings")
-
-    # [T] @ (Array[Array[T]|T]) => Array[T]
-    sentence: (xs...) ->
-      f =
-        (acc, x) ->
-          if NLType(x).isList()
-            acc.concat(x)
-          else
-            acc.push(x)
-            acc
-      _(xs).foldl(f, [])
-
-    # [T] @ (ListOrSet[T]) => ListOrSet[T]
-    sort: (xs) ->
-      type = NLType(xs)
-      if type.isList()
-        filtered     = _.filter(xs, (x) -> x isnt Nobody)
-        forAll       = (f) -> _.all(filtered, f)
-        agentClasses = [Turtle, Patch, Link]
-        if _(filtered).isEmpty()
-          filtered
-        else if forAll((x) -> NLType(x).isNumber())
-          filtered.sort((x, y) -> Comparator.numericCompare(x, y).toInt)
-        else if forAll((x) -> NLType(x).isString())
-          filtered.sort()
-        else if _(agentClasses).some((agentClass) -> forAll((x) -> x instanceof agentClass))
-          stableSort(filtered)((x, y) -> x.compare(y).toInt)
-        else
-          throw new Error("We don't know how to sort your kind here!")
-      else if type.isAgentSet()
-        xs.sort()
-      else
-        throw new Error("can only sort lists and agentsets")
-
-    # (Array[Any]) => Number
-    standardDeviation: (xs) ->
-      nums = xs.filter((x) -> NLType(x).isNumber())
-      if nums.length > 1
-        mean       = @sum(xs) / xs.length
-        squareDiff = _(xs).foldl(((acc, x) -> acc + StrictMath.pow(x - mean, 2)), 0)
-        stdDev     = StrictMath.sqrt(squareDiff / (nums.length - 1))
-        NLMath.validateNumber(stdDev)
-      else
-        throw new Error("Can't find the standard deviation of a list without at least two numbers: #{Dump(xs)}")
-
-    # [T] @ (Array[T], Number, Number) => Array[T]
-    sublist: (xs, n1, n2) ->
-      xs.slice(n1, n2)
-
-    # (String, Number, Number) => String
-    substring: (xs, n1, n2) ->
-      xs.substr(n1, n2 - n1)
-
-    # (Array[Number]) => Number
-    sum: (xs) ->
-      NLMath.validateNumber(xs.reduce(((a, b) -> a + b), 0))
-
-    # [T] @ (Array[T]) => Number
-    variance: (xs) ->
-      numbers = _(xs).filter((x) -> NLType(x).isNumber())
-      count   = numbers.size()
-
-      if count < 2
-        throw new Error("Can't find the variance of a list without at least two numbers")
-
-      sum  = numbers.foldl(((acc, x) -> acc + x), 0)
-      mean = sum / count
-      squareOfDifference = numbers.foldl(((acc, x) -> acc + StrictMath.pow(x - mean, 2)), 0)
-      squareOfDifference / (count - 1)
-
     # Prodding at this code is like poking a beehive with a stick... --JAB (7/30/14)
     # [Item] @ (Number, Array[Item]) => Array[Item]
     _nOfArray: (n, items) ->
@@ -317,15 +130,3 @@ module.exports =
               j += 1
             i += 1
           result
-
-    # [T, U >: T] @ (Number, Array[T]. U) => Array[U]
-    _replaceItemInValidList: (index, xs, newItem) ->
-      copy = xs[..]
-      copy.splice(index, 1, newItem)
-      copy
-
-    # (Number, String, String) => String
-    _replaceItemInValidString: (index, xs, newItem) ->
-      pre  = xs.substr(0, index)
-      post = xs.substr(index + newItem.length)
-      "#{pre}#{newItem}#{post}"
