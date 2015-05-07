@@ -28,7 +28,7 @@ object WidgetRead {
   }
 
   implicit object tortoiseJs2UpdateMode extends JsonReader[TortoiseJson, UpdateMode] {
-    def apply(t: TortoiseJson) = t match {
+    def apply(t: TortoiseJson): ValidationNel[String, UpdateMode] = t match {
       case JsString(s) if s.toUpperCase == "CONTINUOUS" =>
         UpdateMode.Continuous.successNel
       case JsString(s) if s.toUpperCase == "TICKBASED"  =>
@@ -54,7 +54,7 @@ object WidgetRead {
   }
 
   implicit object tortoiseJs2Direction extends JsonReader[TortoiseJson, Direction] {
-    def apply(t: TortoiseJson) = t match {
+    def apply(t: TortoiseJson): ValidationNel[String, Direction] = t match {
       case JsString(s) if s.toUpperCase == "HORIZONTAL" =>
         Horizontal.successNel
       case JsString(s) if s.toUpperCase == "VERTICAL"   =>
@@ -66,7 +66,7 @@ object WidgetRead {
 
   implicit object tortoiseJs2InputBoxType extends JsonReader[TortoiseJson, InputBoxType] {
     private def invalidType(s: String): String = s"Invalid input box type $s"
-    def apply(t: TortoiseJson) = t match {
+    def apply(t: TortoiseJson): ValidationNel[String, InputBoxType] = t match {
       case JsString(s) =>
         List(Num, Str, StrReporter, StrCommand, Col).find(_.name == s).toSuccess(NonEmptyList(invalidType(s)))
       case other => invalidType(other.toString).failureNel
@@ -86,22 +86,22 @@ object WidgetRead {
       case JsDouble(d)    => ChooseableDouble(d).successNel
       case JsString(s)    => ChooseableString(s).successNel
       case JsBool(b)      => ChooseableBoolean(b).successNel
-      case JsArray(elems) =>
-        def toLogoList(els: Seq[TortoiseJson]): ValidationNel[String, LogoList] =
-          els.foldLeft(LogoList.Empty.successNel[String]) {
-            case (acc, el) => acc.flatMap(l =>
-                el match {
-                  case JsDouble(d) => l.lput(d: JDouble).successNel
-                  case JsInt(i)    => l.lput(i: JInteger).successNel
-                  case JsBool(b)   => l.lput(b: JBoolean).successNel
-                  case JsString(s) => l.lput(s).successNel
-                  case JsArray(a)  => toLogoList(a).map(newList => l.lput(newList))
-                  case x           => s"could not convert $x to a chooseable value".failureNel
-                })
-          }
-        toLogoList(elems).map(ChooseableList)
+      case JsArray(elems) => toLogoList(elems).map(ChooseableList)
       case other          => s"Could not convert $other to a chooseable value".failureNel
     }
+
+    private def toLogoList(els: Seq[TortoiseJson]): ValidationNel[String, LogoList] =
+      els.foldLeft(LogoList.Empty.successNel[String]) {
+        case (acc, el) => acc.flatMap(l =>
+            el match {
+              case JsDouble(d) => l.lput(d: JDouble).successNel
+              case JsInt(i)    => l.lput(i: JInteger).successNel
+              case JsBool(b)   => l.lput(b: JBoolean).successNel
+              case JsString(s) => l.lput(s).successNel
+              case JsArray(a)  => toLogoList(a).map(newList => l.lput(newList))
+              case x           => s"could not convert $x to a chooseable value".failureNel
+            })
+      }
   }
 
   implicit object tortoiseJs2PenList extends JsonReader[TortoiseJson, List[Pen]] {

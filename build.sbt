@@ -2,6 +2,7 @@ import AddSettings.sbtFiles
 import bintray.Keys.{ bintray => bintrayTask, bintrayOrganization, repository => bintrayRepository }
 import org.scalajs.sbtplugin.cross.{ CrossProject, CrossType }
 import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport.{ fullOptJS, packageJSDependencies }
+import org.scalastyle.sbt.ScalastylePlugin.scalastyle
 
 val nlDependencyVersion = "5.2.0-f198f47"
 
@@ -48,6 +49,13 @@ val commonSettings =
     testOptions in Test += Tests.Argument("-oT"))
 
 lazy val root = (project in file("."))
+
+// These projects are just for scalastyle on shared sources
+lazy val tortoiseCore = (project in file("tortoise")).
+  settings(skip in (Compile, compile) := true)
+
+lazy val macrosCore = (project in file("macros")).
+  settings(skip in (Compile, compile) := true)
 
 lazy val tortoise = CrossProject("tortoise", file("."), new CrossType {
     override def projectDir(crossBase: File, projectType: String): File =

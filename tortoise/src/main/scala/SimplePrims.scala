@@ -6,11 +6,13 @@ import
   org.nlogo.core.{ Command, prim, Reporter }
 
 object SimplePrims {
-
+  // scalastyle:off method.length
+  // scalastyle:off cyclomatic.complexity
   object SimpleReporter {
     def unapply(r: Reporter): Option[String] =
       PartialFunction.condOpt(r) {
         case _: prim._nobody             => "Nobody"
+        case _: prim.etc._basecolors     => "ColorModel.BASE_COLORS"
         case _: prim.etc._nopatches      => "new PatchSet([])"
         case _: prim.etc._noturtles      => "new TurtleSet([])"
         case _: prim.etc._nolinks        => "new LinkSet([])"
@@ -167,7 +169,28 @@ object SimplePrims {
         case _: prim.etc._link           => "world.linkManager.getLink"
         case _: prim.etc._boom           => "Prims.boom"
         case _: prim.etc._subject        => "world.observer.subject"
+      }
+  }
 
+  object TypeCheck extends JsOps {
+    def unapply(r: Reporter): Option[String] =
+      PartialFunction.condOpt(r) {
+        case _: prim.etc._isagent          => s"isValidAgent()"
+        case _: prim.etc._isagentset       => s"isAgentSet()"
+        case x: prim.etc._isbreed          => s"isBreed(${jsString(x.breedName)})"
+        case _: prim.etc._iscommandtask    => s"isCommandTask()"
+        case _: prim.etc._isdirectedlink   => s"isDirectedLink()"
+        case _: prim.etc._islink           => s"isValidLink()"
+        case _: prim.etc._islinkset        => s"isLinkSet()"
+        case _: prim.etc._islist           => s"isList()"
+        case _: prim.etc._isnumber         => s"isNumber()"
+        case _: prim.etc._ispatch          => s"isPatch()"
+        case _: prim.etc._ispatchset       => s"isPatchSet()"
+        case _: prim.etc._isreportertask   => s"isReporterTask()"
+        case _: prim.etc._isstring         => s"isString()"
+        case _: prim.etc._isturtle         => s"isValidTurtle()"
+        case _: prim.etc._isturtleset      => s"isTurtleSet()"
+        case _: prim.etc._isundirectedlink => s"isUndirectedLink()"
       }
   }
 
@@ -269,5 +292,6 @@ object SimplePrims {
 
       }
   }
-
+  // scalastyle:on method.length
+  // scalastyle:on cyclomatic.complexity
 }

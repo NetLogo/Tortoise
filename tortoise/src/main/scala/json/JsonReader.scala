@@ -16,14 +16,14 @@ import
 
 trait LowPriorityImplicitReaders {
   implicit object boolean2TortoiseJs extends JsonReader[TortoiseJson, Boolean] {
-    def apply(t: TortoiseJson) = t match {
+    def apply(t: TortoiseJson): ValidationNel[String, Boolean] = t match {
       case JsBool(b) => b.successNel
       case o         => incompatibleClass(o.getClass, classOf[Boolean])
     }
   }
 
   abstract class NumberConversion[S](implicit targetClass: ClassTag[S]) extends JsonReader[TortoiseJson, S] {
-    def apply(t: TortoiseJson) = t match {
+    def apply(t: TortoiseJson): ValidationNel[String, S] = t match {
       case JsInt(i)    => convertInt(i)
       case JsDouble(d) => convertDouble(d)
       case o           => incompatibleClass(o.getClass, targetClass.runtimeClass)
@@ -34,8 +34,8 @@ trait LowPriorityImplicitReaders {
   }
 
   implicit object tortoiseJs2Int extends NumberConversion[Int] {
-    def convertInt(i: Int) = i.successNel
-    def convertDouble(d: Double) =
+    def convertInt(i: Int):       ValidationNel[String, Int] = i.successNel
+    def convertDouble(d: Double): ValidationNel[String, Int] =
       if (d.isValidInt)
         d.toInt.successNel
       else
@@ -43,8 +43,8 @@ trait LowPriorityImplicitReaders {
   }
 
   implicit object tortoiseJs2Double extends NumberConversion[Double] {
-    def convertInt(i: Int) = i.toDouble.successNel
-    def convertDouble(d: Double) = d.successNel
+    def convertInt(i: Int):       ValidationNel[String, Double] = i.toDouble.successNel
+    def convertDouble(d: Double): ValidationNel[String, Double] = d.successNel
   }
 
   implicit object tortoiseJs2String extends JsonReader[TortoiseJson, String] {

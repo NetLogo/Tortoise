@@ -52,6 +52,8 @@ object CompiledModel {
 
   private type CompiledModelV = CompileResult[CompiledModel]
 
+  private val DefaultViewSize = 16
+
   def fromModel(model:         Model,
                 compiler:      CompilerLike = Compiler)
       (implicit compilerFlags: CompilerFlags): CompiledModelV = validate(compiler) {
@@ -70,7 +72,7 @@ object CompiledModel {
   def fromCode(netlogoCode:   String,
                compiler:      CompilerLike = Compiler)
      (implicit compilerFlags: CompilerFlags): CompiledModelV =
-    fromModel(Model(netlogoCode, List(View.square(16))))
+    fromModel(Model(netlogoCode, List(View.square(DefaultViewSize))))
 
   def fromCompiledModel(netlogoCode:   String,
                         oldModel:      CompiledModel)

@@ -162,11 +162,11 @@ object BrowserCompiler {
   }
 
   implicit object compiledWidgets2Json extends JsonWriter[Seq[CompiledWidget]] {
-    def apply(l: Seq[CompiledWidget]) = JsArray(l.map(_.toJsonObj))
+    def apply(l: Seq[CompiledWidget]): TortoiseJson = JsArray(l.map(_.toJsonObj))
   }
 
   implicit object compiledCommands2Json extends JsonWriter[Seq[CompiledStringV]] {
-    def apply(l: Seq[CompiledStringV]) = JsArray(l.map(compileResult2Json))
+    def apply(l: Seq[CompiledStringV]): TortoiseJson = JsArray(l.map(compileResult2Json))
   }
 
   implicit object compilation2JsonWriter extends JsonWriter[ValidationNel[Failure, ModelCompilation]] {

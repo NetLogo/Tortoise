@@ -19,9 +19,6 @@ import
   scala.collection.immutable.ListMap
 
 import
-  ShapeToJsonConverters._
-
-import
   TortoiseJson.{ fields, JsArray, JsBool, JsDouble, JsInt, JsNull, JsObject, JsString }
 
 object JsonSerializer {
@@ -32,7 +29,7 @@ object JsonSerializer {
   def serialize(v: AnyRef): String =
     (toJValue _ andThen toNative andThen nativeToString)(v)
 
-  def serializeWithViewUpdates(update: Update, viewUpdates: Seq[DrawingAction] = Seq()) = {
+  def serializeWithViewUpdates(update: Update, viewUpdates: Seq[DrawingAction] = Seq()): String = {
     import DrawingActionToJsonConverters.drawingAction2Json
     val serializedUpdate = serializeToJsObject(update)
     val jsonViewUpdates  = "drawingEvents" -> JsArray(viewUpdates.map(_.toJsonObj))
@@ -86,20 +83,33 @@ object JsonSerializer {
     JsObject(fields(objectsByKey: _*))
   }
 
-  def toJValue(v: AnyRef): TortoiseJson = v match {
+  def toJValue(v: AnyRef): TortoiseJson =
+    (javaPrimsToJson orElse logoPrimsToJson orElse scalaPrimsToJson)
+      .applyOrElse(v, (x: AnyRef) => JsString("XXX IMPLEMENT ME"))
+
+  private val javaPrimsToJson: PartialFunction[AnyRef, TortoiseJson] = {
     case d: JDouble if d.doubleValue.isValidInt => JsInt(d.intValue)
     case d: JDouble                             => JsDouble(d.doubleValue)
     case i: JInteger                            => JsInt(i.intValue)
     case i: JLong                               => JsInt(i.intValue)
     case b: JBoolean                            => JsBool(b)
     case s: JString                             => JsString(s)
-    case s: ShapeList                           => JsObject(fields(s.shapes.map(shape => shape.name -> shape.toJsonObj): _*))
-    case s: Shape                               => s.toJsonObj
-    case l: LogoList                            => JsArray((l.toVector map toJValue).toList)
-    case (x: AnyRef, y: AnyRef)                 => JsArray(List(toJValue(x), toJValue(y)))
-    case Some(x: AnyRef)                        => toJValue(x)
-    case None                                   => JsNull
-    case x                                      => JsString("XXX IMPLEMENT ME") // JString(v.toString)
+  }
+
+  private val logoPrimsToJson: PartialFunction[AnyRef, TortoiseJson] = {
+    import ShapeToJsonConverters.shape2Json
+    import ShapeListToJsonConverter.shapeList2Json
+    {
+      case s: ShapeList => JsObject(fields(s.shapes.map(shape => shape.name -> shape.toJsonObj): _*))
+      case s: Shape     => s.toJsonObj
+      case l: LogoList  => JsArray((l.toVector map toJValue).toList)
+    }
+  }
+
+  private val scalaPrimsToJson: PartialFunction[AnyRef, TortoiseJson] = {
+    case (x: AnyRef, y: AnyRef) => JsArray(List(toJValue(x), toJValue(y)))
+    case Some(x: AnyRef)        => toJValue(x)
+    case None                   => JsNull
   }
 
   def getImplicitVariables(kind: Kind): Seq[String] =

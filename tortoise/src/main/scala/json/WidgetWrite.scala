@@ -14,7 +14,7 @@ import
 
 object WidgetWrite {
   implicit object direction2Json extends JsonWriter[Direction] {
-    def apply(d: Direction) = JsString(d.toString.toLowerCase)
+    def apply(d: Direction): TortoiseJson = JsString(d.toString.toLowerCase)
   }
 
   implicit object updateMode2Json extends JsonWriter[UpdateMode] {

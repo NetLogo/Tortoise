@@ -43,21 +43,21 @@ object JSEngine {
   }
 
   object Nashorn extends JSEngineCompanion {
-    override protected type T = NashornEngine
-    override def cleanSlate = new Nashorn
-    override def version    = cleanSlate.engine.versionNumber
+    override protected type T        = NashornEngine
+    override def cleanSlate: T       = new Nashorn
+    override def version:    String  = cleanSlate.engine.versionNumber
   }
 
   object SpiderMonkey extends JSEngineCompanion {
-    override protected type T = SpiderMonkeyEngine
-    override def cleanSlate = new SpiderMonkey
-    override def version    = cleanSlate.engine.versionNumber
+    override protected type T       = SpiderMonkeyEngine
+    override def cleanSlate: T      = new SpiderMonkey
+    override def version:    String = cleanSlate.engine.versionNumber
   }
 
   object V8 extends JSEngineCompanion {
-    override protected type T = V8Engine
-    override def cleanSlate = new V8
-    override def version    = cleanSlate.engine.versionNumber
+    override protected type T       = V8Engine
+    override def cleanSlate: T      = new V8
+    override def version:    String = cleanSlate.engine.versionNumber
   }
 
 }

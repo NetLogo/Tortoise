@@ -5,7 +5,7 @@ package org.nlogo.tortoise.json
 import collection.immutable.ListMap
 
 sealed trait TortoiseJson {
-  override def toString = JsonLibrary.nativeToString(JsonLibrary.toNative(this))
+  override def toString: String = JsonLibrary.nativeToString(JsonLibrary.toNative(this))
 }
 
 object TortoiseJson {

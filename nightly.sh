@@ -42,6 +42,10 @@ if [[ "$@" == "" ||  "$@" == "--clean" ]] ; then
   sbt_test tortoiseJS test
   sbt_test tortoiseJVM crawl
   sbt_test netLogoWeb test
+  sbt_task tortoiseCore/scalastyle
+  sbt_task tortoiseJVM/scalastyle
+  sbt_task tortoiseJS/scalastyle
+  sbt_task macrosCore/scalastyle
   sbt_task tortoiseJVM/depend
   echo "****** all done!"
 else

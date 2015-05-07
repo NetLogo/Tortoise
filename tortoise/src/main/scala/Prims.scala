@@ -3,9 +3,11 @@
 package org.nlogo.tortoise
 
 import
-  org.nlogo.core.{ CommandBlock, CompilerException, prim, ReporterApp, Statement, Token }
+  org.nlogo.core.{ Command, CommandBlock, CompilerException, prim, Reporter, ReporterApp, Statement, Token }
 
 // The Prim traits are split apart as follows
+//                  JsOps
+//                   |
 //      +----> PrimUtils <------+
 //      |            |          |
 //  ReporterPrims<-+ | +--> CommandPrims
@@ -17,14 +19,8 @@ import
 // Having two separate traits makes the code a bit easier to manage, but
 // the decision of whether there are separate traits or not could be revisited
 // in the future after a scala.js upgrade shows that it won't break stuff (RG 3/30/2015)
-trait PrimUtils {
+trait PrimUtils extends JsOps {
   def handlers: Handlers
-
-  // Intended to take in a NetLogo identifier (e.g. breed names, varnames, `turtles-own` varnames) and give back a
-  // string for use in JavaScript.  We cannot simply wrap the string in single quotes, since single quotes are
-  // actually valid characters in NetLogo identifiers!  --JAB (2/26/15)
-  protected def jsString(ident: String): String =
-    '"' + ident + '"'
 
   protected def failCompilation(msg: String, token: Token): Nothing =
     throw new CompilerException(msg, token.start, token.end, token.filename)
@@ -34,9 +30,38 @@ trait PrimUtils {
 
   protected def generateNotImplementedStub(primName: String): String =
     s"notImplemented(${jsString(primName)}, undefined)"
+
+  object VariableReporter extends VariablePrims {
+    def unapply(r: Reporter): Option[String] =
+      procedureAndVarName(r, "get").map {
+        case (proc: String, varName: String) => s"$proc(${jsString(varName)})"
+      }
+  }
+
+  object VariableSetter extends VariablePrims {
+    def unapply(r: Reporter): Option[String => String] =
+      procedureAndVarName(r, "set").map {
+        case (proc: String, varName: String) =>
+          ((setValue: String) => s"$proc(${jsString(varName)}, $setValue);")
+      }
+  }
+
+  trait VariablePrims extends JsOps {
+    protected def procedureAndVarName(r: Reporter, action: String): Option[(String, String)] = PartialFunction.condOpt(r) {
+      case bv: prim._breedvariable        => (s"SelfPrims.${action}Variable", bv.name.toLowerCase)
+      case bv: prim._linkbreedvariable    => (s"SelfPrims.${action}Variable", bv.name.toLowerCase)
+      case tv: prim._turtlevariable       => (s"SelfPrims.${action}Variable", tv.displayName.toLowerCase)
+      case tv: prim._linkvariable         => (s"SelfPrims.${action}Variable", tv.displayName.toLowerCase)
+      case tv: prim._turtleorlinkvariable => (s"SelfPrims.${action}Variable", tv.varName.toLowerCase)
+      case pv: prim._patchvariable        => (s"SelfPrims.${action}PatchVariable", pv.displayName.toLowerCase)
+      case ov: prim._observervariable     => (s"world.observer.${action}Global", ov.displayName.toLowerCase)
+      }
+  }
 }
 
 trait ReporterPrims extends PrimUtils {
+  // scalastyle:off method.length
+  // scalastyle:off cyclomatic.complexity
   def reporter(r: ReporterApp)(implicit compilerFlags: CompilerFlags): String = {
     def arg(i: Int) = handlers.reporter(r.args(i))
     def commaArgs = argsSep(", ")
@@ -50,6 +75,8 @@ trait ReporterPrims extends PrimUtils {
       case SimplePrims.SimpleReporter(op) => op
       case SimplePrims.InfixReporter(op)  => s"(${arg(0)} $op ${arg(1)})"
       case SimplePrims.NormalReporter(op) => s"$op($commaArgs)"
+      case SimplePrims.TypeCheck(check)   => s"NLType(${arg(0)}).$check"
+      case VariableReporter(op)           => op
       case p: prim._const                 => handlers.literal(p.value)
       case lv: prim._letvariable          => handlers.ident(lv.let.name)
       case pv: prim._procedurevariable    => handlers.ident(pv.name)
@@ -66,7 +93,6 @@ trait ReporterPrims extends PrimUtils {
       case _: prim.etc._reduce         => s"${arg(1)}.reduce(${arg(0)})"
       case _: prim.etc._filter         => s"${arg(1)}.filter(${arg(0)})"
       case _: prim.etc._nvalues        => s"Tasks.nValues(${arg(0)}, ${arg(1)})"
-      case _: prim.etc._basecolors     => "ColorModel.BASE_COLORS"
       case prim._errormessage(Some(l)) => s"_error_${l.hashCode()}.message"
 
       // Agentset filtering
@@ -91,32 +117,6 @@ trait ReporterPrims extends PrimUtils {
       case b: prim.etc._breedhere         => s"SelfManager.self().breedHere(${jsString(b.breedName)})"
       case b: prim.etc._breedon           => s"Prims.breedOn(${jsString(b.breedName)}, ${arg(0)})"
 
-      // Variable fetching
-      case bv: prim._breedvariable        => s"SelfPrims.getVariable(${jsString(bv.name.toLowerCase)})"
-      case bv: prim._linkbreedvariable    => s"SelfPrims.getVariable(${jsString(bv.name.toLowerCase)})"
-      case tv: prim._turtlevariable       => s"SelfPrims.getVariable(${jsString(tv.displayName.toLowerCase)})"
-      case tv: prim._linkvariable         => s"SelfPrims.getVariable(${jsString(tv.displayName.toLowerCase)})"
-      case tv: prim._turtleorlinkvariable => s"SelfPrims.getVariable(${jsString(tv.varName.toLowerCase)})"
-      case pv: prim._patchvariable        => s"SelfPrims.getPatchVariable(${jsString(pv.displayName.toLowerCase)})"
-      case ov: prim._observervariable     => s"world.observer.getGlobal(${jsString(ov.displayName.toLowerCase)})"
-
-      // Typechecking
-      case _: prim.etc._isagent          => s"NLType(${arg(0)}).isValidAgent()"
-      case _: prim.etc._isagentset       => s"NLType(${arg(0)}).isAgentSet()"
-      case x: prim.etc._isbreed          => s"NLType(${arg(0)}).isBreed(${jsString(x.breedName)})"
-      case _: prim.etc._iscommandtask    => s"NLType(${arg(0)}).isCommandTask()"
-      case _: prim.etc._isdirectedlink   => s"NLType(${arg(0)}).isDirectedLink()"
-      case _: prim.etc._islink           => s"NLType(${arg(0)}).isValidLink()"
-      case _: prim.etc._islinkset        => s"NLType(${arg(0)}).isLinkSet()"
-      case _: prim.etc._islist           => s"NLType(${arg(0)}).isList()"
-      case _: prim.etc._isnumber         => s"NLType(${arg(0)}).isNumber()"
-      case _: prim.etc._ispatch          => s"NLType(${arg(0)}).isPatch()"
-      case _: prim.etc._ispatchset       => s"NLType(${arg(0)}).isPatchSet()"
-      case _: prim.etc._isreportertask   => s"NLType(${arg(0)}).isReporterTask()"
-      case _: prim.etc._isstring         => s"NLType(${arg(0)}).isString()"
-      case _: prim.etc._isturtle         => s"NLType(${arg(0)}).isValidTurtle()"
-      case _: prim.etc._isturtleset      => s"NLType(${arg(0)}).isTurtleSet()"
-      case _: prim.etc._isundirectedlink => s"NLType(${arg(0)}).isUndirectedLink()"
 
       // Link finding
       case p: prim.etc._inlinkfrom       => s"LinkPrims.inLinkFrom(${jsString(fixBN(p.breedName))}, ${arg(0)})"
@@ -147,6 +147,8 @@ trait ReporterPrims extends PrimUtils {
 
     }
   }
+  // scalastyle:on method.length
+  // scalastyle:on cyclomatic.complexity
 
   def generateOf(r: ReporterApp)(implicit compilerFlags: CompilerFlags): String = {
     val agents = handlers.reporter(r.args(1))
@@ -156,6 +158,8 @@ trait ReporterPrims extends PrimUtils {
 }
 
 trait CommandPrims extends PrimUtils {
+  // scalastyle:off cyclomatic.complexity
+  // scalastyle:off method.length
   def generateCommand(s: Statement)(implicit compilerFlags: CompilerFlags): String = {
     def arg(i: Int) = handlers.reporter(s.args(i))
     def commaArgs = argsSep(", ")
@@ -209,6 +213,8 @@ trait CommandPrims extends PrimUtils {
         failCompilation(s"unknown primitive: ${s.command.getClass.getName}", s.instruction.token)
     }
   }
+  // scalastyle:on method.length
+  // scalastyle:on cyclomatic.complexity
 
   def getReferenceName(s: Statement)(implicit compilerFlags: CompilerFlags): String =
     s.args(0).asInstanceOf[ReporterApp].reporter match {
@@ -221,25 +227,13 @@ trait CommandPrims extends PrimUtils {
   def generateSet(s: Statement)(implicit compilerFlags: CompilerFlags): String = {
     def arg(i: Int) = handlers.reporter(s.args(i))
     s.args(0).asInstanceOf[ReporterApp].reporter match {
-      case p: prim._letvariable =>
+      case p: prim._letvariable                 =>
         s"${handlers.ident(p.let.name)} = ${arg(1)};"
-      case p: prim._observervariable =>
-        s"world.observer.setGlobal(${jsString(p.displayName.toLowerCase)}, ${arg(1)});"
-      case bv: prim._breedvariable =>
-        s"SelfPrims.setVariable(${jsString(bv.name.toLowerCase)}, ${arg(1)});"
-      case bv: prim._linkbreedvariable =>
-        s"SelfPrims.setVariable(${jsString(bv.name.toLowerCase)}, ${arg(1)});"
-      case p: prim._linkvariable =>
-        s"SelfPrims.setVariable(${jsString(p.displayName.toLowerCase)}, ${arg(1)});"
-      case p: prim._turtlevariable =>
-        s"SelfPrims.setVariable(${jsString(p.displayName.toLowerCase)}, ${arg(1)});"
-      case p: prim._turtleorlinkvariable =>
-        s"SelfPrims.setVariable(${jsString(p.varName.toLowerCase)}, ${arg(1)});"
-      case p: prim._patchvariable =>
-        s"SelfPrims.setPatchVariable(${jsString(p.displayName.toLowerCase)}, ${arg(1)});"
-      case p: prim._procedurevariable =>
+      case p: prim._procedurevariable           =>
         s"${handlers.ident(p.name)} = ${arg(1)};"
-      case x =>
+      case VariableSetter(setValue)             =>
+        setValue(arg(1))
+      case x                                    =>
         failCompilation(s"unknown settable: ${x.getClass.getName}", s.instruction.token)
     }
   }

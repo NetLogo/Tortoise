@@ -30,7 +30,9 @@ object CompilerService {
       case NonEmptyList(head, _*) => throw head
     }
 
+    // scalastyle:off regex
     println(model.compiledCode)
+    // scalastyle:on regex
 
   }
 

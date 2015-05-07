@@ -1,4 +1,5 @@
 // (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
+
 package org.nlogo.tortoise.jsengine
 
 import
@@ -34,7 +35,7 @@ class Rhino {
     }).asInstanceOf[ScriptableObject]
 
 
-  def engine = new RhinoEngine(factory, scope)
+  def engine: RhinoEngine = new RhinoEngine(factory, scope)
 
   class RhinoEngine(contextFactory: ContextFactory, scope: Scriptable) {
     def withContext[A <: AnyRef](f: Context => A): A =
@@ -42,6 +43,9 @@ class Rhino {
         override def run(cx: Context): AnyRef = f(cx)
       }).asInstanceOf[A]
 
+    // scalastyle:off null
+    // We use nulls here as the Rhino SecurityDomain, since we're not concerned with security
+    // RG 5/22/15
     def eval(js: String): AnyRef =
       withContext(_.evaluateString(scope, js, "<eval>", 1, null))
 
@@ -51,5 +55,6 @@ class Rhino {
 
       ((a: Array[AnyRef]) => withContext(rhinoFunction.call(_, scope, scope, a)))
     }
+    //scalastyle:on null
   }
 }

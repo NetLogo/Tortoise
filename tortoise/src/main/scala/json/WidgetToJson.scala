@@ -23,41 +23,51 @@ object WidgetToJson {
 
   implicit object readWidgetJson extends JsonReader[TortoiseJson, Widget] {
     import scalaz.syntax.ToValidationOps
-    def apply(json: TortoiseJson): ValidationNel[String, Widget] =
+    def apply(json: TortoiseJson): ValidationNel[String, Widget] = {
+      def failure(unexpectedType: AnyRef) = s"unknown widget type $unexpectedType".failureNel[Widget]
       json match {
         case j: JsObject =>
           j.props.get("type").toSuccess(NonEmptyList("no conversion available")).flatMap {
-            case JsString("button")   => Jsonify.reader[JsObject, Button](j)
-            case JsString("chooser")  => Jsonify.reader[JsObject, Chooser](j)
-            case JsString("inputBox") =>
-              j.props.get("boxtype").toSuccess(NonEmptyList("must supply boxtype for inputBox"))
-                .flatMap(tortoiseJs2InputBoxType)
-                .flatMap {
-                  case Num => Jsonify.reader[JsObject, InputBox[Double]](j)
-                  case Col => Jsonify.reader[JsObject, InputBox[Int]](j)
-                  case _   => Jsonify.reader[JsObject, InputBox[String]](j)
-                }
-            case JsString("monitor")  => Jsonify.reader[JsObject, Monitor](j)
-            case JsString("output")   => Jsonify.reader[JsObject, Output](j)
-            case JsString("pen")      => Jsonify.reader[JsObject, Pen](j)
-            case JsString("plot")     => Jsonify.reader[JsObject, Plot](j)
-            case JsString("slider")   => Jsonify.reader[JsObject, Slider](j)
-            case JsString("switch")   => Jsonify.reader[JsObject, Switch](j)
-            case JsString("textBox")  => Jsonify.reader[JsObject, TextBox](j)
-            case JsString("view")     => Jsonify.reader[JsObject, View](j)
-            case other                => s"unknown widget type $other".failureNel[Widget]
+            case JsString(widgetType) => readerMap.getOrElse(widgetType, failure _).apply(j)
+            case other                => failure(other)
           }
         case other => "Widgets must be represented as a JSON Object".failureNel[Widget]
       }
+    }
+
+    private val readerMap: Map[String, JsObject => ValidationNel[String, Widget]] =
+      Map(
+        "button"   -> Jsonify.reader[JsObject, Button],
+        "chooser"  -> Jsonify.reader[JsObject, Chooser],
+        "inputBox" -> inputBoxReader _,
+        "monitor"  -> Jsonify.reader[JsObject, Monitor],
+        "output"   -> Jsonify.reader[JsObject, Output],
+        "pen"      -> Jsonify.reader[JsObject, Pen],
+        "plot"     -> Jsonify.reader[JsObject, Plot],
+        "slider"   -> Jsonify.reader[JsObject, Slider],
+        "switch"   -> Jsonify.reader[JsObject, Switch],
+        "textBox"  -> Jsonify.reader[JsObject, TextBox],
+        "view"     -> Jsonify.reader[JsObject, View]
+      )
+
+    private def inputBoxReader(j: JsObject): ValidationNel[String, Widget] =
+      j.props.get("boxtype").toSuccess(NonEmptyList("must supply boxtype for inputBox"))
+        .flatMap(tortoiseJs2InputBoxType)
+        .flatMap {
+          case Num => Jsonify.reader[JsObject, InputBox[Double]](j)
+          case Col => Jsonify.reader[JsObject, InputBox[Int]](j)
+          case _   => Jsonify.reader[JsObject, InputBox[String]](j)
+        }
   }
 
   def read(json: TortoiseJson): ValidationNel[String, Widget] =
     JsonReader.read[Widget](json)
 
+  // scalastyle:off cyclomatic.complexity
   implicit def widget2Json(w: Widget): JsonWritable =
     new JsonWritable {
       import WidgetWrite._
-      def toJsonObj =
+      def toJsonObj: TortoiseJson =
         w match {
           case b: Button      => Jsonify.writer[Button, TortoiseJson](b)
           case c: Chooser     => Jsonify.writer[Chooser, TortoiseJson](c)
@@ -72,6 +82,7 @@ object WidgetToJson {
           case v: View        => Jsonify.writer[View, TortoiseJson](v)
         }
     }
+    // scalastyle:on cyclomatic.complexity
 
   class InputBoxConverter(target: InputBox[_]) extends JsonWritable {
     import WidgetWrite._

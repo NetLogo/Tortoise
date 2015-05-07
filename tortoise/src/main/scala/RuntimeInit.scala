@@ -11,7 +11,7 @@ import
 // RuntimeInit generates JavaScript code that does any initialization that needs to happen
 // before any user code runs, for example creating patches
 
-class RuntimeInit(program: Program, model: Model) {
+class RuntimeInit(program: Program, model: Model) extends JsOps {
 
   def init: String =
     s"""var workspace = tortoise_require('engine/workspace')(modelConfig)($genBreedObjects)($genBreedsOwnArgs)($genWorkspaceArgs);
@@ -56,9 +56,9 @@ class RuntimeInit(program: Program, model: Model) {
     val breedObjs =
       (program.breeds.values ++ program.linkBreeds.values).map {
         b =>
-          val name        = wrapInQuotes(b.name)
-          val singular    = wrapInQuotes(b.singular.toLowerCase)
-          val varNames    = mkJSArrStr(b.owns map (_.toLowerCase) map wrapInQuotes)
+          val name        = jsString(b.name)
+          val singular    = jsString(b.singular.toLowerCase)
+          val varNames    = mkJSArrStr(b.owns map (_.toLowerCase) map jsString)
           val directedStr = if (b.isLinkBreed) s", isDirected: ${b.isDirected}" else ""
           s"""{ name: $name, singular: $singular, varNames: $varNames$directedStr }"""
       }
@@ -73,8 +73,8 @@ class RuntimeInit(program: Program, model: Model) {
     val linkVarNames   = program.linksOwn   diff AgentVariables.getImplicitLinkVariables
     val turtleVarNames = program.turtlesOwn diff AgentVariables.getImplicitTurtleVariables
 
-    val linksOwnNames   = mkJSArrStr(linkVarNames   map (_.toLowerCase) map wrapInQuotes)
-    val turtlesOwnNames = mkJSArrStr(turtleVarNames map (_.toLowerCase) map wrapInQuotes)
+    val linksOwnNames   = mkJSArrStr(linkVarNames   map (_.toLowerCase) map jsString)
+    val turtlesOwnNames = mkJSArrStr(turtleVarNames map (_.toLowerCase) map jsString)
 
     s"$turtlesOwnNames, $linksOwnNames"
 
@@ -96,9 +96,9 @@ class RuntimeInit(program: Program, model: Model) {
 
     val patchVarNames  = program.patchesOwn diff AgentVariables.getImplicitPatchVariables
 
-    val globalNames          = mkJSArrStr(program.globals          map (_.toLowerCase) map wrapInQuotes)
-    val interfaceGlobalNames = mkJSArrStr(program.interfaceGlobals map (_.toLowerCase) map wrapInQuotes)
-    val patchesOwnNames      = mkJSArrStr(patchVarNames            map (_.toLowerCase) map wrapInQuotes)
+    val globalNames          = mkJSArrStr(program.globals          map (_.toLowerCase) map jsString)
+    val interfaceGlobalNames = mkJSArrStr(program.interfaceGlobals map (_.toLowerCase) map jsString)
+    val patchesOwnNames      = mkJSArrStr(patchVarNames            map (_.toLowerCase) map jsString)
 
     val turtleShapesJson = shapeList(parseTurtleShapes(model.turtleShapes.toArray))
     val linkShapesJson   = shapeList(parseLinkShapes(model.linkShapes.toArray))
@@ -110,9 +110,6 @@ class RuntimeInit(program: Program, model: Model) {
       s"$wrappingAllowedInX, $wrappingAllowedInY, $turtleShapesJson, $linkShapesJson"
 
   }
-
-  private def wrapInQuotes(str: String): String =
-    '"' + str + '"'
 
   private def mkJSArrStr(arrayValues: Iterable[String]): String =
     if (arrayValues.nonEmpty)
