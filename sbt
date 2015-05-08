@@ -4,7 +4,7 @@ CURR_DIR=`dirname $0`
 if [ `uname -s` = Linux ] ; then
   # use JAVA_HOME from Travis if there is one
   if [ -z "$TRAVIS" ] ; then
-    export JAVA_HOME=/usr/lib/jvm/java-8-sun
+    export JAVA_HOME=/usr/lib/jvm/java-8-oracle
   fi
 else
   if [ `uname -s` = Darwin ] ; then
@@ -16,6 +16,7 @@ fi
 
 export PATH=$JAVA_HOME/bin:$PATH
 JAVA=$JAVA_HOME/bin/java
+
 
 # Most of these settings are fine for everyone
 XSS=-Xss2m
@@ -45,10 +46,15 @@ if [[ `uname -s` == *CYGWIN* ]] ; then
 
 fi
 
+if [ "$TRAVIS" == "true" ]; then
+  JAVA_OPTS="$TRAVIS_JVM_OPTS"
+else
+  JAVA_OPTS="$XSS $XMX $XX"
+fi
+
 "$JAVA" \
-    $XSS $XMX $XX \
-    $ENCODING \
     $JAVA_OPTS \
+    $ENCODING \
     $HEADLESS \
     -classpath $SBT_LAUNCH \
     $BOOT "$@"

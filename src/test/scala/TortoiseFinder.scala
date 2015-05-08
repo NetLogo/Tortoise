@@ -3,11 +3,14 @@
 package org.nlogo.tortoise
 
 import
-  org.scalatest.{ BeforeAndAfterAll, exceptions },
+  org.scalatest.{ Tag, BeforeAndAfterAll, exceptions },
     exceptions.TestPendingException
 
 import
   org.nlogo.headless.test.{ AbstractFixture, Command, Finder, LanguageTest, NormalMode, CommandTests, TestMode, ReporterTests }
+
+import
+  org.nlogo.tortoise.tags.{ SlowTest => TortoiseSlowTag, LanguageTest => TortoiseLanguageTag}
 
 private[tortoise] trait TortoiseFinder extends Finder with BeforeAndAfterAll with BrowserReporter with TestLogger {
 
@@ -32,6 +35,9 @@ private[tortoise] trait TortoiseFinder extends Finder with BeforeAndAfterAll wit
 
   override def runTest(t: LanguageTest, mode: TestMode): Unit =
     loggingFailures(t.suiteName, t.testName, { super.runTest(t, mode) })
+
+  override def test(name: String, otherTags: Tag*)(testFun: => Unit) =
+    super.test(name, (Seq(TortoiseLanguageTag) ++ otherTags):_*)(testFun)
 
   override def withFixture[T](name: String)(body: (AbstractFixture) => T): T =
     freebies.get(name.stripSuffix(" (NormalMode)")) match {

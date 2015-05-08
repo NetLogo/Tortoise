@@ -3,10 +3,11 @@
 package org.nlogo.tortoise
 package dock
 
+import tags.SlowTest
 import org.nlogo.core.{ Model, View }
 import org.nlogo.util.SlowTest
 
-class TestTopologies extends DockingSuite with SlowTest {
+class TestTopologies extends DockingSuite {
 
   val default = View(minPxcor = -8, maxPxcor = 9, minPycor = -10, maxPycor = 11)
 
@@ -21,7 +22,7 @@ class TestTopologies extends DockingSuite with SlowTest {
       Topo("box", false, false)
     )
     for(topo <- topos)
-      test(s"$name in ${topo.name}") { fixture =>
+      test(s"$name in ${topo.name}", SlowTest) { fixture =>
         fixture.declare(Model(code = decls, widgets = List(topo.view)))
         fn(fixture)
       }
@@ -134,7 +135,7 @@ class TestTopologies extends DockingSuite with SlowTest {
 
   ///
 
-  test("box layout spring") {
+  test("box layout spring", SlowTest) {
     implicit fixture => import fixture._
     declare(Model(widgets = List(default.copy(wrappingAllowedInX = false, wrappingAllowedInY = false))))
     testCommand("crt 10 [ setxy random-xcor random-ycor ]")

@@ -1,4 +1,4 @@
-val root = project in file (".") configs(FastMediumSlow.configs: _*)
+val root = project in file (".")
 
 // Keep this up here so things get published to the correct places
 bintraySettings

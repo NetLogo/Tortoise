@@ -4,12 +4,25 @@ sudo: false
 jdk: oraclejdk8
 language: scala
 scala: 2.11.6
+env:
+  global:
+    - TRAVIS=true
+    - TRAVIS_JVM_OPTS="-Xss6m -Xmx1560M -Xms1560M -client -Xverify:none -XX:MaxMetaspaceSize=512M"
 before_install:
   - git submodule update --init --recursive
 install:
   - sbt update
 script:
-  - ./nightly.sh
+  - cat /usr/lib/jvm/java-8-oracle/release
+  - mv .travis.sbt travis.sbt
+  - ./nightly.sh sbt_task test:compile "ensime generate"
+  - ./nightly.sh sbt_test fast
+  - ./nightly.sh sbt_test language
+  - ./nightly.sh sbt_test crawl
+  - ./nightly.sh sbt_task depend
+
+after_failure:
+  - dmesg | tail -100
 
 notifications:
   hipchat:
