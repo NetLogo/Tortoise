@@ -100,180 +100,202 @@ var AgentModel = tortoise_require('agentmodel');
 var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
-function makeNewcomer() {
-  world.turtleManager.createTurtles(1, "").ask(function() {
-    SelfPrims.setVariable("color", (105 + 1));
-    SelfPrims.setVariable("size", 1.8);
-    SelfPrims.setVariable("incumbent?", false);
-    SelfPrims.setVariable("in-team?", false);
-    world.observer.setGlobal("newcomer", SelfManager.self());
-    SelfPrims.setVariable("downtime", 0);
-    SelfPrims.setVariable("explored?", false);
-  }, true);
-}
-function setup() {
-  world.clearAll();
-  BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
-  for (var _index_1053_1059 = 0, _repeatcount_1053_1059 = StrictMath.floor(world.observer.getGlobal("team-size")); _index_1053_1059 < _repeatcount_1053_1059; _index_1053_1059++){
-    Call(makeNewcomer);
-  }
-  world.turtles().ask(function() {
-    SelfPrims.setVariable("in-team?", true);
-    SelfPrims.setVariable("incumbent?", true);
-  }, true);
-  Call(tieCollaborators);
-  Call(colorCollaborations);
-  world.turtles().ask(function() {
-    SelfPrims.setVariable("heading", ((360 / world.observer.getGlobal("team-size")) * SelfPrims.getVariable("who")));
-    SelfPrims.fd(1.75);
-    SelfPrims.setVariable("in-team?", false);
-  }, true);
-  Call(findAllComponents);
-  world.ticker.reset();
-}
-function go() {
-  world.turtles().ask(function() {
-    SelfPrims.setVariable("incumbent?", true);
-    SelfPrims.setVariable("color", (5 - 1.5));
-    SelfPrims.setVariable("size", 0.9);
-  }, true);
-  world.links().ask(function() {
-    SelfPrims.setVariable("new-collaboration?", false);
-  }, true);
-  Call(pickTeamMembers);
-  Call(tieCollaborators);
-  Call(colorCollaborations);
-  world.turtles().ask(function() {
-    if (Prims.gt(SelfPrims.getVariable("downtime"), world.observer.getGlobal("max-downtime"))) {
-      SelfPrims.die();
-    }
-    SelfPrims.setVariable("in-team?", false);
-    SelfPrims.setVariable("downtime", (SelfPrims.getVariable("downtime") + 1));
-  }, true);
-  if (world.observer.getGlobal("layout?")) {
-    Call(layout);
-  }
-  Call(findAllComponents);
-  world.ticker.tick();
-}
-function pickTeamMembers() {
-  var newTeamMember = Nobody;
-  for (var _index_2105_2111 = 0, _repeatcount_2105_2111 = StrictMath.floor(world.observer.getGlobal("team-size")); _index_2105_2111 < _repeatcount_2105_2111; _index_2105_2111++){
-    if (Prims.gte(Prims.randomFloat(100), world.observer.getGlobal("p"))) {
-      Call(makeNewcomer);
-      newTeamMember = world.observer.getGlobal("newcomer");
-    }
-    else {
-      if ((Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("q")) && world.turtles().agentFilter(function() {
-        return (SelfPrims.getVariable("in-team?") && LinkPrims.linkNeighbors("LINKS").agentFilter(function() {
-          return !SelfPrims.getVariable("in-team?");
-        }).nonEmpty());
-      }).nonEmpty())) {
-        newTeamMember = ListPrims.oneOf(world.turtles().agentFilter(function() {
-          return (!SelfPrims.getVariable("in-team?") && LinkPrims.linkNeighbors("LINKS").agentFilter(function() {
-            return SelfPrims.getVariable("in-team?");
-          }).nonEmpty());
-        }));
-      }
-      else {
-        newTeamMember = ListPrims.oneOf(world.turtles().agentFilter(function() {
-          return !SelfPrims.getVariable("in-team?");
-        }));
-      }
-    }
-    newTeamMember.ask(function() {
-      SelfPrims.setVariable("in-team?", true);
-      SelfPrims.setVariable("downtime", 0);
+var procedures = (function() {
+  var makeNewcomer = function() {
+    world.turtleManager.createTurtles(1, "").ask(function() {
+      SelfPrims.setVariable("color", (105 + 1));
       SelfPrims.setVariable("size", 1.8);
-      SelfPrims.setVariable("color", (SelfPrims.getVariable("incumbent?") ? (45 + 2) : (105 + 1)));
+      SelfPrims.setVariable("incumbent?", false);
+      SelfPrims.setVariable("in-team?", false);
+      world.observer.setGlobal("newcomer", SelfManager.self());
+      SelfPrims.setVariable("downtime", 0);
+      SelfPrims.setVariable("explored?", false);
     }, true);
-  }
-}
-function tieCollaborators() {
-  world.turtles().agentFilter(function() {
-    return SelfPrims.getVariable("in-team?");
-  }).ask(function() {
-    LinkPrims.createLinksWith(SelfPrims.other(world.turtles().agentFilter(function() {
-      return SelfPrims.getVariable("in-team?");
-    })), "LINKS").ask(function() {
-      SelfPrims.setVariable("new-collaboration?", true);
-      SelfPrims.setVariable("thickness", 0.3);
+  };
+  var setup = function() {
+    world.clearAll();
+    BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
+    for (var _index_1053_1059 = 0, _repeatcount_1053_1059 = StrictMath.floor(world.observer.getGlobal("team-size")); _index_1053_1059 < _repeatcount_1053_1059; _index_1053_1059++){
+      Call(procedures.makeNewcomer);
+    }
+    world.turtles().ask(function() {
+      SelfPrims.setVariable("in-team?", true);
+      SelfPrims.setVariable("incumbent?", true);
     }, true);
-  }, true);
-}
-function colorCollaborations() {
-  world.links().agentFilter(function() {
-    return (SelfPrims.getVariable("end1").projectionBy(function() {
-      return SelfPrims.getVariable("in-team?");
-    }) && SelfPrims.getVariable("end2").projectionBy(function() {
-      return SelfPrims.getVariable("in-team?");
-    }));
-  }).ask(function() {
-    if (SelfPrims.getVariable("new-collaboration?")) {
-      if ((SelfPrims.getVariable("end1").projectionBy(function() {
-        return SelfPrims.getVariable("incumbent?");
-      }) && SelfPrims.getVariable("end2").projectionBy(function() {
-        return SelfPrims.getVariable("incumbent?");
-      }))) {
-        SelfPrims.setVariable("color", 45);
+    Call(procedures.tieCollaborators);
+    Call(procedures.colorCollaborations);
+    world.turtles().ask(function() {
+      SelfPrims.setVariable("heading", ((360 / world.observer.getGlobal("team-size")) * SelfPrims.getVariable("who")));
+      SelfPrims.fd(1.75);
+      SelfPrims.setVariable("in-team?", false);
+    }, true);
+    Call(procedures.findAllComponents);
+    world.ticker.reset();
+  };
+  var go = function() {
+    world.turtles().ask(function() {
+      SelfPrims.setVariable("incumbent?", true);
+      SelfPrims.setVariable("color", (5 - 1.5));
+      SelfPrims.setVariable("size", 0.9);
+    }, true);
+    world.links().ask(function() {
+      SelfPrims.setVariable("new-collaboration?", false);
+    }, true);
+    Call(procedures.pickTeamMembers);
+    Call(procedures.tieCollaborators);
+    Call(procedures.colorCollaborations);
+    world.turtles().ask(function() {
+      if (Prims.gt(SelfPrims.getVariable("downtime"), world.observer.getGlobal("max-downtime"))) {
+        SelfPrims.die();
+      }
+      SelfPrims.setVariable("in-team?", false);
+      SelfPrims.setVariable("downtime", (SelfPrims.getVariable("downtime") + 1));
+    }, true);
+    if (world.observer.getGlobal("layout?")) {
+      Call(procedures.layout);
+    }
+    Call(procedures.findAllComponents);
+    world.ticker.tick();
+  };
+  var pickTeamMembers = function() {
+    var newTeamMember = Nobody;
+    for (var _index_2105_2111 = 0, _repeatcount_2105_2111 = StrictMath.floor(world.observer.getGlobal("team-size")); _index_2105_2111 < _repeatcount_2105_2111; _index_2105_2111++){
+      if (Prims.gte(Prims.randomFloat(100), world.observer.getGlobal("p"))) {
+        Call(procedures.makeNewcomer);
+        newTeamMember = world.observer.getGlobal("newcomer");
       }
       else {
-        if ((SelfPrims.getVariable("end1").projectionBy(function() {
-          return SelfPrims.getVariable("incumbent?");
-        }) || SelfPrims.getVariable("end2").projectionBy(function() {
-          return SelfPrims.getVariable("incumbent?");
-        }))) {
-          SelfPrims.setVariable("color", 55);
+        if ((Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("q")) && world.turtles().agentFilter(function() {
+          return (SelfPrims.getVariable("in-team?") && LinkPrims.linkNeighbors("LINKS").agentFilter(function() {
+            return !SelfPrims.getVariable("in-team?");
+          }).nonEmpty());
+        }).nonEmpty())) {
+          newTeamMember = ListPrims.oneOf(world.turtles().agentFilter(function() {
+            return (!SelfPrims.getVariable("in-team?") && LinkPrims.linkNeighbors("LINKS").agentFilter(function() {
+              return SelfPrims.getVariable("in-team?");
+            }).nonEmpty());
+          }));
         }
         else {
-          SelfPrims.setVariable("color", 105);
+          newTeamMember = ListPrims.oneOf(world.turtles().agentFilter(function() {
+            return !SelfPrims.getVariable("in-team?");
+          }));
         }
       }
+      newTeamMember.ask(function() {
+        SelfPrims.setVariable("in-team?", true);
+        SelfPrims.setVariable("downtime", 0);
+        SelfPrims.setVariable("size", 1.8);
+        SelfPrims.setVariable("color", (SelfPrims.getVariable("incumbent?") ? (45 + 2) : (105 + 1)));
+      }, true);
     }
-    else {
-      SelfPrims.setVariable("color", 15);
+  };
+  var tieCollaborators = function() {
+    world.turtles().agentFilter(function() {
+      return SelfPrims.getVariable("in-team?");
+    }).ask(function() {
+      LinkPrims.createLinksWith(SelfPrims.other(world.turtles().agentFilter(function() {
+        return SelfPrims.getVariable("in-team?");
+      })), "LINKS").ask(function() {
+        SelfPrims.setVariable("new-collaboration?", true);
+        SelfPrims.setVariable("thickness", 0.3);
+      }, true);
+    }, true);
+  };
+  var colorCollaborations = function() {
+    world.links().agentFilter(function() {
+      return (SelfPrims.getVariable("end1").projectionBy(function() {
+        return SelfPrims.getVariable("in-team?");
+      }) && SelfPrims.getVariable("end2").projectionBy(function() {
+        return SelfPrims.getVariable("in-team?");
+      }));
+    }).ask(function() {
+      if (SelfPrims.getVariable("new-collaboration?")) {
+        if ((SelfPrims.getVariable("end1").projectionBy(function() {
+          return SelfPrims.getVariable("incumbent?");
+        }) && SelfPrims.getVariable("end2").projectionBy(function() {
+          return SelfPrims.getVariable("incumbent?");
+        }))) {
+          SelfPrims.setVariable("color", 45);
+        }
+        else {
+          if ((SelfPrims.getVariable("end1").projectionBy(function() {
+            return SelfPrims.getVariable("incumbent?");
+          }) || SelfPrims.getVariable("end2").projectionBy(function() {
+            return SelfPrims.getVariable("incumbent?");
+          }))) {
+            SelfPrims.setVariable("color", 55);
+          }
+          else {
+            SelfPrims.setVariable("color", 105);
+          }
+        }
+      }
+      else {
+        SelfPrims.setVariable("color", 15);
+      }
+    }, true);
+  };
+  var layout = function() {
+    for (var _index_4155_4161 = 0, _repeatcount_4155_4161 = StrictMath.floor(12); _index_4155_4161 < _repeatcount_4155_4161; _index_4155_4161++){
+      LayoutManager.layoutSpring(world.turtles(), world.links(), 0.18, 0.01, 1.2);
+      notImplemented('display', undefined)();
     }
-  }, true);
-}
-function layout() {
-  for (var _index_4155_4161 = 0, _repeatcount_4155_4161 = StrictMath.floor(12); _index_4155_4161 < _repeatcount_4155_4161; _index_4155_4161++){
-    LayoutManager.layoutSpring(world.turtles(), world.links(), 0.18, 0.01, 1.2);
-    notImplemented('display', undefined)();
-  }
-}
-function findAllComponents() {
-  world.observer.setGlobal("components", []);
-  world.observer.setGlobal("giant-component-size", 0);
-  world.turtles().ask(function() {
-    SelfPrims.setVariable("explored?", false);
-  }, true);
-  while (true) {
-    var start = ListPrims.oneOf(world.turtles().agentFilter(function() {
-      return !SelfPrims.getVariable("explored?");
-    }));
-    if (Prims.equality(start, Nobody)) {
+  };
+  var findAllComponents = function() {
+    world.observer.setGlobal("components", []);
+    world.observer.setGlobal("giant-component-size", 0);
+    world.turtles().ask(function() {
+      SelfPrims.setVariable("explored?", false);
+    }, true);
+    while (true) {
+      var start = ListPrims.oneOf(world.turtles().agentFilter(function() {
+        return !SelfPrims.getVariable("explored?");
+      }));
+      if (Prims.equality(start, Nobody)) {
+        throw new Exception.StopInterrupt;
+      }
+      world.observer.setGlobal("component-size", 0);
+      start.ask(function() {
+        Call(procedures.explore);
+      }, true);
+      if (Prims.gt(world.observer.getGlobal("component-size"), world.observer.getGlobal("giant-component-size"))) {
+        world.observer.setGlobal("giant-component-size", world.observer.getGlobal("component-size"));
+      }
+      world.observer.setGlobal("components", ListPrims.lput(world.observer.getGlobal("component-size"), world.observer.getGlobal("components")));
+    };
+  };
+  var explore = function() {
+    if (SelfPrims.getVariable("explored?")) {
       throw new Exception.StopInterrupt;
     }
-    world.observer.setGlobal("component-size", 0);
-    start.ask(function() {
-      Call(explore);
+    SelfPrims.setVariable("explored?", true);
+    world.observer.setGlobal("component-size", (world.observer.getGlobal("component-size") + 1));
+    LinkPrims.linkNeighbors("LINKS").ask(function() {
+      Call(procedures.explore);
     }, true);
-    if (Prims.gt(world.observer.getGlobal("component-size"), world.observer.getGlobal("giant-component-size"))) {
-      world.observer.setGlobal("giant-component-size", world.observer.getGlobal("component-size"));
-    }
-    world.observer.setGlobal("components", ListPrims.lput(world.observer.getGlobal("component-size"), world.observer.getGlobal("components")));
   };
-}
-function explore() {
-  if (SelfPrims.getVariable("explored?")) {
-    throw new Exception.StopInterrupt;
-  }
-  SelfPrims.setVariable("explored?", true);
-  world.observer.setGlobal("component-size", (world.observer.getGlobal("component-size") + 1));
-  LinkPrims.linkNeighbors("LINKS").ask(function() {
-    Call(explore);
-  }, true);
-}
+  return {
+    "COLOR-COLLABORATIONS":colorCollaborations,
+    "EXPLORE":explore,
+    "FIND-ALL-COMPONENTS":findAllComponents,
+    "GO":go,
+    "LAYOUT":layout,
+    "MAKE-NEWCOMER":makeNewcomer,
+    "PICK-TEAM-MEMBERS":pickTeamMembers,
+    "SETUP":setup,
+    "TIE-COLLABORATORS":tieCollaborators,
+    "colorCollaborations":colorCollaborations,
+    "explore":explore,
+    "findAllComponents":findAllComponents,
+    "go":go,
+    "layout":layout,
+    "makeNewcomer":makeNewcomer,
+    "pickTeamMembers":pickTeamMembers,
+    "setup":setup,
+    "tieCollaborators":tieCollaborators
+  };
+})();
 world.observer.setGlobal("layout?", true);
 world.observer.setGlobal("p", 40);
 world.observer.setGlobal("q", 65);

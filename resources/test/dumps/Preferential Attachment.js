@@ -84,84 +84,102 @@ var AgentModel = tortoise_require('agentmodel');
 var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
-function setup() {
-  world.clearAll();
-  BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
-  Call(makeNode, Nobody);
-  Call(makeNode, world.turtleManager.getTurtle(0));
-  world.ticker.reset();
-}
-function go() {
-  world.links().ask(function() {
-    SelfPrims.setVariable("color", 5);
-  }, true);
-  Call(makeNode, Call(findPartner));
-  world.ticker.tick();
-  if (world.observer.getGlobal("layout?")) {
-    Call(layout);
-  }
-}
-function makeNode(oldNode) {
-  world.turtleManager.createTurtles(1, "").ask(function() {
-    SelfPrims.setVariable("color", 15);
-    if (!Prims.equality(oldNode, Nobody)) {
-      LinkPrims.createLinkWith(oldNode, "LINKS").ask(function() {
-        SelfPrims.setVariable("color", 55);
-      }, true);
-      SelfManager.self().moveTo(oldNode);
-      SelfPrims.fd(8);
+var procedures = (function() {
+  var setup = function() {
+    world.clearAll();
+    BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
+    Call(procedures.makeNode, Nobody);
+    Call(procedures.makeNode, world.turtleManager.getTurtle(0));
+    world.ticker.reset();
+  };
+  var go = function() {
+    world.links().ask(function() {
+      SelfPrims.setVariable("color", 5);
+    }, true);
+    Call(procedures.makeNode, Call(procedures.findPartner));
+    world.ticker.tick();
+    if (world.observer.getGlobal("layout?")) {
+      Call(procedures.layout);
     }
-  }, true);
-}
-function findPartner() {
-  return ListPrims.oneOf(world.links()).projectionBy(function() {
-    return ListPrims.oneOf(SelfManager.self().bothEnds());
-  });
-}
-function resizeNodes() {
-  if (world.turtles().agentAll(function() {
-    return Prims.lte(SelfPrims.getVariable("size"), 1);
-  })) {
-    world.turtles().ask(function() {
-      SelfPrims.setVariable("size", NLMath.sqrt(LinkPrims.linkNeighbors("LINKS").size()));
+  };
+  var makeNode = function(oldNode) {
+    world.turtleManager.createTurtles(1, "").ask(function() {
+      SelfPrims.setVariable("color", 15);
+      if (!Prims.equality(oldNode, Nobody)) {
+        LinkPrims.createLinkWith(oldNode, "LINKS").ask(function() {
+          SelfPrims.setVariable("color", 55);
+        }, true);
+        SelfManager.self().moveTo(oldNode);
+        SelfPrims.fd(8);
+      }
     }, true);
-  }
-  else {
+  };
+  var findPartner = function() {
+    return ListPrims.oneOf(world.links()).projectionBy(function() {
+      return ListPrims.oneOf(SelfManager.self().bothEnds());
+    });
+  };
+  var resizeNodes = function() {
+    if (world.turtles().agentAll(function() {
+      return Prims.lte(SelfPrims.getVariable("size"), 1);
+    })) {
+      world.turtles().ask(function() {
+        SelfPrims.setVariable("size", NLMath.sqrt(LinkPrims.linkNeighbors("LINKS").size()));
+      }, true);
+    }
+    else {
+      world.turtles().ask(function() {
+        SelfPrims.setVariable("size", 1);
+      }, true);
+    }
+  };
+  var layout = function() {
+    for (var _index_2014_2020 = 0, _repeatcount_2014_2020 = StrictMath.floor(3); _index_2014_2020 < _repeatcount_2014_2020; _index_2014_2020++){
+      var factor = NLMath.sqrt(world.turtles().size());
+      LayoutManager.layoutSpring(world.turtles(), world.links(), (1 / factor), (7 / factor), (1 / factor));
+      notImplemented('display', undefined)();
+    }
+    var xOffset = (ListPrims.max(world.turtles().projectionBy(function() {
+      return SelfPrims.getVariable("xcor");
+    })) + ListPrims.min(world.turtles().projectionBy(function() {
+      return SelfPrims.getVariable("xcor");
+    })));
+    var yOffset = (ListPrims.max(world.turtles().projectionBy(function() {
+      return SelfPrims.getVariable("ycor");
+    })) + ListPrims.min(world.turtles().projectionBy(function() {
+      return SelfPrims.getVariable("ycor");
+    })));
+    xOffset = Call(procedures.limitMagnitude, xOffset, 0.1);
+    yOffset = Call(procedures.limitMagnitude, yOffset, 0.1);
     world.turtles().ask(function() {
-      SelfPrims.setVariable("size", 1);
+      SelfPrims.setXY((SelfPrims.getVariable("xcor") - (xOffset / 2)), (SelfPrims.getVariable("ycor") - (yOffset / 2)));
     }, true);
-  }
-}
-function layout() {
-  for (var _index_2014_2020 = 0, _repeatcount_2014_2020 = StrictMath.floor(3); _index_2014_2020 < _repeatcount_2014_2020; _index_2014_2020++){
-    var factor = NLMath.sqrt(world.turtles().size());
-    LayoutManager.layoutSpring(world.turtles(), world.links(), (1 / factor), (7 / factor), (1 / factor));
-    notImplemented('display', undefined)();
-  }
-  var xOffset = (ListPrims.max(world.turtles().projectionBy(function() {
-    return SelfPrims.getVariable("xcor");
-  })) + ListPrims.min(world.turtles().projectionBy(function() {
-    return SelfPrims.getVariable("xcor");
-  })));
-  var yOffset = (ListPrims.max(world.turtles().projectionBy(function() {
-    return SelfPrims.getVariable("ycor");
-  })) + ListPrims.min(world.turtles().projectionBy(function() {
-    return SelfPrims.getVariable("ycor");
-  })));
-  xOffset = Call(limitMagnitude, xOffset, 0.1);
-  yOffset = Call(limitMagnitude, yOffset, 0.1);
-  world.turtles().ask(function() {
-    SelfPrims.setXY((SelfPrims.getVariable("xcor") - (xOffset / 2)), (SelfPrims.getVariable("ycor") - (yOffset / 2)));
-  }, true);
-}
-function limitMagnitude(number, limit) {
-  if (Prims.gt(number, limit)) {
-    return limit;
-  }
-  if (Prims.lt(number,  -limit)) {
-    return  -limit;
-  }
-  return number;
-}
+  };
+  var limitMagnitude = function(number, limit) {
+    if (Prims.gt(number, limit)) {
+      return limit;
+    }
+    if (Prims.lt(number,  -limit)) {
+      return  -limit;
+    }
+    return number;
+  };
+  return {
+    "FIND-PARTNER":findPartner,
+    "GO":go,
+    "LAYOUT":layout,
+    "LIMIT-MAGNITUDE":limitMagnitude,
+    "MAKE-NODE":makeNode,
+    "RESIZE-NODES":resizeNodes,
+    "SETUP":setup,
+    "findPartner":findPartner,
+    "go":go,
+    "layout":layout,
+    "limitMagnitude":limitMagnitude,
+    "makeNode":makeNode,
+    "resizeNodes":resizeNodes,
+    "setup":setup
+  };
+})();
 world.observer.setGlobal("plot?", true);
 world.observer.setGlobal("layout?", true);

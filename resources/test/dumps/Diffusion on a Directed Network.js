@@ -55,107 +55,125 @@ var AgentModel = tortoise_require('agentmodel');
 var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
-function setup() {
-  world.clearAll();
-  BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
-  BreedManager.setDefaultShape(world.links().getBreedName(), "small-arrow-link")
-  world.patches().agentFilter(function() {
-    return (Prims.lt(NLMath.abs(SelfPrims.getPatchVariable("pxcor")), (world.observer.getGlobal("grid-size") / 2)) && Prims.lt(NLMath.abs(SelfPrims.getPatchVariable("pycor")), (world.observer.getGlobal("grid-size") / 2)));
-  }).ask(function() {
-    SelfPrims.sprout(1, "TURTLES").ask(function() {
-      SelfPrims.setVariable("color", 105);
+var procedures = (function() {
+  var setup = function() {
+    world.clearAll();
+    BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
+    BreedManager.setDefaultShape(world.links().getBreedName(), "small-arrow-link")
+    world.patches().agentFilter(function() {
+      return (Prims.lt(NLMath.abs(SelfPrims.getPatchVariable("pxcor")), (world.observer.getGlobal("grid-size") / 2)) && Prims.lt(NLMath.abs(SelfPrims.getPatchVariable("pycor")), (world.observer.getGlobal("grid-size") / 2)));
+    }).ask(function() {
+      SelfPrims.sprout(1, "TURTLES").ask(function() {
+        SelfPrims.setVariable("color", 105);
+      }, true);
     }, true);
-  }, true);
-  world.turtles().ask(function() {
-    SelfPrims.setVariable("val", 1);
-    var neighborNodes = Prims.turtleSet(SelfPrims.getNeighbors4().projectionBy(function() {
-      return SelfManager.self().turtlesHere();
-    }));
-    LinkPrims.createLinksTo(neighborNodes, "ACTIVE-LINKS").ask(function() {
-      SelfPrims.setVariable("current-flow", 0);
-      if (Prims.gt(Prims.randomFloat(100), world.observer.getGlobal("link-chance"))) {
-        SelfPrims.setVariable("breed", world.linkManager.linksOfBreed("INACTIVE-LINKS"));
-        SelfPrims.setVariable('hidden?', true)
+    world.turtles().ask(function() {
+      SelfPrims.setVariable("val", 1);
+      var neighborNodes = Prims.turtleSet(SelfPrims.getNeighbors4().projectionBy(function() {
+        return SelfManager.self().turtlesHere();
+      }));
+      LinkPrims.createLinksTo(neighborNodes, "ACTIVE-LINKS").ask(function() {
+        SelfPrims.setVariable("current-flow", 0);
+        if (Prims.gt(Prims.randomFloat(100), world.observer.getGlobal("link-chance"))) {
+          SelfPrims.setVariable("breed", world.linkManager.linksOfBreed("INACTIVE-LINKS"));
+          SelfPrims.setVariable('hidden?', true)
+        }
+      }, true);
+    }, true);
+    world.turtles().ask(function() {
+      SelfPrims.setXY(((SelfPrims.getVariable("xcor") * (world.topology.maxPxcor - 1)) / ((world.observer.getGlobal("grid-size") / 2) - 0.5)), ((SelfPrims.getVariable("ycor") * (world.topology.maxPycor - 1)) / ((world.observer.getGlobal("grid-size") / 2) - 0.5)));
+    }, true);
+    Call(procedures.updateGlobals);
+    Call(procedures.updateVisuals);
+    world.ticker.reset();
+  };
+  var go = function() {
+    world.turtles().ask(function() {
+      SelfPrims.setVariable("new-val", 0);
+    }, true);
+    world.turtles().ask(function() {
+      var recipients = LinkPrims.outLinkNeighbors("ACTIVE-LINKS");
+      if (recipients.nonEmpty()) {
+        var valToKeep = (SelfPrims.getVariable("val") * (1 - (world.observer.getGlobal("diffusion-rate") / 100)));
+        SelfPrims.setVariable("new-val", (SelfPrims.getVariable("new-val") + valToKeep));
+        var valIncrement = ((SelfPrims.getVariable("val") - valToKeep) / recipients.size());
+        recipients.ask(function() {
+          SelfPrims.setVariable("new-val", (SelfPrims.getVariable("new-val") + valIncrement));
+          LinkPrims.inLinkFrom("ACTIVE-LINKS", SelfManager.myself()).ask(function() {
+            SelfPrims.setVariable("current-flow", valIncrement);
+          }, true);
+        }, true);
+      }
+      else {
+        SelfPrims.setVariable("new-val", (SelfPrims.getVariable("new-val") + SelfPrims.getVariable("val")));
       }
     }, true);
-  }, true);
-  world.turtles().ask(function() {
-    SelfPrims.setXY(((SelfPrims.getVariable("xcor") * (world.topology.maxPxcor - 1)) / ((world.observer.getGlobal("grid-size") / 2) - 0.5)), ((SelfPrims.getVariable("ycor") * (world.topology.maxPycor - 1)) / ((world.observer.getGlobal("grid-size") / 2) - 0.5)));
-  }, true);
-  Call(updateGlobals);
-  Call(updateVisuals);
-  world.ticker.reset();
-}
-function go() {
-  world.turtles().ask(function() {
-    SelfPrims.setVariable("new-val", 0);
-  }, true);
-  world.turtles().ask(function() {
-    var recipients = LinkPrims.outLinkNeighbors("ACTIVE-LINKS");
-    if (recipients.nonEmpty()) {
-      var valToKeep = (SelfPrims.getVariable("val") * (1 - (world.observer.getGlobal("diffusion-rate") / 100)));
-      SelfPrims.setVariable("new-val", (SelfPrims.getVariable("new-val") + valToKeep));
-      var valIncrement = ((SelfPrims.getVariable("val") - valToKeep) / recipients.size());
-      recipients.ask(function() {
-        SelfPrims.setVariable("new-val", (SelfPrims.getVariable("new-val") + valIncrement));
-        LinkPrims.inLinkFrom("ACTIVE-LINKS", SelfManager.myself()).ask(function() {
-          SelfPrims.setVariable("current-flow", valIncrement);
-        }, true);
+    world.turtles().ask(function() {
+      SelfPrims.setVariable("val", SelfPrims.getVariable("new-val"));
+    }, true);
+    Call(procedures.updateGlobals);
+    Call(procedures.updateVisuals);
+    world.ticker.tick();
+  };
+  var rewireALink = function() {
+    if (world.linkManager.linksOfBreed("ACTIVE-LINKS").nonEmpty()) {
+      ListPrims.oneOf(world.linkManager.linksOfBreed("ACTIVE-LINKS")).ask(function() {
+        SelfPrims.setVariable("breed", world.linkManager.linksOfBreed("INACTIVE-LINKS"));
+        SelfPrims.setVariable('hidden?', true)
+      }, true);
+      ListPrims.oneOf(world.linkManager.linksOfBreed("INACTIVE-LINKS")).ask(function() {
+        SelfPrims.setVariable("breed", world.linkManager.linksOfBreed("ACTIVE-LINKS"));
+        SelfPrims.setVariable('hidden?', false)
       }, true);
     }
-    else {
-      SelfPrims.setVariable("new-val", (SelfPrims.getVariable("new-val") + SelfPrims.getVariable("val")));
+  };
+  var updateGlobals = function() {
+    world.observer.setGlobal("total-val", ListPrims.sum(world.turtles().projectionBy(function() {
+      return SelfPrims.getVariable("val");
+    })));
+    world.observer.setGlobal("max-val", ListPrims.max(world.turtles().projectionBy(function() {
+      return SelfPrims.getVariable("val");
+    })));
+    if (world.linkManager.linksOfBreed("ACTIVE-LINKS").nonEmpty()) {
+      world.observer.setGlobal("max-flow", ListPrims.max(world.linkManager.linksOfBreed("ACTIVE-LINKS").projectionBy(function() {
+        return SelfPrims.getVariable("current-flow");
+      })));
+      world.observer.setGlobal("mean-flow", ListPrims.mean(world.linkManager.linksOfBreed("ACTIVE-LINKS").projectionBy(function() {
+        return SelfPrims.getVariable("current-flow");
+      })));
     }
-  }, true);
-  world.turtles().ask(function() {
-    SelfPrims.setVariable("val", SelfPrims.getVariable("new-val"));
-  }, true);
-  Call(updateGlobals);
-  Call(updateVisuals);
-  world.ticker.tick();
-}
-function rewireALink() {
-  if (world.linkManager.linksOfBreed("ACTIVE-LINKS").nonEmpty()) {
-    ListPrims.oneOf(world.linkManager.linksOfBreed("ACTIVE-LINKS")).ask(function() {
-      SelfPrims.setVariable("breed", world.linkManager.linksOfBreed("INACTIVE-LINKS"));
-      SelfPrims.setVariable('hidden?', true)
+  };
+  var updateVisuals = function() {
+    world.turtles().ask(function() {
+      Call(procedures.updateNodeAppearance);
     }, true);
-    ListPrims.oneOf(world.linkManager.linksOfBreed("INACTIVE-LINKS")).ask(function() {
-      SelfPrims.setVariable("breed", world.linkManager.linksOfBreed("ACTIVE-LINKS"));
-      SelfPrims.setVariable('hidden?', false)
+    world.linkManager.linksOfBreed("ACTIVE-LINKS").ask(function() {
+      Call(procedures.updateLinkAppearance);
     }, true);
-  }
-}
-function updateGlobals() {
-  world.observer.setGlobal("total-val", ListPrims.sum(world.turtles().projectionBy(function() {
-    return SelfPrims.getVariable("val");
-  })));
-  world.observer.setGlobal("max-val", ListPrims.max(world.turtles().projectionBy(function() {
-    return SelfPrims.getVariable("val");
-  })));
-  if (world.linkManager.linksOfBreed("ACTIVE-LINKS").nonEmpty()) {
-    world.observer.setGlobal("max-flow", ListPrims.max(world.linkManager.linksOfBreed("ACTIVE-LINKS").projectionBy(function() {
-      return SelfPrims.getVariable("current-flow");
-    })));
-    world.observer.setGlobal("mean-flow", ListPrims.mean(world.linkManager.linksOfBreed("ACTIVE-LINKS").projectionBy(function() {
-      return SelfPrims.getVariable("current-flow");
-    })));
-  }
-}
-function updateVisuals() {
-  world.turtles().ask(function() {
-    Call(updateNodeAppearance);
-  }, true);
-  world.linkManager.linksOfBreed("ACTIVE-LINKS").ask(function() {
-    Call(updateLinkAppearance);
-  }, true);
-}
-function updateNodeAppearance() {
-  SelfPrims.setVariable("size", (0.1 + (5 * NLMath.sqrt((SelfPrims.getVariable("val") / world.observer.getGlobal("total-val"))))));
-}
-function updateLinkAppearance() {
-  SelfPrims.setVariable("color", ColorModel.scaleColor(5, (SelfPrims.getVariable("current-flow") / ((2 * world.observer.getGlobal("mean-flow")) + 1.0E-5)), -0.4, 1));
-}
+  };
+  var updateNodeAppearance = function() {
+    SelfPrims.setVariable("size", (0.1 + (5 * NLMath.sqrt((SelfPrims.getVariable("val") / world.observer.getGlobal("total-val"))))));
+  };
+  var updateLinkAppearance = function() {
+    SelfPrims.setVariable("color", ColorModel.scaleColor(5, (SelfPrims.getVariable("current-flow") / ((2 * world.observer.getGlobal("mean-flow")) + 1.0E-5)), -0.4, 1));
+  };
+  return {
+    "GO":go,
+    "REWIRE-A-LINK":rewireALink,
+    "SETUP":setup,
+    "UPDATE-GLOBALS":updateGlobals,
+    "UPDATE-LINK-APPEARANCE":updateLinkAppearance,
+    "UPDATE-NODE-APPEARANCE":updateNodeAppearance,
+    "UPDATE-VISUALS":updateVisuals,
+    "go":go,
+    "rewireALink":rewireALink,
+    "setup":setup,
+    "updateGlobals":updateGlobals,
+    "updateLinkAppearance":updateLinkAppearance,
+    "updateNodeAppearance":updateNodeAppearance,
+    "updateVisuals":updateVisuals
+  };
+})();
 world.observer.setGlobal("link-chance", 50);
 world.observer.setGlobal("grid-size", 9);
 world.observer.setGlobal("diffusion-rate", 10);

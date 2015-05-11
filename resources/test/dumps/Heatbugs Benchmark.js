@@ -44,85 +44,103 @@ var AgentModel = tortoise_require('agentmodel');
 var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
-function benchmark() {
-  Random.setSeed(362);
-  Call(setup);
-  workspace.timer.reset();
-  for (var _index_216_222 = 0, _repeatcount_216_222 = StrictMath.floor(1000); _index_216_222 < _repeatcount_216_222; _index_216_222++){
-    Call(go);
-  }
-  world.observer.setGlobal("result", workspace.timer.elapsed());
-}
-function setup() {
-  world.clearAll();
-  world.ticker.reset();
-  ListPrims.nOf(world.observer.getGlobal("bug-count"), world.patches()).ask(function() {
-    SelfPrims.sprout(1, "TURTLES").ask(function() {
-      SelfPrims.setVariable("color", 65);
-      SelfPrims.setVariable("size", 1.75);
-      SelfPrims.setVariable("ideal-temp", (world.observer.getGlobal("min-ideal-temp") + Prims.random(NLMath.abs((world.observer.getGlobal("max-ideal-temp") - world.observer.getGlobal("min-ideal-temp"))))));
-      SelfPrims.setVariable("output-heat", (world.observer.getGlobal("min-output-heat") + Prims.random(NLMath.abs((world.observer.getGlobal("max-output-heat") - world.observer.getGlobal("min-output-heat"))))));
-      SelfPrims.setVariable("unhappiness", NLMath.abs((SelfPrims.getVariable("ideal-temp") - SelfPrims.getPatchVariable("temp"))));
-    }, true);
-  }, true);
-}
-function go() {
-  if (!world.turtles().nonEmpty()) {
-    throw new Exception.StopInterrupt;
-  }
-  world.topology.diffuse("temp", world.observer.getGlobal("diffusion-rate"))
-  world.turtles().ask(function() {
-    Call(step);
-  }, true);
-  Call(recolorPatches);
-  world.ticker.tick();
-}
-function recolorPatches() {
-  world.patches().ask(function() {
-    SelfPrims.setPatchVariable("temp", (SelfPrims.getPatchVariable("temp") * (1 - world.observer.getGlobal("evaporation-rate"))));
-    SelfPrims.setPatchVariable("pcolor", ColorModel.scaleColor(15, SelfPrims.getPatchVariable("temp"), 0, 500));
-  }, true);
-}
-function step() {
-  SelfPrims.setVariable("unhappiness", NLMath.abs((SelfPrims.getVariable("ideal-temp") - SelfPrims.getPatchVariable("temp"))));
-  if (Prims.equality(SelfPrims.getVariable("unhappiness"), 0)) {
-    SelfPrims.setPatchVariable("temp", (SelfPrims.getPatchVariable("temp") + SelfPrims.getVariable("output-heat")));
-  }
-  else {
-    var target = Call(findTarget);
-    if ((!Prims.equality(SelfManager.self().getPatchHere(), target) || Prims.gt(world.observer.getGlobal("random-move-chance"), Prims.random(100)))) {
-      Call(bugMove, target);
+var procedures = (function() {
+  var benchmark = function() {
+    Random.setSeed(362);
+    Call(procedures.setup);
+    workspace.timer.reset();
+    for (var _index_216_222 = 0, _repeatcount_216_222 = StrictMath.floor(1000); _index_216_222 < _repeatcount_216_222; _index_216_222++){
+      Call(procedures.go);
     }
-    SelfPrims.setPatchVariable("temp", (SelfPrims.getPatchVariable("temp") + SelfPrims.getVariable("output-heat")));
-  }
-}
-function findTarget() {
-  if (Prims.lt(SelfPrims.getPatchVariable("temp"), SelfPrims.getVariable("ideal-temp"))) {
-    return SelfPrims.getNeighbors().maxOneOf(function() {
-      return SelfPrims.getPatchVariable("temp");
-    });
-  }
-  else {
-    return SelfPrims.getNeighbors().minOneOf(function() {
-      return SelfPrims.getPatchVariable("temp");
-    });
-  }
-}
-function bugMove(target) {
-  var tries = 0;
-  if (!Prims.turtlesOn(target).nonEmpty()) {
-    SelfManager.self().moveTo(target);
-    throw new Exception.StopInterrupt;
-  }
-  while (Prims.lte(tries, 9)) {
-    tries = (tries + 1);
-    target = ListPrims.oneOf(SelfPrims.getNeighbors());
+    world.observer.setGlobal("result", workspace.timer.elapsed());
+  };
+  var setup = function() {
+    world.clearAll();
+    world.ticker.reset();
+    ListPrims.nOf(world.observer.getGlobal("bug-count"), world.patches()).ask(function() {
+      SelfPrims.sprout(1, "TURTLES").ask(function() {
+        SelfPrims.setVariable("color", 65);
+        SelfPrims.setVariable("size", 1.75);
+        SelfPrims.setVariable("ideal-temp", (world.observer.getGlobal("min-ideal-temp") + Prims.random(NLMath.abs((world.observer.getGlobal("max-ideal-temp") - world.observer.getGlobal("min-ideal-temp"))))));
+        SelfPrims.setVariable("output-heat", (world.observer.getGlobal("min-output-heat") + Prims.random(NLMath.abs((world.observer.getGlobal("max-output-heat") - world.observer.getGlobal("min-output-heat"))))));
+        SelfPrims.setVariable("unhappiness", NLMath.abs((SelfPrims.getVariable("ideal-temp") - SelfPrims.getPatchVariable("temp"))));
+      }, true);
+    }, true);
+  };
+  var go = function() {
+    if (!world.turtles().nonEmpty()) {
+      throw new Exception.StopInterrupt;
+    }
+    world.topology.diffuse("temp", world.observer.getGlobal("diffusion-rate"))
+    world.turtles().ask(function() {
+      Call(procedures.step);
+    }, true);
+    Call(procedures.recolorPatches);
+    world.ticker.tick();
+  };
+  var recolorPatches = function() {
+    world.patches().ask(function() {
+      SelfPrims.setPatchVariable("temp", (SelfPrims.getPatchVariable("temp") * (1 - world.observer.getGlobal("evaporation-rate"))));
+      SelfPrims.setPatchVariable("pcolor", ColorModel.scaleColor(15, SelfPrims.getPatchVariable("temp"), 0, 500));
+    }, true);
+  };
+  var step = function() {
+    SelfPrims.setVariable("unhappiness", NLMath.abs((SelfPrims.getVariable("ideal-temp") - SelfPrims.getPatchVariable("temp"))));
+    if (Prims.equality(SelfPrims.getVariable("unhappiness"), 0)) {
+      SelfPrims.setPatchVariable("temp", (SelfPrims.getPatchVariable("temp") + SelfPrims.getVariable("output-heat")));
+    }
+    else {
+      var target = Call(procedures.findTarget);
+      if ((!Prims.equality(SelfManager.self().getPatchHere(), target) || Prims.gt(world.observer.getGlobal("random-move-chance"), Prims.random(100)))) {
+        Call(procedures.bugMove, target);
+      }
+      SelfPrims.setPatchVariable("temp", (SelfPrims.getPatchVariable("temp") + SelfPrims.getVariable("output-heat")));
+    }
+  };
+  var findTarget = function() {
+    if (Prims.lt(SelfPrims.getPatchVariable("temp"), SelfPrims.getVariable("ideal-temp"))) {
+      return SelfPrims.getNeighbors().maxOneOf(function() {
+        return SelfPrims.getPatchVariable("temp");
+      });
+    }
+    else {
+      return SelfPrims.getNeighbors().minOneOf(function() {
+        return SelfPrims.getPatchVariable("temp");
+      });
+    }
+  };
+  var bugMove = function(target) {
+    var tries = 0;
     if (!Prims.turtlesOn(target).nonEmpty()) {
       SelfManager.self().moveTo(target);
       throw new Exception.StopInterrupt;
     }
-  }
-}
+    while (Prims.lte(tries, 9)) {
+      tries = (tries + 1);
+      target = ListPrims.oneOf(SelfPrims.getNeighbors());
+      if (!Prims.turtlesOn(target).nonEmpty()) {
+        SelfManager.self().moveTo(target);
+        throw new Exception.StopInterrupt;
+      }
+    }
+  };
+  return {
+    "BENCHMARK":benchmark,
+    "BUG-MOVE":bugMove,
+    "FIND-TARGET":findTarget,
+    "GO":go,
+    "RECOLOR-PATCHES":recolorPatches,
+    "SETUP":setup,
+    "STEP":step,
+    "benchmark":benchmark,
+    "bugMove":bugMove,
+    "findTarget":findTarget,
+    "go":go,
+    "recolorPatches":recolorPatches,
+    "setup":setup,
+    "step":step
+  };
+})();
 world.observer.setGlobal("bug-count", 100);
 world.observer.setGlobal("evaporation-rate", 0.01);
 world.observer.setGlobal("diffusion-rate", 1);

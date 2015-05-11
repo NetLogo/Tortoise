@@ -44,54 +44,66 @@ var AgentModel = tortoise_require('agentmodel');
 var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
-function setup() {
-  world.clearAll();
-  BreedManager.setDefaultShape(world.turtles().getBreedName(), "square")
-  world.patches().agentFilter(function() {
-    return Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("density"));
-  }).ask(function() {
-    SelfPrims.setPatchVariable("pcolor", 55);
-  }, true);
-  world.patches().agentFilter(function() {
-    return Prims.equality(SelfPrims.getPatchVariable("pxcor"), world.topology.minPxcor);
-  }).ask(function() {
-    Call(ignite);
-  }, true);
-  world.observer.setGlobal("initial-trees", world.patches().agentFilter(function() {
-    return Prims.equality(SelfPrims.getPatchVariable("pcolor"), 55);
-  }).size());
-  world.observer.setGlobal("burned-trees", 0);
-  world.ticker.reset();
-}
-function go() {
-  if (!world.turtles().nonEmpty()) {
-    throw new Exception.StopInterrupt;
-  }
-  world.turtleManager.turtlesOfBreed("FIRES").ask(function() {
-    SelfPrims.getNeighbors4().agentFilter(function() {
-      return Prims.equality(SelfPrims.getPatchVariable("pcolor"), 55);
+var procedures = (function() {
+  var setup = function() {
+    world.clearAll();
+    BreedManager.setDefaultShape(world.turtles().getBreedName(), "square")
+    world.patches().agentFilter(function() {
+      return Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("density"));
     }).ask(function() {
-      Call(ignite);
+      SelfPrims.setPatchVariable("pcolor", 55);
     }, true);
-    SelfPrims.setVariable("breed", world.turtleManager.turtlesOfBreed("EMBERS"));
-  }, true);
-  Call(fadeEmbers);
-  world.ticker.tick();
-}
-function ignite() {
-  SelfPrims.sprout(1, "FIRES").ask(function() {
-    SelfPrims.setVariable("color", 15);
-  }, true);
-  SelfPrims.setPatchVariable("pcolor", 0);
-  world.observer.setGlobal("burned-trees", (world.observer.getGlobal("burned-trees") + 1));
-}
-function fadeEmbers() {
-  world.turtleManager.turtlesOfBreed("EMBERS").ask(function() {
-    SelfPrims.setVariable("color", (SelfPrims.getVariable("color") - 0.3));
-    if (Prims.lt(SelfPrims.getVariable("color"), (15 - 3.5))) {
-      SelfPrims.setPatchVariable("pcolor", SelfPrims.getVariable("color"));
-      SelfPrims.die();
+    world.patches().agentFilter(function() {
+      return Prims.equality(SelfPrims.getPatchVariable("pxcor"), world.topology.minPxcor);
+    }).ask(function() {
+      Call(procedures.ignite);
+    }, true);
+    world.observer.setGlobal("initial-trees", world.patches().agentFilter(function() {
+      return Prims.equality(SelfPrims.getPatchVariable("pcolor"), 55);
+    }).size());
+    world.observer.setGlobal("burned-trees", 0);
+    world.ticker.reset();
+  };
+  var go = function() {
+    if (!world.turtles().nonEmpty()) {
+      throw new Exception.StopInterrupt;
     }
-  }, true);
-}
+    world.turtleManager.turtlesOfBreed("FIRES").ask(function() {
+      SelfPrims.getNeighbors4().agentFilter(function() {
+        return Prims.equality(SelfPrims.getPatchVariable("pcolor"), 55);
+      }).ask(function() {
+        Call(procedures.ignite);
+      }, true);
+      SelfPrims.setVariable("breed", world.turtleManager.turtlesOfBreed("EMBERS"));
+    }, true);
+    Call(procedures.fadeEmbers);
+    world.ticker.tick();
+  };
+  var ignite = function() {
+    SelfPrims.sprout(1, "FIRES").ask(function() {
+      SelfPrims.setVariable("color", 15);
+    }, true);
+    SelfPrims.setPatchVariable("pcolor", 0);
+    world.observer.setGlobal("burned-trees", (world.observer.getGlobal("burned-trees") + 1));
+  };
+  var fadeEmbers = function() {
+    world.turtleManager.turtlesOfBreed("EMBERS").ask(function() {
+      SelfPrims.setVariable("color", (SelfPrims.getVariable("color") - 0.3));
+      if (Prims.lt(SelfPrims.getVariable("color"), (15 - 3.5))) {
+        SelfPrims.setPatchVariable("pcolor", SelfPrims.getVariable("color"));
+        SelfPrims.die();
+      }
+    }, true);
+  };
+  return {
+    "FADE-EMBERS":fadeEmbers,
+    "GO":go,
+    "IGNITE":ignite,
+    "SETUP":setup,
+    "fadeEmbers":fadeEmbers,
+    "go":go,
+    "ignite":ignite,
+    "setup":setup
+  };
+})();
 world.observer.setGlobal("density", 57);

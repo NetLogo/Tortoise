@@ -53,57 +53,69 @@ var AgentModel = tortoise_require('agentmodel');
 var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
-function benchmark() {
-  Random.setSeed(0);
-  workspace.timer.reset();
-  Call(setup);
-  for (var _index_93_99 = 0, _repeatcount_93_99 = StrictMath.floor(5000); _index_93_99 < _repeatcount_93_99; _index_93_99++){
-    Call(go);
-  }
-  world.observer.setGlobal("result", workspace.timer.elapsed());
-}
-function setup() {
-  world.clearAll();
-  world.patches().ask(function() {
-    SelfPrims.setPatchVariable("n", 2);
-    Call(colorize);
-  }, true);
-  world.observer.setGlobal("total", (2 * world.patches().size()));
-  world.ticker.reset();
-}
-function go() {
-  var activePatches = Prims.patchSet(ListPrims.oneOf(world.patches()));
-  activePatches.ask(function() {
-    SelfPrims.setPatchVariable("n", (SelfPrims.getPatchVariable("n") + 1));
-    world.observer.setGlobal("total", (world.observer.getGlobal("total") + 1));
-    Call(colorize);
-  }, true);
-  while (activePatches.nonEmpty()) {
-    var overloadedPatches = activePatches.agentFilter(function() {
-      return Prims.gt(SelfPrims.getPatchVariable("n"), 3);
-    });
-    overloadedPatches.ask(function() {
-      SelfPrims.setPatchVariable("n", (SelfPrims.getPatchVariable("n") - 4));
-      world.observer.setGlobal("total", (world.observer.getGlobal("total") - 4));
-      Call(colorize);
-      SelfPrims.getNeighbors4().ask(function() {
-        SelfPrims.setPatchVariable("n", (SelfPrims.getPatchVariable("n") + 1));
-        world.observer.setGlobal("total", (world.observer.getGlobal("total") + 1));
-        Call(colorize);
-      }, true);
+var procedures = (function() {
+  var benchmark = function() {
+    Random.setSeed(0);
+    workspace.timer.reset();
+    Call(procedures.setup);
+    for (var _index_93_99 = 0, _repeatcount_93_99 = StrictMath.floor(5000); _index_93_99 < _repeatcount_93_99; _index_93_99++){
+      Call(procedures.go);
+    }
+    world.observer.setGlobal("result", workspace.timer.elapsed());
+  };
+  var setup = function() {
+    world.clearAll();
+    world.patches().ask(function() {
+      SelfPrims.setPatchVariable("n", 2);
+      Call(procedures.colorize);
     }, true);
-    activePatches = Prims.patchSet(overloadedPatches.projectionBy(function() {
-      return SelfPrims.getNeighbors4();
-    }));
-  }
-  world.ticker.tick();
-}
-function colorize() {
-  if (Prims.lte(SelfPrims.getPatchVariable("n"), 3)) {
-    SelfPrims.setPatchVariable("pcolor", ListPrims.item(SelfPrims.getPatchVariable("n"), [83, 54, 45, 25]));
-  }
-  else {
-    SelfPrims.setPatchVariable("pcolor", 15);
-  }
-}
+    world.observer.setGlobal("total", (2 * world.patches().size()));
+    world.ticker.reset();
+  };
+  var go = function() {
+    var activePatches = Prims.patchSet(ListPrims.oneOf(world.patches()));
+    activePatches.ask(function() {
+      SelfPrims.setPatchVariable("n", (SelfPrims.getPatchVariable("n") + 1));
+      world.observer.setGlobal("total", (world.observer.getGlobal("total") + 1));
+      Call(procedures.colorize);
+    }, true);
+    while (activePatches.nonEmpty()) {
+      var overloadedPatches = activePatches.agentFilter(function() {
+        return Prims.gt(SelfPrims.getPatchVariable("n"), 3);
+      });
+      overloadedPatches.ask(function() {
+        SelfPrims.setPatchVariable("n", (SelfPrims.getPatchVariable("n") - 4));
+        world.observer.setGlobal("total", (world.observer.getGlobal("total") - 4));
+        Call(procedures.colorize);
+        SelfPrims.getNeighbors4().ask(function() {
+          SelfPrims.setPatchVariable("n", (SelfPrims.getPatchVariable("n") + 1));
+          world.observer.setGlobal("total", (world.observer.getGlobal("total") + 1));
+          Call(procedures.colorize);
+        }, true);
+      }, true);
+      activePatches = Prims.patchSet(overloadedPatches.projectionBy(function() {
+        return SelfPrims.getNeighbors4();
+      }));
+    }
+    world.ticker.tick();
+  };
+  var colorize = function() {
+    if (Prims.lte(SelfPrims.getPatchVariable("n"), 3)) {
+      SelfPrims.setPatchVariable("pcolor", ListPrims.item(SelfPrims.getPatchVariable("n"), [83, 54, 45, 25]));
+    }
+    else {
+      SelfPrims.setPatchVariable("pcolor", 15);
+    }
+  };
+  return {
+    "BENCHMARK":benchmark,
+    "COLORIZE":colorize,
+    "GO":go,
+    "SETUP":setup,
+    "benchmark":benchmark,
+    "colorize":colorize,
+    "go":go,
+    "setup":setup
+  };
+})();
 world.observer.setGlobal("plot?", false);

@@ -62,74 +62,86 @@ var AgentModel = tortoise_require('agentmodel');
 var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
-function setup() {
-  world.clearAll();
-  world.turtleManager.createTurtles(world.observer.getGlobal("population"), "").ask(function() {
-    SelfPrims.setVariable("color", 125);
-    SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
-    SelfPrims.setVariable("leader", Nobody);
-    SelfPrims.setVariable("follower", Nobody);
-  }, true);
-  world.ticker.reset();
-}
-function go() {
-  world.turtles().ask(function() {
-    if (Prims.equality(SelfPrims.getVariable("leader"), Nobody)) {
-      Call(attachTurtle);
+var procedures = (function() {
+  var setup = function() {
+    world.clearAll();
+    world.turtleManager.createTurtles(world.observer.getGlobal("population"), "").ask(function() {
+      SelfPrims.setVariable("color", 125);
+      SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
+      SelfPrims.setVariable("leader", Nobody);
+      SelfPrims.setVariable("follower", Nobody);
+    }, true);
+    world.ticker.reset();
+  };
+  var go = function() {
+    world.turtles().ask(function() {
+      if (Prims.equality(SelfPrims.getVariable("leader"), Nobody)) {
+        Call(procedures.attachTurtle);
+      }
+    }, true);
+    world.turtles().ask(function() {
+      Call(procedures.turnTurtle);
+    }, true);
+    world.turtles().ask(function() {
+      SelfPrims.fd(1);
+    }, true);
+    world.ticker.tick();
+  };
+  var attachTurtle = function() {
+    var xd = (world.observer.getGlobal("near-radius") + Prims.random((world.observer.getGlobal("far-radius") - world.observer.getGlobal("near-radius"))));
+    var yd = (world.observer.getGlobal("near-radius") + Prims.random((world.observer.getGlobal("far-radius") - world.observer.getGlobal("near-radius"))));
+    if (Prims.equality(Prims.random(2), 0)) {
+      xd =  -xd;
     }
-  }, true);
-  world.turtles().ask(function() {
-    Call(turnTurtle);
-  }, true);
-  world.turtles().ask(function() {
-    SelfPrims.fd(1);
-  }, true);
-  world.ticker.tick();
-}
-function attachTurtle() {
-  var xd = (world.observer.getGlobal("near-radius") + Prims.random((world.observer.getGlobal("far-radius") - world.observer.getGlobal("near-radius"))));
-  var yd = (world.observer.getGlobal("near-radius") + Prims.random((world.observer.getGlobal("far-radius") - world.observer.getGlobal("near-radius"))));
-  if (Prims.equality(Prims.random(2), 0)) {
-    xd =  -xd;
-  }
-  if (Prims.equality(Prims.random(2), 0)) {
-    yd =  -yd;
-  }
-  var candidate = ListPrims.oneOf(SelfManager.self().turtlesAt(xd, yd).agentFilter(function() {
-    return Prims.equality(SelfPrims.getVariable("follower"), Nobody);
-  }));
-  if (Prims.equality(candidate, Nobody)) {
-    throw new Exception.StopInterrupt;
-  }
-  candidate.ask(function() {
-    SelfPrims.setVariable("follower", SelfManager.myself());
-  }, true);
-  SelfPrims.setVariable("leader", candidate);
-  if (Prims.equality(SelfPrims.getVariable("follower"), Nobody)) {
-    SelfPrims.setVariable("color", 65);
-  }
-  else {
-    SelfPrims.setVariable("color", 95);
-    SelfPrims.setVariable("shape", "line");
-  }
-  candidate.ask(function() {
-    if (Prims.equality(SelfPrims.getVariable("leader"), Nobody)) {
-      SelfPrims.setVariable("color", 45);
+    if (Prims.equality(Prims.random(2), 0)) {
+      yd =  -yd;
+    }
+    var candidate = ListPrims.oneOf(SelfManager.self().turtlesAt(xd, yd).agentFilter(function() {
+      return Prims.equality(SelfPrims.getVariable("follower"), Nobody);
+    }));
+    if (Prims.equality(candidate, Nobody)) {
+      throw new Exception.StopInterrupt;
+    }
+    candidate.ask(function() {
+      SelfPrims.setVariable("follower", SelfManager.myself());
+    }, true);
+    SelfPrims.setVariable("leader", candidate);
+    if (Prims.equality(SelfPrims.getVariable("follower"), Nobody)) {
+      SelfPrims.setVariable("color", 65);
     }
     else {
       SelfPrims.setVariable("color", 95);
       SelfPrims.setVariable("shape", "line");
     }
-  }, true);
-}
-function turnTurtle() {
-  if (Prims.equality(SelfPrims.getVariable("leader"), Nobody)) {
-    SelfPrims.right((Prims.randomFloat(world.observer.getGlobal("waver")) - Prims.randomFloat(world.observer.getGlobal("waver"))));
-  }
-  else {
-    SelfManager.self().face(SelfPrims.getVariable("leader"));
-  }
-}
+    candidate.ask(function() {
+      if (Prims.equality(SelfPrims.getVariable("leader"), Nobody)) {
+        SelfPrims.setVariable("color", 45);
+      }
+      else {
+        SelfPrims.setVariable("color", 95);
+        SelfPrims.setVariable("shape", "line");
+      }
+    }, true);
+  };
+  var turnTurtle = function() {
+    if (Prims.equality(SelfPrims.getVariable("leader"), Nobody)) {
+      SelfPrims.right((Prims.randomFloat(world.observer.getGlobal("waver")) - Prims.randomFloat(world.observer.getGlobal("waver"))));
+    }
+    else {
+      SelfManager.self().face(SelfPrims.getVariable("leader"));
+    }
+  };
+  return {
+    "ATTACH-TURTLE":attachTurtle,
+    "GO":go,
+    "SETUP":setup,
+    "TURN-TURTLE":turnTurtle,
+    "attachTurtle":attachTurtle,
+    "go":go,
+    "setup":setup,
+    "turnTurtle":turnTurtle
+  };
+})();
 world.observer.setGlobal("waver", 70);
 world.observer.setGlobal("far-radius", 10);
 world.observer.setGlobal("population", 1500);

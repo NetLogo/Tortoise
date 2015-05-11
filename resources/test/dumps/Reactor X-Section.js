@@ -52,180 +52,206 @@ var AgentModel = tortoise_require('agentmodel');
 var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
-function setup() {
-  world.clearAll();
-  BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
-  Call(setupGlobals);
-  world.patches().ask(function() {
-    SelfPrims.setPatchVariable("x", NLMath.abs(SelfPrims.getPatchVariable("pxcor")));
-    SelfPrims.setPatchVariable("y", NLMath.abs(SelfPrims.getPatchVariable("pycor")));
-    SelfPrims.setPatchVariable("rod?", false);
-    Call(buildReactor);
-    Call(setupNuclearFuel);
-  }, true);
-  Call(setupControlRods);
-  world.ticker.reset();
-}
-function setupGlobals() {
-  world.observer.setGlobal("power", 0);
-  world.observer.setGlobal("old-power", 0);
-  world.observer.setGlobal("old-power-2", 0);
-  world.observer.setGlobal("old-power-3", 0);
-  world.observer.setGlobal("old-power-4", 0);
-  world.observer.setGlobal("r", (world.observer.getGlobal("reactor-size") / 2));
-  world.observer.setGlobal("rod-length", world.observer.getGlobal("rod-depth"));
-  world.observer.setGlobal("n-rods", ((world.observer.getGlobal("reactor-size") / (world.observer.getGlobal("rod-spacing") + 1)) - 1));
-}
-function buildReactor() {
-  if (((Prims.equality(SelfPrims.getPatchVariable("x"), world.observer.getGlobal("r")) && Prims.lte(SelfPrims.getPatchVariable("y"), world.observer.getGlobal("r"))) || (Prims.equality(SelfPrims.getPatchVariable("y"), world.observer.getGlobal("r")) && Prims.lte(SelfPrims.getPatchVariable("x"), world.observer.getGlobal("r"))))) {
-    SelfPrims.setPatchVariable("pcolor", 5);
-    SelfPrims.setPatchVariable("rod?", false);
-  }
-}
-function setupNuclearFuel() {
-  if (((Prims.equality(SelfPrims.getPatchVariable("pcolor"), 0) && Prims.lt(SelfPrims.getPatchVariable("x"), world.observer.getGlobal("r"))) && Prims.lt(SelfPrims.getPatchVariable("y"), world.observer.getGlobal("r")))) {
-    SelfPrims.setPatchVariable("pcolor", 15);
-  }
-}
-function setupControlRods() {
-  if (Prims.gt(world.observer.getGlobal("rod-depth"), world.observer.getGlobal("reactor-size"))) {
-    world.observer.setGlobal("rod-depth", world.observer.getGlobal("reactor-size"));
-  }
-  if (((Prims.equality(world.observer.getGlobal("rod-spacing"), 5) || Prims.equality(world.observer.getGlobal("rod-spacing"), 6)) && Prims.equality(world.observer.getGlobal("reactor-size"), 10))) {
-    notImplemented('user-message', undefined)("Spacing too large for reactor size.  Spacing set to 4.");
-    world.observer.setGlobal("rod-spacing", 4);
-    world.observer.setGlobal("n-rods", 1);
-  }
-  var rodX = ((1 - world.observer.getGlobal("r")) + world.observer.getGlobal("rod-spacing"));
-  if (((Prims.equality(world.observer.getGlobal("rod-spacing"), 2) && !Prims.equality(world.observer.getGlobal("reactor-size"), 30)) && !Prims.equality(world.observer.getGlobal("reactor-size"), 60))) {
-    rodX = (rodX + 1);
-  }
-  if ((Prims.equality(world.observer.getGlobal("rod-spacing"), 3) && !Prims.equality(NLMath.mod(world.observer.getGlobal("reactor-size"), 20), 0))) {
-    world.observer.setGlobal("n-rods", (world.observer.getGlobal("n-rods") + 1));
-    rodX = (rodX - 1);
-  }
-  if ((Prims.equality(world.observer.getGlobal("rod-spacing"), 5) && ((Prims.equality(world.observer.getGlobal("reactor-size"), 20) || Prims.equality(world.observer.getGlobal("reactor-size"), 40)) || Prims.equality(world.observer.getGlobal("reactor-size"), 70)))) {
-    if (Prims.equality(world.observer.getGlobal("reactor-size"), 20)) {
+var procedures = (function() {
+  var setup = function() {
+    world.clearAll();
+    BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
+    Call(procedures.setupGlobals);
+    world.patches().ask(function() {
+      SelfPrims.setPatchVariable("x", NLMath.abs(SelfPrims.getPatchVariable("pxcor")));
+      SelfPrims.setPatchVariable("y", NLMath.abs(SelfPrims.getPatchVariable("pycor")));
+      SelfPrims.setPatchVariable("rod?", false);
+      Call(procedures.buildReactor);
+      Call(procedures.setupNuclearFuel);
+    }, true);
+    Call(procedures.setupControlRods);
+    world.ticker.reset();
+  };
+  var setupGlobals = function() {
+    world.observer.setGlobal("power", 0);
+    world.observer.setGlobal("old-power", 0);
+    world.observer.setGlobal("old-power-2", 0);
+    world.observer.setGlobal("old-power-3", 0);
+    world.observer.setGlobal("old-power-4", 0);
+    world.observer.setGlobal("r", (world.observer.getGlobal("reactor-size") / 2));
+    world.observer.setGlobal("rod-length", world.observer.getGlobal("rod-depth"));
+    world.observer.setGlobal("n-rods", ((world.observer.getGlobal("reactor-size") / (world.observer.getGlobal("rod-spacing") + 1)) - 1));
+  };
+  var buildReactor = function() {
+    if (((Prims.equality(SelfPrims.getPatchVariable("x"), world.observer.getGlobal("r")) && Prims.lte(SelfPrims.getPatchVariable("y"), world.observer.getGlobal("r"))) || (Prims.equality(SelfPrims.getPatchVariable("y"), world.observer.getGlobal("r")) && Prims.lte(SelfPrims.getPatchVariable("x"), world.observer.getGlobal("r"))))) {
+      SelfPrims.setPatchVariable("pcolor", 5);
+      SelfPrims.setPatchVariable("rod?", false);
+    }
+  };
+  var setupNuclearFuel = function() {
+    if (((Prims.equality(SelfPrims.getPatchVariable("pcolor"), 0) && Prims.lt(SelfPrims.getPatchVariable("x"), world.observer.getGlobal("r"))) && Prims.lt(SelfPrims.getPatchVariable("y"), world.observer.getGlobal("r")))) {
+      SelfPrims.setPatchVariable("pcolor", 15);
+    }
+  };
+  var setupControlRods = function() {
+    if (Prims.gt(world.observer.getGlobal("rod-depth"), world.observer.getGlobal("reactor-size"))) {
+      world.observer.setGlobal("rod-depth", world.observer.getGlobal("reactor-size"));
+    }
+    if (((Prims.equality(world.observer.getGlobal("rod-spacing"), 5) || Prims.equality(world.observer.getGlobal("rod-spacing"), 6)) && Prims.equality(world.observer.getGlobal("reactor-size"), 10))) {
+      notImplemented('user-message', undefined)("Spacing too large for reactor size.  Spacing set to 4.");
+      world.observer.setGlobal("rod-spacing", 4);
+      world.observer.setGlobal("n-rods", 1);
+    }
+    var rodX = ((1 - world.observer.getGlobal("r")) + world.observer.getGlobal("rod-spacing"));
+    if (((Prims.equality(world.observer.getGlobal("rod-spacing"), 2) && !Prims.equality(world.observer.getGlobal("reactor-size"), 30)) && !Prims.equality(world.observer.getGlobal("reactor-size"), 60))) {
       rodX = (rodX + 1);
     }
-    else {
-      rodX = (rodX + 2);
-    }
-  }
-  if ((Prims.equality(world.observer.getGlobal("rod-spacing"), 6) && Prims.equality(NLMath.mod(world.observer.getGlobal("reactor-size"), 20), 0))) {
-    world.observer.setGlobal("n-rods", (world.observer.getGlobal("n-rods") + 1));
-    if (Prims.equality(world.observer.getGlobal("reactor-size"), 80)) {
-      rodX = (rodX - 2);
-    }
-    else {
+    if ((Prims.equality(world.observer.getGlobal("rod-spacing"), 3) && !Prims.equality(NLMath.mod(world.observer.getGlobal("reactor-size"), 20), 0))) {
+      world.observer.setGlobal("n-rods", (world.observer.getGlobal("n-rods") + 1));
       rodX = (rodX - 1);
     }
-  }
-  for (var _index_1937_1943 = 0, _repeatcount_1937_1943 = StrictMath.floor(world.observer.getGlobal("n-rods")); _index_1937_1943 < _repeatcount_1937_1943; _index_1937_1943++){
-    world.patches().agentFilter(function() {
-      return Prims.equality(SelfPrims.getPatchVariable("pxcor"), rodX);
-    }).ask(function() {
-      SelfPrims.setPatchVariable("rod?", true);
+    if ((Prims.equality(world.observer.getGlobal("rod-spacing"), 5) && ((Prims.equality(world.observer.getGlobal("reactor-size"), 20) || Prims.equality(world.observer.getGlobal("reactor-size"), 40)) || Prims.equality(world.observer.getGlobal("reactor-size"), 70)))) {
+      if (Prims.equality(world.observer.getGlobal("reactor-size"), 20)) {
+        rodX = (rodX + 1);
+      }
+      else {
+        rodX = (rodX + 2);
+      }
+    }
+    if ((Prims.equality(world.observer.getGlobal("rod-spacing"), 6) && Prims.equality(NLMath.mod(world.observer.getGlobal("reactor-size"), 20), 0))) {
+      world.observer.setGlobal("n-rods", (world.observer.getGlobal("n-rods") + 1));
+      if (Prims.equality(world.observer.getGlobal("reactor-size"), 80)) {
+        rodX = (rodX - 2);
+      }
+      else {
+        rodX = (rodX - 1);
+      }
+    }
+    for (var _index_1937_1943 = 0, _repeatcount_1937_1943 = StrictMath.floor(world.observer.getGlobal("n-rods")); _index_1937_1943 < _repeatcount_1937_1943; _index_1937_1943++){
+      world.patches().agentFilter(function() {
+        return Prims.equality(SelfPrims.getPatchVariable("pxcor"), rodX);
+      }).ask(function() {
+        SelfPrims.setPatchVariable("rod?", true);
+      }, true);
+      rodX = ((rodX + world.observer.getGlobal("rod-spacing")) + 1);
+    }
+    world.patches().ask(function() {
+      Call(procedures.buildReactor);
     }, true);
-    rodX = ((rodX + world.observer.getGlobal("rod-spacing")) + 1);
-  }
-  world.patches().ask(function() {
-    Call(buildReactor);
-  }, true);
-  Call(placeControlRods);
-}
-function autoReact() {
-  if (!world.turtles().nonEmpty()) {
-    throw new Exception.StopInterrupt;
-  }
-  if (Prims.gte(world.observer.getGlobal("power-change"), 0)) {
-    if (Prims.gte((world.observer.getGlobal("power") - world.observer.getGlobal("power-rated")), 0)) {
-      world.observer.setGlobal("rod-length", (world.observer.getGlobal("rod-length") + 50));
+    Call(procedures.placeControlRods);
+  };
+  var autoReact = function() {
+    if (!world.turtles().nonEmpty()) {
+      throw new Exception.StopInterrupt;
     }
-  }
-  else {
-    if (Prims.lt((world.observer.getGlobal("power") - world.observer.getGlobal("power-rated")), 0)) {
-      world.observer.setGlobal("rod-length", (world.observer.getGlobal("rod-length") - 10));
-    }
-  }
-  if (Prims.lt(world.observer.getGlobal("rod-length"), 0)) {
-    world.observer.setGlobal("rod-length", 0);
-  }
-  if (Prims.gt(world.observer.getGlobal("rod-length"), world.observer.getGlobal("reactor-size"))) {
-    world.observer.setGlobal("rod-length", world.observer.getGlobal("reactor-size"));
-  }
-  Call(react);
-}
-function manuReact() {
-  if (!world.turtles().nonEmpty()) {
-    throw new Exception.StopInterrupt;
-  }
-  if (Prims.gt(world.observer.getGlobal("rod-depth"), world.observer.getGlobal("reactor-size"))) {
-    world.observer.setGlobal("rod-depth", world.observer.getGlobal("reactor-size"));
-  }
-  world.observer.setGlobal("rod-length", world.observer.getGlobal("rod-depth"));
-  Call(react);
-}
-function react() {
-  Call(placeControlRods);
-  world.observer.setGlobal("power", 0);
-  world.turtles().ask(function() {
-    SelfPrims.fd(1);
-    if (Prims.equality(SelfPrims.getPatchVariable("pcolor"), 5)) {
-      SelfPrims.die();
-    }
-    if (Prims.equality(SelfPrims.getPatchVariable("pcolor"), 15)) {
-      Call(fission);
-    }
-  }, true);
-  world.observer.setGlobal("average-power", (((((world.observer.getGlobal("power") + world.observer.getGlobal("old-power")) + world.observer.getGlobal("old-power-2")) + world.observer.getGlobal("old-power-3")) + world.observer.getGlobal("old-power-4")) / 5));
-  world.observer.setGlobal("power-change", (world.observer.getGlobal("power") - world.observer.getGlobal("old-power")));
-  world.observer.setGlobal("old-power-4", world.observer.getGlobal("old-power-3"));
-  world.observer.setGlobal("old-power-3", world.observer.getGlobal("old-power-2"));
-  world.observer.setGlobal("old-power-2", world.observer.getGlobal("old-power"));
-  world.observer.setGlobal("old-power", world.observer.getGlobal("power"));
-  world.ticker.tick();
-}
-function releaseNeutron() {
-  var whom = Nobody;
-  world.turtleManager.createTurtles(1, "").ask(function() {
-    SelfPrims.setVariable("color", 45);
-    SelfPrims.setVariable("xcor", (Prims.random((world.observer.getGlobal("reactor-size") - 2)) - world.observer.getGlobal("r")));
-    SelfPrims.setVariable("ycor", (Prims.random((world.observer.getGlobal("reactor-size") - 2)) - world.observer.getGlobal("r")));
-    whom = SelfManager.self();
-    if (Prims.equality(SelfPrims.getPatchVariable("pcolor"), 5)) {
-      SelfPrims.die();
-    }
-  }, true);
-  if (Prims.equality(whom, Nobody)) {
-    Call(releaseNeutron);
-  }
-}
-function placeControlRods() {
-  world.patches().agentFilter(function() {
-    return SelfPrims.getPatchVariable("rod?");
-  }).ask(function() {
-    if (Prims.gte(SelfPrims.getPatchVariable("pycor"), (world.observer.getGlobal("r") - world.observer.getGlobal("rod-length")))) {
-      SelfPrims.setPatchVariable("pcolor", 5);
+    if (Prims.gte(world.observer.getGlobal("power-change"), 0)) {
+      if (Prims.gte((world.observer.getGlobal("power") - world.observer.getGlobal("power-rated")), 0)) {
+        world.observer.setGlobal("rod-length", (world.observer.getGlobal("rod-length") + 50));
+      }
     }
     else {
-      SelfPrims.setPatchVariable("pcolor", 0);
+      if (Prims.lt((world.observer.getGlobal("power") - world.observer.getGlobal("power-rated")), 0)) {
+        world.observer.setGlobal("rod-length", (world.observer.getGlobal("rod-length") - 10));
+      }
     }
-  }, true);
-}
-function fission() {
-  SelfPrims.right(Prims.random(360));
-  if (Prims.equality(SelfPrims.getPatchVariable("pcolor"), 15)) {
-    if (world.observer.getGlobal("spend-fuel?")) {
-      SelfPrims.setPatchVariable("pcolor", 35);
+    if (Prims.lt(world.observer.getGlobal("rod-length"), 0)) {
+      world.observer.setGlobal("rod-length", 0);
     }
-    var gain = (1 / SelfManager.self().turtlesHere().size());
-    world.observer.setGlobal("power", (world.observer.getGlobal("power") + gain));
-    SelfPrims.hatch(((2 + Prims.random(2)) * gain), "").ask(function() {
-      SelfPrims.right(Prims.random(360));
+    if (Prims.gt(world.observer.getGlobal("rod-length"), world.observer.getGlobal("reactor-size"))) {
+      world.observer.setGlobal("rod-length", world.observer.getGlobal("reactor-size"));
+    }
+    Call(procedures.react);
+  };
+  var manuReact = function() {
+    if (!world.turtles().nonEmpty()) {
+      throw new Exception.StopInterrupt;
+    }
+    if (Prims.gt(world.observer.getGlobal("rod-depth"), world.observer.getGlobal("reactor-size"))) {
+      world.observer.setGlobal("rod-depth", world.observer.getGlobal("reactor-size"));
+    }
+    world.observer.setGlobal("rod-length", world.observer.getGlobal("rod-depth"));
+    Call(procedures.react);
+  };
+  var react = function() {
+    Call(procedures.placeControlRods);
+    world.observer.setGlobal("power", 0);
+    world.turtles().ask(function() {
+      SelfPrims.fd(1);
+      if (Prims.equality(SelfPrims.getPatchVariable("pcolor"), 5)) {
+        SelfPrims.die();
+      }
+      if (Prims.equality(SelfPrims.getPatchVariable("pcolor"), 15)) {
+        Call(procedures.fission);
+      }
     }, true);
-  }
-}
+    world.observer.setGlobal("average-power", (((((world.observer.getGlobal("power") + world.observer.getGlobal("old-power")) + world.observer.getGlobal("old-power-2")) + world.observer.getGlobal("old-power-3")) + world.observer.getGlobal("old-power-4")) / 5));
+    world.observer.setGlobal("power-change", (world.observer.getGlobal("power") - world.observer.getGlobal("old-power")));
+    world.observer.setGlobal("old-power-4", world.observer.getGlobal("old-power-3"));
+    world.observer.setGlobal("old-power-3", world.observer.getGlobal("old-power-2"));
+    world.observer.setGlobal("old-power-2", world.observer.getGlobal("old-power"));
+    world.observer.setGlobal("old-power", world.observer.getGlobal("power"));
+    world.ticker.tick();
+  };
+  var releaseNeutron = function() {
+    var whom = Nobody;
+    world.turtleManager.createTurtles(1, "").ask(function() {
+      SelfPrims.setVariable("color", 45);
+      SelfPrims.setVariable("xcor", (Prims.random((world.observer.getGlobal("reactor-size") - 2)) - world.observer.getGlobal("r")));
+      SelfPrims.setVariable("ycor", (Prims.random((world.observer.getGlobal("reactor-size") - 2)) - world.observer.getGlobal("r")));
+      whom = SelfManager.self();
+      if (Prims.equality(SelfPrims.getPatchVariable("pcolor"), 5)) {
+        SelfPrims.die();
+      }
+    }, true);
+    if (Prims.equality(whom, Nobody)) {
+      Call(procedures.releaseNeutron);
+    }
+  };
+  var placeControlRods = function() {
+    world.patches().agentFilter(function() {
+      return SelfPrims.getPatchVariable("rod?");
+    }).ask(function() {
+      if (Prims.gte(SelfPrims.getPatchVariable("pycor"), (world.observer.getGlobal("r") - world.observer.getGlobal("rod-length")))) {
+        SelfPrims.setPatchVariable("pcolor", 5);
+      }
+      else {
+        SelfPrims.setPatchVariable("pcolor", 0);
+      }
+    }, true);
+  };
+  var fission = function() {
+    SelfPrims.right(Prims.random(360));
+    if (Prims.equality(SelfPrims.getPatchVariable("pcolor"), 15)) {
+      if (world.observer.getGlobal("spend-fuel?")) {
+        SelfPrims.setPatchVariable("pcolor", 35);
+      }
+      var gain = (1 / SelfManager.self().turtlesHere().size());
+      world.observer.setGlobal("power", (world.observer.getGlobal("power") + gain));
+      SelfPrims.hatch(((2 + Prims.random(2)) * gain), "").ask(function() {
+        SelfPrims.right(Prims.random(360));
+      }, true);
+    }
+  };
+  return {
+    "AUTO-REACT":autoReact,
+    "BUILD-REACTOR":buildReactor,
+    "FISSION":fission,
+    "MANU-REACT":manuReact,
+    "PLACE-CONTROL-RODS":placeControlRods,
+    "REACT":react,
+    "RELEASE-NEUTRON":releaseNeutron,
+    "SETUP":setup,
+    "SETUP-CONTROL-RODS":setupControlRods,
+    "SETUP-GLOBALS":setupGlobals,
+    "SETUP-NUCLEAR-FUEL":setupNuclearFuel,
+    "autoReact":autoReact,
+    "buildReactor":buildReactor,
+    "fission":fission,
+    "manuReact":manuReact,
+    "placeControlRods":placeControlRods,
+    "react":react,
+    "releaseNeutron":releaseNeutron,
+    "setup":setup,
+    "setupControlRods":setupControlRods,
+    "setupGlobals":setupGlobals,
+    "setupNuclearFuel":setupNuclearFuel
+  };
+})();
 world.observer.setGlobal("power-rated", 35);
 world.observer.setGlobal("reactor-size", 122);
 world.observer.setGlobal("rod-depth", 0);

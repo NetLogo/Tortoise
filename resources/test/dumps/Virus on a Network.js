@@ -59,105 +59,127 @@ var AgentModel = tortoise_require('agentmodel');
 var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
-function setup() {
-  world.clearAll();
-  Call(setupNodes);
-  Call(setupSpatiallyClusteredNetwork);
-  ListPrims.nOf(world.observer.getGlobal("initial-outbreak-size"), world.turtles()).ask(function() {
-    Call(becomeInfected);
-  }, true);
-  world.links().ask(function() {
-    SelfPrims.setVariable("color", 9.9);
-  }, true);
-  world.ticker.reset();
-}
-function setupNodes() {
-  BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
-  world.turtleManager.createTurtles(world.observer.getGlobal("number-of-nodes"), "").ask(function() {
-    SelfPrims.setXY((world.topology.randomXcor() * 0.95), (world.topology.randomYcor() * 0.95));
-    Call(becomeSusceptible);
-    SelfPrims.setVariable("virus-check-timer", Prims.random(world.observer.getGlobal("virus-check-frequency")));
-  }, true);
-}
-function setupSpatiallyClusteredNetwork() {
-  var numLinks = ((world.observer.getGlobal("average-node-degree") * world.observer.getGlobal("number-of-nodes")) / 2);
-  while (Prims.lt(world.links().size(), numLinks)) {
-    ListPrims.oneOf(world.turtles()).ask(function() {
-      var choice = SelfPrims.other(world.turtles().agentFilter(function() {
-        return !LinkPrims.isLinkNeighbor("LINKS", SelfManager.myself());
-      })).minOneOf(function() {
-        return SelfManager.self().distance(SelfManager.myself());
-      });
-      if (!Prims.equality(choice, Nobody)) {
-        LinkPrims.createLinkWith(choice, "LINKS").ask(function() {}, false);
+var procedures = (function() {
+  var setup = function() {
+    world.clearAll();
+    Call(procedures.setupNodes);
+    Call(procedures.setupSpatiallyClusteredNetwork);
+    ListPrims.nOf(world.observer.getGlobal("initial-outbreak-size"), world.turtles()).ask(function() {
+      Call(procedures.becomeInfected);
+    }, true);
+    world.links().ask(function() {
+      SelfPrims.setVariable("color", 9.9);
+    }, true);
+    world.ticker.reset();
+  };
+  var setupNodes = function() {
+    BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
+    world.turtleManager.createTurtles(world.observer.getGlobal("number-of-nodes"), "").ask(function() {
+      SelfPrims.setXY((world.topology.randomXcor() * 0.95), (world.topology.randomYcor() * 0.95));
+      Call(procedures.becomeSusceptible);
+      SelfPrims.setVariable("virus-check-timer", Prims.random(world.observer.getGlobal("virus-check-frequency")));
+    }, true);
+  };
+  var setupSpatiallyClusteredNetwork = function() {
+    var numLinks = ((world.observer.getGlobal("average-node-degree") * world.observer.getGlobal("number-of-nodes")) / 2);
+    while (Prims.lt(world.links().size(), numLinks)) {
+      ListPrims.oneOf(world.turtles()).ask(function() {
+        var choice = SelfPrims.other(world.turtles().agentFilter(function() {
+          return !LinkPrims.isLinkNeighbor("LINKS", SelfManager.myself());
+        })).minOneOf(function() {
+          return SelfManager.self().distance(SelfManager.myself());
+        });
+        if (!Prims.equality(choice, Nobody)) {
+          LinkPrims.createLinkWith(choice, "LINKS").ask(function() {}, false);
+        }
+      }, true);
+    }
+    for (var _index_1086_1092 = 0, _repeatcount_1086_1092 = StrictMath.floor(10); _index_1086_1092 < _repeatcount_1086_1092; _index_1086_1092++){
+      LayoutManager.layoutSpring(world.turtles(), world.links(), 0.3, (world.topology.width / NLMath.sqrt(world.observer.getGlobal("number-of-nodes"))), 1);
+    }
+  };
+  var go = function() {
+    if (world.turtles().agentAll(function() {
+      return !SelfPrims.getVariable("infected?");
+    })) {
+      throw new Exception.StopInterrupt;
+    }
+    world.turtles().ask(function() {
+      SelfPrims.setVariable("virus-check-timer", (SelfPrims.getVariable("virus-check-timer") + 1));
+      if (Prims.gte(SelfPrims.getVariable("virus-check-timer"), world.observer.getGlobal("virus-check-frequency"))) {
+        SelfPrims.setVariable("virus-check-timer", 0);
       }
     }, true);
-  }
-  for (var _index_1086_1092 = 0, _repeatcount_1086_1092 = StrictMath.floor(10); _index_1086_1092 < _repeatcount_1086_1092; _index_1086_1092++){
-    LayoutManager.layoutSpring(world.turtles(), world.links(), 0.3, (world.topology.width / NLMath.sqrt(world.observer.getGlobal("number-of-nodes"))), 1);
-  }
-}
-function go() {
-  if (world.turtles().agentAll(function() {
-    return !SelfPrims.getVariable("infected?");
-  })) {
-    throw new Exception.StopInterrupt;
-  }
-  world.turtles().ask(function() {
-    SelfPrims.setVariable("virus-check-timer", (SelfPrims.getVariable("virus-check-timer") + 1));
-    if (Prims.gte(SelfPrims.getVariable("virus-check-timer"), world.observer.getGlobal("virus-check-frequency"))) {
-      SelfPrims.setVariable("virus-check-timer", 0);
-    }
-  }, true);
-  Call(spreadVirus);
-  Call(doVirusChecks);
-  world.ticker.tick();
-}
-function becomeInfected() {
-  SelfPrims.setVariable("infected?", true);
-  SelfPrims.setVariable("resistant?", false);
-  SelfPrims.setVariable("color", 15);
-}
-function becomeSusceptible() {
-  SelfPrims.setVariable("infected?", false);
-  SelfPrims.setVariable("resistant?", false);
-  SelfPrims.setVariable("color", 55);
-}
-function becomeResistant() {
-  SelfPrims.setVariable("infected?", false);
-  SelfPrims.setVariable("resistant?", true);
-  SelfPrims.setVariable("color", 5);
-  LinkPrims.myLinks("LINKS").ask(function() {
-    SelfPrims.setVariable("color", (5 - 2));
-  }, true);
-}
-function spreadVirus() {
-  world.turtles().agentFilter(function() {
-    return SelfPrims.getVariable("infected?");
-  }).ask(function() {
-    LinkPrims.linkNeighbors("LINKS").agentFilter(function() {
-      return !SelfPrims.getVariable("resistant?");
+    Call(procedures.spreadVirus);
+    Call(procedures.doVirusChecks);
+    world.ticker.tick();
+  };
+  var becomeInfected = function() {
+    SelfPrims.setVariable("infected?", true);
+    SelfPrims.setVariable("resistant?", false);
+    SelfPrims.setVariable("color", 15);
+  };
+  var becomeSusceptible = function() {
+    SelfPrims.setVariable("infected?", false);
+    SelfPrims.setVariable("resistant?", false);
+    SelfPrims.setVariable("color", 55);
+  };
+  var becomeResistant = function() {
+    SelfPrims.setVariable("infected?", false);
+    SelfPrims.setVariable("resistant?", true);
+    SelfPrims.setVariable("color", 5);
+    LinkPrims.myLinks("LINKS").ask(function() {
+      SelfPrims.setVariable("color", (5 - 2));
+    }, true);
+  };
+  var spreadVirus = function() {
+    world.turtles().agentFilter(function() {
+      return SelfPrims.getVariable("infected?");
     }).ask(function() {
-      if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("virus-spread-chance"))) {
-        Call(becomeInfected);
+      LinkPrims.linkNeighbors("LINKS").agentFilter(function() {
+        return !SelfPrims.getVariable("resistant?");
+      }).ask(function() {
+        if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("virus-spread-chance"))) {
+          Call(procedures.becomeInfected);
+        }
+      }, true);
+    }, true);
+  };
+  var doVirusChecks = function() {
+    world.turtles().agentFilter(function() {
+      return (SelfPrims.getVariable("infected?") && Prims.equality(SelfPrims.getVariable("virus-check-timer"), 0));
+    }).ask(function() {
+      if (Prims.lt(Prims.random(100), world.observer.getGlobal("recovery-chance"))) {
+        if (Prims.lt(Prims.random(100), world.observer.getGlobal("gain-resistance-chance"))) {
+          Call(procedures.becomeResistant);
+        }
+        else {
+          Call(procedures.becomeSusceptible);
+        }
       }
     }, true);
-  }, true);
-}
-function doVirusChecks() {
-  world.turtles().agentFilter(function() {
-    return (SelfPrims.getVariable("infected?") && Prims.equality(SelfPrims.getVariable("virus-check-timer"), 0));
-  }).ask(function() {
-    if (Prims.lt(Prims.random(100), world.observer.getGlobal("recovery-chance"))) {
-      if (Prims.lt(Prims.random(100), world.observer.getGlobal("gain-resistance-chance"))) {
-        Call(becomeResistant);
-      }
-      else {
-        Call(becomeSusceptible);
-      }
-    }
-  }, true);
-}
+  };
+  return {
+    "BECOME-INFECTED":becomeInfected,
+    "BECOME-RESISTANT":becomeResistant,
+    "BECOME-SUSCEPTIBLE":becomeSusceptible,
+    "DO-VIRUS-CHECKS":doVirusChecks,
+    "GO":go,
+    "SETUP":setup,
+    "SETUP-NODES":setupNodes,
+    "SETUP-SPATIALLY-CLUSTERED-NETWORK":setupSpatiallyClusteredNetwork,
+    "SPREAD-VIRUS":spreadVirus,
+    "becomeInfected":becomeInfected,
+    "becomeResistant":becomeResistant,
+    "becomeSusceptible":becomeSusceptible,
+    "doVirusChecks":doVirusChecks,
+    "go":go,
+    "setup":setup,
+    "setupNodes":setupNodes,
+    "setupSpatiallyClusteredNetwork":setupSpatiallyClusteredNetwork,
+    "spreadVirus":spreadVirus
+  };
+})();
 world.observer.setGlobal("gain-resistance-chance", 5);
 world.observer.setGlobal("recovery-chance", 5);
 world.observer.setGlobal("virus-spread-chance", 2.5);

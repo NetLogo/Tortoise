@@ -44,27 +44,37 @@ var AgentModel = tortoise_require('agentmodel');
 var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
-function benchmark() {
-  Random.setSeed(362);
-  Call(setup);
-  workspace.timer.reset();
-  for (var _index_73_79 = 0, _repeatcount_73_79 = StrictMath.floor(20000); _index_73_79 < _repeatcount_73_79; _index_73_79++){
-    Call(go);
-  }
-  world.observer.setGlobal("result", workspace.timer.elapsed());
-}
-function setup() {
-  world.clearAll();
-  world.ticker.reset();
-  world.turtleManager.createOrderedTurtles(1000, "").ask(function() {
-    SelfManager.self().moveTo(ListPrims.oneOf(world.patches()));
-    SelfManager.self().face(ListPrims.oneOf(SelfPrims.getNeighbors4()));
-  }, true);
-}
-function go() {
-  world.turtles().ask(function() {
-    SelfManager.self().face(ListPrims.oneOf(SelfPrims.getNeighbors4()));
-    SelfPrims.fd(1);
-  }, true);
-  world.ticker.tick();
-}
+var procedures = (function() {
+  var benchmark = function() {
+    Random.setSeed(362);
+    Call(procedures.setup);
+    workspace.timer.reset();
+    for (var _index_73_79 = 0, _repeatcount_73_79 = StrictMath.floor(20000); _index_73_79 < _repeatcount_73_79; _index_73_79++){
+      Call(procedures.go);
+    }
+    world.observer.setGlobal("result", workspace.timer.elapsed());
+  };
+  var setup = function() {
+    world.clearAll();
+    world.ticker.reset();
+    world.turtleManager.createOrderedTurtles(1000, "").ask(function() {
+      SelfManager.self().moveTo(ListPrims.oneOf(world.patches()));
+      SelfManager.self().face(ListPrims.oneOf(SelfPrims.getNeighbors4()));
+    }, true);
+  };
+  var go = function() {
+    world.turtles().ask(function() {
+      SelfManager.self().face(ListPrims.oneOf(SelfPrims.getNeighbors4()));
+      SelfPrims.fd(1);
+    }, true);
+    world.ticker.tick();
+  };
+  return {
+    "BENCHMARK":benchmark,
+    "GO":go,
+    "SETUP":setup,
+    "benchmark":benchmark,
+    "go":go,
+    "setup":setup
+  };
+})();

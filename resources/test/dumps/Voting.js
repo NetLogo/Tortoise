@@ -44,59 +44,69 @@ var AgentModel = tortoise_require('agentmodel');
 var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
-function setup() {
-  world.clearAll();
-  world.patches().ask(function() {
-    SelfPrims.setPatchVariable("vote", Prims.random(2));
-    Call(recolorPatch);
-  }, true);
-  world.ticker.reset();
-}
-function go() {
-  world.patches().ask(function() {
-    SelfPrims.setPatchVariable("total", ListPrims.sum(SelfPrims.getNeighbors().projectionBy(function() {
-      return SelfPrims.getPatchVariable("vote");
-    })));
-  }, true);
-  world.patches().ask(function() {
-    if (Prims.gt(SelfPrims.getPatchVariable("total"), 5)) {
-      SelfPrims.setPatchVariable("vote", 1);
-    }
-    if (Prims.lt(SelfPrims.getPatchVariable("total"), 3)) {
-      SelfPrims.setPatchVariable("vote", 0);
-    }
-    if (Prims.equality(SelfPrims.getPatchVariable("total"), 4)) {
-      if (world.observer.getGlobal("change-vote-if-tied?")) {
-        SelfPrims.setPatchVariable("vote", (1 - SelfPrims.getPatchVariable("vote")));
-      }
-    }
-    if (Prims.equality(SelfPrims.getPatchVariable("total"), 5)) {
-      if (world.observer.getGlobal("award-close-calls-to-loser?")) {
-        SelfPrims.setPatchVariable("vote", 0);
-      }
-      else {
+var procedures = (function() {
+  var setup = function() {
+    world.clearAll();
+    world.patches().ask(function() {
+      SelfPrims.setPatchVariable("vote", Prims.random(2));
+      Call(procedures.recolorPatch);
+    }, true);
+    world.ticker.reset();
+  };
+  var go = function() {
+    world.patches().ask(function() {
+      SelfPrims.setPatchVariable("total", ListPrims.sum(SelfPrims.getNeighbors().projectionBy(function() {
+        return SelfPrims.getPatchVariable("vote");
+      })));
+    }, true);
+    world.patches().ask(function() {
+      if (Prims.gt(SelfPrims.getPatchVariable("total"), 5)) {
         SelfPrims.setPatchVariable("vote", 1);
       }
-    }
-    if (Prims.equality(SelfPrims.getPatchVariable("total"), 3)) {
-      if (world.observer.getGlobal("award-close-calls-to-loser?")) {
-        SelfPrims.setPatchVariable("vote", 1);
-      }
-      else {
+      if (Prims.lt(SelfPrims.getPatchVariable("total"), 3)) {
         SelfPrims.setPatchVariable("vote", 0);
       }
+      if (Prims.equality(SelfPrims.getPatchVariable("total"), 4)) {
+        if (world.observer.getGlobal("change-vote-if-tied?")) {
+          SelfPrims.setPatchVariable("vote", (1 - SelfPrims.getPatchVariable("vote")));
+        }
+      }
+      if (Prims.equality(SelfPrims.getPatchVariable("total"), 5)) {
+        if (world.observer.getGlobal("award-close-calls-to-loser?")) {
+          SelfPrims.setPatchVariable("vote", 0);
+        }
+        else {
+          SelfPrims.setPatchVariable("vote", 1);
+        }
+      }
+      if (Prims.equality(SelfPrims.getPatchVariable("total"), 3)) {
+        if (world.observer.getGlobal("award-close-calls-to-loser?")) {
+          SelfPrims.setPatchVariable("vote", 1);
+        }
+        else {
+          SelfPrims.setPatchVariable("vote", 0);
+        }
+      }
+      Call(procedures.recolorPatch);
+    }, true);
+    world.ticker.tick();
+  };
+  var recolorPatch = function() {
+    if (Prims.equality(SelfPrims.getPatchVariable("vote"), 0)) {
+      SelfPrims.setPatchVariable("pcolor", 55);
     }
-    Call(recolorPatch);
-  }, true);
-  world.ticker.tick();
-}
-function recolorPatch() {
-  if (Prims.equality(SelfPrims.getPatchVariable("vote"), 0)) {
-    SelfPrims.setPatchVariable("pcolor", 55);
-  }
-  else {
-    SelfPrims.setPatchVariable("pcolor", 105);
-  }
-}
+    else {
+      SelfPrims.setPatchVariable("pcolor", 105);
+    }
+  };
+  return {
+    "GO":go,
+    "RECOLOR-PATCH":recolorPatch,
+    "SETUP":setup,
+    "go":go,
+    "recolorPatch":recolorPatch,
+    "setup":setup
+  };
+})();
 world.observer.setGlobal("change-vote-if-tied?", false);
 world.observer.setGlobal("award-close-calls-to-loser?", false);

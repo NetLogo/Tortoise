@@ -53,70 +53,86 @@ var AgentModel = tortoise_require('agentmodel');
 var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
-function setup() {
-  world.clearAll();
-  world.turtleManager.createTurtles(world.observer.getGlobal("number"), "").ask(function() {
-    SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
-    SelfPrims.setVariable("clock", Prims.random(NLMath.round(world.observer.getGlobal("cycle-length"))));
-    SelfPrims.setVariable("threshold", world.observer.getGlobal("flash-length"));
-    if (Prims.equality(world.observer.getGlobal("strategy"), "delay")) {
-      SelfPrims.setVariable("reset-level", SelfPrims.getVariable("threshold"));
-      SelfPrims.setVariable("window", -1);
-    }
-    else {
-      SelfPrims.setVariable("reset-level", 0);
-      SelfPrims.setVariable("window", (SelfPrims.getVariable("threshold") + 1));
-    }
-    SelfPrims.setVariable("size", 2);
-    Call(recolor);
-  }, true);
-  world.ticker.reset();
-}
-function go() {
-  world.turtles().ask(function() {
-    Call(move);
-    Call(incrementClock);
-    if ((Prims.gt(SelfPrims.getVariable("clock"), SelfPrims.getVariable("window")) && Prims.gte(SelfPrims.getVariable("clock"), SelfPrims.getVariable("threshold")))) {
-      Call(look);
-    }
-  }, true);
-  world.turtles().ask(function() {
-    Call(recolor);
-  }, true);
-  world.ticker.tick();
-}
-function recolor() {
-  if (Prims.lt(SelfPrims.getVariable("clock"), SelfPrims.getVariable("threshold"))) {
-    SelfManager.self().hideTurtle(false);;
-    SelfPrims.setVariable("color", 45);
-  }
-  else {
-    SelfPrims.setVariable("color", (5 - 2));
-    if (world.observer.getGlobal("show-dark-fireflies?")) {
+var procedures = (function() {
+  var setup = function() {
+    world.clearAll();
+    world.turtleManager.createTurtles(world.observer.getGlobal("number"), "").ask(function() {
+      SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
+      SelfPrims.setVariable("clock", Prims.random(NLMath.round(world.observer.getGlobal("cycle-length"))));
+      SelfPrims.setVariable("threshold", world.observer.getGlobal("flash-length"));
+      if (Prims.equality(world.observer.getGlobal("strategy"), "delay")) {
+        SelfPrims.setVariable("reset-level", SelfPrims.getVariable("threshold"));
+        SelfPrims.setVariable("window", -1);
+      }
+      else {
+        SelfPrims.setVariable("reset-level", 0);
+        SelfPrims.setVariable("window", (SelfPrims.getVariable("threshold") + 1));
+      }
+      SelfPrims.setVariable("size", 2);
+      Call(procedures.recolor);
+    }, true);
+    world.ticker.reset();
+  };
+  var go = function() {
+    world.turtles().ask(function() {
+      Call(procedures.move);
+      Call(procedures.incrementClock);
+      if ((Prims.gt(SelfPrims.getVariable("clock"), SelfPrims.getVariable("window")) && Prims.gte(SelfPrims.getVariable("clock"), SelfPrims.getVariable("threshold")))) {
+        Call(procedures.look);
+      }
+    }, true);
+    world.turtles().ask(function() {
+      Call(procedures.recolor);
+    }, true);
+    world.ticker.tick();
+  };
+  var recolor = function() {
+    if (Prims.lt(SelfPrims.getVariable("clock"), SelfPrims.getVariable("threshold"))) {
       SelfManager.self().hideTurtle(false);;
+      SelfPrims.setVariable("color", 45);
     }
     else {
-      SelfManager.self().hideTurtle(true);;
+      SelfPrims.setVariable("color", (5 - 2));
+      if (world.observer.getGlobal("show-dark-fireflies?")) {
+        SelfManager.self().hideTurtle(false);;
+      }
+      else {
+        SelfManager.self().hideTurtle(true);;
+      }
     }
-  }
-}
-function move() {
-  SelfPrims.right((Prims.randomFloat(90) - Prims.randomFloat(90)));
-  SelfPrims.fd(1);
-}
-function incrementClock() {
-  SelfPrims.setVariable("clock", (SelfPrims.getVariable("clock") + 1));
-  if (Prims.equality(SelfPrims.getVariable("clock"), world.observer.getGlobal("cycle-length"))) {
-    SelfPrims.setVariable("clock", 0);
-  }
-}
-function look() {
-  if (Prims.gte(SelfManager.self().inRadius(world.turtles(), 1).agentFilter(function() {
-    return Prims.equality(SelfPrims.getVariable("color"), 45);
-  }).size(), world.observer.getGlobal("flashes-to-reset"))) {
-    SelfPrims.setVariable("clock", SelfPrims.getVariable("reset-level"));
-  }
-}
+  };
+  var move = function() {
+    SelfPrims.right((Prims.randomFloat(90) - Prims.randomFloat(90)));
+    SelfPrims.fd(1);
+  };
+  var incrementClock = function() {
+    SelfPrims.setVariable("clock", (SelfPrims.getVariable("clock") + 1));
+    if (Prims.equality(SelfPrims.getVariable("clock"), world.observer.getGlobal("cycle-length"))) {
+      SelfPrims.setVariable("clock", 0);
+    }
+  };
+  var look = function() {
+    if (Prims.gte(SelfManager.self().inRadius(world.turtles(), 1).agentFilter(function() {
+      return Prims.equality(SelfPrims.getVariable("color"), 45);
+    }).size(), world.observer.getGlobal("flashes-to-reset"))) {
+      SelfPrims.setVariable("clock", SelfPrims.getVariable("reset-level"));
+    }
+  };
+  return {
+    "GO":go,
+    "INCREMENT-CLOCK":incrementClock,
+    "LOOK":look,
+    "MOVE":move,
+    "RECOLOR":recolor,
+    "SETUP":setup,
+    "go":go,
+    "incrementClock":incrementClock,
+    "look":look,
+    "move":move,
+    "recolor":recolor,
+    "setup":setup
+  };
+})();
 world.observer.setGlobal("number", 1500);
 world.observer.setGlobal("cycle-length", 10);
 world.observer.setGlobal("flash-length", 1);

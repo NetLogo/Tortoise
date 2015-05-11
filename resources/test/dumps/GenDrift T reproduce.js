@@ -80,46 +80,58 @@ var AgentModel = tortoise_require('agentmodel');
 var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
-function setup() {
-  world.clearAll();
-  world.turtleManager.createTurtles(world.observer.getGlobal("number"), "").ask(function() {
-    SelfPrims.setVariable("color", (5 + (Prims.random(world.observer.getGlobal("colors")) * 10)));
-    if (Prims.equality(SelfPrims.getVariable("color"), 75)) {
-      SelfPrims.setVariable("color", 125);
+var procedures = (function() {
+  var setup = function() {
+    world.clearAll();
+    world.turtleManager.createTurtles(world.observer.getGlobal("number"), "").ask(function() {
+      SelfPrims.setVariable("color", (5 + (Prims.random(world.observer.getGlobal("colors")) * 10)));
+      if (Prims.equality(SelfPrims.getVariable("color"), 75)) {
+        SelfPrims.setVariable("color", 125);
+      }
+      SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
+    }, true);
+    world.ticker.reset();
+  };
+  var go = function() {
+    if (Prims.equality(ListPrims.variance(world.turtles().projectionBy(function() {
+      return SelfPrims.getVariable("color");
+    })), 0)) {
+      throw new Exception.StopInterrupt;
     }
-    SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
-  }, true);
-  world.ticker.reset();
-}
-function go() {
-  if (Prims.equality(ListPrims.variance(world.turtles().projectionBy(function() {
-    return SelfPrims.getVariable("color");
-  })), 0)) {
-    throw new Exception.StopInterrupt;
-  }
-  world.turtles().ask(function() {
-    SelfPrims.right(Prims.random(50));
-    SelfPrims.left(Prims.random(50));
-    SelfPrims.fd(1);
-  }, true);
-  Call(birth);
-  Call(death);
-  world.ticker.tick();
-}
-function birth() {
-  world.turtles().ask(function() {
-    SelfPrims.hatch(Prims.random(5), "").ask(function() {
+    world.turtles().ask(function() {
+      SelfPrims.right(Prims.random(50));
+      SelfPrims.left(Prims.random(50));
       SelfPrims.fd(1);
     }, true);
-  }, true);
-}
-function death() {
-  var totalTurtles = world.turtles().size();
-  world.turtles().ask(function() {
-    if (Prims.gt(Prims.random(totalTurtles), world.observer.getGlobal("number"))) {
-      SelfPrims.die();
-    }
-  }, true);
-}
+    Call(procedures.birth);
+    Call(procedures.death);
+    world.ticker.tick();
+  };
+  var birth = function() {
+    world.turtles().ask(function() {
+      SelfPrims.hatch(Prims.random(5), "").ask(function() {
+        SelfPrims.fd(1);
+      }, true);
+    }, true);
+  };
+  var death = function() {
+    var totalTurtles = world.turtles().size();
+    world.turtles().ask(function() {
+      if (Prims.gt(Prims.random(totalTurtles), world.observer.getGlobal("number"))) {
+        SelfPrims.die();
+      }
+    }, true);
+  };
+  return {
+    "BIRTH":birth,
+    "DEATH":death,
+    "GO":go,
+    "SETUP":setup,
+    "birth":birth,
+    "death":death,
+    "go":go,
+    "setup":setup
+  };
+})();
 world.observer.setGlobal("colors", 5);
 world.observer.setGlobal("number", 500);

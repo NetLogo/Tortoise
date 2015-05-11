@@ -60,127 +60,157 @@ var AgentModel = tortoise_require('agentmodel');
 var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
-function setup() {
-  world.clearAll();
-  Call(setupConstants);
-  Call(setupTurtles);
-  Call(updateGlobalVariables);
-  world.ticker.reset();
-}
-function setupTurtles() {
-  BreedManager.setDefaultShape(world.turtles().getBreedName(), "person")
-  world.turtleManager.createTurtles(world.observer.getGlobal("people"), "").ask(function() {
-    SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
-    SelfPrims.setVariable("age", Prims.random(world.observer.getGlobal("lifespan")));
-    SelfPrims.setVariable("sick-count", 0);
-    SelfPrims.setVariable("immune?", false);
-    SelfPrims.setVariable("size", 1.5);
-    Call(getHealthy);
-  }, true);
-  ListPrims.nOf(10, world.turtles()).ask(function() {
-    Call(getSick);
-  }, true);
-}
-function getSick() {
-  SelfPrims.setVariable("sick?", true);
-  SelfPrims.setVariable("immune?", false);
-  SelfPrims.setVariable("color", 15);
-}
-function getHealthy() {
-  SelfPrims.setVariable("sick?", false);
-  SelfPrims.setVariable("immune?", false);
-  SelfPrims.setVariable("sick-count", 0);
-  SelfPrims.setVariable("color", 55);
-}
-function becomeImmune() {
-  SelfPrims.setVariable("sick?", false);
-  SelfPrims.setVariable("sick-count", 0);
-  SelfPrims.setVariable("immune?", true);
-  SelfPrims.setVariable("color", 5);
-}
-function setupConstants() {
-  world.observer.setGlobal("lifespan", 100);
-  world.observer.setGlobal("carrying-capacity", 750);
-  world.observer.setGlobal("average-offspring", 4);
-}
-function go() {
-  Call(getOlder);
-  Call(move);
-  Call(infect);
-  Call(recover);
-  Call(reproduce);
-  Call(updateGlobalVariables);
-  world.ticker.tick();
-}
-function updateGlobalVariables() {
-  if (Prims.gt(world.turtles().size(), 0)) {
-    world.observer.setGlobal("%infected", ((world.turtles().agentFilter(function() {
-      return SelfPrims.getVariable("sick?");
-    }).size() / world.turtles().size()) * 100));
-    world.observer.setGlobal("%immune", ((world.turtles().agentFilter(function() {
-      return SelfPrims.getVariable("immune?");
-    }).size() / world.turtles().size()) * 100));
-  }
-}
-function getOlder() {
-  world.turtles().ask(function() {
-    SelfPrims.setVariable("age", (SelfPrims.getVariable("age") + 1));
-    if (SelfPrims.getVariable("sick?")) {
-      SelfPrims.setVariable("sick-count", (SelfPrims.getVariable("sick-count") + 1));
-    }
-    if (Prims.gt(SelfPrims.getVariable("age"), world.observer.getGlobal("lifespan"))) {
-      SelfPrims.die();
-    }
-  }, true);
-}
-function move() {
-  world.turtles().ask(function() {
-    SelfPrims.right(Prims.random(100));
-    SelfPrims.left(Prims.random(100));
-    SelfPrims.fd(1);
-  }, true);
-}
-function infect() {
-  world.turtles().agentFilter(function() {
-    return SelfPrims.getVariable("sick?");
-  }).ask(function() {
-    SelfPrims.other(SelfManager.self().turtlesHere().agentFilter(function() {
-      return !SelfPrims.getVariable("immune?");
-    })).ask(function() {
-      if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("infectiousness"))) {
-        Call(getSick);
-      }
+var procedures = (function() {
+  var setup = function() {
+    world.clearAll();
+    Call(procedures.setupConstants);
+    Call(procedures.setupTurtles);
+    Call(procedures.updateGlobalVariables);
+    world.ticker.reset();
+  };
+  var setupTurtles = function() {
+    BreedManager.setDefaultShape(world.turtles().getBreedName(), "person")
+    world.turtleManager.createTurtles(world.observer.getGlobal("people"), "").ask(function() {
+      SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
+      SelfPrims.setVariable("age", Prims.random(world.observer.getGlobal("lifespan")));
+      SelfPrims.setVariable("sick-count", 0);
+      SelfPrims.setVariable("immune?", false);
+      SelfPrims.setVariable("size", 1.5);
+      Call(procedures.getHealthy);
     }, true);
-  }, true);
-}
-function recover() {
-  world.turtles().agentFilter(function() {
-    return SelfPrims.getVariable("sick?");
-  }).ask(function() {
-    if (Prims.gt(Prims.random(SelfPrims.getVariable("sick-count")), (world.observer.getGlobal("lifespan") * (world.observer.getGlobal("duration") / 100)))) {
-      if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("chance-recover"))) {
-        Call(becomeImmune);
+    ListPrims.nOf(10, world.turtles()).ask(function() {
+      Call(procedures.getSick);
+    }, true);
+  };
+  var getSick = function() {
+    SelfPrims.setVariable("sick?", true);
+    SelfPrims.setVariable("immune?", false);
+    SelfPrims.setVariable("color", 15);
+  };
+  var getHealthy = function() {
+    SelfPrims.setVariable("sick?", false);
+    SelfPrims.setVariable("immune?", false);
+    SelfPrims.setVariable("sick-count", 0);
+    SelfPrims.setVariable("color", 55);
+  };
+  var becomeImmune = function() {
+    SelfPrims.setVariable("sick?", false);
+    SelfPrims.setVariable("sick-count", 0);
+    SelfPrims.setVariable("immune?", true);
+    SelfPrims.setVariable("color", 5);
+  };
+  var setupConstants = function() {
+    world.observer.setGlobal("lifespan", 100);
+    world.observer.setGlobal("carrying-capacity", 750);
+    world.observer.setGlobal("average-offspring", 4);
+  };
+  var go = function() {
+    Call(procedures.getOlder);
+    Call(procedures.move);
+    Call(procedures.infect);
+    Call(procedures.recover);
+    Call(procedures.reproduce);
+    Call(procedures.updateGlobalVariables);
+    world.ticker.tick();
+  };
+  var updateGlobalVariables = function() {
+    if (Prims.gt(world.turtles().size(), 0)) {
+      world.observer.setGlobal("%infected", ((world.turtles().agentFilter(function() {
+        return SelfPrims.getVariable("sick?");
+      }).size() / world.turtles().size()) * 100));
+      world.observer.setGlobal("%immune", ((world.turtles().agentFilter(function() {
+        return SelfPrims.getVariable("immune?");
+      }).size() / world.turtles().size()) * 100));
+    }
+  };
+  var getOlder = function() {
+    world.turtles().ask(function() {
+      SelfPrims.setVariable("age", (SelfPrims.getVariable("age") + 1));
+      if (SelfPrims.getVariable("sick?")) {
+        SelfPrims.setVariable("sick-count", (SelfPrims.getVariable("sick-count") + 1));
       }
-      else {
+      if (Prims.gt(SelfPrims.getVariable("age"), world.observer.getGlobal("lifespan"))) {
         SelfPrims.die();
       }
-    }
-  }, true);
-}
-function reproduce() {
-  world.turtles().agentFilter(function() {
-    return !SelfPrims.getVariable("sick?");
-  }).ask(function() {
-    if ((Prims.lt(world.turtles().size(), world.observer.getGlobal("carrying-capacity")) && Prims.lt(Prims.random(world.observer.getGlobal("lifespan")), world.observer.getGlobal("average-offspring")))) {
-      SelfPrims.hatch(1, "").ask(function() {
-        SelfPrims.setVariable("age", 1);
-        SelfPrims.left(45);
-        SelfPrims.fd(1);
-        Call(getHealthy);
+    }, true);
+  };
+  var move = function() {
+    world.turtles().ask(function() {
+      SelfPrims.right(Prims.random(100));
+      SelfPrims.left(Prims.random(100));
+      SelfPrims.fd(1);
+    }, true);
+  };
+  var infect = function() {
+    world.turtles().agentFilter(function() {
+      return SelfPrims.getVariable("sick?");
+    }).ask(function() {
+      SelfPrims.other(SelfManager.self().turtlesHere().agentFilter(function() {
+        return !SelfPrims.getVariable("immune?");
+      })).ask(function() {
+        if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("infectiousness"))) {
+          Call(procedures.getSick);
+        }
       }, true);
-    }
-  }, true);
-}
+    }, true);
+  };
+  var recover = function() {
+    world.turtles().agentFilter(function() {
+      return SelfPrims.getVariable("sick?");
+    }).ask(function() {
+      if (Prims.gt(Prims.random(SelfPrims.getVariable("sick-count")), (world.observer.getGlobal("lifespan") * (world.observer.getGlobal("duration") / 100)))) {
+        if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("chance-recover"))) {
+          Call(procedures.becomeImmune);
+        }
+        else {
+          SelfPrims.die();
+        }
+      }
+    }, true);
+  };
+  var reproduce = function() {
+    world.turtles().agentFilter(function() {
+      return !SelfPrims.getVariable("sick?");
+    }).ask(function() {
+      if ((Prims.lt(world.turtles().size(), world.observer.getGlobal("carrying-capacity")) && Prims.lt(Prims.random(world.observer.getGlobal("lifespan")), world.observer.getGlobal("average-offspring")))) {
+        SelfPrims.hatch(1, "").ask(function() {
+          SelfPrims.setVariable("age", 1);
+          SelfPrims.left(45);
+          SelfPrims.fd(1);
+          Call(procedures.getHealthy);
+        }, true);
+      }
+    }, true);
+  };
+  return {
+    "BECOME-IMMUNE":becomeImmune,
+    "GET-HEALTHY":getHealthy,
+    "GET-OLDER":getOlder,
+    "GET-SICK":getSick,
+    "GO":go,
+    "INFECT":infect,
+    "MOVE":move,
+    "RECOVER":recover,
+    "REPRODUCE":reproduce,
+    "SETUP":setup,
+    "SETUP-CONSTANTS":setupConstants,
+    "SETUP-TURTLES":setupTurtles,
+    "UPDATE-GLOBAL-VARIABLES":updateGlobalVariables,
+    "becomeImmune":becomeImmune,
+    "getHealthy":getHealthy,
+    "getOlder":getOlder,
+    "getSick":getSick,
+    "go":go,
+    "infect":infect,
+    "move":move,
+    "recover":recover,
+    "reproduce":reproduce,
+    "setup":setup,
+    "setupConstants":setupConstants,
+    "setupTurtles":setupTurtles,
+    "updateGlobalVariables":updateGlobalVariables
+  };
+})();
 world.observer.setGlobal("duration", 20);
 world.observer.setGlobal("chance-recover", 50);
 world.observer.setGlobal("infectiousness", 65);

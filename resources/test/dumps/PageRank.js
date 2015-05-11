@@ -44,275 +44,299 @@ var AgentModel = tortoise_require('agentmodel');
 var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
-function setup() {
-  world.clearAll();
-  BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("PAGES").getBreedName(), "circle")
-  if (Prims.equality(world.observer.getGlobal("network-choice"), "Example 1")) {
-    Call(createNetworkExample1);
-  }
-  else {
-    if (Prims.equality(world.observer.getGlobal("network-choice"), "Example 2")) {
-      Call(createNetworkExample2);
+var procedures = (function() {
+  var setup = function() {
+    world.clearAll();
+    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("PAGES").getBreedName(), "circle")
+    if (Prims.equality(world.observer.getGlobal("network-choice"), "Example 1")) {
+      Call(procedures.createNetworkExample1);
     }
     else {
-      if (Prims.equality(world.observer.getGlobal("network-choice"), "Preferential Attachment")) {
-        Call(createNetworkPreferential, 100, 2);
+      if (Prims.equality(world.observer.getGlobal("network-choice"), "Example 2")) {
+        Call(procedures.createNetworkExample2);
       }
       else {
-        notImplemented('user-message', undefined)((Dump('') + Dump("Error: unknown network-choice: ") + Dump(world.observer.getGlobal("network-choice"))));
-      }
-    }
-  }
-  world.patches().ask(function() {
-    SelfPrims.setPatchVariable("pcolor", 9.9);
-  }, true);
-  world.turtleManager.turtlesOfBreed("PAGES").ask(function() {
-    SelfPrims.setVariable("rank", (1 / world.turtleManager.turtlesOfBreed("PAGES").size()));
-  }, true);
-  Call(updateGlobals);
-  world.turtleManager.turtlesOfBreed("PAGES").ask(function() {
-    SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
-    SelfPrims.setVariable("label-color", 0);
-    Call(updatePageAppearance);
-  }, true);
-  for (var _index_827_833 = 0, _repeatcount_827_833 = StrictMath.floor(300); _index_827_833 < _repeatcount_827_833; _index_827_833++){
-    Call(doLayout);
-  }
-  world.links().ask(function() {
-    SelfPrims.setVariable("shape", "curved");
-  }, true);
-  world.ticker.reset();
-}
-function createNetworkExample1() {
-  world.turtleManager.createTurtles(11, "PAGES").ask(function() {}, true);
-  world.turtleManager.getTurtleOfBreed("PAGES", 0).ask(function() {
-    SelfPrims.setVariable("color", 105);
-    LinkPrims.createLinkFrom(world.turtleManager.getTurtleOfBreed("PAGES", 3), "LINKS").ask(function() {}, false);
-  }, true);
-  world.turtleManager.getTurtleOfBreed("PAGES", 1).ask(function() {
-    SelfPrims.setVariable("color", 15);
-    LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 2), world.turtleManager.getTurtleOfBreed("PAGES", 3), world.turtleManager.getTurtleOfBreed("PAGES", 4), world.turtleManager.getTurtleOfBreed("PAGES", 5), world.turtleManager.getTurtleOfBreed("PAGES", 6), world.turtleManager.getTurtleOfBreed("PAGES", 7), world.turtleManager.getTurtleOfBreed("PAGES", 8)), "LINKS").ask(function() {}, false);
-  }, true);
-  world.turtleManager.getTurtleOfBreed("PAGES", 2).ask(function() {
-    SelfPrims.setVariable("color", 25);
-    LinkPrims.createLinkFrom(world.turtleManager.getTurtleOfBreed("PAGES", 1), "LINKS").ask(function() {}, false);
-  }, true);
-  world.turtleManager.getTurtleOfBreed("PAGES", 3).ask(function() {
-    SelfPrims.setVariable("color", 55);
-    LinkPrims.createLinkFrom(world.turtleManager.getTurtleOfBreed("PAGES", 4), "LINKS").ask(function() {}, false);
-  }, true);
-  world.turtleManager.getTurtleOfBreed("PAGES", 4).ask(function() {
-    SelfPrims.setVariable("color", 45);
-    LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 5), world.turtleManager.getTurtleOfBreed("PAGES", 6), world.turtleManager.getTurtleOfBreed("PAGES", 7), world.turtleManager.getTurtleOfBreed("PAGES", 8), world.turtleManager.getTurtleOfBreed("PAGES", 9), world.turtleManager.getTurtleOfBreed("PAGES", 10)), "LINKS").ask(function() {}, false);
-  }, true);
-  world.turtleManager.getTurtleOfBreed("PAGES", 5).ask(function() {
-    SelfPrims.setVariable("color", 55);
-    LinkPrims.createLinkFrom(world.turtleManager.getTurtleOfBreed("PAGES", 4), "LINKS").ask(function() {}, false);
-  }, true);
-  world.turtleManager.turtlesOfBreed("PAGES").agentFilter(function() {
-    return Prims.gt(SelfPrims.getVariable("who"), 5);
-  }).ask(function() {
-    SelfPrims.setVariable("color", 115);
-  }, true);
-}
-function createNetworkExample2() {
-  world.turtleManager.createTurtles(8, "PAGES").ask(function() {}, true);
-  world.turtleManager.getTurtleOfBreed("PAGES", 0).ask(function() {
-    SelfPrims.die();
-  }, true);
-  world.turtleManager.getTurtleOfBreed("PAGES", 1).ask(function() {
-    LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 2), world.turtleManager.getTurtleOfBreed("PAGES", 3), world.turtleManager.getTurtleOfBreed("PAGES", 5), world.turtleManager.getTurtleOfBreed("PAGES", 6)), "LINKS").ask(function() {}, false);
-  }, true);
-  world.turtleManager.getTurtleOfBreed("PAGES", 2).ask(function() {
-    LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 1), world.turtleManager.getTurtleOfBreed("PAGES", 3), world.turtleManager.getTurtleOfBreed("PAGES", 4)), "LINKS").ask(function() {}, false);
-  }, true);
-  world.turtleManager.getTurtleOfBreed("PAGES", 3).ask(function() {
-    LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 1), world.turtleManager.getTurtleOfBreed("PAGES", 4), world.turtleManager.getTurtleOfBreed("PAGES", 5)), "LINKS").ask(function() {}, false);
-  }, true);
-  world.turtleManager.getTurtleOfBreed("PAGES", 4).ask(function() {
-    LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 1), world.turtleManager.getTurtleOfBreed("PAGES", 5)), "LINKS").ask(function() {}, false);
-  }, true);
-  world.turtleManager.getTurtleOfBreed("PAGES", 5).ask(function() {
-    LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 1), world.turtleManager.getTurtleOfBreed("PAGES", 4), world.turtleManager.getTurtleOfBreed("PAGES", 6), world.turtleManager.getTurtleOfBreed("PAGES", 7)), "LINKS").ask(function() {}, false);
-  }, true);
-  world.turtleManager.getTurtleOfBreed("PAGES", 6).ask(function() {
-    LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 5)), "LINKS").ask(function() {}, false);
-  }, true);
-  world.turtleManager.getTurtleOfBreed("PAGES", 7).ask(function() {
-    LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 1)), "LINKS").ask(function() {}, false);
-  }, true);
-}
-function createNetworkPreferential(n, k) {
-  world.turtleManager.createTurtles(n, "PAGES").ask(function() {
-    SelfPrims.setVariable("color", 95);
-  }, true);
-  Call(linkPreferentially, world.turtleManager.turtlesOfBreed("PAGES"), k);
-}
-function linkPreferentially(nodeset, k) {
-  var nodeList = ListPrims.sort(nodeset);
-  var neighborChoiceList = ListPrims.sublist(nodeList, 0, k);
-  ListPrims.item(k, nodeList).ask(function() {
-    Tasks.forEach(Tasks.commandTask(function() {
-      var taskArguments = arguments;
-      if (Prims.equality(Prims.random(2), 0)) {
-        LinkPrims.createLinkTo(taskArguments[0], "LINKS").ask(function() {}, false);
-      }
-      else {
-        LinkPrims.createLinkFrom(taskArguments[0], "LINKS").ask(function() {}, false);
-      }
-    }), neighborChoiceList);
-    neighborChoiceList = ListPrims.sentence(Tasks.nValues(k, Tasks.reporterTask(function() {
-      var taskArguments = arguments;
-      return SelfManager.self();
-    })), neighborChoiceList);
-  }, true);
-  Tasks.forEach(Tasks.commandTask(function() {
-    var taskArguments = arguments;
-    taskArguments[0].ask(function() {
-      var tempNeighborList = neighborChoiceList;
-      for (var _index_3025_3031 = 0, _repeatcount_3025_3031 = StrictMath.floor(k); _index_3025_3031 < _repeatcount_3025_3031; _index_3025_3031++){
-        var neighbor = ListPrims.oneOf(tempNeighborList);
-        tempNeighborList = ListPrims.remove(neighbor, tempNeighborList);
-        neighborChoiceList = ListPrims.fput(neighbor, neighborChoiceList);
-        if (Prims.equality(Prims.random(2), 0)) {
-          LinkPrims.createLinkTo(neighbor, "LINKS").ask(function() {}, false);
+        if (Prims.equality(world.observer.getGlobal("network-choice"), "Preferential Attachment")) {
+          Call(procedures.createNetworkPreferential, 100, 2);
         }
         else {
-          LinkPrims.createLinkFrom(neighbor, "LINKS").ask(function() {}, false);
+          notImplemented('user-message', undefined)((Dump('') + Dump("Error: unknown network-choice: ") + Dump(world.observer.getGlobal("network-choice"))));
         }
       }
+    }
+    world.patches().ask(function() {
+      SelfPrims.setPatchVariable("pcolor", 9.9);
+    }, true);
+    world.turtleManager.turtlesOfBreed("PAGES").ask(function() {
+      SelfPrims.setVariable("rank", (1 / world.turtleManager.turtlesOfBreed("PAGES").size()));
+    }, true);
+    Call(procedures.updateGlobals);
+    world.turtleManager.turtlesOfBreed("PAGES").ask(function() {
+      SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
+      SelfPrims.setVariable("label-color", 0);
+      Call(procedures.updatePageAppearance);
+    }, true);
+    for (var _index_827_833 = 0, _repeatcount_827_833 = StrictMath.floor(300); _index_827_833 < _repeatcount_827_833; _index_827_833++){
+      Call(procedures.doLayout);
+    }
+    world.links().ask(function() {
+      SelfPrims.setVariable("shape", "curved");
+    }, true);
+    world.ticker.reset();
+  };
+  var createNetworkExample1 = function() {
+    world.turtleManager.createTurtles(11, "PAGES").ask(function() {}, true);
+    world.turtleManager.getTurtleOfBreed("PAGES", 0).ask(function() {
+      SelfPrims.setVariable("color", 105);
+      LinkPrims.createLinkFrom(world.turtleManager.getTurtleOfBreed("PAGES", 3), "LINKS").ask(function() {}, false);
+    }, true);
+    world.turtleManager.getTurtleOfBreed("PAGES", 1).ask(function() {
+      SelfPrims.setVariable("color", 15);
+      LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 2), world.turtleManager.getTurtleOfBreed("PAGES", 3), world.turtleManager.getTurtleOfBreed("PAGES", 4), world.turtleManager.getTurtleOfBreed("PAGES", 5), world.turtleManager.getTurtleOfBreed("PAGES", 6), world.turtleManager.getTurtleOfBreed("PAGES", 7), world.turtleManager.getTurtleOfBreed("PAGES", 8)), "LINKS").ask(function() {}, false);
+    }, true);
+    world.turtleManager.getTurtleOfBreed("PAGES", 2).ask(function() {
+      SelfPrims.setVariable("color", 25);
+      LinkPrims.createLinkFrom(world.turtleManager.getTurtleOfBreed("PAGES", 1), "LINKS").ask(function() {}, false);
+    }, true);
+    world.turtleManager.getTurtleOfBreed("PAGES", 3).ask(function() {
+      SelfPrims.setVariable("color", 55);
+      LinkPrims.createLinkFrom(world.turtleManager.getTurtleOfBreed("PAGES", 4), "LINKS").ask(function() {}, false);
+    }, true);
+    world.turtleManager.getTurtleOfBreed("PAGES", 4).ask(function() {
+      SelfPrims.setVariable("color", 45);
+      LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 5), world.turtleManager.getTurtleOfBreed("PAGES", 6), world.turtleManager.getTurtleOfBreed("PAGES", 7), world.turtleManager.getTurtleOfBreed("PAGES", 8), world.turtleManager.getTurtleOfBreed("PAGES", 9), world.turtleManager.getTurtleOfBreed("PAGES", 10)), "LINKS").ask(function() {}, false);
+    }, true);
+    world.turtleManager.getTurtleOfBreed("PAGES", 5).ask(function() {
+      SelfPrims.setVariable("color", 55);
+      LinkPrims.createLinkFrom(world.turtleManager.getTurtleOfBreed("PAGES", 4), "LINKS").ask(function() {}, false);
+    }, true);
+    world.turtleManager.turtlesOfBreed("PAGES").agentFilter(function() {
+      return Prims.gt(SelfPrims.getVariable("who"), 5);
+    }).ask(function() {
+      SelfPrims.setVariable("color", 115);
+    }, true);
+  };
+  var createNetworkExample2 = function() {
+    world.turtleManager.createTurtles(8, "PAGES").ask(function() {}, true);
+    world.turtleManager.getTurtleOfBreed("PAGES", 0).ask(function() {
+      SelfPrims.die();
+    }, true);
+    world.turtleManager.getTurtleOfBreed("PAGES", 1).ask(function() {
+      LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 2), world.turtleManager.getTurtleOfBreed("PAGES", 3), world.turtleManager.getTurtleOfBreed("PAGES", 5), world.turtleManager.getTurtleOfBreed("PAGES", 6)), "LINKS").ask(function() {}, false);
+    }, true);
+    world.turtleManager.getTurtleOfBreed("PAGES", 2).ask(function() {
+      LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 1), world.turtleManager.getTurtleOfBreed("PAGES", 3), world.turtleManager.getTurtleOfBreed("PAGES", 4)), "LINKS").ask(function() {}, false);
+    }, true);
+    world.turtleManager.getTurtleOfBreed("PAGES", 3).ask(function() {
+      LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 1), world.turtleManager.getTurtleOfBreed("PAGES", 4), world.turtleManager.getTurtleOfBreed("PAGES", 5)), "LINKS").ask(function() {}, false);
+    }, true);
+    world.turtleManager.getTurtleOfBreed("PAGES", 4).ask(function() {
+      LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 1), world.turtleManager.getTurtleOfBreed("PAGES", 5)), "LINKS").ask(function() {}, false);
+    }, true);
+    world.turtleManager.getTurtleOfBreed("PAGES", 5).ask(function() {
+      LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 1), world.turtleManager.getTurtleOfBreed("PAGES", 4), world.turtleManager.getTurtleOfBreed("PAGES", 6), world.turtleManager.getTurtleOfBreed("PAGES", 7)), "LINKS").ask(function() {}, false);
+    }, true);
+    world.turtleManager.getTurtleOfBreed("PAGES", 6).ask(function() {
+      LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 5)), "LINKS").ask(function() {}, false);
+    }, true);
+    world.turtleManager.getTurtleOfBreed("PAGES", 7).ask(function() {
+      LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 1)), "LINKS").ask(function() {}, false);
+    }, true);
+  };
+  var createNetworkPreferential = function(n, k) {
+    world.turtleManager.createTurtles(n, "PAGES").ask(function() {
+      SelfPrims.setVariable("color", 95);
+    }, true);
+    Call(procedures.linkPreferentially, world.turtleManager.turtlesOfBreed("PAGES"), k);
+  };
+  var linkPreferentially = function(nodeset, k) {
+    var nodeList = ListPrims.sort(nodeset);
+    var neighborChoiceList = ListPrims.sublist(nodeList, 0, k);
+    ListPrims.item(k, nodeList).ask(function() {
+      Tasks.forEach(Tasks.commandTask(function() {
+        var taskArguments = arguments;
+        if (Prims.equality(Prims.random(2), 0)) {
+          LinkPrims.createLinkTo(taskArguments[0], "LINKS").ask(function() {}, false);
+        }
+        else {
+          LinkPrims.createLinkFrom(taskArguments[0], "LINKS").ask(function() {}, false);
+        }
+      }), neighborChoiceList);
       neighborChoiceList = ListPrims.sentence(Tasks.nValues(k, Tasks.reporterTask(function() {
         var taskArguments = arguments;
         return SelfManager.self();
       })), neighborChoiceList);
     }, true);
-  }), ListPrims.sublist(nodeList, (k + 1), ListPrims.length(nodeList)));
-}
-function doLayout() {
-  LayoutManager.layoutSpring(world.turtleManager.turtlesOfBreed("PAGES"), world.links(), 0.2, (20 / NLMath.sqrt(world.turtleManager.turtlesOfBreed("PAGES").size())), 0.5);
-}
-function go() {
-  if (Prims.equality(world.observer.getGlobal("calculation-method"), "diffusion")) {
-    if (world.turtleManager.turtlesOfBreed("SURFERS").nonEmpty()) {
-      world.turtleManager.turtlesOfBreed("SURFERS").ask(function() {
-        SelfPrims.die();
+    Tasks.forEach(Tasks.commandTask(function() {
+      var taskArguments = arguments;
+      taskArguments[0].ask(function() {
+        var tempNeighborList = neighborChoiceList;
+        for (var _index_3025_3031 = 0, _repeatcount_3025_3031 = StrictMath.floor(k); _index_3025_3031 < _repeatcount_3025_3031; _index_3025_3031++){
+          var neighbor = ListPrims.oneOf(tempNeighborList);
+          tempNeighborList = ListPrims.remove(neighbor, tempNeighborList);
+          neighborChoiceList = ListPrims.fput(neighbor, neighborChoiceList);
+          if (Prims.equality(Prims.random(2), 0)) {
+            LinkPrims.createLinkTo(neighbor, "LINKS").ask(function() {}, false);
+          }
+          else {
+            LinkPrims.createLinkFrom(neighbor, "LINKS").ask(function() {}, false);
+          }
+        }
+        neighborChoiceList = ListPrims.sentence(Tasks.nValues(k, Tasks.reporterTask(function() {
+          var taskArguments = arguments;
+          return SelfManager.self();
+        })), neighborChoiceList);
+      }, true);
+    }), ListPrims.sublist(nodeList, (k + 1), ListPrims.length(nodeList)));
+  };
+  var doLayout = function() {
+    LayoutManager.layoutSpring(world.turtleManager.turtlesOfBreed("PAGES"), world.links(), 0.2, (20 / NLMath.sqrt(world.turtleManager.turtlesOfBreed("PAGES").size())), 0.5);
+  };
+  var go = function() {
+    if (Prims.equality(world.observer.getGlobal("calculation-method"), "diffusion")) {
+      if (world.turtleManager.turtlesOfBreed("SURFERS").nonEmpty()) {
+        world.turtleManager.turtlesOfBreed("SURFERS").ask(function() {
+          SelfPrims.die();
+        }, true);
+      }
+      world.links().ask(function() {
+        SelfPrims.setVariable("color", 5);
+        SelfPrims.setVariable("thickness", 0);
+      }, true);
+      world.turtleManager.turtlesOfBreed("PAGES").ask(function() {
+        SelfPrims.setVariable("new-rank", 0);
+      }, true);
+      world.turtleManager.turtlesOfBreed("PAGES").ask(function() {
+        if (LinkPrims.outLinkNeighbors("LINKS").nonEmpty()) {
+          var rankIncrement = (SelfPrims.getVariable("rank") / LinkPrims.outLinkNeighbors("LINKS").size());
+          LinkPrims.outLinkNeighbors("LINKS").ask(function() {
+            SelfPrims.setVariable("new-rank", (SelfPrims.getVariable("new-rank") + rankIncrement));
+          }, true);
+        }
+        else {
+          var rankIncrement = (SelfPrims.getVariable("rank") / world.turtleManager.turtlesOfBreed("PAGES").size());
+          world.turtleManager.turtlesOfBreed("PAGES").ask(function() {
+            SelfPrims.setVariable("new-rank", (SelfPrims.getVariable("new-rank") + rankIncrement));
+          }, true);
+        }
+      }, true);
+      world.turtleManager.turtlesOfBreed("PAGES").ask(function() {
+        SelfPrims.setVariable("rank", (((1 - world.observer.getGlobal("damping-factor")) / world.turtleManager.turtlesOfBreed("PAGES").size()) + (world.observer.getGlobal("damping-factor") * SelfPrims.getVariable("new-rank"))));
       }, true);
     }
-    world.links().ask(function() {
-      SelfPrims.setVariable("color", 5);
-      SelfPrims.setVariable("thickness", 0);
-    }, true);
-    world.turtleManager.turtlesOfBreed("PAGES").ask(function() {
-      SelfPrims.setVariable("new-rank", 0);
-    }, true);
-    world.turtleManager.turtlesOfBreed("PAGES").ask(function() {
-      if (LinkPrims.outLinkNeighbors("LINKS").nonEmpty()) {
-        var rankIncrement = (SelfPrims.getVariable("rank") / LinkPrims.outLinkNeighbors("LINKS").size());
-        LinkPrims.outLinkNeighbors("LINKS").ask(function() {
-          SelfPrims.setVariable("new-rank", (SelfPrims.getVariable("new-rank") + rankIncrement));
+    else {
+      if (Prims.lt(world.turtleManager.turtlesOfBreed("SURFERS").size(), world.observer.getGlobal("number-of-surfers"))) {
+        world.turtleManager.createTurtles((world.observer.getGlobal("number-of-surfers") - world.turtleManager.turtlesOfBreed("SURFERS").size()), "SURFERS").ask(function() {
+          SelfPrims.setVariable("current-page", ListPrims.oneOf(world.turtleManager.turtlesOfBreed("PAGES")));
+          if (world.observer.getGlobal("watch-surfers?")) {
+            Call(procedures.moveSurfer);
+          }
+          else {
+            SelfManager.self().hideTurtle(true);;
+          }
         }, true);
       }
-      else {
-        var rankIncrement = (SelfPrims.getVariable("rank") / world.turtleManager.turtlesOfBreed("PAGES").size());
-        world.turtleManager.turtlesOfBreed("PAGES").ask(function() {
-          SelfPrims.setVariable("new-rank", (SelfPrims.getVariable("new-rank") + rankIncrement));
+      if (Prims.gt(world.turtleManager.turtlesOfBreed("SURFERS").size(), world.observer.getGlobal("number-of-surfers"))) {
+        ListPrims.nOf((world.turtleManager.turtlesOfBreed("SURFERS").size() - world.observer.getGlobal("number-of-surfers")), world.turtleManager.turtlesOfBreed("SURFERS")).ask(function() {
+          SelfPrims.die();
         }, true);
       }
-    }, true);
-    world.turtleManager.turtlesOfBreed("PAGES").ask(function() {
-      SelfPrims.setVariable("rank", (((1 - world.observer.getGlobal("damping-factor")) / world.turtleManager.turtlesOfBreed("PAGES").size()) + (world.observer.getGlobal("damping-factor") * SelfPrims.getVariable("new-rank"))));
-    }, true);
-  }
-  else {
-    if (Prims.lt(world.turtleManager.turtlesOfBreed("SURFERS").size(), world.observer.getGlobal("number-of-surfers"))) {
-      world.turtleManager.createTurtles((world.observer.getGlobal("number-of-surfers") - world.turtleManager.turtlesOfBreed("SURFERS").size()), "SURFERS").ask(function() {
-        SelfPrims.setVariable("current-page", ListPrims.oneOf(world.turtleManager.turtlesOfBreed("PAGES")));
+      world.links().ask(function() {
+        SelfPrims.setVariable("color", 5);
+        SelfPrims.setVariable("thickness", 0);
+      }, true);
+      world.turtleManager.turtlesOfBreed("SURFERS").ask(function() {
+        var oldPage = SelfPrims.getVariable("current-page");
+        SelfPrims.getVariable("current-page").ask(function() {
+          SelfPrims.setVariable("visits", (SelfPrims.getVariable("visits") + 1));
+        }, true);
+        if ((Prims.lte(Prims.randomFloat(1), world.observer.getGlobal("damping-factor")) && SelfPrims.getVariable("current-page").projectionBy(function() {
+          return LinkPrims.myOutLinks("LINKS");
+        }).nonEmpty())) {
+          SelfPrims.setVariable("current-page", ListPrims.oneOf(SelfPrims.getVariable("current-page").projectionBy(function() {
+            return LinkPrims.outLinkNeighbors("LINKS");
+          })));
+        }
+        else {
+          SelfPrims.setVariable("current-page", ListPrims.oneOf(world.turtleManager.turtlesOfBreed("PAGES")));
+        }
         if (world.observer.getGlobal("watch-surfers?")) {
-          Call(moveSurfer);
+          SelfManager.self().hideTurtle(false);;
+          Call(procedures.moveSurfer);
+          var surferColor = SelfPrims.getVariable("color");
+          oldPage.ask(function() {
+            var traveledLink = LinkPrims.outLinkTo("LINKS", SelfManager.myself().projectionBy(function() {
+              return SelfPrims.getVariable("current-page");
+            }));
+            if (!Prims.equality(traveledLink, Nobody)) {
+              traveledLink.ask(function() {
+                SelfPrims.setVariable("color", surferColor);
+                SelfPrims.setVariable("thickness", 0.08);
+              }, true);
+            }
+          }, true);
         }
         else {
           SelfManager.self().hideTurtle(true);;
         }
       }, true);
-    }
-    if (Prims.gt(world.turtleManager.turtlesOfBreed("SURFERS").size(), world.observer.getGlobal("number-of-surfers"))) {
-      ListPrims.nOf((world.turtleManager.turtlesOfBreed("SURFERS").size() - world.observer.getGlobal("number-of-surfers")), world.turtleManager.turtlesOfBreed("SURFERS")).ask(function() {
-        SelfPrims.die();
+      var totalVisits = ListPrims.sum(world.turtleManager.turtlesOfBreed("PAGES").projectionBy(function() {
+        return SelfPrims.getVariable("visits");
+      }));
+      world.turtleManager.turtlesOfBreed("PAGES").ask(function() {
+        SelfPrims.setVariable("rank", (SelfPrims.getVariable("visits") / totalVisits));
       }, true);
     }
-    world.links().ask(function() {
-      SelfPrims.setVariable("color", 5);
-      SelfPrims.setVariable("thickness", 0);
-    }, true);
-    world.turtleManager.turtlesOfBreed("SURFERS").ask(function() {
-      var oldPage = SelfPrims.getVariable("current-page");
-      SelfPrims.getVariable("current-page").ask(function() {
-        SelfPrims.setVariable("visits", (SelfPrims.getVariable("visits") + 1));
-      }, true);
-      if ((Prims.lte(Prims.randomFloat(1), world.observer.getGlobal("damping-factor")) && SelfPrims.getVariable("current-page").projectionBy(function() {
-        return LinkPrims.myOutLinks("LINKS");
-      }).nonEmpty())) {
-        SelfPrims.setVariable("current-page", ListPrims.oneOf(SelfPrims.getVariable("current-page").projectionBy(function() {
-          return LinkPrims.outLinkNeighbors("LINKS");
-        })));
-      }
-      else {
-        SelfPrims.setVariable("current-page", ListPrims.oneOf(world.turtleManager.turtlesOfBreed("PAGES")));
-      }
-      if (world.observer.getGlobal("watch-surfers?")) {
-        SelfManager.self().hideTurtle(false);;
-        Call(moveSurfer);
-        var surferColor = SelfPrims.getVariable("color");
-        oldPage.ask(function() {
-          var traveledLink = LinkPrims.outLinkTo("LINKS", SelfManager.myself().projectionBy(function() {
-            return SelfPrims.getVariable("current-page");
-          }));
-          if (!Prims.equality(traveledLink, Nobody)) {
-            traveledLink.ask(function() {
-              SelfPrims.setVariable("color", surferColor);
-              SelfPrims.setVariable("thickness", 0.08);
-            }, true);
-          }
-        }, true);
-      }
-      else {
-        SelfManager.self().hideTurtle(true);;
-      }
-    }, true);
-    var totalVisits = ListPrims.sum(world.turtleManager.turtlesOfBreed("PAGES").projectionBy(function() {
-      return SelfPrims.getVariable("visits");
-    }));
+    Call(procedures.updateGlobals);
     world.turtleManager.turtlesOfBreed("PAGES").ask(function() {
-      SelfPrims.setVariable("rank", (SelfPrims.getVariable("visits") / totalVisits));
+      Call(procedures.updatePageAppearance);
     }, true);
-  }
-  Call(updateGlobals);
-  world.turtleManager.turtlesOfBreed("PAGES").ask(function() {
-    Call(updatePageAppearance);
-  }, true);
-  world.ticker.tick();
-}
-function moveSurfer() {
-  SelfManager.self().face(SelfPrims.getVariable("current-page"));
-  SelfManager.self().moveTo(SelfPrims.getVariable("current-page"));
-}
-function updateGlobals() {
-  world.observer.setGlobal("total-rank", ListPrims.sum(world.turtleManager.turtlesOfBreed("PAGES").projectionBy(function() {
-    return SelfPrims.getVariable("rank");
-  })));
-  world.observer.setGlobal("max-rank", ListPrims.max(world.turtleManager.turtlesOfBreed("PAGES").projectionBy(function() {
-    return SelfPrims.getVariable("rank");
-  })));
-}
-function updatePageAppearance() {
-  SelfPrims.setVariable("size", (0.2 + (4 * NLMath.sqrt((SelfPrims.getVariable("rank") / world.observer.getGlobal("total-rank"))))));
-  if (world.observer.getGlobal("show-page-ranks?")) {
-    SelfPrims.setVariable("label", (Dump('') + Dump(NLMath.precision(SelfPrims.getVariable("rank"), 3)) + Dump("     ")));
-  }
-  else {
-    SelfPrims.setVariable("label", "");
-  }
-}
+    world.ticker.tick();
+  };
+  var moveSurfer = function() {
+    SelfManager.self().face(SelfPrims.getVariable("current-page"));
+    SelfManager.self().moveTo(SelfPrims.getVariable("current-page"));
+  };
+  var updateGlobals = function() {
+    world.observer.setGlobal("total-rank", ListPrims.sum(world.turtleManager.turtlesOfBreed("PAGES").projectionBy(function() {
+      return SelfPrims.getVariable("rank");
+    })));
+    world.observer.setGlobal("max-rank", ListPrims.max(world.turtleManager.turtlesOfBreed("PAGES").projectionBy(function() {
+      return SelfPrims.getVariable("rank");
+    })));
+  };
+  var updatePageAppearance = function() {
+    SelfPrims.setVariable("size", (0.2 + (4 * NLMath.sqrt((SelfPrims.getVariable("rank") / world.observer.getGlobal("total-rank"))))));
+    if (world.observer.getGlobal("show-page-ranks?")) {
+      SelfPrims.setVariable("label", (Dump('') + Dump(NLMath.precision(SelfPrims.getVariable("rank"), 3)) + Dump("     ")));
+    }
+    else {
+      SelfPrims.setVariable("label", "");
+    }
+  };
+  return {
+    "CREATE-NETWORK-EXAMPLE-1":createNetworkExample1,
+    "CREATE-NETWORK-EXAMPLE-2":createNetworkExample2,
+    "CREATE-NETWORK-PREFERENTIAL":createNetworkPreferential,
+    "DO-LAYOUT":doLayout,
+    "GO":go,
+    "LINK-PREFERENTIALLY":linkPreferentially,
+    "MOVE-SURFER":moveSurfer,
+    "SETUP":setup,
+    "UPDATE-GLOBALS":updateGlobals,
+    "UPDATE-PAGE-APPEARANCE":updatePageAppearance,
+    "createNetworkExample1":createNetworkExample1,
+    "createNetworkExample2":createNetworkExample2,
+    "createNetworkPreferential":createNetworkPreferential,
+    "doLayout":doLayout,
+    "go":go,
+    "linkPreferentially":linkPreferentially,
+    "moveSurfer":moveSurfer,
+    "setup":setup,
+    "updateGlobals":updateGlobals,
+    "updatePageAppearance":updatePageAppearance
+  };
+})();
 world.observer.setGlobal("damping-factor", 0.85);
 world.observer.setGlobal("calculation-method", "random-surfer");
 world.observer.setGlobal("watch-surfers?", true);

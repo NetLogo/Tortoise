@@ -80,7 +80,9 @@ trait ReporterPrims extends PrimUtils {
       case p: prim._const                 => handlers.literal(p.value)
       case lv: prim._letvariable          => handlers.ident(lv.let.name)
       case pv: prim._procedurevariable    => handlers.ident(pv.name)
-      case call: prim._callreport         => (handlers.ident(call.name) +: args).mkString("Call(", ", ", ")")
+      case call: prim._callreport         =>
+        (handlers.ident(call.name) +: args)
+          .mkString("Call(procedures.", ", ", ")")
 
       // Blarg
       case _: prim._unaryminus         => s" -${arg(0)}" // The space is important, because these can be nested --JAB (6/12/14)
@@ -196,7 +198,7 @@ trait CommandPrims extends PrimUtils {
       case _: prim.etc._showlink         => "SelfPrims.setVariable('hidden?', false)"
       case call: prim._call              =>
         (handlers.ident(call.name) +: args)
-          .mkString("Call(", ", ", ");")
+          .mkString("Call(procedures.", ", ", ");")
       case _: prim.etc._report           => s"return ${arg(0)};"
       case _: prim.etc._ignore           => s"${arg(0)};"
       case l: prim._let                  =>

@@ -57,74 +57,94 @@ var AgentModel = tortoise_require('agentmodel');
 var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
-function setup() {
-  world.clearAll();
-  Call(growGrassAndWeeds);
-  BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("RABBITS").getBreedName(), "rabbit")
-  world.turtleManager.createTurtles(world.observer.getGlobal("number"), "RABBITS").ask(function() {
-    SelfPrims.setVariable("color", 9.9);
-    SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
-    SelfPrims.setVariable("energy", Prims.random(10));
-  }, true);
-  world.ticker.reset();
-}
-function go() {
-  if (!world.turtleManager.turtlesOfBreed("RABBITS").nonEmpty()) {
-    throw new Exception.StopInterrupt;
-  }
-  Call(growGrassAndWeeds);
-  world.turtleManager.turtlesOfBreed("RABBITS").ask(function() {
-    Call(move);
-    Call(eatGrass);
-    Call(eatWeeds);
-    Call(reproduce);
-    Call(death);
-  }, true);
-  world.ticker.tick();
-}
-function growGrassAndWeeds() {
-  world.patches().ask(function() {
-    if (Prims.equality(SelfPrims.getPatchVariable("pcolor"), 0)) {
-      if (Prims.lt(Prims.randomFloat(1000), world.observer.getGlobal("weeds-grow-rate"))) {
-        SelfPrims.setPatchVariable("pcolor", 115);
-      }
-      if (Prims.lt(Prims.randomFloat(1000), world.observer.getGlobal("grass-grow-rate"))) {
-        SelfPrims.setPatchVariable("pcolor", 55);
-      }
-    }
-  }, true);
-}
-function move() {
-  SelfPrims.right(Prims.random(50));
-  SelfPrims.left(Prims.random(50));
-  SelfPrims.fd(1);
-  SelfPrims.setVariable("energy", (SelfPrims.getVariable("energy") - 0.5));
-}
-function eatGrass() {
-  if (Prims.equality(SelfPrims.getPatchVariable("pcolor"), 55)) {
-    SelfPrims.setPatchVariable("pcolor", 0);
-    SelfPrims.setVariable("energy", (SelfPrims.getVariable("energy") + world.observer.getGlobal("grass-energy")));
-  }
-}
-function eatWeeds() {
-  if (Prims.equality(SelfPrims.getPatchVariable("pcolor"), 115)) {
-    SelfPrims.setPatchVariable("pcolor", 0);
-    SelfPrims.setVariable("energy", (SelfPrims.getVariable("energy") + world.observer.getGlobal("weed-energy")));
-  }
-}
-function reproduce() {
-  if (Prims.gt(SelfPrims.getVariable("energy"), world.observer.getGlobal("birth-threshold"))) {
-    SelfPrims.setVariable("energy", (SelfPrims.getVariable("energy") / 2));
-    SelfPrims.hatch(1, "").ask(function() {
-      SelfPrims.fd(1);
+var procedures = (function() {
+  var setup = function() {
+    world.clearAll();
+    Call(procedures.growGrassAndWeeds);
+    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("RABBITS").getBreedName(), "rabbit")
+    world.turtleManager.createTurtles(world.observer.getGlobal("number"), "RABBITS").ask(function() {
+      SelfPrims.setVariable("color", 9.9);
+      SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
+      SelfPrims.setVariable("energy", Prims.random(10));
     }, true);
-  }
-}
-function death() {
-  if (Prims.lt(SelfPrims.getVariable("energy"), 0)) {
-    SelfPrims.die();
-  }
-}
+    world.ticker.reset();
+  };
+  var go = function() {
+    if (!world.turtleManager.turtlesOfBreed("RABBITS").nonEmpty()) {
+      throw new Exception.StopInterrupt;
+    }
+    Call(procedures.growGrassAndWeeds);
+    world.turtleManager.turtlesOfBreed("RABBITS").ask(function() {
+      Call(procedures.move);
+      Call(procedures.eatGrass);
+      Call(procedures.eatWeeds);
+      Call(procedures.reproduce);
+      Call(procedures.death);
+    }, true);
+    world.ticker.tick();
+  };
+  var growGrassAndWeeds = function() {
+    world.patches().ask(function() {
+      if (Prims.equality(SelfPrims.getPatchVariable("pcolor"), 0)) {
+        if (Prims.lt(Prims.randomFloat(1000), world.observer.getGlobal("weeds-grow-rate"))) {
+          SelfPrims.setPatchVariable("pcolor", 115);
+        }
+        if (Prims.lt(Prims.randomFloat(1000), world.observer.getGlobal("grass-grow-rate"))) {
+          SelfPrims.setPatchVariable("pcolor", 55);
+        }
+      }
+    }, true);
+  };
+  var move = function() {
+    SelfPrims.right(Prims.random(50));
+    SelfPrims.left(Prims.random(50));
+    SelfPrims.fd(1);
+    SelfPrims.setVariable("energy", (SelfPrims.getVariable("energy") - 0.5));
+  };
+  var eatGrass = function() {
+    if (Prims.equality(SelfPrims.getPatchVariable("pcolor"), 55)) {
+      SelfPrims.setPatchVariable("pcolor", 0);
+      SelfPrims.setVariable("energy", (SelfPrims.getVariable("energy") + world.observer.getGlobal("grass-energy")));
+    }
+  };
+  var eatWeeds = function() {
+    if (Prims.equality(SelfPrims.getPatchVariable("pcolor"), 115)) {
+      SelfPrims.setPatchVariable("pcolor", 0);
+      SelfPrims.setVariable("energy", (SelfPrims.getVariable("energy") + world.observer.getGlobal("weed-energy")));
+    }
+  };
+  var reproduce = function() {
+    if (Prims.gt(SelfPrims.getVariable("energy"), world.observer.getGlobal("birth-threshold"))) {
+      SelfPrims.setVariable("energy", (SelfPrims.getVariable("energy") / 2));
+      SelfPrims.hatch(1, "").ask(function() {
+        SelfPrims.fd(1);
+      }, true);
+    }
+  };
+  var death = function() {
+    if (Prims.lt(SelfPrims.getVariable("energy"), 0)) {
+      SelfPrims.die();
+    }
+  };
+  return {
+    "DEATH":death,
+    "EAT-GRASS":eatGrass,
+    "EAT-WEEDS":eatWeeds,
+    "GO":go,
+    "GROW-GRASS-AND-WEEDS":growGrassAndWeeds,
+    "MOVE":move,
+    "REPRODUCE":reproduce,
+    "SETUP":setup,
+    "death":death,
+    "eatGrass":eatGrass,
+    "eatWeeds":eatWeeds,
+    "go":go,
+    "growGrassAndWeeds":growGrassAndWeeds,
+    "move":move,
+    "reproduce":reproduce,
+    "setup":setup
+  };
+})();
 world.observer.setGlobal("grass-grow-rate", 15);
 world.observer.setGlobal("weeds-grow-rate", 0);
 world.observer.setGlobal("grass-energy", 5);

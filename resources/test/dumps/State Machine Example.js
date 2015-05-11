@@ -44,79 +44,97 @@ var AgentModel = tortoise_require('agentmodel');
 var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
-function setup() {
-  world.clearAll();
-  BreedManager.setDefaultShape(world.turtles().getBreedName(), "bug")
-  world.patches().ask(function() {
-    if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("density"))) {
+var procedures = (function() {
+  var setup = function() {
+    world.clearAll();
+    BreedManager.setDefaultShape(world.turtles().getBreedName(), "bug")
+    world.patches().ask(function() {
+      if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("density"))) {
+        SelfPrims.setPatchVariable("pcolor", 45);
+      }
+    }, true);
+    world.turtleManager.createTurtles(world.observer.getGlobal("number"), "").ask(function() {
+      SelfPrims.setVariable("color", 9.9);
+      SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
+      SelfPrims.setVariable("next-task", Tasks.commandTask(function() {
+        var taskArguments = arguments;
+        Call(procedures.searchForChip);
+      }));
+      SelfPrims.setVariable("size", 5);
+    }, true);
+    world.ticker.reset();
+  };
+  var go = function() {
+    world.turtles().ask(function() {
+      if (Prims.gt(SelfPrims.getVariable("steps"), 0)) {
+        SelfPrims.setVariable("steps", (SelfPrims.getVariable("steps") - 1));
+      }
+      else {
+        (SelfPrims.getVariable("next-task"))();
+        Call(procedures.wiggle);
+      }
+      SelfPrims.fd(1);
+    }, true);
+    world.ticker.tick();
+  };
+  var wiggle = function() {
+    SelfPrims.right(Prims.random(50));
+    SelfPrims.left(Prims.random(50));
+  };
+  var searchForChip = function() {
+    if (Prims.equality(SelfPrims.getPatchVariable("pcolor"), 45)) {
+      SelfPrims.setPatchVariable("pcolor", 0);
+      SelfPrims.setVariable("color", 25);
+      SelfPrims.setVariable("steps", 20);
+      SelfPrims.setVariable("next-task", Tasks.commandTask(function() {
+        var taskArguments = arguments;
+        Call(procedures.findNewPile);
+      }));
+    }
+  };
+  var findNewPile = function() {
+    if (Prims.equality(SelfPrims.getPatchVariable("pcolor"), 45)) {
+      SelfPrims.setVariable("next-task", Tasks.commandTask(function() {
+        var taskArguments = arguments;
+        Call(procedures.putDownChip);
+      }));
+    }
+  };
+  var putDownChip = function() {
+    if (Prims.equality(SelfPrims.getPatchVariable("pcolor"), 0)) {
       SelfPrims.setPatchVariable("pcolor", 45);
+      SelfPrims.setVariable("color", 9.9);
+      SelfPrims.setVariable("steps", 20);
+      SelfPrims.setVariable("next-task", Tasks.commandTask(function() {
+        var taskArguments = arguments;
+        Call(procedures.getAway);
+      }));
     }
-  }, true);
-  world.turtleManager.createTurtles(world.observer.getGlobal("number"), "").ask(function() {
-    SelfPrims.setVariable("color", 9.9);
-    SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
-    SelfPrims.setVariable("next-task", Tasks.commandTask(function() {
-      var taskArguments = arguments;
-      Call(searchForChip);
-    }));
-    SelfPrims.setVariable("size", 5);
-  }, true);
-  world.ticker.reset();
-}
-function go() {
-  world.turtles().ask(function() {
-    if (Prims.gt(SelfPrims.getVariable("steps"), 0)) {
-      SelfPrims.setVariable("steps", (SelfPrims.getVariable("steps") - 1));
+  };
+  var getAway = function() {
+    if (Prims.equality(SelfPrims.getPatchVariable("pcolor"), 0)) {
+      SelfPrims.setVariable("next-task", Tasks.commandTask(function() {
+        var taskArguments = arguments;
+        Call(procedures.searchForChip);
+      }));
     }
-    else {
-      (SelfPrims.getVariable("next-task"))();
-      Call(wiggle);
-    }
-    SelfPrims.fd(1);
-  }, true);
-  world.ticker.tick();
-}
-function wiggle() {
-  SelfPrims.right(Prims.random(50));
-  SelfPrims.left(Prims.random(50));
-}
-function searchForChip() {
-  if (Prims.equality(SelfPrims.getPatchVariable("pcolor"), 45)) {
-    SelfPrims.setPatchVariable("pcolor", 0);
-    SelfPrims.setVariable("color", 25);
-    SelfPrims.setVariable("steps", 20);
-    SelfPrims.setVariable("next-task", Tasks.commandTask(function() {
-      var taskArguments = arguments;
-      Call(findNewPile);
-    }));
-  }
-}
-function findNewPile() {
-  if (Prims.equality(SelfPrims.getPatchVariable("pcolor"), 45)) {
-    SelfPrims.setVariable("next-task", Tasks.commandTask(function() {
-      var taskArguments = arguments;
-      Call(putDownChip);
-    }));
-  }
-}
-function putDownChip() {
-  if (Prims.equality(SelfPrims.getPatchVariable("pcolor"), 0)) {
-    SelfPrims.setPatchVariable("pcolor", 45);
-    SelfPrims.setVariable("color", 9.9);
-    SelfPrims.setVariable("steps", 20);
-    SelfPrims.setVariable("next-task", Tasks.commandTask(function() {
-      var taskArguments = arguments;
-      Call(getAway);
-    }));
-  }
-}
-function getAway() {
-  if (Prims.equality(SelfPrims.getPatchVariable("pcolor"), 0)) {
-    SelfPrims.setVariable("next-task", Tasks.commandTask(function() {
-      var taskArguments = arguments;
-      Call(searchForChip);
-    }));
-  }
-}
+  };
+  return {
+    "FIND-NEW-PILE":findNewPile,
+    "GET-AWAY":getAway,
+    "GO":go,
+    "PUT-DOWN-CHIP":putDownChip,
+    "SEARCH-FOR-CHIP":searchForChip,
+    "SETUP":setup,
+    "WIGGLE":wiggle,
+    "findNewPile":findNewPile,
+    "getAway":getAway,
+    "go":go,
+    "putDownChip":putDownChip,
+    "searchForChip":searchForChip,
+    "setup":setup,
+    "wiggle":wiggle
+  };
+})();
 world.observer.setGlobal("number", 400);
 world.observer.setGlobal("density", 20);

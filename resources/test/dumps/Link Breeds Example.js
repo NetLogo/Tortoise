@@ -44,23 +44,29 @@ var AgentModel = tortoise_require('agentmodel');
 var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
-function setup() {
-  world.clearAll();
-  world.turtleManager.createOrderedTurtles(10, "").ask(function() {
-    SelfPrims.fd(5);
-    SelfPrims.setVariable("color", 5);
-  }, true);
-  ListPrims.nOf(5, world.turtles()).ask(function() {
-    LinkPrims.createLinkWith(ListPrims.oneOf(SelfPrims.other(world.turtles())), "BLUE-LINKS").ask(function() {
-      SelfPrims.setVariable("color", 105);
-      SelfPrims.setVariable("weight", Prims.random(10));
-      SelfPrims.setVariable("label", SelfPrims.getVariable("weight"));
+var procedures = (function() {
+  var setup = function() {
+    world.clearAll();
+    world.turtleManager.createOrderedTurtles(10, "").ask(function() {
+      SelfPrims.fd(5);
+      SelfPrims.setVariable("color", 5);
     }, true);
-  }, true);
-  BreedManager.setDefaultShape(world.linkManager.linksOfBreed("RED-LINKS").getBreedName(), "curved link")
-  ListPrims.nOf(5, world.turtles()).ask(function() {
-    LinkPrims.createLinkTo(ListPrims.oneOf(SelfPrims.other(world.turtles())), "RED-LINKS").ask(function() {
-      SelfPrims.setVariable("color", 15);
+    ListPrims.nOf(5, world.turtles()).ask(function() {
+      LinkPrims.createLinkWith(ListPrims.oneOf(SelfPrims.other(world.turtles())), "BLUE-LINKS").ask(function() {
+        SelfPrims.setVariable("color", 105);
+        SelfPrims.setVariable("weight", Prims.random(10));
+        SelfPrims.setVariable("label", SelfPrims.getVariable("weight"));
+      }, true);
     }, true);
-  }, true);
-}
+    BreedManager.setDefaultShape(world.linkManager.linksOfBreed("RED-LINKS").getBreedName(), "curved link")
+    ListPrims.nOf(5, world.turtles()).ask(function() {
+      LinkPrims.createLinkTo(ListPrims.oneOf(SelfPrims.other(world.turtles())), "RED-LINKS").ask(function() {
+        SelfPrims.setVariable("color", 15);
+      }, true);
+    }, true);
+  };
+  return {
+    "SETUP":setup,
+    "setup":setup
+  };
+})();

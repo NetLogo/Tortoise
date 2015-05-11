@@ -44,106 +44,136 @@ var AgentModel = tortoise_require('agentmodel');
 var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
-function setup() {
-  world.clearAll();
-  world.turtleManager.createTurtles(world.observer.getGlobal("population"), "").ask(function() {
-    SelfPrims.setVariable("color", ((45 - 2) + Prims.random(7)));
-    SelfPrims.setVariable("size", 1.5);
-    SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
-  }, true);
-  world.ticker.reset();
-}
-function go() {
-  world.turtles().ask(function() {
-    Call(flock);
-  }, true);
-  for (var _index_432_438 = 0, _repeatcount_432_438 = StrictMath.floor(5); _index_432_438 < _repeatcount_432_438; _index_432_438++){
-    world.turtles().ask(function() {
-      SelfPrims.fd(0.2);
+var procedures = (function() {
+  var setup = function() {
+    world.clearAll();
+    world.turtleManager.createTurtles(world.observer.getGlobal("population"), "").ask(function() {
+      SelfPrims.setVariable("color", ((45 - 2) + Prims.random(7)));
+      SelfPrims.setVariable("size", 1.5);
+      SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
     }, true);
-    notImplemented('display', undefined)();
-  }
-  world.ticker.tick();
-}
-function flock() {
-  Call(findFlockmates);
-  if (SelfPrims.getVariable("flockmates").nonEmpty()) {
-    Call(findNearestNeighbor);
-    if (Prims.lt(SelfManager.self().distance(SelfPrims.getVariable("nearest-neighbor")), world.observer.getGlobal("minimum-separation"))) {
-      Call(separate);
+    world.ticker.reset();
+  };
+  var go = function() {
+    world.turtles().ask(function() {
+      Call(procedures.flock);
+    }, true);
+    for (var _index_432_438 = 0, _repeatcount_432_438 = StrictMath.floor(5); _index_432_438 < _repeatcount_432_438; _index_432_438++){
+      world.turtles().ask(function() {
+        SelfPrims.fd(0.2);
+      }, true);
+      notImplemented('display', undefined)();
+    }
+    world.ticker.tick();
+  };
+  var flock = function() {
+    Call(procedures.findFlockmates);
+    if (SelfPrims.getVariable("flockmates").nonEmpty()) {
+      Call(procedures.findNearestNeighbor);
+      if (Prims.lt(SelfManager.self().distance(SelfPrims.getVariable("nearest-neighbor")), world.observer.getGlobal("minimum-separation"))) {
+        Call(procedures.separate);
+      }
+      else {
+        Call(procedures.align);
+        Call(procedures.cohere);
+      }
+    }
+  };
+  var findFlockmates = function() {
+    SelfPrims.setVariable("flockmates", SelfPrims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("vision"))));
+  };
+  var findNearestNeighbor = function() {
+    SelfPrims.setVariable("nearest-neighbor", SelfPrims.getVariable("flockmates").minOneOf(function() {
+      return SelfManager.self().distance(SelfManager.myself());
+    }));
+  };
+  var separate = function() {
+    Call(procedures.turnAway, SelfPrims.getVariable("nearest-neighbor").projectionBy(function() {
+      return SelfPrims.getVariable("heading");
+    }), world.observer.getGlobal("max-separate-turn"));
+  };
+  var align = function() {
+    Call(procedures.turnTowards, Call(procedures.averageFlockmateHeading), world.observer.getGlobal("max-align-turn"));
+  };
+  var averageFlockmateHeading = function() {
+    var xComponent = ListPrims.sum(SelfPrims.getVariable("flockmates").projectionBy(function() {
+      return SelfManager.self().dx();
+    }));
+    var yComponent = ListPrims.sum(SelfPrims.getVariable("flockmates").projectionBy(function() {
+      return SelfManager.self().dy();
+    }));
+    if ((Prims.equality(xComponent, 0) && Prims.equality(yComponent, 0))) {
+      return SelfPrims.getVariable("heading");
     }
     else {
-      Call(align);
-      Call(cohere);
+      return NLMath.atan(xComponent, yComponent);
     }
-  }
-}
-function findFlockmates() {
-  SelfPrims.setVariable("flockmates", SelfPrims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("vision"))));
-}
-function findNearestNeighbor() {
-  SelfPrims.setVariable("nearest-neighbor", SelfPrims.getVariable("flockmates").minOneOf(function() {
-    return SelfManager.self().distance(SelfManager.myself());
-  }));
-}
-function separate() {
-  Call(turnAway, SelfPrims.getVariable("nearest-neighbor").projectionBy(function() {
-    return SelfPrims.getVariable("heading");
-  }), world.observer.getGlobal("max-separate-turn"));
-}
-function align() {
-  Call(turnTowards, Call(averageFlockmateHeading), world.observer.getGlobal("max-align-turn"));
-}
-function averageFlockmateHeading() {
-  var xComponent = ListPrims.sum(SelfPrims.getVariable("flockmates").projectionBy(function() {
-    return SelfManager.self().dx();
-  }));
-  var yComponent = ListPrims.sum(SelfPrims.getVariable("flockmates").projectionBy(function() {
-    return SelfManager.self().dy();
-  }));
-  if ((Prims.equality(xComponent, 0) && Prims.equality(yComponent, 0))) {
-    return SelfPrims.getVariable("heading");
-  }
-  else {
-    return NLMath.atan(xComponent, yComponent);
-  }
-}
-function cohere() {
-  Call(turnTowards, Call(averageHeadingTowardsFlockmates), world.observer.getGlobal("max-cohere-turn"));
-}
-function averageHeadingTowardsFlockmates() {
-  var xComponent = ListPrims.mean(SelfPrims.getVariable("flockmates").projectionBy(function() {
-    return NLMath.sin((SelfManager.self().towards(SelfManager.myself()) + 180));
-  }));
-  var yComponent = ListPrims.mean(SelfPrims.getVariable("flockmates").projectionBy(function() {
-    return NLMath.cos((SelfManager.self().towards(SelfManager.myself()) + 180));
-  }));
-  if ((Prims.equality(xComponent, 0) && Prims.equality(yComponent, 0))) {
-    return SelfPrims.getVariable("heading");
-  }
-  else {
-    return NLMath.atan(xComponent, yComponent);
-  }
-}
-function turnTowards(newHeading, maxTurn) {
-  Call(turnAtMost, NLMath.subtractHeadings(newHeading, SelfPrims.getVariable("heading")), maxTurn);
-}
-function turnAway(newHeading, maxTurn) {
-  Call(turnAtMost, NLMath.subtractHeadings(SelfPrims.getVariable("heading"), newHeading), maxTurn);
-}
-function turnAtMost(turn, maxTurn) {
-  if (Prims.gt(NLMath.abs(turn), maxTurn)) {
-    if (Prims.gt(turn, 0)) {
-      SelfPrims.right(maxTurn);
+  };
+  var cohere = function() {
+    Call(procedures.turnTowards, Call(procedures.averageHeadingTowardsFlockmates), world.observer.getGlobal("max-cohere-turn"));
+  };
+  var averageHeadingTowardsFlockmates = function() {
+    var xComponent = ListPrims.mean(SelfPrims.getVariable("flockmates").projectionBy(function() {
+      return NLMath.sin((SelfManager.self().towards(SelfManager.myself()) + 180));
+    }));
+    var yComponent = ListPrims.mean(SelfPrims.getVariable("flockmates").projectionBy(function() {
+      return NLMath.cos((SelfManager.self().towards(SelfManager.myself()) + 180));
+    }));
+    if ((Prims.equality(xComponent, 0) && Prims.equality(yComponent, 0))) {
+      return SelfPrims.getVariable("heading");
     }
     else {
-      SelfPrims.left(maxTurn);
+      return NLMath.atan(xComponent, yComponent);
     }
-  }
-  else {
-    SelfPrims.right(turn);
-  }
-}
+  };
+  var turnTowards = function(newHeading, maxTurn) {
+    Call(procedures.turnAtMost, NLMath.subtractHeadings(newHeading, SelfPrims.getVariable("heading")), maxTurn);
+  };
+  var turnAway = function(newHeading, maxTurn) {
+    Call(procedures.turnAtMost, NLMath.subtractHeadings(SelfPrims.getVariable("heading"), newHeading), maxTurn);
+  };
+  var turnAtMost = function(turn, maxTurn) {
+    if (Prims.gt(NLMath.abs(turn), maxTurn)) {
+      if (Prims.gt(turn, 0)) {
+        SelfPrims.right(maxTurn);
+      }
+      else {
+        SelfPrims.left(maxTurn);
+      }
+    }
+    else {
+      SelfPrims.right(turn);
+    }
+  };
+  return {
+    "ALIGN":align,
+    "AVERAGE-FLOCKMATE-HEADING":averageFlockmateHeading,
+    "AVERAGE-HEADING-TOWARDS-FLOCKMATES":averageHeadingTowardsFlockmates,
+    "COHERE":cohere,
+    "FIND-FLOCKMATES":findFlockmates,
+    "FIND-NEAREST-NEIGHBOR":findNearestNeighbor,
+    "FLOCK":flock,
+    "GO":go,
+    "SEPARATE":separate,
+    "SETUP":setup,
+    "TURN-AT-MOST":turnAtMost,
+    "TURN-AWAY":turnAway,
+    "TURN-TOWARDS":turnTowards,
+    "align":align,
+    "averageFlockmateHeading":averageFlockmateHeading,
+    "averageHeadingTowardsFlockmates":averageHeadingTowardsFlockmates,
+    "cohere":cohere,
+    "findFlockmates":findFlockmates,
+    "findNearestNeighbor":findNearestNeighbor,
+    "flock":flock,
+    "go":go,
+    "separate":separate,
+    "setup":setup,
+    "turnAtMost":turnAtMost,
+    "turnAway":turnAway,
+    "turnTowards":turnTowards
+  };
+})();
 world.observer.setGlobal("population", 300);
 world.observer.setGlobal("max-align-turn", 5);
 world.observer.setGlobal("max-cohere-turn", 3);

@@ -44,27 +44,35 @@ var AgentModel = tortoise_require('agentmodel');
 var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
-function setupSquare() {
-  world.clearAll();
-  world.patches().ask(function() {
-    SelfPrims.sprout(1, "TURTLES").ask(function() {}, true);
-  }, true);
-  world.turtles().ask(function() {
-    LinkPrims.createLinksWith(Prims.turtlesOn(SelfPrims.getNeighbors4()), "LINKS").ask(function() {}, false);
-  }, true);
-}
-function setupHex() {
-  world.clearAll();
-  world.patches().ask(function() {
-    SelfPrims.sprout(1, "TURTLES").ask(function() {}, true);
-  }, true);
-  world.turtles().ask(function() {
-    LinkPrims.createLinksWith(SelfManager.self().turtlesAt(0, 1), "LINKS").ask(function() {}, false);
-    LinkPrims.createLinksWith(SelfManager.self().turtlesAt(1, 0), "LINKS").ask(function() {}, false);
-    if (Prims.equality(NLMath.mod(SelfPrims.getPatchVariable("pxcor"), 2), 0)) {
-      LinkPrims.createLinksWith(SelfManager.self().turtlesAt(1, -1), "LINKS").ask(function() {}, false);
-      LinkPrims.createLinksWith(SelfManager.self().turtlesAt(-1, -1), "LINKS").ask(function() {}, false);
-      SelfPrims.setVariable("ycor", (SelfPrims.getVariable("ycor") - 0.5));
-    }
-  }, true);
-}
+var procedures = (function() {
+  var setupSquare = function() {
+    world.clearAll();
+    world.patches().ask(function() {
+      SelfPrims.sprout(1, "TURTLES").ask(function() {}, true);
+    }, true);
+    world.turtles().ask(function() {
+      LinkPrims.createLinksWith(Prims.turtlesOn(SelfPrims.getNeighbors4()), "LINKS").ask(function() {}, false);
+    }, true);
+  };
+  var setupHex = function() {
+    world.clearAll();
+    world.patches().ask(function() {
+      SelfPrims.sprout(1, "TURTLES").ask(function() {}, true);
+    }, true);
+    world.turtles().ask(function() {
+      LinkPrims.createLinksWith(SelfManager.self().turtlesAt(0, 1), "LINKS").ask(function() {}, false);
+      LinkPrims.createLinksWith(SelfManager.self().turtlesAt(1, 0), "LINKS").ask(function() {}, false);
+      if (Prims.equality(NLMath.mod(SelfPrims.getPatchVariable("pxcor"), 2), 0)) {
+        LinkPrims.createLinksWith(SelfManager.self().turtlesAt(1, -1), "LINKS").ask(function() {}, false);
+        LinkPrims.createLinksWith(SelfManager.self().turtlesAt(-1, -1), "LINKS").ask(function() {}, false);
+        SelfPrims.setVariable("ycor", (SelfPrims.getVariable("ycor") - 0.5));
+      }
+    }, true);
+  };
+  return {
+    "SETUP-HEX":setupHex,
+    "SETUP-SQUARE":setupSquare,
+    "setupHex":setupHex,
+    "setupSquare":setupSquare
+  };
+})();

@@ -11,8 +11,8 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('Light', plotOps.makePenOps, false, new PenBundle.State(45.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Moth Colors Over Time', 'Light')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Moth Colors Over Time', 'Light')(function() { plotManager.plotValue(world.observer.getGlobal("light-moths"));; }); }); }),
 new PenBundle.Pen('Medium', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Moth Colors Over Time', 'Medium')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Moth Colors Over Time', 'Medium')(function() { plotManager.plotValue(world.observer.getGlobal("medium-moths"));; }); }); }),
 new PenBundle.Pen('Dark', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Moth Colors Over Time', 'Dark')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Moth Colors Over Time', 'Dark')(function() { plotManager.plotValue(world.observer.getGlobal("dark-moths"));; }); }); }),
-new PenBundle.Pen('Pollution', plotOps.makePenOps, false, new PenBundle.State(5.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Moth Colors Over Time', 'Pollution')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Moth Colors Over Time', 'Pollution')(function() { plotManager.plotValue((((Call(upperBound) / 3) * world.observer.getGlobal("darkness")) / 8));; }); }); })];
-  var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Moth Colors Over Time', undefined)(function() { plotManager.setYRange(0, Call(upperBound));; }); }); };
+new PenBundle.Pen('Pollution', plotOps.makePenOps, false, new PenBundle.State(5.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Moth Colors Over Time', 'Pollution')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Moth Colors Over Time', 'Pollution')(function() { plotManager.plotValue((((Call(procedures.upperBound) / 3) * world.observer.getGlobal("darkness")) / 8));; }); }); })];
+  var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Moth Colors Over Time', undefined)(function() { plotManager.setYRange(0, Call(procedures.upperBound));; }); }); };
   var update  = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Moth Colors Over Time', undefined)(function() {}); }); };
   return new Plot(name, pens, plotOps, 'Time', 'Moth Color Count', true, 0.0, 100.0, 0.0, 200.0, setup, update);
 })()];
@@ -54,142 +54,180 @@ var AgentModel = tortoise_require('agentmodel');
 var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
-function envColor() {
-  return (9 - world.observer.getGlobal("darkness"));
-}
-function deltaEnv() {
-  return (world.observer.getGlobal("speed") / 100);
-}
-function randomColor() {
-  return (Prims.random(9) + 1);
-}
-function upperBound() {
-  return (4 * world.observer.getGlobal("num-moths"));
-}
-function setup() {
-  world.clearAll();
-  Call(setupWorld);
-  Call(setupMoths);
-  Call(updateMonitors);
-  world.ticker.reset();
-}
-function setupWorld() {
-  world.observer.setGlobal("darkness", 0);
-  world.observer.setGlobal("darkening?", true);
-  world.patches().ask(function() {
-    SelfPrims.setPatchVariable("pcolor", Call(envColor));
-  }, true);
-}
-function setupMoths() {
-  world.turtleManager.createTurtles(world.observer.getGlobal("num-moths"), "MOTHS").ask(function() {
-    SelfPrims.setVariable("color", Call(randomColor));
-    Call(mothsPickShape);
-    SelfPrims.setVariable("age", Prims.random(3));
-    SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
-  }, true);
-}
-function go() {
-  world.turtleManager.turtlesOfBreed("MOTHS").ask(function() {
-    Call(mothsMate);
-    Call(mothsGrimReaper);
-    Call(mothsGetEaten);
-    Call(mothsAge);
-  }, true);
-  if (world.observer.getGlobal("cycle-pollution?")) {
-    Call(cyclePollution);
-  }
-  world.ticker.tick();
-  Call(updateMonitors);
-}
-function mothsMate() {
-  if ((Prims.equality(SelfPrims.getVariable("age"), 2) || Prims.equality(SelfPrims.getVariable("age"), 3))) {
-    SelfPrims.hatch(2, "").ask(function() {
-      if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("mutation"))) {
-        if (Prims.equality(Prims.random(2), 0)) {
-          SelfPrims.setVariable("color", NLMath.round((SelfPrims.getVariable("color") + (Prims.randomFloat(world.observer.getGlobal("mutation")) / 12.5))));
-          if (Prims.gte(SelfPrims.getVariable("color"), 9)) {
-            SelfPrims.setVariable("color", 9);
-          }
-        }
-        else {
-          SelfPrims.setVariable("color", NLMath.round((SelfPrims.getVariable("color") - (Prims.randomFloat(world.observer.getGlobal("mutation")) / 12.5))));
-          if ((Prims.lte(SelfPrims.getVariable("color"), 1) || Prims.gte(SelfPrims.getVariable("color"), 130))) {
-            SelfPrims.setVariable("color", 1);
-          }
-        }
-      }
-      Call(mothsPickShape);
-      SelfPrims.setVariable("age", 0);
-      SelfPrims.right(Prims.randomFloat(360));
-      SelfPrims.fd(1);
+var procedures = (function() {
+  var envColor = function() {
+    return (9 - world.observer.getGlobal("darkness"));
+  };
+  var deltaEnv = function() {
+    return (world.observer.getGlobal("speed") / 100);
+  };
+  var randomColor = function() {
+    return (Prims.random(9) + 1);
+  };
+  var upperBound = function() {
+    return (4 * world.observer.getGlobal("num-moths"));
+  };
+  var setup = function() {
+    world.clearAll();
+    Call(procedures.setupWorld);
+    Call(procedures.setupMoths);
+    Call(procedures.updateMonitors);
+    world.ticker.reset();
+  };
+  var setupWorld = function() {
+    world.observer.setGlobal("darkness", 0);
+    world.observer.setGlobal("darkening?", true);
+    world.patches().ask(function() {
+      SelfPrims.setPatchVariable("pcolor", Call(procedures.envColor));
     }, true);
-  }
-}
-function mothsGetEaten() {
-  if (Prims.lt(Prims.randomFloat(1000), ((world.observer.getGlobal("selection") * NLMath.abs((Call(envColor) - SelfPrims.getVariable("color")))) + 200))) {
-    SelfPrims.die();
-  }
-}
-function mothsGrimReaper() {
-  if (Prims.equality(Prims.random(13), 0)) {
-    SelfPrims.die();
-  }
-  if (Prims.gt(world.turtleManager.turtlesOfBreed("MOTHS").size(), Call(upperBound))) {
-    if (Prims.equality(Prims.random(2), 0)) {
+  };
+  var setupMoths = function() {
+    world.turtleManager.createTurtles(world.observer.getGlobal("num-moths"), "MOTHS").ask(function() {
+      SelfPrims.setVariable("color", Call(procedures.randomColor));
+      Call(procedures.mothsPickShape);
+      SelfPrims.setVariable("age", Prims.random(3));
+      SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
+    }, true);
+  };
+  var go = function() {
+    world.turtleManager.turtlesOfBreed("MOTHS").ask(function() {
+      Call(procedures.mothsMate);
+      Call(procedures.mothsGrimReaper);
+      Call(procedures.mothsGetEaten);
+      Call(procedures.mothsAge);
+    }, true);
+    if (world.observer.getGlobal("cycle-pollution?")) {
+      Call(procedures.cyclePollution);
+    }
+    world.ticker.tick();
+    Call(procedures.updateMonitors);
+  };
+  var mothsMate = function() {
+    if ((Prims.equality(SelfPrims.getVariable("age"), 2) || Prims.equality(SelfPrims.getVariable("age"), 3))) {
+      SelfPrims.hatch(2, "").ask(function() {
+        if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("mutation"))) {
+          if (Prims.equality(Prims.random(2), 0)) {
+            SelfPrims.setVariable("color", NLMath.round((SelfPrims.getVariable("color") + (Prims.randomFloat(world.observer.getGlobal("mutation")) / 12.5))));
+            if (Prims.gte(SelfPrims.getVariable("color"), 9)) {
+              SelfPrims.setVariable("color", 9);
+            }
+          }
+          else {
+            SelfPrims.setVariable("color", NLMath.round((SelfPrims.getVariable("color") - (Prims.randomFloat(world.observer.getGlobal("mutation")) / 12.5))));
+            if ((Prims.lte(SelfPrims.getVariable("color"), 1) || Prims.gte(SelfPrims.getVariable("color"), 130))) {
+              SelfPrims.setVariable("color", 1);
+            }
+          }
+        }
+        Call(procedures.mothsPickShape);
+        SelfPrims.setVariable("age", 0);
+        SelfPrims.right(Prims.randomFloat(360));
+        SelfPrims.fd(1);
+      }, true);
+    }
+  };
+  var mothsGetEaten = function() {
+    if (Prims.lt(Prims.randomFloat(1000), ((world.observer.getGlobal("selection") * NLMath.abs((Call(procedures.envColor) - SelfPrims.getVariable("color")))) + 200))) {
       SelfPrims.die();
     }
-  }
-}
-function mothsAge() {
-  SelfPrims.setVariable("age", (SelfPrims.getVariable("age") + 1));
-}
-function mothsPickShape() {
-  if (Prims.lt(SelfPrims.getVariable("color"), 5)) {
-    SelfPrims.setVariable("shape", "moth dark");
-  }
-  else {
-    SelfPrims.setVariable("shape", "moth light");
-  }
-}
-function updateMonitors() {
-  world.observer.setGlobal("light-moths", world.turtleManager.turtlesOfBreed("MOTHS").agentFilter(function() {
-    return Prims.gte(SelfPrims.getVariable("color"), 7);
-  }).size());
-  world.observer.setGlobal("dark-moths", world.turtleManager.turtlesOfBreed("MOTHS").agentFilter(function() {
-    return Prims.lte(SelfPrims.getVariable("color"), 3);
-  }).size());
-  world.observer.setGlobal("medium-moths", (world.turtleManager.turtlesOfBreed("MOTHS").size() - (world.observer.getGlobal("light-moths") + world.observer.getGlobal("dark-moths"))));
-}
-function polluteWorld() {
-  if (Prims.lte(world.observer.getGlobal("darkness"), (8 - Call(deltaEnv)))) {
-    world.observer.setGlobal("darkness", (world.observer.getGlobal("darkness") + Call(deltaEnv)));
-    world.patches().ask(function() {
-      SelfPrims.setPatchVariable("pcolor", Call(envColor));
-    }, true);
-  }
-  else {
-    world.observer.setGlobal("darkening?", false);
-  }
-}
-function cleanUpWorld() {
-  if (Prims.gte(world.observer.getGlobal("darkness"), (0 + Call(deltaEnv)))) {
-    world.observer.setGlobal("darkness", (world.observer.getGlobal("darkness") - Call(deltaEnv)));
-    world.patches().ask(function() {
-      SelfPrims.setPatchVariable("pcolor", Call(envColor));
-    }, true);
-  }
-  else {
-    world.observer.setGlobal("darkening?", true);
-  }
-}
-function cyclePollution() {
-  if (Prims.equality(world.observer.getGlobal("darkening?"), true)) {
-    Call(polluteWorld);
-  }
-  else {
-    Call(cleanUpWorld);
-  }
-}
+  };
+  var mothsGrimReaper = function() {
+    if (Prims.equality(Prims.random(13), 0)) {
+      SelfPrims.die();
+    }
+    if (Prims.gt(world.turtleManager.turtlesOfBreed("MOTHS").size(), Call(procedures.upperBound))) {
+      if (Prims.equality(Prims.random(2), 0)) {
+        SelfPrims.die();
+      }
+    }
+  };
+  var mothsAge = function() {
+    SelfPrims.setVariable("age", (SelfPrims.getVariable("age") + 1));
+  };
+  var mothsPickShape = function() {
+    if (Prims.lt(SelfPrims.getVariable("color"), 5)) {
+      SelfPrims.setVariable("shape", "moth dark");
+    }
+    else {
+      SelfPrims.setVariable("shape", "moth light");
+    }
+  };
+  var updateMonitors = function() {
+    world.observer.setGlobal("light-moths", world.turtleManager.turtlesOfBreed("MOTHS").agentFilter(function() {
+      return Prims.gte(SelfPrims.getVariable("color"), 7);
+    }).size());
+    world.observer.setGlobal("dark-moths", world.turtleManager.turtlesOfBreed("MOTHS").agentFilter(function() {
+      return Prims.lte(SelfPrims.getVariable("color"), 3);
+    }).size());
+    world.observer.setGlobal("medium-moths", (world.turtleManager.turtlesOfBreed("MOTHS").size() - (world.observer.getGlobal("light-moths") + world.observer.getGlobal("dark-moths"))));
+  };
+  var polluteWorld = function() {
+    if (Prims.lte(world.observer.getGlobal("darkness"), (8 - Call(procedures.deltaEnv)))) {
+      world.observer.setGlobal("darkness", (world.observer.getGlobal("darkness") + Call(procedures.deltaEnv)));
+      world.patches().ask(function() {
+        SelfPrims.setPatchVariable("pcolor", Call(procedures.envColor));
+      }, true);
+    }
+    else {
+      world.observer.setGlobal("darkening?", false);
+    }
+  };
+  var cleanUpWorld = function() {
+    if (Prims.gte(world.observer.getGlobal("darkness"), (0 + Call(procedures.deltaEnv)))) {
+      world.observer.setGlobal("darkness", (world.observer.getGlobal("darkness") - Call(procedures.deltaEnv)));
+      world.patches().ask(function() {
+        SelfPrims.setPatchVariable("pcolor", Call(procedures.envColor));
+      }, true);
+    }
+    else {
+      world.observer.setGlobal("darkening?", true);
+    }
+  };
+  var cyclePollution = function() {
+    if (Prims.equality(world.observer.getGlobal("darkening?"), true)) {
+      Call(procedures.polluteWorld);
+    }
+    else {
+      Call(procedures.cleanUpWorld);
+    }
+  };
+  return {
+    "CLEAN-UP-WORLD":cleanUpWorld,
+    "CYCLE-POLLUTION":cyclePollution,
+    "DELTA-ENV":deltaEnv,
+    "ENV-COLOR":envColor,
+    "GO":go,
+    "MOTHS-AGE":mothsAge,
+    "MOTHS-GET-EATEN":mothsGetEaten,
+    "MOTHS-GRIM-REAPER":mothsGrimReaper,
+    "MOTHS-MATE":mothsMate,
+    "MOTHS-PICK-SHAPE":mothsPickShape,
+    "POLLUTE-WORLD":polluteWorld,
+    "RANDOM-COLOR":randomColor,
+    "SETUP":setup,
+    "SETUP-MOTHS":setupMoths,
+    "SETUP-WORLD":setupWorld,
+    "UPDATE-MONITORS":updateMonitors,
+    "UPPER-BOUND":upperBound,
+    "cleanUpWorld":cleanUpWorld,
+    "cyclePollution":cyclePollution,
+    "deltaEnv":deltaEnv,
+    "envColor":envColor,
+    "go":go,
+    "mothsAge":mothsAge,
+    "mothsGetEaten":mothsGetEaten,
+    "mothsGrimReaper":mothsGrimReaper,
+    "mothsMate":mothsMate,
+    "mothsPickShape":mothsPickShape,
+    "polluteWorld":polluteWorld,
+    "randomColor":randomColor,
+    "setup":setup,
+    "setupMoths":setupMoths,
+    "setupWorld":setupWorld,
+    "updateMonitors":updateMonitors,
+    "upperBound":upperBound
+  };
+})();
 world.observer.setGlobal("num-moths", 100);
 world.observer.setGlobal("mutation", 15);
 world.observer.setGlobal("selection", 50);

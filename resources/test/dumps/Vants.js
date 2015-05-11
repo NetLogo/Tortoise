@@ -44,46 +44,58 @@ var AgentModel = tortoise_require('agentmodel');
 var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
-function setup() {
-  world.clearAll();
-  world.patches().ask(function() {
-    SelfPrims.setPatchVariable("pcolor", 9.9);
-  }, true);
-  world.turtleManager.createTurtles(world.observer.getGlobal("num-vants"), "").ask(function() {
-    SelfManager.self().face(ListPrims.oneOf(SelfPrims.getNeighbors4()));
-    SelfPrims.setVariable("color", 15);
-    SelfPrims.setVariable("size", 6);
-  }, true);
-  world.ticker.reset();
-}
-function goForward() {
-  Tasks.forEach(Tasks.commandTask(function() {
-    var taskArguments = arguments;
-    taskArguments[0].ask(function() {
-      SelfPrims.fd(1);
-      Call(turn);
+var procedures = (function() {
+  var setup = function() {
+    world.clearAll();
+    world.patches().ask(function() {
+      SelfPrims.setPatchVariable("pcolor", 9.9);
     }, true);
-  }), ListPrims.sort(world.turtles()));
-  world.ticker.tick();
-}
-function goReverse() {
-  Tasks.forEach(Tasks.commandTask(function() {
-    var taskArguments = arguments;
-    taskArguments[0].ask(function() {
-      Call(turn);
-      SelfPrims.bk(1);
+    world.turtleManager.createTurtles(world.observer.getGlobal("num-vants"), "").ask(function() {
+      SelfManager.self().face(ListPrims.oneOf(SelfPrims.getNeighbors4()));
+      SelfPrims.setVariable("color", 15);
+      SelfPrims.setVariable("size", 6);
     }, true);
-  }), ListPrims.reverse(ListPrims.sort(world.turtles())));
-  world.ticker.tick();
-}
-function turn() {
-  if (Prims.equality(SelfPrims.getPatchVariable("pcolor"), 9.9)) {
-    SelfPrims.setPatchVariable("pcolor", 0);
-    SelfPrims.right(90);
-  }
-  else {
-    SelfPrims.setPatchVariable("pcolor", 9.9);
-    SelfPrims.left(90);
-  }
-}
+    world.ticker.reset();
+  };
+  var goForward = function() {
+    Tasks.forEach(Tasks.commandTask(function() {
+      var taskArguments = arguments;
+      taskArguments[0].ask(function() {
+        SelfPrims.fd(1);
+        Call(procedures.turn);
+      }, true);
+    }), ListPrims.sort(world.turtles()));
+    world.ticker.tick();
+  };
+  var goReverse = function() {
+    Tasks.forEach(Tasks.commandTask(function() {
+      var taskArguments = arguments;
+      taskArguments[0].ask(function() {
+        Call(procedures.turn);
+        SelfPrims.bk(1);
+      }, true);
+    }), ListPrims.reverse(ListPrims.sort(world.turtles())));
+    world.ticker.tick();
+  };
+  var turn = function() {
+    if (Prims.equality(SelfPrims.getPatchVariable("pcolor"), 9.9)) {
+      SelfPrims.setPatchVariable("pcolor", 0);
+      SelfPrims.right(90);
+    }
+    else {
+      SelfPrims.setPatchVariable("pcolor", 9.9);
+      SelfPrims.left(90);
+    }
+  };
+  return {
+    "GO-FORWARD":goForward,
+    "GO-REVERSE":goReverse,
+    "SETUP":setup,
+    "TURN":turn,
+    "goForward":goForward,
+    "goReverse":goReverse,
+    "setup":setup,
+    "turn":turn
+  };
+})();
 world.observer.setGlobal("num-vants", 1);

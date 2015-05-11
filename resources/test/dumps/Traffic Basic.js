@@ -59,73 +59,91 @@ var AgentModel = tortoise_require('agentmodel');
 var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
-function setup() {
-  world.clearAll();
-  world.patches().ask(function() {
-    Call(setupRoad);
-  }, true);
-  Call(setupCars);
-  world.observer.watch(world.observer.getGlobal("sample-car"));
-  world.ticker.reset();
-}
-function setupRoad() {
-  if ((Prims.lt(SelfPrims.getPatchVariable("pycor"), 2) && Prims.gt(SelfPrims.getPatchVariable("pycor"), -2))) {
-    SelfPrims.setPatchVariable("pcolor", 9.9);
-  }
-}
-function setupCars() {
-  if (Prims.gt(world.observer.getGlobal("number-of-cars"), world.topology.width)) {
-    notImplemented('user-message', undefined)((Dump('') + Dump("There are too many cars for the amount of road.  Please decrease the NUMBER-OF-CARS slider to below ") + Dump((world.topology.width + 1)) + Dump(" and press the SETUP button again.  The setup has stopped.")));
-    throw new Exception.StopInterrupt;
-  }
-  BreedManager.setDefaultShape(world.turtles().getBreedName(), "car")
-  world.turtleManager.createTurtles(world.observer.getGlobal("number-of-cars"), "").ask(function() {
-    SelfPrims.setVariable("color", 105);
-    SelfPrims.setVariable("xcor", world.topology.randomXcor());
-    SelfPrims.setVariable("heading", 90);
-    SelfPrims.setVariable("speed", (0.1 + Prims.randomFloat(0.9)));
-    SelfPrims.setVariable("speed-limit", 1);
-    SelfPrims.setVariable("speed-min", 0);
-    Call(separateCars);
-  }, true);
-  world.observer.setGlobal("sample-car", ListPrims.oneOf(world.turtles()));
-  world.observer.getGlobal("sample-car").ask(function() {
-    SelfPrims.setVariable("color", 15);
-  }, true);
-}
-function separateCars() {
-  if (SelfPrims.other(SelfManager.self().turtlesHere()).nonEmpty()) {
-    SelfPrims.fd(1);
-    Call(separateCars);
-  }
-}
-function go() {
-  world.turtles().ask(function() {
-    var carAhead = ListPrims.oneOf(Prims.turtlesOn(SelfManager.self().patchAhead(1)));
-    if (!Prims.equality(carAhead, Nobody)) {
-      Call(slowDownCar, carAhead);
+var procedures = (function() {
+  var setup = function() {
+    world.clearAll();
+    world.patches().ask(function() {
+      Call(procedures.setupRoad);
+    }, true);
+    Call(procedures.setupCars);
+    world.observer.watch(world.observer.getGlobal("sample-car"));
+    world.ticker.reset();
+  };
+  var setupRoad = function() {
+    if ((Prims.lt(SelfPrims.getPatchVariable("pycor"), 2) && Prims.gt(SelfPrims.getPatchVariable("pycor"), -2))) {
+      SelfPrims.setPatchVariable("pcolor", 9.9);
     }
-    else {
-      Call(speedUpCar);
+  };
+  var setupCars = function() {
+    if (Prims.gt(world.observer.getGlobal("number-of-cars"), world.topology.width)) {
+      notImplemented('user-message', undefined)((Dump('') + Dump("There are too many cars for the amount of road.  Please decrease the NUMBER-OF-CARS slider to below ") + Dump((world.topology.width + 1)) + Dump(" and press the SETUP button again.  The setup has stopped.")));
+      throw new Exception.StopInterrupt;
     }
-    if (Prims.lt(SelfPrims.getVariable("speed"), SelfPrims.getVariable("speed-min"))) {
-      SelfPrims.setVariable("speed", SelfPrims.getVariable("speed-min"));
+    BreedManager.setDefaultShape(world.turtles().getBreedName(), "car")
+    world.turtleManager.createTurtles(world.observer.getGlobal("number-of-cars"), "").ask(function() {
+      SelfPrims.setVariable("color", 105);
+      SelfPrims.setVariable("xcor", world.topology.randomXcor());
+      SelfPrims.setVariable("heading", 90);
+      SelfPrims.setVariable("speed", (0.1 + Prims.randomFloat(0.9)));
+      SelfPrims.setVariable("speed-limit", 1);
+      SelfPrims.setVariable("speed-min", 0);
+      Call(procedures.separateCars);
+    }, true);
+    world.observer.setGlobal("sample-car", ListPrims.oneOf(world.turtles()));
+    world.observer.getGlobal("sample-car").ask(function() {
+      SelfPrims.setVariable("color", 15);
+    }, true);
+  };
+  var separateCars = function() {
+    if (SelfPrims.other(SelfManager.self().turtlesHere()).nonEmpty()) {
+      SelfPrims.fd(1);
+      Call(procedures.separateCars);
     }
-    if (Prims.gt(SelfPrims.getVariable("speed"), SelfPrims.getVariable("speed-limit"))) {
-      SelfPrims.setVariable("speed", SelfPrims.getVariable("speed-limit"));
-    }
-    SelfPrims.fd(SelfPrims.getVariable("speed"));
-  }, true);
-  world.ticker.tick();
-}
-function slowDownCar(carAhead) {
-  SelfPrims.setVariable("speed", (carAhead.projectionBy(function() {
-    return SelfPrims.getVariable("speed");
-  }) - world.observer.getGlobal("deceleration")));
-}
-function speedUpCar() {
-  SelfPrims.setVariable("speed", (SelfPrims.getVariable("speed") + world.observer.getGlobal("acceleration")));
-}
+  };
+  var go = function() {
+    world.turtles().ask(function() {
+      var carAhead = ListPrims.oneOf(Prims.turtlesOn(SelfManager.self().patchAhead(1)));
+      if (!Prims.equality(carAhead, Nobody)) {
+        Call(procedures.slowDownCar, carAhead);
+      }
+      else {
+        Call(procedures.speedUpCar);
+      }
+      if (Prims.lt(SelfPrims.getVariable("speed"), SelfPrims.getVariable("speed-min"))) {
+        SelfPrims.setVariable("speed", SelfPrims.getVariable("speed-min"));
+      }
+      if (Prims.gt(SelfPrims.getVariable("speed"), SelfPrims.getVariable("speed-limit"))) {
+        SelfPrims.setVariable("speed", SelfPrims.getVariable("speed-limit"));
+      }
+      SelfPrims.fd(SelfPrims.getVariable("speed"));
+    }, true);
+    world.ticker.tick();
+  };
+  var slowDownCar = function(carAhead) {
+    SelfPrims.setVariable("speed", (carAhead.projectionBy(function() {
+      return SelfPrims.getVariable("speed");
+    }) - world.observer.getGlobal("deceleration")));
+  };
+  var speedUpCar = function() {
+    SelfPrims.setVariable("speed", (SelfPrims.getVariable("speed") + world.observer.getGlobal("acceleration")));
+  };
+  return {
+    "GO":go,
+    "SEPARATE-CARS":separateCars,
+    "SETUP":setup,
+    "SETUP-CARS":setupCars,
+    "SETUP-ROAD":setupRoad,
+    "SLOW-DOWN-CAR":slowDownCar,
+    "SPEED-UP-CAR":speedUpCar,
+    "go":go,
+    "separateCars":separateCars,
+    "setup":setup,
+    "setupCars":setupCars,
+    "setupRoad":setupRoad,
+    "slowDownCar":slowDownCar,
+    "speedUpCar":speedUpCar
+  };
+})();
 world.observer.setGlobal("number-of-cars", 20);
 world.observer.setGlobal("deceleration", 0.026);
 world.observer.setGlobal("acceleration", 0.0045);

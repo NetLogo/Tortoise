@@ -44,47 +44,55 @@ var AgentModel = tortoise_require('agentmodel');
 var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
-function setup() {
-  world.clearAll();
-  world.turtleManager.createTurtles(1, "").ask(function() {
-    SelfPrims.setVariable("shape", "line");
-    SelfPrims.setVariable("color", world.observer.getGlobal("init-color"));
-    SelfPrims.setXY(world.observer.getGlobal("init-x"), world.observer.getGlobal("init-y"));
-    SelfPrims.setVariable("heading", 0);
-    SelfManager.self().penManager.lowerPen();
-  }, true);
-  world.ticker.reset();
-}
-function go() {
-  world.turtles().ask(function() {
-    SelfPrims.setVariable("new?", false);
-    SelfManager.self().penManager.lowerPen();
-  }, true);
-  world.turtles().agentFilter(function() {
-    return !SelfPrims.getVariable("new?");
-  }).ask(function() {
-    SelfPrims.fd(4);
-    SelfPrims.right(15);
-    SelfPrims.fd(8);
-    SelfPrims.hatch(1, "").ask(function() {
-      SelfPrims.setVariable("new?", true);
+var procedures = (function() {
+  var setup = function() {
+    world.clearAll();
+    world.turtleManager.createTurtles(1, "").ask(function() {
+      SelfPrims.setVariable("shape", "line");
+      SelfPrims.setVariable("color", world.observer.getGlobal("init-color"));
+      SelfPrims.setXY(world.observer.getGlobal("init-x"), world.observer.getGlobal("init-y"));
+      SelfPrims.setVariable("heading", 0);
+      SelfManager.self().penManager.lowerPen();
     }, true);
-    SelfPrims.setVariable("color", (SelfPrims.getVariable("color") + world.observer.getGlobal("color-inc")));
-    SelfPrims.right(180);
-    SelfPrims.jump(8);
-    SelfPrims.right(180);
-    SelfPrims.left(15);
-    SelfPrims.fd(4);
-    SelfPrims.left(15);
-    SelfPrims.hatch(1, "").ask(function() {
-      SelfPrims.setVariable("new?", true);
+    world.ticker.reset();
+  };
+  var go = function() {
+    world.turtles().ask(function() {
+      SelfPrims.setVariable("new?", false);
+      SelfManager.self().penManager.lowerPen();
     }, true);
-    SelfPrims.setVariable("color", (SelfPrims.getVariable("color") + world.observer.getGlobal("color-inc")));
-    SelfPrims.fd(8);
-    SelfPrims.die();
-  }, true);
-  world.ticker.tick();
-}
+    world.turtles().agentFilter(function() {
+      return !SelfPrims.getVariable("new?");
+    }).ask(function() {
+      SelfPrims.fd(4);
+      SelfPrims.right(15);
+      SelfPrims.fd(8);
+      SelfPrims.hatch(1, "").ask(function() {
+        SelfPrims.setVariable("new?", true);
+      }, true);
+      SelfPrims.setVariable("color", (SelfPrims.getVariable("color") + world.observer.getGlobal("color-inc")));
+      SelfPrims.right(180);
+      SelfPrims.jump(8);
+      SelfPrims.right(180);
+      SelfPrims.left(15);
+      SelfPrims.fd(4);
+      SelfPrims.left(15);
+      SelfPrims.hatch(1, "").ask(function() {
+        SelfPrims.setVariable("new?", true);
+      }, true);
+      SelfPrims.setVariable("color", (SelfPrims.getVariable("color") + world.observer.getGlobal("color-inc")));
+      SelfPrims.fd(8);
+      SelfPrims.die();
+    }, true);
+    world.ticker.tick();
+  };
+  return {
+    "GO":go,
+    "SETUP":setup,
+    "go":go,
+    "setup":setup
+  };
+})();
 world.observer.setGlobal("color-inc", 7);
 world.observer.setGlobal("init-color", 45);
 world.observer.setGlobal("init-x", 0);

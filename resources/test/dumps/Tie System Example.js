@@ -44,29 +44,35 @@ var AgentModel = tortoise_require('agentmodel');
 var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
-function setup() {
-  world.clearAll();
-  BreedManager.setDefaultShape(world.turtles().getBreedName(), "planet")
-  world.turtleManager.createTurtles(1, "SUNS").ask(function() {
-    SelfPrims.setVariable("size", 6);
-    SelfPrims.setVariable("color", 45);
-  }, true);
-  world.turtleManager.createTurtles(5, "PLANETS").ask(function() {
-    SelfPrims.setVariable("size", 2);
-    SelfPrims.setVariable("color", (105 + Prims.random(3)));
-    SelfPrims.fd((6 + Prims.randomFloat(12)));
-    LinkPrims.createLinkFrom(ListPrims.oneOf(world.turtleManager.turtlesOfBreed("SUNS")), "LINKS").ask(function() {
-      SelfManager.self().tie();
-      SelfPrims.setVariable('hidden?', true)
+var procedures = (function() {
+  var setup = function() {
+    world.clearAll();
+    BreedManager.setDefaultShape(world.turtles().getBreedName(), "planet")
+    world.turtleManager.createTurtles(1, "SUNS").ask(function() {
+      SelfPrims.setVariable("size", 6);
+      SelfPrims.setVariable("color", 45);
     }, true);
-    SelfPrims.hatch(2, "MOONS").ask(function() {
-      SelfPrims.setVariable("size", 0.5);
-      SelfPrims.setVariable("color", (5 + Prims.random(3)));
-      SelfPrims.fd((1 + Prims.randomFloat(3)));
-      LinkPrims.createLinkFrom(SelfManager.myself(), "LINKS").ask(function() {
+    world.turtleManager.createTurtles(5, "PLANETS").ask(function() {
+      SelfPrims.setVariable("size", 2);
+      SelfPrims.setVariable("color", (105 + Prims.random(3)));
+      SelfPrims.fd((6 + Prims.randomFloat(12)));
+      LinkPrims.createLinkFrom(ListPrims.oneOf(world.turtleManager.turtlesOfBreed("SUNS")), "LINKS").ask(function() {
         SelfManager.self().tie();
         SelfPrims.setVariable('hidden?', true)
       }, true);
+      SelfPrims.hatch(2, "MOONS").ask(function() {
+        SelfPrims.setVariable("size", 0.5);
+        SelfPrims.setVariable("color", (5 + Prims.random(3)));
+        SelfPrims.fd((1 + Prims.randomFloat(3)));
+        LinkPrims.createLinkFrom(SelfManager.myself(), "LINKS").ask(function() {
+          SelfManager.self().tie();
+          SelfPrims.setVariable('hidden?', true)
+        }, true);
+      }, true);
     }, true);
-  }, true);
-}
+  };
+  return {
+    "SETUP":setup,
+    "setup":setup
+  };
+})();

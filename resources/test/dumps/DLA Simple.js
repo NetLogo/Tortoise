@@ -44,31 +44,39 @@ var AgentModel = tortoise_require('agentmodel');
 var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
-function setup() {
-  world.clearAll();
-  world.getPatchAt(0, 0).ask(function() {
-    SelfPrims.setPatchVariable("pcolor", 55);
-  }, true);
-  world.turtleManager.createTurtles(world.observer.getGlobal("num-particles"), "").ask(function() {
-    SelfPrims.setVariable("color", 15);
-    SelfPrims.setVariable("size", 1.5);
-    SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
-  }, true);
-  world.ticker.reset();
-}
-function go() {
-  world.turtles().ask(function() {
-    SelfPrims.right(Prims.random(world.observer.getGlobal("wiggle-angle")));
-    SelfPrims.left(Prims.random(world.observer.getGlobal("wiggle-angle")));
-    SelfPrims.fd(1);
-    if (SelfPrims.getNeighbors().agentFilter(function() {
-      return Prims.equality(SelfPrims.getPatchVariable("pcolor"), 55);
-    }).nonEmpty()) {
+var procedures = (function() {
+  var setup = function() {
+    world.clearAll();
+    world.getPatchAt(0, 0).ask(function() {
       SelfPrims.setPatchVariable("pcolor", 55);
-      SelfPrims.die();
-    }
-  }, true);
-  world.ticker.tick();
-}
+    }, true);
+    world.turtleManager.createTurtles(world.observer.getGlobal("num-particles"), "").ask(function() {
+      SelfPrims.setVariable("color", 15);
+      SelfPrims.setVariable("size", 1.5);
+      SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
+    }, true);
+    world.ticker.reset();
+  };
+  var go = function() {
+    world.turtles().ask(function() {
+      SelfPrims.right(Prims.random(world.observer.getGlobal("wiggle-angle")));
+      SelfPrims.left(Prims.random(world.observer.getGlobal("wiggle-angle")));
+      SelfPrims.fd(1);
+      if (SelfPrims.getNeighbors().agentFilter(function() {
+        return Prims.equality(SelfPrims.getPatchVariable("pcolor"), 55);
+      }).nonEmpty()) {
+        SelfPrims.setPatchVariable("pcolor", 55);
+        SelfPrims.die();
+      }
+    }, true);
+    world.ticker.tick();
+  };
+  return {
+    "GO":go,
+    "SETUP":setup,
+    "go":go,
+    "setup":setup
+  };
+})();
 world.observer.setGlobal("wiggle-angle", 60);
 world.observer.setGlobal("num-particles", 2500);

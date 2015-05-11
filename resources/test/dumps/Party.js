@@ -60,133 +60,161 @@ var AgentModel = tortoise_require('agentmodel');
 var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
-function setup() {
-  world.clearAll();
-  world.observer.setGlobal("group-sites", world.patches().agentFilter(function() {
-    return Call(groupSite_p);
-  }));
-  BreedManager.setDefaultShape(world.turtles().getBreedName(), "person")
-  world.turtleManager.createTurtles(world.observer.getGlobal("number"), "").ask(function() {
-    Call(chooseSex);
-    SelfPrims.setVariable("size", 3);
-    SelfPrims.setVariable("my-group-site", ListPrims.oneOf(world.observer.getGlobal("group-sites")));
-    SelfManager.self().moveTo(SelfPrims.getVariable("my-group-site"));
-  }, true);
-  world.turtles().ask(function() {
-    Call(updateHappiness);
-  }, true);
-  Call(countBoringGroups);
-  Call(updateLabels);
-  world.turtles().ask(function() {
-    Call(spreadOutVertically);
-  }, true);
-  world.ticker.reset();
-}
-function go() {
-  if (world.turtles().agentAll(function() {
-    return SelfPrims.getVariable("happy?");
-  })) {
-    throw new Exception.StopInterrupt;
-  }
-  world.turtles().ask(function() {
-    SelfManager.self().moveTo(SelfPrims.getVariable("my-group-site"));
-  }, true);
-  world.turtles().ask(function() {
-    Call(updateHappiness);
-  }, true);
-  world.turtles().ask(function() {
-    Call(leaveIfUnhappy);
-  }, true);
-  Call(findNewGroups);
-  Call(updateLabels);
-  Call(countBoringGroups);
-  world.turtles().ask(function() {
-    SelfPrims.setVariable("my-group-site", SelfManager.self().getPatchHere());
-    Call(spreadOutVertically);
-  }, true);
-  world.ticker.tick();
-}
-function updateHappiness() {
-  var total = SelfManager.self().turtlesHere().size();
-  var same = SelfManager.self().turtlesHere().agentFilter(function() {
-    return Prims.equality(SelfPrims.getVariable("color"), SelfManager.myself().projectionBy(function() {
-      return SelfPrims.getVariable("color");
+var procedures = (function() {
+  var setup = function() {
+    world.clearAll();
+    world.observer.setGlobal("group-sites", world.patches().agentFilter(function() {
+      return Call(procedures.groupSite_p);
     }));
-  }).size();
-  var opposite = (total - same);
-  SelfPrims.setVariable("happy?", Prims.lte((opposite / total), (world.observer.getGlobal("tolerance") / 100)));
-}
-function leaveIfUnhappy() {
-  if (!SelfPrims.getVariable("happy?")) {
-    SelfPrims.setVariable("heading", ListPrims.oneOf([90, 270]));
-    SelfPrims.fd(1);
-  }
-}
-function findNewGroups() {
-  notImplemented('display', undefined)();
-  var malcontents = world.turtles().agentFilter(function() {
-    return !ListPrims.member(SelfManager.self().getPatchHere(), world.observer.getGlobal("group-sites"));
-  });
-  if (!malcontents.nonEmpty()) {
-    throw new Exception.StopInterrupt;
-  }
-  malcontents.ask(function() {
-    SelfPrims.fd(1);
-  }, true);
-  Call(findNewGroups);
-}
-function groupSite_p() {
-  var groupInterval = NLMath.floor((world.topology.width / world.observer.getGlobal("num-groups")));
-  return (((Prims.equality(SelfPrims.getPatchVariable("pycor"), 0) && Prims.lte(SelfPrims.getPatchVariable("pxcor"), 0)) && Prims.equality(NLMath.mod(SelfPrims.getPatchVariable("pxcor"), groupInterval), 0)) && Prims.lt(NLMath.floor(( -SelfPrims.getPatchVariable("pxcor") / groupInterval)), world.observer.getGlobal("num-groups")));
-}
-function spreadOutVertically() {
-  if (Call(woman_p)) {
-    SelfPrims.setVariable("heading", 180);
-  }
-  else {
-    SelfPrims.setVariable("heading", 0);
-  }
-  SelfPrims.fd(4);
-  while (SelfPrims.other(SelfManager.self().turtlesHere()).nonEmpty()) {
-    if (SelfManager.self().canMove(2)) {
+    BreedManager.setDefaultShape(world.turtles().getBreedName(), "person")
+    world.turtleManager.createTurtles(world.observer.getGlobal("number"), "").ask(function() {
+      Call(procedures.chooseSex);
+      SelfPrims.setVariable("size", 3);
+      SelfPrims.setVariable("my-group-site", ListPrims.oneOf(world.observer.getGlobal("group-sites")));
+      SelfManager.self().moveTo(SelfPrims.getVariable("my-group-site"));
+    }, true);
+    world.turtles().ask(function() {
+      Call(procedures.updateHappiness);
+    }, true);
+    Call(procedures.countBoringGroups);
+    Call(procedures.updateLabels);
+    world.turtles().ask(function() {
+      Call(procedures.spreadOutVertically);
+    }, true);
+    world.ticker.reset();
+  };
+  var go = function() {
+    if (world.turtles().agentAll(function() {
+      return SelfPrims.getVariable("happy?");
+    })) {
+      throw new Exception.StopInterrupt;
+    }
+    world.turtles().ask(function() {
+      SelfManager.self().moveTo(SelfPrims.getVariable("my-group-site"));
+    }, true);
+    world.turtles().ask(function() {
+      Call(procedures.updateHappiness);
+    }, true);
+    world.turtles().ask(function() {
+      Call(procedures.leaveIfUnhappy);
+    }, true);
+    Call(procedures.findNewGroups);
+    Call(procedures.updateLabels);
+    Call(procedures.countBoringGroups);
+    world.turtles().ask(function() {
+      SelfPrims.setVariable("my-group-site", SelfManager.self().getPatchHere());
+      Call(procedures.spreadOutVertically);
+    }, true);
+    world.ticker.tick();
+  };
+  var updateHappiness = function() {
+    var total = SelfManager.self().turtlesHere().size();
+    var same = SelfManager.self().turtlesHere().agentFilter(function() {
+      return Prims.equality(SelfPrims.getVariable("color"), SelfManager.myself().projectionBy(function() {
+        return SelfPrims.getVariable("color");
+      }));
+    }).size();
+    var opposite = (total - same);
+    SelfPrims.setVariable("happy?", Prims.lte((opposite / total), (world.observer.getGlobal("tolerance") / 100)));
+  };
+  var leaveIfUnhappy = function() {
+    if (!SelfPrims.getVariable("happy?")) {
+      SelfPrims.setVariable("heading", ListPrims.oneOf([90, 270]));
       SelfPrims.fd(1);
     }
+  };
+  var findNewGroups = function() {
+    notImplemented('display', undefined)();
+    var malcontents = world.turtles().agentFilter(function() {
+      return !ListPrims.member(SelfManager.self().getPatchHere(), world.observer.getGlobal("group-sites"));
+    });
+    if (!malcontents.nonEmpty()) {
+      throw new Exception.StopInterrupt;
+    }
+    malcontents.ask(function() {
+      SelfPrims.fd(1);
+    }, true);
+    Call(procedures.findNewGroups);
+  };
+  var groupSite_p = function() {
+    var groupInterval = NLMath.floor((world.topology.width / world.observer.getGlobal("num-groups")));
+    return (((Prims.equality(SelfPrims.getPatchVariable("pycor"), 0) && Prims.lte(SelfPrims.getPatchVariable("pxcor"), 0)) && Prims.equality(NLMath.mod(SelfPrims.getPatchVariable("pxcor"), groupInterval), 0)) && Prims.lt(NLMath.floor(( -SelfPrims.getPatchVariable("pxcor") / groupInterval)), world.observer.getGlobal("num-groups")));
+  };
+  var spreadOutVertically = function() {
+    if (Call(procedures.woman_p)) {
+      SelfPrims.setVariable("heading", 180);
+    }
     else {
-      SelfPrims.setVariable("xcor", (SelfPrims.getVariable("xcor") - 1));
-      SelfPrims.setVariable("ycor", 0);
-      SelfPrims.fd(4);
+      SelfPrims.setVariable("heading", 0);
     }
-  }
-}
-function countBoringGroups() {
-  world.observer.getGlobal("group-sites").ask(function() {
-    if (Call(boring_p)) {
-      SelfPrims.setPatchVariable("plabel-color", 5);
+    SelfPrims.fd(4);
+    while (SelfPrims.other(SelfManager.self().turtlesHere()).nonEmpty()) {
+      if (SelfManager.self().canMove(2)) {
+        SelfPrims.fd(1);
+      }
+      else {
+        SelfPrims.setVariable("xcor", (SelfPrims.getVariable("xcor") - 1));
+        SelfPrims.setVariable("ycor", 0);
+        SelfPrims.fd(4);
+      }
     }
-    else {
-      SelfPrims.setPatchVariable("plabel-color", 9.9);
-    }
-  }, true);
-  world.observer.setGlobal("boring-groups", world.observer.getGlobal("group-sites").agentFilter(function() {
-    return Prims.equality(SelfPrims.getPatchVariable("plabel-color"), 5);
-  }).size());
-}
-function boring_p() {
-  return Prims.equality(ListPrims.length(ListPrims.removeDuplicates(SelfManager.self().turtlesHere().projectionBy(function() {
-    return SelfPrims.getVariable("color");
-  }))), 1);
-}
-function updateLabels() {
-  world.observer.getGlobal("group-sites").ask(function() {
-    SelfPrims.setPatchVariable("plabel", SelfManager.self().turtlesHere().size());
-  }, true);
-}
-function chooseSex() {
-  SelfPrims.setVariable("color", ListPrims.oneOf([135, 105]));
-}
-function woman_p() {
-  return Prims.equality(SelfPrims.getVariable("color"), 135);
-}
+  };
+  var countBoringGroups = function() {
+    world.observer.getGlobal("group-sites").ask(function() {
+      if (Call(procedures.boring_p)) {
+        SelfPrims.setPatchVariable("plabel-color", 5);
+      }
+      else {
+        SelfPrims.setPatchVariable("plabel-color", 9.9);
+      }
+    }, true);
+    world.observer.setGlobal("boring-groups", world.observer.getGlobal("group-sites").agentFilter(function() {
+      return Prims.equality(SelfPrims.getPatchVariable("plabel-color"), 5);
+    }).size());
+  };
+  var boring_p = function() {
+    return Prims.equality(ListPrims.length(ListPrims.removeDuplicates(SelfManager.self().turtlesHere().projectionBy(function() {
+      return SelfPrims.getVariable("color");
+    }))), 1);
+  };
+  var updateLabels = function() {
+    world.observer.getGlobal("group-sites").ask(function() {
+      SelfPrims.setPatchVariable("plabel", SelfManager.self().turtlesHere().size());
+    }, true);
+  };
+  var chooseSex = function() {
+    SelfPrims.setVariable("color", ListPrims.oneOf([135, 105]));
+  };
+  var woman_p = function() {
+    return Prims.equality(SelfPrims.getVariable("color"), 135);
+  };
+  return {
+    "BORING?":boring_p,
+    "CHOOSE-SEX":chooseSex,
+    "COUNT-BORING-GROUPS":countBoringGroups,
+    "FIND-NEW-GROUPS":findNewGroups,
+    "GO":go,
+    "GROUP-SITE?":groupSite_p,
+    "LEAVE-IF-UNHAPPY":leaveIfUnhappy,
+    "SETUP":setup,
+    "SPREAD-OUT-VERTICALLY":spreadOutVertically,
+    "UPDATE-HAPPINESS":updateHappiness,
+    "UPDATE-LABELS":updateLabels,
+    "WOMAN?":woman_p,
+    "boring_p":boring_p,
+    "chooseSex":chooseSex,
+    "countBoringGroups":countBoringGroups,
+    "findNewGroups":findNewGroups,
+    "go":go,
+    "groupSite_p":groupSite_p,
+    "leaveIfUnhappy":leaveIfUnhappy,
+    "setup":setup,
+    "spreadOutVertically":spreadOutVertically,
+    "updateHappiness":updateHappiness,
+    "updateLabels":updateLabels,
+    "woman_p":woman_p
+  };
+})();
 world.observer.setGlobal("tolerance", 25);
 world.observer.setGlobal("number", 70);
 world.observer.setGlobal("num-groups", 10);

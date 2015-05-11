@@ -44,8 +44,7 @@ object Compiler extends CompilerLike with ModelConfigGenerator {
                   (implicit compilerFlags: CompilerFlags): (String, Program, ProceduresMap) = {
     val (defs, results): (Seq[ProcedureDefinition], StructureResults) =
       frontEnd.frontEnd(model.code, program = program, oldProcedures = oldProcedures)
-    val main =
-      defs.map(compileProcedureDef).mkString("", "\n", "\n")
+    val main = proceduresObject(defs.map(compileProcedureDef))
     (main, results.program, results.procedures)
   }
 
@@ -63,15 +62,35 @@ object Compiler extends CompilerLike with ModelConfigGenerator {
     (js, program, procedures)
   }
 
+  private def proceduresObject(procedureDefs: Seq[(String, Map[String, String])]) = {
+    import handlers.indented
+    val functionDeclarations = procedureDefs.map(_._1).mkString("\n")
+    val propertyDeclarations = procedureDefs.map(_._2)
+      .foldLeft(Map.empty[String, String])(_ ++ _)
+      .toSeq.sortBy(_._1)
+      .map(prop => s""""${prop._1}":${prop._2}""").mkString(",\n")
+    s"""|var procedures = (function() {
+        |${indented(functionDeclarations)}
+        |  return {
+        |${indented(indented(propertyDeclarations))}
+        |  };
+        |})();\n""".stripMargin
+  }
+
   private def compileProcedureDef(pd:            ProcedureDefinition)
-                        (implicit compilerFlags: CompilerFlags): String = {
-    val name = handlers.ident(pd.procedure.name)
-    handlers.resetEveryID(name)
+                        (implicit compilerFlags: CompilerFlags): (String, Map[String, String]) = {
+    val originalName = pd.procedure.name
+    val safeName = handlers.ident(originalName)
+    handlers.resetEveryID(safeName)
     val body = handlers.commands(pd.statements)
     val args = pd.procedure.args.map(handlers.ident).mkString(", ")
-    s"""|function $name($args) {
-        |${handlers.indented(body)}
-        |}""".stripMargin
+    val functionJavascript = s"""|var $safeName = function($args) {
+                                 |${handlers.indented(body)}
+                                 |};""".stripMargin
+    if (safeName != originalName)
+      (functionJavascript, Map(originalName -> safeName, safeName -> safeName))
+    else
+      (functionJavascript, Map(safeName -> safeName))
   }
 
   // How this works:

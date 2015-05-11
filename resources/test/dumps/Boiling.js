@@ -8,7 +8,7 @@ var PlotOps   = tortoise_require('engine/plot/plotops');
 modelConfig.plots = [(function() {
   var name    = 'Average Heat';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('ave-heat', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Average Heat', 'ave-heat')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Average Heat', 'ave-heat')(function() { plotManager.plotValue(Call(averageHeat));; }); }); })];
+  var pens    = [new PenBundle.Pen('ave-heat', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Average Heat', 'ave-heat')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Average Heat', 'ave-heat')(function() { plotManager.plotValue(Call(procedures.averageHeat));; }); }); })];
   var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Average Heat', undefined)(function() {}); }); };
   var update  = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Average Heat', undefined)(function() {}); }); };
   return new Plot(name, pens, plotOps, 'Time', 'Avg Heat', false, 0.0, 50.0, 0.0, 212.0, setup, update);
@@ -51,24 +51,34 @@ var AgentModel = tortoise_require('agentmodel');
 var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
-function setup() {
-  world.clearAll();
-  world.patches().ask(function() {
-    SelfPrims.setPatchVariable("heat", Prims.random(212));
-    SelfPrims.setPatchVariable("pcolor", ColorModel.scaleColor(15, SelfPrims.getPatchVariable("heat"), 0, 212));
-  }, true);
-  world.ticker.reset();
-}
-function go() {
-  world.topology.diffuse("heat", 1)
-  world.patches().ask(function() {
-    SelfPrims.setPatchVariable("heat", NLMath.mod((SelfPrims.getPatchVariable("heat") + 5), 212));
-    SelfPrims.setPatchVariable("pcolor", ColorModel.scaleColor(15, SelfPrims.getPatchVariable("heat"), 0, 212));
-  }, true);
-  world.ticker.tick();
-}
-function averageHeat() {
-  return ListPrims.mean(world.patches().projectionBy(function() {
-    return SelfPrims.getPatchVariable("heat");
-  }));
-}
+var procedures = (function() {
+  var setup = function() {
+    world.clearAll();
+    world.patches().ask(function() {
+      SelfPrims.setPatchVariable("heat", Prims.random(212));
+      SelfPrims.setPatchVariable("pcolor", ColorModel.scaleColor(15, SelfPrims.getPatchVariable("heat"), 0, 212));
+    }, true);
+    world.ticker.reset();
+  };
+  var go = function() {
+    world.topology.diffuse("heat", 1)
+    world.patches().ask(function() {
+      SelfPrims.setPatchVariable("heat", NLMath.mod((SelfPrims.getPatchVariable("heat") + 5), 212));
+      SelfPrims.setPatchVariable("pcolor", ColorModel.scaleColor(15, SelfPrims.getPatchVariable("heat"), 0, 212));
+    }, true);
+    world.ticker.tick();
+  };
+  var averageHeat = function() {
+    return ListPrims.mean(world.patches().projectionBy(function() {
+      return SelfPrims.getPatchVariable("heat");
+    }));
+  };
+  return {
+    "AVERAGE-HEAT":averageHeat,
+    "GO":go,
+    "SETUP":setup,
+    "averageHeat":averageHeat,
+    "go":go,
+    "setup":setup
+  };
+})();

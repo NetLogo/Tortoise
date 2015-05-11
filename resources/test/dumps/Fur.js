@@ -44,80 +44,100 @@ var AgentModel = tortoise_require('agentmodel');
 var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
-function setup() {
-  world.clearAll();
-  world.patches().ask(function() {
-    SelfPrims.setPatchVariable("inner-neighbors", Call(ellipseIn, world.observer.getGlobal("inner-radius-x"), world.observer.getGlobal("inner-radius-y")));
-    SelfPrims.setPatchVariable("outer-neighbors", Call(ellipseRing, world.observer.getGlobal("outer-radius-x"), world.observer.getGlobal("outer-radius-y"), world.observer.getGlobal("inner-radius-x"), world.observer.getGlobal("inner-radius-y")));
-  }, true);
-  if (world.patches().agentFilter(function() {
-    return Prims.equality(SelfPrims.getPatchVariable("outer-neighbors").size(), 0);
-  }).nonEmpty()) {
-    notImplemented('user-message', undefined)((Dump('') + Dump("It doesn't make sense that 'outer' is equal to or smaller than 'inner.' ") + Dump(" Please reset the sliders and press Setup again.")));
-    throw new Exception.StopInterrupt;
-  }
-  else {
-    Call(restart);
-  }
-  world.ticker.reset();
-}
-function restart() {
-  world.patches().ask(function() {
-    if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("initial-density"))) {
-      SelfPrims.setPatchVariable("pcolor", 9.9);
+var procedures = (function() {
+  var setup = function() {
+    world.clearAll();
+    world.patches().ask(function() {
+      SelfPrims.setPatchVariable("inner-neighbors", Call(procedures.ellipseIn, world.observer.getGlobal("inner-radius-x"), world.observer.getGlobal("inner-radius-y")));
+      SelfPrims.setPatchVariable("outer-neighbors", Call(procedures.ellipseRing, world.observer.getGlobal("outer-radius-x"), world.observer.getGlobal("outer-radius-y"), world.observer.getGlobal("inner-radius-x"), world.observer.getGlobal("inner-radius-y")));
+    }, true);
+    if (world.patches().agentFilter(function() {
+      return Prims.equality(SelfPrims.getPatchVariable("outer-neighbors").size(), 0);
+    }).nonEmpty()) {
+      notImplemented('user-message', undefined)((Dump('') + Dump("It doesn't make sense that 'outer' is equal to or smaller than 'inner.' ") + Dump(" Please reset the sliders and press Setup again.")));
+      throw new Exception.StopInterrupt;
     }
     else {
-      SelfPrims.setPatchVariable("pcolor", 0);
+      Call(procedures.restart);
     }
-  }, true);
-  world.ticker.reset();
-}
-function go() {
-  world.patches().ask(function() {
-    Call(pickNewColor);
-  }, true);
-  world.patches().ask(function() {
-    SelfPrims.setPatchVariable("pcolor", SelfPrims.getPatchVariable("new-color"));
-  }, true);
-  world.ticker.tick();
-}
-function pickNewColor() {
-  var activator = SelfPrims.getPatchVariable("inner-neighbors").agentFilter(function() {
-    return Prims.equality(SelfPrims.getPatchVariable("pcolor"), 9.9);
-  }).size();
-  var inhibitor = SelfPrims.getPatchVariable("outer-neighbors").agentFilter(function() {
-    return Prims.equality(SelfPrims.getPatchVariable("pcolor"), 9.9);
-  }).size();
-  var difference = (activator - (world.observer.getGlobal("ratio") * inhibitor));
-  if (Prims.gt(difference, 0)) {
-    SelfPrims.setPatchVariable("new-color", 9.9);
-  }
-  else {
-    if (Prims.lt(difference, 0)) {
-      SelfPrims.setPatchVariable("new-color", 0);
+    world.ticker.reset();
+  };
+  var restart = function() {
+    world.patches().ask(function() {
+      if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("initial-density"))) {
+        SelfPrims.setPatchVariable("pcolor", 9.9);
+      }
+      else {
+        SelfPrims.setPatchVariable("pcolor", 0);
+      }
+    }, true);
+    world.ticker.reset();
+  };
+  var go = function() {
+    world.patches().ask(function() {
+      Call(procedures.pickNewColor);
+    }, true);
+    world.patches().ask(function() {
+      SelfPrims.setPatchVariable("pcolor", SelfPrims.getPatchVariable("new-color"));
+    }, true);
+    world.ticker.tick();
+  };
+  var pickNewColor = function() {
+    var activator = SelfPrims.getPatchVariable("inner-neighbors").agentFilter(function() {
+      return Prims.equality(SelfPrims.getPatchVariable("pcolor"), 9.9);
+    }).size();
+    var inhibitor = SelfPrims.getPatchVariable("outer-neighbors").agentFilter(function() {
+      return Prims.equality(SelfPrims.getPatchVariable("pcolor"), 9.9);
+    }).size();
+    var difference = (activator - (world.observer.getGlobal("ratio") * inhibitor));
+    if (Prims.gt(difference, 0)) {
+      SelfPrims.setPatchVariable("new-color", 9.9);
     }
-  }
-}
-function ellipseIn(xRadius, yRadius) {
-  return SelfManager.self().inRadius(world.patches(), ListPrims.max(ListPrims.list(xRadius, yRadius))).agentFilter(function() {
-    return Prims.gte(1, ((NLMath.pow(Call(xdistance, SelfManager.myself()), 2) / NLMath.pow(xRadius, 2)) + (NLMath.pow(Call(ydistance, SelfManager.myself()), 2) / NLMath.pow(yRadius, 2))));
-  });
-}
-function ellipseRing(outxRadius, outyRadius, inxRadius, inyRadius) {
-  return SelfManager.self().inRadius(world.patches(), ListPrims.max(ListPrims.list(outxRadius, outyRadius))).agentFilter(function() {
-    return (Prims.gte(1, ((NLMath.pow(Call(xdistance, SelfManager.myself()), 2) / NLMath.pow(outxRadius, 2)) + (NLMath.pow(Call(ydistance, SelfManager.myself()), 2) / NLMath.pow(outyRadius, 2)))) && Prims.lt(1, ((NLMath.pow(Call(xdistance, SelfManager.myself()), 2) / NLMath.pow(inxRadius, 2)) + (NLMath.pow(Call(ydistance, SelfManager.myself()), 2) / NLMath.pow(inyRadius, 2)))));
-  });
-}
-function xdistance(otherPatch) {
-  return SelfManager.self().distanceXY(otherPatch.projectionBy(function() {
-    return SelfPrims.getPatchVariable("pxcor");
-  }), SelfPrims.getPatchVariable("pycor"));
-}
-function ydistance(otherPatch) {
-  return SelfManager.self().distanceXY(SelfPrims.getPatchVariable("pxcor"), otherPatch.projectionBy(function() {
-    return SelfPrims.getPatchVariable("pycor");
-  }));
-}
+    else {
+      if (Prims.lt(difference, 0)) {
+        SelfPrims.setPatchVariable("new-color", 0);
+      }
+    }
+  };
+  var ellipseIn = function(xRadius, yRadius) {
+    return SelfManager.self().inRadius(world.patches(), ListPrims.max(ListPrims.list(xRadius, yRadius))).agentFilter(function() {
+      return Prims.gte(1, ((NLMath.pow(Call(procedures.xdistance, SelfManager.myself()), 2) / NLMath.pow(xRadius, 2)) + (NLMath.pow(Call(procedures.ydistance, SelfManager.myself()), 2) / NLMath.pow(yRadius, 2))));
+    });
+  };
+  var ellipseRing = function(outxRadius, outyRadius, inxRadius, inyRadius) {
+    return SelfManager.self().inRadius(world.patches(), ListPrims.max(ListPrims.list(outxRadius, outyRadius))).agentFilter(function() {
+      return (Prims.gte(1, ((NLMath.pow(Call(procedures.xdistance, SelfManager.myself()), 2) / NLMath.pow(outxRadius, 2)) + (NLMath.pow(Call(procedures.ydistance, SelfManager.myself()), 2) / NLMath.pow(outyRadius, 2)))) && Prims.lt(1, ((NLMath.pow(Call(procedures.xdistance, SelfManager.myself()), 2) / NLMath.pow(inxRadius, 2)) + (NLMath.pow(Call(procedures.ydistance, SelfManager.myself()), 2) / NLMath.pow(inyRadius, 2)))));
+    });
+  };
+  var xdistance = function(otherPatch) {
+    return SelfManager.self().distanceXY(otherPatch.projectionBy(function() {
+      return SelfPrims.getPatchVariable("pxcor");
+    }), SelfPrims.getPatchVariable("pycor"));
+  };
+  var ydistance = function(otherPatch) {
+    return SelfManager.self().distanceXY(SelfPrims.getPatchVariable("pxcor"), otherPatch.projectionBy(function() {
+      return SelfPrims.getPatchVariable("pycor");
+    }));
+  };
+  return {
+    "ELLIPSE-IN":ellipseIn,
+    "ELLIPSE-RING":ellipseRing,
+    "GO":go,
+    "PICK-NEW-COLOR":pickNewColor,
+    "RESTART":restart,
+    "SETUP":setup,
+    "XDISTANCE":xdistance,
+    "YDISTANCE":ydistance,
+    "ellipseIn":ellipseIn,
+    "ellipseRing":ellipseRing,
+    "go":go,
+    "pickNewColor":pickNewColor,
+    "restart":restart,
+    "setup":setup,
+    "xdistance":xdistance,
+    "ydistance":ydistance
+  };
+})();
 world.observer.setGlobal("initial-density", 50);
 world.observer.setGlobal("ratio", 0.35);
 world.observer.setGlobal("inner-radius-x", 3);

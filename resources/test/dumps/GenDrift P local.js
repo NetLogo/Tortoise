@@ -80,27 +80,35 @@ var AgentModel = tortoise_require('agentmodel');
 var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
-function setup() {
-  world.clearAll();
-  world.patches().ask(function() {
-    SelfPrims.setPatchVariable("pcolor", ((Prims.random(world.observer.getGlobal("colors")) * 10) + 5));
-    if (Prims.equality(SelfPrims.getPatchVariable("pcolor"), 75)) {
-      SelfPrims.setPatchVariable("pcolor", 125);
-    }
-  }, true);
-  world.ticker.reset();
-}
-function go() {
-  if (Prims.equality(ListPrims.variance(world.patches().projectionBy(function() {
-    return SelfPrims.getPatchVariable("pcolor");
-  })), 0)) {
-    throw new Exception.StopInterrupt;
-  }
-  world.patches().ask(function() {
-    SelfPrims.setPatchVariable("pcolor", ListPrims.oneOf(SelfPrims.getNeighbors()).projectionBy(function() {
+var procedures = (function() {
+  var setup = function() {
+    world.clearAll();
+    world.patches().ask(function() {
+      SelfPrims.setPatchVariable("pcolor", ((Prims.random(world.observer.getGlobal("colors")) * 10) + 5));
+      if (Prims.equality(SelfPrims.getPatchVariable("pcolor"), 75)) {
+        SelfPrims.setPatchVariable("pcolor", 125);
+      }
+    }, true);
+    world.ticker.reset();
+  };
+  var go = function() {
+    if (Prims.equality(ListPrims.variance(world.patches().projectionBy(function() {
       return SelfPrims.getPatchVariable("pcolor");
-    }));
-  }, true);
-  world.ticker.tick();
-}
+    })), 0)) {
+      throw new Exception.StopInterrupt;
+    }
+    world.patches().ask(function() {
+      SelfPrims.setPatchVariable("pcolor", ListPrims.oneOf(SelfPrims.getNeighbors()).projectionBy(function() {
+        return SelfPrims.getPatchVariable("pcolor");
+      }));
+    }, true);
+    world.ticker.tick();
+  };
+  return {
+    "GO":go,
+    "SETUP":setup,
+    "go":go,
+    "setup":setup
+  };
+})();
 world.observer.setGlobal("colors", 5);

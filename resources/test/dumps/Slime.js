@@ -44,53 +44,63 @@ var AgentModel = tortoise_require('agentmodel');
 var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
-function setup() {
-  world.clearAll();
-  world.turtleManager.createTurtles(world.observer.getGlobal("population"), "").ask(function() {
-    SelfPrims.setVariable("color", 15);
-    SelfPrims.setVariable("size", 2);
-    SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
-  }, true);
-  world.patches().ask(function() {
-    SelfPrims.setPatchVariable("chemical", 0);
-  }, true);
-  world.ticker.reset();
-}
-function go() {
-  world.turtles().ask(function() {
-    if (Prims.gt(SelfPrims.getPatchVariable("chemical"), world.observer.getGlobal("sniff-threshold"))) {
-      Call(turnTowardChemical);
+var procedures = (function() {
+  var setup = function() {
+    world.clearAll();
+    world.turtleManager.createTurtles(world.observer.getGlobal("population"), "").ask(function() {
+      SelfPrims.setVariable("color", 15);
+      SelfPrims.setVariable("size", 2);
+      SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
+    }, true);
+    world.patches().ask(function() {
+      SelfPrims.setPatchVariable("chemical", 0);
+    }, true);
+    world.ticker.reset();
+  };
+  var go = function() {
+    world.turtles().ask(function() {
+      if (Prims.gt(SelfPrims.getPatchVariable("chemical"), world.observer.getGlobal("sniff-threshold"))) {
+        Call(procedures.turnTowardChemical);
+      }
+      SelfPrims.right(((Prims.randomFloat(world.observer.getGlobal("wiggle-angle")) - Prims.randomFloat(world.observer.getGlobal("wiggle-angle"))) + world.observer.getGlobal("wiggle-bias")));
+      SelfPrims.fd(1);
+      SelfPrims.setPatchVariable("chemical", (SelfPrims.getPatchVariable("chemical") + 2));
+    }, true);
+    world.topology.diffuse("chemical", 1)
+    world.patches().ask(function() {
+      SelfPrims.setPatchVariable("chemical", (SelfPrims.getPatchVariable("chemical") * 0.9));
+      SelfPrims.setPatchVariable("pcolor", ColorModel.scaleColor(55, SelfPrims.getPatchVariable("chemical"), 0.1, 3));
+    }, true);
+    world.ticker.tick();
+  };
+  var turnTowardChemical = function() {
+    var ahead = SelfManager.self().patchAhead(1).projectionBy(function() {
+      return SelfPrims.getPatchVariable("chemical");
+    });
+    var myright = SelfManager.self().patchRightAndAhead(world.observer.getGlobal("sniff-angle"), 1).projectionBy(function() {
+      return SelfPrims.getPatchVariable("chemical");
+    });
+    var myleft = SelfManager.self().patchLeftAndAhead(world.observer.getGlobal("sniff-angle"), 1).projectionBy(function() {
+      return SelfPrims.getPatchVariable("chemical");
+    });
+    if ((Prims.gte(myright, ahead) && Prims.gte(myright, myleft))) {
+      SelfPrims.right(world.observer.getGlobal("sniff-angle"));
     }
-    SelfPrims.right(((Prims.randomFloat(world.observer.getGlobal("wiggle-angle")) - Prims.randomFloat(world.observer.getGlobal("wiggle-angle"))) + world.observer.getGlobal("wiggle-bias")));
-    SelfPrims.fd(1);
-    SelfPrims.setPatchVariable("chemical", (SelfPrims.getPatchVariable("chemical") + 2));
-  }, true);
-  world.topology.diffuse("chemical", 1)
-  world.patches().ask(function() {
-    SelfPrims.setPatchVariable("chemical", (SelfPrims.getPatchVariable("chemical") * 0.9));
-    SelfPrims.setPatchVariable("pcolor", ColorModel.scaleColor(55, SelfPrims.getPatchVariable("chemical"), 0.1, 3));
-  }, true);
-  world.ticker.tick();
-}
-function turnTowardChemical() {
-  var ahead = SelfManager.self().patchAhead(1).projectionBy(function() {
-    return SelfPrims.getPatchVariable("chemical");
-  });
-  var myright = SelfManager.self().patchRightAndAhead(world.observer.getGlobal("sniff-angle"), 1).projectionBy(function() {
-    return SelfPrims.getPatchVariable("chemical");
-  });
-  var myleft = SelfManager.self().patchLeftAndAhead(world.observer.getGlobal("sniff-angle"), 1).projectionBy(function() {
-    return SelfPrims.getPatchVariable("chemical");
-  });
-  if ((Prims.gte(myright, ahead) && Prims.gte(myright, myleft))) {
-    SelfPrims.right(world.observer.getGlobal("sniff-angle"));
-  }
-  else {
-    if (Prims.gte(myleft, ahead)) {
-      SelfPrims.left(world.observer.getGlobal("sniff-angle"));
+    else {
+      if (Prims.gte(myleft, ahead)) {
+        SelfPrims.left(world.observer.getGlobal("sniff-angle"));
+      }
     }
-  }
-}
+  };
+  return {
+    "GO":go,
+    "SETUP":setup,
+    "TURN-TOWARD-CHEMICAL":turnTowardChemical,
+    "go":go,
+    "setup":setup,
+    "turnTowardChemical":turnTowardChemical
+  };
+})();
 world.observer.setGlobal("population", 400);
 world.observer.setGlobal("sniff-threshold", 1);
 world.observer.setGlobal("sniff-angle", 45);

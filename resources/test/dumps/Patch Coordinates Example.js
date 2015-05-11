@@ -44,45 +44,53 @@ var AgentModel = tortoise_require('agentmodel');
 var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
-function setup() {
-  world.clearAll();
-  world.patches().ask(function() {
-    SelfPrims.setPatchVariable("pcolor", 5);
-  }, true);
-  world.getPatchAt(world.observer.getGlobal("start-x"), world.observer.getGlobal("start-y")).ask(function() {
-    SelfPrims.setPatchVariable("pcolor", 55);
-  }, true);
-  world.turtleManager.createTurtles(1, "SEARCHERS").ask(function() {
-    SelfPrims.setVariable("heading", 0);
-    SelfPrims.setVariable("color", 15);
-    SelfPrims.setVariable("size", 0.2);
-    SelfPrims.setVariable("shape", "circle");
-    SelfPrims.setXY(world.observer.getGlobal("start-x"), world.observer.getGlobal("start-y"));
-  }, true);
-  world.turtleManager.createTurtles(1, "CENTERS").ask(function() {
-    SelfPrims.setVariable("color", 105);
-    SelfPrims.setVariable("size", 0.1);
-    SelfPrims.setVariable("shape", "circle");
-    SelfPrims.setXY(world.observer.getGlobal("start-x"), world.observer.getGlobal("start-y"));
-  }, true);
-  world.ticker.reset();
-}
-function go() {
-  world.patches().ask(function() {
-    SelfPrims.setPatchVariable("pcolor", 5);
-  }, true);
-  world.turtleManager.turtlesOfBreed("CENTERS").ask(function() {
-    SelfPrims.setXY(world.observer.getGlobal("start-x"), world.observer.getGlobal("start-y"));
-  }, true);
-  world.turtleManager.turtlesOfBreed("SEARCHERS").ask(function() {
-    SelfPrims.setXY(world.observer.getGlobal("start-x"), world.observer.getGlobal("start-y"));
-    SelfPrims.setPatchVariable("pcolor", 55);
-    SelfPrims.right(5);
-    SelfPrims.fd(world.observer.getGlobal("distance-of-travel"));
-    SelfPrims.setPatchVariable("pcolor", 0);
-  }, true);
-  world.ticker.tick();
-}
+var procedures = (function() {
+  var setup = function() {
+    world.clearAll();
+    world.patches().ask(function() {
+      SelfPrims.setPatchVariable("pcolor", 5);
+    }, true);
+    world.getPatchAt(world.observer.getGlobal("start-x"), world.observer.getGlobal("start-y")).ask(function() {
+      SelfPrims.setPatchVariable("pcolor", 55);
+    }, true);
+    world.turtleManager.createTurtles(1, "SEARCHERS").ask(function() {
+      SelfPrims.setVariable("heading", 0);
+      SelfPrims.setVariable("color", 15);
+      SelfPrims.setVariable("size", 0.2);
+      SelfPrims.setVariable("shape", "circle");
+      SelfPrims.setXY(world.observer.getGlobal("start-x"), world.observer.getGlobal("start-y"));
+    }, true);
+    world.turtleManager.createTurtles(1, "CENTERS").ask(function() {
+      SelfPrims.setVariable("color", 105);
+      SelfPrims.setVariable("size", 0.1);
+      SelfPrims.setVariable("shape", "circle");
+      SelfPrims.setXY(world.observer.getGlobal("start-x"), world.observer.getGlobal("start-y"));
+    }, true);
+    world.ticker.reset();
+  };
+  var go = function() {
+    world.patches().ask(function() {
+      SelfPrims.setPatchVariable("pcolor", 5);
+    }, true);
+    world.turtleManager.turtlesOfBreed("CENTERS").ask(function() {
+      SelfPrims.setXY(world.observer.getGlobal("start-x"), world.observer.getGlobal("start-y"));
+    }, true);
+    world.turtleManager.turtlesOfBreed("SEARCHERS").ask(function() {
+      SelfPrims.setXY(world.observer.getGlobal("start-x"), world.observer.getGlobal("start-y"));
+      SelfPrims.setPatchVariable("pcolor", 55);
+      SelfPrims.right(5);
+      SelfPrims.fd(world.observer.getGlobal("distance-of-travel"));
+      SelfPrims.setPatchVariable("pcolor", 0);
+    }, true);
+    world.ticker.tick();
+  };
+  return {
+    "GO":go,
+    "SETUP":setup,
+    "go":go,
+    "setup":setup
+  };
+})();
 world.observer.setGlobal("distance-of-travel", 1);
 world.observer.setGlobal("start-y", 0);
 world.observer.setGlobal("start-x", 0);

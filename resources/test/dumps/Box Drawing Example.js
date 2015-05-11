@@ -44,39 +44,47 @@ var AgentModel = tortoise_require('agentmodel');
 var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
-function setupCorner() {
-  world.clearAll();
-  world.patches().ask(function() {
-    if (((Prims.equality(SelfPrims.getPatchVariable("pxcor"), 0) && Prims.gte(SelfPrims.getPatchVariable("pycor"), 0)) && Prims.lte(SelfPrims.getPatchVariable("pycor"), world.observer.getGlobal("edge")))) {
-      SelfPrims.setPatchVariable("pcolor", 15);
-    }
-    if (((Prims.equality(SelfPrims.getPatchVariable("pxcor"), world.observer.getGlobal("edge")) && Prims.gte(SelfPrims.getPatchVariable("pycor"), 0)) && Prims.lte(SelfPrims.getPatchVariable("pycor"), world.observer.getGlobal("edge")))) {
-      SelfPrims.setPatchVariable("pcolor", 15);
-    }
-    if (((Prims.equality(SelfPrims.getPatchVariable("pycor"), 0) && Prims.gte(SelfPrims.getPatchVariable("pxcor"), 0)) && Prims.lte(SelfPrims.getPatchVariable("pxcor"), world.observer.getGlobal("edge")))) {
-      SelfPrims.setPatchVariable("pcolor", 15);
-    }
-    if (((Prims.equality(SelfPrims.getPatchVariable("pycor"), world.observer.getGlobal("edge")) && Prims.gte(SelfPrims.getPatchVariable("pxcor"), 0)) && Prims.lte(SelfPrims.getPatchVariable("pxcor"), world.observer.getGlobal("edge")))) {
-      SelfPrims.setPatchVariable("pcolor", 15);
-    }
-  }, true);
-}
-function setupCenter() {
-  world.clearAll();
-  world.observer.setGlobal("halfedge", NLMath.toInt((world.observer.getGlobal("edge") / 2)));
-  world.patches().ask(function() {
-    if (((Prims.equality(SelfPrims.getPatchVariable("pxcor"),  -world.observer.getGlobal("halfedge")) && Prims.gte(SelfPrims.getPatchVariable("pycor"),  -world.observer.getGlobal("halfedge"))) && Prims.lte(SelfPrims.getPatchVariable("pycor"), (0 + world.observer.getGlobal("halfedge"))))) {
-      SelfPrims.setPatchVariable("pcolor", 105);
-    }
-    if (((Prims.equality(SelfPrims.getPatchVariable("pxcor"), (0 + world.observer.getGlobal("halfedge"))) && Prims.gte(SelfPrims.getPatchVariable("pycor"),  -world.observer.getGlobal("halfedge"))) && Prims.lte(SelfPrims.getPatchVariable("pycor"), (0 + world.observer.getGlobal("halfedge"))))) {
-      SelfPrims.setPatchVariable("pcolor", 105);
-    }
-    if (((Prims.equality(SelfPrims.getPatchVariable("pycor"),  -world.observer.getGlobal("halfedge")) && Prims.gte(SelfPrims.getPatchVariable("pxcor"),  -world.observer.getGlobal("halfedge"))) && Prims.lte(SelfPrims.getPatchVariable("pxcor"), (0 + world.observer.getGlobal("halfedge"))))) {
-      SelfPrims.setPatchVariable("pcolor", 105);
-    }
-    if (((Prims.equality(SelfPrims.getPatchVariable("pycor"), (0 + world.observer.getGlobal("halfedge"))) && Prims.gte(SelfPrims.getPatchVariable("pxcor"),  -world.observer.getGlobal("halfedge"))) && Prims.lte(SelfPrims.getPatchVariable("pxcor"), (0 + world.observer.getGlobal("halfedge"))))) {
-      SelfPrims.setPatchVariable("pcolor", 105);
-    }
-  }, true);
-}
+var procedures = (function() {
+  var setupCorner = function() {
+    world.clearAll();
+    world.patches().ask(function() {
+      if (((Prims.equality(SelfPrims.getPatchVariable("pxcor"), 0) && Prims.gte(SelfPrims.getPatchVariable("pycor"), 0)) && Prims.lte(SelfPrims.getPatchVariable("pycor"), world.observer.getGlobal("edge")))) {
+        SelfPrims.setPatchVariable("pcolor", 15);
+      }
+      if (((Prims.equality(SelfPrims.getPatchVariable("pxcor"), world.observer.getGlobal("edge")) && Prims.gte(SelfPrims.getPatchVariable("pycor"), 0)) && Prims.lte(SelfPrims.getPatchVariable("pycor"), world.observer.getGlobal("edge")))) {
+        SelfPrims.setPatchVariable("pcolor", 15);
+      }
+      if (((Prims.equality(SelfPrims.getPatchVariable("pycor"), 0) && Prims.gte(SelfPrims.getPatchVariable("pxcor"), 0)) && Prims.lte(SelfPrims.getPatchVariable("pxcor"), world.observer.getGlobal("edge")))) {
+        SelfPrims.setPatchVariable("pcolor", 15);
+      }
+      if (((Prims.equality(SelfPrims.getPatchVariable("pycor"), world.observer.getGlobal("edge")) && Prims.gte(SelfPrims.getPatchVariable("pxcor"), 0)) && Prims.lte(SelfPrims.getPatchVariable("pxcor"), world.observer.getGlobal("edge")))) {
+        SelfPrims.setPatchVariable("pcolor", 15);
+      }
+    }, true);
+  };
+  var setupCenter = function() {
+    world.clearAll();
+    world.observer.setGlobal("halfedge", NLMath.toInt((world.observer.getGlobal("edge") / 2)));
+    world.patches().ask(function() {
+      if (((Prims.equality(SelfPrims.getPatchVariable("pxcor"),  -world.observer.getGlobal("halfedge")) && Prims.gte(SelfPrims.getPatchVariable("pycor"),  -world.observer.getGlobal("halfedge"))) && Prims.lte(SelfPrims.getPatchVariable("pycor"), (0 + world.observer.getGlobal("halfedge"))))) {
+        SelfPrims.setPatchVariable("pcolor", 105);
+      }
+      if (((Prims.equality(SelfPrims.getPatchVariable("pxcor"), (0 + world.observer.getGlobal("halfedge"))) && Prims.gte(SelfPrims.getPatchVariable("pycor"),  -world.observer.getGlobal("halfedge"))) && Prims.lte(SelfPrims.getPatchVariable("pycor"), (0 + world.observer.getGlobal("halfedge"))))) {
+        SelfPrims.setPatchVariable("pcolor", 105);
+      }
+      if (((Prims.equality(SelfPrims.getPatchVariable("pycor"),  -world.observer.getGlobal("halfedge")) && Prims.gte(SelfPrims.getPatchVariable("pxcor"),  -world.observer.getGlobal("halfedge"))) && Prims.lte(SelfPrims.getPatchVariable("pxcor"), (0 + world.observer.getGlobal("halfedge"))))) {
+        SelfPrims.setPatchVariable("pcolor", 105);
+      }
+      if (((Prims.equality(SelfPrims.getPatchVariable("pycor"), (0 + world.observer.getGlobal("halfedge"))) && Prims.gte(SelfPrims.getPatchVariable("pxcor"),  -world.observer.getGlobal("halfedge"))) && Prims.lte(SelfPrims.getPatchVariable("pxcor"), (0 + world.observer.getGlobal("halfedge"))))) {
+        SelfPrims.setPatchVariable("pcolor", 105);
+      }
+    }, true);
+  };
+  return {
+    "SETUP-CENTER":setupCenter,
+    "SETUP-CORNER":setupCorner,
+    "setupCenter":setupCenter,
+    "setupCorner":setupCorner
+  };
+})();
 world.observer.setGlobal("edge", 8);

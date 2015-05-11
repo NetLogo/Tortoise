@@ -42,7 +42,7 @@ object BrowserCompilerTest extends TestSuite {
     }
 
     "testModelHasResult"-{
-      assert(compileModel(validModel)[String]("result").contains("function foo"))
+      assert(compileModel(validModel)[String]("result").contains("foo"))
     }
 
     "testModelHasSuccess"-{

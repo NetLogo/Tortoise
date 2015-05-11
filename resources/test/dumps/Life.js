@@ -44,67 +44,83 @@ var AgentModel = tortoise_require('agentmodel');
 var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
-function setupBlank() {
-  world.clearAll();
-  world.patches().ask(function() {
-    Call(cellDeath);
-  }, true);
-  world.ticker.reset();
-}
-function setupRandom() {
-  world.clearAll();
-  world.patches().ask(function() {
-    if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("initial-density"))) {
-      Call(cellBirth);
-    }
-    else {
-      Call(cellDeath);
-    }
-  }, true);
-  world.ticker.reset();
-}
-function cellBirth() {
-  SelfPrims.setPatchVariable("living?", true);
-  SelfPrims.setPatchVariable("pcolor", world.observer.getGlobal("fgcolor"));
-}
-function cellDeath() {
-  SelfPrims.setPatchVariable("living?", false);
-  SelfPrims.setPatchVariable("pcolor", world.observer.getGlobal("bgcolor"));
-}
-function go() {
-  world.patches().ask(function() {
-    SelfPrims.setPatchVariable("live-neighbors", SelfPrims.getNeighbors().agentFilter(function() {
-      return SelfPrims.getPatchVariable("living?");
-    }).size());
-  }, true);
-  world.patches().ask(function() {
-    if (Prims.equality(SelfPrims.getPatchVariable("live-neighbors"), 3)) {
-      Call(cellBirth);
-    }
-    else {
-      if (!Prims.equality(SelfPrims.getPatchVariable("live-neighbors"), 2)) {
-        Call(cellDeath);
-      }
-    }
-  }, true);
-  world.ticker.tick();
-}
-function drawCells() {
-  var erasing_p = world.getPatchAt(MousePrims.getX(), MousePrims.getY()).projectionBy(function() {
-    return SelfPrims.getPatchVariable("living?");
-  });
-  while (MousePrims.isDown()) {
-    world.getPatchAt(MousePrims.getX(), MousePrims.getY()).ask(function() {
-      if (erasing_p) {
-        Call(cellDeath);
+var procedures = (function() {
+  var setupBlank = function() {
+    world.clearAll();
+    world.patches().ask(function() {
+      Call(procedures.cellDeath);
+    }, true);
+    world.ticker.reset();
+  };
+  var setupRandom = function() {
+    world.clearAll();
+    world.patches().ask(function() {
+      if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("initial-density"))) {
+        Call(procedures.cellBirth);
       }
       else {
-        Call(cellBirth);
+        Call(procedures.cellDeath);
       }
     }, true);
-    notImplemented('display', undefined)();
-  }
-}
+    world.ticker.reset();
+  };
+  var cellBirth = function() {
+    SelfPrims.setPatchVariable("living?", true);
+    SelfPrims.setPatchVariable("pcolor", world.observer.getGlobal("fgcolor"));
+  };
+  var cellDeath = function() {
+    SelfPrims.setPatchVariable("living?", false);
+    SelfPrims.setPatchVariable("pcolor", world.observer.getGlobal("bgcolor"));
+  };
+  var go = function() {
+    world.patches().ask(function() {
+      SelfPrims.setPatchVariable("live-neighbors", SelfPrims.getNeighbors().agentFilter(function() {
+        return SelfPrims.getPatchVariable("living?");
+      }).size());
+    }, true);
+    world.patches().ask(function() {
+      if (Prims.equality(SelfPrims.getPatchVariable("live-neighbors"), 3)) {
+        Call(procedures.cellBirth);
+      }
+      else {
+        if (!Prims.equality(SelfPrims.getPatchVariable("live-neighbors"), 2)) {
+          Call(procedures.cellDeath);
+        }
+      }
+    }, true);
+    world.ticker.tick();
+  };
+  var drawCells = function() {
+    var erasing_p = world.getPatchAt(MousePrims.getX(), MousePrims.getY()).projectionBy(function() {
+      return SelfPrims.getPatchVariable("living?");
+    });
+    while (MousePrims.isDown()) {
+      world.getPatchAt(MousePrims.getX(), MousePrims.getY()).ask(function() {
+        if (erasing_p) {
+          Call(procedures.cellDeath);
+        }
+        else {
+          Call(procedures.cellBirth);
+        }
+      }, true);
+      notImplemented('display', undefined)();
+    }
+  };
+  return {
+    "CELL-BIRTH":cellBirth,
+    "CELL-DEATH":cellDeath,
+    "DRAW-CELLS":drawCells,
+    "GO":go,
+    "SETUP-BLANK":setupBlank,
+    "SETUP-RANDOM":setupRandom,
+    "cellBirth":cellBirth,
+    "cellDeath":cellDeath,
+    "drawCells":drawCells,
+    "go":go,
+    "setupBlank":setupBlank,
+    "setupRandom":setupRandom
+  };
+})();
 world.observer.setGlobal("initial-density", 35);
 world.observer.setGlobal("fgcolor", 123);
 world.observer.setGlobal("bgcolor", 79);

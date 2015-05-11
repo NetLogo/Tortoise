@@ -58,40 +58,50 @@ var AgentModel = tortoise_require('agentmodel');
 var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
-function setup() {
-  world.clearAll();
-  world.observer.setGlobal("traps-triggered", 0);
-  world.patches().ask(function() {
-    SelfPrims.setPatchVariable("pcolor", (105 + 3));
-  }, true);
-  BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
-  world.turtleManager.createTurtles(1, "").ask(function() {
-    SelfPrims.setVariable("color", 9.9);
-    SelfPrims.setVariable("size", 1.5);
-  }, true);
-  world.ticker.reset();
-}
-function go() {
-  if (!world.turtles().nonEmpty()) {
-    throw new Exception.StopInterrupt;
-  }
-  world.turtles().ask(function() {
-    if (Prims.equality(SelfPrims.getPatchVariable("pcolor"), 15)) {
-      SelfPrims.die();
+var procedures = (function() {
+  var setup = function() {
+    world.clearAll();
+    world.observer.setGlobal("traps-triggered", 0);
+    world.patches().ask(function() {
+      SelfPrims.setPatchVariable("pcolor", (105 + 3));
+    }, true);
+    BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
+    world.turtleManager.createTurtles(1, "").ask(function() {
+      SelfPrims.setVariable("color", 9.9);
+      SelfPrims.setVariable("size", 1.5);
+    }, true);
+    world.ticker.reset();
+  };
+  var go = function() {
+    if (!world.turtles().nonEmpty()) {
+      throw new Exception.StopInterrupt;
     }
-    else {
-      SelfPrims.setPatchVariable("pcolor", 15);
-      world.observer.setGlobal("traps-triggered", (world.observer.getGlobal("traps-triggered") + 1));
-      SelfPrims.hatch(1, "").ask(function() {
-        Call(move);
-      }, true);
-      Call(move);
-    }
-  }, true);
-  world.ticker.tick();
-}
-function move() {
-  SelfPrims.right(Prims.randomFloat(360));
-  SelfPrims.fd(Prims.randomFloat(world.observer.getGlobal("max-distance")));
-}
+    world.turtles().ask(function() {
+      if (Prims.equality(SelfPrims.getPatchVariable("pcolor"), 15)) {
+        SelfPrims.die();
+      }
+      else {
+        SelfPrims.setPatchVariable("pcolor", 15);
+        world.observer.setGlobal("traps-triggered", (world.observer.getGlobal("traps-triggered") + 1));
+        SelfPrims.hatch(1, "").ask(function() {
+          Call(procedures.move);
+        }, true);
+        Call(procedures.move);
+      }
+    }, true);
+    world.ticker.tick();
+  };
+  var move = function() {
+    SelfPrims.right(Prims.randomFloat(360));
+    SelfPrims.fd(Prims.randomFloat(world.observer.getGlobal("max-distance")));
+  };
+  return {
+    "GO":go,
+    "MOVE":move,
+    "SETUP":setup,
+    "go":go,
+    "move":move,
+    "setup":setup
+  };
+})();
 world.observer.setGlobal("max-distance", 4.5);

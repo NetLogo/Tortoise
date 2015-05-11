@@ -58,79 +58,97 @@ var AgentModel = tortoise_require('agentmodel');
 var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
-function setup() {
-  world.clearAll();
-  if (Prims.gt(world.observer.getGlobal("number"), world.patches().size())) {
-    notImplemented('user-message', undefined)((Dump('') + Dump("This pond only has room for ") + Dump(world.patches().size()) + Dump(" turtles.")));
-    throw new Exception.StopInterrupt;
-  }
-  ListPrims.nOf(world.observer.getGlobal("number"), world.patches()).ask(function() {
-    SelfPrims.sprout(1, "TURTLES").ask(function() {
-      SelfPrims.setVariable("color", 15);
+var procedures = (function() {
+  var setup = function() {
+    world.clearAll();
+    if (Prims.gt(world.observer.getGlobal("number"), world.patches().size())) {
+      notImplemented('user-message', undefined)((Dump('') + Dump("This pond only has room for ") + Dump(world.patches().size()) + Dump(" turtles.")));
+      throw new Exception.StopInterrupt;
+    }
+    ListPrims.nOf(world.observer.getGlobal("number"), world.patches()).ask(function() {
+      SelfPrims.sprout(1, "TURTLES").ask(function() {
+        SelfPrims.setVariable("color", 15);
+      }, true);
     }, true);
-  }, true);
-  ListPrims.nOf((world.observer.getGlobal("number") / 2), world.turtles()).ask(function() {
-    SelfPrims.setVariable("color", 55);
-  }, true);
-  Call(updateVariables);
-  world.ticker.reset();
-}
-function go() {
-  if (world.turtles().agentAll(function() {
-    return SelfPrims.getVariable("happy?");
-  })) {
-    throw new Exception.StopInterrupt;
-  }
-  Call(moveUnhappyTurtles);
-  Call(updateVariables);
-  world.ticker.tick();
-}
-function moveUnhappyTurtles() {
-  world.turtles().agentFilter(function() {
-    return !SelfPrims.getVariable("happy?");
-  }).ask(function() {
-    Call(findNewSpot);
-  }, true);
-}
-function findNewSpot() {
-  SelfPrims.right(Prims.randomFloat(360));
-  SelfPrims.fd(Prims.randomFloat(10));
-  if (SelfPrims.other(SelfManager.self().turtlesHere()).nonEmpty()) {
-    Call(findNewSpot);
-  }
-  SelfManager.self().moveTo(SelfManager.self().getPatchHere());
-}
-function updateVariables() {
-  Call(updateTurtles);
-  Call(updateGlobals);
-}
-function updateTurtles() {
-  world.turtles().ask(function() {
-    SelfPrims.setVariable("similar-nearby", Prims.turtlesOn(SelfPrims.getNeighbors()).agentFilter(function() {
-      return Prims.equality(SelfPrims.getVariable("color"), SelfManager.myself().projectionBy(function() {
-        return SelfPrims.getVariable("color");
-      }));
-    }).size());
-    SelfPrims.setVariable("other-nearby", Prims.turtlesOn(SelfPrims.getNeighbors()).agentFilter(function() {
-      return !Prims.equality(SelfPrims.getVariable("color"), SelfManager.myself().projectionBy(function() {
-        return SelfPrims.getVariable("color");
-      }));
-    }).size());
-    SelfPrims.setVariable("total-nearby", (SelfPrims.getVariable("similar-nearby") + SelfPrims.getVariable("other-nearby")));
-    SelfPrims.setVariable("happy?", Prims.gte(SelfPrims.getVariable("similar-nearby"), ((world.observer.getGlobal("%-similar-wanted") * SelfPrims.getVariable("total-nearby")) / 100)));
-  }, true);
-}
-function updateGlobals() {
-  var similarNeighbors = ListPrims.sum(world.turtles().projectionBy(function() {
-    return SelfPrims.getVariable("similar-nearby");
-  }));
-  var totalNeighbors = ListPrims.sum(world.turtles().projectionBy(function() {
-    return SelfPrims.getVariable("total-nearby");
-  }));
-  world.observer.setGlobal("percent-similar", ((similarNeighbors / totalNeighbors) * 100));
-  world.observer.setGlobal("percent-unhappy", ((world.turtles().agentFilter(function() {
-    return !SelfPrims.getVariable("happy?");
-  }).size() / world.turtles().size()) * 100));
-}
+    ListPrims.nOf((world.observer.getGlobal("number") / 2), world.turtles()).ask(function() {
+      SelfPrims.setVariable("color", 55);
+    }, true);
+    Call(procedures.updateVariables);
+    world.ticker.reset();
+  };
+  var go = function() {
+    if (world.turtles().agentAll(function() {
+      return SelfPrims.getVariable("happy?");
+    })) {
+      throw new Exception.StopInterrupt;
+    }
+    Call(procedures.moveUnhappyTurtles);
+    Call(procedures.updateVariables);
+    world.ticker.tick();
+  };
+  var moveUnhappyTurtles = function() {
+    world.turtles().agentFilter(function() {
+      return !SelfPrims.getVariable("happy?");
+    }).ask(function() {
+      Call(procedures.findNewSpot);
+    }, true);
+  };
+  var findNewSpot = function() {
+    SelfPrims.right(Prims.randomFloat(360));
+    SelfPrims.fd(Prims.randomFloat(10));
+    if (SelfPrims.other(SelfManager.self().turtlesHere()).nonEmpty()) {
+      Call(procedures.findNewSpot);
+    }
+    SelfManager.self().moveTo(SelfManager.self().getPatchHere());
+  };
+  var updateVariables = function() {
+    Call(procedures.updateTurtles);
+    Call(procedures.updateGlobals);
+  };
+  var updateTurtles = function() {
+    world.turtles().ask(function() {
+      SelfPrims.setVariable("similar-nearby", Prims.turtlesOn(SelfPrims.getNeighbors()).agentFilter(function() {
+        return Prims.equality(SelfPrims.getVariable("color"), SelfManager.myself().projectionBy(function() {
+          return SelfPrims.getVariable("color");
+        }));
+      }).size());
+      SelfPrims.setVariable("other-nearby", Prims.turtlesOn(SelfPrims.getNeighbors()).agentFilter(function() {
+        return !Prims.equality(SelfPrims.getVariable("color"), SelfManager.myself().projectionBy(function() {
+          return SelfPrims.getVariable("color");
+        }));
+      }).size());
+      SelfPrims.setVariable("total-nearby", (SelfPrims.getVariable("similar-nearby") + SelfPrims.getVariable("other-nearby")));
+      SelfPrims.setVariable("happy?", Prims.gte(SelfPrims.getVariable("similar-nearby"), ((world.observer.getGlobal("%-similar-wanted") * SelfPrims.getVariable("total-nearby")) / 100)));
+    }, true);
+  };
+  var updateGlobals = function() {
+    var similarNeighbors = ListPrims.sum(world.turtles().projectionBy(function() {
+      return SelfPrims.getVariable("similar-nearby");
+    }));
+    var totalNeighbors = ListPrims.sum(world.turtles().projectionBy(function() {
+      return SelfPrims.getVariable("total-nearby");
+    }));
+    world.observer.setGlobal("percent-similar", ((similarNeighbors / totalNeighbors) * 100));
+    world.observer.setGlobal("percent-unhappy", ((world.turtles().agentFilter(function() {
+      return !SelfPrims.getVariable("happy?");
+    }).size() / world.turtles().size()) * 100));
+  };
+  return {
+    "FIND-NEW-SPOT":findNewSpot,
+    "GO":go,
+    "MOVE-UNHAPPY-TURTLES":moveUnhappyTurtles,
+    "SETUP":setup,
+    "UPDATE-GLOBALS":updateGlobals,
+    "UPDATE-TURTLES":updateTurtles,
+    "UPDATE-VARIABLES":updateVariables,
+    "findNewSpot":findNewSpot,
+    "go":go,
+    "moveUnhappyTurtles":moveUnhappyTurtles,
+    "setup":setup,
+    "updateGlobals":updateGlobals,
+    "updateTurtles":updateTurtles,
+    "updateVariables":updateVariables
+  };
+})();
 world.observer.setGlobal("number", 2000);
 world.observer.setGlobal("%-similar-wanted", 30);

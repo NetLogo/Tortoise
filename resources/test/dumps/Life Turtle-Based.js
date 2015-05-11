@@ -44,122 +44,142 @@ var AgentModel = tortoise_require('agentmodel');
 var Meta       = tortoise_require('meta');
 var Random     = tortoise_require('shim/random');
 var StrictMath = tortoise_require('shim/strictmath');
-function setupBlank() {
-  world.clearAll();
-  BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("CELLS").getBreedName(), "circle")
-  BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("BABIES").getBreedName(), "dot")
-  world.patches().ask(function() {
-    SelfPrims.setPatchVariable("live-neighbors", 0);
-  }, true);
-  world.ticker.reset();
-}
-function setupRandom() {
-  Call(setupBlank);
-  world.patches().ask(function() {
-    if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("initial-density"))) {
-      SelfPrims.sprout(1, "BABIES").ask(function() {}, true);
-    }
-  }, true);
-  Call(go);
-  world.ticker.reset();
-}
-function birth() {
-  SelfPrims.sprout(1, "BABIES").ask(function() {
-    SelfPrims.setVariable("color", (65 + 1));
-  }, true);
-}
-function go() {
-  world.turtleManager.turtlesOfBreed("CELLS").agentFilter(function() {
-    return Prims.equality(SelfPrims.getVariable("color"), 5);
-  }).ask(function() {
-    SelfPrims.die();
-  }, true);
-  world.turtleManager.turtlesOfBreed("BABIES").ask(function() {
-    SelfPrims.setVariable("breed", world.turtleManager.turtlesOfBreed("CELLS"));
-    SelfPrims.setVariable("color", 9.9);
-  }, true);
-  world.turtleManager.turtlesOfBreed("CELLS").ask(function() {
-    SelfPrims.getNeighbors().ask(function() {
-      SelfPrims.setPatchVariable("live-neighbors", (SelfPrims.getPatchVariable("live-neighbors") + 1));
+var procedures = (function() {
+  var setupBlank = function() {
+    world.clearAll();
+    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("CELLS").getBreedName(), "circle")
+    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("BABIES").getBreedName(), "dot")
+    world.patches().ask(function() {
+      SelfPrims.setPatchVariable("live-neighbors", 0);
     }, true);
-  }, true);
-  world.turtleManager.turtlesOfBreed("CELLS").ask(function() {
-    if ((Prims.equality(SelfPrims.getPatchVariable("live-neighbors"), 2) || Prims.equality(SelfPrims.getPatchVariable("live-neighbors"), 3))) {
+    world.ticker.reset();
+  };
+  var setupRandom = function() {
+    Call(procedures.setupBlank);
+    world.patches().ask(function() {
+      if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("initial-density"))) {
+        SelfPrims.sprout(1, "BABIES").ask(function() {}, true);
+      }
+    }, true);
+    Call(procedures.go);
+    world.ticker.reset();
+  };
+  var birth = function() {
+    SelfPrims.sprout(1, "BABIES").ask(function() {
+      SelfPrims.setVariable("color", (65 + 1));
+    }, true);
+  };
+  var go = function() {
+    world.turtleManager.turtlesOfBreed("CELLS").agentFilter(function() {
+      return Prims.equality(SelfPrims.getVariable("color"), 5);
+    }).ask(function() {
+      SelfPrims.die();
+    }, true);
+    world.turtleManager.turtlesOfBreed("BABIES").ask(function() {
+      SelfPrims.setVariable("breed", world.turtleManager.turtlesOfBreed("CELLS"));
       SelfPrims.setVariable("color", 9.9);
-    }
-    else {
-      SelfPrims.setVariable("color", 5);
-    }
-  }, true);
-  world.patches().ask(function() {
-    if ((!SelfManager.self().breedHere("CELLS").nonEmpty() && Prims.equality(SelfPrims.getPatchVariable("live-neighbors"), 3))) {
-      Call(birth);
-    }
-    SelfPrims.setPatchVariable("live-neighbors", 0);
-  }, true);
-  world.ticker.tick();
-}
-function drawCells() {
-  var erasing_p = Prims.breedOn("CELLS", world.getPatchAt(MousePrims.getX(), MousePrims.getY())).nonEmpty();
-  while (MousePrims.isDown()) {
-    world.getPatchAt(MousePrims.getX(), MousePrims.getY()).ask(function() {
-      if (erasing_p) {
-        Call(erase);
+    }, true);
+    world.turtleManager.turtlesOfBreed("CELLS").ask(function() {
+      SelfPrims.getNeighbors().ask(function() {
+        SelfPrims.setPatchVariable("live-neighbors", (SelfPrims.getPatchVariable("live-neighbors") + 1));
+      }, true);
+    }, true);
+    world.turtleManager.turtlesOfBreed("CELLS").ask(function() {
+      if ((Prims.equality(SelfPrims.getPatchVariable("live-neighbors"), 2) || Prims.equality(SelfPrims.getPatchVariable("live-neighbors"), 3))) {
+        SelfPrims.setVariable("color", 9.9);
       }
       else {
-        Call(draw);
+        SelfPrims.setVariable("color", 5);
       }
     }, true);
-    notImplemented('display', undefined)();
-  }
-}
-function draw() {
-  if (!SelfManager.self().breedHere("CELLS").nonEmpty()) {
+    world.patches().ask(function() {
+      if ((!SelfManager.self().breedHere("CELLS").nonEmpty() && Prims.equality(SelfPrims.getPatchVariable("live-neighbors"), 3))) {
+        Call(procedures.birth);
+      }
+      SelfPrims.setPatchVariable("live-neighbors", 0);
+    }, true);
+    world.ticker.tick();
+  };
+  var drawCells = function() {
+    var erasing_p = Prims.breedOn("CELLS", world.getPatchAt(MousePrims.getX(), MousePrims.getY())).nonEmpty();
+    while (MousePrims.isDown()) {
+      world.getPatchAt(MousePrims.getX(), MousePrims.getY()).ask(function() {
+        if (erasing_p) {
+          Call(procedures.erase);
+        }
+        else {
+          Call(procedures.draw);
+        }
+      }, true);
+      notImplemented('display', undefined)();
+    }
+  };
+  var draw = function() {
+    if (!SelfManager.self().breedHere("CELLS").nonEmpty()) {
+      SelfManager.self().turtlesHere().ask(function() {
+        SelfPrims.die();
+      }, true);
+      SelfPrims.sprout(1, "CELLS").ask(function() {
+        SelfPrims.setVariable("color", 9.9);
+      }, true);
+      Call(procedures.update);
+      SelfPrims.getNeighbors().ask(function() {
+        Call(procedures.update);
+      }, true);
+    }
+  };
+  var erase = function() {
     SelfManager.self().turtlesHere().ask(function() {
       SelfPrims.die();
     }, true);
-    SelfPrims.sprout(1, "CELLS").ask(function() {
-      SelfPrims.setVariable("color", 9.9);
-    }, true);
-    Call(update);
+    Call(procedures.update);
     SelfPrims.getNeighbors().ask(function() {
-      Call(update);
+      Call(procedures.update);
     }, true);
-  }
-}
-function erase() {
-  SelfManager.self().turtlesHere().ask(function() {
-    SelfPrims.die();
-  }, true);
-  Call(update);
-  SelfPrims.getNeighbors().ask(function() {
-    Call(update);
-  }, true);
-}
-function update() {
-  SelfManager.self().breedHere("BABIES").ask(function() {
-    SelfPrims.die();
-  }, true);
-  var n = Prims.breedOn("CELLS", SelfPrims.getNeighbors()).size();
-  if (SelfManager.self().breedHere("CELLS").nonEmpty()) {
-    if ((Prims.equality(n, 2) || Prims.equality(n, 3))) {
-      SelfManager.self().breedHere("CELLS").ask(function() {
-        SelfPrims.setVariable("color", 9.9);
-      }, true);
+  };
+  var update = function() {
+    SelfManager.self().breedHere("BABIES").ask(function() {
+      SelfPrims.die();
+    }, true);
+    var n = Prims.breedOn("CELLS", SelfPrims.getNeighbors()).size();
+    if (SelfManager.self().breedHere("CELLS").nonEmpty()) {
+      if ((Prims.equality(n, 2) || Prims.equality(n, 3))) {
+        SelfManager.self().breedHere("CELLS").ask(function() {
+          SelfPrims.setVariable("color", 9.9);
+        }, true);
+      }
+      else {
+        SelfManager.self().breedHere("CELLS").ask(function() {
+          SelfPrims.setVariable("color", 5);
+        }, true);
+      }
     }
     else {
-      SelfManager.self().breedHere("CELLS").ask(function() {
-        SelfPrims.setVariable("color", 5);
-      }, true);
+      if (Prims.equality(n, 3)) {
+        SelfPrims.sprout(1, "BABIES").ask(function() {
+          SelfPrims.setVariable("color", (65 + 1));
+        }, true);
+      }
     }
-  }
-  else {
-    if (Prims.equality(n, 3)) {
-      SelfPrims.sprout(1, "BABIES").ask(function() {
-        SelfPrims.setVariable("color", (65 + 1));
-      }, true);
-    }
-  }
-  SelfPrims.setPatchVariable("live-neighbors", 0);
-}
+    SelfPrims.setPatchVariable("live-neighbors", 0);
+  };
+  return {
+    "BIRTH":birth,
+    "DRAW":draw,
+    "DRAW-CELLS":drawCells,
+    "ERASE":erase,
+    "GO":go,
+    "SETUP-BLANK":setupBlank,
+    "SETUP-RANDOM":setupRandom,
+    "UPDATE":update,
+    "birth":birth,
+    "draw":draw,
+    "drawCells":drawCells,
+    "erase":erase,
+    "go":go,
+    "setupBlank":setupBlank,
+    "setupRandom":setupRandom,
+    "update":update
+  };
+})();
 world.observer.setGlobal("initial-density", 35);
