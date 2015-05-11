@@ -39,7 +39,7 @@ trait BrowserReporter {
 
   private def writeToFile(name: String)(html: HTML): Unit = {
 
-    val parent = new File("./tortoise/target/last-test-run-reports")
+    val parent = new File("./jvm/target/last-test-run-reports")
     val file   = new File(parent, genFileName(name))
     parent.mkdirs()
 
