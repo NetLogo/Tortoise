@@ -3,9 +3,8 @@
 package org.nlogo.tortoise
 
 import
-  org.nlogo.{ api, core },
-    core.Dump,
-    core.{ AstNode, CommandBlock, LogoList, Nobody, Pure, ReporterApp, ReporterBlock, Statements, Token }
+  org.nlogo.core.{ AstNode, CommandBlock, Dump, LogoList, Nobody, Pure, ReporterApp,
+                   ReporterBlock, Statements, Token }
 
 trait Handlers extends EveryIDProvider {
 

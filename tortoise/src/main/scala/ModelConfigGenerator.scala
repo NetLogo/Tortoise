@@ -3,8 +3,7 @@
 package org.nlogo.tortoise
 
 import
-  org.nlogo.core,
-   core.{ Color, CompilerException, Model, Pen, Plot, Token }
+  org.nlogo.core.{ Color, CompilerException, Model, Pen, Plot, Token }
 
 private[tortoise] trait ModelConfigGenerator {
 

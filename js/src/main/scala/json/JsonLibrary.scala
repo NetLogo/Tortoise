@@ -3,7 +3,7 @@
 package org.nlogo.tortoise.json
 
 import
-  scala.scalajs.js.{ Any => JAny, Array => JArray, Dictionary, JSON, Object => JObject, typeOf }
+  scala.scalajs.js.{ Any => JAny, Array => JArray, Dictionary, JSON, typeOf }
 
 import
   TortoiseJson.{ fields, JsArray, JsBool, JsDouble, JsInt, JsNull, JsObject, JsString }
@@ -14,7 +14,9 @@ object JsonLibrary {
 
   def toNative(tj: TortoiseJson): Native =
     tj match {
-      case JsNull          => JAny.fromUnit(())
+      // scalastyle:off null
+      case JsNull          => null // as of scala.js 0.6.2 JAny.fromUnit(()) is undefined, not null - RG 5/19/15
+      // scalastyle:on null
       case JsInt(i)        => JAny.fromInt(i)
       case JsDouble(d)     => JAny.fromDouble(d)
       case JsString(s)     => JAny.fromString(s)

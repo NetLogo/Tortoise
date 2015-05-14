@@ -15,9 +15,6 @@ import
 import
   TortoiseJson.{ fields, JsBool, JsDouble, JsInt, JsObject, JsString }
 
-import
-  TortoiseJson.{ JsBool, JsDouble, JsInt, JsObject, JsString, fields }
-
 object WidgetToJson {
   import WidgetRead._
 

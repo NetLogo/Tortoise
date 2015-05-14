@@ -84,6 +84,7 @@ object WidgetRead {
 
     def chooseableElement(t: TortoiseJson): ValidationNel[String, Chooseable] = t match {
       case JsDouble(d)    => ChooseableDouble(d).successNel
+      case JsInt(i)       => ChooseableDouble(i.toDouble).successNel
       case JsString(s)    => ChooseableString(s).successNel
       case JsBool(b)      => ChooseableBoolean(b).successNel
       case JsArray(elems) => toLogoList(elems).map(ChooseableList)
