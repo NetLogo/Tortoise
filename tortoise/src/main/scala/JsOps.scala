@@ -8,4 +8,9 @@ trait JsOps {
   // actually valid characters in NetLogo identifiers!  --JAB (2/26/15)
   def jsString(ident: String): String =
     '"' + ident + '"'
+
+  def sanitizeNil(s: String): String =
+    if (s != "NIL") s.replaceAllLiterally("'", "\\'") else ""
 }
+
+object JsOps extends JsOps

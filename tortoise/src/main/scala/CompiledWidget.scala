@@ -9,12 +9,27 @@ import
     WidgetToJson.widget2Json
 
 import
-  org.nlogo.core.{ CompilerException, Widget }
+  org.nlogo.core.{ CompilerException, Pen, Plot, Widget }
 
 import
   scalaz.ValidationNel
 
+import
+  WidgetCompilation.{ CompiledStringV, PlotWidgetCompilation, UpdateableCompilation }
+
 case class CompiledWidget(widgetData: Widget, widgetCompilation: WidgetCompilation)
+
+class CompiledPlot(val plot:               Plot,
+                   val cleanDisplay:       String,
+                   val compiledSetupCode:  CompiledStringV,
+                   val compiledUpdateCode: CompiledStringV,
+                   val compiledPens:       Seq[CompiledPen])
+  extends CompiledWidget(plot, PlotWidgetCompilation(compiledSetupCode, compiledUpdateCode, compiledPens))
+
+class CompiledPen(val pen:                Pen,
+                  val compiledSetupCode:  CompiledStringV,
+                  val compiledUpdateCode: CompiledStringV)
+  extends CompiledWidget(pen, UpdateableCompilation(compiledSetupCode, compiledUpdateCode))
 
 object CompiledWidget {
   implicit def compileWidget2Json(compiledWidget: CompiledWidget): JsonWritable =
@@ -25,27 +40,54 @@ object CompiledWidget {
     }
 
   implicit object compiledWidgets2Json extends JsonWriter[Seq[CompiledWidget]] {
-    def apply(l: Seq[CompiledWidget]) = JsArray(l.map(_.toJsonObj))
+    def apply(l: Seq[CompiledWidget]): TortoiseJson = JsArray(l.map(_.toJsonObj))
   }
 }
 
-sealed trait WidgetCompilation
+sealed trait WidgetCompilation {
+  import WidgetCompilation.NamedFunction
+
+  def compiledElements: Seq[NamedFunction] = Seq()
+
+  def fold[T](init: T)(f: (T, NamedFunction) => T): T =
+    compiledElements.foldLeft(init)(f)
+}
 
 object WidgetCompilation {
   type CompiledStringV = ValidationNel[Exception, String]
+
+  type NamedFunction = (String, CompiledStringV)
+
   case object NotCompiled extends WidgetCompilation
   case class SourceCompilation(
-    compiledSource: CompiledStringV) extends WidgetCompilation
+    compiledSource: CompiledStringV) extends WidgetCompilation {
+    override def compiledElements: Seq[NamedFunction] = Seq(
+      "compiledSource" -> compiledSource)
+  }
   case class UpdateableCompilation(
     compiledSetupCode: CompiledStringV,
-    compiledUpdateCode: CompiledStringV) extends WidgetCompilation
+    compiledUpdateCode: CompiledStringV) extends WidgetCompilation {
+      override def compiledElements: Seq[NamedFunction] =
+        Seq("compiledSetupCode"  -> compiledSetupCode,
+            "compiledUpdateCode" -> compiledUpdateCode)
+  }
   case class PlotWidgetCompilation(
     compiledSetupCode: CompiledStringV,
     compiledUpdateCode: CompiledStringV,
-    compiledPens: Seq[CompiledWidget]) extends WidgetCompilation
-  case class SliderCompilation(compiledMin: CompiledStringV,
+    compiledPens: Seq[CompiledWidget]) extends WidgetCompilation {
+      override def compiledElements: Seq[NamedFunction] =
+        Seq("compiledSetupCode"  -> compiledSetupCode,
+            "compiledUpdateCode" -> compiledUpdateCode)
+  }
+  case class SliderCompilation(
+    compiledMin: CompiledStringV,
     compiledMax: CompiledStringV,
-    compiledStep: CompiledStringV) extends WidgetCompilation
+    compiledStep: CompiledStringV) extends WidgetCompilation {
+      override def compiledElements: Seq[NamedFunction] =
+        Seq("compiledMax"  -> compiledMax,
+            "compiledMin"  -> compiledMin,
+            "compiledStep" -> compiledStep)
+  }
 
   implicit object compileError2Json extends JsonWriter[Throwable] {
     def apply(ex: Throwable): TortoiseJson =
@@ -66,10 +108,10 @@ object WidgetCompilation {
       compileResult.fold(
         es => JsObject(fields(
           "success" -> JsBool(false),
-          "result" -> JsArray(es.list.toList.map(compileError2Json)))),
+          "result"  -> JsArray(es.list.toList.map(compileError2Json)))),
         success => JsObject(fields(
           "success" -> JsBool(true),
-          "result" -> JsString(success))))
+          "result"  -> JsString(success))))
   }
 
   implicit object widgetCompilation2Json extends JsonWriter[WidgetCompilation] {

@@ -15,6 +15,7 @@ import
 object WidgetSamples {
 
   val slider         = Slider("abc", 1, 2, 3, 4, "foobar", "5", "25", 10.0, "1", Some("bazzes"), Horizontal)
+  val reporterSlider = Slider("abc", 1, 2, 3, 4, "foobar", "0", "count turtles", 10.0, "count turtles / 100", Some("bazzes"), Horizontal)
   val switch         = Switch("abc", 1, 2, 3, 4, "foobar", true)
   val buttonNoName   = Button(None, 1, 2, 3, 4, "foobar", false, "TURTLE", "A")
   val buttonBadAgent = Button(None, 1, 2, 3, 4, "foobar", false, "FLUBBER", "A")
