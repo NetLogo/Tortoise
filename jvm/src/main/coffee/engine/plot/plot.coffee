@@ -51,8 +51,8 @@ module.exports = class Plot
       else
         pen = new Pen(name, @_ops.makePenOps, true)
         @_penMap[pen.name.toUpperCase()] = pen
+        @_ops.registerPen(pen)
         pen
-    @_ops.registerPen(@_currentPen)
     return
 
   # () => Unit
