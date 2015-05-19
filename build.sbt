@@ -3,9 +3,9 @@ import bintray.Keys.{ bintray => bintrayTask, bintrayOrganization, repository =>
 import org.scalajs.sbtplugin.cross.{ CrossProject, CrossType }
 import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport.{ fullOptJS, packageJSDependencies }
 
-val nlDependencyVersion       = "5.2.0-b5edaf7"
+val nlDependencyVersion = "5.2.0-f198f47"
 
-val parserJsDependencyVersion = "0.0.1-b5edaf7"
+val parserJsDependencyVersion = "0.0.1-f198f47"
 
 val commonSettings =
   // Keep this up here so things get published to the correct places
