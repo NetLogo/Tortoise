@@ -3,6 +3,9 @@
 package org.nlogo.tortoise
 
 import
+  JsOps.{ indented, jsString }
+
+import
   org.nlogo.core.{ CommandBlock, CompilerException, prim, Reporter, ReporterApp, Statement, Token }
 
 // The Prim traits are split apart as follows
@@ -19,7 +22,7 @@ import
 // Having two separate traits makes the code a bit easier to manage, but
 // the decision of whether there are separate traits or not could be revisited
 // in the future after a scala.js upgrade shows that it won't break stuff (RG 3/30/2015)
-trait PrimUtils extends JsOps {
+trait PrimUtils {
   def handlers: Handlers
 
   protected def failCompilation(msg: String, token: Token): Nothing =
@@ -46,7 +49,7 @@ trait PrimUtils extends JsOps {
       }
   }
 
-  trait VariablePrims extends JsOps {
+  trait VariablePrims {
     protected def procedureAndVarName(r: Reporter, action: String): Option[(String, String)] = PartialFunction.condOpt(r) {
       case bv: prim._breedvariable        => (s"SelfPrims.${action}Variable", bv.name.toLowerCase)
       case bv: prim._linkbreedvariable    => (s"SelfPrims.${action}Variable", bv.name.toLowerCase)
@@ -243,7 +246,7 @@ trait CommandPrims extends PrimUtils {
   def generateLoop(w: Statement)(implicit compilerFlags: CompilerFlags): String = {
     val body = handlers.commands(w.args(0))
     s"""|while (true) {
-        |${handlers.indented(body)}
+        |${indented(body)}
         |};""".stripMargin
   }
 
@@ -253,7 +256,7 @@ trait CommandPrims extends PrimUtils {
     val i = handlers.unusedVarname(w.command.token, "index")
     val j = handlers.unusedVarname(w.command.token, "repeatcount")
     s"""|for (var $i = 0, $j = StrictMath.floor($count); $i < $j; $i++){
-        |${handlers.indented(body)}
+        |${indented(body)}
         |}""".stripMargin
   }
 
@@ -261,7 +264,7 @@ trait CommandPrims extends PrimUtils {
     val pred = handlers.reporter(w.args(0))
     val body = handlers.commands(w.args(1))
     s"""|while ($pred) {
-        |${handlers.indented(body)}
+        |${indented(body)}
         |}""".stripMargin
   }
 
@@ -269,7 +272,7 @@ trait CommandPrims extends PrimUtils {
     val pred = handlers.reporter(s.args(0))
     val body = handlers.commands(s.args(1))
     s"""|if ($pred) {
-        |${handlers.indented(body)}
+        |${indented(body)}
         |}""".stripMargin
   }
 
@@ -278,10 +281,10 @@ trait CommandPrims extends PrimUtils {
     val thenBlock = handlers.commands(s.args(1))
     val elseBlock = handlers.commands(s.args(2))
     s"""|if ($pred) {
-        |${handlers.indented(thenBlock)}
+        |${indented(thenBlock)}
         |}
         |else {
-        |${handlers.indented(elseBlock)}
+        |${indented(elseBlock)}
         |}""".stripMargin
   }
 
@@ -297,9 +300,9 @@ trait CommandPrims extends PrimUtils {
     val handleError = handlers.commands(s.args(1)).replaceAll(s"_error_${c.let.hashCode()}", errorName)
     s"""
        |try {
-       |${handlers.indented(doCarefully)}
+       |${indented(doCarefully)}
        |} catch ($errorName) {
-       |${handlers.indented(handleError)}
+       |${indented(handleError)}
        |}
      """.stripMargin
   }
@@ -348,7 +351,7 @@ trait CommandPrims extends PrimUtils {
     val everyId = handlers.nextEveryID()
     s"""|if (Prims.isThrottleTimeElapsed("$everyId", workspace.selfManager.self(), $time)) {
         |  Prims.resetThrottleTimerFor("$everyId", workspace.selfManager.self());
-        |${handlers.indented(body)}
+        |${indented(body)}
         |}""".stripMargin
   }
 

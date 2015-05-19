@@ -11,7 +11,7 @@ import
   jsengine.Rhino
 
 import
-  org.mozilla.javascript.JavaScriptException
+  org.mozilla.javascript.{ ConsString, JavaScriptException }
 
 import
   org.scalatest.{ FunSuite, TestFailedException }
@@ -24,20 +24,24 @@ import
 
 class ModelDumpTests extends FunSuite {
 
-  val compilationFunction: Array[AnyRef] => AnyRef = {
+  val compilationFunction: Array[AnyRef] => (JMap[String, AnyRef], JList[AnyRef]) = {
     val engineSource   = resourceText("/tortoise.js")
     val rhinoEngine    = (new Rhino).engine
     rhinoEngine.eval(engineSource)
-    rhinoEngine.function("function(s) { return (new BrowserCompiler()).fromNlogo(s); }")
+    rhinoEngine.function("function(s) { return (new BrowserCompiler()).fromNlogo(s); }") andThen {
+      compilationObject =>
+        val compilation  = compilationObject.asInstanceOf[JMap[String, AnyRef]]
+        val widgetString = compilation("widgets").asInstanceOf[ConsString].toString
+        val widgets      = rhinoEngine.eval(widgetString).asInstanceOf[JList[AnyRef]]
+        (compilation, widgets)
+    }
   }
 
   for (path <- Model.models.map(_.path).distinct) {
     test(s"outputs correct model javascript for ${path}") {
       try {
-        val modelContents     = Source.fromFile(path).mkString
-        val compilationResult =
-          compilationFunction(Array[Object](modelContents))
-            .asInstanceOf[JMap[String, AnyRef]]
+        val modelContents                = Source.fromFile(path).mkString
+        val (compilationResult, widgets) = compilationFunction(Array[Object](modelContents))
         assert(compilationResult("success").asInstanceOf[Boolean])
 
         val genaratedJs = cleanJsNumbers(compilationResult("result").toString.trim)
@@ -45,7 +49,6 @@ class ModelDumpTests extends FunSuite {
           assertResult(archivedCompilation(path))(genaratedJs)
         }
 
-        val widgets = compilationResult("widgets").asInstanceOf[JList[AnyRef]]
         assert(widgets.nonEmpty)
         widgets.foreach {
           widget =>
@@ -77,7 +80,7 @@ class ModelDumpTests extends FunSuite {
       case e: TestFailedException =>
         val fw = new FileWriter(s"target/netlogoweb-${path.split('/').last}.js")
         fw.write(genaratedJs, 0, genaratedJs.length)
-        fw.close
+        fw.close()
         throw e
     }
 

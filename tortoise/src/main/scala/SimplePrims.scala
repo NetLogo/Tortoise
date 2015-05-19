@@ -3,6 +3,9 @@
 package org.nlogo.tortoise
 
 import
+  JsOps.jsString
+
+import
   org.nlogo.core.{ Command, prim, Reporter }
 
 object SimplePrims {
@@ -172,7 +175,7 @@ object SimplePrims {
       }
   }
 
-  object TypeCheck extends JsOps {
+  object TypeCheck {
     def unapply(r: Reporter): Option[String] =
       PartialFunction.condOpt(r) {
         case _: prim.etc._isagent          => s"isValidAgent()"

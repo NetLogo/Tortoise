@@ -3,10 +3,13 @@
 package org.nlogo.tortoise
 
 import
+  JsOps.{ jsArrayString, jsFunction }
+
+import
   org.nlogo.core.{ AstNode, CommandBlock, Dump, LogoList, Nobody, Pure, ReporterApp,
                    ReporterBlock, Statements, Token }
 
-trait Handlers extends EveryIDProvider with JsOps {
+trait Handlers extends EveryIDProvider {
 
   def prims: Prims
 

@@ -41,7 +41,7 @@ import
 // - Compiler calls Handlers
 // - Handlers calls Prims
 // - Prims calls back to Handlers
-object Compiler extends CompilerLike with JsOps {
+object Compiler extends CompilerLike {
 
   self =>
 

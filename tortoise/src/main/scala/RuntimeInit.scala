@@ -3,6 +3,9 @@
 package org.nlogo.tortoise
 
 import
+  JsOps.{ jsArrayString, jsFunction, jsString }
+
+import
   org.nlogo.{ core, tortoise },
     core.{ AgentKind, AgentVariables, Model, Program, ShapeList, ShapeParser },
     tortoise.json.JsonSerializer
@@ -13,8 +16,7 @@ import
 // RuntimeInit generates JavaScript code that does any initialization that needs to happen
 // before any user code runs, for example creating patches
 
-class RuntimeInit(program: Program, model: Model, onTickFunction: String = JsOps.jsFunction())
-  extends JsOps {
+class RuntimeInit(program: Program, model: Model, onTickFunction: String = jsFunction()) {
 
   def init: Seq[TortoiseSymbol] = Seq(
     WorkspaceInit(Seq(Seq(jsArrayString(genBreedObjects)), genBreedsOwnArgs, genWorkspaceArgs :+ onTickFunction)),

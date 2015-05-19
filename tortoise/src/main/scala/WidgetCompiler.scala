@@ -97,7 +97,7 @@ class WidgetCompiler(compileCommand:  String => CompiledStringV,
   }
 }
 
-object WidgetCompiler extends JsOps {
+object WidgetCompiler {
   val monitorRenames = Map(
     "compiledSource" -> "reporter")
 
