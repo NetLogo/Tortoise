@@ -3,22 +3,24 @@
 package org.nlogo.tortoise
 
 import
-  java.util.{ List => JList, Map => JMap }
+  java.{ io => jio, util => jutil},
+    jio.FileWriter,
+    jutil.{ List => JList, Map => JMap }
+
+import
+  jsengine.Rhino
 
 import
   org.mozilla.javascript.JavaScriptException
 
 import
-  org.scalatest.FunSuite
+  org.scalatest.{ FunSuite, TestFailedException }
 
 import
   scala.{ collection, io, util },
     collection.JavaConversions._,
     io.Source,
     util.matching.Regex
-
-import
-  jsengine.Rhino
 
 class ModelDumpTests extends FunSuite {
 
@@ -38,8 +40,10 @@ class ModelDumpTests extends FunSuite {
             .asInstanceOf[JMap[String, AnyRef]]
         assert(compilationResult("success").asInstanceOf[Boolean])
 
-        val genaratedJs = compilationResult("result").toString.trim
-        assertResult(archivedCompilation(path))(genaratedJs)
+        val genaratedJs = cleanJsNumbers(compilationResult("result").toString.trim)
+        loggingGeneratedJs(genaratedJs, path) {
+          assertResult(archivedCompilation(path))(genaratedJs)
+        }
 
         val widgets = compilationResult("widgets").asInstanceOf[JList[AnyRef]]
         assert(widgets.nonEmpty)
@@ -65,6 +69,17 @@ class ModelDumpTests extends FunSuite {
     val modelName = path.split('/').last.split('.')(0)
     cleanJsNumbers(resourceText(s"/dumps/$modelName.js").trim)
   }
+
+  private def loggingGeneratedJs(genaratedJs: String, path: String)(runTest: => Unit): Unit =
+    try {
+      runTest
+    } catch {
+      case e: TestFailedException =>
+        val fw = new FileWriter(s"target/netlogoweb-${path.split('/').last}.js")
+        fw.write(genaratedJs, 0, genaratedJs.length)
+        fw.close
+        throw e
+    }
 
   // scala.js `toString` for numeric values gives different results than jvm scala.
   // We need do a little cleanup to match the outputs - 2/17/15 RG
