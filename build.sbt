@@ -38,7 +38,7 @@ val commonSettings =
     resourceDirectory in Test    := (baseDirectory in root).value / "resources" / "test",
     // Build and publication settings
     isSnapshot                         := true, // Used by the publish-versioned plugin
-    bintrayRepository in bintrayTask   := "Tortoise",
+    bintrayRepository in bintrayTask   := "TortoiseAux",
     bintrayOrganization in bintrayTask := Some("netlogo"),
     // Logging and Output settings
     ivyLoggingLevel                 := UpdateLogging.Quiet, // only log problems plz
