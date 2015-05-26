@@ -17,7 +17,6 @@ script:
   - rm -rf tmp/nightly
   - mkdir -p tmp/nightly
   - cp .travis.sbt jvm/travis.sbt
-  - ./nightly.sh sbt_task tortoiseJVM/test:compile "ensime generate"
   - ./nightly.sh sbt_task tortoiseJS/test:compile
   - ./nightly.sh sbt_test tortoiseJVM fast
   - ./nightly.sh sbt_test tortoiseJVM language
