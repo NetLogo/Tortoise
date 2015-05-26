@@ -35,7 +35,6 @@ sbt_test(){
 if [[ "$@" == "" ||  "$@" == "--clean" ]] ; then
   rm -rf tmp/nightly
   mkdir -p tmp/nightly
-  sbt_task tortoiseJVM/test:compile "ensime generate"
   sbt_task tortoiseJS/test:compile
   sbt_test tortoiseJVM fast
   sbt_test tortoiseJVM language
