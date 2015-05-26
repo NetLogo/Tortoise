@@ -15,7 +15,7 @@ addSbtPlugin("me.lessis" % "bintray-sbt" % "0.1.2")
 
 // prevents noise from bintray stuff
 libraryDependencies +=
-  "org.slf4j" % "slf4j-nop" % "1.6.0"
+  "org.slf4j" % "slf4j-nop" % "1.7.12"
 
 resolvers += Resolver.url(
   "publish-versioned-plugin-releases",
