@@ -31,6 +31,7 @@ val commonSettings =
       "org.scalatest" %% "scalatest" % "2.2.1" % "test",
       "org.skyscreamer" % "jsonassert" % "1.2.3" % "test",
       "org.reflections" % "reflections" % "0.9.10" % "test",
+      "org.scalacheck" %% "scalacheck" % "1.12.1" % "test",
       // Bring in headless test code/framework for our tests
       "org.nlogo" % "netlogoheadless" % nlDependencyVersion % "test" classifier "tests"),
     ivyScala      := ivyScala.value map { _.copy(overrideScalaVersion = true) }, // needed to keep scala.js happy

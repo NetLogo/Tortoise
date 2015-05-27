@@ -112,7 +112,7 @@ check absenceOfPackageCycles > 1 in org.nlogo.tortoise.*
 
 [scalaz] = scalaz.*
 
-[testing] = org.scalatest.* org.scalautils.* org.scalactic.* org.scalacheck.* org.jmock.* org.hamcrest.* scalatags.* org.nlogo.headless.test.*
+[testing] = org.scalatest.* org.scalautils.* org.scalactic.* org.scalacheck.* org.jmock.* org.hamcrest.* org.nlogo.headless.test.* scalatags.*
 
 [libs] = [stdlib-j] [stdlib-s] [headless-AWT] [json4s] [nashorn] [rhino] [scalaz] [testing]
 """)
