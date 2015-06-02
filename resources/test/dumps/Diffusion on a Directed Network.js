@@ -7,7 +7,7 @@ var PlotOps   = tortoise_require('engine/plot/plotops');
 
 modelConfig.plots = [(function() {
   var name    = 'Histogram';
-  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
+  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Bar), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Histogram', 'default')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Histogram', 'default')(function() { plotManager.setXRange(0, NLMath.ceil((world.observer.getGlobal("max-val") + 0.5)));
 plotManager.setHistogramBarCount(NLMath.ceil(NLMath.sqrt(world.turtles().size())));
 plotManager.drawHistogramFrom(world.turtles().projectionBy(function() {

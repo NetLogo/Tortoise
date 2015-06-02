@@ -7,7 +7,7 @@ var PlotOps   = tortoise_require('engine/plot/plotops');
 
 modelConfig.plots = [(function() {
   var name    = 'Average Wait Time of Cars';
-  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
+  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Average Wait Time of Cars', 'default')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Average Wait Time of Cars', 'default')(function() { plotManager.plotValue(ListPrims.mean(world.turtles().projectionBy(function() {
   return SelfPrims.getVariable("wait-time");
 })));; }); }); })];
@@ -16,7 +16,7 @@ modelConfig.plots = [(function() {
   return new Plot(name, pens, plotOps, 'Time', 'Average Wait', false, 0.0, 100.0, 0.0, 5.0, setup, update);
 })(), (function() {
   var name    = 'Average Speed of Cars';
-  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
+  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Average Speed of Cars', 'default')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Average Speed of Cars', 'default')(function() { plotManager.plotValue(ListPrims.mean(world.turtles().projectionBy(function() {
   return SelfPrims.getVariable("speed");
 })));; }); }); })];
@@ -25,7 +25,7 @@ modelConfig.plots = [(function() {
   return new Plot(name, pens, plotOps, 'Time', 'Average Speed', false, 0.0, 100.0, 0.0, 1.0, setup, update);
 })(), (function() {
   var name    = 'Stopped Cars';
-  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
+  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Stopped Cars', 'default')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Stopped Cars', 'default')(function() { plotManager.plotValue(world.observer.getGlobal("num-cars-stopped"));; }); }); })];
   var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Stopped Cars', undefined)(function() { plotManager.setYRange(0, world.observer.getGlobal("num-cars"));; }); }); };
   var update  = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Stopped Cars', undefined)(function() {}); }); };

@@ -7,14 +7,14 @@ var PlotOps   = tortoise_require('engine/plot/plotops');
 
 modelConfig.plots = [(function() {
   var name    = 'Traps triggered';
-  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
+  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Traps triggered', 'default')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Traps triggered', 'default')(function() { plotManager.plotValue(world.observer.getGlobal("traps-triggered"));; }); }); })];
   var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Traps triggered', undefined)(function() {}); }); };
   var update  = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Traps triggered', undefined)(function() {}); }); };
   return new Plot(name, pens, plotOps, '', '', false, 0.0, 10.0, 0.0, 100.0, setup, update);
 })(), (function() {
   var name    = 'Balls in the air';
-  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
+  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Balls in the air', 'default')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Balls in the air', 'default')(function() { plotManager.plotValue(world.turtles().size());; }); }); })];
   var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Balls in the air', undefined)(function() {}); }); };
   var update  = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Balls in the air', undefined)(function() {}); }); };

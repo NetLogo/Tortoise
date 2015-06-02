@@ -7,7 +7,7 @@ var PlotOps   = tortoise_require('engine/plot/plotops');
 
 modelConfig.plots = [(function() {
   var name    = 'Average Heat';
-  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
+  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('ave-heat', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Average Heat', 'ave-heat')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Average Heat', 'ave-heat')(function() { plotManager.plotValue(Call(averageHeat));; }); }); })];
   var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Average Heat', undefined)(function() {}); }); };
   var update  = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Average Heat', undefined)(function() {}); }); };

@@ -7,7 +7,7 @@ var PlotOps   = tortoise_require('engine/plot/plotops');
 
 modelConfig.plots = [(function() {
   var name    = 'Turtle Populations';
-  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
+  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('color5', plotOps.makePenOps, false, new PenBundle.State(5.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Populations', 'color5')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Populations', 'color5')(function() { plotManager.plotValue(world.turtles().agentFilter(function() {
   return Prims.equality(SelfPrims.getVariable("color"), 5);
 }).size());; }); }); }),

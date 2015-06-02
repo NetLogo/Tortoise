@@ -7,7 +7,7 @@ var PlotOps   = tortoise_require('engine/plot/plotops');
 
 modelConfig.plots = [(function() {
   var name    = 'Degree Distribution (log-log)';
-  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
+  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Point), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Degree Distribution (log-log)', 'default')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Degree Distribution (log-log)', 'default')(function() { if (!world.observer.getGlobal("plot?")) {
   throw new Exception.StopInterrupt;
 }
@@ -30,7 +30,7 @@ while (Prims.lte(degree, maxDegree)) {
   return new Plot(name, pens, plotOps, 'log(degree)', 'log(# of nodes)', false, 0.0, 0.3, 0.0, 0.3, setup, update);
 })(), (function() {
   var name    = 'Degree Distribution';
-  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
+  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Bar), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Degree Distribution', 'default')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Degree Distribution', 'default')(function() { if (!world.observer.getGlobal("plot?")) {
   throw new Exception.StopInterrupt;
 }

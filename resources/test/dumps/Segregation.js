@@ -7,14 +7,14 @@ var PlotOps   = tortoise_require('engine/plot/plotops');
 
 modelConfig.plots = [(function() {
   var name    = 'Percent Similar';
-  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
+  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('percent', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Percent Similar', 'percent')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Percent Similar', 'percent')(function() { plotManager.plotValue(world.observer.getGlobal("percent-similar"));; }); }); })];
   var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Percent Similar', undefined)(function() {}); }); };
   var update  = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Percent Similar', undefined)(function() {}); }); };
   return new Plot(name, pens, plotOps, 'time', '%', false, 0.0, 5.0, 0.0, 100.0, setup, update);
 })(), (function() {
   var name    = 'Percent Unhappy';
-  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
+  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('percent', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Percent Unhappy', 'percent')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Percent Unhappy', 'percent')(function() { plotManager.plotValue(world.observer.getGlobal("percent-unhappy"));; }); }); })];
   var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Percent Unhappy', undefined)(function() {}); }); };
   var update  = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Percent Unhappy', undefined)(function() {}); }); };

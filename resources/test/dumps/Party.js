@@ -7,7 +7,7 @@ var PlotOps   = tortoise_require('engine/plot/plotops');
 
 modelConfig.plots = [(function() {
   var name    = 'Number Happy';
-  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
+  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('Happy', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Number Happy', 'Happy')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Number Happy', 'Happy')(function() { plotManager.plotValue(world.turtles().agentFilter(function() {
   return SelfPrims.getVariable("happy?");
 }).size());; }); }); })];
@@ -16,7 +16,7 @@ modelConfig.plots = [(function() {
   return new Plot(name, pens, plotOps, 'clock', '', false, 0.0, 10.0, 0.0, 150.0, setup, update);
 })(), (function() {
   var name    = 'Single Sex Groups';
-  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
+  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('Single Sex', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Single Sex Groups', 'Single Sex')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Single Sex Groups', 'Single Sex')(function() { plotManager.plotValue(world.observer.getGlobal("boring-groups"));; }); }); })];
   var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Single Sex Groups', undefined)(function() {}); }); };
   var update  = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Single Sex Groups', undefined)(function() {}); }); };

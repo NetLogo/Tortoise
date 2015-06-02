@@ -7,7 +7,7 @@ var PlotOps   = tortoise_require('engine/plot/plotops');
 
 modelConfig.plots = [(function() {
   var name    = 'Hydrophobic Isolation';
-  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
+  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('ratio', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Hydrophobic Isolation', 'ratio')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Hydrophobic Isolation', 'ratio')(function() { plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed("OILS").projectionBy(function() {
   return (SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("OILS"), world.observer.getGlobal("interaction-distance")).size() / SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("interaction-distance")).agentFilter(function() {
     return !LinkPrims.isLinkNeighbor("LINKS", SelfManager.myself());

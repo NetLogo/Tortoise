@@ -7,7 +7,7 @@ var PlotOps   = tortoise_require('engine/plot/plotops');
 
 modelConfig.plots = [(function() {
   var name    = 'Energy Histogram';
-  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
+  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('fast', plotOps.makePenOps, false, new PenBundle.State(15.0, 10.0, PenBundle.DisplayMode.Bar), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Energy Histogram', 'fast')(function() { plotManager.setHistogramBarCount(40);; }); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Energy Histogram', 'fast')(function() { plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() {
   return Prims.equality(SelfPrims.getVariable("color"), 15);
 }).projectionBy(function() {
@@ -32,7 +32,7 @@ plotManager.setYRange(0, NLMath.ceil((world.observer.getGlobal("number-of-partic
   return new Plot(name, pens, plotOps, 'Energy', 'Number', true, 0.0, 400.0, 0.0, 10.0, setup, update);
 })(), (function() {
   var name    = 'Speed Counts';
-  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
+  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('fast', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Counts', 'fast')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Counts', 'fast')(function() { plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("percent-fast"));; }); }); }),
 new PenBundle.Pen('medium', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Counts', 'medium')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Counts', 'medium')(function() { plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("percent-medium"));; }); }); }),
 new PenBundle.Pen('slow', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Counts', 'slow')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Counts', 'slow')(function() { plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("percent-slow"));; }); }); })];
@@ -41,7 +41,7 @@ new PenBundle.Pen('slow', plotOps.makePenOps, false, new PenBundle.State(105.0, 
   return new Plot(name, pens, plotOps, 'time', 'count (%)', true, 0.0, 20.0, 0.0, 100.0, setup, update);
 })(), (function() {
   var name    = 'Speed Histogram';
-  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
+  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('fast', plotOps.makePenOps, false, new PenBundle.State(15.0, 5.0, PenBundle.DisplayMode.Bar), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Histogram', 'fast')(function() { plotManager.setHistogramBarCount(40);; }); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Histogram', 'fast')(function() { plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() {
   return Prims.equality(SelfPrims.getVariable("color"), 15);
 }).projectionBy(function() {

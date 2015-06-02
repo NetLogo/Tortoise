@@ -7,7 +7,7 @@ var PlotOps   = tortoise_require('engine/plot/plotops');
 
 modelConfig.plots = [(function() {
   var name    = 'Class Plot';
-  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
+  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('low', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Class Plot', 'low')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Class Plot', 'low')(function() { plotManager.plotValue(world.turtles().agentFilter(function() {
   return Prims.equality(SelfPrims.getVariable("color"), 15);
 }).size());; }); }); }),
@@ -22,7 +22,7 @@ new PenBundle.Pen('up', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.
   return new Plot(name, pens, plotOps, 'Time', 'Turtles', true, 0.0, 50.0, 0.0, 250.0, setup, update);
 })(), (function() {
   var name    = 'Class Histogram';
-  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
+  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Bar), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Class Histogram', 'default')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Class Histogram', 'default')(function() { plotManager.resetPen();
 plotManager.setPenColor(15);
 plotManager.plotValue(world.turtles().agentFilter(function() {
@@ -41,7 +41,7 @@ plotManager.plotValue(world.turtles().agentFilter(function() {
   return new Plot(name, pens, plotOps, 'Classes', 'Turtles', false, 0.0, 3.0, 0.0, 250.0, setup, update);
 })(), (function() {
   var name    = 'Lorenz Curve';
-  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
+  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('lorenz', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Lorenz Curve', 'lorenz')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Lorenz Curve', 'lorenz')(function() { plotManager.resetPen();
 plotManager.setPenInterval((100 / world.observer.getGlobal("num-people")));
 plotManager.plotValue(0);
@@ -56,7 +56,7 @@ plotManager.plotValue(100);; }); }); }, function() { workspace.rng.withAux(funct
   return new Plot(name, pens, plotOps, 'Pop %', 'Wealth %', true, 0.0, 100.0, 0.0, 100.0, setup, update);
 })(), (function() {
   var name    = 'Gini-Index v. Time';
-  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
+  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Gini-Index v. Time', 'default')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Gini-Index v. Time', 'default')(function() { plotManager.plotValue(((world.observer.getGlobal("gini-index-reserve") / world.observer.getGlobal("num-people")) / 0.5));; }); }); })];
   var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Gini-Index v. Time', undefined)(function() {}); }); };
   var update  = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Gini-Index v. Time', undefined)(function() {}); }); };
