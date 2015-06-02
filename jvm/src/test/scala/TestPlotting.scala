@@ -162,6 +162,23 @@ class TestPlotting extends FunSuite with PlottingHelpers {
     histogram(5, 19, 2, 107, -123, 2, 2, 2, 0, 1, 93)
     assertXYs(2 -> 4, 5 -> 1, 1 -> 1, 0 -> 1, 19 -> 1, 107 -> 1, -123 -> 1, 93 -> 1)
 
+    // Test `plotxy` and `plot` intermixed
+    clearPlot()
+    plotxy(12, 53)
+    assertXYs(12 -> 53)
+    plot(9)
+    assertXYs(12 -> 53, 13 -> 9)
+    plotxy(100002, -1)
+    assertXYs(12 -> 53, 13 -> 9, 100002 -> -1)
+    plotxy(100004, 101)
+    assertXYs(12 -> 53, 13 -> 9, 100002 -> -1, 100004 -> 101)
+    plot(98)
+    assertXYs(12 -> 53, 13 -> 9, 100002 -> -1, 100004 -> 101, 100005 -> 98)
+    plotxy(0, 1031)
+    assertXYs(12 -> 53, 13 -> 9, 100002 -> -1, 100004 -> 101, 100005 -> 98, 0 -> 1031)
+    plot(15)
+    assertXYs(12 -> 53, 13 -> 9, 100002 -> -1, 100004 -> 101, 100005 -> 98, 0 -> 1031, 1 -> 15)
+
   }
 
   testPlotting("plot-pen-exists?") { (nashorn) =>
@@ -506,11 +523,12 @@ trait PlottingHelpers {
         |      var reset       = function() {};
         |      var registerPen = function() {};
         |
-        |      var resetPen      = function() { return function() {}; };
-        |      var addPoint      = function() { return function() {}; };
-        |      var updatePenMode = function() { return function() {}; };
+        |      var resetPen       = function() { return function() {}; };
+        |      var addPoint       = function() { return function() {}; };
+        |      var updatePenMode  = function() { return function() {}; };
+        |      var updatePenColor = function() { return function() {}; };
         |
-        |      DummyOps.__super__.constructor.call(this, resize, reset, registerPen, resetPen, addPoint, updatePenMode);
+        |      DummyOps.__super__.constructor.call(this, resize, reset, registerPen, resetPen, addPoint, updatePenMode, updatePenColor);
         |
         |    }
         |

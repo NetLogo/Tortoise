@@ -88,7 +88,7 @@ module.exports = class Plot
 
   # (Number, Number) => Unit
   plotPoint: (x, y) ->
-    @_withPen((pen) => pen.addPoint(x, y); @_verifySize(pen))
+    @_withPen((pen) => pen.addXY(x, y); @_verifySize(pen))
     return
 
   # (Number) => Unit

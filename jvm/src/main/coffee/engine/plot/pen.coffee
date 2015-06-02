@@ -31,12 +31,9 @@ class PlotPoint
 
 class Counter
 
-  _count:   undefined # Number
-  _atFirst: undefined # Number   Who's at first?  Me, ya punk!  --JAB (10/15/14)
-
-  constructor: ->
-    @_count   = 0
-    @_atFirst = true
+  # Who's at first?  Me, ya punk!  --JAB (10/15/14)
+  # (Number, Boolean) => Counter
+  constructor: (@_count = 0, @_atFirst = true) ->
 
   # (Number) => Number
   next: (interval) ->
@@ -58,6 +55,11 @@ module.exports.State = class State
   clone: ->
     new State(@color, @interval, @displayMode, @mode)
 
+  # (Number) => Unit
+  leapCounterTo: (x) ->
+    @_counter = new Counter(x, false)
+    return
+
   # () => Number
   nextX: ->
     @_counter.next(@interval)
@@ -66,8 +68,10 @@ module.exports.State = class State
   partiallyReset: ->
     new State(@color, @interval, @displayMode, Down)
 
+  # () => Unit
   resetCounter: ->
     @_counter = new Counter()
+    return
 
 module.exports.Pen = class Pen
 
@@ -81,16 +85,15 @@ module.exports.Pen = class Pen
     @_ops = genOps(this)
     @reset()
 
-  # (Number, Number) => Unit
-  addPoint: (x, y) ->
-    @_points.push(new PlotPoint(x, y, @_state.mode, @_state.color))
-    @_updateBounds(x, y)
-    @_ops.addPoint(x, y)
-    return
-
   # (Number) => Unit
   addValue: (y) ->
-    @addPoint(@_state.nextX(), y)
+    @_addPoint(@_state.nextX(), y)
+    return
+
+  # (Number, Number) => Unit
+  addXY: (x, y) ->
+    @_addPoint(x, y)
+    @_state.leapCounterTo(x)
     return
 
   # () => (Number, Number, Number, Number)
@@ -101,7 +104,7 @@ module.exports.Pen = class Pen
   drawHistogramFrom: (ys) ->
     @reset(true)
     nums = ys.filter((y) -> JSType(y).isNumber())
-    _(nums).countBy().forEach((n, key) => @addPoint(Number(key), n); return).value()
+    _(nums).countBy().forEach((n, key) => @addXY(Number(key), n); return).value()
     return
 
   # () => Number
@@ -180,6 +183,13 @@ module.exports.Pen = class Pen
   # () => Unit
   usePointMode: ->
     @_updateDisplayMode(Point)
+    return
+
+  # (Number, Number) => Unit
+  _addPoint: (x, y) ->
+    @_points.push(new PlotPoint(x, y, @_state.mode, @_state.color))
+    @_updateBounds(x, y)
+    @_ops.addPoint(x, y)
     return
 
     # (x, y) => Unit

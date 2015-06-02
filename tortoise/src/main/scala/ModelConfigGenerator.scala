@@ -57,7 +57,7 @@ private[tortoise] trait ModelConfigGenerator {
 
       val noop       = thunkifyProcedure("")
       val arity2Noop = thunkifyFunction(noop)
-      val plotOps    = s"new PlotOps($noop, $noop, $noop, $arity2Noop, $arity2Noop, $arity2Noop)"
+      val plotOps    = s"new PlotOps($noop, $noop, $noop, $arity2Noop, $arity2Noop, $arity2Noop, $arity2Noop)"
 
       val cleanDisplay = sanitize(display)
       val plotPens     = pens.map(_.toJS(cleanDisplay)).mkString("[", ",\n", "]")
