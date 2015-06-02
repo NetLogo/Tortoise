@@ -59,10 +59,13 @@ class BrowserCompiler {
     JsonLibrary.toNative(compilingModel(_.fromNlogoContents(contents)).toJsonObj)
 
   private def compilingModel(
-    f: CompiledModel.type => ValidationNel[CompilerException, CompiledModel],
+    f: CompiledModel.type => ValidationNel[Exception, CompiledModel],
     g: (CompiledModel, ModelCompilation) => ModelCompilation = (a, b) => b): ValidationNel[Failure, ModelCompilation] =
     Validation.fromTryCatchThrowable[ValidationNel[Failure, ModelCompilation], Throwable](
-      f(CompiledModel).leftMap(_.map(e => FailureCompilerException(e)))
+      f(CompiledModel).leftMap(_.map {
+        case e: CompilerException => FailureCompilerException(e)
+        case e: Exception         => FailureException(e)
+      })
         .map(m => g(m, ModelCompilation.fromCompiledModel(m, compileWidgets(m))))
     ).fold(
       error => FailureException(error).failureNel[ModelCompilation],

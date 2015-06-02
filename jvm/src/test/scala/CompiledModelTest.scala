@@ -38,6 +38,10 @@ class CompiledModelTest extends FunSuite {
     testModelCode(badModelCode, isInvalid)
   }
 
+  test("invalid model from nlogo") {
+    assert(CompiledModel.fromNlogoContents("").isFailure)
+  }
+
   test("model with unimplemented primitives can be compiled") {
     val unimplemented =
       s"""|to go

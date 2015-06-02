@@ -64,10 +64,11 @@ object CompiledModel {
 
   def fromNlogoContents(contents:      String,
                         compiler:      CompilerLike  = Compiler)
-              (implicit compilerFlags: CompilerFlags): CompiledModelV = {
-    val model = ModelReader.parseModel(contents, CompilerUtilities)
-    fromModel(model)
-  }
+              (implicit compilerFlags: CompilerFlags): ValidationNel[Exception, CompiledModel] =
+    try fromModel(ModelReader.parseModel(contents, CompilerUtilities))
+    catch {
+      case e: RuntimeException => e.failureNel
+    }
 
   def fromCode(netlogoCode:   String,
                compiler:      CompilerLike = Compiler)
