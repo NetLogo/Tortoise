@@ -142,6 +142,7 @@ module.exports.Pen = class Pen
   # (Number) => Unit
   setColor: (color) ->
     @_state.color = color
+    @_ops.updateColor(color)
     return
 
   # P.S. I find it _hilarious_ that this can take '0' and negative numbers --JAB (9/22/14)
