@@ -104,4 +104,19 @@ object JsonReader extends LowPriorityImplicitReaders {
 
   implicit def jsArray2RichJsArray(json: JsArray): RichJsArray =
     new RichJsArray(json)
+
+  abstract class JsonSequenceReader[T] extends JsonReader[TortoiseJson, Seq[T]] {
+    import scalaz.{ std, syntax },
+      syntax.traverse._,
+      std.list._
+
+    def nonArrayErrorString(json: TortoiseJson): String
+    def convertElem(json: TortoiseJson): ValidationNel[String, T]
+
+    def apply(json: TortoiseJson): ValidationNel[String, Seq[T]] =
+      json match {
+        case JsArray(elems) => elems.map(convertElem).toList.sequenceU
+        case other          => nonArrayErrorString(other).failureNel[Seq[T]]
+      }
+  }
 }
