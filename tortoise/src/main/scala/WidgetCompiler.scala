@@ -17,7 +17,7 @@ import
   org.nlogo.core.{ Button, CompilerException, Monitor, Pen, Plot, Slider, Token, Widget }
 
 import
-  TortoiseSymbol.Declare
+  TortoiseSymbol.JsDeclare
 
 import
   WidgetCompilation._

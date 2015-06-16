@@ -3,9 +3,11 @@
 package org.nlogo.tortoise
 
 import
-  org.nlogo.{ agent, core, parse },
-    core.{ model, AgentKind, CompilerException, FrontEndInterface, Model, Program, View },
-      AgentKind._,
+  CompilerLike.Compilation
+
+import
+  org.nlogo.{ core, parse },
+    core.{ model, CompilerException, FrontEndInterface, Model, Program, View },
       FrontEndInterface.{ ProceduresMap, NoProcedures },
     model.ModelReader,
     parse.CompilerUtilities
@@ -15,31 +17,18 @@ import
     Scalaz.ToValidationOps
 
 case class CompiledModel(compiledCode: String        = "",
-                         model:        Model,
-                         program:      Program       = Program.empty(),
-                         procedures:   ProceduresMap = NoProcedures,
+                         compilation:  Compilation,
                          private val compiler: CompilerLike = Compiler) {
+  import CompiledModel.CompileResult
 
-  import CompiledModel.{ AskableKind, CompileResult }
+  val Compilation(_, widgets, _, model, procedures, program) = compilation
 
   def compileReporter(logo: String): CompileResult[String] = validate {
     _.compileReporter(logo, procedures, program)
   }
 
-  def compileCommand(logo: String, kind: AgentKind = Observer): CompileResult[String] = {
-
-    val command =
-      if (kind == Observer)
-        logo
-      else
-        s"""|ask ${kind.toSpecialAgentSetString} [
-            |  $logo
-            |]""".stripMargin
-
-    validate {
-      _.compileCommands(command, procedures, program)
-    }
-
+  def compileCommand(logo: String): CompileResult[String] = validate {
+    _.compileCommands(logo, procedures, program)
   }
 
   private val validate: (CompilerLike => String) => CompileResult[String] = CompiledModel.validate(compiler)
@@ -58,8 +47,8 @@ object CompiledModel {
                 compiler:      CompilerLike = Compiler)
       (implicit compilerFlags: CompilerFlags): CompiledModelV = validate(compiler) {
     (c) =>
-      val (code, program, procedures) = c.compileProcedures(model)
-      CompiledModel(code, model, program, procedures, c)
+      val compilation = c.compileProcedures(model)
+      CompiledModel(compiler.toJS(compilation), compilation, c)
   }
 
   def fromNlogoContents(contents:      String,
@@ -78,7 +67,8 @@ object CompiledModel {
   def fromCompiledModel(netlogoCode:   String,
                         oldModel:      CompiledModel)
               (implicit compilerFlags: CompilerFlags): CompiledModelV = {
-    val CompiledModel(_, model, _, _, compiler) = oldModel
+    val CompiledModel(_, compilation, compiler) = oldModel
+    val model                                   = compilation.model
     fromModel(model.copy(code = netlogoCode), compiler)
   }
 
@@ -87,15 +77,5 @@ object CompiledModel {
     catch {
       case ex: CompilerException => ex.failureNel
     }
-
-  private implicit class AskableKind(kind: AgentKind) {
-    def toSpecialAgentSetString: String =
-      kind match {
-        case Turtle   => "turtles"
-        case Patch    => "patches"
-        case Link     => "links"
-        case _        => throw new IllegalArgumentException(s"This type of agent cannot be asked: $kind")
-      }
-  }
 
 }

@@ -6,7 +6,7 @@ import
   org.nlogo.core.{ AstNode, CommandBlock, Dump, LogoList, Nobody, Pure, ReporterApp,
                    ReporterBlock, Statements, Token }
 
-trait Handlers extends EveryIDProvider {
+trait Handlers extends EveryIDProvider with JsOps {
 
   def prims: Prims
 
@@ -34,13 +34,9 @@ trait Handlers extends EveryIDProvider {
           false
       }
     if (body.isEmpty)
-      "function() {}"
-    else if (isTrivialReporter(node))
-      s"function() { $body }"
+      jsFunction()
     else
-      s"""|function() {
-          |${indented(body)}
-          |}""".stripMargin
+      jsFunction(body = body)
   }
 
   // The "abstract" syntax trees we get from the front end aren't totally abstract in that they have
@@ -67,15 +63,12 @@ trait Handlers extends EveryIDProvider {
 
   def literal(obj: AnyRef): String = obj match {
     case ll: LogoList =>
-      ll.scalaIterator.map(literal).mkString("[", ", ", "]")
+      jsArrayString(ll.map(literal))
     case Nobody =>
       "Nobody"
     case x =>
       Dump.logoObject(x, readable = true, exporting = false)
   }
-
-  def indented(s: String): String =
-    s.lines.map("  " + _).mkString("\n")
 
   def ident(s: String): String = JSIdentProvider(s)
 

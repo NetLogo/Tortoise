@@ -34,9 +34,9 @@ module.exports =
     _patchesAllBlack:          undefined # Boolean
     _patchesWithLabels:        undefined # Number
 
-    # (MiniWorkspace, Array[String], Array[String], Array[String], Number, Number, Number, Number, Number, Boolean, Boolean, Array[Object], Array[Object]) => World
+    # (MiniWorkspace, Array[String], Array[String], Array[String], Number, Number, Number, Number, Number, Boolean, Boolean, Array[Object], Array[Object], () => Unit) => World
     constructor: (miniWorkspace, globalNames, interfaceGlobalNames, @patchesOwnNames, minPxcor, maxPxcor, minPycor
-                , maxPycor, _patchSize, wrappingAllowedInX, wrappingAllowedInY, turtleShapeList, linkShapeList) ->
+                , maxPycor, _patchSize, wrappingAllowedInX, wrappingAllowedInY, turtleShapeList, linkShapeList, onTickFunction) ->
       { selfManager: @selfManager, updater: @_updater, rng: @rng
       , breedManager: @breedManager, plotManager: @_plotManager } = miniWorkspace
       @_updater.collectUpdates()
@@ -60,9 +60,13 @@ module.exports =
         wrappingAllowedInY: wrappingAllowedInY
       })
 
+      onTick = =>
+        @rng.withAux(onTickFunction)
+        @_plotManager.updatePlots()
+
       @linkManager   = new LinkManager(this, @breedManager, @_updater, @_setUnbreededLinksDirected, @_setUnbreededLinksUndirected)
       @observer      = new Observer(@_updater.updated, globalNames, interfaceGlobalNames)
-      @ticker        = new Ticker(@_plotManager.setupPlots, @_plotManager.updatePlots, @_updater.updated(this))
+      @ticker        = new Ticker(@_plotManager.setupPlots, onTick, @_updater.updated(this))
       @topology      = null
       @turtleManager = new TurtleManager(this, @breedManager, @_updater, @rng.nextInt)
 

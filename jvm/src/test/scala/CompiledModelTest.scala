@@ -110,7 +110,9 @@ class CompiledModelTest extends FunSuite {
                             runTest:       TestFunc,
                             compilerFlags: CompilerFlags = CompilerFlags.Default): Unit = {
 
-    val genJS         = (code: String) => (codeToModel andThen ((m: CModel) => Compiler.compileProcedures(m)(compilerFlags)))(code)._1
+    val genJS         = (codeToModel                                                  andThen
+                        ((m: CModel) => Compiler.compileProcedures(m)(compilerFlags)) andThen
+                        Compiler.toJS)(_)
     val genValidation = (code: String) => CompiledModel.fromCode(code)(compilerFlags) map (_.compiledCode)
 
     runTest(modelCode, genJS, genValidation)

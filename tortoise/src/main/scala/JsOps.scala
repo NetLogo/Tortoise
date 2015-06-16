@@ -11,6 +11,33 @@ trait JsOps {
 
   def sanitizeNil(s: String): String =
     if (s != "NIL") s.replaceAllLiterally("'", "\\'") else ""
+
+  def jsArrayString(arrayValues: Iterable[String], separator: String=" "): String =
+    if (arrayValues.nonEmpty)
+      arrayValues.mkString("[", s",$separator", "]")
+    else
+      "[]"
+
+  def jsFunction(args: Seq[String] = Seq(), body: String = ""): String = {
+    val jsArgs = args.mkString("(", ", ", ")")
+    if (body.length == 0)
+      s"function$jsArgs {}"
+    else if (body.lines.length < 2 && body.length < 100)
+      s"function$jsArgs { $body }"
+    else
+      s"""|function$jsArgs {
+          |${indented(body)}
+          |}""".stripMargin
+  }
+
+  def thunkifyProcedure(str: String): String =
+    if (str.nonEmpty) jsFunction(body = s"$str;") else jsFunction()
+
+  def thunkifyFunction(str: String): String =
+    if (str.nonEmpty) jsFunction(body = s"return $str;") else jsFunction()
+
+  def indented(s: String): String =
+    s.lines.map("  " + _).mkString("\n")
 }
 
 object JsOps extends JsOps

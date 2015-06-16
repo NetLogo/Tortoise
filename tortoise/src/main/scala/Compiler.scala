@@ -3,21 +3,45 @@
 package org.nlogo.tortoise
 
 import
-  org.nlogo.{ api, core, parse },
-    core.{ AgentKind, FrontEndInterface, Model, ProcedureDefinition, Program, SourceWrapping, StructureResults },
+  CompilerLike.Compilation
+
+import
+  org.nlogo.{ core, parse },
+    core.{ AgentKind, CompilerException, FrontEndInterface, Model, ProcedureDefinition, Program, SourceWrapping, StructureResults },
       FrontEndInterface.{ ProceduresMap, NoProcedures },
     parse.FrontEnd
 
-// there are three main entry points here:
-//   compile{Reporter, Commands, Procedures}
-// all three take NetLogo, return JavaScript.
+import
+  scalaz.{ Scalaz, ValidationNel },
+    Scalaz.ToValidationOps
+
+import
+  TortoiseSymbol.JsStatement
+
+// there are four main entry points here:
+//   compile{Reporter, Commands}
+// take NetLogo, return JavaScript.
+//   compileProcedures
+// takes NetLogo, returns a "Compilation", which can be sent to
+//    toJS
+//  which takes a Compilation and returns JavaScript
+
+// The division between compileProcedures and toJS makes it easier for clients, such as
+// Galapagos, to deal with compiled components which are *not* procedures,
+// things like widgets, plots, and interface initialization. compileProcedures will raise
+// an error if the procedures cannot be compiled, if other components cannot be compiled,
+// those components will contain (or be) a failed validation. toJS translates the
+// entire Compilation into a ready-to-execute JavaScript model. We separate these
+// functions in order to allow non-critical compilation concerns to fail while still
+// allowing procedure compilation to succeed. We return those failures in order to allow
+// Galapagos to make a decision about how to behave when a part of compilation fails.
+// RG 6/17/2015
 
 // the dependencies between the classes in this package are as follows:
 // - Compiler calls Handlers
 // - Handlers calls Prims
 // - Prims calls back to Handlers
-
-object Compiler extends CompilerLike with ModelConfigGenerator {
+object Compiler extends CompilerLike with JsOps {
 
   self =>
 
@@ -25,6 +49,21 @@ object Compiler extends CompilerLike with ModelConfigGenerator {
   private val handlers: Handlers = new Handlers { override lazy val prims    = self.prims }
 
   val frontEnd: FrontEndInterface = FrontEnd
+
+  def toJS(result:           Compilation)
+    (implicit compilerFlags: CompilerFlags = CompilerFlags.Default) : String = {
+    import result.model
+    val init              = new RuntimeInit(result.program, model, compilerFlags.onTickCallback).init
+    val modelConfig       = PlotCompiler.formatPlots(result.widgets)
+    val procedures        = ProcedureCompiler.formatProcedures(result.compiledProcedures)
+    val interfaceGlobalJs = result.interfaceGlobalCommands.map(
+      (v: ValidationNel[CompilerException, String]) => v.fold(
+        ces => s"""modelConfig.output.write("Error(s) in interface global init: ${ces.map(_.getMessage).list.mkString(", ")}")""",
+        identity)).mkString("\n")
+
+    val interfaceInit = JsStatement("interfaceInit", interfaceGlobalJs, Seq("world", "procedures", "modelConfig"))
+    TortoiseLoader.integrateSymbols(Seq(init, modelConfig, procedures).flatten :+ interfaceInit)
+  }
 
   def compileReporter(logo:          String,
                       oldProcedures: ProceduresMap = NoProcedures,
@@ -41,56 +80,33 @@ object Compiler extends CompilerLike with ModelConfigGenerator {
   def compileMoreProcedures(model:         Model,
                             program:       Program,
                             oldProcedures: ProceduresMap)
-                  (implicit compilerFlags: CompilerFlags): (String, Program, ProceduresMap) = {
+                  (implicit compilerFlags: CompilerFlags):
+                  (Seq[ProcedureDefinition], Program, ProceduresMap) = {
     val (defs, results): (Seq[ProcedureDefinition], StructureResults) =
       frontEnd.frontEnd(model.code, program = program, oldProcedures = oldProcedures)
-    val main = proceduresObject(defs.map(compileProcedureDef))
-    (main, results.program, results.procedures)
+    (defs, results.program, results.procedures)
   }
 
   def compileProcedures(model:         Model)
-              (implicit compilerFlags: CompilerFlags): (String, Program, ProceduresMap) = {
-    val (main, program, procedures) = compileMoreProcedures(
+              (implicit compilerFlags: CompilerFlags): Compilation = {
+    val (procedureDefs, program, procedures) = compileMoreProcedures(
       model,
       Program.empty.copy(interfaceGlobals = model.interfaceGlobals),
       FrontEndInterface.NoProcedures)
-    val init = new RuntimeInit(program, model)
-    val interface =
-      compileCommands(model.interfaceGlobalCommands.mkString("\n"), program = program)
-    val modelConfig = genModelConfig(model)(compileCommands(_, procedures, program))
-    val js = modelConfig + init.init + main + interface
-    (js, program, procedures)
+    val validatedCompileCommand  = validate(s => compileCommands(s, procedures, program)) _
+    val validatedCompileReporter = validate(s => compileReporter(s, procedures, program)) _
+    val interface                = model.interfaceGlobalCommands.map(validatedCompileCommand)
+    val compiledProcedures       = new ProcedureCompiler(handlers).compileProcedures(procedureDefs)
+    val compiledWidgets          = new WidgetCompiler(validatedCompileCommand, validatedCompileReporter)
+      .compileWidgets(model.widgets)
+    Compilation(compiledProcedures, compiledWidgets, interface, model, procedures, program)
   }
 
-  private def proceduresObject(procedureDefs: Seq[(String, Map[String, String])]) = {
-    import handlers.indented
-    val functionDeclarations = procedureDefs.map(_._1).mkString("\n")
-    val propertyDeclarations = procedureDefs.map(_._2)
-      .foldLeft(Map.empty[String, String])(_ ++ _)
-      .toSeq.sortBy(_._1)
-      .map(prop => s""""${prop._1}":${prop._2}""").mkString(",\n")
-    s"""|var procedures = (function() {
-        |${indented(functionDeclarations)}
-        |  return {
-        |${indented(indented(propertyDeclarations))}
-        |  };
-        |})();\n""".stripMargin
-  }
-
-  private def compileProcedureDef(pd:            ProcedureDefinition)
-                        (implicit compilerFlags: CompilerFlags): (String, Map[String, String]) = {
-    val originalName = pd.procedure.name
-    val safeName = handlers.ident(originalName)
-    handlers.resetEveryID(safeName)
-    val body = handlers.commands(pd.statements)
-    val args = pd.procedure.args.map(handlers.ident).mkString(", ")
-    val functionJavascript = s"""|var $safeName = function($args) {
-                                 |${handlers.indented(body)}
-                                 |};""".stripMargin
-    if (safeName != originalName)
-      (functionJavascript, Map(originalName -> safeName, safeName -> safeName))
-    else
-      (functionJavascript, Map(safeName -> safeName))
+  private def validate(compileFunc: String => String)(arg: String): CompiledModel.CompileResult[String] = {
+    try compileFunc(arg).successNel[CompilerException]
+    catch {
+      case ex: CompilerException => ex.failureNel[String]
+    }
   }
 
   // How this works:

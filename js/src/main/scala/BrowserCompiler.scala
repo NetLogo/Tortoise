@@ -10,7 +10,7 @@ import
     WidgetToJson.{ widget2Json, readWidgetJson }
 
 import
-  org.nlogo.core.{ AgentKind, CompilerException, FrontEndInterface, Model, Widget }
+  org.nlogo.core.{ CompilerException, Model, Widget }
 
 import
   scala.reflect.ClassTag
@@ -66,7 +66,7 @@ class BrowserCompiler {
         case e: CompilerException => FailureCompilerException(e)
         case e: Exception         => FailureException(e)
       })
-        .map(m => g(m, ModelCompilation.fromCompiledModel(m, compileWidgets(m))))
+        .map(m => g(m, ModelCompilation.fromCompiledModel(m)))
     ).fold(
       error => FailureException(error).failureNel[ModelCompilation],
       success => success)
@@ -90,38 +90,6 @@ class BrowserCompiler {
 
   private def readNative[A](n: NativeJson)(implicit ev: JsonReader[TortoiseJson, A]): ValidationNel[Failure, A] =
     JsonReader.read(JsonLibrary.toTortoise(n))(ev).leftMap(_.map(s => FailureString(s)))
-
-  private def sanitizeSource(s: String) =
-    s.replace("\\n", "\n").replace("\\\\", "\\").replace("\\\"", "\"")
-
-  private val toKind = Map(
-    "OBSERVER" -> AgentKind.Observer,
-    "TURTLE"   -> AgentKind.Turtle,
-    "PATCH"    -> AgentKind.Patch,
-    "LINK"     -> AgentKind.Link)
-
-  private def compileWidgets(compiledModel: CompiledModel): List[CompiledWidget] = {
-    import org.nlogo.core.{Plot, Button, Slider, Monitor, Pen, Widget}
-    def compileCmd(code: String, agentType: String = "OBSERVER"): CompiledStringV =
-      compiledModel.compileCommand(sanitizeSource(code), toKind(agentType.toUpperCase))
-    def compileRep(code: String): CompiledStringV =
-      compiledModel.compileReporter(sanitizeSource(code))
-    def compilePen(pen: Pen): CompiledWidget =
-      CompiledWidget(
-        pen, UpdateableCompilation(compileCmd(pen.setupCode), compileCmd(pen.updateCode)))
-    compiledModel.model.widgets.map { w: Widget =>
-      CompiledWidget(w,
-        w match {
-        case b: Button      => SourceCompilation(compileCmd(b.source, b.buttonType))
-        case m: Monitor     => SourceCompilation(compileRep(m.source))
-        case p: Plot        =>
-          PlotWidgetCompilation(compileCmd(p.setupCode), compileCmd(p.updateCode), p.pens.map(compilePen))
-        case s: Slider      =>
-          SliderCompilation(compileRep(s.min), compileRep(s.max), compileRep(s.step))
-        case _ => NotCompiled
-      })
-    }
-  }
 }
 
 object BrowserCompiler {
@@ -164,12 +132,13 @@ object BrowserCompiler {
         "result" -> JsString(success))))
   }
 
-  implicit object compiledWidgets2Json extends JsonWriter[Seq[CompiledWidget]] {
-    def apply(l: Seq[CompiledWidget]): TortoiseJson = JsArray(l.map(_.toJsonObj))
-  }
-
   implicit object compiledCommands2Json extends JsonWriter[Seq[CompiledStringV]] {
     def apply(l: Seq[CompiledStringV]): TortoiseJson = JsArray(l.map(compileResult2Json))
+  }
+
+  implicit object compiledWidgets2JsonString extends JsonWriter[Seq[CompiledWidget]] {
+    def apply(widgets: Seq[CompiledWidget]): TortoiseJson =
+      JsString(WidgetCompiler.formatWidgets(widgets))
   }
 
   implicit object compilation2JsonWriter extends JsonWriter[ValidationNel[Failure, ModelCompilation]] {
@@ -187,51 +156,14 @@ object BrowserCompiler {
       compileResult.fold(compilationFailureJson, compilationSuccessJson)
   }
 
-  implicit object widgetCompilation2Json extends JsonWriter[WidgetCompilation] {
-    import BrowserCompiler.compiledWidgets2Json
-
-    def apply(widgetCompilation: WidgetCompilation): TortoiseJson =
-      widgetCompilation match {
-        case NotCompiled              => JsObject(fields())
-        case s: SourceCompilation     => Jsonify.writer[SourceCompilation, TortoiseJson](s)
-        case u: UpdateableCompilation => Jsonify.writer[UpdateableCompilation, TortoiseJson](u)
-        case p: PlotWidgetCompilation => Jsonify.writer[PlotWidgetCompilation, TortoiseJson](p)
-        case s: SliderCompilation     => Jsonify.writer[SliderCompilation, TortoiseJson](s)
-      }
-  }
-
   implicit def exception2Json(ex: Throwable): JsonWritable =
     JsonWriter.convert(ex)
 
   implicit def failure2Json(f: Failure): JsonWritable =
     JsonWriter.convert(f)
 
-  implicit def compileWidget2Json(compiledWidget: CompiledWidget): JsonWritable =
-    new JsonWritable {
-      def toJsonObj = JsObject(
-        widgetCompilation2Json(compiledWidget.widgetCompilation).asInstanceOf[JsObject].props ++
-        compiledWidget.widgetData.toJsonObj.asInstanceOf[JsObject].props)
-    }
-
   implicit def compilationResult2Json(modelCompilation: ValidationNel[Failure, ModelCompilation]): JsonWritable =
     JsonWriter.convert(modelCompilation)
-
-  case class CompiledWidget(widgetData: Widget, widgetCompilation: WidgetCompilation)
-
-  sealed trait WidgetCompilation
-  case object NotCompiled extends WidgetCompilation
-  case class SourceCompilation(
-    compiledSource: CompiledStringV) extends WidgetCompilation
-  case class UpdateableCompilation(
-    compiledSetupCode: CompiledStringV,
-    compiledUpdateCode: CompiledStringV) extends WidgetCompilation
-  case class PlotWidgetCompilation(
-    compiledSetupCode: CompiledStringV,
-    compiledUpdateCode: CompiledStringV,
-    compiledPens: Seq[CompiledWidget]) extends WidgetCompilation
-  case class SliderCompilation(compiledMin: CompiledStringV,
-    compiledMax: CompiledStringV,
-    compiledStep: CompiledStringV) extends WidgetCompilation
 
   case class ModelCompilation(
     result: String,
@@ -242,12 +174,12 @@ object BrowserCompiler {
     reporters: Seq[CompiledStringV] = Seq())
 
   object ModelCompilation {
-    def fromCompiledModel(compiledModel: CompiledModel, widgets: Seq[CompiledWidget]): ModelCompilation =
+    def fromCompiledModel(compiledModel: CompiledModel): ModelCompilation =
       ModelCompilation(
         compiledModel.compiledCode,
         compiledModel.model.code,
         compiledModel.model.info,
-        widgets)
+        compiledModel.widgets)
   }
 
   sealed trait Failure

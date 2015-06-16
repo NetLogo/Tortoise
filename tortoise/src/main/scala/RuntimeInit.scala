@@ -3,69 +3,66 @@
 package org.nlogo.tortoise
 
 import
-  org.nlogo.core.{ AgentKind, AgentVariables, Model, Program, ShapeList, ShapeParser }
+  org.nlogo.{ core, tortoise },
+    core.{ AgentKind, AgentVariables, Model, Program, ShapeList, ShapeParser },
+    tortoise.json.JsonSerializer
 
 import
-  org.nlogo.tortoise.json.JsonSerializer
+  TortoiseSymbol.{ JsDeclare, JsRequire, WorkspaceInit }
 
 // RuntimeInit generates JavaScript code that does any initialization that needs to happen
 // before any user code runs, for example creating patches
 
-class RuntimeInit(program: Program, model: Model) extends JsOps {
+class RuntimeInit(program: Program, model: Model, onTickFunction: String = JsOps.jsFunction())
+  extends JsOps {
 
-  def init: String =
-    s"""var workspace = tortoise_require('engine/workspace')(modelConfig)($genBreedObjects)($genBreedsOwnArgs)($genWorkspaceArgs);
-       |
-       |var BreedManager  = workspace.breedManager;
-       |var LayoutManager = workspace.layoutManager;
-       |var LinkPrims     = workspace.linkPrims;
-       |var ListPrims     = workspace.listPrims;
-       |var MousePrims    = workspace.mousePrims;
-       |var plotManager   = workspace.plotManager;
-       |var Prims         = workspace.prims;
-       |var PrintPrims    = workspace.printPrims;
-       |var OutputPrims   = workspace.outputPrims;
-       |var SelfPrims     = workspace.selfPrims;
-       |var SelfManager   = workspace.selfManager;
-       |var Updater       = workspace.updater;
-       |var world         = workspace.world;
-       |
-       |var Call           = tortoise_require('util/call');
-       |var Exception      = tortoise_require('util/exception');
-       |var NLMath         = tortoise_require('util/nlmath');
-       |var notImplemented = tortoise_require('util/notimplemented');
-       |
-       |var Dump      = tortoise_require('engine/dump');
-       |var ColorModel = tortoise_require('engine/core/colormodel');
-       |var Link      = tortoise_require('engine/core/link');
-       |var LinkSet   = tortoise_require('engine/core/linkset');
-       |var Nobody    = tortoise_require('engine/core/nobody');
-       |var PatchSet  = tortoise_require('engine/core/patchset');
-       |var Turtle    = tortoise_require('engine/core/turtle');
-       |var TurtleSet = tortoise_require('engine/core/turtleset');
-       |var NLType    = tortoise_require('engine/core/typechecker');
-       |var Tasks     = tortoise_require('engine/prim/tasks');
-       |
-       |var AgentModel = tortoise_require('agentmodel');
-       |var Meta       = tortoise_require('meta');
-       |var Random     = tortoise_require('shim/random');
-       |var StrictMath = tortoise_require('shim/strictmath');
-       |""".stripMargin
+  def init: Seq[TortoiseSymbol] = Seq(
+    WorkspaceInit(Seq(Seq(jsArrayString(genBreedObjects)), genBreedsOwnArgs, genWorkspaceArgs :+ onTickFunction)),
 
-  private def genBreedObjects: String = {
-    val breedObjs =
-      (program.breeds.values ++ program.linkBreeds.values).map {
-        b =>
-          val name        = jsString(b.name)
-          val singular    = jsString(b.singular.toLowerCase)
-          val varNames    = mkJSArrStr(b.owns map (_.toLowerCase) map jsString)
-          val directedStr = if (b.isLinkBreed) s", isDirected: ${b.isDirected}" else ""
-          s"""{ name: $name, singular: $singular, varNames: $varNames$directedStr }"""
-      }
-    mkJSArrStr(breedObjs)
-  }
+    JsDeclare("BreedManager",  "workspace.breedManager",  Seq("workspace")),
+    JsDeclare("LayoutManager", "workspace.layoutManager", Seq("workspace")),
+    JsDeclare("LinkPrims",     "workspace.linkPrims",     Seq("workspace")),
+    JsDeclare("ListPrims",     "workspace.listPrims",     Seq("workspace")),
+    JsDeclare("MousePrims",    "workspace.mousePrims",    Seq("workspace")),
+    JsDeclare("plotManager",   "workspace.plotManager",   Seq("workspace")),
+    JsDeclare("Prims",         "workspace.prims",         Seq("workspace")),
+    JsDeclare("PrintPrims",    "workspace.printPrims",    Seq("workspace")),
+    JsDeclare("OutputPrims",   "workspace.outputPrims",   Seq("workspace")),
+    JsDeclare("SelfPrims",     "workspace.selfPrims",     Seq("workspace")),
+    JsDeclare("SelfManager",   "workspace.selfManager",   Seq("workspace")),
+    JsDeclare("Updater",       "workspace.updater",       Seq("workspace")),
+    JsDeclare("world",         "workspace.world",         Seq("workspace")),
 
-  private def genBreedsOwnArgs: String = {
+    JsRequire("Call",           "util/call"),
+    JsRequire("Exception",      "util/exception"),
+    JsRequire("NLMath",         "util/nlmath"),
+    JsRequire("notImplemented", "util/notimplemented"),
+    JsRequire("Dump",           "engine/dump"),
+    JsRequire("ColorModel",     "engine/core/colormodel"),
+    JsRequire("Link",           "engine/core/link"),
+    JsRequire("LinkSet",        "engine/core/linkset"),
+    JsRequire("Nobody",         "engine/core/nobody"),
+    JsRequire("PatchSet",       "engine/core/patchset"),
+    JsRequire("Turtle",         "engine/core/turtle"),
+    JsRequire("TurtleSet",      "engine/core/turtleset"),
+    JsRequire("NLType",         "engine/core/typechecker"),
+    JsRequire("Tasks",          "engine/prim/tasks"),
+    JsRequire("AgentModel",     "agentmodel"),
+    JsRequire("Meta",           "meta"),
+    JsRequire("Random",         "shim/random"),
+    JsRequire("StrictMath",     "shim/strictmath"))
+
+  private def genBreedObjects: Seq[String] =
+    (program.breeds.values ++ program.linkBreeds.values).map {
+      b =>
+        val name        = jsString(b.name)
+        val singular    = jsString(b.singular.toLowerCase)
+        val varNames    = jsArrayString(b.owns map (_.toLowerCase) map jsString)
+        val directedStr = if (b.isLinkBreed) s", isDirected: ${b.isDirected}" else ""
+        s"""{ name: $name, singular: $singular, varNames: $varNames$directedStr }"""
+    }.toSeq
+
+  private def genBreedsOwnArgs: Seq[String] = {
 
     // The turtle varnames information is only used by the `Turtle` class, which already has intrinsic knowledge of many
     // variables (often in special-cased form, e.g. `color`), so we should only bother passing in turtles-own variables
@@ -73,14 +70,13 @@ class RuntimeInit(program: Program, model: Model) extends JsOps {
     val linkVarNames   = program.linksOwn   diff AgentVariables.getImplicitLinkVariables
     val turtleVarNames = program.turtlesOwn diff AgentVariables.getImplicitTurtleVariables
 
-    val linksOwnNames   = mkJSArrStr(linkVarNames   map (_.toLowerCase) map jsString)
-    val turtlesOwnNames = mkJSArrStr(turtleVarNames map (_.toLowerCase) map jsString)
+    val linksOwnNames   = jsArrayString(linkVarNames   map (_.toLowerCase) map jsString)
+    val turtlesOwnNames = jsArrayString(turtleVarNames map (_.toLowerCase) map jsString)
 
-    s"$turtlesOwnNames, $linksOwnNames"
-
+    Seq(turtlesOwnNames, linksOwnNames)
   }
 
-  private def genWorkspaceArgs: String = {
+  private def genWorkspaceArgs: Seq[String] = {
 
     def shapeList(shapes: ShapeList): String =
       if (shapes.names.nonEmpty)
@@ -96,9 +92,9 @@ class RuntimeInit(program: Program, model: Model) extends JsOps {
 
     val patchVarNames  = program.patchesOwn diff AgentVariables.getImplicitPatchVariables
 
-    val globalNames          = mkJSArrStr(program.globals          map (_.toLowerCase) map jsString)
-    val interfaceGlobalNames = mkJSArrStr(program.interfaceGlobals map (_.toLowerCase) map jsString)
-    val patchesOwnNames      = mkJSArrStr(patchVarNames            map (_.toLowerCase) map jsString)
+    val globalNames          = jsArrayString(program.globals          map (_.toLowerCase) map jsString)
+    val interfaceGlobalNames = jsArrayString(program.interfaceGlobals map (_.toLowerCase) map jsString)
+    val patchesOwnNames      = jsArrayString(patchVarNames            map (_.toLowerCase) map jsString)
 
     val turtleShapesJson = shapeList(parseTurtleShapes(model.turtleShapes.toArray))
     val linkShapesJson   = shapeList(parseLinkShapes(model.linkShapes.toArray))
@@ -106,15 +102,7 @@ class RuntimeInit(program: Program, model: Model) extends JsOps {
     val view = model.view
     import view._
 
-    s"$globalNames, $interfaceGlobalNames, $patchesOwnNames, $minPxcor, $maxPxcor, $minPycor, $maxPycor, $patchSize, " +
-      s"$wrappingAllowedInX, $wrappingAllowedInY, $turtleShapesJson, $linkShapesJson"
-
+    Seq(globalNames, interfaceGlobalNames, patchesOwnNames, minPxcor, maxPxcor, minPycor, maxPycor, patchSize,
+      wrappingAllowedInX, wrappingAllowedInY, turtleShapesJson, linkShapesJson).map(_.toString)
   }
-
-  private def mkJSArrStr(arrayValues: Iterable[String]): String =
-    if (arrayValues.nonEmpty)
-      arrayValues.mkString("[", ", ", "]")
-    else
-      "[]"
-
 }

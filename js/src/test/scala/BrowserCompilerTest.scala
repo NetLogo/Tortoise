@@ -13,6 +13,10 @@ import
     TortoiseJson.{ JsArray, JsObject, JsString },
     WidgetToJson.widget2Json
 
+import
+  scala.scalajs.js,
+    js.JSON
+
 import utest._
 
 object BrowserCompilerTest extends TestSuite {
@@ -110,11 +114,18 @@ object BrowserCompilerTest extends TestSuite {
     info    = "some model info here")
 
   private def withWidget(compiledModel: JsObject, widgetType: String, f: JsObject => Unit): Unit = {
-    val compiledWidgets = compiledModel[JsArray]("widgets")
-      .elems.map(_.asInstanceOf[JsObject])
-    val selectedWidget  = ((widget: JsObject) => widget[String]("type") == widgetType)
-    assert(compiledWidgets.exists(selectedWidget))
-    f(compiledWidgets.find(selectedWidget).get)
+    // this song and dance is to turn a string with Javascript Objects containing functions
+    // into TortoiseJson objects
+    val widgetsString = compiledModel[String]("widgets")
+    val widgetsJson = JsonLibrary.toTortoise(js.eval(widgetsString))
+    widgetsJson match {
+      case JsArray(elems) =>
+        val compiledWidgets = elems.collect { case jo : JsObject => jo }
+        val selectedWidget  = ((widget: JsObject) => widget[String]("type") == widgetType)
+        assert(compiledWidgets.exists(selectedWidget))
+        f(compiledWidgets.find(selectedWidget).get)
+      case _ => throw new Exception(s"Invalid widget set $widgetsString")
+    }
   }
 
   private def compileModel(s: String): JsObject =

@@ -3,7 +3,7 @@
 package org.nlogo.tortoise
 
 import
-  org.nlogo.core.{ Command, CommandBlock, CompilerException, prim, Reporter, ReporterApp, Statement, Token }
+  org.nlogo.core.{ CommandBlock, CompilerException, prim, Reporter, ReporterApp, Statement, Token }
 
 // The Prim traits are split apart as follows
 //                  JsOps

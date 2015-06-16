@@ -22,10 +22,10 @@ class TortoiseFixture(name: String, nashorn: Nashorn, notImplemented: (String) =
   private var procs: ProceduresMap = NoProcedures
 
   override def declare(model: CModel): Unit = {
-    val (js, p, m) = cautiously(Compiler.compileProcedures(model))
-    program = p
-    procs = m
-    nashorn.eval(js)
+    val compilation = cautiously(Compiler.compileProcedures(model))
+    program = compilation.program
+    procs   = compilation.procedures
+    nashorn.eval(Compiler.toJS(compilation))
     ()
   }
 

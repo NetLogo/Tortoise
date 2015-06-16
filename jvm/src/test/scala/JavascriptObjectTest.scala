@@ -29,17 +29,17 @@ class JavascriptObjectTest extends FunSuite {
 
   test("writes a javascript object holding just a single named function") {
     val javascriptObject = new JavascriptObject("foo" -> jsFunction)
-    assertResult("""{"foo":function(){return 2;}}""")(javascriptObject.toJsString)
+    assertResult("""{"foo":function() { return 2; }}""")(javascriptObject.toJsString)
   }
 
   test("writes a javascript object that has had functions added") {
     val javascriptObject = new JavascriptObject().addObjectProperties(jsObject).addFunction("baz", jsFunction)
-    assertResult("""{"baz":function(){return 2;},"foo":"bar"}""")(javascriptObject.toJsString)
+    assertResult("""{"baz":function() { return 2; },"foo":"bar"}""")(javascriptObject.toJsString)
   }
 
   test("writes a javascript named function that has had values added") {
     val javascriptObject = new JavascriptObject("baz" -> jsFunction).addObjectProperties(jsObject)
-    assertResult("""{"foo":"bar","baz":function(){return 2;}}""")(javascriptObject.toJsString)
+    assertResult("""{"foo":"bar","baz":function() { return 2; }}""")(javascriptObject.toJsString)
   }
 
   test("can be queried about elements") {

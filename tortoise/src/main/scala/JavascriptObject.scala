@@ -11,6 +11,9 @@ import
     TortoiseJson.{ fields, JsObject }
 
 import
+  JsOps.jsFunction
+
+import
   scala.collection.immutable.ListMap
 
 // JavascriptObject represents a fully-featured javascript object.
@@ -49,7 +52,7 @@ object JavascriptObject {
     def renderField(name: String): String =
       s""""$name":$toJsString"""
     def toJsString: String =
-      s"function${args.mkString("(", ", ", ")")}${body.mkString("{", "\n", "}")}"
+      jsFunction(args, body.mkString("\n"))
   }
 
   case class JsonValueElement(json: TortoiseJson) extends ElementValue {

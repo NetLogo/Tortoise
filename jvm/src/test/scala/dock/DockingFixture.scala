@@ -248,10 +248,23 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
     declareHelper(model)
   }
 
+  private val runMonitors =
+    """|function() {
+       |  widgets.forEach(function(w) {
+       |    if (w.type == "monitor") {
+       |      w.reporter();
+       |    }
+       |  });
+       |}""".stripMargin
+
+  implicit val compilerFlags = CompilerFlags.Default.copy(onTickCallback = runMonitors)
+
   def declareHelper(model: Model) {
     netLogoCode ++= s"${model.code}\n"
-    val (js, _, _) = Compiler.compileProcedures(model)
+    val result = Compiler.compileProcedures(model)
+    val js = Compiler.toJS(result)
     evalJS(js)
+    evalJS(s"var widgets = ${WidgetCompiler.formatWidgets(result.widgets)};")
     state = Map()
     nashorn.eval("expectedModel = new AgentModel")
     nashorn.eval("actualModel = new AgentModel")
