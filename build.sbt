@@ -24,13 +24,13 @@ val commonSettings =
     resolvers           += bintray.Opts.resolver.repo("netlogo", "NetLogoHeadless"),
     libraryDependencies ++= Seq(
       "org.nlogo" % "netlogoheadless" % nlDependencyVersion,
-      "org.mozilla" % "rhino" % "1.7R5", // see jsengine/Rhino.scala for more information
+      "org.mozilla" % "rhino" % "1.7.6", // see jsengine/Rhino.scala for more information
       "org.json4s" %% "json4s-native" % "3.2.11",
       "org.scalaz" %% "scalaz-core" % "7.1.1",
       "com.lihaoyi" %% "scalatags" % "0.4.5" % "test",
       "org.scalatest" %% "scalatest" % "2.2.1" % "test",
       "org.skyscreamer" % "jsonassert" % "1.2.3" % "test",
-      "org.reflections" % "reflections" % "0.9.9" % "test",
+      "org.reflections" % "reflections" % "0.9.10" % "test",
       // Bring in headless test code/framework for our tests
       "org.nlogo" % "netlogoheadless" % nlDependencyVersion % "test" classifier "tests"),
     ivyScala      := ivyScala.value map { _.copy(overrideScalaVersion = true) }, // needed to keep scala.js happy
