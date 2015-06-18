@@ -14,26 +14,13 @@ module.exports =
     @_nextInt:     undefined # (Number) => Number
     @_selfManager: undefined # SelfManager
 
-    # [T <: Agent] @ (Array[T]) => AbstractAgentSet[T]
-    constructor: (agents) ->
-      super(agents)
-
-      @_nextInt =
-        agents[0]?.world.rng.nextInt ? (-> throw new Error("How/why are you calling the RNG in an empty agentset?"))
-
-      @_selfManager =
-        agents[0]?.world.selfManager ? {
-          askAgent: () -> () -> undefined
-          self: -> { id: undefined }
-        }
-
     # (() => Boolean) => AbstractAgentSet[T]
     agentFilter: (f) ->
-      @filter(@_selfManager.askAgent(f))
+      @filter(@_lazyGetSelfManager().askAgent(f))
 
     # (() => Boolean) => Boolean
     agentAll: (f) ->
-      @every(@_selfManager.askAgent(f))
+      @every(@_lazyGetSelfManager().askAgent(f))
 
     # (() => Any, Boolean) => Unit
     ask: (f, shouldShuffle) ->
@@ -44,16 +31,18 @@ module.exports =
         else
           @iterator()
 
-      iter.forEach(@_selfManager.askAgent(f))
+      selfManager = @_lazyGetSelfManager()
 
-      if @_selfManager.self().isDead?()
+      iter.forEach(selfManager.askAgent(f))
+
+      if selfManager.self().isDead?()
         throw new Death
 
       return
 
     # [Result] @ (() => Result) => Array[Result]
     projectionBy: (f) ->
-      @shufflerator().map(@_selfManager.askAgent(f))
+      @shufflerator().map(@_lazyGetSelfManager().askAgent(f))
 
     # (() => Double) => Agent
     maxOneOf: (f) ->
@@ -69,7 +58,7 @@ module.exports =
 
     # () => Shufflerator[T]
     shufflerator: ->
-      new Shufflerator(@toArray(), ((agent) -> agent?.id >= 0), @_nextInt)
+      new Shufflerator(@toArray(), ((agent) -> agent?.id >= 0), @_lazyGetNextIntFunc())
 
     # () => Array[T]
     sort: ->
@@ -92,7 +81,7 @@ module.exports =
       foldFunc =
         ([currentBest, currentWinners], agent) =>
 
-          result = @_selfManager.askAgent(f)(agent)
+          result = @_lazyGetSelfManager().askAgent(f)(agent)
 
           if result is currentBest
             currentWinners.push(agent)
@@ -107,4 +96,27 @@ module.exports =
       if winners.length is 0
         Nobody
       else
-        winners[@_nextInt(winners.length)]
+        winners[@_lazyGetNextIntFunc()(winners.length)]
+
+    # () => (Number) => Number
+    _lazyGetNextIntFunc: ->
+      if @_nextInt?
+        @_nextInt
+      else if @_items[0]?
+        @_nextInt = @_items[0].world.rng.nextInt
+        @_nextInt
+      else
+        (-> throw new Error("How are you calling the RNG in an empty agentset?"))
+
+    # () => SelfManager
+    _lazyGetSelfManager: ->
+      if @_selfManager?
+        @_selfManager
+      else if @_items[0]?
+        @_selfManager = @_items[0].world.selfManager
+        @_selfManager
+      else
+        {
+          askAgent: () -> () -> undefined,
+          self:     -> { id: undefined }
+        }
