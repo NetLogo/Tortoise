@@ -1,104 +1,140 @@
-var modelConfig  = (typeof window.modelConfig !== "undefined" && window.modelConfig !== null) ? window.modelConfig : {};
-var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.plotOps !== null) ? modelConfig.plotOps : {};
-
+var AgentModel = tortoise_require('agentmodel');
+var Call = tortoise_require('util/call');
+var ColorModel = tortoise_require('engine/core/colormodel');
+var Dump = tortoise_require('engine/dump');
+var Exception = tortoise_require('util/exception');
+var Link = tortoise_require('engine/core/link');
+var LinkSet = tortoise_require('engine/core/linkset');
+var Meta = tortoise_require('meta');
+var NLMath = tortoise_require('util/nlmath');
+var NLType = tortoise_require('engine/core/typechecker');
+var Nobody = tortoise_require('engine/core/nobody');
+var PatchSet = tortoise_require('engine/core/patchset');
 var PenBundle = tortoise_require('engine/plot/pen');
-var Plot      = tortoise_require('engine/plot/plot');
-var PlotOps   = tortoise_require('engine/plot/plotops');
-
+var Plot = tortoise_require('engine/plot/plot');
+var PlotOps = tortoise_require('engine/plot/plotops');
+var Random = tortoise_require('shim/random');
+var StrictMath = tortoise_require('shim/strictmath');
+var Tasks = tortoise_require('engine/prim/tasks');
+var Turtle = tortoise_require('engine/core/turtle');
+var TurtleSet = tortoise_require('engine/core/turtleset');
+var notImplemented = tortoise_require('util/notimplemented');
+var modelConfig = (typeof window.modelConfig !== "undefined" && window.modelConfig !== null) ? window.modelConfig : {};
+var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.plotOps !== null) ? modelConfig.plotOps : {};
+if (typeof javax !== "undefined") {
+  modelConfig.output = {
+    clear: function() {},
+    write: function(str) { context.getWriter().print(str); }
+  }
+}
 modelConfig.plots = [(function() {
   var name    = 'Average grain count';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('average', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Average grain count', 'average')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Average grain count', 'average')(function() { plotManager.plotValue((world.observer.getGlobal("total") / world.patches().size()));; }); }); })];
-  var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Average grain count', undefined)(function() {}); }); };
-  var update  = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Average grain count', undefined)(function() {}); }); };
-  return new Plot(name, pens, plotOps, 'ticks', 'grains', false, 0.0, 1.0, 2.0, 2.1, setup, update);
+  var pens    = [new PenBundle.Pen('average', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {
+    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Average grain count', 'average')(function() {}); });
+  }, function() {
+    workspace.rng.withAux(function() {
+      plotManager.withTemporaryContext('Average grain count', 'average')(function() { plotManager.plotValue((world.observer.getGlobal("total") / world.patches().size()));; });
+    });
+  })];
+  var setup   = function() {
+    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Average grain count', undefined)(function() {}); });
+  };
+  var update  = function() {
+    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Average grain count', undefined)(function() {}); });
+  };
+  return new Plot(name, pens, plotOps, "ticks", "grains", false, 0.0, 1.0, 2.0, 2.1, setup, update);
 })(), (function() {
   var name    = 'Avalanche sizes';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Avalanche sizes', 'default')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Avalanche sizes', 'default')(function() { if ((Prims.equality(NLMath.mod(world.ticker.tickCount(), 100), 0) && !ListPrims.empty(world.observer.getGlobal("sizes")))) {
-  plotManager.resetPen();
-  var counts = Tasks.nValues((1 + ListPrims.max(world.observer.getGlobal("sizes"))), Tasks.reporterTask(function() { var taskArguments = arguments;
-  return 0; }));
-  Tasks.forEach(Tasks.commandTask(function() {
-    var taskArguments = arguments;
-    counts = ListPrims.replaceItem(taskArguments[0], counts, (1 + ListPrims.item(taskArguments[0], counts)));
-  }), world.observer.getGlobal("sizes"));
-  var s = 0;
-  Tasks.forEach(Tasks.commandTask(function() {
-    var taskArguments = arguments;
-    var c = taskArguments[0];
-    if ((Prims.gt(s, 0) && Prims.gt(c, 0))) {
-      plotManager.plotPoint(NLMath.log(s, 10), NLMath.log(c, 10));
-    }
-    s = (s + 1);
-  }), counts);
-}; }); }); })];
-  var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Avalanche sizes', undefined)(function() {}); }); };
-  var update  = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Avalanche sizes', undefined)(function() {}); }); };
-  return new Plot(name, pens, plotOps, 'log size', 'log count', false, 0.0, 1.0, 0.0, 1.0, setup, update);
+  var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {
+    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Avalanche sizes', 'default')(function() {}); });
+  }, function() {
+    workspace.rng.withAux(function() {
+      plotManager.withTemporaryContext('Avalanche sizes', 'default')(function() {
+        if ((Prims.equality(NLMath.mod(world.ticker.tickCount(), 100), 0) && !ListPrims.empty(world.observer.getGlobal("sizes")))) {
+          plotManager.resetPen();
+          var counts = Tasks.nValues((1 + ListPrims.max(world.observer.getGlobal("sizes"))), Tasks.reporterTask(function() {
+            var taskArguments = arguments;
+            return 0;
+          }));
+          Tasks.forEach(Tasks.commandTask(function() {
+            var taskArguments = arguments;
+            counts = ListPrims.replaceItem(taskArguments[0], counts, (1 + ListPrims.item(taskArguments[0], counts)));
+          }), world.observer.getGlobal("sizes"));
+          var s = 0;
+          Tasks.forEach(Tasks.commandTask(function() {
+            var taskArguments = arguments;
+            var c = taskArguments[0];
+            if ((Prims.gt(s, 0) && Prims.gt(c, 0))) {
+              plotManager.plotPoint(NLMath.log(s, 10), NLMath.log(c, 10));
+            }
+            s = (s + 1);
+          }), counts);
+        };
+      });
+    });
+  })];
+  var setup   = function() {
+    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Avalanche sizes', undefined)(function() {}); });
+  };
+  var update  = function() {
+    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Avalanche sizes', undefined)(function() {}); });
+  };
+  return new Plot(name, pens, plotOps, "log size", "log count", false, 0.0, 1.0, 0.0, 1.0, setup, update);
 })(), (function() {
   var name    = 'Avalanche lifetimes';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Avalanche lifetimes', 'default')(function() {}); }); }, function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Avalanche lifetimes', 'default')(function() { if ((Prims.equality(NLMath.mod(world.ticker.tickCount(), 100), 0) && !ListPrims.empty(world.observer.getGlobal("lifetimes")))) {
-  plotManager.resetPen();
-  var counts = Tasks.nValues((1 + ListPrims.max(world.observer.getGlobal("lifetimes"))), Tasks.reporterTask(function() { var taskArguments = arguments;
-  return 0; }));
-  Tasks.forEach(Tasks.commandTask(function() {
-    var taskArguments = arguments;
-    counts = ListPrims.replaceItem(taskArguments[0], counts, (1 + ListPrims.item(taskArguments[0], counts)));
-  }), world.observer.getGlobal("lifetimes"));
-  var l = 0;
-  Tasks.forEach(Tasks.commandTask(function() {
-    var taskArguments = arguments;
-    var c = taskArguments[0];
-    if ((Prims.gt(l, 0) && Prims.gt(c, 0))) {
-      plotManager.plotPoint(NLMath.log(l, 10), NLMath.log(c, 10));
-    }
-    l = (l + 1);
-  }), counts);
-}; }); }); })];
-  var setup   = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Avalanche lifetimes', undefined)(function() {}); }); };
-  var update  = function() { workspace.rng.withAux(function() { plotManager.withTemporaryContext('Avalanche lifetimes', undefined)(function() {}); }); };
-  return new Plot(name, pens, plotOps, 'log lifetime', 'log count', false, 0.0, 1.0, 0.0, 1.0, setup, update);
+  var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {
+    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Avalanche lifetimes', 'default')(function() {}); });
+  }, function() {
+    workspace.rng.withAux(function() {
+      plotManager.withTemporaryContext('Avalanche lifetimes', 'default')(function() {
+        if ((Prims.equality(NLMath.mod(world.ticker.tickCount(), 100), 0) && !ListPrims.empty(world.observer.getGlobal("lifetimes")))) {
+          plotManager.resetPen();
+          var counts = Tasks.nValues((1 + ListPrims.max(world.observer.getGlobal("lifetimes"))), Tasks.reporterTask(function() {
+            var taskArguments = arguments;
+            return 0;
+          }));
+          Tasks.forEach(Tasks.commandTask(function() {
+            var taskArguments = arguments;
+            counts = ListPrims.replaceItem(taskArguments[0], counts, (1 + ListPrims.item(taskArguments[0], counts)));
+          }), world.observer.getGlobal("lifetimes"));
+          var l = 0;
+          Tasks.forEach(Tasks.commandTask(function() {
+            var taskArguments = arguments;
+            var c = taskArguments[0];
+            if ((Prims.gt(l, 0) && Prims.gt(c, 0))) {
+              plotManager.plotPoint(NLMath.log(l, 10), NLMath.log(c, 10));
+            }
+            l = (l + 1);
+          }), counts);
+        };
+      });
+    });
+  })];
+  var setup   = function() {
+    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Avalanche lifetimes', undefined)(function() {}); });
+  };
+  var update  = function() {
+    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Avalanche lifetimes', undefined)(function() {}); });
+  };
+  return new Plot(name, pens, plotOps, "log lifetime", "log count", false, 0.0, 1.0, 0.0, 1.0, setup, update);
 })()];
-if (typeof javax !== "undefined") { modelConfig.output = { clear: function(){}, write: function(str) { context.getWriter().print(str); } } }
-
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])(["animate-avalanches?", "drop-location", "grains-per-patch", "total", "total-on-tick", "sizes", "last-size", "lifetimes", "last-lifetime", "selected-patch", "default-color", "fired-color", "selected-color"], ["animate-avalanches?", "drop-location", "grains-per-patch"], ["n", "n-stack", "base-color"], -50, 50, -50, 50, 4.0, false, false, {"default":{"rotate":true,"elements":[{"xcors":[150,40,150,260],"ycors":[5,250,205,250],"type":"polygon","color":"rgba(141, 141, 141, 1.0)","filled":true,"marked":true}]}}, {"default":{"direction-indicator":{"rotate":true,"elements":[{"x1":150,"y1":150,"x2":90,"y2":180,"type":"line","color":"rgba(141, 141, 141, 1.0)","filled":false,"marked":true},{"x1":150,"y1":150,"x2":210,"y2":180,"type":"line","color":"rgba(141, 141, 141, 1.0)","filled":false,"marked":true}]},"curviness":0.0,"lines":[{"x-offset":-0.2,"is-visible":false,"dash-pattern":[0.0,1.0]},{"x-offset":0.0,"is-visible":true,"dash-pattern":[1.0,0.0]},{"x-offset":0.2,"is-visible":false,"dash-pattern":[0.0,1.0]}]}});
-
-var BreedManager  = workspace.breedManager;
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])(["animate-avalanches?", "drop-location", "grains-per-patch", "total", "total-on-tick", "sizes", "last-size", "lifetimes", "last-lifetime", "selected-patch", "default-color", "fired-color", "selected-color"], ["animate-avalanches?", "drop-location", "grains-per-patch"], ["n", "n-stack", "base-color"], -50, 50, -50, 50, 4.0, false, false, {"default":{"rotate":true,"elements":[{"xcors":[150,40,150,260],"ycors":[5,250,205,250],"type":"polygon","color":"rgba(141, 141, 141, 1.0)","filled":true,"marked":true}]}}, {"default":{"direction-indicator":{"rotate":true,"elements":[{"x1":150,"y1":150,"x2":90,"y2":180,"type":"line","color":"rgba(141, 141, 141, 1.0)","filled":false,"marked":true},{"x1":150,"y1":150,"x2":210,"y2":180,"type":"line","color":"rgba(141, 141, 141, 1.0)","filled":false,"marked":true}]},"curviness":0.0,"lines":[{"x-offset":-0.2,"is-visible":false,"dash-pattern":[0.0,1.0]},{"x-offset":0.0,"is-visible":true,"dash-pattern":[1.0,0.0]},{"x-offset":0.2,"is-visible":false,"dash-pattern":[0.0,1.0]}]}}, function(){});
+var BreedManager = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
-var LinkPrims     = workspace.linkPrims;
-var ListPrims     = workspace.listPrims;
-var MousePrims    = workspace.mousePrims;
-var plotManager   = workspace.plotManager;
-var Prims         = workspace.prims;
-var PrintPrims    = workspace.printPrims;
-var OutputPrims   = workspace.outputPrims;
-var SelfPrims     = workspace.selfPrims;
-var SelfManager   = workspace.selfManager;
-var Updater       = workspace.updater;
-var world         = workspace.world;
-
-var Call           = tortoise_require('util/call');
-var Exception      = tortoise_require('util/exception');
-var NLMath         = tortoise_require('util/nlmath');
-var notImplemented = tortoise_require('util/notimplemented');
-
-var Dump      = tortoise_require('engine/dump');
-var ColorModel = tortoise_require('engine/core/colormodel');
-var Link      = tortoise_require('engine/core/link');
-var LinkSet   = tortoise_require('engine/core/linkset');
-var Nobody    = tortoise_require('engine/core/nobody');
-var PatchSet  = tortoise_require('engine/core/patchset');
-var Turtle    = tortoise_require('engine/core/turtle');
-var TurtleSet = tortoise_require('engine/core/turtleset');
-var NLType    = tortoise_require('engine/core/typechecker');
-var Tasks     = tortoise_require('engine/prim/tasks');
-
-var AgentModel = tortoise_require('agentmodel');
-var Meta       = tortoise_require('meta');
-var Random     = tortoise_require('shim/random');
-var StrictMath = tortoise_require('shim/strictmath');
+var LinkPrims = workspace.linkPrims;
+var ListPrims = workspace.listPrims;
+var MousePrims = workspace.mousePrims;
+var OutputPrims = workspace.outputPrims;
+var Prims = workspace.prims;
+var PrintPrims = workspace.printPrims;
+var SelfManager = workspace.selfManager;
+var SelfPrims = workspace.selfPrims;
+var Updater = workspace.updater;
+var plotManager = workspace.plotManager;
+var world = workspace.world;
 var procedures = (function() {
   var setup = function(setupTask) {
     world.clearAll();
@@ -112,12 +148,8 @@ var procedures = (function() {
       SelfPrims.setPatchVariable("base-color", world.observer.getGlobal("default-color"));
     }, true);
     var ignore = Call(procedures.stabilize, false);
-    world.patches().ask(function() {
-      Call(procedures.recolor);
-    }, true);
-    world.observer.setGlobal("total", ListPrims.sum(world.patches().projectionBy(function() {
-      return SelfPrims.getPatchVariable("n");
-    })));
+    world.patches().ask(function() { Call(procedures.recolor); }, true);
+    world.observer.setGlobal("total", ListPrims.sum(world.patches().projectionBy(function() { return SelfPrims.getPatchVariable("n"); })));
     world.observer.setGlobal("sizes", []);
     world.observer.setGlobal("lifetimes", []);
     world.ticker.reset();
@@ -153,9 +185,7 @@ var procedures = (function() {
       }
       avalanchePatches.ask(function() {
         Call(procedures.recolor);
-        SelfPrims.getNeighbors4().ask(function() {
-          Call(procedures.recolor);
-        }, true);
+        SelfPrims.getNeighbors4().ask(function() { Call(procedures.recolor); }, true);
       }, true);
       notImplemented('display', undefined)();
       avalanchePatches.ask(function() {
@@ -170,16 +200,10 @@ var procedures = (function() {
     if (MousePrims.isInside()) {
       var p = world.getPatchAt(MousePrims.getX(), MousePrims.getY());
       world.observer.setGlobal("selected-patch", p);
-      world.patches().ask(function() {
-        Call(procedures.pushN);
-      }, true);
-      world.observer.getGlobal("selected-patch").ask(function() {
-        Call(procedures.updateN, 1);
-      }, true);
+      world.patches().ask(function() { Call(procedures.pushN); }, true);
+      world.observer.getGlobal("selected-patch").ask(function() { Call(procedures.updateN, 1); }, true);
       var results = Call(procedures.stabilize, false);
-      world.patches().ask(function() {
-        Call(procedures.popN);
-      }, true);
+      world.patches().ask(function() { Call(procedures.popN); }, true);
       world.patches().ask(function() {
         SelfPrims.setPatchVariable("base-color", world.observer.getGlobal("default-color"));
         Call(procedures.recolor);
@@ -202,15 +226,11 @@ var procedures = (function() {
     }
   };
   var stabilize = function(animate_p) {
-    var activePatches = world.patches().agentFilter(function() {
-      return Prims.gt(SelfPrims.getPatchVariable("n"), 3);
-    });
+    var activePatches = world.patches().agentFilter(function() { return Prims.gt(SelfPrims.getPatchVariable("n"), 3); });
     var iters = 0;
     var avalanchePatches = new PatchSet([]);
     while (activePatches.nonEmpty()) {
-      var overloadedPatches = activePatches.agentFilter(function() {
-        return Prims.gt(SelfPrims.getPatchVariable("n"), 3);
-      });
+      var overloadedPatches = activePatches.agentFilter(function() { return Prims.gt(SelfPrims.getPatchVariable("n"), 3); });
       if (overloadedPatches.nonEmpty()) {
         iters = (iters + 1);
       }
@@ -231,9 +251,7 @@ var procedures = (function() {
         notImplemented('display', undefined)();
       }
       avalanchePatches = Prims.patchSet(avalanchePatches, overloadedPatches);
-      activePatches = Prims.patchSet(overloadedPatches.projectionBy(function() {
-        return SelfPrims.getNeighbors4();
-      }));
+      activePatches = Prims.patchSet(overloadedPatches.projectionBy(function() { return SelfPrims.getNeighbors4(); }));
     }
     return ListPrims.list(avalanchePatches, iters);
   };
