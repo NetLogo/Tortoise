@@ -352,7 +352,8 @@ module.exports =
 
     # (Breed) => Turtle
     _makeTurtleCopy: (breed) ->
-      turtle   = @_createTurtle(@_color, @_heading, @xcor, @ycor, breed, @_label, @_labelcolor, @_hidden, @_size, @_givenShape, (self) => @penManager.clone(@_genUpdate(self)))
+      shape    = if breed is @_breed then @_givenShape else undefined
+      turtle   = @_createTurtle(@_color, @_heading, @xcor, @ycor, breed, @_label, @_labelcolor, @_hidden, @_size, shape, (self) => @penManager.clone(@_genUpdate(self)))
       varNames = @_varNamesForBreed(breed)
       _(varNames).forEach((varName) =>
         turtle.setVariable(varName, @getVariable(varName))
