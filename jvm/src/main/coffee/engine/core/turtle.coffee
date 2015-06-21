@@ -529,6 +529,8 @@ module.exports =
 
         @_varManager.refineBy(obsoletedNames)(freshNames)
 
+        @_givenShape = undefined
+
       @_breed = trueBreed
       @_genVarUpdate("breed")
 
