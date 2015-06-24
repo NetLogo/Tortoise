@@ -517,6 +517,9 @@ module.exports =
         else
           breed
 
+      if @_breed? and @_breed isnt trueBreed
+        @_givenShape = undefined
+
       if @_breed isnt trueBreed
         trueBreed.add(this)
         @_breed?.remove(this)
@@ -529,7 +532,6 @@ module.exports =
 
         @_varManager.refineBy(obsoletedNames)(freshNames)
 
-        @_givenShape = undefined
 
       @_breed = trueBreed
       @_genVarUpdate("breed")
