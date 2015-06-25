@@ -1,6 +1,6 @@
 # Tortoise
 
-info: https://github.com/NetLogo/NetLogo/wiki/Tortoise
+info: https://github.com/NetLogo/NetLogo/wiki/NetLogo-Web
 
 engine/compiler issues: https://github.com/NetLogo/Tortoise/issues
 
