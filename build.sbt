@@ -24,7 +24,7 @@ val commonSettings =
     resolvers           += bintray.Opts.resolver.repo("netlogo", "NetLogoHeadless"),
     libraryDependencies ++= Seq(
       "org.nlogo" % "netlogoheadless" % nlDependencyVersion,
-      "org.mozilla" % "rhino" % "1.7.6", // see jsengine/Rhino.scala for more information
+      "org.mozilla" % "rhino" % "1.7.7", // see jsengine/Rhino.scala for more information
       "org.json4s" %% "json4s-native" % "3.2.11",
       "org.scalaz" %% "scalaz-core" % "7.1.1",
       "com.lihaoyi" %% "scalatags" % "0.4.5" % "test",
