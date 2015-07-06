@@ -24,8 +24,9 @@ object Jsonify {
 
       val treeOpt = withConstructorProperties(c)(resultType.tpe) {
         (target, propertyName, propertyKey) =>
+          val propValue = TermName(c.freshName("prop"))
           val readField = q"JsonReader.readField[$target]($json, $propertyKey)"
-          (q"$propertyName = $propertyName", fq"$propertyName <- $readField")
+          (fq"$propValue <- $readField", q"$propertyName = $propValue")
       }
 
       treeOpt.map {
@@ -36,8 +37,8 @@ object Jsonify {
             import scalaz.Validation.FlatMap.ValidationFlatMapRequested
             implicit object $name extends JsonReader[${inputType.tpe}, ${resultType.tpe}]{
               def apply($json: ${inputType.tpe}) =
-                for (..${constructorElems.map(_._2)})
-                  yield new ${resultType.tpe}(..${constructorElems.map(_._1)})
+                for (..${constructorElems.map(_._1)})
+                  yield new ${resultType.tpe}(..${constructorElems.map(_._2)})
             }
             $name
           }"""

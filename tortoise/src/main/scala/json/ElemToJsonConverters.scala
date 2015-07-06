@@ -2,6 +2,7 @@
 
 package org.nlogo.tortoise.json
 
+
 import
   org.nlogo.core.Shape.{ Circle, Element, Line, Polygon, Rectangle, RgbColor }
 
@@ -9,7 +10,11 @@ import
   scala.language.implicitConversions
 
 import
-  TortoiseJson.{ fields, JsString, JsBool, JsObject, JsArray, JsInt }
+  TortoiseJson.{ fields, JsArray, JsBool, JsField, JsInt, JsObject, JsString }
+
+import
+  scalaz.{ syntax, Scalaz, ValidationNel },
+    Scalaz.ToValidationOps
 
 sealed trait ElemConverter[T <: Element] extends JsonConverter[T] {
 
@@ -31,7 +36,6 @@ sealed trait ElemConverter[T <: Element] extends JsonConverter[T] {
 }
 
 object ElemToJsonConverters {
-
   implicit def elem2Json(target: Element): JsonWritable =
     target match {
       case p: Polygon   => new PolygonConverter(p)
@@ -40,6 +44,16 @@ object ElemToJsonConverters {
       case l: Line      => new LineConverter(l)
       case e            => new OtherConverter(e)
     }
+
+  def read(json: TortoiseJson): ValidationNel[String, Element] = {
+    val matchType = JsField("type")
+    json match {
+      case obj@JsObject(matchType(JsString(ElementReader(reader)))) =>
+        reader(obj)
+      case other =>
+        s"$other is not an Element".failureNel
+    }
+  }
 
   class PolygonConverter(override protected val target: Polygon) extends ElemConverter[Polygon] {
     override protected val typ        = "polygon"
@@ -81,6 +95,4 @@ object ElemToJsonConverters {
   class OtherConverter(override protected val target: Element) extends ElemConverter[Element] {
     override protected val extraProps = JsObject(fields())
   }
-
 }
-

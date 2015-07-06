@@ -19,7 +19,10 @@ import
 class RuntimeInit(program: Program, model: Model, onTickFunction: String = jsFunction()) {
 
   def init: Seq[TortoiseSymbol] = Seq(
-    WorkspaceInit(Seq(Seq(jsArrayString(genBreedObjects)), genBreedsOwnArgs, genWorkspaceArgs :+ onTickFunction)),
+    JsDeclare("turtleShapes", shapeList(new ShapeList(AgentKind.Turtle, model.turtleShapes))),
+    JsDeclare("linkShapes",   shapeList(new ShapeList(AgentKind.Link,   model.linkShapes))),
+
+    WorkspaceInit(Seq(Seq(genBreedObjects), genBreedsOwnArgs, genWorkspaceArgs), Seq("turtleShapes", "linkShapes")),
 
     JsDeclare("BreedManager",  "workspace.breedManager",  Seq("workspace")),
     JsDeclare("LayoutManager", "workspace.layoutManager", Seq("workspace")),
@@ -54,8 +57,8 @@ class RuntimeInit(program: Program, model: Model, onTickFunction: String = jsFun
     JsRequire("Random",         "shim/random"),
     JsRequire("StrictMath",     "shim/strictmath"))
 
-  private def genBreedObjects: Seq[String] =
-    (program.breeds.values ++ program.linkBreeds.values).map {
+  private def genBreedObjects: String = {
+    val breedObjects = (program.breeds.values ++ program.linkBreeds.values).map {
       b =>
         val name        = jsString(b.name)
         val singular    = jsString(b.singular.toLowerCase)
@@ -63,6 +66,8 @@ class RuntimeInit(program: Program, model: Model, onTickFunction: String = jsFun
         val directedStr = if (b.isLinkBreed) s", isDirected: ${b.isDirected}" else ""
         s"""{ name: $name, singular: $singular, varNames: $varNames$directedStr }"""
     }.toSeq
+    jsArrayString(breedObjects)
+  }
 
   private def genBreedsOwnArgs: Seq[String] = {
 
@@ -80,31 +85,23 @@ class RuntimeInit(program: Program, model: Model, onTickFunction: String = jsFun
 
   private def genWorkspaceArgs: Seq[String] = {
 
-    def shapeList(shapes: ShapeList): String =
-      if (shapes.names.nonEmpty)
-        JsonSerializer.serialize(shapes)
-      else
-        "{}"
-
-    def parseTurtleShapes(strings: Array[String]): ShapeList =
-      new ShapeList(AgentKind.Turtle, ShapeParser.parseVectorShapes(strings))
-
-    def parseLinkShapes(strings: Array[String]): ShapeList =
-      new ShapeList(AgentKind.Link, ShapeParser.parseLinkShapes(strings))
-
     val patchVarNames  = program.patchesOwn diff AgentVariables.getImplicitPatchVariables
 
     val globalNames          = jsArrayString(program.globals          map (_.toLowerCase) map jsString)
     val interfaceGlobalNames = jsArrayString(program.interfaceGlobals map (_.toLowerCase) map jsString)
     val patchesOwnNames      = jsArrayString(patchVarNames            map (_.toLowerCase) map jsString)
 
-    val turtleShapesJson = shapeList(parseTurtleShapes(model.turtleShapes.toArray))
-    val linkShapesJson   = shapeList(parseLinkShapes(model.linkShapes.toArray))
-
     val view = model.view
     import view._
 
     Seq(globalNames, interfaceGlobalNames, patchesOwnNames, minPxcor, maxPxcor, minPycor, maxPycor, patchSize,
-      wrappingAllowedInX, wrappingAllowedInY, turtleShapesJson, linkShapesJson).map(_.toString)
+      wrappingAllowedInX, wrappingAllowedInY, "turtleShapes", "linkShapes", onTickFunction).map(_.toString)
   }
+
+  private def shapeList(shapes: ShapeList): String =
+    if (shapes.names.nonEmpty)
+      JsonSerializer.serialize(shapes)
+    else
+      "{}"
+
 }

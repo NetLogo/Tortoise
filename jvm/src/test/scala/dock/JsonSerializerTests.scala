@@ -132,12 +132,13 @@ class JsonSerializerTests extends FixtureSuite with Matchers {
 
   test("JsonSerializer shapes") { implicit fixture =>
 
-    val defShapes = ShapeParser.parseVectorShapes(Model.defaultShapes)
-    val shapeList = new ShapeList(AgentKind.Turtle, defShapes)
+    val shapeList = new ShapeList(AgentKind.Turtle, Model.defaultShapes)
 
     val shapes = Seq(
         "default" ->
           """|{
+             |  "name":"default",
+             |  "editableColorIndex":0,
              |  "rotate":true,
              |  "elements":[{
              |      "xcors":[150,40,150,260],
@@ -150,6 +151,8 @@ class JsonSerializerTests extends FixtureSuite with Matchers {
              |}""".stripMargin,
         "person"  ->
           """|{
+             |  "name":"person",
+             |  "editableColorIndex":0,
              |  "rotate":false,
              |  "elements":[{
              |      "x":110,
