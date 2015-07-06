@@ -6,8 +6,10 @@ import
   java.lang.{ Boolean => JBoolean, Double => JDouble, Integer => JInteger }
 
 import
-  org.nlogo.core.{ Chooseable, Col, Direction, Horizontal, InputBoxType,
-    LogoList, Num, Pen, Str, StrCommand, StrReporter, UpdateMode, Vertical }
+  org.nlogo.core.{ Button, Chooseable, Chooser, Col, Direction, Horizontal,
+    InputBox, InputBoxType, LogoList, Monitor, Num, Output, Pen,
+    Plot, Slider, Str, Switch, StrCommand, StrReporter,
+    TextBox, UpdateMode, Vertical, View, Widget }
 
 import
   scalaz.{ syntax, Scalaz, Validation, NonEmptyList, ValidationNel },
@@ -117,4 +119,31 @@ object WidgetRead {
       case other        => penListError
     }
   }
+
+  private val readerMap: Map[String, JsObject => ValidationNel[String, Widget]] =
+    Map(
+      "button"   -> Jsonify.reader[JsObject, Button],
+      "chooser"  -> Jsonify.reader[JsObject, Chooser],
+      "inputBox" -> inputBoxReader _,
+      "monitor"  -> Jsonify.reader[JsObject, Monitor],
+      "output"   -> Jsonify.reader[JsObject, Output],
+      "pen"      -> Jsonify.reader[JsObject, Pen],
+      "plot"     -> Jsonify.reader[JsObject, Plot],
+      "slider"   -> Jsonify.reader[JsObject, Slider],
+      "switch"   -> Jsonify.reader[JsObject, Switch],
+      "textBox"  -> Jsonify.reader[JsObject, TextBox],
+      "view"     -> Jsonify.reader[JsObject, View]
+    )
+
+  private def inputBoxReader(j: JsObject): ValidationNel[String, Widget] =
+    j.props.get("boxtype").toSuccess(NonEmptyList("must supply boxtype for inputBox"))
+      .flatMap(tortoiseJs2InputBoxType)
+      .flatMap {
+        case Num => Jsonify.reader[JsObject, InputBox[Double]](j)
+        case Col => Jsonify.reader[JsObject, InputBox[Int]](j)
+        case _   => Jsonify.reader[JsObject, InputBox[String]](j)
+      }
+
+  def unapply(widgetType: String): Option[JsObject => ValidationNel[String, Widget]] =
+    readerMap.get(widgetType)
 }

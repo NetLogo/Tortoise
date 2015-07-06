@@ -42,13 +42,11 @@ object WidgetToJsonTest extends TestSuite {
     }
 
   "fails to read without a type"-{
-    assert("no conversion available".failureNel == readWidget(JsObject(fields())))
+    val error = "Widgets must be represented as a JSON Object with type specified".failureNel
+    assert(error == readWidget(JsObject(fields())))
   }
 
   "errors when reading bad output"-{
-    println(WidgetToJson.read(locatableJsObject(
-      "type"     -> JsString("output"),
-      "fontSize" -> JsNull)))
     assert(
       "could not convert JsNull to int".failureNel ==
         WidgetToJson.read(locatableJsObject(

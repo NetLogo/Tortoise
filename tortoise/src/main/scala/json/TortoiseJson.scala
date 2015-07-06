@@ -21,4 +21,11 @@ object TortoiseJson {
   def fields(pairs: (String, TortoiseJson)*): ListMap[String, TortoiseJson] =
     ListMap(pairs: _*)
 
+  class JsField(name: String) {
+    def unapply(props: Map[String, TortoiseJson]): Option[TortoiseJson] = props.get(name)
+  }
+
+  object JsField {
+    def apply(name: String): JsField = new JsField(name)
+  }
 }

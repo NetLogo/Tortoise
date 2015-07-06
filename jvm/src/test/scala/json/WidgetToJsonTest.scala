@@ -49,7 +49,9 @@ class WidgetToJsonTest extends FunSuite {
   }
 
   test("fails to read without a type") {
-    assertResult("no conversion available".failureNel)(WidgetToJson.read(JsObject(fields())))
+    val failure =
+      "Widgets must be represented as a JSON Object with type specified".failureNel
+    assertResult(failure)(WidgetToJson.read(JsObject(fields())))
   }
 
   test("errors when reading bad output") {
