@@ -2,20 +2,26 @@
 
 package org.nlogo.tortoise
 
-import
-  org.nlogo.core.{ model, LiteralParser, Model, Slider, View },
-    model.ModelReader
+import BrowserCompiler.literalParser
 
 import
-  json.{ JsonLibrary, JsonReader, TortoiseJson, WidgetToJson },
-    JsonLibrary.toNative,
+  org.nlogo.core.{ model, Model, Shape, Slider, View },
+    model.ModelReader,
+    Shape.LinkLine
+
+import
+  json.{ JsonLibrary, JsonLinkLine, JsonLinkShape, JsonReader, JsonVectorShape, ShapeToJsonConverters, TortoiseJson, WidgetToJson },
+    JsonLibrary.{ Native => NativeJson, toNative },
     JsonReader.{ jsObject2RichJsObject, jsArray2RichJsArray },
-    TortoiseJson.{ JsArray, JsObject, JsString },
+    ShapeToJsonConverters.shape2Json,
+    TortoiseJson.{ fields, JsArray, JsObject, JsString },
     WidgetToJson.widget2Json
 
 import
-  scala.scalajs.js,
-    js.JSON
+  scala.{ collection, scalajs },
+    collection.immutable.ListMap,
+    scalajs.js,
+      js.JSON
 
 import utest._
 
@@ -32,7 +38,7 @@ object BrowserCompilerTest extends TestSuite {
       assert(! compiledModel[Boolean]("success"))
       val result     = compiledModel.props("result").asInstanceOf[JsArray]
       val firstError = result.elems(0).asInstanceOf[JsObject]
-      assert("END expected" == firstError[String]("message"))
+      assertErrorMessage(compiledModel, "END expected")
       assert(2147483647     == firstError[Int]("start"))
       assert(2147483647     == firstError[Int]("end"))
     }
@@ -90,8 +96,7 @@ object BrowserCompilerTest extends TestSuite {
       val commands       = toNative(JsString("foobar"))
       val compiledModel  = withBrowserCompiler(_.fromNlogo(formattedModel, commands))
       assert(! compiledModel[Boolean]("success"))
-      assert(compiledModel[JsArray]("result").apply[JsObject](0).apply[String]("message") ==
-        "commands must be an Array of String")
+      assertErrorMessage(compiledModel, "commands must be an Array of String")
     }
 
     "testCompilesReporters"-{
@@ -100,18 +105,59 @@ object BrowserCompilerTest extends TestSuite {
     }
 
     "testCompilesFromModel"-{
-      val compiledModel = withBrowserCompiler(_.fromModel(
-        toNative(JsString(validModel.code)),
-        toNative(JsArray(validModel.widgets.map(widget2Json(_).toJsonObj))),
-        toNative(JsArray(Seq(JsString("ask turtles [fd 1]"))))))
+      val compilationRequest =
+        modelToCompilationRequest(validModel,
+          fields("commands" -> JsArray(Seq(JsString("ask turtles [fd 1]")))))
+      val compiledModel = withBrowserCompiler(_.fromModel(compilationRequest))
       assert(compiledModel[Boolean]("success"))
+    }
+
+    "testExportsNlogo"-{
+      val exportResult = withBrowserCompiler(_.exportNlogo(modelToCompilationRequest(validModel)))
+      assert(exportResult[Boolean]("success"))
+      val exportedNlogo = exportResult[String]("result")
+      val parsedModel = ModelReader.parseModel(exportedNlogo, literalParser)
+      assert(parsedModel.code == validModel.code)
+      assert(parsedModel.info == validModel.info)
+      assert(parsedModel.widgets == validModel.widgets)
+      assert(parsedModel.turtleShapes.last.name == "custom")
+      assert(parsedModel.linkShapes.last.name == "custom2")
+    }
+
+    "testFromModelCompilationPreservesCustomShapes"-{
+      assert(false)
     }
   }
 
-  private val validModel: Model = Model(
-    code    = "to foo fd 1 end",
-    widgets = List(View()),
-    info    = "some model info here")
+  private def modelToCompilationRequest(model: Model): NativeJson =
+    modelToCompilationRequest(model, fields())
+
+  private def modelToCompilationRequest(model: Model, additionalFields: ListMap[String, TortoiseJson]): NativeJson = {
+    val reqObj = JsObject(
+      fields(
+        "code"         -> JsString(model.code),
+        "info"         -> JsString(model.info),
+        "linkShapes"   -> JsArray(model.linkShapes.map(_.toJsonObj)),
+        "turtleShapes" -> JsArray(model.turtleShapes.map(_.toJsonObj)),
+        "widgets"      -> JsArray(model.widgets.map(widget2Json(_).toJsonObj))) ++
+      additionalFields)
+    toNative(reqObj)
+  }
+
+  private val validModel: Model = {
+    val vectorShape = JsonVectorShape("custom", false, 0, Seq())
+    val linkLine  = JsonLinkLine(0.0, true, Seq(0.0f, 1.0f))
+    val linkShape = JsonLinkShape("custom2", 1.0, Seq(linkLine, linkLine, linkLine), vectorShape)
+    Model(
+      code         = "to foo fd 1 end",
+      widgets      = List(View()),
+      info         = "some model info here",
+      linkShapes   = Model.defaultLinkShapes :+ linkShape,
+      turtleShapes = Model.defaultShapes :+ vectorShape)
+  }
+
+  private def assertErrorMessage(compiledModel: JsObject, message: String): Unit =
+    assert(compiledModel[JsArray]("result").apply[JsObject](0).apply[String]("message") == message)
 
   private def withWidget(compiledModel: JsObject, widgetType: String, f: JsObject => Unit): Unit = {
     // this song and dance is to turn a string with Javascript Objects containing functions
@@ -141,8 +187,4 @@ object BrowserCompilerTest extends TestSuite {
   private def withBrowserCompiler(f: BrowserCompiler => JsonLibrary.Native): JsObject =
     JsonLibrary.toTortoise(f(new BrowserCompiler)).asInstanceOf[JsObject]
 
-  private val literalParser = new LiteralParser {
-    def readFromString(s: String): AnyRef            = throw new Exception("LiteralParser used unexpectedly")
-    def readNumberFromString(source: String): AnyRef = throw new Exception("LiteralParser used unexpectedly")
-  }
 }

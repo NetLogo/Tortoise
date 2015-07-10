@@ -15,6 +15,8 @@ import
   TortoiseJson.{ JsArray, JsBool, JsDouble, JsInt, JsObject, JsString }
 
 trait LowPriorityImplicitReaders {
+  import JsonReader.JsonSequenceReader
+
   implicit object boolean2TortoiseJs extends JsonReader[TortoiseJson, Boolean] {
     def apply(t: TortoiseJson): ValidationNel[String, Boolean] = t match {
       case JsBool(b) => b.successNel
@@ -52,6 +54,14 @@ trait LowPriorityImplicitReaders {
       case JsString(s) => s.successNel
       case other       => s"could not convert $other to String".failureNel
     }
+  }
+
+  implicit object tortoiseJsAsStringSeq extends JsonSequenceReader[String] {
+    def nonArrayErrorString(json: TortoiseJson): String =
+      s"expected an array of strings, found $json"
+
+    def convertElem(json: TortoiseJson): ValidationNel[String, String] =
+      tortoiseJs2String(json)
   }
 
   implicit object tortoiseJsAsJsObject extends JsonReader[TortoiseJson, JsObject] {

@@ -3,14 +3,18 @@
 package org.nlogo.tortoise
 
 import
-  json.{ Jsonify, JsonLibrary, JsonReader, JsonWritable, JsonWriter, TortoiseJson, WidgetToJson },
-    JsonLibrary.{ Native => NativeJson },
+  json.{ Jsonify, JsonLibrary, JsonReader, JsonWritable, JsonWriter, ShapeToJsonConverters, TortoiseJson, WidgetToJson },
+    JsonLibrary.{ Native => NativeJson, toTortoise },
+    JsonReader.tortoiseJsAsStringSeq,
     JsonWriter._,
+    ShapeToJsonConverters.{ linkShapes2Json, vectorShapes2Json },
     TortoiseJson._,
-    WidgetToJson.{ widget2Json, readWidgetJson }
+    WidgetToJson.{ widget2Json, readWidgetJson, readWidgetsJson }
 
 import
-  org.nlogo.core.{ CompilerException, Model, Widget }
+  org.nlogo.core.{ CompilerException, LiteralParser, model, Model, Shape, Widget },
+    Shape.{ LinkShape, VectorShape },
+    model.ModelReader
 
 import
   scala.reflect.ClassTag
@@ -33,14 +37,15 @@ class BrowserCompiler {
   import BrowserCompiler._
 
   @JSExport
-  def fromModel(codeJson: NativeJson, widgetJson: NativeJson, commandJson: NativeJson): NativeJson = {
+  def fromModel(compilationRequest: NativeJson): NativeJson = {
     val compilationResult =
       for {
-        code        <- readNative[String](codeJson)
-        widgets     <- readArray[Widget](widgetJson, "widgets")
-        commands    <- readArray[String](commandJson, "commands")
-        compilation <- compilingModel(_.fromModel(Model(code = code, widgets = widgets)), compileCommands(commands))
+        tortoiseReq   <- readNative[JsObject](compilationRequest)
+        parsedRequest <- Jsonify.reader[JsObject, CompilationRequest](tortoiseReq).leftMap(_.map(FailureString))
+        model         = Model(code = parsedRequest.code, widgets = parsedRequest.widgets.toList)
+        compilation   <- compilingModel(_.fromModel(model), compileCommands(parsedRequest.commands))
       } yield compilation
+
     JsonLibrary.toNative(compilationResult.toJsonObj)
   }
 
@@ -57,6 +62,17 @@ class BrowserCompiler {
   @JSExport
   def fromNlogo(contents: String): NativeJson =
     JsonLibrary.toNative(compilingModel(_.fromNlogoContents(contents)).toJsonObj)
+
+  @JSExport
+  def exportNlogo(exportRequest: NativeJson): NativeJson = {
+    val model =
+      for {
+        tortoiseReq   <- readNative[JsObject](exportRequest)
+        parsedRequest <- Jsonify.reader[JsObject, ExportRequest](tortoiseReq).leftMap(_.map(FailureString))
+      } yield ModelReader.formatModel(parsedRequest.toModel, literalParser)
+
+    JsonLibrary.toNative(model.toJsonObj)
+  }
 
   private def compilingModel(
     f: CompiledModel.type => ValidationNel[Exception, CompiledModel],
@@ -141,19 +157,30 @@ object BrowserCompiler {
       JsString(WidgetCompiler.formatWidgets(widgets))
   }
 
-  implicit object compilation2JsonWriter extends JsonWriter[ValidationNel[Failure, ModelCompilation]] {
-    private def compilationSuccessJson(success: ModelCompilation): TortoiseJson = {
-      val compilation = Jsonify.writer[ModelCompilation, TortoiseJson](success)
-      JsObject(compilation.asInstanceOf[JsObject].props +
-        ("success" -> JsBool(true)))
-    }
-    private def compilationFailureJson(failures: NonEmptyList[Failure]): JsObject =
+  abstract class result2JsonWriter[T] extends JsonWriter[ValidationNel[Failure, T]] {
+    protected def successJson(success: T): JsObject
+
+    private def failureJson(failures: NonEmptyList[Failure]): JsObject =
       JsObject(fields(
         "success" -> JsBool(false),
         "result"  -> JsArray(failures.list.toList.map(_.toJsonObj))))
 
-    def apply(compileResult: ValidationNel[Failure, ModelCompilation]): TortoiseJson =
-      compileResult.fold(compilationFailureJson, compilationSuccessJson)
+    def apply(compileResult: ValidationNel[Failure, T]): TortoiseJson =
+      compileResult.fold(
+        failureJson,
+        success =>
+          JsObject(successJson(success).props + ("success" -> JsBool(true))))
+  }
+
+
+  implicit object compilation2JsonWriter extends result2JsonWriter[ModelCompilation] {
+    override protected def successJson(success: ModelCompilation): JsObject =
+      Jsonify.writer[ModelCompilation, TortoiseJson](success).asInstanceOf[JsObject]
+  }
+
+  implicit object export2JsonWriter extends result2JsonWriter[String] {
+    override protected def successJson(success: String): JsObject =
+      JsObject(fields("result" -> JsString(success)))
   }
 
   implicit def exception2Json(ex: Throwable): JsonWritable =
@@ -173,6 +200,9 @@ object BrowserCompiler {
     commands: Seq[CompiledStringV] = Seq(),
     reporters: Seq[CompiledStringV] = Seq())
 
+  implicit def exportResult2Json(exportResult: ValidationNel[Failure, String]): JsonWritable =
+    JsonWriter.convert(exportResult)
+
   object ModelCompilation {
     def fromCompiledModel(compiledModel: CompiledModel): ModelCompilation =
       ModelCompilation(
@@ -187,4 +217,25 @@ object BrowserCompiler {
   case class FailureException(exception: Throwable) extends Failure
   case class FailureCompilerException(exception: CompilerException) extends Failure
 
+  case class ExportRequest(
+    code:         String,
+    info:         String,
+    widgets:      Seq[Widget],
+    turtleShapes: Seq[VectorShape],
+    linkShapes:   Seq[LinkShape]
+  ) {
+    def toModel: Model =
+      Model(code = code, info = info, widgets = widgets.toList, turtleShapes = turtleShapes.toList, linkShapes = linkShapes.toList)
+  }
+
+  case class CompilationRequest(
+    code:     String,
+    widgets:  Seq[Widget],
+    commands: Seq[String]
+  )
+
+  object literalParser extends LiteralParser {
+    def readFromString(s: String): AnyRef            = throw new Exception("Invalid NetLogo Web Model")
+    def readNumberFromString(source: String): AnyRef = throw new Exception("Invalid NetLogo Web Model")
+  }
 }

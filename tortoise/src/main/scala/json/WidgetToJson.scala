@@ -3,6 +3,9 @@
 package org.nlogo.tortoise.json
 
 import
+  JsonReader.JsonSequenceReader
+
+import
   org.nlogo.core.{ Button, Chooser, Col, InputBox,
     InputBoxType, Monitor, Num, Output, Pen, Plot, Slider, Switch, TextBox, View, Widget }
 
@@ -24,6 +27,13 @@ object WidgetToJson {
           "Widgets must be represented as a JSON Object with type specified".failureNel[Widget]
       }
     }
+  }
+
+  implicit object readWidgetsJson extends JsonSequenceReader[Widget] {
+    def nonArrayErrorString(json: TortoiseJson): String =
+      s"expected an array of Widgets, found $json"
+
+    def convertElem(json: TortoiseJson): ValidationNel[String, Widget] = readWidgetJson(json)
   }
 
   def read(json: TortoiseJson): ValidationNel[String, Widget] =
