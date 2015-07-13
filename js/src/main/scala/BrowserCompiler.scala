@@ -5,9 +5,8 @@ package org.nlogo.tortoise
 import
   json.{ Jsonify, JsonLibrary, JsonReader, JsonWritable, JsonWriter, ShapeToJsonConverters, TortoiseJson, WidgetToJson },
     JsonLibrary.{ Native => NativeJson, toTortoise },
-    JsonReader.tortoiseJsAsStringSeq,
     JsonWriter._,
-    ShapeToJsonConverters.{ linkShapes2Json, vectorShapes2Json },
+    ShapeToJsonConverters.{ readLinkShapes, readVectorShapes, linkShapes2Json, vectorShapes2Json },
     TortoiseJson._,
     WidgetToJson.{ widget2Json, readWidgetJson, readWidgetsJson }
 
@@ -41,9 +40,9 @@ class BrowserCompiler {
     val compilationResult =
       for {
         tortoiseReq   <- readNative[JsObject](compilationRequest)
-        parsedRequest <- Jsonify.reader[JsObject, CompilationRequest](tortoiseReq).leftMap(_.map(FailureString))
-        model         = Model(code = parsedRequest.code, widgets = parsedRequest.widgets.toList)
-        compilation   <- compilingModel(_.fromModel(model), compileCommands(parsedRequest.commands))
+        parsedRequest <- CompilationRequest.read(tortoiseReq).leftMap(_.map(FailureString))
+        compilation   <- compilingModel(
+          _.fromModel(parsedRequest.toModel), compileCommands(parsedRequest.allCommands))
       } yield compilation
 
     JsonLibrary.toNative(compilationResult.toJsonObj)
@@ -68,7 +67,7 @@ class BrowserCompiler {
     val model =
       for {
         tortoiseReq   <- readNative[JsObject](exportRequest)
-        parsedRequest <- Jsonify.reader[JsObject, ExportRequest](tortoiseReq).leftMap(_.map(FailureString))
+        parsedRequest <- ExportRequest.read(tortoiseReq).leftMap(_.map(FailureString))
       } yield ModelReader.formatModel(parsedRequest.toModel, literalParser)
 
     JsonLibrary.toNative(model.toJsonObj)
@@ -228,11 +227,60 @@ object BrowserCompiler {
       Model(code = code, info = info, widgets = widgets.toList, turtleShapes = turtleShapes.toList, linkShapes = linkShapes.toList)
   }
 
+  object ExportRequest {
+    val read = Jsonify.reader[JsObject, ExportRequest]
+  }
+
   case class CompilationRequest(
-    code:     String,
-    widgets:  Seq[Widget],
-    commands: Seq[String]
-  )
+    code:         String,
+    info:         Option[String],
+    widgets:      Seq[Widget],
+    commands:     Option[Seq[String]],
+    turtleShapes: Option[Seq[VectorShape]],
+    linkShapes:   Option[Seq[LinkShape]]
+  ) {
+    val allCommands: Seq[String] = commands.getOrElse(Seq())
+
+    def toModel: Model =
+      Model(
+        code         = code,
+        widgets      = widgets.toList,
+        info         = info                       getOrElse "",
+        turtleShapes = turtleShapes.map(_.toList) getOrElse Model.defaultShapes,
+        linkShapes   = linkShapes.map(_.toList)   getOrElse Model.defaultLinkShapes)
+  }
+
+  object CompilationRequest {
+    import JsonReader.{ tortoiseJsAsStringSeq, tortoiseJs2String }
+
+    trait OptionalJsonReader[T] extends JsonReader[TortoiseJson, Option[T]] {
+      def transform: TortoiseJson => ValidationNel[String, T]
+
+      override def apply(json: TortoiseJson): ValidationNel[String, Option[T]] =
+        transform(json).map(vt => Some(vt))
+
+      override def read(key: String, json: Option[TortoiseJson]): ValidationNel[String, Option[T]] =
+        json.map(apply).getOrElse(None.successNel)
+    }
+
+    implicit object optionalSeqReader extends OptionalJsonReader[Seq[String]] {
+      override val transform = tortoiseJsAsStringSeq
+    }
+
+    implicit object optionalStringReader extends OptionalJsonReader[String] {
+      override val transform = tortoiseJs2String
+    }
+
+    implicit object optionVectorShapes extends OptionalJsonReader[Seq[VectorShape]] {
+      override val transform = readVectorShapes _
+    }
+
+    implicit object optionLinkShapes extends OptionalJsonReader[Seq[LinkShape]] {
+      override val transform = readLinkShapes _
+    }
+
+    val read = Jsonify.reader[JsObject, CompilationRequest]
+  }
 
   object literalParser extends LiteralParser {
     def readFromString(s: String): AnyRef            = throw new Exception("Invalid NetLogo Web Model")

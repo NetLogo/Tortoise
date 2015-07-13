@@ -124,8 +124,28 @@ object BrowserCompilerTest extends TestSuite {
       assert(parsedModel.linkShapes.last.name == "custom2")
     }
 
-    "testFromModelCompilationPreservesCustomShapes"-{
-      assert(false)
+    "testCompilationWithoutCommandsOK"-{
+      val compiledModel = withBrowserCompiler(_.fromModel(modelToCompilationRequest(validModel)))
+      assert(compiledModel[Boolean]("success"))
+      val commands      = compiledModel[JsArray]("commands")
+      assert(commands.elems.isEmpty)
+    }
+
+    "testCompilationPreservesCustomShapes"-{
+      val compiledModel = withBrowserCompiler(_.fromModel(modelToCompilationRequest(validModel)))
+      assert(compiledModel[Boolean]("success"))
+      val compiledJs = compiledModel[String]("result")
+      assert(compiledJs.contains("custom"))
+      assert(compiledJs.contains("custom2"))
+    }
+
+
+    "testCompilationSucceedsWithJustCode"-{
+      val compiledModel = withBrowserCompiler(_.fromModel(toNative(JsObject(fields(
+        "code" -> JsString("to foo fd 1 end"),
+        "widgets" -> JsArray(validModel.widgets.map(widget2Json(_).toJsonObj))
+        )))))
+      assert(compiledModel[Boolean]("success"))
     }
   }
 
