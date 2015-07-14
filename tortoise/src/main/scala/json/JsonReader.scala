@@ -129,4 +129,14 @@ object JsonReader extends LowPriorityImplicitReaders {
         case other          => nonArrayErrorString(other).failureNel[Seq[T]]
       }
   }
+
+  trait OptionalJsonReader[T] extends JsonReader[TortoiseJson, Option[T]] {
+    def transform: TortoiseJson => ValidationNel[String, T]
+
+    override def apply(json: TortoiseJson): ValidationNel[String, Option[T]] =
+      transform(json).map(vt => Some(vt))
+
+    override def read(key: String, json: Option[TortoiseJson]): ValidationNel[String, Option[T]] =
+      json.map(apply).getOrElse(None.successNel)
+  }
 }

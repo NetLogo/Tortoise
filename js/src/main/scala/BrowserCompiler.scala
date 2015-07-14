@@ -3,16 +3,16 @@
 package org.nlogo.tortoise
 
 import
-  json.{ Jsonify, JsonLibrary, JsonReader, JsonWritable, JsonWriter, ShapeToJsonConverters, TortoiseJson, WidgetToJson },
-    JsonLibrary.{ Native => NativeJson, toTortoise },
-    JsonWriter._,
-    ShapeToJsonConverters.{ readLinkShapes, readVectorShapes, linkShapes2Json, vectorShapes2Json },
-    TortoiseJson._,
-    WidgetToJson.{ widget2Json, readWidgetJson, readWidgetsJson }
+  CompiledModel.CompileResult
 
 import
-  org.nlogo.core.{ CompilerException, LiteralParser, model, Model, Shape, Widget },
-    Shape.{ LinkShape, VectorShape },
+  json.{ Jsonify, JsonLibrary, JsonReader, JsonWritable, JsonWriter, TortoiseJson },
+    JsonLibrary.{ Native => NativeJson, toTortoise },
+    JsonWriter.string2TortoiseJs,
+    TortoiseJson._
+
+import
+  org.nlogo.core.{ CompilerException, LiteralParser, model },
     model.ModelReader
 
 import
@@ -26,9 +26,6 @@ import
     std.list._,
     Scalaz.ToValidationOps,
     Validation.FlatMap.ValidationFlatMapRequested
-
-import
-  CompiledModel.CompileResult
 
 @JSExport("BrowserCompiler")
 class BrowserCompiler {
@@ -104,44 +101,22 @@ class BrowserCompiler {
     compilation.copy(commands = commands.map(model.compileCommand(_)))
 
   private def readNative[A](n: NativeJson)(implicit ev: JsonReader[TortoiseJson, A]): ValidationNel[Failure, A] =
-    JsonReader.read(JsonLibrary.toTortoise(n))(ev).leftMap(_.map(s => FailureString(s)))
+    JsonReader.read(toTortoise(n))(ev).leftMap(_.map(s => FailureString(s)))
 }
 
 object BrowserCompiler {
 
+  import Failure.exception2Json
+
   type CompiledModelV  = CompileResult[CompiledModel]
   type CompiledStringV = CompileResult[String]
-
-  implicit object compileError2Json extends JsonWriter[Throwable] {
-    def apply(ex: Throwable): TortoiseJson =
-      ex match {
-        case compilerException: CompilerException =>
-          JsObject(fields(
-            "message" -> JsString(compilerException.getMessage),
-            "start"   -> JsInt(compilerException.start),
-            "end"     -> JsInt(compilerException.end)))
-        case otherException                       =>
-          JsObject(fields(
-            "message" -> JsString(otherException.getMessage)))
-      }
-  }
-
-  implicit object compileFailure2Json extends JsonWriter[Failure] {
-    def apply(f: Failure): TortoiseJson =
-      f match {
-        case FailureCompilerException(ce) => ce.toJsonObj
-        case FailureException(e)          => e.toJsonObj
-        case FailureString(s)             =>
-          JsObject(fields("message" -> JsString(s)))
-      }
-  }
 
   implicit object compileResult2Json extends JsonWriter[CompiledStringV] {
     def apply(compileResult: CompiledStringV): TortoiseJson =
       compileResult.fold(
         es => JsObject(fields(
           "success" -> JsBool(false),
-          "result" -> JsArray(es.list.toList.map((e: Exception) => e.toJsonObj)))),
+          "result"  -> JsArray(es.list.toList.map((e: Exception) => e.toJsonObj)))),
       success => JsObject(fields(
         "success" -> JsBool(true),
         "result" -> JsString(success))))
@@ -182,12 +157,6 @@ object BrowserCompiler {
       JsObject(fields("result" -> JsString(success)))
   }
 
-  implicit def exception2Json(ex: Throwable): JsonWritable =
-    JsonWriter.convert(ex)
-
-  implicit def failure2Json(f: Failure): JsonWritable =
-    JsonWriter.convert(f)
-
   implicit def compilationResult2Json(modelCompilation: ValidationNel[Failure, ModelCompilation]): JsonWritable =
     JsonWriter.convert(modelCompilation)
 
@@ -209,77 +178,6 @@ object BrowserCompiler {
         compiledModel.model.code,
         compiledModel.model.info,
         compiledModel.widgets)
-  }
-
-  sealed trait Failure
-  case class FailureString(str: String) extends Failure
-  case class FailureException(exception: Throwable) extends Failure
-  case class FailureCompilerException(exception: CompilerException) extends Failure
-
-  case class ExportRequest(
-    code:         String,
-    info:         String,
-    widgets:      Seq[Widget],
-    turtleShapes: Seq[VectorShape],
-    linkShapes:   Seq[LinkShape]
-  ) {
-    def toModel: Model =
-      Model(code = code, info = info, widgets = widgets.toList, turtleShapes = turtleShapes.toList, linkShapes = linkShapes.toList)
-  }
-
-  object ExportRequest {
-    val read = Jsonify.reader[JsObject, ExportRequest]
-  }
-
-  case class CompilationRequest(
-    code:         String,
-    info:         Option[String],
-    widgets:      Seq[Widget],
-    commands:     Option[Seq[String]],
-    turtleShapes: Option[Seq[VectorShape]],
-    linkShapes:   Option[Seq[LinkShape]]
-  ) {
-    val allCommands: Seq[String] = commands.getOrElse(Seq())
-
-    def toModel: Model =
-      Model(
-        code         = code,
-        widgets      = widgets.toList,
-        info         = info                       getOrElse "",
-        turtleShapes = turtleShapes.map(_.toList) getOrElse Model.defaultShapes,
-        linkShapes   = linkShapes.map(_.toList)   getOrElse Model.defaultLinkShapes)
-  }
-
-  object CompilationRequest {
-    import JsonReader.{ tortoiseJsAsStringSeq, tortoiseJs2String }
-
-    trait OptionalJsonReader[T] extends JsonReader[TortoiseJson, Option[T]] {
-      def transform: TortoiseJson => ValidationNel[String, T]
-
-      override def apply(json: TortoiseJson): ValidationNel[String, Option[T]] =
-        transform(json).map(vt => Some(vt))
-
-      override def read(key: String, json: Option[TortoiseJson]): ValidationNel[String, Option[T]] =
-        json.map(apply).getOrElse(None.successNel)
-    }
-
-    implicit object optionalSeqReader extends OptionalJsonReader[Seq[String]] {
-      override val transform = tortoiseJsAsStringSeq
-    }
-
-    implicit object optionalStringReader extends OptionalJsonReader[String] {
-      override val transform = tortoiseJs2String
-    }
-
-    implicit object optionVectorShapes extends OptionalJsonReader[Seq[VectorShape]] {
-      override val transform = readVectorShapes _
-    }
-
-    implicit object optionLinkShapes extends OptionalJsonReader[Seq[LinkShape]] {
-      override val transform = readLinkShapes _
-    }
-
-    val read = Jsonify.reader[JsObject, CompilationRequest]
   }
 
   object literalParser extends LiteralParser {
