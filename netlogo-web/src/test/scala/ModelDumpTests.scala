@@ -42,9 +42,10 @@ class ModelDumpTests extends FunSuite {
       try {
         val modelContents                = Source.fromFile(path).mkString
         val (compilationResult, widgets) = compilationFunction(Array[Object](modelContents))
-        assert(compilationResult("success").asInstanceOf[Boolean])
+        val modelResult = compilationResult("model").asInstanceOf[JMap[String,AnyRef]]
+        assert(modelResult.get("success").asInstanceOf[Boolean])
 
-        val genaratedJs = cleanJsNumbers(compilationResult("result").toString.trim)
+        val genaratedJs = cleanJsNumbers(modelResult.get("result").toString.trim)
         loggingGeneratedJs(genaratedJs, path) {
           assertResult(archivedCompilation(path))(genaratedJs)
         }

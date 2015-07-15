@@ -27,16 +27,16 @@ import utest._
 
 object BrowserCompilerTest extends TestSuite {
   def tests = TestSuite {
-    "testInvalidModels"-{
+    "testInvalidModel"-{
       val compiledModel = compileModel("")
-      assert(! compiledModel[Boolean]("success"))
-      assert(compiledModel[JsArray]("result").elems.nonEmpty)
+      assert(! isSuccess(compiledModel))
+      assert(compiledModel[JsObject]("model").apply[JsArray]("result").elems.nonEmpty)
     }
 
-    "testInvalidModel"-{
+    "testErrantModel"-{
       val compiledModel = compileModel(validModel.copy(code = "to foo fd 1"))
-      assert(! compiledModel[Boolean]("success"))
-      val result     = compiledModel.props("result").asInstanceOf[JsArray]
+      assert(! isSuccess(compiledModel))
+      val result     = compiledModel[JsObject]("model").apply[JsArray]("result")
       val firstError = result.elems(0).asInstanceOf[JsObject]
       assertErrorMessage(compiledModel, "END expected")
       assert(2147483647     == firstError[Int]("start"))
@@ -52,11 +52,11 @@ object BrowserCompilerTest extends TestSuite {
     }
 
     "testModelHasResult"-{
-      assert(compileModel(validModel)[String]("result").contains("foo"))
+      assert(compiledJs(compileModel(validModel)).contains("foo"))
     }
 
     "testModelHasSuccess"-{
-      assert(compileModel(validModel)[Boolean]("success"))
+      assert(isSuccess(compileModel(validModel)))
     }
 
     "testModelHasView"-{
@@ -66,7 +66,7 @@ object BrowserCompilerTest extends TestSuite {
     "testModelWithCompileWidget"-{
       val slider = Slider(display = "steps", varName = "steps")
       val compiledModel = compileModel(validModel.copy(widgets = slider::validModel.widgets))
-      assert(compiledModel[Boolean]("success"))
+      assert(isSuccess(compiledModel))
       withWidget(compiledModel, "slider", slider =>
         Seq("compiledStep", "compiledMax", "compiledMin").foreach { field =>
           assert(slider[JsObject](field).apply[Boolean]("success"))
@@ -77,7 +77,7 @@ object BrowserCompilerTest extends TestSuite {
     "TestModelWithInvalidWidgets"-{
       val invalidSlider = Slider(display = "steps", varName = "steps", min = "qwerty")
       val compiledModel = compileModel(validModel.copy(widgets = invalidSlider::validModel.widgets))
-      assert(compiledModel[Boolean]("success"))
+      assert(isSuccess(compiledModel))
       withWidget(compiledModel, "slider", {slider =>
           assert(slider[JsObject]("compiledMin").apply[Boolean]("success") == false)
           assert(slider[JsObject]("compiledMin").apply[JsArray]("result").elems.nonEmpty) })
@@ -95,11 +95,11 @@ object BrowserCompilerTest extends TestSuite {
       val formattedModel = ModelReader.formatModel(validModel, literalParser)
       val commands       = toNative(JsString("foobar"))
       val compiledModel  = withBrowserCompiler(_.fromNlogo(formattedModel, commands))
-      assert(! compiledModel[Boolean]("success"))
+      assert(! isSuccess(compiledModel))
       assertErrorMessage(compiledModel, "commands must be an Array of String")
     }
 
-    "testCompilesReporters"-{
+    "testReturnsReportersElement"-{
       val compiledModel = compileModel(validModel)
       assert(compiledModel[JsArray]("reporters").elems.isEmpty)
     }
@@ -109,7 +109,7 @@ object BrowserCompilerTest extends TestSuite {
         modelToCompilationRequest(validModel,
           fields("commands" -> JsArray(Seq(JsString("ask turtles [fd 1]")))))
       val compiledModel = withBrowserCompiler(_.fromModel(compilationRequest))
-      assert(compiledModel[Boolean]("success"))
+      assert(isSuccess(compiledModel))
     }
 
     "testExportsNlogo"-{
@@ -117,26 +117,26 @@ object BrowserCompilerTest extends TestSuite {
       assert(exportResult[Boolean]("success"))
       val exportedNlogo = exportResult[String]("result")
       val parsedModel = ModelReader.parseModel(exportedNlogo, literalParser)
-      assert(parsedModel.code == validModel.code)
-      assert(parsedModel.info == validModel.info)
-      assert(parsedModel.widgets == validModel.widgets)
+      assert(parsedModel.code                   == validModel.code)
+      assert(parsedModel.info                   == validModel.info)
+      assert(parsedModel.widgets                == validModel.widgets)
       assert(parsedModel.turtleShapes.last.name == "custom")
-      assert(parsedModel.linkShapes.last.name == "custom2")
+      assert(parsedModel.linkShapes.last.name   == "custom2")
     }
 
     "testCompilationWithoutCommandsOK"-{
       val compiledModel = withBrowserCompiler(_.fromModel(modelToCompilationRequest(validModel)))
-      assert(compiledModel[Boolean]("success"))
+      assert(isSuccess(compiledModel))
       val commands      = compiledModel[JsArray]("commands")
       assert(commands.elems.isEmpty)
     }
 
     "testCompilationPreservesCustomShapes"-{
       val compiledModel = withBrowserCompiler(_.fromModel(modelToCompilationRequest(validModel)))
-      assert(compiledModel[Boolean]("success"))
-      val compiledJs = compiledModel[String]("result")
-      assert(compiledJs.contains("custom"))
-      assert(compiledJs.contains("custom2"))
+      assert(isSuccess(compiledModel))
+      val js = compiledJs(compiledModel)
+      assert(js.contains("custom"))
+      assert(js.contains("custom2"))
     }
 
 
@@ -145,9 +145,15 @@ object BrowserCompilerTest extends TestSuite {
         "code" -> JsString("to foo fd 1 end"),
         "widgets" -> JsArray(validModel.widgets.map(widget2Json(_).toJsonObj))
         )))))
-      assert(compiledModel[Boolean]("success"))
+      assert(isSuccess(compiledModel))
     }
   }
+
+  private def isSuccess(compiledModel: JsObject): Boolean =
+    compiledModel[JsObject]("model").apply[Boolean]("success")
+
+  private def compiledJs(compiledModel: JsObject): String =
+    compiledModel[JsObject]("model").apply[String]("result")
 
   private def modelToCompilationRequest(model: Model): NativeJson =
     modelToCompilationRequest(model, fields())
@@ -177,7 +183,11 @@ object BrowserCompilerTest extends TestSuite {
   }
 
   private def assertErrorMessage(compiledModel: JsObject, message: String): Unit =
-    assert(compiledModel[JsArray]("result").apply[JsObject](0).apply[String]("message") == message)
+    assert(
+      compiledModel[JsObject]("model")
+        .apply[JsArray]("result")
+        .apply[JsObject](0)
+        .apply[String]("message") == message)
 
   private def withWidget(compiledModel: JsObject, widgetType: String, f: JsObject => Unit): Unit = {
     // this song and dance is to turn a string with Javascript Objects containing functions
