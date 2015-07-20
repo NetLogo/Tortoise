@@ -122,8 +122,11 @@ lazy val netLogoWeb: Project = (project in file("netlogo-web")).
     // these tasks force the regeneration of the tortoise.js source on each build
     resourceGenerators in Compile += Def.task {
       (fullOptJS in Compile in tortoiseJS).value
-      IO.copy(Seq(((artifactPath in fullOptJS in Compile in tortoiseJS).value, resourceManaged.value / "tortoise.js")))
-      Seq(resourceManaged.value / "tortoise.js")
+      val tortoiseJsFile = (artifactPath in fullOptJS in Compile in tortoiseJS).value
+      val files          = Seq[File](tortoiseJsFile, tortoiseJsFile.getParentFile / (tortoiseJsFile.getName + ".map"))
+      val copies         = files.map((f: File) => (f, resourceManaged.value / f.getName))
+      IO.copy(copies)
+      copies.map(_._2)
     }.taskValue,
     cleanGeneratedSources          := { IO.delete(resourceManaged.value) },
     cleanFiles                     <+= resourceManaged,
