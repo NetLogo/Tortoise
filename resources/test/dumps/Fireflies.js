@@ -70,6 +70,7 @@ var procedures = (function() {
     world.clearAll();
     world.turtleManager.createTurtles(world.observer.getGlobal("number"), "").ask(function() {
       SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
+      SelfPrims.setVariable("shape", "butterfly");
       SelfPrims.setVariable("clock", Prims.random(NLMath.round(world.observer.getGlobal("cycle-length"))));
       SelfPrims.setVariable("threshold", world.observer.getGlobal("flash-length"));
       if (Prims.equality(world.observer.getGlobal("strategy"), "delay")) {
@@ -145,5 +146,5 @@ world.observer.setGlobal("number", 1500);
 world.observer.setGlobal("cycle-length", 10);
 world.observer.setGlobal("flash-length", 1);
 world.observer.setGlobal("flashes-to-reset", 1);
-world.observer.setGlobal("show-dark-fireflies?", true);
+world.observer.setGlobal("show-dark-fireflies?", false);
 world.observer.setGlobal("strategy", "delay");

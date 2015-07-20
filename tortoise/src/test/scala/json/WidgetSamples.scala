@@ -82,19 +82,21 @@ object WidgetSamples {
       "on"      -> JsBool(true)),
 
     "buttonNoName" -> locatableJsObject(
-      "type"       -> JsString("button"),
-      "source"     -> JsString("foobar"),
-      "forever"    -> JsBool(false),
-      "buttonType" -> JsString("TURTLE"),
-      "actionKey"  -> JsString("A")),
+      "type"                   -> JsString("button"),
+      "source"                 -> JsString("foobar"),
+      "forever"                -> JsBool(false),
+      "disableUntilTicksStart" -> JsBool(false),
+      "buttonType"             -> JsString("TURTLE"),
+      "actionKey"              -> JsString("A")),
 
     "buttonWithName" -> locatableJsObject(
-      "type"       -> JsString("button"),
-      "display"    -> JsString("press this"),
-      "source"     -> JsString("foobar"),
-      "forever"    -> JsBool(false),
-      "buttonType" -> JsString("OBSERVER"),
-      "actionKey"  -> JsNull),
+      "type"                   -> JsString("button"),
+      "display"                -> JsString("press this"),
+      "source"                 -> JsString("foobar"),
+      "forever"                -> JsBool(false),
+      "disableUntilTicksStart" -> JsBool(false),
+      "buttonType"             -> JsString("OBSERVER"),
+      "actionKey"              -> JsNull),
 
     "chooser" -> locatableJsObject(
       "type"          -> JsString("chooser"),

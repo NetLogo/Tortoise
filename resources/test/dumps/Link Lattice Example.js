@@ -51,6 +51,7 @@ var procedures = (function() {
     world.turtles().ask(function() {
       LinkPrims.createLinksWith(Prims.turtlesOn(SelfPrims.getNeighbors4()), "LINKS").ask(function() {}, false);
     }, true);
+    world.ticker.reset();
   };
   var setupHex = function() {
     world.clearAll();
@@ -64,6 +65,7 @@ var procedures = (function() {
         SelfPrims.setVariable("ycor", (SelfPrims.getVariable("ycor") - 0.5));
       }
     }, true);
+    world.ticker.reset();
   };
   return {
     "SETUP-HEX":setupHex,

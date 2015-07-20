@@ -149,7 +149,7 @@ object Model {
       metrics = Seq("total", "sizes", "lifetimes")
     ),
     Model(
-      path = "models/Sample Models/Chemistry & Physics/Diffusion Limited Aggregation/DLA Simple.nlogo",
+      path = "models/IABM Textbook/chapter 3/DLA Extensions/DLA Simple.nlogo",
       dimensions = Some((-20, 20, -20, 20)),
       setup = "setup   set num-particles 100",
       repetitions = 25

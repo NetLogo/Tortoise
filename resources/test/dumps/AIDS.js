@@ -237,7 +237,7 @@ var procedures = (function() {
   };
   var infect = function() {
     if (((SelfPrims.getVariable("coupled?") && SelfPrims.getVariable("infected?")) && !SelfPrims.getVariable("known?"))) {
-      if ((Prims.gt(Prims.randomFloat(11), SelfPrims.getVariable("condom-use")) || Prims.gt(Prims.randomFloat(11), SelfPrims.getVariable("partner").projectionBy(function() { return SelfPrims.getVariable("condom-use"); })))) {
+      if ((Prims.gt(Prims.randomFloat(10), SelfPrims.getVariable("condom-use")) || Prims.gt(Prims.randomFloat(10), SelfPrims.getVariable("partner").projectionBy(function() { return SelfPrims.getVariable("condom-use"); })))) {
         if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("infection-chance"))) {
           SelfPrims.getVariable("partner").ask(function() { SelfPrims.setVariable("infected?", true); }, true);
         }

@@ -200,11 +200,13 @@ object SimplePrims {
   object SimpleCommand {
     def unapply(c: Command): Option[String] =
       PartialFunction.condOpt(c) {
-        case _: prim._done             => ""
-        case _: prim.etc._observercode => ""
-        case _: prim.etc._stop         => "throw new Exception.StopInterrupt"
-        case _: prim.etc._hideturtle   => "SelfManager.self().hideTurtle(true);"
-        case _: prim.etc._showturtle   => "SelfManager.self().hideTurtle(false);"
+        case _: prim._done                         => ""
+        case _: prim.etc._observercode             => ""
+        case _: prim.etc._stop                     => "throw new Exception.StopInterrupt"
+        case _: prim.etc._hideturtle               => "SelfManager.self().hideTurtle(true);"
+        case _: prim.etc._showturtle               => "SelfManager.self().hideTurtle(false);"
+        case _: prim.etc._stopinspecting           => ""
+        case _: prim.etc._stopinspectingdeadagents => ""
       }
   }
 

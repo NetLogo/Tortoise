@@ -62,6 +62,7 @@ var procedures = (function() {
     ListPrims.nOf(5, world.turtles()).ask(function() {
       LinkPrims.createLinkTo(ListPrims.oneOf(SelfPrims.other(world.turtles())), "RED-LINKS").ask(function() { SelfPrims.setVariable("color", 15); }, true);
     }, true);
+    world.ticker.reset();
   };
   return {
     "SETUP":setup,
