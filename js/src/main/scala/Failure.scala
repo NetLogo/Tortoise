@@ -9,14 +9,14 @@ import
 import
   org.nlogo.core.CompilerException
 
-sealed trait Failure
-case class FailureString(str: String) extends Failure
-case class FailureException(exception: Throwable) extends Failure
-case class FailureCompilerException(exception: CompilerException) extends Failure
+sealed trait TortoiseFailure
+case class FailureString(str: String) extends TortoiseFailure
+case class FailureException(exception: Throwable) extends TortoiseFailure
+case class FailureCompilerException(exception: CompilerException) extends TortoiseFailure
 
-object Failure {
-  implicit object compileFailure2Json extends JsonWriter[Failure] {
-    def apply(f: Failure): TortoiseJson =
+object TortoiseFailure {
+  implicit object compileFailure2Json extends JsonWriter[TortoiseFailure] {
+    def apply(f: TortoiseFailure): TortoiseJson =
       f match {
         case FailureCompilerException(ce) => ce.toJsonObj
         case FailureException(e)          => e.toJsonObj
@@ -39,7 +39,7 @@ object Failure {
       }
   }
 
-  implicit def failure2Json(f: Failure): JsonWritable =
+  implicit def failure2Json(f: TortoiseFailure): JsonWritable =
     JsonWriter.convert(f)
 
   implicit def exception2Json(ex: Throwable): JsonWritable =

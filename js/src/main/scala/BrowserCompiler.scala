@@ -72,8 +72,8 @@ class BrowserCompiler {
 
   private def compilingModel(
     f: CompiledModel.type => ValidationNel[Exception, CompiledModel],
-    g: (CompiledModel, ModelCompilation) => ModelCompilation = (a, b) => b): ValidationNel[Failure, ModelCompilation] =
-    Validation.fromTryCatchThrowable[ValidationNel[Failure, ModelCompilation], Throwable](
+    g: (CompiledModel, ModelCompilation) => ModelCompilation = (a, b) => b): ValidationNel[TortoiseFailure, ModelCompilation] =
+    Validation.fromTryCatchThrowable[ValidationNel[TortoiseFailure, ModelCompilation], Throwable](
       f(CompiledModel).leftMap(_.map {
         case e: CompilerException => FailureCompilerException(e)
         case e: Exception         => FailureException(e)
@@ -84,7 +84,7 @@ class BrowserCompiler {
       success => success)
 
   private def readArray[A](native: NativeJson, name: String)
-                          (implicit ct: ClassTag[A], ev: JsonReader[TortoiseJson, A]): ValidationNel[Failure, List[A]] = {
+                          (implicit ct: ClassTag[A], ev: JsonReader[TortoiseJson, A]): ValidationNel[TortoiseFailure, List[A]] = {
 
     def defaultError = FailureString(s"$name must be an Array of ${ct.runtimeClass.getSimpleName}")
     val arrV         = readNative[JsArray](native) orElse defaultError.failureNel
@@ -92,7 +92,7 @@ class BrowserCompiler {
     arrV.flatMap {
       arr =>
         val validations = arr.elems.map(e => JsonReader.read(e)(ev).bimap(_ map FailureString, List(_)))
-        validations.foldLeft(List.empty[A].successNel[Failure])(_ +++ _)
+        validations.foldLeft(List.empty[A].successNel[TortoiseFailure])(_ +++ _)
     }
 
   }
@@ -100,13 +100,13 @@ class BrowserCompiler {
   private def compileCommands(commands: Seq[String])(model: CompiledModel, compilation: ModelCompilation): ModelCompilation =
     compilation.copy(commands = commands.map(model.compileCommand(_)))
 
-  private def readNative[A](n: NativeJson)(implicit ev: JsonReader[TortoiseJson, A]): ValidationNel[Failure, A] =
+  private def readNative[A](n: NativeJson)(implicit ev: JsonReader[TortoiseJson, A]): ValidationNel[TortoiseFailure, A] =
     JsonReader.read(toTortoise(n))(ev).leftMap(_.map(s => FailureString(s)))
 }
 
 object BrowserCompiler {
 
-  import Failure.exception2Json
+  import TortoiseFailure.exception2Json
 
   type CompiledModelV  = CompileResult[CompiledModel]
   type CompiledStringV = CompileResult[String]
@@ -131,14 +131,14 @@ object BrowserCompiler {
       JsString(WidgetCompiler.formatWidgets(widgets))
   }
 
-  implicit object export2JsonWriter extends JsonWriter[ValidationNel[Failure, String]] {
-    def apply(compileResult: ValidationNel[Failure, String]): TortoiseJson =
+  implicit object export2JsonWriter extends JsonWriter[ValidationNel[TortoiseFailure, String]] {
+    def apply(compileResult: ValidationNel[TortoiseFailure, String]): TortoiseJson =
       compileResult.fold(
         failureJson,
         success =>
           JsObject(successJson(success).props + ("success" -> JsBool(true))))
 
-    private def failureJson(failures: NonEmptyList[Failure]): JsObject =
+    private def failureJson(failures: NonEmptyList[TortoiseFailure]): JsObject =
       JsObject(fields(
         "success" -> JsBool(false),
         "result"  -> JsArray(failures.list.toList.map(_.toJsonObj))))
@@ -147,8 +147,8 @@ object BrowserCompiler {
       JsObject(fields("result" -> JsString(success)))
   }
 
-  implicit object modelCompilationNel2Json extends JsonWriter[ValidationNel[Failure, CompiledModel]] {
-    def apply(compileResult: ValidationNel[Failure, CompiledModel]): TortoiseJson =
+  implicit object modelCompilationNel2Json extends JsonWriter[ValidationNel[TortoiseFailure, CompiledModel]] {
+    def apply(compileResult: ValidationNel[TortoiseFailure, CompiledModel]): TortoiseJson =
       compileResult.fold(
         failureJson,
         success =>
@@ -156,7 +156,7 @@ object BrowserCompiler {
             "success" -> JsBool(true),
             "result"  -> JsString(success.compiledCode))))
 
-    private def failureJson(failures: NonEmptyList[Failure]): JsObject =
+    private def failureJson(failures: NonEmptyList[TortoiseFailure]): JsObject =
       JsObject(fields(
         "success" -> JsBool(false),
         "result"  -> JsArray(failures.list.toList.map(_.toJsonObj))))
@@ -167,7 +167,7 @@ object BrowserCompiler {
       Jsonify.writer[ModelCompilation, TortoiseJson](success).asInstanceOf[JsObject]
   }
 
-  implicit def compilationResult2Json(modelCompilationV: ValidationNel[Failure, ModelCompilation]): JsonWritable =
+  implicit def compilationResult2Json(modelCompilationV: ValidationNel[TortoiseFailure, ModelCompilation]): JsonWritable =
     // We fold up any errors that occurred outside the scope of the CompiledModel into
     // the CompiledModel result so we can avoid looking at 5 different success keys
     JsonWriter.convert(
@@ -176,14 +176,14 @@ object BrowserCompiler {
       success => success))
 
   case class ModelCompilation(
-    model: ValidationNel[Failure, CompiledModel],
+    model: ValidationNel[TortoiseFailure, CompiledModel],
     code: String,
     info: String,
     widgets: Seq[CompiledWidget],
     commands: Seq[CompiledStringV] = Seq(),
     reporters: Seq[CompiledStringV] = Seq())
 
-  implicit def exportResult2Json(exportResult: ValidationNel[Failure, String]): JsonWritable =
+  implicit def exportResult2Json(exportResult: ValidationNel[TortoiseFailure, String]): JsonWritable =
     JsonWriter.convert(exportResult)
 
   object ModelCompilation {

@@ -9,12 +9,15 @@ import
   org.nlogo.core.{ Color, CompilerException, Model, Pen, Plot, Token }
 
 import
-  scalaz.{ syntax, NonEmptyList, ValidationNel },
+  scalaz.{ Success, syntax, NonEmptyList, ValidationNel },
     syntax.{ apply => applysyntax, ToValidationOps },
       applysyntax._
 
 import
   TortoiseSymbol.{ JsDeclare, JsStatement, JsRequire }
+
+import
+  WidgetCompilation.UpdateableCompilation
 
 object PlotCompiler {
   private def getOrElse(expr: String)(`default`: String): String =
@@ -47,20 +50,25 @@ object PlotCompiler {
   }
 
   implicit class RichCompiledPlot(compiledPlot: CompiledPlot) {
-    import compiledPlot.{ cleanDisplay, compiledPens, compiledSetupCode, compiledUpdateCode }
+    import compiledPlot.{ cleanDisplay, plotWidgetCompilation }
 
     def toJS: String =
-      (compiledSetupCode |@| compiledUpdateCode)(constructNewPlot)
-        .fold(showPlotErrors, identity)
+      plotWidgetCompilation.fold(
+        showPlotErrors,
+        pwc => constructNewPlot(pwc.compiledSetupCode, pwc.compiledUpdateCode, pwc.compiledPens))
 
-    private def constructNewPlot(compiledSetup: String, compiledUpdate: String): String = {
+    private def constructNewPlot(compiledSetup: String, compiledUpdate: String, compiledPens: Seq[CompiledPen]): String = {
       import compiledPlot.plot._
 
-      val noop       = thunkifyProcedure("")
-      val arity2Noop = thunkifyFunction(noop)
-      val plotOps    = s"new PlotOps($noop, $noop, $noop, $arity2Noop, $arity2Noop, $arity2Noop, $arity2Noop)"
+      val noop         = thunkifyProcedure("")
+      val arity2Noop   = thunkifyFunction(noop)
+      val emptyPlotOps = s"new PlotOps($noop, $noop, $noop, $arity2Noop, $arity2Noop, $arity2Noop, $arity2Noop)"
 
       val plotPens   = jsArrayString(compiledPens.map(penToJS), "\n")
+      // TODO: Figure how this fits in...
+      // .fold(
+      //  e => "console.log(\"error\");",
+      //  pens => jsArrayString(pens, "\n"))
 
       val args =
         Seq("name", "pens", "plotOps", jsString(sanitizeNil(xAxis)), jsString(sanitizeNil(yAxis)),
@@ -68,7 +76,7 @@ object PlotCompiler {
 
       var plotContructor =
         s"""|var name    = '$cleanDisplay';
-            |var plotOps = ${getOrElse("modelPlotOps[name]")(plotOps)};
+            |var plotOps = ${getOrElse("modelPlotOps[name]")(emptyPlotOps)};
             |var pens    = $plotPens;
             |var setup   = $compiledSetup;
             |var update  = $compiledUpdate;
@@ -77,17 +85,18 @@ object PlotCompiler {
       s"(${jsFunction(body = plotContructor)})()"
     }
 
-    private def showPlotErrors(ces: NonEmptyList[Exception]): String = {
-      val formattedErrors = ces.map(_.getMessage).list.mkString(", ")
+    private def showPlotErrors(es: NonEmptyList[Exception]): String = {
+      val formattedErrors = es.map(_.getMessage).list.mkString(", ")
       s"""modelConfig.output.write("Errors in plot $cleanDisplay initialization $formattedErrors");"""
     }
 
     def penToJS(compiledPen: CompiledPen): String = {
-      def constructNewPen(compiledSetup: String, compiledUpdate: String): String = {
-        import compiledPen.pen._
+      def constructNewPen(pen: Pen)(compilation: UpdateableCompilation): String = {
+        import pen._
+
         val state =
           s"new PenBundle.State(${Color.getClosestColorNumberByARGB(color)}, $interval, ${displayModeToJS(mode)})"
-        s"new PenBundle.Pen('$display', plotOps.makePenOps, false, $state, $compiledSetup, $compiledUpdate)"
+        s"new PenBundle.Pen('$display', plotOps.makePenOps, false, $state, ${compilation.compiledSetupCode}, ${compilation.compiledUpdateCode})"
       }
 
       def displayModeToJS(mode: Int): String =
@@ -98,13 +107,13 @@ object PlotCompiler {
           case _ => "Line"
         }}"
 
-      def showPenErrors(ces: NonEmptyList[Exception]): String = {
+      def showPenErrors(pen: Pen)(ces: NonEmptyList[Exception]): String = {
         val formattedErrors = ces.map(_.getMessage).list.mkString(", ")
-        s"""modelConfig.output.write("Errors in pen ${compiledPen.pen.display} initialization $formattedErrors");"""
+        s"""modelConfig.output.write("Errors in pen ${pen.display} initialization $formattedErrors");"""
       }
 
-      (compiledPen.compiledSetupCode |@| compiledPen.compiledUpdateCode)(constructNewPen)
-        .fold(showPenErrors, identity)
+      compiledPen.widgetCompilation.fold(
+        showPenErrors(compiledPen.pen), constructNewPen(compiledPen.pen))
     }
   }
 }

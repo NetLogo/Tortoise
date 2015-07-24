@@ -8,7 +8,7 @@ import
 import
   json.{ JsonWriter, TortoiseJson },
     JsonWriter._,
-    TortoiseJson.JsObject
+    TortoiseJson.{ fields, JsArray, JsBool, JsObject, JsString }
 
 import
   JsOps.{ jsArrayString, jsFunction, jsString, sanitizeNil, thunkifyFunction, thunkifyProcedure }
@@ -17,13 +17,18 @@ import
   org.nlogo.core.{ Button, CompilerException, Monitor, Pen, Plot, Slider, Token, Widget }
 
 import
-  scalaz.Scalaz.ToValidationOps
+  scalaz.{ Apply, NonEmptyList, Scalaz, Success, ValidationNel },
+    Scalaz.ToValidationOps
 
 import
   TortoiseSymbol.JsDeclare
 
 import
   WidgetCompilation._
+
+import
+  WidgetCompiler.{ ExceptionValidation, ValidationContextualizer }
+
 
 class WidgetCompiler(compileCommand:  String => CompiledStringV,
                      compileReporter: String => CompiledStringV) {
@@ -32,6 +37,28 @@ class WidgetCompiler(compileCommand:  String => CompiledStringV,
     validatePlots(widgets)
     widgets.map(compileWidget)
   }
+
+  private def compileWidget(w: Widget): CompiledWidget =
+    w match {
+      case p: Plot    =>
+        val cleanDisplay = sanitizeNil(p.display)
+
+        val Seq(compiledSetup, compiledUpdate) =
+          Seq("setup" -> p.setupCode, "update" -> p.updateCode).map {
+            case (name, code) =>
+              compileInContext(code, cleanDisplay).contextualizeError("plot", cleanDisplay, name)
+          }
+
+        val compilation =
+          Apply[ExceptionValidation].apply2(compiledSetup, compiledUpdate)(
+            PlotWidgetCompilation(_, _, p.pens.map(compilePen(cleanDisplay))))
+        new CompiledPlot(p, cleanDisplay, compilation)
+
+      case b: Button  => CompiledWidget(b, compileButton(b))
+      case m: Monitor => CompiledWidget(m, compileMonitor(m))
+      case s: Slider  => CompiledWidget(s, compileSlider(s))
+      case _          => CompiledWidget(w, NotCompiled.successNel)
+    }
 
   private def validatePlots(widgets: Seq[Widget]): Unit = {
     val invalidPlots =
@@ -46,47 +73,55 @@ class WidgetCompiler(compileCommand:  String => CompiledStringV,
     }
   }
 
-  private def askWithKind(kind: String)(command: String): String = {
-    def fail(kind: String): Nothing =
-      throw new IllegalArgumentException(s"This type of agent cannot be asked: $kind")
+  private def compileButton(b: Button): ValidationNel[Exception, SourceCompilation] = {
+    def askWithKind(kind: String)(command: String): String = {
+      def fail(kind: String): Nothing =
+        throw new IllegalArgumentException(s"This type of agent cannot be asked: $kind")
 
-    def askBlock(agents: String)(logoAsk: String): String =
-      s"ask $agents [ $logoAsk ]"
+      def askBlock(agents: String)(logoAsk: String): String =
+        s"ask $agents [ $logoAsk ]"
 
-    val kindToAgentSetString = Map[String, String => String](
-      "OBSERVER" -> identity _,
-      "TURTLE"   -> askBlock("turtles") _,
-      "PATCH"    -> askBlock("patches") _,
-      "LINK"     -> askBlock("links")   _)
+      val kindToAgentSetString = Map[String, String => String](
+        "OBSERVER" -> identity _,
+        "TURTLE"   -> askBlock("turtles") _,
+        "PATCH"    -> askBlock("patches") _,
+        "LINK"     -> askBlock("links")   _)
 
-    kindToAgentSetString.getOrElse(kind, fail(kind)).apply(command)
-  }
-
-  private def sanitizeSource(s: String) =
-    s.replace("\\n", "\n").replace("\\\\", "\\").replace("\\\"", "\"")
-
-  private def compileWidget(w: Widget): CompiledWidget =
-    w match {
-      case b: Button  => CompiledWidget(w, SourceCompilation(
-        compileCommand(sanitizeSource(askWithKind(b.buttonType.toUpperCase)(b.source)))))
-      case m: Monitor => CompiledWidget(w, SourceCompilation(compileReporter(m.source)))
-      case p: Plot    =>
-        val cleanDisplay = sanitizeNil(p.display)
-        new CompiledPlot(p, cleanDisplay,
-          compileInContext(p.setupCode,  cleanDisplay),
-          compileInContext(p.updateCode, cleanDisplay),
-          p.pens.map(compilePen(cleanDisplay)))
-      case s: Slider  => CompiledWidget(w, SliderCompilation(
-        compileReporter(s.min),
-        compileReporter(s.max),
-        compileReporter(s.step)))
-      case _          => CompiledWidget(w, NotCompiled)
+      kindToAgentSetString.getOrElse(kind, fail(kind)).apply(command)
     }
 
-  private def compilePen(ownerName: String)(pen: Pen): CompiledPen =
-    new CompiledPen(pen,
-       compileInContext(pen.setupCode,  ownerName, Option(pen.display)),
-       compileInContext(pen.updateCode, ownerName, Option(pen.display)))
+    def sanitizeSource(s: String) =
+      s.replace("\\n", "\n").replace("\\\\", "\\").replace("\\\"", "\"")
+
+    compileCommand(sanitizeSource(askWithKind(b.buttonType.toUpperCase)(b.source)))
+      .contextualizeError("button", b.display.getOrElse(b.source), "source")
+      .map(SourceCompilation.apply)
+  }
+
+  private def compileMonitor(m: Monitor): ExceptionValidation[SourceCompilation] =
+    compileReporter(m.source)
+      .contextualizeError("monitor", m.display.getOrElse(m.source), "reporter")
+      .map(SourceCompilation.apply)
+
+  private def compileSlider(s: Slider): ExceptionValidation[SliderCompilation] = {
+    def sliderError(name: String, reporter: String): ExceptionValidation[String] =
+      compileReporter(reporter).contextualizeError("slider", s.display, name)
+
+    val Seq(max, min, step) =
+      Seq("min" -> s.min, "max" -> s.max, "step" -> s.step).map((sliderError _).tupled)
+
+    Apply[ExceptionValidation].apply3(max, min, step)(SliderCompilation.apply)
+  }
+
+  private def compilePen(ownerName: String)(pen: Pen): CompiledPen = {
+    val Seq(setup, update) = Seq("setup" -> pen.setupCode, "update" -> pen.updateCode).map {
+      case (name, code) =>
+        compileInContext(code,  ownerName, Option(pen.display))
+          .contextualizeError("pen", Option(pen.display).getOrElse(""), name)
+    }
+
+    new CompiledPen(pen, Apply[ExceptionValidation].apply2(setup, update)(UpdateableCompilation.apply))
+  }
 
   private def compileInContext(code:        String,
                                plotNameRaw: String,
@@ -97,41 +132,69 @@ class WidgetCompiler(compileCommand:  String => CompiledStringV,
     if (code.trim.isEmpty)
       thunkifyProcedure("").successNel
     else
-      compileCommand(code) map thunkifyProcedure map
+      compileCommand(code) map thunkifyProcedure  map
         (inTempContext andThen thunkifyProcedure) map
         (withAuxRNG    andThen thunkifyProcedure)
   }
 }
 
 object WidgetCompiler {
+  type ExceptionValidation[T] = ValidationNel[Exception, T]
+
   val monitorRenames = Map(
     "compiledSource" -> "reporter")
 
   val sliderRenames = Map(
-    "compiledMin" -> "getMin",
-    "compiledMax" -> "getMax",
+    "compiledMin"  -> "getMin",
+    "compiledMax"  -> "getMax",
     "compiledStep" -> "getStep")
 
   def formatWidgets(cws: Seq[CompiledWidget]): String =
     jsArrayString(cws.map(formatWidget(_).toJsString), "\n")
 
   def formatWidget(compiledWidget: CompiledWidget): JavascriptObject = {
-      val javascriptObject = new JavascriptObject().addObjectProperties(compiledWidget.toJsonObj.asInstanceOf[JsObject])
+      val javascriptObject =
+        new JavascriptObject().addObjectProperties(compiledWidget.toJsonObj.asInstanceOf[JsObject])
+      val javascriptWithCompilationStatus =
+        compiledWidget.widgetCompilation.fold(
+          decorateFailure(javascriptObject),
+          decorateSuccess(javascriptObject))
+
       compiledWidget match {
-        case CompiledWidget(monitor: Monitor, comp: SourceCompilation) =>
-          comp.fold(javascriptObject)(addCompiledField(monitorRenames))
-        case CompiledWidget(slider:  Slider,  comp: SliderCompilation) =>
-          comp.fold(javascriptObject)(addCompiledField(sliderRenames))
-        case _ => javascriptObject
+        case CompiledWidget(monitor: Monitor, Success(comp: SourceCompilation))     =>
+          comp.fold(javascriptWithCompilationStatus)(addCompiledField(monitorRenames))
+        case CompiledWidget(slider:  Slider,  Success(comp: SliderCompilation))     =>
+          comp.fold(javascriptWithCompilationStatus)(addCompiledField(sliderRenames))
+        case cw => javascriptWithCompilationStatus
       }
     }
 
+  private def decorateFailure(javascriptObject: JavascriptObject)(errors: NonEmptyList[Exception]): JavascriptObject =
+    javascriptObject.addObjectProperties(
+      JsObject(fields(
+        "compilation" -> JsObject(fields(
+          "success"  -> JsBool(false),
+          "messages" -> JsArray(errors.list.map(e => JsString(e.getMessage))))))))
+
+  private def decorateSuccess(javascriptObject: JavascriptObject)(success: WidgetCompilation): JavascriptObject =
+    javascriptObject.addObjectProperties(
+      JsObject(fields(
+        "compilation" -> JsObject(fields(
+          "success"  -> JsBool(true),
+          "messages" -> JsArray(Seq()))))))
+
   private def addCompiledField(fnNames:          Map[String, String])
                               (javascriptObject: JavascriptObject,
-                               compileResult:    (String, CompiledStringV)) =
+                               compileResult:    (String, String)) =
     compileResult match {
-      case (fieldName, compilation) => compilation.fold(
-        e    => javascriptObject,
-        body => javascriptObject.addFunction(fnNames(fieldName), JsFunction(Seq(), Seq(s"return $body;"))))
+      case (fieldName, body) =>
+        javascriptObject.addFunction(fnNames(fieldName), JsFunction(Seq(), Seq(s"return $body;")))
     }
+
+  implicit class ValidationContextualizer(validation: CompiledStringV) {
+    def contextualizeError(widgetType: String, widgetName: String, widgetField: String): CompiledStringV = {
+      val context = s"$widgetType '$widgetName' - $widgetType.$widgetField"
+      validation.leftMap(_.map(e => new Exception(s"$context: ${e.getMessage}")))
+    }
+  }
 }

@@ -14,7 +14,8 @@ import
                     buttonNoName   => turtleButtonWidget,
                     buttonWithName => buttonWidget,
                     monitor        => monitorWidget,
-                    plot,
+                    pen            => penWidget,
+                    plot           => plotWidget,
                     reporterSlider,
                     slider         => sliderWidget,
                     textBox        => textBoxWidget,
@@ -28,17 +29,22 @@ import
   org.scalatest.FunSuite
 
 import
-  scalaz.{ NonEmptyList, Scalaz, std },
+  scalaz.{ NonEmptyList, Scalaz, std, ValidationNel },
     Scalaz.ToValidationOps,
     std.option.optionSyntax._
 
 import
   WidgetCompilation.{ CompiledStringV, NotCompiled, SliderCompilation, SourceCompilation }
 
+import
+  WidgetCompiler.formatWidget
+
 class WidgetCompilerTest extends FunSuite {
   val commandMap = Map(
     "foobar"                 -> "foobar()",
-    "ask turtles [ foobar ]" -> "AgentSet.ask(world.turtles, function() { foobar; })")
+    "ask turtles [ foobar ]" -> "AgentSet.ask(world.turtles, function() { foobar; })",
+    "setup"                  -> "procedures.setup()",
+    "update"                 -> "procedures.update()")
 
   val reporterMap = Map(
     "0"                   -> "0",
@@ -46,74 +52,172 @@ class WidgetCompilerTest extends FunSuite {
     "count turtles / 100" -> "turtles.length() / 100",
     "reporter"            -> "globalVar()")
 
-  def compileCommand(logo: String): CompiledStringV = {
+  def compileCommand(logo: String): CompiledStringV =
     commandMap.get(logo).toSuccess(NonEmptyList(new Exception("Expected command")))
-  }
 
   def compileReporter(logo: String): CompiledStringV =
     reporterMap.get(logo).toSuccess(NonEmptyList(new Exception("Expected reporter")))
 
-  def compileWidgets(ws: Widget*): JavascriptObject = {
-    val compiledWidget =
-      new WidgetCompiler(compileCommand, compileReporter).compileWidgets(ws).head
-    WidgetCompiler.formatWidget(compiledWidget)
-  }
+  def compileWidgets(ws: Widget*): Seq[CompiledWidget] =
+    new WidgetCompiler(compileCommand, compileReporter).compileWidgets(ws)
 
-  test("widgetCompiler returns a JavascriptObject corresponding to a given widget") {
-    val compiledWidget = compileWidgets(textBoxWidget)
-    assert(compiledWidget("left").hasValueOf(JsInt(1)))
-  }
+  def compileWidget(w: Widget): CompiledWidget = compileWidgets(w).head
 
-  test("WidgetCompiler returns a monitor widget with the widget reporter as a function and a currentValue of empty-string") {
-    val compiledWidget = compileWidgets(monitorWidget)
-    val expectedCompilation = JsFunction(Seq(), Seq("return globalVar();"))
-    assert(compiledWidget("reporter").hasValueOf(expectedCompilation))
-  }
+  def assertHasWidgetData(compiledWidget: CompiledWidget, widgetData: Widget): Unit =
+    assert(compiledWidget.widgetData == widgetData)
 
-  test("WidgetCompiler returns a monitor widget with errors when compilation fails") {
-    val compiledWidget = compileWidgets(monitorWidget.copy(source = "error"))
-    val failureResult  = JsArray(Seq(JsObject(fields("message" -> JsString("Expected reporter")))))
-    val compiledSourceFailure = JsObject(fields("success" -> JsBool(false), "result" -> failureResult))
-    assert(compiledWidget("compiledSource").hasValueOf(compiledSourceFailure))
-  }
+  def assertIsSuccess(compiledWidget: CompiledWidget): Unit =
+    compiledWidget.widgetCompilation.fold(_ => fail("expected success"), _ => ())
 
-  test("WidgetCompiler returns a slider with getMin, getMax, getStep functions") {
-    val compiledSlider = compileWidgets(reporterSlider)
-    val expectedValues = Map[String, JsFunction](
-      "getMax"  -> JsFunction(Seq(), Seq("return turtles.length();")),
-      "getMin"  -> JsFunction(Seq(), Seq("return 0;")),
-      "getStep" -> JsFunction(Seq(), Seq("return turtles.length() / 100;")))
-    expectedValues.foreach {
-      case (key, function) => assert(compiledSlider(key).hasValueOf(function))
+  def assertIsFailure(compiledWidget: CompiledWidget): Unit =
+    compiledWidget.widgetCompilation.fold(_ => (), _ => fail("expected failure"))
+
+  def assertHasErrors(compiledWidget: CompiledWidget, errors: String*): Unit =
+    assert(
+      compiledWidget.widgetCompilation.fold(
+        es      =>
+          errors.forall(
+            name => es.list.exists(_.getMessage.contains(name))),
+        success => fail("compilation should have failed")))
+
+  def assertContains(jsObject: JavascriptObject, jsonObject: JsObject): Unit =
+    assert(
+      jsObject.jsonSerializableSubobject.props.filterKeys(jsonObject.props.keySet.contains) ==
+        jsonObject.props)
+
+  def assertHasFunctions(jsObject: JavascriptObject, values: Map[String, JsFunction]): Unit =
+    values.foreach {
+      case (key, function) => assert(jsObject(key).exists(_ == function))
     }
+
+  def assertHasValues(jsObject: JavascriptObject, values: Map[String, TortoiseJson]): Unit =
+    values.foreach {
+      case (key, value) => assert(jsObject(key).exists(_ == JsonValueElement(value)))
+    }
+
+  def compiledWidget(compilation: ValidationNel[Exception, WidgetCompilation]): CompiledWidget =
+    CompiledWidget(monitorWidget, compilation)
+
+  Map(
+    "monitor" -> monitorWidget,
+    "button"  -> buttonWidget,
+    "plot"    -> plotWidget,
+    "slider"  -> reporterSlider).foreach {
+      case (name, widget) =>
+        test(s"compileWidgets returns a compiled $name widget") {
+          val compiledWidget = compileWidget(widget)
+          assertHasWidgetData(compiledWidget, widget)
+          assertIsSuccess(compiledWidget)
+        }
+    }
+
+  test("compileWidgets returns a compiled turtle button widget") {
+    val compiledButton = compileWidget(turtleButtonWidget)
+    assertIsSuccess(compiledButton)
+    assertHasWidgetData(compiledButton, turtleButtonWidget)
+    compiledButton.widgetCompilation.fold(
+      e => fail(),
+      c => c match {
+        case SourceCompilation(source) =>
+          assert(source == "AgentSet.ask(world.turtles, function() { foobar; })")
+        case _ => fail("compilation should have succeeded")
+      })
   }
 
-  test("Compiles button widgets") {
-    val compiledButton = compileWidgets(buttonWidget)
-    val successResult = JsObject(fields("success" -> JsBool(true), "result" -> JsString("foobar()")))
-    assert(compiledButton("compiledSource").hasValueOf(successResult))
-  }
+  Seq(
+    ("slider",
+      reporterSlider.copy(min = "error", max = "error", step = "error"),
+      Seq("slider", "min", "max", "step")),
+    ("monitor",
+      monitorWidget.copy(source = "error"),
+      Seq("abc", "reporter", "monitor")),
+    ("button",
+      buttonWidget.copy(source = "fatal-error"),
+      Seq("press this", "source", "button")),
+    ("plot",
+      plotWidget.copy(setupCode = "fatal-error"),
+      Seq("plot", "abc", "setup"))).foreach {
+        case (name, widget, errors) =>
+          test(s"compileWidgets returns a $name widget with errors when compilation fails") {
+            val compiledWidget = compileWidget(widget)
+            assertHasWidgetData(compiledWidget, widget)
+            assertIsFailure(compiledWidget)
+            assertHasErrors(compiledWidget, errors: _*)
+          }
+      }
 
-  test("Compiles buttons which have an agent type by asking agents of that type") {
-    val compiledButton = compileWidgets(turtleButtonWidget)
-    val successResult = JsObject(fields("success" -> JsBool(true),
-                                        "result"  -> JsString("AgentSet.ask(world.turtles, function() { foobar; })")))
-    assert(compiledButton("compiledSource").hasValueOf(successResult))
-  }
+   test("errors on bad pen widgets") {
+     val badPenPlot = plotWidget.copy(pens = List(penWidget.copy(setupCode = "fatal-error")))
+     compileWidget(badPenPlot)
+       .asInstanceOf[CompiledPlot].plotWidgetCompilation
+       .fold(
+         es  => fail("expected plot compilation to succeed, pen compilation to fail"),
+         { pwc =>
+            assert(pwc.compiledPens.forall(_.widgetCompilation.isFailure))
+            assertHasErrors(pwc.compiledPens.head , "pen", "abc", "setup")
+         })
+   }
 
-  test("Raises an error when the wrong kind of agent is asked to do something") {
-    intercept[IllegalArgumentException] { compileWidgets(invalidButtonWidget) }
+  test("compileWidgets errors when the wrong kind of agent is asked to do something") {
+    intercept[IllegalArgumentException] { compileWidget(invalidButtonWidget) }
     ()
   }
 
-  test("Raises an error when two plots with the same name are detected") {
-    intercept[CompilerException] { compileWidgets(plot, plot) }
+  test("compileWidgets errors when two plots with the same name are detected") {
+    intercept[CompilerException] { compileWidgets(plotWidget, plotWidget) }
     ()
   }
 
-  implicit class RichJavascriptObjectProperty(prop: Option[ElementValue]) {
-    def isPresent: Boolean          = prop.nonEmpty
-    def hasValueOf(f: JsFunction)   = prop.map(_ == f).getOrElse(false)
-    def hasValueOf(j: TortoiseJson) = prop.map(_ == JsonValueElement(j)).getOrElse(false)
+  val compilationSuccess = Map(
+    "compilation" -> JsObject(fields(
+      "success"     -> JsBool(true),
+      "messages"    -> JsArray(Seq()))))
+
+  test("formatWidgets formats SourceCompilation widget, preserving data") {
+    val goodWidget = compiledWidget(SourceCompilation("globalVar()").successNel)
+    val widgetJsObject = formatWidget(goodWidget)
+    val expectedFunctions = Map("reporter" -> JsFunction(Seq(), Seq("return globalVar();")))
+
+    assertContains(widgetJsObject, monitorWidget.toJsonObj.asInstanceOf[JsObject])
+    assertHasValues(widgetJsObject, compilationSuccess)
+    assertHasFunctions(widgetJsObject, expectedFunctions)
+  }
+
+  test("formatWidgets formats slider with getMin, getMax, getStep") {
+    val sliderCompilation =
+      SliderCompilation("0", "turtles.length()", "turtles.length() / 100")
+
+    val formattedSlider = formatWidget(CompiledWidget(reporterSlider, sliderCompilation.successNel))
+
+    val expectedValues = Map[String, JsFunction](
+      "getMin"  -> JsFunction(Seq(), Seq("return 0;")),
+      "getMax"  -> JsFunction(Seq(), Seq("return turtles.length();")),
+      "getStep" -> JsFunction(Seq(), Seq("return turtles.length() / 100;")))
+
+    assertContains(formattedSlider,  reporterSlider.toJsonObj.asInstanceOf[JsObject])
+    assertHasValues(formattedSlider, compilationSuccess)
+    assertHasFunctions(formattedSlider, expectedValues)
+  }
+
+  test("formatWidgets formats button widgets") {
+    val formattedButton =
+      formatWidget(CompiledWidget(buttonWidget, SourceCompilation("foobar()").successNel))
+
+    val compiledSource = Map("compiledSource" -> JsString("foobar()"))
+
+    assertHasValues(formattedButton, compiledSource)
+    assertHasValues(formattedButton, compilationSuccess)
+  }
+
+  test("formatWidgets formats failing SourceCompilation widget") {
+    val failingWidget  = compiledWidget(new Exception("Expected reporter").failureNel)
+    val widgetJsObject = formatWidget(failingWidget)
+    val compilationFailure = Map(
+      "compilation" -> JsObject(fields(
+        "success"     -> JsBool(false),
+        "messages"    -> JsArray(Seq(JsString("Expected reporter"))))))
+
+    assertContains(widgetJsObject, monitorWidget.toJsonObj.asInstanceOf[JsObject])
+    assertHasValues(widgetJsObject, compilationFailure)
   }
 }

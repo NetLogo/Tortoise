@@ -67,11 +67,10 @@ object BrowserCompilerTest extends TestSuite {
       val slider = Slider(display = "steps", varName = "steps")
       val compiledModel = compileModel(validModel.copy(widgets = slider::validModel.widgets))
       assert(isSuccess(compiledModel))
-      withWidget(compiledModel, "slider", slider =>
-        Seq("compiledStep", "compiledMax", "compiledMin").foreach { field =>
-          assert(slider[JsObject](field).apply[Boolean]("success"))
-          assert(slider[JsObject](field).apply[String]("result").nonEmpty)
-        })
+      withWidget(compiledModel, "slider", { slider =>
+        assert(slider[JsObject]("compilation").apply[Boolean]("success"))
+        assert(slider[JsObject]("compilation").apply[JsArray]("messages").elems.isEmpty)
+      })
     }
 
     "TestModelWithInvalidWidgets"-{
@@ -79,8 +78,8 @@ object BrowserCompilerTest extends TestSuite {
       val compiledModel = compileModel(validModel.copy(widgets = invalidSlider::validModel.widgets))
       assert(isSuccess(compiledModel))
       withWidget(compiledModel, "slider", {slider =>
-          assert(slider[JsObject]("compiledMin").apply[Boolean]("success") == false)
-          assert(slider[JsObject]("compiledMin").apply[JsArray]("result").elems.nonEmpty) })
+          assert(slider[JsObject]("compilation").apply[Boolean]("success") == false)
+          assert(slider[JsObject]("compilation").apply[JsArray]("messages").elems.nonEmpty) })
     }
 
     "testCompilesCommands"-{
