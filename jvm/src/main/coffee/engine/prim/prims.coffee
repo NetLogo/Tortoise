@@ -63,10 +63,10 @@ module.exports =
                 if not @equality(ys[index], x)
                   return false
               true
-            a.size() is b.size() and Object.getPrototypeOf(a) is Object.getPrototypeOf(b) and subsumes(a.sort(), b.sort())
+            (a.isBreedSet() and typeB.isBreedSet(a.getBreedName())) or
+              (a.size() is b.size() and Object.getPrototypeOf(a) is Object.getPrototypeOf(b) and subsumes(a.sort(), b.sort()))
           else
-            typeA.isBreedSet(b.name) or typeB.isBreedSet(a.name) or
-              (a is Nobody and b.isDead?()) or (b is Nobody and a.isDead?()) or ((typeA.isTurtle() or (typeA.isLink() and b isnt Nobody)) and a.compare(b) is EQ)
+            (a is Nobody and b.isDead?()) or (b is Nobody and a.isDead?()) or ((typeA.isTurtle() or (typeA.isLink() and b isnt Nobody)) and a.compare(b) is EQ)
         )
       else
         throw new Error("Checking equality on undefined is an invalid condition")

@@ -12,7 +12,11 @@ module.exports =
 
     # () => String
     toString: ->
-      @_specialName.toLowerCase() ? "(agentset, #{@size()} patches)"
+      @_specialName?.toLowerCase() ? "(agentset, #{@size()} patches)"
+
+    # () => Boolean
+    isBreedSet: ->
+      false # I guess? Not clear what's correct here. BCH 7/24/2015
 
     # (Array[T], PatchSet[T]) => PatchSet[T]
     _generateFrom: (newAgentArr, agents) ->

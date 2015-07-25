@@ -22,6 +22,10 @@ module.exports =
     toString: ->
       @_specialName ? "(agentset, #{@size()} #{@getBreedName().toLowerCase()})"
 
+    # () => Boolean
+    isBreedSet: ->
+      @_specialName?
+
     # (Array[T], TurtleSet[T]) => TurtleSet[T]
     _generateFrom: (newAgentArr, agents) ->
       new TurtleSet(newAgentArr, agents.getBreedName())
