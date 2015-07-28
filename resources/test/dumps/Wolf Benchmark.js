@@ -26,7 +26,8 @@ var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.pl
 if (typeof javax !== "undefined") {
   modelConfig.output = {
     clear: function() {},
-    write: function(str) { context.getWriter().print(str); }
+    write: function(str) { context.getWriter().print(str); },
+    alert: function(str) {}
   }
 }
 modelConfig.plots = [(function() {

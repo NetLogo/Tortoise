@@ -9,9 +9,7 @@ import
   org.nlogo.core.{ Color, CompilerException, Model, Pen, Plot, Token }
 
 import
-  scalaz.{ Success, syntax, NonEmptyList, ValidationNel },
-    syntax.{ apply => applysyntax, ToValidationOps },
-      applysyntax._
+  scalaz.NonEmptyList
 
 import
   TortoiseSymbol.{ JsDeclare, JsStatement, JsRequire }
@@ -23,16 +21,24 @@ object PlotCompiler {
   private def getOrElse(expr: String)(`default`: String): String =
     s"""(typeof $expr !== "undefined" && $expr !== null) ? $expr : ${`default`}"""
 
-  def formatPlots(widgets: Seq[CompiledWidget]): Seq[TortoiseSymbol] = {
-    val plots = widgets.collect { case cp: CompiledPlot => cp }
+  trait PlotComponentRendition
+  case class ErrorAlert(messages: Seq[String])       extends PlotComponentRendition
+  case class SuccessfulComponent(plotObject: String) extends PlotComponentRendition
 
+  def formatPlots(widgets: Seq[CompiledWidget]): Seq[TortoiseSymbol] = {
     // If `javax` exists, we're in Nashorn, and, therefore, testing --JAB (3/2/15)
     val defaultModelConfigOutput = s"""|if (typeof javax !== "undefined") {
                                        |  modelConfig.output = {
                                        |    clear: ${jsFunction()},
-                                       |    write: ${jsFunction(Seq("str"), "context.getWriter().print(str);")}
+                                       |    write: ${jsFunction(Seq("str"), "context.getWriter().print(str);")},
+                                       |    alert: ${jsFunction(Seq("str"))}
                                        |  }
                                        |}""".stripMargin
+
+    val (plotObjects, plotErrors) =
+      formatObjectsAndErrors(
+        widgets.collect { case cp: CompiledPlot => cp }.map(_.renderJS),
+        jsArrayString(_), es => alertFailure(es.mkString(", ")))
 
     Seq(
       JsRequire("PenBundle", "engine/plot/pen"),
@@ -44,31 +50,43 @@ object PlotCompiler {
 
       JsStatement(
         "modelConfig.plots",
-        s"modelConfig.plots = ${jsArrayString(plots.map(_.toJS))};",
+        s"modelConfig.plots = $plotObjects;$plotErrors",
         Seq("PenBundle", "Plot", "PlotOps", "modelConfig", "modelPlotOps")),
       JsStatement("modelConfig.output", defaultModelConfigOutput, Seq("modelConfig")))
   }
 
+  private def alertFailure(s: String) =
+    s"""modelConfig.output.alert("$s");"""
+
+  private def formatObjectsAndErrors(
+    renditions:         Seq[PlotComponentRendition],
+    aggregateSuccesses: Seq[String] => String,
+    aggregateFailures:  Seq[String] => String): (String, String) = {
+      val successes = renditions.collect { case sp: SuccessfulComponent => sp.plotObject }
+      val errors    = renditions.collect { case ea: ErrorAlert          => ea.messages }.flatten
+      (aggregateSuccesses(successes),
+        if (errors.isEmpty) "" else aggregateFailures(errors))
+    }
+
   implicit class RichCompiledPlot(compiledPlot: CompiledPlot) {
     import compiledPlot.{ cleanDisplay, plotWidgetCompilation }
 
-    def toJS: String =
+    def renderJS: PlotComponentRendition =
       plotWidgetCompilation.fold(
         showPlotErrors,
         pwc => constructNewPlot(pwc.compiledSetupCode, pwc.compiledUpdateCode, pwc.compiledPens))
 
-    private def constructNewPlot(compiledSetup: String, compiledUpdate: String, compiledPens: Seq[CompiledPen]): String = {
+    private def constructNewPlot(compiledSetup: String,
+                                compiledUpdate: String,
+                                compiledPens:   Seq[CompiledPen]): SuccessfulComponent = {
       import compiledPlot.plot._
 
       val noop         = thunkifyProcedure("")
       val arity2Noop   = thunkifyFunction(noop)
       val emptyPlotOps = s"new PlotOps($noop, $noop, $noop, $arity2Noop, $arity2Noop, $arity2Noop, $arity2Noop)"
 
-      val plotPens   = jsArrayString(compiledPens.map(penToJS), "\n")
-      // TODO: Figure how this fits in...
-      // .fold(
-      //  e => "console.log(\"error\");",
-      //  pens => jsArrayString(pens, "\n"))
+      val (plotPens, penErrors) = formatObjectsAndErrors(compiledPens.map(renderPen),
+        jsArrayString(_, "\n"), es => alertFailure(es.mkString(", ")))
 
       val args =
         Seq("name", "pens", "plotOps", jsString(sanitizeNil(xAxis)), jsString(sanitizeNil(yAxis)),
@@ -77,26 +95,25 @@ object PlotCompiler {
       var plotContructor =
         s"""|var name    = '$cleanDisplay';
             |var plotOps = ${getOrElse("modelPlotOps[name]")(emptyPlotOps)};
-            |var pens    = $plotPens;
+            |var pens    = $plotPens;$penErrors
             |var setup   = $compiledSetup;
             |var update  = $compiledUpdate;
             |return new Plot($args);""".stripMargin
 
-      s"(${jsFunction(body = plotContructor)})()"
+      SuccessfulComponent(s"(${jsFunction(body = plotContructor)})()")
     }
 
-    private def showPlotErrors(es: NonEmptyList[Exception]): String = {
-      val formattedErrors = es.map(_.getMessage).list.mkString(", ")
-      s"""modelConfig.output.write("Errors in plot $cleanDisplay initialization $formattedErrors");"""
-    }
+    private def showPlotErrors(es: NonEmptyList[Exception]): ErrorAlert =
+      ErrorAlert(es.map(_.getMessage).list.toList)
 
-    def penToJS(compiledPen: CompiledPen): String = {
-      def constructNewPen(pen: Pen)(compilation: UpdateableCompilation): String = {
+    def renderPen(compiledPen: CompiledPen): PlotComponentRendition = {
+      def constructNewPen(pen: Pen)(compilation: UpdateableCompilation): SuccessfulComponent = {
         import pen._
 
-        val state =
+        val state  =
           s"new PenBundle.State(${Color.getClosestColorNumberByARGB(color)}, $interval, ${displayModeToJS(mode)})"
-        s"new PenBundle.Pen('$display', plotOps.makePenOps, false, $state, ${compilation.compiledSetupCode}, ${compilation.compiledUpdateCode})"
+        val penArgs = Seq(s"'$display'", "plotOps.makePenOps", "false", state, compilation.compiledSetupCode, compilation.compiledUpdateCode)
+        SuccessfulComponent(s"new PenBundle.Pen(${penArgs.mkString(", ")})")
       }
 
       def displayModeToJS(mode: Int): String =
@@ -107,10 +124,8 @@ object PlotCompiler {
           case _ => "Line"
         }}"
 
-      def showPenErrors(pen: Pen)(ces: NonEmptyList[Exception]): String = {
-        val formattedErrors = ces.map(_.getMessage).list.mkString(", ")
-        s"""modelConfig.output.write("Errors in pen ${pen.display} initialization $formattedErrors");"""
-      }
+      def showPenErrors(pen: Pen)(ces: NonEmptyList[Exception]): ErrorAlert =
+        ErrorAlert(ces.map(_.getMessage).list)
 
       compiledPen.widgetCompilation.fold(
         showPenErrors(compiledPen.pen), constructNewPen(compiledPen.pen))
