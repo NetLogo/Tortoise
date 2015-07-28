@@ -32,9 +32,7 @@ if (typeof javax !== "undefined") {
 modelConfig.plots = [(function() {
   var name    = 'Magnetization';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('average spin', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Magnetization', 'average spin')(function() {}); });
-  }, function() {
+  var pens    = [new PenBundle.Pen('average spin', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Magnetization', 'average spin')(function() {
         if (Prims.equality(NLMath.mod(world.ticker.tickCount(), world.observer.getGlobal("plotting-interval")), 0)) {
@@ -52,15 +50,9 @@ modelConfig.plots = [(function() {
         plotManager.enableAutoplotting();;
       });
     });
-  }, function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Magnetization', 'axis')(function() {}); });
-  })];
-  var setup   = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Magnetization', undefined)(function() {}); });
-  };
-  var update  = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Magnetization', undefined)(function() {}); });
-  };
+  }, function() {})];
+  var setup   = function() {};
+  var update  = function() {};
   return new Plot(name, pens, plotOps, "time", "average spin", false, 0.0, 20.0, -1.0, 1.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])(["temperature", "plotting-interval", "sum-of-spins"], ["temperature", "plotting-interval"], ["spin"], -40, 40, -40, 40, 5.0, true, true, turtleShapes, linkShapes, function(){});

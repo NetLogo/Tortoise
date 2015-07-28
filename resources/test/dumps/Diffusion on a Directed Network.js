@@ -32,9 +32,7 @@ if (typeof javax !== "undefined") {
 modelConfig.plots = [(function() {
   var name    = 'Histogram';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Bar), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Histogram', 'default')(function() {}); });
-  }, function() {
+  var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Bar), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Histogram', 'default')(function() {
         plotManager.setXRange(0, NLMath.ceil((world.observer.getGlobal("max-val") + 0.5)));
@@ -43,12 +41,8 @@ modelConfig.plots = [(function() {
       });
     });
   })];
-  var setup   = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Histogram', undefined)(function() {}); });
-  };
-  var update  = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Histogram', undefined)(function() {}); });
-  };
+  var setup   = function() {};
+  var update  = function() {};
   return new Plot(name, pens, plotOps, "val", "# of nodes", false, 0.0, 10.0, 0.0, 10.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "ACTIVE-LINKS", singular: "active-link", varNames: [], isDirected: true }, { name: "INACTIVE-LINKS", singular: "inactive-link", varNames: [], isDirected: true }])(["val", "new-val"], ["current-flow"])(["link-chance", "grid-size", "diffusion-rate", "total-val", "max-val", "max-flow", "mean-flow"], ["link-chance", "grid-size", "diffusion-rate"], [], -10, 10, -10, 10, 20.0, false, false, turtleShapes, linkShapes, function(){});

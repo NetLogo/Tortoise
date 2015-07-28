@@ -32,39 +32,29 @@ if (typeof javax !== "undefined") {
 modelConfig.plots = [(function() {
   var name    = 'Network Status';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('susceptible', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Network Status', 'susceptible')(function() {}); });
-  }, function() {
+  var pens    = [new PenBundle.Pen('susceptible', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Network Status', 'susceptible')(function() {
         plotManager.plotValue(((world.turtles().agentFilter(function() { return (!SelfPrims.getVariable("infected?") && !SelfPrims.getVariable("resistant?")); }).size() / world.turtles().size()) * 100));;
       });
     });
   }),
-  new PenBundle.Pen('infected', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Network Status', 'infected')(function() {}); });
-  }, function() {
+  new PenBundle.Pen('infected', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Network Status', 'infected')(function() {
         plotManager.plotValue(((world.turtles().agentFilter(function() { return SelfPrims.getVariable("infected?"); }).size() / world.turtles().size()) * 100));;
       });
     });
   }),
-  new PenBundle.Pen('resistant', plotOps.makePenOps, false, new PenBundle.State(5.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Network Status', 'resistant')(function() {}); });
-  }, function() {
+  new PenBundle.Pen('resistant', plotOps.makePenOps, false, new PenBundle.State(5.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Network Status', 'resistant')(function() {
         plotManager.plotValue(((world.turtles().agentFilter(function() { return SelfPrims.getVariable("resistant?"); }).size() / world.turtles().size()) * 100));;
       });
     });
   })];
-  var setup   = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Network Status', undefined)(function() {}); });
-  };
-  var update  = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Network Status', undefined)(function() {}); });
-  };
+  var setup   = function() {};
+  var update  = function() {};
   return new Plot(name, pens, plotOps, "time", "% of nodes", true, 0.0, 52.0, 0.0, 100.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["infected?", "resistant?", "virus-check-timer"], [])(["gain-resistance-chance", "recovery-chance", "virus-spread-chance", "number-of-nodes", "virus-check-frequency", "initial-outbreak-size", "average-node-degree"], ["gain-resistance-chance", "recovery-chance", "virus-spread-chance", "number-of-nodes", "virus-check-frequency", "initial-outbreak-size", "average-node-degree"], [], -20, 20, -20, 20, 11.0, false, false, turtleShapes, linkShapes, function(){});

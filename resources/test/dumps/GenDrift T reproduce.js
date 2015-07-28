@@ -32,90 +32,70 @@ if (typeof javax !== "undefined") {
 modelConfig.plots = [(function() {
   var name    = 'Turtle Populations';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('color5', plotOps.makePenOps, false, new PenBundle.State(5.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Populations', 'color5')(function() {}); });
-  }, function() {
+  var pens    = [new PenBundle.Pen('color5', plotOps.makePenOps, false, new PenBundle.State(5.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Turtle Populations', 'color5')(function() {
         plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfPrims.getVariable("color"), 5); }).size());;
       });
     });
   }),
-  new PenBundle.Pen('color15', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Populations', 'color15')(function() {}); });
-  }, function() {
+  new PenBundle.Pen('color15', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Turtle Populations', 'color15')(function() {
         plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfPrims.getVariable("color"), 15); }).size());;
       });
     });
   }),
-  new PenBundle.Pen('color25', plotOps.makePenOps, false, new PenBundle.State(25.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Populations', 'color25')(function() {}); });
-  }, function() {
+  new PenBundle.Pen('color25', plotOps.makePenOps, false, new PenBundle.State(25.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Turtle Populations', 'color25')(function() {
         plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfPrims.getVariable("color"), 25); }).size());;
       });
     });
   }),
-  new PenBundle.Pen('color35', plotOps.makePenOps, false, new PenBundle.State(35.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Populations', 'color35')(function() {}); });
-  }, function() {
+  new PenBundle.Pen('color35', plotOps.makePenOps, false, new PenBundle.State(35.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Turtle Populations', 'color35')(function() {
         plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfPrims.getVariable("color"), 35); }).size());;
       });
     });
   }),
-  new PenBundle.Pen('color45', plotOps.makePenOps, false, new PenBundle.State(45.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Populations', 'color45')(function() {}); });
-  }, function() {
+  new PenBundle.Pen('color45', plotOps.makePenOps, false, new PenBundle.State(45.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Turtle Populations', 'color45')(function() {
         plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfPrims.getVariable("color"), 45); }).size());;
       });
     });
   }),
-  new PenBundle.Pen('color55', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Populations', 'color55')(function() {}); });
-  }, function() {
+  new PenBundle.Pen('color55', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Turtle Populations', 'color55')(function() {
         plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfPrims.getVariable("color"), 55); }).size());;
       });
     });
   }),
-  new PenBundle.Pen('color65', plotOps.makePenOps, false, new PenBundle.State(65.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Populations', 'color65')(function() {}); });
-  }, function() {
+  new PenBundle.Pen('color65', plotOps.makePenOps, false, new PenBundle.State(65.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Turtle Populations', 'color65')(function() {
         plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfPrims.getVariable("color"), 65); }).size());;
       });
     });
   }),
-  new PenBundle.Pen('color125', plotOps.makePenOps, false, new PenBundle.State(125.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Populations', 'color125')(function() {}); });
-  }, function() {
+  new PenBundle.Pen('color125', plotOps.makePenOps, false, new PenBundle.State(125.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Turtle Populations', 'color125')(function() {
         plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfPrims.getVariable("color"), 75); }).size());;
       });
     });
   }),
-  new PenBundle.Pen('color85', plotOps.makePenOps, false, new PenBundle.State(85.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Populations', 'color85')(function() {}); });
-  }, function() {
+  new PenBundle.Pen('color85', plotOps.makePenOps, false, new PenBundle.State(85.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Turtle Populations', 'color85')(function() {
         plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfPrims.getVariable("color"), 85); }).size());;
       });
     });
   }),
-  new PenBundle.Pen('color95', plotOps.makePenOps, false, new PenBundle.State(95.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Populations', 'color95')(function() {}); });
-  }, function() {
+  new PenBundle.Pen('color95', plotOps.makePenOps, false, new PenBundle.State(95.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Turtle Populations', 'color95')(function() {
         plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfPrims.getVariable("color"), 95); }).size());;
@@ -127,9 +107,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Turtle Populations', undefined)(function() { plotManager.setYRange(0, world.turtles().size());; });
     });
   };
-  var update  = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Populations', undefined)(function() {}); });
-  };
+  var update  = function() {};
   return new Plot(name, pens, plotOps, "Time", "Number", false, 0.0, 50.0, 0.0, 50.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])(["colors", "number"], ["colors", "number"], [], -22, 22, -22, 22, 9.0, true, true, turtleShapes, linkShapes, function(){});

@@ -32,19 +32,13 @@ if (typeof javax !== "undefined") {
 modelConfig.plots = [(function() {
   var name    = 'Global Temperature';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Global Temperature', 'default')(function() {}); });
-  }, function() {
+  var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Global Temperature', 'default')(function() { plotManager.plotValue(world.observer.getGlobal("temperature"));; });
     });
   })];
-  var setup   = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Global Temperature', undefined)(function() {}); });
-  };
-  var update  = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Global Temperature', undefined)(function() {}); });
-  };
+  var setup   = function() {};
+  var update  = function() {};
   return new Plot(name, pens, plotOps, "", "", false, 0.0, 10.0, 10.0, 20.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "RAYS", singular: "ray", varNames: [] }, { name: "IRS", singular: "ir", varNames: [] }, { name: "HEATS", singular: "heat", varNames: [] }, { name: "CO2S", singular: "co2", varNames: [] }, { name: "CLOUDS", singular: "cloud", varNames: ["cloud-speed", "cloud-id"] }])([], [])(["sun-brightness", "albedo", "sky-top", "earth-top", "temperature"], ["sun-brightness", "albedo"], [], -24, 24, -8, 22, 11.0, true, false, turtleShapes, linkShapes, function(){});

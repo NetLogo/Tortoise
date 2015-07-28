@@ -32,16 +32,12 @@ if (typeof javax !== "undefined") {
 modelConfig.plots = [(function() {
   var name    = 'Power';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('power-rated', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Power', 'power-rated')(function() {}); });
-  }, function() {
+  var pens    = [new PenBundle.Pen('power-rated', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Power', 'power-rated')(function() { plotManager.plotValue(world.observer.getGlobal("power-rated"));; });
     });
   }),
-  new PenBundle.Pen('avg-power', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Power', 'avg-power')(function() {}); });
-  }, function() {
+  new PenBundle.Pen('avg-power', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Power', 'avg-power')(function() { plotManager.plotValue(world.observer.getGlobal("average-power"));; });
     });
@@ -51,9 +47,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Power', undefined)(function() { plotManager.setYRange(0, (3 * world.observer.getGlobal("power-rated")));; });
     });
   };
-  var update  = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Power', undefined)(function() {}); });
-  };
+  var update  = function() {};
   return new Plot(name, pens, plotOps, "time", "power", false, 0.0, 250.0, 0.0, 105.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])(["power-rated", "reactor-size", "rod-depth", "rod-spacing", "spend-fuel?", "power", "old-power", "old-power-2", "old-power-3", "old-power-4", "average-power", "power-change", "rod-length", "n-rods", "r"], ["power-rated", "reactor-size", "rod-depth", "rod-spacing", "spend-fuel?"], ["x", "y", "rod?"], -70, 70, -70, 70, 3.0, false, false, turtleShapes, linkShapes, function(){});

@@ -32,9 +32,7 @@ if (typeof javax !== "undefined") {
 modelConfig.plots = [(function() {
   var name    = 'Hydrophobic Isolation';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('ratio', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Hydrophobic Isolation', 'ratio')(function() {}); });
-  }, function() {
+  var pens    = [new PenBundle.Pen('ratio', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Hydrophobic Isolation', 'ratio')(function() {
         plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed("OILS").projectionBy(function() {
@@ -43,12 +41,8 @@ modelConfig.plots = [(function() {
       });
     });
   })];
-  var setup   = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Hydrophobic Isolation', undefined)(function() {}); });
-  };
-  var update  = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Hydrophobic Isolation', undefined)(function() {}); });
-  };
+  var setup   = function() {};
+  var update  = function() {};
   return new Plot(name, pens, plotOps, "", "", true, 0.0, 10.0, 0.0, 1.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "WATERS", singular: "water", varNames: [] }, { name: "OILS", singular: "oil", varNames: [] }])([], [])(["num-water", "num-lipids", "water-water-force", "water-oil-force", "too-close-force", "random-force", "lipid-length", "interaction-distance", "too-close-distance"], ["num-water", "num-lipids", "water-water-force", "water-oil-force", "too-close-force", "random-force"], [], -25, 25, -25, 25, 10.0, true, true, turtleShapes, linkShapes, function(){});

@@ -32,38 +32,26 @@ if (typeof javax !== "undefined") {
 modelConfig.plots = [(function() {
   var name    = 'Percent Similar';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('percent', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Percent Similar', 'percent')(function() {}); });
-  }, function() {
+  var pens    = [new PenBundle.Pen('percent', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Percent Similar', 'percent')(function() { plotManager.plotValue(world.observer.getGlobal("percent-similar"));; });
     });
   })];
-  var setup   = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Percent Similar', undefined)(function() {}); });
-  };
-  var update  = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Percent Similar', undefined)(function() {}); });
-  };
+  var setup   = function() {};
+  var update  = function() {};
   return new Plot(name, pens, plotOps, "time", "%", false, 0.0, 5.0, 0.0, 100.0, setup, update);
 })(), (function() {
   var name    = 'Number-unhappy';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(64.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Number-unhappy', 'default')(function() {}); });
-  }, function() {
+  var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(64.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Number-unhappy', 'default')(function() {
         plotManager.plotValue(world.turtles().agentFilter(function() { return !SelfPrims.getVariable("happy?"); }).size());;
       });
     });
   })];
-  var setup   = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Number-unhappy', undefined)(function() {}); });
-  };
-  var update  = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Number-unhappy', undefined)(function() {}); });
-  };
+  var setup   = function() {};
+  var update  = function() {};
   return new Plot(name, pens, plotOps, "", "", false, 0.0, 10.0, 0.0, 100.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["happy?", "similar-nearby", "other-nearby", "total-nearby"], [])(["%-similar-wanted", "visualization", "density", "percent-similar", "percent-unhappy"], ["%-similar-wanted", "visualization", "density"], [], -25, 25, -25, 25, 8.0, true, true, turtleShapes, linkShapes, function(){});

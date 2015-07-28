@@ -32,30 +32,22 @@ if (typeof javax !== "undefined") {
 modelConfig.plots = [(function() {
   var name    = 'Moth Colors Over Time';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('Light', plotOps.makePenOps, false, new PenBundle.State(45.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Moth Colors Over Time', 'Light')(function() {}); });
-  }, function() {
+  var pens    = [new PenBundle.Pen('Light', plotOps.makePenOps, false, new PenBundle.State(45.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Moth Colors Over Time', 'Light')(function() { plotManager.plotValue(world.observer.getGlobal("light-moths"));; });
     });
   }),
-  new PenBundle.Pen('Medium', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Moth Colors Over Time', 'Medium')(function() {}); });
-  }, function() {
+  new PenBundle.Pen('Medium', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Moth Colors Over Time', 'Medium')(function() { plotManager.plotValue(world.observer.getGlobal("medium-moths"));; });
     });
   }),
-  new PenBundle.Pen('Dark', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Moth Colors Over Time', 'Dark')(function() {}); });
-  }, function() {
+  new PenBundle.Pen('Dark', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Moth Colors Over Time', 'Dark')(function() { plotManager.plotValue(world.observer.getGlobal("dark-moths"));; });
     });
   }),
-  new PenBundle.Pen('Pollution', plotOps.makePenOps, false, new PenBundle.State(5.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Moth Colors Over Time', 'Pollution')(function() {}); });
-  }, function() {
+  new PenBundle.Pen('Pollution', plotOps.makePenOps, false, new PenBundle.State(5.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Moth Colors Over Time', 'Pollution')(function() {
         plotManager.plotValue((((Call(procedures.upperBound) / 3) * world.observer.getGlobal("darkness")) / 8));;
@@ -67,9 +59,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Moth Colors Over Time', undefined)(function() { plotManager.setYRange(0, Call(procedures.upperBound));; });
     });
   };
-  var update  = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Moth Colors Over Time', undefined)(function() {}); });
-  };
+  var update  = function() {};
   return new Plot(name, pens, plotOps, "Time", "Moth Color Count", true, 0.0, 100.0, 0.0, 200.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "MOTHS", singular: "moth", varNames: ["age"] }])([], [])(["num-moths", "mutation", "selection", "speed", "cycle-pollution?", "light-moths", "medium-moths", "dark-moths", "darkness", "darkening?"], ["num-moths", "mutation", "selection", "speed", "cycle-pollution?"], [], -16, 16, -20, 20, 10.0, true, true, turtleShapes, linkShapes, function(){});

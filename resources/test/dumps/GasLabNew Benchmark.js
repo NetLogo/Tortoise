@@ -32,127 +32,47 @@ if (typeof javax !== "undefined") {
 modelConfig.plots = [(function() {
   var name    = 'Pressure vs. Time';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(25.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Pressure vs. Time', 'default')(function() {}); });
-  }, function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Pressure vs. Time', 'default')(function() {}); });
-  })];
-  var setup   = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Pressure vs. Time', undefined)(function() {}); });
-  };
-  var update  = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Pressure vs. Time', undefined)(function() {}); });
-  };
+  var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(25.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {})];
+  var setup   = function() {};
+  var update  = function() {};
   return new Plot(name, pens, plotOps, "time", "pressure", false, 0.0, 20.0, 0.0, 100.0, setup, update);
 })(), (function() {
   var name    = 'Wall Hits per Particle';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Wall Hits per Particle', 'default')(function() {}); });
-  }, function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Wall Hits per Particle', 'default')(function() {}); });
-  })];
-  var setup   = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Wall Hits per Particle', undefined)(function() {}); });
-  };
-  var update  = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Wall Hits per Particle', undefined)(function() {}); });
-  };
+  var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {})];
+  var setup   = function() {};
+  var update  = function() {};
   return new Plot(name, pens, plotOps, "", "", false, 0.0, 20.0, 0.0, 1.0, setup, update);
 })(), (function() {
   var name    = 'Energy Histogram';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('fast', plotOps.makePenOps, false, new PenBundle.State(15.0, 10.0, PenBundle.DisplayMode.Bar), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Energy Histogram', 'fast')(function() {}); });
-  }, function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Energy Histogram', 'fast')(function() {}); });
-  }),
-  new PenBundle.Pen('medium', plotOps.makePenOps, false, new PenBundle.State(55.0, 10.0, PenBundle.DisplayMode.Bar), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Energy Histogram', 'medium')(function() {}); });
-  }, function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Energy Histogram', 'medium')(function() {}); });
-  }),
-  new PenBundle.Pen('slow', plotOps.makePenOps, false, new PenBundle.State(105.0, 10.0, PenBundle.DisplayMode.Bar), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Energy Histogram', 'slow')(function() {}); });
-  }, function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Energy Histogram', 'slow')(function() {}); });
-  }),
-  new PenBundle.Pen('avg-energy', plotOps.makePenOps, false, new PenBundle.State(5.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Energy Histogram', 'avg-energy')(function() {}); });
-  }, function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Energy Histogram', 'avg-energy')(function() {}); });
-  }),
-  new PenBundle.Pen('init-avg-energy', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Energy Histogram', 'init-avg-energy')(function() {}); });
-  }, function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Energy Histogram', 'init-avg-energy')(function() {}); });
-  })];
-  var setup   = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Energy Histogram', undefined)(function() {}); });
-  };
-  var update  = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Energy Histogram', undefined)(function() {}); });
-  };
+  var pens    = [new PenBundle.Pen('fast', plotOps.makePenOps, false, new PenBundle.State(15.0, 10.0, PenBundle.DisplayMode.Bar), function() {}, function() {}),
+  new PenBundle.Pen('medium', plotOps.makePenOps, false, new PenBundle.State(55.0, 10.0, PenBundle.DisplayMode.Bar), function() {}, function() {}),
+  new PenBundle.Pen('slow', plotOps.makePenOps, false, new PenBundle.State(105.0, 10.0, PenBundle.DisplayMode.Bar), function() {}, function() {}),
+  new PenBundle.Pen('avg-energy', plotOps.makePenOps, false, new PenBundle.State(5.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {}),
+  new PenBundle.Pen('init-avg-energy', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {})];
+  var setup   = function() {};
+  var update  = function() {};
   return new Plot(name, pens, plotOps, "Energy", "Number", true, 0.0, 400.0, 0.0, 10.0, setup, update);
 })(), (function() {
   var name    = 'Speed Counts';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('fast', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Counts', 'fast')(function() {}); });
-  }, function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Counts', 'fast')(function() {}); });
-  }),
-  new PenBundle.Pen('medium', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Counts', 'medium')(function() {}); });
-  }, function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Counts', 'medium')(function() {}); });
-  }),
-  new PenBundle.Pen('slow', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Counts', 'slow')(function() {}); });
-  }, function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Counts', 'slow')(function() {}); });
-  })];
-  var setup   = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Counts', undefined)(function() {}); });
-  };
-  var update  = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Counts', undefined)(function() {}); });
-  };
+  var pens    = [new PenBundle.Pen('fast', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {}),
+  new PenBundle.Pen('medium', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {}),
+  new PenBundle.Pen('slow', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {})];
+  var setup   = function() {};
+  var update  = function() {};
   return new Plot(name, pens, plotOps, "time", "count", false, 0.0, 20.0, 0.0, 100.0, setup, update);
 })(), (function() {
   var name    = 'Speed Histogram';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('fast', plotOps.makePenOps, false, new PenBundle.State(15.0, 5.0, PenBundle.DisplayMode.Bar), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Histogram', 'fast')(function() {}); });
-  }, function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Histogram', 'fast')(function() {}); });
-  }),
-  new PenBundle.Pen('medium', plotOps.makePenOps, false, new PenBundle.State(55.0, 5.0, PenBundle.DisplayMode.Bar), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Histogram', 'medium')(function() {}); });
-  }, function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Histogram', 'medium')(function() {}); });
-  }),
-  new PenBundle.Pen('slow', plotOps.makePenOps, false, new PenBundle.State(105.0, 5.0, PenBundle.DisplayMode.Bar), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Histogram', 'slow')(function() {}); });
-  }, function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Histogram', 'slow')(function() {}); });
-  }),
-  new PenBundle.Pen('avg-speed', plotOps.makePenOps, false, new PenBundle.State(5.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Histogram', 'avg-speed')(function() {}); });
-  }, function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Histogram', 'avg-speed')(function() {}); });
-  }),
-  new PenBundle.Pen('init-avg-speed', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Histogram', 'init-avg-speed')(function() {}); });
-  }, function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Histogram', 'init-avg-speed')(function() {}); });
-  })];
-  var setup   = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Histogram', undefined)(function() {}); });
-  };
-  var update  = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Histogram', undefined)(function() {}); });
-  };
+  var pens    = [new PenBundle.Pen('fast', plotOps.makePenOps, false, new PenBundle.State(15.0, 5.0, PenBundle.DisplayMode.Bar), function() {}, function() {}),
+  new PenBundle.Pen('medium', plotOps.makePenOps, false, new PenBundle.State(55.0, 5.0, PenBundle.DisplayMode.Bar), function() {}, function() {}),
+  new PenBundle.Pen('slow', plotOps.makePenOps, false, new PenBundle.State(105.0, 5.0, PenBundle.DisplayMode.Bar), function() {}, function() {}),
+  new PenBundle.Pen('avg-speed', plotOps.makePenOps, false, new PenBundle.State(5.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {}),
+  new PenBundle.Pen('init-avg-speed', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {})];
+  var setup   = function() {};
+  var update  = function() {};
   return new Plot(name, pens, plotOps, "Speed", "Number", true, 0.0, 50.0, 0.0, 100.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "PARTICLES", singular: "particle", varNames: ["speed", "mass", "energy", "wall-hits", "momentum-difference", "last-collision"] }, { name: "FLASHES", singular: "flash", varNames: ["birthday"] }, { name: "CLOCKERS", singular: "clocker", varNames: [] }])([], [])(["number-of-particles", "collide?", "trace?", "init-particle-speed", "particle-mass", "result", "tick-length", "box-edge", "pressure", "pressure-history", "zero-pressure-count", "wall-hits-per-particle", "length-horizontal-surface", "length-vertical-surface", "init-avg-speed", "init-avg-energy", "avg-speed", "avg-energy", "fast", "medium", "slow", "fade-needed?"], ["number-of-particles", "collide?", "trace?", "init-particle-speed", "particle-mass"], [], -50, 50, -50, 50, 4.0, true, true, turtleShapes, linkShapes, function(){});

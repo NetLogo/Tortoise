@@ -32,29 +32,11 @@ if (typeof javax !== "undefined") {
 modelConfig.plots = [(function() {
   var name    = 'Link counts';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('newcomer-newcomer', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Link counts', 'newcomer-newcomer')(function() {}); });
-  }, function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Link counts', 'newcomer-newcomer')(function() {}); });
-  }),
-  new PenBundle.Pen('newcomer-incumbent', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Link counts', 'newcomer-incumbent')(function() {}); });
-  }, function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Link counts', 'newcomer-incumbent')(function() {}); });
-  }),
-  new PenBundle.Pen('incumbent-incumbent', plotOps.makePenOps, false, new PenBundle.State(45.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Link counts', 'incumbent-incumbent')(function() {}); });
-  }, function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Link counts', 'incumbent-incumbent')(function() {}); });
-  }),
-  new PenBundle.Pen('previous collaborators', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Link counts', 'previous collaborators')(function() {}); });
-  }, function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Link counts', 'previous collaborators')(function() {}); });
-  })];
-  var setup   = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Link counts', undefined)(function() {}); });
-  };
+  var pens    = [new PenBundle.Pen('newcomer-newcomer', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {}),
+  new PenBundle.Pen('newcomer-incumbent', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {}),
+  new PenBundle.Pen('incumbent-incumbent', plotOps.makePenOps, false, new PenBundle.State(45.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {}),
+  new PenBundle.Pen('previous collaborators', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {})];
+  var setup   = function() {};
   var update  = function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Link counts', undefined)(function() {
@@ -90,40 +72,28 @@ modelConfig.plots = [(function() {
 })(), (function() {
   var name    = '% of agents in the giant component';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('% of agents in the giant component', 'default')(function() {}); });
-  }, function() {
+  var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('% of agents in the giant component', 'default')(function() {
         plotManager.plotPoint(world.ticker.tickCount(), (world.observer.getGlobal("giant-component-size") / world.turtles().size()));;
       });
     });
   })];
-  var setup   = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('% of agents in the giant component', undefined)(function() {}); });
-  };
-  var update  = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('% of agents in the giant component', undefined)(function() {}); });
-  };
+  var setup   = function() {};
+  var update  = function() {};
   return new Plot(name, pens, plotOps, "Time", "% of all agents", false, 0.0, 10.0, 0.0, 1.0, setup, update);
 })(), (function() {
   var name    = 'Average component size';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Average component size', 'default')(function() {}); });
-  }, function() {
+  var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Average component size', 'default')(function() {
         plotManager.plotPoint(world.ticker.tickCount(), ListPrims.mean(world.observer.getGlobal("components")));;
       });
     });
   })];
-  var setup   = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Average component size', undefined)(function() {}); });
-  };
-  var update  = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Average component size', undefined)(function() {}); });
-  };
+  var setup   = function() {};
+  var update  = function() {};
   return new Plot(name, pens, plotOps, "Time", "Number of agents", false, 0.0, 10.0, 0.0, 1.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["incumbent?", "in-team?", "downtime", "explored?"], ["new-collaboration?"])(["layout?", "p", "q", "team-size", "plot?", "max-downtime", "newcomer", "component-size", "giant-component-size", "components"], ["layout?", "p", "q", "team-size", "plot?", "max-downtime"], [], -50, 50, -50, 50, 4.0, true, true, turtleShapes, linkShapes, function(){});

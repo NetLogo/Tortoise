@@ -32,27 +32,11 @@ if (typeof javax !== "undefined") {
 modelConfig.plots = [(function() {
   var name    = 'Food in each pile';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('food-in-pile1', plotOps.makePenOps, false, new PenBundle.State(85.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Food in each pile', 'food-in-pile1')(function() {}); });
-  }, function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Food in each pile', 'food-in-pile1')(function() {}); });
-  }),
-  new PenBundle.Pen('food-in-pile2', plotOps.makePenOps, false, new PenBundle.State(95.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Food in each pile', 'food-in-pile2')(function() {}); });
-  }, function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Food in each pile', 'food-in-pile2')(function() {}); });
-  }),
-  new PenBundle.Pen('food-in-pile3', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Food in each pile', 'food-in-pile3')(function() {}); });
-  }, function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Food in each pile', 'food-in-pile3')(function() {}); });
-  })];
-  var setup   = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Food in each pile', undefined)(function() {}); });
-  };
-  var update  = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Food in each pile', undefined)(function() {}); });
-  };
+  var pens    = [new PenBundle.Pen('food-in-pile1', plotOps.makePenOps, false, new PenBundle.State(85.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {}),
+  new PenBundle.Pen('food-in-pile2', plotOps.makePenOps, false, new PenBundle.State(95.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {}),
+  new PenBundle.Pen('food-in-pile3', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {})];
+  var setup   = function() {};
+  var update  = function() {};
   return new Plot(name, pens, plotOps, "Time", "Food", false, 0.0, 100.0, 0.0, 100.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["carrying-food?", "drop-size"], [])(["diffusion-rate", "evaporation-rate", "plot?", "ants", "result"], ["diffusion-rate", "evaporation-rate", "plot?", "ants"], ["chemical", "food", "nest?", "nest-scent", "food-source-number"], -50, 50, -50, 50, 5.0, false, false, turtleShapes, linkShapes, function(){});

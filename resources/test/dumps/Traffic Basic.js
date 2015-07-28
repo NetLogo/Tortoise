@@ -32,39 +32,29 @@ if (typeof javax !== "undefined") {
 modelConfig.plots = [(function() {
   var name    = 'Car speeds';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('red car', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Car speeds', 'red car')(function() {}); });
-  }, function() {
+  var pens    = [new PenBundle.Pen('red car', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Car speeds', 'red car')(function() {
         plotManager.plotValue(world.observer.getGlobal("sample-car").projectionBy(function() { return SelfPrims.getVariable("speed"); }));;
       });
     });
   }),
-  new PenBundle.Pen('min speed', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Car speeds', 'min speed')(function() {}); });
-  }, function() {
+  new PenBundle.Pen('min speed', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Car speeds', 'min speed')(function() {
         plotManager.plotValue(ListPrims.min(world.turtles().projectionBy(function() { return SelfPrims.getVariable("speed"); })));;
       });
     });
   }),
-  new PenBundle.Pen('max speed', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Car speeds', 'max speed')(function() {}); });
-  }, function() {
+  new PenBundle.Pen('max speed', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Car speeds', 'max speed')(function() {
         plotManager.plotValue(ListPrims.max(world.turtles().projectionBy(function() { return SelfPrims.getVariable("speed"); })));;
       });
     });
   })];
-  var setup   = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Car speeds', undefined)(function() {}); });
-  };
-  var update  = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Car speeds', undefined)(function() {}); });
-  };
+  var setup   = function() {};
+  var update  = function() {};
   return new Plot(name, pens, plotOps, "time", "speed", true, 0.0, 300.0, 0.0, 1.1, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["speed", "speed-limit", "speed-min"], [])(["number-of-cars", "deceleration", "acceleration", "sample-car"], ["number-of-cars", "deceleration", "acceleration"], [], -25, 25, -4, 4, 13.0, true, false, turtleShapes, linkShapes, function(){});

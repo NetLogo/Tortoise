@@ -32,26 +32,18 @@ if (typeof javax !== "undefined") {
 modelConfig.plots = [(function() {
   var name    = 'Cows over time';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('greedy', plotOps.makePenOps, false, new PenBundle.State(93.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Cows over time', 'greedy')(function() {}); });
-  }, function() {
+  var pens    = [new PenBundle.Pen('greedy', plotOps.makePenOps, false, new PenBundle.State(93.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Cows over time', 'greedy')(function() { plotManager.plotValue(world.turtleManager.turtlesOfBreed("GREEDY-COWS").size());; });
     });
   }),
-  new PenBundle.Pen('cooperative', plotOps.makePenOps, false, new PenBundle.State(13.5, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Cows over time', 'cooperative')(function() {}); });
-  }, function() {
+  new PenBundle.Pen('cooperative', plotOps.makePenOps, false, new PenBundle.State(13.5, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Cows over time', 'cooperative')(function() { plotManager.plotValue(world.turtleManager.turtlesOfBreed("COOPERATIVE-COWS").size());; });
     });
   })];
-  var setup   = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Cows over time', undefined)(function() {}); });
-  };
-  var update  = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Cows over time', undefined)(function() {}); });
-  };
+  var setup   = function() {};
+  var update  = function() {};
   return new Plot(name, pens, plotOps, "Time", "Cows", true, 0.0, 10.0, 0.0, 100.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "COOPERATIVE-COWS", singular: "cooperative-cow", varNames: [] }, { name: "GREEDY-COWS", singular: "greedy-cow", varNames: [] }])(["energy"], [])(["cooperative-probability", "initial-cows", "low-high-threshold", "high-growth-chance", "stride-length", "max-grass-height", "reproduction-threshold", "grass-energy", "metabolism", "low-growth-chance", "reproduction-cost"], ["cooperative-probability", "initial-cows", "low-high-threshold", "high-growth-chance", "stride-length", "max-grass-height", "reproduction-threshold", "grass-energy", "metabolism", "low-growth-chance", "reproduction-cost"], ["grass"], -10, 10, -10, 10, 15.0, true, true, turtleShapes, linkShapes, function(){});

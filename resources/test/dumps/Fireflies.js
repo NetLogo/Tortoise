@@ -32,9 +32,7 @@ if (typeof javax !== "undefined") {
 modelConfig.plots = [(function() {
   var name    = 'Flashing Fireflies';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('flashing', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Flashing Fireflies', 'flashing')(function() {}); });
-  }, function() {
+  var pens    = [new PenBundle.Pen('flashing', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Flashing Fireflies', 'flashing')(function() {
         plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfPrims.getVariable("color"), 45); }).size());;
@@ -46,9 +44,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Flashing Fireflies', undefined)(function() { plotManager.setYRange(0, world.observer.getGlobal("number"));; });
     });
   };
-  var update  = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Flashing Fireflies', undefined)(function() {}); });
-  };
+  var update  = function() {};
   return new Plot(name, pens, plotOps, "Time", "Number", false, 0.0, 100.0, 0.0, 1500.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["clock", "threshold", "reset-level", "window"], [])(["number", "cycle-length", "flash-length", "flashes-to-reset", "show-dark-fireflies?", "strategy"], ["number", "cycle-length", "flash-length", "flashes-to-reset", "show-dark-fireflies?", "strategy"], [], -35, 35, -35, 35, 6.0, true, true, turtleShapes, linkShapes, function(){});

@@ -32,48 +32,36 @@ if (typeof javax !== "undefined") {
 modelConfig.plots = [(function() {
   var name    = 'Strategy Counts';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('CC', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Strategy Counts', 'CC')(function() {}); });
-  }, function() {
+  var pens    = [new PenBundle.Pen('CC', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Strategy Counts', 'CC')(function() {
         plotManager.plotPoint(world.ticker.tickCount(), world.turtles().agentFilter(function() { return Prims.equality(SelfPrims.getVariable("shape"), "circle"); }).size());;
       });
     });
   }),
-  new PenBundle.Pen('CD', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Strategy Counts', 'CD')(function() {}); });
-  }, function() {
+  new PenBundle.Pen('CD', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Strategy Counts', 'CD')(function() {
         plotManager.plotPoint(world.ticker.tickCount(), world.turtles().agentFilter(function() { return Prims.equality(SelfPrims.getVariable("shape"), "circle 2"); }).size());;
       });
     });
   }),
-  new PenBundle.Pen('DC', plotOps.makePenOps, false, new PenBundle.State(44.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Strategy Counts', 'DC')(function() {}); });
-  }, function() {
+  new PenBundle.Pen('DC', plotOps.makePenOps, false, new PenBundle.State(44.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Strategy Counts', 'DC')(function() {
         plotManager.plotPoint(world.ticker.tickCount(), world.turtles().agentFilter(function() { return Prims.equality(SelfPrims.getVariable("shape"), "square"); }).size());;
       });
     });
   }),
-  new PenBundle.Pen('DD', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Strategy Counts', 'DD')(function() {}); });
-  }, function() {
+  new PenBundle.Pen('DD', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Strategy Counts', 'DD')(function() {
         plotManager.plotPoint(world.ticker.tickCount(), world.turtles().agentFilter(function() { return Prims.equality(SelfPrims.getVariable("shape"), "square 2"); }).size());;
       });
     });
   })];
-  var setup   = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Strategy Counts', undefined)(function() {}); });
-  };
-  var update  = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Strategy Counts', undefined)(function() {}); });
-  };
+  var setup   = function() {};
+  var update  = function() {};
   return new Plot(name, pens, plotOps, "time", "count", true, 0.0, 10.0, 0.0, 1.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["ptr", "cooperate-with-same?", "cooperate-with-different?"], [])(["mutation-rate", "death-rate", "immigrants-per-day", "initial-ptr", "cost-of-giving", "gain-of-receiving", "immigrant-chance-cooperate-with-same", "immigrant-chance-cooperate-with-different", "meet", "meet-agg", "last100meet", "meetown", "meetown-agg", "last100meetown", "meetother", "meetother-agg", "last100meetother", "coopown", "coopown-agg", "last100coopown", "coopother", "coopother-agg", "defother", "defother-agg", "last100defother", "last100cc", "last100cd", "last100dc", "last100dd", "last100consist-ethno", "last100coop"], ["mutation-rate", "death-rate", "immigrants-per-day", "initial-ptr", "cost-of-giving", "gain-of-receiving", "immigrant-chance-cooperate-with-same", "immigrant-chance-cooperate-with-different"], [], 0, 50, 0, 50, 9.0, true, true, turtleShapes, linkShapes, function(){});

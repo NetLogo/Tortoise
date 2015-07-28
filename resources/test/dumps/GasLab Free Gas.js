@@ -65,9 +65,7 @@ modelConfig.plots = [(function() {
       });
     });
   }),
-  new PenBundle.Pen('avg-energy', plotOps.makePenOps, false, new PenBundle.State(5.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Energy Histogram', 'avg-energy')(function() {}); });
-  }, function() {
+  new PenBundle.Pen('avg-energy', plotOps.makePenOps, false, new PenBundle.State(5.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Energy Histogram', 'avg-energy')(function() {
         plotManager.resetPen();
@@ -79,12 +77,8 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Energy Histogram', 'init-avg-energy')(function() { Call(procedures.drawVertLine, world.observer.getGlobal("init-avg-energy"));; });
     });
-  }, function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Energy Histogram', 'init-avg-energy')(function() {}); });
-  })];
-  var setup   = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Energy Histogram', undefined)(function() {}); });
-  };
+  }, function() {})];
+  var setup   = function() {};
   var update  = function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Energy Histogram', undefined)(function() {
@@ -97,30 +91,22 @@ modelConfig.plots = [(function() {
 })(), (function() {
   var name    = 'Speed Counts';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('fast', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Counts', 'fast')(function() {}); });
-  }, function() {
+  var pens    = [new PenBundle.Pen('fast', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Speed Counts', 'fast')(function() { plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("percent-fast"));; });
     });
   }),
-  new PenBundle.Pen('medium', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Counts', 'medium')(function() {}); });
-  }, function() {
+  new PenBundle.Pen('medium', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Speed Counts', 'medium')(function() { plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("percent-medium"));; });
     });
   }),
-  new PenBundle.Pen('slow', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Counts', 'slow')(function() {}); });
-  }, function() {
+  new PenBundle.Pen('slow', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Speed Counts', 'slow')(function() { plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("percent-slow"));; });
     });
   })];
-  var setup   = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Counts', undefined)(function() {}); });
-  };
+  var setup   = function() {};
   var update  = function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Speed Counts', undefined)(function() { plotManager.setYRange(0, 100);; });
@@ -163,9 +149,7 @@ modelConfig.plots = [(function() {
       });
     });
   }),
-  new PenBundle.Pen('avg-speed', plotOps.makePenOps, false, new PenBundle.State(5.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Histogram', 'avg-speed')(function() {}); });
-  }, function() {
+  new PenBundle.Pen('avg-speed', plotOps.makePenOps, false, new PenBundle.State(5.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Speed Histogram', 'avg-speed')(function() {
         plotManager.resetPen();
@@ -177,12 +161,8 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Speed Histogram', 'init-avg-speed')(function() { Call(procedures.drawVertLine, world.observer.getGlobal("init-avg-speed"));; });
     });
-  }, function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Histogram', 'init-avg-speed')(function() {}); });
-  })];
-  var setup   = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Speed Histogram', undefined)(function() {}); });
-  };
+  }, function() {})];
+  var setup   = function() {};
   var update  = function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Speed Histogram', undefined)(function() {

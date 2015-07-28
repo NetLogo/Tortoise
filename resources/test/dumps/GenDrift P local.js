@@ -32,102 +32,78 @@ if (typeof javax !== "undefined") {
 modelConfig.plots = [(function() {
   var name    = 'Patch Colors';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('color5', plotOps.makePenOps, false, new PenBundle.State(5.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Patch Colors', 'color5')(function() {}); });
-  }, function() {
+  var pens    = [new PenBundle.Pen('color5', plotOps.makePenOps, false, new PenBundle.State(5.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Patch Colors', 'color5')(function() {
         plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfPrims.getPatchVariable("pcolor"), 5); }).size());;
       });
     });
   }),
-  new PenBundle.Pen('color15', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Patch Colors', 'color15')(function() {}); });
-  }, function() {
+  new PenBundle.Pen('color15', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Patch Colors', 'color15')(function() {
         plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfPrims.getPatchVariable("pcolor"), 15); }).size());;
       });
     });
   }),
-  new PenBundle.Pen('color25', plotOps.makePenOps, false, new PenBundle.State(25.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Patch Colors', 'color25')(function() {}); });
-  }, function() {
+  new PenBundle.Pen('color25', plotOps.makePenOps, false, new PenBundle.State(25.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Patch Colors', 'color25')(function() {
         plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfPrims.getPatchVariable("pcolor"), 25); }).size());;
       });
     });
   }),
-  new PenBundle.Pen('color35', plotOps.makePenOps, false, new PenBundle.State(35.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Patch Colors', 'color35')(function() {}); });
-  }, function() {
+  new PenBundle.Pen('color35', plotOps.makePenOps, false, new PenBundle.State(35.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Patch Colors', 'color35')(function() {
         plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfPrims.getPatchVariable("pcolor"), 35); }).size());;
       });
     });
   }),
-  new PenBundle.Pen('color45', plotOps.makePenOps, false, new PenBundle.State(45.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Patch Colors', 'color45')(function() {}); });
-  }, function() {
+  new PenBundle.Pen('color45', plotOps.makePenOps, false, new PenBundle.State(45.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Patch Colors', 'color45')(function() {
         plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfPrims.getPatchVariable("pcolor"), 45); }).size());;
       });
     });
   }),
-  new PenBundle.Pen('color55', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Patch Colors', 'color55')(function() {}); });
-  }, function() {
+  new PenBundle.Pen('color55', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Patch Colors', 'color55')(function() {
         plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfPrims.getPatchVariable("pcolor"), 55); }).size());;
       });
     });
   }),
-  new PenBundle.Pen('color65', plotOps.makePenOps, false, new PenBundle.State(65.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Patch Colors', 'color65')(function() {}); });
-  }, function() {
+  new PenBundle.Pen('color65', plotOps.makePenOps, false, new PenBundle.State(65.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Patch Colors', 'color65')(function() {
         plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfPrims.getPatchVariable("pcolor"), 65); }).size());;
       });
     });
   }),
-  new PenBundle.Pen('color125', plotOps.makePenOps, false, new PenBundle.State(125.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Patch Colors', 'color125')(function() {}); });
-  }, function() {
+  new PenBundle.Pen('color125', plotOps.makePenOps, false, new PenBundle.State(125.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Patch Colors', 'color125')(function() {
         plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfPrims.getPatchVariable("pcolor"), 125); }).size());;
       });
     });
   }),
-  new PenBundle.Pen('color85', plotOps.makePenOps, false, new PenBundle.State(85.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Patch Colors', 'color85')(function() {}); });
-  }, function() {
+  new PenBundle.Pen('color85', plotOps.makePenOps, false, new PenBundle.State(85.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Patch Colors', 'color85')(function() {
         plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfPrims.getPatchVariable("pcolor"), 85); }).size());;
       });
     });
   }),
-  new PenBundle.Pen('color95', plotOps.makePenOps, false, new PenBundle.State(95.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Patch Colors', 'color95')(function() {}); });
-  }, function() {
+  new PenBundle.Pen('color95', plotOps.makePenOps, false, new PenBundle.State(95.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Patch Colors', 'color95')(function() {
         plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfPrims.getPatchVariable("pcolor"), 95); }).size());;
       });
     });
   })];
-  var setup   = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Patch Colors', undefined)(function() {}); });
-  };
-  var update  = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Patch Colors', undefined)(function() {}); });
-  };
+  var setup   = function() {};
+  var update  = function() {};
   return new Plot(name, pens, plotOps, "Time", "Number", false, 0.0, 100.0, 0.0, 200.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])(["colors"], ["colors"], [], -30, 30, -30, 30, 6.0, true, true, turtleShapes, linkShapes, function(){});

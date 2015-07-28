@@ -32,19 +32,13 @@ if (typeof javax !== "undefined") {
 modelConfig.plots = [(function() {
   var name    = 'Average Heat';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('ave-heat', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Average Heat', 'ave-heat')(function() {}); });
-  }, function() {
+  var pens    = [new PenBundle.Pen('ave-heat', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Average Heat', 'ave-heat')(function() { plotManager.plotValue(Call(procedures.averageHeat));; });
     });
   })];
-  var setup   = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Average Heat', undefined)(function() {}); });
-  };
-  var update  = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Average Heat', undefined)(function() {}); });
-  };
+  var setup   = function() {};
+  var update  = function() {};
   return new Plot(name, pens, plotOps, "Time", "Avg Heat", false, 0.0, 50.0, 0.0, 212.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])([], [], ["heat"], -40, 40, -40, 40, 5.0, true, true, turtleShapes, linkShapes, function(){});

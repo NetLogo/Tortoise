@@ -32,25 +32,19 @@ if (typeof javax !== "undefined") {
 modelConfig.plots = [(function() {
   var name    = 'Populations';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('grass', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Populations', 'grass')(function() {}); });
-  }, function() {
+  var pens    = [new PenBundle.Pen('grass', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Populations', 'grass')(function() {
         plotManager.plotValue((world.patches().agentFilter(function() { return Prims.equality(SelfPrims.getPatchVariable("pcolor"), 55); }).size() / 4));;
       });
     });
   }),
-  new PenBundle.Pen('rabbits', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Populations', 'rabbits')(function() {}); });
-  }, function() {
+  new PenBundle.Pen('rabbits', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Populations', 'rabbits')(function() { plotManager.plotValue(world.turtleManager.turtlesOfBreed("RABBITS").size());; });
     });
   }),
-  new PenBundle.Pen('weeds', plotOps.makePenOps, false, new PenBundle.State(115.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Populations', 'weeds')(function() {}); });
-  }, function() {
+  new PenBundle.Pen('weeds', plotOps.makePenOps, false, new PenBundle.State(115.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Populations', 'weeds')(function() {
         plotManager.plotValue((world.patches().agentFilter(function() { return Prims.equality(SelfPrims.getPatchVariable("pcolor"), 115); }).size() / 4));;
@@ -62,9 +56,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Populations', undefined)(function() { plotManager.setYRange(0, world.observer.getGlobal("number"));; });
     });
   };
-  var update  = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Populations', undefined)(function() {}); });
-  };
+  var update  = function() {};
   return new Plot(name, pens, plotOps, "Time", "Pop", true, 0.0, 100.0, 0.0, 111.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "RABBITS", singular: "rabbit", varNames: ["energy"] }])([], [])(["grass-grow-rate", "weeds-grow-rate", "grass-energy", "weed-energy", "number", "birth-threshold"], ["grass-grow-rate", "weeds-grow-rate", "grass-energy", "weed-energy", "number", "birth-threshold"], [], -20, 20, -20, 20, 12.0, true, true, turtleShapes, linkShapes, function(){});

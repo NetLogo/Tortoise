@@ -32,27 +32,11 @@ if (typeof javax !== "undefined") {
 modelConfig.plots = [(function() {
   var name    = 'populations';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('sheep', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('populations', 'sheep')(function() {}); });
-  }, function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('populations', 'sheep')(function() {}); });
-  }),
-  new PenBundle.Pen('wolves', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('populations', 'wolves')(function() {}); });
-  }, function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('populations', 'wolves')(function() {}); });
-  }),
-  new PenBundle.Pen('grass / 4', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('populations', 'grass / 4')(function() {}); });
-  }, function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('populations', 'grass / 4')(function() {}); });
-  })];
-  var setup   = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('populations', undefined)(function() {}); });
-  };
-  var update  = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('populations', undefined)(function() {}); });
-  };
+  var pens    = [new PenBundle.Pen('sheep', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {}),
+  new PenBundle.Pen('wolves', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {}),
+  new PenBundle.Pen('grass / 4', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {})];
+  var setup   = function() {};
+  var update  = function() {};
   return new Plot(name, pens, plotOps, "time", "pop.", false, 0.0, 100.0, 0.0, 100.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "SHEEP", singular: "a-sheep", varNames: [] }, { name: "WOLVES", singular: "wolf", varNames: [] }])(["energy", "prey"], [])(["init-sheep", "sheep-metabolism", "sheep-reproduce", "init-wolves", "wolf-metabolism", "wolf-reproduce", "grass?", "grass-delay", "plot?", "result"], ["init-sheep", "sheep-metabolism", "sheep-reproduce", "init-wolves", "wolf-metabolism", "wolf-reproduce", "grass?", "grass-delay", "plot?"], ["countdown"], -20, 20, -20, 20, 8.0, true, true, turtleShapes, linkShapes, function(){});

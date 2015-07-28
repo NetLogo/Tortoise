@@ -32,18 +32,14 @@ if (typeof javax !== "undefined") {
 modelConfig.plots = [(function() {
   var name    = 'Average';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('average', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Average', 'average')(function() {}); });
-  }, function() {
+  var pens    = [new PenBundle.Pen('average', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Average', 'average')(function() {
         plotManager.plotPoint(world.ticker.tickCount(), (world.observer.getGlobal("total") / world.patches().size()));;
       });
     });
   })];
-  var setup   = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Average', undefined)(function() {}); });
-  };
+  var setup   = function() {};
   var update  = function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Average', undefined)(function() {

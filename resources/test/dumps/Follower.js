@@ -32,36 +32,28 @@ if (typeof javax !== "undefined") {
 modelConfig.plots = [(function() {
   var name    = 'Turtle Count';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('unattached', plotOps.makePenOps, false, new PenBundle.State(125.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Count', 'unattached')(function() {}); });
-  }, function() {
+  var pens    = [new PenBundle.Pen('unattached', plotOps.makePenOps, false, new PenBundle.State(125.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Turtle Count', 'unattached')(function() {
         plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfPrims.getVariable("color"), 125); }).size());;
       });
     });
   }),
-  new PenBundle.Pen('heads', plotOps.makePenOps, false, new PenBundle.State(45.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Count', 'heads')(function() {}); });
-  }, function() {
+  new PenBundle.Pen('heads', plotOps.makePenOps, false, new PenBundle.State(45.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Turtle Count', 'heads')(function() {
         plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfPrims.getVariable("color"), 45); }).size());;
       });
     });
   }),
-  new PenBundle.Pen('bodies', plotOps.makePenOps, false, new PenBundle.State(95.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Count', 'bodies')(function() {}); });
-  }, function() {
+  new PenBundle.Pen('bodies', plotOps.makePenOps, false, new PenBundle.State(95.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Turtle Count', 'bodies')(function() {
         plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfPrims.getVariable("color"), 95); }).size());;
       });
     });
   }),
-  new PenBundle.Pen('tails', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Count', 'tails')(function() {}); });
-  }, function() {
+  new PenBundle.Pen('tails', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Turtle Count', 'tails')(function() {
         plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfPrims.getVariable("color"), 65); }).size());;
@@ -73,9 +65,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Turtle Count', undefined)(function() { plotManager.setYRange(0, world.observer.getGlobal("population"));; });
     });
   };
-  var update  = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Turtle Count', undefined)(function() {}); });
-  };
+  var update  = function() {};
   return new Plot(name, pens, plotOps, "time", "#", true, 0.0, 50.0, 0.0, 350.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["leader", "follower"], [])(["waver", "far-radius", "population", "near-radius"], ["waver", "far-radius", "population", "near-radius"], [], -30, 30, -30, 30, 8.0, true, true, turtleShapes, linkShapes, function(){});

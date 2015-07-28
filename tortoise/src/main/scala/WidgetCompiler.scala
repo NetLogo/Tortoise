@@ -17,6 +17,9 @@ import
   org.nlogo.core.{ Button, CompilerException, Monitor, Pen, Plot, Slider, Token, Widget }
 
 import
+  scalaz.Scalaz.ToValidationOps
+
+import
   TortoiseSymbol.JsDeclare
 
 import
@@ -91,9 +94,12 @@ class WidgetCompiler(compileCommand:  String => CompiledStringV,
     val penName       = penNameOpt map (name => s"'$name'") getOrElse "undefined"
     val inTempContext = (f: String) => s"plotManager.withTemporaryContext('$plotNameRaw', $penName)($f)"
     val withAuxRNG    = (f: String) => s"workspace.rng.withAux($f)"
-    compileCommand(code) map thunkifyProcedure map
-      (inTempContext andThen thunkifyProcedure) map
-      (withAuxRNG    andThen thunkifyProcedure)
+    if (code.trim.isEmpty)
+      thunkifyProcedure("").successNel
+    else
+      compileCommand(code) map thunkifyProcedure map
+        (inTempContext andThen thunkifyProcedure) map
+        (withAuxRNG    andThen thunkifyProcedure)
   }
 }
 

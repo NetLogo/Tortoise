@@ -32,46 +32,34 @@ if (typeof javax !== "undefined") {
 modelConfig.plots = [(function() {
   var name    = 'Populations';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('sick', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Populations', 'sick')(function() {}); });
-  }, function() {
+  var pens    = [new PenBundle.Pen('sick', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Populations', 'sick')(function() {
         plotManager.plotValue(world.turtles().agentFilter(function() { return SelfPrims.getVariable("sick?"); }).size());;
       });
     });
   }),
-  new PenBundle.Pen('immune', plotOps.makePenOps, false, new PenBundle.State(5.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Populations', 'immune')(function() {}); });
-  }, function() {
+  new PenBundle.Pen('immune', plotOps.makePenOps, false, new PenBundle.State(5.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Populations', 'immune')(function() {
         plotManager.plotValue(world.turtles().agentFilter(function() { return Call(procedures.immune_p); }).size());;
       });
     });
   }),
-  new PenBundle.Pen('healthy', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Populations', 'healthy')(function() {}); });
-  }, function() {
+  new PenBundle.Pen('healthy', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Populations', 'healthy')(function() {
         plotManager.plotValue(world.turtles().agentFilter(function() { return (!SelfPrims.getVariable("sick?") && !Call(procedures.immune_p)); }).size());;
       });
     });
   }),
-  new PenBundle.Pen('total', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Populations', 'total')(function() {}); });
-  }, function() {
+  new PenBundle.Pen('total', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Populations', 'total')(function() { plotManager.plotValue(world.turtles().size());; });
     });
   })];
-  var setup   = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Populations', undefined)(function() {}); });
-  };
-  var update  = function() {
-    workspace.rng.withAux(function() { plotManager.withTemporaryContext('Populations', undefined)(function() {}); });
-  };
+  var setup   = function() {};
+  var update  = function() {};
   return new Plot(name, pens, plotOps, "weeks", "people", true, 0.0, 52.0, 0.0, 200.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["sick?", "remaining-immunity", "sick-time", "age"], [])(["duration", "chance-recover", "infectiousness", "number-people", "turtle-shape", "%infected", "%immune", "lifespan", "chance-reproduce", "carrying-capacity", "immunity-duration"], ["duration", "chance-recover", "infectiousness", "number-people", "turtle-shape"], [], -17, 17, -17, 17, 14.0, true, true, turtleShapes, linkShapes, function(){});
