@@ -59,7 +59,7 @@ var procedures = (function() {
         SelfPrims.setVariable("label", SelfPrims.getVariable("weight"));
       }, true);
     }, true);
-    BreedManager.setDefaultShape(world.linkManager.linksOfBreed("RED-LINKS").getBreedName(), "curved link")
+    BreedManager.setDefaultShape(world.linkManager.linksOfBreed("RED-LINKS").getSpecialName(), "curved link")
     ListPrims.nOf(5, world.turtles()).ask(function() {
       LinkPrims.createLinkTo(ListPrims.oneOf(SelfPrims.other(world.turtles())), "RED-LINKS").ask(function() { SelfPrims.setVariable("color", 15); }, true);
     }, true);

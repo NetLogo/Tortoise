@@ -85,7 +85,7 @@ var procedures = (function() {
         }
       }, true);
     }
-    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("SHEEP").getBreedName(), "sheep")
+    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("SHEEP").getSpecialName(), "sheep")
     world.turtleManager.createTurtles(world.observer.getGlobal("initial-number-sheep"), "SHEEP").ask(function() {
       SelfPrims.setVariable("color", 9.9);
       SelfPrims.setVariable("size", 1.5);
@@ -93,7 +93,7 @@ var procedures = (function() {
       SelfPrims.setVariable("energy", Prims.random((2 * world.observer.getGlobal("sheep-gain-from-food"))));
       SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
     }, true);
-    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("WOLVES").getBreedName(), "wolf")
+    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("WOLVES").getSpecialName(), "wolf")
     world.turtleManager.createTurtles(world.observer.getGlobal("initial-number-wolves"), "WOLVES").ask(function() {
       SelfPrims.setVariable("color", 0);
       SelfPrims.setVariable("size", 2);

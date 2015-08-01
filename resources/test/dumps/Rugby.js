@@ -78,7 +78,7 @@ var procedures = (function() {
     }));
   };
   var setupBalls = function() {
-    BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
+    BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
     world.observer.getGlobal("try-line").ask(function() {
       SelfPrims.sprout(1, "TURTLES").ask(function() {
         SelfPrims.setVariable("color", 25);

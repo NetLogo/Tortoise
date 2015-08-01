@@ -66,7 +66,7 @@ var procedures = (function() {
     world.observer.setGlobal("lipid-length", 2);
     world.observer.setGlobal("interaction-distance", 4);
     world.observer.setGlobal("too-close-distance", 1.3);
-    BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
+    BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
     world.turtleManager.createTurtles((world.observer.getGlobal("num-water") + world.observer.getGlobal("num-lipids")), "WATERS").ask(function() {
       SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
       SelfPrims.setVariable("color", 105);

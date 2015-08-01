@@ -72,7 +72,7 @@ var procedures = (function() {
     world.observer.setGlobal("result", workspace.timer.elapsed());
   };
   var setupTurtles = function() {
-    BreedManager.setDefaultShape(world.turtles().getBreedName(), "bug")
+    BreedManager.setDefaultShape(world.turtles().getSpecialName(), "bug")
     world.turtleManager.createOrderedTurtles(world.observer.getGlobal("ants"), "").ask(function() {
       SelfPrims.setVariable("size", 2);
       SelfPrims.right(Prims.randomFloat(360));

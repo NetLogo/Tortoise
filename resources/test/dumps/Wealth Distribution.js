@@ -173,7 +173,7 @@ var procedures = (function() {
     SelfPrims.setPatchVariable("pcolor", ColorModel.scaleColor(45, SelfPrims.getPatchVariable("grain-here"), 0, world.observer.getGlobal("max-grain")));
   };
   var setupTurtles = function() {
-    BreedManager.setDefaultShape(world.turtles().getBreedName(), "person")
+    BreedManager.setDefaultShape(world.turtles().getSpecialName(), "person")
     world.turtleManager.createTurtles(world.observer.getGlobal("num-people"), "").ask(function() {
       SelfManager.self().moveTo(ListPrims.oneOf(world.patches()));
       SelfPrims.setVariable("size", 1.5);

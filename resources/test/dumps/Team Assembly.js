@@ -125,7 +125,7 @@ var procedures = (function() {
   };
   var setup = function() {
     world.clearAll();
-    BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
+    BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
     for (var _index_1053_1059 = 0, _repeatcount_1053_1059 = StrictMath.floor(world.observer.getGlobal("team-size")); _index_1053_1059 < _repeatcount_1053_1059; _index_1053_1059++){
       Call(procedures.makeNewcomer);
     }

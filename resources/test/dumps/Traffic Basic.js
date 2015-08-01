@@ -90,7 +90,7 @@ var procedures = (function() {
       notImplemented('user-message', undefined)((Dump('') + Dump("There are too many cars for the amount of road.  Please decrease the NUMBER-OF-CARS slider to below ") + Dump((world.topology.width + 1)) + Dump(" and press the SETUP button again.  The setup has stopped.")));
       throw new Exception.StopInterrupt;
     }
-    BreedManager.setDefaultShape(world.turtles().getBreedName(), "car")
+    BreedManager.setDefaultShape(world.turtles().getSpecialName(), "car")
     world.turtleManager.createTurtles(world.observer.getGlobal("number-of-cars"), "").ask(function() {
       SelfPrims.setVariable("color", 105);
       SelfPrims.setVariable("xcor", world.topology.randomXcor());

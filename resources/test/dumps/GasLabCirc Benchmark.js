@@ -59,7 +59,7 @@ var procedures = (function() {
   var setup = function() {
     world.clearAll();
     world.ticker.reset();
-    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("PARTICLES").getBreedName(), "circle")
+    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("PARTICLES").getSpecialName(), "circle")
     world.observer.setGlobal("manage-view-updates?", true);
     world.observer.setGlobal("view-update-rate", 0.2);
     world.observer.setGlobal("box-edge", (world.topology.maxPxcor - 1));

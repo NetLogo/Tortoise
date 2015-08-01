@@ -77,7 +77,7 @@ var procedures = (function() {
   var setup = function() {
     world.clearAll();
     world.observer.setGlobal("group-sites", world.patches().agentFilter(function() { return Call(procedures.groupSite_p); }));
-    BreedManager.setDefaultShape(world.turtles().getBreedName(), "person")
+    BreedManager.setDefaultShape(world.turtles().getSpecialName(), "person")
     world.turtleManager.createTurtles(world.observer.getGlobal("number"), "").ask(function() {
       Call(procedures.chooseSex);
       SelfPrims.setVariable("size", 3);

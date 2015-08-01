@@ -82,7 +82,7 @@ var procedures = (function() {
     world.ticker.reset();
   };
   var setupNodes = function() {
-    BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
+    BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
     world.turtleManager.createTurtles(world.observer.getGlobal("number-of-nodes"), "").ask(function() {
       SelfPrims.setXY((world.topology.randomXcor() * 0.95), (world.topology.randomYcor() * 0.95));
       Call(procedures.becomeSusceptible);

@@ -68,7 +68,7 @@ var world = workspace.world;
 var procedures = (function() {
   var setup = function() {
     world.clearAll();
-    BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
+    BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
     Call(procedures.setupGlobals);
     world.patches().ask(function() {
       SelfPrims.setPatchVariable("x", NLMath.abs(SelfPrims.getPatchVariable("pxcor")));

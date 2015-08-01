@@ -48,7 +48,7 @@ var world = workspace.world;
 var procedures = (function() {
   var setup = function() {
     world.clearAll();
-    BreedManager.setDefaultShape(world.turtles().getBreedName(), "square")
+    BreedManager.setDefaultShape(world.turtles().getSpecialName(), "square")
     world.patches().agentFilter(function() { return Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("density")); }).ask(function() { SelfPrims.setPatchVariable("pcolor", 55); }, true);
     world.patches().agentFilter(function() { return Prims.equality(SelfPrims.getPatchVariable("pxcor"), world.topology.minPxcor); }).ask(function() { Call(procedures.ignite); }, true);
     world.observer.setGlobal("initial-trees", world.patches().agentFilter(function() { return Prims.equality(SelfPrims.getPatchVariable("pcolor"), 55); }).size());

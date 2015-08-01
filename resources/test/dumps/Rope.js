@@ -48,7 +48,7 @@ var world = workspace.world;
 var procedures = (function() {
   var setup = function() {
     world.clearAll();
-    BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
+    BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
     world.turtleManager.createTurtles(world.topology.width, "").ask(function() {
       SelfPrims.setVariable("xcor", SelfPrims.getVariable("who"));
       SelfPrims.setVariable("color", 15);

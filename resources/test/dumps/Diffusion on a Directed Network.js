@@ -63,8 +63,8 @@ var world = workspace.world;
 var procedures = (function() {
   var setup = function() {
     world.clearAll();
-    BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
-    BreedManager.setDefaultShape(world.links().getBreedName(), "small-arrow-link")
+    BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
+    BreedManager.setDefaultShape(world.links().getSpecialName(), "small-arrow-link")
     world.patches().agentFilter(function() {
       return (Prims.lt(NLMath.abs(SelfPrims.getPatchVariable("pxcor")), (world.observer.getGlobal("grid-size") / 2)) && Prims.lt(NLMath.abs(SelfPrims.getPatchVariable("pycor")), (world.observer.getGlobal("grid-size") / 2)));
     }).ask(function() { SelfPrims.sprout(1, "TURTLES").ask(function() { SelfPrims.setVariable("color", 105); }, true); }, true);

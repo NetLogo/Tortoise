@@ -191,7 +191,7 @@ var world = workspace.world;
 var procedures = (function() {
   var setup = function() {
     world.clearAll();
-    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("PARTICLES").getBreedName(), "circle")
+    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("PARTICLES").getSpecialName(), "circle")
     world.observer.setGlobal("max-tick-delta", 0.1073);
     Call(procedures.makeParticles);
     Call(procedures.updateVariables);

@@ -59,11 +59,11 @@ var world = workspace.world;
 var procedures = (function() {
   var setup = function() {
     world.clearAll();
-    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("RAYS").getBreedName(), "ray")
-    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("IRS").getBreedName(), "ray")
-    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("CLOUDS").getBreedName(), "cloud")
-    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("HEATS").getBreedName(), "dot")
-    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("CO2S").getBreedName(), "CO2-molecule")
+    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("RAYS").getSpecialName(), "ray")
+    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("IRS").getSpecialName(), "ray")
+    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("CLOUDS").getSpecialName(), "cloud")
+    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("HEATS").getSpecialName(), "dot")
+    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("CO2S").getSpecialName(), "CO2-molecule")
     Call(procedures.setupWorld);
     world.observer.setGlobal("temperature", 12);
     world.ticker.reset();

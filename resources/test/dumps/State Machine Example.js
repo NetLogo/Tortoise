@@ -48,7 +48,7 @@ var world = workspace.world;
 var procedures = (function() {
   var setup = function() {
     world.clearAll();
-    BreedManager.setDefaultShape(world.turtles().getBreedName(), "bug")
+    BreedManager.setDefaultShape(world.turtles().getSpecialName(), "bug")
     world.patches().ask(function() {
       if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("density"))) {
         SelfPrims.setPatchVariable("pcolor", 45);

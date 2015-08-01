@@ -72,7 +72,7 @@ var procedures = (function() {
     world.ticker.reset();
   };
   var setupCows = function() {
-    BreedManager.setDefaultShape(world.turtles().getBreedName(), "cow")
+    BreedManager.setDefaultShape(world.turtles().getSpecialName(), "cow")
     world.turtleManager.createTurtles(world.observer.getGlobal("initial-cows"), "").ask(function() {
       SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
       SelfPrims.setVariable("energy", (world.observer.getGlobal("metabolism") * 4));

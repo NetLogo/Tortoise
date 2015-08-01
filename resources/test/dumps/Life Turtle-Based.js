@@ -48,8 +48,8 @@ var world = workspace.world;
 var procedures = (function() {
   var setupBlank = function() {
     world.clearAll();
-    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("CELLS").getBreedName(), "circle")
-    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("BABIES").getBreedName(), "dot")
+    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("CELLS").getSpecialName(), "circle")
+    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("BABIES").getSpecialName(), "dot")
     world.patches().ask(function() { SelfPrims.setPatchVariable("live-neighbors", 0); }, true);
     world.ticker.reset();
   };

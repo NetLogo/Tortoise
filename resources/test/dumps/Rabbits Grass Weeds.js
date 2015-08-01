@@ -78,7 +78,7 @@ var procedures = (function() {
   var setup = function() {
     world.clearAll();
     Call(procedures.growGrassAndWeeds);
-    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("RABBITS").getBreedName(), "rabbit")
+    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("RABBITS").getSpecialName(), "rabbit")
     world.turtleManager.createTurtles(world.observer.getGlobal("number"), "RABBITS").ask(function() {
       SelfPrims.setVariable("color", 9.9);
       SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());

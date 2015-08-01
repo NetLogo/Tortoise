@@ -48,7 +48,7 @@ var world = workspace.world;
 var procedures = (function() {
   var setup = function() {
     world.clearAll();
-    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("PAGES").getBreedName(), "circle")
+    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("PAGES").getSpecialName(), "circle")
     if (Prims.equality(world.observer.getGlobal("network-choice"), "Example 1")) {
       Call(procedures.createNetworkExample1);
     }

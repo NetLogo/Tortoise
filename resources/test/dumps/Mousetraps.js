@@ -72,7 +72,7 @@ var procedures = (function() {
     world.clearAll();
     world.observer.setGlobal("traps-triggered", 0);
     world.patches().ask(function() { SelfPrims.setPatchVariable("pcolor", (105 + 3)); }, true);
-    BreedManager.setDefaultShape(world.turtles().getBreedName(), "circle")
+    BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
     world.turtleManager.createTurtles(1, "").ask(function() {
       SelfPrims.setVariable("color", 9.9);
       SelfPrims.setVariable("size", 1.5);

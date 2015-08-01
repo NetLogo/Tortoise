@@ -48,7 +48,7 @@ var world = workspace.world;
 var procedures = (function() {
   var setup = function() {
     world.clearAll();
-    BreedManager.setDefaultShape(world.turtles().getBreedName(), "planet")
+    BreedManager.setDefaultShape(world.turtles().getSpecialName(), "planet")
     world.turtleManager.createTurtles(1, "SUNS").ask(function() {
       SelfPrims.setVariable("size", 6);
       SelfPrims.setVariable("color", 45);

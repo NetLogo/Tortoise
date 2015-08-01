@@ -103,7 +103,7 @@ var procedures = (function() {
   var setup = function() {
     world.clearAll();
     world.ticker.reset();
-    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("PARTICLES").getBreedName(), "circle")
+    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("PARTICLES").getSpecialName(), "circle")
     world.observer.setGlobal("fade-needed?", false);
     world.observer.setGlobal("box-edge", (world.topology.maxPxcor - 1));
     world.observer.setGlobal("length-horizontal-surface", ((2 * (world.observer.getGlobal("box-edge") - 1)) + 1));
@@ -397,7 +397,7 @@ var procedures = (function() {
     }
   };
   var makeClocker = function() {
-    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("CLOCKERS").getBreedName(), "clocker")
+    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("CLOCKERS").getSpecialName(), "clocker")
     world.turtleManager.createOrderedTurtles(1, "CLOCKERS").ask(function() {
       SelfPrims.setXY((world.observer.getGlobal("box-edge") - 5), (world.observer.getGlobal("box-edge") - 5));
       SelfPrims.setVariable("color", (115 + 2));
