@@ -54,20 +54,20 @@ module.exports =
       if a? and b?
         typeA = NLType(a)
         typeB = NLType(b)
-        (a is b) or ( # This code has been purposely rewritten into a crude, optimized form --JAB (3/19/14)
-          if typeA.isList() and typeB.isList()
-            a.length is b.length and a.every((elem, i) => @equality(elem, b[i]))
-          else if typeA.isAgentSet() and typeB.isAgentSet()
+        (a is b) or # This code has been purposely rewritten into a crude, optimized form --JAB (3/19/14)
+          typeA.isBreedSet(b.getSpecialName?()) or
+          typeB.isBreedSet(a.getSpecialName?()) or
+          (a is Nobody and b.isDead?()) or
+          (b is Nobody and a.isDead?()) or
+          ((typeA.isTurtle() or (typeA.isLink() and b isnt Nobody)) and a.compare(b) is EQ) or
+          (typeA.isList() and typeB.isList() and a.length is b.length and a.every((elem, i) => @equality(elem, b[i]))) or
+          (typeA.isAgentSet() and typeB.isAgentSet() and a.size() is b.size() and Object.getPrototypeOf(a) is Object.getPrototypeOf(b) and (
             subsumes = (xs, ys) =>
               for x, index in xs
                 if not @equality(ys[index], x)
                   return false
               true
-            a.size() is b.size() and Object.getPrototypeOf(a) is Object.getPrototypeOf(b) and subsumes(a.sort(), b.sort())
-          else
-            typeA.isBreedSet(b.getSpecialName?()) or typeB.isBreedSet(a.getSpecialName?()) or
-              (a is Nobody and b.isDead?()) or (b is Nobody and a.isDead?()) or ((typeA.isTurtle() or (typeA.isLink() and b isnt Nobody)) and a.compare(b) is EQ)
-        )
+            subsumes(a.sort(), b.sort())))
       else
         throw new Error("Checking equality on undefined is an invalid condition")
 
