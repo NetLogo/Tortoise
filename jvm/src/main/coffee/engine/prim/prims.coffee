@@ -47,7 +47,7 @@ module.exports =
           throw new Error("`breed-on` unsupported for class '#{typeof(x)}'")
 
       turtles = _(patches).map((p) -> p.breedHereArray(breedName)).flatten().value()
-      new TurtleSet(turtles, breedName)
+      new TurtleSet(turtles)
 
     # (Any, Any) => Boolean
     equality: (a, b) ->
@@ -65,7 +65,7 @@ module.exports =
               true
             a.size() is b.size() and Object.getPrototypeOf(a) is Object.getPrototypeOf(b) and subsumes(a.sort(), b.sort())
           else
-            typeA.isBreedSet(b.name) or typeB.isBreedSet(a.name) or
+            typeA.isBreedSet(b.getSpecialName?()) or typeB.isBreedSet(a.getSpecialName?()) or
               (a is Nobody and b.isDead?()) or (b is Nobody and a.isDead?()) or ((typeA.isTurtle() or (typeA.isLink() and b isnt Nobody)) and a.compare(b) is EQ)
         )
       else

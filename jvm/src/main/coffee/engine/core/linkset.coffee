@@ -7,25 +7,13 @@ JSType               = require('util/typechecker')
 module.exports =
   class LinkSet extends AbstractAgentSet
 
-    # [T <: Turtle] @ ((() => Array[T])|Array[T], String, String) => TurtleSet
-    constructor: (@_agents, @_breedName = "LINKS", @_specialName) ->
-      super(@_unwrap(@_agents))
-
-    # () => String
-    getBreedName: ->
-      @_breedName
+    # [T <: Turtle] @ ((() => Array[T])|Array[T], String) => LinkSet
+    constructor: (@_agents, specialName) ->
+      super(@_unwrap(@_agents), "links", specialName)
 
     # () => Iterator[T]
     iterator: ->
       new DeadSkippingIterator(@_unwrap(@_agents))
-
-    # () => String
-    toString: ->
-      @_specialName.toLowerCase() ? "(agentset, #{@size()} #{@getBreedName().toLowerCase()})"
-
-    # (Array[T], LinkSet[T]) => LinkSet[T]
-    _generateFrom: (newAgentArr, agents) ->
-      new LinkSet(newAgentArr, agents.getBreedName())
 
     # I know, I know, this is insane, right?  "Why would you do this?!", you demand.  I don't blame you.  I don't like
     # it, either.  But, look... we have a problem on our hands.  Special agentsets are a thing.  They can be stored

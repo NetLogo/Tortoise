@@ -196,7 +196,7 @@ trait CommandPrims extends PrimUtils {
       case _: prim.etc._error            => s"throw new Error(${arg(0)});"
       case h: prim._hatch                => generateHatch(s, h.breedName)
       case _: prim.etc._diffuse          => s"world.topology.diffuse(${jsString(getReferenceName(s))}, ${arg(1)})"
-      case x: prim.etc._setdefaultshape  => s"BreedManager.setDefaultShape(${arg(0)}.getBreedName(), ${arg(1)})"
+      case x: prim.etc._setdefaultshape  => s"BreedManager.setDefaultShape(${arg(0)}.getSpecialName(), ${arg(1)})"
       case _: prim.etc._hidelink         => "SelfPrims.setVariable('hidden?', true)"
       case _: prim.etc._showlink         => "SelfPrims.setVariable('hidden?', false)"
       case call: prim._call              =>

@@ -348,7 +348,7 @@ module.exports =
       isNameValid = breedName? and not _(breedName).isEmpty()
       breed       = if isNameValid then @world.breedManager.get(breedName) else @_breed
       newTurtles  = _(0).range(n).map(=> @_makeTurtleCopy(breed)).value()
-      new TurtleSet(newTurtles, breed)
+      new TurtleSet(newTurtles)
 
     # (Breed) => Turtle
     _makeTurtleCopy: (breed) ->
@@ -510,8 +510,9 @@ module.exports =
         if type.isString()
           @world.breedManager.get(breed)
         else if type.isAgentSet()
-          if breed.getBreedName?
-            @world.breedManager.get(breed.getBreedName())
+          specialName = breed.getSpecialName()
+          if specialName?
+            @world.breedManager.get(specialName)
           else
             throw new Error("You can't set BREED to a non-breed agentset.")
         else

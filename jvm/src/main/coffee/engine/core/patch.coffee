@@ -97,7 +97,7 @@ module.exports =
 
     # (String) => TurtleSet
     breedHere: (breedName) ->
-      new TurtleSet(@breedHereArray(breedName), breedName)
+      new TurtleSet(@breedHereArray(breedName))
 
     # (String) => Array[Turtle]
     breedHereArray: (breedName) ->

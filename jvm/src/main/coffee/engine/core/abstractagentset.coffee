@@ -14,6 +14,10 @@ module.exports =
     @_nextInt:     undefined # (Number) => Number
     @_selfManager: undefined # SelfManager
 
+    # (Array[T], String, String) => AbstractAgentSet
+    constructor: (agents, @_agentTypeName, @_specialName) ->
+      super(agents)
+
     # (() => Boolean) => AbstractAgentSet[T]
     agentFilter: (f) ->
       @filter(@_lazyGetSelfManager().askAgent(f))
@@ -39,6 +43,10 @@ module.exports =
         throw new Death
 
       return
+
+    # () => String
+    getSpecialName: ->
+      @_specialName
 
     # [Result] @ (() => Result) => Array[Result]
     projectionBy: (f) ->
@@ -72,9 +80,13 @@ module.exports =
       @_items = @iterator().toArray() # Prune out dead agents --JAB (7/21/14)
       @_items[..]
 
+    # () => String
+    toString: ->
+      @_specialName?.toLowerCase() ? "(agentset, #{@size()} #{@_agentTypeName})"
+
     # (Array[T]) => AbstractAgentSet[T]
     copyWithNewAgents: (agents) ->
-      @_generateFrom(agents, this)
+      @_generateFrom(agents)
 
     # [U] @ (U, (U, U) => Boolean, () => U) => Agent
     _findBestOf: (worstPossible, findIsBetter, f) ->
@@ -97,6 +109,10 @@ module.exports =
         Nobody
       else
         winners[@_lazyGetNextIntFunc()(winners.length)]
+
+    # (Array[T]) => This[T]
+    _generateFrom: (newAgentArr) ->
+      new @constructor(newAgentArr)
 
     # () => (Number) => Number
     _lazyGetNextIntFunc: ->

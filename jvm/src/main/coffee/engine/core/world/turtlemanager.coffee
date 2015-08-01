@@ -43,7 +43,7 @@ module.exports =
           heading = (360 * num) / n
           @_createTurtle(color, heading, 0, 0, @_breedManager.get(breedName))
       ).value()
-      new TurtleSet(turtles, breedName)
+      new TurtleSet(turtles)
 
     # (Number, String, Number, Number) => TurtleSet
     createTurtles: (n, breedName, xcor = 0, ycor = 0) ->
@@ -52,7 +52,7 @@ module.exports =
         heading = @_nextInt(360)
         @_createTurtle(color, heading, xcor, ycor, @_breedManager.get(breedName))
       ).value()
-      new TurtleSet(turtles, breedName)
+      new TurtleSet(turtles)
 
     # (Number) => Agent
     getTurtle: (id) ->
@@ -68,12 +68,12 @@ module.exports =
 
     # () => TurtleSet
     turtles: ->
-      new TurtleSet(@_turtles, "TURTLES", "turtles")
+      new TurtleSet(@_turtles, "turtles")
 
     # (String) => TurtleSet
     turtlesOfBreed: (breedName) =>
       breed = @_breedManager.get(breedName)
-      new TurtleSet(breed.members, breedName, breedName)
+      new TurtleSet(breed.members, breedName)
 
     # () => Unit
     _clearTurtlesSuspended: ->

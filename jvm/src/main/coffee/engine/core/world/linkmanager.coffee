@@ -73,12 +73,12 @@ module.exports =
     # () => LinkSet
     links: ->
       thunk = (=> @_linkArray())
-      new LinkSet(thunk, "LINKS", "links")
+      new LinkSet(thunk, "links")
 
     # (String) => LinkSet
     linksOfBreed: (breedName) =>
       thunk = (=> stableSort(@_breedManager.get(breedName).members)((x, y) -> x.compare(y).toInt))
-      new LinkSet(thunk, breedName, breedName)
+      new LinkSet(thunk, breedName)
 
     # () => Array[Link]
     _linkArray: ->
