@@ -1,6 +1,13 @@
 # opt-in to Travis new container-based infrastructure
 sudo: false
 
+# for faster builds
+cache:
+  directories:
+  - $HOME/.ivy2
+  - $HOME/.sbt/boot
+  - $HOME/.sbt/launchers
+
 jdk: oraclejdk8
 language: scala
 scala: 2.11.7
