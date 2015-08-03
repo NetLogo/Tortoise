@@ -80,7 +80,7 @@ lazy val tortoise = CrossProject("tortoise", file("."), new CrossType {
     }).
   jsSettings(
     name                                 := "TortoiseJS",
-    artifactPath in (Compile, fullOptJS) := ((crossTarget in (Compile, fullOptJS)).value / "tortoise.js"),
+    artifactPath in (Compile, fullOptJS) := ((crossTarget in (Compile, fullOptJS)).value / "tortoise-compiler.js"),
     skip in packageJSDependencies        := false, // bundles all dependencies in with generated JS
     testFrameworks                       += new TestFramework("utest.runner.Framework"),
     libraryDependencies                  ++= {
