@@ -1,6 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 Nobody         = require('./nobody')
+NLType         = require('./typechecker')
 Seq            = require('util/seq')
 Shufflerator   = require('util/shufflerator')
 stableSort     = require('util/stablesort')
@@ -98,7 +99,7 @@ module.exports =
           if result is currentBest
             currentWinners.push(agent)
             [currentBest, currentWinners]
-          else if findIsBetter(result, currentBest)
+          else if NLType(result).isNumber() and findIsBetter(result, currentBest)
             [result, [agent]]
           else
             [currentBest, currentWinners]
