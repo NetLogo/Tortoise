@@ -1,6 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-{ DeathInterrupt: Death, StopInterrupt: Stop } = require('util/exception')
+{ DeathInterrupt: Death } = require('util/exception')
 
 module.exports =
   class SelfManager
@@ -37,7 +37,7 @@ module.exports =
       res =
         try f()
         catch error
-          throw error if not (error instanceof Death or error instanceof Stop)
+          throw error if not (error instanceof Death)
 
       @_self   = oldAgent
       @_myself = oldMyself

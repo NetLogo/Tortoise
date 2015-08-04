@@ -11,7 +11,7 @@ import
   org.nlogo.{ core, headless },
     core.{ AgentKind, CompilerException, FrontEndInterface, Model => CModel, Program, View },
       FrontEndInterface.{ ProceduresMap, NoProcedures },
-    headless.test.{ AbstractFixture, Command, CompileError, RuntimeError, Reporter, Success, TestMode }
+    headless.test.{ AbstractFixture, Command, Compile, CompileError, RuntimeError, Reporter, Success, TestMode }
 
 
 import jsengine.Nashorn
@@ -21,11 +21,15 @@ class TortoiseFixture(name: String, nashorn: Nashorn, notImplemented: (String) =
   private var program: Program = Program.empty
   private var procs: ProceduresMap = NoProcedures
 
-  override def declare(model: CModel): Unit = {
+  private def modelJS(model: CModel): String = {
     val compilation = cautiously(Compiler.compileProcedures(model))
     program = compilation.program
     procs   = compilation.procedures
-    nashorn.eval(Compiler.toJS(compilation))
+    Compiler.toJS(compilation)
+  }
+
+  override def declare(model: CModel): Unit = {
+    nashorn.eval(modelJS(model))
     ()
   }
 
@@ -59,6 +63,19 @@ class TortoiseFixture(name: String, nashorn: Nashorn, notImplemented: (String) =
       case r =>
         notImplemented(s"unknown result type: ${r.getClass.getSimpleName}")
     }
+  }
+
+  override def checkCompile(model: CModel, compile: Compile): Unit = {
+    lazy val js = modelJS(model)
+    compile.result match {
+      case Success(expectedResult) =>
+        nashorn.eval(js)
+      case CompileError(msg) =>
+        expectCompileError(js, msg)
+      case r =>
+        notImplemented(s"unknown result type: ${r.getClass.getSimpleName}")
+    }
+    ()
   }
 
   private def expectCompileError(js: => String, msg: String): Unit = {

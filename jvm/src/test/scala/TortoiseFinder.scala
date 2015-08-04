@@ -76,7 +76,6 @@ class TestCommands extends CommandTests with TortoiseFinder {
   import Freebies._
   override val freebies = Map[String, String](
     // requires handling of non-local exit (see in JVM NetLogo: `NonLocalExit`, `_report`, `_foreach`, `_run`)
-    "Stop::ReportFromForeach" -> "no non-local exit from foreach",
     "Every::EveryLosesScope"  -> "NetLogo Web does not support distinct jobs"
   ) ++ incErrorDetectCommands ++ emptyInitBlockCommands ++ evalNotSupportedCommands ++ cmdTaskRepMismatchCommands
 }
@@ -211,11 +210,6 @@ private[tortoise] object Freebies {
     "Run::RunRejectExtraArgumentsIfFirstArgIsString",
     "Run::RunResultRejectExtraArgumentsIfFirstArgIsString",
     "Sort::SortingTypeErrors",
-    "Stop::ReportFromDynamicallyNestedForeach",
-    "Stop::StopFromForeach1",
-    "Stop::StopFromForeachInsideReporterProcedure",
-    "Stop::StopFromNestedForeachInsideReporterProcedure",
-    "Stop::FallOffEndOfReporterProcedure",
     "Turtles::Turtles1a",
     "TurtlesOn::TurtlesOn1",
     "TypeChecking::AgentClassChecking1",

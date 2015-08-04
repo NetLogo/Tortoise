@@ -15,7 +15,7 @@ module.exports = class Plot
   isAutoplotting: undefined # Boolean
   name:           undefined # String
 
-  # (String, Array[Pen], PlotOps, String, String, Boolean, Number, Number, Number, Number, () => Unit, () => Unit) => Plot
+  # (String, Array[Pen], PlotOps, String, String, Boolean, Number, Number, Number, Number, () => (Unit | Stop), () => (Unit | Stop)) => Plot
   constructor: (@name, pens = [], @_ops, @xLabel, @yLabel, @isLegendEnabled = true, @xMin = 0, @xMax = 10, @yMin = 0, @yMax = 10, @_setupThis = (->), @_updateThis = (->)) ->
     @isAutoplotting  = true
     @_currentPen     = pens[0]
@@ -139,11 +139,9 @@ module.exports = class Plot
 
   # () => Unit
   setup: ->
-    try @_setupThis()
-    catch e
-      if not (e instanceof Stop)
-        throw e
-    _(@_penMap).forEach((pen) -> pen.setup(); return).value()
+    setupResult = @_setupThis()
+    if not (setupResult instanceof Stop)
+      _(@_penMap).forEach((pen) -> pen.setup(); return).value()
     return
 
   # (Number, Number) => Unit
@@ -166,11 +164,9 @@ module.exports = class Plot
 
   # () => Unit
   update: ->
-    try @_updateThis()
-    catch e
-      if not (e instanceof Stop)
-        throw e
-    _(@_penMap).forEach((pen) -> pen.update(); return).value()
+    updateResult = @_updateThis()
+    if not (updateResult instanceof Stop)
+      _(@_penMap).forEach((pen) -> pen.update(); return).value()
     return
 
   # () => Unit

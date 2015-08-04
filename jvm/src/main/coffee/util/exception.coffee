@@ -5,14 +5,16 @@ class NetLogoException
 
 class AgentException    extends NetLogoException
 class DeathInterrupt    extends NetLogoException
-class TopologyInterrupt extends NetLogoException
+class ReportInterrupt   extends NetLogoException
 class StopInterrupt     extends NetLogoException
+class TopologyInterrupt extends NetLogoException
 
 module.exports = {
   AgentException
-  NetLogoException
   DeathInterrupt
-  TopologyInterrupt
+  NetLogoException
+  ReportInterrupt
   StopInterrupt
+  TopologyInterrupt
 }
 

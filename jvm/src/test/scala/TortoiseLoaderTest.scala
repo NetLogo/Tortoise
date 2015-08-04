@@ -29,8 +29,8 @@ import
 // within the given compilation. -- RG 6/9/2015
 class TortoiseLoaderTest extends FunSuite {
   test("renders out a compilation unit with no dependencies") {
-    testCompile("var Call = tortoise_require('util/call');",
-      JsRequire("Call", "util/call"))
+    testCompile("var AgentModel = tortoise_require('agentmodel');",
+      JsRequire("AgentModel", "agentmodel"))
   }
 
   test("raises an error a unit does not have its dependencies met") {

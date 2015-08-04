@@ -3,6 +3,9 @@
 package org.nlogo.tortoise
 
 import
+  CompilerFlags.WidgetPropagation
+
+import
   CompilerLike.Compilation
 
 import
@@ -94,10 +97,11 @@ object Compiler extends CompilerLike {
       Program.empty.copy(interfaceGlobals = model.interfaceGlobals),
       FrontEndInterface.NoProcedures)
     val validatedCompileCommand  = validate(s => compileCommands(s, procedures, program)) _
+    val validatedStopCompileCommand  = validate(s => compileCommands(s, procedures, program)(compilerFlags.copy(propagationStyle = WidgetPropagation))) _
     val validatedCompileReporter = validate(s => compileReporter(s, procedures, program)) _
     val interface                = model.interfaceGlobalCommands.map(validatedCompileCommand)
     val compiledProcedures       = new ProcedureCompiler(handlers).compileProcedures(procedureDefs)
-    val compiledWidgets          = new WidgetCompiler(validatedCompileCommand, validatedCompileReporter)
+    val compiledWidgets          = new WidgetCompiler(validatedStopCompileCommand, validatedCompileReporter)
       .compileWidgets(model.widgets)
     Compilation(compiledProcedures, compiledWidgets, interface, model, procedures, program)
   }

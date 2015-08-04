@@ -3,7 +3,7 @@
 package org.nlogo.tortoise
 
 import
-  JsOps.{ jsArrayString, jsFunction }
+  JsOps.{ jsArrayString, jsFunction, indented }
 
 import
   org.nlogo.core.{ AstNode, CommandBlock, Dump, LogoList, Nobody, Pure, ReporterApp,
@@ -13,10 +13,10 @@ trait Handlers extends EveryIDProvider {
 
   def prims: Prims
 
-  def fun(    node:          AstNode,
-              isReporter:    Boolean = false,
-              isTask:        Boolean = false)
-    (implicit compilerFlags: CompilerFlags): String = {
+  def fun(node:          AstNode,
+          isReporter:    Boolean = false,
+          isTask:        Boolean = false)
+    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
     val taskHeader =
       if (isTask)
         "var taskArguments = arguments;\n"
@@ -47,22 +47,35 @@ trait Handlers extends EveryIDProvider {
   // objects, representing the concrete syntax of square brackets, but at this stage of compilation
   // the brackets are irrelevant.  So when we see a block we just immediately recurse into it.
 
-  def commands(node: AstNode)(implicit compilerFlags: CompilerFlags): String =
-    node match {
-      case block: CommandBlock =>
-        commands(block.statements)
-      case statements: Statements =>
-        statements.stmts.map(prims.generateCommand)
-          .filter(_.nonEmpty)
-          .mkString("\n")
+  def commands(node: AstNode, catchStop: Boolean = true)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String =
+    incrementingContext { context =>
+      node match {
+        case block: CommandBlock =>
+          commands(block.statements)(compilerFlags, context)
+        case statements: Statements =>
+          val generatedJS =
+            statements.stmts.map(prims.generateCommand(_)(compilerFlags, context))
+              .filter(_.nonEmpty)
+              .mkString("\n")
+              if (catchStop && statements.nonLocalExit)
+                commandBlockContext(generatedJS)
+              else
+                generatedJS
+      }
     }
 
-  def reporter(node: AstNode)(implicit compilerFlags: CompilerFlags): String = node match {
-    case block: ReporterBlock =>
-      reporter(block.app)
-    case app: ReporterApp =>
-    prims.reporter(app)
-  }
+  def reporter(node: AstNode)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String =
+    incrementingContext { context =>
+      node match {
+        case block: ReporterBlock =>
+          reporter(block.app)(compilerFlags, context)
+        case app: ReporterApp =>
+          prims.reporter(app)(compilerFlags, context)
+      }
+    }
+
+  private def incrementingContext[T](f: CompilerContext => T)(implicit context: CompilerContext): T =
+    f(context.copy(blockLevel = context.blockLevel + 1))
 
   def literal(obj: AnyRef): String = obj match {
     case ll: LogoList =>
@@ -77,5 +90,28 @@ trait Handlers extends EveryIDProvider {
 
   def unusedVarname(token: Token, hint: String = ""): String =
     s"_${hint}_${token.start}_${token.end}"
+
+  def reporterProcContext(reporterJS: String): String =
+    s"""|try {
+        |${indented(reporterJS)}
+        |  throw new Error("Reached end of reporter procedure without REPORT being called.");
+        |} catch (e) {
+        |  if (e instanceof Exception.ReportInterrupt) {
+        |    return e.message;
+        |  } else {
+        |    throw e;
+        |  }
+        |}""".stripMargin
+
+  def commandBlockContext(commandJS: String): String =
+    s"""|try {
+        |${indented(commandJS)}
+        |} catch (e) {
+        |  if (e instanceof Exception.StopInterrupt) {
+        |    return e;
+        |  } else {
+        |    throw e;
+        |  }
+        |}""".stripMargin
 
 }

@@ -14,16 +14,21 @@ import
 import
   TortoiseSymbol.JsDeclare
 
-class ProcedureCompiler(handlers: Handlers)(implicit compilerFlags: CompilerFlags) {
+class ProcedureCompiler(handlers: Handlers)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext) {
   def compileProcedures(procedureDefs: Seq[ProcedureDefinition]): CompiledProceduresDictionary =
     procedureDefs.map(compileProcedureDef)
 
   private def compileProcedureDef(pd:            ProcedureDefinition)
-                        (implicit compilerFlags: CompilerFlags): (String, Map[String, String]) = {
+                        (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): (String, Map[String, String]) = {
     val originalName = pd.procedure.name
     val safeName = handlers.ident(originalName)
     handlers.resetEveryID(safeName)
-    val body = handlers.commands(pd.statements)
+    val body =
+      if (pd.procedure.isReporter) {
+        val unwrappedBody = handlers.commands(pd.statements, false)
+        handlers.reporterProcContext(unwrappedBody)
+      } else
+        handlers.commands(pd.statements)
     val args = pd.procedure.args.map(handlers.ident)
     val functionJavascript = s"var $safeName = ${jsFunction(args = args, body = body)};"
     if (safeName != originalName)

@@ -3,8 +3,6 @@
 _      = require('lodash')
 JSType = require('util/typechecker')
 
-{ StopInterrupt: Stop } = require('util/exception')
-
 # data PenMode =
 Up   = {}
 Down = {}
@@ -80,7 +78,7 @@ module.exports.Pen = class Pen
   _points: undefined # Array[PlotPoint]
   _state:  undefined # State
 
-  # (String, (Pen) => PenOps, Boolean, State, () => Unit, () => Unit) => Pen
+  # (String, (Pen) => PenOps, Boolean, State, () => (Unit|Stop), () => (Unit|Stop)) => Pen
   constructor: (@name, genOps, @isTemp = false, @_defaultState = new State(), @_setupThis = (->), @_updateThis = (->)) ->
     @_ops = genOps(this)
     @reset()
@@ -156,18 +154,12 @@ module.exports.Pen = class Pen
 
   # () => Unit
   setup: () ->
-    try @_setupThis()
-    catch e
-      if not (e instanceof Stop)
-        throw e
+    @_setupThis()
     return
 
   # () => Unit
   update: () ->
-    try @_updateThis()
-    catch e
-      if not (e instanceof Stop)
-        throw e
+    @_updateThis()
     return
 
   # () => Unit
