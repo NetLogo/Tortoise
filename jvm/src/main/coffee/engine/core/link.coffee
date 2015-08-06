@@ -15,7 +15,7 @@ NLType           = require('./typechecker')
 module.exports =
   class Link
 
-    # type RegLinkStampFunc = (Number, Number, Number, Number, Number, Number, Number, RGB, String, Number) => Unit
+    # type RegLinkStampFunc = (Number, Number, Number, Number, Number, Number, Number, RGB, String, Number, String) => Unit
 
     _breed:            undefined # Breed
     _updateVarsByName: undefined # (String*) => Unit
@@ -84,7 +84,7 @@ module.exports =
       midX  = @getMidpointX()
       midY  = @getMidpointY()
 
-      @_registerLinkStamp(e1x, e1y, e2x, e2y, midX, midY, stampHeading, color, @_shape, @thickness)
+      @_registerLinkStamp(e1x, e1y, e2x, e2y, midX, midY, stampHeading, color, @_shape, @_thickness, @isDirected, @getSize(), @_isHidden, "normal")
 
     # () => TurtleSet
     bothEnds: ->

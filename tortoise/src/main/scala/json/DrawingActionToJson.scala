@@ -9,7 +9,7 @@ import
       DrawingAction.{ ClearDrawing, DrawLine, StampImage }
 
 import
-  TortoiseJson.{ fields, JsArray, JsDouble, JsInt, JsObject, JsString }
+  TortoiseJson.{ fields, JsArray, JsBool, JsDouble, JsInt, JsObject, JsString }
 
 sealed trait DrawingActionConverter[T <: DrawingAction] extends JsonConverter[T] {
 
@@ -57,7 +57,8 @@ class StampImageConverter(override protected val target: StampImage) extends Dra
             "size"      -> JsDouble(size),
             "x"         -> JsDouble(x),
             "y"         -> JsDouble(y),
-            "shapeName" -> JsString(shapeName)
+            "shapeName" -> JsString(shapeName),
+            "stampMode" -> JsString(stampMode)
           ))
 
         ("turtle", obj)
@@ -74,7 +75,12 @@ class StampImageConverter(override protected val target: StampImage) extends Dra
             "x1"        -> JsDouble(x1),
             "x2"        -> JsDouble(x2),
             "y1"        -> JsDouble(y1),
-            "y2"        -> JsDouble(y2)
+            "y2"        -> JsDouble(y2),
+            "thickness" -> JsDouble(thickness),
+            "directed?" -> JsBool(isDirected),
+            "size"      -> JsDouble(size),
+            "hidden?"   -> JsBool(isHidden),
+            "stampMode" -> JsString(stampMode)
           ))
 
         ("link", obj)

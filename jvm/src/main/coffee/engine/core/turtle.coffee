@@ -19,7 +19,7 @@ module.exports =
 
     # type GenTurtleFunc      = (Number, Number, Number, Number, Breed, String, Number, Boolean, Number, String, PenManager) => Turtle
     # type RegLineDrawFunc    = (Number, Number, Number, Number, RGB, Number, String) => Unit
-    # type RegTurtleStampFunc = (Number, Number, Number, Number, RGB, String) => Unit
+    # type RegTurtleStampFunc = (Number, Number, Number, Number, RGB, String, String) => Unit
 
     _breed:            undefined # Breed
     _breedShape:       undefined # String
@@ -392,7 +392,7 @@ module.exports =
 
     # () => Unit
     stamp: ->
-      @_registerTurtleStamp(@xcor, @ycor, @_size, @_heading, ColorModel.colorToRGB(@_color), @_getShape())
+      @_registerTurtleStamp(@xcor, @ycor, @_size, @_heading, ColorModel.colorToRGB(@_color), @_getShape(), "normal")
       return
 
     # (Any) => Comparator
