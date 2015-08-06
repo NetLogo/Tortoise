@@ -7,7 +7,7 @@ import
 
 import
   org.nlogo.{ core, tortoise },
-    core.{ AgentKind, AgentVariables, Model, Program, ShapeList, ShapeParser },
+    core.{ AgentKind, AgentVariables, Model, Program, ShapeList },
     tortoise.json.JsonSerializer
 
 import
