@@ -3,6 +3,7 @@
 _                 = require('lodash')
 AbstractAgentSet  = require('./abstractagentset')
 ColorModel        = require('engine/core/colormodel')
+makePenLines      = require('./makepenlines')
 Nobody            = require('./nobody')
 TurtleLinkManager = require('./turtlelinkmanager')
 TurtleSet         = require('./turtleset')
@@ -18,7 +19,7 @@ module.exports =
   class Turtle
 
     # type GenTurtleFunc      = (Number, Number, Number, Number, Breed, String, Number, Boolean, Number, String, PenManager) => Turtle
-    # type RegLineDrawFunc    = (Number, Number, Number, Number, RGB, Number, String) => Unit
+    # type RegLineDrawFunc    = (Number, Number, Number, Number, Boolean, Boolean, RGB, Number, String, String) => Unit
     # type RegTurtleStampFunc = (Number, Number, Number, Number, RGB, String, String) => Unit
 
     _breed:            undefined # Breed
@@ -111,7 +112,6 @@ module.exports =
       @xcor       = @world.topology.wrapX(newX)
       @ycor       = @world.topology.wrapY(newY)
       @_updateVarsByName("xcor", "ycor")
-      @_drawLine(oldX, oldY, newX, newY)
 
       if originPatch isnt @getPatchHere()
         originPatch.untrackTurtle(this)
@@ -249,6 +249,7 @@ module.exports =
 
     # (Number) => Unit
     _jump: (distance) ->
+      @_drawJumpLine(@xcor, @ycor, distance)
       @_setXandY(@xcor + distance * @dx(), @ycor + distance * @dy())
       return
 
@@ -272,6 +273,7 @@ module.exports =
       origYcor = @ycor
       try
         @_setXandY(x, y, tiedCaller)
+        @_drawLine(origXcor, origYcor, x, y)
       catch error
         @_setXandY(origXcor, origYcor, tiedCaller)
         if error instanceof TopologyInterrupt
@@ -417,7 +419,21 @@ module.exports =
     _drawLine: (oldX, oldY, newX, newY) ->
       penMode = @penManager.getMode()
       if (penMode is Down or penMode is Erase) and (oldX isnt newX or oldY isnt newY)
-         @_registerLineDraw(oldX, oldY, newX, newY, ColorModel.colorToRGB(@_color), @penManager.getSize(), @penManager.getMode().toString())
+        wrappedX = @world.topology.wrapX(newX)
+        wrappedY = @world.topology.wrapY(newY)
+        @_registerLineDraw(oldX, oldY, wrappedX, wrappedY, ColorModel.colorToRGB(@_color), @penManager.getSize(), @penManager.getMode().toString())
+      return
+
+    # (Number, Number, Number) => Unit
+    _drawJumpLine: (x, y, dist) ->
+      penMode = @penManager.getMode()
+      if (penMode is Down or penMode is Erase)
+        color = ColorModel.colorToRGB(@_color)
+        size  = @penManager.getSize()
+        mode  = @penManager.getMode().toString()
+        { minPxcor, maxPxcor, minPycor, maxPycor } = @world.topology
+        lines = makePenLines(x, y, @_normalizeHeading(@_heading), dist, minPxcor - 0.5, maxPxcor + 0.5, minPycor - 0.5, maxPycor + 0.5)
+        _(lines).forEach(({ x1, y1, x2, y2 }) => @_registerLineDraw(x1, y1, x2, y2, color, size, mode); return).value()
       return
 
     # Unfortunately, we can't just throw out `_breedShape` and grab the shape from our

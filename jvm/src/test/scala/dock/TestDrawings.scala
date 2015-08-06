@@ -8,6 +8,7 @@ class TestDrawings extends DockingSuite {
     testCommand("crt 1")
     testCommand("ask turtles [ pd fd 1 ]")
     testCommand("ask turtles [ fd 5 right 2 fd 2 fd 3 left 10 fd 5 fd 2 ]")
+    testCommand("ask turtles [ set heading 30 jump 50 ]")
   }
   test("turtle stamps") { implicit fixture => import fixture._
     testCommand("crt 1 [ stamp fd 1 stamp ]")
