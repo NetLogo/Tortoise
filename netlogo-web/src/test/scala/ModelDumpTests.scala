@@ -25,7 +25,7 @@ import
 class ModelDumpTests extends FunSuite {
 
   val compilationFunction: Array[AnyRef] => (JMap[String, AnyRef], JList[AnyRef]) = {
-    val engineSource   = resourceText("/tortoise.js")
+    val engineSource   = resourceText("/tortoise-compiler.js")
     val rhinoEngine    = (new Rhino).engine
     rhinoEngine.eval(engineSource)
     rhinoEngine.function("function(s) { return (new BrowserCompiler()).fromNlogo(s); }") andThen {
