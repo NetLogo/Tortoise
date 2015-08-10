@@ -1,5 +1,4 @@
 var AgentModel = tortoise_require('agentmodel');
-var Call = tortoise_require('util/call');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
@@ -82,13 +81,13 @@ var world = workspace.world;
 var procedures = (function() {
   var setupEmpty = function() {
     world.clearAll();
-    Call(procedures.initializeVariables);
+    procedures.initializeVariables();
     world.ticker.reset();
   };
   var setupFull = function() {
     world.clearAll();
-    Call(procedures.initializeVariables);
-    world.patches().ask(function() { Call(procedures.createTurtle); }, true);
+    procedures.initializeVariables();
+    world.patches().ask(function() { procedures.createTurtle(); }, true);
     world.ticker.reset();
   };
   var initializeVariables = function() {
@@ -118,13 +117,24 @@ var procedures = (function() {
   };
   var createTurtle = function() {
     SelfPrims.sprout(1, "TURTLES").ask(function() {
-      SelfPrims.setVariable("color", Call(procedures.randomColor));
+      SelfPrims.setVariable("color", procedures.randomColor());
       SelfPrims.setVariable("cooperate-with-same?", Prims.lt(Prims.randomFloat(1), world.observer.getGlobal("immigrant-chance-cooperate-with-same")));
       SelfPrims.setVariable("cooperate-with-different?", Prims.lt(Prims.randomFloat(1), world.observer.getGlobal("immigrant-chance-cooperate-with-different")));
-      Call(procedures.updateShape);
+      procedures.updateShape();
     }, true);
   };
-  var randomColor = function() { return ListPrims.oneOf([15, 105, 45, 55]); };
+  var randomColor = function() {
+    try {
+      throw new Exception.ReportInterrupt(ListPrims.oneOf([15, 105, 45, 55]));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
+  };
   var clearStats = function() {
     world.observer.setGlobal("meetown", 0);
     world.observer.setGlobal("meet", 0);
@@ -134,19 +144,19 @@ var procedures = (function() {
     world.observer.setGlobal("coopother", 0);
   };
   var go = function() {
-    Call(procedures.clearStats);
-    Call(procedures.immigrate);
+    procedures.clearStats();
+    procedures.immigrate();
     world.turtles().ask(function() { SelfPrims.setVariable("ptr", world.observer.getGlobal("initial-ptr")); }, true);
-    world.turtles().ask(function() { Call(procedures.interact); }, true);
-    world.turtles().ask(function() { Call(procedures.reproduce); }, true);
-    Call(procedures.death);
-    Call(procedures.updateStats);
+    world.turtles().ask(function() { procedures.interact(); }, true);
+    world.turtles().ask(function() { procedures.reproduce(); }, true);
+    procedures.death();
+    procedures.updateStats();
     world.ticker.tick();
   };
   var immigrate = function() {
     var emptyPatches = world.patches().agentFilter(function() { return !SelfManager.self().turtlesHere().nonEmpty(); });
     var howMany = ListPrims.min(ListPrims.list(world.observer.getGlobal("immigrants-per-day"), emptyPatches.size()));
-    ListPrims.nOf(howMany, emptyPatches).ask(function() { Call(procedures.createTurtle); }, true);
+    ListPrims.nOf(howMany, emptyPatches).ask(function() { procedures.createTurtle(); }, true);
   };
   var interact = function() {
     Prims.turtlesOn(SelfPrims.getNeighbors4()).ask(function() {
@@ -188,7 +198,7 @@ var procedures = (function() {
       if (!Prims.equality(destination, Nobody)) {
         SelfPrims.hatch(1, "").ask(function() {
           SelfManager.self().moveTo(destination);
-          Call(procedures.mutate);
+          procedures.mutate();
         }, true);
       }
     }
@@ -197,7 +207,7 @@ var procedures = (function() {
     if (Prims.lt(Prims.randomFloat(1), world.observer.getGlobal("mutation-rate"))) {
       var oldColor = SelfPrims.getVariable("color");
       while (Prims.equality(SelfPrims.getVariable("color"), oldColor)) {
-        SelfPrims.setVariable("color", Call(procedures.randomColor));
+        SelfPrims.setVariable("color", procedures.randomColor());
       }
     }
     if (Prims.lt(Prims.randomFloat(1), world.observer.getGlobal("mutation-rate"))) {
@@ -206,7 +216,7 @@ var procedures = (function() {
     if (Prims.lt(Prims.randomFloat(1), world.observer.getGlobal("mutation-rate"))) {
       SelfPrims.setVariable("cooperate-with-different?", !SelfPrims.getVariable("cooperate-with-different?"));
     }
-    Call(procedures.updateShape);
+    procedures.updateShape();
   };
   var death = function() {
     world.turtles().ask(function() {
@@ -234,93 +244,309 @@ var procedures = (function() {
     }
   };
   var updateStats = function() {
-    world.observer.setGlobal("last100dd", Call(procedures.shorten, ListPrims.lput(world.turtles().agentFilter(function() { return Prims.equality(SelfPrims.getVariable("shape"), "square 2"); }).size(), world.observer.getGlobal("last100dd"))));
-    world.observer.setGlobal("last100cc", Call(procedures.shorten, ListPrims.lput(world.turtles().agentFilter(function() { return Prims.equality(SelfPrims.getVariable("shape"), "circle"); }).size(), world.observer.getGlobal("last100cc"))));
-    world.observer.setGlobal("last100cd", Call(procedures.shorten, ListPrims.lput(world.turtles().agentFilter(function() { return Prims.equality(SelfPrims.getVariable("shape"), "circle 2"); }).size(), world.observer.getGlobal("last100cd"))));
-    world.observer.setGlobal("last100dc", Call(procedures.shorten, ListPrims.lput(world.turtles().agentFilter(function() { return Prims.equality(SelfPrims.getVariable("shape"), "square"); }).size(), world.observer.getGlobal("last100dc"))));
-    world.observer.setGlobal("last100coopown", Call(procedures.shorten, ListPrims.lput(world.observer.getGlobal("coopown"), world.observer.getGlobal("last100coopown"))));
-    world.observer.setGlobal("last100defother", Call(procedures.shorten, ListPrims.lput(world.observer.getGlobal("defother"), world.observer.getGlobal("last100defother"))));
-    world.observer.setGlobal("last100meetown", Call(procedures.shorten, ListPrims.lput(world.observer.getGlobal("meetown"), world.observer.getGlobal("last100meetown"))));
-    world.observer.setGlobal("last100coop", Call(procedures.shorten, ListPrims.lput((world.observer.getGlobal("coopown") + world.observer.getGlobal("coopother")), world.observer.getGlobal("last100coop"))));
-    world.observer.setGlobal("last100meet", Call(procedures.shorten, ListPrims.lput(world.observer.getGlobal("meet"), world.observer.getGlobal("last100meet"))));
-    world.observer.setGlobal("last100meetother", Call(procedures.shorten, ListPrims.lput(world.observer.getGlobal("meetother"), world.observer.getGlobal("last100meetother"))));
+    world.observer.setGlobal("last100dd", procedures.shorten(ListPrims.lput(world.turtles().agentFilter(function() { return Prims.equality(SelfPrims.getVariable("shape"), "square 2"); }).size(), world.observer.getGlobal("last100dd"))));
+    world.observer.setGlobal("last100cc", procedures.shorten(ListPrims.lput(world.turtles().agentFilter(function() { return Prims.equality(SelfPrims.getVariable("shape"), "circle"); }).size(), world.observer.getGlobal("last100cc"))));
+    world.observer.setGlobal("last100cd", procedures.shorten(ListPrims.lput(world.turtles().agentFilter(function() { return Prims.equality(SelfPrims.getVariable("shape"), "circle 2"); }).size(), world.observer.getGlobal("last100cd"))));
+    world.observer.setGlobal("last100dc", procedures.shorten(ListPrims.lput(world.turtles().agentFilter(function() { return Prims.equality(SelfPrims.getVariable("shape"), "square"); }).size(), world.observer.getGlobal("last100dc"))));
+    world.observer.setGlobal("last100coopown", procedures.shorten(ListPrims.lput(world.observer.getGlobal("coopown"), world.observer.getGlobal("last100coopown"))));
+    world.observer.setGlobal("last100defother", procedures.shorten(ListPrims.lput(world.observer.getGlobal("defother"), world.observer.getGlobal("last100defother"))));
+    world.observer.setGlobal("last100meetown", procedures.shorten(ListPrims.lput(world.observer.getGlobal("meetown"), world.observer.getGlobal("last100meetown"))));
+    world.observer.setGlobal("last100coop", procedures.shorten(ListPrims.lput((world.observer.getGlobal("coopown") + world.observer.getGlobal("coopother")), world.observer.getGlobal("last100coop"))));
+    world.observer.setGlobal("last100meet", procedures.shorten(ListPrims.lput(world.observer.getGlobal("meet"), world.observer.getGlobal("last100meet"))));
+    world.observer.setGlobal("last100meetother", procedures.shorten(ListPrims.lput(world.observer.getGlobal("meetother"), world.observer.getGlobal("last100meetother"))));
   };
   var shorten = function(theList) {
-    if (Prims.gt(ListPrims.length(theList), 100)) {
-      return ListPrims.butFirst(theList);
-    }
-    else {
-      return theList;
+    try {
+      if (Prims.gt(ListPrims.length(theList), 100)) {
+        throw new Exception.ReportInterrupt(ListPrims.butFirst(theList));
+      }
+      else {
+        throw new Exception.ReportInterrupt(theList);
+      }
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
     }
   };
   var meetownPercent = function() {
-    return (world.observer.getGlobal("meetown") / ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet"))));
+    try {
+      throw new Exception.ReportInterrupt((world.observer.getGlobal("meetown") / ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet")))));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
   };
   var meetownAggPercent = function() {
-    return (world.observer.getGlobal("meetown-agg") / ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet-agg"))));
+    try {
+      throw new Exception.ReportInterrupt((world.observer.getGlobal("meetown-agg") / ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet-agg")))));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
   };
   var coopownPercent = function() {
-    return (world.observer.getGlobal("coopown") / ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meetown"))));
+    try {
+      throw new Exception.ReportInterrupt((world.observer.getGlobal("coopown") / ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meetown")))));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
   };
   var coopownAggPercent = function() {
-    return (world.observer.getGlobal("coopown-agg") / ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meetown-agg"))));
+    try {
+      throw new Exception.ReportInterrupt((world.observer.getGlobal("coopown-agg") / ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meetown-agg")))));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
   };
   var defotherPercent = function() {
-    return (world.observer.getGlobal("defother") / ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meetother"))));
+    try {
+      throw new Exception.ReportInterrupt((world.observer.getGlobal("defother") / ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meetother")))));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
   };
   var defotherAggPercent = function() {
-    return (world.observer.getGlobal("defother-agg") / ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meetother-agg"))));
+    try {
+      throw new Exception.ReportInterrupt((world.observer.getGlobal("defother-agg") / ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meetother-agg")))));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
   };
   var consistEthnoPercent = function() {
-    return ((world.observer.getGlobal("defother") + world.observer.getGlobal("coopown")) / ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet"))));
+    try {
+      throw new Exception.ReportInterrupt(((world.observer.getGlobal("defother") + world.observer.getGlobal("coopown")) / ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet")))));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
   };
   var consistEthnoAggPercent = function() {
-    return ((world.observer.getGlobal("defother-agg") + world.observer.getGlobal("coopown-agg")) / ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet-agg"))));
+    try {
+      throw new Exception.ReportInterrupt(((world.observer.getGlobal("defother-agg") + world.observer.getGlobal("coopown-agg")) / ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet-agg")))));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
   };
   var coopPercent = function() {
-    return ((world.observer.getGlobal("coopown") + world.observer.getGlobal("coopother")) / ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet"))));
+    try {
+      throw new Exception.ReportInterrupt(((world.observer.getGlobal("coopown") + world.observer.getGlobal("coopother")) / ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet")))));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
   };
   var coopAggPercent = function() {
-    return ((world.observer.getGlobal("coopown-agg") + world.observer.getGlobal("coopother-agg")) / ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet-agg"))));
+    try {
+      throw new Exception.ReportInterrupt(((world.observer.getGlobal("coopown-agg") + world.observer.getGlobal("coopother-agg")) / ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet-agg")))));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
   };
   var ccCount = function() {
-    return (ListPrims.sum(world.observer.getGlobal("last100cc")) / ListPrims.max(ListPrims.list(1, ListPrims.length(world.observer.getGlobal("last100cc")))));
+    try {
+      throw new Exception.ReportInterrupt((ListPrims.sum(world.observer.getGlobal("last100cc")) / ListPrims.max(ListPrims.list(1, ListPrims.length(world.observer.getGlobal("last100cc"))))));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
   };
   var cdCount = function() {
-    return (ListPrims.sum(world.observer.getGlobal("last100cd")) / ListPrims.max(ListPrims.list(1, ListPrims.length(world.observer.getGlobal("last100cd")))));
+    try {
+      throw new Exception.ReportInterrupt((ListPrims.sum(world.observer.getGlobal("last100cd")) / ListPrims.max(ListPrims.list(1, ListPrims.length(world.observer.getGlobal("last100cd"))))));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
   };
   var dcCount = function() {
-    return (ListPrims.sum(world.observer.getGlobal("last100dc")) / ListPrims.max(ListPrims.list(1, ListPrims.length(world.observer.getGlobal("last100dc")))));
+    try {
+      throw new Exception.ReportInterrupt((ListPrims.sum(world.observer.getGlobal("last100dc")) / ListPrims.max(ListPrims.list(1, ListPrims.length(world.observer.getGlobal("last100dc"))))));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
   };
   var ddCount = function() {
-    return (ListPrims.sum(world.observer.getGlobal("last100dd")) / ListPrims.max(ListPrims.list(1, ListPrims.length(world.observer.getGlobal("last100dd")))));
+    try {
+      throw new Exception.ReportInterrupt((ListPrims.sum(world.observer.getGlobal("last100dd")) / ListPrims.max(ListPrims.list(1, ListPrims.length(world.observer.getGlobal("last100dd"))))));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
   };
   var ccPercent = function() {
-    return (Call(procedures.ccCount) / ListPrims.max(ListPrims.list(1, (((Call(procedures.ccCount) + Call(procedures.cdCount)) + Call(procedures.dcCount)) + Call(procedures.ddCount)))));
+    try {
+      throw new Exception.ReportInterrupt((procedures.ccCount() / ListPrims.max(ListPrims.list(1, (((procedures.ccCount() + procedures.cdCount()) + procedures.dcCount()) + procedures.ddCount())))));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
   };
   var cdPercent = function() {
-    return (Call(procedures.cdCount) / ListPrims.max(ListPrims.list(1, (((Call(procedures.ccCount) + Call(procedures.cdCount)) + Call(procedures.dcCount)) + Call(procedures.ddCount)))));
+    try {
+      throw new Exception.ReportInterrupt((procedures.cdCount() / ListPrims.max(ListPrims.list(1, (((procedures.ccCount() + procedures.cdCount()) + procedures.dcCount()) + procedures.ddCount())))));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
   };
   var dcPercent = function() {
-    return (Call(procedures.dcCount) / ListPrims.max(ListPrims.list(1, (((Call(procedures.ccCount) + Call(procedures.cdCount)) + Call(procedures.dcCount)) + Call(procedures.ddCount)))));
+    try {
+      throw new Exception.ReportInterrupt((procedures.dcCount() / ListPrims.max(ListPrims.list(1, (((procedures.ccCount() + procedures.cdCount()) + procedures.dcCount()) + procedures.ddCount())))));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
   };
   var ddPercent = function() {
-    return (Call(procedures.ddCount) / ListPrims.max(ListPrims.list(1, (((Call(procedures.ccCount) + Call(procedures.cdCount)) + Call(procedures.dcCount)) + Call(procedures.ddCount)))));
+    try {
+      throw new Exception.ReportInterrupt((procedures.ddCount() / ListPrims.max(ListPrims.list(1, (((procedures.ccCount() + procedures.cdCount()) + procedures.dcCount()) + procedures.ddCount())))));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
   };
   var last100coopownPercent = function() {
-    return (ListPrims.sum(world.observer.getGlobal("last100coopown")) / ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meetown")))));
+    try {
+      throw new Exception.ReportInterrupt((ListPrims.sum(world.observer.getGlobal("last100coopown")) / ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meetown"))))));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
   };
   var last100defotherPercent = function() {
-    return (ListPrims.sum(world.observer.getGlobal("last100defother")) / ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meetother")))));
+    try {
+      throw new Exception.ReportInterrupt((ListPrims.sum(world.observer.getGlobal("last100defother")) / ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meetother"))))));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
   };
   var last100consistEthnoPercent = function() {
-    return ((ListPrims.sum(world.observer.getGlobal("last100defother")) + ListPrims.sum(world.observer.getGlobal("last100coopown"))) / ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meet")))));
+    try {
+      throw new Exception.ReportInterrupt(((ListPrims.sum(world.observer.getGlobal("last100defother")) + ListPrims.sum(world.observer.getGlobal("last100coopown"))) / ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meet"))))));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
   };
   var last100meetownPercent = function() {
-    return (ListPrims.sum(world.observer.getGlobal("last100meetown")) / ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meet")))));
+    try {
+      throw new Exception.ReportInterrupt((ListPrims.sum(world.observer.getGlobal("last100meetown")) / ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meet"))))));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
   };
   var last100coopPercent = function() {
-    return (ListPrims.sum(world.observer.getGlobal("last100coop")) / ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meet")))));
+    try {
+      throw new Exception.ReportInterrupt((ListPrims.sum(world.observer.getGlobal("last100coop")) / ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meet"))))));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
   };
   return {
     "CC-COUNT":ccCount,

@@ -1,5 +1,4 @@
 var AgentModel = tortoise_require('agentmodel');
-var Call = tortoise_require('util/call');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
@@ -49,9 +48,9 @@ var procedures = (function() {
   var benchmark = function() {
     Random.setSeed(5454);
     workspace.timer.reset();
-    Call(procedures.setup);
+    procedures.setup();
     for (var _index_105_111 = 0, _repeatcount_105_111 = StrictMath.floor(20); _index_105_111 < _repeatcount_105_111; _index_105_111++){
-      Call(procedures.go);
+      procedures.go();
     }
     world.observer.setGlobal("result", workspace.timer.elapsed());
   };
@@ -64,7 +63,7 @@ var procedures = (function() {
     }, true);
   };
   var go = function() {
-    world.patches().ask(function() { Call(procedures.findNewState); }, true);
+    world.patches().ask(function() { procedures.findNewState(); }, true);
     world.patches().ask(function() {
       SelfPrims.setPatchVariable("state", SelfPrims.getPatchVariable("new-state"));
       SelfPrims.setPatchVariable("pcolor", ColorModel.scaleColor(15, SelfPrims.getPatchVariable("state"), 0, world.observer.getGlobal("n")));

@@ -1,5 +1,4 @@
 var AgentModel = tortoise_require('agentmodel');
-var Call = tortoise_require('util/call');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
@@ -133,13 +132,21 @@ var procedures = (function() {
     world.ticker.reset();
   };
   var go = function() {
-    if (Prims.equality(ListPrims.variance(world.patches().projectionBy(function() { return SelfPrims.getPatchVariable("pcolor"); })), 0)) {
-      throw new Exception.StopInterrupt;
+    try {
+      if (Prims.equality(ListPrims.variance(world.patches().projectionBy(function() { return SelfPrims.getPatchVariable("pcolor"); })), 0)) {
+        throw new Exception.StopInterrupt;
+      }
+      world.patches().ask(function() {
+        SelfPrims.setPatchVariable("pcolor", ListPrims.oneOf(SelfPrims.getNeighbors()).projectionBy(function() { return SelfPrims.getPatchVariable("pcolor"); }));
+      }, true);
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    world.patches().ask(function() {
-      SelfPrims.setPatchVariable("pcolor", ListPrims.oneOf(SelfPrims.getNeighbors()).projectionBy(function() { return SelfPrims.getPatchVariable("pcolor"); }));
-    }, true);
-    world.ticker.tick();
   };
   return {
     "GO":go,

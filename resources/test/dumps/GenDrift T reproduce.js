@@ -1,5 +1,4 @@
 var AgentModel = tortoise_require('agentmodel');
-var Call = tortoise_require('util/call');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
@@ -138,17 +137,25 @@ var procedures = (function() {
     world.ticker.reset();
   };
   var go = function() {
-    if (Prims.equality(ListPrims.variance(world.turtles().projectionBy(function() { return SelfPrims.getVariable("color"); })), 0)) {
-      throw new Exception.StopInterrupt;
+    try {
+      if (Prims.equality(ListPrims.variance(world.turtles().projectionBy(function() { return SelfPrims.getVariable("color"); })), 0)) {
+        throw new Exception.StopInterrupt;
+      }
+      world.turtles().ask(function() {
+        SelfPrims.right(Prims.random(50));
+        SelfPrims.left(Prims.random(50));
+        SelfPrims.fd(1);
+      }, true);
+      procedures.birth();
+      procedures.death();
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    world.turtles().ask(function() {
-      SelfPrims.right(Prims.random(50));
-      SelfPrims.left(Prims.random(50));
-      SelfPrims.fd(1);
-    }, true);
-    Call(procedures.birth);
-    Call(procedures.death);
-    world.ticker.tick();
   };
   var birth = function() {
     world.turtles().ask(function() { SelfPrims.hatch(Prims.random(5), "").ask(function() { SelfPrims.fd(1); }, true); }, true);

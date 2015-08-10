@@ -1,5 +1,4 @@
 var AgentModel = tortoise_require('agentmodel');
-var Call = tortoise_require('util/call');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
@@ -49,8 +48,8 @@ var procedures = (function() {
   var setup = function() {
     world.clearAll();
     world.observer.setGlobal("max-y-histogram", (world.topology.minPycor + world.observer.getGlobal("height")));
-    Call(procedures.createHistogramWidth);
-    Call(procedures.setupColumnCounters);
+    procedures.createHistogramWidth();
+    procedures.setupColumnCounters();
     world.observer.setGlobal("time-to-stop?", false);
     world.ticker.reset();
   };
@@ -79,18 +78,26 @@ var procedures = (function() {
     }, true);
   };
   var go = function() {
-    if (world.observer.getGlobal("time-to-stop?")) {
-      throw new Exception.StopInterrupt;
+    try {
+      if (world.observer.getGlobal("time-to-stop?")) {
+        throw new Exception.StopInterrupt;
+      }
+      procedures.selectRandomValue();
+      procedures.sendMessengerToItsColumn();
+      if (world.observer.getGlobal("colors?")) {
+        procedures.paint();
+      }
+      else {
+        world.patches().agentFilter(function() { return !Prims.equality(SelfPrims.getPatchVariable("pcolor"), 35); }).ask(function() { SelfPrims.setPatchVariable("pcolor", 45); }, true);
+      }
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    Call(procedures.selectRandomValue);
-    Call(procedures.sendMessengerToItsColumn);
-    if (world.observer.getGlobal("colors?")) {
-      Call(procedures.paint);
-    }
-    else {
-      world.patches().agentFilter(function() { return !Prims.equality(SelfPrims.getPatchVariable("pcolor"), 35); }).ask(function() { SelfPrims.setPatchVariable("pcolor", 45); }, true);
-    }
-    world.ticker.tick();
   };
   var selectRandomValue = function() {
     world.getPatchAt(0, (world.observer.getGlobal("max-y-histogram") + 4)).ask(function() {
@@ -117,7 +124,7 @@ var procedures = (function() {
       SelfPrims.die();
     }, true);
     it.ask(function() {
-      Call(procedures.createFrame);
+      procedures.createFrame();
       SelfPrims.fd(1);
       if (Prims.equality(SelfPrims.getVariable("ycor"), world.observer.getGlobal("max-y-histogram"))) {
         world.observer.setGlobal("time-to-stop?", true);
@@ -147,23 +154,50 @@ var procedures = (function() {
     }, true);
   };
   var _percent_Red = function() {
-    return NLMath.precision(((100 * world.patches().agentFilter(function() { return Prims.equality(SelfPrims.getPatchVariable("pcolor"), 15); }).size()) / world.turtleManager.turtlesOfBreed("FRAMES").size()), 2);
+    try {
+      throw new Exception.ReportInterrupt(NLMath.precision(((100 * world.patches().agentFilter(function() { return Prims.equality(SelfPrims.getPatchVariable("pcolor"), 15); }).size()) / world.turtleManager.turtlesOfBreed("FRAMES").size()), 2));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
   };
   var _percent_Full = function() {
-    return NLMath.precision(((100 * world.turtleManager.turtlesOfBreed("FRAMES").size()) / (world.observer.getGlobal("height") * world.observer.getGlobal("sample-space"))), 2);
+    try {
+      throw new Exception.ReportInterrupt(NLMath.precision(((100 * world.turtleManager.turtlesOfBreed("FRAMES").size()) / (world.observer.getGlobal("height") * world.observer.getGlobal("sample-space"))), 2));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
   };
   var biggestGap = function() {
-    var maxColumn = ListPrims.max(world.turtleManager.turtlesOfBreed("COLUMN-COUNTERS").projectionBy(function() {
-      return SelfPrims.getVariable("my-column-patches").agentFilter(function() {
-        return Prims.lt(SelfPrims.getPatchVariable("pycor"), SelfManager.myself().projectionBy(function() { return SelfPrims.getPatchVariable("pycor"); }));
-      }).size();
-    }));
-    var minColumn = ListPrims.min(world.turtleManager.turtlesOfBreed("COLUMN-COUNTERS").projectionBy(function() {
-      return SelfPrims.getVariable("my-column-patches").agentFilter(function() {
-        return Prims.lt(SelfPrims.getPatchVariable("pycor"), SelfManager.myself().projectionBy(function() { return SelfPrims.getPatchVariable("pycor"); }));
-      }).size();
-    }));
-    return (maxColumn - minColumn);
+    try {
+      var maxColumn = ListPrims.max(world.turtleManager.turtlesOfBreed("COLUMN-COUNTERS").projectionBy(function() {
+        return SelfPrims.getVariable("my-column-patches").agentFilter(function() {
+          return Prims.lt(SelfPrims.getPatchVariable("pycor"), SelfManager.myself().projectionBy(function() { return SelfPrims.getPatchVariable("pycor"); }));
+        }).size();
+      }));
+      var minColumn = ListPrims.min(world.turtleManager.turtlesOfBreed("COLUMN-COUNTERS").projectionBy(function() {
+        return SelfPrims.getVariable("my-column-patches").agentFilter(function() {
+          return Prims.lt(SelfPrims.getPatchVariable("pycor"), SelfManager.myself().projectionBy(function() { return SelfPrims.getPatchVariable("pycor"); }));
+        }).size();
+      }));
+      throw new Exception.ReportInterrupt((maxColumn - minColumn));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
   };
   return {
     "%-FULL":_percent_Full,

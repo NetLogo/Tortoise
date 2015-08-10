@@ -1,5 +1,4 @@
 var AgentModel = tortoise_require('agentmodel');
-var Call = tortoise_require('util/call');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
@@ -64,10 +63,10 @@ var world = workspace.world;
 var procedures = (function() {
   var setup = function() {
     world.clearAll();
-    Call(procedures.setupCows);
+    procedures.setupCows();
     world.patches().ask(function() {
       SelfPrims.setPatchVariable("grass", world.observer.getGlobal("max-grass-height"));
-      Call(procedures.colorGrass);
+      procedures.colorGrass();
     }, true);
     world.ticker.reset();
   };
@@ -88,13 +87,13 @@ var procedures = (function() {
   };
   var go = function() {
     world.turtles().ask(function() {
-      Call(procedures.move);
-      Call(procedures.eat);
-      Call(procedures.reproduce);
+      procedures.move();
+      procedures.eat();
+      procedures.reproduce();
     }, true);
     world.patches().ask(function() {
-      Call(procedures.growGrass);
-      Call(procedures.colorGrass);
+      procedures.growGrass();
+      procedures.colorGrass();
     }, true);
     world.ticker.tick();
   };
@@ -132,11 +131,11 @@ var procedures = (function() {
   };
   var eat = function() {
     if (Prims.equality(SelfPrims.getVariable("breed"), world.turtleManager.turtlesOfBreed("COOPERATIVE-COWS"))) {
-      Call(procedures.eatCooperative);
+      procedures.eatCooperative();
     }
     else {
       if (Prims.equality(SelfPrims.getVariable("breed"), world.turtleManager.turtlesOfBreed("GREEDY-COWS"))) {
-        Call(procedures.eatGreedy);
+        procedures.eatGreedy();
       }
     }
   };

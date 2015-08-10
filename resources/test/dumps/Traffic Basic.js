@@ -1,5 +1,4 @@
 var AgentModel = tortoise_require('agentmodel');
-var Call = tortoise_require('util/call');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
@@ -75,8 +74,8 @@ var world = workspace.world;
 var procedures = (function() {
   var setup = function() {
     world.clearAll();
-    world.patches().ask(function() { Call(procedures.setupRoad); }, true);
-    Call(procedures.setupCars);
+    world.patches().ask(function() { procedures.setupRoad(); }, true);
+    procedures.setupCars();
     world.observer.watch(world.observer.getGlobal("sample-car"));
     world.ticker.reset();
   };
@@ -86,37 +85,45 @@ var procedures = (function() {
     }
   };
   var setupCars = function() {
-    if (Prims.gt(world.observer.getGlobal("number-of-cars"), world.topology.width)) {
-      notImplemented('user-message', undefined)((Dump('') + Dump("There are too many cars for the amount of road.  Please decrease the NUMBER-OF-CARS slider to below ") + Dump((world.topology.width + 1)) + Dump(" and press the SETUP button again.  The setup has stopped.")));
-      throw new Exception.StopInterrupt;
+    try {
+      if (Prims.gt(world.observer.getGlobal("number-of-cars"), world.topology.width)) {
+        notImplemented('user-message', undefined)((Dump('') + Dump("There are too many cars for the amount of road.  Please decrease the NUMBER-OF-CARS slider to below ") + Dump((world.topology.width + 1)) + Dump(" and press the SETUP button again.  The setup has stopped.")));
+        throw new Exception.StopInterrupt;
+      }
+      BreedManager.setDefaultShape(world.turtles().getSpecialName(), "car")
+      world.turtleManager.createTurtles(world.observer.getGlobal("number-of-cars"), "").ask(function() {
+        SelfPrims.setVariable("color", 105);
+        SelfPrims.setVariable("xcor", world.topology.randomXcor());
+        SelfPrims.setVariable("heading", 90);
+        SelfPrims.setVariable("speed", (0.1 + Prims.randomFloat(0.9)));
+        SelfPrims.setVariable("speed-limit", 1);
+        SelfPrims.setVariable("speed-min", 0);
+        procedures.separateCars();
+      }, true);
+      world.observer.setGlobal("sample-car", ListPrims.oneOf(world.turtles()));
+      world.observer.getGlobal("sample-car").ask(function() { SelfPrims.setVariable("color", 15); }, true);
+    } catch (e) {
+      if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    BreedManager.setDefaultShape(world.turtles().getSpecialName(), "car")
-    world.turtleManager.createTurtles(world.observer.getGlobal("number-of-cars"), "").ask(function() {
-      SelfPrims.setVariable("color", 105);
-      SelfPrims.setVariable("xcor", world.topology.randomXcor());
-      SelfPrims.setVariable("heading", 90);
-      SelfPrims.setVariable("speed", (0.1 + Prims.randomFloat(0.9)));
-      SelfPrims.setVariable("speed-limit", 1);
-      SelfPrims.setVariable("speed-min", 0);
-      Call(procedures.separateCars);
-    }, true);
-    world.observer.setGlobal("sample-car", ListPrims.oneOf(world.turtles()));
-    world.observer.getGlobal("sample-car").ask(function() { SelfPrims.setVariable("color", 15); }, true);
   };
   var separateCars = function() {
     if (SelfPrims.other(SelfManager.self().turtlesHere()).nonEmpty()) {
       SelfPrims.fd(1);
-      Call(procedures.separateCars);
+      procedures.separateCars();
     }
   };
   var go = function() {
     world.turtles().ask(function() {
       var carAhead = ListPrims.oneOf(Prims.turtlesOn(SelfManager.self().patchAhead(1)));
       if (!Prims.equality(carAhead, Nobody)) {
-        Call(procedures.slowDownCar, carAhead);
+        procedures.slowDownCar(carAhead);
       }
       else {
-        Call(procedures.speedUpCar);
+        procedures.speedUpCar();
       }
       if (Prims.lt(SelfPrims.getVariable("speed"), SelfPrims.getVariable("speed-min"))) {
         SelfPrims.setVariable("speed", SelfPrims.getVariable("speed-min"));

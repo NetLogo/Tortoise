@@ -1,5 +1,4 @@
 var AgentModel = tortoise_require('agentmodel');
-var Call = tortoise_require('util/call');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
@@ -51,13 +50,13 @@ modelConfig.plots = [(function() {
   new PenBundle.Pen('Pollution', plotOps.makePenOps, false, new PenBundle.State(5.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Moth Colors Over Time', 'Pollution')(function() {
-        plotManager.plotValue((((Call(procedures.upperBound) / 3) * world.observer.getGlobal("darkness")) / 8));;
+        plotManager.plotValue((((procedures.upperBound() / 3) * world.observer.getGlobal("darkness")) / 8));;
       });
     });
   })];
   var setup   = function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('Moth Colors Over Time', undefined)(function() { plotManager.setYRange(0, Call(procedures.upperBound));; });
+      plotManager.withTemporaryContext('Moth Colors Over Time', undefined)(function() { plotManager.setYRange(0, procedures.upperBound());; });
     });
   };
   var update  = function() {};
@@ -78,42 +77,86 @@ var Updater = workspace.updater;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var envColor = function() { return (9 - world.observer.getGlobal("darkness")); };
-  var deltaEnv = function() { return (world.observer.getGlobal("speed") / 100); };
-  var randomColor = function() { return (Prims.random(9) + 1); };
-  var upperBound = function() { return (4 * world.observer.getGlobal("num-moths")); };
+  var envColor = function() {
+    try {
+      throw new Exception.ReportInterrupt((9 - world.observer.getGlobal("darkness")));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
+  };
+  var deltaEnv = function() {
+    try {
+      throw new Exception.ReportInterrupt((world.observer.getGlobal("speed") / 100));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
+  };
+  var randomColor = function() {
+    try {
+      throw new Exception.ReportInterrupt((Prims.random(9) + 1));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
+  };
+  var upperBound = function() {
+    try {
+      throw new Exception.ReportInterrupt((4 * world.observer.getGlobal("num-moths")));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
+  };
   var setup = function() {
     world.clearAll();
-    Call(procedures.setupWorld);
-    Call(procedures.setupMoths);
-    Call(procedures.updateMonitors);
+    procedures.setupWorld();
+    procedures.setupMoths();
+    procedures.updateMonitors();
     world.ticker.reset();
   };
   var setupWorld = function() {
     world.observer.setGlobal("darkness", 0);
     world.observer.setGlobal("darkening?", true);
-    world.patches().ask(function() { SelfPrims.setPatchVariable("pcolor", Call(procedures.envColor)); }, true);
+    world.patches().ask(function() { SelfPrims.setPatchVariable("pcolor", procedures.envColor()); }, true);
   };
   var setupMoths = function() {
     world.turtleManager.createTurtles(world.observer.getGlobal("num-moths"), "MOTHS").ask(function() {
-      SelfPrims.setVariable("color", Call(procedures.randomColor));
-      Call(procedures.mothsPickShape);
+      SelfPrims.setVariable("color", procedures.randomColor());
+      procedures.mothsPickShape();
       SelfPrims.setVariable("age", Prims.random(3));
       SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
     }, true);
   };
   var go = function() {
     world.turtleManager.turtlesOfBreed("MOTHS").ask(function() {
-      Call(procedures.mothsMate);
-      Call(procedures.mothsGrimReaper);
-      Call(procedures.mothsGetEaten);
-      Call(procedures.mothsAge);
+      procedures.mothsMate();
+      procedures.mothsGrimReaper();
+      procedures.mothsGetEaten();
+      procedures.mothsAge();
     }, true);
     if (world.observer.getGlobal("cycle-pollution?")) {
-      Call(procedures.cyclePollution);
+      procedures.cyclePollution();
     }
     world.ticker.tick();
-    Call(procedures.updateMonitors);
+    procedures.updateMonitors();
   };
   var mothsMate = function() {
     if ((Prims.equality(SelfPrims.getVariable("age"), 2) || Prims.equality(SelfPrims.getVariable("age"), 3))) {
@@ -132,7 +175,7 @@ var procedures = (function() {
             }
           }
         }
-        Call(procedures.mothsPickShape);
+        procedures.mothsPickShape();
         SelfPrims.setVariable("age", 0);
         SelfPrims.right(Prims.randomFloat(360));
         SelfPrims.fd(1);
@@ -140,7 +183,7 @@ var procedures = (function() {
     }
   };
   var mothsGetEaten = function() {
-    if (Prims.lt(Prims.randomFloat(1000), ((world.observer.getGlobal("selection") * NLMath.abs((Call(procedures.envColor) - SelfPrims.getVariable("color")))) + 200))) {
+    if (Prims.lt(Prims.randomFloat(1000), ((world.observer.getGlobal("selection") * NLMath.abs((procedures.envColor() - SelfPrims.getVariable("color")))) + 200))) {
       SelfPrims.die();
     }
   };
@@ -148,7 +191,7 @@ var procedures = (function() {
     if (Prims.equality(Prims.random(13), 0)) {
       SelfPrims.die();
     }
-    if (Prims.gt(world.turtleManager.turtlesOfBreed("MOTHS").size(), Call(procedures.upperBound))) {
+    if (Prims.gt(world.turtleManager.turtlesOfBreed("MOTHS").size(), procedures.upperBound())) {
       if (Prims.equality(Prims.random(2), 0)) {
         SelfPrims.die();
       }
@@ -169,18 +212,18 @@ var procedures = (function() {
     world.observer.setGlobal("medium-moths", (world.turtleManager.turtlesOfBreed("MOTHS").size() - (world.observer.getGlobal("light-moths") + world.observer.getGlobal("dark-moths"))));
   };
   var polluteWorld = function() {
-    if (Prims.lte(world.observer.getGlobal("darkness"), (8 - Call(procedures.deltaEnv)))) {
-      world.observer.setGlobal("darkness", (world.observer.getGlobal("darkness") + Call(procedures.deltaEnv)));
-      world.patches().ask(function() { SelfPrims.setPatchVariable("pcolor", Call(procedures.envColor)); }, true);
+    if (Prims.lte(world.observer.getGlobal("darkness"), (8 - procedures.deltaEnv()))) {
+      world.observer.setGlobal("darkness", (world.observer.getGlobal("darkness") + procedures.deltaEnv()));
+      world.patches().ask(function() { SelfPrims.setPatchVariable("pcolor", procedures.envColor()); }, true);
     }
     else {
       world.observer.setGlobal("darkening?", false);
     }
   };
   var cleanUpWorld = function() {
-    if (Prims.gte(world.observer.getGlobal("darkness"), (0 + Call(procedures.deltaEnv)))) {
-      world.observer.setGlobal("darkness", (world.observer.getGlobal("darkness") - Call(procedures.deltaEnv)));
-      world.patches().ask(function() { SelfPrims.setPatchVariable("pcolor", Call(procedures.envColor)); }, true);
+    if (Prims.gte(world.observer.getGlobal("darkness"), (0 + procedures.deltaEnv()))) {
+      world.observer.setGlobal("darkness", (world.observer.getGlobal("darkness") - procedures.deltaEnv()));
+      world.patches().ask(function() { SelfPrims.setPatchVariable("pcolor", procedures.envColor()); }, true);
     }
     else {
       world.observer.setGlobal("darkening?", true);
@@ -188,10 +231,10 @@ var procedures = (function() {
   };
   var cyclePollution = function() {
     if (Prims.equality(world.observer.getGlobal("darkening?"), true)) {
-      Call(procedures.polluteWorld);
+      procedures.polluteWorld();
     }
     else {
-      Call(procedures.cleanUpWorld);
+      procedures.cleanUpWorld();
     }
   };
   return {

@@ -1,5 +1,4 @@
 var AgentModel = tortoise_require('agentmodel');
-var Call = tortoise_require('util/call');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
@@ -48,15 +47,15 @@ var world = workspace.world;
 var procedures = (function() {
   var setup = function() {
     world.clearAll();
-    Call(procedures.setupField);
-    Call(procedures.setupBalls);
+    procedures.setupField();
+    procedures.setupBalls();
     world.observer.setGlobal("current-max", 0);
     world.observer.setGlobal("best-dist", -1);
     world.observer.setGlobal("kicks", 0);
     world.observer.getGlobal("try-line").ask(function() { SelfPrims.setPatchVariable("score", 0); }, true);
-    Call(procedures.findAnalyticSolution);
+    procedures.findAnalyticSolution();
     if (world.observer.getGlobal("show-level-curves?")) {
-      Call(procedures.drawLevelCurves);
+      procedures.drawLevelCurves();
     }
     world.ticker.reset();
   };
@@ -86,22 +85,22 @@ var procedures = (function() {
         SelfPrims.setVariable("heading", (Prims.randomFloat(90) + 90));
       }, true);
     }, true);
-    Call(procedures.plotScores);
+    procedures.plotScores();
   };
   var go = function() {
     while (world.turtles().nonEmpty()) {
-      world.turtles().ask(function() { Call(procedures.move); }, true);
+      world.turtles().ask(function() { procedures.move(); }, true);
       notImplemented('display', undefined)();
     }
     world.observer.setGlobal("kicks", (world.observer.getGlobal("kicks") + world.observer.getGlobal("try-line").size()));
     world.observer.setGlobal("goals", ListPrims.sum(world.observer.getGlobal("try-line").projectionBy(function() { return SelfPrims.getPatchVariable("score"); })));
-    Call(procedures.setupBalls);
+    procedures.setupBalls();
     world.ticker.tick();
   };
   var move = function() {
     if ((Prims.gte(SelfPrims.getPatchVariable("pxcor"), (world.topology.maxPxcor - 1)) || Prims.gte(SelfPrims.getPatchVariable("pycor"), (world.topology.minPycor + 1)))) {
-      Call(procedures.checkPatch, Call(procedures.nextPatch));
-      Call(procedures.checkPatch, SelfManager.self().patchAhead(1));
+      procedures.checkPatch(procedures.nextPatch());
+      procedures.checkPatch(SelfManager.self().patchAhead(1));
     }
     SelfPrims.fd(1);
   };
@@ -115,53 +114,70 @@ var procedures = (function() {
     }
   };
   var nextPatch = function() {
-    if (Prims.lt(SelfPrims.getVariable("heading"), SelfManager.self().towardsXY((SelfPrims.getPatchVariable("pxcor") + 0.5), (SelfPrims.getPatchVariable("pycor") + 0.5)))) {
-      return SelfManager.self().patchAt(0, 1);
+    try {
+      if (Prims.lt(SelfPrims.getVariable("heading"), SelfManager.self().towardsXY((SelfPrims.getPatchVariable("pxcor") + 0.5), (SelfPrims.getPatchVariable("pycor") + 0.5)))) {
+        throw new Exception.ReportInterrupt(SelfManager.self().patchAt(0, 1));
+      }
+      if (Prims.lt(SelfPrims.getVariable("heading"), SelfManager.self().towardsXY((SelfPrims.getPatchVariable("pxcor") + 0.5), (SelfPrims.getPatchVariable("pycor") - 0.5)))) {
+        throw new Exception.ReportInterrupt(SelfManager.self().patchAt(1, 0));
+      }
+      if (Prims.lt(SelfPrims.getVariable("heading"), SelfManager.self().towardsXY((SelfPrims.getPatchVariable("pxcor") - 0.5), (SelfPrims.getPatchVariable("pycor") - 0.5)))) {
+        throw new Exception.ReportInterrupt(SelfManager.self().patchAt(0, -1));
+      }
+      if (Prims.lt(SelfPrims.getVariable("heading"), SelfManager.self().towardsXY((SelfPrims.getPatchVariable("pxcor") - 0.5), (SelfPrims.getPatchVariable("pycor") + 0.5)))) {
+        throw new Exception.ReportInterrupt(SelfManager.self().patchAt(-1, 0));
+      }
+      throw new Exception.ReportInterrupt(SelfManager.self().patchAt(0, 1));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
     }
-    if (Prims.lt(SelfPrims.getVariable("heading"), SelfManager.self().towardsXY((SelfPrims.getPatchVariable("pxcor") + 0.5), (SelfPrims.getPatchVariable("pycor") - 0.5)))) {
-      return SelfManager.self().patchAt(1, 0);
-    }
-    if (Prims.lt(SelfPrims.getVariable("heading"), SelfManager.self().towardsXY((SelfPrims.getPatchVariable("pxcor") - 0.5), (SelfPrims.getPatchVariable("pycor") - 0.5)))) {
-      return SelfManager.self().patchAt(0, -1);
-    }
-    if (Prims.lt(SelfPrims.getVariable("heading"), SelfManager.self().towardsXY((SelfPrims.getPatchVariable("pxcor") - 0.5), (SelfPrims.getPatchVariable("pycor") + 0.5)))) {
-      return SelfManager.self().patchAt(-1, 0);
-    }
-    return SelfManager.self().patchAt(0, 1);
   };
   var plotScores = function() {
-    world.observer.setGlobal("current-max", ListPrims.max(world.observer.getGlobal("try-line").projectionBy(function() { return SelfPrims.getPatchVariable("score"); })));
-    if (Prims.equality(world.observer.getGlobal("current-max"), 0)) {
-      world.observer.getGlobal("histogram-area").ask(function() { SelfPrims.setPatchVariable("pcolor", 0); }, true);
-      throw new Exception.StopInterrupt;
-    }
-    world.observer.getGlobal("try-line").ask(function() {
-      if (Prims.equality(SelfPrims.getPatchVariable("score"), world.observer.getGlobal("current-max"))) {
-        world.observer.setGlobal("best-dist", SelfPrims.getPatchVariable("pycor"));
-        SelfManager.self().patchAt(2, 0).ask(function() { SelfPrims.setPatchVariable("plabel", SelfPrims.getPatchVariable("pycor")); }, true);
+    try {
+      world.observer.setGlobal("current-max", ListPrims.max(world.observer.getGlobal("try-line").projectionBy(function() { return SelfPrims.getPatchVariable("score"); })));
+      if (Prims.equality(world.observer.getGlobal("current-max"), 0)) {
+        world.observer.getGlobal("histogram-area").ask(function() { SelfPrims.setPatchVariable("pcolor", 0); }, true);
+        throw new Exception.StopInterrupt;
       }
-      else {
-        if (!Prims.equality(SelfPrims.getPatchVariable("pcolor"), 125)) {
-          SelfManager.self().patchAt(2, 0).ask(function() { SelfPrims.setPatchVariable("plabel", ""); }, true);
-        }
-      }
-    }, true);
-    world.observer.getGlobal("histogram-area").ask(function() {
-      if (Prims.gt(SelfPrims.getPatchVariable("pxcor"), (world.observer.getGlobal("kick-line") - ((SelfManager.self().patchAt((world.observer.getGlobal("kick-line") - SelfPrims.getPatchVariable("pxcor")), 0).projectionBy(function() { return SelfPrims.getPatchVariable("score"); }) * (world.observer.getGlobal("kick-line") - world.topology.minPxcor)) / world.observer.getGlobal("current-max"))))) {
-        if (Prims.equality(SelfManager.self().patchAt((world.observer.getGlobal("kick-line") - SelfPrims.getPatchVariable("pxcor")), 0).projectionBy(function() { return SelfPrims.getPatchVariable("score"); }), world.observer.getGlobal("current-max"))) {
-          SelfPrims.setPatchVariable("pcolor", 45);
+      world.observer.getGlobal("try-line").ask(function() {
+        if (Prims.equality(SelfPrims.getPatchVariable("score"), world.observer.getGlobal("current-max"))) {
+          world.observer.setGlobal("best-dist", SelfPrims.getPatchVariable("pycor"));
+          SelfManager.self().patchAt(2, 0).ask(function() { SelfPrims.setPatchVariable("plabel", SelfPrims.getPatchVariable("pycor")); }, true);
         }
         else {
-          SelfPrims.setPatchVariable("pcolor", 105);
+          if (!Prims.equality(SelfPrims.getPatchVariable("pcolor"), 125)) {
+            SelfManager.self().patchAt(2, 0).ask(function() { SelfPrims.setPatchVariable("plabel", ""); }, true);
+          }
         }
+      }, true);
+      world.observer.getGlobal("histogram-area").ask(function() {
+        if (Prims.gt(SelfPrims.getPatchVariable("pxcor"), (world.observer.getGlobal("kick-line") - ((SelfManager.self().patchAt((world.observer.getGlobal("kick-line") - SelfPrims.getPatchVariable("pxcor")), 0).projectionBy(function() { return SelfPrims.getPatchVariable("score"); }) * (world.observer.getGlobal("kick-line") - world.topology.minPxcor)) / world.observer.getGlobal("current-max"))))) {
+          if (Prims.equality(SelfManager.self().patchAt((world.observer.getGlobal("kick-line") - SelfPrims.getPatchVariable("pxcor")), 0).projectionBy(function() { return SelfPrims.getPatchVariable("score"); }), world.observer.getGlobal("current-max"))) {
+            SelfPrims.setPatchVariable("pcolor", 45);
+          }
+          else {
+            SelfPrims.setPatchVariable("pcolor", 105);
+          }
+        }
+        else {
+          SelfPrims.setPatchVariable("pcolor", 0);
+        }
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      else {
-        SelfPrims.setPatchVariable("pcolor", 0);
-      }
-    }, true);
+    }
   };
   var findAnalyticSolution = function() {
-    world.patches().agentFilter(function() { return Prims.gt(SelfPrims.getPatchVariable("pycor"), world.topology.minPycor); }).ask(function() { Call(procedures.calcGoalAngle); }, true);
+    world.patches().agentFilter(function() { return Prims.gt(SelfPrims.getPatchVariable("pycor"), world.topology.minPycor); }).ask(function() { procedures.calcGoalAngle(); }, true);
     var winningPatch = world.observer.getGlobal("try-line").minOneOf(function() { return SelfPrims.getPatchVariable("goal-angle"); });
     winningPatch.ask(function() {
       SelfPrims.setPatchVariable("pcolor", 125);

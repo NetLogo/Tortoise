@@ -1,5 +1,4 @@
 var AgentModel = tortoise_require('agentmodel');
-var Call = tortoise_require('util/call');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
@@ -35,7 +34,7 @@ modelConfig.plots = [(function() {
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('ave-heat', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('Average Heat', 'ave-heat')(function() { plotManager.plotValue(Call(procedures.averageHeat));; });
+      plotManager.withTemporaryContext('Average Heat', 'ave-heat')(function() { plotManager.plotValue(procedures.averageHeat());; });
     });
   })];
   var setup   = function() {};
@@ -74,7 +73,16 @@ var procedures = (function() {
     world.ticker.tick();
   };
   var averageHeat = function() {
-    return ListPrims.mean(world.patches().projectionBy(function() { return SelfPrims.getPatchVariable("heat"); }));
+    try {
+      throw new Exception.ReportInterrupt(ListPrims.mean(world.patches().projectionBy(function() { return SelfPrims.getPatchVariable("heat"); })));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
   };
   return {
     "AVERAGE-HEAT":averageHeat,

@@ -1,5 +1,4 @@
 var AgentModel = tortoise_require('agentmodel');
-var Call = tortoise_require('util/call');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
@@ -61,7 +60,7 @@ var procedures = (function() {
       var taskArguments = arguments;
       taskArguments[0].ask(function() {
         SelfPrims.fd(1);
-        Call(procedures.turn);
+        procedures.turn();
       }, true);
     }), ListPrims.sort(world.turtles()));
     world.ticker.tick();
@@ -70,7 +69,7 @@ var procedures = (function() {
     Tasks.forEach(Tasks.commandTask(function() {
       var taskArguments = arguments;
       taskArguments[0].ask(function() {
-        Call(procedures.turn);
+        procedures.turn();
         SelfPrims.bk(1);
       }, true);
     }), ListPrims.reverse(ListPrims.sort(world.turtles())));

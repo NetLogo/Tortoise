@@ -1,5 +1,4 @@
 var AgentModel = tortoise_require('agentmodel');
-var Call = tortoise_require('util/call');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
@@ -36,18 +35,26 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Point), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Degree Distribution (log-log)', 'default')(function() {
-        if (!world.observer.getGlobal("plot?")) {
-          throw new Exception.StopInterrupt;
-        }
-        var maxDegree = ListPrims.max(world.turtles().projectionBy(function() { return LinkPrims.linkNeighbors("LINKS").size(); }));
-        plotManager.resetPen();
-        var degree = 1;
-        while (Prims.lte(degree, maxDegree)) {
-          var matches = world.turtles().agentFilter(function() { return Prims.equality(LinkPrims.linkNeighbors("LINKS").size(), degree); });
-          if (matches.nonEmpty()) {
-            plotManager.plotPoint(NLMath.log(degree, 10), NLMath.log(matches.size(), 10));
+        try {
+          if (!world.observer.getGlobal("plot?")) {
+            throw new Exception.StopInterrupt;
           }
-          degree = (degree + 1);
+          var maxDegree = ListPrims.max(world.turtles().projectionBy(function() { return LinkPrims.linkNeighbors("LINKS").size(); }));
+          plotManager.resetPen();
+          var degree = 1;
+          while (Prims.lte(degree, maxDegree)) {
+            var matches = world.turtles().agentFilter(function() { return Prims.equality(LinkPrims.linkNeighbors("LINKS").size(), degree); });
+            if (matches.nonEmpty()) {
+              plotManager.plotPoint(NLMath.log(degree, 10), NLMath.log(matches.size(), 10));
+            }
+            degree = (degree + 1);
+          }
+        } catch (e) {
+          if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
         };
       });
     });
@@ -61,13 +68,21 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Bar), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Degree Distribution', 'default')(function() {
-        if (!world.observer.getGlobal("plot?")) {
-          throw new Exception.StopInterrupt;
-        }
-        var maxDegree = ListPrims.max(world.turtles().projectionBy(function() { return LinkPrims.linkNeighbors("LINKS").size(); }));
-        plotManager.resetPen();
-        plotManager.setXRange(1, (maxDegree + 1));
-        plotManager.drawHistogramFrom(world.turtles().projectionBy(function() { return LinkPrims.linkNeighbors("LINKS").size(); }));;
+        try {
+          if (!world.observer.getGlobal("plot?")) {
+            throw new Exception.StopInterrupt;
+          }
+          var maxDegree = ListPrims.max(world.turtles().projectionBy(function() { return LinkPrims.linkNeighbors("LINKS").size(); }));
+          plotManager.resetPen();
+          plotManager.setXRange(1, (maxDegree + 1));
+          plotManager.drawHistogramFrom(world.turtles().projectionBy(function() { return LinkPrims.linkNeighbors("LINKS").size(); }));
+        } catch (e) {
+          if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   })];
@@ -93,16 +108,16 @@ var procedures = (function() {
   var setup = function() {
     world.clearAll();
     BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
-    Call(procedures.makeNode, Nobody);
-    Call(procedures.makeNode, world.turtleManager.getTurtle(0));
+    procedures.makeNode(Nobody);
+    procedures.makeNode(world.turtleManager.getTurtle(0));
     world.ticker.reset();
   };
   var go = function() {
     world.links().ask(function() { SelfPrims.setVariable("color", 5); }, true);
-    Call(procedures.makeNode, Call(procedures.findPartner));
+    procedures.makeNode(procedures.findPartner());
     world.ticker.tick();
     if (world.observer.getGlobal("layout?")) {
-      Call(procedures.layout);
+      procedures.layout();
     }
   };
   var makeNode = function(oldNode) {
@@ -116,7 +131,16 @@ var procedures = (function() {
     }, true);
   };
   var findPartner = function() {
-    return ListPrims.oneOf(world.links()).projectionBy(function() { return ListPrims.oneOf(SelfManager.self().bothEnds()); });
+    try {
+      throw new Exception.ReportInterrupt(ListPrims.oneOf(world.links()).projectionBy(function() { return ListPrims.oneOf(SelfManager.self().bothEnds()); }));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
   };
   var resizeNodes = function() {
     if (world.turtles().agentAll(function() { return Prims.lte(SelfPrims.getVariable("size"), 1); })) {
@@ -134,20 +158,29 @@ var procedures = (function() {
     }
     var xOffset = (ListPrims.max(world.turtles().projectionBy(function() { return SelfPrims.getVariable("xcor"); })) + ListPrims.min(world.turtles().projectionBy(function() { return SelfPrims.getVariable("xcor"); })));
     var yOffset = (ListPrims.max(world.turtles().projectionBy(function() { return SelfPrims.getVariable("ycor"); })) + ListPrims.min(world.turtles().projectionBy(function() { return SelfPrims.getVariable("ycor"); })));
-    xOffset = Call(procedures.limitMagnitude, xOffset, 0.1);
-    yOffset = Call(procedures.limitMagnitude, yOffset, 0.1);
+    xOffset = procedures.limitMagnitude(xOffset,0.1);
+    yOffset = procedures.limitMagnitude(yOffset,0.1);
     world.turtles().ask(function() {
       SelfPrims.setXY((SelfPrims.getVariable("xcor") - (xOffset / 2)), (SelfPrims.getVariable("ycor") - (yOffset / 2)));
     }, true);
   };
   var limitMagnitude = function(number, limit) {
-    if (Prims.gt(number, limit)) {
-      return limit;
+    try {
+      if (Prims.gt(number, limit)) {
+        throw new Exception.ReportInterrupt(limit);
+      }
+      if (Prims.lt(number,  -limit)) {
+        throw new Exception.ReportInterrupt( -limit);
+      }
+      throw new Exception.ReportInterrupt(number);
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
     }
-    if (Prims.lt(number,  -limit)) {
-      return  -limit;
-    }
-    return number;
   };
   return {
     "FIND-PARTNER":findPartner,

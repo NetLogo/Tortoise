@@ -1,5 +1,4 @@
 var AgentModel = tortoise_require('agentmodel');
-var Call = tortoise_require('util/call');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
@@ -132,26 +131,34 @@ var procedures = (function() {
     world.turtleManager.createTurtles(world.observer.getGlobal("number"), "").ask(function() {
       SelfPrims.setVariable("color", ListPrims.item(Prims.random(world.observer.getGlobal("colors")), [5, 15, 25, 35, 45, 55, 65, 85, 95, 125]));
       SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
-      Call(procedures.moveOffWall);
+      procedures.moveOffWall();
     }, true);
     world.ticker.reset();
   };
   var go = function() {
-    if (Prims.equality(ListPrims.variance(world.turtles().projectionBy(function() { return SelfPrims.getVariable("color"); })), 0)) {
-      throw new Exception.StopInterrupt;
+    try {
+      if (Prims.equality(ListPrims.variance(world.turtles().projectionBy(function() { return SelfPrims.getVariable("color"); })), 0)) {
+        throw new Exception.StopInterrupt;
+      }
+      world.turtles().ask(function() {
+        SelfPrims.right((Prims.random(50) - Prims.random(50)));
+        procedures.meet();
+        if (Prims.equality(SelfManager.self().patchAhead(0.5).projectionBy(function() { return SelfPrims.getPatchVariable("pcolor"); }), 0)) {
+          SelfPrims.fd(0.5);
+        }
+        else {
+          SelfPrims.right(Prims.random(360));
+        }
+      }, true);
+      procedures.findTopSpecies();
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    world.turtles().ask(function() {
-      SelfPrims.right((Prims.random(50) - Prims.random(50)));
-      Call(procedures.meet);
-      if (Prims.equality(SelfManager.self().patchAhead(0.5).projectionBy(function() { return SelfPrims.getPatchVariable("pcolor"); }), 0)) {
-        SelfPrims.fd(0.5);
-      }
-      else {
-        SelfPrims.right(Prims.random(360));
-      }
-    }, true);
-    Call(procedures.findTopSpecies);
-    world.ticker.tick();
   };
   var meet = function() {
     var candidate = ListPrims.oneOf(SelfManager.self().turtlesAt(1, 0));
@@ -176,7 +183,7 @@ var procedures = (function() {
         return (Prims.equality(NLMath.abs(SelfPrims.getPatchVariable("pycor")), world.topology.maxPycor) || Prims.equality(SelfPrims.getPatchVariable("pycor"), NLMath.round(MousePrims.getY())));
       }).ask(function() {
         SelfPrims.setPatchVariable("pcolor", 9.9);
-        SelfManager.self().turtlesHere().ask(function() { Call(procedures.moveOffWall); }, true);
+        SelfManager.self().turtlesHere().ask(function() { procedures.moveOffWall(); }, true);
       }, true);
       notImplemented('display', undefined)();
     }

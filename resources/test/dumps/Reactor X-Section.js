@@ -1,5 +1,4 @@
 var AgentModel = tortoise_require('agentmodel');
-var Call = tortoise_require('util/call');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
@@ -69,15 +68,15 @@ var procedures = (function() {
   var setup = function() {
     world.clearAll();
     BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
-    Call(procedures.setupGlobals);
+    procedures.setupGlobals();
     world.patches().ask(function() {
       SelfPrims.setPatchVariable("x", NLMath.abs(SelfPrims.getPatchVariable("pxcor")));
       SelfPrims.setPatchVariable("y", NLMath.abs(SelfPrims.getPatchVariable("pycor")));
       SelfPrims.setPatchVariable("rod?", false);
-      Call(procedures.buildReactor);
-      Call(procedures.setupNuclearFuel);
+      procedures.buildReactor();
+      procedures.setupNuclearFuel();
     }, true);
-    Call(procedures.setupControlRods);
+    procedures.setupControlRods();
     world.ticker.reset();
   };
   var setupGlobals = function() {
@@ -139,43 +138,59 @@ var procedures = (function() {
       world.patches().agentFilter(function() { return Prims.equality(SelfPrims.getPatchVariable("pxcor"), rodX); }).ask(function() { SelfPrims.setPatchVariable("rod?", true); }, true);
       rodX = ((rodX + world.observer.getGlobal("rod-spacing")) + 1);
     }
-    world.patches().ask(function() { Call(procedures.buildReactor); }, true);
-    Call(procedures.placeControlRods);
+    world.patches().ask(function() { procedures.buildReactor(); }, true);
+    procedures.placeControlRods();
   };
   var autoReact = function() {
-    if (!world.turtles().nonEmpty()) {
-      throw new Exception.StopInterrupt;
-    }
-    if (Prims.gte(world.observer.getGlobal("power-change"), 0)) {
-      if (Prims.gte((world.observer.getGlobal("power") - world.observer.getGlobal("power-rated")), 0)) {
-        world.observer.setGlobal("rod-length", (world.observer.getGlobal("rod-length") + 50));
+    try {
+      if (!world.turtles().nonEmpty()) {
+        throw new Exception.StopInterrupt;
+      }
+      if (Prims.gte(world.observer.getGlobal("power-change"), 0)) {
+        if (Prims.gte((world.observer.getGlobal("power") - world.observer.getGlobal("power-rated")), 0)) {
+          world.observer.setGlobal("rod-length", (world.observer.getGlobal("rod-length") + 50));
+        }
+      }
+      else {
+        if (Prims.lt((world.observer.getGlobal("power") - world.observer.getGlobal("power-rated")), 0)) {
+          world.observer.setGlobal("rod-length", (world.observer.getGlobal("rod-length") - 10));
+        }
+      }
+      if (Prims.lt(world.observer.getGlobal("rod-length"), 0)) {
+        world.observer.setGlobal("rod-length", 0);
+      }
+      if (Prims.gt(world.observer.getGlobal("rod-length"), world.observer.getGlobal("reactor-size"))) {
+        world.observer.setGlobal("rod-length", world.observer.getGlobal("reactor-size"));
+      }
+      procedures.react();
+    } catch (e) {
+      if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
-    else {
-      if (Prims.lt((world.observer.getGlobal("power") - world.observer.getGlobal("power-rated")), 0)) {
-        world.observer.setGlobal("rod-length", (world.observer.getGlobal("rod-length") - 10));
-      }
-    }
-    if (Prims.lt(world.observer.getGlobal("rod-length"), 0)) {
-      world.observer.setGlobal("rod-length", 0);
-    }
-    if (Prims.gt(world.observer.getGlobal("rod-length"), world.observer.getGlobal("reactor-size"))) {
-      world.observer.setGlobal("rod-length", world.observer.getGlobal("reactor-size"));
-    }
-    Call(procedures.react);
   };
   var manuReact = function() {
-    if (!world.turtles().nonEmpty()) {
-      throw new Exception.StopInterrupt;
+    try {
+      if (!world.turtles().nonEmpty()) {
+        throw new Exception.StopInterrupt;
+      }
+      if (Prims.gt(world.observer.getGlobal("rod-depth"), world.observer.getGlobal("reactor-size"))) {
+        world.observer.setGlobal("rod-depth", world.observer.getGlobal("reactor-size"));
+      }
+      world.observer.setGlobal("rod-length", world.observer.getGlobal("rod-depth"));
+      procedures.react();
+    } catch (e) {
+      if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    if (Prims.gt(world.observer.getGlobal("rod-depth"), world.observer.getGlobal("reactor-size"))) {
-      world.observer.setGlobal("rod-depth", world.observer.getGlobal("reactor-size"));
-    }
-    world.observer.setGlobal("rod-length", world.observer.getGlobal("rod-depth"));
-    Call(procedures.react);
   };
   var react = function() {
-    Call(procedures.placeControlRods);
+    procedures.placeControlRods();
     world.observer.setGlobal("power", 0);
     world.turtles().ask(function() {
       SelfPrims.fd(1);
@@ -183,7 +198,7 @@ var procedures = (function() {
         SelfPrims.die();
       }
       if (Prims.equality(SelfPrims.getPatchVariable("pcolor"), 15)) {
-        Call(procedures.fission);
+        procedures.fission();
       }
     }, true);
     world.observer.setGlobal("average-power", (((((world.observer.getGlobal("power") + world.observer.getGlobal("old-power")) + world.observer.getGlobal("old-power-2")) + world.observer.getGlobal("old-power-3")) + world.observer.getGlobal("old-power-4")) / 5));
@@ -206,7 +221,7 @@ var procedures = (function() {
       }
     }, true);
     if (Prims.equality(whom, Nobody)) {
-      Call(procedures.releaseNeutron);
+      procedures.releaseNeutron();
     }
   };
   var placeControlRods = function() {

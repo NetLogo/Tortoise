@@ -1,5 +1,4 @@
 var AgentModel = tortoise_require('agentmodel');
-var Call = tortoise_require('util/call');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
@@ -53,10 +52,10 @@ var procedures = (function() {
   };
   var benchmark = function() {
     Random.setSeed(4378);
-    Call(procedures.setupRandom);
+    procedures.setupRandom();
     workspace.timer.reset();
     for (var _index_415_421 = 0, _repeatcount_415_421 = StrictMath.floor((10 * world.topology.height)); _index_415_421 < _repeatcount_415_421; _index_415_421++){
-      Call(procedures.go);
+      procedures.go();
     }
     world.observer.setGlobal("result", workspace.timer.elapsed());
   };
@@ -64,12 +63,12 @@ var procedures = (function() {
     world.clearPatches();
     world.turtleManager.clearTurtles();
     world.observer.setGlobal("row", world.topology.maxPycor);
-    Call(procedures.refreshRules);
+    procedures.refreshRules();
     world.observer.setGlobal("gone?", false);
     world.observer.setGlobal("rules-shown?", false);
   };
   var singleCell = function() {
-    Call(procedures.setupGeneral);
+    procedures.setupGeneral();
     world.patches().agentFilter(function() { return Prims.equality(SelfPrims.getPatchVariable("pycor"), world.observer.getGlobal("row")); }).ask(function() {
       SelfPrims.setPatchVariable("on?", false);
       SelfPrims.setPatchVariable("pcolor", world.observer.getGlobal("background"));
@@ -81,47 +80,63 @@ var procedures = (function() {
     world.ticker.reset();
   };
   var setupRandom = function() {
-    Call(procedures.setupGeneral);
+    procedures.setupGeneral();
     world.patches().agentFilter(function() { return Prims.equality(SelfPrims.getPatchVariable("pycor"), world.observer.getGlobal("row")); }).ask(function() {
       SelfPrims.setPatchVariable("on?", Prims.lt(Prims.random(100), world.observer.getGlobal("density")));
-      Call(procedures.colorPatch);
+      procedures.colorPatch();
     }, true);
     world.ticker.reset();
   };
   var setupContinue = function() {
-    var on_pList = [];
-    if (!world.observer.getGlobal("gone?")) {
-      throw new Exception.StopInterrupt;
-    }
-    on_pList = Tasks.map(Tasks.reporterTask(function() {
-      var taskArguments = arguments;
-      return taskArguments[0].projectionBy(function() { return SelfPrims.getPatchVariable("on?"); });
-    }), ListPrims.sort(world.patches().agentFilter(function() { return Prims.equality(SelfPrims.getPatchVariable("pycor"), world.observer.getGlobal("row")); })));
-    Call(procedures.setupGeneral);
-    world.patches().agentFilter(function() { return Prims.equality(SelfPrims.getPatchVariable("pycor"), world.observer.getGlobal("row")); }).ask(function() {
-      SelfPrims.setPatchVariable("on?", ListPrims.item((SelfPrims.getPatchVariable("pxcor") + world.topology.maxPxcor), on_pList));
-      Call(procedures.colorPatch);
-    }, true);
-    world.observer.setGlobal("gone?", true);
-  };
-  var go = function() {
-    if (world.observer.getGlobal("rules-shown?")) {
-      throw new Exception.StopInterrupt;
-    }
-    if (Prims.equality(world.observer.getGlobal("row"), world.topology.minPycor)) {
-      if (world.observer.getGlobal("auto-continue?")) {
-        notImplemented('display', undefined)();
-        Call(procedures.setupContinue);
-      }
-      else {
+    try {
+      var on_pList = [];
+      if (!world.observer.getGlobal("gone?")) {
         throw new Exception.StopInterrupt;
       }
+      on_pList = Tasks.map(Tasks.reporterTask(function() {
+        var taskArguments = arguments;
+        return taskArguments[0].projectionBy(function() { return SelfPrims.getPatchVariable("on?"); });
+      }), ListPrims.sort(world.patches().agentFilter(function() { return Prims.equality(SelfPrims.getPatchVariable("pycor"), world.observer.getGlobal("row")); })));
+      procedures.setupGeneral();
+      world.patches().agentFilter(function() { return Prims.equality(SelfPrims.getPatchVariable("pycor"), world.observer.getGlobal("row")); }).ask(function() {
+        SelfPrims.setPatchVariable("on?", ListPrims.item((SelfPrims.getPatchVariable("pxcor") + world.topology.maxPxcor), on_pList));
+        procedures.colorPatch();
+      }, true);
+      world.observer.setGlobal("gone?", true);
+    } catch (e) {
+      if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    world.patches().agentFilter(function() { return Prims.equality(SelfPrims.getPatchVariable("pycor"), world.observer.getGlobal("row")); }).ask(function() { Call(procedures.doRule); }, true);
-    world.observer.setGlobal("row", (world.observer.getGlobal("row") - 1));
-    world.patches().agentFilter(function() { return Prims.equality(SelfPrims.getPatchVariable("pycor"), world.observer.getGlobal("row")); }).ask(function() { Call(procedures.colorPatch); }, true);
-    world.observer.setGlobal("gone?", true);
-    world.ticker.tick();
+  };
+  var go = function() {
+    try {
+      if (world.observer.getGlobal("rules-shown?")) {
+        throw new Exception.StopInterrupt;
+      }
+      if (Prims.equality(world.observer.getGlobal("row"), world.topology.minPycor)) {
+        if (world.observer.getGlobal("auto-continue?")) {
+          notImplemented('display', undefined)();
+          procedures.setupContinue();
+        }
+        else {
+          throw new Exception.StopInterrupt;
+        }
+      }
+      world.patches().agentFilter(function() { return Prims.equality(SelfPrims.getPatchVariable("pycor"), world.observer.getGlobal("row")); }).ask(function() { procedures.doRule(); }, true);
+      world.observer.setGlobal("row", (world.observer.getGlobal("row") - 1));
+      world.patches().agentFilter(function() { return Prims.equality(SelfPrims.getPatchVariable("pycor"), world.observer.getGlobal("row")); }).ask(function() { procedures.colorPatch(); }, true);
+      world.observer.setGlobal("gone?", true);
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   };
   var doRule = function() {
     var leftOn_p = SelfManager.self().patchAt(-1, 0).projectionBy(function() { return SelfPrims.getPatchVariable("on?"); });
@@ -138,65 +153,83 @@ var procedures = (function() {
     }
   };
   var bindigit = function(number, powerOfTwo) {
-    if (Prims.equality(powerOfTwo, 0)) {
-      return NLMath.mod(NLMath.floor(number), 2);
-    }
-    else {
-      return Call(procedures.bindigit, (NLMath.floor(number) / 2), (powerOfTwo - 1));
+    try {
+      if (Prims.equality(powerOfTwo, 0)) {
+        throw new Exception.ReportInterrupt(NLMath.mod(NLMath.floor(number), 2));
+      }
+      else {
+        throw new Exception.ReportInterrupt(procedures.bindigit((NLMath.floor(number) / 2),(powerOfTwo - 1)));
+      }
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
     }
   };
   var refreshRules = function() {
     if (Prims.equality(world.observer.getGlobal("rule"), world.observer.getGlobal("old-rule"))) {
-      if (!Prims.equality(world.observer.getGlobal("rule"), Call(procedures.calculateRule))) {
-        world.observer.setGlobal("rule", Call(procedures.calculateRule));
+      if (!Prims.equality(world.observer.getGlobal("rule"), procedures.calculateRule())) {
+        world.observer.setGlobal("rule", procedures.calculateRule());
       }
     }
     else {
-      Call(procedures.extrapolateSwitches);
+      procedures.extrapolateSwitches();
     }
     world.observer.setGlobal("old-rule", world.observer.getGlobal("rule"));
   };
   var extrapolateSwitches = function() {
-    world.observer.setGlobal("ooo", Prims.equality(Call(procedures.bindigit, world.observer.getGlobal("rule"), 0), 1));
-    world.observer.setGlobal("ooi", Prims.equality(Call(procedures.bindigit, world.observer.getGlobal("rule"), 1), 1));
-    world.observer.setGlobal("oio", Prims.equality(Call(procedures.bindigit, world.observer.getGlobal("rule"), 2), 1));
-    world.observer.setGlobal("oii", Prims.equality(Call(procedures.bindigit, world.observer.getGlobal("rule"), 3), 1));
-    world.observer.setGlobal("ioo", Prims.equality(Call(procedures.bindigit, world.observer.getGlobal("rule"), 4), 1));
-    world.observer.setGlobal("ioi", Prims.equality(Call(procedures.bindigit, world.observer.getGlobal("rule"), 5), 1));
-    world.observer.setGlobal("iio", Prims.equality(Call(procedures.bindigit, world.observer.getGlobal("rule"), 6), 1));
-    world.observer.setGlobal("iii", Prims.equality(Call(procedures.bindigit, world.observer.getGlobal("rule"), 7), 1));
+    world.observer.setGlobal("ooo", Prims.equality(procedures.bindigit(world.observer.getGlobal("rule"),0), 1));
+    world.observer.setGlobal("ooi", Prims.equality(procedures.bindigit(world.observer.getGlobal("rule"),1), 1));
+    world.observer.setGlobal("oio", Prims.equality(procedures.bindigit(world.observer.getGlobal("rule"),2), 1));
+    world.observer.setGlobal("oii", Prims.equality(procedures.bindigit(world.observer.getGlobal("rule"),3), 1));
+    world.observer.setGlobal("ioo", Prims.equality(procedures.bindigit(world.observer.getGlobal("rule"),4), 1));
+    world.observer.setGlobal("ioi", Prims.equality(procedures.bindigit(world.observer.getGlobal("rule"),5), 1));
+    world.observer.setGlobal("iio", Prims.equality(procedures.bindigit(world.observer.getGlobal("rule"),6), 1));
+    world.observer.setGlobal("iii", Prims.equality(procedures.bindigit(world.observer.getGlobal("rule"),7), 1));
   };
   var calculateRule = function() {
-    var rresult = 0;
-    if (world.observer.getGlobal("ooo")) {
-      rresult = (rresult + 1);
+    try {
+      var rresult = 0;
+      if (world.observer.getGlobal("ooo")) {
+        rresult = (rresult + 1);
+      }
+      if (world.observer.getGlobal("ooi")) {
+        rresult = (rresult + 2);
+      }
+      if (world.observer.getGlobal("oio")) {
+        rresult = (rresult + 4);
+      }
+      if (world.observer.getGlobal("oii")) {
+        rresult = (rresult + 8);
+      }
+      if (world.observer.getGlobal("ioo")) {
+        rresult = (rresult + 16);
+      }
+      if (world.observer.getGlobal("ioi")) {
+        rresult = (rresult + 32);
+      }
+      if (world.observer.getGlobal("iio")) {
+        rresult = (rresult + 64);
+      }
+      if (world.observer.getGlobal("iii")) {
+        rresult = (rresult + 128);
+      }
+      throw new Exception.ReportInterrupt(rresult);
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
     }
-    if (world.observer.getGlobal("ooi")) {
-      rresult = (rresult + 2);
-    }
-    if (world.observer.getGlobal("oio")) {
-      rresult = (rresult + 4);
-    }
-    if (world.observer.getGlobal("oii")) {
-      rresult = (rresult + 8);
-    }
-    if (world.observer.getGlobal("ioo")) {
-      rresult = (rresult + 16);
-    }
-    if (world.observer.getGlobal("ioi")) {
-      rresult = (rresult + 32);
-    }
-    if (world.observer.getGlobal("iio")) {
-      rresult = (rresult + 64);
-    }
-    if (world.observer.getGlobal("iii")) {
-      rresult = (rresult + 128);
-    }
-    return rresult;
   };
   var showRules = function() {
-    Call(procedures.setupGeneral);
-    var rules = Call(procedures.listRules);
+    procedures.setupGeneral();
+    var rules = procedures.listRules();
     world.patches().agentFilter(function() { return Prims.gt(SelfPrims.getPatchVariable("pycor"), (world.topology.maxPycor - 5)); }).ask(function() { SelfPrims.setPatchVariable("pcolor", 5); }, true);
     world.patches().agentFilter(function() {
       return (Prims.equality(SelfPrims.getPatchVariable("pycor"), world.topology.maxPycor) && Prims.equality(NLMath.mod((SelfPrims.getPatchVariable("pxcor") + 1), NLMath.floor((world.topology.width / 8))), 0));
@@ -204,16 +237,16 @@ var procedures = (function() {
       SelfPrims.sprout(1, "TURTLES").ask(function() {
         SelfPrims.setVariable("heading", 270);
         SelfPrims.fd(18);
-        Call(procedures.printBlock, ListPrims.item(0, ListPrims.item(SelfPrims.getVariable("who"), rules)));
+        procedures.printBlock(ListPrims.item(0, ListPrims.item(SelfPrims.getVariable("who"), rules)));
         SelfPrims.fd(2);
-        Call(procedures.printBlock, ListPrims.item(1, ListPrims.item(SelfPrims.getVariable("who"), rules)));
+        procedures.printBlock(ListPrims.item(1, ListPrims.item(SelfPrims.getVariable("who"), rules)));
         SelfPrims.fd(2);
-        Call(procedures.printBlock, ListPrims.item(2, ListPrims.item(SelfPrims.getVariable("who"), rules)));
+        procedures.printBlock(ListPrims.item(2, ListPrims.item(SelfPrims.getVariable("who"), rules)));
         SelfPrims.bk(2);
         SelfPrims.setVariable("heading", 180);
         SelfPrims.fd(2);
         SelfPrims.setVariable("heading", 90);
-        Call(procedures.printBlock, ListPrims.item(3, ListPrims.item(SelfPrims.getVariable("who"), rules)));
+        procedures.printBlock(ListPrims.item(3, ListPrims.item(SelfPrims.getVariable("who"), rules)));
         SelfPrims.die();
       }, true);
     }, true);
@@ -234,16 +267,25 @@ var procedures = (function() {
     }
   };
   var listRules = function() {
-    var rules = [];
-    rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("ooo"), [false, false, false]), rules);
-    rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("ooi"), [false, false, true]), rules);
-    rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("oio"), [false, true, false]), rules);
-    rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("oii"), [false, true, true]), rules);
-    rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("ioo"), [true, false, false]), rules);
-    rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("ioi"), [true, false, true]), rules);
-    rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("iio"), [true, true, false]), rules);
-    rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("iii"), [true, true, true]), rules);
-    return rules;
+    try {
+      var rules = [];
+      rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("ooo"), [false, false, false]), rules);
+      rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("ooi"), [false, false, true]), rules);
+      rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("oio"), [false, true, false]), rules);
+      rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("oii"), [false, true, true]), rules);
+      rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("ioo"), [true, false, false]), rules);
+      rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("ioi"), [true, false, true]), rules);
+      rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("iio"), [true, true, false]), rules);
+      rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("iii"), [true, true, true]), rules);
+      throw new Exception.ReportInterrupt(rules);
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
   };
   return {
     "BENCHMARK":benchmark,

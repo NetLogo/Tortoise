@@ -1,5 +1,4 @@
 var AgentModel = tortoise_require('agentmodel');
-var Call = tortoise_require('util/call');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
@@ -80,21 +79,29 @@ var procedures = (function() {
     world.ticker.reset();
   };
   var go = function() {
-    if (!world.turtles().nonEmpty()) {
-      throw new Exception.StopInterrupt;
+    try {
+      if (!world.turtles().nonEmpty()) {
+        throw new Exception.StopInterrupt;
+      }
+      world.turtles().ask(function() {
+        if (Prims.equality(SelfPrims.getPatchVariable("pcolor"), 15)) {
+          SelfPrims.die();
+        }
+        else {
+          SelfPrims.setPatchVariable("pcolor", 15);
+          world.observer.setGlobal("traps-triggered", (world.observer.getGlobal("traps-triggered") + 1));
+          SelfPrims.hatch(1, "").ask(function() { procedures.move(); }, true);
+          procedures.move();
+        }
+      }, true);
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    world.turtles().ask(function() {
-      if (Prims.equality(SelfPrims.getPatchVariable("pcolor"), 15)) {
-        SelfPrims.die();
-      }
-      else {
-        SelfPrims.setPatchVariable("pcolor", 15);
-        world.observer.setGlobal("traps-triggered", (world.observer.getGlobal("traps-triggered") + 1));
-        SelfPrims.hatch(1, "").ask(function() { Call(procedures.move); }, true);
-        Call(procedures.move);
-      }
-    }, true);
-    world.ticker.tick();
   };
   var move = function() {
     SelfPrims.right(Prims.randomFloat(360));

@@ -1,5 +1,4 @@
 var AgentModel = tortoise_require('agentmodel');
-var Call = tortoise_require('util/call');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
@@ -37,7 +36,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Magnetization', 'average spin')(function() {
         if (Prims.equality(NLMath.mod(world.ticker.tickCount(), world.observer.getGlobal("plotting-interval")), 0)) {
-          plotManager.plotPoint(world.ticker.tickCount(), Call(procedures.magnetization));
+          plotManager.plotPoint(world.ticker.tickCount(), procedures.magnetization());
         };
       });
     });
@@ -80,13 +79,13 @@ var procedures = (function() {
       else {
         SelfPrims.setPatchVariable("spin", initialMagnetization);
       }
-      Call(procedures.recolor);
+      procedures.recolor();
     }, true);
     world.observer.setGlobal("sum-of-spins", ListPrims.sum(world.patches().projectionBy(function() { return SelfPrims.getPatchVariable("spin"); })));
     world.ticker.reset();
   };
   var go = function() {
-    ListPrims.oneOf(world.patches()).ask(function() { Call(procedures.update); }, true);
+    ListPrims.oneOf(world.patches()).ask(function() { procedures.update(); }, true);
     world.ticker.tick();
   };
   var update = function() {
@@ -94,7 +93,7 @@ var procedures = (function() {
     if ((Prims.lte(ediff, 0) || (Prims.gt(world.observer.getGlobal("temperature"), 0) && Prims.lt(Prims.randomFloat(1), NLMath.exp(( -ediff / world.observer.getGlobal("temperature"))))))) {
       SelfPrims.setPatchVariable("spin",  -SelfPrims.getPatchVariable("spin"));
       world.observer.setGlobal("sum-of-spins", (world.observer.getGlobal("sum-of-spins") + (2 * SelfPrims.getPatchVariable("spin"))));
-      Call(procedures.recolor);
+      procedures.recolor();
     }
   };
   var recolor = function() {
@@ -105,7 +104,18 @@ var procedures = (function() {
       SelfPrims.setPatchVariable("pcolor", (105 - 2));
     }
   };
-  var magnetization = function() { return (world.observer.getGlobal("sum-of-spins") / world.patches().size()); };
+  var magnetization = function() {
+    try {
+      throw new Exception.ReportInterrupt((world.observer.getGlobal("sum-of-spins") / world.patches().size()));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
+  };
   return {
     "GO":go,
     "MAGNETIZATION":magnetization,

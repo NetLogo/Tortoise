@@ -1,5 +1,4 @@
 var AgentModel = tortoise_require('agentmodel');
-var Call = tortoise_require('util/call');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
@@ -44,8 +43,16 @@ modelConfig.plots = [(function() {
   var update  = function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Average', undefined)(function() {
-        if (!world.observer.getGlobal("plot?")) {
-          throw new Exception.StopInterrupt;
+        try {
+          if (!world.observer.getGlobal("plot?")) {
+            throw new Exception.StopInterrupt;
+          }
+        } catch (e) {
+          if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
         };
       });
     });
@@ -70,9 +77,9 @@ var procedures = (function() {
   var benchmark = function() {
     Random.setSeed(0);
     workspace.timer.reset();
-    Call(procedures.setup);
+    procedures.setup();
     for (var _index_93_99 = 0, _repeatcount_93_99 = StrictMath.floor(5000); _index_93_99 < _repeatcount_93_99; _index_93_99++){
-      Call(procedures.go);
+      procedures.go();
     }
     world.observer.setGlobal("result", workspace.timer.elapsed());
   };
@@ -80,7 +87,7 @@ var procedures = (function() {
     world.clearAll();
     world.patches().ask(function() {
       SelfPrims.setPatchVariable("n", 2);
-      Call(procedures.colorize);
+      procedures.colorize();
     }, true);
     world.observer.setGlobal("total", (2 * world.patches().size()));
     world.ticker.reset();
@@ -90,18 +97,18 @@ var procedures = (function() {
     activePatches.ask(function() {
       SelfPrims.setPatchVariable("n", (SelfPrims.getPatchVariable("n") + 1));
       world.observer.setGlobal("total", (world.observer.getGlobal("total") + 1));
-      Call(procedures.colorize);
+      procedures.colorize();
     }, true);
     while (activePatches.nonEmpty()) {
       var overloadedPatches = activePatches.agentFilter(function() { return Prims.gt(SelfPrims.getPatchVariable("n"), 3); });
       overloadedPatches.ask(function() {
         SelfPrims.setPatchVariable("n", (SelfPrims.getPatchVariable("n") - 4));
         world.observer.setGlobal("total", (world.observer.getGlobal("total") - 4));
-        Call(procedures.colorize);
+        procedures.colorize();
         SelfPrims.getNeighbors4().ask(function() {
           SelfPrims.setPatchVariable("n", (SelfPrims.getPatchVariable("n") + 1));
           world.observer.setGlobal("total", (world.observer.getGlobal("total") + 1));
-          Call(procedures.colorize);
+          procedures.colorize();
         }, true);
       }, true);
       activePatches = Prims.patchSet(overloadedPatches.projectionBy(function() { return SelfPrims.getNeighbors4(); }));

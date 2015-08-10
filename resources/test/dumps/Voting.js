@@ -1,5 +1,4 @@
 var AgentModel = tortoise_require('agentmodel');
-var Call = tortoise_require('util/call');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
@@ -50,7 +49,7 @@ var procedures = (function() {
     world.clearAll();
     world.patches().ask(function() {
       SelfPrims.setPatchVariable("vote", Prims.random(2));
-      Call(procedures.recolorPatch);
+      procedures.recolorPatch();
     }, true);
     world.ticker.reset();
   };
@@ -86,7 +85,7 @@ var procedures = (function() {
           SelfPrims.setPatchVariable("vote", 0);
         }
       }
-      Call(procedures.recolorPatch);
+      procedures.recolorPatch();
     }, true);
     world.ticker.tick();
   };

@@ -1,5 +1,4 @@
 var AgentModel = tortoise_require('agentmodel');
-var Call = tortoise_require('util/call');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
@@ -59,7 +58,7 @@ var procedures = (function() {
   var go = function() {
     world.turtles().ask(function() {
       if (Prims.gt(SelfPrims.getPatchVariable("chemical"), world.observer.getGlobal("sniff-threshold"))) {
-        Call(procedures.turnTowardChemical);
+        procedures.turnTowardChemical();
       }
       SelfPrims.right(((Prims.randomFloat(world.observer.getGlobal("wiggle-angle")) - Prims.randomFloat(world.observer.getGlobal("wiggle-angle"))) + world.observer.getGlobal("wiggle-bias")));
       SelfPrims.fd(1);

@@ -1,5 +1,4 @@
 var AgentModel = tortoise_require('agentmodel');
-var Call = tortoise_require('util/call');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
@@ -54,13 +53,13 @@ var procedures = (function() {
     world.ticker.reset();
   };
   var setupRandom = function() {
-    Call(procedures.setupBlank);
+    procedures.setupBlank();
     world.patches().ask(function() {
       if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("initial-density"))) {
         SelfPrims.sprout(1, "BABIES").ask(function() {}, true);
       }
     }, true);
-    Call(procedures.go);
+    procedures.go();
     world.ticker.reset();
   };
   var birth = function() { SelfPrims.sprout(1, "BABIES").ask(function() { SelfPrims.setVariable("color", (65 + 1)); }, true); };
@@ -83,7 +82,7 @@ var procedures = (function() {
     }, true);
     world.patches().ask(function() {
       if ((!SelfManager.self().breedHere("CELLS").nonEmpty() && Prims.equality(SelfPrims.getPatchVariable("live-neighbors"), 3))) {
-        Call(procedures.birth);
+        procedures.birth();
       }
       SelfPrims.setPatchVariable("live-neighbors", 0);
     }, true);
@@ -94,10 +93,10 @@ var procedures = (function() {
     while (MousePrims.isDown()) {
       world.getPatchAt(MousePrims.getX(), MousePrims.getY()).ask(function() {
         if (erasing_p) {
-          Call(procedures.erase);
+          procedures.erase();
         }
         else {
-          Call(procedures.draw);
+          procedures.draw();
         }
       }, true);
       notImplemented('display', undefined)();
@@ -107,14 +106,14 @@ var procedures = (function() {
     if (!SelfManager.self().breedHere("CELLS").nonEmpty()) {
       SelfManager.self().turtlesHere().ask(function() { SelfPrims.die(); }, true);
       SelfPrims.sprout(1, "CELLS").ask(function() { SelfPrims.setVariable("color", 9.9); }, true);
-      Call(procedures.update);
-      SelfPrims.getNeighbors().ask(function() { Call(procedures.update); }, true);
+      procedures.update();
+      SelfPrims.getNeighbors().ask(function() { procedures.update(); }, true);
     }
   };
   var erase = function() {
     SelfManager.self().turtlesHere().ask(function() { SelfPrims.die(); }, true);
-    Call(procedures.update);
-    SelfPrims.getNeighbors().ask(function() { Call(procedures.update); }, true);
+    procedures.update();
+    SelfPrims.getNeighbors().ask(function() { procedures.update(); }, true);
   };
   var update = function() {
     SelfManager.self().breedHere("BABIES").ask(function() { SelfPrims.die(); }, true);

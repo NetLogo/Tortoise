@@ -1,5 +1,4 @@
 var AgentModel = tortoise_require('agentmodel');
-var Call = tortoise_require('util/call');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
@@ -77,7 +76,7 @@ var world = workspace.world;
 var procedures = (function() {
   var setup = function() {
     world.clearAll();
-    Call(procedures.growGrassAndWeeds);
+    procedures.growGrassAndWeeds();
     BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("RABBITS").getSpecialName(), "rabbit")
     world.turtleManager.createTurtles(world.observer.getGlobal("number"), "RABBITS").ask(function() {
       SelfPrims.setVariable("color", 9.9);
@@ -87,18 +86,26 @@ var procedures = (function() {
     world.ticker.reset();
   };
   var go = function() {
-    if (!world.turtleManager.turtlesOfBreed("RABBITS").nonEmpty()) {
-      throw new Exception.StopInterrupt;
+    try {
+      if (!world.turtleManager.turtlesOfBreed("RABBITS").nonEmpty()) {
+        throw new Exception.StopInterrupt;
+      }
+      procedures.growGrassAndWeeds();
+      world.turtleManager.turtlesOfBreed("RABBITS").ask(function() {
+        procedures.move();
+        procedures.eatGrass();
+        procedures.eatWeeds();
+        procedures.reproduce();
+        procedures.death();
+      }, true);
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    Call(procedures.growGrassAndWeeds);
-    world.turtleManager.turtlesOfBreed("RABBITS").ask(function() {
-      Call(procedures.move);
-      Call(procedures.eatGrass);
-      Call(procedures.eatWeeds);
-      Call(procedures.reproduce);
-      Call(procedures.death);
-    }, true);
-    world.ticker.tick();
   };
   var growGrassAndWeeds = function() {
     world.patches().ask(function() {

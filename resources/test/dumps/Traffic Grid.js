@@ -1,5 +1,4 @@
 var AgentModel = tortoise_require('agentmodel');
-var Call = tortoise_require('util/call');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
@@ -92,23 +91,31 @@ var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
   var setup = function() {
-    world.clearAll();
-    Call(procedures.setupGlobals);
-    Call(procedures.setupPatches);
-    Call(procedures.makeCurrent, ListPrims.oneOf(world.observer.getGlobal("intersections")));
-    Call(procedures.labelCurrent);
-    BreedManager.setDefaultShape(world.turtles().getSpecialName(), "car")
-    if (Prims.gt(world.observer.getGlobal("num-cars"), world.observer.getGlobal("roads").size())) {
-      notImplemented('user-message', undefined)((Dump('') + Dump("There are too many cars for the amount of ") + Dump("road.  Either increase the amount of roads ") + Dump("by increasing the GRID-SIZE-X or ") + Dump("GRID-SIZE-Y sliders, or decrease the ") + Dump("number of cars by lowering the NUMBER slider.\n") + Dump("The setup has stopped.")));
-      throw new Exception.StopInterrupt;
+    try {
+      world.clearAll();
+      procedures.setupGlobals();
+      procedures.setupPatches();
+      procedures.makeCurrent(ListPrims.oneOf(world.observer.getGlobal("intersections")));
+      procedures.labelCurrent();
+      BreedManager.setDefaultShape(world.turtles().getSpecialName(), "car")
+      if (Prims.gt(world.observer.getGlobal("num-cars"), world.observer.getGlobal("roads").size())) {
+        notImplemented('user-message', undefined)((Dump('') + Dump("There are too many cars for the amount of ") + Dump("road.  Either increase the amount of roads ") + Dump("by increasing the GRID-SIZE-X or ") + Dump("GRID-SIZE-Y sliders, or decrease the ") + Dump("number of cars by lowering the NUMBER slider.\n") + Dump("The setup has stopped.")));
+        throw new Exception.StopInterrupt;
+      }
+      world.turtleManager.createTurtles(world.observer.getGlobal("num-cars"), "").ask(function() {
+        procedures.setupCars();
+        procedures.setCarColor();
+        procedures.recordData();
+      }, true);
+      world.turtles().ask(function() { procedures.setCarSpeed(); }, true);
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    world.turtleManager.createTurtles(world.observer.getGlobal("num-cars"), "").ask(function() {
-      Call(procedures.setupCars);
-      Call(procedures.setCarColor);
-      Call(procedures.recordData);
-    }, true);
-    world.turtles().ask(function() { Call(procedures.setCarSpeed); }, true);
-    world.ticker.reset();
   };
   var setupGlobals = function() {
     world.observer.setGlobal("current-light", Nobody);
@@ -135,7 +142,7 @@ var procedures = (function() {
       return (Prims.equality(NLMath.floor(NLMath.mod(((SelfPrims.getPatchVariable("pxcor") + world.topology.maxPxcor) - NLMath.floor((world.observer.getGlobal("grid-x-inc") - 1))), world.observer.getGlobal("grid-x-inc"))), 0) && Prims.equality(NLMath.floor(NLMath.mod((SelfPrims.getPatchVariable("pycor") + world.topology.maxPycor), world.observer.getGlobal("grid-y-inc"))), 0));
     }));
     world.observer.getGlobal("roads").ask(function() { SelfPrims.setPatchVariable("pcolor", 9.9); }, true);
-    Call(procedures.setupIntersections);
+    procedures.setupIntersections();
   };
   var setupIntersections = function() {
     world.observer.getGlobal("intersections").ask(function() {
@@ -145,13 +152,13 @@ var procedures = (function() {
       SelfPrims.setPatchVariable("auto?", true);
       SelfPrims.setPatchVariable("my-row", NLMath.floor(((SelfPrims.getPatchVariable("pycor") + world.topology.maxPycor) / world.observer.getGlobal("grid-y-inc"))));
       SelfPrims.setPatchVariable("my-column", NLMath.floor(((SelfPrims.getPatchVariable("pxcor") + world.topology.maxPxcor) / world.observer.getGlobal("grid-x-inc"))));
-      Call(procedures.setSignalColors);
+      procedures.setSignalColors();
     }, true);
   };
   var setupCars = function() {
     SelfPrims.setVariable("speed", 0);
     SelfPrims.setVariable("wait-time", 0);
-    Call(procedures.putOnEmptyRoad);
+    procedures.putOnEmptyRoad();
     if (SelfPrims.getPatchVariable("intersection?")) {
       if (Prims.equality(Prims.random(2), 0)) {
         SelfPrims.setVariable("up-car?", true);
@@ -179,28 +186,36 @@ var procedures = (function() {
     SelfManager.self().moveTo(ListPrims.oneOf(world.observer.getGlobal("roads").agentFilter(function() { return !Prims.turtlesOn(SelfManager.self()).nonEmpty(); })));
   };
   var go = function() {
-    Call(procedures.updateCurrent);
-    Call(procedures.setSignals);
+    procedures.updateCurrent();
+    procedures.setSignals();
     world.observer.setGlobal("num-cars-stopped", 0);
     world.turtles().ask(function() {
-      Call(procedures.setCarSpeed);
+      procedures.setCarSpeed();
       SelfPrims.fd(SelfPrims.getVariable("speed"));
-      Call(procedures.recordData);
-      Call(procedures.setCarColor);
+      procedures.recordData();
+      procedures.setCarColor();
     }, true);
-    Call(procedures.nextPhase);
+    procedures.nextPhase();
     world.ticker.tick();
   };
   var chooseCurrent = function() {
-    if (MousePrims.isDown()) {
-      var xMouse = MousePrims.getX();
-      var yMouse = MousePrims.getY();
-      if (world.getPatchAt(xMouse, yMouse).projectionBy(function() { return SelfPrims.getPatchVariable("intersection?"); })) {
-        Call(procedures.updateCurrent);
-        Call(procedures.unlabelCurrent);
-        Call(procedures.makeCurrent, world.getPatchAt(xMouse, yMouse));
-        Call(procedures.labelCurrent);
-        throw new Exception.StopInterrupt;
+    try {
+      if (MousePrims.isDown()) {
+        var xMouse = MousePrims.getX();
+        var yMouse = MousePrims.getY();
+        if (world.getPatchAt(xMouse, yMouse).projectionBy(function() { return SelfPrims.getPatchVariable("intersection?"); })) {
+          procedures.updateCurrent();
+          procedures.unlabelCurrent();
+          procedures.makeCurrent(world.getPatchAt(xMouse, yMouse));
+          procedures.labelCurrent();
+          throw new Exception.StopInterrupt;
+        }
+      }
+    } catch (e) {
+      if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
   };
@@ -233,7 +248,7 @@ var procedures = (function() {
       return (SelfPrims.getPatchVariable("auto?") && Prims.equality(world.observer.getGlobal("phase"), NLMath.floor(((SelfPrims.getPatchVariable("my-phase") * world.observer.getGlobal("ticks-per-cycle")) / 100))));
     }).ask(function() {
       SelfPrims.setPatchVariable("green-light-up?", !SelfPrims.getPatchVariable("green-light-up?"));
-      Call(procedures.setSignalColors);
+      procedures.setSignalColors();
     }, true);
   };
   var setSignalColors = function() {
@@ -258,10 +273,10 @@ var procedures = (function() {
     }
     else {
       if (SelfPrims.getVariable("up-car?")) {
-        Call(procedures.setSpeed, 0, -1);
+        procedures.setSpeed(0,-1);
       }
       else {
-        Call(procedures.setSpeed, 1, 0);
+        procedures.setSpeed(1,0);
       }
     }
   };
@@ -275,11 +290,11 @@ var procedures = (function() {
       }
       else {
         SelfPrims.setVariable("speed", ListPrims.oneOf(turtlesAhead).projectionBy(function() { return SelfPrims.getVariable("speed"); }));
-        Call(procedures.slowDown);
+        procedures.slowDown();
       }
     }
     else {
-      Call(procedures.speedUp);
+      procedures.speedUp();
     }
   };
   var slowDown = function() {
@@ -318,7 +333,7 @@ var procedures = (function() {
   var changeCurrent = function() {
     world.observer.getGlobal("current-light").ask(function() {
       SelfPrims.setPatchVariable("green-light-up?", !SelfPrims.getPatchVariable("green-light-up?"));
-      Call(procedures.setSignalColors);
+      procedures.setSignalColors();
     }, true);
   };
   var nextPhase = function() {

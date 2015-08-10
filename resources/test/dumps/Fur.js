@@ -1,5 +1,4 @@
 var AgentModel = tortoise_require('agentmodel');
-var Call = tortoise_require('util/call');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
@@ -47,19 +46,27 @@ var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
   var setup = function() {
-    world.clearAll();
-    world.patches().ask(function() {
-      SelfPrims.setPatchVariable("inner-neighbors", Call(procedures.ellipseIn, world.observer.getGlobal("inner-radius-x"), world.observer.getGlobal("inner-radius-y")));
-      SelfPrims.setPatchVariable("outer-neighbors", Call(procedures.ellipseRing, world.observer.getGlobal("outer-radius-x"), world.observer.getGlobal("outer-radius-y"), world.observer.getGlobal("inner-radius-x"), world.observer.getGlobal("inner-radius-y")));
-    }, true);
-    if (world.patches().agentFilter(function() { return Prims.equality(SelfPrims.getPatchVariable("outer-neighbors").size(), 0); }).nonEmpty()) {
-      notImplemented('user-message', undefined)((Dump('') + Dump("It doesn't make sense that 'outer' is equal to or smaller than 'inner.' ") + Dump(" Please reset the sliders and press Setup again.")));
-      throw new Exception.StopInterrupt;
+    try {
+      world.clearAll();
+      world.patches().ask(function() {
+        SelfPrims.setPatchVariable("inner-neighbors", procedures.ellipseIn(world.observer.getGlobal("inner-radius-x"),world.observer.getGlobal("inner-radius-y")));
+        SelfPrims.setPatchVariable("outer-neighbors", procedures.ellipseRing(world.observer.getGlobal("outer-radius-x"),world.observer.getGlobal("outer-radius-y"),world.observer.getGlobal("inner-radius-x"),world.observer.getGlobal("inner-radius-y")));
+      }, true);
+      if (world.patches().agentFilter(function() { return Prims.equality(SelfPrims.getPatchVariable("outer-neighbors").size(), 0); }).nonEmpty()) {
+        notImplemented('user-message', undefined)((Dump('') + Dump("It doesn't make sense that 'outer' is equal to or smaller than 'inner.' ") + Dump(" Please reset the sliders and press Setup again.")));
+        throw new Exception.StopInterrupt;
+      }
+      else {
+        procedures.restart();
+      }
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    else {
-      Call(procedures.restart);
-    }
-    world.ticker.reset();
   };
   var restart = function() {
     world.patches().ask(function() {
@@ -73,7 +80,7 @@ var procedures = (function() {
     world.ticker.reset();
   };
   var go = function() {
-    world.patches().ask(function() { Call(procedures.pickNewColor); }, true);
+    world.patches().ask(function() { procedures.pickNewColor(); }, true);
     world.patches().ask(function() { SelfPrims.setPatchVariable("pcolor", SelfPrims.getPatchVariable("new-color")); }, true);
     world.ticker.tick();
   };
@@ -91,20 +98,56 @@ var procedures = (function() {
     }
   };
   var ellipseIn = function(xRadius, yRadius) {
-    return SelfManager.self().inRadius(world.patches(), ListPrims.max(ListPrims.list(xRadius, yRadius))).agentFilter(function() {
-      return Prims.gte(1, ((NLMath.pow(Call(procedures.xdistance, SelfManager.myself()), 2) / NLMath.pow(xRadius, 2)) + (NLMath.pow(Call(procedures.ydistance, SelfManager.myself()), 2) / NLMath.pow(yRadius, 2))));
-    });
+    try {
+      throw new Exception.ReportInterrupt(SelfManager.self().inRadius(world.patches(), ListPrims.max(ListPrims.list(xRadius, yRadius))).agentFilter(function() {
+        return Prims.gte(1, ((NLMath.pow(procedures.xdistance(SelfManager.myself()), 2) / NLMath.pow(xRadius, 2)) + (NLMath.pow(procedures.ydistance(SelfManager.myself()), 2) / NLMath.pow(yRadius, 2))));
+      }));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
   };
   var ellipseRing = function(outxRadius, outyRadius, inxRadius, inyRadius) {
-    return SelfManager.self().inRadius(world.patches(), ListPrims.max(ListPrims.list(outxRadius, outyRadius))).agentFilter(function() {
-      return (Prims.gte(1, ((NLMath.pow(Call(procedures.xdistance, SelfManager.myself()), 2) / NLMath.pow(outxRadius, 2)) + (NLMath.pow(Call(procedures.ydistance, SelfManager.myself()), 2) / NLMath.pow(outyRadius, 2)))) && Prims.lt(1, ((NLMath.pow(Call(procedures.xdistance, SelfManager.myself()), 2) / NLMath.pow(inxRadius, 2)) + (NLMath.pow(Call(procedures.ydistance, SelfManager.myself()), 2) / NLMath.pow(inyRadius, 2)))));
-    });
+    try {
+      throw new Exception.ReportInterrupt(SelfManager.self().inRadius(world.patches(), ListPrims.max(ListPrims.list(outxRadius, outyRadius))).agentFilter(function() {
+        return (Prims.gte(1, ((NLMath.pow(procedures.xdistance(SelfManager.myself()), 2) / NLMath.pow(outxRadius, 2)) + (NLMath.pow(procedures.ydistance(SelfManager.myself()), 2) / NLMath.pow(outyRadius, 2)))) && Prims.lt(1, ((NLMath.pow(procedures.xdistance(SelfManager.myself()), 2) / NLMath.pow(inxRadius, 2)) + (NLMath.pow(procedures.ydistance(SelfManager.myself()), 2) / NLMath.pow(inyRadius, 2)))));
+      }));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
   };
   var xdistance = function(otherPatch) {
-    return SelfManager.self().distanceXY(otherPatch.projectionBy(function() { return SelfPrims.getPatchVariable("pxcor"); }), SelfPrims.getPatchVariable("pycor"));
+    try {
+      throw new Exception.ReportInterrupt(SelfManager.self().distanceXY(otherPatch.projectionBy(function() { return SelfPrims.getPatchVariable("pxcor"); }), SelfPrims.getPatchVariable("pycor")));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
   };
   var ydistance = function(otherPatch) {
-    return SelfManager.self().distanceXY(SelfPrims.getPatchVariable("pxcor"), otherPatch.projectionBy(function() { return SelfPrims.getPatchVariable("pycor"); }));
+    try {
+      throw new Exception.ReportInterrupt(SelfManager.self().distanceXY(SelfPrims.getPatchVariable("pxcor"), otherPatch.projectionBy(function() { return SelfPrims.getPatchVariable("pycor"); })));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
   };
   return {
     "ELLIPSE-IN":ellipseIn,

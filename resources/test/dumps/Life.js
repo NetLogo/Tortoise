@@ -1,5 +1,4 @@
 var AgentModel = tortoise_require('agentmodel');
-var Call = tortoise_require('util/call');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
@@ -48,17 +47,17 @@ var world = workspace.world;
 var procedures = (function() {
   var setupBlank = function() {
     world.clearAll();
-    world.patches().ask(function() { Call(procedures.cellDeath); }, true);
+    world.patches().ask(function() { procedures.cellDeath(); }, true);
     world.ticker.reset();
   };
   var setupRandom = function() {
     world.clearAll();
     world.patches().ask(function() {
       if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("initial-density"))) {
-        Call(procedures.cellBirth);
+        procedures.cellBirth();
       }
       else {
-        Call(procedures.cellDeath);
+        procedures.cellDeath();
       }
     }, true);
     world.ticker.reset();
@@ -77,11 +76,11 @@ var procedures = (function() {
     }, true);
     world.patches().ask(function() {
       if (Prims.equality(SelfPrims.getPatchVariable("live-neighbors"), 3)) {
-        Call(procedures.cellBirth);
+        procedures.cellBirth();
       }
       else {
         if (!Prims.equality(SelfPrims.getPatchVariable("live-neighbors"), 2)) {
-          Call(procedures.cellDeath);
+          procedures.cellDeath();
         }
       }
     }, true);
@@ -92,10 +91,10 @@ var procedures = (function() {
     while (MousePrims.isDown()) {
       world.getPatchAt(MousePrims.getX(), MousePrims.getY()).ask(function() {
         if (erasing_p) {
-          Call(procedures.cellDeath);
+          procedures.cellDeath();
         }
         else {
-          Call(procedures.cellBirth);
+          procedures.cellBirth();
         }
       }, true);
       notImplemented('display', undefined)();

@@ -1,5 +1,4 @@
 var AgentModel = tortoise_require('agentmodel');
-var Call = tortoise_require('util/call');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
@@ -70,13 +69,17 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Energy Histogram', 'avg-energy')(function() {
         plotManager.resetPen();
-        Call(procedures.drawVertLine, world.observer.getGlobal("avg-energy"));;
+        var _maybestop_49_63 = procedures.drawVertLine(world.observer.getGlobal("avg-energy"));
+        if (_maybestop_49_63 instanceof Exception.StopInterrupt) { return _maybestop_49_63; };
       });
     });
   }),
   new PenBundle.Pen('init-avg-energy', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('Energy Histogram', 'init-avg-energy')(function() { Call(procedures.drawVertLine, world.observer.getGlobal("init-avg-energy"));; });
+      plotManager.withTemporaryContext('Energy Histogram', 'init-avg-energy')(function() {
+        var _maybestop_33_47 = procedures.drawVertLine(world.observer.getGlobal("init-avg-energy"));
+        if (_maybestop_33_47 instanceof Exception.StopInterrupt) { return _maybestop_33_47; };
+      });
     });
   }, function() {})];
   var setup   = function() {};
@@ -154,13 +157,17 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Speed Histogram', 'avg-speed')(function() {
         plotManager.resetPen();
-        Call(procedures.drawVertLine, world.observer.getGlobal("avg-speed"));;
+        var _maybestop_50_64 = procedures.drawVertLine(world.observer.getGlobal("avg-speed"));
+        if (_maybestop_50_64 instanceof Exception.StopInterrupt) { return _maybestop_50_64; };
       });
     });
   }),
   new PenBundle.Pen('init-avg-speed', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('Speed Histogram', 'init-avg-speed')(function() { Call(procedures.drawVertLine, world.observer.getGlobal("init-avg-speed"));; });
+      plotManager.withTemporaryContext('Speed Histogram', 'init-avg-speed')(function() {
+        var _maybestop_33_47 = procedures.drawVertLine(world.observer.getGlobal("init-avg-speed"));
+        if (_maybestop_33_47 instanceof Exception.StopInterrupt) { return _maybestop_33_47; };
+      });
     });
   }, function() {})];
   var setup   = function() {};
@@ -193,17 +200,17 @@ var procedures = (function() {
     world.clearAll();
     BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("PARTICLES").getSpecialName(), "circle")
     world.observer.setGlobal("max-tick-delta", 0.1073);
-    Call(procedures.makeParticles);
-    Call(procedures.updateVariables);
+    procedures.makeParticles();
+    procedures.updateVariables();
     world.observer.setGlobal("init-avg-speed", world.observer.getGlobal("avg-speed"));
     world.observer.setGlobal("init-avg-energy", world.observer.getGlobal("avg-energy"));
     world.ticker.reset();
   };
   var go = function() {
-    world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() { Call(procedures.move); }, true);
+    world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() { procedures.move(); }, true);
     world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() {
       if (world.observer.getGlobal("collide?")) {
-        Call(procedures.checkForCollision);
+        procedures.checkForCollision();
       }
     }, true);
     if (world.observer.getGlobal("trace?")) {
@@ -214,10 +221,10 @@ var procedures = (function() {
     }
     world.ticker.tickAdvance(world.observer.getGlobal("tick-delta"));
     if (Prims.gt(NLMath.floor(world.ticker.tickCount()), NLMath.floor((world.ticker.tickCount() - world.observer.getGlobal("tick-delta"))))) {
-      Call(procedures.updateVariables);
+      procedures.updateVariables();
       plotManager.updatePlots();
     }
-    Call(procedures.calculateTickDelta);
+    procedures.calculateTickDelta();
     notImplemented('display', undefined)();
   };
   var updateVariables = function() {
@@ -250,7 +257,7 @@ var procedures = (function() {
         return (Prims.lt(SelfPrims.getVariable("who"), SelfManager.myself().projectionBy(function() { return SelfPrims.getVariable("who"); })) && !Prims.equality(SelfManager.myself(), SelfPrims.getVariable("last-collision")));
       })));
       if ((!Prims.equality(candidate, Nobody) && (Prims.gt(SelfPrims.getVariable("speed"), 0) || Prims.gt(candidate.projectionBy(function() { return SelfPrims.getVariable("speed"); }), 0)))) {
-        Call(procedures.collideWith, candidate);
+        procedures.collideWith(candidate);
         SelfPrims.setVariable("last-collision", candidate);
         candidate.ask(function() { SelfPrims.setVariable("last-collision", SelfManager.myself()); }, true);
       }
@@ -280,8 +287,8 @@ var procedures = (function() {
         SelfPrims.setVariable("heading", (theta - NLMath.atan(v2l, v2t)));
       }
     }, true);
-    Call(procedures.recolor);
-    otherParticle.ask(function() { Call(procedures.recolor); }, true);
+    procedures.recolor();
+    otherParticle.ask(function() { procedures.recolor(); }, true);
   };
   var recolor = function() {
     if (Prims.lt(SelfPrims.getVariable("speed"), (0.5 * 10))) {
@@ -298,11 +305,11 @@ var procedures = (function() {
   };
   var makeParticles = function() {
     world.turtleManager.createTurtles(world.observer.getGlobal("number-of-particles"), "PARTICLES").ask(function() {
-      Call(procedures.setupParticle);
-      Call(procedures.randomPosition);
-      Call(procedures.recolor);
+      procedures.setupParticle();
+      procedures.randomPosition();
+      procedures.recolor();
     }, true);
-    Call(procedures.calculateTickDelta);
+    procedures.calculateTickDelta();
   };
   var setupParticle = function() {
     SelfPrims.setVariable("speed", world.observer.getGlobal("init-particle-speed"));
@@ -314,11 +321,20 @@ var procedures = (function() {
     SelfPrims.setXY(((1 + world.topology.minPxcor) + Prims.randomFloat(((2 * world.topology.maxPxcor) - 2))), ((1 + world.topology.minPycor) + Prims.randomFloat(((2 * world.topology.maxPycor) - 2))));
   };
   var lastN = function(n, theList) {
-    if (Prims.gte(n, ListPrims.length(theList))) {
-      return theList;
-    }
-    else {
-      return Call(procedures.lastN, n, ListPrims.butFirst(theList));
+    try {
+      if (Prims.gte(n, ListPrims.length(theList))) {
+        throw new Exception.ReportInterrupt(theList);
+      }
+      else {
+        throw new Exception.ReportInterrupt(procedures.lastN(n,ListPrims.butFirst(theList)));
+      }
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
     }
   };
   var drawVertLine = function(xval) {

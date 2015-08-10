@@ -1,5 +1,4 @@
 var AgentModel = tortoise_require('agentmodel');
-var Call = tortoise_require('util/call');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
@@ -56,7 +55,7 @@ var procedures = (function() {
     world.ticker.reset();
   };
   var go = function() {
-    world.turtles().ask(function() { Call(procedures.flock); }, true);
+    world.turtles().ask(function() { procedures.flock(); }, true);
     for (var _index_432_438 = 0, _repeatcount_432_438 = StrictMath.floor(5); _index_432_438 < _repeatcount_432_438; _index_432_438++){
       world.turtles().ask(function() { SelfPrims.fd(0.2); }, true);
       notImplemented('display', undefined)();
@@ -64,15 +63,15 @@ var procedures = (function() {
     world.ticker.tick();
   };
   var flock = function() {
-    Call(procedures.findFlockmates);
+    procedures.findFlockmates();
     if (SelfPrims.getVariable("flockmates").nonEmpty()) {
-      Call(procedures.findNearestNeighbor);
+      procedures.findNearestNeighbor();
       if (Prims.lt(SelfManager.self().distance(SelfPrims.getVariable("nearest-neighbor")), world.observer.getGlobal("minimum-separation"))) {
-        Call(procedures.separate);
+        procedures.separate();
       }
       else {
-        Call(procedures.align);
-        Call(procedures.cohere);
+        procedures.align();
+        procedures.cohere();
       }
     }
   };
@@ -83,39 +82,57 @@ var procedures = (function() {
     SelfPrims.setVariable("nearest-neighbor", SelfPrims.getVariable("flockmates").minOneOf(function() { return SelfManager.self().distance(SelfManager.myself()); }));
   };
   var separate = function() {
-    Call(procedures.turnAway, SelfPrims.getVariable("nearest-neighbor").projectionBy(function() { return SelfPrims.getVariable("heading"); }), world.observer.getGlobal("max-separate-turn"));
+    procedures.turnAway(SelfPrims.getVariable("nearest-neighbor").projectionBy(function() { return SelfPrims.getVariable("heading"); }),world.observer.getGlobal("max-separate-turn"));
   };
   var align = function() {
-    Call(procedures.turnTowards, Call(procedures.averageFlockmateHeading), world.observer.getGlobal("max-align-turn"));
+    procedures.turnTowards(procedures.averageFlockmateHeading(),world.observer.getGlobal("max-align-turn"));
   };
   var averageFlockmateHeading = function() {
-    var xComponent = ListPrims.sum(SelfPrims.getVariable("flockmates").projectionBy(function() { return SelfManager.self().dx(); }));
-    var yComponent = ListPrims.sum(SelfPrims.getVariable("flockmates").projectionBy(function() { return SelfManager.self().dy(); }));
-    if ((Prims.equality(xComponent, 0) && Prims.equality(yComponent, 0))) {
-      return SelfPrims.getVariable("heading");
-    }
-    else {
-      return NLMath.atan(xComponent, yComponent);
+    try {
+      var xComponent = ListPrims.sum(SelfPrims.getVariable("flockmates").projectionBy(function() { return SelfManager.self().dx(); }));
+      var yComponent = ListPrims.sum(SelfPrims.getVariable("flockmates").projectionBy(function() { return SelfManager.self().dy(); }));
+      if ((Prims.equality(xComponent, 0) && Prims.equality(yComponent, 0))) {
+        throw new Exception.ReportInterrupt(SelfPrims.getVariable("heading"));
+      }
+      else {
+        throw new Exception.ReportInterrupt(NLMath.atan(xComponent, yComponent));
+      }
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
     }
   };
   var cohere = function() {
-    Call(procedures.turnTowards, Call(procedures.averageHeadingTowardsFlockmates), world.observer.getGlobal("max-cohere-turn"));
+    procedures.turnTowards(procedures.averageHeadingTowardsFlockmates(),world.observer.getGlobal("max-cohere-turn"));
   };
   var averageHeadingTowardsFlockmates = function() {
-    var xComponent = ListPrims.mean(SelfPrims.getVariable("flockmates").projectionBy(function() { return NLMath.sin((SelfManager.self().towards(SelfManager.myself()) + 180)); }));
-    var yComponent = ListPrims.mean(SelfPrims.getVariable("flockmates").projectionBy(function() { return NLMath.cos((SelfManager.self().towards(SelfManager.myself()) + 180)); }));
-    if ((Prims.equality(xComponent, 0) && Prims.equality(yComponent, 0))) {
-      return SelfPrims.getVariable("heading");
-    }
-    else {
-      return NLMath.atan(xComponent, yComponent);
+    try {
+      var xComponent = ListPrims.mean(SelfPrims.getVariable("flockmates").projectionBy(function() { return NLMath.sin((SelfManager.self().towards(SelfManager.myself()) + 180)); }));
+      var yComponent = ListPrims.mean(SelfPrims.getVariable("flockmates").projectionBy(function() { return NLMath.cos((SelfManager.self().towards(SelfManager.myself()) + 180)); }));
+      if ((Prims.equality(xComponent, 0) && Prims.equality(yComponent, 0))) {
+        throw new Exception.ReportInterrupt(SelfPrims.getVariable("heading"));
+      }
+      else {
+        throw new Exception.ReportInterrupt(NLMath.atan(xComponent, yComponent));
+      }
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
     }
   };
   var turnTowards = function(newHeading, maxTurn) {
-    Call(procedures.turnAtMost, NLMath.subtractHeadings(newHeading, SelfPrims.getVariable("heading")), maxTurn);
+    procedures.turnAtMost(NLMath.subtractHeadings(newHeading, SelfPrims.getVariable("heading")),maxTurn);
   };
   var turnAway = function(newHeading, maxTurn) {
-    Call(procedures.turnAtMost, NLMath.subtractHeadings(SelfPrims.getVariable("heading"), newHeading), maxTurn);
+    procedures.turnAtMost(NLMath.subtractHeadings(SelfPrims.getVariable("heading"), newHeading),maxTurn);
   };
   var turnAtMost = function(turn, maxTurn) {
     if (Prims.gt(NLMath.abs(turn), maxTurn)) {

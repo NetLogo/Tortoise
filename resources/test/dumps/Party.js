@@ -1,5 +1,4 @@
 var AgentModel = tortoise_require('agentmodel');
-var Call = tortoise_require('util/call');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
@@ -76,35 +75,43 @@ var world = workspace.world;
 var procedures = (function() {
   var setup = function() {
     world.clearAll();
-    world.observer.setGlobal("group-sites", world.patches().agentFilter(function() { return Call(procedures.groupSite_p); }));
+    world.observer.setGlobal("group-sites", world.patches().agentFilter(function() { return procedures.groupSite_p(); }));
     BreedManager.setDefaultShape(world.turtles().getSpecialName(), "person")
     world.turtleManager.createTurtles(world.observer.getGlobal("number"), "").ask(function() {
-      Call(procedures.chooseSex);
+      procedures.chooseSex();
       SelfPrims.setVariable("size", 3);
       SelfPrims.setVariable("my-group-site", ListPrims.oneOf(world.observer.getGlobal("group-sites")));
       SelfManager.self().moveTo(SelfPrims.getVariable("my-group-site"));
     }, true);
-    world.turtles().ask(function() { Call(procedures.updateHappiness); }, true);
-    Call(procedures.countBoringGroups);
-    Call(procedures.updateLabels);
-    world.turtles().ask(function() { Call(procedures.spreadOutVertically); }, true);
+    world.turtles().ask(function() { procedures.updateHappiness(); }, true);
+    procedures.countBoringGroups();
+    procedures.updateLabels();
+    world.turtles().ask(function() { procedures.spreadOutVertically(); }, true);
     world.ticker.reset();
   };
   var go = function() {
-    if (world.turtles().agentAll(function() { return SelfPrims.getVariable("happy?"); })) {
-      throw new Exception.StopInterrupt;
+    try {
+      if (world.turtles().agentAll(function() { return SelfPrims.getVariable("happy?"); })) {
+        throw new Exception.StopInterrupt;
+      }
+      world.turtles().ask(function() { SelfManager.self().moveTo(SelfPrims.getVariable("my-group-site")); }, true);
+      world.turtles().ask(function() { procedures.updateHappiness(); }, true);
+      world.turtles().ask(function() { procedures.leaveIfUnhappy(); }, true);
+      procedures.findNewGroups();
+      procedures.updateLabels();
+      procedures.countBoringGroups();
+      world.turtles().ask(function() {
+        SelfPrims.setVariable("my-group-site", SelfManager.self().getPatchHere());
+        procedures.spreadOutVertically();
+      }, true);
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    world.turtles().ask(function() { SelfManager.self().moveTo(SelfPrims.getVariable("my-group-site")); }, true);
-    world.turtles().ask(function() { Call(procedures.updateHappiness); }, true);
-    world.turtles().ask(function() { Call(procedures.leaveIfUnhappy); }, true);
-    Call(procedures.findNewGroups);
-    Call(procedures.updateLabels);
-    Call(procedures.countBoringGroups);
-    world.turtles().ask(function() {
-      SelfPrims.setVariable("my-group-site", SelfManager.self().getPatchHere());
-      Call(procedures.spreadOutVertically);
-    }, true);
-    world.ticker.tick();
   };
   var updateHappiness = function() {
     var total = SelfManager.self().turtlesHere().size();
@@ -121,22 +128,39 @@ var procedures = (function() {
     }
   };
   var findNewGroups = function() {
-    notImplemented('display', undefined)();
-    var malcontents = world.turtles().agentFilter(function() {
-      return !ListPrims.member(SelfManager.self().getPatchHere(), world.observer.getGlobal("group-sites"));
-    });
-    if (!malcontents.nonEmpty()) {
-      throw new Exception.StopInterrupt;
+    try {
+      notImplemented('display', undefined)();
+      var malcontents = world.turtles().agentFilter(function() {
+        return !ListPrims.member(SelfManager.self().getPatchHere(), world.observer.getGlobal("group-sites"));
+      });
+      if (!malcontents.nonEmpty()) {
+        throw new Exception.StopInterrupt;
+      }
+      malcontents.ask(function() { SelfPrims.fd(1); }, true);
+      procedures.findNewGroups();
+    } catch (e) {
+      if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    malcontents.ask(function() { SelfPrims.fd(1); }, true);
-    Call(procedures.findNewGroups);
   };
   var groupSite_p = function() {
-    var groupInterval = NLMath.floor((world.topology.width / world.observer.getGlobal("num-groups")));
-    return (((Prims.equality(SelfPrims.getPatchVariable("pycor"), 0) && Prims.lte(SelfPrims.getPatchVariable("pxcor"), 0)) && Prims.equality(NLMath.mod(SelfPrims.getPatchVariable("pxcor"), groupInterval), 0)) && Prims.lt(NLMath.floor(( -SelfPrims.getPatchVariable("pxcor") / groupInterval)), world.observer.getGlobal("num-groups")));
+    try {
+      var groupInterval = NLMath.floor((world.topology.width / world.observer.getGlobal("num-groups")));
+      throw new Exception.ReportInterrupt((((Prims.equality(SelfPrims.getPatchVariable("pycor"), 0) && Prims.lte(SelfPrims.getPatchVariable("pxcor"), 0)) && Prims.equality(NLMath.mod(SelfPrims.getPatchVariable("pxcor"), groupInterval), 0)) && Prims.lt(NLMath.floor(( -SelfPrims.getPatchVariable("pxcor") / groupInterval)), world.observer.getGlobal("num-groups"))));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
   };
   var spreadOutVertically = function() {
-    if (Call(procedures.woman_p)) {
+    if (procedures.woman_p()) {
       SelfPrims.setVariable("heading", 180);
     }
     else {
@@ -156,7 +180,7 @@ var procedures = (function() {
   };
   var countBoringGroups = function() {
     world.observer.getGlobal("group-sites").ask(function() {
-      if (Call(procedures.boring_p)) {
+      if (procedures.boring_p()) {
         SelfPrims.setPatchVariable("plabel-color", 5);
       }
       else {
@@ -166,13 +190,33 @@ var procedures = (function() {
     world.observer.setGlobal("boring-groups", world.observer.getGlobal("group-sites").agentFilter(function() { return Prims.equality(SelfPrims.getPatchVariable("plabel-color"), 5); }).size());
   };
   var boring_p = function() {
-    return Prims.equality(ListPrims.length(ListPrims.removeDuplicates(SelfManager.self().turtlesHere().projectionBy(function() { return SelfPrims.getVariable("color"); }))), 1);
+    try {
+      throw new Exception.ReportInterrupt(Prims.equality(ListPrims.length(ListPrims.removeDuplicates(SelfManager.self().turtlesHere().projectionBy(function() { return SelfPrims.getVariable("color"); }))), 1));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
   };
   var updateLabels = function() {
     world.observer.getGlobal("group-sites").ask(function() { SelfPrims.setPatchVariable("plabel", SelfManager.self().turtlesHere().size()); }, true);
   };
   var chooseSex = function() { SelfPrims.setVariable("color", ListPrims.oneOf([135, 105])); };
-  var woman_p = function() { return Prims.equality(SelfPrims.getVariable("color"), 135); };
+  var woman_p = function() {
+    try {
+      throw new Exception.ReportInterrupt(Prims.equality(SelfPrims.getVariable("color"), 135));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
+  };
   return {
     "BORING?":boring_p,
     "CHOOSE-SEX":chooseSex,

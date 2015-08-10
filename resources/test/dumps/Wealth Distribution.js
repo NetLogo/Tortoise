@@ -1,5 +1,4 @@
 var AgentModel = tortoise_require('agentmodel');
-var Call = tortoise_require('util/call');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
@@ -143,9 +142,9 @@ var procedures = (function() {
   var setup = function() {
     world.clearAll();
     world.observer.setGlobal("max-grain", 50);
-    Call(procedures.setupPatches);
-    Call(procedures.setupTurtles);
-    Call(procedures.updateLorenzAndGini);
+    procedures.setupPatches();
+    procedures.setupTurtles();
+    procedures.updateLorenzAndGini();
     world.ticker.reset();
   };
   var setupPatches = function() {
@@ -166,7 +165,7 @@ var procedures = (function() {
     world.patches().ask(function() {
       SelfPrims.setPatchVariable("grain-here", NLMath.floor(SelfPrims.getPatchVariable("grain-here")));
       SelfPrims.setPatchVariable("max-grain-here", SelfPrims.getPatchVariable("grain-here"));
-      Call(procedures.recolorPatch);
+      procedures.recolorPatch();
     }, true);
   };
   var recolorPatch = function() {
@@ -177,10 +176,10 @@ var procedures = (function() {
     world.turtleManager.createTurtles(world.observer.getGlobal("num-people"), "").ask(function() {
       SelfManager.self().moveTo(ListPrims.oneOf(world.patches()));
       SelfPrims.setVariable("size", 1.5);
-      Call(procedures.setInitialTurtleVars);
+      procedures.setInitialTurtleVars();
       SelfPrims.setVariable("age", Prims.random(SelfPrims.getVariable("life-expectancy")));
     }, true);
-    Call(procedures.recolorTurtles);
+    procedures.recolorTurtles();
   };
   var setInitialTurtleVars = function() {
     SelfPrims.setVariable("age", 0);
@@ -207,45 +206,54 @@ var procedures = (function() {
     }, true);
   };
   var go = function() {
-    world.turtles().ask(function() { Call(procedures.turnTowardsGrain); }, true);
-    Call(procedures.harvest);
-    world.turtles().ask(function() { Call(procedures.moveEatAgeDie); }, true);
-    Call(procedures.recolorTurtles);
+    world.turtles().ask(function() { procedures.turnTowardsGrain(); }, true);
+    procedures.harvest();
+    world.turtles().ask(function() { procedures.moveEatAgeDie(); }, true);
+    procedures.recolorTurtles();
     if (Prims.equality(NLMath.mod(world.ticker.tickCount(), world.observer.getGlobal("grain-growth-interval")), 0)) {
-      world.patches().ask(function() { Call(procedures.growGrain); }, true);
+      world.patches().ask(function() { procedures.growGrain(); }, true);
     }
-    Call(procedures.updateLorenzAndGini);
+    procedures.updateLorenzAndGini();
     world.ticker.tick();
   };
   var turnTowardsGrain = function() {
     SelfPrims.setVariable("heading", 0);
     var bestDirection = 0;
-    var bestAmount = Call(procedures.grainAhead);
+    var bestAmount = procedures.grainAhead();
     SelfPrims.setVariable("heading", 90);
-    if (Prims.gt(Call(procedures.grainAhead), bestAmount)) {
+    if (Prims.gt(procedures.grainAhead(), bestAmount)) {
       bestDirection = 90;
-      bestAmount = Call(procedures.grainAhead);
+      bestAmount = procedures.grainAhead();
     }
     SelfPrims.setVariable("heading", 180);
-    if (Prims.gt(Call(procedures.grainAhead), bestAmount)) {
+    if (Prims.gt(procedures.grainAhead(), bestAmount)) {
       bestDirection = 180;
-      bestAmount = Call(procedures.grainAhead);
+      bestAmount = procedures.grainAhead();
     }
     SelfPrims.setVariable("heading", 270);
-    if (Prims.gt(Call(procedures.grainAhead), bestAmount)) {
+    if (Prims.gt(procedures.grainAhead(), bestAmount)) {
       bestDirection = 270;
-      bestAmount = Call(procedures.grainAhead);
+      bestAmount = procedures.grainAhead();
     }
     SelfPrims.setVariable("heading", bestDirection);
   };
   var grainAhead = function() {
-    var total = 0;
-    var howFar = 1;
-    for (var _index_3994_4000 = 0, _repeatcount_3994_4000 = StrictMath.floor(SelfPrims.getVariable("vision")); _index_3994_4000 < _repeatcount_3994_4000; _index_3994_4000++){
-      total = (total + SelfManager.self().patchAhead(howFar).projectionBy(function() { return SelfPrims.getPatchVariable("grain-here"); }));
-      howFar = (howFar + 1);
+    try {
+      var total = 0;
+      var howFar = 1;
+      for (var _index_3994_4000 = 0, _repeatcount_3994_4000 = StrictMath.floor(SelfPrims.getVariable("vision")); _index_3994_4000 < _repeatcount_3994_4000; _index_3994_4000++){
+        total = (total + SelfManager.self().patchAhead(howFar).projectionBy(function() { return SelfPrims.getPatchVariable("grain-here"); }));
+        howFar = (howFar + 1);
+      }
+      throw new Exception.ReportInterrupt(total);
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
     }
-    return total;
   };
   var growGrain = function() {
     if (Prims.lt(SelfPrims.getPatchVariable("grain-here"), SelfPrims.getPatchVariable("max-grain-here"))) {
@@ -253,7 +261,7 @@ var procedures = (function() {
       if (Prims.gt(SelfPrims.getPatchVariable("grain-here"), SelfPrims.getPatchVariable("max-grain-here"))) {
         SelfPrims.setPatchVariable("grain-here", SelfPrims.getPatchVariable("max-grain-here"));
       }
-      Call(procedures.recolorPatch);
+      procedures.recolorPatch();
     }
   };
   var harvest = function() {
@@ -262,7 +270,7 @@ var procedures = (function() {
     }, true);
     world.turtles().ask(function() {
       SelfPrims.setPatchVariable("grain-here", 0);
-      Call(procedures.recolorPatch);
+      procedures.recolorPatch();
     }, true);
   };
   var moveEatAgeDie = function() {
@@ -270,7 +278,7 @@ var procedures = (function() {
     SelfPrims.setVariable("wealth", (SelfPrims.getVariable("wealth") - SelfPrims.getVariable("metabolism")));
     SelfPrims.setVariable("age", (SelfPrims.getVariable("age") + 1));
     if ((Prims.lt(SelfPrims.getVariable("wealth"), 0) || Prims.gte(SelfPrims.getVariable("age"), SelfPrims.getVariable("life-expectancy")))) {
-      Call(procedures.setInitialTurtleVars);
+      procedures.setInitialTurtleVars();
     }
   };
   var updateLorenzAndGini = function() {

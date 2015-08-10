@@ -1,5 +1,4 @@
 var AgentModel = tortoise_require('agentmodel');
-var Call = tortoise_require('util/call');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
@@ -59,7 +58,7 @@ var procedures = (function() {
       SelfPrims.setXY(world.topology.randomXcor(), world.topology.randomYcor());
       SelfPrims.setVariable("next-task", Tasks.commandTask(function() {
         var taskArguments = arguments;
-        Call(procedures.searchForChip);
+        procedures.searchForChip();
       }));
       SelfPrims.setVariable("size", 5);
     }, true);
@@ -67,14 +66,22 @@ var procedures = (function() {
   };
   var go = function() {
     world.turtles().ask(function() {
-      if (Prims.gt(SelfPrims.getVariable("steps"), 0)) {
-        SelfPrims.setVariable("steps", (SelfPrims.getVariable("steps") - 1));
+      try {
+        if (Prims.gt(SelfPrims.getVariable("steps"), 0)) {
+          SelfPrims.setVariable("steps", (SelfPrims.getVariable("steps") - 1));
+        }
+        else {
+          (SelfPrims.getVariable("next-task"))();
+          procedures.wiggle();
+        }
+        SelfPrims.fd(1);
+      } catch (e) {
+        if (e instanceof Exception.StopInterrupt) {
+          return e;
+        } else {
+          throw e;
+        }
       }
-      else {
-        (SelfPrims.getVariable("next-task"))();
-        Call(procedures.wiggle);
-      }
-      SelfPrims.fd(1);
     }, true);
     world.ticker.tick();
   };
@@ -89,7 +96,7 @@ var procedures = (function() {
       SelfPrims.setVariable("steps", 20);
       SelfPrims.setVariable("next-task", Tasks.commandTask(function() {
         var taskArguments = arguments;
-        Call(procedures.findNewPile);
+        procedures.findNewPile();
       }));
     }
   };
@@ -97,7 +104,7 @@ var procedures = (function() {
     if (Prims.equality(SelfPrims.getPatchVariable("pcolor"), 45)) {
       SelfPrims.setVariable("next-task", Tasks.commandTask(function() {
         var taskArguments = arguments;
-        Call(procedures.putDownChip);
+        procedures.putDownChip();
       }));
     }
   };
@@ -108,7 +115,7 @@ var procedures = (function() {
       SelfPrims.setVariable("steps", 20);
       SelfPrims.setVariable("next-task", Tasks.commandTask(function() {
         var taskArguments = arguments;
-        Call(procedures.getAway);
+        procedures.getAway();
       }));
     }
   };
@@ -116,7 +123,7 @@ var procedures = (function() {
     if (Prims.equality(SelfPrims.getPatchVariable("pcolor"), 0)) {
       SelfPrims.setVariable("next-task", Tasks.commandTask(function() {
         var taskArguments = arguments;
-        Call(procedures.searchForChip);
+        procedures.searchForChip();
       }));
     }
   };

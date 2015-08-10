@@ -1,5 +1,4 @@
 var AgentModel = tortoise_require('agentmodel');
-var Call = tortoise_require('util/call');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
@@ -79,8 +78,8 @@ var world = workspace.world;
 var procedures = (function() {
   var setup = function() {
     world.clearAll();
-    Call(procedures.setupGlobals);
-    Call(procedures.setupPeople);
+    procedures.setupGlobals();
+    procedures.setupPeople();
     world.ticker.reset();
   };
   var setupGlobals = function() {
@@ -107,11 +106,11 @@ var procedures = (function() {
       if (SelfPrims.getVariable("infected?")) {
         SelfPrims.setVariable("infection-length", Prims.randomFloat(world.observer.getGlobal("symptoms-show")));
       }
-      Call(procedures.assignCommitment);
-      Call(procedures.assignCouplingTendency);
-      Call(procedures.assignCondomUse);
-      Call(procedures.assignTestFrequency);
-      Call(procedures.assignColor);
+      procedures.assignCommitment();
+      procedures.assignCouplingTendency();
+      procedures.assignCondomUse();
+      procedures.assignTestFrequency();
+      procedures.assignColor();
     }, true);
   };
   var assignColor = function() {
@@ -128,68 +127,85 @@ var procedures = (function() {
     }
   };
   var assignCommitment = function() {
-    SelfPrims.setVariable("commitment", Call(procedures.randomNear, world.observer.getGlobal("average-commitment")));
+    SelfPrims.setVariable("commitment", procedures.randomNear(world.observer.getGlobal("average-commitment")));
   };
   var assignCouplingTendency = function() {
-    SelfPrims.setVariable("coupling-tendency", Call(procedures.randomNear, world.observer.getGlobal("average-coupling-tendency")));
+    SelfPrims.setVariable("coupling-tendency", procedures.randomNear(world.observer.getGlobal("average-coupling-tendency")));
   };
   var assignCondomUse = function() {
-    SelfPrims.setVariable("condom-use", Call(procedures.randomNear, world.observer.getGlobal("average-condom-use")));
+    SelfPrims.setVariable("condom-use", procedures.randomNear(world.observer.getGlobal("average-condom-use")));
   };
   var assignTestFrequency = function() {
-    SelfPrims.setVariable("test-frequency", Call(procedures.randomNear, world.observer.getGlobal("average-test-frequency")));
+    SelfPrims.setVariable("test-frequency", procedures.randomNear(world.observer.getGlobal("average-test-frequency")));
   };
   var randomNear = function(center) {
-    var result = 0;
-    for (var _index_3693_3699 = 0, _repeatcount_3693_3699 = StrictMath.floor(40); _index_3693_3699 < _repeatcount_3693_3699; _index_3693_3699++){
-      result = (result + Prims.randomFloat(center));
+    try {
+      var result = 0;
+      for (var _index_3693_3699 = 0, _repeatcount_3693_3699 = StrictMath.floor(40); _index_3693_3699 < _repeatcount_3693_3699; _index_3693_3699++){
+        result = (result + Prims.randomFloat(center));
+      }
+      throw new Exception.ReportInterrupt((result / 20));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
     }
-    return (result / 20);
   };
   var go = function() {
-    if (world.turtles().agentAll(function() { return SelfPrims.getVariable("known?"); })) {
-      throw new Exception.StopInterrupt;
+    try {
+      if (world.turtles().agentAll(function() { return SelfPrims.getVariable("known?"); })) {
+        throw new Exception.StopInterrupt;
+      }
+      procedures.checkSliders();
+      world.turtles().ask(function() {
+        if (SelfPrims.getVariable("infected?")) {
+          SelfPrims.setVariable("infection-length", (SelfPrims.getVariable("infection-length") + 1));
+        }
+        if (SelfPrims.getVariable("coupled?")) {
+          SelfPrims.setVariable("couple-length", (SelfPrims.getVariable("couple-length") + 1));
+        }
+      }, true);
+      world.turtles().ask(function() {
+        if (!SelfPrims.getVariable("coupled?")) {
+          procedures.move();
+        }
+      }, true);
+      world.turtles().ask(function() {
+        if (((!SelfPrims.getVariable("coupled?") && Prims.equality(SelfPrims.getVariable("shape"), "person righty")) && Prims.lt(Prims.randomFloat(10), SelfPrims.getVariable("coupling-tendency")))) {
+          procedures.couple();
+        }
+      }, true);
+      world.turtles().ask(function() { procedures.uncouple(); }, true);
+      world.turtles().ask(function() { procedures.infect(); }, true);
+      world.turtles().ask(function() { procedures.test(); }, true);
+      world.turtles().ask(function() { procedures.assignColor(); }, true);
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    Call(procedures.checkSliders);
-    world.turtles().ask(function() {
-      if (SelfPrims.getVariable("infected?")) {
-        SelfPrims.setVariable("infection-length", (SelfPrims.getVariable("infection-length") + 1));
-      }
-      if (SelfPrims.getVariable("coupled?")) {
-        SelfPrims.setVariable("couple-length", (SelfPrims.getVariable("couple-length") + 1));
-      }
-    }, true);
-    world.turtles().ask(function() {
-      if (!SelfPrims.getVariable("coupled?")) {
-        Call(procedures.move);
-      }
-    }, true);
-    world.turtles().ask(function() {
-      if (((!SelfPrims.getVariable("coupled?") && Prims.equality(SelfPrims.getVariable("shape"), "person righty")) && Prims.lt(Prims.randomFloat(10), SelfPrims.getVariable("coupling-tendency")))) {
-        Call(procedures.couple);
-      }
-    }, true);
-    world.turtles().ask(function() { Call(procedures.uncouple); }, true);
-    world.turtles().ask(function() { Call(procedures.infect); }, true);
-    world.turtles().ask(function() { Call(procedures.test); }, true);
-    world.turtles().ask(function() { Call(procedures.assignColor); }, true);
-    world.ticker.tick();
   };
   var checkSliders = function() {
     if (!Prims.equality(world.observer.getGlobal("slider-check-1"), world.observer.getGlobal("average-commitment"))) {
-      world.turtles().ask(function() { Call(procedures.assignCommitment); }, true);
+      world.turtles().ask(function() { procedures.assignCommitment(); }, true);
       world.observer.setGlobal("slider-check-1", world.observer.getGlobal("average-commitment"));
     }
     if (!Prims.equality(world.observer.getGlobal("slider-check-2"), world.observer.getGlobal("average-coupling-tendency"))) {
-      world.turtles().ask(function() { Call(procedures.assignCouplingTendency); }, true);
+      world.turtles().ask(function() { procedures.assignCouplingTendency(); }, true);
       world.observer.setGlobal("slider-check-2", world.observer.getGlobal("average-coupling-tendency"));
     }
     if (!Prims.equality(world.observer.getGlobal("slider-check-3"), world.observer.getGlobal("average-condom-use"))) {
-      world.turtles().ask(function() { Call(procedures.assignCondomUse); }, true);
+      world.turtles().ask(function() { procedures.assignCondomUse(); }, true);
       world.observer.setGlobal("slider-check-3", world.observer.getGlobal("average-condom-use"));
     }
     if (!Prims.equality(world.observer.getGlobal("slider-check-4"), world.observer.getGlobal("average-test-frequency"))) {
-      world.turtles().ask(function() { Call(procedures.assignTestFrequency); }, true);
+      world.turtles().ask(function() { procedures.assignTestFrequency(); }, true);
       world.observer.setGlobal("slider-check-4", world.observer.getGlobal("average-test-frequency"));
     }
   };
@@ -250,11 +266,20 @@ var procedures = (function() {
     }
   };
   var _percent_infected = function() {
-    if (world.turtles().nonEmpty()) {
-      return ((world.turtles().agentFilter(function() { return SelfPrims.getVariable("infected?"); }).size() / world.turtles().size()) * 100);
-    }
-    else {
-      return 0;
+    try {
+      if (world.turtles().nonEmpty()) {
+        throw new Exception.ReportInterrupt(((world.turtles().agentFilter(function() { return SelfPrims.getVariable("infected?"); }).size() / world.turtles().size()) * 100));
+      }
+      else {
+        throw new Exception.ReportInterrupt(0);
+      }
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
     }
   };
   return {

@@ -1,5 +1,4 @@
 var AgentModel = tortoise_require('agentmodel');
-var Call = tortoise_require('util/call');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
@@ -75,7 +74,7 @@ var procedures = (function() {
     }, true);
     world.observer.setGlobal("drains", world.patches().agentFilter(function() { return SelfPrims.getPatchVariable("drain?"); }));
     world.observer.setGlobal("land", world.patches().agentFilter(function() { return !SelfPrims.getPatchVariable("drain?"); }));
-    world.observer.getGlobal("land").ask(function() { Call(procedures.recolor); }, true);
+    world.observer.getGlobal("land").ask(function() { procedures.recolor(); }, true);
     world.ticker.reset();
   };
   var recolor = function() {
@@ -88,11 +87,11 @@ var procedures = (function() {
   };
   var showWater = function() {
     world.observer.setGlobal("show-water?", true);
-    world.observer.getGlobal("land").ask(function() { Call(procedures.recolor); }, true);
+    world.observer.getGlobal("land").ask(function() { procedures.recolor(); }, true);
   };
   var hideWater = function() {
     world.observer.setGlobal("show-water?", false);
-    world.observer.getGlobal("land").ask(function() { Call(procedures.recolor); }, true);
+    world.observer.getGlobal("land").ask(function() { procedures.recolor(); }, true);
   };
   var go = function() {
     world.observer.getGlobal("land").ask(function() {
@@ -102,14 +101,14 @@ var procedures = (function() {
     }, true);
     world.observer.getGlobal("land").ask(function() {
       if (Prims.gt(SelfPrims.getPatchVariable("water"), 0)) {
-        Call(procedures.flow);
+        procedures.flow();
       }
     }, true);
     world.observer.getGlobal("drains").ask(function() {
       SelfPrims.setPatchVariable("water", 0);
       SelfPrims.setPatchVariable("elevation", -10000000);
     }, true);
-    world.observer.getGlobal("land").ask(function() { Call(procedures.recolor); }, true);
+    world.observer.getGlobal("land").ask(function() { procedures.recolor(); }, true);
     world.ticker.tick();
   };
   var flow = function() {

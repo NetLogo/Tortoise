@@ -1,5 +1,4 @@
 var AgentModel = tortoise_require('agentmodel');
-var Call = tortoise_require('util/call');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
@@ -64,7 +63,7 @@ var procedures = (function() {
     BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("CLOUDS").getSpecialName(), "cloud")
     BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("HEATS").getSpecialName(), "dot")
     BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("CO2S").getSpecialName(), "CO2-molecule")
-    Call(procedures.setupWorld);
+    procedures.setupWorld();
     world.observer.setGlobal("temperature", 12);
     world.ticker.reset();
   };
@@ -82,17 +81,17 @@ var procedures = (function() {
         SelfPrims.setPatchVariable("pcolor", (15 + 3));
       }
       if (Prims.equality(SelfPrims.getPatchVariable("pycor"), world.observer.getGlobal("earth-top"))) {
-        Call(procedures.updateAlbedo);
+        procedures.updateAlbedo();
       }
     }, true);
   };
   var go = function() {
     world.turtleManager.turtlesOfBreed("CLOUDS").ask(function() { SelfPrims.fd(SelfPrims.getVariable("cloud-speed")); }, true);
-    Call(procedures.runSunshine);
-    world.patches().agentFilter(function() { return Prims.equality(SelfPrims.getPatchVariable("pycor"), world.observer.getGlobal("earth-top")); }).ask(function() { Call(procedures.updateAlbedo); }, true);
-    Call(procedures.runHeat);
-    Call(procedures.runIr);
-    Call(procedures.runCo2);
+    procedures.runSunshine();
+    world.patches().agentFilter(function() { return Prims.equality(SelfPrims.getPatchVariable("pycor"), world.observer.getGlobal("earth-top")); }).ask(function() { procedures.updateAlbedo(); }, true);
+    procedures.runHeat();
+    procedures.runIr();
+    procedures.runCo2();
     world.ticker.tick();
   };
   var updateAlbedo = function() {
@@ -129,9 +128,9 @@ var procedures = (function() {
       }
       SelfPrims.fd(0.3);
     }, true);
-    Call(procedures.createSunshine);
-    Call(procedures.reflectRaysFromClouds);
-    Call(procedures.encounterEarth);
+    procedures.createSunshine();
+    procedures.reflectRaysFromClouds();
+    procedures.encounterEarth();
   };
   var createSunshine = function() {
     if (Prims.gt((10 * world.observer.getGlobal("sun-brightness")), Prims.random(50))) {

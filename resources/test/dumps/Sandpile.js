@@ -1,5 +1,4 @@
 var AgentModel = tortoise_require('agentmodel');
-var Call = tortoise_require('util/call');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
@@ -132,21 +131,21 @@ var procedures = (function() {
       SelfPrims.setPatchVariable("n-stack", []);
       SelfPrims.setPatchVariable("base-color", world.observer.getGlobal("default-color"));
     }, true);
-    var ignore = Call(procedures.stabilize, false);
-    world.patches().ask(function() { Call(procedures.recolor); }, true);
+    var ignore = procedures.stabilize(false);
+    world.patches().ask(function() { procedures.recolor(); }, true);
     world.observer.setGlobal("total", ListPrims.sum(world.patches().projectionBy(function() { return SelfPrims.getPatchVariable("n"); })));
     world.observer.setGlobal("sizes", []);
     world.observer.setGlobal("lifetimes", []);
     world.ticker.reset();
   };
   var setupUniform = function(initial) {
-    Call(procedures.setup, Tasks.reporterTask(function() {
+    procedures.setup(Tasks.reporterTask(function() {
       var taskArguments = arguments;
       return initial;
     }));
   };
   var setupRandom = function() {
-    Call(procedures.setup, Tasks.reporterTask(function() {
+    procedures.setup(Tasks.reporterTask(function() {
       var taskArguments = arguments;
       return Prims.random(4);
     }));
@@ -155,13 +154,13 @@ var procedures = (function() {
     SelfPrims.setPatchVariable("pcolor", ColorModel.scaleColor(SelfPrims.getPatchVariable("base-color"), SelfPrims.getPatchVariable("n"), 0, 4));
   };
   var go = function() {
-    var drop = Call(procedures.dropPatch);
+    var drop = procedures.dropPatch();
     if (!Prims.equality(drop, Nobody)) {
       drop.ask(function() {
-        Call(procedures.updateN, 1);
-        Call(procedures.recolor);
+        procedures.updateN(1);
+        procedures.recolor();
       }, true);
-      var results = Call(procedures.stabilize, world.observer.getGlobal("animate-avalanches?"));
+      var results = procedures.stabilize(world.observer.getGlobal("animate-avalanches?"));
       var avalanchePatches = ListPrims.first(results);
       var lifetime = ListPrims.last(results);
       if (avalanchePatches.nonEmpty()) {
@@ -169,13 +168,13 @@ var procedures = (function() {
         world.observer.setGlobal("lifetimes", ListPrims.lput(lifetime, world.observer.getGlobal("lifetimes")));
       }
       avalanchePatches.ask(function() {
-        Call(procedures.recolor);
-        SelfPrims.getNeighbors4().ask(function() { Call(procedures.recolor); }, true);
+        procedures.recolor();
+        SelfPrims.getNeighbors4().ask(function() { procedures.recolor(); }, true);
       }, true);
       notImplemented('display', undefined)();
       avalanchePatches.ask(function() {
         SelfPrims.setPatchVariable("base-color", world.observer.getGlobal("default-color"));
-        Call(procedures.recolor);
+        procedures.recolor();
       }, true);
       world.observer.setGlobal("total-on-tick", world.observer.getGlobal("total"));
       world.ticker.tick();
@@ -185,18 +184,18 @@ var procedures = (function() {
     if (MousePrims.isInside()) {
       var p = world.getPatchAt(MousePrims.getX(), MousePrims.getY());
       world.observer.setGlobal("selected-patch", p);
-      world.patches().ask(function() { Call(procedures.pushN); }, true);
-      world.observer.getGlobal("selected-patch").ask(function() { Call(procedures.updateN, 1); }, true);
-      var results = Call(procedures.stabilize, false);
-      world.patches().ask(function() { Call(procedures.popN); }, true);
+      world.patches().ask(function() { procedures.pushN(); }, true);
+      world.observer.getGlobal("selected-patch").ask(function() { procedures.updateN(1); }, true);
+      var results = procedures.stabilize(false);
+      world.patches().ask(function() { procedures.popN(); }, true);
       world.patches().ask(function() {
         SelfPrims.setPatchVariable("base-color", world.observer.getGlobal("default-color"));
-        Call(procedures.recolor);
+        procedures.recolor();
       }, true);
       var avalanchePatches = ListPrims.first(results);
       avalanchePatches.ask(function() {
         SelfPrims.setPatchVariable("base-color", world.observer.getGlobal("selected-color"));
-        Call(procedures.recolor);
+        procedures.recolor();
       }, true);
       notImplemented('display', undefined)();
     }
@@ -205,65 +204,83 @@ var procedures = (function() {
         world.observer.setGlobal("selected-patch", Nobody);
         world.patches().ask(function() {
           SelfPrims.setPatchVariable("base-color", world.observer.getGlobal("default-color"));
-          Call(procedures.recolor);
+          procedures.recolor();
         }, true);
       }
     }
   };
   var stabilize = function(animate_p) {
-    var activePatches = world.patches().agentFilter(function() { return Prims.gt(SelfPrims.getPatchVariable("n"), 3); });
-    var iters = 0;
-    var avalanchePatches = new PatchSet([]);
-    while (activePatches.nonEmpty()) {
-      var overloadedPatches = activePatches.agentFilter(function() { return Prims.gt(SelfPrims.getPatchVariable("n"), 3); });
-      if (overloadedPatches.nonEmpty()) {
-        iters = (iters + 1);
-      }
-      overloadedPatches.ask(function() {
-        SelfPrims.setPatchVariable("base-color", world.observer.getGlobal("fired-color"));
-        Call(procedures.updateN, -4);
-        if (animate_p) {
-          Call(procedures.recolor);
+    try {
+      var activePatches = world.patches().agentFilter(function() { return Prims.gt(SelfPrims.getPatchVariable("n"), 3); });
+      var iters = 0;
+      var avalanchePatches = new PatchSet([]);
+      while (activePatches.nonEmpty()) {
+        var overloadedPatches = activePatches.agentFilter(function() { return Prims.gt(SelfPrims.getPatchVariable("n"), 3); });
+        if (overloadedPatches.nonEmpty()) {
+          iters = (iters + 1);
         }
-        SelfPrims.getNeighbors4().ask(function() {
-          Call(procedures.updateN, 1);
+        overloadedPatches.ask(function() {
+          SelfPrims.setPatchVariable("base-color", world.observer.getGlobal("fired-color"));
+          procedures.updateN(-4);
           if (animate_p) {
-            Call(procedures.recolor);
+            procedures.recolor();
           }
+          SelfPrims.getNeighbors4().ask(function() {
+            procedures.updateN(1);
+            if (animate_p) {
+              procedures.recolor();
+            }
+          }, true);
         }, true);
-      }, true);
-      if (animate_p) {
-        notImplemented('display', undefined)();
+        if (animate_p) {
+          notImplemented('display', undefined)();
+        }
+        avalanchePatches = Prims.patchSet(avalanchePatches, overloadedPatches);
+        activePatches = Prims.patchSet(overloadedPatches.projectionBy(function() { return SelfPrims.getNeighbors4(); }));
       }
-      avalanchePatches = Prims.patchSet(avalanchePatches, overloadedPatches);
-      activePatches = Prims.patchSet(overloadedPatches.projectionBy(function() { return SelfPrims.getNeighbors4(); }));
+      throw new Exception.ReportInterrupt(ListPrims.list(avalanchePatches, iters));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
     }
-    return ListPrims.list(avalanchePatches, iters);
   };
   var updateN = function(howMuch) {
     SelfPrims.setPatchVariable("n", (SelfPrims.getPatchVariable("n") + howMuch));
     world.observer.setGlobal("total", (world.observer.getGlobal("total") + howMuch));
   };
   var dropPatch = function() {
-    if (Prims.equality(world.observer.getGlobal("drop-location"), "center")) {
-      return world.getPatchAt(0, 0);
-    }
-    if (Prims.equality(world.observer.getGlobal("drop-location"), "random")) {
-      return ListPrims.oneOf(world.patches());
-    }
-    if ((Prims.equality(world.observer.getGlobal("drop-location"), "mouse-click") && MousePrims.isDown())) {
-      if (Prims.isThrottleTimeElapsed("dropPatch_0", workspace.selfManager.self(), 0.3)) {
-        Prims.resetThrottleTimerFor("dropPatch_0", workspace.selfManager.self());
-        return world.getPatchAt(MousePrims.getX(), MousePrims.getY());
+    try {
+      if (Prims.equality(world.observer.getGlobal("drop-location"), "center")) {
+        throw new Exception.ReportInterrupt(world.getPatchAt(0, 0));
+      }
+      if (Prims.equality(world.observer.getGlobal("drop-location"), "random")) {
+        throw new Exception.ReportInterrupt(ListPrims.oneOf(world.patches()));
+      }
+      if ((Prims.equality(world.observer.getGlobal("drop-location"), "mouse-click") && MousePrims.isDown())) {
+        if (Prims.isThrottleTimeElapsed("dropPatch_0", workspace.selfManager.self(), 0.3)) {
+          Prims.resetThrottleTimerFor("dropPatch_0", workspace.selfManager.self());
+          throw new Exception.ReportInterrupt(world.getPatchAt(MousePrims.getX(), MousePrims.getY()));
+        }
+      }
+      throw new Exception.ReportInterrupt(Nobody);
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
       }
     }
-    return Nobody;
   };
   var pushN = function() {
     SelfPrims.setPatchVariable("n-stack", ListPrims.fput(SelfPrims.getPatchVariable("n"), SelfPrims.getPatchVariable("n-stack")));
   };
   var popN = function() {
-    Call(procedures.updateN, (ListPrims.first(SelfPrims.getPatchVariable("n-stack")) - SelfPrims.getPatchVariable("n")));
+    procedures.updateN((ListPrims.first(SelfPrims.getPatchVariable("n-stack")) - SelfPrims.getPatchVariable("n")));
     SelfPrims.setPatchVariable("n-stack", ListPrims.butLast(SelfPrims.getPatchVariable("n-stack")));
   };
   return {

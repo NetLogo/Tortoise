@@ -1,5 +1,4 @@
 var AgentModel = tortoise_require('agentmodel');
-var Call = tortoise_require('util/call');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
@@ -57,10 +56,10 @@ var world = workspace.world;
 var procedures = (function() {
   var benchmark = function() {
     Random.setSeed(579);
-    Call(procedures.setup);
+    procedures.setup();
     workspace.timer.reset();
     for (var _index_175_181 = 0, _repeatcount_175_181 = StrictMath.floor(10000); _index_175_181 < _repeatcount_175_181; _index_175_181++){
-      Call(procedures.go);
+      procedures.go();
     }
     world.observer.setGlobal("result", workspace.timer.elapsed());
   };
@@ -91,35 +90,43 @@ var procedures = (function() {
       SelfPrims.setXY(Prims.random(world.topology.width), Prims.random(world.topology.height));
     }, true);
     if (world.observer.getGlobal("plot?")) {
-      Call(procedures.graph);
+      procedures.graph();
     }
   };
   var go = function() {
-    world.turtleManager.turtlesOfBreed("SHEEP").ask(function() {
-      Call(procedures.move);
-      if (world.observer.getGlobal("grass?")) {
+    try {
+      world.turtleManager.turtlesOfBreed("SHEEP").ask(function() {
+        procedures.move();
+        if (world.observer.getGlobal("grass?")) {
+          SelfPrims.setVariable("energy", (SelfPrims.getVariable("energy") - 1));
+          procedures.eatGrass();
+        }
+        procedures.reproduceSheep();
+        procedures.death();
+      }, true);
+      world.turtleManager.turtlesOfBreed("WOLVES").ask(function() {
+        procedures.move();
         SelfPrims.setVariable("energy", (SelfPrims.getVariable("energy") - 1));
-        Call(procedures.eatGrass);
+        procedures.catchSheep();
+        procedures.reproduceWolves();
+        procedures.death();
+      }, true);
+      if (world.observer.getGlobal("grass?")) {
+        world.patches().ask(function() { procedures.growGrass(); }, true);
       }
-      Call(procedures.reproduceSheep);
-      Call(procedures.death);
-    }, true);
-    world.turtleManager.turtlesOfBreed("WOLVES").ask(function() {
-      Call(procedures.move);
-      SelfPrims.setVariable("energy", (SelfPrims.getVariable("energy") - 1));
-      Call(procedures.catchSheep);
-      Call(procedures.reproduceWolves);
-      Call(procedures.death);
-    }, true);
-    if (world.observer.getGlobal("grass?")) {
-      world.patches().ask(function() { Call(procedures.growGrass); }, true);
-    }
-    if (world.observer.getGlobal("plot?")) {
-      Call(procedures.graph);
-    }
-    world.ticker.tick();
-    if (Prims.equality(world.turtles().size(), 0)) {
-      throw new Exception.StopInterrupt;
+      if (world.observer.getGlobal("plot?")) {
+        procedures.graph();
+      }
+      world.ticker.tick();
+      if (Prims.equality(world.turtles().size(), 0)) {
+        throw new Exception.StopInterrupt;
+      }
+    } catch (e) {
+      if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   };
   var move = function() {

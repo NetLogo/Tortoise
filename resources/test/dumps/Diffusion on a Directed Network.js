@@ -1,5 +1,4 @@
 var AgentModel = tortoise_require('agentmodel');
-var Call = tortoise_require('util/call');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
@@ -82,8 +81,8 @@ var procedures = (function() {
     world.turtles().ask(function() {
       SelfPrims.setXY(((SelfPrims.getVariable("xcor") * (world.topology.maxPxcor - 1)) / ((world.observer.getGlobal("grid-size") / 2) - 0.5)), ((SelfPrims.getVariable("ycor") * (world.topology.maxPycor - 1)) / ((world.observer.getGlobal("grid-size") / 2) - 0.5)));
     }, true);
-    Call(procedures.updateGlobals);
-    Call(procedures.updateVisuals);
+    procedures.updateGlobals();
+    procedures.updateVisuals();
     world.ticker.reset();
   };
   var go = function() {
@@ -104,8 +103,8 @@ var procedures = (function() {
       }
     }, true);
     world.turtles().ask(function() { SelfPrims.setVariable("val", SelfPrims.getVariable("new-val")); }, true);
-    Call(procedures.updateGlobals);
-    Call(procedures.updateVisuals);
+    procedures.updateGlobals();
+    procedures.updateVisuals();
     world.ticker.tick();
   };
   var rewireALink = function() {
@@ -129,8 +128,8 @@ var procedures = (function() {
     }
   };
   var updateVisuals = function() {
-    world.turtles().ask(function() { Call(procedures.updateNodeAppearance); }, true);
-    world.linkManager.linksOfBreed("ACTIVE-LINKS").ask(function() { Call(procedures.updateLinkAppearance); }, true);
+    world.turtles().ask(function() { procedures.updateNodeAppearance(); }, true);
+    world.linkManager.linksOfBreed("ACTIVE-LINKS").ask(function() { procedures.updateLinkAppearance(); }, true);
   };
   var updateNodeAppearance = function() {
     SelfPrims.setVariable("size", (0.1 + (5 * NLMath.sqrt((SelfPrims.getVariable("val") / world.observer.getGlobal("total-val"))))));

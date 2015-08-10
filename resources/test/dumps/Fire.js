@@ -1,5 +1,4 @@
 var AgentModel = tortoise_require('agentmodel');
-var Call = tortoise_require('util/call');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
@@ -50,21 +49,29 @@ var procedures = (function() {
     world.clearAll();
     BreedManager.setDefaultShape(world.turtles().getSpecialName(), "square")
     world.patches().agentFilter(function() { return Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("density")); }).ask(function() { SelfPrims.setPatchVariable("pcolor", 55); }, true);
-    world.patches().agentFilter(function() { return Prims.equality(SelfPrims.getPatchVariable("pxcor"), world.topology.minPxcor); }).ask(function() { Call(procedures.ignite); }, true);
+    world.patches().agentFilter(function() { return Prims.equality(SelfPrims.getPatchVariable("pxcor"), world.topology.minPxcor); }).ask(function() { procedures.ignite(); }, true);
     world.observer.setGlobal("initial-trees", world.patches().agentFilter(function() { return Prims.equality(SelfPrims.getPatchVariable("pcolor"), 55); }).size());
     world.observer.setGlobal("burned-trees", 0);
     world.ticker.reset();
   };
   var go = function() {
-    if (!world.turtles().nonEmpty()) {
-      throw new Exception.StopInterrupt;
+    try {
+      if (!world.turtles().nonEmpty()) {
+        throw new Exception.StopInterrupt;
+      }
+      world.turtleManager.turtlesOfBreed("FIRES").ask(function() {
+        SelfPrims.getNeighbors4().agentFilter(function() { return Prims.equality(SelfPrims.getPatchVariable("pcolor"), 55); }).ask(function() { procedures.ignite(); }, true);
+        SelfPrims.setVariable("breed", world.turtleManager.turtlesOfBreed("EMBERS"));
+      }, true);
+      procedures.fadeEmbers();
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    world.turtleManager.turtlesOfBreed("FIRES").ask(function() {
-      SelfPrims.getNeighbors4().agentFilter(function() { return Prims.equality(SelfPrims.getPatchVariable("pcolor"), 55); }).ask(function() { Call(procedures.ignite); }, true);
-      SelfPrims.setVariable("breed", world.turtleManager.turtlesOfBreed("EMBERS"));
-    }, true);
-    Call(procedures.fadeEmbers);
-    world.ticker.tick();
   };
   var ignite = function() {
     SelfPrims.sprout(1, "FIRES").ask(function() { SelfPrims.setVariable("color", 15); }, true);

@@ -1,5 +1,4 @@
 var AgentModel = tortoise_require('agentmodel');
-var Call = tortoise_require('util/call');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
@@ -77,27 +76,35 @@ var procedures = (function() {
         SelfPrims.sprout(1, "TURTLES").ask(function() { SelfPrims.setVariable("color", ListPrims.oneOf([15, 55])); }, true);
       }
     }, true);
-    Call(procedures.updateTurtles);
-    Call(procedures.updateGlobals);
+    procedures.updateTurtles();
+    procedures.updateGlobals();
     world.ticker.reset();
   };
   var go = function() {
-    if (world.turtles().agentAll(function() { return SelfPrims.getVariable("happy?"); })) {
-      throw new Exception.StopInterrupt;
+    try {
+      if (world.turtles().agentAll(function() { return SelfPrims.getVariable("happy?"); })) {
+        throw new Exception.StopInterrupt;
+      }
+      procedures.moveUnhappyTurtles();
+      procedures.updateTurtles();
+      procedures.updateGlobals();
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    Call(procedures.moveUnhappyTurtles);
-    Call(procedures.updateTurtles);
-    Call(procedures.updateGlobals);
-    world.ticker.tick();
   };
   var moveUnhappyTurtles = function() {
-    world.turtles().agentFilter(function() { return !SelfPrims.getVariable("happy?"); }).ask(function() { Call(procedures.findNewSpot); }, true);
+    world.turtles().agentFilter(function() { return !SelfPrims.getVariable("happy?"); }).ask(function() { procedures.findNewSpot(); }, true);
   };
   var findNewSpot = function() {
     SelfPrims.right(Prims.randomFloat(360));
     SelfPrims.fd(Prims.randomFloat(10));
     if (SelfPrims.other(SelfManager.self().turtlesHere()).nonEmpty()) {
-      Call(procedures.findNewSpot);
+      procedures.findNewSpot();
     }
     SelfManager.self().moveTo(SelfManager.self().getPatchHere());
   };

@@ -1,5 +1,4 @@
 var AgentModel = tortoise_require('agentmodel');
-var Call = tortoise_require('util/call');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
@@ -48,10 +47,10 @@ var world = workspace.world;
 var procedures = (function() {
   var benchmark = function() {
     Random.setSeed(362);
-    Call(procedures.setup);
+    procedures.setup();
     workspace.timer.reset();
     for (var _index_216_222 = 0, _repeatcount_216_222 = StrictMath.floor(1000); _index_216_222 < _repeatcount_216_222; _index_216_222++){
-      Call(procedures.go);
+      procedures.go();
     }
     world.observer.setGlobal("result", workspace.timer.elapsed());
   };
@@ -69,13 +68,21 @@ var procedures = (function() {
     }, true);
   };
   var go = function() {
-    if (!world.turtles().nonEmpty()) {
-      throw new Exception.StopInterrupt;
+    try {
+      if (!world.turtles().nonEmpty()) {
+        throw new Exception.StopInterrupt;
+      }
+      world.topology.diffuse("temp", world.observer.getGlobal("diffusion-rate"))
+      world.turtles().ask(function() { procedures.step(); }, true);
+      procedures.recolorPatches();
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    world.topology.diffuse("temp", world.observer.getGlobal("diffusion-rate"))
-    world.turtles().ask(function() { Call(procedures.step); }, true);
-    Call(procedures.recolorPatches);
-    world.ticker.tick();
   };
   var recolorPatches = function() {
     world.patches().ask(function() {
@@ -89,33 +96,50 @@ var procedures = (function() {
       SelfPrims.setPatchVariable("temp", (SelfPrims.getPatchVariable("temp") + SelfPrims.getVariable("output-heat")));
     }
     else {
-      var target = Call(procedures.findTarget);
+      var target = procedures.findTarget();
       if ((!Prims.equality(SelfManager.self().getPatchHere(), target) || Prims.gt(world.observer.getGlobal("random-move-chance"), Prims.random(100)))) {
-        Call(procedures.bugMove, target);
+        procedures.bugMove(target);
       }
       SelfPrims.setPatchVariable("temp", (SelfPrims.getPatchVariable("temp") + SelfPrims.getVariable("output-heat")));
     }
   };
   var findTarget = function() {
-    if (Prims.lt(SelfPrims.getPatchVariable("temp"), SelfPrims.getVariable("ideal-temp"))) {
-      return SelfPrims.getNeighbors().maxOneOf(function() { return SelfPrims.getPatchVariable("temp"); });
-    }
-    else {
-      return SelfPrims.getNeighbors().minOneOf(function() { return SelfPrims.getPatchVariable("temp"); });
+    try {
+      if (Prims.lt(SelfPrims.getPatchVariable("temp"), SelfPrims.getVariable("ideal-temp"))) {
+        throw new Exception.ReportInterrupt(SelfPrims.getNeighbors().maxOneOf(function() { return SelfPrims.getPatchVariable("temp"); }));
+      }
+      else {
+        throw new Exception.ReportInterrupt(SelfPrims.getNeighbors().minOneOf(function() { return SelfPrims.getPatchVariable("temp"); }));
+      }
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
     }
   };
   var bugMove = function(target) {
-    var tries = 0;
-    if (!Prims.turtlesOn(target).nonEmpty()) {
-      SelfManager.self().moveTo(target);
-      throw new Exception.StopInterrupt;
-    }
-    while (Prims.lte(tries, 9)) {
-      tries = (tries + 1);
-      target = ListPrims.oneOf(SelfPrims.getNeighbors());
+    try {
+      var tries = 0;
       if (!Prims.turtlesOn(target).nonEmpty()) {
         SelfManager.self().moveTo(target);
         throw new Exception.StopInterrupt;
+      }
+      while (Prims.lte(tries, 9)) {
+        tries = (tries + 1);
+        target = ListPrims.oneOf(SelfPrims.getNeighbors());
+        if (!Prims.turtlesOn(target).nonEmpty()) {
+          SelfManager.self().moveTo(target);
+          throw new Exception.StopInterrupt;
+        }
+      }
+    } catch (e) {
+      if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
   };
