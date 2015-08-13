@@ -2,6 +2,9 @@
   "arrow_spacing": {
     "level": "error"
   },
+  "eol_last": {
+    "level": "error"
+  },
   "indentation": {
     "level": "ignore"
   },
