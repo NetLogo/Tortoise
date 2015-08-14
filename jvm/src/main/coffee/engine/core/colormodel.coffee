@@ -82,11 +82,11 @@ module.exports = {
     index = nextInt(BaseColors.length)
     BaseColors[index]
 
-  # (Number) => Number
+  # [T <: Number|RGB] @ (T) => T
   wrapColor: (color) ->
     if JSType(color).isArray()
       color
-    else # Bah!  This branch ought to be equivalent to `color %% ColorMax`, but that causes floating-point discrepencies. --JAB (7/30/14)
+    else # Bah!  This branch ought to be equivalent to `color %% ColorMax`, but that causes floating-point discrepancies. --JAB (7/30/14)
       modColor = color % ColorMax
       if modColor >= 0
         modColor
