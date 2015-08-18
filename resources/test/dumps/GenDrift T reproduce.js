@@ -108,7 +108,7 @@ modelConfig.plots = [(function() {
     });
   };
   var update  = function() {};
-  return new Plot(name, pens, plotOps, "Time", "Number", false, 0.0, 50.0, 0.0, 50.0, setup, update);
+  return new Plot(name, pens, plotOps, "Time", "Number", false, true, 0.0, 50.0, 0.0, 50.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])(["colors", "number"], ["colors", "number"], [], -22, 22, -22, 22, 9.0, true, true, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;

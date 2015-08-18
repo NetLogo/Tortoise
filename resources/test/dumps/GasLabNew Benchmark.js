@@ -35,14 +35,14 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(25.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {})];
   var setup   = function() {};
   var update  = function() {};
-  return new Plot(name, pens, plotOps, "time", "pressure", false, 0.0, 20.0, 0.0, 100.0, setup, update);
+  return new Plot(name, pens, plotOps, "time", "pressure", false, true, 0.0, 20.0, 0.0, 100.0, setup, update);
 })(), (function() {
   var name    = 'Wall Hits per Particle';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {})];
   var setup   = function() {};
   var update  = function() {};
-  return new Plot(name, pens, plotOps, "", "", false, 0.0, 20.0, 0.0, 1.0, setup, update);
+  return new Plot(name, pens, plotOps, "", "", false, true, 0.0, 20.0, 0.0, 1.0, setup, update);
 })(), (function() {
   var name    = 'Energy Histogram';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
@@ -53,7 +53,7 @@ modelConfig.plots = [(function() {
   new PenBundle.Pen('init-avg-energy', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {})];
   var setup   = function() {};
   var update  = function() {};
-  return new Plot(name, pens, plotOps, "Energy", "Number", true, 0.0, 400.0, 0.0, 10.0, setup, update);
+  return new Plot(name, pens, plotOps, "Energy", "Number", true, false, 0.0, 400.0, 0.0, 10.0, setup, update);
 })(), (function() {
   var name    = 'Speed Counts';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
@@ -62,7 +62,7 @@ modelConfig.plots = [(function() {
   new PenBundle.Pen('slow', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {})];
   var setup   = function() {};
   var update  = function() {};
-  return new Plot(name, pens, plotOps, "time", "count", false, 0.0, 20.0, 0.0, 100.0, setup, update);
+  return new Plot(name, pens, plotOps, "time", "count", false, true, 0.0, 20.0, 0.0, 100.0, setup, update);
 })(), (function() {
   var name    = 'Speed Histogram';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
@@ -73,7 +73,7 @@ modelConfig.plots = [(function() {
   new PenBundle.Pen('init-avg-speed', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {})];
   var setup   = function() {};
   var update  = function() {};
-  return new Plot(name, pens, plotOps, "Speed", "Number", true, 0.0, 50.0, 0.0, 100.0, setup, update);
+  return new Plot(name, pens, plotOps, "Speed", "Number", true, false, 0.0, 50.0, 0.0, 100.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "PARTICLES", singular: "particle", varNames: ["speed", "mass", "energy", "wall-hits", "momentum-difference", "last-collision"] }, { name: "FLASHES", singular: "flash", varNames: ["birthday"] }, { name: "CLOCKERS", singular: "clocker", varNames: [] }])([], [])(["number-of-particles", "collide?", "trace?", "init-particle-speed", "particle-mass", "result", "tick-length", "box-edge", "pressure", "pressure-history", "zero-pressure-count", "wall-hits-per-particle", "length-horizontal-surface", "length-vertical-surface", "init-avg-speed", "init-avg-energy", "avg-speed", "avg-energy", "fast", "medium", "slow", "fade-needed?"], ["number-of-particles", "collide?", "trace?", "init-particle-speed", "particle-mass"], [], -50, 50, -50, 50, 4.0, true, true, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;

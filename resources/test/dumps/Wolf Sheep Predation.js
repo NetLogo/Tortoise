@@ -53,7 +53,7 @@ modelConfig.plots = [(function() {
   })];
   var setup   = function() {};
   var update  = function() {};
-  return new Plot(name, pens, plotOps, "time", "pop.", true, 0.0, 100.0, 0.0, 100.0, setup, update);
+  return new Plot(name, pens, plotOps, "time", "pop.", true, true, 0.0, 100.0, 0.0, 100.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "SHEEP", singular: "a-sheep", varNames: [] }, { name: "WOLVES", singular: "wolf", varNames: [] }])(["energy"], [])(["initial-number-sheep", "sheep-gain-from-food", "sheep-reproduce", "initial-number-wolves", "wolf-gain-from-food", "wolf-reproduce", "grass?", "grass-regrowth-time", "show-energy?", "grass"], ["initial-number-sheep", "sheep-gain-from-food", "sheep-reproduce", "initial-number-wolves", "wolf-gain-from-food", "wolf-reproduce", "grass?", "grass-regrowth-time", "show-energy?"], ["countdown"], -25, 25, -25, 25, 9.0, true, true, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;

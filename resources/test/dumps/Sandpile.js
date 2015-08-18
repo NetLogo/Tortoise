@@ -39,7 +39,7 @@ modelConfig.plots = [(function() {
   })];
   var setup   = function() {};
   var update  = function() {};
-  return new Plot(name, pens, plotOps, "ticks", "grains", false, 0.0, 1.0, 2.0, 2.1, setup, update);
+  return new Plot(name, pens, plotOps, "ticks", "grains", false, true, 0.0, 1.0, 2.0, 2.1, setup, update);
 })(), (function() {
   var name    = 'Avalanche sizes';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
@@ -71,7 +71,7 @@ modelConfig.plots = [(function() {
   })];
   var setup   = function() {};
   var update  = function() {};
-  return new Plot(name, pens, plotOps, "log size", "log count", false, 0.0, 1.0, 0.0, 1.0, setup, update);
+  return new Plot(name, pens, plotOps, "log size", "log count", false, true, 0.0, 1.0, 0.0, 1.0, setup, update);
 })(), (function() {
   var name    = 'Avalanche lifetimes';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
@@ -103,7 +103,7 @@ modelConfig.plots = [(function() {
   })];
   var setup   = function() {};
   var update  = function() {};
-  return new Plot(name, pens, plotOps, "log lifetime", "log count", false, 0.0, 1.0, 0.0, 1.0, setup, update);
+  return new Plot(name, pens, plotOps, "log lifetime", "log count", false, true, 0.0, 1.0, 0.0, 1.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])(["animate-avalanches?", "drop-location", "grains-per-patch", "total", "total-on-tick", "sizes", "last-size", "lifetimes", "last-lifetime", "selected-patch", "default-color", "fired-color", "selected-color"], ["animate-avalanches?", "drop-location", "grains-per-patch"], ["n", "n-stack", "base-color"], -50, 50, -50, 50, 4.0, false, false, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;

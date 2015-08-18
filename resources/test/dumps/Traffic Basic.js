@@ -55,7 +55,7 @@ modelConfig.plots = [(function() {
   })];
   var setup   = function() {};
   var update  = function() {};
-  return new Plot(name, pens, plotOps, "time", "speed", true, 0.0, 300.0, 0.0, 1.1, setup, update);
+  return new Plot(name, pens, plotOps, "time", "speed", true, true, 0.0, 300.0, 0.0, 1.1, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["speed", "speed-limit", "speed-min"], [])(["number-of-cars", "deceleration", "acceleration", "sample-car"], ["number-of-cars", "deceleration", "acceleration"], [], -25, 25, -4, 4, 13.0, true, false, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;

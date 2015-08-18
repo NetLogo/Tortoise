@@ -55,7 +55,7 @@ modelConfig.plots = [(function() {
   })];
   var setup   = function() {};
   var update  = function() {};
-  return new Plot(name, pens, plotOps, "time", "% of nodes", true, 0.0, 52.0, 0.0, 100.0, setup, update);
+  return new Plot(name, pens, plotOps, "time", "% of nodes", true, true, 0.0, 52.0, 0.0, 100.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["infected?", "resistant?", "virus-check-timer"], [])(["gain-resistance-chance", "recovery-chance", "virus-spread-chance", "number-of-nodes", "virus-check-frequency", "initial-outbreak-size", "average-node-degree"], ["gain-resistance-chance", "recovery-chance", "virus-spread-chance", "number-of-nodes", "virus-check-frequency", "initial-outbreak-size", "average-node-degree"], [], -20, 20, -20, 20, 11.0, false, false, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;

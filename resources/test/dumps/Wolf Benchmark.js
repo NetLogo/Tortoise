@@ -37,7 +37,7 @@ modelConfig.plots = [(function() {
   new PenBundle.Pen('grass / 4', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {})];
   var setup   = function() {};
   var update  = function() {};
-  return new Plot(name, pens, plotOps, "time", "pop.", false, 0.0, 100.0, 0.0, 100.0, setup, update);
+  return new Plot(name, pens, plotOps, "time", "pop.", false, true, 0.0, 100.0, 0.0, 100.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "SHEEP", singular: "a-sheep", varNames: [] }, { name: "WOLVES", singular: "wolf", varNames: [] }])(["energy", "prey"], [])(["init-sheep", "sheep-metabolism", "sheep-reproduce", "init-wolves", "wolf-metabolism", "wolf-reproduce", "grass?", "grass-delay", "plot?", "result"], ["init-sheep", "sheep-metabolism", "sheep-reproduce", "init-wolves", "wolf-metabolism", "wolf-reproduce", "grass?", "grass-delay", "plot?"], ["countdown"], -20, 20, -20, 20, 8.0, true, true, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;

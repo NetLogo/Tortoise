@@ -39,7 +39,7 @@ modelConfig.plots = [(function() {
   })];
   var setup   = function() {};
   var update  = function() {};
-  return new Plot(name, pens, plotOps, "", "", false, 0.0, 10.0, 0.0, 100.0, setup, update);
+  return new Plot(name, pens, plotOps, "", "", false, true, 0.0, 10.0, 0.0, 100.0, setup, update);
 })(), (function() {
   var name    = 'Balls in the air';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
@@ -50,7 +50,7 @@ modelConfig.plots = [(function() {
   })];
   var setup   = function() {};
   var update  = function() {};
-  return new Plot(name, pens, plotOps, "", "", false, 0.0, 10.0, 0.0, 100.0, setup, update);
+  return new Plot(name, pens, plotOps, "", "", false, true, 0.0, 10.0, 0.0, 100.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])(["max-distance", "traps-triggered"], ["max-distance"], [], -80, 80, -80, 80, 3.0, false, false, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;

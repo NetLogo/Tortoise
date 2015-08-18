@@ -57,7 +57,7 @@ modelConfig.plots = [(function() {
     });
   };
   var update  = function() {};
-  return new Plot(name, pens, plotOps, "Time", "Pop", true, 0.0, 100.0, 0.0, 111.0, setup, update);
+  return new Plot(name, pens, plotOps, "Time", "Pop", true, true, 0.0, 100.0, 0.0, 111.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "RABBITS", singular: "rabbit", varNames: ["energy"] }])([], [])(["grass-grow-rate", "weeds-grow-rate", "grass-energy", "weed-energy", "number", "birth-threshold"], ["grass-grow-rate", "weeds-grow-rate", "grass-energy", "weed-energy", "number", "birth-threshold"], [], -20, 20, -20, 20, 12.0, true, true, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;

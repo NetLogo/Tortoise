@@ -66,7 +66,7 @@ modelConfig.plots = [(function() {
     });
   };
   var update  = function() {};
-  return new Plot(name, pens, plotOps, "time", "#", true, 0.0, 50.0, 0.0, 350.0, setup, update);
+  return new Plot(name, pens, plotOps, "time", "#", true, true, 0.0, 50.0, 0.0, 350.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["leader", "follower"], [])(["waver", "far-radius", "population", "near-radius"], ["waver", "far-radius", "population", "near-radius"], [], -30, 30, -30, 30, 8.0, true, true, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;

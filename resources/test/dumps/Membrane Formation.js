@@ -43,7 +43,7 @@ modelConfig.plots = [(function() {
   })];
   var setup   = function() {};
   var update  = function() {};
-  return new Plot(name, pens, plotOps, "", "", true, 0.0, 10.0, 0.0, 1.0, setup, update);
+  return new Plot(name, pens, plotOps, "", "", true, true, 0.0, 10.0, 0.0, 1.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "WATERS", singular: "water", varNames: [] }, { name: "OILS", singular: "oil", varNames: [] }])([], [])(["num-water", "num-lipids", "water-water-force", "water-oil-force", "too-close-force", "random-force", "lipid-length", "interaction-distance", "too-close-distance"], ["num-water", "num-lipids", "water-water-force", "water-oil-force", "too-close-force", "random-force"], [], -25, 25, -25, 25, 10.0, true, true, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;

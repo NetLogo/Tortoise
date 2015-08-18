@@ -41,7 +41,7 @@ modelConfig.plots = [(function() {
   })];
   var setup   = function() {};
   var update  = function() {};
-  return new Plot(name, pens, plotOps, "Time", "Average Wait", false, 0.0, 100.0, 0.0, 5.0, setup, update);
+  return new Plot(name, pens, plotOps, "Time", "Average Wait", false, true, 0.0, 100.0, 0.0, 5.0, setup, update);
 })(), (function() {
   var name    = 'Average Speed of Cars';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
@@ -58,7 +58,7 @@ modelConfig.plots = [(function() {
     });
   };
   var update  = function() {};
-  return new Plot(name, pens, plotOps, "Time", "Average Speed", false, 0.0, 100.0, 0.0, 1.0, setup, update);
+  return new Plot(name, pens, plotOps, "Time", "Average Speed", false, true, 0.0, 100.0, 0.0, 1.0, setup, update);
 })(), (function() {
   var name    = 'Stopped Cars';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
@@ -73,7 +73,7 @@ modelConfig.plots = [(function() {
     });
   };
   var update  = function() {};
-  return new Plot(name, pens, plotOps, "Time", "Stopped Cars", false, 0.0, 100.0, 0.0, 100.0, setup, update);
+  return new Plot(name, pens, plotOps, "Time", "Stopped Cars", false, true, 0.0, 100.0, 0.0, 100.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["speed", "up-car?", "wait-time"], [])(["grid-size-y", "grid-size-x", "power?", "num-cars", "speed-limit", "ticks-per-cycle", "current-phase", "current-auto?", "grid-x-inc", "grid-y-inc", "acceleration", "phase", "num-cars-stopped", "current-light", "intersections", "roads"], ["grid-size-y", "grid-size-x", "power?", "num-cars", "speed-limit", "ticks-per-cycle", "current-phase", "current-auto?"], ["intersection?", "green-light-up?", "my-row", "my-column", "my-phase", "auto?"], -18, 18, -18, 18, 9.0, true, true, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;

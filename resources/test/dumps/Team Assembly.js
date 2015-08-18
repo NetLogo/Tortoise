@@ -68,7 +68,7 @@ modelConfig.plots = [(function() {
       });
     });
   };
-  return new Plot(name, pens, plotOps, "time", "cumulative count", false, 0.0, 300.0, 0.0, 10.0, setup, update);
+  return new Plot(name, pens, plotOps, "time", "cumulative count", false, true, 0.0, 300.0, 0.0, 10.0, setup, update);
 })(), (function() {
   var name    = '% of agents in the giant component';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
@@ -81,7 +81,7 @@ modelConfig.plots = [(function() {
   })];
   var setup   = function() {};
   var update  = function() {};
-  return new Plot(name, pens, plotOps, "Time", "% of all agents", false, 0.0, 10.0, 0.0, 1.0, setup, update);
+  return new Plot(name, pens, plotOps, "Time", "% of all agents", false, true, 0.0, 10.0, 0.0, 1.0, setup, update);
 })(), (function() {
   var name    = 'Average component size';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
@@ -94,7 +94,7 @@ modelConfig.plots = [(function() {
   })];
   var setup   = function() {};
   var update  = function() {};
-  return new Plot(name, pens, plotOps, "Time", "Number of agents", false, 0.0, 10.0, 0.0, 1.0, setup, update);
+  return new Plot(name, pens, plotOps, "Time", "Number of agents", false, true, 0.0, 10.0, 0.0, 1.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["incumbent?", "in-team?", "downtime", "explored?"], ["new-collaboration?"])(["layout?", "p", "q", "team-size", "plot?", "max-downtime", "newcomer", "component-size", "giant-component-size", "components"], ["layout?", "p", "q", "team-size", "plot?", "max-downtime"], [], -50, 50, -50, 50, 4.0, true, true, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;

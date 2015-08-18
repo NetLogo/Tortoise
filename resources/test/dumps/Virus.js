@@ -60,7 +60,7 @@ modelConfig.plots = [(function() {
   })];
   var setup   = function() {};
   var update  = function() {};
-  return new Plot(name, pens, plotOps, "weeks", "people", true, 0.0, 52.0, 0.0, 200.0, setup, update);
+  return new Plot(name, pens, plotOps, "weeks", "people", true, true, 0.0, 52.0, 0.0, 200.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["sick?", "remaining-immunity", "sick-time", "age"], [])(["duration", "chance-recover", "infectiousness", "number-people", "turtle-shape", "%infected", "%immune", "lifespan", "chance-reproduce", "carrying-capacity", "immunity-duration"], ["duration", "chance-recover", "infectiousness", "number-people", "turtle-shape"], [], -17, 17, -17, 17, 14.0, true, true, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;

@@ -48,7 +48,7 @@ modelConfig.plots = [(function() {
     });
   };
   var update  = function() {};
-  return new Plot(name, pens, plotOps, "time", "power", false, 0.0, 250.0, 0.0, 105.0, setup, update);
+  return new Plot(name, pens, plotOps, "time", "power", false, true, 0.0, 250.0, 0.0, 105.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])(["power-rated", "reactor-size", "rod-depth", "rod-spacing", "spend-fuel?", "power", "old-power", "old-power-2", "old-power-3", "old-power-4", "average-power", "power-change", "rod-length", "n-rods", "r"], ["power-rated", "reactor-size", "rod-depth", "rod-spacing", "spend-fuel?"], ["x", "y", "rod?"], -70, 70, -70, 70, 3.0, false, false, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;

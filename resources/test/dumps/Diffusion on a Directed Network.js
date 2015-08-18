@@ -43,7 +43,7 @@ modelConfig.plots = [(function() {
   })];
   var setup   = function() {};
   var update  = function() {};
-  return new Plot(name, pens, plotOps, "val", "# of nodes", false, 0.0, 10.0, 0.0, 10.0, setup, update);
+  return new Plot(name, pens, plotOps, "val", "# of nodes", false, true, 0.0, 10.0, 0.0, 10.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "ACTIVE-LINKS", singular: "active-link", varNames: [], isDirected: true }, { name: "INACTIVE-LINKS", singular: "inactive-link", varNames: [], isDirected: true }])(["val", "new-val"], ["current-flow"])(["link-chance", "grid-size", "diffusion-rate", "total-val", "max-val", "max-flow", "mean-flow"], ["link-chance", "grid-size", "diffusion-rate"], [], -10, 10, -10, 10, 20.0, false, false, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;

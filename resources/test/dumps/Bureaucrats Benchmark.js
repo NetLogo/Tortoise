@@ -57,7 +57,7 @@ modelConfig.plots = [(function() {
       });
     });
   };
-  return new Plot(name, pens, plotOps, "", "", true, 0.0, 1.0, 2.0, 2.1, setup, update);
+  return new Plot(name, pens, plotOps, "", "", true, true, 0.0, 1.0, 2.0, 2.1, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])(["plot?", "total", "result"], ["plot?"], ["n"], 0, 99, 0, 99, 3.0, false, false, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;

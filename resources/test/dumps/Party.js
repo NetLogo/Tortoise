@@ -45,7 +45,7 @@ modelConfig.plots = [(function() {
     });
   };
   var update  = function() {};
-  return new Plot(name, pens, plotOps, "clock", "", false, 0.0, 10.0, 0.0, 150.0, setup, update);
+  return new Plot(name, pens, plotOps, "clock", "", false, true, 0.0, 10.0, 0.0, 150.0, setup, update);
 })(), (function() {
   var name    = 'Single Sex Groups';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
@@ -56,7 +56,7 @@ modelConfig.plots = [(function() {
   })];
   var setup   = function() {};
   var update  = function() {};
-  return new Plot(name, pens, plotOps, "clock", "", false, 0.0, 10.0, 0.0, 12.0, setup, update);
+  return new Plot(name, pens, plotOps, "clock", "", false, true, 0.0, 10.0, 0.0, 12.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["happy?", "my-group-site"], [])(["tolerance", "number", "num-groups", "group-sites", "boring-groups"], ["tolerance", "number", "num-groups"], [], -80, 1, -55, 55, 5.0, true, false, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;

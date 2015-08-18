@@ -60,7 +60,7 @@ modelConfig.plots = [(function() {
     });
   };
   var update  = function() {};
-  return new Plot(name, pens, plotOps, "Time", "Moth Color Count", true, 0.0, 100.0, 0.0, 200.0, setup, update);
+  return new Plot(name, pens, plotOps, "Time", "Moth Color Count", true, true, 0.0, 100.0, 0.0, 200.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "MOTHS", singular: "moth", varNames: ["age"] }])([], [])(["num-moths", "mutation", "selection", "speed", "cycle-pollution?", "light-moths", "medium-moths", "dark-moths", "darkness", "darkening?"], ["num-moths", "mutation", "selection", "speed", "cycle-pollution?"], [], -16, 16, -20, 20, 10.0, true, true, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;

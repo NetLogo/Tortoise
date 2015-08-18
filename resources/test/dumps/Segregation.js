@@ -39,7 +39,7 @@ modelConfig.plots = [(function() {
   })];
   var setup   = function() {};
   var update  = function() {};
-  return new Plot(name, pens, plotOps, "time", "%", false, 0.0, 5.0, 0.0, 100.0, setup, update);
+  return new Plot(name, pens, plotOps, "time", "%", false, true, 0.0, 5.0, 0.0, 100.0, setup, update);
 })(), (function() {
   var name    = 'Number-unhappy';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
@@ -52,7 +52,7 @@ modelConfig.plots = [(function() {
   })];
   var setup   = function() {};
   var update  = function() {};
-  return new Plot(name, pens, plotOps, "", "", false, 0.0, 10.0, 0.0, 100.0, setup, update);
+  return new Plot(name, pens, plotOps, "", "", false, true, 0.0, 10.0, 0.0, 100.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["happy?", "similar-nearby", "other-nearby", "total-nearby"], [])(["%-similar-wanted", "visualization", "density", "percent-similar", "percent-unhappy"], ["%-similar-wanted", "visualization", "density"], [], -25, 25, -25, 25, 8.0, true, true, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;

@@ -39,7 +39,7 @@ modelConfig.plots = [(function() {
   })];
   var setup   = function() {};
   var update  = function() {};
-  return new Plot(name, pens, plotOps, "", "", false, 0.0, 10.0, 10.0, 20.0, setup, update);
+  return new Plot(name, pens, plotOps, "", "", false, true, 0.0, 10.0, 10.0, 20.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "RAYS", singular: "ray", varNames: [] }, { name: "IRS", singular: "ir", varNames: [] }, { name: "HEATS", singular: "heat", varNames: [] }, { name: "CO2S", singular: "co2", varNames: [] }, { name: "CLOUDS", singular: "cloud", varNames: ["cloud-speed", "cloud-id"] }])([], [])(["sun-brightness", "albedo", "sky-top", "earth-top", "temperature"], ["sun-brightness", "albedo"], [], -24, 24, -8, 22, 11.0, true, false, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;

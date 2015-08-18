@@ -91,7 +91,7 @@ modelConfig.plots = [(function() {
       });
     });
   };
-  return new Plot(name, pens, plotOps, "Energy", "Number", true, 0.0, 400.0, 0.0, 10.0, setup, update);
+  return new Plot(name, pens, plotOps, "Energy", "Number", true, false, 0.0, 400.0, 0.0, 10.0, setup, update);
 })(), (function() {
   var name    = 'Speed Counts';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
@@ -116,7 +116,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Speed Counts', undefined)(function() { plotManager.setYRange(0, 100);; });
     });
   };
-  return new Plot(name, pens, plotOps, "time", "count (%)", true, 0.0, 20.0, 0.0, 100.0, setup, update);
+  return new Plot(name, pens, plotOps, "time", "count (%)", true, true, 0.0, 20.0, 0.0, 100.0, setup, update);
 })(), (function() {
   var name    = 'Speed Histogram';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
@@ -179,7 +179,7 @@ modelConfig.plots = [(function() {
       });
     });
   };
-  return new Plot(name, pens, plotOps, "Speed", "Number", true, 0.0, 50.0, 0.0, 100.0, setup, update);
+  return new Plot(name, pens, plotOps, "Speed", "Number", true, false, 0.0, 50.0, 0.0, 100.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "PARTICLES", singular: "particle", varNames: ["speed", "mass", "energy", "last-collision"] }])([], [])(["number-of-particles", "collide?", "trace?", "init-particle-speed", "particle-mass", "tick-delta", "max-tick-delta", "init-avg-speed", "init-avg-energy", "avg-speed", "avg-energy", "fast", "medium", "slow", "percent-fast", "percent-medium", "percent-slow"], ["number-of-particles", "collide?", "trace?", "init-particle-speed", "particle-mass"], [], -40, 40, -40, 40, 4.0, true, true, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;

@@ -61,7 +61,7 @@ modelConfig.plots = [(function() {
   })];
   var setup   = function() {};
   var update  = function() {};
-  return new Plot(name, pens, plotOps, "log(degree)", "log(# of nodes)", false, 0.0, 0.3, 0.0, 0.3, setup, update);
+  return new Plot(name, pens, plotOps, "log(degree)", "log(# of nodes)", false, true, 0.0, 0.3, 0.0, 0.3, setup, update);
 })(), (function() {
   var name    = 'Degree Distribution';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
@@ -88,7 +88,7 @@ modelConfig.plots = [(function() {
   })];
   var setup   = function() {};
   var update  = function() {};
-  return new Plot(name, pens, plotOps, "degree", "# of nodes", false, 1.0, 10.0, 0.0, 10.0, setup, update);
+  return new Plot(name, pens, plotOps, "degree", "# of nodes", false, true, 1.0, 10.0, 0.0, 10.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])(["plot?", "layout?"], ["plot?", "layout?"], [], -45, 45, -45, 45, 5.0, false, false, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;

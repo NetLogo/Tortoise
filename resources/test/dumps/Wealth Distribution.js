@@ -59,7 +59,7 @@ modelConfig.plots = [(function() {
     });
   };
   var update  = function() {};
-  return new Plot(name, pens, plotOps, "Time", "Turtles", true, 0.0, 50.0, 0.0, 250.0, setup, update);
+  return new Plot(name, pens, plotOps, "Time", "Turtles", true, true, 0.0, 50.0, 0.0, 250.0, setup, update);
 })(), (function() {
   var name    = 'Class Histogram';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
@@ -82,7 +82,7 @@ modelConfig.plots = [(function() {
     });
   };
   var update  = function() {};
-  return new Plot(name, pens, plotOps, "Classes", "Turtles", false, 0.0, 3.0, 0.0, 250.0, setup, update);
+  return new Plot(name, pens, plotOps, "Classes", "Turtles", false, false, 0.0, 3.0, 0.0, 250.0, setup, update);
 })(), (function() {
   var name    = 'Lorenz Curve';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
@@ -109,7 +109,7 @@ modelConfig.plots = [(function() {
   }, function() {})];
   var setup   = function() {};
   var update  = function() {};
-  return new Plot(name, pens, plotOps, "Pop %", "Wealth %", true, 0.0, 100.0, 0.0, 100.0, setup, update);
+  return new Plot(name, pens, plotOps, "Pop %", "Wealth %", true, false, 0.0, 100.0, 0.0, 100.0, setup, update);
 })(), (function() {
   var name    = 'Gini-Index v. Time';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
@@ -122,7 +122,7 @@ modelConfig.plots = [(function() {
   })];
   var setup   = function() {};
   var update  = function() {};
-  return new Plot(name, pens, plotOps, "Time", "Gini", false, 0.0, 50.0, 0.0, 1.0, setup, update);
+  return new Plot(name, pens, plotOps, "Time", "Gini", false, true, 0.0, 50.0, 0.0, 1.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["age", "wealth", "life-expectancy", "metabolism", "vision"], [])(["max-vision", "grain-growth-interval", "metabolism-max", "num-people", "percent-best-land", "life-expectancy-max", "num-grain-grown", "life-expectancy-min", "max-grain", "gini-index-reserve", "lorenz-points"], ["max-vision", "grain-growth-interval", "metabolism-max", "num-people", "percent-best-land", "life-expectancy-max", "num-grain-grown", "life-expectancy-min"], ["grain-here", "max-grain-here"], -25, 25, -25, 25, 8.0, true, true, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;

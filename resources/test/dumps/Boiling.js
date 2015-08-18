@@ -39,7 +39,7 @@ modelConfig.plots = [(function() {
   })];
   var setup   = function() {};
   var update  = function() {};
-  return new Plot(name, pens, plotOps, "Time", "Avg Heat", false, 0.0, 50.0, 0.0, 212.0, setup, update);
+  return new Plot(name, pens, plotOps, "Time", "Avg Heat", false, true, 0.0, 50.0, 0.0, 212.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])([], [], ["heat"], -40, 40, -40, 40, 5.0, true, true, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;

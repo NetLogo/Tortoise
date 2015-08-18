@@ -44,7 +44,7 @@ modelConfig.plots = [(function() {
   })];
   var setup   = function() {};
   var update  = function() {};
-  return new Plot(name, pens, plotOps, "Time", "Cows", true, 0.0, 10.0, 0.0, 100.0, setup, update);
+  return new Plot(name, pens, plotOps, "Time", "Cows", true, true, 0.0, 10.0, 0.0, 100.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "COOPERATIVE-COWS", singular: "cooperative-cow", varNames: [] }, { name: "GREEDY-COWS", singular: "greedy-cow", varNames: [] }])(["energy"], [])(["cooperative-probability", "initial-cows", "low-high-threshold", "high-growth-chance", "stride-length", "max-grass-height", "reproduction-threshold", "grass-energy", "metabolism", "low-growth-chance", "reproduction-cost"], ["cooperative-probability", "initial-cows", "low-high-threshold", "high-growth-chance", "stride-length", "max-grass-height", "reproduction-threshold", "grass-energy", "metabolism", "low-growth-chance", "reproduction-cost"], ["grass"], -10, 10, -10, 10, 15.0, true, true, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;

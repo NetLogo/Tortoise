@@ -53,7 +53,7 @@ modelConfig.plots = [(function() {
   }, function() {})];
   var setup   = function() {};
   var update  = function() {};
-  return new Plot(name, pens, plotOps, "time", "average spin", false, 0.0, 20.0, -1.0, 1.0, setup, update);
+  return new Plot(name, pens, plotOps, "time", "average spin", false, true, 0.0, 20.0, -1.0, 1.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])(["temperature", "plotting-interval", "sum-of-spins"], ["temperature", "plotting-interval"], ["spin"], -40, 40, -40, 40, 5.0, true, true, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;

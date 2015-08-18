@@ -59,7 +59,7 @@ modelConfig.plots = [(function() {
     });
   };
   var update  = function() {};
-  return new Plot(name, pens, plotOps, "weeks", "people", true, 0.0, 52.0, 0.0, 350.0, setup, update);
+  return new Plot(name, pens, plotOps, "weeks", "people", true, true, 0.0, 52.0, 0.0, 350.0, setup, update);
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["infected?", "known?", "infection-length", "coupled?", "couple-length", "commitment", "coupling-tendency", "condom-use", "test-frequency", "partner"], [])(["initial-people", "average-commitment", "average-coupling-tendency", "average-condom-use", "average-test-frequency", "infection-chance", "symptoms-show", "slider-check-1", "slider-check-2", "slider-check-3", "slider-check-4"], ["initial-people", "average-commitment", "average-coupling-tendency", "average-condom-use", "average-test-frequency"], [], -12, 12, -12, 12, 17.0, true, true, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;
