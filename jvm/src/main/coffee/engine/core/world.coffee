@@ -96,7 +96,7 @@ module.exports =
     # (Number, Number, Number, Number, Boolean, Boolean) => Unit
     resize: (minPxcor, maxPxcor, minPycor, maxPycor, wrapsInX = @topology._wrapInX, wrapsInY = @topology._wrapInY) ->
       @_resizeHelper(minPxcor, maxPxcor, minPycor, maxPycor, wrapsInX, wrapsInY)
-      @_updater.clearDrawing()
+      @clearDrawing()
 
     # (Number, Number, Number, Number, Boolean, Boolean) => Unit
     _resizeHelper: (minPxcor, maxPxcor, minPycor, maxPycor, wrapsInX = @topology._wrapInX, wrapsInY = @topology._wrapInY) ->
@@ -145,8 +145,12 @@ module.exports =
       @_resetPatchLabelCount()
       @ticker.clear()
       @_plotManager.clearAllPlots()
-      @_updater.clearDrawing()
+      @clearDrawing()
       return
+
+    # () => Unit
+    clearDrawing: ->
+      @_updater.clearDrawing()
 
     # () => Unit
     clearPatches: ->
