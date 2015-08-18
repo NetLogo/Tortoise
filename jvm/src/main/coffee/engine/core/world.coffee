@@ -15,6 +15,8 @@ StrictMath      = require('shim/strictmath')
 module.exports =
   class World
 
+    # type ShapeMap = Object[String, Shape]
+
     id: 0 # Number
 
     breedManager:  undefined # BreedManager
@@ -34,9 +36,10 @@ module.exports =
     _patchesAllBlack:          undefined # Boolean
     _patchesWithLabels:        undefined # Number
 
-    # (MiniWorkspace, Array[String], Array[String], Array[String], Number, Number, Number, Number, Number, Boolean, Boolean, Array[Object], Array[Object], () => Unit) => World
+    # (MiniWorkspace, Array[String], Array[String], Array[String], Number, Number, Number, Number, Number, Boolean, Boolean, ShapeMap, ShapeMap, () => Unit) => World
     constructor: (miniWorkspace, globalNames, interfaceGlobalNames, @patchesOwnNames, minPxcor, maxPxcor, minPycor
-                , maxPycor, @patchSize, wrappingAllowedInX, wrappingAllowedInY, turtleShapeList, linkShapeList, onTickFunction) ->
+                , maxPycor, @patchSize, wrappingAllowedInX, wrappingAllowedInY, @turtleShapeMap, linkShapeMap
+                , onTickFunction) ->
       { selfManager: @selfManager, updater: @_updater, rng: @rng
       , breedManager: @breedManager, plotManager: @_plotManager } = miniWorkspace
       @_updater.collectUpdates()
@@ -48,13 +51,13 @@ module.exports =
         maxPxcor: maxPxcor,
         maxPycor: maxPycor,
         linkBreeds: "XXX IMPLEMENT ME",
-        linkShapeList: linkShapeList,
+        linkShapeList: linkShapeMap,
         patchSize: @patchSize,
         patchesAllBlack: @_patchesAllBlack,
         patchesWithLabels: @_patchesWithLabels,
         ticks: -1,
         turtleBreeds: "XXX IMPLEMENT ME",
-        turtleShapeList: turtleShapeList,
+        turtleShapeList: @turtleShapeMap,
         unbreededLinksAreDirected: false
         wrappingAllowedInX: wrappingAllowedInX,
         wrappingAllowedInY: wrappingAllowedInY
