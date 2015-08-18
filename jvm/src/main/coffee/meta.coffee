@@ -2,5 +2,6 @@
 
 module.exports = {
   isApplet: false
+  isWeb:    true
   version:  "0.1"
 }

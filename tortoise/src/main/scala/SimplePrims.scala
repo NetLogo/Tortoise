@@ -27,6 +27,7 @@ object SimplePrims {
         case _: prim.etc._worldheight    => "world.topology.height"
         case _: prim.etc._netlogoapplet  => "Meta.isApplet"
         case _: prim.etc._netlogoversion => "Meta.version"
+        case _: prim.etc._netlogoweb     => "Meta.isWeb"
       }
   }
 
