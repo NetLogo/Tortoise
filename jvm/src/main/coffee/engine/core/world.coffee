@@ -36,7 +36,7 @@ module.exports =
 
     # (MiniWorkspace, Array[String], Array[String], Array[String], Number, Number, Number, Number, Number, Boolean, Boolean, Array[Object], Array[Object], () => Unit) => World
     constructor: (miniWorkspace, globalNames, interfaceGlobalNames, @patchesOwnNames, minPxcor, maxPxcor, minPycor
-                , maxPycor, _patchSize, wrappingAllowedInX, wrappingAllowedInY, turtleShapeList, linkShapeList, onTickFunction) ->
+                , maxPycor, @patchSize, wrappingAllowedInX, wrappingAllowedInY, turtleShapeList, linkShapeList, onTickFunction) ->
       { selfManager: @selfManager, updater: @_updater, rng: @rng
       , breedManager: @breedManager, plotManager: @_plotManager } = miniWorkspace
       @_updater.collectUpdates()
@@ -49,7 +49,7 @@ module.exports =
         maxPycor: maxPycor,
         linkBreeds: "XXX IMPLEMENT ME",
         linkShapeList: linkShapeList,
-        patchSize: _patchSize,
+        patchSize: @patchSize,
         patchesAllBlack: @_patchesAllBlack,
         patchesWithLabels: @_patchesWithLabels,
         ticks: -1,

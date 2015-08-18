@@ -26,6 +26,7 @@ object SimplePrims {
         case _: prim.etc._nolinks        => "new LinkSet([])"
         case _: prim.etc._nopatches      => "new PatchSet([])"
         case _: prim.etc._noturtles      => "new TurtleSet([])"
+        case _: prim.etc._patchsize      => "world.patchSize"
         case _: prim.etc._worldheight    => "world.topology.height"
         case _: prim.etc._worldwidth     => "world.topology.width"
       }
