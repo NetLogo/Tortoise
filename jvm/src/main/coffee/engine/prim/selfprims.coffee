@@ -37,6 +37,11 @@ module.exports =
       @_getSelf().fd(-n)
       return
 
+    # () => Unit
+    home: ->
+      @_getSelf().goHome()
+      return
+
     # (Number) => Unit
     jump: (n) ->
       @_getSelf().jumpIfAble(n)

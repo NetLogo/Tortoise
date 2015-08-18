@@ -207,6 +207,12 @@ module.exports =
           throw error
       return
 
+    # Handy for when your turtles are drunk --JAB (8/18/15)
+    # () => Unit
+    goHome: ->
+      @setXY(0, 0)
+      return
+
     # (Boolean) => Unit
     hideTurtle: (shouldHide) ->
       Setters.setIsHidden.call(this, shouldHide)

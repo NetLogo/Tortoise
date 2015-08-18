@@ -244,13 +244,14 @@ object SimplePrims {
 
         // SelfPrims
         case _: prim._bk        => "SelfPrims.bk"
+        case _: prim._fd        => "SelfPrims.fd"
+        case _: prim._jump      => "SelfPrims.jump"
         case _: prim.etc._die   => "SelfPrims.die"
+        case _: prim.etc._home  => "SelfPrims.home"
         case _: prim.etc._left  => "SelfPrims.left"
         case _: prim.etc._right => "SelfPrims.right"
         case _: prim.etc._setxy => "SelfPrims.setXY"
         case _: prim.etc._stamp => "SelfPrims.stamp"
-        case _: prim._fd        => "SelfPrims.fd"
-        case _: prim._jump      => "SelfPrims.jump"
 
         // Plotting
         case _: prim.etc._autoplotoff            => "plotManager.disableAutoplotting"
