@@ -16,18 +16,18 @@ object SimplePrims {
       PartialFunction.condOpt(r) {
         case _: prim._nobody             => "Nobody"
         case _: prim.etc._basecolors     => "ColorModel.BASE_COLORS"
-        case _: prim.etc._nopatches      => "new PatchSet([])"
-        case _: prim.etc._noturtles      => "new TurtleSet([])"
-        case _: prim.etc._nolinks        => "new LinkSet([])"
-        case _: prim.etc._minpxcor       => "world.topology.minPxcor"
-        case _: prim.etc._minpycor       => "world.topology.minPycor"
         case _: prim.etc._maxpxcor       => "world.topology.maxPxcor"
         case _: prim.etc._maxpycor       => "world.topology.maxPycor"
-        case _: prim.etc._worldwidth     => "world.topology.width"
-        case _: prim.etc._worldheight    => "world.topology.height"
+        case _: prim.etc._minpxcor       => "world.topology.minPxcor"
+        case _: prim.etc._minpycor       => "world.topology.minPycor"
         case _: prim.etc._netlogoapplet  => "Meta.isApplet"
         case _: prim.etc._netlogoversion => "Meta.version"
         case _: prim.etc._netlogoweb     => "Meta.isWeb"
+        case _: prim.etc._nolinks        => "new LinkSet([])"
+        case _: prim.etc._nopatches      => "new PatchSet([])"
+        case _: prim.etc._noturtles      => "new TurtleSet([])"
+        case _: prim.etc._worldheight    => "world.topology.height"
+        case _: prim.etc._worldwidth     => "world.topology.width"
       }
   }
 
