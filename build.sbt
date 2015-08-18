@@ -14,7 +14,7 @@ val commonSettings =
   Seq(
     organization  := "org.nlogo",
     licenses      += ("GPL-2.0", url("http://opensource.org/licenses/GPL-2.0")),
-    version       := "0.1",
+    version       := "1.0",
     // Compilation settings
     crossPaths    := false, // we're not cross-building for different Scala versions
     scalaVersion  := "2.11.7",
