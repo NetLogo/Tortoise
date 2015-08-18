@@ -54,12 +54,12 @@ trait PrimUtils {
 
   trait VariablePrims {
     protected def procedureAndVarName(r: Reporter, action: String): Option[(String, String)] = PartialFunction.condOpt(r) {
-      case bv: prim._breedvariable        => (s"SelfPrims.${action}Variable", bv.name.toLowerCase)
-      case bv: prim._linkbreedvariable    => (s"SelfPrims.${action}Variable", bv.name.toLowerCase)
-      case tv: prim._turtlevariable       => (s"SelfPrims.${action}Variable", tv.displayName.toLowerCase)
-      case tv: prim._linkvariable         => (s"SelfPrims.${action}Variable", tv.displayName.toLowerCase)
-      case tv: prim._turtleorlinkvariable => (s"SelfPrims.${action}Variable", tv.varName.toLowerCase)
-      case pv: prim._patchvariable        => (s"SelfPrims.${action}PatchVariable", pv.displayName.toLowerCase)
+      case bv: prim._breedvariable        => (s"SelfManager.self().${action}Variable", bv.name.toLowerCase)
+      case bv: prim._linkbreedvariable    => (s"SelfManager.self().${action}Variable", bv.name.toLowerCase)
+      case tv: prim._turtlevariable       => (s"SelfManager.self().${action}Variable", tv.displayName.toLowerCase)
+      case tv: prim._linkvariable         => (s"SelfManager.self().${action}Variable", tv.displayName.toLowerCase)
+      case tv: prim._turtleorlinkvariable => (s"SelfManager.self().${action}Variable", tv.varName.toLowerCase)
+      case pv: prim._patchvariable        => (s"SelfManager.self().${action}PatchVariable", pv.displayName.toLowerCase)
       case ov: prim._observervariable     => (s"world.observer.${action}Global", ov.displayName.toLowerCase)
       }
   }
@@ -197,10 +197,12 @@ trait CommandPrims extends PrimUtils {
       case _: prim.etc._every            => generateEvery(s)
       case _: prim.etc._error            => s"throw new Error(${arg(0)});"
       case h: prim._hatch                => generateHatch(s, h.breedName)
+      case _: prim._bk                   => s"SelfManager.self().fd(-${arg(0)});"
+      case _: prim.etc._left             => s"SelfManager.self().right(-${arg(0)});"
       case _: prim.etc._diffuse          => s"world.topology.diffuse(${jsString(getReferenceName(s))}, ${arg(1)})"
       case x: prim.etc._setdefaultshape  => s"BreedManager.setDefaultShape(${arg(0)}.getSpecialName(), ${arg(1)})"
-      case _: prim.etc._hidelink         => "SelfPrims.setVariable('hidden?', true)"
-      case _: prim.etc._showlink         => "SelfPrims.setVariable('hidden?', false)"
+      case _: prim.etc._hidelink         => "SelfManager.self().setVariable('hidden?', true)"
+      case _: prim.etc._showlink         => "SelfManager.self().setVariable('hidden?', false)"
       case call: prim._call              => generateCall(call, args)
       case _: prim.etc._report           => s"throw new Exception.ReportInterrupt(${arg(0)});"
       case _: prim.etc._ignore           => s"${arg(0)};"
@@ -345,14 +347,14 @@ trait CommandPrims extends PrimUtils {
     val body = handlers.fun(s.args(1))
     val breedName = s.command.asInstanceOf[prim._sprout].breedName
     val trueBreedName = if (breedName.nonEmpty) breedName else "TURTLES"
-    val sprouted = s"SelfPrims.sprout($n, ${jsString(trueBreedName)})"
+    val sprouted = s"SelfManager.self().sprout($n, ${jsString(trueBreedName)})"
     genAsk(sprouted, true, body)
   }
 
   def generateHatch(s: Statement, breedName: String)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
     val n = handlers.reporter(s.args(0))
     val body = handlers.fun(s.args(1))
-    genAsk(s"SelfPrims.hatch($n, ${jsString(breedName)})", true, body)
+    genAsk(s"SelfManager.self().hatch($n, ${jsString(breedName)})", true, body)
   }
 
   def generateEvery(w: Statement)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {

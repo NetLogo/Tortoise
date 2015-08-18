@@ -54,8 +54,6 @@ object SimplePrims {
         // SelfPrims
         case _: prim.etc._linkheading => "SelfPrims.linkHeading"
         case _: prim.etc._linklength  => "SelfPrims.linkLength"
-        case _: prim._neighbors4      => "SelfPrims.getNeighbors4"
-        case _: prim._neighbors       => "SelfPrims.getNeighbors"
         case _: prim._other           => "SelfPrims.other"
 
         // SelfManager
@@ -77,6 +75,8 @@ object SimplePrims {
         case _: prim.etc._turtlesat          => "SelfManager.self().turtlesAt"
         case _: prim.etc._turtleshere        => "SelfManager.self().turtlesHere"
         case _: prim._inradius               => "SelfManager.self().inRadius"
+        case _: prim._neighbors              => "Self:anager.self().getNeighbors"
+        case _: prim._neighbors4             => "SelfManager.self().getNeighbors4"
         case _: prim._patchat                => "SelfManager.self().patchAt"
 
         // ListPrims
@@ -231,27 +231,23 @@ object SimplePrims {
         case _: prim.etc._outputwrite => "OutputPrims.write"
 
         // SelfManager
+        case _: prim._fd           => "SelfManager.self().fd"
+        case _: prim._jump         => "SelfManager.self().jumpIfAble"
+        case _: prim.etc._die      => "SelfManager.self().die"
         case _: prim.etc._face     => "SelfManager.self().face"
         case _: prim.etc._facexy   => "SelfManager.self().faceXY"
         case _: prim.etc._followme => "SelfManager.self().followMe"
+        case _: prim.etc._home     => "SelfManager.self().goHome"
         case _: prim.etc._moveto   => "SelfManager.self().moveTo"
         case _: prim.etc._pendown  => "SelfManager.self().penManager.lowerPen"
         case _: prim.etc._penup    => "SelfManager.self().penManager.raisePen"
         case _: prim.etc._rideme   => "SelfManager.self().rideMe"
+        case _: prim.etc._right    => "SelfManager.self().right"
+        case _: prim.etc._setxy    => "SelfManager.self().setXY"
+        case _: prim.etc._stamp    => "SelfManager.self().stamp"
         case _: prim.etc._tie      => "SelfManager.self().tie"
         case _: prim.etc._untie    => "SelfManager.self().untie"
         case _: prim.etc._watchme  => "SelfManager.self().watchMe"
-
-        // SelfPrims
-        case _: prim._bk        => "SelfPrims.bk"
-        case _: prim._fd        => "SelfPrims.fd"
-        case _: prim._jump      => "SelfPrims.jump"
-        case _: prim.etc._die   => "SelfPrims.die"
-        case _: prim.etc._home  => "SelfPrims.home"
-        case _: prim.etc._left  => "SelfPrims.left"
-        case _: prim.etc._right => "SelfPrims.right"
-        case _: prim.etc._setxy => "SelfPrims.setXY"
-        case _: prim.etc._stamp => "SelfPrims.stamp"
 
         // Plotting
         case _: prim.etc._autoplotoff            => "plotManager.disableAutoplotting"
