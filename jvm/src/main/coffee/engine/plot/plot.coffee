@@ -12,12 +12,10 @@ module.exports = class Plot
   _originalBounds: undefined # (Number, Number, Number, Number)
   _penMap:         undefined # Object[String, Pen]
 
-  isAutoplotting: undefined # Boolean
-  name:           undefined # String
+  name: undefined # String
 
   # (String, Array[Pen], PlotOps, String, String, Boolean, Number, Number, Number, Number, () => (Unit | Stop), () => (Unit | Stop)) => Plot
-  constructor: (@name, pens = [], @_ops, @xLabel, @yLabel, @isLegendEnabled = true, @xMin = 0, @xMax = 10, @yMin = 0, @yMax = 10, @_setupThis = (->), @_updateThis = (->)) ->
-    @isAutoplotting  = true
+  constructor: (@name, pens = [], @_ops, @xLabel, @yLabel, @isLegendEnabled = true, @isAutoplotting = true, @xMin = 0, @xMax = 10, @yMin = 0, @yMax = 10, @_setupThis = (->), @_updateThis = (->)) ->
     @_currentPen     = pens[0]
     @_originalBounds = [@xMin, @xMax, @yMin, @yMax]
     @_penMap         = _(pens).map((p) -> p.name.toUpperCase()).zipObject(pens).value()

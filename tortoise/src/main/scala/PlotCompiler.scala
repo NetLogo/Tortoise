@@ -90,7 +90,7 @@ object PlotCompiler {
 
       val args =
         Seq("name", "pens", "plotOps", jsString(sanitizeNil(xAxis)), jsString(sanitizeNil(yAxis)),
-          legendOn, xmin, xmax, ymin, ymax, "setup", "update").mkString(", ")
+          legendOn, autoPlotOn, xmin, xmax, ymin, ymax, "setup", "update").mkString(", ")
 
       var plotContructor =
         s"""|var name    = '$cleanDisplay';

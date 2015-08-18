@@ -20,9 +20,24 @@ class TestPlotting extends FunSuite with PlottingHelpers {
 
   testPlotting("auto-plot-on / auto-plot-off") { (nashorn) =>
 
+    import Plots._
+
     implicit val n = nashorn
 
-    assertAutoplottingness(Plots.Default.isAutoplotting)
+    setPlot(ClassHistogram.name)
+    assertAutoplottingness(ClassHistogram.isAutoplotting)
+
+    setPlot(ClassPlot.name)
+    assertAutoplottingness(ClassPlot.isAutoplotting)
+
+    setPlot(Gini.name)
+    assertAutoplottingness(Gini.isAutoplotting)
+
+    setPlot(Lorenz.name)
+    assertAutoplottingness(Lorenz.isAutoplotting)
+
+    setPlot(Default.name)
+    assertAutoplottingness(Default.isAutoplotting)
     disableAutoplotting()
     assertIsntAutoplotting()
     disableAutoplotting()
