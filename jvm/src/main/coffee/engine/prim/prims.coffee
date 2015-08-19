@@ -132,6 +132,10 @@ module.exports =
       else
         -@_rng.nextLong(-truncated)
 
+    # (Number, Number) => Number
+    randomCoord: (min, max) ->
+      min - 0.5 + @_rng.nextDouble() * (max - min + 1)
+
     # (Number) => Number
     randomFloat: (n) ->
       n * @_rng.nextDouble()

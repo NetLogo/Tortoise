@@ -19,8 +19,8 @@ module.exports =
     _neighborCache:  undefined
     _neighbor4Cache: undefined
 
-    # (Number, Number, Number, Number, () => PatchSet, (Number, Number) => Patch, () => Number) => Topology
-    constructor: (@minPxcor, @maxPxcor, @minPycor, @maxPycor, @_getPatches, @_getPatchAt, @_nextDouble) ->
+    # (Number, Number, Number, Number, () => PatchSet, (Number, Number) => Patch) => Topology
+    constructor: (@minPxcor, @maxPxcor, @minPycor, @maxPycor, @_getPatches, @_getPatchAt) ->
       @height          = 1 + @maxPycor - @minPycor
       @width           = 1 + @maxPxcor - @minPxcor
       @_neighborCache  = {}
@@ -95,18 +95,6 @@ module.exports =
           [xcor, ycor] = agent.getCoords()
           @distanceXY(xcor, ycor, x, y) <= radius
       )
-
-    # () => Number
-    randomXcor: ->
-      @_randomCor(@minPxcor, @maxPxcor)
-
-    # () => Number
-    randomYcor: ->
-      @_randomCor(@minPycor, @maxPycor)
-
-    # (Number, Number) => Number
-    _randomCor: (min, max) ->
-      min - 0.5 + @_nextDouble() * (max - min + 1)
 
     # (Number, Number) => Array[Patch]
     _getNeighbors: (pxcor, pycor) ->

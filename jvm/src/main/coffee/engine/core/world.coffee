@@ -117,7 +117,7 @@ module.exports =
 
     # (Boolean, Boolean, Number, Number, Number, Number) => Unit
     changeTopology: (wrapsInX, wrapsInY, minX = @topology.minPxcor, maxX = @topology.maxPxcor, minY = @topology.minPycor, maxY = @topology.maxPycor) ->
-      @topology = topologyFactory(wrapsInX, wrapsInY, minX, maxX, minY, maxY, @patches, @getPatchAt, @rng.nextDouble)
+      @topology = topologyFactory(wrapsInX, wrapsInY, minX, maxX, minY, maxY, @patches, @getPatchAt)
       @_updater.updated(this)("wrappingAllowedInX", "wrappingAllowedInY")
       return
 
