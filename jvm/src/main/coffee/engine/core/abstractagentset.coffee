@@ -53,13 +53,13 @@ module.exports =
     projectionBy: (f) ->
       @shufflerator().map(@_lazyGetSelfManager().askAgent(f))
 
-    # (() => Double) => Agent
+    # (() => Number) => Agent
     maxOneOf: (f) ->
-      @_findBestOf(-Number.MAX_VALUE, ((result, currentBest) -> result > currentBest), f)
+      @_randomOneOf(@_findMaxesBy(f))
 
-    # (() => Double) => Agent
+    # (() => Number) => Agent
     minOneOf: (f) ->
-      @_findBestOf(Number.MAX_VALUE, ((result, currentBest) -> result < currentBest), f)
+      @_randomOneOf(@_findMinsBy(f))
 
     # () => AbstractAgentSet[T]
     shuffled: ->
@@ -89,6 +89,13 @@ module.exports =
     copyWithNewAgents: (agents) ->
       @_generateFrom(agents)
 
+    # (Array[Agent]) => Agent
+    _randomOneOf: (agents) ->
+      if agents.length is 0
+        Nobody
+      else
+        agents[@_lazyGetNextIntFunc()(agents.length)]
+
     # [U] @ (U, (U, U) => Boolean, () => U) => Agent
     _findBestOf: (worstPossible, findIsBetter, f) ->
       foldFunc =
@@ -105,11 +112,15 @@ module.exports =
             [currentBest, currentWinners]
 
       [[], winners] = @foldl(foldFunc, [worstPossible, []])
+      winners
 
-      if winners.length is 0
-        Nobody
-      else
-        winners[@_lazyGetNextIntFunc()(winners.length)]
+    # [U] @ (() => U) => Array[Agent]
+    _findMaxesBy: (f) ->
+      @_findBestOneOf(-Number.MAX_VALUE, ((result, currentBest) -> result > currentBest), f)
+
+    # [U] @ (() => U) => Array[Agent]
+    _findMinsBy: (f) ->
+      @_findBestOneOf(Number.MAX_VALUE, ((result, currentBest) -> result < currentBest), f)
 
     # (Array[T]) => This[T]
     _generateFrom: (newAgentArr) ->
