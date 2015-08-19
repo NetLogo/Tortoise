@@ -240,6 +240,7 @@ object SimplePrims {
         case _: prim.etc._home     => "SelfManager.self().goHome"
         case _: prim.etc._moveto   => "SelfManager.self().moveTo"
         case _: prim.etc._pendown  => "SelfManager.self().penManager.lowerPen"
+        case _: prim.etc._penerase => "SelfManager.self().penManager.useEraser"
         case _: prim.etc._penup    => "SelfManager.self().penManager.raisePen"
         case _: prim.etc._rideme   => "SelfManager.self().rideMe"
         case _: prim.etc._right    => "SelfManager.self().right"
