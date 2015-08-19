@@ -71,6 +71,34 @@ module.exports =
       else
         throw new Error("Checking equality on undefined is an invalid condition")
 
+    # () => String
+    dateAndTime: ->
+
+      withTwoDigits   = (x) -> (if x < 10 then "0" else "") + x
+      withThreeDigits = (x) -> (if x < 10 then "00" else if x < 100 then "0" else "") + x
+      numberToMonth   = { 1: "Jan",  2: "Feb", 3: "Mar",  4: "Apr",  5: "May",  6: "Jun"
+                        , 7: "Jul",  8: "Aug", 9: "Sep", 10: "Oct", 11: "Nov", 12: "Dec" }
+
+      d = new Date
+
+      hoursNum  = d.getHours()
+      modHours  = if hoursNum is 0 or hoursNum is 12 then 12 else hoursNum % 12
+      hours     = withTwoDigits(modHours)
+      minutes   = withTwoDigits(d.getMinutes())
+      seconds   = withTwoDigits(d.getSeconds())
+      clockTime = "#{hours}:#{minutes}:#{seconds}"
+
+      millis = withThreeDigits(d.getMilliseconds())
+
+      amOrPM = if hoursNum >= 12 then "PM" else "AM"
+
+      date  = withTwoDigits(d.getDate())
+      month = numberToMonth[d.getMonth() + 1]
+      year  = d.getFullYear()
+      calendarComponent = "#{date}-#{month}-#{year}"
+
+      "#{clockTime}.#{millis} #{amOrPM} #{calendarComponent}"
+
     # (String, Agent|Number, Number) => Boolean
     isThrottleTimeElapsed: (commandID, agent, timeLimit) ->
       entry = @_everyMap[@_genEveryKey(commandID, agent)]
