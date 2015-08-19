@@ -60,7 +60,7 @@ module.exports = {
   areRelatedByShade: (color1, color2) ->
     @_colorIntegral(color1) is @_colorIntegral(color2)
 
-  # (Number) => RGB
+  # (Number|Array[Number]|String) => RGB
   colorToRGB: (color) ->
     type = JSType(color)
     if type.isNumber()
