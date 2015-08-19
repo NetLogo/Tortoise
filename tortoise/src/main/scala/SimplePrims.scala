@@ -170,6 +170,7 @@ object SimplePrims {
         case _: prim.etc._scalecolor     => "ColorModel.scaleColor"
         case _: prim.etc._extractrgb     => "ColorModel.colorToRGB"
         case _: prim.etc._rgb            => "ColorModel.genRGBFromComponents"
+        case _: prim.etc._wrapcolor      => "ColorModel.wrapColor"
         case _: prim.etc._turtleson      => "Prims.turtlesOn"
         case _: prim._greaterthan        => "Prims.gt"
         case _: prim._lessthan           => "Prims.lt"
