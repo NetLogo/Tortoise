@@ -115,6 +115,12 @@ trait ReporterPrims extends PrimUtils {
       case o: prim.etc._all =>
         val agents = arg(0)
         s"$agents.agentAll(${handlers.fun(r.args(1), true)})"
+      case _: prim.etc._withmax =>
+        val agents = arg(0)
+        s"$agents.maxesBy(${handlers.fun(r.args(1), true)})"
+      case _: prim.etc._withmin =>
+        val agents = arg(0)
+        s"$agents.minsBy(${handlers.fun(r.args(1), true)})"
 
       // Lookup by breed
       case b: prim._breed                 => s"world.turtleManager.turtlesOfBreed(${jsString(b.breedName)})"

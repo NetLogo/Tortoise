@@ -53,6 +53,10 @@ module.exports =
     projectionBy: (f) ->
       @shufflerator().map(@_lazyGetSelfManager().askAgent(f))
 
+    # (() => Number) => AbstractAgentSet[T]
+    maxesBy: (f) ->
+      @copyWithNewAgents(@_findMaxesBy(f))
+
     # (() => Number) => Agent
     maxOneOf: (f) ->
       @_randomOneOf(@_findMaxesBy(f))
@@ -60,6 +64,10 @@ module.exports =
     # (() => Number) => Agent
     minOneOf: (f) ->
       @_randomOneOf(@_findMinsBy(f))
+
+    # (() => Number) => AbstractAgentSet[T]
+    minsBy: (f) ->
+      @copyWithNewAgents(@_findMinsBy(f))
 
     # () => AbstractAgentSet[T]
     shuffled: ->
