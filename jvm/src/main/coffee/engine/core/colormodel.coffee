@@ -72,6 +72,11 @@ module.exports = {
     else
       throw new Error("Unrecognized color format: #{color}")
 
+  # (Number, Number, Number) => RGB
+  genRGBFromComponents: (r, g, b) ->
+    attenuate = (x) -> if x < 0 then 0 else if x > 255 then 255 else x
+    [r, g, b].map(attenuate)
+
   # (Number) => Number
   nthColor: (n) ->
     index = n % BaseColors.length
