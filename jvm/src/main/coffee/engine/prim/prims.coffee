@@ -140,6 +140,10 @@ module.exports =
     randomFloat: (n) ->
       n * @_rng.nextDouble()
 
+    # (Number, Number) => Number
+    randomPatchCoord: (min, max) ->
+      min + @_rng.nextInt(max - min + 1)
+
     # [T <: (Array[Turtle]|Turtle|AbstractAgentSet[Turtle])] @ (T*) => TurtleSet
     turtleSet: (inputs...) ->
       @_createAgentSet(inputs, Turtle, TurtleSet)

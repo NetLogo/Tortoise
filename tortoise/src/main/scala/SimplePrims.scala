@@ -27,6 +27,8 @@ object SimplePrims {
         case _: prim.etc._nopatches      => "new PatchSet([])"
         case _: prim.etc._noturtles      => "new TurtleSet([])"
         case _: prim.etc._patchsize      => "world.patchSize"
+        case _: prim.etc._randompxcor    => "Prims.randomPatchCoord(world.topology.minPxcor, world.topology.maxPxcor)"
+        case _: prim.etc._randompycor    => "Prims.randomPatchCoord(world.topology.minPycor, world.topology.maxPycor)"
         case _: prim.etc._randomxcor     => "Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor)"
         case _: prim.etc._randomycor     => "Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor)"
         case _: prim.etc._shapes         => "Object.keys(world.turtleShapeMap)"
