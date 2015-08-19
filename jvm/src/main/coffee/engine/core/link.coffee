@@ -13,6 +13,12 @@ TurtleSet        = require('./turtleset')
 { Setters, VariableSpecs }                = require('./link/linkvariables')
 { ExtraVariableSpec }                     = require('./structure/variablespec')
 
+class StampMode
+  constructor: (@name) -> # (String) => StampMode
+
+Stamp      = new StampMode("normal")
+StampErase = new StampMode("erase")
+
 module.exports =
   class Link
 
@@ -69,23 +75,13 @@ module.exports =
 
     # () => Unit
     stamp: ->
+      @_drawStamp(Stamp)
+      return
 
-      { xcor: e1x, ycor: e1y } = @end1
-      { xcor: e2x, ycor: e2y } = @end2
-
-      stampHeading =
-        try @world.topology.towards(e1x, e1y, e2x, e2y)
-        catch error
-          if error instanceof AgentException
-            0
-          else
-            throw error
-
-      color = ColorModel.colorToRGB(@_color)
-      midX  = @getMidpointX()
-      midY  = @getMidpointY()
-
-      @_registerLinkStamp(e1x, e1y, e2x, e2y, midX, midY, stampHeading, color, @_shape, @_thickness, @isDirected, @getSize(), @_isHidden, "normal")
+    # () => Unit
+    stampErase: ->
+      @_drawStamp(StampErase)
+      return
 
     # () => TurtleSet
     bothEnds: ->
@@ -167,6 +163,27 @@ module.exports =
     # () => Array[String]
     varNames: ->
       @_varManager.names()
+
+    # (StampMode) => Unit
+    _drawStamp: (mode) ->
+
+      { xcor: e1x, ycor: e1y } = @end1
+      { xcor: e2x, ycor: e2y } = @end2
+
+      stampHeading =
+        try @world.topology.towards(e1x, e1y, e2x, e2y)
+        catch error
+          if error instanceof AgentException
+            0
+          else
+            throw error
+
+      color = ColorModel.colorToRGB(@_color)
+      midX  = @getMidpointX()
+      midY  = @getMidpointY()
+
+      @_registerLinkStamp(e1x, e1y, e2x, e2y, midX, midY, stampHeading, color, @_shape, @_thickness, @isDirected, @getSize(), @_isHidden, mode.name)
+      return
 
     # (Breed) => Array[String]
     _varNamesForBreed: (breed) ->

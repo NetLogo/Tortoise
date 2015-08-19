@@ -17,6 +17,12 @@ NLMath            = require('util/nlmath')
 { DeathInterrupt: Death, TopologyInterrupt } = require('util/exception')
 { Setters, VariableSpecs }                   = require('./turtle/turtlevariables')
 
+class StampMode
+  constructor: (@name) -> # (String) => StampMode
+
+Stamp      = new StampMode("normal")
+StampErase = new StampMode("erase")
+
 module.exports =
   class Turtle
 
@@ -325,7 +331,12 @@ module.exports =
 
     # () => Unit
     stamp: ->
-      @_registerTurtleStamp(@xcor, @ycor, @_size, @_heading, ColorModel.colorToRGB(@_color), @_getShape(), "normal")
+      @_drawStamp(Stamp)
+      return
+
+    # () => Unit
+    stampErase: ->
+      @_drawStamp(StampErase)
       return
 
     # (Any) => Comparator
@@ -345,6 +356,11 @@ module.exports =
     # () => Array[String]
     varNames: ->
       @_varManager.names()
+
+    # (StampMode) => Unit
+    _drawStamp: (mode) ->
+      @_registerTurtleStamp(@xcor, @ycor, @_size, @_heading, ColorModel.colorToRGB(@_color), @_getShape(), mode.name)
+      return
 
     # (Number, Number, Number, Number) => Unit
     _drawLine: (oldX, oldY, newX, newY) ->
