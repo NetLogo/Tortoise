@@ -119,7 +119,7 @@ setColor = (color) ->
 setHeading = (heading, tiedCaller = undefined) ->
 
   oldHeading = @_heading
-  @_heading  = @_normalizeHeading(heading)
+  @_heading  = NLMath.normalizeHeading(heading)
   @_genVarUpdate("heading")
 
   dh      = @_heading - oldHeading

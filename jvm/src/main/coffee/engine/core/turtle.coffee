@@ -127,7 +127,7 @@ module.exports =
 
     # (Number, Number) => Agent
     patchRightAndAhead: (angle, distance) ->
-      heading = @_normalizeHeading(@_heading + angle)
+      heading = NLMath.normalizeHeading(@_heading + angle)
       try
         newX = @world.topology.wrapX(@xcor + distance * NLMath.squash(NLMath.sin(heading)))
         newY = @world.topology.wrapY(@ycor + distance * NLMath.squash(NLMath.cos(heading)))
@@ -195,7 +195,7 @@ module.exports =
     # (Number, Turtle) => Unit
     right: (angle, tiedCaller = undefined) ->
       newHeading = @_heading + angle
-      Setters.setHeading.call(this, @_normalizeHeading(newHeading), tiedCaller)
+      Setters.setHeading.call(this, NLMath.normalizeHeading(newHeading), tiedCaller)
       return
 
     # (Number, Number, Turtle) => Unit
@@ -379,7 +379,7 @@ module.exports =
         size  = @penManager.getSize()
         mode  = @penManager.getMode().toString()
         { minPxcor, maxPxcor, minPycor, maxPycor } = @world.topology
-        lines = makePenLines(x, y, @_normalizeHeading(@_heading), dist, minPxcor - 0.5, maxPxcor + 0.5, minPycor - 0.5, maxPycor + 0.5)
+        lines = makePenLines(x, y, NLMath.normalizeHeading(@_heading), dist, minPxcor - 0.5, maxPxcor + 0.5, minPycor - 0.5, maxPycor + 0.5)
         _(lines).forEach(({ x1, y1, x2, y2 }) => @_registerLineDraw(x1, y1, x2, y2, color, size, mode); return).value()
       return
 
@@ -395,13 +395,6 @@ module.exports =
     # (String) => (Link) => Boolean
     _linkBreedMatches: (breedName) -> (link) ->
       breedName is "LINKS" or breedName is link.getBreedName()
-
-    # (Number) => Number
-    _normalizeHeading: (heading) ->
-      if (0 <= heading < 360)
-        heading
-      else
-        ((heading % 360) + 360) % 360
 
     # () => Unit
     _seppuku: ->

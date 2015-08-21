@@ -57,6 +57,13 @@ module.exports = {
   mod: (a, b) ->
     a %% b
 
+  # (Number) => Number
+  normalizeHeading: (heading) ->
+    if (0 <= heading < 360)
+      heading
+    else
+      ((heading % 360) + 360) % 360
+
   # (Number, Number) => Number
   precision: (n, places) ->
     multiplier = StrictMath.pow(10, places)
