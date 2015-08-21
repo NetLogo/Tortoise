@@ -84,6 +84,7 @@ module.exports =
       pos = (x1 + (x1 + @_shortestX(x1, x2))) / 2
       @_wrap(pos, @minPxcor - 0.5, @maxPxcor + 0.5)
 
+    # (Number, Number) => Number
     midpointy: (y1, y2) ->
       pos = (y1 + (y1 + @_shortestY(y1, y2))) / 2
       @_wrap(pos, @minPycor - 0.5, @maxPycor + 0.5)
