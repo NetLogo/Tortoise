@@ -101,6 +101,35 @@ module.exports =
     min: (xs) ->
       Math.min(xs...)
 
+    # [T] @ (Array[T]) => Array[T]
+    modes: (items) ->
+
+      genItemCountPairs =
+        (xs) =>
+          pairs = []
+          for x in xs
+            pair = _(pairs).find(([item, c]) => @_equality(item, x))
+            if pair?
+              pair[1] += 1
+            else
+              pairs.push([x, 1])
+          pairs
+
+      calculateModes =
+        (xsToCounts) ->
+          f =
+            ([bests, bestCount], [item, count]) ->
+              if count > bestCount
+                [[item], count]
+              else if count < bestCount
+                [bests, bestCount]
+              else
+                [bests.concat([item]), bestCount]
+          _(xsToCounts).foldl(f, [[], 0])
+
+      [result, []] = calculateModes(genItemCountPairs(items))
+      result
+
     # [Item] @ (Number, ListOrSet[Item]) => ListOrSet[Item]
     nOf: (n, agentsOrList) ->
       type = NLType(agentsOrList)

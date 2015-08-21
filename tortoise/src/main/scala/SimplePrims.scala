@@ -98,6 +98,7 @@ object SimplePrims {
         case _: prim.etc._median            => "ListPrims.median"
         case _: prim.etc._member            => "ListPrims.member"
         case _: prim.etc._min               => "ListPrims.min"
+        case _: prim.etc._modes             => "ListPrims.modes"
         case _: prim.etc._nof               => "ListPrims.nOf"
         case _: prim.etc._position          => "ListPrims.position"
         case _: prim.etc._removeduplicates  => "ListPrims.removeDuplicates"
