@@ -245,6 +245,24 @@ module.exports =
             acc
       _(xs).foldl(f, [])
 
+    # [T] @ (Array[T]) => Array[T]
+    shuffle: (xs) ->
+
+      swap =
+        (arr, i, j) ->
+          tmp    = arr[i]
+          arr[i] = arr[j]
+          arr[j] = tmp;
+
+      out = xs[..]
+      i   = out.length
+
+      while i > 1
+        swap(out, i - 1, @_nextInt(i))
+        i--
+
+      out
+
     # [T] @ (ListOrSet[T]) => ListOrSet[T]
     sort: (xs) ->
       type = NLType(xs)
