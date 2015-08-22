@@ -104,15 +104,7 @@ module.exports =
 
     # (Number, Number) => Patch
     patchAt: (dx, dy) ->
-      try
-        x = @world.topology.wrapX(@xcor + dx)
-        y = @world.topology.wrapY(@ycor + dy)
-        @world.getPatchAt(x, y)
-      catch error
-        if error instanceof TopologyInterrupt
-          Nobody
-        else
-          throw error
+      @world.patchAtCoords(@xcor + dx, @ycor + dy)
 
     # (Number, Number) => TurtleSet
     turtlesAt: (dx, dy) ->
@@ -127,13 +119,7 @@ module.exports =
 
     # (Number, Number) => Agent
     patchRightAndAhead: (angle, distance) ->
-      heading = NLMath.normalizeHeading(@_heading + angle)
-      try
-        newX = @world.topology.wrapX(@xcor + distance * NLMath.squash(NLMath.sin(heading)))
-        newY = @world.topology.wrapY(@ycor + distance * NLMath.squash(NLMath.cos(heading)))
-        @world.getPatchAt(newX, newY)
-      catch error
-        if error instanceof TopologyInterrupt then Nobody else throw error
+      @patchAtHeadingAndDistance(@_heading + angle, distance)
 
     # (Number, Number) => Agent
     patchLeftAndAhead: (angle, distance) ->

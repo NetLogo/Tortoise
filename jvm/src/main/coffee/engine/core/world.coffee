@@ -9,6 +9,7 @@ LinkManager     = require('./world/linkmanager')
 Ticker          = require('./world/ticker')
 TurtleManager   = require('./world/turtlemanager')
 StrictMath      = require('shim/strictmath')
+NLMath          = require('util/nlmath')
 
 { TopologyInterrupt } = require('util/exception')
 
@@ -133,6 +134,22 @@ module.exports =
           Nobody
         else
           throw error
+
+    # (Number, Number) => Agent
+    patchAtCoords: (x, y) ->
+      try
+        newX = @topology.wrapX(x)
+        newY = @topology.wrapY(y)
+        @getPatchAt(newX, newY)
+      catch error
+        if error instanceof TopologyInterrupt then Nobody else throw error
+
+    # (Number, Number, Number, Number) => Agent
+    patchAtHeadingAndDistanceFrom: (angle, distance, x, y) ->
+      heading = NLMath.normalizeHeading(angle)
+      targetX = x + distance * NLMath.squash(NLMath.sin(heading))
+      targetY = y + distance * NLMath.squash(NLMath.cos(heading))
+      @patchAtCoords(targetX, targetY)
 
     # () => Unit
     clearAll: ->

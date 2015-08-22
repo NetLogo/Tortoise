@@ -108,12 +108,11 @@ module.exports =
 
     # (Number, Number) => Agent
     patchAt: (dx, dy) ->
-      try
-        newX = @world.topology.wrapX(@pxcor + dx)
-        newY = @world.topology.wrapY(@pycor + dy)
-        @world.getPatchAt(newX, newY)
-      catch error
-        if error instanceof TopologyInterrupt then Nobody else throw error
+      @patchAtCoords(@pxcor + dx, @pycor + dy)
+
+    # (Number, Number) => Agent
+    patchAtCoords: (x, y) ->
+      @world.patchAtCoords(x, y)
 
     # () => Unit
     watchMe: ->
