@@ -114,6 +114,10 @@ module.exports =
     patchAtCoords: (x, y) ->
       @world.patchAtCoords(x, y)
 
+    # (Number, Number) => Agent
+    patchAtHeadingAndDistance: (angle, distance) ->
+      @world.patchAtHeadingAndDistanceFrom(angle, distance, @pxcor, @pycor)
+
     # () => Unit
     watchMe: ->
       @world.observer.watch(this)

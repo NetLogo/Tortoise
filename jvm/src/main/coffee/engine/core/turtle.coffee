@@ -118,6 +118,10 @@ module.exports =
         @world.selfManager.myself().end1
 
     # (Number, Number) => Agent
+    patchAtHeadingAndDistance: (angle, distance) ->
+      @world.patchAtHeadingAndDistanceFrom(angle, distance, @xcor, @ycor)
+
+    # (Number, Number) => Agent
     patchRightAndAhead: (angle, distance) ->
       @patchAtHeadingAndDistance(@_heading + angle, distance)
 
