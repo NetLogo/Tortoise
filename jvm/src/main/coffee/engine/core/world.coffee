@@ -151,6 +151,11 @@ module.exports =
       targetY = y + distance * NLMath.squash(NLMath.cos(heading))
       @patchAtCoords(targetX, targetY)
 
+    # (Number) => Unit
+    setPatchSize: (@patchSize) ->
+      @_updater.updated(this)("patchSize")
+      return
+
     # () => Unit
     clearAll: ->
       @observer.clearCodeGlobals()

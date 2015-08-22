@@ -183,6 +183,7 @@ module.exports =
       maxPycor:                   ["MAXPYCOR",                  world.topology.maxPycor]
       minPxcor:                   ["MINPXCOR",                  world.topology.minPxcor]
       minPycor:                   ["MINPYCOR",                  world.topology.minPycor]
+      patchSize:                  ["patchSize",                 world.patchSize]
       ticks:                      ["ticks",                     world.ticker._count]
       unbreededLinksAreDirected:  ["unbreededLinksAreDirected", world.breedManager.links().isDirected()]
       width:                      ["worldWidth",                world.topology.width]
