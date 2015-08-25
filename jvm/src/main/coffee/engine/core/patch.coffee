@@ -106,6 +106,10 @@ module.exports =
     turtlesAt: (dx, dy) ->
       @patchAt(dx, dy).turtlesHere()
 
+    # (String, Number, Number) => TurtleSet
+    breedAt: (breedName, dx, dy) ->
+      @patchAt(dx, dy).breedHere(breedName)
+
     # (Number, Number) => Agent
     patchAt: (dx, dy) ->
       @patchAtCoords(@pxcor + dx, @pycor + dy)

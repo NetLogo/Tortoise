@@ -110,6 +110,10 @@ module.exports =
     turtlesAt: (dx, dy) ->
       @getPatchHere().turtlesAt(dx, dy)
 
+    # (String, Number, Number) => TurtleSet
+    breedAt: (breedName, dx, dy) ->
+      @getPatchHere().breedAt(breedName, dx, dy)
+
     # () => Turtle
     otherEnd: ->
       if this is @world.selfManager.myself().end1
