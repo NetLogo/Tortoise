@@ -57,11 +57,11 @@ module.exports =
     maxesBy: (f) ->
       @copyWithNewAgents(@_findMaxesBy(f))
 
-    # (() => Number) => Agent
+    # (() => Number) => T
     maxOneOf: (f) ->
       @_randomOneOf(@_findMaxesBy(f))
 
-    # (() => Number) => Agent
+    # (() => Number) => T
     minOneOf: (f) ->
       @_randomOneOf(@_findMinsBy(f))
 
@@ -97,14 +97,14 @@ module.exports =
     copyWithNewAgents: (agents) ->
       @_generateFrom(agents)
 
-    # (Array[Agent]) => Agent
+    # (Array[T]) => T
     _randomOneOf: (agents) ->
       if agents.length is 0
         Nobody
       else
         agents[@_lazyGetNextIntFunc()(agents.length)]
 
-    # [U] @ (U, (U, U) => Boolean, () => U) => Agent
+    # (Number, (Number, Number) => Boolean, () => Number) => T
     _findBestOf: (worstPossible, findIsBetter, f) ->
       foldFunc =
         ([currentBest, currentWinners], agent) =>
@@ -122,11 +122,11 @@ module.exports =
       [[], winners] = @foldl(foldFunc, [worstPossible, []])
       winners
 
-    # [U] @ (() => U) => Array[Agent]
+    # [U] @ (() => U) => Array[T]
     _findMaxesBy: (f) ->
       @_findBestOneOf(-Number.MAX_VALUE, ((result, currentBest) -> result > currentBest), f)
 
-    # [U] @ (() => U) => Array[Agent]
+    # [U] @ (() => U) => Array[T]
     _findMinsBy: (f) ->
       @_findBestOneOf(Number.MAX_VALUE, ((result, currentBest) -> result < currentBest), f)
 
