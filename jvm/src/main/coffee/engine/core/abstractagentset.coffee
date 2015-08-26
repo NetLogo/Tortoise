@@ -1,5 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
+_              = require('lodash')
 Nobody         = require('./nobody')
 NLType         = require('./typechecker')
 Seq            = require('util/seq')
@@ -57,9 +58,31 @@ module.exports =
     maxesBy: (f) ->
       @copyWithNewAgents(@_findMaxesBy(f))
 
+    # (Number, () => Number) => AbstractAgentSet[T]
+    maxNOf: (n, f) ->
+
+      if n > @size()
+        throw new Error("Requested #{n} random agents from a set of only #{@size()} agents.")
+
+      if n < 0
+        throw new Error("First input to MAX-N-OF can't be negative.")
+
+      @_findBestNOf(n, f, (x, y) -> if x is y then 0 else if x > y then -1 else 1)
+
     # (() => Number) => T
     maxOneOf: (f) ->
       @_randomOneOf(@_findMaxesBy(f))
+
+    # (Number, () => Number) => AbstractAgentSet[T]
+    minNOf: (n, f) ->
+
+      if n > @size()
+        throw new Error("Requested #{n} random agents from a set of only #{@size()} agents.")
+
+      if n < 0
+        throw new Error("First input to MIN-N-OF can't be negative.")
+
+      @_findBestNOf(n, f, (x, y) -> if x is y then 0 else if x < y then -1 else 1)
 
     # (() => Number) => T
     minOneOf: (f) ->
@@ -96,6 +119,42 @@ module.exports =
     # (Array[T]) => AbstractAgentSet[T]
     copyWithNewAgents: (agents) ->
       @_generateFrom(agents)
+
+    # (Number, () => Number, (Number, Number) => Number) => AbstractAgentSet[T]
+    _findBestNOf: (n, f, cStyleComparator) ->
+
+      ask = @_lazyGetSelfManager().askAgent(f)
+
+      groupByValue =
+        (acc, agent) ->
+          result = ask(agent)
+          if NLType(result).isNumber()
+            entry = acc[result]
+            if entry?
+              entry.push(agent)
+            else
+              acc[result] = [agent]
+          acc
+
+      appendAgent =
+        ([winners, numAdded], agent) ->
+          if numAdded < n
+            winners.push(agent)
+            [winners, numAdded + 1]
+          else
+            [winners, numAdded]
+
+      collectWinners =
+        ([winners, numAdded], agents) ->
+          if numAdded < n
+            _(agents).foldl(appendAgent, [winners, numAdded])
+          else
+            [winners, numAdded]
+
+      valueToAgentsMap = @shufflerator().toArray().reduce(groupByValue, {})
+      agentLists       = _(valueToAgentsMap).keys().map(parseFloat).value().sort(cStyleComparator).map((value) -> valueToAgentsMap[value])
+      [best, []]       = _(agentLists).foldl(collectWinners, [[], 0])
+      @_generateFrom(best)
 
     # (Array[T]) => T
     _randomOneOf: (agents) ->

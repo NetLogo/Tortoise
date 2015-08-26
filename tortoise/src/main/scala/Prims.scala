@@ -106,9 +106,15 @@ trait ReporterPrims extends PrimUtils {
       case _: prim._with =>
         val agents = arg(0)
         s"$agents.agentFilter(${handlers.fun(r.args(1), true)})"
+      case _: prim.etc._maxnof =>
+        val agents = arg(1)
+        s"$agents.maxNOf(${arg(0)}, ${handlers.fun(r.args(2), true)})"
       case _: prim.etc._maxoneof =>
         val agents = arg(0)
         s"$agents.maxOneOf(${handlers.fun(r.args(1), true)})"
+      case _: prim.etc._minnof =>
+        val agents = arg(1)
+        s"$agents.minNOf(${arg(0)}, ${handlers.fun(r.args(2), true)})"
       case _: prim.etc._minoneof =>
         val agents = arg(0)
         s"$agents.minOneOf(${handlers.fun(r.args(1), true)})"
