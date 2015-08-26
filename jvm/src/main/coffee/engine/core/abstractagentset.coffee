@@ -124,11 +124,11 @@ module.exports =
 
     # [U] @ (() => U) => Array[T]
     _findMaxesBy: (f) ->
-      @_findBestOneOf(-Number.MAX_VALUE, ((result, currentBest) -> result > currentBest), f)
+      @_findBestOf(-Infinity, ((result, currentBest) -> result > currentBest), f)
 
     # [U] @ (() => U) => Array[T]
     _findMinsBy: (f) ->
-      @_findBestOneOf(Number.MAX_VALUE, ((result, currentBest) -> result < currentBest), f)
+      @_findBestOf(Infinity, ((result, currentBest) -> result < currentBest), f)
 
     # (Array[T]) => This[T]
     _generateFrom: (newAgentArr) ->
