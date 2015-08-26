@@ -56,7 +56,7 @@ class Nashorn {
       case a: jdk.nashorn.api.scripting.ScriptObjectMirror if a.isArray =>
         LogoList.fromIterator(
           Iterator.from(0)
-            .map(x => fromNashorn(a.get(x)))
+            .map(x => fromNashorn(a.get(x.toString)))
             .take(a.get("length").asInstanceOf[Number].intValue))
       case a: jdk.nashorn.api.scripting.ScriptObjectMirror if a.get("id") == -1 =>
         Nobody
