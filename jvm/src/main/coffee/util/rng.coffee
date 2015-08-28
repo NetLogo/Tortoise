@@ -17,6 +17,10 @@ module.exports =
     constructor: ->
       @_useMainRNG()
 
+    # () => Number
+    nextGaussian: =>
+      @_currentRNG.nextGaussian()
+
     # (Number) => Number
     nextInt: (limit) =>
       @_currentRNG.nextInt(limit)

@@ -166,6 +166,7 @@ object SimplePrims {
         case _: prim.etc._map            => "Tasks.map"
         case _: prim._random             => "Prims.random"
         case _: prim.etc._randomfloat    => "Prims.randomFloat"
+        case _: prim.etc._randomnormal   => "Prims.randomNormal"
         case _: prim.etc._linkset        => "Prims.linkSet"
         case _: prim.etc._patchset       => "Prims.patchSet"
         case _: prim.etc._turtleset      => "Prims.turtleSet"

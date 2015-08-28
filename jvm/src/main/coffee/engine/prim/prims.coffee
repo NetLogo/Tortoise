@@ -169,6 +169,13 @@ module.exports =
       n * @_rng.nextDouble()
 
     # (Number, Number) => Number
+    randomNormal: (mean, stdDev) ->
+      if stdDev >= 0
+        NLMath.validateNumber(mean + stdDev * @_rng.nextGaussian())
+      else
+        throw new Error("random-normal's second input can't be negative.")
+
+    # (Number, Number) => Number
     randomPatchCoord: (min, max) ->
       min + @_rng.nextInt(max - min + 1)
 
