@@ -192,6 +192,7 @@ object SimplePrims {
       PartialFunction.condOpt(r) {
         case _: prim.etc._isagent          => s"isValidAgent()"
         case _: prim.etc._isagentset       => s"isAgentSet()"
+        case _: prim.etc._isboolean        => s"isBoolean()"
         case x: prim.etc._isbreed          => s"isBreed(${jsString(x.breedName)})"
         case _: prim.etc._iscommandtask    => s"isCommandTask()"
         case _: prim.etc._isdirectedlink   => s"isDirectedLink()"

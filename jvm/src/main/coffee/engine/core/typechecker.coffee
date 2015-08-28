@@ -18,6 +18,7 @@ JSType           = require('util/typechecker')
 
 NLType.prototype.isAgent          =             -> @isTurtle() or @isPatch() or @isLink()
 NLType.prototype.isAgentSet       =             -> @_x instanceof AbstractAgentSet
+NLType.prototype.isBoolean        =             -> JSType(@_x).isBoolean()
 NLType.prototype.isBreed          = (breedName) -> not @_x.isDead?() and @_x.isBreed?(breedName) is true
 NLType.prototype.isBreedSet       = (breedName) -> @isAgentSet() and @_x.getSpecialName()? and @_x.getSpecialName() is breedName
 NLType.prototype.isCommandTask    =             -> JSType(@_x).isFunction() and not @_x.isReporter
