@@ -1,13 +1,14 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 _               = require('lodash')
-ColorModel      = require('engine/core/colormodel')
 Nobody          = require('./nobody')
 TurtleSet       = require('./turtleset')
 VariableManager = require('./structure/variablemanager')
 Comparator      = require('util/comparator')
 
 { DeathInterrupt: Death, TopologyInterrupt } = require('util/exception')
+{ Setters, VariableSpecs }                   = require('./patch/patchvariables')
+{ ExtraVariableSpec }                        = require('./structure/variablespec')
 
 module.exports =
   class Patch
@@ -136,9 +137,9 @@ module.exports =
     # () => Unit
     reset: ->
       @_varManager = @_genVarManager(@world.patchesOwnNames)
-      @_setPcolor(0)
-      @_setPlabel('')
-      @_setPlabelColor(9.9)
+      Setters.setPcolor.call(this, 0)
+      Setters.setPlabel.call(this, '')
+      Setters.setPlabelColor.call(this, 9.9)
       return
 
     # () => Array[String]
@@ -147,50 +148,11 @@ module.exports =
 
     # Array[String] => VariableManager
     _genVarManager: (extraVarNames) ->
-      varBundles = [
-        { name: 'id',           get: (=> @id),           set: (->)                         },
-        { name: 'pcolor',       get: (=> @_pcolor),      set: ((x) => @_setPcolor(x))      },
-        { name: 'plabel',       get: (=> @_plabel),      set: ((x) => @_setPlabel(x))      },
-        { name: 'plabel-color', get: (=> @_plabelcolor), set: ((x) => @_setPlabelColor(x)) },
-        { name: 'pxcor',        get: (=> @pxcor),        set: (->)                         },
-        { name: 'pycor',        get: (=> @pycor),        set: (->)                         }
-      ]
-
-      new VariableManager(extraVarNames, varBundles)
+      extraSpecs = extraVarNames.map((name) -> new ExtraVariableSpec(name))
+      allSpecs   = VariableSpecs.concat(extraSpecs)
+      new VariableManager(this, allSpecs)
 
     # (String) => Unit
     _genVarUpdate: (varName) ->
       @_updateVarsByName(varName)
-      return
-
-    # (Number) => Unit
-    _setPcolor: (color) ->
-      wrappedColor = ColorModel.wrapColor(color)
-      if @_pcolor isnt wrappedColor
-        @_pcolor = wrappedColor
-        @_genVarUpdate("pcolor")
-        if wrappedColor isnt 0
-          @_declareNonBlackPatch()
-      return
-
-    # (String) => Unit
-    _setPlabel: (label) ->
-      wasEmpty = @_plabel is ""
-      isEmpty  = label is ""
-
-      @_plabel = label
-      @_genVarUpdate("plabel")
-
-      if isEmpty and not wasEmpty
-        @_decrementPatchLabelCount()
-      else if not isEmpty and wasEmpty
-        @_incrementPatchLabelCount()
-
-      return
-
-
-    # (Number) => Unit
-    _setPlabelColor: (color) ->
-      @_plabelcolor = ColorModel.wrapColor(color)
-      @_genVarUpdate("plabel-color")
       return

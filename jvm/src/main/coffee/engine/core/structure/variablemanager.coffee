@@ -1,40 +1,54 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
+_ = require('lodash')
+
+{ ExtraVariableSpec, ImmutableVariableSpec, MutableVariableSpec } = require('./variablespec')
+
 module.exports =
   class VariableManager
 
-    # type VariableBundle[T] = { name: String, get: () => T, set: (T) => Unit }
+    _names: undefined # Array[String]
 
-    # (Array[String], Array[VariableBundle]) => VariableManager
-    constructor: (@_varNames = [], @_getAndSetFuncs = []) ->
-      @_addVarsByName(@_varNames)
-      @_addVarsByBundle(@_getAndSetFuncs)
+    # (Agent, Array[VariableSpec[_]]) => VariableManager
+    constructor: (@agent, varSpecs) ->
+      @_addVarsBySpec(varSpecs)
+      @_names = (name for { name } in varSpecs)
 
     # () => Array[String]
     names: ->
-      @_getAndSetFuncs.map(({ name }) -> name).concat(@_varNames)
+      @_names
 
-    # (Array[String]) => (Array[String], Array[VariableBundle]) => Unit
-    refineBy: (obsoleteVarNames = []) => (varNames = [], getAndSetFuncs = []) =>
-      invalidatedSetter = -> throw new Error("#{name} is no longer a valid variable.")
-      for name in obsoleteVarNames
-        @_defineProperty(name, { get: undefined, set: invalidatedSetter, configurable: true })
+    # (Array[String], Array[String]) => Unit
+    refineBy: (oldNames, newNames) ->
+      invalidatedSetter = (name) -> (value) -> throw new Error("#{name} is no longer a valid variable.")
 
-      @_addVarsByName(varNames)
-      @_addVarsByBundle(getAndSetFuncs)
+      obsoletedNames = _(oldNames).difference(newNames).value()
+      freshNames     = _(newNames).difference(oldNames).value()
+      specs          = freshNames.map((name) -> new ExtraVariableSpec(name))
+
+      for name in obsoletedNames
+        @_defineProperty(name, { get: undefined, set: invalidatedSetter(name), configurable: true })
+
+      @_addVarsBySpec(specs)
+      @_names = _(@_names).difference(obsoletedNames).value().concat(freshNames)
 
       return
 
-    # (Array[String]) => Unit
-    _addVarsByName: (varNames) ->
-      for name in varNames
-        @_defineProperty(name, { value: 0, writable: true, configurable: true })
-      return
-
-    # (Array[VariableBundle]) => Unit
-    _addVarsByBundle: (bundles) ->
-      for { name, get, set } in bundles
-        @_defineProperty(name, { get: get, set: set, configurable: true })
+    # (Array[VariableSpec]) => Unit
+    _addVarsBySpec: (varSpecs) ->
+      for spec in varSpecs
+        obj =
+          if spec instanceof ExtraVariableSpec
+            { configurable: true, value: 0, writable: true }
+          else if spec instanceof MutableVariableSpec
+            get = do (spec) -> (-> spec.get.call(@agent))
+            set = do (spec) -> ((x) -> spec.set.call(@agent, x))
+            { configurable: true, get, set }
+          else if spec instanceof ImmutableVariableSpec
+            { value: spec.get.call(@agent), writable: false }
+          else
+            throw new Error("Non-exhaustive spec type match: #{typeof(spec)}!")
+        @_defineProperty(spec.name, obj)
       return
 
     # (String, Object) => Unit

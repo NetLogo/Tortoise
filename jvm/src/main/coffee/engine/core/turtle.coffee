@@ -13,7 +13,9 @@ Comparator        = require('util/comparator')
 NLMath            = require('util/nlmath')
 
 { PenManager, PenStatus: { Down, Erase } }   = require('./structure/penmanager')
+{ ExtraVariableSpec }                        = require('./structure/variablespec')
 { DeathInterrupt: Death, TopologyInterrupt } = require('util/exception')
+{ Setters, VariableSpecs }                   = require('./turtle/turtlevariables')
 
 module.exports =
   class Turtle
@@ -40,95 +42,18 @@ module.exports =
       @linkManager = new TurtleLinkManager(@id, @world.breedManager)
 
       varNames     = @_varNamesForBreed(breed)
-      @_varManager = @_genVarManager(varNames, @world.turtleManager.turtlesOfBreed)
+      @_varManager = @_genVarManager(varNames)
 
-      @_setBreed(breed)
+      Setters.setBreed.call(this, breed)
 
       if @_givenShape?
-        @_setShape(@_givenShape)
+        Setters.setShape.call(this, @_givenShape)
 
       @getPatchHere().trackTurtle(this)
 
     # () => String
     getBreedName: ->
       @_breed.name
-
-    # (Number, Turtle) => Unit
-    _setXcor: (newX, tiedCaller = undefined) ->
-
-      originPatch = @getPatchHere()
-      oldX        = @xcor
-      @xcor       = @world.topology.wrapX(newX)
-      @_updateVarsByName("xcor")
-      @_drawLine(oldX, @ycor, newX, @ycor)
-
-      if originPatch isnt @getPatchHere()
-        originPatch.untrackTurtle(this)
-        @getPatchHere().trackTurtle(this)
-
-      @linkManager._refresh()
-
-      dx = @xcor - oldX
-      @_tiedTurtles().forEach(
-        (turtle) =>
-          if turtle isnt tiedCaller
-            turtle._setXcor(turtle.xcor + dx, this)
-          return
-      )
-
-      return
-
-    # (Number, Turtle) => Unit
-    _setYcor: (newY, tiedCaller = undefined) ->
-
-      originPatch = @getPatchHere()
-      oldY        = @ycor
-      @ycor       = @world.topology.wrapY(newY)
-      @_updateVarsByName("ycor")
-      @_drawLine(@xcor, oldY, @xcor, newY)
-
-      if originPatch isnt @getPatchHere()
-        originPatch.untrackTurtle(this)
-        @getPatchHere().trackTurtle(this)
-
-      @linkManager._refresh()
-
-      dy = @ycor - oldY
-      @_tiedTurtles().forEach(
-        (turtle) =>
-          if turtle isnt tiedCaller
-            turtle._setYcor(turtle.ycor + dy, this)
-          return
-      )
-
-      return
-
-    # (Number, Number, Turtle) => Unit
-    _setXandY: (newX, newY, tiedCaller = undefined) ->
-
-      originPatch = @getPatchHere()
-      oldX        = @xcor
-      oldY        = @ycor
-      @xcor       = @world.topology.wrapX(newX)
-      @ycor       = @world.topology.wrapY(newY)
-      @_updateVarsByName("xcor", "ycor")
-
-      if originPatch isnt @getPatchHere()
-        originPatch.untrackTurtle(this)
-        @getPatchHere().trackTurtle(this)
-
-      @linkManager._refresh()
-
-      dx = @xcor - oldX
-      dy = @ycor - oldY
-      @_tiedTurtles().forEach(
-        (turtle) =>
-          if turtle isnt tiedCaller
-            turtle._setXandY(turtle.xcor + dx, turtle.ycor + dy, this)
-          return
-      )
-
-      return
 
     # (Number) => Boolean
     canMove: (distance) ->
@@ -158,7 +83,7 @@ module.exports =
     # (Number, Number) => Unit
     faceXY: (x, y) ->
       if x isnt @xcor or y isnt @ycor
-        @_setHeading(@world.topology.towards(@xcor, @ycor, x, y))
+        Setters.setHeading.call(this, @world.topology.towards(@xcor, @ycor, x, y))
       return
 
     # (Turtle|Patch) => Unit
@@ -264,7 +189,7 @@ module.exports =
     # (Number, Turtle) => Unit
     right: (angle, tiedCaller = undefined) ->
       newHeading = @_heading + angle
-      @_setHeading(@_normalizeHeading(newHeading), tiedCaller)
+      Setters.setHeading.call(this, @_normalizeHeading(newHeading), tiedCaller)
       return
 
     # (Number, Number, Turtle) => Unit
@@ -284,7 +209,7 @@ module.exports =
 
     # (Boolean) => Unit
     hideTurtle: (shouldHide) ->
-      @_setIsHidden(shouldHide)
+      Setters.setIsHidden.call(this, shouldHide)
       return
 
     # (String) => Boolean
@@ -484,152 +409,40 @@ module.exports =
     _fixedTiedTurtles: ->
       _(@_tiedTurtlesRaw().fixeds).unique(false, (x) -> x.id).value()
 
-    # (Array[String], (String) => TurtleSet) => VariableManager
-    _genVarManager: (extraVarNames, getTurtlesByBreedName) ->
-      varBundles = [
-        { name: 'breed',       get: (=> getTurtlesByBreedName(@_breed.name)), set: ((x) => @_setBreed(x))             },
-        { name: 'color',       get: (=> @_color),                             set: ((x) => @_setColor(x))             },
-        { name: 'heading',     get: (=> @_heading),                           set: ((x) => @_setHeading(x))           },
-        { name: 'hidden?',     get: (=> @_hidden),                            set: ((x) => @_setIsHidden(x))          },
-        { name: 'label',       get: (=> @_label),                             set: ((x) => @_setLabel(x))             },
-        { name: 'label-color', get: (=> @_labelcolor),                        set: ((x) => @_setLabelColor(x))        },
-        { name: 'pen-mode',    get: (=> @penManager.getMode().toString()),    set: ((x) => @penManager.setPenMode(x)) },
-        { name: 'pen-size',    get: (=> @penManager.getSize()),               set: ((x) => @penManager.setSize(x))    },
-        { name: 'shape',       get: (=> @_getShape()),                        set: ((x) => @_setShape(x))             },
-        { name: 'size',        get: (=> @_size),                              set: ((x) => @_setSize(x))              },
-        { name: 'who',         get: (=> @id),                                 set: (->)                               },
-        { name: 'xcor',        get: (=> @xcor),                               set: ((x) => @_setXcor(x))              },
-        { name: 'ycor',        get: (=> @ycor),                               set: ((x) => @_setYcor(x))              }
-      ]
-
-      new VariableManager(extraVarNames, varBundles)
+    # (Array[String]) => VariableManager
+    _genVarManager: (extraVarNames) ->
+      extraSpecs = extraVarNames.map((name) -> new ExtraVariableSpec(name))
+      allSpecs   = VariableSpecs.concat(extraSpecs)
+      new VariableManager(this, allSpecs)
 
     # (String) => Unit
     _genVarUpdate: (varName) ->
       @_updateVarsByName(varName)
       return
 
+    # (Number, Number, Turtle) => Unit
+    _setXandY: (newX, newY, tiedCaller = undefined) ->
 
-    ###
-     "Jason, this is craziness!", you say.  "Not quite," I say.  It _is_ kind of lame, but changing turtle members
-     needs to be controlled, so that all changes cause updates to be triggered.  And since the `VariableManager` needs
-     to know how to set all of the variables, we may as well declare the code for that in a place where it can be
-     easily reused. --JAB (6/2/14)
-    ###
+      originPatch = @getPatchHere()
+      oldX        = @xcor
+      oldY        = @ycor
+      @xcor       = @world.topology.wrapX(newX)
+      @ycor       = @world.topology.wrapY(newY)
+      @_updateVarsByName("xcor", "ycor")
 
-    # (AbstractAgentSet|Breed|String) => Unit
-    _setBreed: (breed) ->
+      if originPatch isnt @getPatchHere()
+        originPatch.untrackTurtle(this)
+        @getPatchHere().trackTurtle(this)
 
-      type = NLType(breed)
+      @linkManager._refresh()
 
-      trueBreed =
-        if type.isString()
-          @world.breedManager.get(breed)
-        else if type.isAgentSet()
-          specialName = breed.getSpecialName()
-          if specialName?
-            @world.breedManager.get(specialName)
-          else
-            throw new Error("You can't set BREED to a non-breed agentset.")
-        else
-          breed
-
-      if @_breed? and @_breed isnt trueBreed
-        @_givenShape = undefined
-
-      if @_breed isnt trueBreed
-        trueBreed.add(this)
-        @_breed?.remove(this)
-
-        newNames = @_varNamesForBreed(trueBreed)
-        oldNames = @_varNamesForBreed(@_breed)
-
-        obsoletedNames = _(oldNames).difference(newNames).value()
-        freshNames     = _(newNames).difference(oldNames).value()
-
-        @_varManager.refineBy(obsoletedNames)(freshNames)
-
-
-      @_breed = trueBreed
-      @_genVarUpdate("breed")
-
-      @_setBreedShape(trueBreed.getShape())
-
-      if trueBreed isnt @world.breedManager.turtles()
-        @world.breedManager.turtles().add(this)
-
-      return
-
-    # (String) => Unit
-    _setBreedShape: (shape) ->
-      @_breedShape = shape.toLowerCase()
-      if not @_givenShape?
-        @_genVarUpdate("shape")
-      return
-
-    # (Number) => Unit
-    _setColor: (color) ->
-      @_color = ColorModel.wrapColor(color)
-      @_genVarUpdate("color")
-      return
-
-    # (Number, Turtle) => Unit
-    _setHeading: (heading, tiedCaller = undefined) ->
-
-      oldHeading = @_heading
-      @_heading  = @_normalizeHeading(heading)
-      @_genVarUpdate("heading")
-
-      dh      = @_heading - oldHeading
-      [x, y]  = @getCoords()
-
-      @_fixedTiedTurtles().forEach(
-        (turtle) =>
-          if turtle isnt tiedCaller
-            turtle.right(dh, this)
-          return
-      )
-
+      dx = @xcor - oldX
+      dy = @ycor - oldY
       @_tiedTurtles().forEach(
         (turtle) =>
           if turtle isnt tiedCaller
-            r        = @distance(turtle)
-            [tx, ty] = turtle.getCoords()
-            theta    = StrictMath.toDegrees(StrictMath.atan2(ty - y, x - tx)) - 90 + dh
-            newX     = x + r * NLMath.squash(NLMath.sin(theta))
-            newY     = y + r * NLMath.squash(NLMath.cos(theta))
-            turtle.setXY(newX, newY, this)
+            turtle._setXandY(turtle.xcor + dx, turtle.ycor + dy, this)
           return
       )
 
-      return
-
-    # (Boolean) => Unit
-    _setIsHidden: (isHidden) ->
-      @_hidden = isHidden
-      @_genVarUpdate("hidden?")
-      return
-
-    # (String) => Unit
-    _setLabel: (label) ->
-      @_label = label
-      @_genVarUpdate("label")
-      return
-
-    # (Number) => Unit
-    _setLabelColor: (color) ->
-      @_labelcolor = ColorModel.wrapColor(color)
-      @_genVarUpdate("label-color")
-      return
-
-    # (String) => Unit
-    _setShape: (shape) ->
-      @_givenShape = shape.toLowerCase()
-      @_genVarUpdate("shape")
-      return
-
-    # (Number) => Unit
-    _setSize: (size) ->
-      @_size = size
-      @_genVarUpdate("size")
       return

@@ -6,11 +6,12 @@ ColorModel       = require('./colormodel')
 linkCompare      = require('./structure/linkcompare')
 VariableManager  = require('./structure/variablemanager')
 TurtleSet        = require('./turtleset')
-NLType           = require('./typechecker')
 
 { EQUALS: EQ, GREATER_THAN: GT, LESS_THAN: LT, } = require('util/comparator')
 
 { AgentException, DeathInterrupt: Death } = require('util/exception')
+{ Setters, VariableSpecs }                = require('./link/linkvariables')
+{ ExtraVariableSpec }                     = require('./structure/variablespec')
 
 module.exports =
   class Link
@@ -23,15 +24,15 @@ module.exports =
 
     # The type signatures here can be found to the right of the parameters. --JAB (4/21/15)
     constructor: (@id, @isDirected, @end1, @end2, @world, genUpdate, @_registerDeath, @_registerRemoval        # Number, Boolean, Turtle, Turtle, World, (Updatable) => (String*) => Unit, (Number) => Unit, (Link) => Unit
-                , @_registerLinkStamp, getLinksByBreedName, breed = @world.breedManager.links(), @_color = 5   # RegLinkStampFunc, (String) => LinkSet, Breed, Number
+                , @_registerLinkStamp, @_getLinksByBreedName, breed = @world.breedManager.links(), @_color = 5 # RegLinkStampFunc, (String) => LinkSet, Breed, Number
                 , @_isHidden = false, @_label = "", @_labelcolor = 9.9, @_shape = "default", @_thickness = 0   # Boolean, String, Number, String, Number
                 , @tiemode = "none") ->                                                                        # String
       @_updateVarsByName = genUpdate(this)
 
       varNames     = @_varNamesForBreed(breed)
-      @_varManager = @_genVarManager(varNames, getLinksByBreedName)
+      @_varManager = @_genVarManager(varNames)
 
-      @_setBreed(breed)
+      Setters.setBreed.call(this, breed)
       @end1.linkManager.add(this)
       @end2.linkManager.add(this)
       @updateEndRelatedVars()
@@ -96,12 +97,12 @@ module.exports =
 
     # () => Unit
     tie: ->
-      @_setTieMode("fixed")
+      Setters.setTieMode.call(this, "fixed")
       return
 
     # () => Unit
     untie: ->
-      @_setTieMode("none")
+      Setters.setTieMode.call(this, "none")
       return
 
     # () => Unit
@@ -180,117 +181,13 @@ module.exports =
       @_registerDeath(@id)
       return
 
-    # (Array[String], (String) => LinkSet) => VariableManager
-    _genVarManager: (extraVarNames, getLinksByBreedName) ->
-      varBundles = [
-        { name: 'breed',       get: (=> getLinksByBreedName(@_breed.name)), set: ((x) => @_setBreed(x))      },
-        { name: 'color',       get: (=> @_color),                           set: ((x) => @_setColor(x))      },
-        { name: 'end1',        get: (=> @end1),                             set: ((x) => @_setEnd1(x))       },
-        { name: 'end2',        get: (=> @end2),                             set: ((x) => @_setEnd2(x))       },
-        { name: 'hidden?',     get: (=> @_isHidden),                        set: ((x) => @_setIsHidden(x))   },
-        { name: 'label',       get: (=> @_label),                           set: ((x) => @_setLabel(x))      },
-        { name: 'label-color', get: (=> @_labelcolor),                      set: ((x) => @_setLabelColor(x)) },
-        { name: 'shape',       get: (=> @_shape),                           set: ((x) => @_setShape(x))      },
-        { name: 'thickness',   get: (=> @_thickness),                       set: ((x) => @_setThickness(x))  },
-        { name: 'tie-mode',    get: (=> @tiemode),                          set: ((x) => @_setTieMode(x))    }
-      ]
-
-      new VariableManager(extraVarNames, varBundles)
+    # (Array[String]) => VariableManager
+    _genVarManager: (extraVarNames) ->
+      extraSpecs = extraVarNames.map((name) -> new ExtraVariableSpec(name))
+      allSpecs   = VariableSpecs.concat(extraSpecs)
+      new VariableManager(this, allSpecs)
 
     # (String) => Unit
     _genVarUpdate: (varName) ->
       @_updateVarsByName(varName)
-      return
-
-    # (AbstractAgentSet|Breed|String) => Unit
-    _setBreed: (breed) ->
-
-      type = NLType(breed)
-
-      trueBreed =
-        if type.isString()
-          @world.breedManager.get(breed)
-        else if type.isAgentSet()
-          specialName = breed.getSpecialName()
-          if specialName?
-            @world.breedManager.get(specialName)
-          else
-            throw new Error("You can't set BREED to a non-breed agentset.")
-        else
-          breed
-
-      if @_breed isnt trueBreed
-        trueBreed.add(this)
-        @_breed?.remove(this)
-
-        newNames = @_varNamesForBreed(trueBreed)
-        oldNames = @_varNamesForBreed(@_breed)
-
-        obsoletedNames = _(oldNames).difference(newNames).value()
-        freshNames     = _(newNames).difference(oldNames).value()
-
-        @_varManager.refineBy(obsoletedNames)(freshNames)
-
-      @_breed = trueBreed
-      @_genVarUpdate("breed")
-
-      @_setShape(trueBreed.getShape())
-
-      if trueBreed isnt @world.breedManager.links()
-        @world.breedManager.links().add(this)
-
-      return
-
-    # (Number) => Unit
-    _setColor: (color) ->
-      @_color = ColorModel.wrapColor(color)
-      @_genVarUpdate("color")
-      return
-
-    # (Turtle) => Unit
-    _setEnd1: (turtle) ->
-      @end1 = turtle
-      @_genVarUpdate("end1")
-      return
-
-    # (Turtle) => Unit
-    _setEnd2: (turtle) ->
-      @end2 = turtle
-      @_genVarUpdate("end2")
-      return
-
-    # (Boolean) => Unit
-    _setIsHidden: (isHidden) ->
-      @_isHidden = isHidden
-      @_genVarUpdate("hidden?")
-      return
-
-    # (String) => Unit
-    _setLabel: (label) ->
-      @_label = label
-      @_genVarUpdate("label")
-      return
-
-    # (Number) => Unit
-    _setLabelColor: (color) ->
-      @_labelcolor = ColorModel.wrapColor(color)
-      @_genVarUpdate("label-color")
-      return
-
-    # (String) => Unit
-    _setShape: (shape) ->
-      @_shape = shape.toLowerCase()
-      @_genVarUpdate("shape")
-      return
-
-    # (Number) => Unit
-    _setThickness: (thickness) ->
-      @_thickness = thickness
-      @_genVarUpdate("thickness")
-      return
-
-    # (String) => Unit
-    _setTieMode: (mode) ->
-      @tiemode = mode
-      @_genVarUpdate("tie-mode")
       return

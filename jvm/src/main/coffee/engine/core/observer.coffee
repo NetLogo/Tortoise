@@ -12,6 +12,8 @@ Nobody          = require('./nobody')
 NLType          = require('./typechecker')
 VariableManager = require('./structure/variablemanager')
 
+{ ExtraVariableSpec } = require('./structure/variablespec')
+
 module.exports =
   class Observer
 
@@ -32,8 +34,9 @@ module.exports =
 
       @resetPerspective()
 
-      @_varManager      = new VariableManager(@_globalNames)
-      @_codeGlobalNames = _(@_globalNames).difference(@_interfaceGlobalNames)
+      globalSpecs       = @_globalNames.map((name) -> new ExtraVariableSpec(name))
+      @_varManager      = new VariableManager(this, globalSpecs)
+      @_codeGlobalNames = _(@_globalNames).difference(@_interfaceGlobalNames).value()
 
     # () => Unit
     clearCodeGlobals: ->
