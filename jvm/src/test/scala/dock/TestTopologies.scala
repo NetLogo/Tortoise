@@ -5,7 +5,6 @@ package dock
 
 import tags.SlowTest
 import org.nlogo.core.{ Model, View }
-import org.nlogo.util.SlowTest
 
 class TestTopologies extends DockingSuite {
 

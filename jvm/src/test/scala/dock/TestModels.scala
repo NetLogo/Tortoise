@@ -3,7 +3,6 @@
 package org.nlogo.tortoise
 package dock
 
-import org.nlogo.util.SlowTest
 import tags.SlowTest
 
 class TestModels extends DockingSuite {
