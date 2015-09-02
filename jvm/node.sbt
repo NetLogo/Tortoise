@@ -31,7 +31,7 @@ lazy val grunt = taskKey[Seq[File]]("Runs `grunt` from within SBT")
 grunt := {
   val targetJS = (classDirectory in Compile).value / "js" / "tortoise-engine.js"
   installGrunt.value
-  if (coffeeSources.value exists (_.newerThan(targetJS)))
+  if (allJSSources.value exists (_.newerThan(targetJS)))
     Process("grunt", baseDirectory.value).!(streams.value.log)
   Seq() // Wrong, but it works how I want it to...
 }
@@ -40,7 +40,7 @@ grunt <<= grunt.dependsOn(npmInstall)
 
 resourceGenerators in Compile <+= grunt
 
-watchSources ++= coffeeSources.value
+watchSources ++= allJSSources.value
 
 
 
@@ -62,8 +62,16 @@ lazy val nodeDeps = Def.task[Seq[File]] {
     Seq()
 }
 
+lazy val allJSSources = Def.task[Seq[File]] {
+  coffeeSources.value ++ scalaJSSources.value
+}
+
 lazy val coffeeSources = Def.task[Seq[File]] {
   listFilesRecursively(baseDirectory.value / "src" / "main" / "coffee")
+}
+
+lazy val scalaJSSources = Def.task[Seq[File]] {
+  (baseDirectory.value / "src" / "main" / "scalajs").listFiles.filter(_.isFile)
 }
 
 lazy val gruntSources = Def.task[Seq[File]] {

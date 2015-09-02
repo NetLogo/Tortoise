@@ -1,6 +1,5 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-Random = require('./random')
+{ MersenneTwisterFast } = require('./engine-scala')
 
-module.exports =
-  AuxRandom ? Random
+module.exports = MersenneTwisterFast()

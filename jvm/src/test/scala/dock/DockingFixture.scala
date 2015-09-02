@@ -162,9 +162,13 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
       val (expectedModel, actualModel) = updatedJsonModels(expectedJson, actualJson)
       org.skyscreamer.jsonassert.JSONAssert.assertEquals(
         expectedModel, actualModel, true)  // strict = true
-      assert(workspace.world.mainRNG.save == nashorn.eval(
-        """if (typeof Random == "undefined" || typeof Random.save == "undefined") { [] } else { Random.save() }"""),
-        "divergent RNG state")
+
+      val truncateDecimals = (s: String) => s.replaceAllLiterally(".0 ", " ")
+      val headlessRNGState = truncateDecimals(workspace.world.mainRNG.save)
+      val nashornRNGState  = truncateDecimals(nashorn.eval("Random.save()").asInstanceOf[String])
+
+      assert(headlessRNGState == nashornRNGState, "divergent RNG state")
+
     }
   }
 

@@ -1,16 +1,14 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
+{ MersenneTwisterFast } = require('./engine-scala')
+
 ###
-on Nashorn, we provide this via MersenneTwisterFast.  in the browser,
-we delegate to Math.random(), for speed.  we could swap in a JS
-implementation of the Mersenne Twister (code for it is googlable),
-but I fear (though have not measured) the performance impact --ST
+On the JVM, we use Headless' MersenneTwisterFast.
+In the browser, we use a ScalaJS implementation of it.
+We can't the ScalaJS implementation in both environments,
+because MTF relies on bit-shifting, and JVM integers have
+a different number of bits than JS integers, leading to
+different results.
 ###
 
-module.exports =
-  Random ? {
-    nextInt:    (limit) -> Math.floor(Math.random() * limit)
-    nextLong:   (limit) -> @nextInt(limit)
-    nextDouble:         -> Math.random()
-    setSeed:    (seed)  -> return # No-op!
-  }
+module.exports = MersenneTwisterFast()

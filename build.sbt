@@ -72,6 +72,26 @@ lazy val tortoise = CrossProject("tortoise", file("."), new CrossType {
   jvmSettings(Depend.settings: _*).
   jvmSettings(
     name :=  "Tortoise",
+    (resources in Compile) <<= (resources in Compile).dependsOn {
+      Def.task[Seq[File]] {
+        val _          = (fullOptJS in Compile in engineScalaJS).value
+        val engineFile = (artifactPath in fullOptJS in Compile in engineScalaJS).value
+        val destFile   = (classDirectory in Compile).value / "js" / "tortoise" / "shim" / "engine-scala.js"
+        IO.copyFile(engineFile, destFile)
+        val oldContents = IO.read(destFile)
+        val newContents =
+          s"""(function() {
+             |
+             |$oldContents
+             |  module.exports = {
+             |    MersenneTwisterFast: MersenneTwisterFast
+             |  };
+             |
+             |}).call(this);""".stripMargin
+        IO.write(destFile, newContents)
+        Seq(destFile)
+      }
+    },
     // this ensures that generated test reports are updated each run
     (test in Test) <<= (test in Test).dependsOn {
       Def.task[Unit] {
@@ -136,3 +156,8 @@ lazy val netLogoWeb: Project = (project in file("netlogo-web")).
       clean in tortoiseJS,
       fullOptJS in Compile in tortoiseJS))
 
+lazy val engineScalaJS: Project =
+  (project in file("jvm/src/main/scalajs")).
+    enablePlugins(ScalaJSPlugin).
+    settings(commonSettings: _*).
+    settings(name := "EngineScalaJS")
