@@ -106,7 +106,7 @@ class TortoiseFixture(name: String, nashorn: Nashorn, notImplemented: (String) =
   }
 
   private def cautiously[T](t: => T): T = {
-    val notImplementedMessages = Seq("unknown primitive: ", "unknown settable: ", "unknown language feature: ")
+    val notImplementedMessages = Seq("unimplemented primitive: ", "unknown settable: ", "unknown language feature: ")
     try t
     catch {
       case ex: CompilerException if notImplementedMessages.exists(ex.getMessage.startsWith) =>

@@ -150,7 +150,7 @@ trait ReporterPrims extends PrimUtils {
       case _ if compilerFlags.generateUnimplemented =>
         generateNotImplementedStub(r.reporter.getClass.getName.drop(1))
       case _                                        =>
-        failCompilation(s"unknown primitive: ${r.reporter.getClass.getName}", r.instruction.token)
+        failCompilation(s"unimplemented primitive: ${r.instruction.token.text}", r.instruction.token)
 
     }
   }
@@ -215,7 +215,7 @@ trait CommandPrims extends PrimUtils {
       case _ if compilerFlags.generateUnimplemented =>
         s"${generateNotImplementedStub(s.command.getClass.getName.drop(1))};"
       case _                                        =>
-        failCompilation(s"unknown primitive: ${s.command.getClass.getName}", s.instruction.token)
+        failCompilation(s"unimplemented primitive: ${s.instruction.token.text}", s.instruction.token)
     }
   }
   // scalastyle:on method.length
