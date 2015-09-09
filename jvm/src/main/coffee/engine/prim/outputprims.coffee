@@ -6,7 +6,7 @@ genPrintBundle = require('./printbundle')
 
 module.exports.Config =
   class OutputConfig
-    # (() => Unit, PrintFunc) => PrintConfig
+    # (() => Unit, PrintFunc) => OutputConfig
     constructor: (@clear = (->), @write = (->)) ->
 
 module.exports.Prims =
