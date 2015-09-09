@@ -88,7 +88,7 @@ lazy val tortoise = CrossProject("tortoise", file("."), new CrossType {
       Seq(
         "com.lihaoyi" %%%! "utest" % "0.3.1",
         "org.nlogo"   %%%! "parser-js" % parserJsDependencyVersion,
-        "com.github.japgolly.fork.scalaz" %%%! "scalaz-core" % "7.1.1")
+        "com.github.japgolly.fork.scalaz" %%%! "scalaz-core" % "7.1.3")
     })
 
 lazy val tortoiseJS  = tortoise.js
@@ -100,7 +100,7 @@ lazy val macros = CrossProject("macros", file("macros"), CrossType.Pure).
   settings(
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-      "org.scalaz" %% "scalaz-core" % "7.1.1"),
+      "org.scalaz" %% "scalaz-core" % "7.1.3"),
     ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) }
   )
 
