@@ -63,7 +63,7 @@ trait BrowserReporter {
 
   private def genFileName(s: String): String =
     s.replaceAll("::", "_")
-      .replaceAll("\\s+", "-")
+      .replaceAll("\\s+|\\.|/|\\\\", "-")
       .replaceAll("\\(", "")
       .replaceAll("\\)", "") ++ ".html"
 
