@@ -13,14 +13,14 @@ Hasher =
   (x) ->
     type = NLType(x)
     if type.isTurtle() or type.isLink()
-      x.id
+      "#{x.constructor.name} | #{x.id}"
     else if x is Nobody
-      -1
+      "nobody: -1"
     else if type.isList()
-      f = (acc, x) -> 31 * acc + (if x? then Hasher(x) else 0)
-      _(x).foldl(f, 1)
+      f = (acc, x) -> "31 *" + acc + (if x? then Hasher(x) else "0")
+      _(x).foldl(f, 1).toString()
     else if type.isAgentSet()
-      Hasher(x.toArray())
+      "#{x.toString()} | #{Hasher(x.toArray())}"
     else
       x.toString()
 
