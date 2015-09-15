@@ -3,12 +3,12 @@
 _                 = require('lodash')
 AbstractAgentSet  = require('./abstractagentset')
 ColorModel        = require('engine/core/colormodel')
-makePenLines      = require('./makepenlines')
 Nobody            = require('./nobody')
 TurtleLinkManager = require('./turtlelinkmanager')
 TurtleSet         = require('./turtleset')
 NLType            = require('./typechecker')
 VariableManager   = require('./structure/variablemanager')
+makePenLines      = require('./turtle/makepenlines')
 Comparator        = require('util/comparator')
 NLMath            = require('util/nlmath')
 
