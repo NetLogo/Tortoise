@@ -76,22 +76,24 @@ makePenLines = (x, y, heading, jumpDist, minX, maxX, minY, maxY) ->
     makeTrailsBy = makeTrails(heading, minX, maxX, minY, maxY)
     lazyWrapX    = lazyWrapValue(minX, maxX)
     lazyWrapY    = lazyWrapValue(minY, maxY)
-    helper       = makePenLinesHelper(makeTrailsBy, lazyWrapX, lazyWrapY)
-    helper(x, y, jumpDist, helper, [])
+    makePenLinesHelper(makeTrailsBy, lazyWrapX, lazyWrapY)(x, y, jumpDist, [])
 
-# ((Number, Number, Number) => Array[Trail], (Number) => Number, (Number) => Number) => (Number, Number, Number, ThisFunction.type, Array[Trail]) => Array[Trail]
-makePenLinesHelper = (makeTrailsBy, lazyWrapX, lazyWrapY) -> (x, y, jumpDist, helper, acc) ->
+# ((Number, Number, Number) => Array[Trail], (Number) => Number, (Number) => Number) => (Number, Number, Number, Array[Trail]) => Array[Trail]
+makePenLinesHelper = (makeTrailsBy, lazyWrapX, lazyWrapY) ->
+  inner = (x, y, jumpDist, acc) ->
 
-  trails       = makeTrailsBy(x, y, jumpDist)
-  trail        = trails.sort(({ dist: distA }, { dist: distB }) -> if distA < distB then -1 else if distA is distB then 0 else 1)[0] #_(trails).min((x) -> x.dist)
-  newAcc       = acc.concat([trail])
-  nextJumpDist = jumpDist - trail.dist
+    trails       = makeTrailsBy(x, y, jumpDist)
+    trail        = trails.sort(({ dist: distA }, { dist: distB }) -> if distA < distB then -1 else if distA is distB then 0 else 1)[0]
+    newAcc       = acc.concat([trail])
+    nextJumpDist = jumpDist - trail.dist
 
-  if nextJumpDist <= 0
-    newAcc
-  else
-    newX = lazyWrapX(trail.x2)
-    newY = lazyWrapY(trail.y2)
-    helper(newX, newY, nextJumpDist, helper, newAcc)
+    if nextJumpDist <= 0
+      newAcc
+    else
+      newX = lazyWrapX(trail.x2)
+      newY = lazyWrapY(trail.y2)
+      inner(newX, newY, nextJumpDist, newAcc)
+
+  inner
 
 module.exports = makePenLines
