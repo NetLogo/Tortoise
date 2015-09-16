@@ -14,6 +14,8 @@ NLMath     = require('util/nlmath')
  easily reused. --JAB (6/2/14, 8/28/15)
 ###
 
+# In this file: `this.type` is `Turtle`
+
 # (Number, Turtle) => Unit
 setXcor = (newX, tiedCaller = undefined) ->
 

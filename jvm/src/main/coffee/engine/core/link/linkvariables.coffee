@@ -5,6 +5,8 @@ NLType     = require('../typechecker')
 
 { ImmutableVariableSpec, MutableVariableSpec } = require('../structure/variablespec')
 
+# In this file: `this.type` is `Link`
+
 # (String) => Unit
 setShape = (shape) ->
   @_shape = shape.toLowerCase()

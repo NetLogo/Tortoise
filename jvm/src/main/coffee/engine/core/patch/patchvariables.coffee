@@ -4,6 +4,8 @@ ColorModel = require('engine/core/colormodel')
 
 { ImmutableVariableSpec, MutableVariableSpec } = require('../structure/variablespec')
 
+# In this file: `this.type` is `Patch`
+
 # (Number) => Unit
 setPcolor = (color) ->
   wrappedColor = ColorModel.wrapColor(color)

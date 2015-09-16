@@ -46,13 +46,13 @@ module.exports =
 
       return
 
+    # (Array[T]) => AbstractAgentSet[T]
+    copyWithNewAgents: (agents) ->
+      @_generateFrom(agents)
+
     # () => String
     getSpecialName: ->
       @_specialName
-
-    # [Result] @ (() => Result) => Array[Result]
-    projectionBy: (f) ->
-      @shufflerator().map(@_lazyGetSelfManager().askAgent(f))
 
     # (() => Number) => AbstractAgentSet[T]
     maxesBy: (f) ->
@@ -92,6 +92,10 @@ module.exports =
     minsBy: (f) ->
       @copyWithNewAgents(@_findMinsBy(f))
 
+    # [Result] @ (() => Result) => Array[Result]
+    projectionBy: (f) ->
+      @shufflerator().map(@_lazyGetSelfManager().askAgent(f))
+
     # () => AbstractAgentSet[T]
     shuffled: ->
       @copyWithNewAgents(@shufflerator().toArray())
@@ -115,10 +119,6 @@ module.exports =
     # () => String
     toString: ->
       @_specialName?.toLowerCase() ? "(agentset, #{@size()} #{@_agentTypeName})"
-
-    # (Array[T]) => AbstractAgentSet[T]
-    copyWithNewAgents: (agents) ->
-      @_generateFrom(agents)
 
     # (Number, () => Number, (Number, Number) => Number) => AbstractAgentSet[T]
     _findBestNOf: (n, f, cStyleComparator) ->
