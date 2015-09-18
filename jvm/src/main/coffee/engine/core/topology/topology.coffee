@@ -1,6 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 _              = require('lodash')
+inCone         = require('./incone')
 Topology       = require('./topology')
 StrictMath     = require('shim/strictmath')
 abstractMethod = require('util/abstractmethoderror')
@@ -79,7 +80,11 @@ module.exports =
       pos = (y1 + (y1 + @_shortestY(y1, y2))) / 2
       @_wrap(pos, @minPycor - 0.5, @maxPycor + 0.5)
 
-    # (Number, Number, AbstractAgents[Agent], Number)
+    # [T] @ (Number, Number, Number, AbstractAgents[T], Number, Number) => AbstractAgentSet[T]
+    inCone: (x, y, heading, agents, distance, angle) ->
+      inCone.call(this, x, y, heading, agents, distance, angle)
+
+    # [T] @ (Number, Number, AbstractAgents[T], Number) => AbstractAgentSet[T]
     inRadius: (x, y, agents, radius) ->
       agents.filter(
         (agent) =>

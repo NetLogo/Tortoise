@@ -98,6 +98,17 @@ module.exports =
       @faceXY(x, y)
       return
 
+    # [T] @ (AbstractAgentSet[T], Number, Number) => AbstractAgentSet[T]
+    inCone: (agents, distance, angle) ->
+      if distance < 0
+        throw new Error("IN-CONE cannot take a negative radius.")
+      else if angle < 0
+        throw new Error("IN-CONE cannot take a negative angle.")
+      else if angle > 360
+        throw new Error("IN-CONE cannot take an angle greater than 360.")
+      else
+        @world.topology.inCone(@xcor, @ycor, NLMath.normalizeHeading(@_heading), agents, distance, angle)
+
     # [T] @ (AbstractAgentSet[T], Number) => AbstractAgentSet[T]
     inRadius: (agents, radius) ->
       @world.topology.inRadius(@xcor, @ycor, agents, radius)

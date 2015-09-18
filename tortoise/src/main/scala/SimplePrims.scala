@@ -79,6 +79,7 @@ object SimplePrims {
         case _: prim.etc._towardsxy                  => "SelfManager.self().towardsXY"
         case _: prim.etc._turtlesat                  => "SelfManager.self().turtlesAt"
         case _: prim.etc._turtleshere                => "SelfManager.self().turtlesHere"
+        case _: prim.etc._incone                     => "SelfManager.self().inCone"
         case _: prim._inradius                       => "SelfManager.self().inRadius"
         case _: prim._neighbors                      => "SelfManager.self().getNeighbors"
         case _: prim._neighbors4                     => "SelfManager.self().getNeighbors4"
