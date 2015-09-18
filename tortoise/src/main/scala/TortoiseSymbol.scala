@@ -41,9 +41,9 @@ object TortoiseSymbol {
       def compare(a: TortoiseSymbol, b: TortoiseSymbol): Int = {
         lazy val defaultComparison = Ordering.String.compare(a.provides, b.provides)
         (a, b) match {
-          case (r1: JsRequire, r2: JsRequire)         => defaultComparison
-          case (r: JsRequire, o)                    => -1
-          case (o, r: JsRequire)                    => 1
+          case (r1: JsRequire, r2: JsRequire)     => defaultComparison
+          case (r: JsRequire, o)                  => -1
+          case (o, r: JsRequire)                  => 1
           case (s1: JsStatement, s2: JsStatement) => defaultComparison
           case (s: JsStatement, o)                => 1
           case (o, s: JsStatement)                => -1

@@ -57,7 +57,7 @@ object Compiler extends CompilerLike {
     (implicit compilerFlags: CompilerFlags = CompilerFlags.Default) : String = {
     import result.model
     val init              = new RuntimeInit(result.program, model, compilerFlags.onTickCallback).init
-    val modelConfig       = PlotCompiler.formatPlots(result.widgets)
+    val plotConfig        = PlotCompiler.formatPlots(result.widgets)
     val procedures        = ProcedureCompiler.formatProcedures(result.compiledProcedures)
     val interfaceGlobalJs = result.interfaceGlobalCommands.map(
       (v: ValidationNel[CompilerException, String]) => v.fold(
@@ -65,7 +65,7 @@ object Compiler extends CompilerLike {
         identity)).mkString("\n")
 
     val interfaceInit = JsStatement("interfaceInit", interfaceGlobalJs, Seq("world", "procedures", "modelConfig"))
-    TortoiseLoader.integrateSymbols(Seq(init, modelConfig, procedures).flatten :+ interfaceInit)
+    TortoiseLoader.integrateSymbols(Seq(init, plotConfig, procedures).flatten :+ interfaceInit)
   }
 
   def compileReporter(logo:          String,

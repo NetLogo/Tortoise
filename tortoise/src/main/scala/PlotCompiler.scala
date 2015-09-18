@@ -6,7 +6,7 @@ import
   JsOps.{ jsArrayString, jsFunction, jsString, sanitizeNil, thunkifyFunction, thunkifyProcedure }
 
 import
-  org.nlogo.core.{ Color, CompilerException, Model, Pen, Plot, Token }
+  org.nlogo.core.{ Color, Pen }
 
 import
   scalaz.NonEmptyList
@@ -18,8 +18,6 @@ import
   WidgetCompilation.UpdateableCompilation
 
 object PlotCompiler {
-  private def getOrElse(expr: String)(`default`: String): String =
-    s"""(typeof $expr !== "undefined" && $expr !== null) ? $expr : ${`default`}"""
 
   trait PlotComponentRendition
   case class ErrorAlert(messages: Seq[String])       extends PlotComponentRendition
@@ -92,7 +90,7 @@ object PlotCompiler {
         Seq("name", "pens", "plotOps", jsString(sanitizeNil(xAxis)), jsString(sanitizeNil(yAxis)),
           legendOn, autoPlotOn, xmin, xmax, ymin, ymax, "setup", "update").mkString(", ")
 
-      var plotContructor =
+      val plotConstructor =
         s"""|var name    = '$cleanDisplay';
             |var plotOps = ${getOrElse("modelPlotOps[name]")(emptyPlotOps)};
             |var pens    = $plotPens;$penErrors
@@ -100,7 +98,8 @@ object PlotCompiler {
             |var update  = $compiledUpdate;
             |return new Plot($args);""".stripMargin
 
-      SuccessfulComponent(s"(${jsFunction(body = plotContructor)})()")
+      SuccessfulComponent(s"(${jsFunction(body = plotConstructor)})()")
+
     }
 
     private def showPlotErrors(es: NonEmptyList[Exception]): ErrorAlert =
@@ -131,4 +130,8 @@ object PlotCompiler {
         showPenErrors(compiledPen.pen), constructNewPen(compiledPen.pen))
     }
   }
+
+  private def getOrElse(expr: String)(`default`: String): String =
+    s"""(typeof $expr !== "undefined" && $expr !== null) ? $expr : ${`default`}"""
+
 }
