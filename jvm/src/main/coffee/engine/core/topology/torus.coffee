@@ -120,9 +120,9 @@ module.exports =
         @_getPatchAt(pxcor + 1, pycor + 1)
 
     # (Number, Number) => Number
-    _shortestX: (x1, x2) ->
+    _shortestX: (x1, x2) =>
       @_shortestXWrapped(x1, x2)
 
     # (Number, Number) => Number
-    _shortestY: (y1, y2) ->
+    _shortestY: (y1, y2) =>
       @_shortestYWrapped(y1, y2)

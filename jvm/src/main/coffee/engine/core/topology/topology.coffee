@@ -67,17 +67,7 @@ module.exports =
 
     # (Number, Number, Number, Number) => Number
     towards: (x1, y1, x2, y2) ->
-      if (x1 isnt x2) or (y1 isnt y2)
-        dx = @_shortestX(x1, x2)
-        dy = @_shortestY(y1, y2)
-        if dx is 0
-          if dy >= 0 then 0 else 180
-        else if dy is 0
-          if dx >= 0 then 90 else 270
-        else
-          (270 + StrictMath.toDegrees(StrictMath.PI() + StrictMath.atan2(-dy, dx))) % 360
-      else
-        throw new AgentException("No heading is defined from a point (#{x1},#{x2}) to that same point.")
+      @_towards(x1, y1, x2, y2, @_shortestX, @_shortestY)
 
     # (Number, Number) => Number
     midpointx: (x1, x2) ->
@@ -170,6 +160,24 @@ module.exports =
 
       return
 
+    # (Number, Number, Number, Number, (Number, Number) => Number, (Number, Number) => Number) => Number
+    _towards: (x1, y1, x2, y2, findXDist, findYDist) ->
+      if (x1 isnt x2) or (y1 isnt y2)
+        dx = findXDist(x1, x2)
+        dy = findYDist(y1, y2)
+        if dx is 0
+          if dy >= 0 then 0 else 180
+        else if dy is 0
+          if dx >= 0 then 90 else 270
+        else
+          (270 + StrictMath.toDegrees(StrictMath.PI() + StrictMath.atan2(-dy, dx))) % 360
+      else
+        throw new AgentException("No heading is defined from a point (#{x1},#{x2}) to that same point.")
+
+    # (Number, Number, Number, Number) => Number
+    _towardsNotWrapped: (x1, y1, x2, y2) ->
+      @_towards(x1, y1, x2, y2, @_shortestNotWrapped, @_shortestNotWrapped)
+
     # (Number, Number, Number) => Number
     _wrap: (pos, min, max) ->
       if pos >= max
@@ -217,8 +225,8 @@ module.exports =
     wrapY: (pos) -> abstractMethod('Topology.wrapY')
 
     # (Number, Number) => Number
-    _shortestX: (x1, x2) -> abstractMethod('Topology._shortestX')
-    _shortestY: (y1, y2) -> abstractMethod('Topology._shortestY')
+    _shortestX: (x1, x2) => abstractMethod('Topology._shortestX')
+    _shortestY: (y1, y2) => abstractMethod('Topology._shortestY')
 
     # (Number, Number) => Patch|Boolean
     _getPatchNorth:     (x, y) -> abstractMethod('Topology._getPatchNorth')
