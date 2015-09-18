@@ -37,6 +37,14 @@ module.exports = {
   cos: (degrees) ->
     StrictMath.cos(StrictMath.toRadians(degrees))
 
+  # (Number, Number) => Number
+  distance2_2D: (x, y) ->
+    StrictMath.sqrt(x * x + y * y)
+
+  # (Number, Number, Number, Number) => Number
+  distance4_2D: (x1, y1, x2, y2) ->
+    @distance2_2D(x1 - x2, y1 - y2)
+
   # (Number) => Number
   exp: (n) ->
     StrictMath.exp(n)
@@ -52,6 +60,14 @@ module.exports = {
   # (Number, Number) => Number
   log: (num, base) ->
     StrictMath.log(num) / StrictMath.log(base)
+
+  # (Number*) => Number
+  max: (xs...) ->
+    Math.max(xs...) # Variadic `max` doesn't exist on the Java `Math` object --JAB (9/23/15)
+
+  # (Number*) => Number
+  min: (xs...) ->
+    Math.min(xs...) # Variadic `min` doesn't exist on the Java `Math` object --JAB (9/15/15)
 
   # (Number, Number) => Number
   mod: (a, b) ->
