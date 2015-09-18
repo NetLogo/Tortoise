@@ -19,6 +19,9 @@ import
     Scalaz.ToValidationOps
 
 import
+  JsOps.jsFunction
+
+import
   TortoiseSymbol.JsStatement
 
 // there are four main entry points here:
@@ -65,7 +68,7 @@ object Compiler extends CompilerLike {
         identity)).mkString("\n")
 
     val interfaceInit = JsStatement("interfaceInit", interfaceGlobalJs, Seq("world", "procedures", "modelConfig"))
-    TortoiseLoader.integrateSymbols(Seq(init, plotConfig, procedures).flatten :+ interfaceInit)
+    TortoiseLoader.integrateSymbols(init ++ plotConfig ++ procedures :+ outputConfig :+ interfaceInit)
   }
 
   def compileReporter(logo:          String,
@@ -134,6 +137,22 @@ object Compiler extends CompilerLike {
       handlers.commands(defs.head.statements)
     else
       handlers.reporter(defs.head.statements.stmts(1).args(0))
+  }
+
+  private def outputConfig: JsStatement = {
+
+    // If `javax` exists, we're in Nashorn, and, therefore, testing --JAB (3/2/15)
+    val defaultConfig =
+      s"""|if (typeof javax !== "undefined") {
+          |  modelConfig.output = {
+          |    clear: ${jsFunction()},
+          |    write: ${jsFunction(Seq("str"), "context.getWriter().print(str);")}
+          |    alert: ${jsFunction(Seq("str"))}
+          |  }
+          |}""".stripMargin
+
+    JsStatement("modelConfig.output", defaultConfig, Seq("modelConfig"))
+
   }
 
 }

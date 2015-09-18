@@ -24,14 +24,6 @@ object PlotCompiler {
   case class SuccessfulComponent(plotObject: String) extends PlotComponentRendition
 
   def formatPlots(widgets: Seq[CompiledWidget]): Seq[TortoiseSymbol] = {
-    // If `javax` exists, we're in Nashorn, and, therefore, testing --JAB (3/2/15)
-    val defaultModelConfigOutput = s"""|if (typeof javax !== "undefined") {
-                                       |  modelConfig.output = {
-                                       |    clear: ${jsFunction()},
-                                       |    write: ${jsFunction(Seq("str"), "context.getWriter().print(str);")},
-                                       |    alert: ${jsFunction(Seq("str"))}
-                                       |  }
-                                       |}""".stripMargin
 
     val (plotObjects, plotErrors) =
       formatObjectsAndErrors(
@@ -49,8 +41,7 @@ object PlotCompiler {
       JsStatement(
         "modelConfig.plots",
         s"modelConfig.plots = $plotObjects;$plotErrors",
-        Seq("PenBundle", "Plot", "PlotOps", "modelConfig", "modelPlotOps")),
-      JsStatement("modelConfig.output", defaultModelConfigOutput, Seq("modelConfig")))
+        Seq("PenBundle", "Plot", "PlotOps", "modelConfig", "modelPlotOps")))
   }
 
   private def alertFailure(s: String) =
