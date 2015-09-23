@@ -64,11 +64,11 @@ object Compiler extends CompilerLike {
     val procedures        = ProcedureCompiler.formatProcedures(result.compiledProcedures)
     val interfaceGlobalJs = result.interfaceGlobalCommands.map(
       (v: ValidationNel[CompilerException, String]) => v.fold(
-        ces => s"""modelConfig.output.write("Error(s) in interface global init: ${ces.map(_.getMessage).list.mkString(", ")}")""",
+        ces => s"""modelConfig.dialog.notify("Error(s) in interface global init: ${ces.map(_.getMessage).list.mkString(", ")}")""",
         identity)).mkString("\n")
 
     val interfaceInit = JsStatement("interfaceInit", interfaceGlobalJs, Seq("world", "procedures", "modelConfig"))
-    TortoiseLoader.integrateSymbols(init ++ plotConfig ++ procedures :+ outputConfig :+ interfaceInit)
+    TortoiseLoader.integrateSymbols(init ++ plotConfig ++ procedures :+ outputConfig :+ dialogConfig :+ interfaceInit)
   }
 
   def compileReporter(logo:          String,
@@ -147,11 +147,24 @@ object Compiler extends CompilerLike {
           |  modelConfig.output = {
           |    clear: ${jsFunction()},
           |    write: ${jsFunction(Seq("str"), "context.getWriter().print(str);")}
-          |    alert: ${jsFunction(Seq("str"))}
           |  }
           |}""".stripMargin
 
     JsStatement("modelConfig.output", defaultConfig, Seq("modelConfig"))
+
+  }
+
+  private def dialogConfig: JsStatement = {
+
+    // If `javax` exists, we're in Nashorn, and, therefore, testing --JAB (3/2/15)
+    val defaultConfig =
+      s"""|if (typeof javax !== "undefined") {
+          |  modelConfig.dialog = {
+          |    notify:  ${jsFunction(Seq("str"))}
+          |  }
+          |}""".stripMargin
+
+    JsStatement("modelConfig.dialog", defaultConfig, Seq("modelConfig"))
 
   }
 

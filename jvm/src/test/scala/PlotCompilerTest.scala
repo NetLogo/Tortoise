@@ -22,19 +22,19 @@ import
     Scalaz.ToValidationOps
 
 class PlotCompilerTest extends FunSuite with OneInstancePerTest {
-  class FakeOutput {
+  class FakeDialog {
     var alertsReceived = Seq[String]()
 
-    def alert(s: String): Unit =
+    def notify(s: String): Unit =
       alertsReceived = alertsReceived :+ s
   }
 
-  lazy val output = new FakeOutput()
+  lazy val dialog = new FakeDialog()
 
   lazy val nashornEngine = {
     val e = new Nashorn().engine
-    e.put("fakeOutput", output)
-    e.eval("modelConfig = { output: fakeOutput };")
+    e.put("fakeDialog", dialog)
+    e.eval("modelConfig = { dialog: fakeDialog };")
     e.eval("modelPlotOps = {};")
     e.eval("function PlotOps() {};")
     e.eval("function Plot() {};")
@@ -54,7 +54,7 @@ class PlotCompilerTest extends FunSuite with OneInstancePerTest {
     val generatedJs =
       compilePlotWidgetV(new Exception("plot abc has problems").failureNel)
     nashornEngine.eval(generatedJs)
-    assert(output.alertsReceived.head == "plot abc has problems")
+    assert(dialog.alertsReceived.head == "Error: plot abc has problems")
   }
 
   test("returns valid javascript when pens have errors") {
@@ -63,7 +63,7 @@ class PlotCompilerTest extends FunSuite with OneInstancePerTest {
       PlotWidgetCompilation("function() {}", "function() {}", Seq(errantPen)).successNel
     val generatedJs = compilePlotWidgetV(widgetCompilation)
     nashornEngine.eval(generatedJs)
-    assert(output.alertsReceived.head == "pen has problems")
+    assert(dialog.alertsReceived.head == "Error: pen has problems")
   }
 
   test("returns multiple errors when there are multiple pen errors") {
@@ -72,7 +72,7 @@ class PlotCompilerTest extends FunSuite with OneInstancePerTest {
       PlotWidgetCompilation("function() {}", "function() {}", Seq(errantPens)).successNel
     val generatedJs = compilePlotWidgetV(widgetCompilation)
     nashornEngine.eval(generatedJs)
-    assert(output.alertsReceived.head == "pen a has problems, pen b has problems")
+    assert(dialog.alertsReceived.head == "Error: pen a has problems, pen b has problems")
   }
 
   test("returns valid javascript when plots are correct") {
@@ -80,6 +80,6 @@ class PlotCompilerTest extends FunSuite with OneInstancePerTest {
       PlotWidgetCompilation("function() {}", "function() {}", Seq()).successNel
     val generatedJs = compilePlotWidgetV(widgetCompilation)
     nashornEngine.eval(generatedJs)
-    assert(output.alertsReceived.isEmpty)
+    assert(dialog.alertsReceived.isEmpty)
   }
 }

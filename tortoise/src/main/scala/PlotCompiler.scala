@@ -45,7 +45,7 @@ object PlotCompiler {
   }
 
   private def alertFailure(s: String) =
-    s"""modelConfig.output.alert("$s");"""
+    s"""modelConfig.dialog.notify("Error: $s");"""
 
   private def formatObjectsAndErrors(
     renditions:         Seq[PlotComponentRendition],

@@ -11,15 +11,14 @@ LayoutManager = require('./prim/layoutmanager')
 LinkPrims     = require('./prim/linkprims')
 ListPrims     = require('./prim/listprims')
 Prims         = require('./prim/prims')
-PrintPrims    = require('./prim/printprims')
-OutputPrims   = require('./prim/outputprims')
 SelfPrims     = require('./prim/selfprims')
 RNG           = require('util/rng')
 Timer         = require('util/timer')
 
-{ Config: MouseConfig,  Prims: MousePrims }  = require('./prim/mouseprims')
-{ Config: PrintConfig,  Prims: PrintPrims }  = require('./prim/printprims')
-{ Config: OutputConfig, Prims: OutputPrims } = require('./prim/outputprims')
+{ Config: MouseConfig,      Prims: MousePrims }      = require('./prim/mouseprims')
+{ Config: PrintConfig,      Prims: PrintPrims }      = require('./prim/printprims')
+{ Config: OutputConfig,     Prims: OutputPrims }     = require('./prim/outputprims')
+{ Config: UserDialogConfig, Prims: UserDialogPrims } = require('./prim/userdialogprims')
 
 class MiniWorkspace
   # (SelfManager, Updater, BreedManager, RNG, PlotManager) => MiniWorkspace
@@ -34,6 +33,7 @@ module.exports =
     plots        = modelConfig?.plots  ? []
     printConfig  = modelConfig?.print  ? new PrintConfig
     outputConfig = modelConfig?.output ? new OutputConfig
+    dialogConfig = modelConfig?.dialog ? new UserDialogConfig
 
     rng         = new RNG
 
@@ -45,13 +45,14 @@ module.exports =
     timer        = new Timer
     updater      = new Updater
 
-    world         = new World(new MiniWorkspace(selfManager, updater, breedManager, rng, plotManager), worldArgs...)
-    layoutManager = new LayoutManager(world, rng.nextDouble)
-    linkPrims     = new LinkPrims(world)
-    listPrims     = new ListPrims(Hasher, prims.equality.bind(prims), rng.nextInt)
-    mousePrims    = new MousePrims(mouseConfig)
-    printPrims    = new PrintPrims(printConfig, Dump)
-    outputPrims   = new OutputPrims(outputConfig, Dump)
+    world           = new World(new MiniWorkspace(selfManager, updater, breedManager, rng, plotManager), worldArgs...)
+    layoutManager   = new LayoutManager(world, rng.nextDouble)
+    linkPrims       = new LinkPrims(world)
+    listPrims       = new ListPrims(Hasher, prims.equality.bind(prims), rng.nextInt)
+    mousePrims      = new MousePrims(mouseConfig)
+    printPrims      = new PrintPrims(printConfig, Dump)
+    outputPrims     = new OutputPrims(outputConfig, Dump)
+    userDialogPrims = new UserDialogPrims(dialogConfig)
 
     {
       selfManager
@@ -68,5 +69,6 @@ module.exports =
       selfPrims
       timer
       updater
+      userDialogPrims
       world
     }
