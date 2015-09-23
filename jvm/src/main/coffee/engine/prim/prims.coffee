@@ -12,6 +12,7 @@ TurtleSet        = require('../core/turtleset')
 NLType           = require('../core/typechecker')
 StrictMath       = require('shim/strictmath')
 Exception        = require('util/exception')
+NLMath           = require('util/nlmath')
 Timer            = require('util/timer')
 
 { EQUALS: EQ, GREATER_THAN: GT, LESS_THAN: LT, } = require('util/comparator')
@@ -174,6 +175,10 @@ module.exports =
         NLMath.validateNumber(mean + stdDev * @_rng.nextGaussian())
       else
         throw new Error("random-normal's second input can't be negative.")
+
+    # (Number) => Number
+    randomExponential: (mean) ->
+      NLMath.validateNumber(-mean * StrictMath.log(@_rng.nextDouble()))
 
     # (Number, Number) => Number
     randomPatchCoord: (min, max) ->
