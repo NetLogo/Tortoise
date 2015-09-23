@@ -160,6 +160,7 @@ object Compiler extends CompilerLike {
     val defaultConfig =
       s"""|if (typeof javax !== "undefined") {
           |  modelConfig.dialog = {
+          |    confirm: ${jsFunction(Seq("str"), "return true;")},
           |    notify:  ${jsFunction(Seq("str"))}
           |  }
           |}""".stripMargin

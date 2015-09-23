@@ -306,10 +306,10 @@ object SimplePrims {
         case _: prim.etc._resetperspective => "world.observer.resetPerspective"
         case _: prim.etc._layoutspring     => "LayoutManager.layoutSpring"
         case _: prim.etc._changetopology   => "world.changeTopology"
+        case _: prim.etc._usermessage      => "UserDialogPrims.confirm"
 
         // Unimplemented
         case _: prim.etc._display     => "notImplemented('display', undefined)"
-        case _: prim.etc._usermessage => "notImplemented('user-message', undefined)"
 
       }
   }
