@@ -166,6 +166,7 @@ object SimplePrims {
         case _: prim.etc._timer          => "workspace.timer.elapsed"
         case _: prim.etc._map            => "Tasks.map"
         case _: prim._random             => "Prims.random"
+        case _: prim.etc._randomstate    => "Random.save"
         case _: prim.etc._randomfloat    => "Prims.randomFloat"
         case _: prim.etc._randomnormal   => "Prims.randomNormal"
         case _: prim.etc._linkset        => "Prims.linkSet"
