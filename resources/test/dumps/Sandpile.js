@@ -23,10 +23,15 @@ var modelConfig = (typeof window.modelConfig !== "undefined" && window.modelConf
 var turtleShapes = {"default":{"name":"default","editableColorIndex":0,"rotate":true,"elements":[{"xcors":[150,40,150,260],"ycors":[5,250,205,250],"type":"polygon","color":"rgba(141, 141, 141, 1.0)","filled":true,"marked":true}]}};
 var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.plotOps !== null) ? modelConfig.plotOps : {};
 if (typeof javax !== "undefined") {
+  modelConfig.dialog = {
+    confirm: function(str) { return true; },
+    notify:  function(str) {}
+  }
+}
+if (typeof javax !== "undefined") {
   modelConfig.output = {
     clear: function() {},
-    write: function(str) { context.getWriter().print(str); },
-    alert: function(str) {}
+    write: function(str) { context.getWriter().print(str); }
   }
 }
 modelConfig.plots = [(function() {
@@ -117,6 +122,7 @@ var PrintPrims = workspace.printPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
+var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
@@ -127,13 +133,13 @@ var procedures = (function() {
     world.observer.setGlobal("selected-color", 55);
     world.observer.setGlobal("selected-patch", Nobody);
     world.patches().ask(function() {
-      SelfPrims.setPatchVariable("n", (setupTask)());
-      SelfPrims.setPatchVariable("n-stack", []);
-      SelfPrims.setPatchVariable("base-color", world.observer.getGlobal("default-color"));
+      SelfManager.self().setPatchVariable("n", (setupTask)());
+      SelfManager.self().setPatchVariable("n-stack", []);
+      SelfManager.self().setPatchVariable("base-color", world.observer.getGlobal("default-color"));
     }, true);
     var ignore = procedures.stabilize(false);
     world.patches().ask(function() { procedures.recolor(); }, true);
-    world.observer.setGlobal("total", ListPrims.sum(world.patches().projectionBy(function() { return SelfPrims.getPatchVariable("n"); })));
+    world.observer.setGlobal("total", ListPrims.sum(world.patches().projectionBy(function() { return SelfManager.self().getPatchVariable("n"); })));
     world.observer.setGlobal("sizes", []);
     world.observer.setGlobal("lifetimes", []);
     world.ticker.reset();
@@ -151,7 +157,7 @@ var procedures = (function() {
     }));
   };
   var recolor = function() {
-    SelfPrims.setPatchVariable("pcolor", ColorModel.scaleColor(SelfPrims.getPatchVariable("base-color"), SelfPrims.getPatchVariable("n"), 0, 4));
+    SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(SelfManager.self().getPatchVariable("base-color"), SelfManager.self().getPatchVariable("n"), 0, 4));
   };
   var go = function() {
     var drop = procedures.dropPatch();
@@ -169,11 +175,11 @@ var procedures = (function() {
       }
       avalanchePatches.ask(function() {
         procedures.recolor();
-        SelfPrims.getNeighbors4().ask(function() { procedures.recolor(); }, true);
+        SelfManager.self().getNeighbors4().ask(function() { procedures.recolor(); }, true);
       }, true);
       notImplemented('display', undefined)();
       avalanchePatches.ask(function() {
-        SelfPrims.setPatchVariable("base-color", world.observer.getGlobal("default-color"));
+        SelfManager.self().setPatchVariable("base-color", world.observer.getGlobal("default-color"));
         procedures.recolor();
       }, true);
       world.observer.setGlobal("total-on-tick", world.observer.getGlobal("total"));
@@ -189,12 +195,12 @@ var procedures = (function() {
       var results = procedures.stabilize(false);
       world.patches().ask(function() { procedures.popN(); }, true);
       world.patches().ask(function() {
-        SelfPrims.setPatchVariable("base-color", world.observer.getGlobal("default-color"));
+        SelfManager.self().setPatchVariable("base-color", world.observer.getGlobal("default-color"));
         procedures.recolor();
       }, true);
       var avalanchePatches = ListPrims.first(results);
       avalanchePatches.ask(function() {
-        SelfPrims.setPatchVariable("base-color", world.observer.getGlobal("selected-color"));
+        SelfManager.self().setPatchVariable("base-color", world.observer.getGlobal("selected-color"));
         procedures.recolor();
       }, true);
       notImplemented('display', undefined)();
@@ -203,7 +209,7 @@ var procedures = (function() {
       if (!Prims.equality(world.observer.getGlobal("selected-patch"), Nobody)) {
         world.observer.setGlobal("selected-patch", Nobody);
         world.patches().ask(function() {
-          SelfPrims.setPatchVariable("base-color", world.observer.getGlobal("default-color"));
+          SelfManager.self().setPatchVariable("base-color", world.observer.getGlobal("default-color"));
           procedures.recolor();
         }, true);
       }
@@ -211,21 +217,21 @@ var procedures = (function() {
   };
   var stabilize = function(animate_p) {
     try {
-      var activePatches = world.patches().agentFilter(function() { return Prims.gt(SelfPrims.getPatchVariable("n"), 3); });
+      var activePatches = world.patches().agentFilter(function() { return Prims.gt(SelfManager.self().getPatchVariable("n"), 3); });
       var iters = 0;
       var avalanchePatches = new PatchSet([]);
       while (activePatches.nonEmpty()) {
-        var overloadedPatches = activePatches.agentFilter(function() { return Prims.gt(SelfPrims.getPatchVariable("n"), 3); });
+        var overloadedPatches = activePatches.agentFilter(function() { return Prims.gt(SelfManager.self().getPatchVariable("n"), 3); });
         if (overloadedPatches.nonEmpty()) {
           iters = (iters + 1);
         }
         overloadedPatches.ask(function() {
-          SelfPrims.setPatchVariable("base-color", world.observer.getGlobal("fired-color"));
+          SelfManager.self().setPatchVariable("base-color", world.observer.getGlobal("fired-color"));
           procedures.updateN(-4);
           if (animate_p) {
             procedures.recolor();
           }
-          SelfPrims.getNeighbors4().ask(function() {
+          SelfManager.self().getNeighbors4().ask(function() {
             procedures.updateN(1);
             if (animate_p) {
               procedures.recolor();
@@ -236,7 +242,7 @@ var procedures = (function() {
           notImplemented('display', undefined)();
         }
         avalanchePatches = Prims.patchSet(avalanchePatches, overloadedPatches);
-        activePatches = Prims.patchSet(overloadedPatches.projectionBy(function() { return SelfPrims.getNeighbors4(); }));
+        activePatches = Prims.patchSet(overloadedPatches.projectionBy(function() { return SelfManager.self().getNeighbors4(); }));
       }
       throw new Exception.ReportInterrupt(ListPrims.list(avalanchePatches, iters));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
@@ -249,7 +255,7 @@ var procedures = (function() {
     }
   };
   var updateN = function(howMuch) {
-    SelfPrims.setPatchVariable("n", (SelfPrims.getPatchVariable("n") + howMuch));
+    SelfManager.self().setPatchVariable("n", (SelfManager.self().getPatchVariable("n") + howMuch));
     world.observer.setGlobal("total", (world.observer.getGlobal("total") + howMuch));
   };
   var dropPatch = function() {
@@ -277,11 +283,11 @@ var procedures = (function() {
     }
   };
   var pushN = function() {
-    SelfPrims.setPatchVariable("n-stack", ListPrims.fput(SelfPrims.getPatchVariable("n"), SelfPrims.getPatchVariable("n-stack")));
+    SelfManager.self().setPatchVariable("n-stack", ListPrims.fput(SelfManager.self().getPatchVariable("n"), SelfManager.self().getPatchVariable("n-stack")));
   };
   var popN = function() {
-    procedures.updateN((ListPrims.first(SelfPrims.getPatchVariable("n-stack")) - SelfPrims.getPatchVariable("n")));
-    SelfPrims.setPatchVariable("n-stack", ListPrims.butLast(SelfPrims.getPatchVariable("n-stack")));
+    procedures.updateN((ListPrims.first(SelfManager.self().getPatchVariable("n-stack")) - SelfManager.self().getPatchVariable("n")));
+    SelfManager.self().setPatchVariable("n-stack", ListPrims.butLast(SelfManager.self().getPatchVariable("n-stack")));
   };
   return {
     "DROP-PATCH":dropPatch,

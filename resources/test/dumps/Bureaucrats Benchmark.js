@@ -23,10 +23,15 @@ var modelConfig = (typeof window.modelConfig !== "undefined" && window.modelConf
 var turtleShapes = {"default":{"name":"default","editableColorIndex":0,"rotate":true,"elements":[{"xcors":[150,40,150,260],"ycors":[5,250,205,250],"type":"polygon","color":"rgba(141, 141, 141, 1.0)","filled":true,"marked":true}]}};
 var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.plotOps !== null) ? modelConfig.plotOps : {};
 if (typeof javax !== "undefined") {
+  modelConfig.dialog = {
+    confirm: function(str) { return true; },
+    notify:  function(str) {}
+  }
+}
+if (typeof javax !== "undefined") {
   modelConfig.output = {
     clear: function() {},
-    write: function(str) { context.getWriter().print(str); },
-    alert: function(str) {}
+    write: function(str) { context.getWriter().print(str); }
   }
 }
 modelConfig.plots = [(function() {
@@ -71,11 +76,12 @@ var PrintPrims = workspace.printPrims;
 var SelfManager = workspace.selfManager;
 var SelfPrims = workspace.selfPrims;
 var Updater = workspace.updater;
+var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
   var benchmark = function() {
-    Random.setSeed(0);
+    workspace.rng.setSeed(0);
     workspace.timer.reset();
     procedures.setup();
     for (var _index_93_99 = 0, _repeatcount_93_99 = StrictMath.floor(5000); _index_93_99 < _repeatcount_93_99; _index_93_99++){
@@ -86,7 +92,7 @@ var procedures = (function() {
   var setup = function() {
     world.clearAll();
     world.patches().ask(function() {
-      SelfPrims.setPatchVariable("n", 2);
+      SelfManager.self().setPatchVariable("n", 2);
       procedures.colorize();
     }, true);
     world.observer.setGlobal("total", (2 * world.patches().size()));
@@ -95,32 +101,32 @@ var procedures = (function() {
   var go = function() {
     var activePatches = Prims.patchSet(ListPrims.oneOf(world.patches()));
     activePatches.ask(function() {
-      SelfPrims.setPatchVariable("n", (SelfPrims.getPatchVariable("n") + 1));
+      SelfManager.self().setPatchVariable("n", (SelfManager.self().getPatchVariable("n") + 1));
       world.observer.setGlobal("total", (world.observer.getGlobal("total") + 1));
       procedures.colorize();
     }, true);
     while (activePatches.nonEmpty()) {
-      var overloadedPatches = activePatches.agentFilter(function() { return Prims.gt(SelfPrims.getPatchVariable("n"), 3); });
+      var overloadedPatches = activePatches.agentFilter(function() { return Prims.gt(SelfManager.self().getPatchVariable("n"), 3); });
       overloadedPatches.ask(function() {
-        SelfPrims.setPatchVariable("n", (SelfPrims.getPatchVariable("n") - 4));
+        SelfManager.self().setPatchVariable("n", (SelfManager.self().getPatchVariable("n") - 4));
         world.observer.setGlobal("total", (world.observer.getGlobal("total") - 4));
         procedures.colorize();
-        SelfPrims.getNeighbors4().ask(function() {
-          SelfPrims.setPatchVariable("n", (SelfPrims.getPatchVariable("n") + 1));
+        SelfManager.self().getNeighbors4().ask(function() {
+          SelfManager.self().setPatchVariable("n", (SelfManager.self().getPatchVariable("n") + 1));
           world.observer.setGlobal("total", (world.observer.getGlobal("total") + 1));
           procedures.colorize();
         }, true);
       }, true);
-      activePatches = Prims.patchSet(overloadedPatches.projectionBy(function() { return SelfPrims.getNeighbors4(); }));
+      activePatches = Prims.patchSet(overloadedPatches.projectionBy(function() { return SelfManager.self().getNeighbors4(); }));
     }
     world.ticker.tick();
   };
   var colorize = function() {
-    if (Prims.lte(SelfPrims.getPatchVariable("n"), 3)) {
-      SelfPrims.setPatchVariable("pcolor", ListPrims.item(SelfPrims.getPatchVariable("n"), [83, 54, 45, 25]));
+    if (Prims.lte(SelfManager.self().getPatchVariable("n"), 3)) {
+      SelfManager.self().setPatchVariable("pcolor", ListPrims.item(SelfManager.self().getPatchVariable("n"), [83, 54, 45, 25]));
     }
     else {
-      SelfPrims.setPatchVariable("pcolor", 15);
+      SelfManager.self().setPatchVariable("pcolor", 15);
     }
   };
   return {
