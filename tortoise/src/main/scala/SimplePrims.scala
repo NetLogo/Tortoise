@@ -299,7 +299,7 @@ object SimplePrims {
         case _: prim.etc._tick             => "world.ticker.tick"
         case _: prim.etc._tickadvance      => "world.ticker.tickAdvance"
         case _: prim.etc._resettimer       => "workspace.timer.reset"
-        case _: prim.etc._randomseed       => "Random.setSeed"
+        case _: prim.etc._randomseed       => "workspace.rng.setSeed"
         case _: prim.etc._follow           => "world.observer.follow"
         case _: prim.etc._ride             => "world.observer.ride"
         case _: prim.etc._watch            => "world.observer.watch"
