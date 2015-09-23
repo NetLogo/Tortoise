@@ -15,7 +15,7 @@ module.exports =
 
     # () => RNG
     constructor: ->
-      @_useMainRNG()
+      @_currentRNG = Random
 
     # () => Number
     nextGaussian: =>
@@ -40,12 +40,18 @@ module.exports =
 
     # [T] @ (() => T) => T
     withAux: (f) ->
-      @_currentRNG = AuxRandom
-      result = f()
-      @_useMainRNG()
-      result
+      @_withAnother(AuxRandom)(f)
 
-    # () => Unit
-    _useMainRNG: ->
-      @_currentRNG = Random
-      return
+    # [T] @ (() => T) => T
+    withClone: (f) ->
+      @_withAnother(Random.clone())(f)
+
+    # [T] @ (Generator) => (() => T) => T
+    _withAnother: (rng) -> (f) =>
+      prevRNG = @_currentRNG
+      @_currentRNG = rng
+      result =
+        try f()
+        finally
+          @_currentRNG = prevRNG
+      result

@@ -221,6 +221,8 @@ trait CommandPrims extends PrimUtils {
       case _: prim.etc._ignore           => s"${arg(0)};"
       case l: prim._let                  =>
         s"var ${handlers.ident(l.let.name)} = ${arg(0)};"
+      case _: prim.etc._withlocalrandomness =>
+        s"workspace.rng.withClone(function() { ${handlers.commands(s.args(0))} })"
       case _: prim.etc._run              =>
         val taskInputs = args.tail.mkString(", ")
         s"(${arg(0)})($taskInputs);"
