@@ -170,6 +170,7 @@ object SimplePrims {
         case _: prim.etc._randomexponential => "Prims.randomExponential"
         case _: prim.etc._randomfloat       => "Prims.randomFloat"
         case _: prim.etc._randomnormal      => "Prims.randomNormal"
+        case _: prim.etc._randompoisson     => "Prims.randomPoisson"
         case _: prim.etc._linkset           => "Prims.linkSet"
         case _: prim.etc._patchset          => "Prims.patchSet"
         case _: prim.etc._turtleset         => "Prims.turtleSet"

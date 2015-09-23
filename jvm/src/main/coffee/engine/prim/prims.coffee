@@ -184,6 +184,15 @@ module.exports =
     randomPatchCoord: (min, max) ->
       min + @_rng.nextInt(max - min + 1)
 
+    # (Number) => Number
+    randomPoisson: (mean) ->
+      q   = 0
+      sum = -StrictMath.log(1 - @_rng.nextDouble())
+      while sum <= mean
+        q   += 1
+        sum -= StrictMath.log(1 - @_rng.nextDouble())
+      q
+
     # [T <: (Array[Turtle]|Turtle|AbstractAgentSet[Turtle])] @ (T*) => TurtleSet
     turtleSet: (inputs...) ->
       @_createAgentSet(inputs, Turtle, TurtleSet)
