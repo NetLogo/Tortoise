@@ -1,6 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 _          = require('lodash')
+NLMath     = require('util/nlmath')
 JSType     = require('util/typechecker')
 StrictMath = require('shim/strictmath')
 
@@ -88,6 +89,11 @@ module.exports = {
     else
       throw new Error("Unrecognized color format: #{color}")
 
+  # (ColorNumber) => HSB
+  colorToHSB: (color) ->
+    [r, g, b] = @colorToRGB(color)
+    @rgbToHSB(r, g, b)
+
   # (RGB...) => RGB
   genRGBFromComponents: (r, g, b) ->
     [r, g, b].map(attenuateRGB)
@@ -127,6 +133,31 @@ module.exports = {
   randomColor: (nextInt) ->
     index = nextInt(BaseColors.length)
     BaseColors[index]
+
+  # Courtesy of Paul S. at http://stackoverflow.com/a/17243070/1116979 --JAB (9/23/15)
+  # (RGB...) => HSB
+  rgbToHSB: (rawR, rawG, rawB) ->
+
+    r = attenuateRGB(rawR)
+    g = attenuateRGB(rawG)
+    b = attenuateRGB(rawB)
+
+    max = NLMath.max(r, g, b)
+    min = NLMath.min(r, g, b)
+
+    difference = max - min
+
+    hue =
+      switch max
+        when min then 0
+        when r   then ((g - b) + difference * (if g < b then 6 else 0)) / (6 * difference)
+        when g   then ((b - r) + difference * 2) / (6 * difference)
+        when b   then ((r - g) + difference * 4) / (6 * difference)
+
+    saturation = if max is 0 then 0 else difference / max
+    brightness = max / 255
+
+    [hue * 360, saturation * 100, brightness * 100]
 
   # [T <: ColorNumber|RGB] @ (T) => T
   wrapColor: (color) ->
