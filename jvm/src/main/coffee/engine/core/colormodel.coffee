@@ -4,14 +4,30 @@ _          = require('lodash')
 JSType     = require('util/typechecker')
 StrictMath = require('shim/strictmath')
 
-# type RGB = (Number, Number, Number)
+# type ColorNumber = Number
+# type ColorName   = String
+# type HSB         = (Number, Number, Number)
+# type RGB         = (Number, Number, Number)
+
+# (Number, Number) => (Number) => Number
+attenuate =
+  (lowerBound, upperBound) -> (x) ->
+    if x < lowerBound
+      lowerBound
+    else if x > upperBound
+      upperBound
+    else
+      x
+
+# (Number) => Number
+attenuateRGB = attenuate(0, 255)
 
 ColorMax = 140
 
-# Array[Number]
+# Array[ColorNumber]
 BaseColors = _(0).range(ColorMax / 10).map((n) -> (n * 10) + 5).value()
 
-# Object[String, Number]
+# Object[ColorName, Number]
 NamesToIndicesMap =
   (->
     temp = {}
@@ -48,19 +64,19 @@ RGBCache =
     baseIndex = StrictMath.floor(colorTimesTen / 100)
     rgb       = BaseRGBs[baseIndex]
     step      = (colorTimesTen % 100 - 50) / 50.48 + 0.012
-    attenuate = if step <= 0 then (x) -> x else (x) -> 0xFF - x
-    rgb.map((x) -> x + StrictMath.truncate(attenuate(x) * step))
+    clamp     = if step <= 0 then (x) -> x else (x) -> 0xFF - x
+    rgb.map((x) -> x + StrictMath.truncate(clamp(x) * step))
 
 module.exports = {
 
-  COLOR_MAX:   ColorMax   # Number
-  BASE_COLORS: BaseColors # Array[Number]
+  COLOR_MAX:   ColorMax   # ColorNumber
+  BASE_COLORS: BaseColors # Array[ColorNumber]
 
-  # (Number, Number) => Boolean
+  # (ColorNumber, ColorNumber) => Boolean
   areRelatedByShade: (color1, color2) ->
     @_colorIntegral(color1) is @_colorIntegral(color2)
 
-  # (Number|Array[Number]|String) => RGB
+  # [T <: ColorNumber|RGB|ColorName] @ (T) => RGB
   colorToRGB: (color) ->
     type = JSType(color)
     if type.isNumber()
@@ -72,22 +88,21 @@ module.exports = {
     else
       throw new Error("Unrecognized color format: #{color}")
 
-  # (Number, Number, Number) => RGB
+  # (RGB...) => RGB
   genRGBFromComponents: (r, g, b) ->
-    attenuate = (x) -> if x < 0 then 0 else if x > 255 then 255 else x
-    [r, g, b].map(attenuate)
+    [r, g, b].map(attenuateRGB)
 
-  # (Number) => Number
+  # (Number) => ColorNumber
   nthColor: (n) ->
     index = n % BaseColors.length
     BaseColors[index]
 
-  # ((Number) => Number) => Number
+  # ((Number) => Number) => ColorNumber
   randomColor: (nextInt) ->
     index = nextInt(BaseColors.length)
     BaseColors[index]
 
-  # [T <: Number|RGB] @ (T) => T
+  # [T <: ColorNumber|RGB] @ (T) => T
   wrapColor: (color) ->
     if JSType(color).isArray()
       color
@@ -98,7 +113,7 @@ module.exports = {
       else
         ColorMax + modColor
 
-  # (Number, Number, Number, Number) => Number
+  # (ColorNumber, Number, Number, Number) => Number
   scaleColor: (color, number, min, max) ->
 
     percent =
@@ -133,11 +148,11 @@ module.exports = {
 
     @_colorIntegral(color) * 10 + finalPercent
 
-  # (Number) => Number
+  # (ColorNumber) => Number
   _colorIntegral: (color) ->
     StrictMath.floor(color / 10)
 
-  # (String) => RGB
+  # (ColorName) => RGB
   _nameToRGB: (name) ->
     BaseRGBs[NamesToIndicesMap[name]]
 
