@@ -152,6 +152,10 @@ module.exports = {
 
     rgb.map((x) -> StrictMath.round(x * 255))
 
+  # (HSB...) => ColorNumber
+  nearestColorNumberOfHSB: (h, s, b) ->
+    @nearestColorNumberOfRGB(@hsbToRGB(h, s, b)...)
+
   # (RGB...) => ColorNumber
   nearestColorNumberOfRGB: (r, g, b) ->
     red   = attenuateRGB(r)

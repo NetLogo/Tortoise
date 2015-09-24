@@ -156,6 +156,7 @@ object SimplePrims {
         case _: prim.etc._tan              => "NLMath.tan"
 
         // ColorModel
+        case _: prim.etc._approximatehsb    => "ColorModel.nearestColorNumberOfHSB"
         case _: prim.etc._approximatergb    => "ColorModel.nearestColorNumberOfRGB"
         case _: prim.etc._extracthsb        => "ColorModel.colorToHSB"
         case _: prim.etc._extractrgb        => "ColorModel.colorToRGB"
