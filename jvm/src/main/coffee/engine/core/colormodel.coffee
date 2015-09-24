@@ -23,6 +23,14 @@ attenuate =
 # (Number) => Number
 attenuateRGB = attenuate(0, 255)
 
+# (RGB...) => String
+componentsToKey = (r, g, b) ->
+  "#{r}_#{g}_#{b}"
+
+# (String) => RGB
+keyToComponents = (key) ->
+  key.split('_').map(parseFloat)
+
 ColorMax = 140
 
 # Array[ColorNumber]
@@ -59,14 +67,34 @@ BaseRGBs = [
   [255, 255, 255]  # white
 ]
 
-# Array[RGB]
-RGBCache =
-  for colorTimesTen in [0..1400]
-    baseIndex = StrictMath.floor(colorTimesTen / 100)
-    rgb       = BaseRGBs[baseIndex]
-    step      = (colorTimesTen % 100 - 50) / 50.48 + 0.012
-    clamp     = if step <= 0 then (x) -> x else (x) -> 0xFF - x
-    rgb.map((x) -> x + StrictMath.truncate(clamp(x) * step))
+# (Array[RGB], Object[String, RGB])
+[RGBCache, RGBMap] =
+  (->
+    rgbMap   = {}
+    rgbCache =
+      for colorTimesTen in [0...(ColorMax * 10)]
+
+        # We do this branching to make sure that the right color
+        # is used for white and black, which appear multiple times
+        # in NetLogo's nonsensical color space --JAB (9/24/15)
+        finalRGB =
+          if colorTimesTen is 0
+            [0, 0, 0]
+          else if colorTimesTen is 99
+            [255, 255, 255]
+          else
+            baseIndex = StrictMath.floor(colorTimesTen / 100)
+            rgb       = BaseRGBs[baseIndex]
+            step      = (colorTimesTen % 100 - 50) / 50.48 + 0.012
+            clamp     = if step <= 0 then (x) -> x else (x) -> 0xFF - x
+            rgb.map((x) -> x + StrictMath.truncate(clamp(x) * step))
+
+        rgbMap[componentsToKey(finalRGB...)] = colorTimesTen / 10
+        finalRGB
+
+    [rgbCache, rgbMap]
+
+  )()
 
 module.exports = {
 
@@ -123,6 +151,16 @@ module.exports = {
         when 5 then [b, p, q]
 
     rgb.map((x) -> StrictMath.round(x * 255))
+
+  # (RGB...) => ColorNumber
+  nearestColorNumberOfRGB: (r, g, b) ->
+    red   = attenuateRGB(r)
+    green = attenuateRGB(g)
+    blue  = attenuateRGB(b)
+
+    colorNumber = RGBMap[componentsToKey(red, green, blue)] ? @_estimateColorNumber(red, green, blue)
+
+    NLMath.validateNumber(colorNumber)
 
   # (Number) => ColorNumber
   nthColor: (n) ->
@@ -212,5 +250,30 @@ module.exports = {
   # (ColorName) => RGB
   _nameToRGB: (name) ->
     BaseRGBs[NamesToIndicesMap[name]]
+
+  # (RGB...) => ColorNumber
+  _estimateColorNumber: (r, g, b) ->
+    f =
+      (acc, [k, v]) =>
+        [cr, cg, cb] = keyToComponents(k)
+        dist = @_colorDistance(r, g, b, cr, cg, cb)
+        if dist < acc[1]
+          [v, dist]
+        else
+          acc
+    _(RGBMap).pairs().foldl(f, [0, Number.MAX_VALUE])[0]
+
+  # CoffeeScript code from the Scala code in Headless' './parser-core/src/main/core/Color.scala',
+  # which was translated from Java code that came from a C snippet at www.compuphase.com/cmetric.htm
+  # Dealwithit --JAB (9/24/15)
+  # (Number, Number, Number, Number, Number, Number) => Number
+  _colorDistance: (r1, g1, b1, r2, g2, b2) ->
+    rMean = r1 + r2 / 2
+    rDiff = r1 - r2
+    gDiff = g1 - g2
+    bDiff = b1 - b2
+    (((512 + rMean) * rDiff * rDiff) >> 8) + 4 * gDiff * gDiff + (((767 - rMean) * bDiff * bDiff) >> 8)
+    # I don't know what this code means.
+    # Leave a comment on this webzone if you know what this code means --JAB (9/24/15)
 
 }
