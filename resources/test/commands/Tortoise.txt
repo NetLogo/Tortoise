@@ -1,7 +1,4 @@
-# eventually this file might contain some language tests that only
-# work in Tortoise, not in JVM NetLogo.
-#
-# for now, its main purpose is as a place to temporarily add new
+# This file's main purpose is as a place to temporarily add new
 # language tests during development without having to depend on
 # a new NetLogoHeadlessTests artifact.  if the test you add
 # here should pass on JVM NetLogo too, then before committing
@@ -9,3 +6,4 @@
 
 Smoke
   2 + 2 => 4
+  netlogo-web? => true
