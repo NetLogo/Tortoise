@@ -92,6 +92,32 @@ module.exports = {
   genRGBFromComponents: (r, g, b) ->
     [r, g, b].map(attenuateRGB)
 
+  # Courtesy of Paul S. at http://stackoverflow.com/a/17243070/1116979 --JAB (9/23/15)
+  # (HSB...) => RGB
+  hsbToRGB: (rawH, rawS, rawB) ->
+
+    h = attenuate(0, 360)(rawH) / 360
+    s = attenuate(0, 100)(rawS) / 100
+    b = attenuate(0, 100)(rawB) / 100
+
+    i = StrictMath.floor(h * 6)
+
+    f = h * 6 - i
+    p = b * (1 - s)
+    q = b * (1 - f * s)
+    t = b * (1 - (1 - f) * s)
+
+    rgb =
+      switch i % 6
+        when 0 then [b, t, p]
+        when 1 then [q, b, p]
+        when 2 then [p, b, t]
+        when 3 then [p, q, b]
+        when 4 then [t, p, b]
+        when 5 then [b, p, q]
+
+    rgb.map((x) -> StrictMath.round(x * 255))
+
   # (Number) => ColorNumber
   nthColor: (n) ->
     index = n % BaseColors.length
