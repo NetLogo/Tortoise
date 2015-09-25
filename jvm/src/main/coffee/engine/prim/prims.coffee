@@ -15,6 +15,7 @@ Exception        = require('util/exception')
 NLMath           = require('util/nlmath')
 Timer            = require('util/timer')
 
+{ MersenneTwisterFast }                          = require('shim/engine-scala')
 { EQUALS: EQ, GREATER_THAN: GT, LESS_THAN: LT, } = require('util/comparator')
 
 module.exports =
@@ -108,6 +109,19 @@ module.exports =
     # (String, Agent|Number) => Unit
     resetThrottleTimerFor: (commandID, agent) ->
       @_everyMap[@_genEveryKey(commandID, agent)] = new Timer()
+
+    # () => Number
+    generateNewSeed: (->
+      lastSeed = 0 # Rather than adding a global, scope this permanent state here --JAB (9/25/15)
+      helper = ->
+        seed = (new MersenneTwisterFast).nextInt()
+        if seed isnt lastSeed
+          lastSeed = seed
+          seed
+        else
+          helper()
+      helper
+    )()
 
     # (Any, Any) => Boolean
     gt: (a, b) ->

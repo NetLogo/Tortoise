@@ -177,6 +177,7 @@ object SimplePrims {
         case _: prim.etc._timer             => "workspace.timer.elapsed"
         case _: prim.etc._map               => "Tasks.map"
         case _: prim._random                => "Prims.random"
+        case _: prim.etc._newseed           => "Prims.generateNewSeed"
         case _: prim.etc._randomstate       => "Random.save"
         case _: prim.etc._randomexponential => "Prims.randomExponential"
         case _: prim.etc._randomfloat       => "Prims.randomFloat"

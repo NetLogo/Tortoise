@@ -263,7 +263,8 @@ final class MersenneTwisterFast(seed: Long = System.nanoTime) extends Random wit
     }
   }
 
-  override def nextInt: Int = {
+  @JSExport
+  override def nextInt(): Int = {
 
     var y: Int = 0
 
