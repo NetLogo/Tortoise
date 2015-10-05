@@ -27,6 +27,12 @@
   "no_interpolation_in_single_quotes": {
     "level": "error"
   },
+  "no_nested_string_interpolation": {
+    "level": "error"
+  },
+  "no_private_function_fat_arrows": {
+    "level": "error"
+  },
   "no_unnecessary_fat_arrows": {
     "level": "ignore"
   },

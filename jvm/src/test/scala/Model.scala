@@ -274,7 +274,7 @@ object Model {
     Model(
       path = "models/Sample Models/Chemistry & Physics/Ising.nlogo",
       dimensions = Some((-10, 10, -10, 10)),
-      setup = "setup 0",
+      setup = "setup",
       repetitions = 150
     ),
     Model(

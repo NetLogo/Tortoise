@@ -39,11 +39,7 @@ modelConfig.plots = [(function() {
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('average spin', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('Magnetization', 'average spin')(function() {
-        if (Prims.equality(NLMath.mod(world.ticker.tickCount(), world.observer.getGlobal("plotting-interval")), 0)) {
-          plotManager.plotPoint(world.ticker.tickCount(), procedures.magnetization());
-        };
-      });
+      plotManager.withTemporaryContext('Magnetization', 'average spin')(function() { plotManager.plotPoint(world.ticker.tickCount(), procedures.magnetization());; });
     });
   }),
   new PenBundle.Pen('axis', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {
@@ -60,7 +56,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "time", "average spin", false, true, 0.0, 20.0, -1.0, 1.0, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])(["temperature", "plotting-interval", "sum-of-spins"], ["temperature", "plotting-interval"], ["spin"], -40, 40, -40, 40, 5.0, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])(["temperature", "probability-of-spin-up", "sum-of-spins"], ["temperature", "probability-of-spin-up"], ["spin"], -40, 40, -40, 40, 5.0, true, true, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims = workspace.linkPrims;
@@ -76,14 +72,14 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function(initialMagnetization) {
+  var setup = function() {
     world.clearAll();
     world.patches().ask(function() {
-      if (Prims.equality(initialMagnetization, 0)) {
-        SelfManager.self().setPatchVariable("spin", ListPrims.oneOf([-1, 1]));
+      if (Prims.lt(Prims.random(100), world.observer.getGlobal("probability-of-spin-up"))) {
+        SelfManager.self().setPatchVariable("spin", 1);
       }
       else {
-        SelfManager.self().setPatchVariable("spin", initialMagnetization);
+        SelfManager.self().setPatchVariable("spin", -1);
       }
       procedures.recolor();
     }, true);
@@ -91,8 +87,11 @@ var procedures = (function() {
     world.ticker.reset();
   };
   var go = function() {
-    ListPrims.oneOf(world.patches()).ask(function() { procedures.update(); }, true);
-    world.ticker.tick();
+    for (var _index_510_516 = 0, _repeatcount_510_516 = StrictMath.floor(1000); _index_510_516 < _repeatcount_510_516; _index_510_516++){
+      ListPrims.oneOf(world.patches()).ask(function() { procedures.update(); }, true);
+    }
+    world.ticker.tickAdvance(1000);
+    plotManager.updatePlots();
   };
   var update = function() {
     var ediff = ((2 * SelfManager.self().getPatchVariable("spin")) * ListPrims.sum(SelfManager.self().getNeighbors4().projectionBy(function() { return SelfManager.self().getPatchVariable("spin"); })));
@@ -135,5 +134,5 @@ var procedures = (function() {
     "update":update
   };
 })();
-world.observer.setGlobal("temperature", 2.24);
-world.observer.setGlobal("plotting-interval", 100);
+world.observer.setGlobal("temperature", 2.27);
+world.observer.setGlobal("probability-of-spin-up", 50);

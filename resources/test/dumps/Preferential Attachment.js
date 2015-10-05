@@ -157,7 +157,7 @@ var procedures = (function() {
     }
   };
   var layout = function() {
-    for (var _index_2014_2020 = 0, _repeatcount_2014_2020 = StrictMath.floor(3); _index_2014_2020 < _repeatcount_2014_2020; _index_2014_2020++){
+    for (var _index_2025_2031 = 0, _repeatcount_2025_2031 = StrictMath.floor(3); _index_2025_2031 < _repeatcount_2025_2031; _index_2025_2031++){
       var factor = NLMath.sqrt(world.turtles().size());
       LayoutManager.layoutSpring(world.turtles(), world.links(), (1 / factor), (7 / factor), (1 / factor));
       notImplemented('display', undefined)();

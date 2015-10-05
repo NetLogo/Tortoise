@@ -249,7 +249,7 @@ var procedures = (function() {
     try {
       var total = 0;
       var howFar = 1;
-      for (var _index_3994_4000 = 0, _repeatcount_3994_4000 = StrictMath.floor(SelfManager.self().getVariable("vision")); _index_3994_4000 < _repeatcount_3994_4000; _index_3994_4000++){
+      for (var _index_4005_4011 = 0, _repeatcount_4005_4011 = StrictMath.floor(SelfManager.self().getVariable("vision")); _index_4005_4011 < _repeatcount_4005_4011; _index_4005_4011++){
         total = (total + SelfManager.self().patchAhead(howFar).projectionBy(function() { return SelfManager.self().getPatchVariable("grain-here"); }));
         howFar = (howFar + 1);
       }
@@ -296,7 +296,7 @@ var procedures = (function() {
     var index = 0;
     world.observer.setGlobal("gini-index-reserve", 0);
     world.observer.setGlobal("lorenz-points", []);
-    for (var _index_6020_6026 = 0, _repeatcount_6020_6026 = StrictMath.floor(world.observer.getGlobal("num-people")); _index_6020_6026 < _repeatcount_6020_6026; _index_6020_6026++){
+    for (var _index_6031_6037 = 0, _repeatcount_6031_6037 = StrictMath.floor(world.observer.getGlobal("num-people")); _index_6031_6037 < _repeatcount_6031_6037; _index_6031_6037++){
       wealthSumSoFar = (wealthSumSoFar + ListPrims.item(index, sortedWealths));
       world.observer.setGlobal("lorenz-points", ListPrims.lput(((wealthSumSoFar / totalWealth) * 100), world.observer.getGlobal("lorenz-points")));
       index = (index + 1);

@@ -147,7 +147,7 @@ var procedures = (function() {
   var randomNear = function(center) {
     try {
       var result = 0;
-      for (var _index_3693_3699 = 0, _repeatcount_3693_3699 = StrictMath.floor(40); _index_3693_3699 < _repeatcount_3693_3699; _index_3693_3699++){
+      for (var _index_3704_3710 = 0, _repeatcount_3704_3710 = StrictMath.floor(40); _index_3704_3710 < _repeatcount_3704_3710; _index_3704_3710++){
         result = (result + Prims.randomFloat(center));
       }
       throw new Exception.ReportInterrupt((result / 20));

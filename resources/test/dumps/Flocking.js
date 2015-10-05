@@ -62,7 +62,7 @@ var procedures = (function() {
   };
   var go = function() {
     world.turtles().ask(function() { procedures.flock(); }, true);
-    for (var _index_432_438 = 0, _repeatcount_432_438 = StrictMath.floor(5); _index_432_438 < _repeatcount_432_438; _index_432_438++){
+    for (var _index_443_449 = 0, _repeatcount_443_449 = StrictMath.floor(5); _index_443_449 < _repeatcount_443_449; _index_443_449++){
       world.turtles().ask(function() { SelfManager.self().fd(0.2); }, true);
       notImplemented('display', undefined)();
     }

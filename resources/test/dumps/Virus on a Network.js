@@ -106,7 +106,7 @@ var procedures = (function() {
         }
       }, true);
     }
-    for (var _index_1086_1092 = 0, _repeatcount_1086_1092 = StrictMath.floor(10); _index_1086_1092 < _repeatcount_1086_1092; _index_1086_1092++){
+    for (var _index_1097_1103 = 0, _repeatcount_1097_1103 = StrictMath.floor(10); _index_1097_1103 < _repeatcount_1097_1103; _index_1097_1103++){
       LayoutManager.layoutSpring(world.turtles(), world.links(), 0.3, (world.topology.width / NLMath.sqrt(world.observer.getGlobal("number-of-nodes"))), 1);
     }
   };
