@@ -348,6 +348,69 @@ object Model {
       setup = "setup release-neutron",
       go = "auto-react",
       repetitions = 20
+    ),
+    Model(
+      path = "models/Sample Models/Biology/BeeSmart Hive Finding.nlogo",
+      repetitions = 50
+    ),
+    Model(
+      path  = "models/Sample Models/Mathematics/Turtles Circling.nlogo",
+      setup = "setup " +
+              "draw-circle clear-drawing draw-circle " +
+              "ask turtles [ set shape \"turtle\" set shape \"circle\" set shape \"turtle\" ] " +
+              "ask turtles [ pen-down ]",
+      go    = "repeat 50 [ all-circle ] " +
+              "repeat 50 [ zero-circle ]",
+      repetitions = 1
+    ),
+    Model(
+      path  = "models/Sample Models/Biology/Evolution/Sunflower Biomorphs.nlogo",
+      setup = "setup set asexual? false",
+      go    = "go handle-mouse-down",
+      repetitions = 20
+    ),
+    Model(
+      path = "models/Sample Models/Mathematics/Probability/ProbLab/Dice Stalagmite.nlogo",
+      repetitions = 50
+    ),
+    Model(
+      path = "models/Code Examples/Many Regions Example.nlogo",
+      repetitions = 50
+    ),
+    Model(
+      path  = "models/Code Examples/HSB and RGB Example.nlogo",
+      setup = "",
+      go    = "set hue (random 361) set saturation (random 101) set brightness (random 101) " +
+              "set rgb-red (random 256) set rgb-green (random 256) set rgb-blue (random 256) " +
+              "let hsb-str (word hue \",\" saturation \",\" brightness) " +
+              "let rgb-str (word hsb hue saturation brightness) " +
+              "error (word hsb-str \" and also \" rgb-str) " +
+              "go",
+      repetitions = 20
+    ),
+    Model(
+      path = "models/Curricular Models/BEAGLE Evolution/Plant Speciation.nlogo",
+      repetitions = 20
+    ),
+    Model(
+      path = "models/IABM Textbook/chapter 2/Simple Economy.nlogo",
+      repetitions = 10
+    ),
+    Model(
+      path = "models/Curricular Models/Urban Suite/Urban Suite - Recycling.nlogo",
+      repetitions = 30
+    ),
+    Model(
+      path = "models/Curricular Models/epiDEM/epiDEM Travel and Control.nlogo",
+      repetitions = 40
+    ),
+    Model(
+      path = "models/Curricular Models/Connected Chemistry/Connected Chemistry Gas Combustion.nlogo",
+      repetitions = 100
+    ),
+    Model(
+      path = "models/Sample Models/Biology/Autumn.nlogo",
+      repetitions = 60
     )
   )
 }
