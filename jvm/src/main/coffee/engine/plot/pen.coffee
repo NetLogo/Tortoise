@@ -1,7 +1,8 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_      = require('lodash')
-JSType = require('util/typechecker')
+_          = require('lodash')
+StrictMath = require('shim/strictmath')
+JSType     = require('util/typechecker')
 
 # data PenMode =
 Up   = {}
@@ -98,11 +99,16 @@ module.exports.Pen = class Pen
   bounds: ->
     @_bounds
 
-  # (Array[Number]) => Unit
-  drawHistogramFrom: (ys) ->
+  # (Array[Number], Number, Number) => Unit
+  drawHistogramFrom: (ys, xMin, xMax) ->
     @reset(true)
-    nums = ys.filter((y) -> JSType(y).isNumber())
-    _(nums).countBy().forEach((n, key) => @addXY(Number(key), n); return).value()
+    interval        = @getInterval()
+    determineBucket = (x) -> StrictMath.round((x / interval) * (1 + 3.2e-15)) # See 'Histogram.scala' in Headless for explanation --JAB (10/21/15)
+    numbers         = _(ys).filter((y) -> JSType(y).isNumber())
+    buckets         = numbers.map(determineBucket)
+    validBuckets    = buckets.filter((x) => (xMin / interval) <= x <= (xMax / interval))
+    bucketsToCounts = validBuckets.countBy()
+    bucketsToCounts.forEach((count, bucketNum) => @addXY(Number(bucketNum) * interval, count); return).value()
     return
 
   # () => Number

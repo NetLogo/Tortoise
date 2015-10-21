@@ -120,7 +120,7 @@ class TestPlotting extends FunSuite with PlottingHelpers {
 
   }
 
-  testPlotting("plot / plotxy / histogram / set-plot-pen-interval ") { (nashorn) =>
+  testPlotting("plot / plotxy / set-plot-pen-interval ") { (nashorn) =>
 
     implicit val n = nashorn
 
@@ -166,17 +166,6 @@ class TestPlotting extends FunSuite with PlottingHelpers {
     plotxy(0, 1031)
     assertXYs(12 -> 53, 9 -> 22, 100002 -> -1, 0 -> 1031)
 
-    // Test `histogram`
-    clearPlot()
-    histogram(5, 19, 2, 107, -123, 2, 2, 2, 0, 1, 93)
-    assertXYs(2 -> 4, 5 -> 1, 1 -> 1, 0 -> 1, 19 -> 1, 107 -> 1, -123 -> 1, 93 -> 1)
-    histogram()
-    assertXYs()
-    histogram(12, 9, -12, 5)
-    assertXYs(12 -> 1, 9 -> 1, -12 -> 1, 5 -> 1)
-    histogram(5, 19, 2, 107, -123, 2, 2, 2, 0, 1, 93)
-    assertXYs(2 -> 4, 5 -> 1, 1 -> 1, 0 -> 1, 19 -> 1, 107 -> 1, -123 -> 1, 93 -> 1)
-
     // Test `plotxy` and `plot` intermixed
     clearPlot()
     plotxy(12, 53)
@@ -193,6 +182,38 @@ class TestPlotting extends FunSuite with PlottingHelpers {
     assertXYs(12 -> 53, 13 -> 9, 100002 -> -1, 100004 -> 101, 100005 -> 98, 0 -> 1031)
     plot(15)
     assertXYs(12 -> 53, 13 -> 9, 100002 -> -1, 100004 -> 101, 100005 -> 98, 0 -> 1031, 1 -> 15)
+
+  }
+
+  testPlotting("histogram") { (nashorn) =>
+
+    implicit val n = nashorn
+
+    // Test `histogram` basics
+    clearPlot()
+    histogram(5, 19, 2, 107, -123, 2, 2, 2, 0, 1, 93)
+    assertXYs(2 -> 4, 5 -> 1, 1 -> 1, 0 -> 1, 19 -> 1)
+    histogram()
+    assertXYs()
+    histogram(12, 9, -12, 5)
+    assertXYs(12 -> 1, 9 -> 1, 5 -> 1)
+    histogram(5, 19, 2, 107, -123, 2, 2, 2, 0, 1, 93)
+    assertXYs(2 -> 4, 5 -> 1, 1 -> 1, 0 -> 1, 19 -> 1)
+
+    // Test `histogram` with different interval
+    // Buckets should be: { 0: [0, 1, 2, 2, 2, 2], 1: [5], 3: [19] }
+    clearPlot()
+    setInterval(5)
+    histogram(5, 19, 2, 107, -123, 2, 2, 2, 0, 1, 93)
+    assertXYs(0 -> 6, 5 -> 1, 20 -> 1)
+
+    // Test `histogram` with negative xMin
+    // Buckets should be: { -25: [-123], 0: [0, 1, 2, 2, 2, 2], 1: [5], 3: [19] }
+    clearPlot()
+    setAxisRange(-125, 20)(n, X)
+    setInterval(5)
+    histogram(5, 19, 2, 107, -123, 2, 2, 2, 0, 1, 93)
+    assertXYs(-125 -> 1, 0 -> 6, 5 -> 1, 20 -> 1)
 
   }
 

@@ -63,7 +63,7 @@ module.exports = class Plot
     @_withPen(
       (pen) =>
         if pen.getInterval() > 0
-          pen.drawHistogramFrom(list)
+          pen.drawHistogramFrom(list, @xMin, @xMax)
           @_verifyHistogramSize(pen)
         else
           throw new Error("You cannot histogram with a plot-pen-interval of #{pen.interval}.")
