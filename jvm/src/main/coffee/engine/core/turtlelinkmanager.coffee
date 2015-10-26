@@ -4,7 +4,8 @@ _                         = require('lodash')
 LinkSet                   = require('./linkset')
 Nobody                    = require('./nobody')
 TurtleSet                 = require('./turtleset')
-{ DeathInterrupt: Death } = require('util/exception')
+
+{ DeathInterrupt, ignoring } = require('util/exception')
 
 # (Breed) => String
 mustNotBeDirected = (breed) ->
@@ -133,13 +134,7 @@ module.exports =
 
       # Purposely done after resetting the arrays so that calls to `TurtleLinkManager.remove` in `Link.die` don't spend
       # a ton of time iterating through long arrays that are in the process of being wiped out. --JAB (11/24/14)
-      oldLinks.forEach(
-        (link) ->
-          try link.die()
-          catch error
-            throw error if not (error instanceof Death)
-          return
-      )
+      oldLinks.forEach((link) -> ignoring(DeathInterrupt)(() => link.die()))
 
       return
 

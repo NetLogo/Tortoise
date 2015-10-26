@@ -8,7 +8,7 @@ TurtleSet  = require('../turtleset')
 Builtins   = require('../structure/builtins')
 IDManager  = require('./idmanager')
 
-{ DeathInterrupt: Death }  = require('util/exception')
+{ DeathInterrupt, ignoring }  = require('util/exception')
 
 module.exports =
   class TurtleManager
@@ -25,13 +25,7 @@ module.exports =
 
     # () => Unit
     clearTurtles: ->
-      @turtles().forEach((turtle) ->
-        try
-          turtle.die()
-        catch error
-          throw error if not (error instanceof Death)
-        return
-      )
+      @turtles().forEach((turtle) -> ignoring(DeathInterrupt)(() => turtle.die()))
       @_idManager.reset()
       return
 
