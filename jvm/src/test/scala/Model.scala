@@ -409,6 +409,12 @@ object Model {
       repetitions = 100
     ),
     Model(
+      path = "models/Curricular Models/ModelSim/Evolution/Bacteria Hunt Speeds.nlogo",
+      go   = "go " +
+             "if (ticks mod 5 = 0) [ ask one-of bacteria [ death ] ]",
+      repetitions = 100
+    ),
+    Model(
       path = "models/Sample Models/Biology/Autumn.nlogo",
       repetitions = 60
     )

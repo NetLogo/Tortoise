@@ -12,10 +12,12 @@ makePenLines      = require('./turtle/makepenlines')
 Comparator        = require('util/comparator')
 NLMath            = require('util/nlmath')
 
-{ PenManager, PenStatus: { Down, Erase } }   = require('./structure/penmanager')
-{ ExtraVariableSpec }                        = require('./structure/variablespec')
-{ DeathInterrupt: Death, TopologyInterrupt } = require('util/exception')
-{ Setters, VariableSpecs }                   = require('./turtle/turtlevariables')
+{ PenManager, PenStatus: { Down, Erase } }             = require('./structure/penmanager')
+{ ExtraVariableSpec }                                  = require('./structure/variablespec')
+{ DeathInterrupt: Death, ignoring, TopologyInterrupt } = require('util/exception')
+{ Setters, VariableSpecs }                             = require('./turtle/turtlevariables')
+
+ignorantly = ignoring(TopologyInterrupt)
 
 class StampMode
   constructor: (@name) -> # (String) => StampMode
@@ -27,6 +29,7 @@ module.exports =
   class Turtle
 
     # type GenTurtleFunc      = (Number, Number, Number, Number, Breed, String, Number, Boolean, Number, String, PenManager) => Turtle
+    # type IDSet              = Object[ID, Boolean]
     # type RegLineDrawFunc    = (Number, Number, Number, Number, Boolean, Boolean, RGB, Number, String, String) => Unit
     # type RegTurtleStampFunc = (Number, Number, Number, Number, RGB, String, String) => Unit
 
@@ -197,21 +200,21 @@ module.exports =
     dy: ->
       NLMath.squash(NLMath.cos(@_heading))
 
-    # (Number, Turtle) => Unit
-    right: (angle, tiedCaller = undefined) ->
+    # (Number, IDSet) => Unit
+    right: (angle, seenTurtlesSet = {}) ->
       newHeading = @_heading + angle
-      Setters.setHeading.call(this, NLMath.normalizeHeading(newHeading), tiedCaller)
+      Setters.setHeading.call(this, newHeading, seenTurtlesSet)
       return
 
-    # (Number, Number, Turtle) => Unit
-    setXY: (x, y, tiedCaller = undefined) ->
+    # (Number, Number, IDSet) => Unit
+    setXY: (x, y, seenTurtlesSet = {}) ->
       origXcor = @xcor
       origYcor = @ycor
       try
-        @_setXandY(x, y, tiedCaller)
+        @_setXandY(x, y, seenTurtlesSet)
         @_drawLine(origXcor, origYcor, x, y)
       catch error
-        @_setXandY(origXcor, origYcor, tiedCaller)
+        @_setXandY(origXcor, origYcor, seenTurtlesSet)
         if error instanceof TopologyInterrupt
           throw new TopologyInterrupt("The point [ #{x} , #{y} ] is outside of the boundaries of the world and wrapping is not permitted in one or both directions.")
         else
@@ -440,8 +443,8 @@ module.exports =
       @_updateVarsByName(varName)
       return
 
-    # (Number, Number, Turtle) => Unit
-    _setXandY: (newX, newY, tiedCaller = undefined) ->
+    # (Number, Number, IDSet) => Unit
+    _setXandY: (newX, newY, seenTurtlesSet = {}) ->
 
       originPatch = @getPatchHere()
       oldX        = @xcor
@@ -456,13 +459,19 @@ module.exports =
 
       @linkManager._refresh()
 
-      dx = @xcor - oldX
-      dy = @ycor - oldY
-      @_tiedTurtles().forEach(
-        (turtle) =>
-          if turtle isnt tiedCaller
-            turtle._setXandY(turtle.xcor + dx, turtle.ycor + dy, this)
-          return
-      )
+      # It's important not to use the wrapped coordinates (`@xcor`, `@ycor`) here.
+      # Using those will cause floating point arithmetic discrepancies. --JAB (10/22/15)
+      dx = newX - oldX
+      dy = newY - oldY
+      f  = (seenTurtles) => (turtle) => ignorantly(() => turtle._setXandY(turtle.xcor + dx, turtle.ycor + dy, seenTurtles))
+      @_withEachTiedTurtle(f, seenTurtlesSet)
 
+      return
+
+    # ((IDSet) => (Turtle) => Any, IDSet) => Unit
+    _withEachTiedTurtle: (f, seenTurtlesSet) ->
+      seenTurtlesSet[@id] = true
+      turtles = @_tiedTurtles().filter(({ id }) -> not seenTurtlesSet[id]?)
+      turtles.forEach(({ id }) -> seenTurtlesSet[id] = true)
+      turtles.forEach(f(seenTurtlesSet))
       return

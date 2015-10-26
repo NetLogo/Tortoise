@@ -121,10 +121,7 @@ module.exports =
 
     # () => Array[Link]
     tieLinks: ->
-      if @_breedManager.links().isUndirected()
-        @_linksIn.concat(@_linksOut)
-      else
-        @_linksOut
+      @_linksIn.filter((link) -> not link.isDirected).concat(@_linksOut)
 
     # () => Unit
     _clear: ->

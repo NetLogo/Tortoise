@@ -1,11 +1,13 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
+_          = require('lodash')
 ColorModel = require('engine/core/colormodel')
 NLType     = require('../typechecker')
 StrictMath = require('shim/strictmath')
 NLMath     = require('util/nlmath')
 
 { ImmutableVariableSpec, MutableVariableSpec } = require('../structure/variablespec')
+{ ignoring, TopologyInterrupt }                = require('util/exception')
 
 ###
  "Jason, this is craziness!", you say.  "Not quite," I say.  It _is_ kind of lame, but changing turtle members
@@ -16,8 +18,10 @@ NLMath     = require('util/nlmath')
 
 # In this file: `this.type` is `Turtle`
 
-# (Number, Turtle) => Unit
-setXcor = (newX, tiedCaller = undefined) ->
+ignorantly = ignoring(TopologyInterrupt)
+
+# (Number, IDSet) => Unit
+setXcor = (newX, seenTurtlesSet = {}) ->
 
   originPatch = @getPatchHere()
   oldX        = @xcor
@@ -31,18 +35,14 @@ setXcor = (newX, tiedCaller = undefined) ->
 
   @linkManager._refresh()
 
-  dx = @xcor - oldX
-  @_tiedTurtles().forEach(
-    (turtle) =>
-      if turtle isnt tiedCaller
-        setXcor.call(turtle, turtle.xcor + dx, this)
-      return
-  )
+  dx = newX - oldX
+  f  = (seenTurtles) => (turtle) => ignorantly(() => setXcor.call(turtle, turtle.xcor + dx, seenTurtles))
+  @_withEachTiedTurtle(f, seenTurtlesSet)
 
   return
 
-# (Number, Turtle) => Unit
-setYcor = (newY, tiedCaller = undefined) ->
+# (Number, IDSet) => Unit
+setYcor = (newY, seenTurtlesSet = {}) ->
 
   originPatch = @getPatchHere()
   oldY        = @ycor
@@ -56,13 +56,9 @@ setYcor = (newY, tiedCaller = undefined) ->
 
   @linkManager._refresh()
 
-  dy = @ycor - oldY
-  @_tiedTurtles().forEach(
-    (turtle) =>
-      if turtle isnt tiedCaller
-        setYcor.call(turtle, turtle.ycor + dy, this)
-      return
-  )
+  dy = newY - oldY
+  f  = (seenTurtles) => (turtle) => ignorantly(() => setYcor.call(turtle, turtle.ycor + dy, seenTurtles))
+  @_withEachTiedTurtle(f, seenTurtlesSet)
 
   return
 
@@ -117,34 +113,15 @@ setColor = (color) ->
   @_genVarUpdate("color")
   return
 
-# (Number, Turtle) => Unit
-setHeading = (heading, tiedCaller = undefined) ->
+# (Number, IDSet) => Unit
+setHeading = (heading, seenTurtlesSet = {}) ->
 
   oldHeading = @_heading
   @_heading  = NLMath.normalizeHeading(heading)
   @_genVarUpdate("heading")
 
-  dh      = @_heading - oldHeading
-  [x, y]  = @getCoords()
-
-  @_fixedTiedTurtles().forEach(
-    (turtle) =>
-      if turtle isnt tiedCaller
-        turtle.right(dh, this)
-      return
-  )
-
-  @_tiedTurtles().forEach(
-    (turtle) =>
-      if turtle isnt tiedCaller
-        r        = @distance(turtle)
-        [tx, ty] = turtle.getCoords()
-        theta    = StrictMath.toDegrees(StrictMath.atan2(ty - y, x - tx)) - 90 + dh
-        newX     = x + r * NLMath.squash(NLMath.sin(theta))
-        newY     = y + r * NLMath.squash(NLMath.cos(theta))
-        turtle.setXY(newX, newY, this)
-      return
-  )
+  dh = NLMath.subtractHeadings(@_heading, oldHeading)
+  _handleTiesForHeadingChange.call(this, seenTurtlesSet, dh)
 
   return
 
@@ -176,6 +153,49 @@ setShape = (shape) ->
 setSize = (size) ->
   @_size = size
   @_genVarUpdate("size")
+  return
+
+# I have so many apologies for this code, but, hey,
+# it wasn't my idea to embed ties into NetLogo. --JAB (10/26/15)
+#
+# (IDSet, Number) => Unit
+_handleTiesForHeadingChange = (seenTurtlesSet, dh) ->
+
+  [x, y] = @getCoords()
+
+  turtleModePairs = @linkManager.tieLinks().map(({ end1, end2, tiemode }) => [(if end1 is this then end2 else end1), tiemode])
+
+  seenTurtlesSet[@id] = true
+  filteredPairs = turtleModePairs.filter(
+    ([{ id }, mode]) ->
+      result = not seenTurtlesSet[id]? and mode isnt "none"
+      seenTurtlesSet[id] = true
+      result
+  )
+
+  filteredPairs.forEach(
+    ([turtle, mode]) =>
+
+      wentBoom =
+        try
+          r = @distance(turtle)
+          if r isnt 0
+            theta = @towards(turtle) + dh
+            newX  = x + r * NLMath.squash(NLMath.sin(theta))
+            newY  = y + r * NLMath.squash(NLMath.cos(theta))
+            turtle.setXY(newX, newY, _.clone(seenTurtlesSet))
+          false
+        catch ex
+          if ex instanceof TopologyInterrupt
+            true
+          else
+            throw ex
+
+      if mode is "fixed" and not wentBoom
+        turtle.right(dh, _.clone(seenTurtlesSet))
+
+  )
+
   return
 
 Setters = {
