@@ -68,7 +68,7 @@ private[tortoise] trait TortoiseFinder extends Finder with BeforeAndAfterAll wit
 class TestReporters extends ReporterTests with TortoiseFinder {
   import Freebies._
   override val freebies = Map(
-    "Version::Version" -> "Assumes JVM NetLogo version numbers"
+    "Misc::Version" -> "Assumes JVM NetLogo version numbers"
   ) ++ sortingHeteroListReporters ++ evalNotSupportedReporters ++ incErrorDetectReporters
 }
 
