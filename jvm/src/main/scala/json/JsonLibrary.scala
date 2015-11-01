@@ -3,7 +3,7 @@
 package org.nlogo.tortoise.json
 
 import
-  org.json4s.{ JArray, JBool, JDecimal, JDouble, JField, JInt, JNothing, JNull, JObject, JString, JValue, native },
+  org.json4s.{ JArray, JBool, JDecimal, JDouble, JField, JInt, JLong, JNothing, JNull, JObject, JString, JValue, native },
     native.JsonMethods.{ compact, render }
 
 import
@@ -30,6 +30,7 @@ object JsonLibrary {
       case JInt(i)          => JsInt(i.toInt)
       case JDouble(d)       => JsDouble(d)
       case JDecimal(d)      => JsDouble(d.toDouble)
+      case JLong(l)         => JsDouble(l.toDouble)
       case JString(s)       => JsString(s)
       case JBool(b)         => JsBool(b)
       case JArray(a)        => JsArray(a.map(toTortoise).toList)
