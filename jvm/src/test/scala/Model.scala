@@ -417,6 +417,22 @@ object Model {
     Model(
       path = "models/Sample Models/Biology/Autumn.nlogo",
       repetitions = 60
+    ),
+    Model(
+      path = "models/Sample Models/Biology/Evolution/Mimicry.nlogo",
+      repetitions = 20
+    ),
+    Model(
+      path = "models/Sample Models/Art/Fireworks.nlogo",
+      repetitions = 50
+    ),
+    Model(
+      path = "models/Curricular Models/BEAGLE Evolution/DNA Replication Fork.nlogo",
+      repetitions = 100
+    ),
+    Model(
+      path = "models/Curricular Models/BEAGLE Evolution/Bug Hunt Coevolution.nlogo",
+      repetitions = 60
     )
   )
 }
