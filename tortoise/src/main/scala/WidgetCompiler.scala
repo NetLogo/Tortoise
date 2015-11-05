@@ -155,33 +155,15 @@ object WidgetCompiler {
   def formatWidget(compiledWidget: CompiledWidget): JavascriptObject = {
       val javascriptObject =
         new JavascriptObject().addObjectProperties(compiledWidget.toJsonObj.asInstanceOf[JsObject])
-      val javascriptWithCompilationStatus =
-        compiledWidget.widgetCompilation.fold(
-          decorateFailure(javascriptObject),
-          decorateSuccess(javascriptObject))
 
       compiledWidget match {
         case CompiledWidget(monitor: Monitor, Success(comp: SourceCompilation))     =>
-          comp.fold(javascriptWithCompilationStatus)(addCompiledField(monitorRenames))
+          comp.fold(javascriptObject)(addCompiledField(monitorRenames))
         case CompiledWidget(slider:  Slider,  Success(comp: SliderCompilation))     =>
-          comp.fold(javascriptWithCompilationStatus)(addCompiledField(sliderRenames))
-        case cw => javascriptWithCompilationStatus
+          comp.fold(javascriptObject)(addCompiledField(sliderRenames))
+        case cw => javascriptObject
       }
     }
-
-  private def decorateFailure(javascriptObject: JavascriptObject)(errors: NonEmptyList[Exception]): JavascriptObject =
-    javascriptObject.addObjectProperties(
-      JsObject(fields(
-        "compilation" -> JsObject(fields(
-          "success"  -> JsBool(false),
-          "messages" -> JsArray(errors.list.map(e => JsString(e.getMessage))))))))
-
-  private def decorateSuccess(javascriptObject: JavascriptObject)(success: WidgetCompilation): JavascriptObject =
-    javascriptObject.addObjectProperties(
-      JsObject(fields(
-        "compilation" -> JsObject(fields(
-          "success"  -> JsBool(true),
-          "messages" -> JsArray(Seq()))))))
 
   private def addCompiledField(fnNames:          Map[String, String])
                               (javascriptObject: JavascriptObject,

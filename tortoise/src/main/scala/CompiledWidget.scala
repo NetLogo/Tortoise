@@ -12,7 +12,7 @@ import
   org.nlogo.core.{ CompilerException, Pen, Plot, Widget }
 
 import
-  scalaz.ValidationNel
+  scalaz.{ NonEmptyList, ValidationNel }
 
 import
   WidgetCompilation.{ PlotWidgetCompilation, UpdateableCompilation }
@@ -27,17 +27,18 @@ class CompiledPlot(val plot:               Plot,
 class CompiledPen(val pen:               Pen,
                   updateableCompilation: ValidationNel[Exception, UpdateableCompilation])
   extends CompiledWidget(pen, updateableCompilation) {
-    override val widgetCompilation: ValidationNel[Exception, UpdateableCompilation] = updateableCompilation
+    override val widgetCompilation: ValidationNel[Exception, UpdateableCompilation] =
+      updateableCompilation
   }
 
 object CompiledWidget {
 
-  def compiledWidgetToJson(compiledWidget: CompiledWidget): JsObject =
-    JsObject(
-      compiledWidget.widgetCompilation.fold(
-        (e) => fields(),
-        WidgetCompilation.widgetCompilation2Json(_).asInstanceOf[JsObject].props) ++
-      compiledWidget.widgetData.toJsonObj.asInstanceOf[JsObject].props)
+  def compiledWidgetToJson(compiledWidget: CompiledWidget): JsObject = {
+    val javascriptObject = compiledWidget.widgetData.toJsonObj
+    compiledWidget.widgetCompilation.fold(
+      decorateFailure(javascriptObject),
+      decorateSuccess(javascriptObject))
+  }
 
   implicit def compiledWidget2Json(compiledWidget: CompiledWidget): JsonWritable =
     new JsonWritable {
@@ -57,6 +58,23 @@ object CompiledWidget {
   implicit object compiledWidgets2Json extends JsonWriter[Seq[CompiledWidget]] {
     def apply(l: Seq[CompiledWidget]): TortoiseJson = JsArray(l.map(_.toJsonObj))
   }
+
+  private def decorateFailure(javascriptObject: JsObject)(errors: NonEmptyList[Exception]): JsObject =
+    JsObject(
+      javascriptObject.props ++
+      fields(
+        "compilation" -> JsObject(fields(
+          "success"  -> JsBool(false),
+          "messages" -> JsArray(errors.list.map(e => JsString(e.getMessage)))))))
+
+  private def decorateSuccess(javascriptObject: JsObject)(success: WidgetCompilation): JsObject =
+    JsObject(
+      WidgetCompilation.widgetCompilation2Json(success).asInstanceOf[JsObject].props ++
+      javascriptObject.props ++
+      fields(
+        "compilation" -> JsObject(fields(
+          "success"  -> JsBool(true),
+          "messages" -> JsArray(Seq())))))
 }
 
 sealed trait WidgetCompilation {
