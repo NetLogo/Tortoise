@@ -43,8 +43,8 @@ object WidgetToJson {
   implicit def widget2Json(w: Widget): JsonWritable =
     new JsonWritable {
       import WidgetWrite._
-      def toJsonObj: TortoiseJson =
-        w match {
+      def toJsonObj: JsObject =
+        (w match {
           case b: Button      => Jsonify.writer[Button, TortoiseJson](b)
           case c: Chooser     => Jsonify.writer[Chooser, TortoiseJson](c)
           case i: InputBox[_] => new InputBoxConverter(i).toJsonObj
@@ -56,7 +56,7 @@ object WidgetToJson {
           case s: Switch      => Jsonify.writer[Switch, TortoiseJson](s)
           case t: TextBox     => Jsonify.writer[TextBox, TortoiseJson](t)
           case v: View        => Jsonify.writer[View, TortoiseJson](v)
-        }
+        }).asInstanceOf[JsObject]
     }
     // scalastyle:on cyclomatic.complexity
 

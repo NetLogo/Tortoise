@@ -9,7 +9,7 @@ import
   TortoiseJson.{ fields, JsArray, JsBool, JsDouble, JsInt, JsObject, JsString }
 
 trait JsonWritable {
-  def toJsonObj: TortoiseJson
+  def toJsonObj: JsObject
   def toJson   : String       = nativeToString(toNative(toJsonObj))
 }
 
@@ -30,7 +30,7 @@ trait JsonWriter[T] extends (T => TortoiseJson) {
 object JsonWriter extends LowPriorityWriterImplicits {
   implicit def convert[T](target: T)(implicit ev: JsonWriter[T]): JsonWritable =
     new JsonWritable {
-      def toJsonObj: TortoiseJson = ev(target)
+      def toJsonObj = ev(target).asInstanceOf[JsObject]
     }
 }
 

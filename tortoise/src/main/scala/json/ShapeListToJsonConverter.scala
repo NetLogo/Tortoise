@@ -16,7 +16,7 @@ object ShapeListToJsonConverter {
     new JsonWritableShapeList(shapeList)
 
   class JsonWritableShapeList(shapeList: ShapeList) extends JsonWritable {
-    def toJsonObj: TortoiseJson =
+    def toJsonObj: JsObject =
       JsObject(fields(shapeList.shapes map(shape => shape.name -> shape.toJsonObj): _*))
   }
 }
