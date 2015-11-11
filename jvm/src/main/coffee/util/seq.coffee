@@ -67,6 +67,6 @@ module.exports =
     toString: ->
       "Seq(#{@toArray().toString()})"
 
-    # (Array[T], Seq[T]) => Seq[T]
-    _generateFrom: (newItems, oldSeq) ->
+    # (Array[T]) => Seq[T]
+    _generateFrom: (newItems) ->
       new Seq(newItems)
