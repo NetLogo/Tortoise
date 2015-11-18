@@ -433,6 +433,10 @@ object Model {
     Model(
       path = "models/Curricular Models/BEAGLE Evolution/Bug Hunt Coevolution.nlogo",
       repetitions = 60
+    ),
+    Model(
+      path = "models/Curricular Models/BEAGLE Evolution/Fish Tank Genetic Drift.nlogo",
+      repetitions = 60
     )
   )
 }
