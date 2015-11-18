@@ -61,13 +61,19 @@ module.exports =
     # () => Unit
     _fetch: ->
       if @_hasNext()
+
         if @_i < @_items.length - 1
           randNum = @_i + @_nextInt(@_items.length - @_i)
           @_nextOne = @_items[randNum]
           @_items[randNum] = @_items[@_i]
         else
           @_nextOne = @_items[@_i]
+
         @_i++
+
+        if not @_itemIsValid(@_nextOne)
+          @_fetch()
+
       else
         @_nextOne = null
 

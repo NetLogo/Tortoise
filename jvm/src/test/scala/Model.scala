@@ -437,6 +437,10 @@ object Model {
     Model(
       path = "models/Curricular Models/BEAGLE Evolution/Fish Tank Genetic Drift.nlogo",
       repetitions = 60
+    ),
+    Model(
+      path = "models/Curricular Models/Connected Chemistry/Connected Chemistry Reversible Reaction.nlogo",
+      repetitions = 30
     )
   )
 }
