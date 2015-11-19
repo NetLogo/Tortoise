@@ -16,8 +16,8 @@ RNG           = require('util/rng')
 Timer         = require('util/timer')
 
 { Config: MouseConfig,      Prims: MousePrims }      = require('./prim/mouseprims')
-{ Config: PrintConfig,      Prims: PrintPrims }      = require('./prim/printprims')
 { Config: OutputConfig,     Prims: OutputPrims }     = require('./prim/outputprims')
+{ Config: PrintConfig,      Prims: PrintPrims }      = require('./prim/printprims')
 { Config: UserDialogConfig, Prims: UserDialogPrims } = require('./prim/userdialogprims')
 
 class MiniWorkspace
@@ -29,11 +29,11 @@ module.exports =
 
     worldArgs = arguments # If you want `Workspace` to take more parameters--parameters not related to `World`--just keep returning new functions
 
-    mouseConfig  = modelConfig?.mouse  ? new MouseConfig
-    plots        = modelConfig?.plots  ? []
-    printConfig  = modelConfig?.print  ? new PrintConfig
-    outputConfig = modelConfig?.output ? new OutputConfig
-    dialogConfig = modelConfig?.dialog ? new UserDialogConfig
+    dialogConfig  = modelConfig?.dialog  ? new UserDialogConfig
+    mouseConfig   = modelConfig?.mouse   ? new MouseConfig
+    outputConfig  = modelConfig?.output  ? new OutputConfig
+    plots         = modelConfig?.plots   ? []
+    printConfig   = modelConfig?.print   ? new PrintConfig
 
     rng         = new RNG
 
@@ -47,11 +47,13 @@ module.exports =
 
     world           = new World(new MiniWorkspace(selfManager, updater, breedManager, rng, plotManager), worldArgs...)
     layoutManager   = new LayoutManager(world, rng.nextDouble)
+
     linkPrims       = new LinkPrims(world)
     listPrims       = new ListPrims(Hasher, prims.equality.bind(prims), rng.nextInt)
+
     mousePrims      = new MousePrims(mouseConfig)
-    printPrims      = new PrintPrims(printConfig, Dump)
     outputPrims     = new OutputPrims(outputConfig, Dump)
+    printPrims      = new PrintPrims(printConfig, Dump)
     userDialogPrims = new UserDialogPrims(dialogConfig)
 
     {
@@ -61,10 +63,10 @@ module.exports =
       linkPrims
       listPrims
       mousePrims
+      outputPrims
       plotManager
       prims
       printPrims
-      outputPrims
       rng
       selfPrims
       timer
