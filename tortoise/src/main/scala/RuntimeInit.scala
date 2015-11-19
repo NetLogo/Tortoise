@@ -24,20 +24,20 @@ class RuntimeInit(program: Program, model: Model, onTickFunction: String = jsFun
 
     WorkspaceInit(Seq(Seq(genBreedObjects), genBreedsOwnArgs, genWorkspaceArgs), Seq("turtleShapes", "linkShapes")),
 
-    JsDeclare("BreedManager",      "workspace.breedManager",      Seq("workspace")),
-    JsDeclare("LayoutManager",     "workspace.layoutManager",     Seq("workspace")),
-    JsDeclare("LinkPrims",         "workspace.linkPrims",         Seq("workspace")),
-    JsDeclare("ListPrims",         "workspace.listPrims",         Seq("workspace")),
-    JsDeclare("MousePrims",        "workspace.mousePrims",        Seq("workspace")),
-    JsDeclare("plotManager",       "workspace.plotManager",       Seq("workspace")),
-    JsDeclare("Prims",             "workspace.prims",             Seq("workspace")),
-    JsDeclare("PrintPrims",        "workspace.printPrims",        Seq("workspace")),
-    JsDeclare("OutputPrims",       "workspace.outputPrims",       Seq("workspace")),
-    JsDeclare("SelfPrims",         "workspace.selfPrims",         Seq("workspace")),
-    JsDeclare("SelfManager",       "workspace.selfManager",       Seq("workspace")),
-    JsDeclare("UserDialogPrims",   "workspace.userDialogPrims",   Seq("workspace")),
-    JsDeclare("Updater",           "workspace.updater",           Seq("workspace")),
-    JsDeclare("world",             "workspace.world",             Seq("workspace")),
+    workspaceDeclare("BreedManager"),
+    workspaceDeclare("LayoutManager"),
+    workspaceDeclare("LinkPrims"),
+    workspaceDeclare("ListPrims"),
+    workspaceDeclare("MousePrims"),
+    workspaceDeclare("plotManager"),
+    workspaceDeclare("Prims"),
+    workspaceDeclare("PrintPrims"),
+    workspaceDeclare("OutputPrims"),
+    workspaceDeclare("SelfPrims"),
+    workspaceDeclare("SelfManager"),
+    workspaceDeclare("UserDialogPrims"),
+    workspaceDeclare("Updater"),
+    workspaceDeclare("world"),
 
     JsRequire("Exception",      "util/exception"),
     JsRequire("NLMath",         "util/nlmath"),
@@ -103,5 +103,10 @@ class RuntimeInit(program: Program, model: Model, onTickFunction: String = jsFun
       JsonSerializer.serialize(shapes)
     else
       "{}"
+
+  private def workspaceDeclare(declarationName: String): JsDeclare = {
+    val camelCased = declarationName.head.toLower + declarationName.tail
+    JsDeclare(declarationName, s"workspace.$camelCased", Seq("workspace"))
+  }
 
 }
