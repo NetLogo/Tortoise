@@ -40,7 +40,7 @@ class BrowserCompiler {
         parsedRequest <- CompilationRequest.read(tortoiseReq).leftMap(_.map(FailureString))
         compilation   <- compilingModel(
           _.fromModel(parsedRequest.toModel).leftMap(_.map(ex => ex: Exception)),
-          compileCommands(parsedRequest.allCommands))
+          compileExtras(parsedRequest.allCommands, parsedRequest.allReporters))
       } yield compilation
 
     JsonLibrary.toNative(compilationResult.leftMap(_.map(fail => fail: TortoiseFailure)).toJsonObj)
@@ -51,7 +51,7 @@ class BrowserCompiler {
     val compilationResult =
       for {
         commands    <- readArray[String](commandJson, "commands")
-        compilation <- compilingModel(_.fromNlogoContents(contents), compileCommands(commands))
+        compilation <- compilingModel(_.fromNlogoContents(contents), compileExtras(commands, Seq()))
       } yield compilation
     JsonLibrary.toNative(compilationResult.toJsonObj)
   }
@@ -96,8 +96,10 @@ class BrowserCompiler {
 
   }
 
-  private def compileCommands(commands: Seq[String])(model: CompiledModel, compilation: ModelCompilation): ModelCompilation =
-    compilation.copy(commands = commands.map(model.compileCommand(_)))
+  private def compileExtras(commands: Seq[String], reporters: Seq[String])
+                           (model: CompiledModel, compilation: ModelCompilation): ModelCompilation =
+    compilation.copy(commands  = commands. map(model.compileCommand(_)),
+                     reporters = reporters.map(model.compileReporter(_)))
 
   private def readNative[A](n: NativeJson)(implicit ev: JsonReader[TortoiseJson, A]): ValidationNel[TortoiseFailure, A] =
     JsonReader.read(toTortoise(n))(ev).leftMap(_.map(s => FailureString(s)))

@@ -52,11 +52,13 @@ case class CompilationRequest(
   info:         Option[String],
   widgets:      Seq[Widget],
   commands:     Option[Seq[String]],
+  reporters:    Option[Seq[String]],
   turtleShapes: Option[Seq[VectorShape]],
   linkShapes:   Option[Seq[LinkShape]]
 ) {
 
-  val allCommands: Seq[String] = commands.getOrElse(Seq())
+  val allCommands:  Seq[String] = commands. getOrElse(Seq())
+  val allReporters: Seq[String] = reporters.getOrElse(Seq())
 
   def toModel: Model =
     Model(
