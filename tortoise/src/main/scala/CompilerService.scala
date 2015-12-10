@@ -27,7 +27,7 @@ object CompilerService {
     input.close()
 
     val model = CompiledModel.fromNlogoContents(nlogo) valueOr {
-      case NonEmptyList(head, _*) => throw head
+      case NonEmptyList(head, _) => throw head
     }
 
     // scalastyle:off regex

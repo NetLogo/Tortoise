@@ -65,7 +65,7 @@ object CompiledWidget {
       fields(
         "compilation" -> JsObject(fields(
           "success"  -> JsBool(false),
-          "messages" -> JsArray(errors.list.map(e => JsString(e.getMessage)))))))
+          "messages" -> JsArray(errors.list.toList.map(e => JsString(e.getMessage)))))))
 
   private def decorateSuccess(javascriptObject: JsObject)(success: WidgetCompilation): JsObject =
     JsObject(

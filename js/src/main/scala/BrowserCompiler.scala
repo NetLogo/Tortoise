@@ -39,10 +39,11 @@ class BrowserCompiler {
         tortoiseReq   <- readNative[JsObject](compilationRequest)
         parsedRequest <- CompilationRequest.read(tortoiseReq).leftMap(_.map(FailureString))
         compilation   <- compilingModel(
-          _.fromModel(parsedRequest.toModel), compileCommands(parsedRequest.allCommands))
+          _.fromModel(parsedRequest.toModel).leftMap(_.map(ex => ex: Exception)),
+          compileCommands(parsedRequest.allCommands))
       } yield compilation
 
-    JsonLibrary.toNative(compilationResult.toJsonObj)
+    JsonLibrary.toNative(compilationResult.leftMap(_.map(fail => fail: TortoiseFailure)).toJsonObj)
   }
 
   @JSExport
@@ -67,7 +68,7 @@ class BrowserCompiler {
         parsedRequest <- ExportRequest.read(tortoiseReq).leftMap(_.map(FailureString))
       } yield ModelReader.formatModel(parsedRequest.toModel, literalParser)
 
-    JsonLibrary.toNative(model.toJsonObj)
+    JsonLibrary.toNative(model.leftMap(_.map(fail => fail: TortoiseFailure)).toJsonObj)
   }
 
   private def compilingModel(
@@ -75,25 +76,23 @@ class BrowserCompiler {
     g: (CompiledModel, ModelCompilation) => ModelCompilation = (a, b) => b): ValidationNel[TortoiseFailure, ModelCompilation] =
     Validation.fromTryCatchThrowable[ValidationNel[TortoiseFailure, ModelCompilation], Throwable](
       f(CompiledModel).leftMap(_.map {
-        case e: CompilerException => FailureCompilerException(e)
-        case e: Exception         => FailureException(e)
-      })
-        .map(m => g(m, ModelCompilation.fromCompiledModel(m)))
+        case e: CompilerException => FailureCompilerException(e): TortoiseFailure
+        case e: Exception         => FailureException        (e): TortoiseFailure
+      }).map(m => g(m, ModelCompilation.fromCompiledModel(m)))
     ).fold(
-      error => FailureException(error).failureNel[ModelCompilation],
+      error => (FailureException(error): TortoiseFailure).failureNel[ModelCompilation],
       success => success)
 
   private def readArray[A](native: NativeJson, name: String)
                           (implicit ct: ClassTag[A], ev: JsonReader[TortoiseJson, A]): ValidationNel[TortoiseFailure, List[A]] = {
 
     def defaultError = FailureString(s"$name must be an Array of ${ct.runtimeClass.getSimpleName}")
-    val arrV         = readNative[JsArray](native) orElse defaultError.failureNel
 
-    arrV.flatMap {
+    readNative[JsArray](native).orElse(defaultError.failureNel).flatMap {
       arr =>
         val validations = arr.elems.map(e => JsonReader.read(e)(ev).bimap(_ map FailureString, List(_)))
-        validations.foldLeft(List.empty[A].successNel[TortoiseFailure])(_ +++ _)
-    }
+        validations.foldLeft(List.empty[A].successNel[FailureString])(_ +++ _).leftMap(_.map(fail => fail: TortoiseFailure))
+    }.leftMap(_.map(fail => fail: TortoiseFailure))
 
   }
 
@@ -102,6 +101,7 @@ class BrowserCompiler {
 
   private def readNative[A](n: NativeJson)(implicit ev: JsonReader[TortoiseJson, A]): ValidationNel[TortoiseFailure, A] =
     JsonReader.read(toTortoise(n))(ev).leftMap(_.map(s => FailureString(s)))
+
 }
 
 object BrowserCompiler {

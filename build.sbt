@@ -8,6 +8,8 @@ val nlDependencyVersion       = "5.2.0-94328de"
 
 val parserJsDependencyVersion = "0.0.1-e351f90"
 
+val scalazVersion             = "7.2.0"
+
 val commonSettings =
   // Keep this up here so things get published to the correct places
   bintraySettings ++
@@ -26,7 +28,7 @@ val commonSettings =
       "org.nlogo" % "netlogoheadless" % nlDependencyVersion,
       "org.mozilla" % "rhino" % "1.7.7", // see jsengine/Rhino.scala for more information
       "org.json4s" %% "json4s-native" % "3.3.0",
-      "org.scalaz" %% "scalaz-core" % "7.2.0",
+      "org.scalaz" %% "scalaz-core" % scalazVersion,
       "com.lihaoyi" %% "scalatags" % "0.5.3" % "test",
       "org.scalatest" %% "scalatest" % "2.2.1" % "test",
       "org.skyscreamer" % "jsonassert" % "1.2.3" % "test",
@@ -108,7 +110,7 @@ lazy val tortoise = CrossProject("tortoise", file("."), new CrossType {
       Seq(
         "com.lihaoyi" %%%! "utest" % "0.3.1",
         "org.nlogo"   %%%! "parser-js" % parserJsDependencyVersion,
-        "com.github.japgolly.fork.scalaz" %%%! "scalaz-core" % "7.1.3")
+        "com.github.japgolly.fork.scalaz" %%%! "scalaz-core" % scalazVersion)
     })
 
 lazy val tortoiseJS  = tortoise.js
@@ -120,7 +122,7 @@ lazy val macros = CrossProject("macros", file("macros"), CrossType.Pure).
   settings(
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-      "org.scalaz" %% "scalaz-core" % "7.1.3"),
+      "org.scalaz" %% "scalaz-core" % scalazVersion),
     ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) }
   )
 

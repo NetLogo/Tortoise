@@ -64,7 +64,7 @@ object Compiler extends CompilerLike {
     val procedures        = ProcedureCompiler.formatProcedures(result.compiledProcedures)
     val interfaceGlobalJs = result.interfaceGlobalCommands.map(
       (v: ValidationNel[CompilerException, String]) => v.fold(
-        ces => s"""modelConfig.dialog.notify("Error(s) in interface global init: ${ces.map(_.getMessage).list.mkString(", ")}")""",
+        ces => s"""modelConfig.dialog.notify("Error(s) in interface global init: ${ces.map(_.getMessage).list.toList.mkString(", ")}")""",
         identity)).mkString("\n")
 
     val interfaceInit = JsStatement("interfaceInit", interfaceGlobalJs, Seq("world", "procedures", "modelConfig"))
@@ -95,18 +95,32 @@ object Compiler extends CompilerLike {
 
   def compileProcedures(model:         Model)
               (implicit compilerFlags: CompilerFlags): Compilation = {
-    val (procedureDefs, program, procedures) = compileMoreProcedures(
-      model,
-      Program.empty.copy(interfaceGlobals = model.interfaceGlobals),
-      FrontEndInterface.NoProcedures)
-    val validatedCompileCommand  = validate(s => compileCommands(s, procedures, program)) _
-    val validatedStopCompileCommand  = validate(s => compileCommands(s, procedures, program)(compilerFlags.copy(propagationStyle = WidgetPropagation))) _
-    val validatedCompileReporter = validate(s => compileReporter(s, procedures, program)) _
-    val interface                = model.interfaceGlobalCommands.map(validatedCompileCommand)
-    val compiledProcedures       = new ProcedureCompiler(handlers).compileProcedures(procedureDefs)
-    val compiledWidgets          = new WidgetCompiler(validatedStopCompileCommand, validatedCompileReporter)
-      .compileWidgets(model.widgets)
+
+    val (procedureDefs, program, procedures) =
+      {
+        val prog  = Program.empty.copy(interfaceGlobals = model.interfaceGlobals)
+        val procs = FrontEndInterface.NoProcedures
+        compileMoreProcedures(model, prog, procs)
+      }
+
+    val compiledProcedures = new ProcedureCompiler(handlers).compileProcedures(procedureDefs)
+
+    val compiledWidgets =
+      {
+        val flags             = compilerFlags.copy(propagationStyle = WidgetPropagation)
+        val compileStoppableV = validate(s => compileCommands(s, procedures, program)(flags)) _ andThen (_.leftMap(_.map(ex => ex: Exception)))
+        val compileReporterV  = validate(s => compileReporter(s, procedures, program))        _ andThen (_.leftMap(_.map(ex => ex: Exception)))
+        new WidgetCompiler(compileStoppableV, compileReporterV).compileWidgets(model.widgets)
+      }
+
+    val interface =
+      {
+        val validatedCompileCommand = validate(s => compileCommands(s, procedures, program)) _
+        model.interfaceGlobalCommands.map(validatedCompileCommand)
+      }
+
     Compilation(compiledProcedures, compiledWidgets, interface, model, procedures, program)
+
   }
 
   private def validate(compileFunc: String => String)(arg: String): CompiledModel.CompileResult[String] = {
