@@ -111,7 +111,7 @@ object Benchmarker extends App {
             resultJS    <- model.compileReporter("result")
           } yield s"${model.compiledCode};$caJS;$benchmarkJS;$resultJS;"
 
-        val js = jsV valueOr { case NonEmptyList(head, _*) => throw head }
+        val js = jsV valueOr { case NonEmptyList(head, _) => throw head }
 
         val results =
           enginesAndEvals.toSeq map {

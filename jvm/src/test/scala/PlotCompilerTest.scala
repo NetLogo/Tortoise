@@ -60,7 +60,7 @@ class PlotCompilerTest extends FunSuite with OneInstancePerTest {
   test("returns valid javascript when pens have errors") {
     val errantPen = new CompiledPen(penWidget, new Exception("pen has problems").failureNel)
     val widgetCompilation =
-      PlotWidgetCompilation("function() {}", "function() {}", Seq(errantPen)).successNel
+      PlotWidgetCompilation("function() {}", "function() {}", Seq(errantPen)).successNel[Exception]
     val generatedJs = compilePlotWidgetV(widgetCompilation)
     nashornEngine.eval(generatedJs)
     assert(dialog.alertsReceived.head == "Error: pen has problems")
@@ -69,7 +69,7 @@ class PlotCompilerTest extends FunSuite with OneInstancePerTest {
   test("returns multiple errors when there are multiple pen errors") {
     val errantPens = new CompiledPen(penWidget, NonEmptyList(new Exception("pen a has problems"), new Exception("pen b has problems")).failure)
     val widgetCompilation =
-      PlotWidgetCompilation("function() {}", "function() {}", Seq(errantPens)).successNel
+      PlotWidgetCompilation("function() {}", "function() {}", Seq(errantPens)).successNel[Exception]
     val generatedJs = compilePlotWidgetV(widgetCompilation)
     nashornEngine.eval(generatedJs)
     assert(dialog.alertsReceived.head == "Error: pen a has problems, pen b has problems")
@@ -77,7 +77,7 @@ class PlotCompilerTest extends FunSuite with OneInstancePerTest {
 
   test("returns valid javascript when plots are correct") {
     val widgetCompilation =
-      PlotWidgetCompilation("function() {}", "function() {}", Seq()).successNel
+      PlotWidgetCompilation("function() {}", "function() {}", Seq()).successNel[Exception]
     val generatedJs = compilePlotWidgetV(widgetCompilation)
     nashornEngine.eval(generatedJs)
     assert(dialog.alertsReceived.isEmpty)

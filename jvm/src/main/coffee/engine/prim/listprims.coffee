@@ -252,7 +252,7 @@ module.exports =
         (arr, i, j) ->
           tmp    = arr[i]
           arr[i] = arr[j]
-          arr[j] = tmp;
+          arr[j] = tmp
 
       out = xs[..]
       i   = out.length

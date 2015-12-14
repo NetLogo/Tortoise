@@ -15,7 +15,7 @@ class TestModelDumps extends FunSuite {
         scala.util.Try(Resource.asString(s"/dumps/${model.filename}.js"))
           .getOrElse("").trim
       val modelContents = io.Source.fromFile(model.path).mkString
-      val compiledModel = CompiledModel.fromNlogoContents(modelContents) valueOr { case NonEmptyList(head, _*) => throw head }
+      val compiledModel = CompiledModel.fromNlogoContents(modelContents) valueOr { case NonEmptyList(head, _) => throw head }
       val actual        = compiledModel.compiledCode.trim
       if (expected != actual) {
         val path = s"target/${model.filename}.js"

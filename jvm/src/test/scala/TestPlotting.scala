@@ -363,7 +363,7 @@ trait PlottingHelpers {
     val input = Source.fromFile("models/Sample Models/Social Science/Wealth Distribution.nlogo")
     val nlogo = input.mkString
     input.close()
-    CompiledModel.fromNlogoContents(nlogo) valueOr ((nel) => throw new Exception(s"This test is seriously borked: ${nel.list.mkString}"))
+    CompiledModel.fromNlogoContents(nlogo) valueOr ((nel) => throw new Exception(s"This test is seriously borked: ${nel.list.toList.mkString}"))
   }
 
   protected object Plots {
@@ -468,7 +468,7 @@ trait PlottingHelpers {
     evalNL(netlogo, model.compileCommand(_))
 
   private def evalNL(netlogo: String, evaluator: (String) => CompiledModel.CompileResult[String])(implicit nashorn: Nashorn): AnyRef = {
-    val result = evaluator(netlogo) valueOr ((nel) => throw new Exception(nel.list.mkString))
+    val result = evaluator(netlogo) valueOr ((nel) => throw new Exception(nel.list.toList.mkString))
     nashorn.eval(result)
   }
 

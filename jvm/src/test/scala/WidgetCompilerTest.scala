@@ -77,7 +77,7 @@ class WidgetCompilerTest extends FunSuite {
       compiledWidget.widgetCompilation.fold(
         es      =>
           errors.forall(
-            name => es.list.exists(_.getMessage.contains(name))),
+            name => es.list.toList.exists(_.getMessage.contains(name))),
         success => fail("compilation should have failed")))
 
   def assertContains(jsObject: JavascriptObject, jsonObject: JsObject): Unit =
