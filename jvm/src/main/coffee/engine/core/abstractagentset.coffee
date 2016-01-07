@@ -15,6 +15,7 @@ module.exports =
 
     @_nextInt:     undefined # (Number) => Number
     @_selfManager: undefined # SelfManager
+    @_world:       undefined # World
 
     # (Array[T], String, String) => AbstractAgentSet
     constructor: (agents, @_agentTypeName, @_specialName) ->
@@ -197,8 +198,8 @@ module.exports =
     _lazyGetNextIntFunc: ->
       if @_nextInt?
         @_nextInt
-      else if @_items[0]?
-        @_nextInt = @_items[0].world.rng.nextInt
+      else if @_lazyGetWorld()?
+        @_nextInt = @_lazyGetWorld().rng.nextInt
         @_nextInt
       else
         (-> throw new Error("How are you calling the RNG in an empty agentset?"))
@@ -207,11 +208,20 @@ module.exports =
     _lazyGetSelfManager: ->
       if @_selfManager?
         @_selfManager
-      else if @_items[0]?
-        @_selfManager = @_items[0].world.selfManager
+      else if @_lazyGetWorld()?
+        @_selfManager = @_lazyGetWorld().selfManager
         @_selfManager
       else
         {
           askAgent: () -> () -> undefined,
           self:     -> { id: undefined }
         }
+
+    _lazyGetWorld: ->
+      if @_world?
+        @_world
+      else if @_items[0]?
+        @_world = @_items[0].world
+        @_world
+      else
+        undefined
