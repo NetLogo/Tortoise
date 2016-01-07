@@ -441,6 +441,10 @@ object Model {
     Model(
       path = "models/Curricular Models/Connected Chemistry/Connected Chemistry Reversible Reaction.nlogo",
       repetitions = 30
+    ),
+    Model(
+      path = "models/Sample Models/Computer Science/Hex Cell Aggregation.nlogo",
+      repetitions = 30
     )
   )
 }

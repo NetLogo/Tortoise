@@ -47,6 +47,10 @@ module.exports =
 
       return
 
+    # (Array[(Number, Number)]) => AbstractAgentSet[T]
+    atPoints: (points) ->
+      require('./agentset/atpoints').call(this, points)
+
     # (Array[T]) => AbstractAgentSet[T]
     copyWithNewAgents: (agents) ->
       @_generateFrom(agents)
