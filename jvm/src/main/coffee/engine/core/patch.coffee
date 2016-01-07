@@ -111,7 +111,7 @@ module.exports =
       @patchAt(dx, dy).breedHere(breedName)
 
     # (Number, Number) => Agent
-    patchAt: (dx, dy) ->
+    patchAt: (dx, dy) =>
       @patchAtCoords(@pxcor + dx, @pycor + dy)
 
     # (Number, Number) => Agent

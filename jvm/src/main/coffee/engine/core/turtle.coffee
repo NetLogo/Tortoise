@@ -117,7 +117,7 @@ module.exports =
       @world.topology.inRadius(@xcor, @ycor, agents, radius)
 
     # (Number, Number) => Patch
-    patchAt: (dx, dy) ->
+    patchAt: (dx, dy) =>
       @world.patchAtCoords(@xcor + dx, @ycor + dy)
 
     # (Number, Number) => TurtleSet
