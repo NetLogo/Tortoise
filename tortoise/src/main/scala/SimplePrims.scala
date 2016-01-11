@@ -195,6 +195,7 @@ object SimplePrims {
         case _: prim.etc._boom              => "Prims.boom"
         case _: prim.etc._subject           => "world.observer.subject"
         case _: prim.etc._dateandtime       => "Prims.dateAndTime"
+        case _: prim.etc._nanotime          => "Prims.nanoTime"
 
       }
   }

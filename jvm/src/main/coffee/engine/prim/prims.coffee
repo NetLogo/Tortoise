@@ -157,6 +157,36 @@ module.exports =
     lte: (a, b) ->
       @lt(a, b) or @equality(a, b)
 
+    # Some complications here....
+    #
+    # First, this will not yield the same results as the equivalent primitive in JVM NetLogo.
+    # The Java documentation for `System.nanoTime` explains that its nanotimes are set against an arbitrary origin time
+    # that isn't even guaranteed to be consistent across JVM instances.  Naturally, JS engines can't reproduce it,
+    # either.
+    #
+    # Secondly, the resolution here is inconsistent.  In any modern browser, we can use the "High Resolution Time" API
+    # but, right now, it's only a "Recommendation" and not a "Standard", so it is actually not implemented yet in
+    # Nashorn.  Because of that, we use `performance.now()` if we can, but fall back to `Date.now()` if High Performance
+    # Time is not available.
+    #
+    # Thirdly, though, even when we have `performance.now()`, the time resolution is only guaranteed to be microsecond
+    # precision.  When we use `Date.now()`, the time resolution is in milliseconds.  Regardless of the resolution,
+    # though, the value is converted to nanoseconds.
+    #
+    # So, in summary, the resolution of this implementation of `__nano-time` is inconsistent and not actually
+    # nanoseconds, and is not consistent with the times provided in JVM NetLogo, but the Java Docs for
+    # `System.nanoTime()` state that it is only to be used for measuring elapsed time, and that should still be
+    # reasonably possible with the prim behavior supplied here. --JAB (1/11/16)
+    #
+    # () => Number
+    nanoTime: ->
+      nanos =
+        if performance?.now?
+          performance.now() * 1e3
+        else
+          Date.now() * 1e6
+      nanos | 0
+
     # [T <: (Array[Patch]|Patch|AbstractAgentSet[Patch])] @ (T*) => PatchSet
     patchSet: (inputs...) ->
       @_createAgentSet(inputs, Patch, PatchSet)
