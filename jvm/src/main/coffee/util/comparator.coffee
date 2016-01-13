@@ -19,4 +19,14 @@ module.exports = {
     else
       @EQUALS
 
+  # (String, String) => Comparison
+  stringCompare: (x, y) ->
+    comparison = x.localeCompare(y)
+    if comparison < 0
+      @LESS_THAN
+    else if comparison > 0
+      @GREATER_THAN
+    else
+      @EQUALS
+
 }
