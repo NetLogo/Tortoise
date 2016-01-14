@@ -211,6 +211,7 @@ private[tortoise] object Freebies {
     "Run::RunResultRejectExtraArgumentsIfFirstArgIsString",
     "Sort::SortingTypeErrors",
     "Sort::sort-by-catches-java-7-general-contract-violation-error",
+    "Sort::sort-on-rejects-mixed-types",
     "Turtles::Turtles1a",
     "TurtlesOn::TurtlesOn1",
     "TypeChecking::AgentClassChecking1",

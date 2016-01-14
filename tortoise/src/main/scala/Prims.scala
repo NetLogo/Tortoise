@@ -130,6 +130,9 @@ trait ReporterPrims extends PrimUtils {
       case _: prim.etc._atpoints =>
         val agents = arg(0)
         s"$agents.atPoints(${arg(1)})"
+      case _: prim.etc._sorton =>
+        val agents = arg(1)
+        s"$agents.sortOn(${handlers.fun(r.args(0), true)})"
 
       // Lookup by breed
       case b: prim._breed                 => s"world.turtleManager.turtlesOfBreed(${jsString(b.breedName)})"

@@ -449,6 +449,22 @@ object Model {
     Model(
       path = "models/Sample Models/Chemistry & Physics/GasLab/GasLab Circular Particles.nlogo",
       repetitions = 20
+    ),
+    Model(
+      path = "models/Curricular Models/BEAGLE Evolution/DNA Protein Synthesis.nlogo",
+      repetitions = 52, // This is the number of repetitions needed to finish the animation entirely --JAB (1/13/16)
+      setup = """
+                |setup
+                |set event-1-triggered? true
+                |set event-2-triggered? true
+                |set event-3-triggered? true
+                |set event-4-triggered? true
+                |replicate-dna visualize-all-genes
+                |set event-6-triggered? true
+                |set event-7-triggered? true
+                |set event-8-triggered? true
+                |set event-9-triggered? true
+              """.stripMargin
     )
   )
 }

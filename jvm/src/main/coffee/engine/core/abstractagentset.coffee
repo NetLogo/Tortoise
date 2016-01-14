@@ -2,6 +2,7 @@
 
 _              = require('lodash')
 Nobody         = require('./nobody')
+projectionSort = require('./projectionsort')
 NLType         = require('./typechecker')
 Seq            = require('util/seq')
 Shufflerator   = require('util/shufflerator')
@@ -115,6 +116,10 @@ module.exports =
         @toArray()
       else
         stableSort(@toArray())((x, y) -> x.compare(y).toInt)
+
+    # [U] @ ((T) => U) => Array[T]
+    sortOn: (f) ->
+      projectionSort(@shufflerator().toArray())(f)
 
     # () => Array[T]
     toArray: ->
