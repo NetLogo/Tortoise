@@ -18,6 +18,8 @@ stableSort       = require('util/stablesort')
 module.exports =
   class ListPrims
 
+    # type ListOrSet[T] = AbstractAgentSet|Array[T]
+
     # (Hasher, (Any, Any) => Boolean, (Number) => Number) => ListPrims
     constructor: (@_hasher, @_equality, @_nextInt) ->
 
@@ -284,6 +286,36 @@ module.exports =
         xs.sort()
       else
         throw new Error("can only sort lists and agentsets")
+
+    # ((T, T) => Boolean, ListOrSet[T]) => Array[T]
+    sortBy: (task, xs) ->
+      type = NLType(xs)
+      arr  =
+        if type.isList()
+          xs
+        else if type.isAgentSet()
+          xs.shufflerator().toArray()
+        else
+          throw new Error("can only sort lists and agentsets")
+
+      taskIsTrue =
+        (a, b) ->
+          value = task(a, b)
+          if value is true or value is false
+            value
+          else
+            throw new Error("SORT-BY expected input to be a TRUE/FALSE but got #{value} instead.")
+
+      f =
+        (x, y) ->
+          if taskIsTrue(x, y)
+            -1
+          else if taskIsTrue(y, x)
+            1
+          else
+            0
+
+      stableSort(arr)(f)
 
     # (Array[Any]) => Number
     standardDeviation: (xs) ->

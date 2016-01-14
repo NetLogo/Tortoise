@@ -110,6 +110,7 @@ object SimplePrims {
         case _: prim.etc._reverse           => "ListPrims.reverse"
         case _: prim.etc._shuffle           => "ListPrims.shuffle"
         case _: prim.etc._sort              => "ListPrims.sort"
+        case _: prim.etc._sortby            => "ListPrims.sortBy"
         case _: prim.etc._standarddeviation => "ListPrims.standardDeviation"
         case _: prim.etc._sublist           => "ListPrims.sublist"
         case _: prim.etc._substring         => "ListPrims.substring"

@@ -445,6 +445,10 @@ object Model {
     Model(
       path = "models/Sample Models/Computer Science/Hex Cell Aggregation.nlogo",
       repetitions = 30
+    ),
+    Model(
+      path = "models/Sample Models/Chemistry & Physics/GasLab/GasLab Circular Particles.nlogo",
+      repetitions = 20
     )
   )
 }

@@ -108,7 +108,6 @@ private[tortoise] object Freebies {
     "TurtlesHere::TurtlesHereCheckOrder4"
   )
 
-  // Significant: Real errors could be hiding behind this (mostly) low-hanging fruit
   private val incErrorDetectStr = "Tortoise error detection and reporting not complete"
   private val incErrorDetectReporterNames = Seq(
     "Lists::Lput5",
@@ -131,6 +130,7 @@ private[tortoise] object Freebies {
     "Lists::ListSubList8",
     "Lists::ListSubList9",
     "Lists::ListSubList12",
+    "Lists::SortBy5",
     "Numbers::Sqrt1",
     "Numbers::Sqrt4",
     "Numbers::DivByZero1",
@@ -210,6 +210,7 @@ private[tortoise] object Freebies {
     "Run::RunRejectExtraArgumentsIfFirstArgIsString",
     "Run::RunResultRejectExtraArgumentsIfFirstArgIsString",
     "Sort::SortingTypeErrors",
+    "Sort::sort-by-catches-java-7-general-contract-violation-error",
     "Turtles::Turtles1a",
     "TurtlesOn::TurtlesOn1",
     "TypeChecking::AgentClassChecking1",
