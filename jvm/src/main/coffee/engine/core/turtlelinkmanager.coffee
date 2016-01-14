@@ -154,4 +154,4 @@ module.exports =
 
     # (Link, Boolean) => Boolean
     _isCorrectlyDirected: (link, isDirected) ->
-      @_breedManager.links().isUndirected() or isDirected is @_breedManager.get(link.getBreedName()).isDirected()
+      isDirected is @_breedManager.get(link.getBreedName()).isDirected()
