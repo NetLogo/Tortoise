@@ -21,8 +21,8 @@ script:
   - ./nightly.sh sbt_test tortoiseJVM fast
   - ./nightly.sh sbt_test tortoiseJVM language
   - ./nightly.sh sbt_test tortoiseJS test
-  - ./nightly.sh sbt_test tortoiseJVM crawl
-  - travis_wait ./nightly.sh sbt_test netLogoWeb test
+  - travis_wait 45 ./nightly.sh sbt_test tortoiseJVM crawl
+  - travis_wait 60 ./nightly.sh sbt_test netLogoWeb test
   - ./nightly.sh sbt_task tortoiseJVM/depend
 
 after_failure:
