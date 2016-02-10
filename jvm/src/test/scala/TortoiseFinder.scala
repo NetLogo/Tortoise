@@ -190,7 +190,6 @@ private[tortoise] object Freebies {
     "Lists::RemoveBug997FirstArgMustBeStringIfSecondArgIsString",
     "Lists::FilterTypeError",
     "Math::CatchNumbersOutsideDoubleRangeOfIntegers",
-    "Math::DivideByZero",
     "MoveTo::MoveTo",
     "Patch::SetVariableRuntime",
     "RGB::PatchesRGBColor",
