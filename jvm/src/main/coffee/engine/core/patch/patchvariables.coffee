@@ -44,8 +44,7 @@ Setters = {
 }
 
 VariableSpecs = [
-  new ImmutableVariableSpec('id',    -> @id)
-, new ImmutableVariableSpec('pxcor', -> @pxcor)
+  new ImmutableVariableSpec('pxcor', -> @pxcor)
 , new ImmutableVariableSpec('pycor', -> @pycor)
 , new MutableVariableSpec('pcolor',       (-> @_pcolor),      setPcolor)
 , new MutableVariableSpec('plabel',       (-> @_plabel),      setPlabel)
