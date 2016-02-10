@@ -51,7 +51,7 @@ module.exports =
       turtles = _(patches).map((p) -> p.breedHereArray(breedName)).flatten().value()
       new TurtleSet(turtles)
 
-    # (Number, Number) -> Number
+    # (Number, Number) => Number
     div: (a, b) ->
       if b isnt 0
         a / b
