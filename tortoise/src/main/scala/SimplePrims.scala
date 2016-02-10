@@ -43,7 +43,6 @@ object SimplePrims {
         case _: prim.etc._plus      => "+"
         case _: prim._minus         => "-"
         case _: prim.etc._mult      => "*"
-        case _: prim.etc._div       => "/"
         case _: prim.etc._remainder => "%"
         case _: prim._and           => "&&"
         case _: prim._or            => "||"
@@ -167,6 +166,7 @@ object SimplePrims {
         case _: prim.etc._shadeof           => "ColorModel.areRelatedByShade"
         case _: prim.etc._wrapcolor         => "ColorModel.wrapColor"
 
+        case _: prim.etc._div               => "Prims.div"
         case _: prim._turtle                => "world.turtleManager.getTurtle"
         case _: prim.etc._patch             => "world.getPatchAt"
         case _: prim._equal                 => "Prims.equality"

@@ -51,6 +51,13 @@ module.exports =
       turtles = _(patches).map((p) -> p.breedHereArray(breedName)).flatten().value()
       new TurtleSet(turtles)
 
+    # (Number, Number) -> Number
+    div: (a, b) ->
+      if b isnt 0
+        a / b
+      else
+        throw new Error("Division by zero.")
+
     # (Any, Any) => Boolean
     equality: (a, b) ->
       if a? and b?
