@@ -161,8 +161,6 @@ private[tortoise] object Freebies {
     "AnyAll::All5",
     "Ask::AskAllTurtles",
     "Ask::AskAllPatches",
-    "BooleanOperators::ShortCircuitAnd",
-    "BooleanOperators::ShortCircuitOr",
     "Breeds::SetBreedToNonBreed",
     "CommandTasks::*WrongTypeOfTask1",
     "CommandTasks::WrongTypeOfTask2",
