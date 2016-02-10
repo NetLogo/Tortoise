@@ -142,8 +142,8 @@ var procedures = (function() {
   };
   var updateGlobalVariables = function() {
     if (Prims.gt(world.turtles().size(), 0)) {
-      world.observer.setGlobal("%infected", ((world.turtles().agentFilter(function() { return SelfManager.self().getVariable("sick?"); }).size() / world.turtles().size()) * 100));
-      world.observer.setGlobal("%immune", ((world.turtles().agentFilter(function() { return procedures.immune_p(); }).size() / world.turtles().size()) * 100));
+      world.observer.setGlobal("%infected", (Prims.div(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("sick?"); }).size(), world.turtles().size()) * 100));
+      world.observer.setGlobal("%immune", (Prims.div(world.turtles().agentFilter(function() { return procedures.immune_p(); }).size(), world.turtles().size()) * 100));
     }
   };
   var updateDisplay = function() {

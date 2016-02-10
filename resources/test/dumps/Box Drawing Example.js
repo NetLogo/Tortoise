@@ -71,7 +71,7 @@ var procedures = (function() {
   };
   var setupCenter = function() {
     world.clearAll();
-    var halfedge = NLMath.toInt((world.observer.getGlobal("edge") / 2));
+    var halfedge = NLMath.toInt(Prims.div(world.observer.getGlobal("edge"), 2));
     world.patches().ask(function() {
       if (((Prims.equality(SelfManager.self().getPatchVariable("pxcor"),  -halfedge) && Prims.gte(SelfManager.self().getPatchVariable("pycor"),  -halfedge)) && Prims.lte(SelfManager.self().getPatchVariable("pycor"), (0 + halfedge)))) {
         SelfManager.self().setPatchVariable("pcolor", 105);

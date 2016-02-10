@@ -176,7 +176,7 @@ var procedures = (function() {
         throw new Exception.ReportInterrupt(NLMath.mod(NLMath.floor(number), 2));
       }
       else {
-        throw new Exception.ReportInterrupt(procedures.bindigit((NLMath.floor(number) / 2),(powerOfTwo - 1)));
+        throw new Exception.ReportInterrupt(procedures.bindigit(Prims.div(NLMath.floor(number), 2),(powerOfTwo - 1)));
       }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
@@ -250,7 +250,7 @@ var procedures = (function() {
     var rules = procedures.listRules();
     world.patches().agentFilter(function() { return Prims.gt(SelfManager.self().getPatchVariable("pycor"), (world.topology.maxPycor - 5)); }).ask(function() { SelfManager.self().setPatchVariable("pcolor", 5); }, true);
     world.patches().agentFilter(function() {
-      return (Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.maxPycor) && Prims.equality(NLMath.mod((SelfManager.self().getPatchVariable("pxcor") + 1), NLMath.floor((world.topology.width / 8))), 0));
+      return (Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.maxPycor) && Prims.equality(NLMath.mod((SelfManager.self().getPatchVariable("pxcor") + 1), NLMath.floor(Prims.div(world.topology.width, 8))), 0));
     }).ask(function() {
       SelfManager.self().sprout(1, "TURTLES").ask(function() {
         SelfManager.self().setVariable("heading", 270);

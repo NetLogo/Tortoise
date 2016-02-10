@@ -51,7 +51,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('populations', 'grass / 4')(function() {
         if (world.observer.getGlobal("grass?")) {
-          plotManager.plotValue((world.observer.getGlobal("grass") / 4));
+          plotManager.plotValue(Prims.div(world.observer.getGlobal("grass"), 4));
         };
       });
     });
@@ -157,7 +157,7 @@ var procedures = (function() {
   };
   var reproduceSheep = function() {
     if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("sheep-reproduce"))) {
-      SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") / 2));
+      SelfManager.self().setVariable("energy", Prims.div(SelfManager.self().getVariable("energy"), 2));
       SelfManager.self().hatch(1, "").ask(function() {
         SelfManager.self().right(Prims.randomFloat(360));
         SelfManager.self().fd(1);
@@ -166,7 +166,7 @@ var procedures = (function() {
   };
   var reproduceWolves = function() {
     if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("wolf-reproduce"))) {
-      SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") / 2));
+      SelfManager.self().setVariable("energy", Prims.div(SelfManager.self().getVariable("energy"), 2));
       SelfManager.self().hatch(1, "").ask(function() {
         SelfManager.self().right(Prims.randomFloat(360));
         SelfManager.self().fd(1);

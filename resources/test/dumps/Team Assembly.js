@@ -80,7 +80,7 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('% of agents in the giant component', 'default')(function() {
-        plotManager.plotPoint(world.ticker.tickCount(), (world.observer.getGlobal("giant-component-size") / world.turtles().size()));;
+        plotManager.plotPoint(world.ticker.tickCount(), Prims.div(world.observer.getGlobal("giant-component-size"), world.turtles().size()));;
       });
     });
   })];
@@ -141,7 +141,7 @@ var procedures = (function() {
     procedures.tieCollaborators();
     procedures.colorCollaborations();
     world.turtles().ask(function() {
-      SelfManager.self().setVariable("heading", ((360 / world.observer.getGlobal("team-size")) * SelfManager.self().getVariable("who")));
+      SelfManager.self().setVariable("heading", (Prims.div(360, world.observer.getGlobal("team-size")) * SelfManager.self().getVariable("who")));
       SelfManager.self().fd(1.75);
       SelfManager.self().setVariable("in-team?", false);
     }, true);

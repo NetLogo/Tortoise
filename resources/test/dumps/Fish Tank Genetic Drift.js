@@ -217,7 +217,7 @@ var procedures = (function() {
     world.observer.setGlobal("num-fish-born", 0);
     world.observer.setGlobal("num-fish-in-tank", 0);
     world.observer.setGlobal("size-of-karyotype-background-for-cells", 5.2);
-    world.observer.setGlobal("initial-#-females", NLMath.floor(((world.observer.getGlobal("initial-females") / 100) * world.observer.getGlobal("carrying-capacity"))));
+    world.observer.setGlobal("initial-#-females", NLMath.floor((Prims.div(world.observer.getGlobal("initial-females"), 100) * world.observer.getGlobal("carrying-capacity"))));
     world.observer.setGlobal("initial-#-males", (world.observer.getGlobal("carrying-capacity") - world.observer.getGlobal("initial-#-females")));
     world.observer.setGlobal("green-dorsal-fin-color", [90, 255, 90, 255]);
     world.observer.setGlobal("no-green-dorsal-fin-color", [176, 196, 222, 255]);
@@ -271,13 +271,13 @@ var procedures = (function() {
   var createInitialGenePool = function() {
     var numBigAlleles = 0;
     var initialNumberFish = world.observer.getGlobal("carrying-capacity");
-    numBigAlleles = NLMath.round((((world.observer.getGlobal("initial-alleles-big-b") * 2) * initialNumberFish) / 100));
+    numBigAlleles = NLMath.round(Prims.div(((world.observer.getGlobal("initial-alleles-big-b") * 2) * initialNumberFish), 100));
     procedures.makeInitialAllelesForGene(1,"B","b",numBigAlleles);
-    numBigAlleles = NLMath.round((((world.observer.getGlobal("initial-alleles-big-t") * 2) * initialNumberFish) / 100));
+    numBigAlleles = NLMath.round(Prims.div(((world.observer.getGlobal("initial-alleles-big-t") * 2) * initialNumberFish), 100));
     procedures.makeInitialAllelesForGene(2,"T","t",numBigAlleles);
-    numBigAlleles = NLMath.round((((world.observer.getGlobal("initial-alleles-big-f") * 2) * initialNumberFish) / 100));
+    numBigAlleles = NLMath.round(Prims.div(((world.observer.getGlobal("initial-alleles-big-f") * 2) * initialNumberFish), 100));
     procedures.makeInitialAllelesForGene(3,"F","f",numBigAlleles);
-    numBigAlleles = NLMath.round((((world.observer.getGlobal("initial-alleles-big-g") * 2) * initialNumberFish) / 100));
+    numBigAlleles = NLMath.round(Prims.div(((world.observer.getGlobal("initial-alleles-big-g") * 2) * initialNumberFish), 100));
     procedures.makeInitialAllelesForGene(4,"G","g",numBigAlleles);
     procedures.makeInitialAllelesForGene(5,"Y","X",world.observer.getGlobal("initial-#-males"));
   };
@@ -628,7 +628,7 @@ var procedures = (function() {
     var colorList = [];
     world.turtleManager.turtlesOfBreed("FISH-BONES").ask(function() {
       SelfManager.self().setVariable("countdown", (SelfManager.self().getVariable("countdown") - 1));
-      boneTransparency = ((SelfManager.self().getVariable("countdown") * 255) / 50);
+      boneTransparency = Prims.div((SelfManager.self().getVariable("countdown") * 255), 50);
       colorList = ListPrims.lput(boneTransparency, [255, 255, 255]);
       SelfManager.self().setVariable("color", colorList);
       if (Prims.lte(SelfManager.self().getVariable("countdown"), 0)) {
@@ -1090,7 +1090,7 @@ var procedures = (function() {
       if (dividersToTheLeft.nonEmpty()) {
         thisRegionLeftSide = ListPrims.max(dividersToTheLeft.projectionBy(function() { return SelfManager.self().getPatchVariable("pxcor"); }));
       }
-      var tankCapacityOfThisRegion = (((thisRegionRightSide - thisRegionLeftSide) * world.observer.getGlobal("carrying-capacity")) / 25);
+      var tankCapacityOfThisRegion = Prims.div(((thisRegionRightSide - thisRegionLeftSide) * world.observer.getGlobal("carrying-capacity")), 25);
       throw new Exception.ReportInterrupt(tankCapacityOfThisRegion);
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {

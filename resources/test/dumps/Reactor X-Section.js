@@ -91,9 +91,9 @@ var procedures = (function() {
     world.observer.setGlobal("old-power-2", 0);
     world.observer.setGlobal("old-power-3", 0);
     world.observer.setGlobal("old-power-4", 0);
-    world.observer.setGlobal("r", (world.observer.getGlobal("reactor-size") / 2));
+    world.observer.setGlobal("r", Prims.div(world.observer.getGlobal("reactor-size"), 2));
     world.observer.setGlobal("rod-length", world.observer.getGlobal("rod-depth"));
-    world.observer.setGlobal("n-rods", ((world.observer.getGlobal("reactor-size") / (world.observer.getGlobal("rod-spacing") + 1)) - 1));
+    world.observer.setGlobal("n-rods", (Prims.div(world.observer.getGlobal("reactor-size"), (world.observer.getGlobal("rod-spacing") + 1)) - 1));
   };
   var buildReactor = function() {
     if (((Prims.equality(SelfManager.self().getPatchVariable("x"), world.observer.getGlobal("r")) && Prims.lte(SelfManager.self().getPatchVariable("y"), world.observer.getGlobal("r"))) || (Prims.equality(SelfManager.self().getPatchVariable("y"), world.observer.getGlobal("r")) && Prims.lte(SelfManager.self().getPatchVariable("x"), world.observer.getGlobal("r"))))) {
@@ -207,7 +207,7 @@ var procedures = (function() {
         procedures.fission();
       }
     }, true);
-    world.observer.setGlobal("average-power", (((((world.observer.getGlobal("power") + world.observer.getGlobal("old-power")) + world.observer.getGlobal("old-power-2")) + world.observer.getGlobal("old-power-3")) + world.observer.getGlobal("old-power-4")) / 5));
+    world.observer.setGlobal("average-power", Prims.div(((((world.observer.getGlobal("power") + world.observer.getGlobal("old-power")) + world.observer.getGlobal("old-power-2")) + world.observer.getGlobal("old-power-3")) + world.observer.getGlobal("old-power-4")), 5));
     world.observer.setGlobal("power-change", (world.observer.getGlobal("power") - world.observer.getGlobal("old-power")));
     world.observer.setGlobal("old-power-4", world.observer.getGlobal("old-power-3"));
     world.observer.setGlobal("old-power-3", world.observer.getGlobal("old-power-2"));
@@ -246,7 +246,7 @@ var procedures = (function() {
       if (world.observer.getGlobal("spend-fuel?")) {
         SelfManager.self().setPatchVariable("pcolor", 35);
       }
-      var gain = (1 / SelfManager.self().turtlesHere().size());
+      var gain = Prims.div(1, SelfManager.self().turtlesHere().size());
       world.observer.setGlobal("power", (world.observer.getGlobal("power") + gain));
       SelfManager.self().hatch(((2 + Prims.random(2)) * gain), "").ask(function() { SelfManager.self().right(Prims.random(360)); }, true);
     }

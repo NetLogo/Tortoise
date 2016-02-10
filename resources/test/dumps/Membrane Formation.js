@@ -41,7 +41,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Hydrophobic Isolation', 'ratio')(function() {
         plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed("OILS").projectionBy(function() {
-          return (SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("OILS"), world.observer.getGlobal("interaction-distance")).size() / SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("interaction-distance")).agentFilter(function() { return !LinkPrims.isLinkNeighbor("LINKS", SelfManager.myself()); }).size());
+          return Prims.div(SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("OILS"), world.observer.getGlobal("interaction-distance")).size(), SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("interaction-distance")).agentFilter(function() { return !LinkPrims.isLinkNeighbor("LINKS", SelfManager.myself()); }).size());
         })));;
       });
     });

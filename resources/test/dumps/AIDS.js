@@ -150,7 +150,7 @@ var procedures = (function() {
       for (var _index_3704_3710 = 0, _repeatcount_3704_3710 = StrictMath.floor(40); _index_3704_3710 < _repeatcount_3704_3710; _index_3704_3710++){
         result = (result + Prims.randomFloat(center));
       }
-      throw new Exception.ReportInterrupt((result / 20));
+      throw new Exception.ReportInterrupt(Prims.div(result, 20));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -274,7 +274,7 @@ var procedures = (function() {
   var _percent_infected = function() {
     try {
       if (world.turtles().nonEmpty()) {
-        throw new Exception.ReportInterrupt(((world.turtles().agentFilter(function() { return SelfManager.self().getVariable("infected?"); }).size() / world.turtles().size()) * 100));
+        throw new Exception.ReportInterrupt((Prims.div(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("infected?"); }).size(), world.turtles().size()) * 100));
       }
       else {
         throw new Exception.ReportInterrupt(0);

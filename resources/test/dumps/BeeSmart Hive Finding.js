@@ -188,7 +188,7 @@ var procedures = (function() {
           if (Prims.gt(SelfPrims.other(SelfManager.self().inCone(world.turtleManager.turtlesOfBreed("SCOUTS"), 3, 60)).size(), 0)) {
             var observed = ListPrims.oneOf(SelfManager.self().inCone(world.turtleManager.turtlesOfBreed("SCOUTS"), 3, 60));
             if (Prims.equality(observed.projectionBy(function() { return SelfManager.self().getVariable("next-task"); }), world.observer.getGlobal("dance-task"))) {
-              if (Prims.lt(Prims.random(((1 / observed.projectionBy(function() { return SelfManager.self().getVariable("interest"); })) * 1000)), 1)) {
+              if (Prims.lt(Prims.random((Prims.div(1, observed.projectionBy(function() { return SelfManager.self().getVariable("interest"); })) * 1000)), 1)) {
                 SelfManager.self().setVariable("target", observed.projectionBy(function() { return SelfManager.self().getVariable("target"); }));
                 SelfManager.self().setVariable("color", 9.9);
                 SelfManager.self().setVariable("next-task", world.observer.getGlobal("re-visit-task"));
@@ -430,15 +430,15 @@ var procedures = (function() {
     }
   };
   var makeSemicircle = function() {
-    var numOfTurns = ((1 / SelfManager.self().getVariable("interest")) * 2600);
-    var anglePerTurn = (180 / numOfTurns);
-    var semicircle = (((0.5 * SelfManager.self().getVariable("dist-to-hive")) * 3.141592653589793) / 5);
+    var numOfTurns = (Prims.div(1, SelfManager.self().getVariable("interest")) * 2600);
+    var anglePerTurn = Prims.div(180, numOfTurns);
+    var semicircle = Prims.div(((0.5 * SelfManager.self().getVariable("dist-to-hive")) * 3.141592653589793), 5);
     if (Prims.equality(SelfManager.self().getVariable("circle-switch"), 1)) {
       SelfManager.self().face(SelfManager.self().getVariable("target"));
       SelfManager.self().right(-90);
       for (var _index_17139_17145 = 0, _repeatcount_17139_17145 = StrictMath.floor(numOfTurns); _index_17139_17145 < _repeatcount_17139_17145; _index_17139_17145++){
         SelfManager.self().right(-anglePerTurn);
-        SelfManager.self().fd(((semicircle / 180) * anglePerTurn));
+        SelfManager.self().fd((Prims.div(semicircle, 180) * anglePerTurn));
       }
     }
     if (Prims.equality(SelfManager.self().getVariable("circle-switch"), -1)) {
@@ -446,7 +446,7 @@ var procedures = (function() {
       SelfManager.self().right(90);
       for (var _index_17286_17292 = 0, _repeatcount_17286_17292 = StrictMath.floor(numOfTurns); _index_17286_17292 < _repeatcount_17286_17292; _index_17286_17292++){
         SelfManager.self().right(anglePerTurn);
-        SelfManager.self().fd(((semicircle / 180) * anglePerTurn));
+        SelfManager.self().fd((Prims.div(semicircle, 180) * anglePerTurn));
       }
     }
     SelfManager.self().setVariable("circle-switch", (SelfManager.self().getVariable("circle-switch") * -1));
@@ -459,7 +459,7 @@ var procedures = (function() {
     var waggleSwitch = 1;
     SelfManager.self().right(-60);
     SelfManager.self().fd(0.4);
-    for (var _index_17864_17870 = 0, _repeatcount_17864_17870 = StrictMath.floor(((SelfManager.self().getVariable("dist-to-hive") - 2) / 2)); _index_17864_17870 < _repeatcount_17864_17870; _index_17864_17870++){
+    for (var _index_17864_17870 = 0, _repeatcount_17864_17870 = StrictMath.floor(Prims.div((SelfManager.self().getVariable("dist-to-hive") - 2), 2)); _index_17864_17870 < _repeatcount_17864_17870; _index_17864_17870++){
       if (Prims.equality(waggleSwitch, 1)) {
         SelfManager.self().right(120);
         SelfManager.self().fd(0.8);

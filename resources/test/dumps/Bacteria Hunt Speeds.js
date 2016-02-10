@@ -215,7 +215,7 @@ var procedures = (function() {
         throw new Exception.StopInterrupt;
       }
       var prey = ListPrims.oneOf(world.turtleManager.turtlesOfBreed("PREDATORS")).projectionBy(function() {
-        return SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("BACTERIA"), (SelfManager.self().getVariable("size") / 2));
+        return SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("BACTERIA"), Prims.div(SelfManager.self().getVariable("size"), 2));
       });
       if (!prey.nonEmpty()) {
         throw new Exception.StopInterrupt;

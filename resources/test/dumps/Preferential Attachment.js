@@ -159,7 +159,7 @@ var procedures = (function() {
   var layout = function() {
     for (var _index_2025_2031 = 0, _repeatcount_2025_2031 = StrictMath.floor(3); _index_2025_2031 < _repeatcount_2025_2031; _index_2025_2031++){
       var factor = NLMath.sqrt(world.turtles().size());
-      LayoutManager.layoutSpring(world.turtles(), world.links(), (1 / factor), (7 / factor), (1 / factor));
+      LayoutManager.layoutSpring(world.turtles(), world.links(), Prims.div(1, factor), Prims.div(7, factor), Prims.div(1, factor));
       notImplemented('display', undefined)();
     }
     var xOffset = (ListPrims.max(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("xcor"); })) + ListPrims.min(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("xcor"); })));
@@ -167,7 +167,7 @@ var procedures = (function() {
     xOffset = procedures.limitMagnitude(xOffset,0.1);
     yOffset = procedures.limitMagnitude(yOffset,0.1);
     world.turtles().ask(function() {
-      SelfManager.self().setXY((SelfManager.self().getVariable("xcor") - (xOffset / 2)), (SelfManager.self().getVariable("ycor") - (yOffset / 2)));
+      SelfManager.self().setXY((SelfManager.self().getVariable("xcor") - Prims.div(xOffset, 2)), (SelfManager.self().getVariable("ycor") - Prims.div(yOffset, 2)));
     }, true);
   };
   var limitMagnitude = function(number, limit) {

@@ -125,7 +125,7 @@ var procedures = (function() {
       return Prims.equality(SelfManager.self().getVariable("color"), SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("color"); }));
     }).size();
     var opposite = (total - same);
-    SelfManager.self().setVariable("happy?", Prims.lte((opposite / total), (world.observer.getGlobal("tolerance") / 100)));
+    SelfManager.self().setVariable("happy?", Prims.lte(Prims.div(opposite, total), Prims.div(world.observer.getGlobal("tolerance"), 100)));
   };
   var leaveIfUnhappy = function() {
     if (!SelfManager.self().getVariable("happy?")) {
@@ -154,8 +154,8 @@ var procedures = (function() {
   };
   var groupSite_p = function() {
     try {
-      var groupInterval = NLMath.floor((world.topology.width / world.observer.getGlobal("num-groups")));
-      throw new Exception.ReportInterrupt((((Prims.equality(SelfManager.self().getPatchVariable("pycor"), 0) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), 0)) && Prims.equality(NLMath.mod(SelfManager.self().getPatchVariable("pxcor"), groupInterval), 0)) && Prims.lt(NLMath.floor(( -SelfManager.self().getPatchVariable("pxcor") / groupInterval)), world.observer.getGlobal("num-groups"))));
+      var groupInterval = NLMath.floor(Prims.div(world.topology.width, world.observer.getGlobal("num-groups")));
+      throw new Exception.ReportInterrupt((((Prims.equality(SelfManager.self().getPatchVariable("pycor"), 0) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), 0)) && Prims.equality(NLMath.mod(SelfManager.self().getPatchVariable("pxcor"), groupInterval), 0)) && Prims.lt(NLMath.floor(Prims.div( -SelfManager.self().getPatchVariable("pxcor"), groupInterval)), world.observer.getGlobal("num-groups"))));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {

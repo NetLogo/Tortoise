@@ -55,7 +55,7 @@ modelConfig.plots = [(function() {
   new PenBundle.Pen('Pollution', plotOps.makePenOps, false, new PenBundle.State(5.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Moth Colors Over Time', 'Pollution')(function() {
-        plotManager.plotValue((((procedures.upperBound() / 3) * world.observer.getGlobal("darkness")) / 8));;
+        plotManager.plotValue(Prims.div((Prims.div(procedures.upperBound(), 3) * world.observer.getGlobal("darkness")), 8));;
       });
     });
   })];
@@ -97,7 +97,7 @@ var procedures = (function() {
   };
   var deltaEnv = function() {
     try {
-      throw new Exception.ReportInterrupt((world.observer.getGlobal("speed") / 100));
+      throw new Exception.ReportInterrupt(Prims.div(world.observer.getGlobal("speed"), 100));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -169,13 +169,13 @@ var procedures = (function() {
       SelfManager.self().hatch(2, "").ask(function() {
         if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("mutation"))) {
           if (Prims.equality(Prims.random(2), 0)) {
-            SelfManager.self().setVariable("color", NLMath.round((SelfManager.self().getVariable("color") + (Prims.randomFloat(world.observer.getGlobal("mutation")) / 12.5))));
+            SelfManager.self().setVariable("color", NLMath.round((SelfManager.self().getVariable("color") + Prims.div(Prims.randomFloat(world.observer.getGlobal("mutation")), 12.5))));
             if (Prims.gte(SelfManager.self().getVariable("color"), 9)) {
               SelfManager.self().setVariable("color", 9);
             }
           }
           else {
-            SelfManager.self().setVariable("color", NLMath.round((SelfManager.self().getVariable("color") - (Prims.randomFloat(world.observer.getGlobal("mutation")) / 12.5))));
+            SelfManager.self().setVariable("color", NLMath.round((SelfManager.self().getVariable("color") - Prims.div(Prims.randomFloat(world.observer.getGlobal("mutation")), 12.5))));
             if ((Prims.lte(SelfManager.self().getVariable("color"), 1) || Prims.gte(SelfManager.self().getVariable("color"), 130))) {
               SelfManager.self().setVariable("color", 1);
             }

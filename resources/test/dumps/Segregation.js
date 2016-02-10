@@ -123,7 +123,7 @@ var procedures = (function() {
         return !Prims.equality(SelfManager.self().getVariable("color"), SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("color"); }));
       }).size());
       SelfManager.self().setVariable("total-nearby", (SelfManager.self().getVariable("similar-nearby") + SelfManager.self().getVariable("other-nearby")));
-      SelfManager.self().setVariable("happy?", Prims.gte(SelfManager.self().getVariable("similar-nearby"), ((world.observer.getGlobal("%-similar-wanted") * SelfManager.self().getVariable("total-nearby")) / 100)));
+      SelfManager.self().setVariable("happy?", Prims.gte(SelfManager.self().getVariable("similar-nearby"), Prims.div((world.observer.getGlobal("%-similar-wanted") * SelfManager.self().getVariable("total-nearby")), 100)));
       if (Prims.equality(world.observer.getGlobal("visualization"), "old")) {
         SelfManager.self().setVariable("shape", "default");
       }
@@ -140,8 +140,8 @@ var procedures = (function() {
   var updateGlobals = function() {
     var similarNeighbors = ListPrims.sum(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("similar-nearby"); }));
     var totalNeighbors = ListPrims.sum(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("total-nearby"); }));
-    world.observer.setGlobal("percent-similar", ((similarNeighbors / totalNeighbors) * 100));
-    world.observer.setGlobal("percent-unhappy", ((world.turtles().agentFilter(function() { return !SelfManager.self().getVariable("happy?"); }).size() / world.turtles().size()) * 100));
+    world.observer.setGlobal("percent-similar", (Prims.div(similarNeighbors, totalNeighbors) * 100));
+    world.observer.setGlobal("percent-unhappy", (Prims.div(world.turtles().agentFilter(function() { return !SelfManager.self().getVariable("happy?"); }).size(), world.turtles().size()) * 100));
   };
   return {
     "FIND-NEW-SPOT":findNewSpot,

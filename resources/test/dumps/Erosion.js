@@ -57,7 +57,7 @@ var procedures = (function() {
     world.patches().ask(function() {
       if (world.observer.getGlobal("bumpy?")) {
         if (world.observer.getGlobal("hill?")) {
-          SelfManager.self().setPatchVariable("elevation", (((-100 * (SelfManager.self().distanceXY(0, 0) / world.topology.maxPxcor)) + 100) + Prims.random(100)));
+          SelfManager.self().setPatchVariable("elevation", (((-100 * Prims.div(SelfManager.self().distanceXY(0, 0), world.topology.maxPxcor)) + 100) + Prims.random(100)));
         }
         else {
           SelfManager.self().setPatchVariable("elevation", Prims.random(125));

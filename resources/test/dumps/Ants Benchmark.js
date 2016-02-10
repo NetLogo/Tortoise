@@ -136,7 +136,7 @@ var procedures = (function() {
   };
   var go = function() {
     world.turtles().ask(function() { procedures.goTurtles(); }, true);
-    world.topology.diffuse("chemical", (world.observer.getGlobal("diffusion-rate") / 100))
+    world.topology.diffuse("chemical", Prims.div(world.observer.getGlobal("diffusion-rate"), 100))
     world.patches().ask(function() { procedures.goPatches(); }, true);
     world.ticker.tick();
     procedures.doPlotting();
@@ -154,7 +154,7 @@ var procedures = (function() {
     }
   };
   var goPatches = function() {
-    SelfManager.self().setPatchVariable("chemical", ((SelfManager.self().getPatchVariable("chemical") * (100 - world.observer.getGlobal("evaporation-rate"))) / 100));
+    SelfManager.self().setPatchVariable("chemical", Prims.div((SelfManager.self().getPatchVariable("chemical") * (100 - world.observer.getGlobal("evaporation-rate"))), 100));
     procedures.updateDisplay();
   };
   var returnToNest = function() {

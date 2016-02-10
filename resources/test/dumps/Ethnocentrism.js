@@ -280,7 +280,7 @@ var procedures = (function() {
   };
   var meetownPercent = function() {
     try {
-      throw new Exception.ReportInterrupt((world.observer.getGlobal("meetown") / ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet")))));
+      throw new Exception.ReportInterrupt(Prims.div(world.observer.getGlobal("meetown"), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet")))));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -292,7 +292,7 @@ var procedures = (function() {
   };
   var meetownAggPercent = function() {
     try {
-      throw new Exception.ReportInterrupt((world.observer.getGlobal("meetown-agg") / ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet-agg")))));
+      throw new Exception.ReportInterrupt(Prims.div(world.observer.getGlobal("meetown-agg"), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet-agg")))));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -304,7 +304,7 @@ var procedures = (function() {
   };
   var coopownPercent = function() {
     try {
-      throw new Exception.ReportInterrupt((world.observer.getGlobal("coopown") / ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meetown")))));
+      throw new Exception.ReportInterrupt(Prims.div(world.observer.getGlobal("coopown"), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meetown")))));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -316,7 +316,7 @@ var procedures = (function() {
   };
   var coopownAggPercent = function() {
     try {
-      throw new Exception.ReportInterrupt((world.observer.getGlobal("coopown-agg") / ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meetown-agg")))));
+      throw new Exception.ReportInterrupt(Prims.div(world.observer.getGlobal("coopown-agg"), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meetown-agg")))));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -328,7 +328,7 @@ var procedures = (function() {
   };
   var defotherPercent = function() {
     try {
-      throw new Exception.ReportInterrupt((world.observer.getGlobal("defother") / ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meetother")))));
+      throw new Exception.ReportInterrupt(Prims.div(world.observer.getGlobal("defother"), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meetother")))));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -340,7 +340,7 @@ var procedures = (function() {
   };
   var defotherAggPercent = function() {
     try {
-      throw new Exception.ReportInterrupt((world.observer.getGlobal("defother-agg") / ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meetother-agg")))));
+      throw new Exception.ReportInterrupt(Prims.div(world.observer.getGlobal("defother-agg"), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meetother-agg")))));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -352,7 +352,7 @@ var procedures = (function() {
   };
   var consistEthnoPercent = function() {
     try {
-      throw new Exception.ReportInterrupt(((world.observer.getGlobal("defother") + world.observer.getGlobal("coopown")) / ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet")))));
+      throw new Exception.ReportInterrupt(Prims.div((world.observer.getGlobal("defother") + world.observer.getGlobal("coopown")), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet")))));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -364,7 +364,7 @@ var procedures = (function() {
   };
   var consistEthnoAggPercent = function() {
     try {
-      throw new Exception.ReportInterrupt(((world.observer.getGlobal("defother-agg") + world.observer.getGlobal("coopown-agg")) / ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet-agg")))));
+      throw new Exception.ReportInterrupt(Prims.div((world.observer.getGlobal("defother-agg") + world.observer.getGlobal("coopown-agg")), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet-agg")))));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -376,7 +376,7 @@ var procedures = (function() {
   };
   var coopPercent = function() {
     try {
-      throw new Exception.ReportInterrupt(((world.observer.getGlobal("coopown") + world.observer.getGlobal("coopother")) / ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet")))));
+      throw new Exception.ReportInterrupt(Prims.div((world.observer.getGlobal("coopown") + world.observer.getGlobal("coopother")), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet")))));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -388,7 +388,7 @@ var procedures = (function() {
   };
   var coopAggPercent = function() {
     try {
-      throw new Exception.ReportInterrupt(((world.observer.getGlobal("coopown-agg") + world.observer.getGlobal("coopother-agg")) / ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet-agg")))));
+      throw new Exception.ReportInterrupt(Prims.div((world.observer.getGlobal("coopown-agg") + world.observer.getGlobal("coopother-agg")), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet-agg")))));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -400,7 +400,7 @@ var procedures = (function() {
   };
   var ccCount = function() {
     try {
-      throw new Exception.ReportInterrupt((ListPrims.sum(world.observer.getGlobal("last100cc")) / ListPrims.max(ListPrims.list(1, ListPrims.length(world.observer.getGlobal("last100cc"))))));
+      throw new Exception.ReportInterrupt(Prims.div(ListPrims.sum(world.observer.getGlobal("last100cc")), ListPrims.max(ListPrims.list(1, ListPrims.length(world.observer.getGlobal("last100cc"))))));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -412,7 +412,7 @@ var procedures = (function() {
   };
   var cdCount = function() {
     try {
-      throw new Exception.ReportInterrupt((ListPrims.sum(world.observer.getGlobal("last100cd")) / ListPrims.max(ListPrims.list(1, ListPrims.length(world.observer.getGlobal("last100cd"))))));
+      throw new Exception.ReportInterrupt(Prims.div(ListPrims.sum(world.observer.getGlobal("last100cd")), ListPrims.max(ListPrims.list(1, ListPrims.length(world.observer.getGlobal("last100cd"))))));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -424,7 +424,7 @@ var procedures = (function() {
   };
   var dcCount = function() {
     try {
-      throw new Exception.ReportInterrupt((ListPrims.sum(world.observer.getGlobal("last100dc")) / ListPrims.max(ListPrims.list(1, ListPrims.length(world.observer.getGlobal("last100dc"))))));
+      throw new Exception.ReportInterrupt(Prims.div(ListPrims.sum(world.observer.getGlobal("last100dc")), ListPrims.max(ListPrims.list(1, ListPrims.length(world.observer.getGlobal("last100dc"))))));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -436,7 +436,7 @@ var procedures = (function() {
   };
   var ddCount = function() {
     try {
-      throw new Exception.ReportInterrupt((ListPrims.sum(world.observer.getGlobal("last100dd")) / ListPrims.max(ListPrims.list(1, ListPrims.length(world.observer.getGlobal("last100dd"))))));
+      throw new Exception.ReportInterrupt(Prims.div(ListPrims.sum(world.observer.getGlobal("last100dd")), ListPrims.max(ListPrims.list(1, ListPrims.length(world.observer.getGlobal("last100dd"))))));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -448,7 +448,7 @@ var procedures = (function() {
   };
   var ccPercent = function() {
     try {
-      throw new Exception.ReportInterrupt((procedures.ccCount() / ListPrims.max(ListPrims.list(1, (((procedures.ccCount() + procedures.cdCount()) + procedures.dcCount()) + procedures.ddCount())))));
+      throw new Exception.ReportInterrupt(Prims.div(procedures.ccCount(), ListPrims.max(ListPrims.list(1, (((procedures.ccCount() + procedures.cdCount()) + procedures.dcCount()) + procedures.ddCount())))));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -460,7 +460,7 @@ var procedures = (function() {
   };
   var cdPercent = function() {
     try {
-      throw new Exception.ReportInterrupt((procedures.cdCount() / ListPrims.max(ListPrims.list(1, (((procedures.ccCount() + procedures.cdCount()) + procedures.dcCount()) + procedures.ddCount())))));
+      throw new Exception.ReportInterrupt(Prims.div(procedures.cdCount(), ListPrims.max(ListPrims.list(1, (((procedures.ccCount() + procedures.cdCount()) + procedures.dcCount()) + procedures.ddCount())))));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -472,7 +472,7 @@ var procedures = (function() {
   };
   var dcPercent = function() {
     try {
-      throw new Exception.ReportInterrupt((procedures.dcCount() / ListPrims.max(ListPrims.list(1, (((procedures.ccCount() + procedures.cdCount()) + procedures.dcCount()) + procedures.ddCount())))));
+      throw new Exception.ReportInterrupt(Prims.div(procedures.dcCount(), ListPrims.max(ListPrims.list(1, (((procedures.ccCount() + procedures.cdCount()) + procedures.dcCount()) + procedures.ddCount())))));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -484,7 +484,7 @@ var procedures = (function() {
   };
   var ddPercent = function() {
     try {
-      throw new Exception.ReportInterrupt((procedures.ddCount() / ListPrims.max(ListPrims.list(1, (((procedures.ccCount() + procedures.cdCount()) + procedures.dcCount()) + procedures.ddCount())))));
+      throw new Exception.ReportInterrupt(Prims.div(procedures.ddCount(), ListPrims.max(ListPrims.list(1, (((procedures.ccCount() + procedures.cdCount()) + procedures.dcCount()) + procedures.ddCount())))));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -496,7 +496,7 @@ var procedures = (function() {
   };
   var last100coopownPercent = function() {
     try {
-      throw new Exception.ReportInterrupt((ListPrims.sum(world.observer.getGlobal("last100coopown")) / ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meetown"))))));
+      throw new Exception.ReportInterrupt(Prims.div(ListPrims.sum(world.observer.getGlobal("last100coopown")), ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meetown"))))));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -508,7 +508,7 @@ var procedures = (function() {
   };
   var last100defotherPercent = function() {
     try {
-      throw new Exception.ReportInterrupt((ListPrims.sum(world.observer.getGlobal("last100defother")) / ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meetother"))))));
+      throw new Exception.ReportInterrupt(Prims.div(ListPrims.sum(world.observer.getGlobal("last100defother")), ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meetother"))))));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -520,7 +520,7 @@ var procedures = (function() {
   };
   var last100consistEthnoPercent = function() {
     try {
-      throw new Exception.ReportInterrupt(((ListPrims.sum(world.observer.getGlobal("last100defother")) + ListPrims.sum(world.observer.getGlobal("last100coopown"))) / ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meet"))))));
+      throw new Exception.ReportInterrupt(Prims.div((ListPrims.sum(world.observer.getGlobal("last100defother")) + ListPrims.sum(world.observer.getGlobal("last100coopown"))), ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meet"))))));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -532,7 +532,7 @@ var procedures = (function() {
   };
   var last100meetownPercent = function() {
     try {
-      throw new Exception.ReportInterrupt((ListPrims.sum(world.observer.getGlobal("last100meetown")) / ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meet"))))));
+      throw new Exception.ReportInterrupt(Prims.div(ListPrims.sum(world.observer.getGlobal("last100meetown")), ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meet"))))));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -544,7 +544,7 @@ var procedures = (function() {
   };
   var last100coopPercent = function() {
     try {
-      throw new Exception.ReportInterrupt((ListPrims.sum(world.observer.getGlobal("last100coop")) / ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meet"))))));
+      throw new Exception.ReportInterrupt(Prims.div(ListPrims.sum(world.observer.getGlobal("last100coop")), ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meet"))))));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {

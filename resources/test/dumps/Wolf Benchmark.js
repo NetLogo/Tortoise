@@ -147,7 +147,7 @@ var procedures = (function() {
   };
   var reproduceSheep = function() {
     if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("sheep-reproduce"))) {
-      SelfManager.self().setVariable("energy", NLMath.round((SelfManager.self().getVariable("energy") / 2)));
+      SelfManager.self().setVariable("energy", NLMath.round(Prims.div(SelfManager.self().getVariable("energy"), 2)));
       SelfManager.self().hatch(1, "").ask(function() {
         SelfManager.self().right(Prims.random(360));
         SelfManager.self().fd(1);
@@ -156,7 +156,7 @@ var procedures = (function() {
   };
   var reproduceWolves = function() {
     if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("wolf-reproduce"))) {
-      SelfManager.self().setVariable("energy", NLMath.round((SelfManager.self().getVariable("energy") / 2)));
+      SelfManager.self().setVariable("energy", NLMath.round(Prims.div(SelfManager.self().getVariable("energy"), 2)));
       SelfManager.self().hatch(1, "").ask(function() {
         SelfManager.self().right(Prims.random(360));
         SelfManager.self().fd(1);
@@ -193,7 +193,7 @@ var procedures = (function() {
     plotManager.plotValue(world.turtleManager.turtlesOfBreed("WOLVES").size());
     if (world.observer.getGlobal("grass?")) {
       plotManager.setCurrentPen("grass / 4");
-      plotManager.plotValue((world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55); }).size() / 4));
+      plotManager.plotValue(Prims.div(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55); }).size(), 4));
     }
   };
   return {

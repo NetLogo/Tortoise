@@ -86,11 +86,11 @@ var procedures = (function() {
       }).size();
       var b = SelfManager.self().getNeighbors().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("state"), world.observer.getGlobal("n")); }).size();
       if (Prims.equality(SelfManager.self().getPatchVariable("state"), 0)) {
-        SelfManager.self().setPatchVariable("new-state", (NLMath.toInt((a / world.observer.getGlobal("k1"))) + NLMath.toInt((b / world.observer.getGlobal("k2")))));
+        SelfManager.self().setPatchVariable("new-state", (NLMath.toInt(Prims.div(a, world.observer.getGlobal("k1"))) + NLMath.toInt(Prims.div(b, world.observer.getGlobal("k2")))));
       }
       else {
         var s = (SelfManager.self().getPatchVariable("state") + ListPrims.sum(SelfManager.self().getNeighbors().projectionBy(function() { return SelfManager.self().getPatchVariable("state"); })));
-        SelfManager.self().setPatchVariable("new-state", (NLMath.toInt((s / ((a + b) + 1))) + world.observer.getGlobal("g")));
+        SelfManager.self().setPatchVariable("new-state", (NLMath.toInt(Prims.div(s, ((a + b) + 1))) + world.observer.getGlobal("g")));
       }
       if (Prims.gt(SelfManager.self().getPatchVariable("new-state"), world.observer.getGlobal("n"))) {
         SelfManager.self().setPatchVariable("new-state", world.observer.getGlobal("n"));

@@ -40,7 +40,7 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('grass', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Populations', 'grass')(function() {
-        plotManager.plotValue((world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55); }).size() / 4));;
+        plotManager.plotValue(Prims.div(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55); }).size(), 4));;
       });
     });
   }),
@@ -52,7 +52,7 @@ modelConfig.plots = [(function() {
   new PenBundle.Pen('weeds', plotOps.makePenOps, false, new PenBundle.State(115.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Populations', 'weeds')(function() {
-        plotManager.plotValue((world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 115); }).size() / 4));;
+        plotManager.plotValue(Prims.div(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 115); }).size(), 4));;
       });
     });
   })];
@@ -145,7 +145,7 @@ var procedures = (function() {
   };
   var reproduce = function() {
     if (Prims.gt(SelfManager.self().getVariable("energy"), world.observer.getGlobal("birth-threshold"))) {
-      SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") / 2));
+      SelfManager.self().setVariable("energy", Prims.div(SelfManager.self().getVariable("energy"), 2));
       SelfManager.self().hatch(1, "").ask(function() { SelfManager.self().fd(1); }, true);
     }
   };

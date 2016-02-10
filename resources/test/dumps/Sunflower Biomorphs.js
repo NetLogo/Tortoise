@@ -68,9 +68,9 @@ var procedures = (function() {
     var i = 0;
     while (Prims.lt(i, (world.observer.getGlobal("rows") * world.observer.getGlobal("columns")))) {
       world.turtleManager.getTurtle(i).ask(function() {
-        var xInt = (world.topology.width / world.observer.getGlobal("columns"));
-        var yInt = (world.topology.height / world.observer.getGlobal("rows"));
-        SelfManager.self().setXY((((-1 * world.topology.maxPxcor) + (xInt / 2)) + (NLMath.mod(i, world.observer.getGlobal("columns")) * xInt)), ((world.topology.maxPycor + (world.topology.minPycor / world.observer.getGlobal("rows"))) - (NLMath.toInt((i / world.observer.getGlobal("columns"))) * yInt)));
+        var xInt = Prims.div(world.topology.width, world.observer.getGlobal("columns"));
+        var yInt = Prims.div(world.topology.height, world.observer.getGlobal("rows"));
+        SelfManager.self().setXY((((-1 * world.topology.maxPxcor) + Prims.div(xInt, 2)) + (NLMath.mod(i, world.observer.getGlobal("columns")) * xInt)), ((world.topology.maxPycor + Prims.div(world.topology.minPycor, world.observer.getGlobal("rows"))) - (NLMath.toInt(Prims.div(i, world.observer.getGlobal("columns"))) * yInt)));
       }, true);
       i = (i + 1);
     }
@@ -88,10 +88,10 @@ var procedures = (function() {
     world.turtleManager.turtlesOfBreed("PETALS").ask(function() {
       SelfManager.self().fd(SelfManager.self().getVariable("step-size"));
       SelfManager.self().setVariable("size", (SelfManager.self().getVariable("size-modifier") * NLMath.sqrt(SelfManager.self().distance(SelfManager.self().getVariable("parent")))));
-      if (Prims.gt(NLMath.abs((SelfManager.self().getVariable("xcor") - SelfManager.self().getVariable("parent").projectionBy(function() { return SelfManager.self().getVariable("xcor"); }))), (world.topology.maxPxcor / (world.observer.getGlobal("columns") * 1.5)))) {
+      if (Prims.gt(NLMath.abs((SelfManager.self().getVariable("xcor") - SelfManager.self().getVariable("parent").projectionBy(function() { return SelfManager.self().getVariable("xcor"); }))), Prims.div(world.topology.maxPxcor, (world.observer.getGlobal("columns") * 1.5)))) {
         SelfManager.self().die();
       }
-      if (Prims.gt(NLMath.abs((SelfManager.self().getVariable("ycor") - SelfManager.self().getVariable("parent").projectionBy(function() { return SelfManager.self().getVariable("ycor"); }))), (world.topology.maxPycor / (world.observer.getGlobal("rows") * 1.5)))) {
+      if (Prims.gt(NLMath.abs((SelfManager.self().getVariable("ycor") - SelfManager.self().getVariable("parent").projectionBy(function() { return SelfManager.self().getVariable("ycor"); }))), Prims.div(world.topology.maxPycor, (world.observer.getGlobal("rows") * 1.5)))) {
         SelfManager.self().die();
       }
     }, true);
@@ -104,11 +104,11 @@ var procedures = (function() {
     world.turtleManager.turtlesOfBreed("PETALS").ask(function() { SelfManager.self().die(); }, true);
     world.turtleManager.turtlesOfBreed("SPAWNERS").ask(function() {
       if (world.observer.getGlobal("controlled-mutation?")) {
-        world.observer.setGlobal("mutation", ((SelfManager.self().getVariable("who") * 1) / (world.observer.getGlobal("rows") * world.observer.getGlobal("columns"))));
+        world.observer.setGlobal("mutation", Prims.div((SelfManager.self().getVariable("who") * 1), (world.observer.getGlobal("rows") * world.observer.getGlobal("columns"))));
       }
       SelfManager.self().setVariable("num-colors", ((ListPrims.oneOf(ListPrims.list(parent1, parent2)).projectionBy(function() { return SelfManager.self().getVariable("num-colors"); }) + NLMath.mod(NLMath.toInt(Prims.randomNormal(0, (world.observer.getGlobal("mutation") * 10))), 15)) + 1));
-      SelfManager.self().setVariable("step-size", (ListPrims.oneOf(ListPrims.list(parent1, parent2)).projectionBy(function() { return SelfManager.self().getVariable("step-size"); }) + Prims.randomNormal(0, (world.observer.getGlobal("mutation") / 5))));
-      SelfManager.self().setVariable("turn-increment", (ListPrims.oneOf(ListPrims.list(parent1, parent2)).projectionBy(function() { return SelfManager.self().getVariable("turn-increment"); }) + Prims.randomNormal(0, (world.observer.getGlobal("mutation") / 20))));
+      SelfManager.self().setVariable("step-size", (ListPrims.oneOf(ListPrims.list(parent1, parent2)).projectionBy(function() { return SelfManager.self().getVariable("step-size"); }) + Prims.randomNormal(0, Prims.div(world.observer.getGlobal("mutation"), 5))));
+      SelfManager.self().setVariable("turn-increment", (ListPrims.oneOf(ListPrims.list(parent1, parent2)).projectionBy(function() { return SelfManager.self().getVariable("turn-increment"); }) + Prims.randomNormal(0, Prims.div(world.observer.getGlobal("mutation"), 20))));
       SelfManager.self().setVariable("size-modifier", (ListPrims.oneOf(ListPrims.list(parent1, parent2)).projectionBy(function() { return SelfManager.self().getVariable("size-modifier"); }) + Prims.randomNormal(0, world.observer.getGlobal("mutation"))));
       if (Prims.gt(SelfManager.self().getVariable("size-modifier"), 1.5)) {
         SelfManager.self().setVariable("size-modifier", 1.5);
@@ -119,11 +119,11 @@ var procedures = (function() {
     world.turtleManager.turtlesOfBreed("PETALS").ask(function() { SelfManager.self().die(); }, true);
     world.turtleManager.turtlesOfBreed("SPAWNERS").ask(function() {
       if (world.observer.getGlobal("controlled-mutation?")) {
-        world.observer.setGlobal("mutation", ((SelfManager.self().getVariable("who") * 1) / (world.observer.getGlobal("rows") * world.observer.getGlobal("columns"))));
+        world.observer.setGlobal("mutation", Prims.div((SelfManager.self().getVariable("who") * 1), (world.observer.getGlobal("rows") * world.observer.getGlobal("columns"))));
       }
       SelfManager.self().setVariable("num-colors", (NLMath.mod((parent1.projectionBy(function() { return SelfManager.self().getVariable("num-colors"); }) + NLMath.toInt(Prims.randomNormal(0, (world.observer.getGlobal("mutation") * 10)))), 15) + 1));
-      SelfManager.self().setVariable("step-size", (parent1.projectionBy(function() { return SelfManager.self().getVariable("step-size"); }) + Prims.randomNormal(0, (world.observer.getGlobal("mutation") / 5))));
-      SelfManager.self().setVariable("turn-increment", (parent1.projectionBy(function() { return SelfManager.self().getVariable("turn-increment"); }) + Prims.randomNormal(0, (world.observer.getGlobal("mutation") / 20))));
+      SelfManager.self().setVariable("step-size", (parent1.projectionBy(function() { return SelfManager.self().getVariable("step-size"); }) + Prims.randomNormal(0, Prims.div(world.observer.getGlobal("mutation"), 5))));
+      SelfManager.self().setVariable("turn-increment", (parent1.projectionBy(function() { return SelfManager.self().getVariable("turn-increment"); }) + Prims.randomNormal(0, Prims.div(world.observer.getGlobal("mutation"), 20))));
       SelfManager.self().setVariable("size-modifier", (parent1.projectionBy(function() { return SelfManager.self().getVariable("size-modifier"); }) + Prims.randomNormal(0, world.observer.getGlobal("mutation"))));
       if (Prims.gt(SelfManager.self().getVariable("size-modifier"), 1.5)) {
         SelfManager.self().setVariable("size-modifier", 1.5);

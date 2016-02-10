@@ -41,7 +41,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('tolerances', 'left')(function() {
         plotManager.drawHistogramFrom(world.turtles().agentFilter(function() {
-          return Prims.lt(SelfManager.self().getVariable("xcor"), ((world.topology.minPxcor + world.topology.maxPxcor) / 2));
+          return Prims.lt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
         }).projectionBy(function() { return SelfManager.self().getVariable("tolerance"); }));;
       });
     });
@@ -50,7 +50,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('tolerances', 'right')(function() {
         plotManager.drawHistogramFrom(world.turtles().agentFilter(function() {
-          return Prims.gt(SelfManager.self().getVariable("xcor"), ((world.topology.minPxcor + world.topology.maxPxcor) / 2));
+          return Prims.gt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
         }).projectionBy(function() { return SelfManager.self().getVariable("tolerance"); }));;
       });
     });
@@ -65,7 +65,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('flower-times', 'left')(function() {
         plotManager.drawHistogramFrom(world.turtles().agentFilter(function() {
-          return Prims.lt(SelfManager.self().getVariable("xcor"), ((world.topology.minPxcor + world.topology.maxPxcor) / 2));
+          return Prims.lt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
         }).projectionBy(function() { return SelfManager.self().getVariable("flower-time"); }));;
       });
     });
@@ -74,7 +74,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('flower-times', 'right')(function() {
         plotManager.drawHistogramFrom(world.turtles().agentFilter(function() {
-          return Prims.gt(SelfManager.self().getVariable("xcor"), ((world.topology.minPxcor + world.topology.maxPxcor) / 2));
+          return Prims.gt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
         }).projectionBy(function() { return SelfManager.self().getVariable("flower-time"); }));;
       });
     });
@@ -89,10 +89,10 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('avg. tolerance', 'left')(function() {
         if (world.turtles().agentFilter(function() {
-          return Prims.lt(SelfManager.self().getVariable("xcor"), ((world.topology.minPxcor + world.topology.maxPxcor) / 2));
+          return Prims.lt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
         }).nonEmpty()) {
           plotManager.plotPoint(world.observer.getGlobal("year"), ListPrims.mean(world.turtles().agentFilter(function() {
-            return Prims.lt(SelfManager.self().getVariable("xcor"), ((world.topology.minPxcor + world.topology.maxPxcor) / 2));
+            return Prims.lt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
           }).projectionBy(function() { return SelfManager.self().getVariable("tolerance"); })));
         };
       });
@@ -102,10 +102,10 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('avg. tolerance', 'right')(function() {
         if (world.turtles().agentFilter(function() {
-          return Prims.gt(SelfManager.self().getVariable("xcor"), ((world.topology.minPxcor + world.topology.maxPxcor) / 2));
+          return Prims.gt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
         }).nonEmpty()) {
           plotManager.plotPoint(world.observer.getGlobal("year"), ListPrims.mean(world.turtles().agentFilter(function() {
-            return Prims.gt(SelfManager.self().getVariable("xcor"), ((world.topology.minPxcor + world.topology.maxPxcor) / 2));
+            return Prims.gt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
           }).projectionBy(function() { return SelfManager.self().getVariable("tolerance"); })));
         };
       });
@@ -121,27 +121,27 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('simultaneous flowering', 'default')(function() {
         if ((world.turtles().agentFilter(function() {
-          return Prims.gt(SelfManager.self().getVariable("xcor"), ((world.topology.minPxcor + world.topology.maxPxcor) / 2));
+          return Prims.gt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
         }).nonEmpty() && world.turtles().agentFilter(function() {
-          return Prims.lt(SelfManager.self().getVariable("xcor"), ((world.topology.minPxcor + world.topology.maxPxcor) / 2));
+          return Prims.lt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
         }).nonEmpty())) {
           var n = 0;
           var m = 0;
           var avg = ListPrims.mean(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("tolerance"); }));
           for (var _index_215_221 = 0, _repeatcount_215_221 = StrictMath.floor(500); _index_215_221 < _repeatcount_215_221; _index_215_221++){
             var r = ListPrims.oneOf(world.turtles().agentFilter(function() {
-              return Prims.gt(SelfManager.self().getVariable("xcor"), ((world.topology.minPxcor + world.topology.maxPxcor) / 2));
+              return Prims.gt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
             }));
             var s = ListPrims.oneOf(world.turtles().agentFilter(function() {
-              return Prims.lt(SelfManager.self().getVariable("xcor"), ((world.topology.minPxcor + world.topology.maxPxcor) / 2));
+              return Prims.lt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
             }));
             if (Prims.lt(NLMath.abs((r.projectionBy(function() { return SelfManager.self().getVariable("flower-time"); }) - s.projectionBy(function() { return SelfManager.self().getVariable("flower-time"); }))), world.observer.getGlobal("flower-duration"))) {
               m = (m + 1);
             }
             n = (n + 1);
           }
-          world.observer.setGlobal("percent-same-flowering-time", NLMath.precision(((m / n) * 100), 1));
-          plotManager.plotPoint(world.observer.getGlobal("year"), ((m / n) * 100));
+          world.observer.setGlobal("percent-same-flowering-time", NLMath.precision((Prims.div(m, n) * 100), 1));
+          plotManager.plotPoint(world.observer.getGlobal("year"), (Prims.div(m, n) * 100));
         };
       });
     });
@@ -194,7 +194,7 @@ var procedures = (function() {
         if (Prims.equality(world.observer.getGlobal("initial-tolerance"), "random tolerances")) {
           SelfManager.self().setVariable("tolerance", Prims.randomFloat(100));
         }
-        SelfManager.self().setVariable("flower-time", (365 / 2));
+        SelfManager.self().setVariable("flower-time", Prims.div(365, 2));
         SelfManager.self().setVariable("heading", Prims.random(360));
         SelfManager.self().fd(Prims.randomFloat(0.5));
         SelfManager.self().setVariable("fitness", 1);
@@ -207,7 +207,7 @@ var procedures = (function() {
     world.ticker.reset();
   };
   var setupTwoRegions = function() {
-    SelfManager.self().setPatchVariable("metal", NLMath.precision((100 / (1 + NLMath.exp((world.observer.getGlobal("frontier-sharpness") * (((world.topology.maxPxcor + world.topology.minPxcor) / 2) - SelfManager.self().getPatchVariable("pxcor")))))), 0));
+    SelfManager.self().setPatchVariable("metal", NLMath.precision(Prims.div(100, (1 + NLMath.exp((world.observer.getGlobal("frontier-sharpness") * (Prims.div((world.topology.maxPxcor + world.topology.minPxcor), 2) - SelfManager.self().getPatchVariable("pxcor")))))), 0));
   };
   var go = function() {
     procedures.checkLabels();
@@ -245,7 +245,7 @@ var procedures = (function() {
         world.observer.setGlobal("end-of-days-counter", (world.observer.getGlobal("end-of-days-counter") + 1));
         world.turtles().agentFilter(function() { return SelfManager.self().getVariable("seedling?"); }).ask(function() { procedures.visualizeSeedlingGrowth(); }, true);
         world.turtles().agentFilter(function() { return SelfManager.self().getVariable("will-die?"); }).ask(function() {
-          SelfManager.self().setVariable("size", (1 - (world.observer.getGlobal("end-of-days-counter") / 10)));
+          SelfManager.self().setVariable("size", (1 - Prims.div(world.observer.getGlobal("end-of-days-counter"), 10)));
         }, true);
         if (Prims.gt(world.observer.getGlobal("end-of-days-counter"), 9)) {
           world.observer.setGlobal("year", (world.observer.getGlobal("year") + 1));
@@ -291,8 +291,8 @@ var procedures = (function() {
           SelfManager.self().setVariable("size", 1);
         }
         if (Prims.equality(world.observer.getGlobal("genetics-model"), "avg. genotype")) {
-          SelfManager.self().setVariable("tolerance", ((SelfManager.self().getVariable("tolerance") + mate.projectionBy(function() { return SelfManager.self().getVariable("tolerance"); })) / 2));
-          SelfManager.self().setVariable("flower-time", ((SelfManager.self().getVariable("flower-time") + mate.projectionBy(function() { return SelfManager.self().getVariable("flower-time"); })) / 2));
+          SelfManager.self().setVariable("tolerance", Prims.div((SelfManager.self().getVariable("tolerance") + mate.projectionBy(function() { return SelfManager.self().getVariable("tolerance"); })), 2));
+          SelfManager.self().setVariable("flower-time", Prims.div((SelfManager.self().getVariable("flower-time") + mate.projectionBy(function() { return SelfManager.self().getVariable("flower-time"); })), 2));
         }
         if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("chance-tolerance-mutation"))) {
           SelfManager.self().setVariable("tolerance", (SelfManager.self().getVariable("tolerance") + Prims.randomNormal(0, world.observer.getGlobal("tolerance-mutation-stdev"))));
@@ -322,8 +322,8 @@ var procedures = (function() {
   };
   var markTurtlesToKill = function() {
     world.turtles().ask(function() {
-      var t = (SelfManager.self().getVariable("tolerance") / 100);
-      var m = (SelfManager.self().getPatchVariable("metal") / 100);
+      var t = Prims.div(SelfManager.self().getVariable("tolerance"), 100);
+      var m = Prims.div(SelfManager.self().getPatchVariable("metal"), 100);
       SelfManager.self().setVariable("fitness", (((1 - m) * (1 - (0.4 * t))) + (m * (1 - (0.4 * (1 - t))))));
       if (Prims.gt(Prims.randomFloat(1), SelfManager.self().getVariable("fitness"))) {
         SelfManager.self().setVariable("will-die?", true);
@@ -382,7 +382,7 @@ var procedures = (function() {
   };
   var visualizeSeedlingGrowth = function() {
     if (SelfManager.self().getVariable("seedling?")) {
-      SelfManager.self().setVariable("size", (world.observer.getGlobal("end-of-days-counter") / 10));
+      SelfManager.self().setVariable("size", Prims.div(world.observer.getGlobal("end-of-days-counter"), 10));
     }
   };
   var visualizeBloom = function() {
@@ -442,7 +442,7 @@ var procedures = (function() {
   };
   var calcPatchColor = function(m) {
     try {
-      throw new Exception.ReportInterrupt(ColorModel.genRGBFromComponents(0, ((255 * (1 - (m / 100))) / 2), ((255 * (m / 100)) / 2)));
+      throw new Exception.ReportInterrupt(ColorModel.genRGBFromComponents(0, Prims.div((255 * (1 - Prims.div(m, 100))), 2), Prims.div((255 * Prims.div(m, 100)), 2)));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -459,7 +459,7 @@ var procedures = (function() {
         throw new Exception.ReportInterrupt(blackPcolor);
       }
       else {
-        throw new Exception.ReportInterrupt(ColorModel.genRGBFromComponents(0, (255 * (1 - (t / 100))), (255 * (t / 100))));
+        throw new Exception.ReportInterrupt(ColorModel.genRGBFromComponents(0, (255 * (1 - Prims.div(t, 100))), (255 * Prims.div(t, 100))));
       }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {

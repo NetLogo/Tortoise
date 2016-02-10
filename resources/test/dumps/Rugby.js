@@ -162,7 +162,7 @@ var procedures = (function() {
         }
       }, true);
       world.observer.getGlobal("histogram-area").ask(function() {
-        if (Prims.gt(SelfManager.self().getPatchVariable("pxcor"), (world.observer.getGlobal("kick-line") - ((SelfManager.self().patchAt((world.observer.getGlobal("kick-line") - SelfManager.self().getPatchVariable("pxcor")), 0).projectionBy(function() { return SelfManager.self().getPatchVariable("score"); }) * (world.observer.getGlobal("kick-line") - world.topology.minPxcor)) / world.observer.getGlobal("current-max"))))) {
+        if (Prims.gt(SelfManager.self().getPatchVariable("pxcor"), (world.observer.getGlobal("kick-line") - Prims.div((SelfManager.self().patchAt((world.observer.getGlobal("kick-line") - SelfManager.self().getPatchVariable("pxcor")), 0).projectionBy(function() { return SelfManager.self().getPatchVariable("score"); }) * (world.observer.getGlobal("kick-line") - world.topology.minPxcor)), world.observer.getGlobal("current-max"))))) {
           if (Prims.equality(SelfManager.self().patchAt((world.observer.getGlobal("kick-line") - SelfManager.self().getPatchVariable("pxcor")), 0).projectionBy(function() { return SelfManager.self().getPatchVariable("score"); }), world.observer.getGlobal("current-max"))) {
             SelfManager.self().setPatchVariable("pcolor", 45);
           }

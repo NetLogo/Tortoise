@@ -77,7 +77,7 @@ var procedures = (function() {
   };
   var patchQuadrant = function() {
     try {
-      throw new Exception.ReportInterrupt(ListPrims.list((Prims.lt(SelfManager.self().getPatchVariable("pxcor"), (world.topology.width / 2)) ? -1 : 1), (Prims.lt(SelfManager.self().getPatchVariable("pycor"), (world.topology.width / 2)) ? -1 : 1)));
+      throw new Exception.ReportInterrupt(ListPrims.list((Prims.lt(SelfManager.self().getPatchVariable("pxcor"), Prims.div(world.topology.width, 2)) ? -1 : 1), (Prims.lt(SelfManager.self().getPatchVariable("pycor"), Prims.div(world.topology.width, 2)) ? -1 : 1)));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {

@@ -71,7 +71,9 @@ var procedures = (function() {
       }
     }
     world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
-    world.turtleManager.turtlesOfBreed("PAGES").ask(function() { SelfManager.self().setVariable("rank", (1 / world.turtleManager.turtlesOfBreed("PAGES").size())); }, true);
+    world.turtleManager.turtlesOfBreed("PAGES").ask(function() {
+      SelfManager.self().setVariable("rank", Prims.div(1, world.turtleManager.turtlesOfBreed("PAGES").size()));
+    }, true);
     procedures.updateGlobals();
     world.turtleManager.turtlesOfBreed("PAGES").ask(function() {
       SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
@@ -182,7 +184,7 @@ var procedures = (function() {
     }), ListPrims.sublist(nodeList, (k + 1), ListPrims.length(nodeList)));
   };
   var doLayout = function() {
-    LayoutManager.layoutSpring(world.turtleManager.turtlesOfBreed("PAGES"), world.links(), 0.2, (20 / NLMath.sqrt(world.turtleManager.turtlesOfBreed("PAGES").size())), 0.5);
+    LayoutManager.layoutSpring(world.turtleManager.turtlesOfBreed("PAGES"), world.links(), 0.2, Prims.div(20, NLMath.sqrt(world.turtleManager.turtlesOfBreed("PAGES").size())), 0.5);
   };
   var go = function() {
     if (Prims.equality(world.observer.getGlobal("calculation-method"), "diffusion")) {
@@ -196,20 +198,20 @@ var procedures = (function() {
       world.turtleManager.turtlesOfBreed("PAGES").ask(function() { SelfManager.self().setVariable("new-rank", 0); }, true);
       world.turtleManager.turtlesOfBreed("PAGES").ask(function() {
         if (LinkPrims.outLinkNeighbors("LINKS").nonEmpty()) {
-          var rankIncrement = (SelfManager.self().getVariable("rank") / LinkPrims.outLinkNeighbors("LINKS").size());
+          var rankIncrement = Prims.div(SelfManager.self().getVariable("rank"), LinkPrims.outLinkNeighbors("LINKS").size());
           LinkPrims.outLinkNeighbors("LINKS").ask(function() {
             SelfManager.self().setVariable("new-rank", (SelfManager.self().getVariable("new-rank") + rankIncrement));
           }, true);
         }
         else {
-          var rankIncrement = (SelfManager.self().getVariable("rank") / world.turtleManager.turtlesOfBreed("PAGES").size());
+          var rankIncrement = Prims.div(SelfManager.self().getVariable("rank"), world.turtleManager.turtlesOfBreed("PAGES").size());
           world.turtleManager.turtlesOfBreed("PAGES").ask(function() {
             SelfManager.self().setVariable("new-rank", (SelfManager.self().getVariable("new-rank") + rankIncrement));
           }, true);
         }
       }, true);
       world.turtleManager.turtlesOfBreed("PAGES").ask(function() {
-        SelfManager.self().setVariable("rank", (((1 - world.observer.getGlobal("damping-factor")) / world.turtleManager.turtlesOfBreed("PAGES").size()) + (world.observer.getGlobal("damping-factor") * SelfManager.self().getVariable("new-rank"))));
+        SelfManager.self().setVariable("rank", (Prims.div((1 - world.observer.getGlobal("damping-factor")), world.turtleManager.turtlesOfBreed("PAGES").size()) + (world.observer.getGlobal("damping-factor") * SelfManager.self().getVariable("new-rank"))));
       }, true);
     }
     else {
@@ -259,7 +261,9 @@ var procedures = (function() {
         }
       }, true);
       var totalVisits = ListPrims.sum(world.turtleManager.turtlesOfBreed("PAGES").projectionBy(function() { return SelfManager.self().getVariable("visits"); }));
-      world.turtleManager.turtlesOfBreed("PAGES").ask(function() { SelfManager.self().setVariable("rank", (SelfManager.self().getVariable("visits") / totalVisits)); }, true);
+      world.turtleManager.turtlesOfBreed("PAGES").ask(function() {
+        SelfManager.self().setVariable("rank", Prims.div(SelfManager.self().getVariable("visits"), totalVisits));
+      }, true);
     }
     procedures.updateGlobals();
     world.turtleManager.turtlesOfBreed("PAGES").ask(function() { procedures.updatePageAppearance(); }, true);
@@ -274,7 +278,7 @@ var procedures = (function() {
     world.observer.setGlobal("max-rank", ListPrims.max(world.turtleManager.turtlesOfBreed("PAGES").projectionBy(function() { return SelfManager.self().getVariable("rank"); })));
   };
   var updatePageAppearance = function() {
-    SelfManager.self().setVariable("size", (0.2 + (4 * NLMath.sqrt((SelfManager.self().getVariable("rank") / world.observer.getGlobal("total-rank"))))));
+    SelfManager.self().setVariable("size", (0.2 + (4 * NLMath.sqrt(Prims.div(SelfManager.self().getVariable("rank"), world.observer.getGlobal("total-rank"))))));
     if (world.observer.getGlobal("show-page-ranks?")) {
       SelfManager.self().setVariable("label", (Dump('') + Dump(NLMath.precision(SelfManager.self().getVariable("rank"), 3)) + Dump("     ")));
     }

@@ -95,7 +95,7 @@ var procedures = (function() {
   };
   var update = function() {
     var ediff = ((2 * SelfManager.self().getPatchVariable("spin")) * ListPrims.sum(SelfManager.self().getNeighbors4().projectionBy(function() { return SelfManager.self().getPatchVariable("spin"); })));
-    if ((Prims.lte(ediff, 0) || (Prims.gt(world.observer.getGlobal("temperature"), 0) && Prims.lt(Prims.randomFloat(1), NLMath.exp(( -ediff / world.observer.getGlobal("temperature"))))))) {
+    if ((Prims.lte(ediff, 0) || (Prims.gt(world.observer.getGlobal("temperature"), 0) && Prims.lt(Prims.randomFloat(1), NLMath.exp(Prims.div( -ediff, world.observer.getGlobal("temperature"))))))) {
       SelfManager.self().setPatchVariable("spin",  -SelfManager.self().getPatchVariable("spin"));
       world.observer.setGlobal("sum-of-spins", (world.observer.getGlobal("sum-of-spins") + (2 * SelfManager.self().getPatchVariable("spin"))));
       procedures.recolor();
@@ -111,7 +111,7 @@ var procedures = (function() {
   };
   var magnetization = function() {
     try {
-      throw new Exception.ReportInterrupt((world.observer.getGlobal("sum-of-spins") / world.patches().size()));
+      throw new Exception.ReportInterrupt(Prims.div(world.observer.getGlobal("sum-of-spins"), world.patches().size()));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {

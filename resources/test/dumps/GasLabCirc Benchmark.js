@@ -70,7 +70,7 @@ var procedures = (function() {
     world.observer.setGlobal("box-edge", (world.topology.maxPxcor - 1));
     procedures.makeBox();
     procedures.makeParticles();
-    world.observer.setGlobal("tick-length", (1 / NLMath.ceil(ListPrims.max(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("speed"); })))));
+    world.observer.setGlobal("tick-length", Prims.div(1, NLMath.ceil(ListPrims.max(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("speed"); })))));
     world.observer.setGlobal("original-tick-length", world.observer.getGlobal("tick-length"));
     world.observer.setGlobal("colliding-particle-1", Nobody);
     world.observer.setGlobal("colliding-particle-2", Nobody);
@@ -152,14 +152,14 @@ var procedures = (function() {
       var ySpeed = (SelfManager.self().getVariable("speed") * procedures.convertHeadingY(SelfManager.self().getVariable("heading")));
       var dvx = (xSpeed - myXSpeed);
       var dvy = (ySpeed - myYSpeed);
-      var sumR = ((myParticleSize / 2) + (SelfManager.self().projectionBy(function() { return SelfManager.self().getVariable("size"); }) / 2));
+      var sumR = (Prims.div(myParticleSize, 2) + Prims.div(SelfManager.self().projectionBy(function() { return SelfManager.self().getVariable("size"); }), 2));
       var pSquared = (((dpx * dpx) + (dpy * dpy)) - NLMath.pow(sumR, 2));
       var pv = (2 * ((dpx * dvx) + (dpy * dvy)));
       var vSquared = ((dvx * dvx) + (dvy * dvy));
       var d1 = (NLMath.pow(pv, 2) - ((4 * vSquared) * pSquared));
       var timeToCollision = -1;
       if (Prims.gte(d1, 0)) {
-        timeToCollision = (( -pv - NLMath.sqrt(d1)) / (2 * vSquared));
+        timeToCollision = Prims.div(( -pv - NLMath.sqrt(d1)), (2 * vSquared));
       }
       if (Prims.gt(timeToCollision, 0)) {
         var collidingPair = ListPrims.list((timeToCollision + world.ticker.tickCount()), SelfManager.self(), SelfManager.myself());
@@ -174,17 +174,17 @@ var procedures = (function() {
     var xnegPlane = ( -world.observer.getGlobal("box-edge") + 0.5);
     var yposPlane = (world.observer.getGlobal("box-edge") - 0.5);
     var ynegPlane = ( -world.observer.getGlobal("box-edge") + 0.5);
-    var contactPointXpos = (SelfManager.self().getVariable("xcor") + (SelfManager.self().getVariable("size") / 2));
-    var contactPointXneg = (SelfManager.self().getVariable("xcor") - (SelfManager.self().getVariable("size") / 2));
-    var contactPointYpos = (SelfManager.self().getVariable("ycor") + (SelfManager.self().getVariable("size") / 2));
-    var contactPointYneg = (SelfManager.self().getVariable("ycor") - (SelfManager.self().getVariable("size") / 2));
+    var contactPointXpos = (SelfManager.self().getVariable("xcor") + Prims.div(SelfManager.self().getVariable("size"), 2));
+    var contactPointXneg = (SelfManager.self().getVariable("xcor") - Prims.div(SelfManager.self().getVariable("size"), 2));
+    var contactPointYpos = (SelfManager.self().getVariable("ycor") + Prims.div(SelfManager.self().getVariable("size"), 2));
+    var contactPointYneg = (SelfManager.self().getVariable("ycor") - Prims.div(SelfManager.self().getVariable("size"), 2));
     var dpxpos = (xposPlane - contactPointXpos);
     var dpxneg = (xnegPlane - contactPointXneg);
     var dpypos = (yposPlane - contactPointYpos);
     var dpyneg = (ynegPlane - contactPointYneg);
     var tPlaneXpos = 0;
     if (!Prims.equality(xSpeed, 0)) {
-      tPlaneXpos = (dpxpos / xSpeed);
+      tPlaneXpos = Prims.div(dpxpos, xSpeed);
     }
     else {
       tPlaneXpos = 0;
@@ -194,7 +194,7 @@ var procedures = (function() {
     }
     var tPlaneXneg = 0;
     if (!Prims.equality(xSpeed, 0)) {
-      tPlaneXneg = (dpxneg / xSpeed);
+      tPlaneXneg = Prims.div(dpxneg, xSpeed);
     }
     else {
       tPlaneXneg = 0;
@@ -204,7 +204,7 @@ var procedures = (function() {
     }
     var tPlaneYpos = 0;
     if (!Prims.equality(ySpeed, 0)) {
-      tPlaneYpos = (dpypos / ySpeed);
+      tPlaneYpos = Prims.div(dpypos, ySpeed);
     }
     else {
       tPlaneYpos = 0;
@@ -214,7 +214,7 @@ var procedures = (function() {
     }
     var tPlaneYneg = 0;
     if (!Prims.equality(ySpeed, 0)) {
-      tPlaneYneg = (dpyneg / ySpeed);
+      tPlaneYneg = Prims.div(dpyneg, ySpeed);
     }
     else {
       tPlaneYneg = 0;
@@ -296,7 +296,7 @@ var procedures = (function() {
     var v1l = (SelfManager.self().getVariable("speed") * NLMath.sin((theta - SelfManager.self().getVariable("heading"))));
     var v2t = (speed2 * NLMath.cos((theta - heading2)));
     var v2l = (speed2 * NLMath.sin((theta - heading2)));
-    var vcm = (((SelfManager.self().getVariable("mass") * v1t) + (mass2 * v2t)) / (SelfManager.self().getVariable("mass") + mass2));
+    var vcm = Prims.div(((SelfManager.self().getVariable("mass") * v1t) + (mass2 * v2t)), (SelfManager.self().getVariable("mass") + mass2));
     v1t = ((2 * vcm) - v1t);
     v2t = ((2 * vcm) - v2t);
     SelfManager.self().setVariable("speed", NLMath.sqrt(((v1t * v1t) + (v1l * v1l))));
@@ -338,7 +338,7 @@ var procedures = (function() {
   var recolorShaded = function() {
     var avgSpeed = 1;
     if (Prims.lt(SelfManager.self().getVariable("speed"), (3 * avgSpeed))) {
-      SelfManager.self().setVariable("color", ((95 - 3.001) + ((8 * SelfManager.self().getVariable("speed")) / (3 * avgSpeed))));
+      SelfManager.self().setVariable("color", ((95 - 3.001) + Prims.div((8 * SelfManager.self().getVariable("speed")), (3 * avgSpeed))));
     }
     else {
       SelfManager.self().setVariable("color", (95 + 4.999));
@@ -377,8 +377,8 @@ var procedures = (function() {
   };
   var overlapping_p = function() {
     try {
-      throw new Exception.ReportInterrupt(SelfPrims.other(SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("PARTICLES"), ((SelfManager.self().getVariable("size") + world.observer.getGlobal("largest-particle-size")) / 2)).agentFilter(function() {
-        return Prims.lt(SelfManager.self().distance(SelfManager.myself()), ((SelfManager.self().getVariable("size") + SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("size"); })) / 2));
+      throw new Exception.ReportInterrupt(SelfPrims.other(SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("PARTICLES"), Prims.div((SelfManager.self().getVariable("size") + world.observer.getGlobal("largest-particle-size")), 2)).agentFilter(function() {
+        return Prims.lt(SelfManager.self().distance(SelfManager.myself()), Prims.div((SelfManager.self().getVariable("size") + SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("size"); })), 2));
       })).nonEmpty());
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
@@ -390,7 +390,7 @@ var procedures = (function() {
     }
   };
   var randomPosition = function() {
-    SelfManager.self().setXY((ListPrims.oneOf([1, -1]) * Prims.randomFloat(((world.observer.getGlobal("box-edge") - 0.5) - (SelfManager.self().getVariable("size") / 2)))), (ListPrims.oneOf([1, -1]) * Prims.randomFloat(((world.observer.getGlobal("box-edge") - 0.5) - (SelfManager.self().getVariable("size") / 2)))));
+    SelfManager.self().setXY((ListPrims.oneOf([1, -1]) * Prims.randomFloat(((world.observer.getGlobal("box-edge") - 0.5) - Prims.div(SelfManager.self().getVariable("size"), 2)))), (ListPrims.oneOf([1, -1]) * Prims.randomFloat(((world.observer.getGlobal("box-edge") - 0.5) - Prims.div(SelfManager.self().getVariable("size"), 2)))));
   };
   var reverseTime = function() {
     world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() { SelfManager.self().right(180); }, true);

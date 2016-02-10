@@ -56,21 +56,21 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('new', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Land Use', 'new')(function() {
-        plotManager.plotValue(((world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "new"); }).size() / world.patches().size()) * 100));;
+        plotManager.plotValue((Prims.div(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "new"); }).size(), world.patches().size()) * 100));;
       });
     });
   }),
   new PenBundle.Pen('recycled', plotOps.makePenOps, false, new PenBundle.State(65.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Land Use', 'recycled')(function() {
-        plotManager.plotValue(((world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "recycled"); }).size() / world.patches().size()) * 100));;
+        plotManager.plotValue((Prims.div(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "recycled"); }).size(), world.patches().size()) * 100));;
       });
     });
   }),
   new PenBundle.Pen('waste', plotOps.makePenOps, false, new PenBundle.State(44.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Land Use', 'waste')(function() {
-        plotManager.plotValue(((world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "waste"); }).size() / world.patches().size()) * 100));;
+        plotManager.plotValue((Prims.div(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "waste"); }).size(), world.patches().size()) * 100));;
       });
     });
   })];
@@ -102,7 +102,7 @@ var procedures = (function() {
     world.turtles().ask(function() {
       SelfManager.self().setVariable("size", 1.5);
       SelfManager.self().setXY(Prims.randomPatchCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomPatchCoord(world.topology.minPycor, world.topology.maxPycor));
-      SelfManager.self().setVariable("energy", (world.observer.getGlobal("max-stored-energy") / 2));
+      SelfManager.self().setVariable("energy", Prims.div(world.observer.getGlobal("max-stored-energy"), 2));
     }, true);
     world.patches().ask(function() {
       SelfManager.self().setPatchVariable("resource-type", "new");
@@ -199,12 +199,12 @@ var procedures = (function() {
   };
   var updateEnvironment = function() {
     world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "recycled"); }).ask(function() {
-      if (Prims.lt(Prims.random(100), (world.observer.getGlobal("resource-regeneration") / 10))) {
+      if (Prims.lt(Prims.random(100), Prims.div(world.observer.getGlobal("resource-regeneration"), 10))) {
         SelfManager.self().setPatchVariable("resource-type", "new");
       }
     }, true);
     world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "waste"); }).ask(function() {
-      if ((Prims.equality(Prims.random(5), 0) && Prims.lt(Prims.random(100), (world.observer.getGlobal("resource-regeneration") / 10)))) {
+      if ((Prims.equality(Prims.random(5), 0) && Prims.lt(Prims.random(100), Prims.div(world.observer.getGlobal("resource-regeneration"), 10)))) {
         SelfManager.self().setPatchVariable("resource-type", "new");
       }
     }, true);

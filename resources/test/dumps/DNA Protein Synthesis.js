@@ -232,7 +232,7 @@ var procedures = (function() {
       var endOfGene_p = false;
       var tripletCounter = 0;
       var newCode = SelfManager.self().getVariable("code");
-      for (var _index_10154_10160 = 0, _repeatcount_10154_10160 = StrictMath.floor(NLMath.floor((ListPrims.length(SelfManager.self().getVariable("code")) / 3))); _index_10154_10160 < _repeatcount_10154_10160; _index_10154_10160++){
+      for (var _index_10154_10160 = 0, _repeatcount_10154_10160 = StrictMath.floor(NLMath.floor(Prims.div(ListPrims.length(SelfManager.self().getVariable("code")), 3))); _index_10154_10160 < _repeatcount_10154_10160; _index_10154_10160++){
         var thisTriplet = (Dump('') + Dump(ListPrims.item((0 + (tripletCounter * 3)), SelfManager.self().getVariable("code"))) + Dump(ListPrims.item((1 + (tripletCounter * 3)), SelfManager.self().getVariable("code"))) + Dump(ListPrims.item((2 + (tripletCounter * 3)), SelfManager.self().getVariable("code"))));
         if ((((Prims.equality(thisTriplet, "TAG") || Prims.equality(thisTriplet, "TGA")) || Prims.equality(thisTriplet, "TAA")) && !endOfGene_p)) {
           SelfManager.self().setVariable("end-position", (tripletCounter * 3));
@@ -328,7 +328,7 @@ var procedures = (function() {
     world.turtleManager.turtlesOfBreed("MRNAS").agentFilter(function() {
       return (Prims.equality(SelfManager.self().getVariable("cap-type"), "start") && Prims.equality(SelfManager.self().getVariable("strand"), strandType));
     }).ask(function() {
-      var numberOfTripletsInList = NLMath.floor((ListPrims.length(SelfManager.self().getVariable("code")) / 3));
+      var numberOfTripletsInList = NLMath.floor(Prims.div(ListPrims.length(SelfManager.self().getVariable("code")), 3));
       var thisTriplet = "";
       var tripletCounter = 0;
       for (var _index_13285_13291 = 0, _repeatcount_13285_13291 = StrictMath.floor(numberOfTripletsInList); _index_13285_13291 < _repeatcount_13285_13291; _index_13285_13291++){

@@ -125,7 +125,7 @@ var procedures = (function() {
     try {
       throw new Exception.ReportInterrupt(Tasks.nValues((n + 1), Tasks.reporterTask(function() {
         var taskArguments = arguments;
-        return world.getPatchAt((world.topology.minPxcor + (taskArguments[0] * ((world.topology.maxPxcor - world.topology.minPxcor) / n))), 0).projectionBy(function() { return SelfManager.self().getPatchVariable("pxcor"); });
+        return world.getPatchAt((world.topology.minPxcor + (taskArguments[0] * Prims.div((world.topology.maxPxcor - world.topology.minPxcor), n))), 0).projectionBy(function() { return SelfManager.self().getPatchVariable("pxcor"); });
       })));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
@@ -144,7 +144,7 @@ var procedures = (function() {
       SelfManager.self().setVariable("color", (5 - 3));
       SelfManager.self().penManager.lowerPen();
       SelfManager.self().fd(world.topology.height);
-      SelfManager.self().setVariable("xcor", (SelfManager.self().getVariable("xcor") + (1 / world.patchSize)));
+      SelfManager.self().setVariable("xcor", (SelfManager.self().getVariable("xcor") + Prims.div(1, world.patchSize)));
       SelfManager.self().right(180);
       SelfManager.self().setVariable("color", (5 + 3));
       SelfManager.self().fd(world.topology.height);

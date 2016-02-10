@@ -94,7 +94,7 @@ var procedures = (function() {
     world.observer.setGlobal("single-outcomes", []);
     world.observer.setGlobal("pair-outcomes", []);
     world.patches().agentFilter(function() { return Prims.gt(SelfManager.self().getPatchVariable("pxcor"), 4); }).ask(function() {
-      SelfManager.self().setPatchVariable("column", NLMath.floor(((SelfManager.self().getPatchVariable("pxcor") - 1) / 2)));
+      SelfManager.self().setPatchVariable("column", NLMath.floor(Prims.div((SelfManager.self().getPatchVariable("pxcor") - 1), 2)));
     }, true);
     world.patches().agentFilter(function() { return Prims.lt(SelfManager.self().getPatchVariable("pxcor"), -4); }).ask(function() {
       SelfManager.self().setPatchVariable("column", ((SelfManager.self().getPatchVariable("pxcor") - world.topology.minPxcor) + 1));

@@ -181,7 +181,7 @@ var procedures = (function() {
         winningAmount = howMany;
       }
     }), ColorModel.BASE_COLORS);
-    world.observer.setGlobal("max-percent", ((100 * winningAmount) / world.turtles().size()));
+    world.observer.setGlobal("max-percent", Prims.div((100 * winningAmount), world.turtles().size()));
   };
   var placeWall = function() {
     if (MousePrims.isDown()) {

@@ -95,7 +95,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Lorenz Curve', 'lorenz')(function() {
         plotManager.resetPen();
-        plotManager.setPenInterval((100 / world.observer.getGlobal("num-people")));
+        plotManager.setPenInterval(Prims.div(100, world.observer.getGlobal("num-people")));
         plotManager.plotValue(0);
         Tasks.forEach(Tasks.commandTask(function() {
           var taskArguments = arguments;
@@ -121,7 +121,7 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Gini-Index v. Time', 'default')(function() {
-        plotManager.plotValue(((world.observer.getGlobal("gini-index-reserve") / world.observer.getGlobal("num-people")) / 0.5));;
+        plotManager.plotValue(Prims.div(Prims.div(world.observer.getGlobal("gini-index-reserve"), world.observer.getGlobal("num-people")), 0.5));;
       });
     });
   })];
@@ -200,11 +200,11 @@ var procedures = (function() {
   var recolorTurtles = function() {
     var maxWealth = ListPrims.max(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("wealth"); }));
     world.turtles().ask(function() {
-      if (Prims.lte(SelfManager.self().getVariable("wealth"), (maxWealth / 3))) {
+      if (Prims.lte(SelfManager.self().getVariable("wealth"), Prims.div(maxWealth, 3))) {
         SelfManager.self().setVariable("color", 15);
       }
       else {
-        if (Prims.lte(SelfManager.self().getVariable("wealth"), ((maxWealth * 2) / 3))) {
+        if (Prims.lte(SelfManager.self().getVariable("wealth"), Prims.div((maxWealth * 2), 3))) {
           SelfManager.self().setVariable("color", 55);
         }
         else {
@@ -274,7 +274,7 @@ var procedures = (function() {
   };
   var harvest = function() {
     world.turtles().ask(function() {
-      SelfManager.self().setVariable("wealth", NLMath.floor((SelfManager.self().getVariable("wealth") + (SelfManager.self().getPatchVariable("grain-here") / SelfManager.self().turtlesHere().size()))));
+      SelfManager.self().setVariable("wealth", NLMath.floor((SelfManager.self().getVariable("wealth") + Prims.div(SelfManager.self().getPatchVariable("grain-here"), SelfManager.self().turtlesHere().size()))));
     }, true);
     world.turtles().ask(function() {
       SelfManager.self().setPatchVariable("grain-here", 0);
@@ -298,9 +298,9 @@ var procedures = (function() {
     world.observer.setGlobal("lorenz-points", []);
     for (var _index_6031_6037 = 0, _repeatcount_6031_6037 = StrictMath.floor(world.observer.getGlobal("num-people")); _index_6031_6037 < _repeatcount_6031_6037; _index_6031_6037++){
       wealthSumSoFar = (wealthSumSoFar + ListPrims.item(index, sortedWealths));
-      world.observer.setGlobal("lorenz-points", ListPrims.lput(((wealthSumSoFar / totalWealth) * 100), world.observer.getGlobal("lorenz-points")));
+      world.observer.setGlobal("lorenz-points", ListPrims.lput((Prims.div(wealthSumSoFar, totalWealth) * 100), world.observer.getGlobal("lorenz-points")));
       index = (index + 1);
-      world.observer.setGlobal("gini-index-reserve", ((world.observer.getGlobal("gini-index-reserve") + (index / world.observer.getGlobal("num-people"))) - (wealthSumSoFar / totalWealth)));
+      world.observer.setGlobal("gini-index-reserve", ((world.observer.getGlobal("gini-index-reserve") + Prims.div(index, world.observer.getGlobal("num-people"))) - Prims.div(wealthSumSoFar, totalWealth)));
     }
   };
   return {

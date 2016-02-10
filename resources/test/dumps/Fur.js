@@ -106,7 +106,7 @@ var procedures = (function() {
   var ellipseIn = function(xRadius, yRadius) {
     try {
       throw new Exception.ReportInterrupt(SelfManager.self().inRadius(world.patches(), ListPrims.max(ListPrims.list(xRadius, yRadius))).agentFilter(function() {
-        return Prims.gte(1, ((NLMath.pow(procedures.xdistance(SelfManager.myself()), 2) / NLMath.pow(xRadius, 2)) + (NLMath.pow(procedures.ydistance(SelfManager.myself()), 2) / NLMath.pow(yRadius, 2))));
+        return Prims.gte(1, (Prims.div(NLMath.pow(procedures.xdistance(SelfManager.myself()), 2), NLMath.pow(xRadius, 2)) + Prims.div(NLMath.pow(procedures.ydistance(SelfManager.myself()), 2), NLMath.pow(yRadius, 2))));
       }));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
@@ -120,7 +120,7 @@ var procedures = (function() {
   var ellipseRing = function(outxRadius, outyRadius, inxRadius, inyRadius) {
     try {
       throw new Exception.ReportInterrupt(SelfManager.self().inRadius(world.patches(), ListPrims.max(ListPrims.list(outxRadius, outyRadius))).agentFilter(function() {
-        return (Prims.gte(1, ((NLMath.pow(procedures.xdistance(SelfManager.myself()), 2) / NLMath.pow(outxRadius, 2)) + (NLMath.pow(procedures.ydistance(SelfManager.myself()), 2) / NLMath.pow(outyRadius, 2)))) && Prims.lt(1, ((NLMath.pow(procedures.xdistance(SelfManager.myself()), 2) / NLMath.pow(inxRadius, 2)) + (NLMath.pow(procedures.ydistance(SelfManager.myself()), 2) / NLMath.pow(inyRadius, 2)))));
+        return (Prims.gte(1, (Prims.div(NLMath.pow(procedures.xdistance(SelfManager.myself()), 2), NLMath.pow(outxRadius, 2)) + Prims.div(NLMath.pow(procedures.ydistance(SelfManager.myself()), 2), NLMath.pow(outyRadius, 2)))) && Prims.lt(1, (Prims.div(NLMath.pow(procedures.xdistance(SelfManager.myself()), 2), NLMath.pow(inxRadius, 2)) + Prims.div(NLMath.pow(procedures.ydistance(SelfManager.myself()), 2), NLMath.pow(inyRadius, 2)))));
       }));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {

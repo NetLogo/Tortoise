@@ -92,7 +92,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Energy Histogram', undefined)(function() {
         plotManager.setXRange(0, (((0.5 * (world.observer.getGlobal("init-particle-speed") * 2)) * (world.observer.getGlobal("init-particle-speed") * 2)) * world.observer.getGlobal("particle-mass")));
-        plotManager.setYRange(0, NLMath.ceil((world.observer.getGlobal("number-of-particles") / 6)));;
+        plotManager.setYRange(0, NLMath.ceil(Prims.div(world.observer.getGlobal("number-of-particles"), 6)));;
       });
     });
   };
@@ -180,7 +180,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Speed Histogram', undefined)(function() {
         plotManager.setXRange(0, (world.observer.getGlobal("init-particle-speed") * 2));
-        plotManager.setYRange(0, NLMath.ceil((world.observer.getGlobal("number-of-particles") / 6)));;
+        plotManager.setYRange(0, NLMath.ceil(Prims.div(world.observer.getGlobal("number-of-particles"), 6)));;
       });
     });
   };
@@ -237,15 +237,15 @@ var procedures = (function() {
     world.observer.setGlobal("medium", world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); }).size());
     world.observer.setGlobal("slow", world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 105); }).size());
     world.observer.setGlobal("fast", world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); }).size());
-    world.observer.setGlobal("percent-medium", ((world.observer.getGlobal("medium") / world.turtleManager.turtlesOfBreed("PARTICLES").size()) * 100));
-    world.observer.setGlobal("percent-slow", ((world.observer.getGlobal("slow") / world.turtleManager.turtlesOfBreed("PARTICLES").size()) * 100));
-    world.observer.setGlobal("percent-fast", ((world.observer.getGlobal("fast") / world.turtleManager.turtlesOfBreed("PARTICLES").size()) * 100));
+    world.observer.setGlobal("percent-medium", (Prims.div(world.observer.getGlobal("medium"), world.turtleManager.turtlesOfBreed("PARTICLES").size()) * 100));
+    world.observer.setGlobal("percent-slow", (Prims.div(world.observer.getGlobal("slow"), world.turtleManager.turtlesOfBreed("PARTICLES").size()) * 100));
+    world.observer.setGlobal("percent-fast", (Prims.div(world.observer.getGlobal("fast"), world.turtleManager.turtlesOfBreed("PARTICLES").size()) * 100));
     world.observer.setGlobal("avg-speed", ListPrims.mean(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("speed"); })));
     world.observer.setGlobal("avg-energy", ListPrims.mean(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("energy"); })));
   };
   var calculateTickDelta = function() {
     if (world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.gt(SelfManager.self().getVariable("speed"), 0); }).nonEmpty()) {
-      world.observer.setGlobal("tick-delta", ListPrims.min(ListPrims.list((1 / NLMath.ceil(ListPrims.max(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("speed"); })))), world.observer.getGlobal("max-tick-delta"))));
+      world.observer.setGlobal("tick-delta", ListPrims.min(ListPrims.list(Prims.div(1, NLMath.ceil(ListPrims.max(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("speed"); })))), world.observer.getGlobal("max-tick-delta"))));
     }
     else {
       world.observer.setGlobal("tick-delta", world.observer.getGlobal("max-tick-delta"));
@@ -278,7 +278,7 @@ var procedures = (function() {
     var v1l = (SelfManager.self().getVariable("speed") * NLMath.sin((theta - SelfManager.self().getVariable("heading"))));
     var v2t = (speed2 * NLMath.cos((theta - heading2)));
     var v2l = (speed2 * NLMath.sin((theta - heading2)));
-    var vcm = (((SelfManager.self().getVariable("mass") * v1t) + (mass2 * v2t)) / (SelfManager.self().getVariable("mass") + mass2));
+    var vcm = Prims.div(((SelfManager.self().getVariable("mass") * v1t) + (mass2 * v2t)), (SelfManager.self().getVariable("mass") + mass2));
     v1t = ((2 * vcm) - v1t);
     v2t = ((2 * vcm) - v2t);
     SelfManager.self().setVariable("speed", NLMath.sqrt((NLMath.pow(v1t, 2) + NLMath.pow(v1l, 2))));

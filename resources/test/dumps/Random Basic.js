@@ -61,7 +61,7 @@ var procedures = (function() {
   };
   var createHistogramWidth = function() {
     world.patches().ask(function() {
-      if (((Prims.gte(SelfManager.self().getPatchVariable("pxcor"), ( -world.observer.getGlobal("sample-space") / 2)) && Prims.lt(SelfManager.self().getPatchVariable("pxcor"), (world.observer.getGlobal("sample-space") / 2))) && Prims.lt(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("max-y-histogram")))) {
+      if (((Prims.gte(SelfManager.self().getPatchVariable("pxcor"), Prims.div( -world.observer.getGlobal("sample-space"), 2)) && Prims.lt(SelfManager.self().getPatchVariable("pxcor"), Prims.div(world.observer.getGlobal("sample-space"), 2))) && Prims.lt(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("max-y-histogram")))) {
         SelfManager.self().setPatchVariable("pcolor", 45);
       }
       else {
@@ -76,7 +76,7 @@ var procedures = (function() {
       SelfManager.self().sprout(1, "COLUMN-COUNTERS").ask(function() {
         SelfManager.self().hideTurtle(true);;
         SelfManager.self().setVariable("heading", 0);
-        SelfManager.self().setVariable("my-column", NLMath.floor(((SelfManager.self().getPatchVariable("pxcor") + (world.observer.getGlobal("sample-space") / 2)) + 1)));
+        SelfManager.self().setVariable("my-column", NLMath.floor(((SelfManager.self().getPatchVariable("pxcor") + Prims.div(world.observer.getGlobal("sample-space"), 2)) + 1)));
         SelfManager.self().setVariable("my-column-patches", world.patches().agentFilter(function() {
           return Prims.equality(SelfManager.self().getPatchVariable("pxcor"), SelfManager.myself().projectionBy(function() { return SelfManager.self().getPatchVariable("pxcor"); }));
         }));
@@ -147,7 +147,7 @@ var procedures = (function() {
   };
   var paint = function() {
     world.turtleManager.turtlesOfBreed("COLUMN-COUNTERS").ask(function() {
-      if (Prims.lte(SelfManager.self().getVariable("my-column"), ((world.observer.getGlobal("red-green") * world.observer.getGlobal("sample-space")) / 100))) {
+      if (Prims.lte(SelfManager.self().getVariable("my-column"), Prims.div((world.observer.getGlobal("red-green") * world.observer.getGlobal("sample-space")), 100))) {
         SelfManager.self().getVariable("my-column-patches").agentFilter(function() {
           return Prims.lt(SelfManager.self().getPatchVariable("pycor"), SelfManager.myself().projectionBy(function() { return SelfManager.self().getPatchVariable("pycor"); }));
         }).ask(function() { SelfManager.self().setPatchVariable("pcolor", 15); }, true);
@@ -161,7 +161,7 @@ var procedures = (function() {
   };
   var _percent_Red = function() {
     try {
-      throw new Exception.ReportInterrupt(NLMath.precision(((100 * world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15); }).size()) / world.turtleManager.turtlesOfBreed("FRAMES").size()), 2));
+      throw new Exception.ReportInterrupt(NLMath.precision(Prims.div((100 * world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15); }).size()), world.turtleManager.turtlesOfBreed("FRAMES").size()), 2));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -173,7 +173,7 @@ var procedures = (function() {
   };
   var _percent_Full = function() {
     try {
-      throw new Exception.ReportInterrupt(NLMath.precision(((100 * world.turtleManager.turtlesOfBreed("FRAMES").size()) / (world.observer.getGlobal("height") * world.observer.getGlobal("sample-space"))), 2));
+      throw new Exception.ReportInterrupt(NLMath.precision(Prims.div((100 * world.turtleManager.turtlesOfBreed("FRAMES").size()), (world.observer.getGlobal("height") * world.observer.getGlobal("sample-space"))), 2));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {

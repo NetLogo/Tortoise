@@ -219,7 +219,7 @@ var procedures = (function() {
       if (Prims.gt((world.ticker.tickCount() - SelfManager.self().getVariable("birthday")), 0.4)) {
         SelfManager.self().die();
       }
-      SelfManager.self().setVariable("color", ListPrims.lput((255 - ((255 * (world.ticker.tickCount() - SelfManager.self().getVariable("birthday"))) / 0.4)), [20, 20, 20]));
+      SelfManager.self().setVariable("color", ListPrims.lput((255 - Prims.div((255 * (world.ticker.tickCount() - SelfManager.self().getVariable("birthday"))), 0.4)), [20, 20, 20]));
     }, true);
   };
   var bounce = function() {
@@ -232,12 +232,12 @@ var procedures = (function() {
       }
       if (Prims.equality(NLMath.abs(newPx), world.observer.getGlobal("box-edge"))) {
         SelfManager.self().setVariable("heading",  -SelfManager.self().getVariable("heading"));
-        SelfManager.self().setVariable("momentum-instant", (NLMath.abs((((NLMath.sin(SelfManager.self().getVariable("heading")) * 2) * SelfManager.self().getVariable("mass")) * SelfManager.self().getVariable("speed"))) / world.observer.getGlobal("length-vertical-surface")));
+        SelfManager.self().setVariable("momentum-instant", Prims.div(NLMath.abs((((NLMath.sin(SelfManager.self().getVariable("heading")) * 2) * SelfManager.self().getVariable("mass")) * SelfManager.self().getVariable("speed"))), world.observer.getGlobal("length-vertical-surface")));
         SelfManager.self().setVariable("momentum-difference", (SelfManager.self().getVariable("momentum-difference") + SelfManager.self().getVariable("momentum-instant")));
       }
       if (Prims.equality(NLMath.abs(newPy), world.observer.getGlobal("box-edge"))) {
         SelfManager.self().setVariable("heading", (180 - SelfManager.self().getVariable("heading")));
-        SelfManager.self().setVariable("momentum-instant", (NLMath.abs((((NLMath.cos(SelfManager.self().getVariable("heading")) * 2) * SelfManager.self().getVariable("mass")) * SelfManager.self().getVariable("speed"))) / world.observer.getGlobal("length-horizontal-surface")));
+        SelfManager.self().setVariable("momentum-instant", Prims.div(NLMath.abs((((NLMath.cos(SelfManager.self().getVariable("heading")) * 2) * SelfManager.self().getVariable("mass")) * SelfManager.self().getVariable("speed"))), world.observer.getGlobal("length-horizontal-surface")));
         SelfManager.self().setVariable("momentum-difference", (SelfManager.self().getVariable("momentum-difference") + SelfManager.self().getVariable("momentum-instant")));
       }
       if (world.observer.getGlobal("show-wall-hits?")) {
@@ -296,7 +296,7 @@ var procedures = (function() {
   };
   var calculateTickAdvanceAmount = function() {
     if (world.turtleManager.turtlesOfBreed("GAS-MOLECULES").agentFilter(function() { return Prims.gt(SelfManager.self().getVariable("speed"), 0); }).nonEmpty()) {
-      world.observer.setGlobal("tick-advance-amount", ListPrims.min(ListPrims.list((1 / NLMath.ceil(ListPrims.max(world.turtleManager.turtlesOfBreed("GAS-MOLECULES").projectionBy(function() { return SelfManager.self().getVariable("speed"); })))), world.observer.getGlobal("max-tick-advance-amount"))));
+      world.observer.setGlobal("tick-advance-amount", ListPrims.min(ListPrims.list(Prims.div(1, NLMath.ceil(ListPrims.max(world.turtleManager.turtlesOfBreed("GAS-MOLECULES").projectionBy(function() { return SelfManager.self().getVariable("speed"); })))), world.observer.getGlobal("max-tick-advance-amount"))));
     }
     else {
       world.observer.setGlobal("tick-advance-amount", world.observer.getGlobal("max-tick-advance-amount"));
@@ -333,7 +333,7 @@ var procedures = (function() {
           SelfManager.self().setVariable("molecule-type", "water");
           SelfManager.self().setVariable("mass", 10);
           var totalEnergyProducts = (totalEnergyAllReactants + world.observer.getGlobal("bond-energy-released"));
-          SelfManager.self().setVariable("energy", (totalEnergyProducts / 2));
+          SelfManager.self().setVariable("energy", Prims.div(totalEnergyProducts, 2));
           SelfManager.self().setVariable("speed", procedures.speedFromEnergy());
         }, true);
         SelfManager.self().die();
@@ -363,7 +363,7 @@ var procedures = (function() {
     var v1l = (SelfManager.self().getVariable("speed") * NLMath.sin((theta - SelfManager.self().getVariable("heading"))));
     var v2t = (speed2 * NLMath.cos((theta - heading2)));
     var v2l = (speed2 * NLMath.sin((theta - heading2)));
-    var vcm = (((SelfManager.self().getVariable("mass") * v1t) + (mass2 * v2t)) / (SelfManager.self().getVariable("mass") + mass2));
+    var vcm = Prims.div(((SelfManager.self().getVariable("mass") * v1t) + (mass2 * v2t)), (SelfManager.self().getVariable("mass") + mass2));
     v1t = ((2 * vcm) - v1t);
     v2t = ((2 * vcm) - v2t);
     SelfManager.self().setVariable("speed", NLMath.sqrt((NLMath.pow(v1t, 2) + NLMath.pow(v1l, 2))));
@@ -381,7 +381,7 @@ var procedures = (function() {
   };
   var speedFromEnergy = function() {
     try {
-      throw new Exception.ReportInterrupt(NLMath.sqrt(((2 * SelfManager.self().getVariable("energy")) / SelfManager.self().getVariable("mass"))));
+      throw new Exception.ReportInterrupt(NLMath.sqrt(Prims.div((2 * SelfManager.self().getVariable("energy")), SelfManager.self().getVariable("mass"))));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {

@@ -121,7 +121,7 @@ var procedures = (function() {
     world.observer.setGlobal("number-forward-reactions", 0);
     world.observer.setGlobal("number-reverse-reactions", 0);
     world.observer.setGlobal("scale-factor-energy-to-temp", 4);
-    world.observer.setGlobal("scale-factor-temp-to-energy", (1 / world.observer.getGlobal("scale-factor-energy-to-temp")));
+    world.observer.setGlobal("scale-factor-temp-to-energy", Prims.div(1, world.observer.getGlobal("scale-factor-energy-to-temp")));
     world.observer.setGlobal("outside-energy", (world.observer.getGlobal("initial-gas-temp") * world.observer.getGlobal("scale-factor-temp-to-energy")));
     world.observer.setGlobal("difference-bond-energies", 20);
     world.observer.setGlobal("activation-energy", 80);
@@ -213,7 +213,7 @@ var procedures = (function() {
   };
   var calculateTickAdvanceAmount = function() {
     if (world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.gt(SelfManager.self().getVariable("speed"), 0); }).nonEmpty()) {
-      world.observer.setGlobal("tick-advance-amount", ListPrims.min(ListPrims.list((1 / NLMath.ceil(ListPrims.max(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("speed"); })))), world.observer.getGlobal("max-tick-advance-amount"))));
+      world.observer.setGlobal("tick-advance-amount", ListPrims.min(ListPrims.list(Prims.div(1, NLMath.ceil(ListPrims.max(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("speed"); })))), world.observer.getGlobal("max-tick-advance-amount"))));
     }
     else {
       world.observer.setGlobal("tick-advance-amount", world.observer.getGlobal("max-tick-advance-amount"));
@@ -250,8 +250,8 @@ var procedures = (function() {
         SelfManager.self().setVariable("molecule-type", "nh3");
         SelfManager.self().setVariable("shape", "nh3");
         SelfManager.self().setVariable("mass", 10);
-        SelfManager.self().setVariable("energy", ((totalOutputEnergy * 10) / 20));
-        SelfManager.self().setVariable("speed", NLMath.sqrt((2 * (SelfManager.self().getVariable("energy") / SelfManager.self().getVariable("mass")))));
+        SelfManager.self().setVariable("energy", Prims.div((totalOutputEnergy * 10), 20));
+        SelfManager.self().setVariable("speed", NLMath.sqrt((2 * Prims.div(SelfManager.self().getVariable("energy"), SelfManager.self().getVariable("mass")))));
         SelfManager.self().hatch(1, "").ask(function() { SelfManager.self().setVariable("heading", (SelfManager.self().getVariable("heading") + 180)); }, true);
         reactants.ask(function() { SelfManager.self().die(); }, true);
         world.observer.setGlobal("number-forward-reactions", (world.observer.getGlobal("number-forward-reactions") + 1));
@@ -270,13 +270,13 @@ var procedures = (function() {
         SelfManager.self().setVariable("molecule-type", "nitrogen");
         SelfManager.self().setVariable("shape", "nitrogen");
         SelfManager.self().setVariable("mass", 14);
-        SelfManager.self().setVariable("energy", ((totalOutputEnergy * 14) / 20));
+        SelfManager.self().setVariable("energy", Prims.div((totalOutputEnergy * 14), 20));
         SelfManager.self().setVariable("speed", procedures.speedFromEnergy());
         SelfManager.self().hatch(3, "").ask(function() {
           SelfManager.self().setVariable("molecule-type", "hydrogen");
           SelfManager.self().setVariable("shape", "hydrogen");
           SelfManager.self().setVariable("mass", 2);
-          SelfManager.self().setVariable("energy", ((totalOutputEnergy * 2) / 20));
+          SelfManager.self().setVariable("energy", Prims.div((totalOutputEnergy * 2), 20));
           SelfManager.self().setVariable("speed", procedures.speedFromEnergy());
           SelfManager.self().setVariable("heading", Prims.random(360));
         }, true);
@@ -342,14 +342,14 @@ var procedures = (function() {
       newPy = NLMath.round((SelfManager.self().getVariable("ycor") + SelfManager.self().dy()));
       if ((Prims.equality(NLMath.abs(newPx), world.observer.getGlobal("box-edge-x")) || Prims.equality(newPx, world.observer.getGlobal("piston-position")))) {
         SelfManager.self().setVariable("heading",  -SelfManager.self().getVariable("heading"));
-        SelfManager.self().setVariable("momentum-difference", (SelfManager.self().getVariable("momentum-difference") + (NLMath.abs((((NLMath.sin(SelfManager.self().getVariable("heading")) * 2) * SelfManager.self().getVariable("mass")) * SelfManager.self().getVariable("speed"))) / world.observer.getGlobal("length-vertical-surface"))));
+        SelfManager.self().setVariable("momentum-difference", (SelfManager.self().getVariable("momentum-difference") + Prims.div(NLMath.abs((((NLMath.sin(SelfManager.self().getVariable("heading")) * 2) * SelfManager.self().getVariable("mass")) * SelfManager.self().getVariable("speed"))), world.observer.getGlobal("length-vertical-surface"))));
       }
       if (Prims.equality(NLMath.abs(newPy), world.observer.getGlobal("box-edge-y"))) {
         SelfManager.self().setVariable("heading", (180 - SelfManager.self().getVariable("heading")));
-        SelfManager.self().setVariable("momentum-difference", (SelfManager.self().getVariable("momentum-difference") + (NLMath.abs((((NLMath.cos(SelfManager.self().getVariable("heading")) * 2) * SelfManager.self().getVariable("mass")) * SelfManager.self().getVariable("speed"))) / world.observer.getGlobal("length-horizontal-surface"))));
+        SelfManager.self().setVariable("momentum-difference", (SelfManager.self().getVariable("momentum-difference") + Prims.div(NLMath.abs((((NLMath.cos(SelfManager.self().getVariable("heading")) * 2) * SelfManager.self().getVariable("mass")) * SelfManager.self().getVariable("speed"))), world.observer.getGlobal("length-horizontal-surface"))));
       }
       if (world.getPatchAt(newPx, newPy).projectionBy(function() { return procedures.isothermalWall_p(); })) {
-        SelfManager.self().setVariable("energy", ((SelfManager.self().getVariable("energy") + world.observer.getGlobal("outside-energy")) / 2));
+        SelfManager.self().setVariable("energy", Prims.div((SelfManager.self().getVariable("energy") + world.observer.getGlobal("outside-energy")), 2));
         SelfManager.self().setVariable("speed", procedures.speedFromEnergy());
       }
       world.getPatchAt(newPx, newPy).ask(function() { procedures.makeAFlash(); }, true);
@@ -399,7 +399,7 @@ var procedures = (function() {
     v1l = (SelfManager.self().getVariable("speed") * NLMath.sin((theta - SelfManager.self().getVariable("heading"))));
     v2t = (speed2 * NLMath.cos((theta - heading2)));
     v2l = (speed2 * NLMath.sin((theta - heading2)));
-    vcm = (((SelfManager.self().getVariable("mass") * v1t) + (mass2 * v2t)) / (SelfManager.self().getVariable("mass") + mass2));
+    vcm = Prims.div(((SelfManager.self().getVariable("mass") * v1t) + (mass2 * v2t)), (SelfManager.self().getVariable("mass") + mass2));
     v1t = ((2 * vcm) - v1t);
     v2t = ((2 * vcm) - v2t);
     SelfManager.self().setVariable("speed", NLMath.sqrt((NLMath.pow(v1t, 2) + NLMath.pow(v1l, 2))));
@@ -488,7 +488,7 @@ var procedures = (function() {
   };
   var speedFromEnergy = function() {
     try {
-      throw new Exception.ReportInterrupt(NLMath.sqrt(((2 * SelfManager.self().getVariable("energy")) / SelfManager.self().getVariable("mass"))));
+      throw new Exception.ReportInterrupt(NLMath.sqrt(Prims.div((2 * SelfManager.self().getVariable("energy")), SelfManager.self().getVariable("mass"))));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -500,7 +500,7 @@ var procedures = (function() {
   };
   var energyFromSpeed = function() {
     try {
-      throw new Exception.ReportInterrupt((((SelfManager.self().getVariable("mass") * SelfManager.self().getVariable("speed")) * SelfManager.self().getVariable("speed")) / 2));
+      throw new Exception.ReportInterrupt(Prims.div(((SelfManager.self().getVariable("mass") * SelfManager.self().getVariable("speed")) * SelfManager.self().getVariable("speed")), 2));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {

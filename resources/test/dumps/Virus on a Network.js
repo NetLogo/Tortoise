@@ -40,23 +40,23 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('susceptible', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Network Status', 'susceptible')(function() {
-        plotManager.plotValue(((world.turtles().agentFilter(function() {
+        plotManager.plotValue((Prims.div(world.turtles().agentFilter(function() {
           return (!SelfManager.self().getVariable("infected?") && !SelfManager.self().getVariable("resistant?"));
-        }).size() / world.turtles().size()) * 100));;
+        }).size(), world.turtles().size()) * 100));;
       });
     });
   }),
   new PenBundle.Pen('infected', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Network Status', 'infected')(function() {
-        plotManager.plotValue(((world.turtles().agentFilter(function() { return SelfManager.self().getVariable("infected?"); }).size() / world.turtles().size()) * 100));;
+        plotManager.plotValue((Prims.div(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("infected?"); }).size(), world.turtles().size()) * 100));;
       });
     });
   }),
   new PenBundle.Pen('resistant', plotOps.makePenOps, false, new PenBundle.State(5.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Network Status', 'resistant')(function() {
-        plotManager.plotValue(((world.turtles().agentFilter(function() { return SelfManager.self().getVariable("resistant?"); }).size() / world.turtles().size()) * 100));;
+        plotManager.plotValue((Prims.div(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("resistant?"); }).size(), world.turtles().size()) * 100));;
       });
     });
   })];
@@ -97,7 +97,7 @@ var procedures = (function() {
     }, true);
   };
   var setupSpatiallyClusteredNetwork = function() {
-    var numLinks = ((world.observer.getGlobal("average-node-degree") * world.observer.getGlobal("number-of-nodes")) / 2);
+    var numLinks = Prims.div((world.observer.getGlobal("average-node-degree") * world.observer.getGlobal("number-of-nodes")), 2);
     while (Prims.lt(world.links().size(), numLinks)) {
       ListPrims.oneOf(world.turtles()).ask(function() {
         var choice = SelfPrims.other(world.turtles().agentFilter(function() { return !LinkPrims.isLinkNeighbor("LINKS", SelfManager.myself()); })).minOneOf(function() { return SelfManager.self().distance(SelfManager.myself()); });
@@ -107,7 +107,7 @@ var procedures = (function() {
       }, true);
     }
     for (var _index_1097_1103 = 0, _repeatcount_1097_1103 = StrictMath.floor(10); _index_1097_1103 < _repeatcount_1097_1103; _index_1097_1103++){
-      LayoutManager.layoutSpring(world.turtles(), world.links(), 0.3, (world.topology.width / NLMath.sqrt(world.observer.getGlobal("number-of-nodes"))), 1);
+      LayoutManager.layoutSpring(world.turtles(), world.links(), 0.3, Prims.div(world.topology.width, NLMath.sqrt(world.observer.getGlobal("number-of-nodes"))), 1);
     }
   };
   var go = function() {

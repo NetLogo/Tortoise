@@ -39,7 +39,7 @@ modelConfig.plots = [(function() {
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('average', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('Average grain count', 'average')(function() { plotManager.plotValue((world.observer.getGlobal("total") / world.patches().size()));; });
+      plotManager.withTemporaryContext('Average grain count', 'average')(function() { plotManager.plotValue(Prims.div(world.observer.getGlobal("total"), world.patches().size()));; });
     });
   })];
   var setup   = function() {};

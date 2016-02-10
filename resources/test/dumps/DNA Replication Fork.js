@@ -135,11 +135,11 @@ var procedures = (function() {
   var makePolymerases = function() {
     world.turtleManager.createTurtles(1, "POLYMERASES").ask(function() {
       SelfManager.self().setVariable("heading", Prims.random(((180 - Prims.random(20)) + Prims.random(20))));
-      SelfManager.self().setXY((((world.topology.maxPxcor - world.topology.minPxcor) / 2) + 3), (world.topology.maxPycor - 1));
+      SelfManager.self().setXY((Prims.div((world.topology.maxPxcor - world.topology.minPxcor), 2) + 3), (world.topology.maxPycor - 1));
     }, true);
     world.turtleManager.createTurtles(1, "POLYMERASES").ask(function() {
       SelfManager.self().setVariable("heading", ((90 - Prims.random(20)) + Prims.random(20)));
-      SelfManager.self().setXY((((world.topology.maxPxcor - world.topology.minPxcor) / 2) - 5), (world.topology.maxPycor - 1));
+      SelfManager.self().setXY((Prims.div((world.topology.maxPxcor - world.topology.minPxcor), 2) - 5), (world.topology.maxPycor - 1));
     }, true);
     world.turtleManager.turtlesOfBreed("POLYMERASES").ask(function() {
       procedures.attachEnzymeTag(150,0.85,"polymerase");
@@ -155,7 +155,7 @@ var procedures = (function() {
       SelfManager.self().setVariable("size", 3.2);
       SelfManager.self().setVariable("heading", 90);
       procedures.attachEnzymeTag(150,0.85,"helicase");
-      SelfManager.self().setXY(((world.topology.maxPxcor - world.topology.minPxcor) / 2), (world.topology.maxPycor - 1));
+      SelfManager.self().setXY(Prims.div((world.topology.maxPxcor - world.topology.minPxcor), 2), (world.topology.maxPycor - 1));
     }, true);
   };
   var makeATopoisomerase = function() {
@@ -175,7 +175,7 @@ var procedures = (function() {
         }, true);
       }, true);
       procedures.attachEnzymeTag(150,0.85,"topoisomerase");
-      SelfManager.self().setXY((((world.topology.maxPxcor - world.topology.minPxcor) / 2) - 3), (world.topology.maxPycor - 1));
+      SelfManager.self().setXY((Prims.div((world.topology.maxPxcor - world.topology.minPxcor), 2) - 3), (world.topology.maxPycor - 1));
     }, true);
   };
   var makeAndAttachAPrimase = function() {
@@ -395,7 +395,7 @@ var procedures = (function() {
     world.turtleManager.turtlesOfBreed("NUCLEOTIDES").agentFilter(function() {
       return (procedures.nextNucleotideUnzippedTheSame_p() && Prims.gt(SelfManager.self().getVariable("unzipped-stage"), 0));
     }).ask(function() {
-      var fractionalSeparation = (SelfManager.self().getVariable("unzipped-stage") / 2);
+      var fractionalSeparation = Prims.div(SelfManager.self().getVariable("unzipped-stage"), 2);
       if (Prims.equality(SelfManager.self().getVariable("unzipped-stage"), 3)) {
         LinkPrims.myLinks("OLD-STAIRS").ask(function() { SelfManager.self().die(); }, true);
         LinkPrims.myOutLinks("BACKBONES").ask(function() { SelfManager.self().die(); }, true);
@@ -878,7 +878,7 @@ var procedures = (function() {
   };
   var userMessageStringForMutations = function() {
     try {
-      var duplicationRate = NLMath.precision(((world.observer.getGlobal("total-correct-duplications-top-strand") + world.observer.getGlobal("total-correct-duplications-bottom-strand")) / world.observer.getGlobal("final-time")), 4);
+      var duplicationRate = NLMath.precision(Prims.div((world.observer.getGlobal("total-correct-duplications-top-strand") + world.observer.getGlobal("total-correct-duplications-bottom-strand")), world.observer.getGlobal("final-time")), 4);
       throw new Exception.ReportInterrupt((Dump('') + Dump("You had ") + Dump((world.observer.getGlobal("total-correct-duplications-top-strand") + world.observer.getGlobal("total-correct-duplications-bottom-strand"))) + Dump(" correct replications and ") + Dump((world.observer.getGlobal("total-substitution-mutations-top-strand") + world.observer.getGlobal("total-substitution-mutations-bottom-strand"))) + Dump(" substitutions and ") + Dump((world.observer.getGlobal("total-deletion-mutations-top-strand") + world.observer.getGlobal("total-deletion-mutations-bottom-strand"))) + Dump("  deletions.") + Dump(" That replication process took you ") + Dump(world.observer.getGlobal("final-time")) + Dump(" seconds.  This was a rate of ") + Dump(duplicationRate) + Dump(" correct nucleotides duplicated per second.")));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {

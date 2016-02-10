@@ -82,7 +82,7 @@ var procedures = (function() {
     }, true);
   };
   var projectileMotion = function() {
-    SelfManager.self().setVariable("y-vel", (SelfManager.self().getVariable("y-vel") - (world.observer.getGlobal("gravity") / 5)));
+    SelfManager.self().setVariable("y-vel", (SelfManager.self().getVariable("y-vel") - Prims.div(world.observer.getGlobal("gravity"), 5)));
     SelfManager.self().setVariable("heading", NLMath.atan(SelfManager.self().getVariable("x-vel"), SelfManager.self().getVariable("y-vel")));
     var moveAmount = NLMath.sqrt((NLMath.pow(SelfManager.self().getVariable("x-vel"), 2) + NLMath.pow(SelfManager.self().getVariable("y-vel"), 2)));
     if (!SelfManager.self().canMove(moveAmount)) {
@@ -115,7 +115,7 @@ var procedures = (function() {
     }, true);
   };
   var fade = function() {
-    SelfManager.self().setVariable("dim", (SelfManager.self().getVariable("dim") - (world.observer.getGlobal("fade-amount") / 10)));
+    SelfManager.self().setVariable("dim", (SelfManager.self().getVariable("dim") - Prims.div(world.observer.getGlobal("fade-amount"), 10)));
     SelfManager.self().setVariable("color", ColorModel.scaleColor(SelfManager.self().getVariable("col"), SelfManager.self().getVariable("dim"), -5, 0.5));
     if (Prims.lt(SelfManager.self().getVariable("color"), (SelfManager.self().getVariable("col") - 3.5))) {
       SelfManager.self().die();

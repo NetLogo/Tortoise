@@ -265,8 +265,8 @@ var procedures = (function() {
   };
   var wiggle = function() {
     if (world.observer.getGlobal("wiggle?")) {
-      SelfManager.self().right(((Prims.randomFloat(30) * 0.05) / world.observer.getGlobal("speed-factor")));
-      SelfManager.self().right(-((Prims.randomFloat(30) * 0.05) / world.observer.getGlobal("speed-factor")));
+      SelfManager.self().right(Prims.div((Prims.randomFloat(30) * 0.05), world.observer.getGlobal("speed-factor")));
+      SelfManager.self().right(-Prims.div((Prims.randomFloat(30) * 0.05), world.observer.getGlobal("speed-factor")));
     }
   };
   var movePlayer = function() {
@@ -369,7 +369,7 @@ var procedures = (function() {
     var birdEnergySplit = 0;
     if (Prims.gt(world.turtleManager.turtlesOfBreed("BIRDS").size(), 0)) {
       ListPrims.oneOf(world.turtleManager.turtlesOfBreed("BIRDS")).ask(function() {
-        birdEnergySplit = (SelfManager.self().getVariable("eaten") / 2);
+        birdEnergySplit = Prims.div(SelfManager.self().getVariable("eaten"), 2);
         SelfManager.self().setVariable("eaten", birdEnergySplit);
         SelfManager.self().hatch(1, "").ask(function() {
           procedures.mutateOffspringBird();

@@ -80,14 +80,14 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('% infected', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Cumulative Infected and Recovered', '% infected')(function() {
-        plotManager.plotValue((((world.turtles().agentFilter(function() { return SelfManager.self().getVariable("cured?"); }).size() + world.turtles().agentFilter(function() { return SelfManager.self().getVariable("infected?"); }).size()) / world.observer.getGlobal("initial-people")) * 100));;
+        plotManager.plotValue((Prims.div((world.turtles().agentFilter(function() { return SelfManager.self().getVariable("cured?"); }).size() + world.turtles().agentFilter(function() { return SelfManager.self().getVariable("infected?"); }).size()), world.observer.getGlobal("initial-people")) * 100));;
       });
     });
   }),
   new PenBundle.Pen('% recovered', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Cumulative Infected and Recovered', '% recovered')(function() {
-        plotManager.plotValue(((world.turtles().agentFilter(function() { return SelfManager.self().getVariable("cured?"); }).size() / world.observer.getGlobal("initial-people")) * 100));;
+        plotManager.plotValue((Prims.div(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("cured?"); }).size(), world.observer.getGlobal("initial-people")) * 100));;
       });
     });
   })];
@@ -119,8 +119,8 @@ var procedures = (function() {
     world.ticker.reset();
   };
   var setupGlobals = function() {
-    world.getPatchAt(( -world.topology.maxPxcor / 2), 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
-    world.getPatchAt((world.topology.maxPxcor / 2), 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
+    world.getPatchAt(Prims.div( -world.topology.maxPxcor, 2), 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
+    world.getPatchAt(Prims.div(world.topology.maxPxcor, 2), 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
     world.observer.setGlobal("border", world.patches().agentFilter(function() {
       return (Prims.equality(SelfManager.self().getPatchVariable("pxcor"), 0) && Prims.gte(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), 0));
     }));
@@ -171,11 +171,11 @@ var procedures = (function() {
     world.turtleManager.createTurtles(world.observer.getGlobal("initial-ambulance"), "").ask(function() {
       if (Prims.lt(Prims.random(2), 1)) {
         SelfManager.self().setVariable("continent", 1);
-        SelfManager.self().setXY(( -world.topology.maxPxcor / 2), 0);
+        SelfManager.self().setXY(Prims.div( -world.topology.maxPxcor, 2), 0);
       }
       else {
         SelfManager.self().setVariable("continent", 2);
-        SelfManager.self().setXY((world.topology.maxPxcor / 2), 0);
+        SelfManager.self().setXY(Prims.div(world.topology.maxPxcor, 2), 0);
       }
       SelfManager.self().setVariable("cured?", false);
       SelfManager.self().setVariable("isolated?", false);
@@ -188,9 +188,9 @@ var procedures = (function() {
     }, true);
   };
   var assignTendency = function() {
-    SelfManager.self().setVariable("isolation-tendency", (Prims.randomNormal(world.observer.getGlobal("average-isolation-tendency"), world.observer.getGlobal("average-isolation-tendency")) / 4));
-    SelfManager.self().setVariable("hospital-going-tendency", (Prims.randomNormal(world.observer.getGlobal("average-hospital-going-tendency"), world.observer.getGlobal("average-hospital-going-tendency")) / 4));
-    world.observer.setGlobal("recovery-time", (Prims.randomNormal(world.observer.getGlobal("average-recovery-time"), world.observer.getGlobal("average-recovery-time")) / 4));
+    SelfManager.self().setVariable("isolation-tendency", Prims.div(Prims.randomNormal(world.observer.getGlobal("average-isolation-tendency"), world.observer.getGlobal("average-isolation-tendency")), 4));
+    SelfManager.self().setVariable("hospital-going-tendency", Prims.div(Prims.randomNormal(world.observer.getGlobal("average-hospital-going-tendency"), world.observer.getGlobal("average-hospital-going-tendency")), 4));
+    world.observer.setGlobal("recovery-time", Prims.div(Prims.randomNormal(world.observer.getGlobal("average-recovery-time"), world.observer.getGlobal("average-recovery-time")), 4));
     if (Prims.gt(world.observer.getGlobal("recovery-time"), (world.observer.getGlobal("average-recovery-time") * 2))) {
       world.observer.setGlobal("recovery-time", (world.observer.getGlobal("average-recovery-time") * 2));
     }
@@ -366,7 +366,7 @@ var procedures = (function() {
       }
     }
     else {
-      if (Prims.gt(SelfManager.self().getVariable("infection-length"), (world.observer.getGlobal("recovery-time") / 5))) {
+      if (Prims.gt(SelfManager.self().getVariable("infection-length"), Prims.div(world.observer.getGlobal("recovery-time"), 5))) {
         SelfManager.self().setVariable("infected?", false);
         SelfManager.self().setVariable("cured?", true);
         SelfManager.self().setVariable("nb-recovered", (SelfManager.self().getVariable("nb-recovered") + 1));
@@ -383,17 +383,17 @@ var procedures = (function() {
     SelfManager.self().setVariable("hospitalized?", false);
     SelfManager.self().patchAt(0, 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 0); }, true);
     world.observer.getGlobal("border").ask(function() { SelfManager.self().setPatchVariable("pcolor", 45); }, true);
-    world.getPatchAt(( -world.topology.maxPxcor / 2), 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
-    world.getPatchAt((world.topology.maxPxcor / 2), 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
+    world.getPatchAt(Prims.div( -world.topology.maxPxcor, 2), 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
+    world.getPatchAt(Prims.div(world.topology.maxPxcor, 2), 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
   };
   var hospitalize = function() {
     SelfManager.self().setVariable("hospitalized?", true);
     SelfManager.self().setPatchVariable("pcolor", 0);
     if (Prims.equality(SelfManager.self().getVariable("continent"), 1)) {
-      SelfManager.self().moveTo(world.getPatchAt(( -world.topology.maxPxcor / 2), 0));
+      SelfManager.self().moveTo(world.getPatchAt(Prims.div( -world.topology.maxPxcor, 2), 0));
     }
     else {
-      SelfManager.self().moveTo(world.getPatchAt((world.topology.maxPxcor / 2), 0));
+      SelfManager.self().moveTo(world.getPatchAt(Prims.div(world.topology.maxPxcor, 2), 0));
     }
     SelfManager.self().setPatchVariable("pcolor", 9.9);
   };
@@ -429,16 +429,16 @@ var procedures = (function() {
       world.observer.setGlobal("beta-n", 0);
     }
     else {
-      world.observer.setGlobal("beta-n", (newInfected / world.observer.getGlobal("nb-infected-previous")));
+      world.observer.setGlobal("beta-n", Prims.div(newInfected, world.observer.getGlobal("nb-infected-previous")));
     }
     if (Prims.lt(world.observer.getGlobal("nb-infected-previous"), 5)) {
       world.observer.setGlobal("gamma", 0);
     }
     else {
-      world.observer.setGlobal("gamma", (newRecovered / world.observer.getGlobal("nb-infected-previous")));
+      world.observer.setGlobal("gamma", Prims.div(newRecovered, world.observer.getGlobal("nb-infected-previous")));
     }
     if ((!Prims.equality((world.observer.getGlobal("initial-people") - susceptibleT), 0) && !Prims.equality(susceptibleT, 0))) {
-      world.observer.setGlobal("r0", (NLMath.ln((s0 / susceptibleT)) / (world.observer.getGlobal("initial-people") - susceptibleT)));
+      world.observer.setGlobal("r0", Prims.div(NLMath.ln(Prims.div(s0, susceptibleT)), (world.observer.getGlobal("initial-people") - susceptibleT)));
       world.observer.setGlobal("r0", (world.observer.getGlobal("r0") * s0));
     }
   };

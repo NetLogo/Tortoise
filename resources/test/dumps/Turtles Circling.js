@@ -92,8 +92,8 @@ var procedures = (function() {
     }
   };
   var moveAlongCircle = function(r) {
-    SelfManager.self().fd((((3.141592653589793 * r) / 180) * (world.observer.getGlobal("speed") / 50)));
-    SelfManager.self().right((world.observer.getGlobal("speed") / 50));
+    SelfManager.self().fd((Prims.div((3.141592653589793 * r), 180) * Prims.div(world.observer.getGlobal("speed"), 50)));
+    SelfManager.self().right(Prims.div(world.observer.getGlobal("speed"), 50));
   };
   var zeroCircle = function() {
     world.turtleManager.getTurtle(0).ask(function() {

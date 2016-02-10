@@ -296,7 +296,7 @@ var procedures = (function() {
   };
   var showIntensity = function() {
     SelfManager.self().setVariable("color", ColorModel.scaleColor(45, world.observer.getGlobal("sun-intensity"), 0, 150));
-    SelfManager.self().setVariable("size", (world.observer.getGlobal("sun-intensity") / 10));
+    SelfManager.self().setVariable("size", Prims.div(world.observer.getGlobal("sun-intensity"), 10));
     SelfManager.self().setVariable("label", (Dump('') + Dump(world.observer.getGlobal("sun-intensity")) + Dump("%")));
     if (Prims.lt(world.observer.getGlobal("sun-intensity"), 50)) {
       SelfManager.self().setVariable("label-color", 45);
