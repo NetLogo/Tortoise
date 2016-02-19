@@ -134,17 +134,15 @@ module.exports =
       [result, []] = calculateModes(genItemCountPairs(items))
       result
 
-    # [Item] @ (Number, ListOrSet[Item]) => ListOrSet[Item]
-    nOf: (n, agentsOrList) ->
-      type = NLType(agentsOrList)
-      if type.isList()
-        @_nOfArray(n, agentsOrList)
-      else if type.isAgentSet()
-        items    = agentsOrList.iterator().toArray()
-        newItems = @_nOfArray(n, items)
-        agentsOrList.copyWithNewAgents(newItems)
-      else
-        throw new Error("N-OF expected input to be a list or agentset but got #{Dump(agentsOrList)} instead.")
+    # [T] @ (Number, AbstractAgentSet[T]) => AbstractAgentSet[T]
+    nOf_number_agentset: (n, agents) ->
+      items    = agentsOrList.iterator().toArray()
+      newItems = @_nOfArray(n, items)
+      agentsOrList.copyWithNewAgents(newItems)
+
+    # [T] @ (Number, Array[T]) => Array[T]
+    nOf_number_list: (n, xs) ->
+      @_nOfArray(n, xs)
 
     # [Item] @ (ListOrSet[Item]) => Item
     oneOf: (agentsOrList) ->
@@ -176,6 +174,13 @@ module.exports =
       else
         false
 
+    # [T] @ (Task[T, T, T]), Array[T]) => T
+    reduce: (task, xs) ->
+      if xs.length isnt 1
+        xs.reduce(task)
+      else
+        xs
+
     # [Item, Container <: (Array[Item]|String)] @ (Item, Container) => Container
     remove: (x, xs) ->
       type = NLType(xs)
@@ -204,17 +209,17 @@ module.exports =
         [out, []] = xs.reduce(f, [[], {}])
         out
 
-    # [Item, Container <: (Array[Item]|String)] @ (Number, Container) => Container
-    removeItem: (n, xs) ->
-      type = NLType(xs)
-      if type.isList()
-        temp = xs[..]
-        temp.splice(n, 1) # Cryptic, but effective --JAB (5/26/14)
-        temp
-      else
-        pre  = xs.slice(0, n)
-        post = xs.slice(n + 1)
-        pre + post
+    # [T] @ (Number, Array[T]) => Array[T]
+    removeItem_number_list: (n, xs) ->
+      temp = xs[..]
+      temp.splice(n, 1) # Cryptic, but effective --JAB (5/26/14)
+      temp
+
+    # [T] @ (Number, String) => String
+    removeItem_number_string: (n, str) ->
+      pre  = str.slice(0, n)
+      post = str.slice(n + 1)
+      pre + post
 
     # [Item, Container <: (Array[Item]|String)] @ (Number, Container, Item) => Container
     replaceItem: (n, xs, x) ->
@@ -377,15 +382,9 @@ module.exports =
     sum: (xs) ->
       xs.reduce(((a, b) -> a + b), 0)
 
-    # [T] @ (Array[T]) => Number
-    variance: (xs) ->
-      numbers = filter((x) -> NLType(x).isNumber())(xs)
-      count   = numbers.length
-
-      if count < 2
-        throw new Error("Can't find the variance of a list without at least two numbers")
-
-      sum  = numbers.reduce(((acc, x) -> acc + x), 0)
+    # (Array[Number]) => Number
+    variance: (numbers) ->
+      sum  = numbers.foldl(((acc, x) -> acc + x), 0)
       mean = sum / count
       squareOfDifference = numbers.reduce(((acc, x) -> acc + StrictMath.pow(x - mean, 2)), 0)
       squareOfDifference / (count - 1)

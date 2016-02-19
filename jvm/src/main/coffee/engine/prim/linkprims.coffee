@@ -1,5 +1,8 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
+# When the middle layer is complete, can probably just be collapsed into the middle layer entirely.
+# That is, all of these functions are just redirects to the link manager, so let the middle layer
+# do the redirection. --JAB 2/29/16
 module.exports =
   class LinkPrims
 

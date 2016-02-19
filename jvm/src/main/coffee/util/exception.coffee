@@ -3,7 +3,8 @@
 class NetLogoException
   constructor: (@message) ->
 
-class AgentException    extends NetLogoException
+class AgentException extends Error
+
 class DeathInterrupt    extends NetLogoException
 class ReportInterrupt   extends NetLogoException
 class StopInterrupt     extends NetLogoException

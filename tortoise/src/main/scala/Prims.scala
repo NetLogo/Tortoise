@@ -97,7 +97,6 @@ trait ReporterPrims extends PrimUtils {
       case _: prim._word               => ("''" +: args).map(arg => s"Dump($arg)").mkString("(", " + ", ")")
       case _: prim._of                 => generateOf(r)
       case _: prim.etc._ifelsevalue    => s"(${arg(0)} ? ${arg(1)} : ${arg(2)})"
-      case _: prim.etc._reduce         => s"${arg(1)}.reduce(${arg(0)})"
       case _: prim.etc._filter         => s"${arg(1)}.filter(${arg(0)})"
       case _: prim.etc._nvalues        => s"Tasks.nValues(${arg(0)}, ${arg(1)})"
       case prim._errormessage(Some(l)) => s"_error_${l.hashCode()}.message"
@@ -136,7 +135,7 @@ trait ReporterPrims extends PrimUtils {
 
       // Lookup by breed
       case b: prim._breed                 => s"world.turtleManager.turtlesOfBreed(${jsString(b.breedName)})"
-      case b: prim.etc._breedsingular     => s"world.turtleManager.getTurtleOfBreed(${jsString(b.breedName)}, ${arg(0)})"
+      case b: prim.etc._breedsingular     => s"middlePrims.breedsingular_string_number(${jsString(b.breedName)}, ${arg(0)})"
       case b: prim.etc._linkbreed         => s"world.linkManager.linksOfBreed(${jsString(b.breedName)})"
       case p: prim.etc._linkbreedsingular => s"world.linkManager.getLink(${arg(0)}, ${arg(1)}, ${jsString(p.breedName)})"
       case b: prim.etc._breedat           => s"SelfManager.self().breedAt(${jsString(b.breedName)}, ${arg(0)}, ${arg(1)})"
@@ -286,7 +285,8 @@ trait CommandPrims extends PrimUtils {
     val body = handlers.commands(w.args(1))
     val i = handlers.unusedVarname(w.command.token, "index")
     val j = handlers.unusedVarname(w.command.token, "repeatcount")
-    s"""|for (var $i = 0, $j = StrictMath.floor($count); $i < $j; $i++){
+    s"""|middlePrims._throwIfInvalidLong($count);
+        |for (var $i = 0, $j = StrictMath.floor($count); $i < $j; $i++){
         |${indented(body)}
         |}""".stripMargin
   }

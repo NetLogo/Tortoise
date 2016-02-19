@@ -14,6 +14,11 @@ stableSort  = require('util/stablesort')
 { pipeline }              = require('brazierjs/function')
 { values }                = require('brazierjs/object')
 
+# data LinkKindedness =
+CatInBox   = {}
+Undirected = {}
+Directed   = {}
+
 module.exports =
 
   class LinkManager
@@ -22,42 +27,56 @@ module.exports =
 
     _links:     undefined # SortedLinks
     _linksFrom: undefined # Object[String, Object[Number, Number]]
-    _idManager: undefined # IDManager
     _linksTo:   undefined # Object[String, Object[Number, Number]]
+
+    _idManager:      undefined # IDManager
+    _linkKindedness: undefined # LinkKindedness
 
     # (World, BreedManager, Updater, () => Unit, () => Unit) => LinkManager
     constructor: (@_world, @_breedManager, @_updater, @_notifyIsDirected, @_notifyIsUndirected) ->
       @clear()
 
+    # (String) => Boolean
+    breedIsAcceptable: (breedName) ->
+      isDirected = @_breedManager.get(breedName).isDirected()
+      not ((isDirected and @_linkKindedness is Undirected) or
+            (not isDirected and @_linkKindedness is Directed))
+
     # () => Unit
     clear: ->
-      @_linkArrCache = undefined
-      @_links        = new SortedLinks
-      @_linksFrom    = {}
-      @_idManager    = new IDManager
-      @_linksTo      = {}
+      @_linkArrCache   = undefined
+      @_links          = new SortedLinks
+      @_linksFrom      = {}
+      @_idManager      = new IDManager
+      @_linkKindedness = CatInBox
+      @_linksTo        = {}
 
     # (Turtle, Turtle, String) => Link
     createDirectedLink: (from, to, breedName) ->
       if (breedName.toUpperCase() is "LINKS") then @_notifyIsDirected()
+      @_linkKindedness = Directed
       @_createLink(true, from, to, breedName)
 
     # (Turtle, TurtleSet, String) => LinkSet
     createDirectedLinks: (source, others, breedName) ->
       if (breedName.toUpperCase() is "LINKS") then @_notifyIsDirected()
+      @_linkKindedness = Directed
       @_createLinksBy((turtle) => @_createLink(true, source, turtle, breedName))(others)
 
     # (Turtle, TurtleSet, String) => LinkSet
     createReverseDirectedLinks: (source, others, breedName) ->
       if (breedName.toUpperCase() is "LINKS") then @_notifyIsDirected()
+      @_linkKindedness = Directed
       @_createLinksBy((turtle) => @_createLink(true, turtle, source, breedName))(others)
 
     # (Turtle, Turtle, String) => Link
     createUndirectedLink: (source, other, breedName) ->
+      @_linkKindedness = Undirected
       @_createLink(false, source, other, breedName)
 
     # (Turtle, TurtleSet, String) => LinkSet
     createUndirectedLinks: (source, others, breedName) ->
+      @_linkKindedness = Undirected
       @_createLinksBy((turtle) => @_createLink(false, source, turtle, breedName))(others)
 
     # (Number, Number, String) => Agent
@@ -91,10 +110,14 @@ module.exports =
 
     # (Link) => Unit
     _removeLink: (link) =>
+
       l = @_links.find(({id}) -> id is link.id)
       @_links = @_links.remove(l)
       @_linkArrCache = undefined
-      if @_links.isEmpty() then @_notifyIsUndirected()
+
+      if @_links.isEmpty()
+        @_linkKindedness = CatInBox
+        @_notifyIsUndirected()
 
       remove = (set, id1, id2) -> if set? then set[id1] = filter((x) -> x isnt id2)(set[id1])
       remove(@_linksFrom[link.getBreedName()], link.end1.id, link.end2.id)

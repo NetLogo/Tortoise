@@ -37,6 +37,7 @@ module.exports =
 
     _breed:            undefined # Breed
     _breedShape:       undefined # String
+    _finalBreedName:   undefined # String
     _updateVarsByName: undefined # (String*) => Unit
     _varManager:       undefined # VariableManager
 
@@ -244,6 +245,7 @@ module.exports =
 
     # () => Nothing
     die: ->
+      @_finalBreedName = @getBreedName()
       @_breed.remove(this)
       if not @isDead()
         @_removeTurtle(@id)
