@@ -256,7 +256,8 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
     """|function() {
        |  widgets.forEach(function(w) {
        |    if (w.type == "monitor") {
-       |      w.reporter();
+       |      try { w.reporter(); }
+       |      catch (error) { } // Shhh, no errors here.  What would give you that impression?  --JAB (2/22/16)
        |    }
        |  });
        |}""".stripMargin
