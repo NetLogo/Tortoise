@@ -87,7 +87,7 @@ trait ReporterPrims extends PrimUtils {
       case lv: prim._letvariable          => handlers.ident(lv.let.name)
       case pv: prim._procedurevariable    => handlers.ident(pv.name)
       case call: prim._callreport         =>
-        s"procedures.${handlers.ident(call.name)}(${args.mkString(",")})"
+        s"""procedures["${call.name}"](${args.mkString(",")})"""
 
       // Blarg
       case _: prim._unaryminus         => s" -${arg(0)}" // The space is important, because these can be nested --JAB (6/12/14)
@@ -253,7 +253,7 @@ trait CommandPrims extends PrimUtils {
   /// custom generators for particular Commands
   def generateCall(call: prim._call, args: Seq[String])(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
     val callDecl =
-      s"procedures.${handlers.ident(call.name)}(${args.mkString(",")});"
+      s"""procedures["${call.name}"](${args.mkString(",")});"""
     if (compilerFlags.propagationStyle == WidgetPropagation && compilerContext.blockLevel == 1) {
       val tmp = handlers.unusedVarname(call.token, "maybestop")
       s"""|var $tmp = $callDecl

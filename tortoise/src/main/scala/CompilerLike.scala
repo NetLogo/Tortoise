@@ -30,7 +30,7 @@ trait CompilerLike {
 
 object CompilerLike {
   case class Compilation(
-    compiledProcedures:      Seq[(String, Map[String, String])],
+    compiledProcedures:      Seq[(String, Seq[String])],
     widgets:                 Seq[CompiledWidget],
     interfaceGlobalCommands: Seq[ValidationNel[CompilerException, String]],
     model:                   Model,

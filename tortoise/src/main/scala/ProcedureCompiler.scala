@@ -19,7 +19,7 @@ class ProcedureCompiler(handlers: Handlers)(implicit compilerFlags: CompilerFlag
     procedureDefs.map(compileProcedureDef)
 
   private def compileProcedureDef(pd:            ProcedureDefinition)
-                        (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): (String, Map[String, String]) = {
+                        (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): (String, Seq[String]) = {
     val originalName = pd.procedure.name
     val safeName = handlers.ident(originalName)
     handlers.resetEveryID(safeName)
@@ -30,31 +30,28 @@ class ProcedureCompiler(handlers: Handlers)(implicit compilerFlags: CompilerFlag
       } else
         handlers.commands(pd.statements)
     val args = pd.procedure.args.map(handlers.ident)
-    val functionJavascript = s"var $safeName = ${jsFunction(args = args, body = body)};"
-    if (safeName != originalName)
-      (functionJavascript, Map(originalName -> safeName, safeName -> safeName))
-    else
-      (functionJavascript, Map(safeName -> safeName))
+    val functionJs = s"(${jsFunction(args = args, body = body)})"
+    (functionJs, Seq(safeName, originalName).distinct)
   }
 }
 
 object ProcedureCompiler {
-  type CompiledProceduresDictionary = Seq[(String, Map[String, String])]
+  type CompiledProceduresDictionary = Seq[(String, Seq[String])]
 
   def formatProcedures(procedures: CompiledProceduresDictionary): Seq[TortoiseSymbol] =
     Seq(JsDeclare("procedures", proceduresObject(procedures), Seq("workspace", "world")))
 
   private def proceduresObject(procedureDefs: CompiledProceduresDictionary) = {
-    val functionDeclarations = procedureDefs.map(_._1).mkString("\n")
-    val propertyDeclarations = procedureDefs.map(_._2)
-      .foldLeft(Map.empty[String, String])(_ ++ _)
-      .toSeq.sortBy(_._1)
-      .map(prop => s""""${prop._1}":${prop._2}""").mkString(",\n")
+    val procedureDefsJs =
+      procedureDefs.map {
+        case (js, names) =>
+          names.map(name => s"""procs["$name"] = temp;""").mkString(s"temp = $js;\n", "\n", "")
+      }.mkString("\n")
     val propertyFunctionBody =
-    s"""|$functionDeclarations
-        |return {
-        |${indented(propertyDeclarations)}
-        |};""".stripMargin
+      s"""|var procs = {};
+          |var temp = undefined;
+          |$procedureDefsJs
+          |return procs;""".stripMargin
     s"(${jsFunction(body = propertyFunctionBody)})()"
   }
 }
