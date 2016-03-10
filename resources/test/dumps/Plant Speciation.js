@@ -166,7 +166,9 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
     world.observer.setGlobal("day", 0);
     world.observer.setGlobal("old-year", 0);
@@ -180,8 +182,8 @@ var procedures = (function() {
     world.observer.setGlobal("old-visualize-time-steps-state", world.observer.getGlobal("visualize-time-steps"));
     world.patches().ask(function() {
       SelfManager.self().setPatchVariable("barrier?", false);
-      procedures.setupTwoRegions();
-      SelfManager.self().setPatchVariable("pcolor", procedures.calcPatchColor(SelfManager.self().getPatchVariable("metal")));
+      procedures["SETUP-TWO-REGIONS"]();
+      SelfManager.self().setPatchVariable("pcolor", procedures["CALC-PATCH-COLOR"](SelfManager.self().getPatchVariable("metal")));
     }, true);
     world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pxcor"), world.topology.minPxcor); }).ask(function() {
       SelfManager.self().sprout(world.observer.getGlobal("plants-per-patch"), "TURTLES").ask(function() {
@@ -201,49 +203,57 @@ var procedures = (function() {
         SelfManager.self().setVariable("shape", "plant");
         SelfManager.self().setVariable("seedling?", false);
         SelfManager.self().setVariable("will-die?", false);
-        SelfManager.self().setVariable("color", procedures.calcPlantColor(SelfManager.self().getVariable("tolerance")));
+        SelfManager.self().setVariable("color", procedures["CALC-PLANT-COLOR"](SelfManager.self().getVariable("tolerance")));
       }, true);
     }, true);
     world.ticker.reset();
-  };
-  var setupTwoRegions = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     SelfManager.self().setPatchVariable("metal", NLMath.precision(Prims.div(100, (1 + NLMath.exp((world.observer.getGlobal("frontier-sharpness") * (Prims.div((world.topology.maxPxcor + world.topology.minPxcor), 2) - SelfManager.self().getPatchVariable("pxcor")))))), 0));
-  };
-  var go = function() {
-    procedures.checkLabels();
+  });
+  procs["setupTwoRegions"] = temp;
+  procs["SETUP-TWO-REGIONS"] = temp;
+  temp = (function() {
+    procedures["CHECK-LABELS"]();
     if (!Prims.equality(world.observer.getGlobal("old-visualize-time-steps-state"), world.observer.getGlobal("visualize-time-steps"))) {
-      world.turtles().ask(function() { procedures.redrawPlantsAsFullSizedPlants(); }, true);
+      world.turtles().ask(function() { procedures["REDRAW-PLANTS-AS-FULL-SIZED-PLANTS"](); }, true);
     }
     if (Prims.equality(world.observer.getGlobal("visualize-time-steps"), "years")) {
       world.observer.setGlobal("day", 0);
       world.observer.setGlobal("year", (world.observer.getGlobal("year") + 1));
-      world.turtles().ask(function() { procedures.redrawPlantsAsFullSizedPlants(); }, true);
-      procedures.doStartOfNewYearEvents();
+      world.turtles().ask(function() { procedures["REDRAW-PLANTS-AS-FULL-SIZED-PLANTS"](); }, true);
+      procedures["DO-START-OF-NEW-YEAR-EVENTS"]();
     }
     if (Prims.equality(world.observer.getGlobal("visualize-time-steps"), "days")) {
-      procedures.visualizeBloom();
-      procedures.doEndOfDaysEvents();
+      procedures["VISUALIZE-BLOOM"]();
+      procedures["DO-END-OF-DAYS-EVENTS"]();
     }
     world.ticker.tick();
-  };
-  var doStartOfNewYearEvents = function() {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     if (Prims.gt(world.observer.getGlobal("year"), world.observer.getGlobal("old-year"))) {
-      procedures.doReproduction();
-      procedures.markTurtlesToKill();
-      procedures.killMarkedTurtles();
+      procedures["DO-REPRODUCTION"]();
+      procedures["MARK-TURTLES-TO-KILL"]();
+      procedures["KILL-MARKED-TURTLES"]();
       world.observer.setGlobal("old-year", world.observer.getGlobal("year"));
     }
-  };
-  var doEndOfDaysEvents = function() {
+  });
+  procs["doStartOfNewYearEvents"] = temp;
+  procs["DO-START-OF-NEW-YEAR-EVENTS"] = temp;
+  temp = (function() {
     if (Prims.equality(world.observer.getGlobal("day"), 365)) {
       if (Prims.equality(world.observer.getGlobal("transition-time?"), false)) {
-        procedures.doReproduction();
-        procedures.markTurtlesToKill();
+        procedures["DO-REPRODUCTION"]();
+        procedures["MARK-TURTLES-TO-KILL"]();
         world.observer.setGlobal("transition-time?", true);
       }
       if (world.observer.getGlobal("transition-time?")) {
         world.observer.setGlobal("end-of-days-counter", (world.observer.getGlobal("end-of-days-counter") + 1));
-        world.turtles().agentFilter(function() { return SelfManager.self().getVariable("seedling?"); }).ask(function() { procedures.visualizeSeedlingGrowth(); }, true);
+        world.turtles().agentFilter(function() { return SelfManager.self().getVariable("seedling?"); }).ask(function() { procedures["VISUALIZE-SEEDLING-GROWTH"](); }, true);
         world.turtles().agentFilter(function() { return SelfManager.self().getVariable("will-die?"); }).ask(function() {
           SelfManager.self().setVariable("size", (1 - Prims.div(world.observer.getGlobal("end-of-days-counter"), 10)));
         }, true);
@@ -252,16 +262,18 @@ var procedures = (function() {
           world.observer.setGlobal("end-of-days-counter", 0);
           world.observer.setGlobal("transition-time?", false);
           world.observer.setGlobal("day", 0);
-          world.turtles().ask(function() { procedures.turnSeedlingsIntoFullPlants(); }, true);
-          procedures.killMarkedTurtles();
+          world.turtles().ask(function() { procedures["TURN-SEEDLINGS-INTO-FULL-PLANTS"](); }, true);
+          procedures["KILL-MARKED-TURTLES"]();
         }
       }
     }
     else {
       world.observer.setGlobal("day", (world.observer.getGlobal("day") + 1));
     }
-  };
-  var doReproduction = function() {
+  });
+  procs["doEndOfDaysEvents"] = temp;
+  procs["DO-END-OF-DAYS-EVENTS"] = temp;
+  temp = (function() {
     world.turtles().ask(function() {
       var potentialMates = [];
       var nearbyTurtles = world.turtles();
@@ -278,9 +290,9 @@ var procedures = (function() {
       }
       var compatibilities = Tasks.map(Tasks.reporterTask(function() {
         var taskArguments = arguments;
-        return procedures.compatibility(SelfManager.self(),taskArguments[0]);
+        return procedures["COMPATIBILITY"](SelfManager.self(),taskArguments[0]);
       }), potentialMates);
-      var mate = procedures.pickWeighted(potentialMates,compatibilities);
+      var mate = procedures["PICK-WEIGHTED"](potentialMates,compatibilities);
       SelfManager.self().hatch(Prims.randomPoisson(world.observer.getGlobal("average-number-offspring")), "").ask(function() {
         SelfManager.self().setVariable("seedling?", true);
         SelfManager.self().setVariable("will-die?", false);
@@ -312,15 +324,17 @@ var procedures = (function() {
         if (Prims.gt(SelfManager.self().getVariable("flower-time"), 365)) {
           SelfManager.self().setVariable("flower-time", 365);
         }
-        SelfManager.self().setVariable("color", procedures.calcPlantColor(SelfManager.self().getVariable("tolerance")));
-        procedures.migrateThisPlant();
+        SelfManager.self().setVariable("color", procedures["CALC-PLANT-COLOR"](SelfManager.self().getVariable("tolerance")));
+        procedures["MIGRATE-THIS-PLANT"]();
       }, true);
       if (Prims.equality(world.observer.getGlobal("plant-type"), "annual")) {
         SelfManager.self().setVariable("will-die?", true);
       }
     }, true);
-  };
-  var markTurtlesToKill = function() {
+  });
+  procs["doReproduction"] = temp;
+  procs["DO-REPRODUCTION"] = temp;
+  temp = (function() {
     world.turtles().ask(function() {
       var t = Prims.div(SelfManager.self().getVariable("tolerance"), 100);
       var m = Prims.div(SelfManager.self().getPatchVariable("metal"), 100);
@@ -338,24 +352,32 @@ var procedures = (function() {
         SelfManager.self().turtlesHere().minNOf(overpopulation, function() { return SelfManager.self().getVariable("fitness"); }).ask(function() { SelfManager.self().setVariable("will-die?", true); }, true);
       }
     }, true);
-  };
-  var migrateThisPlant = function() {
+  });
+  procs["markTurtlesToKill"] = temp;
+  procs["MARK-TURTLES-TO-KILL"] = temp;
+  temp = (function() {
     if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("chance-seed-dispersal"))) {
       SelfManager.self().moveTo(ListPrims.oneOf(SelfManager.self().getNeighbors()));
       SelfManager.self().right(Prims.random(360));
       SelfManager.self().fd(Prims.randomFloat(0.45));
     }
-  };
-  var killMarkedTurtles = function() {
+  });
+  procs["migrateThisPlant"] = temp;
+  procs["MIGRATE-THIS-PLANT"] = temp;
+  temp = (function() {
     world.turtles().agentFilter(function() { return SelfManager.self().getVariable("will-die?"); }).ask(function() { SelfManager.self().die(); }, true);
-  };
-  var turnSeedlingsIntoFullPlants = function() {
+  });
+  procs["killMarkedTurtles"] = temp;
+  procs["KILL-MARKED-TURTLES"] = temp;
+  temp = (function() {
     if (SelfManager.self().getVariable("seedling?")) {
       SelfManager.self().setVariable("seedling?", false);
     }
-    procedures.redrawPlantsAsFullSizedPlants();
-  };
-  var checkLabels = function() {
+    procedures["REDRAW-PLANTS-AS-FULL-SIZED-PLANTS"]();
+  });
+  procs["turnSeedlingsIntoFullPlants"] = temp;
+  procs["TURN-SEEDLINGS-INTO-FULL-PLANTS"] = temp;
+  temp = (function() {
     world.patches().ask(function() {
       if (Prims.equality(world.observer.getGlobal("show-labels-as"), "metal in soil")) {
         SelfManager.self().setPatchVariable("plabel", SelfManager.self().getPatchVariable("metal"));
@@ -375,17 +397,23 @@ var procedures = (function() {
         SelfManager.self().setVariable("label", "");
       }
     }, true);
-  };
-  var redrawPlantsAsFullSizedPlants = function() {
+  });
+  procs["checkLabels"] = temp;
+  procs["CHECK-LABELS"] = temp;
+  temp = (function() {
     SelfManager.self().setVariable("shape", "plant");
     SelfManager.self().setVariable("size", 1);
-  };
-  var visualizeSeedlingGrowth = function() {
+  });
+  procs["redrawPlantsAsFullSizedPlants"] = temp;
+  procs["REDRAW-PLANTS-AS-FULL-SIZED-PLANTS"] = temp;
+  temp = (function() {
     if (SelfManager.self().getVariable("seedling?")) {
       SelfManager.self().setVariable("size", Prims.div(world.observer.getGlobal("end-of-days-counter"), 10));
     }
-  };
-  var visualizeBloom = function() {
+  });
+  procs["visualizeSeedlingGrowth"] = temp;
+  procs["VISUALIZE-SEEDLING-GROWTH"] = temp;
+  temp = (function() {
     world.turtles().ask(function() {
       if ((Prims.gte(world.observer.getGlobal("day"), SelfManager.self().getVariable("flower-time")) && Prims.lte(world.observer.getGlobal("day"), (SelfManager.self().getVariable("flower-time") + world.observer.getGlobal("flower-duration"))))) {
         SelfManager.self().setVariable("shape", "flower");
@@ -394,8 +422,10 @@ var procedures = (function() {
         SelfManager.self().setVariable("shape", "plant");
       }
     }, true);
-  };
-  var pickWeighted = function(options, weights) {
+  });
+  procs["visualizeBloom"] = temp;
+  procs["VISUALIZE-BLOOM"] = temp;
+  temp = (function(options, weights) {
     try {
       var wsum = 0;
       Tasks.forEach(Tasks.commandTask(function() {
@@ -421,8 +451,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var compatibility = function(t1, t2) {
+  });
+  procs["pickWeighted"] = temp;
+  procs["PICK-WEIGHTED"] = temp;
+  temp = (function(t1, t2) {
     try {
       var diff = NLMath.abs((t1.projectionBy(function() { return SelfManager.self().getVariable("flower-time"); }) - t2.projectionBy(function() { return SelfManager.self().getVariable("flower-time"); })));
       if (Prims.lt(diff, world.observer.getGlobal("flower-duration"))) {
@@ -439,8 +471,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var calcPatchColor = function(m) {
+  });
+  procs["compatibility"] = temp;
+  procs["COMPATIBILITY"] = temp;
+  temp = (function(m) {
     try {
       throw new Exception.ReportInterrupt(ColorModel.genRGBFromComponents(0, Prims.div((255 * (1 - Prims.div(m, 100))), 2), Prims.div((255 * Prims.div(m, 100)), 2)));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
@@ -451,8 +485,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var calcPlantColor = function(t) {
+  });
+  procs["calcPatchColor"] = temp;
+  procs["CALC-PATCH-COLOR"] = temp;
+  temp = (function(t) {
     try {
       var blackPcolor = ColorModel.genRGBFromComponents(0, 0, 0);
       if (SelfManager.self().getPatchVariable("barrier?")) {
@@ -469,45 +505,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  return {
-    "CALC-PATCH-COLOR":calcPatchColor,
-    "CALC-PLANT-COLOR":calcPlantColor,
-    "CHECK-LABELS":checkLabels,
-    "COMPATIBILITY":compatibility,
-    "DO-END-OF-DAYS-EVENTS":doEndOfDaysEvents,
-    "DO-REPRODUCTION":doReproduction,
-    "DO-START-OF-NEW-YEAR-EVENTS":doStartOfNewYearEvents,
-    "GO":go,
-    "KILL-MARKED-TURTLES":killMarkedTurtles,
-    "MARK-TURTLES-TO-KILL":markTurtlesToKill,
-    "MIGRATE-THIS-PLANT":migrateThisPlant,
-    "PICK-WEIGHTED":pickWeighted,
-    "REDRAW-PLANTS-AS-FULL-SIZED-PLANTS":redrawPlantsAsFullSizedPlants,
-    "SETUP":setup,
-    "SETUP-TWO-REGIONS":setupTwoRegions,
-    "TURN-SEEDLINGS-INTO-FULL-PLANTS":turnSeedlingsIntoFullPlants,
-    "VISUALIZE-BLOOM":visualizeBloom,
-    "VISUALIZE-SEEDLING-GROWTH":visualizeSeedlingGrowth,
-    "calcPatchColor":calcPatchColor,
-    "calcPlantColor":calcPlantColor,
-    "checkLabels":checkLabels,
-    "compatibility":compatibility,
-    "doEndOfDaysEvents":doEndOfDaysEvents,
-    "doReproduction":doReproduction,
-    "doStartOfNewYearEvents":doStartOfNewYearEvents,
-    "go":go,
-    "killMarkedTurtles":killMarkedTurtles,
-    "markTurtlesToKill":markTurtlesToKill,
-    "migrateThisPlant":migrateThisPlant,
-    "pickWeighted":pickWeighted,
-    "redrawPlantsAsFullSizedPlants":redrawPlantsAsFullSizedPlants,
-    "setup":setup,
-    "setupTwoRegions":setupTwoRegions,
-    "turnSeedlingsIntoFullPlants":turnSeedlingsIntoFullPlants,
-    "visualizeBloom":visualizeBloom,
-    "visualizeSeedlingGrowth":visualizeSeedlingGrowth
-  };
+  });
+  procs["calcPlantColor"] = temp;
+  procs["CALC-PLANT-COLOR"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("chance-tolerance-mutation", 10);
 world.observer.setGlobal("tolerance-mutation-stdev", 20);

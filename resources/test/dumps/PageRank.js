@@ -51,19 +51,21 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
     BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("PAGES").getSpecialName(), "circle")
     if (Prims.equality(world.observer.getGlobal("network-choice"), "Example 1")) {
-      procedures.createNetworkExample1();
+      procedures["CREATE-NETWORK-EXAMPLE-1"]();
     }
     else {
       if (Prims.equality(world.observer.getGlobal("network-choice"), "Example 2")) {
-        procedures.createNetworkExample2();
+        procedures["CREATE-NETWORK-EXAMPLE-2"]();
       }
       else {
         if (Prims.equality(world.observer.getGlobal("network-choice"), "Preferential Attachment")) {
-          procedures.createNetworkPreferential(100,2);
+          procedures["CREATE-NETWORK-PREFERENTIAL"](100,2);
         }
         else {
           UserDialogPrims.confirm((Dump('') + Dump("Error: unknown network-choice: ") + Dump(world.observer.getGlobal("network-choice"))));
@@ -74,19 +76,21 @@ var procedures = (function() {
     world.turtleManager.turtlesOfBreed("PAGES").ask(function() {
       SelfManager.self().setVariable("rank", Prims.div(1, world.turtleManager.turtlesOfBreed("PAGES").size()));
     }, true);
-    procedures.updateGlobals();
+    procedures["UPDATE-GLOBALS"]();
     world.turtleManager.turtlesOfBreed("PAGES").ask(function() {
       SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
       SelfManager.self().setVariable("label-color", 0);
-      procedures.updatePageAppearance();
+      procedures["UPDATE-PAGE-APPEARANCE"]();
     }, true);
     for (var _index_827_833 = 0, _repeatcount_827_833 = StrictMath.floor(300); _index_827_833 < _repeatcount_827_833; _index_827_833++){
-      procedures.doLayout();
+      procedures["DO-LAYOUT"]();
     }
     world.links().ask(function() { SelfManager.self().setVariable("shape", "curved"); }, true);
     world.ticker.reset();
-  };
-  var createNetworkExample1 = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     world.turtleManager.createTurtles(11, "PAGES").ask(function() {}, true);
     world.turtleManager.getTurtleOfBreed("PAGES", 0).ask(function() {
       SelfManager.self().setVariable("color", 105);
@@ -113,8 +117,10 @@ var procedures = (function() {
       LinkPrims.createLinkFrom(world.turtleManager.getTurtleOfBreed("PAGES", 4), "LINKS").ask(function() {}, false);
     }, true);
     world.turtleManager.turtlesOfBreed("PAGES").agentFilter(function() { return Prims.gt(SelfManager.self().getVariable("who"), 5); }).ask(function() { SelfManager.self().setVariable("color", 115); }, true);
-  };
-  var createNetworkExample2 = function() {
+  });
+  procs["createNetworkExample1"] = temp;
+  procs["CREATE-NETWORK-EXAMPLE-1"] = temp;
+  temp = (function() {
     world.turtleManager.createTurtles(8, "PAGES").ask(function() {}, true);
     world.turtleManager.getTurtleOfBreed("PAGES", 0).ask(function() { SelfManager.self().die(); }, true);
     world.turtleManager.getTurtleOfBreed("PAGES", 1).ask(function() {
@@ -138,12 +144,16 @@ var procedures = (function() {
     world.turtleManager.getTurtleOfBreed("PAGES", 7).ask(function() {
       LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 1)), "LINKS").ask(function() {}, false);
     }, true);
-  };
-  var createNetworkPreferential = function(n, k) {
+  });
+  procs["createNetworkExample2"] = temp;
+  procs["CREATE-NETWORK-EXAMPLE-2"] = temp;
+  temp = (function(n, k) {
     world.turtleManager.createTurtles(n, "PAGES").ask(function() { SelfManager.self().setVariable("color", 95); }, true);
-    procedures.linkPreferentially(world.turtleManager.turtlesOfBreed("PAGES"),k);
-  };
-  var linkPreferentially = function(nodeset, k) {
+    procedures["LINK-PREFERENTIALLY"](world.turtleManager.turtlesOfBreed("PAGES"),k);
+  });
+  procs["createNetworkPreferential"] = temp;
+  procs["CREATE-NETWORK-PREFERENTIAL"] = temp;
+  temp = (function(nodeset, k) {
     var nodeList = ListPrims.sort(nodeset);
     var neighborChoiceList = ListPrims.sublist(nodeList, 0, k);
     ListPrims.item(k, nodeList).ask(function() {
@@ -182,11 +192,15 @@ var procedures = (function() {
         })), neighborChoiceList);
       }, true);
     }), ListPrims.sublist(nodeList, (k + 1), ListPrims.length(nodeList)));
-  };
-  var doLayout = function() {
+  });
+  procs["linkPreferentially"] = temp;
+  procs["LINK-PREFERENTIALLY"] = temp;
+  temp = (function() {
     LayoutManager.layoutSpring(world.turtleManager.turtlesOfBreed("PAGES"), world.links(), 0.2, Prims.div(20, NLMath.sqrt(world.turtleManager.turtlesOfBreed("PAGES").size())), 0.5);
-  };
-  var go = function() {
+  });
+  procs["doLayout"] = temp;
+  procs["DO-LAYOUT"] = temp;
+  temp = (function() {
     if (Prims.equality(world.observer.getGlobal("calculation-method"), "diffusion")) {
       if (world.turtleManager.turtlesOfBreed("SURFERS").nonEmpty()) {
         world.turtleManager.turtlesOfBreed("SURFERS").ask(function() { SelfManager.self().die(); }, true);
@@ -219,7 +233,7 @@ var procedures = (function() {
         world.turtleManager.createTurtles((world.observer.getGlobal("number-of-surfers") - world.turtleManager.turtlesOfBreed("SURFERS").size()), "SURFERS").ask(function() {
           SelfManager.self().setVariable("current-page", ListPrims.oneOf(world.turtleManager.turtlesOfBreed("PAGES")));
           if (world.observer.getGlobal("watch-surfers?")) {
-            procedures.moveSurfer();
+            procedures["MOVE-SURFER"]();
           }
           else {
             SelfManager.self().hideTurtle(true);;
@@ -244,7 +258,7 @@ var procedures = (function() {
         }
         if (world.observer.getGlobal("watch-surfers?")) {
           SelfManager.self().hideTurtle(false);;
-          procedures.moveSurfer();
+          procedures["MOVE-SURFER"]();
           var surferColor = SelfManager.self().getVariable("color");
           oldPage.ask(function() {
             var traveledLink = LinkPrims.outLinkTo("LINKS", SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("current-page"); }));
@@ -265,19 +279,25 @@ var procedures = (function() {
         SelfManager.self().setVariable("rank", Prims.div(SelfManager.self().getVariable("visits"), totalVisits));
       }, true);
     }
-    procedures.updateGlobals();
-    world.turtleManager.turtlesOfBreed("PAGES").ask(function() { procedures.updatePageAppearance(); }, true);
+    procedures["UPDATE-GLOBALS"]();
+    world.turtleManager.turtlesOfBreed("PAGES").ask(function() { procedures["UPDATE-PAGE-APPEARANCE"](); }, true);
     world.ticker.tick();
-  };
-  var moveSurfer = function() {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     SelfManager.self().face(SelfManager.self().getVariable("current-page"));
     SelfManager.self().moveTo(SelfManager.self().getVariable("current-page"));
-  };
-  var updateGlobals = function() {
+  });
+  procs["moveSurfer"] = temp;
+  procs["MOVE-SURFER"] = temp;
+  temp = (function() {
     world.observer.setGlobal("total-rank", ListPrims.sum(world.turtleManager.turtlesOfBreed("PAGES").projectionBy(function() { return SelfManager.self().getVariable("rank"); })));
     world.observer.setGlobal("max-rank", ListPrims.max(world.turtleManager.turtlesOfBreed("PAGES").projectionBy(function() { return SelfManager.self().getVariable("rank"); })));
-  };
-  var updatePageAppearance = function() {
+  });
+  procs["updateGlobals"] = temp;
+  procs["UPDATE-GLOBALS"] = temp;
+  temp = (function() {
     SelfManager.self().setVariable("size", (0.2 + (4 * NLMath.sqrt(Prims.div(SelfManager.self().getVariable("rank"), world.observer.getGlobal("total-rank"))))));
     if (world.observer.getGlobal("show-page-ranks?")) {
       SelfManager.self().setVariable("label", (Dump('') + Dump(NLMath.precision(SelfManager.self().getVariable("rank"), 3)) + Dump("     ")));
@@ -285,29 +305,10 @@ var procedures = (function() {
     else {
       SelfManager.self().setVariable("label", "");
     }
-  };
-  return {
-    "CREATE-NETWORK-EXAMPLE-1":createNetworkExample1,
-    "CREATE-NETWORK-EXAMPLE-2":createNetworkExample2,
-    "CREATE-NETWORK-PREFERENTIAL":createNetworkPreferential,
-    "DO-LAYOUT":doLayout,
-    "GO":go,
-    "LINK-PREFERENTIALLY":linkPreferentially,
-    "MOVE-SURFER":moveSurfer,
-    "SETUP":setup,
-    "UPDATE-GLOBALS":updateGlobals,
-    "UPDATE-PAGE-APPEARANCE":updatePageAppearance,
-    "createNetworkExample1":createNetworkExample1,
-    "createNetworkExample2":createNetworkExample2,
-    "createNetworkPreferential":createNetworkPreferential,
-    "doLayout":doLayout,
-    "go":go,
-    "linkPreferentially":linkPreferentially,
-    "moveSurfer":moveSurfer,
-    "setup":setup,
-    "updateGlobals":updateGlobals,
-    "updatePageAppearance":updatePageAppearance
-  };
+  });
+  procs["updatePageAppearance"] = temp;
+  procs["UPDATE-PAGE-APPEARANCE"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("damping-factor", 0.85);
 world.observer.setGlobal("calculation-method", "random-surfer");

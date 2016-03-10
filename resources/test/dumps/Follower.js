@@ -89,7 +89,9 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
     world.turtleManager.createTurtles(world.observer.getGlobal("population"), "").ask(function() {
       SelfManager.self().setVariable("color", 125);
@@ -98,18 +100,22 @@ var procedures = (function() {
       SelfManager.self().setVariable("follower", Nobody);
     }, true);
     world.ticker.reset();
-  };
-  var go = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     world.turtles().ask(function() {
       if (Prims.equality(SelfManager.self().getVariable("leader"), Nobody)) {
-        procedures.attachTurtle();
+        procedures["ATTACH-TURTLE"]();
       }
     }, true);
-    world.turtles().ask(function() { procedures.turnTurtle(); }, true);
+    world.turtles().ask(function() { procedures["TURN-TURTLE"](); }, true);
     world.turtles().ask(function() { SelfManager.self().fd(1); }, true);
     world.ticker.tick();
-  };
-  var attachTurtle = function() {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     try {
       var xd = (world.observer.getGlobal("near-radius") + Prims.random((world.observer.getGlobal("far-radius") - world.observer.getGlobal("near-radius"))));
       var yd = (world.observer.getGlobal("near-radius") + Prims.random((world.observer.getGlobal("far-radius") - world.observer.getGlobal("near-radius"))));
@@ -148,25 +154,20 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var turnTurtle = function() {
+  });
+  procs["attachTurtle"] = temp;
+  procs["ATTACH-TURTLE"] = temp;
+  temp = (function() {
     if (Prims.equality(SelfManager.self().getVariable("leader"), Nobody)) {
       SelfManager.self().right((Prims.randomFloat(world.observer.getGlobal("waver")) - Prims.randomFloat(world.observer.getGlobal("waver"))));
     }
     else {
       SelfManager.self().face(SelfManager.self().getVariable("leader"));
     }
-  };
-  return {
-    "ATTACH-TURTLE":attachTurtle,
-    "GO":go,
-    "SETUP":setup,
-    "TURN-TURTLE":turnTurtle,
-    "attachTurtle":attachTurtle,
-    "go":go,
-    "setup":setup,
-    "turnTurtle":turnTurtle
-  };
+  });
+  procs["turnTurtle"] = temp;
+  procs["TURN-TURTLE"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("waver", 70);
 world.observer.setGlobal("far-radius", 10);

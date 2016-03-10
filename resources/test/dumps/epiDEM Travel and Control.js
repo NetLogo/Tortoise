@@ -111,22 +111,28 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
-    procedures.setupGlobals();
-    procedures.setupPeople();
-    procedures.setupAmbulance();
+    procedures["SETUP-GLOBALS"]();
+    procedures["SETUP-PEOPLE"]();
+    procedures["SETUP-AMBULANCE"]();
     world.ticker.reset();
-  };
-  var setupGlobals = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     world.getPatchAt(Prims.div( -world.topology.maxPxcor, 2), 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
     world.getPatchAt(Prims.div(world.topology.maxPxcor, 2), 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
     world.observer.setGlobal("border", world.patches().agentFilter(function() {
       return (Prims.equality(SelfManager.self().getPatchVariable("pxcor"), 0) && Prims.gte(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), 0));
     }));
     world.observer.getGlobal("border").ask(function() { SelfManager.self().setPatchVariable("pcolor", 45); }, true);
-  };
-  var setupPeople = function() {
+  });
+  procs["setupGlobals"] = temp;
+  procs["SETUP-GLOBALS"] = temp;
+  temp = (function() {
     world.turtleManager.createTurtles(world.observer.getGlobal("initial-people"), "").ask(function() {
       SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
       if (Prims.lte(SelfManager.self().getVariable("xcor"), 0)) {
@@ -141,7 +147,7 @@ var procedures = (function() {
       SelfManager.self().setVariable("ambulance?", false);
       SelfManager.self().setVariable("infected?", false);
       SelfManager.self().setVariable("susceptible-0", 1);
-      procedures.assignTendency();
+      procedures["ASSIGN-TENDENCY"]();
       if (Prims.equality(SelfManager.self().getVariable("continent"), 1)) {
         SelfManager.self().setVariable("shape", "square");
       }
@@ -161,13 +167,15 @@ var procedures = (function() {
       else {
         SelfManager.self().setVariable("inoculated?", false);
       }
-      procedures.assignColor();
+      procedures["ASSIGN-COLOR"]();
     }, true);
     if (world.observer.getGlobal("links?")) {
-      procedures.makeNetwork();
+      procedures["MAKE-NETWORK"]();
     }
-  };
-  var setupAmbulance = function() {
+  });
+  procs["setupPeople"] = temp;
+  procs["SETUP-PEOPLE"] = temp;
+  temp = (function() {
     world.turtleManager.createTurtles(world.observer.getGlobal("initial-ambulance"), "").ask(function() {
       if (Prims.lt(Prims.random(2), 1)) {
         SelfManager.self().setVariable("continent", 1);
@@ -186,8 +194,10 @@ var procedures = (function() {
       SelfManager.self().setVariable("shape", "person");
       SelfManager.self().setVariable("color", 45);
     }, true);
-  };
-  var assignTendency = function() {
+  });
+  procs["setupAmbulance"] = temp;
+  procs["SETUP-AMBULANCE"] = temp;
+  temp = (function() {
     SelfManager.self().setVariable("isolation-tendency", Prims.div(Prims.randomNormal(world.observer.getGlobal("average-isolation-tendency"), world.observer.getGlobal("average-isolation-tendency")), 4));
     SelfManager.self().setVariable("hospital-going-tendency", Prims.div(Prims.randomNormal(world.observer.getGlobal("average-hospital-going-tendency"), world.observer.getGlobal("average-hospital-going-tendency")), 4));
     world.observer.setGlobal("recovery-time", Prims.div(Prims.randomNormal(world.observer.getGlobal("average-recovery-time"), world.observer.getGlobal("average-recovery-time")), 4));
@@ -209,8 +219,10 @@ var procedures = (function() {
     if (Prims.lt(SelfManager.self().getVariable("hospital-going-tendency"), 0)) {
       SelfManager.self().setVariable("hospital-going-tendency", 0);
     }
-  };
-  var assignColor = function() {
+  });
+  procs["assignTendency"] = temp;
+  procs["ASSIGN-TENDENCY"] = temp;
+  temp = (function() {
     if (SelfManager.self().getVariable("cured?")) {
       SelfManager.self().setVariable("color", 55);
     }
@@ -230,61 +242,65 @@ var procedures = (function() {
     if (SelfManager.self().getVariable("ambulance?")) {
       SelfManager.self().setVariable("color", 45);
     }
-  };
-  var makeNetwork = function() {
+  });
+  procs["assignColor"] = temp;
+  procs["ASSIGN-COLOR"] = temp;
+  temp = (function() {
     world.turtles().ask(function() {
       LinkPrims.createLinksWith(Prims.turtlesOn(SelfManager.self().getNeighbors()), "LINKS").ask(function() {}, false);
     }, true);
-  };
-  var go = function() {
+  });
+  procs["makeNetwork"] = temp;
+  procs["MAKE-NETWORK"] = temp;
+  temp = (function() {
     try {
       if (world.turtles().agentAll(function() { return !SelfManager.self().getVariable("infected?"); })) {
         throw new Exception.StopInterrupt;
       }
-      world.turtles().ask(function() { procedures.clearCount(); }, true);
+      world.turtles().ask(function() { procedures["CLEAR-COUNT"](); }, true);
       world.turtles().ask(function() {
         if (((!SelfManager.self().getVariable("isolated?") && !SelfManager.self().getVariable("hospitalized?")) && !SelfManager.self().getVariable("ambulance?"))) {
-          procedures.move();
+          procedures["MOVE"]();
         }
       }, true);
       world.turtles().ask(function() {
         if (((SelfManager.self().getVariable("infected?") && !SelfManager.self().getVariable("isolated?")) && !SelfManager.self().getVariable("hospitalized?"))) {
-          procedures.infect();
+          procedures["INFECT"]();
         }
       }, true);
       world.turtles().ask(function() {
         if ((((!SelfManager.self().getVariable("isolated?") && !SelfManager.self().getVariable("hospitalized?")) && SelfManager.self().getVariable("infected?")) && Prims.lt(Prims.random(100), SelfManager.self().getVariable("isolation-tendency")))) {
-          procedures.isolate();
+          procedures["ISOLATE"]();
         }
       }, true);
       world.turtles().ask(function() {
         if ((((!SelfManager.self().getVariable("isolated?") && !SelfManager.self().getVariable("hospitalized?")) && SelfManager.self().getVariable("infected?")) && Prims.lt(Prims.random(100), SelfManager.self().getVariable("hospital-going-tendency")))) {
-          procedures.hospitalize();
+          procedures["HOSPITALIZE"]();
         }
       }, true);
       world.turtles().ask(function() {
         if (SelfManager.self().getVariable("ambulance?")) {
-          procedures.move();
+          procedures["MOVE"]();
           Prims.turtlesOn(SelfManager.self().getNeighbors()).ask(function() {
             if ((Prims.equality(SelfManager.self().getVariable("ambulance?"), false) && Prims.equality(SelfManager.self().getVariable("infected?"), true))) {
-              procedures.hospitalize();
+              procedures["HOSPITALIZE"]();
             }
           }, true);
         }
       }, true);
       world.turtles().ask(function() {
         if (SelfManager.self().getVariable("infected?")) {
-          procedures.maybeRecover();
+          procedures["MAYBE-RECOVER"]();
         }
       }, true);
       world.turtles().ask(function() {
         if (((SelfManager.self().getVariable("isolated?") || SelfManager.self().getVariable("hospitalized?")) && SelfManager.self().getVariable("cured?"))) {
-          procedures.unisolate();
+          procedures["UNISOLATE"]();
         }
       }, true);
       world.turtles().ask(function() {
-        procedures.assignColor();
-        procedures.calculateR0();
+        procedures["ASSIGN-COLOR"]();
+        procedures["CALCULATE-R0"]();
       }, true);
       world.ticker.tick();
     } catch (e) {
@@ -294,8 +310,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var move = function() {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     if (world.observer.getGlobal("travel?")) {
       if ((Prims.lt(Prims.random(100), world.observer.getGlobal("travel-tendency")) && !SelfManager.self().getVariable("ambulance?"))) {
         SelfManager.self().setVariable("xcor",  -SelfManager.self().getVariable("xcor"));
@@ -349,12 +367,16 @@ var procedures = (function() {
         }
       }
     }
-  };
-  var clearCount = function() {
+  });
+  procs["move"] = temp;
+  procs["MOVE"] = temp;
+  temp = (function() {
     SelfManager.self().setVariable("nb-infected", 0);
     SelfManager.self().setVariable("nb-recovered", 0);
-  };
-  var maybeRecover = function() {
+  });
+  procs["clearCount"] = temp;
+  procs["CLEAR-COUNT"] = temp;
+  temp = (function() {
     SelfManager.self().setVariable("infection-length", (SelfManager.self().getVariable("infection-length") + 1));
     if (!SelfManager.self().getVariable("hospitalized?")) {
       if (Prims.gt(SelfManager.self().getVariable("infection-length"), world.observer.getGlobal("recovery-time"))) {
@@ -372,21 +394,27 @@ var procedures = (function() {
         SelfManager.self().setVariable("nb-recovered", (SelfManager.self().getVariable("nb-recovered") + 1));
       }
     }
-  };
-  var isolate = function() {
+  });
+  procs["maybeRecover"] = temp;
+  procs["MAYBE-RECOVER"] = temp;
+  temp = (function() {
     SelfManager.self().setVariable("isolated?", true);
     SelfManager.self().moveTo(SelfManager.self().getPatchHere());
     SelfManager.self().patchAt(0, 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", (5 - 3)); }, true);
-  };
-  var unisolate = function() {
+  });
+  procs["isolate"] = temp;
+  procs["ISOLATE"] = temp;
+  temp = (function() {
     SelfManager.self().setVariable("isolated?", false);
     SelfManager.self().setVariable("hospitalized?", false);
     SelfManager.self().patchAt(0, 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 0); }, true);
     world.observer.getGlobal("border").ask(function() { SelfManager.self().setPatchVariable("pcolor", 45); }, true);
     world.getPatchAt(Prims.div( -world.topology.maxPxcor, 2), 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
     world.getPatchAt(Prims.div(world.topology.maxPxcor, 2), 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
-  };
-  var hospitalize = function() {
+  });
+  procs["unisolate"] = temp;
+  procs["UNISOLATE"] = temp;
+  temp = (function() {
     SelfManager.self().setVariable("hospitalized?", true);
     SelfManager.self().setPatchVariable("pcolor", 0);
     if (Prims.equality(SelfManager.self().getVariable("continent"), 1)) {
@@ -396,8 +424,10 @@ var procedures = (function() {
       SelfManager.self().moveTo(world.getPatchAt(Prims.div(world.topology.maxPxcor, 2), 0));
     }
     SelfManager.self().setPatchVariable("pcolor", 9.9);
-  };
-  var infect = function() {
+  });
+  procs["hospitalize"] = temp;
+  procs["HOSPITALIZE"] = temp;
+  temp = (function() {
     var caller = SelfManager.self();
     var nearbyUninfected = Prims.turtlesOn(SelfManager.self().getNeighbors()).agentFilter(function() {
       return ((!SelfManager.self().getVariable("infected?") && !SelfManager.self().getVariable("cured?")) && !SelfManager.self().getVariable("inoculated?"));
@@ -418,8 +448,10 @@ var procedures = (function() {
         }
       }, true);
     }
-  };
-  var calculateR0 = function() {
+  });
+  procs["infect"] = temp;
+  procs["INFECT"] = temp;
+  temp = (function() {
     var newInfected = ListPrims.sum(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("nb-infected"); }));
     var newRecovered = ListPrims.sum(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("nb-recovered"); }));
     world.observer.setGlobal("nb-infected-previous", ((world.turtles().agentFilter(function() { return SelfManager.self().getVariable("infected?"); }).size() + newRecovered) - newInfected));
@@ -441,41 +473,10 @@ var procedures = (function() {
       world.observer.setGlobal("r0", Prims.div(NLMath.ln(Prims.div(s0, susceptibleT)), (world.observer.getGlobal("initial-people") - susceptibleT)));
       world.observer.setGlobal("r0", (world.observer.getGlobal("r0") * s0));
     }
-  };
-  return {
-    "ASSIGN-COLOR":assignColor,
-    "ASSIGN-TENDENCY":assignTendency,
-    "CALCULATE-R0":calculateR0,
-    "CLEAR-COUNT":clearCount,
-    "GO":go,
-    "HOSPITALIZE":hospitalize,
-    "INFECT":infect,
-    "ISOLATE":isolate,
-    "MAKE-NETWORK":makeNetwork,
-    "MAYBE-RECOVER":maybeRecover,
-    "MOVE":move,
-    "SETUP":setup,
-    "SETUP-AMBULANCE":setupAmbulance,
-    "SETUP-GLOBALS":setupGlobals,
-    "SETUP-PEOPLE":setupPeople,
-    "UNISOLATE":unisolate,
-    "assignColor":assignColor,
-    "assignTendency":assignTendency,
-    "calculateR0":calculateR0,
-    "clearCount":clearCount,
-    "go":go,
-    "hospitalize":hospitalize,
-    "infect":infect,
-    "isolate":isolate,
-    "makeNetwork":makeNetwork,
-    "maybeRecover":maybeRecover,
-    "move":move,
-    "setup":setup,
-    "setupAmbulance":setupAmbulance,
-    "setupGlobals":setupGlobals,
-    "setupPeople":setupPeople,
-    "unisolate":unisolate
-  };
+  });
+  procs["calculateR0"] = temp;
+  procs["CALCULATE-R0"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("initial-people", 250);
 world.observer.setGlobal("average-isolation-tendency", 5);

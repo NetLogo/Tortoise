@@ -51,7 +51,9 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
     world.turtleManager.createTurtles(world.observer.getGlobal("population"), "").ask(function() {
       SelfManager.self().setVariable("color", ((45 - 2) + Prims.random(7)));
@@ -59,41 +61,55 @@ var procedures = (function() {
       SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
     }, true);
     world.ticker.reset();
-  };
-  var go = function() {
-    world.turtles().ask(function() { procedures.flock(); }, true);
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
+    world.turtles().ask(function() { procedures["FLOCK"](); }, true);
     for (var _index_443_449 = 0, _repeatcount_443_449 = StrictMath.floor(5); _index_443_449 < _repeatcount_443_449; _index_443_449++){
       world.turtles().ask(function() { SelfManager.self().fd(0.2); }, true);
       notImplemented('display', undefined)();
     }
     world.ticker.tick();
-  };
-  var flock = function() {
-    procedures.findFlockmates();
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
+    procedures["FIND-FLOCKMATES"]();
     if (SelfManager.self().getVariable("flockmates").nonEmpty()) {
-      procedures.findNearestNeighbor();
+      procedures["FIND-NEAREST-NEIGHBOR"]();
       if (Prims.lt(SelfManager.self().distance(SelfManager.self().getVariable("nearest-neighbor")), world.observer.getGlobal("minimum-separation"))) {
-        procedures.separate();
+        procedures["SEPARATE"]();
       }
       else {
-        procedures.align();
-        procedures.cohere();
+        procedures["ALIGN"]();
+        procedures["COHERE"]();
       }
     }
-  };
-  var findFlockmates = function() {
+  });
+  procs["flock"] = temp;
+  procs["FLOCK"] = temp;
+  temp = (function() {
     SelfManager.self().setVariable("flockmates", SelfPrims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("vision"))));
-  };
-  var findNearestNeighbor = function() {
+  });
+  procs["findFlockmates"] = temp;
+  procs["FIND-FLOCKMATES"] = temp;
+  temp = (function() {
     SelfManager.self().setVariable("nearest-neighbor", SelfManager.self().getVariable("flockmates").minOneOf(function() { return SelfManager.self().distance(SelfManager.myself()); }));
-  };
-  var separate = function() {
-    procedures.turnAway(SelfManager.self().getVariable("nearest-neighbor").projectionBy(function() { return SelfManager.self().getVariable("heading"); }),world.observer.getGlobal("max-separate-turn"));
-  };
-  var align = function() {
-    procedures.turnTowards(procedures.averageFlockmateHeading(),world.observer.getGlobal("max-align-turn"));
-  };
-  var averageFlockmateHeading = function() {
+  });
+  procs["findNearestNeighbor"] = temp;
+  procs["FIND-NEAREST-NEIGHBOR"] = temp;
+  temp = (function() {
+    procedures["TURN-AWAY"](SelfManager.self().getVariable("nearest-neighbor").projectionBy(function() { return SelfManager.self().getVariable("heading"); }),world.observer.getGlobal("max-separate-turn"));
+  });
+  procs["separate"] = temp;
+  procs["SEPARATE"] = temp;
+  temp = (function() {
+    procedures["TURN-TOWARDS"](procedures["AVERAGE-FLOCKMATE-HEADING"](),world.observer.getGlobal("max-align-turn"));
+  });
+  procs["align"] = temp;
+  procs["ALIGN"] = temp;
+  temp = (function() {
     try {
       var xComponent = ListPrims.sum(SelfManager.self().getVariable("flockmates").projectionBy(function() { return SelfManager.self().dx(); }));
       var yComponent = ListPrims.sum(SelfManager.self().getVariable("flockmates").projectionBy(function() { return SelfManager.self().dy(); }));
@@ -111,11 +127,15 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var cohere = function() {
-    procedures.turnTowards(procedures.averageHeadingTowardsFlockmates(),world.observer.getGlobal("max-cohere-turn"));
-  };
-  var averageHeadingTowardsFlockmates = function() {
+  });
+  procs["averageFlockmateHeading"] = temp;
+  procs["AVERAGE-FLOCKMATE-HEADING"] = temp;
+  temp = (function() {
+    procedures["TURN-TOWARDS"](procedures["AVERAGE-HEADING-TOWARDS-FLOCKMATES"](),world.observer.getGlobal("max-cohere-turn"));
+  });
+  procs["cohere"] = temp;
+  procs["COHERE"] = temp;
+  temp = (function() {
     try {
       var xComponent = ListPrims.mean(SelfManager.self().getVariable("flockmates").projectionBy(function() { return NLMath.sin((SelfManager.self().towards(SelfManager.myself()) + 180)); }));
       var yComponent = ListPrims.mean(SelfManager.self().getVariable("flockmates").projectionBy(function() { return NLMath.cos((SelfManager.self().towards(SelfManager.myself()) + 180)); }));
@@ -133,14 +153,20 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var turnTowards = function(newHeading, maxTurn) {
-    procedures.turnAtMost(NLMath.subtractHeadings(newHeading, SelfManager.self().getVariable("heading")),maxTurn);
-  };
-  var turnAway = function(newHeading, maxTurn) {
-    procedures.turnAtMost(NLMath.subtractHeadings(SelfManager.self().getVariable("heading"), newHeading),maxTurn);
-  };
-  var turnAtMost = function(turn, maxTurn) {
+  });
+  procs["averageHeadingTowardsFlockmates"] = temp;
+  procs["AVERAGE-HEADING-TOWARDS-FLOCKMATES"] = temp;
+  temp = (function(newHeading, maxTurn) {
+    procedures["TURN-AT-MOST"](NLMath.subtractHeadings(newHeading, SelfManager.self().getVariable("heading")),maxTurn);
+  });
+  procs["turnTowards"] = temp;
+  procs["TURN-TOWARDS"] = temp;
+  temp = (function(newHeading, maxTurn) {
+    procedures["TURN-AT-MOST"](NLMath.subtractHeadings(SelfManager.self().getVariable("heading"), newHeading),maxTurn);
+  });
+  procs["turnAway"] = temp;
+  procs["TURN-AWAY"] = temp;
+  temp = (function(turn, maxTurn) {
     if (Prims.gt(NLMath.abs(turn), maxTurn)) {
       if (Prims.gt(turn, 0)) {
         SelfManager.self().right(maxTurn);
@@ -152,35 +178,10 @@ var procedures = (function() {
     else {
       SelfManager.self().right(turn);
     }
-  };
-  return {
-    "ALIGN":align,
-    "AVERAGE-FLOCKMATE-HEADING":averageFlockmateHeading,
-    "AVERAGE-HEADING-TOWARDS-FLOCKMATES":averageHeadingTowardsFlockmates,
-    "COHERE":cohere,
-    "FIND-FLOCKMATES":findFlockmates,
-    "FIND-NEAREST-NEIGHBOR":findNearestNeighbor,
-    "FLOCK":flock,
-    "GO":go,
-    "SEPARATE":separate,
-    "SETUP":setup,
-    "TURN-AT-MOST":turnAtMost,
-    "TURN-AWAY":turnAway,
-    "TURN-TOWARDS":turnTowards,
-    "align":align,
-    "averageFlockmateHeading":averageFlockmateHeading,
-    "averageHeadingTowardsFlockmates":averageHeadingTowardsFlockmates,
-    "cohere":cohere,
-    "findFlockmates":findFlockmates,
-    "findNearestNeighbor":findNearestNeighbor,
-    "flock":flock,
-    "go":go,
-    "separate":separate,
-    "setup":setup,
-    "turnAtMost":turnAtMost,
-    "turnAway":turnAway,
-    "turnTowards":turnTowards
-  };
+  });
+  procs["turnAtMost"] = temp;
+  procs["TURN-AT-MOST"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("population", 300);
 world.observer.setGlobal("max-align-turn", 5);

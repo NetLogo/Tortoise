@@ -51,7 +51,9 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
     world.turtleManager.createTurtles(1, "").ask(function() {
       SelfManager.self().setVariable("shape", "line");
@@ -61,8 +63,10 @@ var procedures = (function() {
       SelfManager.self().penManager.lowerPen();
     }, true);
     world.ticker.reset();
-  };
-  var go = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     world.turtles().ask(function() {
       SelfManager.self().setVariable("new?", false);
       SelfManager.self().penManager.lowerPen();
@@ -85,13 +89,10 @@ var procedures = (function() {
       SelfManager.self().die();
     }, true);
     world.ticker.tick();
-  };
-  return {
-    "GO":go,
-    "SETUP":setup,
-    "go":go,
-    "setup":setup
-  };
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("color-inc", 7);
 world.observer.setGlobal("init-color", 45);

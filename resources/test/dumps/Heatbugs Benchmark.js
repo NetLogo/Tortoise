@@ -51,16 +51,20 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var benchmark = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     workspace.rng.setSeed(362);
-    procedures.setup();
+    procedures["SETUP"]();
     workspace.timer.reset();
     for (var _index_216_222 = 0, _repeatcount_216_222 = StrictMath.floor(1000); _index_216_222 < _repeatcount_216_222; _index_216_222++){
-      procedures.go();
+      procedures["GO"]();
     }
     world.observer.setGlobal("result", workspace.timer.elapsed());
-  };
-  var setup = function() {
+  });
+  procs["benchmark"] = temp;
+  procs["BENCHMARK"] = temp;
+  temp = (function() {
     world.clearAll();
     world.ticker.reset();
     ListPrims.nOf(world.observer.getGlobal("bug-count"), world.patches()).ask(function() {
@@ -72,15 +76,17 @@ var procedures = (function() {
         SelfManager.self().setVariable("unhappiness", NLMath.abs((SelfManager.self().getVariable("ideal-temp") - SelfManager.self().getPatchVariable("temp"))));
       }, true);
     }, true);
-  };
-  var go = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     try {
       if (!world.turtles().nonEmpty()) {
         throw new Exception.StopInterrupt;
       }
       world.topology.diffuse("temp", world.observer.getGlobal("diffusion-rate"))
-      world.turtles().ask(function() { procedures.step(); }, true);
-      procedures.recolorPatches();
+      world.turtles().ask(function() { procedures["STEP"](); }, true);
+      procedures["RECOLOR-PATCHES"]();
       world.ticker.tick();
     } catch (e) {
       if (e instanceof Exception.StopInterrupt) {
@@ -89,27 +95,33 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var recolorPatches = function() {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     world.patches().ask(function() {
       SelfManager.self().setPatchVariable("temp", (SelfManager.self().getPatchVariable("temp") * (1 - world.observer.getGlobal("evaporation-rate"))));
       SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(15, SelfManager.self().getPatchVariable("temp"), 0, 500));
     }, true);
-  };
-  var step = function() {
+  });
+  procs["recolorPatches"] = temp;
+  procs["RECOLOR-PATCHES"] = temp;
+  temp = (function() {
     SelfManager.self().setVariable("unhappiness", NLMath.abs((SelfManager.self().getVariable("ideal-temp") - SelfManager.self().getPatchVariable("temp"))));
     if (Prims.equality(SelfManager.self().getVariable("unhappiness"), 0)) {
       SelfManager.self().setPatchVariable("temp", (SelfManager.self().getPatchVariable("temp") + SelfManager.self().getVariable("output-heat")));
     }
     else {
-      var target = procedures.findTarget();
+      var target = procedures["FIND-TARGET"]();
       if ((!Prims.equality(SelfManager.self().getPatchHere(), target) || Prims.gt(world.observer.getGlobal("random-move-chance"), Prims.random(100)))) {
-        procedures.bugMove(target);
+        procedures["BUG-MOVE"](target);
       }
       SelfManager.self().setPatchVariable("temp", (SelfManager.self().getPatchVariable("temp") + SelfManager.self().getVariable("output-heat")));
     }
-  };
-  var findTarget = function() {
+  });
+  procs["step"] = temp;
+  procs["STEP"] = temp;
+  temp = (function() {
     try {
       if (Prims.lt(SelfManager.self().getPatchVariable("temp"), SelfManager.self().getVariable("ideal-temp"))) {
         throw new Exception.ReportInterrupt(SelfManager.self().getNeighbors().maxOneOf(function() { return SelfManager.self().getPatchVariable("temp"); }));
@@ -125,8 +137,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var bugMove = function(target) {
+  });
+  procs["findTarget"] = temp;
+  procs["FIND-TARGET"] = temp;
+  temp = (function(target) {
     try {
       var tries = 0;
       if (!Prims.turtlesOn(target).nonEmpty()) {
@@ -148,23 +162,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  return {
-    "BENCHMARK":benchmark,
-    "BUG-MOVE":bugMove,
-    "FIND-TARGET":findTarget,
-    "GO":go,
-    "RECOLOR-PATCHES":recolorPatches,
-    "SETUP":setup,
-    "STEP":step,
-    "benchmark":benchmark,
-    "bugMove":bugMove,
-    "findTarget":findTarget,
-    "go":go,
-    "recolorPatches":recolorPatches,
-    "setup":setup,
-    "step":step
-  };
+  });
+  procs["bugMove"] = temp;
+  procs["BUG-MOVE"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("bug-count", 100);
 world.observer.setGlobal("evaporation-rate", 0.01);

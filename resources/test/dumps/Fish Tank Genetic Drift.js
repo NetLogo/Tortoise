@@ -207,7 +207,9 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
     world.observer.setGlobal("mouse-continuous-down?", false);
     world.observer.setGlobal("intra-chromosome-pair-spacing", 0.2);
@@ -239,69 +241,81 @@ var procedures = (function() {
       SelfManager.self().setVariable("color", 15);
       SelfManager.self().setVariable("heading", 0);
     }, true);
-    procedures.setTankRegions();
-    procedures.createInitialGenePool();
-    procedures.createInitialFish();
-    procedures.visualizeTank();
-    procedures.visualizeFishAndAlleles();
+    procedures["SET-TANK-REGIONS"]();
+    procedures["CREATE-INITIAL-GENE-POOL"]();
+    procedures["CREATE-INITIAL-FISH"]();
+    procedures["VISUALIZE-TANK"]();
+    procedures["VISUALIZE-FISH-AND-ALLELES"]();
     world.ticker.reset();
-  };
-  var setTankRegions = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     var minPycorEdge = world.topology.minPycor;
     var maxPycorEdge = world.topology.maxPycor;
     var waterPatches = Nobody;
     world.patches().ask(function() {
       SelfManager.self().setPatchVariable("divider-here?", false);
       SelfManager.self().setPatchVariable("type-of-patch", "water");
-      if ((((Prims.equality(SelfManager.self().getPatchVariable("pycor"), (maxPycorEdge - 2)) || Prims.equality(SelfManager.self().getPatchVariable("pycor"), (minPycorEdge + 2))) || Prims.equality(SelfManager.self().getPatchVariable("pxcor"), procedures.leftSideOfWaterInTank())) || Prims.equality(SelfManager.self().getPatchVariable("pxcor"), procedures.rightSideOfWaterInTank()))) {
+      if ((((Prims.equality(SelfManager.self().getPatchVariable("pycor"), (maxPycorEdge - 2)) || Prims.equality(SelfManager.self().getPatchVariable("pycor"), (minPycorEdge + 2))) || Prims.equality(SelfManager.self().getPatchVariable("pxcor"), procedures["LEFT-SIDE-OF-WATER-IN-TANK"]())) || Prims.equality(SelfManager.self().getPatchVariable("pxcor"), procedures["RIGHT-SIDE-OF-WATER-IN-TANK"]()))) {
         SelfManager.self().setPatchVariable("type-of-patch", "water-edge");
       }
       if (Prims.gte(SelfManager.self().getPatchVariable("pycor"), (maxPycorEdge - 1))) {
         SelfManager.self().setPatchVariable("type-of-patch", "air");
       }
-      if (((Prims.lte(SelfManager.self().getPatchVariable("pxcor"), (procedures.leftSideOfWaterInTank() - 1)) || Prims.gte(SelfManager.self().getPatchVariable("pxcor"), (procedures.rightSideOfWaterInTank() + 1))) || Prims.lte(SelfManager.self().getPatchVariable("pycor"), (minPycorEdge + 1)))) {
+      if (((Prims.lte(SelfManager.self().getPatchVariable("pxcor"), (procedures["LEFT-SIDE-OF-WATER-IN-TANK"]() - 1)) || Prims.gte(SelfManager.self().getPatchVariable("pxcor"), (procedures["RIGHT-SIDE-OF-WATER-IN-TANK"]() + 1))) || Prims.lte(SelfManager.self().getPatchVariable("pycor"), (minPycorEdge + 1)))) {
         SelfManager.self().setPatchVariable("type-of-patch", "tank-wall");
       }
-      if ((((Prims.equality(SelfManager.self().getPatchVariable("pycor"), maxPycorEdge) || Prims.equality(SelfManager.self().getPatchVariable("pycor"), minPycorEdge)) || Prims.equality(SelfManager.self().getPatchVariable("pxcor"), (procedures.leftSideOfWaterInTank() - 2))) || Prims.gte(SelfManager.self().getPatchVariable("pxcor"), (procedures.rightSideOfWaterInTank() + 2)))) {
+      if ((((Prims.equality(SelfManager.self().getPatchVariable("pycor"), maxPycorEdge) || Prims.equality(SelfManager.self().getPatchVariable("pycor"), minPycorEdge)) || Prims.equality(SelfManager.self().getPatchVariable("pxcor"), (procedures["LEFT-SIDE-OF-WATER-IN-TANK"]() - 2))) || Prims.gte(SelfManager.self().getPatchVariable("pxcor"), (procedures["RIGHT-SIDE-OF-WATER-IN-TANK"]() + 2)))) {
         SelfManager.self().setPatchVariable("type-of-patch", "air");
       }
     }, true);
     waterPatches = world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("type-of-patch"), "water"); });
-  };
-  var createInitialGenePool = function() {
+  });
+  procs["setTankRegions"] = temp;
+  procs["SET-TANK-REGIONS"] = temp;
+  temp = (function() {
     var numBigAlleles = 0;
     var initialNumberFish = world.observer.getGlobal("carrying-capacity");
     numBigAlleles = NLMath.round(Prims.div(((world.observer.getGlobal("initial-alleles-big-b") * 2) * initialNumberFish), 100));
-    procedures.makeInitialAllelesForGene(1,"B","b",numBigAlleles);
+    procedures["MAKE-INITIAL-ALLELES-FOR-GENE"](1,"B","b",numBigAlleles);
     numBigAlleles = NLMath.round(Prims.div(((world.observer.getGlobal("initial-alleles-big-t") * 2) * initialNumberFish), 100));
-    procedures.makeInitialAllelesForGene(2,"T","t",numBigAlleles);
+    procedures["MAKE-INITIAL-ALLELES-FOR-GENE"](2,"T","t",numBigAlleles);
     numBigAlleles = NLMath.round(Prims.div(((world.observer.getGlobal("initial-alleles-big-f") * 2) * initialNumberFish), 100));
-    procedures.makeInitialAllelesForGene(3,"F","f",numBigAlleles);
+    procedures["MAKE-INITIAL-ALLELES-FOR-GENE"](3,"F","f",numBigAlleles);
     numBigAlleles = NLMath.round(Prims.div(((world.observer.getGlobal("initial-alleles-big-g") * 2) * initialNumberFish), 100));
-    procedures.makeInitialAllelesForGene(4,"G","g",numBigAlleles);
-    procedures.makeInitialAllelesForGene(5,"Y","X",world.observer.getGlobal("initial-#-males"));
-  };
-  var createInitialFish = function() {
+    procedures["MAKE-INITIAL-ALLELES-FOR-GENE"](4,"G","g",numBigAlleles);
+    procedures["MAKE-INITIAL-ALLELES-FOR-GENE"](5,"Y","X",world.observer.getGlobal("initial-#-males"));
+  });
+  procs["createInitialGenePool"] = temp;
+  procs["CREATE-INITIAL-GENE-POOL"] = temp;
+  temp = (function() {
     world.turtleManager.createTurtles(world.observer.getGlobal("initial-#-males"), "SOMATIC-CELLS").ask(function() { SelfManager.self().setVariable("sex", "male"); }, true);
     world.turtleManager.createTurtles(world.observer.getGlobal("initial-#-females"), "SOMATIC-CELLS").ask(function() { SelfManager.self().setVariable("sex", "female"); }, true);
-    world.turtleManager.turtlesOfBreed("SOMATIC-CELLS").ask(function() { procedures.setupNewSomaticCellAttributes(); }, true);
-    procedures.distributeGenePoolToSomaticCells();
-    world.turtleManager.turtlesOfBreed("SOMATIC-CELLS").ask(function() { procedures.growFishPartsFromSomaticCell(); }, true);
-    procedures.distributeFishInTank();
-  };
-  var setupNewSomaticCellAttributes = function() {
+    world.turtleManager.turtlesOfBreed("SOMATIC-CELLS").ask(function() { procedures["SETUP-NEW-SOMATIC-CELL-ATTRIBUTES"](); }, true);
+    procedures["DISTRIBUTE-GENE-POOL-TO-SOMATIC-CELLS"]();
+    world.turtleManager.turtlesOfBreed("SOMATIC-CELLS").ask(function() { procedures["GROW-FISH-PARTS-FROM-SOMATIC-CELL"](); }, true);
+    procedures["DISTRIBUTE-FISH-IN-TANK"]();
+  });
+  procs["createInitialFish"] = temp;
+  procs["CREATE-INITIAL-FISH"] = temp;
+  temp = (function() {
     SelfManager.self().setVariable("heading", 0);
     SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("SOMATIC-CELLS"));
     SelfManager.self().setVariable("color", [100, 100, 100, 100]);
     SelfManager.self().setVariable("size", world.observer.getGlobal("size-of-karyotype-background-for-cells"));
     SelfManager.self().setVariable("hidden?", true);
-  };
-  var distributeFishInTank = function() {
+  });
+  procs["setupNewSomaticCellAttributes"] = temp;
+  procs["SETUP-NEW-SOMATIC-CELL-ATTRIBUTES"] = temp;
+  temp = (function() {
     var waterPatches = world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("type-of-patch"), "water"); });
     var waterPatch = Nobody;
     world.turtleManager.turtlesOfBreed("FISH").ask(function() { SelfManager.self().moveTo(ListPrims.oneOf(waterPatches)); }, true);
-  };
-  var makeInitialAllelesForGene = function(geneNumber, allele1, allele2, numBigAlleles) {
+  });
+  procs["distributeFishInTank"] = temp;
+  procs["DISTRIBUTE-FISH-IN-TANK"] = temp;
+  temp = (function(geneNumber, allele1, allele2, numBigAlleles) {
     var initialNumberFish = (world.observer.getGlobal("initial-#-males") + world.observer.getGlobal("initial-#-females"));
     world.turtleManager.createTurtles((2 * initialNumberFish), "ALLELES").ask(function() {
       SelfManager.self().setVariable("gene", geneNumber);
@@ -319,16 +333,18 @@ var procedures = (function() {
       SelfManager.self().setVariable("label", (Dump('') + Dump(SelfManager.self().getVariable("value")) + Dump("     ")));
       SelfManager.self().setVariable("label-color", SelfManager.self().getVariable("color"));
     }, true);
-  };
-  var distributeGenePoolToSomaticCells = function() {
+  });
+  procs["makeInitialAllelesForGene"] = temp;
+  procs["MAKE-INITIAL-ALLELES-FOR-GENE"] = temp;
+  temp = (function() {
     var thisSomaticCell = Nobody;
     var lastSexAllele = "";
     world.turtleManager.turtlesOfBreed("SOMATIC-CELLS").ask(function() {
       thisSomaticCell = SelfManager.self();
       Tasks.forEach(Tasks.commandTask(function() {
         var taskArguments = arguments;
-        procedures.positionAndLinkAlleles(SelfManager.self(),taskArguments[0],"left");
-        procedures.positionAndLinkAlleles(SelfManager.self(),taskArguments[0],"right");
+        procedures["POSITION-AND-LINK-ALLELES"](SelfManager.self(),taskArguments[0],"left");
+        procedures["POSITION-AND-LINK-ALLELES"](SelfManager.self(),taskArguments[0],"right");
       }), [1, 2, 3, 4]);
       ListPrims.oneOf(world.turtleManager.turtlesOfBreed("ALLELES").agentFilter(function() {
         return ((!SelfManager.self().getVariable("owned-by-fish?") && Prims.equality(SelfManager.self().getVariable("gene"), 5)) && Prims.equality(SelfManager.self().getVariable("value"), "X"));
@@ -365,8 +381,10 @@ var procedures = (function() {
         }, true);
       }, true);
     }, true);
-  };
-  var positionAndLinkAlleles = function(thisSomaticCell, geneNumber, whichSide) {
+  });
+  procs["distributeGenePoolToSomaticCells"] = temp;
+  procs["DISTRIBUTE-GENE-POOL-TO-SOMATIC-CELLS"] = temp;
+  temp = (function(thisSomaticCell, geneNumber, whichSide) {
     var pairShiftRight = 0;
     var sideShift = 0;
     if (Prims.equality(whichSide, "right")) {
@@ -389,39 +407,45 @@ var procedures = (function() {
         SelfManager.self().tie();
       }, true);
     }, true);
-  };
-  var go = function() {
-    procedures.wander();
-    procedures.updateStatistics();
-    procedures.detectFishOutsideTheWater();
-    procedures.detectAndMoveFishAtInsideTankBoundary();
-    procedures.autoSelection();
-    procedures.cleanUpFishBones();
+  });
+  procs["positionAndLinkAlleles"] = temp;
+  procs["POSITION-AND-LINK-ALLELES"] = temp;
+  temp = (function() {
+    procedures["WANDER"]();
+    procedures["UPDATE-STATISTICS"]();
+    procedures["DETECT-FISH-OUTSIDE-THE-WATER"]();
+    procedures["DETECT-AND-MOVE-FISH-AT-INSIDE-TANK-BOUNDARY"]();
+    procedures["AUTO-SELECTION"]();
+    procedures["CLEAN-UP-FISH-BONES"]();
     if (world.observer.getGlobal("auto-replace?")) {
-      procedures.findPotentialMates();
+      procedures["FIND-POTENTIAL-MATES"]();
     }
-    procedures.moveGametesTogether();
-    procedures.convertZygoteIntoSomaticCell();
-    procedures.detectMouseSelectionEvent();
-    procedures.visualizeFishAndAlleles();
-    procedures.visualizeTank();
+    procedures["MOVE-GAMETES-TOGETHER"]();
+    procedures["CONVERT-ZYGOTE-INTO-SOMATIC-CELL"]();
+    procedures["DETECT-MOUSE-SELECTION-EVENT"]();
+    procedures["VISUALIZE-FISH-AND-ALLELES"]();
+    procedures["VISUALIZE-TANK"]();
     world.ticker.tick();
-  };
-  var autoSelection = function() {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     if (world.observer.getGlobal("auto-replace?")) {
       if (Prims.isThrottleTimeElapsed("autoSelection_0", workspace.selfManager.self(), 0.25)) {
         Prims.resetThrottleTimerFor("autoSelection_0", workspace.selfManager.self());
         if (world.turtleManager.turtlesOfBreed("FISH").nonEmpty()) {
           ListPrims.oneOf(world.turtleManager.turtlesOfBreed("FISH")).ask(function() {
-            if (procedures.bothSexesInThisFishsTankRegion_p()) {
-              procedures.removeThisFish();
+            if (procedures["BOTH-SEXES-IN-THIS-FISHS-TANK-REGION?"]()) {
+              procedures["REMOVE-THIS-FISH"]();
             }
           }, true);
         }
       }
     }
-  };
-  var moveGametesTogether = function() {
+  });
+  procs["autoSelection"] = temp;
+  procs["AUTO-SELECTION"] = temp;
+  temp = (function() {
     var myZygote = Nobody;
     var distanceToZygote = 0;
     if (world.observer.getGlobal("see-sex-cells?")) {
@@ -444,8 +468,10 @@ var procedures = (function() {
         SelfManager.self().setVariable("heading", 0);
       }
     }, true);
-  };
-  var convertZygoteIntoSomaticCell = function() {
+  });
+  procs["moveGametesTogether"] = temp;
+  procs["MOVE-GAMETES-TOGETHER"] = temp;
+  temp = (function() {
     var femaleSexCellAlleles = Nobody;
     var maleSexCellAlleles = Nobody;
     var maleGamete = Nobody;
@@ -460,14 +486,14 @@ var procedures = (function() {
       });
       if ((maleGamete.nonEmpty() && femaleGamete.nonEmpty())) {
         if ((Prims.lte(SelfManager.self().distance(ListPrims.oneOf(maleGamete)), 0.01) && Prims.lte(SelfManager.self().distance(ListPrims.oneOf(femaleGamete)), 0.01))) {
-          procedures.setupNewSomaticCellAttributes();
+          procedures["SETUP-NEW-SOMATIC-CELL-ATTRIBUTES"]();
           thisSomaticCell = SelfManager.self();
           maleGamete.ask(function() {
-            maleSexCellAlleles = procedures.allelesThatBelongToThisGamete();
+            maleSexCellAlleles = procedures["ALLELES-THAT-BELONG-TO-THIS-GAMETE"]();
             SelfManager.self().die();
           }, true);
           femaleGamete.ask(function() {
-            femaleSexCellAlleles = procedures.allelesThatBelongToThisGamete();
+            femaleSexCellAlleles = procedures["ALLELES-THAT-BELONG-TO-THIS-GAMETE"]();
             SelfManager.self().die();
           }, true);
           maleSexCellAlleles.ask(function() {
@@ -484,15 +510,17 @@ var procedures = (function() {
               SelfManager.self().tie();
             }, true);
           }, true);
-          procedures.alignAllelesForThisSomaticCell(thisSomaticCell);
-          SelfManager.self().setVariable("sex", procedures.sexPhenotype());
-          procedures.growFishPartsFromSomaticCell();
+          procedures["ALIGN-ALLELES-FOR-THIS-SOMATIC-CELL"](thisSomaticCell);
+          SelfManager.self().setVariable("sex", procedures["SEX-PHENOTYPE"]());
+          procedures["GROW-FISH-PARTS-FROM-SOMATIC-CELL"]();
           world.observer.setGlobal("num-fish-born", (world.observer.getGlobal("num-fish-born") + 1));
         }
       }
     }, true);
-  };
-  var alignAllelesForThisSomaticCell = function(thisZygote) {
+  });
+  procs["convertZygoteIntoSomaticCell"] = temp;
+  procs["CONVERT-ZYGOTE-INTO-SOMATIC-CELL"] = temp;
+  temp = (function(thisZygote) {
     var allAlleles = world.turtleManager.turtlesOfBreed("ALLELES").agentFilter(function() { return LinkPrims.isInLinkNeighbor("LINKS", thisZygote); });
     Tasks.forEach(Tasks.commandTask(function() {
       var taskArguments = arguments;
@@ -515,8 +543,10 @@ var procedures = (function() {
         }, true);
       }
     }), [1, 2, 3, 4, 5]);
-  };
-  var findPotentialMates = function() {
+  });
+  procs["alignAllelesForThisSomaticCell"] = temp;
+  procs["ALIGN-ALLELES-FOR-THIS-SOMATIC-CELL"] = temp;
+  temp = (function() {
     var mom = Nobody;
     var dad = Nobody;
     var xcorDad = 0;
@@ -528,7 +558,7 @@ var procedures = (function() {
         dad = SelfManager.self();
         xcorDad = SelfManager.self().getVariable("xcor");
       }, true);
-      dad.ask(function() { turtlesInThisRegion = procedures.otherTurtlesInThisTurtlesTankRegion(); }, true);
+      dad.ask(function() { turtlesInThisRegion = procedures["OTHER-TURTLES-IN-THIS-TURTLES-TANK-REGION"](); }, true);
       allFishAndFishZygotes = turtlesInThisRegion.agentFilter(function() {
         return (Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("FISH")) || Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("FISH-ZYGOTES")));
       });
@@ -537,14 +567,16 @@ var procedures = (function() {
       });
       if (potentialMates.nonEmpty()) {
         ListPrims.oneOf(potentialMates).ask(function() { mom = SelfManager.self(); }, true);
-        var thisCarryingCapacity = procedures.carryingCapacityInThisRegion(xcorDad);
+        var thisCarryingCapacity = procedures["CARRYING-CAPACITY-IN-THIS-REGION"](xcorDad);
         if (Prims.lt(allFishAndFishZygotes.size(), thisCarryingCapacity)) {
-          procedures.reproduceOffspringFromTheseTwoParents(mom,dad);
+          procedures["REPRODUCE-OFFSPRING-FROM-THESE-TWO-PARENTS"](mom,dad);
         }
       }
     }
-  };
-  var reproduceOffspringFromTheseTwoParents = function(mom, dad) {
+  });
+  procs["findPotentialMates"] = temp;
+  procs["FIND-POTENTIAL-MATES"] = temp;
+  temp = (function(mom, dad) {
     var child = Nobody;
     mom.ask(function() {
       SelfManager.self().hatch(1, "").ask(function() {
@@ -556,10 +588,12 @@ var procedures = (function() {
         child = SelfManager.self();
       }, true);
     }, true);
-    mom.ask(function() { procedures.linkAllelesToGametesAndGametesToZygote(child); }, true);
-    dad.ask(function() { procedures.linkAllelesToGametesAndGametesToZygote(child); }, true);
-  };
-  var linkAllelesToGametesAndGametesToZygote = function(child) {
+    mom.ask(function() { procedures["LINK-ALLELES-TO-GAMETES-AND-GAMETES-TO-ZYGOTE"](child); }, true);
+    dad.ask(function() { procedures["LINK-ALLELES-TO-GAMETES-AND-GAMETES-TO-ZYGOTE"](child); }, true);
+  });
+  procs["reproduceOffspringFromTheseTwoParents"] = temp;
+  procs["REPRODUCE-OFFSPRING-FROM-THESE-TWO-PARENTS"] = temp;
+  temp = (function(child) {
     var thisNewGameteCell = Nobody;
     SelfManager.self().hatch(1, "").ask(function() {
       SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("GAMETE-CELLS"));
@@ -588,8 +622,10 @@ var procedures = (function() {
         }, true);
       }, true);
     }), [1, 2, 3, 4, 5]);
-  };
-  var wander = function() {
+  });
+  procs["linkAllelesToGametesAndGametesToZygote"] = temp;
+  procs["LINK-ALLELES-TO-GAMETES-AND-GAMETES-TO-ZYGOTE"] = temp;
+  temp = (function() {
     world.turtleManager.turtlesOfBreed("FISH").ask(function() {
       SelfManager.self().setVariable("heading", SelfManager.self().getVariable("bearing"));
       SelfManager.self().right(Prims.randomFloat(70));
@@ -599,13 +635,17 @@ var procedures = (function() {
       SelfManager.self().setVariable("heading", 0);
     }, true);
     world.turtleManager.turtlesOfBreed("SOMATIC-CELLS").ask(function() { SelfManager.self().setVariable("heading", 0); }, true);
-  };
-  var detectFishOutsideTheWater = function() {
+  });
+  procs["wander"] = temp;
+  procs["WANDER"] = temp;
+  temp = (function() {
     world.turtleManager.turtlesOfBreed("FISH").agentFilter(function() {
       return (!Prims.equality(SelfManager.self().getPatchVariable("type-of-patch"), "water") && !Prims.equality(SelfManager.self().getPatchVariable("type-of-patch"), "water-edge"));
-    }).ask(function() { procedures.removeThisFish(); }, true);
-  };
-  var detectAndMoveFishAtInsideTankBoundary = function() {
+    }).ask(function() { procedures["REMOVE-THIS-FISH"](); }, true);
+  });
+  procs["detectFishOutsideTheWater"] = temp;
+  procs["DETECT-FISH-OUTSIDE-THE-WATER"] = temp;
+  temp = (function() {
     var nearestWaterPatch = Nobody;
     var waterPatches = world.patches().agentFilter(function() {
       return (Prims.equality(SelfManager.self().getPatchVariable("type-of-patch"), "water") && !SelfManager.self().getPatchVariable("divider-here?"));
@@ -622,8 +662,10 @@ var procedures = (function() {
         SelfManager.self().moveTo(nearestWaterPatch);
       }
     }, true);
-  };
-  var cleanUpFishBones = function() {
+  });
+  procs["detectAndMoveFishAtInsideTankBoundary"] = temp;
+  procs["DETECT-AND-MOVE-FISH-AT-INSIDE-TANK-BOUNDARY"] = temp;
+  temp = (function() {
     var boneTransparency = 0;
     var colorList = [];
     world.turtleManager.turtlesOfBreed("FISH-BONES").ask(function() {
@@ -635,8 +677,10 @@ var procedures = (function() {
         SelfManager.self().die();
       }
     }, true);
-  };
-  var removeThisFish = function() {
+  });
+  procs["cleanUpFishBones"] = temp;
+  procs["CLEAN-UP-FISH-BONES"] = temp;
+  temp = (function() {
     world.observer.setGlobal("num-fish-removed", (world.observer.getGlobal("num-fish-removed") + 1));
     SelfManager.self().hatch(1, "").ask(function() {
       SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("FISH-BONES"));
@@ -648,8 +692,10 @@ var procedures = (function() {
       SelfManager.self().die();
     }, true);
     SelfManager.self().die();
-  };
-  var detectMouseSelectionEvent = function() {
+  });
+  procs["removeThisFish"] = temp;
+  procs["REMOVE-THIS-FISH"] = temp;
+  temp = (function() {
     var pMouseXcor = MousePrims.getX();
     var pMouseYcor = MousePrims.getY();
     var pTypeOfPatch = world.getPatchAt(pMouseXcor, pMouseYcor).projectionBy(function() { return SelfManager.self().getPatchVariable("type-of-patch"); });
@@ -680,7 +726,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("label", "");
       }
       if (mouseWasJustDown_p) {
-        SelfManager.self().breedHere("FISH").ask(function() { procedures.removeThisFish(); }, true);
+        SelfManager.self().breedHere("FISH").ask(function() { procedures["REMOVE-THIS-FISH"](); }, true);
       }
       if ((((((mouseWasJustDown_p && !world.observer.getGlobal("mouse-continuous-down?")) && Prims.equality(pTypeOfPatch, "tank-wall")) && Prims.equality(SelfManager.self().getPatchVariable("pycor"), (world.topology.minPycor + 1))) && Prims.gt(SelfManager.self().getPatchVariable("pxcor"), (world.topology.minPxcor + 1))) && Prims.lt(SelfManager.self().getPatchVariable("pxcor"), (world.topology.maxPxcor - 1)))) {
         SelfManager.self().setPatchVariable("divider-here?", !SelfManager.self().getPatchVariable("divider-here?"));
@@ -704,8 +750,10 @@ var procedures = (function() {
     else {
       world.observer.setGlobal("mouse-continuous-down?", false);
     }
-  };
-  var updateStatistics = function() {
+  });
+  procs["detectMouseSelectionEvent"] = temp;
+  procs["DETECT-MOUSE-SELECTION-EVENT"] = temp;
+  temp = (function() {
     world.observer.setGlobal("num-fish-in-tank", world.turtleManager.turtlesOfBreed("FISH").size());
     world.observer.setGlobal("#-big-b-alleles", world.turtleManager.turtlesOfBreed("ALLELES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("value"), "B"); }).size());
     world.observer.setGlobal("#-small-b-alleles", world.turtleManager.turtlesOfBreed("ALLELES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("value"), "b"); }).size());
@@ -743,8 +791,10 @@ var procedures = (function() {
     }).size());
     world.observer.setGlobal("#-of-males", world.turtleManager.turtlesOfBreed("FISH").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("sex"), "male"); }).size());
     world.observer.setGlobal("#-of-females", world.turtleManager.turtlesOfBreed("FISH").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("sex"), "female"); }).size());
-  };
-  var visualizeTank = function() {
+  });
+  procs["updateStatistics"] = temp;
+  procs["UPDATE-STATISTICS"] = temp;
+  temp = (function() {
     world.patches().agentFilter(function() {
       return (Prims.equality(SelfManager.self().getPatchVariable("type-of-patch"), "water") || Prims.equality(SelfManager.self().getPatchVariable("type-of-patch"), "water-edge"));
     }).ask(function() {
@@ -764,8 +814,10 @@ var procedures = (function() {
       }
     }, true);
     world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("type-of-patch"), "air"); }).ask(function() { SelfManager.self().setPatchVariable("pcolor", (5 + 3)); }, true);
-  };
-  var visualizeFishAndAlleles = function() {
+  });
+  procs["visualizeTank"] = temp;
+  procs["VISUALIZE-TANK"] = temp;
+  temp = (function() {
     if (world.observer.getGlobal("see-body-cells?")) {
       world.turtleManager.turtlesOfBreed("SOMATIC-CELLS").ask(function() {
         SelfManager.self().setVariable("hidden?", false);
@@ -800,8 +852,10 @@ var procedures = (function() {
       world.turtleManager.turtlesOfBreed("FISH").ask(function() { SelfManager.self().setVariable("hidden?", true); }, true);
       world.turtleManager.turtlesOfBreed("FISH-PARTS").ask(function() { SelfManager.self().setVariable("hidden?", true); }, true);
     }
-  };
-  var growFishPartsFromSomaticCell = function() {
+  });
+  procs["visualizeFishAndAlleles"] = temp;
+  procs["VISUALIZE-FISH-AND-ALLELES"] = temp;
+  temp = (function() {
     var thisFishBody = Nobody;
     SelfManager.self().hatch(1, "").ask(function() {
       SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("FISH"));
@@ -825,8 +879,8 @@ var procedures = (function() {
       SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("FISH-PARTS"));
       SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("FISH-PARTS"));
       SelfManager.self().setVariable("size", 1);
-      SelfManager.self().setVariable("shape", procedures.tailShapePhenotype());
-      SelfManager.self().setVariable("color", procedures.tailColorPhenotype());
+      SelfManager.self().setVariable("shape", procedures["TAIL-SHAPE-PHENOTYPE"]());
+      SelfManager.self().setVariable("color", procedures["TAIL-COLOR-PHENOTYPE"]());
       SelfManager.self().setVariable("heading", -90);
       SelfManager.self().fd(0.4);
       LinkPrims.createLinkFrom(thisFishBody, "LINKS").ask(function() {
@@ -839,7 +893,7 @@ var procedures = (function() {
       SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("FISH-PARTS"));
       SelfManager.self().setVariable("size", 1);
       SelfManager.self().setVariable("shape", "fish-fins");
-      SelfManager.self().setVariable("color", procedures.dorsalFinColorPhenotype());
+      SelfManager.self().setVariable("color", procedures["DORSAL-FIN-COLOR-PHENOTYPE"]());
       LinkPrims.createLinkFrom(thisFishBody, "LINKS").ask(function() {
         SelfManager.self().setVariable("hidden?", true);
         SelfManager.self().setVariable("tie-mode", "fixed");
@@ -849,7 +903,7 @@ var procedures = (function() {
     SelfManager.self().hatch(1, "").ask(function() {
       SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("FISH-PARTS"));
       SelfManager.self().setVariable("size", 1);
-      SelfManager.self().setVariable("shape", procedures.rearSpotsPhenotype());
+      SelfManager.self().setVariable("shape", procedures["REAR-SPOTS-PHENOTYPE"]());
       SelfManager.self().setVariable("color", [0, 0, 0, 255]);
       LinkPrims.createLinkFrom(thisFishBody, "LINKS").ask(function() {
         SelfManager.self().setVariable("hidden?", true);
@@ -857,8 +911,10 @@ var procedures = (function() {
         SelfManager.self().tie();
       }, true);
     }, true);
-  };
-  var hasAtLeastOneDominantSetOfInstructionsFor = function(dominantAllele) {
+  });
+  procs["growFishPartsFromSomaticCell"] = temp;
+  procs["GROW-FISH-PARTS-FROM-SOMATIC-CELL"] = temp;
+  temp = (function(dominantAllele) {
     try {
       var thisSomaticCell = SelfManager.self();
       var _pound_OfDominantAlleles = world.turtleManager.turtlesOfBreed("ALLELES").agentFilter(function() {
@@ -878,13 +934,15 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var tailShapePhenotype = function() {
+  });
+  procs["hasAtLeastOneDominantSetOfInstructionsFor"] = temp;
+  procs["HAS-AT-LEAST-ONE-DOMINANT-SET-OF-INSTRUCTIONS-FOR"] = temp;
+  temp = (function() {
     try {
       var thisShape = "";
       var thisFish = SelfManager.myself();
       SelfManager.myself().ask(function() {
-        if (procedures.hasAtLeastOneDominantSetOfInstructionsFor("F")) {
+        if (procedures["HAS-AT-LEAST-ONE-DOMINANT-SET-OF-INSTRUCTIONS-FOR"]("F")) {
           thisShape = world.observer.getGlobal("forked-tail-shape");
         }
         else {
@@ -900,12 +958,14 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var rearSpotsPhenotype = function() {
+  });
+  procs["tailShapePhenotype"] = temp;
+  procs["TAIL-SHAPE-PHENOTYPE"] = temp;
+  temp = (function() {
     try {
       var thisSpotsShape = "";
       SelfManager.myself().ask(function() {
-        if (procedures.hasAtLeastOneDominantSetOfInstructionsFor("B")) {
+        if (procedures["HAS-AT-LEAST-ONE-DOMINANT-SET-OF-INSTRUCTIONS-FOR"]("B")) {
           thisSpotsShape = world.observer.getGlobal("spots-shape");
         }
         else {
@@ -921,12 +981,14 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var dorsalFinColorPhenotype = function() {
+  });
+  procs["rearSpotsPhenotype"] = temp;
+  procs["REAR-SPOTS-PHENOTYPE"] = temp;
+  temp = (function() {
     try {
       var thisColor = [];
       SelfManager.myself().ask(function() {
-        if (procedures.hasAtLeastOneDominantSetOfInstructionsFor("G")) {
+        if (procedures["HAS-AT-LEAST-ONE-DOMINANT-SET-OF-INSTRUCTIONS-FOR"]("G")) {
           thisColor = world.observer.getGlobal("green-dorsal-fin-color");
         }
         else {
@@ -942,13 +1004,15 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var tailColorPhenotype = function() {
+  });
+  procs["dorsalFinColorPhenotype"] = temp;
+  procs["DORSAL-FIN-COLOR-PHENOTYPE"] = temp;
+  temp = (function() {
     try {
       var thisColor = [];
       var thisFish = SelfManager.myself();
       SelfManager.myself().ask(function() {
-        if (procedures.hasAtLeastOneDominantSetOfInstructionsFor("T")) {
+        if (procedures["HAS-AT-LEAST-ONE-DOMINANT-SET-OF-INSTRUCTIONS-FOR"]("T")) {
           thisColor = world.observer.getGlobal("yellow-tail-fin-color");
         }
         else {
@@ -964,12 +1028,14 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var sexPhenotype = function() {
+  });
+  procs["tailColorPhenotype"] = temp;
+  procs["TAIL-COLOR-PHENOTYPE"] = temp;
+  temp = (function() {
     try {
       var thisSex = "";
       var thisCell = SelfManager.self();
-      if (procedures.hasAtLeastOneDominantSetOfInstructionsFor("Y")) {
+      if (procedures["HAS-AT-LEAST-ONE-DOMINANT-SET-OF-INSTRUCTIONS-FOR"]("Y")) {
         thisSex = "male";
       }
       else {
@@ -984,8 +1050,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var allelesThatBelongToThisGamete = function() {
+  });
+  procs["sexPhenotype"] = temp;
+  procs["SEX-PHENOTYPE"] = temp;
+  temp = (function() {
     try {
       throw new Exception.ReportInterrupt(world.turtleManager.turtlesOfBreed("ALLELES").agentFilter(function() { return LinkPrims.isInLinkNeighbor("LINKS", SelfManager.myself()); }));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
@@ -996,8 +1064,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var leftSideOfWaterInTank = function() {
+  });
+  procs["allelesThatBelongToThisGamete"] = temp;
+  procs["ALLELES-THAT-BELONG-TO-THIS-GAMETE"] = temp;
+  temp = (function() {
     try {
       throw new Exception.ReportInterrupt((world.topology.minPxcor + 2));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
@@ -1008,8 +1078,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var rightSideOfWaterInTank = function() {
+  });
+  procs["leftSideOfWaterInTank"] = temp;
+  procs["LEFT-SIDE-OF-WATER-IN-TANK"] = temp;
+  temp = (function() {
     try {
       throw new Exception.ReportInterrupt((world.topology.maxPxcor - 2));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
@@ -1020,13 +1092,15 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var otherTurtlesInThisTurtlesTankRegion = function() {
+  });
+  procs["rightSideOfWaterInTank"] = temp;
+  procs["RIGHT-SIDE-OF-WATER-IN-TANK"] = temp;
+  temp = (function() {
     try {
       var turtlesInThisRegion = Nobody;
       var xcorOfThisTurtle = SelfManager.self().getVariable("xcor");
-      var thisRegionLeftSide = procedures.leftSideOfWaterInTank();
-      var thisRegionRightSide = procedures.rightSideOfWaterInTank();
+      var thisRegionLeftSide = procedures["LEFT-SIDE-OF-WATER-IN-TANK"]();
+      var thisRegionRightSide = procedures["RIGHT-SIDE-OF-WATER-IN-TANK"]();
       var dividersToTheRight = world.patches().agentFilter(function() {
         return (SelfManager.self().getPatchVariable("divider-here?") && Prims.gt(SelfManager.self().getPatchVariable("pxcor"), xcorOfThisTurtle));
       });
@@ -1051,10 +1125,12 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var bothSexesInThisFishsTankRegion_p = function() {
+  });
+  procs["otherTurtlesInThisTurtlesTankRegion"] = temp;
+  procs["OTHER-TURTLES-IN-THIS-TURTLES-TANK-REGION"] = temp;
+  temp = (function() {
     try {
-      var fishInThisRegion = procedures.otherTurtlesInThisTurtlesTankRegion().agentFilter(function() {
+      var fishInThisRegion = procedures["OTHER-TURTLES-IN-THIS-TURTLES-TANK-REGION"]().agentFilter(function() {
         return Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("FISH"));
       });
       var maleFishInThisRegion = fishInThisRegion.agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("sex"), "male"); });
@@ -1073,11 +1149,13 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var carryingCapacityInThisRegion = function(thisXcor) {
+  });
+  procs["bothSexesInThisFishsTankRegion_p"] = temp;
+  procs["BOTH-SEXES-IN-THIS-FISHS-TANK-REGION?"] = temp;
+  temp = (function(thisXcor) {
     try {
-      var thisRegionLeftSide = procedures.leftSideOfWaterInTank();
-      var thisRegionRightSide = procedures.rightSideOfWaterInTank();
+      var thisRegionLeftSide = procedures["LEFT-SIDE-OF-WATER-IN-TANK"]();
+      var thisRegionRightSide = procedures["RIGHT-SIDE-OF-WATER-IN-TANK"]();
       var dividersToTheRight = world.patches().agentFilter(function() {
         return (SelfManager.self().getPatchVariable("divider-here?") && Prims.gt(SelfManager.self().getPatchVariable("pxcor"), thisXcor));
       });
@@ -1100,87 +1178,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  return {
-    "ALIGN-ALLELES-FOR-THIS-SOMATIC-CELL":alignAllelesForThisSomaticCell,
-    "ALLELES-THAT-BELONG-TO-THIS-GAMETE":allelesThatBelongToThisGamete,
-    "AUTO-SELECTION":autoSelection,
-    "BOTH-SEXES-IN-THIS-FISHS-TANK-REGION?":bothSexesInThisFishsTankRegion_p,
-    "CARRYING-CAPACITY-IN-THIS-REGION":carryingCapacityInThisRegion,
-    "CLEAN-UP-FISH-BONES":cleanUpFishBones,
-    "CONVERT-ZYGOTE-INTO-SOMATIC-CELL":convertZygoteIntoSomaticCell,
-    "CREATE-INITIAL-FISH":createInitialFish,
-    "CREATE-INITIAL-GENE-POOL":createInitialGenePool,
-    "DETECT-AND-MOVE-FISH-AT-INSIDE-TANK-BOUNDARY":detectAndMoveFishAtInsideTankBoundary,
-    "DETECT-FISH-OUTSIDE-THE-WATER":detectFishOutsideTheWater,
-    "DETECT-MOUSE-SELECTION-EVENT":detectMouseSelectionEvent,
-    "DISTRIBUTE-FISH-IN-TANK":distributeFishInTank,
-    "DISTRIBUTE-GENE-POOL-TO-SOMATIC-CELLS":distributeGenePoolToSomaticCells,
-    "DORSAL-FIN-COLOR-PHENOTYPE":dorsalFinColorPhenotype,
-    "FIND-POTENTIAL-MATES":findPotentialMates,
-    "GO":go,
-    "GROW-FISH-PARTS-FROM-SOMATIC-CELL":growFishPartsFromSomaticCell,
-    "HAS-AT-LEAST-ONE-DOMINANT-SET-OF-INSTRUCTIONS-FOR":hasAtLeastOneDominantSetOfInstructionsFor,
-    "LEFT-SIDE-OF-WATER-IN-TANK":leftSideOfWaterInTank,
-    "LINK-ALLELES-TO-GAMETES-AND-GAMETES-TO-ZYGOTE":linkAllelesToGametesAndGametesToZygote,
-    "MAKE-INITIAL-ALLELES-FOR-GENE":makeInitialAllelesForGene,
-    "MOVE-GAMETES-TOGETHER":moveGametesTogether,
-    "OTHER-TURTLES-IN-THIS-TURTLES-TANK-REGION":otherTurtlesInThisTurtlesTankRegion,
-    "POSITION-AND-LINK-ALLELES":positionAndLinkAlleles,
-    "REAR-SPOTS-PHENOTYPE":rearSpotsPhenotype,
-    "REMOVE-THIS-FISH":removeThisFish,
-    "REPRODUCE-OFFSPRING-FROM-THESE-TWO-PARENTS":reproduceOffspringFromTheseTwoParents,
-    "RIGHT-SIDE-OF-WATER-IN-TANK":rightSideOfWaterInTank,
-    "SET-TANK-REGIONS":setTankRegions,
-    "SETUP":setup,
-    "SETUP-NEW-SOMATIC-CELL-ATTRIBUTES":setupNewSomaticCellAttributes,
-    "SEX-PHENOTYPE":sexPhenotype,
-    "TAIL-COLOR-PHENOTYPE":tailColorPhenotype,
-    "TAIL-SHAPE-PHENOTYPE":tailShapePhenotype,
-    "UPDATE-STATISTICS":updateStatistics,
-    "VISUALIZE-FISH-AND-ALLELES":visualizeFishAndAlleles,
-    "VISUALIZE-TANK":visualizeTank,
-    "WANDER":wander,
-    "alignAllelesForThisSomaticCell":alignAllelesForThisSomaticCell,
-    "allelesThatBelongToThisGamete":allelesThatBelongToThisGamete,
-    "autoSelection":autoSelection,
-    "bothSexesInThisFishsTankRegion_p":bothSexesInThisFishsTankRegion_p,
-    "carryingCapacityInThisRegion":carryingCapacityInThisRegion,
-    "cleanUpFishBones":cleanUpFishBones,
-    "convertZygoteIntoSomaticCell":convertZygoteIntoSomaticCell,
-    "createInitialFish":createInitialFish,
-    "createInitialGenePool":createInitialGenePool,
-    "detectAndMoveFishAtInsideTankBoundary":detectAndMoveFishAtInsideTankBoundary,
-    "detectFishOutsideTheWater":detectFishOutsideTheWater,
-    "detectMouseSelectionEvent":detectMouseSelectionEvent,
-    "distributeFishInTank":distributeFishInTank,
-    "distributeGenePoolToSomaticCells":distributeGenePoolToSomaticCells,
-    "dorsalFinColorPhenotype":dorsalFinColorPhenotype,
-    "findPotentialMates":findPotentialMates,
-    "go":go,
-    "growFishPartsFromSomaticCell":growFishPartsFromSomaticCell,
-    "hasAtLeastOneDominantSetOfInstructionsFor":hasAtLeastOneDominantSetOfInstructionsFor,
-    "leftSideOfWaterInTank":leftSideOfWaterInTank,
-    "linkAllelesToGametesAndGametesToZygote":linkAllelesToGametesAndGametesToZygote,
-    "makeInitialAllelesForGene":makeInitialAllelesForGene,
-    "moveGametesTogether":moveGametesTogether,
-    "otherTurtlesInThisTurtlesTankRegion":otherTurtlesInThisTurtlesTankRegion,
-    "positionAndLinkAlleles":positionAndLinkAlleles,
-    "rearSpotsPhenotype":rearSpotsPhenotype,
-    "removeThisFish":removeThisFish,
-    "reproduceOffspringFromTheseTwoParents":reproduceOffspringFromTheseTwoParents,
-    "rightSideOfWaterInTank":rightSideOfWaterInTank,
-    "setTankRegions":setTankRegions,
-    "setup":setup,
-    "setupNewSomaticCellAttributes":setupNewSomaticCellAttributes,
-    "sexPhenotype":sexPhenotype,
-    "tailColorPhenotype":tailColorPhenotype,
-    "tailShapePhenotype":tailShapePhenotype,
-    "updateStatistics":updateStatistics,
-    "visualizeFishAndAlleles":visualizeFishAndAlleles,
-    "visualizeTank":visualizeTank,
-    "wander":wander
-  };
+  });
+  procs["carryingCapacityInThisRegion"] = temp;
+  procs["CARRYING-CAPACITY-IN-THIS-REGION"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("initial-alleles-big-b", 50);
 world.observer.setGlobal("see-body-cells?", false);

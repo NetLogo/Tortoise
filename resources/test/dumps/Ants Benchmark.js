@@ -60,23 +60,29 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
     world.ticker.reset();
-    procedures.setupTurtles();
-    procedures.setupPatches();
-    procedures.doPlotting();
-  };
-  var benchmark = function() {
+    procedures["SETUP-TURTLES"]();
+    procedures["SETUP-PATCHES"]();
+    procedures["DO-PLOTTING"]();
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     workspace.rng.setSeed(337);
     workspace.timer.reset();
-    procedures.setup();
+    procedures["SETUP"]();
     for (var _index_332_338 = 0, _repeatcount_332_338 = StrictMath.floor(800); _index_332_338 < _repeatcount_332_338; _index_332_338++){
-      procedures.go();
+      procedures["GO"]();
     }
     world.observer.setGlobal("result", workspace.timer.elapsed());
-  };
-  var setupTurtles = function() {
+  });
+  procs["benchmark"] = temp;
+  procs["BENCHMARK"] = temp;
+  temp = (function() {
     BreedManager.setDefaultShape(world.turtles().getSpecialName(), "bug")
     world.turtleManager.createOrderedTurtles(world.observer.getGlobal("ants"), "").ask(function() {
       SelfManager.self().setVariable("size", 2);
@@ -84,22 +90,28 @@ var procedures = (function() {
       SelfManager.self().setVariable("color", 15);
       SelfManager.self().setVariable("carrying-food?", false);
     }, true);
-  };
-  var setupPatches = function() {
+  });
+  procs["setupTurtles"] = temp;
+  procs["SETUP-TURTLES"] = temp;
+  temp = (function() {
     world.patches().ask(function() {
       SelfManager.self().setPatchVariable("chemical", 0);
       SelfManager.self().setPatchVariable("food", 0);
       SelfManager.self().setPatchVariable("food-source-number", -1);
-      procedures.setupNest();
-      procedures.setupFood();
-      procedures.updateDisplay();
+      procedures["SETUP-NEST"]();
+      procedures["SETUP-FOOD"]();
+      procedures["UPDATE-DISPLAY"]();
     }, true);
-  };
-  var setupNest = function() {
+  });
+  procs["setupPatches"] = temp;
+  procs["SETUP-PATCHES"] = temp;
+  temp = (function() {
     SelfManager.self().setPatchVariable("nest?", Prims.lt(SelfManager.self().distanceXY(0, 0), 5));
     SelfManager.self().setPatchVariable("nest-scent", (200 - SelfManager.self().distanceXY(0, 0)));
-  };
-  var setupFood = function() {
+  });
+  procs["setupNest"] = temp;
+  procs["SETUP-NEST"] = temp;
+  temp = (function() {
     if (Prims.lt(SelfManager.self().distanceXY((0.6 * world.topology.maxPxcor), 0), 5)) {
       SelfManager.self().setPatchVariable("food-source-number", 1);
     }
@@ -112,8 +124,10 @@ var procedures = (function() {
     if (Prims.gt(SelfManager.self().getPatchVariable("food-source-number"), 0)) {
       SelfManager.self().setPatchVariable("food", (1 + Prims.random(2)));
     }
-  };
-  var updateDisplay = function() {
+  });
+  procs["setupFood"] = temp;
+  procs["SETUP-FOOD"] = temp;
+  temp = (function() {
     if (SelfManager.self().getPatchVariable("nest?")) {
       SelfManager.self().setPatchVariable("pcolor", 115);
     }
@@ -133,31 +147,39 @@ var procedures = (function() {
         SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(55, SelfManager.self().getPatchVariable("chemical"), 0.1, 5));
       }
     }
-  };
-  var go = function() {
-    world.turtles().ask(function() { procedures.goTurtles(); }, true);
+  });
+  procs["updateDisplay"] = temp;
+  procs["UPDATE-DISPLAY"] = temp;
+  temp = (function() {
+    world.turtles().ask(function() { procedures["GO-TURTLES"](); }, true);
     world.topology.diffuse("chemical", Prims.div(world.observer.getGlobal("diffusion-rate"), 100))
-    world.patches().ask(function() { procedures.goPatches(); }, true);
+    world.patches().ask(function() { procedures["GO-PATCHES"](); }, true);
     world.ticker.tick();
-    procedures.doPlotting();
-  };
-  var goTurtles = function() {
+    procedures["DO-PLOTTING"]();
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     if (Prims.lt(SelfManager.self().getVariable("who"), world.ticker.tickCount())) {
       if (SelfManager.self().getVariable("carrying-food?")) {
         SelfManager.self().setVariable("color", (25 + 1));
-        procedures.returnToNest();
+        procedures["RETURN-TO-NEST"]();
       }
       else {
         SelfManager.self().setVariable("color", 15);
-        procedures.lookForFood();
+        procedures["LOOK-FOR-FOOD"]();
       }
     }
-  };
-  var goPatches = function() {
+  });
+  procs["goTurtles"] = temp;
+  procs["GO-TURTLES"] = temp;
+  temp = (function() {
     SelfManager.self().setPatchVariable("chemical", Prims.div((SelfManager.self().getPatchVariable("chemical") * (100 - world.observer.getGlobal("evaporation-rate"))), 100));
-    procedures.updateDisplay();
-  };
-  var returnToNest = function() {
+    procedures["UPDATE-DISPLAY"]();
+  });
+  procs["goPatches"] = temp;
+  procs["GO-PATCHES"] = temp;
+  temp = (function() {
     if (SelfManager.self().getPatchVariable("nest?")) {
       SelfManager.self().setVariable("carrying-food?", false);
       SelfManager.self().right(180);
@@ -169,12 +191,14 @@ var procedures = (function() {
       if (Prims.lt(SelfManager.self().getVariable("drop-size"), 1)) {
         SelfManager.self().setVariable("drop-size", 1);
       }
-      procedures.uphillNestScent();
-      procedures.wiggle();
+      procedures["UPHILL-NEST-SCENT"]();
+      procedures["WIGGLE"]();
       SelfManager.self().fd(1);
     }
-  };
-  var lookForFood = function() {
+  });
+  procs["returnToNest"] = temp;
+  procs["RETURN-TO-NEST"] = temp;
+  temp = (function() {
     try {
       if (Prims.gt(SelfManager.self().getPatchVariable("food"), 0)) {
         SelfManager.self().setVariable("carrying-food?", true);
@@ -188,11 +212,11 @@ var procedures = (function() {
       }
       else {
         if (Prims.lt(SelfManager.self().getPatchVariable("chemical"), 0.05)) {
-          procedures.wiggle();
+          procedures["WIGGLE"]();
           SelfManager.self().fd(1);
         }
         else {
-          procedures.uphillChemical();
+          procedures["UPHILL-CHEMICAL"]();
           SelfManager.self().fd(1);
         }
       }
@@ -203,12 +227,14 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var uphillChemical = function() {
-    procedures.wiggle();
+  });
+  procs["lookForFood"] = temp;
+  procs["LOOK-FOR-FOOD"] = temp;
+  temp = (function() {
+    procedures["WIGGLE"]();
     var scentAhead = SelfManager.self().patchAhead(1).projectionBy(function() { return SelfManager.self().getPatchVariable("chemical"); });
-    var scentRight = procedures.chemicalScent(45);
-    var scentLeft = procedures.chemicalScent(-45);
+    var scentRight = procedures["CHEMICAL-SCENT"](45);
+    var scentLeft = procedures["CHEMICAL-SCENT"](-45);
     if ((Prims.gt(scentRight, scentAhead) || Prims.gt(scentLeft, scentAhead))) {
       if (Prims.gt(scentRight, scentLeft)) {
         SelfManager.self().right(45);
@@ -217,12 +243,14 @@ var procedures = (function() {
         SelfManager.self().right(-45);
       }
     }
-  };
-  var uphillNestScent = function() {
-    procedures.wiggle();
+  });
+  procs["uphillChemical"] = temp;
+  procs["UPHILL-CHEMICAL"] = temp;
+  temp = (function() {
+    procedures["WIGGLE"]();
     var scentAhead = SelfManager.self().patchAhead(1).projectionBy(function() { return SelfManager.self().getPatchVariable("nest-scent"); });
-    var scentRight = procedures.getNestScent(45);
-    var scentLeft = procedures.getNestScent(-45);
+    var scentRight = procedures["GET-NEST-SCENT"](45);
+    var scentLeft = procedures["GET-NEST-SCENT"](-45);
     if ((Prims.gt(scentRight, scentAhead) || Prims.gt(scentLeft, scentAhead))) {
       if (Prims.gt(scentRight, scentLeft)) {
         SelfManager.self().right(45);
@@ -231,14 +259,18 @@ var procedures = (function() {
         SelfManager.self().right(-45);
       }
     }
-  };
-  var wiggle = function() {
+  });
+  procs["uphillNestScent"] = temp;
+  procs["UPHILL-NEST-SCENT"] = temp;
+  temp = (function() {
     SelfManager.self().right((Prims.random(40) - Prims.random(40)));
     if (!SelfManager.self().canMove(1)) {
       SelfManager.self().right(180);
     }
-  };
-  var getNestScent = function(angle) {
+  });
+  procs["wiggle"] = temp;
+  procs["WIGGLE"] = temp;
+  temp = (function(angle) {
     try {
       var p = SelfManager.self().patchRightAndAhead(angle, 1);
       if (!Prims.equality(p, Nobody)) {
@@ -253,8 +285,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var chemicalScent = function(angle) {
+  });
+  procs["getNestScent"] = temp;
+  procs["GET-NEST-SCENT"] = temp;
+  temp = (function(angle) {
     try {
       var p = SelfManager.self().patchRightAndAhead(angle, 1);
       if (!Prims.equality(p, Nobody)) {
@@ -269,8 +303,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var doPlotting = function() {
+  });
+  procs["chemicalScent"] = temp;
+  procs["CHEMICAL-SCENT"] = temp;
+  temp = (function() {
     try {
       if (!world.observer.getGlobal("plot?")) {
         throw new Exception.StopInterrupt;
@@ -289,45 +325,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  return {
-    "BENCHMARK":benchmark,
-    "CHEMICAL-SCENT":chemicalScent,
-    "DO-PLOTTING":doPlotting,
-    "GET-NEST-SCENT":getNestScent,
-    "GO":go,
-    "GO-PATCHES":goPatches,
-    "GO-TURTLES":goTurtles,
-    "LOOK-FOR-FOOD":lookForFood,
-    "RETURN-TO-NEST":returnToNest,
-    "SETUP":setup,
-    "SETUP-FOOD":setupFood,
-    "SETUP-NEST":setupNest,
-    "SETUP-PATCHES":setupPatches,
-    "SETUP-TURTLES":setupTurtles,
-    "UPDATE-DISPLAY":updateDisplay,
-    "UPHILL-CHEMICAL":uphillChemical,
-    "UPHILL-NEST-SCENT":uphillNestScent,
-    "WIGGLE":wiggle,
-    "benchmark":benchmark,
-    "chemicalScent":chemicalScent,
-    "doPlotting":doPlotting,
-    "getNestScent":getNestScent,
-    "go":go,
-    "goPatches":goPatches,
-    "goTurtles":goTurtles,
-    "lookForFood":lookForFood,
-    "returnToNest":returnToNest,
-    "setup":setup,
-    "setupFood":setupFood,
-    "setupNest":setupNest,
-    "setupPatches":setupPatches,
-    "setupTurtles":setupTurtles,
-    "updateDisplay":updateDisplay,
-    "uphillChemical":uphillChemical,
-    "uphillNestScent":uphillNestScent,
-    "wiggle":wiggle
-  };
+  });
+  procs["doPlotting"] = temp;
+  procs["DO-PLOTTING"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("diffusion-rate", 53);
 world.observer.setGlobal("evaporation-rate", 10);

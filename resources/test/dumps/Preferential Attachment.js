@@ -111,22 +111,28 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
     BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
-    procedures.makeNode(Nobody);
-    procedures.makeNode(world.turtleManager.getTurtle(0));
+    procedures["MAKE-NODE"](Nobody);
+    procedures["MAKE-NODE"](world.turtleManager.getTurtle(0));
     world.ticker.reset();
-  };
-  var go = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     world.links().ask(function() { SelfManager.self().setVariable("color", 5); }, true);
-    procedures.makeNode(procedures.findPartner());
+    procedures["MAKE-NODE"](procedures["FIND-PARTNER"]());
     world.ticker.tick();
     if (world.observer.getGlobal("layout?")) {
-      procedures.layout();
+      procedures["LAYOUT"]();
     }
-  };
-  var makeNode = function(oldNode) {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function(oldNode) {
     world.turtleManager.createTurtles(1, "").ask(function() {
       SelfManager.self().setVariable("color", 15);
       if (!Prims.equality(oldNode, Nobody)) {
@@ -135,8 +141,10 @@ var procedures = (function() {
         SelfManager.self().fd(8);
       }
     }, true);
-  };
-  var findPartner = function() {
+  });
+  procs["makeNode"] = temp;
+  procs["MAKE-NODE"] = temp;
+  temp = (function() {
     try {
       throw new Exception.ReportInterrupt(ListPrims.oneOf(world.links()).projectionBy(function() { return ListPrims.oneOf(SelfManager.self().bothEnds()); }));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
@@ -147,16 +155,20 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var resizeNodes = function() {
+  });
+  procs["findPartner"] = temp;
+  procs["FIND-PARTNER"] = temp;
+  temp = (function() {
     if (world.turtles().agentAll(function() { return Prims.lte(SelfManager.self().getVariable("size"), 1); })) {
       world.turtles().ask(function() { SelfManager.self().setVariable("size", NLMath.sqrt(LinkPrims.linkNeighbors("LINKS").size())); }, true);
     }
     else {
       world.turtles().ask(function() { SelfManager.self().setVariable("size", 1); }, true);
     }
-  };
-  var layout = function() {
+  });
+  procs["resizeNodes"] = temp;
+  procs["RESIZE-NODES"] = temp;
+  temp = (function() {
     for (var _index_2025_2031 = 0, _repeatcount_2025_2031 = StrictMath.floor(3); _index_2025_2031 < _repeatcount_2025_2031; _index_2025_2031++){
       var factor = NLMath.sqrt(world.turtles().size());
       LayoutManager.layoutSpring(world.turtles(), world.links(), Prims.div(1, factor), Prims.div(7, factor), Prims.div(1, factor));
@@ -164,13 +176,15 @@ var procedures = (function() {
     }
     var xOffset = (ListPrims.max(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("xcor"); })) + ListPrims.min(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("xcor"); })));
     var yOffset = (ListPrims.max(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("ycor"); })) + ListPrims.min(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("ycor"); })));
-    xOffset = procedures.limitMagnitude(xOffset,0.1);
-    yOffset = procedures.limitMagnitude(yOffset,0.1);
+    xOffset = procedures["LIMIT-MAGNITUDE"](xOffset,0.1);
+    yOffset = procedures["LIMIT-MAGNITUDE"](yOffset,0.1);
     world.turtles().ask(function() {
       SelfManager.self().setXY((SelfManager.self().getVariable("xcor") - Prims.div(xOffset, 2)), (SelfManager.self().getVariable("ycor") - Prims.div(yOffset, 2)));
     }, true);
-  };
-  var limitMagnitude = function(number, limit) {
+  });
+  procs["layout"] = temp;
+  procs["LAYOUT"] = temp;
+  temp = (function(number, limit) {
     try {
       if (Prims.gt(number, limit)) {
         throw new Exception.ReportInterrupt(limit);
@@ -187,23 +201,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  return {
-    "FIND-PARTNER":findPartner,
-    "GO":go,
-    "LAYOUT":layout,
-    "LIMIT-MAGNITUDE":limitMagnitude,
-    "MAKE-NODE":makeNode,
-    "RESIZE-NODES":resizeNodes,
-    "SETUP":setup,
-    "findPartner":findPartner,
-    "go":go,
-    "layout":layout,
-    "limitMagnitude":limitMagnitude,
-    "makeNode":makeNode,
-    "resizeNodes":resizeNodes,
-    "setup":setup
-  };
+  });
+  procs["limitMagnitude"] = temp;
+  procs["LIMIT-MAGNITUDE"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("plot?", true);
 world.observer.setGlobal("layout?", true);

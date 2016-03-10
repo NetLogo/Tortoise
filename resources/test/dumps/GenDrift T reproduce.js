@@ -131,7 +131,9 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
     world.turtleManager.createTurtles(world.observer.getGlobal("number"), "").ask(function() {
       SelfManager.self().setVariable("color", (5 + (Prims.random(world.observer.getGlobal("colors")) * 10)));
@@ -141,8 +143,10 @@ var procedures = (function() {
       SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
     }, true);
     world.ticker.reset();
-  };
-  var go = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     try {
       if (Prims.equality(ListPrims.variance(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("color"); })), 0)) {
         throw new Exception.StopInterrupt;
@@ -152,8 +156,8 @@ var procedures = (function() {
         SelfManager.self().right(-Prims.random(50));
         SelfManager.self().fd(1);
       }, true);
-      procedures.birth();
-      procedures.death();
+      procedures["BIRTH"]();
+      procedures["DEATH"]();
       world.ticker.tick();
     } catch (e) {
       if (e instanceof Exception.StopInterrupt) {
@@ -162,28 +166,25 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var birth = function() {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     world.turtles().ask(function() { SelfManager.self().hatch(Prims.random(5), "").ask(function() { SelfManager.self().fd(1); }, true); }, true);
-  };
-  var death = function() {
+  });
+  procs["birth"] = temp;
+  procs["BIRTH"] = temp;
+  temp = (function() {
     var totalTurtles = world.turtles().size();
     world.turtles().ask(function() {
       if (Prims.gt(Prims.random(totalTurtles), world.observer.getGlobal("number"))) {
         SelfManager.self().die();
       }
     }, true);
-  };
-  return {
-    "BIRTH":birth,
-    "DEATH":death,
-    "GO":go,
-    "SETUP":setup,
-    "birth":birth,
-    "death":death,
-    "go":go,
-    "setup":setup
-  };
+  });
+  procs["death"] = temp;
+  procs["DEATH"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("colors", 5);
 world.observer.setGlobal("number", 500);

@@ -51,7 +51,9 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
     world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", 5); }, true);
     world.getPatchAt(world.observer.getGlobal("start-x"), world.observer.getGlobal("start-y")).ask(function() { SelfManager.self().setPatchVariable("pcolor", 55); }, true);
@@ -69,8 +71,10 @@ var procedures = (function() {
       SelfManager.self().setXY(world.observer.getGlobal("start-x"), world.observer.getGlobal("start-y"));
     }, true);
     world.ticker.reset();
-  };
-  var go = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", 5); }, true);
     world.turtleManager.turtlesOfBreed("CENTERS").ask(function() { SelfManager.self().setXY(world.observer.getGlobal("start-x"), world.observer.getGlobal("start-y")); }, true);
     world.turtleManager.turtlesOfBreed("SEARCHERS").ask(function() {
@@ -81,13 +85,10 @@ var procedures = (function() {
       SelfManager.self().setPatchVariable("pcolor", 0);
     }, true);
     world.ticker.tick();
-  };
-  return {
-    "GO":go,
-    "SETUP":setup,
-    "go":go,
-    "setup":setup
-  };
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("distance-of-travel", 1);
 world.observer.setGlobal("start-y", 0);

@@ -80,23 +80,29 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
-    procedures.setupNodes();
-    procedures.setupSpatiallyClusteredNetwork();
-    ListPrims.nOf(world.observer.getGlobal("initial-outbreak-size"), world.turtles()).ask(function() { procedures.becomeInfected(); }, true);
+    procedures["SETUP-NODES"]();
+    procedures["SETUP-SPATIALLY-CLUSTERED-NETWORK"]();
+    ListPrims.nOf(world.observer.getGlobal("initial-outbreak-size"), world.turtles()).ask(function() { procedures["BECOME-INFECTED"](); }, true);
     world.links().ask(function() { SelfManager.self().setVariable("color", 9.9); }, true);
     world.ticker.reset();
-  };
-  var setupNodes = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
     world.turtleManager.createTurtles(world.observer.getGlobal("number-of-nodes"), "").ask(function() {
       SelfManager.self().setXY((Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor) * 0.95), (Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor) * 0.95));
-      procedures.becomeSusceptible();
+      procedures["BECOME-SUSCEPTIBLE"]();
       SelfManager.self().setVariable("virus-check-timer", Prims.random(world.observer.getGlobal("virus-check-frequency")));
     }, true);
-  };
-  var setupSpatiallyClusteredNetwork = function() {
+  });
+  procs["setupNodes"] = temp;
+  procs["SETUP-NODES"] = temp;
+  temp = (function() {
     var numLinks = Prims.div((world.observer.getGlobal("average-node-degree") * world.observer.getGlobal("number-of-nodes")), 2);
     while (Prims.lt(world.links().size(), numLinks)) {
       ListPrims.oneOf(world.turtles()).ask(function() {
@@ -109,8 +115,10 @@ var procedures = (function() {
     for (var _index_1097_1103 = 0, _repeatcount_1097_1103 = StrictMath.floor(10); _index_1097_1103 < _repeatcount_1097_1103; _index_1097_1103++){
       LayoutManager.layoutSpring(world.turtles(), world.links(), 0.3, Prims.div(world.topology.width, NLMath.sqrt(world.observer.getGlobal("number-of-nodes"))), 1);
     }
-  };
-  var go = function() {
+  });
+  procs["setupSpatiallyClusteredNetwork"] = temp;
+  procs["SETUP-SPATIALLY-CLUSTERED-NETWORK"] = temp;
+  temp = (function() {
     try {
       if (world.turtles().agentAll(function() { return !SelfManager.self().getVariable("infected?"); })) {
         throw new Exception.StopInterrupt;
@@ -121,8 +129,8 @@ var procedures = (function() {
           SelfManager.self().setVariable("virus-check-timer", 0);
         }
       }, true);
-      procedures.spreadVirus();
-      procedures.doVirusChecks();
+      procedures["SPREAD-VIRUS"]();
+      procedures["DO-VIRUS-CHECKS"]();
       world.ticker.tick();
     } catch (e) {
       if (e instanceof Exception.StopInterrupt) {
@@ -131,66 +139,59 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var becomeInfected = function() {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     SelfManager.self().setVariable("infected?", true);
     SelfManager.self().setVariable("resistant?", false);
     SelfManager.self().setVariable("color", 15);
-  };
-  var becomeSusceptible = function() {
+  });
+  procs["becomeInfected"] = temp;
+  procs["BECOME-INFECTED"] = temp;
+  temp = (function() {
     SelfManager.self().setVariable("infected?", false);
     SelfManager.self().setVariable("resistant?", false);
     SelfManager.self().setVariable("color", 55);
-  };
-  var becomeResistant = function() {
+  });
+  procs["becomeSusceptible"] = temp;
+  procs["BECOME-SUSCEPTIBLE"] = temp;
+  temp = (function() {
     SelfManager.self().setVariable("infected?", false);
     SelfManager.self().setVariable("resistant?", true);
     SelfManager.self().setVariable("color", 5);
     LinkPrims.myLinks("LINKS").ask(function() { SelfManager.self().setVariable("color", (5 - 2)); }, true);
-  };
-  var spreadVirus = function() {
+  });
+  procs["becomeResistant"] = temp;
+  procs["BECOME-RESISTANT"] = temp;
+  temp = (function() {
     world.turtles().agentFilter(function() { return SelfManager.self().getVariable("infected?"); }).ask(function() {
       LinkPrims.linkNeighbors("LINKS").agentFilter(function() { return !SelfManager.self().getVariable("resistant?"); }).ask(function() {
         if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("virus-spread-chance"))) {
-          procedures.becomeInfected();
+          procedures["BECOME-INFECTED"]();
         }
       }, true);
     }, true);
-  };
-  var doVirusChecks = function() {
+  });
+  procs["spreadVirus"] = temp;
+  procs["SPREAD-VIRUS"] = temp;
+  temp = (function() {
     world.turtles().agentFilter(function() {
       return (SelfManager.self().getVariable("infected?") && Prims.equality(SelfManager.self().getVariable("virus-check-timer"), 0));
     }).ask(function() {
       if (Prims.lt(Prims.random(100), world.observer.getGlobal("recovery-chance"))) {
         if (Prims.lt(Prims.random(100), world.observer.getGlobal("gain-resistance-chance"))) {
-          procedures.becomeResistant();
+          procedures["BECOME-RESISTANT"]();
         }
         else {
-          procedures.becomeSusceptible();
+          procedures["BECOME-SUSCEPTIBLE"]();
         }
       }
     }, true);
-  };
-  return {
-    "BECOME-INFECTED":becomeInfected,
-    "BECOME-RESISTANT":becomeResistant,
-    "BECOME-SUSCEPTIBLE":becomeSusceptible,
-    "DO-VIRUS-CHECKS":doVirusChecks,
-    "GO":go,
-    "SETUP":setup,
-    "SETUP-NODES":setupNodes,
-    "SETUP-SPATIALLY-CLUSTERED-NETWORK":setupSpatiallyClusteredNetwork,
-    "SPREAD-VIRUS":spreadVirus,
-    "becomeInfected":becomeInfected,
-    "becomeResistant":becomeResistant,
-    "becomeSusceptible":becomeSusceptible,
-    "doVirusChecks":doVirusChecks,
-    "go":go,
-    "setup":setup,
-    "setupNodes":setupNodes,
-    "setupSpatiallyClusteredNetwork":setupSpatiallyClusteredNetwork,
-    "spreadVirus":spreadVirus
-  };
+  });
+  procs["doVirusChecks"] = temp;
+  procs["DO-VIRUS-CHECKS"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("gain-resistance-chance", 5);
 world.observer.setGlobal("recovery-chance", 5);

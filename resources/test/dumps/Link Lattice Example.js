@@ -51,15 +51,19 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setupSquare = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
     world.patches().ask(function() { SelfManager.self().sprout(1, "TURTLES").ask(function() {}, true); }, true);
     world.turtles().ask(function() {
       LinkPrims.createLinksWith(Prims.turtlesOn(SelfManager.self().getNeighbors4()), "LINKS").ask(function() {}, false);
     }, true);
     world.ticker.reset();
-  };
-  var setupHex = function() {
+  });
+  procs["setupSquare"] = temp;
+  procs["SETUP-SQUARE"] = temp;
+  temp = (function() {
     world.clearAll();
     world.patches().ask(function() { SelfManager.self().sprout(1, "TURTLES").ask(function() {}, true); }, true);
     world.turtles().ask(function() {
@@ -72,11 +76,8 @@ var procedures = (function() {
       }
     }, true);
     world.ticker.reset();
-  };
-  return {
-    "SETUP-HEX":setupHex,
-    "SETUP-SQUARE":setupSquare,
-    "setupHex":setupHex,
-    "setupSquare":setupSquare
-  };
+  });
+  procs["setupHex"] = temp;
+  procs["SETUP-HEX"] = temp;
+  return procs;
 })();

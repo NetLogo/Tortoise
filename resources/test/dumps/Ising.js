@@ -39,7 +39,7 @@ modelConfig.plots = [(function() {
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('average spin', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('Magnetization', 'average spin')(function() { plotManager.plotPoint(world.ticker.tickCount(), procedures.magnetization());; });
+      plotManager.withTemporaryContext('Magnetization', 'average spin')(function() { plotManager.plotPoint(world.ticker.tickCount(), procedures["MAGNETIZATION"]());; });
     });
   }),
   new PenBundle.Pen('axis', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {
@@ -72,7 +72,9 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
     world.patches().ask(function() {
       if (Prims.lt(Prims.random(100), world.observer.getGlobal("probability-of-spin-up"))) {
@@ -81,35 +83,43 @@ var procedures = (function() {
       else {
         SelfManager.self().setPatchVariable("spin", -1);
       }
-      procedures.recolor();
+      procedures["RECOLOR"]();
     }, true);
     world.observer.setGlobal("sum-of-spins", ListPrims.sum(world.patches().projectionBy(function() { return SelfManager.self().getPatchVariable("spin"); })));
     world.ticker.reset();
-  };
-  var go = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     for (var _index_510_516 = 0, _repeatcount_510_516 = StrictMath.floor(1000); _index_510_516 < _repeatcount_510_516; _index_510_516++){
-      ListPrims.oneOf(world.patches()).ask(function() { procedures.update(); }, true);
+      ListPrims.oneOf(world.patches()).ask(function() { procedures["UPDATE"](); }, true);
     }
     world.ticker.tickAdvance(1000);
     plotManager.updatePlots();
-  };
-  var update = function() {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     var ediff = ((2 * SelfManager.self().getPatchVariable("spin")) * ListPrims.sum(SelfManager.self().getNeighbors4().projectionBy(function() { return SelfManager.self().getPatchVariable("spin"); })));
     if ((Prims.lte(ediff, 0) || (Prims.gt(world.observer.getGlobal("temperature"), 0) && Prims.lt(Prims.randomFloat(1), NLMath.exp(Prims.div( -ediff, world.observer.getGlobal("temperature"))))))) {
       SelfManager.self().setPatchVariable("spin",  -SelfManager.self().getPatchVariable("spin"));
       world.observer.setGlobal("sum-of-spins", (world.observer.getGlobal("sum-of-spins") + (2 * SelfManager.self().getPatchVariable("spin"))));
-      procedures.recolor();
+      procedures["RECOLOR"]();
     }
-  };
-  var recolor = function() {
+  });
+  procs["update"] = temp;
+  procs["UPDATE"] = temp;
+  temp = (function() {
     if (Prims.equality(SelfManager.self().getPatchVariable("spin"), 1)) {
       SelfManager.self().setPatchVariable("pcolor", (105 + 2));
     }
     else {
       SelfManager.self().setPatchVariable("pcolor", (105 - 2));
     }
-  };
-  var magnetization = function() {
+  });
+  procs["recolor"] = temp;
+  procs["RECOLOR"] = temp;
+  temp = (function() {
     try {
       throw new Exception.ReportInterrupt(Prims.div(world.observer.getGlobal("sum-of-spins"), world.patches().size()));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
@@ -120,19 +130,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  return {
-    "GO":go,
-    "MAGNETIZATION":magnetization,
-    "RECOLOR":recolor,
-    "SETUP":setup,
-    "UPDATE":update,
-    "go":go,
-    "magnetization":magnetization,
-    "recolor":recolor,
-    "setup":setup,
-    "update":update
-  };
+  });
+  procs["magnetization"] = temp;
+  procs["MAGNETIZATION"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("temperature", 2.27);
 world.observer.setGlobal("probability-of-spin-up", 50);

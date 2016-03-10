@@ -66,7 +66,9 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
     world.observer.setGlobal("lipid-length", 2);
     world.observer.setGlobal("interaction-distance", 4);
@@ -85,16 +87,20 @@ var procedures = (function() {
       partner.ask(function() { SelfManager.self().setVariable("color", 115); }, true);
     }, true);
     world.ticker.reset();
-  };
-  var go = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     world.turtles().ask(function() {
-      procedures.interactWithNeighbor();
-      procedures.repelTooCloseNeighbor();
-      procedures.interactWithPartner();
+      procedures["INTERACT-WITH-NEIGHBOR"]();
+      procedures["REPEL-TOO-CLOSE-NEIGHBOR"]();
+      procedures["INTERACT-WITH-PARTNER"]();
     }, true);
     world.ticker.tick();
-  };
-  var interactWithNeighbor = function() {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     var near = ListPrims.oneOf(SelfPrims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("interaction-distance")).agentFilter(function() { return !LinkPrims.isLinkNeighbor("LINKS", SelfManager.myself()); })));
     if (!Prims.equality(near, Nobody)) {
       SelfManager.self().face(near);
@@ -105,15 +111,19 @@ var procedures = (function() {
         SelfManager.self().fd(world.observer.getGlobal("water-oil-force"));
       }
     }
-  };
-  var repelTooCloseNeighbor = function() {
+  });
+  procs["interactWithNeighbor"] = temp;
+  procs["INTERACT-WITH-NEIGHBOR"] = temp;
+  temp = (function() {
     var tooNear = ListPrims.oneOf(SelfPrims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("too-close-distance"))));
     if (!Prims.equality(tooNear, Nobody)) {
       SelfManager.self().face(tooNear);
       SelfManager.self().fd(world.observer.getGlobal("too-close-force"));
     }
-  };
-  var interactWithPartner = function() {
+  });
+  procs["repelTooCloseNeighbor"] = temp;
+  procs["REPEL-TOO-CLOSE-NEIGHBOR"] = temp;
+  temp = (function() {
     var partner = ListPrims.oneOf(LinkPrims.linkNeighbors("LINKS"));
     if (!Prims.equality(partner, Nobody)) {
       SelfManager.self().face(partner);
@@ -121,19 +131,10 @@ var procedures = (function() {
     }
     SelfManager.self().right(-Prims.random(360));
     SelfManager.self().fd(world.observer.getGlobal("random-force"));
-  };
-  return {
-    "GO":go,
-    "INTERACT-WITH-NEIGHBOR":interactWithNeighbor,
-    "INTERACT-WITH-PARTNER":interactWithPartner,
-    "REPEL-TOO-CLOSE-NEIGHBOR":repelTooCloseNeighbor,
-    "SETUP":setup,
-    "go":go,
-    "interactWithNeighbor":interactWithNeighbor,
-    "interactWithPartner":interactWithPartner,
-    "repelTooCloseNeighbor":repelTooCloseNeighbor,
-    "setup":setup
-  };
+  });
+  procs["interactWithPartner"] = temp;
+  procs["INTERACT-WITH-PARTNER"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("num-water", 750);
 world.observer.setGlobal("num-lipids", 250);

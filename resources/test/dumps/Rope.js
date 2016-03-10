@@ -51,7 +51,9 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
     BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
     world.turtleManager.createTurtles(world.topology.width, "").ask(function() {
@@ -66,8 +68,10 @@ var procedures = (function() {
       }
     }, true);
     world.ticker.reset();
-  };
-  var go = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); }).ask(function() {
       if (Prims.gt(world.ticker.tickCount(), 100)) {
         SelfManager.self().setVariable("ypos", (world.observer.getGlobal("amplitude") * NLMath.sin((world.observer.getGlobal("frequency") * world.ticker.tickCount()))));
@@ -98,13 +102,10 @@ var procedures = (function() {
       }
     }, true);
     world.ticker.tick();
-  };
-  return {
-    "GO":go,
-    "SETUP":setup,
-    "go":go,
-    "setup":setup
-  };
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("friction", 24);
 world.observer.setGlobal("frequency", 10);

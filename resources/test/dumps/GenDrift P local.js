@@ -127,7 +127,9 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
     world.patches().ask(function() {
       SelfManager.self().setPatchVariable("pcolor", ((Prims.random(world.observer.getGlobal("colors")) * 10) + 5));
@@ -136,8 +138,10 @@ var procedures = (function() {
       }
     }, true);
     world.ticker.reset();
-  };
-  var go = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     try {
       if (Prims.equality(ListPrims.variance(world.patches().projectionBy(function() { return SelfManager.self().getPatchVariable("pcolor"); })), 0)) {
         throw new Exception.StopInterrupt;
@@ -153,12 +157,9 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  return {
-    "GO":go,
-    "SETUP":setup,
-    "go":go,
-    "setup":setup
-  };
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("colors", 5);

@@ -96,24 +96,26 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     try {
       world.clearAll();
-      procedures.setupGlobals();
-      procedures.setupPatches();
-      procedures.makeCurrent(ListPrims.oneOf(world.observer.getGlobal("intersections")));
-      procedures.labelCurrent();
+      procedures["SETUP-GLOBALS"]();
+      procedures["SETUP-PATCHES"]();
+      procedures["MAKE-CURRENT"](ListPrims.oneOf(world.observer.getGlobal("intersections")));
+      procedures["LABEL-CURRENT"]();
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "car")
       if (Prims.gt(world.observer.getGlobal("num-cars"), world.observer.getGlobal("roads").size())) {
         UserDialogPrims.confirm((Dump('') + Dump("There are too many cars for the amount of ") + Dump("road.  Either increase the amount of roads ") + Dump("by increasing the GRID-SIZE-X or ") + Dump("GRID-SIZE-Y sliders, or decrease the ") + Dump("number of cars by lowering the NUMBER slider.\n") + Dump("The setup has stopped.")));
         throw new Exception.StopInterrupt;
       }
       world.turtleManager.createTurtles(world.observer.getGlobal("num-cars"), "").ask(function() {
-        procedures.setupCars();
-        procedures.setCarColor();
-        procedures.recordData();
+        procedures["SETUP-CARS"]();
+        procedures["SET-CAR-COLOR"]();
+        procedures["RECORD-DATA"]();
       }, true);
-      world.turtles().ask(function() { procedures.setCarSpeed(); }, true);
+      world.turtles().ask(function() { procedures["SET-CAR-SPEED"](); }, true);
       world.ticker.reset();
     } catch (e) {
       if (e instanceof Exception.StopInterrupt) {
@@ -122,16 +124,20 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var setupGlobals = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     world.observer.setGlobal("current-light", Nobody);
     world.observer.setGlobal("phase", 0);
     world.observer.setGlobal("num-cars-stopped", 0);
     world.observer.setGlobal("grid-x-inc", Prims.div(world.topology.width, world.observer.getGlobal("grid-size-x")));
     world.observer.setGlobal("grid-y-inc", Prims.div(world.topology.height, world.observer.getGlobal("grid-size-y")));
     world.observer.setGlobal("acceleration", 0.099);
-  };
-  var setupPatches = function() {
+  });
+  procs["setupGlobals"] = temp;
+  procs["SETUP-GLOBALS"] = temp;
+  temp = (function() {
     world.patches().ask(function() {
       SelfManager.self().setPatchVariable("intersection?", false);
       SelfManager.self().setPatchVariable("auto?", false);
@@ -148,9 +154,11 @@ var procedures = (function() {
       return (Prims.equality(NLMath.floor(NLMath.mod(((SelfManager.self().getPatchVariable("pxcor") + world.topology.maxPxcor) - NLMath.floor((world.observer.getGlobal("grid-x-inc") - 1))), world.observer.getGlobal("grid-x-inc"))), 0) && Prims.equality(NLMath.floor(NLMath.mod((SelfManager.self().getPatchVariable("pycor") + world.topology.maxPycor), world.observer.getGlobal("grid-y-inc"))), 0));
     }));
     world.observer.getGlobal("roads").ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
-    procedures.setupIntersections();
-  };
-  var setupIntersections = function() {
+    procedures["SETUP-INTERSECTIONS"]();
+  });
+  procs["setupPatches"] = temp;
+  procs["SETUP-PATCHES"] = temp;
+  temp = (function() {
     world.observer.getGlobal("intersections").ask(function() {
       SelfManager.self().setPatchVariable("intersection?", true);
       SelfManager.self().setPatchVariable("green-light-up?", true);
@@ -158,13 +166,15 @@ var procedures = (function() {
       SelfManager.self().setPatchVariable("auto?", true);
       SelfManager.self().setPatchVariable("my-row", NLMath.floor(Prims.div((SelfManager.self().getPatchVariable("pycor") + world.topology.maxPycor), world.observer.getGlobal("grid-y-inc"))));
       SelfManager.self().setPatchVariable("my-column", NLMath.floor(Prims.div((SelfManager.self().getPatchVariable("pxcor") + world.topology.maxPxcor), world.observer.getGlobal("grid-x-inc"))));
-      procedures.setSignalColors();
+      procedures["SET-SIGNAL-COLORS"]();
     }, true);
-  };
-  var setupCars = function() {
+  });
+  procs["setupIntersections"] = temp;
+  procs["SETUP-INTERSECTIONS"] = temp;
+  temp = (function() {
     SelfManager.self().setVariable("speed", 0);
     SelfManager.self().setVariable("wait-time", 0);
-    procedures.putOnEmptyRoad();
+    procedures["PUT-ON-EMPTY-ROAD"]();
     if (SelfManager.self().getPatchVariable("intersection?")) {
       if (Prims.equality(Prims.random(2), 0)) {
         SelfManager.self().setVariable("up-car?", true);
@@ -187,33 +197,39 @@ var procedures = (function() {
     else {
       SelfManager.self().setVariable("heading", 90);
     }
-  };
-  var putOnEmptyRoad = function() {
+  });
+  procs["setupCars"] = temp;
+  procs["SETUP-CARS"] = temp;
+  temp = (function() {
     SelfManager.self().moveTo(ListPrims.oneOf(world.observer.getGlobal("roads").agentFilter(function() { return !Prims.turtlesOn(SelfManager.self()).nonEmpty(); })));
-  };
-  var go = function() {
-    procedures.updateCurrent();
-    procedures.setSignals();
+  });
+  procs["putOnEmptyRoad"] = temp;
+  procs["PUT-ON-EMPTY-ROAD"] = temp;
+  temp = (function() {
+    procedures["UPDATE-CURRENT"]();
+    procedures["SET-SIGNALS"]();
     world.observer.setGlobal("num-cars-stopped", 0);
     world.turtles().ask(function() {
-      procedures.setCarSpeed();
+      procedures["SET-CAR-SPEED"]();
       SelfManager.self().fd(SelfManager.self().getVariable("speed"));
-      procedures.recordData();
-      procedures.setCarColor();
+      procedures["RECORD-DATA"]();
+      procedures["SET-CAR-COLOR"]();
     }, true);
-    procedures.nextPhase();
+    procedures["NEXT-PHASE"]();
     world.ticker.tick();
-  };
-  var chooseCurrent = function() {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     try {
       if (MousePrims.isDown()) {
         var xMouse = MousePrims.getX();
         var yMouse = MousePrims.getY();
         if (world.getPatchAt(xMouse, yMouse).projectionBy(function() { return SelfManager.self().getPatchVariable("intersection?"); })) {
-          procedures.updateCurrent();
-          procedures.unlabelCurrent();
-          procedures.makeCurrent(world.getPatchAt(xMouse, yMouse));
-          procedures.labelCurrent();
+          procedures["UPDATE-CURRENT"]();
+          procedures["UNLABEL-CURRENT"]();
+          procedures["MAKE-CURRENT"](world.getPatchAt(xMouse, yMouse));
+          procedures["LABEL-CURRENT"]();
           throw new Exception.StopInterrupt;
         }
       }
@@ -224,40 +240,52 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var makeCurrent = function(light) {
+  });
+  procs["chooseCurrent"] = temp;
+  procs["CHOOSE-CURRENT"] = temp;
+  temp = (function(light) {
     world.observer.setGlobal("current-light", light);
     world.observer.setGlobal("current-phase", world.observer.getGlobal("current-light").projectionBy(function() { return SelfManager.self().getPatchVariable("my-phase"); }));
     world.observer.setGlobal("current-auto?", world.observer.getGlobal("current-light").projectionBy(function() { return SelfManager.self().getPatchVariable("auto?"); }));
-  };
-  var updateCurrent = function() {
+  });
+  procs["makeCurrent"] = temp;
+  procs["MAKE-CURRENT"] = temp;
+  temp = (function() {
     world.observer.getGlobal("current-light").ask(function() {
       SelfManager.self().setPatchVariable("my-phase", world.observer.getGlobal("current-phase"));
       SelfManager.self().setPatchVariable("auto?", world.observer.getGlobal("current-auto?"));
     }, true);
-  };
-  var labelCurrent = function() {
+  });
+  procs["updateCurrent"] = temp;
+  procs["UPDATE-CURRENT"] = temp;
+  temp = (function() {
     world.observer.getGlobal("current-light").ask(function() {
       SelfManager.self().patchAt(-1, 1).ask(function() {
         SelfManager.self().setPatchVariable("plabel-color", 0);
         SelfManager.self().setPatchVariable("plabel", "current");
       }, true);
     }, true);
-  };
-  var unlabelCurrent = function() {
+  });
+  procs["labelCurrent"] = temp;
+  procs["LABEL-CURRENT"] = temp;
+  temp = (function() {
     world.observer.getGlobal("current-light").ask(function() {
       SelfManager.self().patchAt(-1, 1).ask(function() { SelfManager.self().setPatchVariable("plabel", ""); }, true);
     }, true);
-  };
-  var setSignals = function() {
+  });
+  procs["unlabelCurrent"] = temp;
+  procs["UNLABEL-CURRENT"] = temp;
+  temp = (function() {
     world.observer.getGlobal("intersections").agentFilter(function() {
       return (SelfManager.self().getPatchVariable("auto?") && Prims.equality(world.observer.getGlobal("phase"), NLMath.floor(Prims.div((SelfManager.self().getPatchVariable("my-phase") * world.observer.getGlobal("ticks-per-cycle")), 100))));
     }).ask(function() {
       SelfManager.self().setPatchVariable("green-light-up?", !SelfManager.self().getPatchVariable("green-light-up?"));
-      procedures.setSignalColors();
+      procedures["SET-SIGNAL-COLORS"]();
     }, true);
-  };
-  var setSignalColors = function() {
+  });
+  procs["setSignals"] = temp;
+  procs["SET-SIGNALS"] = temp;
+  temp = (function() {
     if (world.observer.getGlobal("power?")) {
       if (SelfManager.self().getPatchVariable("green-light-up?")) {
         SelfManager.self().patchAt(-1, 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 15); }, true);
@@ -272,21 +300,25 @@ var procedures = (function() {
       SelfManager.self().patchAt(-1, 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
       SelfManager.self().patchAt(0, 1).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
     }
-  };
-  var setCarSpeed = function() {
+  });
+  procs["setSignalColors"] = temp;
+  procs["SET-SIGNAL-COLORS"] = temp;
+  temp = (function() {
     if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15)) {
       SelfManager.self().setVariable("speed", 0);
     }
     else {
       if (SelfManager.self().getVariable("up-car?")) {
-        procedures.setSpeed(0,-1);
+        procedures["SET-SPEED"](0,-1);
       }
       else {
-        procedures.setSpeed(1,0);
+        procedures["SET-SPEED"](1,0);
       }
     }
-  };
-  var setSpeed = function(deltaX, deltaY) {
+  });
+  procs["setCarSpeed"] = temp;
+  procs["SET-CAR-SPEED"] = temp;
+  temp = (function(deltaX, deltaY) {
     var turtlesAhead = SelfManager.self().turtlesAt(deltaX, deltaY);
     if (turtlesAhead.nonEmpty()) {
       if (turtlesAhead.agentFilter(function() {
@@ -296,38 +328,46 @@ var procedures = (function() {
       }
       else {
         SelfManager.self().setVariable("speed", ListPrims.oneOf(turtlesAhead).projectionBy(function() { return SelfManager.self().getVariable("speed"); }));
-        procedures.slowDown();
+        procedures["SLOW-DOWN"]();
       }
     }
     else {
-      procedures.speedUp();
+      procedures["SPEED-UP"]();
     }
-  };
-  var slowDown = function() {
+  });
+  procs["setSpeed"] = temp;
+  procs["SET-SPEED"] = temp;
+  temp = (function() {
     if (Prims.lte(SelfManager.self().getVariable("speed"), 0)) {
       SelfManager.self().setVariable("speed", 0);
     }
     else {
       SelfManager.self().setVariable("speed", (SelfManager.self().getVariable("speed") - world.observer.getGlobal("acceleration")));
     }
-  };
-  var speedUp = function() {
+  });
+  procs["slowDown"] = temp;
+  procs["SLOW-DOWN"] = temp;
+  temp = (function() {
     if (Prims.gt(SelfManager.self().getVariable("speed"), world.observer.getGlobal("speed-limit"))) {
       SelfManager.self().setVariable("speed", world.observer.getGlobal("speed-limit"));
     }
     else {
       SelfManager.self().setVariable("speed", (SelfManager.self().getVariable("speed") + world.observer.getGlobal("acceleration")));
     }
-  };
-  var setCarColor = function() {
+  });
+  procs["speedUp"] = temp;
+  procs["SPEED-UP"] = temp;
+  temp = (function() {
     if (Prims.lt(SelfManager.self().getVariable("speed"), Prims.div(world.observer.getGlobal("speed-limit"), 2))) {
       SelfManager.self().setVariable("color", 105);
     }
     else {
       SelfManager.self().setVariable("color", (85 - 2));
     }
-  };
-  var recordData = function() {
+  });
+  procs["setCarColor"] = temp;
+  procs["SET-CAR-COLOR"] = temp;
+  temp = (function() {
     if (Prims.equality(SelfManager.self().getVariable("speed"), 0)) {
       world.observer.setGlobal("num-cars-stopped", (world.observer.getGlobal("num-cars-stopped") + 1));
       SelfManager.self().setVariable("wait-time", (SelfManager.self().getVariable("wait-time") + 1));
@@ -335,65 +375,26 @@ var procedures = (function() {
     else {
       SelfManager.self().setVariable("wait-time", 0);
     }
-  };
-  var changeCurrent = function() {
+  });
+  procs["recordData"] = temp;
+  procs["RECORD-DATA"] = temp;
+  temp = (function() {
     world.observer.getGlobal("current-light").ask(function() {
       SelfManager.self().setPatchVariable("green-light-up?", !SelfManager.self().getPatchVariable("green-light-up?"));
-      procedures.setSignalColors();
+      procedures["SET-SIGNAL-COLORS"]();
     }, true);
-  };
-  var nextPhase = function() {
+  });
+  procs["changeCurrent"] = temp;
+  procs["CHANGE-CURRENT"] = temp;
+  temp = (function() {
     world.observer.setGlobal("phase", (world.observer.getGlobal("phase") + 1));
     if (Prims.equality(NLMath.mod(world.observer.getGlobal("phase"), world.observer.getGlobal("ticks-per-cycle")), 0)) {
       world.observer.setGlobal("phase", 0);
     }
-  };
-  return {
-    "CHANGE-CURRENT":changeCurrent,
-    "CHOOSE-CURRENT":chooseCurrent,
-    "GO":go,
-    "LABEL-CURRENT":labelCurrent,
-    "MAKE-CURRENT":makeCurrent,
-    "NEXT-PHASE":nextPhase,
-    "PUT-ON-EMPTY-ROAD":putOnEmptyRoad,
-    "RECORD-DATA":recordData,
-    "SET-CAR-COLOR":setCarColor,
-    "SET-CAR-SPEED":setCarSpeed,
-    "SET-SIGNAL-COLORS":setSignalColors,
-    "SET-SIGNALS":setSignals,
-    "SET-SPEED":setSpeed,
-    "SETUP":setup,
-    "SETUP-CARS":setupCars,
-    "SETUP-GLOBALS":setupGlobals,
-    "SETUP-INTERSECTIONS":setupIntersections,
-    "SETUP-PATCHES":setupPatches,
-    "SLOW-DOWN":slowDown,
-    "SPEED-UP":speedUp,
-    "UNLABEL-CURRENT":unlabelCurrent,
-    "UPDATE-CURRENT":updateCurrent,
-    "changeCurrent":changeCurrent,
-    "chooseCurrent":chooseCurrent,
-    "go":go,
-    "labelCurrent":labelCurrent,
-    "makeCurrent":makeCurrent,
-    "nextPhase":nextPhase,
-    "putOnEmptyRoad":putOnEmptyRoad,
-    "recordData":recordData,
-    "setCarColor":setCarColor,
-    "setCarSpeed":setCarSpeed,
-    "setSignalColors":setSignalColors,
-    "setSignals":setSignals,
-    "setSpeed":setSpeed,
-    "setup":setup,
-    "setupCars":setupCars,
-    "setupGlobals":setupGlobals,
-    "setupIntersections":setupIntersections,
-    "setupPatches":setupPatches,
-    "slowDown":slowDown,
-    "speedUp":speedUp,
-    "unlabelCurrent":unlabelCurrent,
-    "updateCurrent":updateCurrent
-  };
+  });
+  procs["nextPhase"] = temp;
+  procs["NEXT-PHASE"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("grid-size-y", 5);
 world.observer.setGlobal("grid-size-x", 5);

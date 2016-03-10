@@ -55,13 +55,13 @@ modelConfig.plots = [(function() {
   new PenBundle.Pen('Pollution', plotOps.makePenOps, false, new PenBundle.State(5.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Moth Colors Over Time', 'Pollution')(function() {
-        plotManager.plotValue(Prims.div((Prims.div(procedures.upperBound(), 3) * world.observer.getGlobal("darkness")), 8));;
+        plotManager.plotValue(Prims.div((Prims.div(procedures["UPPER-BOUND"](), 3) * world.observer.getGlobal("darkness")), 8));;
       });
     });
   })];
   var setup   = function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('Moth Colors Over Time', undefined)(function() { plotManager.setYRange(0, procedures.upperBound());; });
+      plotManager.withTemporaryContext('Moth Colors Over Time', undefined)(function() { plotManager.setYRange(0, procedures["UPPER-BOUND"]());; });
     });
   };
   var update  = function() {};
@@ -83,7 +83,9 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var envColor = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     try {
       throw new Exception.ReportInterrupt((9 - world.observer.getGlobal("darkness")));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
@@ -94,8 +96,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var deltaEnv = function() {
+  });
+  procs["envColor"] = temp;
+  procs["ENV-COLOR"] = temp;
+  temp = (function() {
     try {
       throw new Exception.ReportInterrupt(Prims.div(world.observer.getGlobal("speed"), 100));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
@@ -106,8 +110,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var randomColor = function() {
+  });
+  procs["deltaEnv"] = temp;
+  procs["DELTA-ENV"] = temp;
+  temp = (function() {
     try {
       throw new Exception.ReportInterrupt((Prims.random(9) + 1));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
@@ -118,8 +124,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var upperBound = function() {
+  });
+  procs["randomColor"] = temp;
+  procs["RANDOM-COLOR"] = temp;
+  temp = (function() {
     try {
       throw new Exception.ReportInterrupt((4 * world.observer.getGlobal("num-moths")));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
@@ -130,41 +138,51 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var setup = function() {
+  });
+  procs["upperBound"] = temp;
+  procs["UPPER-BOUND"] = temp;
+  temp = (function() {
     world.clearAll();
-    procedures.setupWorld();
-    procedures.setupMoths();
-    procedures.updateMonitors();
+    procedures["SETUP-WORLD"]();
+    procedures["SETUP-MOTHS"]();
+    procedures["UPDATE-MONITORS"]();
     world.ticker.reset();
-  };
-  var setupWorld = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     world.observer.setGlobal("darkness", 0);
     world.observer.setGlobal("darkening?", true);
-    world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", procedures.envColor()); }, true);
-  };
-  var setupMoths = function() {
+    world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", procedures["ENV-COLOR"]()); }, true);
+  });
+  procs["setupWorld"] = temp;
+  procs["SETUP-WORLD"] = temp;
+  temp = (function() {
     world.turtleManager.createTurtles(world.observer.getGlobal("num-moths"), "MOTHS").ask(function() {
-      SelfManager.self().setVariable("color", procedures.randomColor());
-      procedures.mothsPickShape();
+      SelfManager.self().setVariable("color", procedures["RANDOM-COLOR"]());
+      procedures["MOTHS-PICK-SHAPE"]();
       SelfManager.self().setVariable("age", Prims.random(3));
       SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
     }, true);
-  };
-  var go = function() {
+  });
+  procs["setupMoths"] = temp;
+  procs["SETUP-MOTHS"] = temp;
+  temp = (function() {
     world.turtleManager.turtlesOfBreed("MOTHS").ask(function() {
-      procedures.mothsMate();
-      procedures.mothsGrimReaper();
-      procedures.mothsGetEaten();
-      procedures.mothsAge();
+      procedures["MOTHS-MATE"]();
+      procedures["MOTHS-GRIM-REAPER"]();
+      procedures["MOTHS-GET-EATEN"]();
+      procedures["MOTHS-AGE"]();
     }, true);
     if (world.observer.getGlobal("cycle-pollution?")) {
-      procedures.cyclePollution();
+      procedures["CYCLE-POLLUTION"]();
     }
     world.ticker.tick();
-    procedures.updateMonitors();
-  };
-  var mothsMate = function() {
+    procedures["UPDATE-MONITORS"]();
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     if ((Prims.equality(SelfManager.self().getVariable("age"), 2) || Prims.equality(SelfManager.self().getVariable("age"), 3))) {
       SelfManager.self().hatch(2, "").ask(function() {
         if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("mutation"))) {
@@ -181,104 +199,87 @@ var procedures = (function() {
             }
           }
         }
-        procedures.mothsPickShape();
+        procedures["MOTHS-PICK-SHAPE"]();
         SelfManager.self().setVariable("age", 0);
         SelfManager.self().right(Prims.randomFloat(360));
         SelfManager.self().fd(1);
       }, true);
     }
-  };
-  var mothsGetEaten = function() {
-    if (Prims.lt(Prims.randomFloat(1000), ((world.observer.getGlobal("selection") * NLMath.abs((procedures.envColor() - SelfManager.self().getVariable("color")))) + 200))) {
+  });
+  procs["mothsMate"] = temp;
+  procs["MOTHS-MATE"] = temp;
+  temp = (function() {
+    if (Prims.lt(Prims.randomFloat(1000), ((world.observer.getGlobal("selection") * NLMath.abs((procedures["ENV-COLOR"]() - SelfManager.self().getVariable("color")))) + 200))) {
       SelfManager.self().die();
     }
-  };
-  var mothsGrimReaper = function() {
+  });
+  procs["mothsGetEaten"] = temp;
+  procs["MOTHS-GET-EATEN"] = temp;
+  temp = (function() {
     if (Prims.equality(Prims.random(13), 0)) {
       SelfManager.self().die();
     }
-    if (Prims.gt(world.turtleManager.turtlesOfBreed("MOTHS").size(), procedures.upperBound())) {
+    if (Prims.gt(world.turtleManager.turtlesOfBreed("MOTHS").size(), procedures["UPPER-BOUND"]())) {
       if (Prims.equality(Prims.random(2), 0)) {
         SelfManager.self().die();
       }
     }
-  };
-  var mothsAge = function() { SelfManager.self().setVariable("age", (SelfManager.self().getVariable("age") + 1)); };
-  var mothsPickShape = function() {
+  });
+  procs["mothsGrimReaper"] = temp;
+  procs["MOTHS-GRIM-REAPER"] = temp;
+  temp = (function() { SelfManager.self().setVariable("age", (SelfManager.self().getVariable("age") + 1)); });
+  procs["mothsAge"] = temp;
+  procs["MOTHS-AGE"] = temp;
+  temp = (function() {
     if (Prims.lt(SelfManager.self().getVariable("color"), 5)) {
       SelfManager.self().setVariable("shape", "moth dark");
     }
     else {
       SelfManager.self().setVariable("shape", "moth light");
     }
-  };
-  var updateMonitors = function() {
+  });
+  procs["mothsPickShape"] = temp;
+  procs["MOTHS-PICK-SHAPE"] = temp;
+  temp = (function() {
     world.observer.setGlobal("light-moths", world.turtleManager.turtlesOfBreed("MOTHS").agentFilter(function() { return Prims.gte(SelfManager.self().getVariable("color"), 7); }).size());
     world.observer.setGlobal("dark-moths", world.turtleManager.turtlesOfBreed("MOTHS").agentFilter(function() { return Prims.lte(SelfManager.self().getVariable("color"), 3); }).size());
     world.observer.setGlobal("medium-moths", (world.turtleManager.turtlesOfBreed("MOTHS").size() - (world.observer.getGlobal("light-moths") + world.observer.getGlobal("dark-moths"))));
-  };
-  var polluteWorld = function() {
-    if (Prims.lte(world.observer.getGlobal("darkness"), (8 - procedures.deltaEnv()))) {
-      world.observer.setGlobal("darkness", (world.observer.getGlobal("darkness") + procedures.deltaEnv()));
-      world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", procedures.envColor()); }, true);
+  });
+  procs["updateMonitors"] = temp;
+  procs["UPDATE-MONITORS"] = temp;
+  temp = (function() {
+    if (Prims.lte(world.observer.getGlobal("darkness"), (8 - procedures["DELTA-ENV"]()))) {
+      world.observer.setGlobal("darkness", (world.observer.getGlobal("darkness") + procedures["DELTA-ENV"]()));
+      world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", procedures["ENV-COLOR"]()); }, true);
     }
     else {
       world.observer.setGlobal("darkening?", false);
     }
-  };
-  var cleanUpWorld = function() {
-    if (Prims.gte(world.observer.getGlobal("darkness"), (0 + procedures.deltaEnv()))) {
-      world.observer.setGlobal("darkness", (world.observer.getGlobal("darkness") - procedures.deltaEnv()));
-      world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", procedures.envColor()); }, true);
+  });
+  procs["polluteWorld"] = temp;
+  procs["POLLUTE-WORLD"] = temp;
+  temp = (function() {
+    if (Prims.gte(world.observer.getGlobal("darkness"), (0 + procedures["DELTA-ENV"]()))) {
+      world.observer.setGlobal("darkness", (world.observer.getGlobal("darkness") - procedures["DELTA-ENV"]()));
+      world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", procedures["ENV-COLOR"]()); }, true);
     }
     else {
       world.observer.setGlobal("darkening?", true);
     }
-  };
-  var cyclePollution = function() {
+  });
+  procs["cleanUpWorld"] = temp;
+  procs["CLEAN-UP-WORLD"] = temp;
+  temp = (function() {
     if (Prims.equality(world.observer.getGlobal("darkening?"), true)) {
-      procedures.polluteWorld();
+      procedures["POLLUTE-WORLD"]();
     }
     else {
-      procedures.cleanUpWorld();
+      procedures["CLEAN-UP-WORLD"]();
     }
-  };
-  return {
-    "CLEAN-UP-WORLD":cleanUpWorld,
-    "CYCLE-POLLUTION":cyclePollution,
-    "DELTA-ENV":deltaEnv,
-    "ENV-COLOR":envColor,
-    "GO":go,
-    "MOTHS-AGE":mothsAge,
-    "MOTHS-GET-EATEN":mothsGetEaten,
-    "MOTHS-GRIM-REAPER":mothsGrimReaper,
-    "MOTHS-MATE":mothsMate,
-    "MOTHS-PICK-SHAPE":mothsPickShape,
-    "POLLUTE-WORLD":polluteWorld,
-    "RANDOM-COLOR":randomColor,
-    "SETUP":setup,
-    "SETUP-MOTHS":setupMoths,
-    "SETUP-WORLD":setupWorld,
-    "UPDATE-MONITORS":updateMonitors,
-    "UPPER-BOUND":upperBound,
-    "cleanUpWorld":cleanUpWorld,
-    "cyclePollution":cyclePollution,
-    "deltaEnv":deltaEnv,
-    "envColor":envColor,
-    "go":go,
-    "mothsAge":mothsAge,
-    "mothsGetEaten":mothsGetEaten,
-    "mothsGrimReaper":mothsGrimReaper,
-    "mothsMate":mothsMate,
-    "mothsPickShape":mothsPickShape,
-    "polluteWorld":polluteWorld,
-    "randomColor":randomColor,
-    "setup":setup,
-    "setupMoths":setupMoths,
-    "setupWorld":setupWorld,
-    "updateMonitors":updateMonitors,
-    "upperBound":upperBound
-  };
+  });
+  procs["cyclePollution"] = temp;
+  procs["CYCLE-POLLUTION"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("num-moths", 100);
 world.observer.setGlobal("mutation", 15);

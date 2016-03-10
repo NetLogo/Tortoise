@@ -153,7 +153,9 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
     world.observer.setGlobal("bottom-line", (world.topology.minPycor + 1));
     world.observer.setGlobal("evaporation-temp", 30);
@@ -166,7 +168,7 @@ var procedures = (function() {
       SelfManager.self().setVariable("water-level", (75 + Prims.random(25)));
       SelfManager.self().setVariable("sugar-level", Prims.randomNormal(world.observer.getGlobal("start-sugar-mean"), world.observer.getGlobal("start-sugar-stddev")));
       SelfManager.self().setVariable("carotene", Prims.random(100));
-      procedures.changeColor();
+      procedures["CHANGE-COLOR"]();
       SelfManager.self().setVariable("attachedness", (100 + Prims.random(50)));
       SelfManager.self().fd(NLMath.sqrt(Prims.randomFloat(100)));
     }, true);
@@ -175,27 +177,29 @@ var procedures = (function() {
     }).ask(function() { SelfManager.self().setPatchVariable("pcolor", 35); }, true);
     world.turtleManager.createTurtles(1, "SUNS").ask(function() {
       SelfManager.self().setXY((world.topology.maxPxcor - 2), (world.topology.maxPycor - 3));
-      procedures.showIntensity();
+      procedures["SHOW-INTENSITY"]();
     }, true);
     world.ticker.reset();
-  };
-  var go = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     try {
       if (!world.turtleManager.turtlesOfBreed("LEAVES").nonEmpty()) {
         throw new Exception.StopInterrupt;
       }
-      procedures.makeWindBlow();
-      procedures.makeRainFall();
-      procedures.moveWater();
-      world.turtleManager.turtlesOfBreed("SUNS").ask(function() { procedures.showIntensity(); }, true);
-      procedures.attachedLeaves().ask(function() {
-        procedures.adjustWater();
-        procedures.adjustChlorophyll();
-        procedures.adjustSugar();
-        procedures.changeColor();
-        procedures.changeShape();
+      procedures["MAKE-WIND-BLOW"]();
+      procedures["MAKE-RAIN-FALL"]();
+      procedures["MOVE-WATER"]();
+      world.turtleManager.turtlesOfBreed("SUNS").ask(function() { procedures["SHOW-INTENSITY"](); }, true);
+      procedures["ATTACHED-LEAVES"]().ask(function() {
+        procedures["ADJUST-WATER"]();
+        procedures["ADJUST-CHLOROPHYLL"]();
+        procedures["ADJUST-SUGAR"]();
+        procedures["CHANGE-COLOR"]();
+        procedures["CHANGE-SHAPE"]();
       }, true);
-      world.turtleManager.turtlesOfBreed("LEAVES").ask(function() { procedures.fallIfNecessary(); }, true);
+      world.turtleManager.turtlesOfBreed("LEAVES").ask(function() { procedures["FALL-IF-NECESSARY"](); }, true);
       world.turtleManager.turtlesOfBreed("LEAVES").agentFilter(function() { return Prims.lte(SelfManager.self().getVariable("ycor"), world.observer.getGlobal("bottom-line")); }).ask(function() { SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("DEAD-LEAVES")); }, true);
       world.turtleManager.turtlesOfBreed("LEAVES").agentFilter(function() { return Prims.lt(SelfManager.self().getVariable("water-level"), 1); }).ask(function() { SelfManager.self().setVariable("attachedness", 0); }, true);
       world.turtleManager.turtlesOfBreed("LEAVES").ask(function() {
@@ -244,8 +248,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var makeWindBlow = function() {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     world.turtleManager.turtlesOfBreed("LEAVES").ask(function() {
       if (Prims.equality(Prims.random(2), 1)) {
         SelfManager.self().right((10 * world.observer.getGlobal("wind-factor")));
@@ -255,8 +261,10 @@ var procedures = (function() {
       }
       SelfManager.self().setVariable("attachedness", (SelfManager.self().getVariable("attachedness") - world.observer.getGlobal("wind-factor")));
     }, true);
-  };
-  var makeRainFall = function() {
+  });
+  procs["makeWindBlow"] = temp;
+  procs["MAKE-WIND-BLOW"] = temp;
+  temp = (function() {
     world.turtleManager.createTurtles(world.observer.getGlobal("rain-intensity"), "RAINDROPS").ask(function() {
       SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), world.topology.maxPycor);
       SelfManager.self().setVariable("heading", 180);
@@ -267,8 +275,10 @@ var procedures = (function() {
       SelfManager.self().setVariable("amount-of-water", 10);
     }, true);
     world.turtleManager.turtlesOfBreed("RAINDROPS").ask(function() { SelfManager.self().fd(Prims.randomFloat(2)); }, true);
-  };
-  var moveWater = function() {
+  });
+  procs["makeRainFall"] = temp;
+  procs["MAKE-RAIN-FALL"] = temp;
+  temp = (function() {
     world.turtleManager.turtlesOfBreed("RAINDROPS").agentFilter(function() {
       return (Prims.equality(SelfManager.self().getVariable("location"), "falling") && Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55));
     }).ask(function() {
@@ -293,8 +303,10 @@ var procedures = (function() {
     world.turtleManager.turtlesOfBreed("RAINDROPS").agentFilter(function() {
       return ((Prims.equality(SelfManager.self().getVariable("location"), "in trunk") || Prims.equality(SelfManager.self().getVariable("location"), "in leaves")) && ((Prims.gt(SelfManager.self().getVariable("ycor"), ListPrims.max(world.turtleManager.turtlesOfBreed("LEAVES").projectionBy(function() { return SelfManager.self().getVariable("ycor"); }))) || Prims.gt(SelfManager.self().getVariable("xcor"), ListPrims.max(world.turtleManager.turtlesOfBreed("LEAVES").projectionBy(function() { return SelfManager.self().getVariable("xcor"); })))) || Prims.lt(SelfManager.self().getVariable("xcor"), ListPrims.min(world.turtleManager.turtlesOfBreed("LEAVES").projectionBy(function() { return SelfManager.self().getVariable("xcor"); })))));
     }).ask(function() { SelfManager.self().die(); }, true);
-  };
-  var showIntensity = function() {
+  });
+  procs["moveWater"] = temp;
+  procs["MOVE-WATER"] = temp;
+  temp = (function() {
     SelfManager.self().setVariable("color", ColorModel.scaleColor(45, world.observer.getGlobal("sun-intensity"), 0, 150));
     SelfManager.self().setVariable("size", Prims.div(world.observer.getGlobal("sun-intensity"), 10));
     SelfManager.self().setVariable("label", (Dump('') + Dump(world.observer.getGlobal("sun-intensity")) + Dump("%")));
@@ -304,8 +316,10 @@ var procedures = (function() {
     else {
       SelfManager.self().setVariable("label-color", 0);
     }
-  };
-  var adjustWater = function() {
+  });
+  procs["showIntensity"] = temp;
+  procs["SHOW-INTENSITY"] = temp;
+  temp = (function() {
     try {
       if (Prims.lt(world.observer.getGlobal("temperature"), 10)) {
         throw new Exception.StopInterrupt;
@@ -333,8 +347,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var adjustChlorophyll = function() {
+  });
+  procs["adjustWater"] = temp;
+  procs["ADJUST-WATER"] = temp;
+  temp = (function() {
     if (Prims.lt(world.observer.getGlobal("temperature"), 15)) {
       SelfManager.self().setVariable("chlorophyll", (SelfManager.self().getVariable("chlorophyll") - (0.5 * (15 - world.observer.getGlobal("temperature")))));
     }
@@ -344,8 +360,10 @@ var procedures = (function() {
     if ((Prims.gt(world.observer.getGlobal("temperature"), 15) && Prims.gt(world.observer.getGlobal("sun-intensity"), 20))) {
       SelfManager.self().setVariable("chlorophyll", (SelfManager.self().getVariable("chlorophyll") + 1));
     }
-  };
-  var adjustSugar = function() {
+  });
+  procs["adjustChlorophyll"] = temp;
+  procs["ADJUST-CHLOROPHYLL"] = temp;
+  temp = (function() {
     if (((Prims.gt(SelfManager.self().getVariable("water-level"), 1) && Prims.gt(world.observer.getGlobal("sun-intensity"), 20)) && Prims.gt(SelfManager.self().getVariable("chlorophyll"), 1))) {
       SelfManager.self().setVariable("water-level", (SelfManager.self().getVariable("water-level") - 0.5));
       SelfManager.self().setVariable("chlorophyll", (SelfManager.self().getVariable("chlorophyll") - 0.5));
@@ -353,8 +371,10 @@ var procedures = (function() {
       SelfManager.self().setVariable("attachedness", (SelfManager.self().getVariable("attachedness") + 5));
     }
     SelfManager.self().setVariable("sugar-level", (SelfManager.self().getVariable("sugar-level") - 0.5));
-  };
-  var fallIfNecessary = function() {
+  });
+  procs["adjustSugar"] = temp;
+  procs["ADJUST-SUGAR"] = temp;
+  temp = (function() {
     try {
       if (Prims.gt(SelfManager.self().getVariable("attachedness"), 0)) {
         throw new Exception.StopInterrupt;
@@ -371,8 +391,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var changeColor = function() {
+  });
+  procs["fallIfNecessary"] = temp;
+  procs["FALL-IF-NECESSARY"] = temp;
+  temp = (function() {
     if (((Prims.lt(world.observer.getGlobal("temperature"), 20) && Prims.gt(SelfManager.self().getVariable("sugar-level"), 0)) && Prims.gt(SelfManager.self().getVariable("water-level"), 0))) {
       SelfManager.self().setVariable("sugar-level", (SelfManager.self().getVariable("sugar-level") - 1));
       SelfManager.self().setVariable("water-level", (SelfManager.self().getVariable("water-level") - 1));
@@ -392,33 +414,37 @@ var procedures = (function() {
         SelfManager.self().setVariable("color", ColorModel.scaleColor(45, SelfManager.self().getVariable("carotene"), 150, -50));
       }
     }
-  };
-  var changeShape = function() {
+  });
+  procs["changeColor"] = temp;
+  procs["CHANGE-COLOR"] = temp;
+  temp = (function() {
     if (Prims.equality(world.observer.getGlobal("leaf-display-mode"), "solid")) {
       SelfManager.self().setVariable("shape", "default");
     }
     else {
       if (Prims.equality(world.observer.getGlobal("leaf-display-mode"), "chlorophyll")) {
-        procedures.setShapeForValue(SelfManager.self().getVariable("chlorophyll"));
+        procedures["SET-SHAPE-FOR-VALUE"](SelfManager.self().getVariable("chlorophyll"));
       }
       if (Prims.equality(world.observer.getGlobal("leaf-display-mode"), "water")) {
-        procedures.setShapeForValue(SelfManager.self().getVariable("water-level"));
+        procedures["SET-SHAPE-FOR-VALUE"](SelfManager.self().getVariable("water-level"));
       }
       if (Prims.equality(world.observer.getGlobal("leaf-display-mode"), "sugar")) {
-        procedures.setShapeForValue(SelfManager.self().getVariable("sugar-level"));
+        procedures["SET-SHAPE-FOR-VALUE"](SelfManager.self().getVariable("sugar-level"));
       }
       if (Prims.equality(world.observer.getGlobal("leaf-display-mode"), "carotene")) {
-        procedures.setShapeForValue(SelfManager.self().getVariable("carotene"));
+        procedures["SET-SHAPE-FOR-VALUE"](SelfManager.self().getVariable("carotene"));
       }
       if (Prims.equality(world.observer.getGlobal("leaf-display-mode"), "anthocyanin")) {
-        procedures.setShapeForValue(SelfManager.self().getVariable("anthocyanin"));
+        procedures["SET-SHAPE-FOR-VALUE"](SelfManager.self().getVariable("anthocyanin"));
       }
       if (Prims.equality(world.observer.getGlobal("leaf-display-mode"), "attachedness")) {
-        procedures.setShapeForValue(SelfManager.self().getVariable("attachedness"));
+        procedures["SET-SHAPE-FOR-VALUE"](SelfManager.self().getVariable("attachedness"));
       }
     }
-  };
-  var attachedLeaves = function() {
+  });
+  procs["changeShape"] = temp;
+  procs["CHANGE-SHAPE"] = temp;
+  temp = (function() {
     try {
       throw new Exception.ReportInterrupt(world.turtleManager.turtlesOfBreed("LEAVES").agentFilter(function() { return Prims.gt(SelfManager.self().getVariable("attachedness"), 0); }));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
@@ -429,8 +455,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var setShapeForValue = function(value) {
+  });
+  procs["attachedLeaves"] = temp;
+  procs["ATTACHED-LEAVES"] = temp;
+  temp = (function(value) {
     if (Prims.gt(value, 75)) {
       SelfManager.self().setVariable("shape", "default");
     }
@@ -447,37 +475,10 @@ var procedures = (function() {
         }
       }
     }
-  };
-  return {
-    "ADJUST-CHLOROPHYLL":adjustChlorophyll,
-    "ADJUST-SUGAR":adjustSugar,
-    "ADJUST-WATER":adjustWater,
-    "ATTACHED-LEAVES":attachedLeaves,
-    "CHANGE-COLOR":changeColor,
-    "CHANGE-SHAPE":changeShape,
-    "FALL-IF-NECESSARY":fallIfNecessary,
-    "GO":go,
-    "MAKE-RAIN-FALL":makeRainFall,
-    "MAKE-WIND-BLOW":makeWindBlow,
-    "MOVE-WATER":moveWater,
-    "SET-SHAPE-FOR-VALUE":setShapeForValue,
-    "SETUP":setup,
-    "SHOW-INTENSITY":showIntensity,
-    "adjustChlorophyll":adjustChlorophyll,
-    "adjustSugar":adjustSugar,
-    "adjustWater":adjustWater,
-    "attachedLeaves":attachedLeaves,
-    "changeColor":changeColor,
-    "changeShape":changeShape,
-    "fallIfNecessary":fallIfNecessary,
-    "go":go,
-    "makeRainFall":makeRainFall,
-    "makeWindBlow":makeWindBlow,
-    "moveWater":moveWater,
-    "setShapeForValue":setShapeForValue,
-    "setup":setup,
-    "showIntensity":showIntensity
-  };
+  });
+  procs["setShapeForValue"] = temp;
+  procs["SET-SHAPE-FOR-VALUE"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("number-of-leaves", 278);
 world.observer.setGlobal("wind-factor", 3);

@@ -51,7 +51,9 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
     world.observer.setGlobal("polymerase-color-0", [150, 150, 150, 150]);
     world.observer.setGlobal("polymerase-color-1", [75, 200, 75, 200]);
@@ -100,19 +102,21 @@ var procedures = (function() {
       SelfManager.self().setVariable("hidden?", true);
     }, true);
     for (var _index_8928_8934 = 0, _repeatcount_8928_8934 = StrictMath.floor(world.observer.getGlobal("free-nucleosides")); _index_8928_8934 < _repeatcount_8928_8934; _index_8928_8934++){
-      procedures.makeANucleoside();
+      procedures["MAKE-A-NUCLEOSIDE"]();
     }
-    procedures.makeInitialDnaStrip();
-    procedures.makePolymerases();
-    procedures.makeAHelicase();
-    procedures.makeATopoisomerase();
-    procedures.windInitialDnaIntoBundle();
-    procedures.visualizeAgents();
-    procedures.initializeLengthOfTime();
-    procedures.showInstruction(1);
+    procedures["MAKE-INITIAL-DNA-STRIP"]();
+    procedures["MAKE-POLYMERASES"]();
+    procedures["MAKE-A-HELICASE"]();
+    procedures["MAKE-A-TOPOISOMERASE"]();
+    procedures["WIND-INITIAL-DNA-INTO-BUNDLE"]();
+    procedures["VISUALIZE-AGENTS"]();
+    procedures["INITIALIZE-LENGTH-OF-TIME"]();
+    procedures["SHOW-INSTRUCTION"](1);
     world.ticker.reset();
-  };
-  var initializeLengthOfTime = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     world.observer.setGlobal("using-time-limit", !Prims.equality(world.observer.getGlobal("time-limit"), "none"));
     if (Prims.equality(world.observer.getGlobal("time-limit"), "2 minutes")) {
       world.observer.setGlobal("length-of-simulation", 120);
@@ -122,17 +126,21 @@ var procedures = (function() {
       world.observer.setGlobal("length-of-simulation", 300);
       world.observer.setGlobal("time-remaining", 300);
     }
-  };
-  var makeANucleoside = function() {
+  });
+  procs["initializeLengthOfTime"] = temp;
+  procs["INITIALIZE-LENGTH-OF-TIME"] = temp;
+  temp = (function() {
     world.turtleManager.createTurtles(1, "NUCLEOSIDES").ask(function() {
-      SelfManager.self().setVariable("value", procedures.randomBaseLetter());
+      SelfManager.self().setVariable("value", procedures["RANDOM-BASE-LETTER"]());
       SelfManager.self().setVariable("shape", (Dump('') + Dump("nucleoside-tri-") + Dump(SelfManager.self().getVariable("value"))));
       SelfManager.self().setVariable("color", world.observer.getGlobal("nucleoside-color"));
-      procedures.attachNucleoTag(0,0);
+      procedures["ATTACH-NUCLEO-TAG"](0,0);
       SelfManager.self().setXY(Prims.randomPatchCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomPatchCoord(world.topology.minPycor, world.topology.maxPycor));
     }, true);
-  };
-  var makePolymerases = function() {
+  });
+  procs["makeANucleoside"] = temp;
+  procs["MAKE-A-NUCLEOSIDE"] = temp;
+  temp = (function() {
     world.turtleManager.createTurtles(1, "POLYMERASES").ask(function() {
       SelfManager.self().setVariable("heading", Prims.random(((180 - Prims.random(20)) + Prims.random(20))));
       SelfManager.self().setXY((Prims.div((world.topology.maxPxcor - world.topology.minPxcor), 2) + 3), (world.topology.maxPycor - 1));
@@ -142,23 +150,27 @@ var procedures = (function() {
       SelfManager.self().setXY((Prims.div((world.topology.maxPxcor - world.topology.minPxcor), 2) - 5), (world.topology.maxPycor - 1));
     }, true);
     world.turtleManager.turtlesOfBreed("POLYMERASES").ask(function() {
-      procedures.attachEnzymeTag(150,0.85,"polymerase");
+      procedures["ATTACH-ENZYME-TAG"](150,0.85,"polymerase");
       SelfManager.self().setVariable("locked-state", 0);
       SelfManager.self().setVariable("shape", "polymerase-0");
       SelfManager.self().setVariable("color", world.observer.getGlobal("polymerase-color-0"));
     }, true);
-  };
-  var makeAHelicase = function() {
+  });
+  procs["makePolymerases"] = temp;
+  procs["MAKE-POLYMERASES"] = temp;
+  temp = (function() {
     world.turtleManager.createTurtles(1, "HELICASES").ask(function() {
       SelfManager.self().setVariable("shape", "helicase");
       SelfManager.self().setVariable("color", world.observer.getGlobal("helicase-color-0"));
       SelfManager.self().setVariable("size", 3.2);
       SelfManager.self().setVariable("heading", 90);
-      procedures.attachEnzymeTag(150,0.85,"helicase");
+      procedures["ATTACH-ENZYME-TAG"](150,0.85,"helicase");
       SelfManager.self().setXY(Prims.div((world.topology.maxPxcor - world.topology.minPxcor), 2), (world.topology.maxPycor - 1));
     }, true);
-  };
-  var makeATopoisomerase = function() {
+  });
+  procs["makeAHelicase"] = temp;
+  procs["MAKE-A-HELICASE"] = temp;
+  temp = (function() {
     world.turtleManager.createTurtles(1, "TOPOISOMERASES").ask(function() {
       SelfManager.self().setVariable("shape", "topoisomerase");
       SelfManager.self().setVariable("locked?", false);
@@ -174,11 +186,13 @@ var procedures = (function() {
           SelfManager.self().tie();
         }, true);
       }, true);
-      procedures.attachEnzymeTag(150,0.85,"topoisomerase");
+      procedures["ATTACH-ENZYME-TAG"](150,0.85,"topoisomerase");
       SelfManager.self().setXY((Prims.div((world.topology.maxPxcor - world.topology.minPxcor), 2) - 3), (world.topology.maxPycor - 1));
     }, true);
-  };
-  var makeAndAttachAPrimase = function() {
+  });
+  procs["makeATopoisomerase"] = temp;
+  procs["MAKE-A-TOPOISOMERASE"] = temp;
+  temp = (function() {
     SelfManager.self().hatch(1, "").ask(function() {
       SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("PRIMASES"));
       SelfManager.self().setVariable("shape", "primase");
@@ -191,10 +205,12 @@ var procedures = (function() {
         SelfManager.self().setVariable("hidden?", true);
         SelfManager.self().tie();
       }, true);
-      procedures.attachEnzymeTag(100,0,"primase");
+      procedures["ATTACH-ENZYME-TAG"](100,0,"primase");
     }, true);
-  };
-  var makeInitialDnaStrip = function() {
+  });
+  procs["makeAndAttachAPrimase"] = temp;
+  procs["MAKE-AND-ATTACH-A-PRIMASE"] = temp;
+  temp = (function() {
     var lastNucleotideTopStrand = Nobody;
     var lastNucleotideBottomStrand = Nobody;
     var placeCounter = 0;
@@ -210,7 +226,7 @@ var procedures = (function() {
         placeCounter = (placeCounter + 1);
         SelfManager.self().hatch(1, "").ask(function() {
           SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("NUCLEOTIDES"));
-          SelfManager.self().setVariable("value", procedures.randomBaseLetter());
+          SelfManager.self().setVariable("value", procedures["RANDOM-BASE-LETTER"]());
           firstBasePairValue = SelfManager.self().getVariable("value");
           SelfManager.self().setVariable("shape", (Dump('') + Dump("nucleotide-") + Dump(SelfManager.self().getVariable("value"))));
           SelfManager.self().setVariable("heading", 0);
@@ -219,7 +235,7 @@ var procedures = (function() {
           SelfManager.self().setVariable("color", world.observer.getGlobal("unwound-dna-color"));
           SelfManager.self().setVariable("place", placeCounter);
           SelfManager.self().setVariable("unzipped-stage", 0);
-          procedures.attachNucleoTag(5,0.5);
+          procedures["ATTACH-NUCLEO-TAG"](5,0.5);
           if (!Prims.equality(lastNucleotideTopStrand, Nobody)) {
             LinkPrims.createLinkTo(lastNucleotideTopStrand, "BACKBONES").ask(function() {
               SelfManager.self().setVariable("hidden?", true);
@@ -228,16 +244,16 @@ var procedures = (function() {
           }
           lastNucleotideTopStrand = SelfManager.self();
           if (is_ThisTheFirstBase_p) {
-            procedures.makeAndAttachAPrimase();
+            procedures["MAKE-AND-ATTACH-A-PRIMASE"]();
           }
           is_ThisTheFirstBase_p = false;
           SelfManager.self().hatch(1, "").ask(function() {
             SelfManager.self().right(180);
-            SelfManager.self().setVariable("value", procedures.complementaryBase(firstBasePairValue));
+            SelfManager.self().setVariable("value", procedures["COMPLEMENTARY-BASE"](firstBasePairValue));
             SelfManager.self().setVariable("shape", (Dump('') + Dump("nucleotide-") + Dump(SelfManager.self().getVariable("value"))));
             SelfManager.self().setVariable("class", "original-dna-bottom");
             LinkPrims.createLinkWith(lastNucleotideTopStrand, "OLD-STAIRS").ask(function() { SelfManager.self().setVariable("hidden?", false); }, true);
-            procedures.attachNucleoTag(175,0.7);
+            procedures["ATTACH-NUCLEO-TAG"](175,0.7);
             if (!Prims.equality(lastNucleotideBottomStrand, Nobody)) {
               LinkPrims.createLinkTo(lastNucleotideBottomStrand, "BACKBONES").ask(function() {
                 SelfManager.self().setVariable("hidden?", true);
@@ -251,8 +267,10 @@ var procedures = (function() {
       }
       SelfManager.self().die();
     }, true);
-  };
-  var attachNucleoTag = function(direction, displacement) {
+  });
+  procs["makeInitialDnaStrip"] = temp;
+  procs["MAKE-INITIAL-DNA-STRIP"] = temp;
+  temp = (function(direction, displacement) {
     SelfManager.self().hatch(1, "").ask(function() {
       SelfManager.self().setVariable("heading", direction);
       SelfManager.self().fd(displacement);
@@ -266,8 +284,10 @@ var procedures = (function() {
         SelfManager.self().tie();
       }, true);
     }, true);
-  };
-  var attachEnzymeTag = function(direction, displacement, labelValue) {
+  });
+  procs["attachNucleoTag"] = temp;
+  procs["ATTACH-NUCLEO-TAG"] = temp;
+  temp = (function(direction, displacement, labelValue) {
     SelfManager.self().hatch(1, "").ask(function() {
       SelfManager.self().setVariable("heading", direction);
       SelfManager.self().fd(displacement);
@@ -282,40 +302,44 @@ var procedures = (function() {
         SelfManager.self().tie();
       }, true);
     }, true);
-  };
-  var go = function() {
+  });
+  procs["attachEnzymeTag"] = temp;
+  procs["ATTACH-ENZYME-TAG"] = temp;
+  temp = (function() {
     if (((world.observer.getGlobal("using-time-limit") && Prims.gt(world.observer.getGlobal("time-remaining"), 0)) || (!world.observer.getGlobal("using-time-limit") && !world.observer.getGlobal("cell-divided?")))) {
-      procedures.checkTimer();
-      procedures.moveFreeMolecules();
-      procedures.cleanUpFreePhosphates();
-      procedures.refillOrRemoveNucleosides();
-      procedures.unzipNucleotides();
-      procedures.detectMouseSelectionEvent();
-      procedures.lockPolymeraseToOneNucleotide();
-      procedures.lockTopoisomeraseToWoundPrimase();
-      if (procedures.allBasePairsUnwound_p()) {
-        procedures.separateBasePairs();
+      procedures["CHECK-TIMER"]();
+      procedures["MOVE-FREE-MOLECULES"]();
+      procedures["CLEAN-UP-FREE-PHOSPHATES"]();
+      procedures["REFILL-OR-REMOVE-NUCLEOSIDES"]();
+      procedures["UNZIP-NUCLEOTIDES"]();
+      procedures["DETECT-MOUSE-SELECTION-EVENT"]();
+      procedures["LOCK-POLYMERASE-TO-ONE-NUCLEOTIDE"]();
+      procedures["LOCK-TOPOISOMERASE-TO-WOUND-PRIMASE"]();
+      if (procedures["ALL-BASE-PAIRS-UNWOUND?"]()) {
+        procedures["SEPARATE-BASE-PAIRS"]();
       }
-      procedures.visualizeAgents();
+      procedures["VISUALIZE-AGENTS"]();
       world.ticker.tick();
     }
     if ((world.observer.getGlobal("cell-divided?") && !world.observer.getGlobal("cell-message-shown?"))) {
-      procedures.calculateMutations();
+      procedures["CALCULATE-MUTATIONS"]();
       if (Prims.equality(world.observer.getGlobal("final-time"), 0)) {
         world.observer.setGlobal("final-time", workspace.timer.elapsed());
       }
       UserDialogPrims.confirm((Dump('') + Dump("You have cued the cell division.  Let's see how you did in replicating ") + Dump("an exact copy of the DNA.")));
-      UserDialogPrims.confirm(procedures.userMessageStringForMutations());
+      UserDialogPrims.confirm(procedures["USER-MESSAGE-STRING-FOR-MUTATIONS"]());
       world.observer.setGlobal("cell-message-shown?", true);
     }
     if (((world.observer.getGlobal("using-time-limit") && Prims.lte(world.observer.getGlobal("time-remaining"), 0)) && !world.observer.getGlobal("timer-message-shown?"))) {
-      procedures.calculateMutations();
+      procedures["CALCULATE-MUTATIONS"]();
       UserDialogPrims.confirm((Dump('') + Dump("The timer has expired.  Let's see how you did in replicating ") + Dump("an exact copy of it.")));
-      UserDialogPrims.confirm(procedures.userMessageStringForMutations());
+      UserDialogPrims.confirm(procedures["USER-MESSAGE-STRING-FOR-MUTATIONS"]());
       world.observer.setGlobal("timer-message-shown?", true);
     }
-  };
-  var checkTimer = function() {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     if (!world.observer.getGlobal("simulation-started?")) {
       world.observer.setGlobal("simulation-started?", true);
       workspace.timer.reset();
@@ -323,8 +347,10 @@ var procedures = (function() {
     if (world.observer.getGlobal("using-time-limit")) {
       world.observer.setGlobal("time-remaining", (world.observer.getGlobal("length-of-simulation") - workspace.timer.elapsed()));
     }
-  };
-  var visualizeAgents = function() {
+  });
+  procs["checkTimer"] = temp;
+  procs["CHECK-TIMER"] = temp;
+  temp = (function() {
     world.turtleManager.turtlesOfBreed("ENZYME-TAGS").ask(function() { SelfManager.self().setVariable("hidden?", !world.observer.getGlobal("enzyme-labels?")); }, true);
     world.turtleManager.turtlesOfBreed("NUCLEOTIDE-TAGS").ask(function() { SelfManager.self().setVariable("hidden?", !world.observer.getGlobal("nucleo-labels?")); }, true);
     world.turtleManager.turtlesOfBreed("TOPOISOMERASES").ask(function() {
@@ -359,13 +385,17 @@ var procedures = (function() {
         SelfManager.self().setVariable("color", world.observer.getGlobal("polymerase-color-3"));
       }
     }, true);
-  };
-  var windInitialDnaIntoBundle = function() {
+  });
+  procs["visualizeAgents"] = temp;
+  procs["VISUALIZE-AGENTS"] = temp;
+  temp = (function() {
     for (var _index_17539_17545 = 0, _repeatcount_17539_17545 = StrictMath.floor(world.observer.getGlobal("initial-length-dna")); _index_17539_17545 < _repeatcount_17539_17545; _index_17539_17545++){
-      procedures.windDna();
+      procedures["WIND-DNA"]();
     }
-  };
-  var unwindDna = function() {
+  });
+  procs["windInitialDnaIntoBundle"] = temp;
+  procs["WIND-INITIAL-DNA-INTO-BUNDLE"] = temp;
+  temp = (function() {
     var woundNucleotides = world.turtleManager.turtlesOfBreed("NUCLEOTIDES").agentFilter(function() { return !SelfManager.self().getVariable("unwound?"); });
     if (woundNucleotides.nonEmpty()) {
       var maxWoundPlace = ListPrims.max(woundNucleotides.projectionBy(function() { return SelfManager.self().getVariable("place"); }));
@@ -376,8 +406,10 @@ var procedures = (function() {
         notImplemented('display', undefined)();
       }, true);
     }
-  };
-  var windDna = function() {
+  });
+  procs["unwindDna"] = temp;
+  procs["UNWIND-DNA"] = temp;
+  temp = (function() {
     var unwoundNucleotides = world.turtleManager.turtlesOfBreed("NUCLEOTIDES").agentFilter(function() {
       return ((SelfManager.self().getVariable("unwound?") && !Prims.equality(SelfManager.self().getVariable("class"), "copy-of-dna-bottom")) && !Prims.equality(SelfManager.self().getVariable("class"), "copy-of-dna-top"));
     });
@@ -389,11 +421,13 @@ var procedures = (function() {
         SelfManager.self().setVariable("color", world.observer.getGlobal("wound-dna-color"));
       }, true);
     }
-  };
-  var unzipNucleotides = function() {
+  });
+  procs["windDna"] = temp;
+  procs["WIND-DNA"] = temp;
+  temp = (function() {
     var wereAnyNucleotidesUnzippedFurther_p = false;
     world.turtleManager.turtlesOfBreed("NUCLEOTIDES").agentFilter(function() {
-      return (procedures.nextNucleotideUnzippedTheSame_p() && Prims.gt(SelfManager.self().getVariable("unzipped-stage"), 0));
+      return (procedures["NEXT-NUCLEOTIDE-UNZIPPED-THE-SAME?"]() && Prims.gt(SelfManager.self().getVariable("unzipped-stage"), 0));
     }).ask(function() {
       var fractionalSeparation = Prims.div(SelfManager.self().getVariable("unzipped-stage"), 2);
       if (Prims.equality(SelfManager.self().getVariable("unzipped-stage"), 3)) {
@@ -422,8 +456,10 @@ var procedures = (function() {
         SelfManager.self().setVariable("shape", "helicase");
       }
     }, true);
-  };
-  var separateBasePairs = function() {
+  });
+  procs["unzipNucleotides"] = temp;
+  procs["UNZIP-NUCLEOTIDES"] = temp;
+  temp = (function() {
     var lowestPlace = 0;
     world.turtleManager.turtlesOfBreed("HELICASES").ask(function() {
       var thisHelicase = SelfManager.self();
@@ -432,7 +468,7 @@ var procedures = (function() {
         lowestPlace = unzippedNucleotides.minOneOf(function() { return SelfManager.self().getVariable("place"); });
       }
       var availableNucleotides = unzippedNucleotides.agentFilter(function() {
-        return (Prims.lt(SelfManager.self().distance(thisHelicase), 1) && procedures.arePreviousNucleotidesUnzipped_p());
+        return (Prims.lt(SelfManager.self().distance(thisHelicase), 1) && procedures["ARE-PREVIOUS-NUCLEOTIDES-UNZIPPED?"]());
       });
       if (availableNucleotides.nonEmpty()) {
         var lowestValueNucleotide = availableNucleotides.minOneOf(function() { return SelfManager.self().getVariable("place"); });
@@ -447,25 +483,31 @@ var procedures = (function() {
         }, true);
       }
     }, true);
-  };
-  var moveFreeMolecules = function() {
+  });
+  procs["separateBasePairs"] = temp;
+  procs["SEPARATE-BASE-PAIRS"] = temp;
+  temp = (function() {
     var allMolecules = Prims.turtleSet(world.turtleManager.turtlesOfBreed("NUCLEOSIDES"), world.turtleManager.turtlesOfBreed("PHOSPHATES"), world.turtleManager.turtlesOfBreed("POLYMERASES"), world.turtleManager.turtlesOfBreed("HELICASES"), world.turtleManager.turtlesOfBreed("TOPOISOMERASES"));
     allMolecules.ask(function() {
-      if (!procedures.beingDraggedByCursor_p()) {
+      if (!procedures["BEING-DRAGGED-BY-CURSOR?"]()) {
         SelfManager.self().fd(world.observer.getGlobal("molecule-step"));
       }
     }, true);
-  };
-  var cleanUpFreePhosphates = function() {
+  });
+  procs["moveFreeMolecules"] = temp;
+  procs["MOVE-FREE-MOLECULES"] = temp;
+  temp = (function() {
     world.turtleManager.turtlesOfBreed("PHOSPHATES").ask(function() {
       if ((((Prims.equality(SelfManager.self().getPatchVariable("pxcor"), world.topology.minPxcor) || Prims.equality(SelfManager.self().getPatchVariable("pxcor"), world.topology.maxPxcor)) || Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor)) || Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.maxPycor))) {
         SelfManager.self().die();
       }
     }, true);
-  };
-  var refillOrRemoveNucleosides = function() {
+  });
+  procs["cleanUpFreePhosphates"] = temp;
+  procs["CLEAN-UP-FREE-PHOSPHATES"] = temp;
+  temp = (function() {
     if (Prims.lt(world.turtleManager.turtlesOfBreed("NUCLEOSIDES").size(), world.observer.getGlobal("free-nucleosides"))) {
-      procedures.makeANucleoside();
+      procedures["MAKE-A-NUCLEOSIDE"]();
     }
     if (Prims.gt(world.turtleManager.turtlesOfBreed("NUCLEOSIDES").size(), world.observer.getGlobal("free-nucleosides"))) {
       ListPrims.oneOf(world.turtleManager.turtlesOfBreed("NUCLEOSIDES")).ask(function() {
@@ -473,8 +515,10 @@ var procedures = (function() {
         SelfManager.self().die();
       }, true);
     }
-  };
-  var lockPolymeraseToOneNucleotide = function() {
+  });
+  procs["refillOrRemoveNucleosides"] = temp;
+  procs["REFILL-OR-REMOVE-NUCLEOSIDES"] = temp;
+  temp = (function() {
     var targetXcor = 0;
     var targetYcor = 0;
     var targetClass = "";
@@ -494,7 +538,7 @@ var procedures = (function() {
       var nucleotidesReadyToGearToPolymerase = world.turtleManager.turtlesOfBreed("NUCLEOTIDES").agentFilter(function() {
         return (((!LinkPrims.myLinks("OLD-STAIRS").nonEmpty() && !LinkPrims.myLinks("NEW-STAIRS").nonEmpty()) && (Prims.equality(SelfManager.self().getVariable("class"), "original-dna-bottom") || Prims.equality(SelfManager.self().getVariable("class"), "original-dna-top"))) && Prims.lt(SelfManager.self().distance(SelfManager.myself()), world.observer.getGlobal("lock-radius")));
       });
-      if (((nucleotidesReadyToGearToPolymerase.nonEmpty() && procedures.allBasePairsUnwound_p()) && !procedures.beingDraggedByCursor_p())) {
+      if (((nucleotidesReadyToGearToPolymerase.nonEmpty() && procedures["ALL-BASE-PAIRS-UNWOUND?"]()) && !procedures["BEING-DRAGGED-BY-CURSOR?"]())) {
         targetNucleotideReadyToGearToPolymerase = nucleotidesReadyToGearToPolymerase.minOneOf(function() { return SelfManager.self().distance(SelfManager.myself()); });
         targetXcor = targetNucleotideReadyToGearToPolymerase.projectionBy(function() { return SelfManager.self().getVariable("xcor"); });
         targetYcor = targetNucleotideReadyToGearToPolymerase.projectionBy(function() { return SelfManager.self().getVariable("ycor"); });
@@ -504,12 +548,12 @@ var procedures = (function() {
       if ((!nucleotidesReadyToGearToPolymerase.nonEmpty() || SelfPrims.other(SelfManager.self().breedHere("POLYMERASES")).nonEmpty())) {
         SelfManager.self().setVariable("locked-state", 0);
       }
-      if ((((nucleotidesReadyToGearToPolymerase.nonEmpty() && procedures.allBasePairsUnwound_p()) && Prims.equality(potentialNucleosideReadyToGearToPolymerase, Nobody)) && !SelfPrims.other(SelfManager.self().breedHere("POLYMERASES")).nonEmpty())) {
+      if ((((nucleotidesReadyToGearToPolymerase.nonEmpty() && procedures["ALL-BASE-PAIRS-UNWOUND?"]()) && Prims.equality(potentialNucleosideReadyToGearToPolymerase, Nobody)) && !SelfPrims.other(SelfManager.self().breedHere("POLYMERASES")).nonEmpty())) {
         SelfManager.self().setVariable("locked-state", 1);
       }
-      if ((((!Prims.equality(targetNucleotideReadyToGearToPolymerase, Nobody) && procedures.allBasePairsUnwound_p()) && !Prims.equality(potentialNucleosideReadyToGearToPolymerase, Nobody)) && !SelfPrims.other(SelfManager.self().breedHere("POLYMERASES")).nonEmpty())) {
+      if ((((!Prims.equality(targetNucleotideReadyToGearToPolymerase, Nobody) && procedures["ALL-BASE-PAIRS-UNWOUND?"]()) && !Prims.equality(potentialNucleosideReadyToGearToPolymerase, Nobody)) && !SelfPrims.other(SelfManager.self().breedHere("POLYMERASES")).nonEmpty())) {
         SelfManager.self().setVariable("locked-state", 2);
-        if ((procedures.wouldTheseNucleotidesPairCorrectly_p(targetNucleotideReadyToGearToPolymerase,potentialNucleosideReadyToGearToPolymerase) || world.observer.getGlobal("substitutions?"))) {
+        if ((procedures["WOULD-THESE-NUCLEOTIDES-PAIR-CORRECTLY?"](targetNucleotideReadyToGearToPolymerase,potentialNucleosideReadyToGearToPolymerase) || world.observer.getGlobal("substitutions?"))) {
           potentialNucleosideReadyToGearToPolymerase.ask(function() {
             LinkPrims.myInLinks("CURSOR-DRAGS").ask(function() { SelfManager.self().die(); }, true);
             LinkPrims.linkNeighbors("TAGLINES").ask(function() { SelfManager.self().die(); }, true);
@@ -519,15 +563,15 @@ var procedures = (function() {
             if (Prims.equality(targetClass, "original-dna-top")) {
               SelfManager.self().setVariable("heading", 180);
               SelfManager.self().setVariable("class", "copy-of-dna-bottom");
-              procedures.attachNucleoTag(175,0.7);
+              procedures["ATTACH-NUCLEO-TAG"](175,0.7);
             }
             if (Prims.equality(targetClass, "original-dna-bottom")) {
               SelfManager.self().setVariable("heading", 0);
               SelfManager.self().setVariable("class", "copy-of-dna-top");
-              procedures.attachNucleoTag(5,0.5);
+              procedures["ATTACH-NUCLEO-TAG"](5,0.5);
             }
             SelfManager.self().setXY(targetXcor, targetYcor);
-            procedures.breakOffPhosphatesFromNucleoside();
+            procedures["BREAK-OFF-PHOSPHATES-FROM-NUCLEOSIDE"]();
             LinkPrims.createLinkWith(targetNucleotideReadyToGearToPolymerase, "NEW-STAIRS").ask(function() {
               SelfManager.self().setVariable("hidden?", false);
               SelfManager.self().tie();
@@ -539,15 +583,19 @@ var procedures = (function() {
         }
       }
     }, true);
-  };
-  var breakOffPhosphatesFromNucleoside = function() {
+  });
+  procs["lockPolymeraseToOneNucleotide"] = temp;
+  procs["LOCK-POLYMERASE-TO-ONE-NUCLEOTIDE"] = temp;
+  temp = (function() {
     SelfManager.self().hatch(1, "").ask(function() {
       SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("PHOSPHATES"));
       SelfManager.self().setVariable("shape", "phosphate-pair");
       SelfManager.self().setVariable("heading", Prims.random(360));
     }, true);
-  };
-  var lockTopoisomeraseToWoundPrimase = function() {
+  });
+  procs["breakOffPhosphatesFromNucleoside"] = temp;
+  procs["BREAK-OFF-PHOSPHATES-FROM-NUCLEOSIDE"] = temp;
+  temp = (function() {
     var targetXcor = 0;
     var targetYcor = 0;
     var targetClass = "";
@@ -561,7 +609,7 @@ var procedures = (function() {
           var targetPrimaseReadyToGearToTopoisomerase = ListPrims.oneOf(targetPrimasesReadyToGearToTopoisomerase);
           SelfManager.self().setVariable("locked?", true);
           if (!MousePrims.isDown()) {
-            procedures.unwindDna();
+            procedures["UNWIND-DNA"]();
             LinkPrims.myInLinks("CURSOR-DRAGS").ask(function() { SelfManager.self().die(); }, true);
             targetXcor = targetPrimaseReadyToGearToTopoisomerase.projectionBy(function() { return SelfManager.self().getVariable("xcor"); });
             targetYcor = targetPrimaseReadyToGearToTopoisomerase.projectionBy(function() { return SelfManager.self().getVariable("ycor"); });
@@ -576,8 +624,10 @@ var procedures = (function() {
         SelfManager.self().setVariable("locked?", false);
       }
     }, true);
-  };
-  var calculateMutations = function() {
+  });
+  procs["lockTopoisomeraseToWoundPrimase"] = temp;
+  procs["LOCK-TOPOISOMERASE-TO-WOUND-PRIMASE"] = temp;
+  temp = (function() {
     world.observer.setGlobal("total-deletion-mutations-top-strand", 0);
     world.observer.setGlobal("total-substitution-mutations-top-strand", 0);
     world.observer.setGlobal("total-correct-duplications-top-strand", 0);
@@ -590,7 +640,7 @@ var procedures = (function() {
         world.observer.setGlobal("total-deletion-mutations-top-strand", (world.observer.getGlobal("total-deletion-mutations-top-strand") + 1));
       }
       if (Prims.gte(LinkPrims.myLinks("NEW-STAIRS").size(), 1)) {
-        if (procedures.is_ThisNucleotidePairedCorrectly_p()) {
+        if (procedures["IS-THIS-NUCLEOTIDE-PAIRED-CORRECTLY?"]()) {
           world.observer.setGlobal("total-correct-duplications-top-strand", (world.observer.getGlobal("total-correct-duplications-top-strand") + 1));
         }
         else {
@@ -604,7 +654,7 @@ var procedures = (function() {
         world.observer.setGlobal("total-deletion-mutations-bottom-strand", (world.observer.getGlobal("total-deletion-mutations-bottom-strand") + 1));
       }
       if (Prims.gte(LinkPrims.myLinks("NEW-STAIRS").size(), 1)) {
-        if (procedures.is_ThisNucleotidePairedCorrectly_p()) {
+        if (procedures["IS-THIS-NUCLEOTIDE-PAIRED-CORRECTLY?"]()) {
           world.observer.setGlobal("total-correct-duplications-bottom-strand", (world.observer.getGlobal("total-correct-duplications-bottom-strand") + 1));
         }
         else {
@@ -612,8 +662,10 @@ var procedures = (function() {
         }
       }
     }, true);
-  };
-  var detectMouseSelectionEvent = function() {
+  });
+  procs["calculateMutations"] = temp;
+  procs["CALCULATE-MUTATIONS"] = temp;
+  temp = (function() {
     var pMouseXcor = MousePrims.getX();
     var pMouseYcor = MousePrims.getY();
     var currentMouseDown_p = MousePrims.isDown();
@@ -624,18 +676,18 @@ var procedures = (function() {
       SelfManager.self().setVariable("hidden?", true);
       var allMoveableMolecules = Prims.turtleSet(world.turtleManager.turtlesOfBreed("NUCLEOSIDES"), world.turtleManager.turtlesOfBreed("POLYMERASES"), world.turtleManager.turtlesOfBreed("HELICASES"), world.turtleManager.turtlesOfBreed("TOPOISOMERASES"));
       var draggableMolecules = allMoveableMolecules.agentFilter(function() {
-        return (!procedures.beingDraggedByCursor_p() && Prims.lte(SelfManager.self().distance(SelfManager.myself()), world.observer.getGlobal("mouse-drag-radius")));
+        return (!procedures["BEING-DRAGGED-BY-CURSOR?"]() && Prims.lte(SelfManager.self().distance(SelfManager.myself()), world.observer.getGlobal("mouse-drag-radius")));
       });
       if (((!currentMouseDown_p && MousePrims.isInside()) && draggableMolecules.nonEmpty())) {
         SelfManager.self().setVariable("color", world.observer.getGlobal("cursor-detect-color"));
         SelfManager.self().setVariable("hidden?", false);
         SelfManager.self().right(4);
       }
-      if ((procedures.is_ThisCursorDraggingAnything_p() && MousePrims.isInside())) {
+      if ((procedures["IS-THIS-CURSOR-DRAGGING-ANYTHING?"]() && MousePrims.isInside())) {
         SelfManager.self().setVariable("color", world.observer.getGlobal("cursor-drag-color"));
         SelfManager.self().setVariable("hidden?", false);
       }
-      if ((((!world.observer.getGlobal("mouse-continuous-down?") && currentMouseDown_p) && !procedures.is_ThisCursorDraggingAnything_p()) && draggableMolecules.nonEmpty())) {
+      if ((((!world.observer.getGlobal("mouse-continuous-down?") && currentMouseDown_p) && !procedures["IS-THIS-CURSOR-DRAGGING-ANYTHING?"]()) && draggableMolecules.nonEmpty())) {
         targetTurtle = draggableMolecules.minOneOf(function() { return SelfManager.self().distance(SelfManager.myself()); });
         targetTurtle.ask(function() { SelfManager.self().setXY(pMouseXcor, pMouseYcor); }, true);
         LinkPrims.createLinkTo(targetTurtle, "CURSOR-DRAGS").ask(function() {
@@ -653,8 +705,10 @@ var procedures = (function() {
     else {
       world.observer.setGlobal("mouse-continuous-down?", false);
     }
-  };
-  var randomBaseLetter = function() {
+  });
+  procs["detectMouseSelectionEvent"] = temp;
+  procs["DETECT-MOUSE-SELECTION-EVENT"] = temp;
+  temp = (function() {
     try {
       var r = Prims.random(4);
       var letterToReport = "";
@@ -679,8 +733,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var complementaryBase = function(base) {
+  });
+  procs["randomBaseLetter"] = temp;
+  procs["RANDOM-BASE-LETTER"] = temp;
+  temp = (function(base) {
     try {
       var baseToReport = "";
       if (Prims.equality(base, "A")) {
@@ -704,8 +760,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var timeRemainingToDisplay = function() {
+  });
+  procs["complementaryBase"] = temp;
+  procs["COMPLEMENTARY-BASE"] = temp;
+  temp = (function() {
     try {
       if (world.observer.getGlobal("using-time-limit")) {
         throw new Exception.ReportInterrupt(world.observer.getGlobal("time-remaining"));
@@ -721,8 +779,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var is_ThisCursorDraggingAnything_p = function() {
+  });
+  procs["timeRemainingToDisplay"] = temp;
+  procs["TIME-REMAINING-TO-DISPLAY"] = temp;
+  temp = (function() {
     try {
       if (LinkPrims.outLinkNeighbors("CURSOR-DRAGS").nonEmpty()) {
         throw new Exception.ReportInterrupt(true);
@@ -738,8 +798,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var beingDraggedByCursor_p = function() {
+  });
+  procs["is_ThisCursorDraggingAnything_p"] = temp;
+  procs["IS-THIS-CURSOR-DRAGGING-ANYTHING?"] = temp;
+  temp = (function() {
     try {
       if (LinkPrims.myInLinks("CURSOR-DRAGS").nonEmpty()) {
         throw new Exception.ReportInterrupt(true);
@@ -755,8 +817,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var allBasePairsUnwound_p = function() {
+  });
+  procs["beingDraggedByCursor_p"] = temp;
+  procs["BEING-DRAGGED-BY-CURSOR?"] = temp;
+  temp = (function() {
     try {
       if (world.turtleManager.turtlesOfBreed("NUCLEOTIDES").agentFilter(function() { return !SelfManager.self().getVariable("unwound?"); }).nonEmpty()) {
         throw new Exception.ReportInterrupt(false);
@@ -772,10 +836,12 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var wouldTheseNucleotidesPairCorrectly_p = function(nucleotide1, nucleotide2) {
+  });
+  procs["allBasePairsUnwound_p"] = temp;
+  procs["ALL-BASE-PAIRS-UNWOUND?"] = temp;
+  temp = (function(nucleotide1, nucleotide2) {
     try {
-      if (Prims.equality(procedures.complementaryBase(nucleotide1.projectionBy(function() { return SelfManager.self().getVariable("value"); })), ListPrims.item(0, nucleotide2.projectionBy(function() { return SelfManager.self().getVariable("value"); })))) {
+      if (Prims.equality(procedures["COMPLEMENTARY-BASE"](nucleotide1.projectionBy(function() { return SelfManager.self().getVariable("value"); })), ListPrims.item(0, nucleotide2.projectionBy(function() { return SelfManager.self().getVariable("value"); })))) {
         throw new Exception.ReportInterrupt(true);
       }
       else {
@@ -789,8 +855,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var is_ThisNucleotidePairedCorrectly_p = function() {
+  });
+  procs["wouldTheseNucleotidesPairCorrectly_p"] = temp;
+  procs["WOULD-THESE-NUCLEOTIDES-PAIR-CORRECTLY?"] = temp;
+  temp = (function() {
     try {
       var originalNucleotide = SelfManager.self();
       var thisStair = ListPrims.oneOf(LinkPrims.myLinks("NEW-STAIRS"));
@@ -804,7 +872,7 @@ var procedures = (function() {
           }
         }
       }, true);
-      if ((Prims.equality(SelfManager.self().getVariable("value"), procedures.complementaryBase(thisPairedNucleotide.projectionBy(function() { return SelfManager.self().getVariable("value"); }))) && !overwrite_p)) {
+      if ((Prims.equality(SelfManager.self().getVariable("value"), procedures["COMPLEMENTARY-BASE"](thisPairedNucleotide.projectionBy(function() { return SelfManager.self().getVariable("value"); }))) && !overwrite_p)) {
         throw new Exception.ReportInterrupt(true);
       }
       else {
@@ -818,8 +886,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var nextNucleotideUnzippedTheSame_p = function() {
+  });
+  procs["is_ThisNucleotidePairedCorrectly_p"] = temp;
+  procs["IS-THIS-NUCLEOTIDE-PAIRED-CORRECTLY?"] = temp;
+  temp = (function() {
     try {
       var myUnzippedStage = SelfManager.self().getVariable("unzipped-stage");
       var myPlace = SelfManager.self().getVariable("place");
@@ -829,7 +899,7 @@ var procedures = (function() {
       });
       var canContinueToUnzip_p = false;
       if (Prims.lt(myPlace, world.observer.getGlobal("dna-strand-length"))) {
-        if ((nextNucleotidesAvailable.nonEmpty() && procedures.arePreviousNucleotidesUnzipped_p())) {
+        if ((nextNucleotidesAvailable.nonEmpty() && procedures["ARE-PREVIOUS-NUCLEOTIDES-UNZIPPED?"]())) {
           canContinueToUnzip_p = true;
         }
         else {
@@ -848,8 +918,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var arePreviousNucleotidesUnzipped_p = function() {
+  });
+  procs["nextNucleotideUnzippedTheSame_p"] = temp;
+  procs["NEXT-NUCLEOTIDE-UNZIPPED-THE-SAME?"] = temp;
+  temp = (function() {
     try {
       var myPlace = SelfManager.self().getVariable("place");
       var previousNucleotides = world.turtleManager.turtlesOfBreed("NUCLEOTIDES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("place"), (myPlace - 1)); });
@@ -875,8 +947,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var userMessageStringForMutations = function() {
+  });
+  procs["arePreviousNucleotidesUnzipped_p"] = temp;
+  procs["ARE-PREVIOUS-NUCLEOTIDES-UNZIPPED?"] = temp;
+  temp = (function() {
     try {
       var duplicationRate = NLMath.precision(Prims.div((world.observer.getGlobal("total-correct-duplications-top-strand") + world.observer.getGlobal("total-correct-duplications-bottom-strand")), world.observer.getGlobal("final-time")), 4);
       throw new Exception.ReportInterrupt((Dump('') + Dump("You had ") + Dump((world.observer.getGlobal("total-correct-duplications-top-strand") + world.observer.getGlobal("total-correct-duplications-bottom-strand"))) + Dump(" correct replications and ") + Dump((world.observer.getGlobal("total-substitution-mutations-top-strand") + world.observer.getGlobal("total-substitution-mutations-bottom-strand"))) + Dump(" substitutions and ") + Dump((world.observer.getGlobal("total-deletion-mutations-top-strand") + world.observer.getGlobal("total-deletion-mutations-bottom-strand"))) + Dump("  deletions.") + Dump(" That replication process took you ") + Dump(world.observer.getGlobal("final-time")) + Dump(" seconds.  This was a rate of ") + Dump(duplicationRate) + Dump(" correct nucleotides duplicated per second.")));
@@ -888,10 +962,12 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var currentInstructionLabel = function() {
+  });
+  procs["userMessageStringForMutations"] = temp;
+  procs["USER-MESSAGE-STRING-FOR-MUTATIONS"] = temp;
+  temp = (function() {
     try {
-      throw new Exception.ReportInterrupt((Prims.equality(world.observer.getGlobal("current-instruction"), 0) ? "press setup" : (Dump('') + Dump(world.observer.getGlobal("current-instruction")) + Dump(" / ") + Dump(ListPrims.length(procedures.instructions())))));
+      throw new Exception.ReportInterrupt((Prims.equality(world.observer.getGlobal("current-instruction"), 0) ? "press setup" : (Dump('') + Dump(world.observer.getGlobal("current-instruction")) + Dump(" / ") + Dump(ListPrims.length(procedures["INSTRUCTIONS"]())))));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -900,20 +976,28 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var nextInstruction = function() { procedures.showInstruction((world.observer.getGlobal("current-instruction") + 1)); };
-  var previousInstruction = function() { procedures.showInstruction((world.observer.getGlobal("current-instruction") - 1)); };
-  var showInstruction = function(i) {
-    if ((Prims.gte(i, 1) && Prims.lte(i, ListPrims.length(procedures.instructions())))) {
+  });
+  procs["currentInstructionLabel"] = temp;
+  procs["CURRENT-INSTRUCTION-LABEL"] = temp;
+  temp = (function() { procedures["SHOW-INSTRUCTION"]((world.observer.getGlobal("current-instruction") + 1)); });
+  procs["nextInstruction"] = temp;
+  procs["NEXT-INSTRUCTION"] = temp;
+  temp = (function() { procedures["SHOW-INSTRUCTION"]((world.observer.getGlobal("current-instruction") - 1)); });
+  procs["previousInstruction"] = temp;
+  procs["PREVIOUS-INSTRUCTION"] = temp;
+  temp = (function(i) {
+    if ((Prims.gte(i, 1) && Prims.lte(i, ListPrims.length(procedures["INSTRUCTIONS"]())))) {
       world.observer.setGlobal("current-instruction", i);
       OutputPrims.clear();
       Tasks.forEach(Tasks.commandTask(function() {
         var taskArguments = arguments;
         OutputPrims.print(taskArguments[0]);
-      }), ListPrims.item((world.observer.getGlobal("current-instruction") - 1), procedures.instructions()));
+      }), ListPrims.item((world.observer.getGlobal("current-instruction") - 1), procedures["INSTRUCTIONS"]()));
     }
-  };
-  var instructions = function() {
+  });
+  procs["showInstruction"] = temp;
+  procs["SHOW-INSTRUCTION"] = temp;
+  temp = (function() {
     try {
       throw new Exception.ReportInterrupt([["You will be simulating the process", "of DNA replication that occurs in", "every cell in every living creature", "as part of mitosis or meiosis."], ["To do this you will need to complete", "4 tasks in the shortest time you", "can. Each of these tasks requires", "you to drag a molecule using your", "mouse, from one location to another."], ["The 1st task will be to unwind a ", "twisted bundle of DNA by using your", "mouse to place a topoisomerase ", "enzyme on top of the primase enzyme."], ["The 2nd task will be to unzip the", "DNA ladder structure by dragging", "a helicase enzyme from the 1st ", "base pair to the last base pair."], ["The 3rd task will be to first drag", "a polymerase enzyme to an open", "nucleotide and then drag a floating", "nucleoside to the same location."], ["The last task is to simply repeat", "the previous task of connecting", "nucleosides to open nucleotides", "until as much of the DNA as", "possible has been replicated."], ["The simulation ends either when", "the timer runs out (if the timer?", "chooser is set to YES) or when you", "press the DIVIDE THE CELL button"]]);
       throw new Error("Reached end of reporter procedure without REPORT being called.");
@@ -924,93 +1008,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  return {
-    "ALL-BASE-PAIRS-UNWOUND?":allBasePairsUnwound_p,
-    "ARE-PREVIOUS-NUCLEOTIDES-UNZIPPED?":arePreviousNucleotidesUnzipped_p,
-    "ATTACH-ENZYME-TAG":attachEnzymeTag,
-    "ATTACH-NUCLEO-TAG":attachNucleoTag,
-    "BEING-DRAGGED-BY-CURSOR?":beingDraggedByCursor_p,
-    "BREAK-OFF-PHOSPHATES-FROM-NUCLEOSIDE":breakOffPhosphatesFromNucleoside,
-    "CALCULATE-MUTATIONS":calculateMutations,
-    "CHECK-TIMER":checkTimer,
-    "CLEAN-UP-FREE-PHOSPHATES":cleanUpFreePhosphates,
-    "COMPLEMENTARY-BASE":complementaryBase,
-    "CURRENT-INSTRUCTION-LABEL":currentInstructionLabel,
-    "DETECT-MOUSE-SELECTION-EVENT":detectMouseSelectionEvent,
-    "GO":go,
-    "INITIALIZE-LENGTH-OF-TIME":initializeLengthOfTime,
-    "INSTRUCTIONS":instructions,
-    "IS-THIS-CURSOR-DRAGGING-ANYTHING?":is_ThisCursorDraggingAnything_p,
-    "IS-THIS-NUCLEOTIDE-PAIRED-CORRECTLY?":is_ThisNucleotidePairedCorrectly_p,
-    "LOCK-POLYMERASE-TO-ONE-NUCLEOTIDE":lockPolymeraseToOneNucleotide,
-    "LOCK-TOPOISOMERASE-TO-WOUND-PRIMASE":lockTopoisomeraseToWoundPrimase,
-    "MAKE-A-HELICASE":makeAHelicase,
-    "MAKE-A-NUCLEOSIDE":makeANucleoside,
-    "MAKE-A-TOPOISOMERASE":makeATopoisomerase,
-    "MAKE-AND-ATTACH-A-PRIMASE":makeAndAttachAPrimase,
-    "MAKE-INITIAL-DNA-STRIP":makeInitialDnaStrip,
-    "MAKE-POLYMERASES":makePolymerases,
-    "MOVE-FREE-MOLECULES":moveFreeMolecules,
-    "NEXT-INSTRUCTION":nextInstruction,
-    "NEXT-NUCLEOTIDE-UNZIPPED-THE-SAME?":nextNucleotideUnzippedTheSame_p,
-    "PREVIOUS-INSTRUCTION":previousInstruction,
-    "RANDOM-BASE-LETTER":randomBaseLetter,
-    "REFILL-OR-REMOVE-NUCLEOSIDES":refillOrRemoveNucleosides,
-    "SEPARATE-BASE-PAIRS":separateBasePairs,
-    "SETUP":setup,
-    "SHOW-INSTRUCTION":showInstruction,
-    "TIME-REMAINING-TO-DISPLAY":timeRemainingToDisplay,
-    "UNWIND-DNA":unwindDna,
-    "UNZIP-NUCLEOTIDES":unzipNucleotides,
-    "USER-MESSAGE-STRING-FOR-MUTATIONS":userMessageStringForMutations,
-    "VISUALIZE-AGENTS":visualizeAgents,
-    "WIND-DNA":windDna,
-    "WIND-INITIAL-DNA-INTO-BUNDLE":windInitialDnaIntoBundle,
-    "WOULD-THESE-NUCLEOTIDES-PAIR-CORRECTLY?":wouldTheseNucleotidesPairCorrectly_p,
-    "allBasePairsUnwound_p":allBasePairsUnwound_p,
-    "arePreviousNucleotidesUnzipped_p":arePreviousNucleotidesUnzipped_p,
-    "attachEnzymeTag":attachEnzymeTag,
-    "attachNucleoTag":attachNucleoTag,
-    "beingDraggedByCursor_p":beingDraggedByCursor_p,
-    "breakOffPhosphatesFromNucleoside":breakOffPhosphatesFromNucleoside,
-    "calculateMutations":calculateMutations,
-    "checkTimer":checkTimer,
-    "cleanUpFreePhosphates":cleanUpFreePhosphates,
-    "complementaryBase":complementaryBase,
-    "currentInstructionLabel":currentInstructionLabel,
-    "detectMouseSelectionEvent":detectMouseSelectionEvent,
-    "go":go,
-    "initializeLengthOfTime":initializeLengthOfTime,
-    "instructions":instructions,
-    "is_ThisCursorDraggingAnything_p":is_ThisCursorDraggingAnything_p,
-    "is_ThisNucleotidePairedCorrectly_p":is_ThisNucleotidePairedCorrectly_p,
-    "lockPolymeraseToOneNucleotide":lockPolymeraseToOneNucleotide,
-    "lockTopoisomeraseToWoundPrimase":lockTopoisomeraseToWoundPrimase,
-    "makeAHelicase":makeAHelicase,
-    "makeANucleoside":makeANucleoside,
-    "makeATopoisomerase":makeATopoisomerase,
-    "makeAndAttachAPrimase":makeAndAttachAPrimase,
-    "makeInitialDnaStrip":makeInitialDnaStrip,
-    "makePolymerases":makePolymerases,
-    "moveFreeMolecules":moveFreeMolecules,
-    "nextInstruction":nextInstruction,
-    "nextNucleotideUnzippedTheSame_p":nextNucleotideUnzippedTheSame_p,
-    "previousInstruction":previousInstruction,
-    "randomBaseLetter":randomBaseLetter,
-    "refillOrRemoveNucleosides":refillOrRemoveNucleosides,
-    "separateBasePairs":separateBasePairs,
-    "setup":setup,
-    "showInstruction":showInstruction,
-    "timeRemainingToDisplay":timeRemainingToDisplay,
-    "unwindDna":unwindDna,
-    "unzipNucleotides":unzipNucleotides,
-    "userMessageStringForMutations":userMessageStringForMutations,
-    "visualizeAgents":visualizeAgents,
-    "windDna":windDna,
-    "windInitialDnaIntoBundle":windInitialDnaIntoBundle,
-    "wouldTheseNucleotidesPairCorrectly_p":wouldTheseNucleotidesPairCorrectly_p
-  };
+  });
+  procs["instructions"] = temp;
+  procs["INSTRUCTIONS"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("dna-strand-length", 30);
 world.observer.setGlobal("nucleo-labels?", true);

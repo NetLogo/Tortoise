@@ -67,16 +67,20 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
-    procedures.setupCows();
+    procedures["SETUP-COWS"]();
     world.patches().ask(function() {
       SelfManager.self().setPatchVariable("grass", world.observer.getGlobal("max-grass-height"));
-      procedures.colorGrass();
+      procedures["COLOR-GRASS"]();
     }, true);
     world.ticker.reset();
-  };
-  var setupCows = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     BreedManager.setDefaultShape(world.turtles().getSpecialName(), "cow")
     world.turtleManager.createTurtles(world.observer.getGlobal("initial-cows"), "").ask(function() {
       SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
@@ -90,26 +94,32 @@ var procedures = (function() {
         SelfManager.self().setVariable("color", (95 - 2));
       }
     }, true);
-  };
-  var go = function() {
+  });
+  procs["setupCows"] = temp;
+  procs["SETUP-COWS"] = temp;
+  temp = (function() {
     world.turtles().ask(function() {
-      procedures.move();
-      procedures.eat();
-      procedures.reproduce();
+      procedures["MOVE"]();
+      procedures["EAT"]();
+      procedures["REPRODUCE"]();
     }, true);
     world.patches().ask(function() {
-      procedures.growGrass();
-      procedures.colorGrass();
+      procedures["GROW-GRASS"]();
+      procedures["COLOR-GRASS"]();
     }, true);
     world.ticker.tick();
-  };
-  var reproduce = function() {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     if (Prims.gt(SelfManager.self().getVariable("energy"), world.observer.getGlobal("reproduction-threshold"))) {
       SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") - world.observer.getGlobal("reproduction-cost")));
       SelfManager.self().hatch(1, "").ask(function() {}, true);
     }
-  };
-  var growGrass = function() {
+  });
+  procs["reproduce"] = temp;
+  procs["REPRODUCE"] = temp;
+  temp = (function() {
     if (Prims.gte(SelfManager.self().getPatchVariable("grass"), world.observer.getGlobal("low-high-threshold"))) {
       if (Prims.gte(world.observer.getGlobal("high-growth-chance"), Prims.randomFloat(100))) {
         SelfManager.self().setPatchVariable("grass", (SelfManager.self().getPatchVariable("grass") + 1));
@@ -123,62 +133,53 @@ var procedures = (function() {
     if (Prims.gt(SelfManager.self().getPatchVariable("grass"), world.observer.getGlobal("max-grass-height"))) {
       SelfManager.self().setPatchVariable("grass", world.observer.getGlobal("max-grass-height"));
     }
-  };
-  var colorGrass = function() {
+  });
+  procs["growGrass"] = temp;
+  procs["GROW-GRASS"] = temp;
+  temp = (function() {
     SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor((55 - 1), SelfManager.self().getPatchVariable("grass"), 0, (2 * world.observer.getGlobal("max-grass-height"))));
-  };
-  var move = function() {
+  });
+  procs["colorGrass"] = temp;
+  procs["COLOR-GRASS"] = temp;
+  temp = (function() {
     SelfManager.self().right(Prims.random(360));
     SelfManager.self().fd(world.observer.getGlobal("stride-length"));
     SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") - world.observer.getGlobal("metabolism")));
     if (Prims.lt(SelfManager.self().getVariable("energy"), 0)) {
       SelfManager.self().die();
     }
-  };
-  var eat = function() {
+  });
+  procs["move"] = temp;
+  procs["MOVE"] = temp;
+  temp = (function() {
     if (Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("COOPERATIVE-COWS"))) {
-      procedures.eatCooperative();
+      procedures["EAT-COOPERATIVE"]();
     }
     else {
       if (Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("GREEDY-COWS"))) {
-        procedures.eatGreedy();
+        procedures["EAT-GREEDY"]();
       }
     }
-  };
-  var eatCooperative = function() {
+  });
+  procs["eat"] = temp;
+  procs["EAT"] = temp;
+  temp = (function() {
     if (Prims.gt(SelfManager.self().getPatchVariable("grass"), world.observer.getGlobal("low-high-threshold"))) {
       SelfManager.self().setPatchVariable("grass", (SelfManager.self().getPatchVariable("grass") - 1));
       SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") + world.observer.getGlobal("grass-energy")));
     }
-  };
-  var eatGreedy = function() {
+  });
+  procs["eatCooperative"] = temp;
+  procs["EAT-COOPERATIVE"] = temp;
+  temp = (function() {
     if (Prims.gt(SelfManager.self().getPatchVariable("grass"), 0)) {
       SelfManager.self().setPatchVariable("grass", (SelfManager.self().getPatchVariable("grass") - 1));
       SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") + world.observer.getGlobal("grass-energy")));
     }
-  };
-  return {
-    "COLOR-GRASS":colorGrass,
-    "EAT":eat,
-    "EAT-COOPERATIVE":eatCooperative,
-    "EAT-GREEDY":eatGreedy,
-    "GO":go,
-    "GROW-GRASS":growGrass,
-    "MOVE":move,
-    "REPRODUCE":reproduce,
-    "SETUP":setup,
-    "SETUP-COWS":setupCows,
-    "colorGrass":colorGrass,
-    "eat":eat,
-    "eatCooperative":eatCooperative,
-    "eatGreedy":eatGreedy,
-    "go":go,
-    "growGrass":growGrass,
-    "move":move,
-    "reproduce":reproduce,
-    "setup":setup,
-    "setupCows":setupCows
-  };
+  });
+  procs["eatGreedy"] = temp;
+  procs["EAT-GREEDY"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("cooperative-probability", 0.5);
 world.observer.setGlobal("initial-cows", 20);

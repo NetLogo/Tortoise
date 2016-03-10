@@ -51,25 +51,29 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
     BreedManager.setDefaultShape(world.turtles().getSpecialName(), "square")
     world.patches().agentFilter(function() { return Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("density")); }).ask(function() { SelfManager.self().setPatchVariable("pcolor", 55); }, true);
-    world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pxcor"), world.topology.minPxcor); }).ask(function() { procedures.ignite(); }, true);
+    world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pxcor"), world.topology.minPxcor); }).ask(function() { procedures["IGNITE"](); }, true);
     world.observer.setGlobal("initial-trees", world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55); }).size());
     world.observer.setGlobal("burned-trees", 0);
     world.ticker.reset();
-  };
-  var go = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     try {
       if (!world.turtles().nonEmpty()) {
         throw new Exception.StopInterrupt;
       }
       world.turtleManager.turtlesOfBreed("FIRES").ask(function() {
-        SelfManager.self().getNeighbors4().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55); }).ask(function() { procedures.ignite(); }, true);
+        SelfManager.self().getNeighbors4().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55); }).ask(function() { procedures["IGNITE"](); }, true);
         SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("EMBERS"));
       }, true);
-      procedures.fadeEmbers();
+      procedures["FADE-EMBERS"]();
       world.ticker.tick();
     } catch (e) {
       if (e instanceof Exception.StopInterrupt) {
@@ -78,13 +82,17 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var ignite = function() {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     SelfManager.self().sprout(1, "FIRES").ask(function() { SelfManager.self().setVariable("color", 15); }, true);
     SelfManager.self().setPatchVariable("pcolor", 0);
     world.observer.setGlobal("burned-trees", (world.observer.getGlobal("burned-trees") + 1));
-  };
-  var fadeEmbers = function() {
+  });
+  procs["ignite"] = temp;
+  procs["IGNITE"] = temp;
+  temp = (function() {
     world.turtleManager.turtlesOfBreed("EMBERS").ask(function() {
       SelfManager.self().setVariable("color", (SelfManager.self().getVariable("color") - 0.3));
       if (Prims.lt(SelfManager.self().getVariable("color"), (15 - 3.5))) {
@@ -92,16 +100,9 @@ var procedures = (function() {
         SelfManager.self().die();
       }
     }, true);
-  };
-  return {
-    "FADE-EMBERS":fadeEmbers,
-    "GO":go,
-    "IGNITE":ignite,
-    "SETUP":setup,
-    "fadeEmbers":fadeEmbers,
-    "go":go,
-    "ignite":ignite,
-    "setup":setup
-  };
+  });
+  procs["fadeEmbers"] = temp;
+  procs["FADE-EMBERS"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("density", 57);

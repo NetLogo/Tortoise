@@ -115,7 +115,9 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
     world.observer.setGlobal("run-go?", true);
     world.observer.setGlobal("number-forward-reactions", 0);
@@ -137,70 +139,84 @@ var procedures = (function() {
     world.observer.setGlobal("box-edge-y", (world.topology.maxPycor - 1));
     world.observer.setGlobal("box-edge-x", (world.topology.maxPxcor - 1));
     world.observer.setGlobal("piston-position", (world.observer.getGlobal("init-wall-position") - world.observer.getGlobal("box-edge-x")));
-    procedures.drawBoxPiston();
-    procedures.recalculateWallColor();
-    procedures.calculateVolume();
-    procedures.makeParticles();
+    procedures["DRAW-BOX-PISTON"]();
+    procedures["RECALCULATE-WALL-COLOR"]();
+    procedures["CALCULATE-VOLUME"]();
+    procedures["MAKE-PARTICLES"]();
     world.observer.setGlobal("pressure-history", []);
-    procedures.calculatePressureAndTemperature();
+    procedures["CALCULATE-PRESSURE-AND-TEMPERATURE"]();
     world.ticker.reset();
-  };
-  var makeParticles = function() {
-    world.turtleManager.createTurtles(world.observer.getGlobal("#-h2"), "PARTICLES").ask(function() { procedures.setupHydrogenParticle(); }, true);
-    world.turtleManager.createTurtles(world.observer.getGlobal("#-n2"), "PARTICLES").ask(function() { procedures.setupNitrogenParticle(); }, true);
-    world.turtleManager.createTurtles(world.observer.getGlobal("#-nh3"), "PARTICLES").ask(function() { procedures.setupAmmoniaParticle(); }, true);
-    procedures.calculateTickAdvanceAmount();
-  };
-  var setupHydrogenParticle = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
+    world.turtleManager.createTurtles(world.observer.getGlobal("#-h2"), "PARTICLES").ask(function() { procedures["SETUP-HYDROGEN-PARTICLE"](); }, true);
+    world.turtleManager.createTurtles(world.observer.getGlobal("#-n2"), "PARTICLES").ask(function() { procedures["SETUP-NITROGEN-PARTICLE"](); }, true);
+    world.turtleManager.createTurtles(world.observer.getGlobal("#-nh3"), "PARTICLES").ask(function() { procedures["SETUP-AMMONIA-PARTICLE"](); }, true);
+    procedures["CALCULATE-TICK-ADVANCE-AMOUNT"]();
+  });
+  procs["makeParticles"] = temp;
+  procs["MAKE-PARTICLES"] = temp;
+  temp = (function() {
     SelfManager.self().setVariable("shape", "hydrogen");
     SelfManager.self().setVariable("molecule-type", "hydrogen");
     SelfManager.self().setVariable("mass", 2);
-    procedures.setOtherParticleAttributes();
-  };
-  var setupNitrogenParticle = function() {
+    procedures["SET-OTHER-PARTICLE-ATTRIBUTES"]();
+  });
+  procs["setupHydrogenParticle"] = temp;
+  procs["SETUP-HYDROGEN-PARTICLE"] = temp;
+  temp = (function() {
     SelfManager.self().setVariable("size", world.observer.getGlobal("particle-size"));
     SelfManager.self().setVariable("shape", "nitrogen");
     SelfManager.self().setVariable("molecule-type", "nitrogen");
     SelfManager.self().setVariable("mass", 14);
-    procedures.setOtherParticleAttributes();
-  };
-  var setupAmmoniaParticle = function() {
+    procedures["SET-OTHER-PARTICLE-ATTRIBUTES"]();
+  });
+  procs["setupNitrogenParticle"] = temp;
+  procs["SETUP-NITROGEN-PARTICLE"] = temp;
+  temp = (function() {
     SelfManager.self().setVariable("shape", "nh3");
     SelfManager.self().setVariable("molecule-type", "nh3");
     SelfManager.self().setVariable("mass", 10);
-    procedures.setOtherParticleAttributes();
-  };
-  var setOtherParticleAttributes = function() {
+    procedures["SET-OTHER-PARTICLE-ATTRIBUTES"]();
+  });
+  procs["setupAmmoniaParticle"] = temp;
+  procs["SETUP-AMMONIA-PARTICLE"] = temp;
+  temp = (function() {
     SelfManager.self().setVariable("size", world.observer.getGlobal("particle-size"));
     SelfManager.self().setVariable("last-collision", Nobody);
     SelfManager.self().setVariable("energy", (world.observer.getGlobal("initial-gas-temp") * world.observer.getGlobal("scale-factor-temp-to-energy")));
-    SelfManager.self().setVariable("speed", procedures.speedFromEnergy());
-    procedures.randomPosition();
-  };
-  var randomPosition = function() {
+    SelfManager.self().setVariable("speed", procedures["SPEED-FROM-ENERGY"]());
+    procedures["RANDOM-POSITION"]();
+  });
+  procs["setOtherParticleAttributes"] = temp;
+  procs["SET-OTHER-PARTICLE-ATTRIBUTES"] = temp;
+  temp = (function() {
     SelfManager.self().setXY(((1 - world.observer.getGlobal("box-edge-x")) + Prims.randomFloat(((world.observer.getGlobal("box-edge-x") + world.observer.getGlobal("piston-position")) - 3))), ((1 - world.observer.getGlobal("box-edge-y")) + Prims.randomFloat(((2 * world.observer.getGlobal("box-edge-y")) - 2))));
     SelfManager.self().setVariable("heading", Prims.randomFloat(360));
-  };
-  var go = function() {
+  });
+  procs["randomPosition"] = temp;
+  procs["RANDOM-POSITION"] = temp;
+  temp = (function() {
     try {
       if (!world.observer.getGlobal("run-go?")) {
         throw new Exception.StopInterrupt;
       }
       world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() {
-        procedures.bounce();
-        procedures.move();
-        procedures.checkForCollision();
+        procedures["BOUNCE"]();
+        procedures["MOVE"]();
+        procedures["CHECK-FOR-COLLISION"]();
       }, true);
       if (world.observer.getGlobal("forward-react?")) {
-        world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("molecule-type"), "nitrogen"); }).ask(function() { procedures.checkForForwardReaction(); }, true);
+        world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("molecule-type"), "nitrogen"); }).ask(function() { procedures["CHECK-FOR-FORWARD-REACTION"](); }, true);
       }
       if (world.observer.getGlobal("reverse-react?")) {
-        world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("molecule-type"), "nh3"); }).ask(function() { procedures.checkForReverseReaction(); }, true);
+        world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("molecule-type"), "nh3"); }).ask(function() { procedures["CHECK-FOR-REVERSE-REACTION"](); }, true);
       }
-      procedures.calculatePressureAndTemperature();
-      procedures.calculateTickAdvanceAmount();
+      procedures["CALCULATE-PRESSURE-AND-TEMPERATURE"]();
+      procedures["CALCULATE-TICK-ADVANCE-AMOUNT"]();
       world.ticker.tickAdvance(world.observer.getGlobal("tick-advance-amount"));
-      procedures.recalculateWallColor();
+      procedures["RECALCULATE-WALL-COLOR"]();
       plotManager.updatePlots();
       notImplemented('display', undefined)();
     } catch (e) {
@@ -210,22 +226,28 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var calculateTickAdvanceAmount = function() {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     if (world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.gt(SelfManager.self().getVariable("speed"), 0); }).nonEmpty()) {
       world.observer.setGlobal("tick-advance-amount", ListPrims.min(ListPrims.list(Prims.div(1, NLMath.ceil(ListPrims.max(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("speed"); })))), world.observer.getGlobal("max-tick-advance-amount"))));
     }
     else {
       world.observer.setGlobal("tick-advance-amount", world.observer.getGlobal("max-tick-advance-amount"));
     }
-  };
-  var move = function() {
+  });
+  procs["calculateTickAdvanceAmount"] = temp;
+  procs["CALCULATE-TICK-ADVANCE-AMOUNT"] = temp;
+  temp = (function() {
     if (!Prims.equality(SelfManager.self().patchAhead((SelfManager.self().getVariable("speed") * world.observer.getGlobal("tick-advance-amount"))), SelfManager.self().getPatchHere())) {
       SelfManager.self().setVariable("last-collision", Nobody);
     }
     SelfManager.self().jumpIfAble((SelfManager.self().getVariable("speed") * world.observer.getGlobal("tick-advance-amount")));
-  };
-  var recalculateWallColor = function() {
+  });
+  procs["move"] = temp;
+  procs["MOVE"] = temp;
+  temp = (function() {
     if (world.observer.getGlobal("insulated-walls?")) {
       world.observer.setGlobal("wall-color", world.observer.getGlobal("insulated-wall-color"));
     }
@@ -234,8 +256,10 @@ var procedures = (function() {
     }
     world.patches().agentFilter(function() { return !SelfManager.self().getPatchVariable("insulated?"); }).ask(function() { SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("wall-color")); }, true);
     world.turtleManager.turtlesOfBreed("FLASHES").agentFilter(function() { return Prims.gt((world.ticker.tickCount() - SelfManager.self().getVariable("birthday")), 0.4); }).ask(function() { SelfManager.self().die(); }, true);
-  };
-  var checkForForwardReaction = function() {
+  });
+  procs["recalculateWallColor"] = temp;
+  procs["RECALCULATE-WALL-COLOR"] = temp;
+  temp = (function() {
     var hitHydrogen = world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() {
       return (Prims.lte(SelfManager.self().distance(SelfManager.myself()), 1) && Prims.equality(SelfManager.self().getVariable("molecule-type"), "hydrogen"));
     });
@@ -257,8 +281,10 @@ var procedures = (function() {
         world.observer.setGlobal("number-forward-reactions", (world.observer.getGlobal("number-forward-reactions") + 1));
       }
     }
-  };
-  var checkForReverseReaction = function() {
+  });
+  procs["checkForForwardReaction"] = temp;
+  procs["CHECK-FOR-FORWARD-REACTION"] = temp;
+  temp = (function() {
     var hitNh3 = world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() {
       return ((Prims.lte(SelfManager.self().distance(SelfManager.myself()), 1) && Prims.equality(SelfManager.self().getVariable("molecule-type"), "nh3")) && !Prims.equality(SelfManager.self(), SelfManager.myself()));
     });
@@ -271,21 +297,23 @@ var procedures = (function() {
         SelfManager.self().setVariable("shape", "nitrogen");
         SelfManager.self().setVariable("mass", 14);
         SelfManager.self().setVariable("energy", Prims.div((totalOutputEnergy * 14), 20));
-        SelfManager.self().setVariable("speed", procedures.speedFromEnergy());
+        SelfManager.self().setVariable("speed", procedures["SPEED-FROM-ENERGY"]());
         SelfManager.self().hatch(3, "").ask(function() {
           SelfManager.self().setVariable("molecule-type", "hydrogen");
           SelfManager.self().setVariable("shape", "hydrogen");
           SelfManager.self().setVariable("mass", 2);
           SelfManager.self().setVariable("energy", Prims.div((totalOutputEnergy * 2), 20));
-          SelfManager.self().setVariable("speed", procedures.speedFromEnergy());
+          SelfManager.self().setVariable("speed", procedures["SPEED-FROM-ENERGY"]());
           SelfManager.self().setVariable("heading", Prims.random(360));
         }, true);
         reactants.ask(function() { SelfManager.self().die(); }, true);
         world.observer.setGlobal("number-reverse-reactions", (world.observer.getGlobal("number-reverse-reactions") + 1));
       }
     }
-  };
-  var cool = function() {
+  });
+  procs["checkForReverseReaction"] = temp;
+  procs["CHECK-FOR-REVERSE-REACTION"] = temp;
+  temp = (function() {
     if (Prims.gt(world.observer.getGlobal("outside-energy"), 20)) {
       world.observer.setGlobal("outside-energy", (world.observer.getGlobal("outside-energy") - world.observer.getGlobal("energy-increment")));
     }
@@ -296,19 +324,23 @@ var procedures = (function() {
       world.observer.setGlobal("outside-energy", world.observer.getGlobal("min-outside-energy"));
       UserDialogPrims.confirm("You are currently trying to cool the walls of the container below absolute zero (OK or -273C).  Absolute zero is the lowest theoretical temperature for all matter in the universe and has never been achieved in a real-world laboratory");
     }
-    procedures.recalculateWallColor();
+    procedures["RECALCULATE-WALL-COLOR"]();
     world.observer.getGlobal("heatable-walls").ask(function() { SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("wall-color")); }, true);
-  };
-  var heat = function() {
+  });
+  procs["cool"] = temp;
+  procs["COOL"] = temp;
+  temp = (function() {
     world.observer.setGlobal("outside-energy", (world.observer.getGlobal("outside-energy") + world.observer.getGlobal("energy-increment")));
     if (Prims.gt(world.observer.getGlobal("outside-energy"), world.observer.getGlobal("max-outside-energy"))) {
       world.observer.setGlobal("outside-energy", world.observer.getGlobal("max-outside-energy"));
       UserDialogPrims.confirm((Dump('') + Dump("You have reached the maximum allowable temperature for the walls of the container in this model.")));
     }
-    procedures.recalculateWallColor();
+    procedures["RECALCULATE-WALL-COLOR"]();
     world.observer.getGlobal("heatable-walls").ask(function() { SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("wall-color")); }, true);
-  };
-  var calculatePressureAndTemperature = function() {
+  });
+  procs["heat"] = temp;
+  procs["HEAT"] = temp;
+  temp = (function() {
     world.observer.setGlobal("pressure", (15 * ListPrims.sum(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("momentum-difference"); }))));
     if (Prims.gt(ListPrims.length(world.observer.getGlobal("pressure-history")), 10)) {
       world.observer.setGlobal("pressure-history", ListPrims.lput(world.observer.getGlobal("pressure"), ListPrims.butFirst(world.observer.getGlobal("pressure-history"))));
@@ -320,17 +352,23 @@ var procedures = (function() {
     if (world.turtleManager.turtlesOfBreed("PARTICLES").nonEmpty()) {
       world.observer.setGlobal("temperature", (ListPrims.mean(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("energy"); })) * world.observer.getGlobal("scale-factor-energy-to-temp")));
     }
-  };
-  var calculateVolume = function() {
+  });
+  procs["calculatePressureAndTemperature"] = temp;
+  procs["CALCULATE-PRESSURE-AND-TEMPERATURE"] = temp;
+  temp = (function() {
     world.observer.setGlobal("length-horizontal-surface", (((2 * (world.observer.getGlobal("box-edge-x") - 1)) + 1) - NLMath.abs((world.observer.getGlobal("piston-position") - world.observer.getGlobal("box-edge-x")))));
     world.observer.setGlobal("length-vertical-surface", ((2 * (world.observer.getGlobal("box-edge-y") - 1)) + 1));
     world.observer.setGlobal("volume", ((world.observer.getGlobal("length-horizontal-surface") * world.observer.getGlobal("length-vertical-surface")) * 1));
-  };
-  var resetReactionCounters = function() {
+  });
+  procs["calculateVolume"] = temp;
+  procs["CALCULATE-VOLUME"] = temp;
+  temp = (function() {
     world.observer.setGlobal("number-forward-reactions", 0);
     world.observer.setGlobal("number-reverse-reactions", 0);
-  };
-  var bounce = function() {
+  });
+  procs["resetReactionCounters"] = temp;
+  procs["RESET-REACTION-COUNTERS"] = temp;
+  temp = (function() {
     try {
       var newPatch = 0;
       var newPx = 0;
@@ -348,11 +386,11 @@ var procedures = (function() {
         SelfManager.self().setVariable("heading", (180 - SelfManager.self().getVariable("heading")));
         SelfManager.self().setVariable("momentum-difference", (SelfManager.self().getVariable("momentum-difference") + Prims.div(NLMath.abs((((NLMath.cos(SelfManager.self().getVariable("heading")) * 2) * SelfManager.self().getVariable("mass")) * SelfManager.self().getVariable("speed"))), world.observer.getGlobal("length-horizontal-surface"))));
       }
-      if (world.getPatchAt(newPx, newPy).projectionBy(function() { return procedures.isothermalWall_p(); })) {
+      if (world.getPatchAt(newPx, newPy).projectionBy(function() { return procedures["ISOTHERMAL-WALL?"](); })) {
         SelfManager.self().setVariable("energy", Prims.div((SelfManager.self().getVariable("energy") + world.observer.getGlobal("outside-energy")), 2));
-        SelfManager.self().setVariable("speed", procedures.speedFromEnergy());
+        SelfManager.self().setVariable("speed", procedures["SPEED-FROM-ENERGY"]());
       }
-      world.getPatchAt(newPx, newPy).ask(function() { procedures.makeAFlash(); }, true);
+      world.getPatchAt(newPx, newPy).ask(function() { procedures["MAKE-A-FLASH"](); }, true);
     } catch (e) {
       if (e instanceof Exception.StopInterrupt) {
         return e;
@@ -360,28 +398,34 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var makeAFlash = function() {
+  });
+  procs["bounce"] = temp;
+  procs["BOUNCE"] = temp;
+  temp = (function() {
     SelfManager.self().sprout(1, "TURTLES").ask(function() {
       SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("FLASHES"));
       SelfManager.self().setVariable("birthday", world.ticker.tickCount());
       SelfManager.self().setVariable("color", [0, 0, 0, 100]);
     }, true);
-  };
-  var checkForCollision = function() {
+  });
+  procs["makeAFlash"] = temp;
+  procs["MAKE-A-FLASH"] = temp;
+  temp = (function() {
     var candidate = 0;
     if (Prims.equality(SelfPrims.other(SelfManager.self().breedHere("PARTICLES")).size(), 1)) {
       candidate = ListPrims.oneOf(SelfPrims.other(SelfManager.self().breedHere("PARTICLES").agentFilter(function() {
         return (Prims.lt(SelfManager.self(), SelfManager.myself()) && !Prims.equality(SelfManager.myself(), SelfManager.self().getVariable("last-collision")));
       })));
       if ((!Prims.equality(candidate, Nobody) && (Prims.gt(SelfManager.self().getVariable("speed"), 0) || Prims.gt(candidate.projectionBy(function() { return SelfManager.self().getVariable("speed"); }), 0)))) {
-        procedures.collideWith(candidate);
+        procedures["COLLIDE-WITH"](candidate);
         SelfManager.self().setVariable("last-collision", candidate);
         candidate.ask(function() { SelfManager.self().setVariable("last-collision", SelfManager.myself()); }, true);
       }
     }
-  };
-  var collideWith = function(otherParticle) {
+  });
+  procs["checkForCollision"] = temp;
+  procs["CHECK-FOR-COLLISION"] = temp;
+  temp = (function(otherParticle) {
     var mass2 = 0;
     var speed2 = 0;
     var heading2 = 0;
@@ -414,13 +458,15 @@ var procedures = (function() {
         SelfManager.self().setVariable("heading", (theta - NLMath.atan(v2l, v2t)));
       }
     }, true);
-  };
-  var checkMovePiston = function() {
+  });
+  procs["collideWith"] = temp;
+  procs["COLLIDE-WITH"] = temp;
+  temp = (function() {
     try {
       world.observer.setGlobal("run-go?", false);
       if ((MousePrims.isDown() && Prims.lt(MousePrims.getY(), (world.topology.maxPycor - 1)))) {
         if ((Prims.gte(MousePrims.getX(), world.observer.getGlobal("piston-position")) && Prims.lt(MousePrims.getX(), (world.observer.getGlobal("box-edge-x") - 2)))) {
-          procedures.pistonOut(NLMath.ceil((MousePrims.getX() - world.observer.getGlobal("piston-position"))));
+          procedures["PISTON-OUT"](NLMath.ceil((MousePrims.getX() - world.observer.getGlobal("piston-position"))));
         }
         world.observer.setGlobal("run-go?", true);
         throw new Exception.StopInterrupt;
@@ -432,23 +478,27 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var pistonOut = function(dist) {
+  });
+  procs["checkMovePiston"] = temp;
+  procs["CHECK-MOVE-PISTON"] = temp;
+  temp = (function(dist) {
     if (Prims.gt(dist, 0)) {
       if (Prims.lt((world.observer.getGlobal("piston-position") + dist), (world.observer.getGlobal("box-edge-x") - 1))) {
-        procedures.undrawPiston();
+        procedures["UNDRAW-PISTON"]();
         world.observer.setGlobal("piston-position", (world.observer.getGlobal("piston-position") + dist));
-        procedures.drawBoxPiston();
+        procedures["DRAW-BOX-PISTON"]();
       }
       else {
-        procedures.undrawPiston();
+        procedures["UNDRAW-PISTON"]();
         world.observer.setGlobal("piston-position", (world.observer.getGlobal("box-edge-x") - 1));
-        procedures.drawBoxPiston();
+        procedures["DRAW-BOX-PISTON"]();
       }
-      procedures.calculateVolume();
+      procedures["CALCULATE-VOLUME"]();
     }
-  };
-  var drawBoxPiston = function() {
+  });
+  procs["pistonOut"] = temp;
+  procs["PISTON-OUT"] = temp;
+  temp = (function() {
     world.patches().ask(function() {
       SelfManager.self().setPatchVariable("insulated?", true);
       SelfManager.self().setPatchVariable("wall?", false);
@@ -480,13 +530,17 @@ var procedures = (function() {
       SelfManager.self().setPatchVariable("pcolor", 5);
       SelfManager.self().setPatchVariable("wall?", true);
     }, true);
-  };
-  var undrawPiston = function() {
+  });
+  procs["drawBoxPiston"] = temp;
+  procs["DRAW-BOX-PISTON"] = temp;
+  temp = (function() {
     world.patches().agentFilter(function() {
       return (Prims.equality(SelfManager.self().getPatchVariable("pxcor"), NLMath.round(world.observer.getGlobal("piston-position"))) && Prims.lt(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), world.observer.getGlobal("box-edge-y")));
     }).ask(function() { SelfManager.self().setPatchVariable("pcolor", 0); }, true);
-  };
-  var speedFromEnergy = function() {
+  });
+  procs["undrawPiston"] = temp;
+  procs["UNDRAW-PISTON"] = temp;
+  temp = (function() {
     try {
       throw new Exception.ReportInterrupt(NLMath.sqrt(Prims.div((2 * SelfManager.self().getVariable("energy")), SelfManager.self().getVariable("mass"))));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
@@ -497,8 +551,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var energyFromSpeed = function() {
+  });
+  procs["speedFromEnergy"] = temp;
+  procs["SPEED-FROM-ENERGY"] = temp;
+  temp = (function() {
     try {
       throw new Exception.ReportInterrupt(Prims.div(((SelfManager.self().getVariable("mass") * SelfManager.self().getVariable("speed")) * SelfManager.self().getVariable("speed")), 2));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
@@ -509,8 +565,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var isothermalWall_p = function() {
+  });
+  procs["energyFromSpeed"] = temp;
+  procs["ENERGY-FROM-SPEED"] = temp;
+  temp = (function() {
     try {
       if (((((Prims.equality(NLMath.abs(SelfManager.self().getPatchVariable("pxcor")), (-1 * world.observer.getGlobal("box-edge-x"))) && Prims.lte(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), world.observer.getGlobal("box-edge-y"))) || (Prims.equality(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), world.observer.getGlobal("box-edge-y")) && Prims.lte(NLMath.abs(SelfManager.self().getPatchVariable("pxcor")), world.observer.getGlobal("box-edge-x")))) && !SelfManager.self().getPatchVariable("insulated?")) && !world.observer.getGlobal("insulated-walls?"))) {
         throw new Exception.ReportInterrupt(true);
@@ -526,67 +584,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  return {
-    "BOUNCE":bounce,
-    "CALCULATE-PRESSURE-AND-TEMPERATURE":calculatePressureAndTemperature,
-    "CALCULATE-TICK-ADVANCE-AMOUNT":calculateTickAdvanceAmount,
-    "CALCULATE-VOLUME":calculateVolume,
-    "CHECK-FOR-COLLISION":checkForCollision,
-    "CHECK-FOR-FORWARD-REACTION":checkForForwardReaction,
-    "CHECK-FOR-REVERSE-REACTION":checkForReverseReaction,
-    "CHECK-MOVE-PISTON":checkMovePiston,
-    "COLLIDE-WITH":collideWith,
-    "COOL":cool,
-    "DRAW-BOX-PISTON":drawBoxPiston,
-    "ENERGY-FROM-SPEED":energyFromSpeed,
-    "GO":go,
-    "HEAT":heat,
-    "ISOTHERMAL-WALL?":isothermalWall_p,
-    "MAKE-A-FLASH":makeAFlash,
-    "MAKE-PARTICLES":makeParticles,
-    "MOVE":move,
-    "PISTON-OUT":pistonOut,
-    "RANDOM-POSITION":randomPosition,
-    "RECALCULATE-WALL-COLOR":recalculateWallColor,
-    "RESET-REACTION-COUNTERS":resetReactionCounters,
-    "SET-OTHER-PARTICLE-ATTRIBUTES":setOtherParticleAttributes,
-    "SETUP":setup,
-    "SETUP-AMMONIA-PARTICLE":setupAmmoniaParticle,
-    "SETUP-HYDROGEN-PARTICLE":setupHydrogenParticle,
-    "SETUP-NITROGEN-PARTICLE":setupNitrogenParticle,
-    "SPEED-FROM-ENERGY":speedFromEnergy,
-    "UNDRAW-PISTON":undrawPiston,
-    "bounce":bounce,
-    "calculatePressureAndTemperature":calculatePressureAndTemperature,
-    "calculateTickAdvanceAmount":calculateTickAdvanceAmount,
-    "calculateVolume":calculateVolume,
-    "checkForCollision":checkForCollision,
-    "checkForForwardReaction":checkForForwardReaction,
-    "checkForReverseReaction":checkForReverseReaction,
-    "checkMovePiston":checkMovePiston,
-    "collideWith":collideWith,
-    "cool":cool,
-    "drawBoxPiston":drawBoxPiston,
-    "energyFromSpeed":energyFromSpeed,
-    "go":go,
-    "heat":heat,
-    "isothermalWall_p":isothermalWall_p,
-    "makeAFlash":makeAFlash,
-    "makeParticles":makeParticles,
-    "move":move,
-    "pistonOut":pistonOut,
-    "randomPosition":randomPosition,
-    "recalculateWallColor":recalculateWallColor,
-    "resetReactionCounters":resetReactionCounters,
-    "setOtherParticleAttributes":setOtherParticleAttributes,
-    "setup":setup,
-    "setupAmmoniaParticle":setupAmmoniaParticle,
-    "setupHydrogenParticle":setupHydrogenParticle,
-    "setupNitrogenParticle":setupNitrogenParticle,
-    "speedFromEnergy":speedFromEnergy,
-    "undrawPiston":undrawPiston
-  };
+  });
+  procs["isothermalWall_p"] = temp;
+  procs["ISOTHERMAL-WALL?"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("init-wall-position", 6);
 world.observer.setGlobal("#-n2", 0);

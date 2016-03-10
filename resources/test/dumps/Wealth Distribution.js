@@ -145,15 +145,19 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
     world.observer.setGlobal("max-grain", 50);
-    procedures.setupPatches();
-    procedures.setupTurtles();
-    procedures.updateLorenzAndGini();
+    procedures["SETUP-PATCHES"]();
+    procedures["SETUP-TURTLES"]();
+    procedures["UPDATE-LORENZ-AND-GINI"]();
     world.ticker.reset();
-  };
-  var setupPatches = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     world.patches().ask(function() {
       SelfManager.self().setPatchVariable("max-grain-here", 0);
       if (Prims.lte(Prims.randomFloat(100), world.observer.getGlobal("percent-best-land"))) {
@@ -173,31 +177,39 @@ var procedures = (function() {
     world.patches().ask(function() {
       SelfManager.self().setPatchVariable("grain-here", NLMath.floor(SelfManager.self().getPatchVariable("grain-here")));
       SelfManager.self().setPatchVariable("max-grain-here", SelfManager.self().getPatchVariable("grain-here"));
-      procedures.recolorPatch();
+      procedures["RECOLOR-PATCH"]();
     }, true);
-  };
-  var recolorPatch = function() {
+  });
+  procs["setupPatches"] = temp;
+  procs["SETUP-PATCHES"] = temp;
+  temp = (function() {
     SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(45, SelfManager.self().getPatchVariable("grain-here"), 0, world.observer.getGlobal("max-grain")));
-  };
-  var setupTurtles = function() {
+  });
+  procs["recolorPatch"] = temp;
+  procs["RECOLOR-PATCH"] = temp;
+  temp = (function() {
     BreedManager.setDefaultShape(world.turtles().getSpecialName(), "person")
     world.turtleManager.createTurtles(world.observer.getGlobal("num-people"), "").ask(function() {
       SelfManager.self().moveTo(ListPrims.oneOf(world.patches()));
       SelfManager.self().setVariable("size", 1.5);
-      procedures.setInitialTurtleVars();
+      procedures["SET-INITIAL-TURTLE-VARS"]();
       SelfManager.self().setVariable("age", Prims.random(SelfManager.self().getVariable("life-expectancy")));
     }, true);
-    procedures.recolorTurtles();
-  };
-  var setInitialTurtleVars = function() {
+    procedures["RECOLOR-TURTLES"]();
+  });
+  procs["setupTurtles"] = temp;
+  procs["SETUP-TURTLES"] = temp;
+  temp = (function() {
     SelfManager.self().setVariable("age", 0);
     SelfManager.self().face(ListPrims.oneOf(SelfManager.self().getNeighbors4()));
     SelfManager.self().setVariable("life-expectancy", (world.observer.getGlobal("life-expectancy-min") + Prims.random(((world.observer.getGlobal("life-expectancy-max") - world.observer.getGlobal("life-expectancy-min")) + 1))));
     SelfManager.self().setVariable("metabolism", (1 + Prims.random(world.observer.getGlobal("metabolism-max"))));
     SelfManager.self().setVariable("wealth", (SelfManager.self().getVariable("metabolism") + Prims.random(50)));
     SelfManager.self().setVariable("vision", (1 + Prims.random(world.observer.getGlobal("max-vision"))));
-  };
-  var recolorTurtles = function() {
+  });
+  procs["setInitialTurtleVars"] = temp;
+  procs["SET-INITIAL-TURTLE-VARS"] = temp;
+  temp = (function() {
     var maxWealth = ListPrims.max(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("wealth"); }));
     world.turtles().ask(function() {
       if (Prims.lte(SelfManager.self().getVariable("wealth"), Prims.div(maxWealth, 3))) {
@@ -212,40 +224,46 @@ var procedures = (function() {
         }
       }
     }, true);
-  };
-  var go = function() {
-    world.turtles().ask(function() { procedures.turnTowardsGrain(); }, true);
-    procedures.harvest();
-    world.turtles().ask(function() { procedures.moveEatAgeDie(); }, true);
-    procedures.recolorTurtles();
+  });
+  procs["recolorTurtles"] = temp;
+  procs["RECOLOR-TURTLES"] = temp;
+  temp = (function() {
+    world.turtles().ask(function() { procedures["TURN-TOWARDS-GRAIN"](); }, true);
+    procedures["HARVEST"]();
+    world.turtles().ask(function() { procedures["MOVE-EAT-AGE-DIE"](); }, true);
+    procedures["RECOLOR-TURTLES"]();
     if (Prims.equality(NLMath.mod(world.ticker.tickCount(), world.observer.getGlobal("grain-growth-interval")), 0)) {
-      world.patches().ask(function() { procedures.growGrain(); }, true);
+      world.patches().ask(function() { procedures["GROW-GRAIN"](); }, true);
     }
-    procedures.updateLorenzAndGini();
+    procedures["UPDATE-LORENZ-AND-GINI"]();
     world.ticker.tick();
-  };
-  var turnTowardsGrain = function() {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     SelfManager.self().setVariable("heading", 0);
     var bestDirection = 0;
-    var bestAmount = procedures.grainAhead();
+    var bestAmount = procedures["GRAIN-AHEAD"]();
     SelfManager.self().setVariable("heading", 90);
-    if (Prims.gt(procedures.grainAhead(), bestAmount)) {
+    if (Prims.gt(procedures["GRAIN-AHEAD"](), bestAmount)) {
       bestDirection = 90;
-      bestAmount = procedures.grainAhead();
+      bestAmount = procedures["GRAIN-AHEAD"]();
     }
     SelfManager.self().setVariable("heading", 180);
-    if (Prims.gt(procedures.grainAhead(), bestAmount)) {
+    if (Prims.gt(procedures["GRAIN-AHEAD"](), bestAmount)) {
       bestDirection = 180;
-      bestAmount = procedures.grainAhead();
+      bestAmount = procedures["GRAIN-AHEAD"]();
     }
     SelfManager.self().setVariable("heading", 270);
-    if (Prims.gt(procedures.grainAhead(), bestAmount)) {
+    if (Prims.gt(procedures["GRAIN-AHEAD"](), bestAmount)) {
       bestDirection = 270;
-      bestAmount = procedures.grainAhead();
+      bestAmount = procedures["GRAIN-AHEAD"]();
     }
     SelfManager.self().setVariable("heading", bestDirection);
-  };
-  var grainAhead = function() {
+  });
+  procs["turnTowardsGrain"] = temp;
+  procs["TURN-TOWARDS-GRAIN"] = temp;
+  temp = (function() {
     try {
       var total = 0;
       var howFar = 1;
@@ -262,34 +280,42 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var growGrain = function() {
+  });
+  procs["grainAhead"] = temp;
+  procs["GRAIN-AHEAD"] = temp;
+  temp = (function() {
     if (Prims.lt(SelfManager.self().getPatchVariable("grain-here"), SelfManager.self().getPatchVariable("max-grain-here"))) {
       SelfManager.self().setPatchVariable("grain-here", (SelfManager.self().getPatchVariable("grain-here") + world.observer.getGlobal("num-grain-grown")));
       if (Prims.gt(SelfManager.self().getPatchVariable("grain-here"), SelfManager.self().getPatchVariable("max-grain-here"))) {
         SelfManager.self().setPatchVariable("grain-here", SelfManager.self().getPatchVariable("max-grain-here"));
       }
-      procedures.recolorPatch();
+      procedures["RECOLOR-PATCH"]();
     }
-  };
-  var harvest = function() {
+  });
+  procs["growGrain"] = temp;
+  procs["GROW-GRAIN"] = temp;
+  temp = (function() {
     world.turtles().ask(function() {
       SelfManager.self().setVariable("wealth", NLMath.floor((SelfManager.self().getVariable("wealth") + Prims.div(SelfManager.self().getPatchVariable("grain-here"), SelfManager.self().turtlesHere().size()))));
     }, true);
     world.turtles().ask(function() {
       SelfManager.self().setPatchVariable("grain-here", 0);
-      procedures.recolorPatch();
+      procedures["RECOLOR-PATCH"]();
     }, true);
-  };
-  var moveEatAgeDie = function() {
+  });
+  procs["harvest"] = temp;
+  procs["HARVEST"] = temp;
+  temp = (function() {
     SelfManager.self().fd(1);
     SelfManager.self().setVariable("wealth", (SelfManager.self().getVariable("wealth") - SelfManager.self().getVariable("metabolism")));
     SelfManager.self().setVariable("age", (SelfManager.self().getVariable("age") + 1));
     if ((Prims.lt(SelfManager.self().getVariable("wealth"), 0) || Prims.gte(SelfManager.self().getVariable("age"), SelfManager.self().getVariable("life-expectancy")))) {
-      procedures.setInitialTurtleVars();
+      procedures["SET-INITIAL-TURTLE-VARS"]();
     }
-  };
-  var updateLorenzAndGini = function() {
+  });
+  procs["moveEatAgeDie"] = temp;
+  procs["MOVE-EAT-AGE-DIE"] = temp;
+  temp = (function() {
     var sortedWealths = ListPrims.sort(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("wealth"); }));
     var totalWealth = ListPrims.sum(sortedWealths);
     var wealthSumSoFar = 0;
@@ -302,35 +328,10 @@ var procedures = (function() {
       index = (index + 1);
       world.observer.setGlobal("gini-index-reserve", ((world.observer.getGlobal("gini-index-reserve") + Prims.div(index, world.observer.getGlobal("num-people"))) - Prims.div(wealthSumSoFar, totalWealth)));
     }
-  };
-  return {
-    "GO":go,
-    "GRAIN-AHEAD":grainAhead,
-    "GROW-GRAIN":growGrain,
-    "HARVEST":harvest,
-    "MOVE-EAT-AGE-DIE":moveEatAgeDie,
-    "RECOLOR-PATCH":recolorPatch,
-    "RECOLOR-TURTLES":recolorTurtles,
-    "SET-INITIAL-TURTLE-VARS":setInitialTurtleVars,
-    "SETUP":setup,
-    "SETUP-PATCHES":setupPatches,
-    "SETUP-TURTLES":setupTurtles,
-    "TURN-TOWARDS-GRAIN":turnTowardsGrain,
-    "UPDATE-LORENZ-AND-GINI":updateLorenzAndGini,
-    "go":go,
-    "grainAhead":grainAhead,
-    "growGrain":growGrain,
-    "harvest":harvest,
-    "moveEatAgeDie":moveEatAgeDie,
-    "recolorPatch":recolorPatch,
-    "recolorTurtles":recolorTurtles,
-    "setInitialTurtleVars":setInitialTurtleVars,
-    "setup":setup,
-    "setupPatches":setupPatches,
-    "setupTurtles":setupTurtles,
-    "turnTowardsGrain":turnTowardsGrain,
-    "updateLorenzAndGini":updateLorenzAndGini
-  };
+  });
+  procs["updateLorenzAndGini"] = temp;
+  procs["UPDATE-LORENZ-AND-GINI"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("max-vision", 5);
 world.observer.setGlobal("grain-growth-interval", 1);

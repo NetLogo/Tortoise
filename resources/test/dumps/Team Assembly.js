@@ -117,7 +117,9 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var makeNewcomer = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.turtleManager.createTurtles(1, "").ask(function() {
       SelfManager.self().setVariable("color", (105 + 1));
       SelfManager.self().setVariable("size", 1.8);
@@ -127,37 +129,41 @@ var procedures = (function() {
       SelfManager.self().setVariable("downtime", 0);
       SelfManager.self().setVariable("explored?", false);
     }, true);
-  };
-  var setup = function() {
+  });
+  procs["makeNewcomer"] = temp;
+  procs["MAKE-NEWCOMER"] = temp;
+  temp = (function() {
     world.clearAll();
     BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
     for (var _index_1053_1059 = 0, _repeatcount_1053_1059 = StrictMath.floor(world.observer.getGlobal("team-size")); _index_1053_1059 < _repeatcount_1053_1059; _index_1053_1059++){
-      procedures.makeNewcomer();
+      procedures["MAKE-NEWCOMER"]();
     }
     world.turtles().ask(function() {
       SelfManager.self().setVariable("in-team?", true);
       SelfManager.self().setVariable("incumbent?", true);
     }, true);
-    procedures.tieCollaborators();
-    procedures.colorCollaborations();
+    procedures["TIE-COLLABORATORS"]();
+    procedures["COLOR-COLLABORATIONS"]();
     world.turtles().ask(function() {
       SelfManager.self().setVariable("heading", (Prims.div(360, world.observer.getGlobal("team-size")) * SelfManager.self().getVariable("who")));
       SelfManager.self().fd(1.75);
       SelfManager.self().setVariable("in-team?", false);
     }, true);
-    procedures.findAllComponents();
+    procedures["FIND-ALL-COMPONENTS"]();
     world.ticker.reset();
-  };
-  var go = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     world.turtles().ask(function() {
       SelfManager.self().setVariable("incumbent?", true);
       SelfManager.self().setVariable("color", (5 - 1.5));
       SelfManager.self().setVariable("size", 0.9);
     }, true);
     world.links().ask(function() { SelfManager.self().setVariable("new-collaboration?", false); }, true);
-    procedures.pickTeamMembers();
-    procedures.tieCollaborators();
-    procedures.colorCollaborations();
+    procedures["PICK-TEAM-MEMBERS"]();
+    procedures["TIE-COLLABORATORS"]();
+    procedures["COLOR-COLLABORATIONS"]();
     world.turtles().ask(function() {
       if (Prims.gt(SelfManager.self().getVariable("downtime"), world.observer.getGlobal("max-downtime"))) {
         SelfManager.self().die();
@@ -166,16 +172,18 @@ var procedures = (function() {
       SelfManager.self().setVariable("downtime", (SelfManager.self().getVariable("downtime") + 1));
     }, true);
     if (world.observer.getGlobal("layout?")) {
-      procedures.layout();
+      procedures["LAYOUT"]();
     }
-    procedures.findAllComponents();
+    procedures["FIND-ALL-COMPONENTS"]();
     world.ticker.tick();
-  };
-  var pickTeamMembers = function() {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     var newTeamMember = Nobody;
     for (var _index_2105_2111 = 0, _repeatcount_2105_2111 = StrictMath.floor(world.observer.getGlobal("team-size")); _index_2105_2111 < _repeatcount_2105_2111; _index_2105_2111++){
       if (Prims.gte(Prims.randomFloat(100), world.observer.getGlobal("p"))) {
-        procedures.makeNewcomer();
+        procedures["MAKE-NEWCOMER"]();
         newTeamMember = world.observer.getGlobal("newcomer");
       }
       else {
@@ -197,16 +205,20 @@ var procedures = (function() {
         SelfManager.self().setVariable("color", (SelfManager.self().getVariable("incumbent?") ? (45 + 2) : (105 + 1)));
       }, true);
     }
-  };
-  var tieCollaborators = function() {
+  });
+  procs["pickTeamMembers"] = temp;
+  procs["PICK-TEAM-MEMBERS"] = temp;
+  temp = (function() {
     world.turtles().agentFilter(function() { return SelfManager.self().getVariable("in-team?"); }).ask(function() {
       LinkPrims.createLinksWith(SelfPrims.other(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("in-team?"); })), "LINKS").ask(function() {
         SelfManager.self().setVariable("new-collaboration?", true);
         SelfManager.self().setVariable("thickness", 0.3);
       }, true);
     }, true);
-  };
-  var colorCollaborations = function() {
+  });
+  procs["tieCollaborators"] = temp;
+  procs["TIE-COLLABORATORS"] = temp;
+  temp = (function() {
     world.links().agentFilter(function() {
       return (SelfManager.self().getVariable("end1").projectionBy(function() { return SelfManager.self().getVariable("in-team?"); }) && SelfManager.self().getVariable("end2").projectionBy(function() { return SelfManager.self().getVariable("in-team?"); }));
     }).ask(function() {
@@ -227,14 +239,18 @@ var procedures = (function() {
         SelfManager.self().setVariable("color", 15);
       }
     }, true);
-  };
-  var layout = function() {
+  });
+  procs["colorCollaborations"] = temp;
+  procs["COLOR-COLLABORATIONS"] = temp;
+  temp = (function() {
     for (var _index_4155_4161 = 0, _repeatcount_4155_4161 = StrictMath.floor(12); _index_4155_4161 < _repeatcount_4155_4161; _index_4155_4161++){
       LayoutManager.layoutSpring(world.turtles(), world.links(), 0.18, 0.01, 1.2);
       notImplemented('display', undefined)();
     }
-  };
-  var findAllComponents = function() {
+  });
+  procs["layout"] = temp;
+  procs["LAYOUT"] = temp;
+  temp = (function() {
     try {
       world.observer.setGlobal("components", []);
       world.observer.setGlobal("giant-component-size", 0);
@@ -245,7 +261,7 @@ var procedures = (function() {
           throw new Exception.StopInterrupt;
         }
         world.observer.setGlobal("component-size", 0);
-        start.ask(function() { procedures.explore(); }, true);
+        start.ask(function() { procedures["EXPLORE"](); }, true);
         if (Prims.gt(world.observer.getGlobal("component-size"), world.observer.getGlobal("giant-component-size"))) {
           world.observer.setGlobal("giant-component-size", world.observer.getGlobal("component-size"));
         }
@@ -258,15 +274,17 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var explore = function() {
+  });
+  procs["findAllComponents"] = temp;
+  procs["FIND-ALL-COMPONENTS"] = temp;
+  temp = (function() {
     try {
       if (SelfManager.self().getVariable("explored?")) {
         throw new Exception.StopInterrupt;
       }
       SelfManager.self().setVariable("explored?", true);
       world.observer.setGlobal("component-size", (world.observer.getGlobal("component-size") + 1));
-      LinkPrims.linkNeighbors("LINKS").ask(function() { procedures.explore(); }, true);
+      LinkPrims.linkNeighbors("LINKS").ask(function() { procedures["EXPLORE"](); }, true);
     } catch (e) {
       if (e instanceof Exception.StopInterrupt) {
         return e;
@@ -274,27 +292,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  return {
-    "COLOR-COLLABORATIONS":colorCollaborations,
-    "EXPLORE":explore,
-    "FIND-ALL-COMPONENTS":findAllComponents,
-    "GO":go,
-    "LAYOUT":layout,
-    "MAKE-NEWCOMER":makeNewcomer,
-    "PICK-TEAM-MEMBERS":pickTeamMembers,
-    "SETUP":setup,
-    "TIE-COLLABORATORS":tieCollaborators,
-    "colorCollaborations":colorCollaborations,
-    "explore":explore,
-    "findAllComponents":findAllComponents,
-    "go":go,
-    "layout":layout,
-    "makeNewcomer":makeNewcomer,
-    "pickTeamMembers":pickTeamMembers,
-    "setup":setup,
-    "tieCollaborators":tieCollaborators
-  };
+  });
+  procs["explore"] = temp;
+  procs["EXPLORE"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("layout?", true);
 world.observer.setGlobal("p", 40);

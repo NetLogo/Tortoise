@@ -51,7 +51,9 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
     BreedManager.setDefaultShape(world.turtles().getSpecialName(), "bug")
     world.patches().ask(function() {
@@ -64,13 +66,15 @@ var procedures = (function() {
       SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
       SelfManager.self().setVariable("next-task", Tasks.commandTask(function() {
         var taskArguments = arguments;
-        procedures.searchForChip();
+        procedures["SEARCH-FOR-CHIP"]();
       }));
       SelfManager.self().setVariable("size", 5);
     }, true);
     world.ticker.reset();
-  };
-  var go = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     world.turtles().ask(function() {
       try {
         if (Prims.gt(SelfManager.self().getVariable("steps"), 0)) {
@@ -78,7 +82,7 @@ var procedures = (function() {
         }
         else {
           (SelfManager.self().getVariable("next-task"))();
-          procedures.wiggle();
+          procedures["WIGGLE"]();
         }
         SelfManager.self().fd(1);
       } catch (e) {
@@ -90,65 +94,62 @@ var procedures = (function() {
       }
     }, true);
     world.ticker.tick();
-  };
-  var wiggle = function() {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     SelfManager.self().right(Prims.random(50));
     SelfManager.self().right(-Prims.random(50));
-  };
-  var searchForChip = function() {
+  });
+  procs["wiggle"] = temp;
+  procs["WIGGLE"] = temp;
+  temp = (function() {
     if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 45)) {
       SelfManager.self().setPatchVariable("pcolor", 0);
       SelfManager.self().setVariable("color", 25);
       SelfManager.self().setVariable("steps", 20);
       SelfManager.self().setVariable("next-task", Tasks.commandTask(function() {
         var taskArguments = arguments;
-        procedures.findNewPile();
+        procedures["FIND-NEW-PILE"]();
       }));
     }
-  };
-  var findNewPile = function() {
+  });
+  procs["searchForChip"] = temp;
+  procs["SEARCH-FOR-CHIP"] = temp;
+  temp = (function() {
     if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 45)) {
       SelfManager.self().setVariable("next-task", Tasks.commandTask(function() {
         var taskArguments = arguments;
-        procedures.putDownChip();
+        procedures["PUT-DOWN-CHIP"]();
       }));
     }
-  };
-  var putDownChip = function() {
+  });
+  procs["findNewPile"] = temp;
+  procs["FIND-NEW-PILE"] = temp;
+  temp = (function() {
     if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 0)) {
       SelfManager.self().setPatchVariable("pcolor", 45);
       SelfManager.self().setVariable("color", 9.9);
       SelfManager.self().setVariable("steps", 20);
       SelfManager.self().setVariable("next-task", Tasks.commandTask(function() {
         var taskArguments = arguments;
-        procedures.getAway();
+        procedures["GET-AWAY"]();
       }));
     }
-  };
-  var getAway = function() {
+  });
+  procs["putDownChip"] = temp;
+  procs["PUT-DOWN-CHIP"] = temp;
+  temp = (function() {
     if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 0)) {
       SelfManager.self().setVariable("next-task", Tasks.commandTask(function() {
         var taskArguments = arguments;
-        procedures.searchForChip();
+        procedures["SEARCH-FOR-CHIP"]();
       }));
     }
-  };
-  return {
-    "FIND-NEW-PILE":findNewPile,
-    "GET-AWAY":getAway,
-    "GO":go,
-    "PUT-DOWN-CHIP":putDownChip,
-    "SEARCH-FOR-CHIP":searchForChip,
-    "SETUP":setup,
-    "WIGGLE":wiggle,
-    "findNewPile":findNewPile,
-    "getAway":getAway,
-    "go":go,
-    "putDownChip":putDownChip,
-    "searchForChip":searchForChip,
-    "setup":setup,
-    "wiggle":wiggle
-  };
+  });
+  procs["getAway"] = temp;
+  procs["GET-AWAY"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("number", 400);
 world.observer.setGlobal("density", 20);

@@ -51,36 +51,37 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var benchmark = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     workspace.rng.setSeed(362);
-    procedures.setup();
+    procedures["SETUP"]();
     workspace.timer.reset();
     for (var _index_73_79 = 0, _repeatcount_73_79 = StrictMath.floor(20000); _index_73_79 < _repeatcount_73_79; _index_73_79++){
-      procedures.go();
+      procedures["GO"]();
     }
     world.observer.setGlobal("result", workspace.timer.elapsed());
-  };
-  var setup = function() {
+  });
+  procs["benchmark"] = temp;
+  procs["BENCHMARK"] = temp;
+  temp = (function() {
     world.clearAll();
     world.ticker.reset();
     world.turtleManager.createOrderedTurtles(1000, "").ask(function() {
       SelfManager.self().moveTo(ListPrims.oneOf(world.patches()));
       SelfManager.self().face(ListPrims.oneOf(SelfManager.self().getNeighbors4()));
     }, true);
-  };
-  var go = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     world.turtles().ask(function() {
       SelfManager.self().face(ListPrims.oneOf(SelfManager.self().getNeighbors4()));
       SelfManager.self().fd(1);
     }, true);
     world.ticker.tick();
-  };
-  return {
-    "BENCHMARK":benchmark,
-    "GO":go,
-    "SETUP":setup,
-    "benchmark":benchmark,
-    "go":go,
-    "setup":setup
-  };
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  return procs;
 })();

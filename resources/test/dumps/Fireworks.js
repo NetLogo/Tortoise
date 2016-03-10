@@ -51,25 +51,31 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
     BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
     world.ticker.reset();
-  };
-  var go = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     if (!world.turtles().nonEmpty()) {
       if (Prims.equality(world.observer.getGlobal("countdown"), 0)) {
-        procedures.initRockets();
+        procedures["INIT-ROCKETS"]();
         world.observer.setGlobal("countdown", (world.observer.getGlobal("trails?") ? 30 : 10));
       }
       else {
         world.observer.setGlobal("countdown", (world.observer.getGlobal("countdown") - 1));
       }
     }
-    world.turtles().ask(function() { procedures.projectileMotion(); }, true);
+    world.turtles().ask(function() { procedures["PROJECTILE-MOTION"](); }, true);
     world.ticker.tick();
-  };
-  var initRockets = function() {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     world.clearDrawing();
     world.turtleManager.createTurtles(Prims.random(world.observer.getGlobal("fireworks")), "ROCKETS").ask(function() {
       SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), world.topology.minPycor);
@@ -80,8 +86,10 @@ var procedures = (function() {
       SelfManager.self().setVariable("size", 2);
       SelfManager.self().setVariable("terminal-y-vel", Prims.randomFloat(4));
     }, true);
-  };
-  var projectileMotion = function() {
+  });
+  procs["initRockets"] = temp;
+  procs["INIT-ROCKETS"] = temp;
+  temp = (function() {
     SelfManager.self().setVariable("y-vel", (SelfManager.self().getVariable("y-vel") - Prims.div(world.observer.getGlobal("gravity"), 5)));
     SelfManager.self().setVariable("heading", NLMath.atan(SelfManager.self().getVariable("x-vel"), SelfManager.self().getVariable("y-vel")));
     var moveAmount = NLMath.sqrt((NLMath.pow(SelfManager.self().getVariable("x-vel"), 2) + NLMath.pow(SelfManager.self().getVariable("y-vel"), 2)));
@@ -91,15 +99,17 @@ var procedures = (function() {
     SelfManager.self().fd(NLMath.sqrt((NLMath.pow(SelfManager.self().getVariable("x-vel"), 2) + NLMath.pow(SelfManager.self().getVariable("y-vel"), 2))));
     if (Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("ROCKETS"))) {
       if (Prims.lt(SelfManager.self().getVariable("y-vel"), SelfManager.self().getVariable("terminal-y-vel"))) {
-        procedures.explode();
+        procedures["EXPLODE"]();
         SelfManager.self().die();
       }
     }
     else {
-      procedures.fade();
+      procedures["FADE"]();
     }
-  };
-  var explode = function() {
+  });
+  procs["projectileMotion"] = temp;
+  procs["PROJECTILE-MOTION"] = temp;
+  temp = (function() {
     SelfManager.self().hatch(world.observer.getGlobal("fragments"), "FRAGS").ask(function() {
       SelfManager.self().setVariable("dim", 0);
       SelfManager.self().right(Prims.random(360));
@@ -113,28 +123,19 @@ var procedures = (function() {
         SelfManager.self().penManager.raisePen();
       }
     }, true);
-  };
-  var fade = function() {
+  });
+  procs["explode"] = temp;
+  procs["EXPLODE"] = temp;
+  temp = (function() {
     SelfManager.self().setVariable("dim", (SelfManager.self().getVariable("dim") - Prims.div(world.observer.getGlobal("fade-amount"), 10)));
     SelfManager.self().setVariable("color", ColorModel.scaleColor(SelfManager.self().getVariable("col"), SelfManager.self().getVariable("dim"), -5, 0.5));
     if (Prims.lt(SelfManager.self().getVariable("color"), (SelfManager.self().getVariable("col") - 3.5))) {
       SelfManager.self().die();
     }
-  };
-  return {
-    "EXPLODE":explode,
-    "FADE":fade,
-    "GO":go,
-    "INIT-ROCKETS":initRockets,
-    "PROJECTILE-MOTION":projectileMotion,
-    "SETUP":setup,
-    "explode":explode,
-    "fade":fade,
-    "go":go,
-    "initRockets":initRockets,
-    "projectileMotion":projectileMotion,
-    "setup":setup
-  };
+  });
+  procs["fade"] = temp;
+  procs["FADE"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("trails?", true);
 world.observer.setGlobal("fireworks", 20);

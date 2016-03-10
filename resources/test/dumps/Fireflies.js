@@ -68,7 +68,9 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
     world.turtleManager.createTurtles(world.observer.getGlobal("number"), "").ask(function() {
       SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
@@ -84,22 +86,26 @@ var procedures = (function() {
         SelfManager.self().setVariable("window", (SelfManager.self().getVariable("threshold") + 1));
       }
       SelfManager.self().setVariable("size", 2);
-      procedures.recolor();
+      procedures["RECOLOR"]();
     }, true);
     world.ticker.reset();
-  };
-  var go = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     world.turtles().ask(function() {
-      procedures.move();
-      procedures.incrementClock();
+      procedures["MOVE"]();
+      procedures["INCREMENT-CLOCK"]();
       if ((Prims.gt(SelfManager.self().getVariable("clock"), SelfManager.self().getVariable("window")) && Prims.gte(SelfManager.self().getVariable("clock"), SelfManager.self().getVariable("threshold")))) {
-        procedures.look();
+        procedures["LOOK"]();
       }
     }, true);
-    world.turtles().ask(function() { procedures.recolor(); }, true);
+    world.turtles().ask(function() { procedures["RECOLOR"](); }, true);
     world.ticker.tick();
-  };
-  var recolor = function() {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     if (Prims.lt(SelfManager.self().getVariable("clock"), SelfManager.self().getVariable("threshold"))) {
       SelfManager.self().hideTurtle(false);;
       SelfManager.self().setVariable("color", 45);
@@ -113,36 +119,31 @@ var procedures = (function() {
         SelfManager.self().hideTurtle(true);;
       }
     }
-  };
-  var move = function() {
+  });
+  procs["recolor"] = temp;
+  procs["RECOLOR"] = temp;
+  temp = (function() {
     SelfManager.self().right((Prims.randomFloat(90) - Prims.randomFloat(90)));
     SelfManager.self().fd(1);
-  };
-  var incrementClock = function() {
+  });
+  procs["move"] = temp;
+  procs["MOVE"] = temp;
+  temp = (function() {
     SelfManager.self().setVariable("clock", (SelfManager.self().getVariable("clock") + 1));
     if (Prims.equality(SelfManager.self().getVariable("clock"), world.observer.getGlobal("cycle-length"))) {
       SelfManager.self().setVariable("clock", 0);
     }
-  };
-  var look = function() {
+  });
+  procs["incrementClock"] = temp;
+  procs["INCREMENT-CLOCK"] = temp;
+  temp = (function() {
     if (Prims.gte(SelfManager.self().inRadius(world.turtles(), 1).agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 45); }).size(), world.observer.getGlobal("flashes-to-reset"))) {
       SelfManager.self().setVariable("clock", SelfManager.self().getVariable("reset-level"));
     }
-  };
-  return {
-    "GO":go,
-    "INCREMENT-CLOCK":incrementClock,
-    "LOOK":look,
-    "MOVE":move,
-    "RECOLOR":recolor,
-    "SETUP":setup,
-    "go":go,
-    "incrementClock":incrementClock,
-    "look":look,
-    "move":move,
-    "recolor":recolor,
-    "setup":setup
-  };
+  });
+  procs["look"] = temp;
+  procs["LOOK"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("number", 1500);
 world.observer.setGlobal("cycle-length", 10);

@@ -51,7 +51,9 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
     world.getPatchAt(0, 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 55); }, true);
     world.turtleManager.createTurtles(world.observer.getGlobal("num-particles"), "").ask(function() {
@@ -60,8 +62,10 @@ var procedures = (function() {
       SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
     }, true);
     world.ticker.reset();
-  };
-  var go = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     world.turtles().ask(function() {
       SelfManager.self().right(Prims.random(world.observer.getGlobal("wiggle-angle")));
       SelfManager.self().right(-Prims.random(world.observer.getGlobal("wiggle-angle")));
@@ -72,13 +76,10 @@ var procedures = (function() {
       }
     }, true);
     world.ticker.tick();
-  };
-  return {
-    "GO":go,
-    "SETUP":setup,
-    "go":go,
-    "setup":setup
-  };
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("wiggle-angle", 60);
 world.observer.setGlobal("num-particles", 2500);

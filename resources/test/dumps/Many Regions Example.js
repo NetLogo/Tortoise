@@ -51,21 +51,27 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
-    procedures.setupRegions(world.observer.getGlobal("number-of-regions"));
-    procedures.colorRegions();
-    procedures.setupTurtles();
+    procedures["SETUP-REGIONS"](world.observer.getGlobal("number-of-regions"));
+    procedures["COLOR-REGIONS"]();
+    procedures["SETUP-TURTLES"]();
     world.ticker.reset();
-  };
-  var colorRegions = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     world.patches().agentFilter(function() { return !Prims.equality(SelfManager.self().getPatchVariable("region"), 0); }).ask(function() {
       SelfManager.self().setPatchVariable("pcolor", (2 + (SelfManager.self().getPatchVariable("region") * 10)));
       SelfManager.self().setPatchVariable("plabel-color", (SelfManager.self().getPatchVariable("pcolor") + 1));
       SelfManager.self().setPatchVariable("plabel", SelfManager.self().getPatchVariable("region"));
     }, true);
-  };
-  var setupTurtles = function() {
+  });
+  procs["colorRegions"] = temp;
+  procs["COLOR-REGIONS"] = temp;
+  temp = (function() {
     Tasks.forEach(Tasks.commandTask(function() {
       var taskArguments = arguments;
       var regionPatches = world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("region"), taskArguments[0]); });
@@ -77,24 +83,30 @@ var procedures = (function() {
       var taskArguments = arguments;
       return (taskArguments[0] + 1);
     })));
-  };
-  var go = function() {
-    world.turtles().ask(function() { procedures.move(); }, true);
+  });
+  procs["setupTurtles"] = temp;
+  procs["SETUP-TURTLES"] = temp;
+  temp = (function() {
+    world.turtles().ask(function() { procedures["MOVE"](); }, true);
     world.ticker.tick();
-  };
-  var move = function() {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     var currentRegion = SelfManager.self().getPatchVariable("region");
     SelfManager.self().right(Prims.random(30));
     SelfManager.self().right(-Prims.random(30));
     SelfManager.self().fd(0.25);
-    procedures.keepInRegion(currentRegion);
-  };
-  var setupRegions = function(n) {
+    procedures["KEEP-IN-REGION"](currentRegion);
+  });
+  procs["move"] = temp;
+  procs["MOVE"] = temp;
+  temp = (function(n) {
     Tasks.forEach(Tasks.commandTask(function() {
       var taskArguments = arguments;
-      procedures.drawRegionDivision(taskArguments[0]);
-    }), procedures.regionDivisions(n));
-    world.observer.setGlobal("regions", procedures.regionDefinitions(n));
+      procedures["DRAW-REGION-DIVISION"](taskArguments[0]);
+    }), procedures["REGION-DIVISIONS"](n));
+    world.observer.setGlobal("regions", procedures["REGION-DEFINITIONS"](n));
     Tasks.forEach(Tasks.commandTask(function() {
       var taskArguments = arguments;
       world.patches().agentFilter(function() {
@@ -104,10 +116,12 @@ var procedures = (function() {
       var taskArguments = arguments;
       return (taskArguments[0] + 1);
     })));
-  };
-  var regionDefinitions = function(n) {
+  });
+  procs["setupRegions"] = temp;
+  procs["SETUP-REGIONS"] = temp;
+  temp = (function(n) {
     try {
-      var divisions = procedures.regionDivisions(n);
+      var divisions = procedures["REGION-DIVISIONS"](n);
       throw new Exception.ReportInterrupt(Tasks.map(Tasks.reporterTask(function() {
         var taskArguments = arguments;
         return ListPrims.list((taskArguments[0] + 1), (taskArguments[1] - 1));
@@ -120,8 +134,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var regionDivisions = function(n) {
+  });
+  procs["regionDefinitions"] = temp;
+  procs["REGION-DEFINITIONS"] = temp;
+  temp = (function(n) {
     try {
       throw new Exception.ReportInterrupt(Tasks.nValues((n + 1), Tasks.reporterTask(function() {
         var taskArguments = arguments;
@@ -135,8 +151,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var drawRegionDivision = function(x) {
+  });
+  procs["regionDivisions"] = temp;
+  procs["REGION-DIVISIONS"] = temp;
+  temp = (function(x) {
     world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pxcor"), x); }).ask(function() { SelfManager.self().setPatchVariable("pcolor", (5 + 1.5)); }, true);
     world.turtleManager.createTurtles(1, "").ask(function() {
       SelfManager.self().setXY(x, (world.topology.maxPycor + 0.5));
@@ -150,8 +168,10 @@ var procedures = (function() {
       SelfManager.self().fd(world.topology.height);
       SelfManager.self().die();
     }, true);
-  };
-  var keepInRegion = function(whichRegion) {
+  });
+  procs["drawRegionDivision"] = temp;
+  procs["DRAW-REGION-DIVISION"] = temp;
+  temp = (function(whichRegion) {
     if (!Prims.equality(SelfManager.self().getPatchVariable("region"), whichRegion)) {
       var regionMinPxcor = ListPrims.first(ListPrims.item((whichRegion - 1), world.observer.getGlobal("regions")));
       var regionMaxPxcor = ListPrims.last(ListPrims.item((whichRegion - 1), world.observer.getGlobal("regions")));
@@ -165,29 +185,10 @@ var procedures = (function() {
         }
       }
     }
-  };
-  return {
-    "COLOR-REGIONS":colorRegions,
-    "DRAW-REGION-DIVISION":drawRegionDivision,
-    "GO":go,
-    "KEEP-IN-REGION":keepInRegion,
-    "MOVE":move,
-    "REGION-DEFINITIONS":regionDefinitions,
-    "REGION-DIVISIONS":regionDivisions,
-    "SETUP":setup,
-    "SETUP-REGIONS":setupRegions,
-    "SETUP-TURTLES":setupTurtles,
-    "colorRegions":colorRegions,
-    "drawRegionDivision":drawRegionDivision,
-    "go":go,
-    "keepInRegion":keepInRegion,
-    "move":move,
-    "regionDefinitions":regionDefinitions,
-    "regionDivisions":regionDivisions,
-    "setup":setup,
-    "setupRegions":setupRegions,
-    "setupTurtles":setupTurtles
-  };
+  });
+  procs["keepInRegion"] = temp;
+  procs["KEEP-IN-REGION"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("number-of-regions", 4);
 world.observer.setGlobal("number-of-turtles-per-region", 10);

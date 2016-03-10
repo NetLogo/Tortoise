@@ -39,7 +39,7 @@ modelConfig.plots = [(function() {
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('ave-heat', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('Average Heat', 'ave-heat')(function() { plotManager.plotValue(procedures.averageHeat());; });
+      plotManager.withTemporaryContext('Average Heat', 'ave-heat')(function() { plotManager.plotValue(procedures["AVERAGE-HEAT"]());; });
     });
   })];
   var setup   = function() {};
@@ -62,23 +62,29 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
     world.patches().ask(function() {
       SelfManager.self().setPatchVariable("heat", Prims.random(212));
       SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(15, SelfManager.self().getPatchVariable("heat"), 0, 212));
     }, true);
     world.ticker.reset();
-  };
-  var go = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     world.topology.diffuse("heat", 1)
     world.patches().ask(function() {
       SelfManager.self().setPatchVariable("heat", NLMath.mod((SelfManager.self().getPatchVariable("heat") + 5), 212));
       SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(15, SelfManager.self().getPatchVariable("heat"), 0, 212));
     }, true);
     world.ticker.tick();
-  };
-  var averageHeat = function() {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     try {
       throw new Exception.ReportInterrupt(ListPrims.mean(world.patches().projectionBy(function() { return SelfManager.self().getPatchVariable("heat"); })));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
@@ -89,13 +95,8 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  return {
-    "AVERAGE-HEAT":averageHeat,
-    "GO":go,
-    "SETUP":setup,
-    "averageHeat":averageHeat,
-    "go":go,
-    "setup":setup
-  };
+  });
+  procs["averageHeat"] = temp;
+  procs["AVERAGE-HEAT"] = temp;
+  return procs;
 })();

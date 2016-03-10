@@ -51,7 +51,9 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
     world.turtleManager.createOrderedTurtles(10, "").ask(function() {
       SelfManager.self().fd(5);
@@ -69,9 +71,8 @@ var procedures = (function() {
       LinkPrims.createLinkTo(ListPrims.oneOf(SelfPrims.other(world.turtles())), "RED-LINKS").ask(function() { SelfManager.self().setVariable("color", 15); }, true);
     }, true);
     world.ticker.reset();
-  };
-  return {
-    "SETUP":setup,
-    "setup":setup
-  };
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  return procs;
 })();

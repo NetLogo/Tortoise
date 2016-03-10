@@ -51,7 +51,9 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setupCorner = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
     world.patches().ask(function() {
       if (((Prims.equality(SelfManager.self().getPatchVariable("pxcor"), 0) && Prims.gte(SelfManager.self().getPatchVariable("pycor"), 0)) && Prims.lte(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("edge")))) {
@@ -68,8 +70,10 @@ var procedures = (function() {
       }
     }, true);
     world.ticker.reset();
-  };
-  var setupCenter = function() {
+  });
+  procs["setupCorner"] = temp;
+  procs["SETUP-CORNER"] = temp;
+  temp = (function() {
     world.clearAll();
     var halfedge = NLMath.toInt(Prims.div(world.observer.getGlobal("edge"), 2));
     world.patches().ask(function() {
@@ -87,12 +91,9 @@ var procedures = (function() {
       }
     }, true);
     world.ticker.reset();
-  };
-  return {
-    "SETUP-CENTER":setupCenter,
-    "SETUP-CORNER":setupCorner,
-    "setupCenter":setupCenter,
-    "setupCorner":setupCorner
-  };
+  });
+  procs["setupCenter"] = temp;
+  procs["SETUP-CENTER"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("edge", 8);

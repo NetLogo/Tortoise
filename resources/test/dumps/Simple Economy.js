@@ -53,12 +53,12 @@ modelConfig.plots = [(function() {
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('top 10%', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('wealth by percent', 'top 10%')(function() { plotManager.plotValue(procedures.top10PctWealth());; });
+      plotManager.withTemporaryContext('wealth by percent', 'top 10%')(function() { plotManager.plotValue(procedures["TOP-10-PCT-WEALTH"]());; });
     });
   }),
   new PenBundle.Pen('bottom 50%', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('wealth by percent', 'bottom 50%')(function() { plotManager.plotValue(procedures.bottom50PctWealth());; });
+      plotManager.withTemporaryContext('wealth by percent', 'bottom 50%')(function() { plotManager.plotValue(procedures["BOTTOM-50-PCT-WEALTH"]());; });
     });
   })];
   var setup   = function() {};
@@ -81,7 +81,9 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
     world.turtleManager.createTurtles(500, "").ask(function() {
       SelfManager.self().setVariable("wealth", 100);
@@ -91,21 +93,27 @@ var procedures = (function() {
       SelfManager.self().setXY(SelfManager.self().getVariable("wealth"), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
     }, true);
     world.ticker.reset();
-  };
-  var go = function() {
-    world.turtles().agentFilter(function() { return Prims.gt(SelfManager.self().getVariable("wealth"), 0); }).ask(function() { procedures.transact(); }, true);
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
+    world.turtles().agentFilter(function() { return Prims.gt(SelfManager.self().getVariable("wealth"), 0); }).ask(function() { procedures["TRANSACT"](); }, true);
     world.turtles().ask(function() {
       if (Prims.lte(SelfManager.self().getVariable("wealth"), world.topology.maxPxcor)) {
         SelfManager.self().setVariable("xcor", SelfManager.self().getVariable("wealth"));
       }
     }, true);
     world.ticker.tick();
-  };
-  var transact = function() {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     SelfManager.self().setVariable("wealth", (SelfManager.self().getVariable("wealth") - 1));
     ListPrims.oneOf(SelfPrims.other(world.turtles())).ask(function() { SelfManager.self().setVariable("wealth", (SelfManager.self().getVariable("wealth") + 1)); }, true);
-  };
-  var top10PctWealth = function() {
+  });
+  procs["transact"] = temp;
+  procs["TRANSACT"] = temp;
+  temp = (function() {
     try {
       throw new Exception.ReportInterrupt(ListPrims.sum(world.turtles().maxNOf((world.turtles().size() * 0.1), function() { return SelfManager.self().getVariable("wealth"); }).projectionBy(function() { return SelfManager.self().getVariable("wealth"); })));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
@@ -116,8 +124,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var bottom50PctWealth = function() {
+  });
+  procs["top10PctWealth"] = temp;
+  procs["TOP-10-PCT-WEALTH"] = temp;
+  temp = (function() {
     try {
       throw new Exception.ReportInterrupt(ListPrims.sum(world.turtles().minNOf((world.turtles().size() * 0.5), function() { return SelfManager.self().getVariable("wealth"); }).projectionBy(function() { return SelfManager.self().getVariable("wealth"); })));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
@@ -128,17 +138,8 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  return {
-    "BOTTOM-50-PCT-WEALTH":bottom50PctWealth,
-    "GO":go,
-    "SETUP":setup,
-    "TOP-10-PCT-WEALTH":top10PctWealth,
-    "TRANSACT":transact,
-    "bottom50PctWealth":bottom50PctWealth,
-    "go":go,
-    "setup":setup,
-    "top10PctWealth":top10PctWealth,
-    "transact":transact
-  };
+  });
+  procs["bottom50PctWealth"] = temp;
+  procs["BOTTOM-50-PCT-WEALTH"] = temp;
+  return procs;
 })();

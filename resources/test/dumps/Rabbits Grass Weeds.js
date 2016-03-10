@@ -80,9 +80,11 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
-    procedures.growGrassAndWeeds();
+    procedures["GROW-GRASS-AND-WEEDS"]();
     BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("RABBITS").getSpecialName(), "rabbit")
     world.turtleManager.createTurtles(world.observer.getGlobal("number"), "RABBITS").ask(function() {
       SelfManager.self().setVariable("color", 9.9);
@@ -90,19 +92,21 @@ var procedures = (function() {
       SelfManager.self().setVariable("energy", Prims.random(10));
     }, true);
     world.ticker.reset();
-  };
-  var go = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     try {
       if (!world.turtleManager.turtlesOfBreed("RABBITS").nonEmpty()) {
         throw new Exception.StopInterrupt;
       }
-      procedures.growGrassAndWeeds();
+      procedures["GROW-GRASS-AND-WEEDS"]();
       world.turtleManager.turtlesOfBreed("RABBITS").ask(function() {
-        procedures.move();
-        procedures.eatGrass();
-        procedures.eatWeeds();
-        procedures.reproduce();
-        procedures.death();
+        procedures["MOVE"]();
+        procedures["EAT-GRASS"]();
+        procedures["EAT-WEEDS"]();
+        procedures["REPRODUCE"]();
+        procedures["DEATH"]();
       }, true);
       world.ticker.tick();
     } catch (e) {
@@ -112,8 +116,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var growGrassAndWeeds = function() {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     world.patches().ask(function() {
       if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 0)) {
         if (Prims.lt(Prims.randomFloat(1000), world.observer.getGlobal("weeds-grow-rate"))) {
@@ -124,54 +130,49 @@ var procedures = (function() {
         }
       }
     }, true);
-  };
-  var move = function() {
+  });
+  procs["growGrassAndWeeds"] = temp;
+  procs["GROW-GRASS-AND-WEEDS"] = temp;
+  temp = (function() {
     SelfManager.self().right(Prims.random(50));
     SelfManager.self().right(-Prims.random(50));
     SelfManager.self().fd(1);
     SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") - 0.5));
-  };
-  var eatGrass = function() {
+  });
+  procs["move"] = temp;
+  procs["MOVE"] = temp;
+  temp = (function() {
     if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55)) {
       SelfManager.self().setPatchVariable("pcolor", 0);
       SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") + world.observer.getGlobal("grass-energy")));
     }
-  };
-  var eatWeeds = function() {
+  });
+  procs["eatGrass"] = temp;
+  procs["EAT-GRASS"] = temp;
+  temp = (function() {
     if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 115)) {
       SelfManager.self().setPatchVariable("pcolor", 0);
       SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") + world.observer.getGlobal("weed-energy")));
     }
-  };
-  var reproduce = function() {
+  });
+  procs["eatWeeds"] = temp;
+  procs["EAT-WEEDS"] = temp;
+  temp = (function() {
     if (Prims.gt(SelfManager.self().getVariable("energy"), world.observer.getGlobal("birth-threshold"))) {
       SelfManager.self().setVariable("energy", Prims.div(SelfManager.self().getVariable("energy"), 2));
       SelfManager.self().hatch(1, "").ask(function() { SelfManager.self().fd(1); }, true);
     }
-  };
-  var death = function() {
+  });
+  procs["reproduce"] = temp;
+  procs["REPRODUCE"] = temp;
+  temp = (function() {
     if (Prims.lt(SelfManager.self().getVariable("energy"), 0)) {
       SelfManager.self().die();
     }
-  };
-  return {
-    "DEATH":death,
-    "EAT-GRASS":eatGrass,
-    "EAT-WEEDS":eatWeeds,
-    "GO":go,
-    "GROW-GRASS-AND-WEEDS":growGrassAndWeeds,
-    "MOVE":move,
-    "REPRODUCE":reproduce,
-    "SETUP":setup,
-    "death":death,
-    "eatGrass":eatGrass,
-    "eatWeeds":eatWeeds,
-    "go":go,
-    "growGrassAndWeeds":growGrassAndWeeds,
-    "move":move,
-    "reproduce":reproduce,
-    "setup":setup
-  };
+  });
+  procs["death"] = temp;
+  procs["DEATH"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("grass-grow-rate", 15);
 world.observer.setGlobal("weeds-grow-rate", 0);

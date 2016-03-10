@@ -51,7 +51,9 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
     world.observer.setGlobal("show-water?", true);
     world.patches().ask(function() {
@@ -80,26 +82,34 @@ var procedures = (function() {
     }, true);
     world.observer.setGlobal("drains", world.patches().agentFilter(function() { return SelfManager.self().getPatchVariable("drain?"); }));
     world.observer.setGlobal("land", world.patches().agentFilter(function() { return !SelfManager.self().getPatchVariable("drain?"); }));
-    world.observer.getGlobal("land").ask(function() { procedures.recolor(); }, true);
+    world.observer.getGlobal("land").ask(function() { procedures["RECOLOR"](); }, true);
     world.ticker.reset();
-  };
-  var recolor = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     if ((Prims.equality(SelfManager.self().getPatchVariable("water"), 0) || !world.observer.getGlobal("show-water?"))) {
       SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(9.9, SelfManager.self().getPatchVariable("elevation"), -250, 100));
     }
     else {
       SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(105, ListPrims.min(ListPrims.list(SelfManager.self().getPatchVariable("water"), 75)), 100, -10));
     }
-  };
-  var showWater = function() {
+  });
+  procs["recolor"] = temp;
+  procs["RECOLOR"] = temp;
+  temp = (function() {
     world.observer.setGlobal("show-water?", true);
-    world.observer.getGlobal("land").ask(function() { procedures.recolor(); }, true);
-  };
-  var hideWater = function() {
+    world.observer.getGlobal("land").ask(function() { procedures["RECOLOR"](); }, true);
+  });
+  procs["showWater"] = temp;
+  procs["SHOW-WATER"] = temp;
+  temp = (function() {
     world.observer.setGlobal("show-water?", false);
-    world.observer.getGlobal("land").ask(function() { procedures.recolor(); }, true);
-  };
-  var go = function() {
+    world.observer.getGlobal("land").ask(function() { procedures["RECOLOR"](); }, true);
+  });
+  procs["hideWater"] = temp;
+  procs["HIDE-WATER"] = temp;
+  temp = (function() {
     world.observer.getGlobal("land").ask(function() {
       if (Prims.lt(Prims.randomFloat(1), world.observer.getGlobal("rainfall"))) {
         SelfManager.self().setPatchVariable("water", (SelfManager.self().getPatchVariable("water") + 1));
@@ -107,17 +117,19 @@ var procedures = (function() {
     }, true);
     world.observer.getGlobal("land").ask(function() {
       if (Prims.gt(SelfManager.self().getPatchVariable("water"), 0)) {
-        procedures.flow();
+        procedures["FLOW"]();
       }
     }, true);
     world.observer.getGlobal("drains").ask(function() {
       SelfManager.self().setPatchVariable("water", 0);
       SelfManager.self().setPatchVariable("elevation", -10000000);
     }, true);
-    world.observer.getGlobal("land").ask(function() { procedures.recolor(); }, true);
+    world.observer.getGlobal("land").ask(function() { procedures["RECOLOR"](); }, true);
     world.ticker.tick();
-  };
-  var flow = function() {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     var target = SelfManager.self().getNeighbors().minOneOf(function() {
       return (SelfManager.self().getPatchVariable("elevation") + SelfManager.self().getPatchVariable("water"));
     });
@@ -131,21 +143,10 @@ var procedures = (function() {
         SelfManager.self().setPatchVariable("water", (SelfManager.self().getPatchVariable("water") + amount));
       }, true);
     }
-  };
-  return {
-    "FLOW":flow,
-    "GO":go,
-    "HIDE-WATER":hideWater,
-    "RECOLOR":recolor,
-    "SETUP":setup,
-    "SHOW-WATER":showWater,
-    "flow":flow,
-    "go":go,
-    "hideWater":hideWater,
-    "recolor":recolor,
-    "setup":setup,
-    "showWater":showWater
-  };
+  });
+  procs["flow"] = temp;
+  procs["FLOW"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("terrain-smoothness", 6);
 world.observer.setGlobal("rainfall", 0.1);

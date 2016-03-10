@@ -82,21 +82,27 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
-    procedures.setupGlobals();
-    procedures.setupPeople();
+    procedures["SETUP-GLOBALS"]();
+    procedures["SETUP-PEOPLE"]();
     world.ticker.reset();
-  };
-  var setupGlobals = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     world.observer.setGlobal("infection-chance", 50);
     world.observer.setGlobal("symptoms-show", 200);
     world.observer.setGlobal("slider-check-1", world.observer.getGlobal("average-commitment"));
     world.observer.setGlobal("slider-check-2", world.observer.getGlobal("average-coupling-tendency"));
     world.observer.setGlobal("slider-check-3", world.observer.getGlobal("average-condom-use"));
     world.observer.setGlobal("slider-check-4", world.observer.getGlobal("average-test-frequency"));
-  };
-  var setupPeople = function() {
+  });
+  procs["setupGlobals"] = temp;
+  procs["SETUP-GLOBALS"] = temp;
+  temp = (function() {
     world.turtleManager.createTurtles(world.observer.getGlobal("initial-people"), "").ask(function() {
       SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
       SelfManager.self().setVariable("known?", false);
@@ -112,14 +118,16 @@ var procedures = (function() {
       if (SelfManager.self().getVariable("infected?")) {
         SelfManager.self().setVariable("infection-length", Prims.randomFloat(world.observer.getGlobal("symptoms-show")));
       }
-      procedures.assignCommitment();
-      procedures.assignCouplingTendency();
-      procedures.assignCondomUse();
-      procedures.assignTestFrequency();
-      procedures.assignColor();
+      procedures["ASSIGN-COMMITMENT"]();
+      procedures["ASSIGN-COUPLING-TENDENCY"]();
+      procedures["ASSIGN-CONDOM-USE"]();
+      procedures["ASSIGN-TEST-FREQUENCY"]();
+      procedures["ASSIGN-COLOR"]();
     }, true);
-  };
-  var assignColor = function() {
+  });
+  procs["setupPeople"] = temp;
+  procs["SETUP-PEOPLE"] = temp;
+  temp = (function() {
     if (!SelfManager.self().getVariable("infected?")) {
       SelfManager.self().setVariable("color", 55);
     }
@@ -131,20 +139,30 @@ var procedures = (function() {
         SelfManager.self().setVariable("color", 105);
       }
     }
-  };
-  var assignCommitment = function() {
-    SelfManager.self().setVariable("commitment", procedures.randomNear(world.observer.getGlobal("average-commitment")));
-  };
-  var assignCouplingTendency = function() {
-    SelfManager.self().setVariable("coupling-tendency", procedures.randomNear(world.observer.getGlobal("average-coupling-tendency")));
-  };
-  var assignCondomUse = function() {
-    SelfManager.self().setVariable("condom-use", procedures.randomNear(world.observer.getGlobal("average-condom-use")));
-  };
-  var assignTestFrequency = function() {
-    SelfManager.self().setVariable("test-frequency", procedures.randomNear(world.observer.getGlobal("average-test-frequency")));
-  };
-  var randomNear = function(center) {
+  });
+  procs["assignColor"] = temp;
+  procs["ASSIGN-COLOR"] = temp;
+  temp = (function() {
+    SelfManager.self().setVariable("commitment", procedures["RANDOM-NEAR"](world.observer.getGlobal("average-commitment")));
+  });
+  procs["assignCommitment"] = temp;
+  procs["ASSIGN-COMMITMENT"] = temp;
+  temp = (function() {
+    SelfManager.self().setVariable("coupling-tendency", procedures["RANDOM-NEAR"](world.observer.getGlobal("average-coupling-tendency")));
+  });
+  procs["assignCouplingTendency"] = temp;
+  procs["ASSIGN-COUPLING-TENDENCY"] = temp;
+  temp = (function() {
+    SelfManager.self().setVariable("condom-use", procedures["RANDOM-NEAR"](world.observer.getGlobal("average-condom-use")));
+  });
+  procs["assignCondomUse"] = temp;
+  procs["ASSIGN-CONDOM-USE"] = temp;
+  temp = (function() {
+    SelfManager.self().setVariable("test-frequency", procedures["RANDOM-NEAR"](world.observer.getGlobal("average-test-frequency")));
+  });
+  procs["assignTestFrequency"] = temp;
+  procs["ASSIGN-TEST-FREQUENCY"] = temp;
+  temp = (function(center) {
     try {
       var result = 0;
       for (var _index_3704_3710 = 0, _repeatcount_3704_3710 = StrictMath.floor(40); _index_3704_3710 < _repeatcount_3704_3710; _index_3704_3710++){
@@ -159,13 +177,15 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var go = function() {
+  });
+  procs["randomNear"] = temp;
+  procs["RANDOM-NEAR"] = temp;
+  temp = (function() {
     try {
       if (world.turtles().agentAll(function() { return SelfManager.self().getVariable("known?"); })) {
         throw new Exception.StopInterrupt;
       }
-      procedures.checkSliders();
+      procedures["CHECK-SLIDERS"]();
       world.turtles().ask(function() {
         if (SelfManager.self().getVariable("infected?")) {
           SelfManager.self().setVariable("infection-length", (SelfManager.self().getVariable("infection-length") + 1));
@@ -176,18 +196,18 @@ var procedures = (function() {
       }, true);
       world.turtles().ask(function() {
         if (!SelfManager.self().getVariable("coupled?")) {
-          procedures.move();
+          procedures["MOVE"]();
         }
       }, true);
       world.turtles().ask(function() {
         if (((!SelfManager.self().getVariable("coupled?") && Prims.equality(SelfManager.self().getVariable("shape"), "person righty")) && Prims.lt(Prims.randomFloat(10), SelfManager.self().getVariable("coupling-tendency")))) {
-          procedures.couple();
+          procedures["COUPLE"]();
         }
       }, true);
-      world.turtles().ask(function() { procedures.uncouple(); }, true);
-      world.turtles().ask(function() { procedures.infect(); }, true);
-      world.turtles().ask(function() { procedures.test(); }, true);
-      world.turtles().ask(function() { procedures.assignColor(); }, true);
+      world.turtles().ask(function() { procedures["UNCOUPLE"](); }, true);
+      world.turtles().ask(function() { procedures["INFECT"](); }, true);
+      world.turtles().ask(function() { procedures["TEST"](); }, true);
+      world.turtles().ask(function() { procedures["ASSIGN-COLOR"](); }, true);
       world.ticker.tick();
     } catch (e) {
       if (e instanceof Exception.StopInterrupt) {
@@ -196,30 +216,36 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var checkSliders = function() {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     if (!Prims.equality(world.observer.getGlobal("slider-check-1"), world.observer.getGlobal("average-commitment"))) {
-      world.turtles().ask(function() { procedures.assignCommitment(); }, true);
+      world.turtles().ask(function() { procedures["ASSIGN-COMMITMENT"](); }, true);
       world.observer.setGlobal("slider-check-1", world.observer.getGlobal("average-commitment"));
     }
     if (!Prims.equality(world.observer.getGlobal("slider-check-2"), world.observer.getGlobal("average-coupling-tendency"))) {
-      world.turtles().ask(function() { procedures.assignCouplingTendency(); }, true);
+      world.turtles().ask(function() { procedures["ASSIGN-COUPLING-TENDENCY"](); }, true);
       world.observer.setGlobal("slider-check-2", world.observer.getGlobal("average-coupling-tendency"));
     }
     if (!Prims.equality(world.observer.getGlobal("slider-check-3"), world.observer.getGlobal("average-condom-use"))) {
-      world.turtles().ask(function() { procedures.assignCondomUse(); }, true);
+      world.turtles().ask(function() { procedures["ASSIGN-CONDOM-USE"](); }, true);
       world.observer.setGlobal("slider-check-3", world.observer.getGlobal("average-condom-use"));
     }
     if (!Prims.equality(world.observer.getGlobal("slider-check-4"), world.observer.getGlobal("average-test-frequency"))) {
-      world.turtles().ask(function() { procedures.assignTestFrequency(); }, true);
+      world.turtles().ask(function() { procedures["ASSIGN-TEST-FREQUENCY"](); }, true);
       world.observer.setGlobal("slider-check-4", world.observer.getGlobal("average-test-frequency"));
     }
-  };
-  var move = function() {
+  });
+  procs["checkSliders"] = temp;
+  procs["CHECK-SLIDERS"] = temp;
+  temp = (function() {
     SelfManager.self().right(Prims.randomFloat(360));
     SelfManager.self().fd(1);
-  };
-  var couple = function() {
+  });
+  procs["move"] = temp;
+  procs["MOVE"] = temp;
+  temp = (function() {
     var potentialPartner = ListPrims.oneOf(SelfManager.self().turtlesAt(-1, 0).agentFilter(function() {
       return (!SelfManager.self().getVariable("coupled?") && Prims.equality(SelfManager.self().getVariable("shape"), "person lefty"));
     }));
@@ -235,8 +261,10 @@ var procedures = (function() {
         SelfManager.self().patchAt(-1, 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", (5 - 3)); }, true);
       }
     }
-  };
-  var uncouple = function() {
+  });
+  procs["couple"] = temp;
+  procs["COUPLE"] = temp;
+  temp = (function() {
     if ((SelfManager.self().getVariable("coupled?") && Prims.equality(SelfManager.self().getVariable("shape"), "person righty"))) {
       if ((Prims.gt(SelfManager.self().getVariable("couple-length"), SelfManager.self().getVariable("commitment")) || Prims.gt(SelfManager.self().getVariable("partner").projectionBy(function() { return SelfManager.self().getVariable("couple-length"); }), SelfManager.self().getVariable("partner").projectionBy(function() { return SelfManager.self().getVariable("commitment"); })))) {
         SelfManager.self().setVariable("coupled?", false);
@@ -249,8 +277,10 @@ var procedures = (function() {
         SelfManager.self().setVariable("partner", Nobody);
       }
     }
-  };
-  var infect = function() {
+  });
+  procs["uncouple"] = temp;
+  procs["UNCOUPLE"] = temp;
+  temp = (function() {
     if (((SelfManager.self().getVariable("coupled?") && SelfManager.self().getVariable("infected?")) && !SelfManager.self().getVariable("known?"))) {
       if ((Prims.gt(Prims.randomFloat(10), SelfManager.self().getVariable("condom-use")) || Prims.gt(Prims.randomFloat(10), SelfManager.self().getVariable("partner").projectionBy(function() { return SelfManager.self().getVariable("condom-use"); })))) {
         if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("infection-chance"))) {
@@ -258,8 +288,10 @@ var procedures = (function() {
         }
       }
     }
-  };
-  var test = function() {
+  });
+  procs["infect"] = temp;
+  procs["INFECT"] = temp;
+  temp = (function() {
     if (Prims.lt(Prims.randomFloat(52), SelfManager.self().getVariable("test-frequency"))) {
       if (SelfManager.self().getVariable("infected?")) {
         SelfManager.self().setVariable("known?", true);
@@ -270,8 +302,10 @@ var procedures = (function() {
         SelfManager.self().setVariable("known?", true);
       }
     }
-  };
-  var _percent_infected = function() {
+  });
+  procs["test"] = temp;
+  procs["TEST"] = temp;
+  temp = (function() {
     try {
       if (world.turtles().nonEmpty()) {
         throw new Exception.ReportInterrupt((Prims.div(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("infected?"); }).size(), world.turtles().size()) * 100));
@@ -287,43 +321,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  return {
-    "%INFECTED":_percent_infected,
-    "ASSIGN-COLOR":assignColor,
-    "ASSIGN-COMMITMENT":assignCommitment,
-    "ASSIGN-CONDOM-USE":assignCondomUse,
-    "ASSIGN-COUPLING-TENDENCY":assignCouplingTendency,
-    "ASSIGN-TEST-FREQUENCY":assignTestFrequency,
-    "CHECK-SLIDERS":checkSliders,
-    "COUPLE":couple,
-    "GO":go,
-    "INFECT":infect,
-    "MOVE":move,
-    "RANDOM-NEAR":randomNear,
-    "SETUP":setup,
-    "SETUP-GLOBALS":setupGlobals,
-    "SETUP-PEOPLE":setupPeople,
-    "TEST":test,
-    "UNCOUPLE":uncouple,
-    "_percent_infected":_percent_infected,
-    "assignColor":assignColor,
-    "assignCommitment":assignCommitment,
-    "assignCondomUse":assignCondomUse,
-    "assignCouplingTendency":assignCouplingTendency,
-    "assignTestFrequency":assignTestFrequency,
-    "checkSliders":checkSliders,
-    "couple":couple,
-    "go":go,
-    "infect":infect,
-    "move":move,
-    "randomNear":randomNear,
-    "setup":setup,
-    "setupGlobals":setupGlobals,
-    "setupPeople":setupPeople,
-    "test":test,
-    "uncouple":uncouple
-  };
+  });
+  procs["_percent_infected"] = temp;
+  procs["%INFECTED"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("initial-people", 300);
 world.observer.setGlobal("average-commitment", 50);

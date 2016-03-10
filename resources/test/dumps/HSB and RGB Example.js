@@ -51,21 +51,25 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var go = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.observer.setGlobal("hsb-as-rgb", ColorModel.hsbToRGB(world.observer.getGlobal("hue"), world.observer.getGlobal("saturation"), world.observer.getGlobal("brightness")));
     world.observer.setGlobal("hsb-color", ColorModel.nearestColorNumberOfHSB(world.observer.getGlobal("hue"), world.observer.getGlobal("saturation"), world.observer.getGlobal("brightness")));
-    procedures.quadrant(-1,1).ask(function() { SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("hsb-as-rgb")); }, true);
-    procedures.quadrant(1,1).ask(function() { SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("hsb-color")); }, true);
+    procedures["QUADRANT"](-1,1).ask(function() { SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("hsb-as-rgb")); }, true);
+    procedures["QUADRANT"](1,1).ask(function() { SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("hsb-color")); }, true);
     world.observer.setGlobal("rgb-color", ColorModel.nearestColorNumberOfRGB(world.observer.getGlobal("rgb-red"), world.observer.getGlobal("rgb-green"), world.observer.getGlobal("rgb-blue")));
-    procedures.quadrant(-1,-1).ask(function() {
+    procedures["QUADRANT"](-1,-1).ask(function() {
       SelfManager.self().setPatchVariable("pcolor", ListPrims.list(world.observer.getGlobal("rgb-red"), world.observer.getGlobal("rgb-green"), world.observer.getGlobal("rgb-blue")));
     }, true);
-    procedures.quadrant(1,-1).ask(function() { SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("rgb-color")); }, true);
+    procedures["QUADRANT"](1,-1).ask(function() { SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("rgb-color")); }, true);
     notImplemented('display', undefined)();
-  };
-  var quadrant = function(x, y) {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function(x, y) {
     try {
-      throw new Exception.ReportInterrupt(world.patches().agentFilter(function() { return Prims.equality(procedures.patchQuadrant(), ListPrims.list(x, y)); }));
+      throw new Exception.ReportInterrupt(world.patches().agentFilter(function() { return Prims.equality(procedures["PATCH-QUADRANT"](), ListPrims.list(x, y)); }));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -74,8 +78,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var patchQuadrant = function() {
+  });
+  procs["quadrant"] = temp;
+  procs["QUADRANT"] = temp;
+  temp = (function() {
     try {
       throw new Exception.ReportInterrupt(ListPrims.list((Prims.lt(SelfManager.self().getPatchVariable("pxcor"), Prims.div(world.topology.width, 2)) ? -1 : 1), (Prims.lt(SelfManager.self().getPatchVariable("pycor"), Prims.div(world.topology.width, 2)) ? -1 : 1)));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
@@ -86,15 +92,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  return {
-    "GO":go,
-    "PATCH-QUADRANT":patchQuadrant,
-    "QUADRANT":quadrant,
-    "go":go,
-    "patchQuadrant":patchQuadrant,
-    "quadrant":quadrant
-  };
+  });
+  procs["patchQuadrant"] = temp;
+  procs["PATCH-QUADRANT"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("hue", 180);
 world.observer.setGlobal("saturation", 100);

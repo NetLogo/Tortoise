@@ -51,32 +51,40 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var benchmark = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     workspace.rng.setSeed(5454);
     workspace.timer.reset();
-    procedures.setup();
+    procedures["SETUP"]();
     for (var _index_105_111 = 0, _repeatcount_105_111 = StrictMath.floor(20); _index_105_111 < _repeatcount_105_111; _index_105_111++){
-      procedures.go();
+      procedures["GO"]();
     }
     world.observer.setGlobal("result", workspace.timer.elapsed());
-  };
-  var setup = function() {
+  });
+  procs["benchmark"] = temp;
+  procs["BENCHMARK"] = temp;
+  temp = (function() {
     world.clearAll();
     world.ticker.reset();
     world.patches().ask(function() {
       SelfManager.self().setPatchVariable("state", Prims.random((world.observer.getGlobal("n") + 1)));
       SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(15, SelfManager.self().getPatchVariable("state"), 0, world.observer.getGlobal("n")));
     }, true);
-  };
-  var go = function() {
-    world.patches().ask(function() { procedures.findNewState(); }, true);
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
+    world.patches().ask(function() { procedures["FIND-NEW-STATE"](); }, true);
     world.patches().ask(function() {
       SelfManager.self().setPatchVariable("state", SelfManager.self().getPatchVariable("new-state"));
       SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(15, SelfManager.self().getPatchVariable("state"), 0, world.observer.getGlobal("n")));
     }, true);
     world.ticker.tick();
-  };
-  var findNewState = function() {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     if (Prims.equality(SelfManager.self().getPatchVariable("state"), world.observer.getGlobal("n"))) {
       SelfManager.self().setPatchVariable("new-state", 0);
     }
@@ -96,17 +104,10 @@ var procedures = (function() {
         SelfManager.self().setPatchVariable("new-state", world.observer.getGlobal("n"));
       }
     }
-  };
-  return {
-    "BENCHMARK":benchmark,
-    "FIND-NEW-STATE":findNewState,
-    "GO":go,
-    "SETUP":setup,
-    "benchmark":benchmark,
-    "findNewState":findNewState,
-    "go":go,
-    "setup":setup
-  };
+  });
+  procs["findNewState"] = temp;
+  procs["FIND-NEW-STATE"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("n", 200);
 world.observer.setGlobal("k1", 3);

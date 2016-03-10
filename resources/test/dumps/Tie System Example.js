@@ -51,7 +51,9 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
     BreedManager.setDefaultShape(world.turtles().getSpecialName(), "planet")
     world.turtleManager.createTurtles(1, "SUNS").ask(function() {
@@ -76,9 +78,8 @@ var procedures = (function() {
         }, true);
       }, true);
     }, true);
-  };
-  return {
-    "SETUP":setup,
-    "setup":setup
-  };
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  return procs;
 })();

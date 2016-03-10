@@ -71,21 +71,27 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
-    procedures.setupVariables();
-    procedures.setupTurtles();
+    procedures["SETUP-VARIABLES"]();
+    procedures["SETUP-TURTLES"]();
     world.ticker.reset();
-  };
-  var setupVariables = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     world.observer.setGlobal("carrying-capacity-monarchs", 225);
     world.observer.setGlobal("carrying-capacity-viceroys", 225);
     world.observer.setGlobal("carrying-capacity-birds", 75);
     world.observer.setGlobal("reproduction-chance", 4);
     world.observer.setGlobal("color-range-begin", 15);
     world.observer.setGlobal("color-range-end", 109);
-  };
-  var setupTurtles = function() {
+  });
+  procs["setupVariables"] = temp;
+  procs["SETUP-VARIABLES"] = temp;
+  temp = (function() {
     world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
     BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("MONARCHS").getSpecialName(), "butterfly monarch")
     BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("VICEROYS").getSpecialName(), "butterfly viceroy")
@@ -99,22 +105,26 @@ var procedures = (function() {
     world.turtles().ask(function() {
       SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
     }, true);
-  };
-  var go = function() {
-    world.turtleManager.turtlesOfBreed("BIRDS").ask(function() { procedures.birdsMove(); }, true);
+  });
+  procs["setupTurtles"] = temp;
+  procs["SETUP-TURTLES"] = temp;
+  temp = (function() {
+    world.turtleManager.turtlesOfBreed("BIRDS").ask(function() { procedures["BIRDS-MOVE"](); }, true);
     world.turtles().agentFilter(function() {
       return !Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("BIRDS"));
-    }).ask(function() { procedures.butterfliesMove(); }, true);
+    }).ask(function() { procedures["BUTTERFLIES-MOVE"](); }, true);
     world.turtles().agentFilter(function() {
       return !Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("BIRDS"));
-    }).ask(function() { procedures.butterfliesGetEaten(); }, true);
-    world.turtleManager.turtlesOfBreed("BIRDS").ask(function() { procedures.birdsForget(); }, true);
+    }).ask(function() { procedures["BUTTERFLIES-GET-EATEN"](); }, true);
+    world.turtleManager.turtlesOfBreed("BIRDS").ask(function() { procedures["BIRDS-FORGET"](); }, true);
     world.turtles().agentFilter(function() {
       return !Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("BIRDS"));
-    }).ask(function() { procedures.butterfliesReproduce(); }, true);
+    }).ask(function() { procedures["BUTTERFLIES-REPRODUCE"](); }, true);
     world.ticker.tick();
-  };
-  var birdsMove = function() {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     if (Prims.equality(SelfManager.self().getVariable("shape"), "bird 1")) {
       SelfManager.self().setVariable("shape", "bird 2");
     }
@@ -123,28 +133,34 @@ var procedures = (function() {
     }
     SelfManager.self().setVariable("heading", (180 + Prims.random(180)));
     SelfManager.self().fd(1);
-  };
-  var butterfliesMove = function() {
+  });
+  procs["birdsMove"] = temp;
+  procs["BIRDS-MOVE"] = temp;
+  temp = (function() {
     SelfManager.self().right(Prims.random(100));
     SelfManager.self().right(-Prims.random(100));
     SelfManager.self().fd(1);
-  };
-  var butterfliesGetEaten = function() {
+  });
+  procs["butterfliesMove"] = temp;
+  procs["BUTTERFLIES-MOVE"] = temp;
+  temp = (function() {
     var birdHere = ListPrims.oneOf(SelfManager.self().breedHere("BIRDS"));
     if (!Prims.equality(birdHere, Nobody)) {
       if (!birdHere.projectionBy(function() {
-        return procedures.colorInMemory_p(SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("color"); }));
+        return procedures["COLOR-IN-MEMORY?"](SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("color"); }));
       })) {
         if (Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("MONARCHS"))) {
           birdHere.ask(function() {
-            procedures.rememberColor(SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("color"); }));
+            procedures["REMEMBER-COLOR"](SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("color"); }));
           }, true);
         }
         SelfManager.self().die();
       }
     }
-  };
-  var colorInMemory_p = function(c) {
+  });
+  procs["butterfliesGetEaten"] = temp;
+  procs["BUTTERFLIES-GET-EATEN"] = temp;
+  temp = (function(c) {
     try {
       Tasks.forEach(Tasks.commandTask(function() {
         var taskArguments = arguments;
@@ -161,14 +177,18 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var rememberColor = function(c) {
+  });
+  procs["colorInMemory_p"] = temp;
+  procs["COLOR-IN-MEMORY?"] = temp;
+  temp = (function(c) {
     if (Prims.gte(ListPrims.length(SelfManager.self().getVariable("memory")), world.observer.getGlobal("memory-size"))) {
       SelfManager.self().setVariable("memory", ListPrims.butFirst(SelfManager.self().getVariable("memory")));
     }
     SelfManager.self().setVariable("memory", ListPrims.lput(ListPrims.list(c, 0), SelfManager.self().getVariable("memory")));
-  };
-  var birdsForget = function() {
+  });
+  procs["rememberColor"] = temp;
+  procs["REMEMBER-COLOR"] = temp;
+  temp = (function() {
     SelfManager.self().setVariable("memory", Tasks.map(Tasks.reporterTask(function() {
       var taskArguments = arguments;
       return ListPrims.list(ListPrims.item(0, taskArguments[0]), (1 + ListPrims.item(1, taskArguments[0])));
@@ -177,20 +197,24 @@ var procedures = (function() {
       var taskArguments = arguments;
       return Prims.lte(ListPrims.item(1, taskArguments[0]), world.observer.getGlobal("memory-duration"));
     })));
-  };
-  var butterfliesReproduce = function() {
+  });
+  procs["birdsForget"] = temp;
+  procs["BIRDS-FORGET"] = temp;
+  temp = (function() {
     if (Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("MONARCHS"))) {
       if (Prims.lt(Prims.random(world.turtleManager.turtlesOfBreed("MONARCHS").size()), (world.observer.getGlobal("carrying-capacity-monarchs") - world.turtleManager.turtlesOfBreed("MONARCHS").size()))) {
-        procedures.hatchButterfly();
+        procedures["HATCH-BUTTERFLY"]();
       }
     }
     else {
       if (Prims.lt(Prims.random(world.turtleManager.turtlesOfBreed("VICEROYS").size()), (world.observer.getGlobal("carrying-capacity-viceroys") - world.turtleManager.turtlesOfBreed("VICEROYS").size()))) {
-        procedures.hatchButterfly();
+        procedures["HATCH-BUTTERFLY"]();
       }
     }
-  };
-  var hatchButterfly = function() {
+  });
+  procs["butterfliesReproduce"] = temp;
+  procs["BUTTERFLIES-REPRODUCE"] = temp;
+  temp = (function() {
     if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("reproduction-chance"))) {
       SelfManager.self().hatch(1, "").ask(function() {
         SelfManager.self().fd(1);
@@ -199,33 +223,10 @@ var procedures = (function() {
         }
       }, true);
     }
-  };
-  return {
-    "BIRDS-FORGET":birdsForget,
-    "BIRDS-MOVE":birdsMove,
-    "BUTTERFLIES-GET-EATEN":butterfliesGetEaten,
-    "BUTTERFLIES-MOVE":butterfliesMove,
-    "BUTTERFLIES-REPRODUCE":butterfliesReproduce,
-    "COLOR-IN-MEMORY?":colorInMemory_p,
-    "GO":go,
-    "HATCH-BUTTERFLY":hatchButterfly,
-    "REMEMBER-COLOR":rememberColor,
-    "SETUP":setup,
-    "SETUP-TURTLES":setupTurtles,
-    "SETUP-VARIABLES":setupVariables,
-    "birdsForget":birdsForget,
-    "birdsMove":birdsMove,
-    "butterfliesGetEaten":butterfliesGetEaten,
-    "butterfliesMove":butterfliesMove,
-    "butterfliesReproduce":butterfliesReproduce,
-    "colorInMemory_p":colorInMemory_p,
-    "go":go,
-    "hatchButterfly":hatchButterfly,
-    "rememberColor":rememberColor,
-    "setup":setup,
-    "setupTurtles":setupTurtles,
-    "setupVariables":setupVariables
-  };
+  });
+  procs["hatchButterfly"] = temp;
+  procs["HATCH-BUTTERFLY"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("memory-duration", 30);
 world.observer.setGlobal("mutation-rate", 5);

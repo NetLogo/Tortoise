@@ -51,7 +51,9 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
     world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
     world.turtleManager.createTurtles(world.observer.getGlobal("num-vants"), "").ask(function() {
@@ -60,28 +62,34 @@ var procedures = (function() {
       SelfManager.self().setVariable("size", 6);
     }, true);
     world.ticker.reset();
-  };
-  var goForward = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     Tasks.forEach(Tasks.commandTask(function() {
       var taskArguments = arguments;
       taskArguments[0].ask(function() {
         SelfManager.self().fd(1);
-        procedures.turn();
+        procedures["TURN"]();
       }, true);
     }), ListPrims.sort(world.turtles()));
     world.ticker.tick();
-  };
-  var goReverse = function() {
+  });
+  procs["goForward"] = temp;
+  procs["GO-FORWARD"] = temp;
+  temp = (function() {
     Tasks.forEach(Tasks.commandTask(function() {
       var taskArguments = arguments;
       taskArguments[0].ask(function() {
-        procedures.turn();
+        procedures["TURN"]();
         SelfManager.self().fd(-1);
       }, true);
     }), ListPrims.reverse(ListPrims.sort(world.turtles())));
     world.ticker.tick();
-  };
-  var turn = function() {
+  });
+  procs["goReverse"] = temp;
+  procs["GO-REVERSE"] = temp;
+  temp = (function() {
     if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 9.9)) {
       SelfManager.self().setPatchVariable("pcolor", 0);
       SelfManager.self().right(90);
@@ -90,16 +98,9 @@ var procedures = (function() {
       SelfManager.self().setPatchVariable("pcolor", 9.9);
       SelfManager.self().right(-90);
     }
-  };
-  return {
-    "GO-FORWARD":goForward,
-    "GO-REVERSE":goReverse,
-    "SETUP":setup,
-    "TURN":turn,
-    "goForward":goForward,
-    "goReverse":goReverse,
-    "setup":setup,
-    "turn":turn
-  };
+  });
+  procs["turn"] = temp;
+  procs["TURN"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("num-vants", 1);

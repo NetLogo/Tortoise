@@ -51,7 +51,9 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
     world.turtleManager.createTurtles(world.observer.getGlobal("population"), "").ask(function() {
       SelfManager.self().setVariable("color", 15);
@@ -60,11 +62,13 @@ var procedures = (function() {
     }, true);
     world.patches().ask(function() { SelfManager.self().setPatchVariable("chemical", 0); }, true);
     world.ticker.reset();
-  };
-  var go = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     world.turtles().ask(function() {
       if (Prims.gt(SelfManager.self().getPatchVariable("chemical"), world.observer.getGlobal("sniff-threshold"))) {
-        procedures.turnTowardChemical();
+        procedures["TURN-TOWARD-CHEMICAL"]();
       }
       SelfManager.self().right(((Prims.randomFloat(world.observer.getGlobal("wiggle-angle")) - Prims.randomFloat(world.observer.getGlobal("wiggle-angle"))) + world.observer.getGlobal("wiggle-bias")));
       SelfManager.self().fd(1);
@@ -76,8 +80,10 @@ var procedures = (function() {
       SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(55, SelfManager.self().getPatchVariable("chemical"), 0.1, 3));
     }, true);
     world.ticker.tick();
-  };
-  var turnTowardChemical = function() {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     var ahead = SelfManager.self().patchAhead(1).projectionBy(function() { return SelfManager.self().getPatchVariable("chemical"); });
     var myright = SelfManager.self().patchRightAndAhead(world.observer.getGlobal("sniff-angle"), 1).projectionBy(function() { return SelfManager.self().getPatchVariable("chemical"); });
     var myleft = SelfManager.self().patchLeftAndAhead(world.observer.getGlobal("sniff-angle"), 1).projectionBy(function() { return SelfManager.self().getPatchVariable("chemical"); });
@@ -89,15 +95,10 @@ var procedures = (function() {
         SelfManager.self().right(-world.observer.getGlobal("sniff-angle"));
       }
     }
-  };
-  return {
-    "GO":go,
-    "SETUP":setup,
-    "TURN-TOWARD-CHEMICAL":turnTowardChemical,
-    "go":go,
-    "setup":setup,
-    "turnTowardChemical":turnTowardChemical
-  };
+  });
+  procs["turnTowardChemical"] = temp;
+  procs["TURN-TOWARD-CHEMICAL"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("population", 400);
 world.observer.setGlobal("sniff-threshold", 1);

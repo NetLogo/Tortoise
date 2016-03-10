@@ -107,7 +107,9 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
     world.observer.setGlobal("total-caught", 0);
     world.observer.setGlobal("histogram-interval-size", 1);
@@ -120,7 +122,7 @@ var procedures = (function() {
     world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
     world.turtleManager.createTurtles(world.observer.getGlobal("number-bugs"), "BUGS").ask(function() {
       SelfManager.self().setVariable("speed", world.observer.getGlobal("initial-bug-speed"));
-      procedures.attachVisionCone();
+      procedures["ATTACH-VISION-CONE"]();
     }, true);
     world.turtleManager.turtlesOfBreed("BUGS").ask(function() {
       SelfManager.self().setVariable("vision", world.observer.getGlobal("initial-bug-vision"));
@@ -139,13 +141,15 @@ var procedures = (function() {
       SelfManager.self().setVariable("hidden?", false);
       SelfManager.self().setXY(Prims.random(100), Prims.random(100));
       SelfManager.self().setVariable("speed", world.observer.getGlobal("initial-bird-speed"));
-      procedures.attachVisionCone();
+      procedures["ATTACH-VISION-CONE"]();
     }, true);
-    world.turtleManager.turtlesOfBreed("VISION-CONES").ask(function() { procedures.setVisualizeVisionCone(); }, true);
+    world.turtleManager.turtlesOfBreed("VISION-CONES").ask(function() { procedures["SET-VISUALIZE-VISION-CONE"](); }, true);
     world.ticker.reset();
-    procedures.doPlots();
-  };
-  var attachVisionCone = function() {
+    procedures["DO-PLOTS"]();
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     var parentVision = SelfManager.self().getVariable("vision");
     SelfManager.self().hatch(1, "").ask(function() {
       SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("VISION-CONES"));
@@ -153,22 +157,26 @@ var procedures = (function() {
       SelfManager.self().setVariable("shape", "vision cone");
       SelfManager.self().setVariable("color", 5);
       SelfManager.self().setVariable("size", parentVision);
-      procedures.setVisualizeVisionCone();
+      procedures["SET-VISUALIZE-VISION-CONE"]();
     }, true);
-  };
-  var go = function() {
-    procedures.checkVisualizeVisionConeChange();
-    procedures.checkPlayerCaught();
-    procedures.checkBirdCatch();
-    procedures.movePlayer();
-    procedures.moveBugs();
-    procedures.moveBirds();
-    procedures.reproduceBirds();
+  });
+  procs["attachVisionCone"] = temp;
+  procs["ATTACH-VISION-CONE"] = temp;
+  temp = (function() {
+    procedures["CHECK-VISUALIZE-VISION-CONE-CHANGE"]();
+    procedures["CHECK-PLAYER-CAUGHT"]();
+    procedures["CHECK-BIRD-CATCH"]();
+    procedures["MOVE-PLAYER"]();
+    procedures["MOVE-BUGS"]();
+    procedures["MOVE-BIRDS"]();
+    procedures["REPRODUCE-BIRDS"]();
     world.ticker.tick();
-    procedures.updateVariables();
-    procedures.doPlots();
-  };
-  var updateVariables = function() {
+    procedures["UPDATE-VARIABLES"]();
+    procedures["DO-PLOTS"]();
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     if (world.turtleManager.turtlesOfBreed("BUGS").nonEmpty()) {
       world.observer.setGlobal("avg-bug-speed", ListPrims.mean(world.turtleManager.turtlesOfBreed("BUGS").projectionBy(function() { return SelfManager.self().getVariable("speed"); })));
       world.observer.setGlobal("avg-bug-vision", ListPrims.mean(world.turtleManager.turtlesOfBreed("BUGS").projectionBy(function() { return SelfManager.self().getVariable("vision"); })));
@@ -183,8 +191,10 @@ var procedures = (function() {
     else {
       world.observer.setGlobal("avg-bird-speed", 0);
     }
-  };
-  var reproduceBirds = function() {
+  });
+  procs["updateVariables"] = temp;
+  procs["UPDATE-VARIABLES"] = temp;
+  temp = (function() {
     var worstBird = Nobody;
     if (((Prims.equality(NLMath.mod(world.observer.getGlobal("total-caught"), world.observer.getGlobal("reproduce-birds-after-eating")), 0) && Prims.gt(world.observer.getGlobal("total-caught"), 0)) && world.turtleManager.turtlesOfBreed("BIRDS").nonEmpty())) {
       worstBird = world.turtleManager.turtlesOfBreed("BIRDS").minOneOf(function() { return SelfManager.self().getVariable("eaten"); });
@@ -195,10 +205,12 @@ var procedures = (function() {
         }, true);
         SelfManager.self().die();
       }, true);
-      procedures.reproduceOneBird();
+      procedures["REPRODUCE-ONE-BIRD"]();
     }
-  };
-  var moveBugs = function() {
+  });
+  procs["reproduceBirds"] = temp;
+  procs["REPRODUCE-BIRDS"] = temp;
+  temp = (function() {
     var targetHeading = 0;
     var candidatePredators = Nobody;
     var predator = Nobody;
@@ -219,12 +231,14 @@ var procedures = (function() {
         SelfManager.self().setVariable("label", "!");
       }
       else {
-        procedures.wiggle();
+        procedures["WIGGLE"]();
         SelfManager.self().setVariable("label", "");
       }
     }, true);
-  };
-  var moveBirds = function() {
+  });
+  procs["moveBugs"] = temp;
+  procs["MOVE-BUGS"] = temp;
+  temp = (function() {
     var preyAgent = Nobody;
     var candidateBugs = Nobody;
     var closestBug = Nobody;
@@ -252,24 +266,28 @@ var procedures = (function() {
         if (!Prims.equality(assignedTarget_p, false)) {
           SelfManager.self().setVariable("target", Nobody);
           SelfManager.self().setVariable("label", "");
-          procedures.wiggle();
+          procedures["WIGGLE"]();
         }
       }
       else {
         SelfManager.self().setVariable("target", Nobody);
         SelfManager.self().setVariable("label", "");
-        procedures.wiggle();
+        procedures["WIGGLE"]();
       }
       SelfManager.self().fd((SelfManager.self().getVariable("speed") * world.observer.getGlobal("speed-factor")));
     }, true);
-  };
-  var wiggle = function() {
+  });
+  procs["moveBirds"] = temp;
+  procs["MOVE-BIRDS"] = temp;
+  temp = (function() {
     if (world.observer.getGlobal("wiggle?")) {
       SelfManager.self().right(Prims.div((Prims.randomFloat(30) * 0.05), world.observer.getGlobal("speed-factor")));
       SelfManager.self().right(-Prims.div((Prims.randomFloat(30) * 0.05), world.observer.getGlobal("speed-factor")));
     }
-  };
-  var movePlayer = function() {
+  });
+  procs["wiggle"] = temp;
+  procs["WIGGLE"] = temp;
+  temp = (function() {
     if (MousePrims.isInside()) {
       world.turtleManager.turtlesOfBreed("PLAYERS").ask(function() {
         SelfManager.self().setXY(MousePrims.getX(), MousePrims.getY());
@@ -279,8 +297,10 @@ var procedures = (function() {
     else {
       world.turtleManager.turtlesOfBreed("PLAYERS").ask(function() { SelfManager.self().setVariable("hidden?", true); }, true);
     }
-  };
-  var checkPlayerCaught = function() {
+  });
+  procs["movePlayer"] = temp;
+  procs["MOVE-PLAYER"] = temp;
+  temp = (function() {
     var speedOfCaught = 0;
     var localBugs = 0;
     var snapMouseXcor = MousePrims.getX();
@@ -315,11 +335,13 @@ var procedures = (function() {
           }, true);
           SelfManager.self().die();
         }, true);
-        procedures.reproduceOneBug();
+        procedures["REPRODUCE-ONE-BUG"]();
       }
     }
-  };
-  var checkBirdCatch = function() {
+  });
+  procs["checkPlayerCaught"] = temp;
+  procs["CHECK-PLAYER-CAUGHT"] = temp;
+  temp = (function() {
     var speedOfCaught = 0;
     world.turtleManager.turtlesOfBreed("BIRDS").ask(function() {
       if (SelfManager.self().breedHere("BUGS").nonEmpty()) {
@@ -352,34 +374,40 @@ var procedures = (function() {
           SelfManager.self().die();
         }, true);
         SelfManager.self().setVariable("target", Nobody);
-        procedures.reproduceOneBug();
+        procedures["REPRODUCE-ONE-BUG"]();
       }
     }, true);
-  };
-  var reproduceOneBug = function() {
+  });
+  procs["checkBirdCatch"] = temp;
+  procs["CHECK-BIRD-CATCH"] = temp;
+  temp = (function() {
     ListPrims.oneOf(world.turtleManager.turtlesOfBreed("BUGS")).ask(function() {
       SelfManager.self().hatch(1, "").ask(function() {
-        procedures.mutateOffspringBug();
+        procedures["MUTATE-OFFSPRING-BUG"]();
         SelfManager.self().setVariable("heading", Prims.randomFloat(360));
-        procedures.attachVisionCone();
+        procedures["ATTACH-VISION-CONE"]();
       }, true);
     }, true);
-  };
-  var reproduceOneBird = function() {
+  });
+  procs["reproduceOneBug"] = temp;
+  procs["REPRODUCE-ONE-BUG"] = temp;
+  temp = (function() {
     var birdEnergySplit = 0;
     if (Prims.gt(world.turtleManager.turtlesOfBreed("BIRDS").size(), 0)) {
       ListPrims.oneOf(world.turtleManager.turtlesOfBreed("BIRDS")).ask(function() {
         birdEnergySplit = Prims.div(SelfManager.self().getVariable("eaten"), 2);
         SelfManager.self().setVariable("eaten", birdEnergySplit);
         SelfManager.self().hatch(1, "").ask(function() {
-          procedures.mutateOffspringBird();
+          procedures["MUTATE-OFFSPRING-BIRD"]();
           SelfManager.self().setVariable("heading", Prims.randomFloat(360));
-          procedures.attachVisionCone();
+          procedures["ATTACH-VISION-CONE"]();
         }, true);
       }, true);
     }
-  };
-  var mutateOffspringBug = function() {
+  });
+  procs["reproduceOneBird"] = temp;
+  procs["REPRODUCE-ONE-BIRD"] = temp;
+  temp = (function() {
     if (Prims.equality(Prims.random(2), 0)) {
       SelfManager.self().setVariable("vision", (SelfManager.self().getVariable("vision") + Prims.randomFloat(world.observer.getGlobal("bug-vision-mutation"))));
     }
@@ -404,8 +432,10 @@ var procedures = (function() {
     if (Prims.lt(SelfManager.self().getVariable("speed"), 0)) {
       SelfManager.self().setVariable("speed", 0);
     }
-  };
-  var mutateOffspringBird = function() {
+  });
+  procs["mutateOffspringBug"] = temp;
+  procs["MUTATE-OFFSPRING-BUG"] = temp;
+  temp = (function() {
     if (Prims.equality(Prims.random(2), 0)) {
       SelfManager.self().setVariable("vision", (SelfManager.self().getVariable("vision") + Prims.randomFloat(world.observer.getGlobal("bird-vision-mutation"))));
     }
@@ -430,18 +460,22 @@ var procedures = (function() {
     if (Prims.lt(SelfManager.self().getVariable("speed"), 0)) {
       SelfManager.self().setVariable("speed", 0);
     }
-  };
-  var checkVisualizeVisionConeChange = function() {
+  });
+  procs["mutateOffspringBird"] = temp;
+  procs["MUTATE-OFFSPRING-BIRD"] = temp;
+  temp = (function() {
     if (!Prims.equality(world.observer.getGlobal("old-show-initial-bug-vision-cone?"), world.observer.getGlobal("show-vision-cone?"))) {
       world.observer.setGlobal("old-show-initial-bug-vision-cone?", world.observer.getGlobal("show-vision-cone?"));
-      world.turtleManager.turtlesOfBreed("VISION-CONES").ask(function() { procedures.setVisualizeVisionCone(); }, true);
+      world.turtleManager.turtlesOfBreed("VISION-CONES").ask(function() { procedures["SET-VISUALIZE-VISION-CONE"](); }, true);
     }
     if (!Prims.equality(world.observer.getGlobal("old-vision-cone-distance"), world.observer.getGlobal("initial-bug-vision"))) {
       world.observer.setGlobal("old-vision-cone-distance", world.observer.getGlobal("initial-bug-vision"));
-      world.turtleManager.turtlesOfBreed("VISION-CONES").ask(function() { procedures.setVisualizeVisionCone(); }, true);
+      world.turtleManager.turtlesOfBreed("VISION-CONES").ask(function() { procedures["SET-VISUALIZE-VISION-CONE"](); }, true);
     }
-  };
-  var setVisualizeVisionCone = function() {
+  });
+  procs["checkVisualizeVisionConeChange"] = temp;
+  procs["CHECK-VISUALIZE-VISION-CONE-CHANGE"] = temp;
+  temp = (function() {
     var parentVision = ListPrims.oneOf(LinkPrims.inLinkNeighbors("LINKS")).projectionBy(function() { return SelfManager.self().getVariable("vision"); });
     if (world.observer.getGlobal("show-vision-cone?")) {
       SelfManager.self().setVariable("hidden?", false);
@@ -451,9 +485,13 @@ var procedures = (function() {
       SelfManager.self().setVariable("hidden?", true);
       SelfManager.self().setVariable("size", (2 * parentVision));
     }
-  };
-  var recolorShade = function() { SelfManager.self().setVariable("color", (111 + SelfManager.self().getVariable("speed"))); };
-  var recolorRainbow = function() {
+  });
+  procs["setVisualizeVisionCone"] = temp;
+  procs["SET-VISUALIZE-VISION-CONE"] = temp;
+  temp = (function() { SelfManager.self().setVariable("color", (111 + SelfManager.self().getVariable("speed"))); });
+  procs["recolorShade"] = temp;
+  procs["RECOLOR-SHADE"] = temp;
+  temp = (function() {
     if (Prims.equality(NLMath.floor(SelfManager.self().getVariable("speed")), 6)) {
       SelfManager.self().setVariable("color", 15);
     }
@@ -478,8 +516,10 @@ var procedures = (function() {
     if (Prims.lt(NLMath.floor(SelfManager.self().getVariable("speed")), 1)) {
       SelfManager.self().setVariable("color", (5 + 2));
     }
-  };
-  var doPlots = function() {
+  });
+  procs["recolorRainbow"] = temp;
+  procs["RECOLOR-RAINBOW"] = temp;
+  temp = (function() {
     if (Prims.equality(NLMath.mod(world.ticker.tickCount(), 100), 1)) {
       plotManager.setCurrentPlot("Avg. Vision vs. Time");
       plotManager.setCurrentPen("bugs");
@@ -500,16 +540,18 @@ var procedures = (function() {
         plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("avg-bird-speed"));
       }
       plotManager.setCurrentPlot("Speed of Bugs");
-      procedures.plotHistogramsBugsSpeed();
+      procedures["PLOT-HISTOGRAMS-BUGS-SPEED"]();
       plotManager.setCurrentPlot("Vision of Bugs");
-      procedures.plotHistogramsInitialBugVision();
+      procedures["PLOT-HISTOGRAMS-INITIAL-BUG-VISION"]();
       plotManager.setCurrentPlot("Speed of Birds");
-      procedures.plotHistogramsInitialBirdSpeed();
+      procedures["PLOT-HISTOGRAMS-INITIAL-BIRD-SPEED"]();
       plotManager.setCurrentPlot("Vision of Birds");
-      procedures.plotHistogramsInitialBirdVision();
+      procedures["PLOT-HISTOGRAMS-INITIAL-BIRD-VISION"]();
     }
-  };
-  var plotCaught = function() {
+  });
+  procs["doPlots"] = temp;
+  procs["DO-PLOTS"] = temp;
+  temp = (function() {
     plotManager.setCurrentPen("speed=1");
     plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("total-speed-1-caught"));
     plotManager.setCurrentPen("speed=2");
@@ -522,8 +564,10 @@ var procedures = (function() {
     plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("total-speed-5-caught"));
     plotManager.setCurrentPen("speed=6");
     plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("total-speed-6-caught"));
-  };
-  var plotPopulations = function() {
+  });
+  procs["plotCaught"] = temp;
+  procs["PLOT-CAUGHT"] = temp;
+  temp = (function() {
     plotManager.setCurrentPen("speed=1");
     plotManager.plotValue(world.turtleManager.turtlesOfBreed("BUGS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("speed"), 1); }).size());
     plotManager.setCurrentPen("speed=2");
@@ -536,85 +580,42 @@ var procedures = (function() {
     plotManager.plotValue(world.turtleManager.turtlesOfBreed("BUGS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("speed"), 5); }).size());
     plotManager.setCurrentPen("speed=6");
     plotManager.plotValue(world.turtleManager.turtlesOfBreed("BUGS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("speed"), 6); }).size());
-  };
-  var plotHistogramsBugsSpeed = function() {
+  });
+  procs["plotPopulations"] = temp;
+  procs["PLOT-POPULATIONS"] = temp;
+  temp = (function() {
     plotManager.setHistogramBarCount(10);
     plotManager.setCurrentPen("#");
     plotManager.setPenInterval(world.observer.getGlobal("histogram-interval-size"));
     plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed("BUGS").projectionBy(function() { return SelfManager.self().getVariable("speed"); }));
-  };
-  var plotHistogramsInitialBugVision = function() {
+  });
+  procs["plotHistogramsBugsSpeed"] = temp;
+  procs["PLOT-HISTOGRAMS-BUGS-SPEED"] = temp;
+  temp = (function() {
     plotManager.setHistogramBarCount(10);
     plotManager.setCurrentPen("#");
     plotManager.setPenInterval(world.observer.getGlobal("histogram-interval-size"));
     plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed("BUGS").projectionBy(function() { return SelfManager.self().getVariable("vision"); }));
-  };
-  var plotHistogramsInitialBirdSpeed = function() {
+  });
+  procs["plotHistogramsInitialBugVision"] = temp;
+  procs["PLOT-HISTOGRAMS-INITIAL-BUG-VISION"] = temp;
+  temp = (function() {
     plotManager.setHistogramBarCount(10);
     plotManager.setCurrentPen("#");
     plotManager.setPenInterval(world.observer.getGlobal("histogram-interval-size"));
     plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed("BIRDS").projectionBy(function() { return SelfManager.self().getVariable("speed"); }));
-  };
-  var plotHistogramsInitialBirdVision = function() {
+  });
+  procs["plotHistogramsInitialBirdSpeed"] = temp;
+  procs["PLOT-HISTOGRAMS-INITIAL-BIRD-SPEED"] = temp;
+  temp = (function() {
     plotManager.setHistogramBarCount(10);
     plotManager.setCurrentPen("#");
     plotManager.setPenInterval(world.observer.getGlobal("histogram-interval-size"));
     plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed("BIRDS").projectionBy(function() { return SelfManager.self().getVariable("vision"); }));
-  };
-  return {
-    "ATTACH-VISION-CONE":attachVisionCone,
-    "CHECK-BIRD-CATCH":checkBirdCatch,
-    "CHECK-PLAYER-CAUGHT":checkPlayerCaught,
-    "CHECK-VISUALIZE-VISION-CONE-CHANGE":checkVisualizeVisionConeChange,
-    "DO-PLOTS":doPlots,
-    "GO":go,
-    "MOVE-BIRDS":moveBirds,
-    "MOVE-BUGS":moveBugs,
-    "MOVE-PLAYER":movePlayer,
-    "MUTATE-OFFSPRING-BIRD":mutateOffspringBird,
-    "MUTATE-OFFSPRING-BUG":mutateOffspringBug,
-    "PLOT-CAUGHT":plotCaught,
-    "PLOT-HISTOGRAMS-BUGS-SPEED":plotHistogramsBugsSpeed,
-    "PLOT-HISTOGRAMS-INITIAL-BIRD-SPEED":plotHistogramsInitialBirdSpeed,
-    "PLOT-HISTOGRAMS-INITIAL-BIRD-VISION":plotHistogramsInitialBirdVision,
-    "PLOT-HISTOGRAMS-INITIAL-BUG-VISION":plotHistogramsInitialBugVision,
-    "PLOT-POPULATIONS":plotPopulations,
-    "RECOLOR-RAINBOW":recolorRainbow,
-    "RECOLOR-SHADE":recolorShade,
-    "REPRODUCE-BIRDS":reproduceBirds,
-    "REPRODUCE-ONE-BIRD":reproduceOneBird,
-    "REPRODUCE-ONE-BUG":reproduceOneBug,
-    "SET-VISUALIZE-VISION-CONE":setVisualizeVisionCone,
-    "SETUP":setup,
-    "UPDATE-VARIABLES":updateVariables,
-    "WIGGLE":wiggle,
-    "attachVisionCone":attachVisionCone,
-    "checkBirdCatch":checkBirdCatch,
-    "checkPlayerCaught":checkPlayerCaught,
-    "checkVisualizeVisionConeChange":checkVisualizeVisionConeChange,
-    "doPlots":doPlots,
-    "go":go,
-    "moveBirds":moveBirds,
-    "moveBugs":moveBugs,
-    "movePlayer":movePlayer,
-    "mutateOffspringBird":mutateOffspringBird,
-    "mutateOffspringBug":mutateOffspringBug,
-    "plotCaught":plotCaught,
-    "plotHistogramsBugsSpeed":plotHistogramsBugsSpeed,
-    "plotHistogramsInitialBirdSpeed":plotHistogramsInitialBirdSpeed,
-    "plotHistogramsInitialBirdVision":plotHistogramsInitialBirdVision,
-    "plotHistogramsInitialBugVision":plotHistogramsInitialBugVision,
-    "plotPopulations":plotPopulations,
-    "recolorRainbow":recolorRainbow,
-    "recolorShade":recolorShade,
-    "reproduceBirds":reproduceBirds,
-    "reproduceOneBird":reproduceOneBird,
-    "reproduceOneBug":reproduceOneBug,
-    "setVisualizeVisionCone":setVisualizeVisionCone,
-    "setup":setup,
-    "updateVariables":updateVariables,
-    "wiggle":wiggle
-  };
+  });
+  procs["plotHistogramsInitialBirdVision"] = temp;
+  procs["PLOT-HISTOGRAMS-INITIAL-BIRD-VISION"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("number-bugs", 30);
 world.observer.setGlobal("number-birds", 10);

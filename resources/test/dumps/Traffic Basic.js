@@ -78,19 +78,25 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
-    world.patches().ask(function() { procedures.setupRoad(); }, true);
-    procedures.setupCars();
+    world.patches().ask(function() { procedures["SETUP-ROAD"](); }, true);
+    procedures["SETUP-CARS"]();
     world.observer.watch(world.observer.getGlobal("sample-car"));
     world.ticker.reset();
-  };
-  var setupRoad = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     if ((Prims.lt(SelfManager.self().getPatchVariable("pycor"), 2) && Prims.gt(SelfManager.self().getPatchVariable("pycor"), -2))) {
       SelfManager.self().setPatchVariable("pcolor", 9.9);
     }
-  };
-  var setupCars = function() {
+  });
+  procs["setupRoad"] = temp;
+  procs["SETUP-ROAD"] = temp;
+  temp = (function() {
     try {
       if (Prims.gt(world.observer.getGlobal("number-of-cars"), world.topology.width)) {
         UserDialogPrims.confirm((Dump('') + Dump("There are too many cars for the amount of road.  Please decrease the NUMBER-OF-CARS slider to below ") + Dump((world.topology.width + 1)) + Dump(" and press the SETUP button again.  The setup has stopped.")));
@@ -104,7 +110,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("speed", (0.1 + Prims.randomFloat(0.9)));
         SelfManager.self().setVariable("speed-limit", 1);
         SelfManager.self().setVariable("speed-min", 0);
-        procedures.separateCars();
+        procedures["SEPARATE-CARS"]();
       }, true);
       world.observer.setGlobal("sample-car", ListPrims.oneOf(world.turtles()));
       world.observer.getGlobal("sample-car").ask(function() { SelfManager.self().setVariable("color", 15); }, true);
@@ -115,21 +121,25 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var separateCars = function() {
+  });
+  procs["setupCars"] = temp;
+  procs["SETUP-CARS"] = temp;
+  temp = (function() {
     if (SelfPrims.other(SelfManager.self().turtlesHere()).nonEmpty()) {
       SelfManager.self().fd(1);
-      procedures.separateCars();
+      procedures["SEPARATE-CARS"]();
     }
-  };
-  var go = function() {
+  });
+  procs["separateCars"] = temp;
+  procs["SEPARATE-CARS"] = temp;
+  temp = (function() {
     world.turtles().ask(function() {
       var carAhead = ListPrims.oneOf(Prims.turtlesOn(SelfManager.self().patchAhead(1)));
       if (!Prims.equality(carAhead, Nobody)) {
-        procedures.slowDownCar(carAhead);
+        procedures["SLOW-DOWN-CAR"](carAhead);
       }
       else {
-        procedures.speedUpCar();
+        procedures["SPEED-UP-CAR"]();
       }
       if (Prims.lt(SelfManager.self().getVariable("speed"), SelfManager.self().getVariable("speed-min"))) {
         SelfManager.self().setVariable("speed", SelfManager.self().getVariable("speed-min"));
@@ -140,29 +150,20 @@ var procedures = (function() {
       SelfManager.self().fd(SelfManager.self().getVariable("speed"));
     }, true);
     world.ticker.tick();
-  };
-  var slowDownCar = function(carAhead) {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function(carAhead) {
     SelfManager.self().setVariable("speed", (carAhead.projectionBy(function() { return SelfManager.self().getVariable("speed"); }) - world.observer.getGlobal("deceleration")));
-  };
-  var speedUpCar = function() {
+  });
+  procs["slowDownCar"] = temp;
+  procs["SLOW-DOWN-CAR"] = temp;
+  temp = (function() {
     SelfManager.self().setVariable("speed", (SelfManager.self().getVariable("speed") + world.observer.getGlobal("acceleration")));
-  };
-  return {
-    "GO":go,
-    "SEPARATE-CARS":separateCars,
-    "SETUP":setup,
-    "SETUP-CARS":setupCars,
-    "SETUP-ROAD":setupRoad,
-    "SLOW-DOWN-CAR":slowDownCar,
-    "SPEED-UP-CAR":speedUpCar,
-    "go":go,
-    "separateCars":separateCars,
-    "setup":setup,
-    "setupCars":setupCars,
-    "setupRoad":setupRoad,
-    "slowDownCar":slowDownCar,
-    "speedUpCar":speedUpCar
-  };
+  });
+  procs["speedUpCar"] = temp;
+  procs["SPEED-UP-CAR"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("number-of-cars", 20);
 world.observer.setGlobal("deceleration", 0.026);

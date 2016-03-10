@@ -80,64 +80,65 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var benchmark = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     workspace.rng.setSeed(0);
     workspace.timer.reset();
-    procedures.setup();
+    procedures["SETUP"]();
     for (var _index_93_99 = 0, _repeatcount_93_99 = StrictMath.floor(5000); _index_93_99 < _repeatcount_93_99; _index_93_99++){
-      procedures.go();
+      procedures["GO"]();
     }
     world.observer.setGlobal("result", workspace.timer.elapsed());
-  };
-  var setup = function() {
+  });
+  procs["benchmark"] = temp;
+  procs["BENCHMARK"] = temp;
+  temp = (function() {
     world.clearAll();
     world.patches().ask(function() {
       SelfManager.self().setPatchVariable("n", 2);
-      procedures.colorize();
+      procedures["COLORIZE"]();
     }, true);
     world.observer.setGlobal("total", (2 * world.patches().size()));
     world.ticker.reset();
-  };
-  var go = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     var activePatches = Prims.patchSet(ListPrims.oneOf(world.patches()));
     activePatches.ask(function() {
       SelfManager.self().setPatchVariable("n", (SelfManager.self().getPatchVariable("n") + 1));
       world.observer.setGlobal("total", (world.observer.getGlobal("total") + 1));
-      procedures.colorize();
+      procedures["COLORIZE"]();
     }, true);
     while (activePatches.nonEmpty()) {
       var overloadedPatches = activePatches.agentFilter(function() { return Prims.gt(SelfManager.self().getPatchVariable("n"), 3); });
       overloadedPatches.ask(function() {
         SelfManager.self().setPatchVariable("n", (SelfManager.self().getPatchVariable("n") - 4));
         world.observer.setGlobal("total", (world.observer.getGlobal("total") - 4));
-        procedures.colorize();
+        procedures["COLORIZE"]();
         SelfManager.self().getNeighbors4().ask(function() {
           SelfManager.self().setPatchVariable("n", (SelfManager.self().getPatchVariable("n") + 1));
           world.observer.setGlobal("total", (world.observer.getGlobal("total") + 1));
-          procedures.colorize();
+          procedures["COLORIZE"]();
         }, true);
       }, true);
       activePatches = Prims.patchSet(overloadedPatches.projectionBy(function() { return SelfManager.self().getNeighbors4(); }));
     }
     world.ticker.tick();
-  };
-  var colorize = function() {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     if (Prims.lte(SelfManager.self().getPatchVariable("n"), 3)) {
       SelfManager.self().setPatchVariable("pcolor", ListPrims.item(SelfManager.self().getPatchVariable("n"), [83, 54, 45, 25]));
     }
     else {
       SelfManager.self().setPatchVariable("pcolor", 15);
     }
-  };
-  return {
-    "BENCHMARK":benchmark,
-    "COLORIZE":colorize,
-    "GO":go,
-    "SETUP":setup,
-    "benchmark":benchmark,
-    "colorize":colorize,
-    "go":go,
-    "setup":setup
-  };
+  });
+  procs["colorize"] = temp;
+  procs["COLORIZE"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("plot?", false);

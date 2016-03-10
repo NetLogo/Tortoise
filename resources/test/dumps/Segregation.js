@@ -75,25 +75,29 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
     world.patches().ask(function() {
       if (Prims.lt(Prims.random(100), world.observer.getGlobal("density"))) {
         SelfManager.self().sprout(1, "TURTLES").ask(function() { SelfManager.self().setVariable("color", ListPrims.oneOf([15, 55])); }, true);
       }
     }, true);
-    procedures.updateTurtles();
-    procedures.updateGlobals();
+    procedures["UPDATE-TURTLES"]();
+    procedures["UPDATE-GLOBALS"]();
     world.ticker.reset();
-  };
-  var go = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     try {
       if (world.turtles().agentAll(function() { return SelfManager.self().getVariable("happy?"); })) {
         throw new Exception.StopInterrupt;
       }
-      procedures.moveUnhappyTurtles();
-      procedures.updateTurtles();
-      procedures.updateGlobals();
+      procedures["MOVE-UNHAPPY-TURTLES"]();
+      procedures["UPDATE-TURTLES"]();
+      procedures["UPDATE-GLOBALS"]();
       world.ticker.tick();
     } catch (e) {
       if (e instanceof Exception.StopInterrupt) {
@@ -102,19 +106,25 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var moveUnhappyTurtles = function() {
-    world.turtles().agentFilter(function() { return !SelfManager.self().getVariable("happy?"); }).ask(function() { procedures.findNewSpot(); }, true);
-  };
-  var findNewSpot = function() {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
+    world.turtles().agentFilter(function() { return !SelfManager.self().getVariable("happy?"); }).ask(function() { procedures["FIND-NEW-SPOT"](); }, true);
+  });
+  procs["moveUnhappyTurtles"] = temp;
+  procs["MOVE-UNHAPPY-TURTLES"] = temp;
+  temp = (function() {
     SelfManager.self().right(Prims.randomFloat(360));
     SelfManager.self().fd(Prims.randomFloat(10));
     if (SelfPrims.other(SelfManager.self().turtlesHere()).nonEmpty()) {
-      procedures.findNewSpot();
+      procedures["FIND-NEW-SPOT"]();
     }
     SelfManager.self().moveTo(SelfManager.self().getPatchHere());
-  };
-  var updateTurtles = function() {
+  });
+  procs["findNewSpot"] = temp;
+  procs["FIND-NEW-SPOT"] = temp;
+  temp = (function() {
     world.turtles().ask(function() {
       SelfManager.self().setVariable("similar-nearby", Prims.turtlesOn(SelfManager.self().getNeighbors()).agentFilter(function() {
         return Prims.equality(SelfManager.self().getVariable("color"), SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("color"); }));
@@ -136,27 +146,18 @@ var procedures = (function() {
         }
       }
     }, true);
-  };
-  var updateGlobals = function() {
+  });
+  procs["updateTurtles"] = temp;
+  procs["UPDATE-TURTLES"] = temp;
+  temp = (function() {
     var similarNeighbors = ListPrims.sum(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("similar-nearby"); }));
     var totalNeighbors = ListPrims.sum(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("total-nearby"); }));
     world.observer.setGlobal("percent-similar", (Prims.div(similarNeighbors, totalNeighbors) * 100));
     world.observer.setGlobal("percent-unhappy", (Prims.div(world.turtles().agentFilter(function() { return !SelfManager.self().getVariable("happy?"); }).size(), world.turtles().size()) * 100));
-  };
-  return {
-    "FIND-NEW-SPOT":findNewSpot,
-    "GO":go,
-    "MOVE-UNHAPPY-TURTLES":moveUnhappyTurtles,
-    "SETUP":setup,
-    "UPDATE-GLOBALS":updateGlobals,
-    "UPDATE-TURTLES":updateTurtles,
-    "findNewSpot":findNewSpot,
-    "go":go,
-    "moveUnhappyTurtles":moveUnhappyTurtles,
-    "setup":setup,
-    "updateGlobals":updateGlobals,
-    "updateTurtles":updateTurtles
-  };
+  });
+  procs["updateGlobals"] = temp;
+  procs["UPDATE-GLOBALS"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("%-similar-wanted", 30);
 world.observer.setGlobal("visualization", "square-x");

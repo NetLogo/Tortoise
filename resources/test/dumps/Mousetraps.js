@@ -73,7 +73,9 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
     world.observer.setGlobal("traps-triggered", 0);
     world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", (105 + 3)); }, true);
@@ -83,8 +85,10 @@ var procedures = (function() {
       SelfManager.self().setVariable("size", 1.5);
     }, true);
     world.ticker.reset();
-  };
-  var go = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     try {
       if (!world.turtles().nonEmpty()) {
         throw new Exception.StopInterrupt;
@@ -96,8 +100,8 @@ var procedures = (function() {
         else {
           SelfManager.self().setPatchVariable("pcolor", 15);
           world.observer.setGlobal("traps-triggered", (world.observer.getGlobal("traps-triggered") + 1));
-          SelfManager.self().hatch(1, "").ask(function() { procedures.move(); }, true);
-          procedures.move();
+          SelfManager.self().hatch(1, "").ask(function() { procedures["MOVE"](); }, true);
+          procedures["MOVE"]();
         }
       }, true);
       world.ticker.tick();
@@ -108,18 +112,15 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var move = function() {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     SelfManager.self().right(Prims.randomFloat(360));
     SelfManager.self().fd(Prims.randomFloat(world.observer.getGlobal("max-distance")));
-  };
-  return {
-    "GO":go,
-    "MOVE":move,
-    "SETUP":setup,
-    "go":go,
-    "move":move,
-    "setup":setup
-  };
+  });
+  procs["move"] = temp;
+  procs["MOVE"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("max-distance", 4.5);

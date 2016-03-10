@@ -51,19 +51,23 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
-    procedures.setupGrid();
-    procedures.readSwitches();
-    Prims.breedOn("CELLS", world.getPatchAt(0, 0)).ask(function() { procedures.becomeAlive(); }, true);
+    procedures["SETUP-GRID"]();
+    procedures["READ-SWITCHES"]();
+    Prims.breedOn("CELLS", world.getPatchAt(0, 0)).ask(function() { procedures["BECOME-ALIVE"](); }, true);
     world.ticker.reset();
-  };
-  var go = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     try {
       if (ListPrims.empty(world.observer.getGlobal("eligibles"))) {
         throw new Exception.StopInterrupt;
       }
-      ListPrims.oneOf(world.observer.getGlobal("eligibles")).ask(function() { procedures.becomeAlive(); }, true);
+      ListPrims.oneOf(world.observer.getGlobal("eligibles")).ask(function() { procedures["BECOME-ALIVE"](); }, true);
       world.ticker.tick();
     } catch (e) {
       if (e instanceof Exception.StopInterrupt) {
@@ -72,8 +76,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var becomeAlive = function() {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     SelfManager.self().hideTurtle(false);;
     SelfManager.self().setVariable("eligible?", false);
     world.observer.setGlobal("eligibles", ListPrims.remove(SelfManager.self(), world.observer.getGlobal("eligibles")));
@@ -82,10 +88,12 @@ var procedures = (function() {
       if (Prims.equality(SelfManager.self().getVariable("live-neighbor-count"), 6)) {
         SelfManager.self().setVariable("color", 15);
       }
-      procedures.updateEligibility();
+      procedures["UPDATE-ELIGIBILITY"]();
     }, true);
-  };
-  var updateEligibility = function() {
+  });
+  procs["becomeAlive"] = temp;
+  procs["BECOME-ALIVE"] = temp;
+  temp = (function() {
     if (SelfManager.self().getVariable("eligible?")) {
       if (!ListPrims.member(SelfManager.self().getVariable("live-neighbor-count"), world.observer.getGlobal("switches"))) {
         SelfManager.self().setVariable("eligible?", false);
@@ -98,8 +106,10 @@ var procedures = (function() {
         world.observer.setGlobal("eligibles", ListPrims.fput(SelfManager.self(), world.observer.getGlobal("eligibles")));
       }
     }
-  };
-  var readSwitches = function() {
+  });
+  procs["updateEligibility"] = temp;
+  procs["UPDATE-ELIGIBILITY"] = temp;
+  temp = (function() {
     world.observer.setGlobal("switches", []);
     if (world.observer.getGlobal("one-neighbor?")) {
       world.observer.setGlobal("switches", ListPrims.lput(1, world.observer.getGlobal("switches")));
@@ -123,8 +133,10 @@ var procedures = (function() {
       SelfManager.self().setVariable("eligible?", (SelfManager.self().getVariable("hidden?") && ListPrims.member(SelfManager.self().getVariable("live-neighbor-count"), world.observer.getGlobal("switches"))));
     }, true);
     world.observer.setGlobal("eligibles", world.turtleManager.turtlesOfBreed("CELLS").agentFilter(function() { return SelfManager.self().getVariable("eligible?"); }).projectionBy(function() { return SelfManager.self(); }));
-  };
-  var setupGrid = function() {
+  });
+  procs["readSwitches"] = temp;
+  procs["READ-SWITCHES"] = temp;
+  temp = (function() {
     BreedManager.setDefaultShape(world.turtles().getSpecialName(), "hex")
     world.patches().ask(function() {
       SelfManager.self().sprout(1, "CELLS").ask(function() {
@@ -144,21 +156,10 @@ var procedures = (function() {
         SelfManager.self().setVariable("hex-neighbors", Prims.breedOn("CELLS", world.patches().atPoints([[0, 1], [1, 1], [1, 0], [0, -1], [-1, 0], [-1, 1]])));
       }
     }, true);
-  };
-  return {
-    "BECOME-ALIVE":becomeAlive,
-    "GO":go,
-    "READ-SWITCHES":readSwitches,
-    "SETUP":setup,
-    "SETUP-GRID":setupGrid,
-    "UPDATE-ELIGIBILITY":updateEligibility,
-    "becomeAlive":becomeAlive,
-    "go":go,
-    "readSwitches":readSwitches,
-    "setup":setup,
-    "setupGrid":setupGrid,
-    "updateEligibility":updateEligibility
-  };
+  });
+  procs["setupGrid"] = temp;
+  procs["SETUP-GRID"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("one-neighbor?", true);
 world.observer.setGlobal("two-neighbors?", true);

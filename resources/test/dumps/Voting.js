@@ -51,15 +51,19 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
     world.patches().ask(function() {
       SelfManager.self().setPatchVariable("vote", Prims.random(2));
-      procedures.recolorPatch();
+      procedures["RECOLOR-PATCH"]();
     }, true);
     world.ticker.reset();
-  };
-  var go = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     world.patches().ask(function() {
       SelfManager.self().setPatchVariable("total", ListPrims.sum(SelfManager.self().getNeighbors().projectionBy(function() { return SelfManager.self().getPatchVariable("vote"); })));
     }, true);
@@ -91,26 +95,23 @@ var procedures = (function() {
           SelfManager.self().setPatchVariable("vote", 0);
         }
       }
-      procedures.recolorPatch();
+      procedures["RECOLOR-PATCH"]();
     }, true);
     world.ticker.tick();
-  };
-  var recolorPatch = function() {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     if (Prims.equality(SelfManager.self().getPatchVariable("vote"), 0)) {
       SelfManager.self().setPatchVariable("pcolor", 55);
     }
     else {
       SelfManager.self().setPatchVariable("pcolor", 105);
     }
-  };
-  return {
-    "GO":go,
-    "RECOLOR-PATCH":recolorPatch,
-    "SETUP":setup,
-    "go":go,
-    "recolorPatch":recolorPatch,
-    "setup":setup
-  };
+  });
+  procs["recolorPatch"] = temp;
+  procs["RECOLOR-PATCH"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("change-vote-if-tied?", false);
 world.observer.setGlobal("award-close-calls-to-loser?", false);

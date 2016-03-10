@@ -94,7 +94,9 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
     BreedManager.setDefaultShape(world.turtles().getSpecialName(), "person")
     world.turtleManager.createTurtles(world.observer.getGlobal("num-recyclers"), "RECYCLERS").ask(function() { SelfManager.self().setVariable("color", 105); }, true);
@@ -106,15 +108,17 @@ var procedures = (function() {
     }, true);
     world.patches().ask(function() {
       SelfManager.self().setPatchVariable("resource-type", "new");
-      procedures.updatePatch();
+      procedures["UPDATE-PATCH"]();
     }, true);
     world.ticker.reset();
-  };
-  var go = function() {
-    world.turtleManager.turtlesOfBreed("RECYCLERS").ask(function() { procedures.recyclerProcessPatch(); }, true);
-    world.turtleManager.turtlesOfBreed("WASTEFULS").ask(function() { procedures.wastefulProcessPatch(); }, true);
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
+    world.turtleManager.turtlesOfBreed("RECYCLERS").ask(function() { procedures["RECYCLER-PROCESS-PATCH"](); }, true);
+    world.turtleManager.turtlesOfBreed("WASTEFULS").ask(function() { procedures["WASTEFUL-PROCESS-PATCH"](); }, true);
     world.turtles().ask(function() {
-      procedures.move();
+      procedures["MOVE"]();
       if (Prims.gt(SelfManager.self().getVariable("energy"), world.observer.getGlobal("max-stored-energy"))) {
         SelfManager.self().setVariable("energy", world.observer.getGlobal("max-stored-energy"));
       }
@@ -128,11 +132,13 @@ var procedures = (function() {
     else {
       world.turtles().ask(function() { SelfManager.self().setVariable("label", ""); }, true);
     }
-    procedures.updateEnvironment();
-    world.patches().ask(function() { procedures.updatePatch(); }, true);
+    procedures["UPDATE-ENVIRONMENT"]();
+    world.patches().ask(function() { procedures["UPDATE-PATCH"](); }, true);
     world.ticker.tick();
-  };
-  var move = function() {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     var targetPatch = ListPrims.oneOf(SelfManager.self().getNeighbors());
     if (world.observer.getGlobal("agents-seek-resources?")) {
       var candidateMoves = SelfManager.self().getNeighbors().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "new"); });
@@ -149,8 +155,10 @@ var procedures = (function() {
     SelfManager.self().face(targetPatch);
     SelfManager.self().moveTo(targetPatch);
     SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") - 1));
-  };
-  var recyclerProcessPatch = function() {
+  });
+  procs["move"] = temp;
+  procs["MOVE"] = temp;
+  temp = (function() {
     if (Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "new")) {
       if (Prims.lte(SelfManager.self().getVariable("energy"), (world.observer.getGlobal("max-stored-energy") - 2))) {
         SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") + 2));
@@ -167,8 +175,10 @@ var procedures = (function() {
         SelfManager.self().setPatchVariable("resource-type", "recycled");
       }
     }
-  };
-  var wastefulProcessPatch = function() {
+  });
+  procs["recyclerProcessPatch"] = temp;
+  procs["RECYCLER-PROCESS-PATCH"] = temp;
+  temp = (function() {
     if (Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "new")) {
       if (Prims.lte(SelfManager.self().getVariable("energy"), (world.observer.getGlobal("max-stored-energy") - 4))) {
         SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") + 4));
@@ -183,8 +193,10 @@ var procedures = (function() {
         }
       }
     }
-  };
-  var updatePatch = function() {
+  });
+  procs["wastefulProcessPatch"] = temp;
+  procs["WASTEFUL-PROCESS-PATCH"] = temp;
+  temp = (function() {
     if (Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "new")) {
       SelfManager.self().setPatchVariable("pcolor", 55);
     }
@@ -196,8 +208,10 @@ var procedures = (function() {
         SelfManager.self().setPatchVariable("pcolor", (45 - 1));
       }
     }
-  };
-  var updateEnvironment = function() {
+  });
+  procs["updatePatch"] = temp;
+  procs["UPDATE-PATCH"] = temp;
+  temp = (function() {
     world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "recycled"); }).ask(function() {
       if (Prims.lt(Prims.random(100), Prims.div(world.observer.getGlobal("resource-regeneration"), 10))) {
         SelfManager.self().setPatchVariable("resource-type", "new");
@@ -208,23 +222,10 @@ var procedures = (function() {
         SelfManager.self().setPatchVariable("resource-type", "new");
       }
     }, true);
-  };
-  return {
-    "GO":go,
-    "MOVE":move,
-    "RECYCLER-PROCESS-PATCH":recyclerProcessPatch,
-    "SETUP":setup,
-    "UPDATE-ENVIRONMENT":updateEnvironment,
-    "UPDATE-PATCH":updatePatch,
-    "WASTEFUL-PROCESS-PATCH":wastefulProcessPatch,
-    "go":go,
-    "move":move,
-    "recyclerProcessPatch":recyclerProcessPatch,
-    "setup":setup,
-    "updateEnvironment":updateEnvironment,
-    "updatePatch":updatePatch,
-    "wastefulProcessPatch":wastefulProcessPatch
-  };
+  });
+  procs["updateEnvironment"] = temp;
+  procs["UPDATE-ENVIRONMENT"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("num-recyclers", 25);
 world.observer.setGlobal("num-wastefuls", 25);

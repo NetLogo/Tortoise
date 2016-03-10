@@ -74,7 +74,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Energy Histogram', 'avg-energy')(function() {
         plotManager.resetPen();
-        var _maybestop_49_63 = procedures.drawVertLine(world.observer.getGlobal("avg-energy"));
+        var _maybestop_49_63 = procedures["DRAW-VERT-LINE"](world.observer.getGlobal("avg-energy"));
         if (_maybestop_49_63 instanceof Exception.StopInterrupt) { return _maybestop_49_63; };
       });
     });
@@ -82,7 +82,7 @@ modelConfig.plots = [(function() {
   new PenBundle.Pen('init-avg-energy', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Energy Histogram', 'init-avg-energy')(function() {
-        var _maybestop_33_47 = procedures.drawVertLine(world.observer.getGlobal("init-avg-energy"));
+        var _maybestop_33_47 = procedures["DRAW-VERT-LINE"](world.observer.getGlobal("init-avg-energy"));
         if (_maybestop_33_47 instanceof Exception.StopInterrupt) { return _maybestop_33_47; };
       });
     });
@@ -162,7 +162,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Speed Histogram', 'avg-speed')(function() {
         plotManager.resetPen();
-        var _maybestop_50_64 = procedures.drawVertLine(world.observer.getGlobal("avg-speed"));
+        var _maybestop_50_64 = procedures["DRAW-VERT-LINE"](world.observer.getGlobal("avg-speed"));
         if (_maybestop_50_64 instanceof Exception.StopInterrupt) { return _maybestop_50_64; };
       });
     });
@@ -170,7 +170,7 @@ modelConfig.plots = [(function() {
   new PenBundle.Pen('init-avg-speed', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Speed Histogram', 'init-avg-speed')(function() {
-        var _maybestop_33_47 = procedures.drawVertLine(world.observer.getGlobal("init-avg-speed"));
+        var _maybestop_33_47 = procedures["DRAW-VERT-LINE"](world.observer.getGlobal("init-avg-speed"));
         if (_maybestop_33_47 instanceof Exception.StopInterrupt) { return _maybestop_33_47; };
       });
     });
@@ -202,21 +202,25 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
     BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("PARTICLES").getSpecialName(), "circle")
     world.observer.setGlobal("max-tick-delta", 0.1073);
-    procedures.makeParticles();
-    procedures.updateVariables();
+    procedures["MAKE-PARTICLES"]();
+    procedures["UPDATE-VARIABLES"]();
     world.observer.setGlobal("init-avg-speed", world.observer.getGlobal("avg-speed"));
     world.observer.setGlobal("init-avg-energy", world.observer.getGlobal("avg-energy"));
     world.ticker.reset();
-  };
-  var go = function() {
-    world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() { procedures.move(); }, true);
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
+    world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() { procedures["MOVE"](); }, true);
     world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() {
       if (world.observer.getGlobal("collide?")) {
-        procedures.checkForCollision();
+        procedures["CHECK-FOR-COLLISION"]();
       }
     }, true);
     if (world.observer.getGlobal("trace?")) {
@@ -227,13 +231,15 @@ var procedures = (function() {
     }
     world.ticker.tickAdvance(world.observer.getGlobal("tick-delta"));
     if (Prims.gt(NLMath.floor(world.ticker.tickCount()), NLMath.floor((world.ticker.tickCount() - world.observer.getGlobal("tick-delta"))))) {
-      procedures.updateVariables();
+      procedures["UPDATE-VARIABLES"]();
       plotManager.updatePlots();
     }
-    procedures.calculateTickDelta();
+    procedures["CALCULATE-TICK-DELTA"]();
     notImplemented('display', undefined)();
-  };
-  var updateVariables = function() {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     world.observer.setGlobal("medium", world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); }).size());
     world.observer.setGlobal("slow", world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 105); }).size());
     world.observer.setGlobal("fast", world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); }).size());
@@ -242,34 +248,42 @@ var procedures = (function() {
     world.observer.setGlobal("percent-fast", (Prims.div(world.observer.getGlobal("fast"), world.turtleManager.turtlesOfBreed("PARTICLES").size()) * 100));
     world.observer.setGlobal("avg-speed", ListPrims.mean(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("speed"); })));
     world.observer.setGlobal("avg-energy", ListPrims.mean(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("energy"); })));
-  };
-  var calculateTickDelta = function() {
+  });
+  procs["updateVariables"] = temp;
+  procs["UPDATE-VARIABLES"] = temp;
+  temp = (function() {
     if (world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.gt(SelfManager.self().getVariable("speed"), 0); }).nonEmpty()) {
       world.observer.setGlobal("tick-delta", ListPrims.min(ListPrims.list(Prims.div(1, NLMath.ceil(ListPrims.max(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("speed"); })))), world.observer.getGlobal("max-tick-delta"))));
     }
     else {
       world.observer.setGlobal("tick-delta", world.observer.getGlobal("max-tick-delta"));
     }
-  };
-  var move = function() {
+  });
+  procs["calculateTickDelta"] = temp;
+  procs["CALCULATE-TICK-DELTA"] = temp;
+  temp = (function() {
     if (!Prims.equality(SelfManager.self().patchAhead((SelfManager.self().getVariable("speed") * world.observer.getGlobal("tick-delta"))), SelfManager.self().getPatchHere())) {
       SelfManager.self().setVariable("last-collision", Nobody);
     }
     SelfManager.self().jumpIfAble((SelfManager.self().getVariable("speed") * world.observer.getGlobal("tick-delta")));
-  };
-  var checkForCollision = function() {
+  });
+  procs["move"] = temp;
+  procs["MOVE"] = temp;
+  temp = (function() {
     if (Prims.equality(SelfPrims.other(SelfManager.self().breedHere("PARTICLES")).size(), 1)) {
       var candidate = ListPrims.oneOf(SelfPrims.other(SelfManager.self().breedHere("PARTICLES").agentFilter(function() {
         return (Prims.lt(SelfManager.self().getVariable("who"), SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("who"); })) && !Prims.equality(SelfManager.myself(), SelfManager.self().getVariable("last-collision")));
       })));
       if ((!Prims.equality(candidate, Nobody) && (Prims.gt(SelfManager.self().getVariable("speed"), 0) || Prims.gt(candidate.projectionBy(function() { return SelfManager.self().getVariable("speed"); }), 0)))) {
-        procedures.collideWith(candidate);
+        procedures["COLLIDE-WITH"](candidate);
         SelfManager.self().setVariable("last-collision", candidate);
         candidate.ask(function() { SelfManager.self().setVariable("last-collision", SelfManager.myself()); }, true);
       }
     }
-  };
-  var collideWith = function(otherParticle) {
+  });
+  procs["checkForCollision"] = temp;
+  procs["CHECK-FOR-COLLISION"] = temp;
+  temp = (function(otherParticle) {
     var mass2 = otherParticle.projectionBy(function() { return SelfManager.self().getVariable("mass"); });
     var speed2 = otherParticle.projectionBy(function() { return SelfManager.self().getVariable("speed"); });
     var heading2 = otherParticle.projectionBy(function() { return SelfManager.self().getVariable("heading"); });
@@ -293,10 +307,12 @@ var procedures = (function() {
         SelfManager.self().setVariable("heading", (theta - NLMath.atan(v2l, v2t)));
       }
     }, true);
-    procedures.recolor();
-    otherParticle.ask(function() { procedures.recolor(); }, true);
-  };
-  var recolor = function() {
+    procedures["RECOLOR"]();
+    otherParticle.ask(function() { procedures["RECOLOR"](); }, true);
+  });
+  procs["collideWith"] = temp;
+  procs["COLLIDE-WITH"] = temp;
+  temp = (function() {
     if (Prims.lt(SelfManager.self().getVariable("speed"), (0.5 * 10))) {
       SelfManager.self().setVariable("color", 105);
     }
@@ -308,31 +324,39 @@ var procedures = (function() {
         SelfManager.self().setVariable("color", 55);
       }
     }
-  };
-  var makeParticles = function() {
+  });
+  procs["recolor"] = temp;
+  procs["RECOLOR"] = temp;
+  temp = (function() {
     world.turtleManager.createTurtles(world.observer.getGlobal("number-of-particles"), "PARTICLES").ask(function() {
-      procedures.setupParticle();
-      procedures.randomPosition();
-      procedures.recolor();
+      procedures["SETUP-PARTICLE"]();
+      procedures["RANDOM-POSITION"]();
+      procedures["RECOLOR"]();
     }, true);
-    procedures.calculateTickDelta();
-  };
-  var setupParticle = function() {
+    procedures["CALCULATE-TICK-DELTA"]();
+  });
+  procs["makeParticles"] = temp;
+  procs["MAKE-PARTICLES"] = temp;
+  temp = (function() {
     SelfManager.self().setVariable("speed", world.observer.getGlobal("init-particle-speed"));
     SelfManager.self().setVariable("mass", world.observer.getGlobal("particle-mass"));
     SelfManager.self().setVariable("energy", ((0.5 * SelfManager.self().getVariable("mass")) * NLMath.pow(SelfManager.self().getVariable("speed"), 2)));
     SelfManager.self().setVariable("last-collision", Nobody);
-  };
-  var randomPosition = function() {
+  });
+  procs["setupParticle"] = temp;
+  procs["SETUP-PARTICLE"] = temp;
+  temp = (function() {
     SelfManager.self().setXY(((1 + world.topology.minPxcor) + Prims.randomFloat(((2 * world.topology.maxPxcor) - 2))), ((1 + world.topology.minPycor) + Prims.randomFloat(((2 * world.topology.maxPycor) - 2))));
-  };
-  var lastN = function(n, theList) {
+  });
+  procs["randomPosition"] = temp;
+  procs["RANDOM-POSITION"] = temp;
+  temp = (function(n, theList) {
     try {
       if (Prims.gte(n, ListPrims.length(theList))) {
         throw new Exception.ReportInterrupt(theList);
       }
       else {
-        throw new Exception.ReportInterrupt(procedures.lastN(n,ListPrims.butFirst(theList)));
+        throw new Exception.ReportInterrupt(procedures["LAST-N"](n,ListPrims.butFirst(theList)));
       }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
@@ -342,41 +366,18 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var drawVertLine = function(xval) {
+  });
+  procs["lastN"] = temp;
+  procs["LAST-N"] = temp;
+  temp = (function(xval) {
     plotManager.plotPoint(xval, plotManager.getPlotYMin());
     plotManager.lowerPen();
     plotManager.plotPoint(xval, plotManager.getPlotYMax());
     plotManager.raisePen();
-  };
-  return {
-    "CALCULATE-TICK-DELTA":calculateTickDelta,
-    "CHECK-FOR-COLLISION":checkForCollision,
-    "COLLIDE-WITH":collideWith,
-    "DRAW-VERT-LINE":drawVertLine,
-    "GO":go,
-    "LAST-N":lastN,
-    "MAKE-PARTICLES":makeParticles,
-    "MOVE":move,
-    "RANDOM-POSITION":randomPosition,
-    "RECOLOR":recolor,
-    "SETUP":setup,
-    "SETUP-PARTICLE":setupParticle,
-    "UPDATE-VARIABLES":updateVariables,
-    "calculateTickDelta":calculateTickDelta,
-    "checkForCollision":checkForCollision,
-    "collideWith":collideWith,
-    "drawVertLine":drawVertLine,
-    "go":go,
-    "lastN":lastN,
-    "makeParticles":makeParticles,
-    "move":move,
-    "randomPosition":randomPosition,
-    "recolor":recolor,
-    "setup":setup,
-    "setupParticle":setupParticle,
-    "updateVariables":updateVariables
-  };
+  });
+  procs["drawVertLine"] = temp;
+  procs["DRAW-VERT-LINE"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("number-of-particles", 100);
 world.observer.setGlobal("collide?", true);

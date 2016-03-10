@@ -51,19 +51,21 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     try {
       world.clearAll();
       world.patches().ask(function() {
-        SelfManager.self().setPatchVariable("inner-neighbors", procedures.ellipseIn(world.observer.getGlobal("inner-radius-x"),world.observer.getGlobal("inner-radius-y")));
-        SelfManager.self().setPatchVariable("outer-neighbors", procedures.ellipseRing(world.observer.getGlobal("outer-radius-x"),world.observer.getGlobal("outer-radius-y"),world.observer.getGlobal("inner-radius-x"),world.observer.getGlobal("inner-radius-y")));
+        SelfManager.self().setPatchVariable("inner-neighbors", procedures["ELLIPSE-IN"](world.observer.getGlobal("inner-radius-x"),world.observer.getGlobal("inner-radius-y")));
+        SelfManager.self().setPatchVariable("outer-neighbors", procedures["ELLIPSE-RING"](world.observer.getGlobal("outer-radius-x"),world.observer.getGlobal("outer-radius-y"),world.observer.getGlobal("inner-radius-x"),world.observer.getGlobal("inner-radius-y")));
       }, true);
       if (world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("outer-neighbors").size(), 0); }).nonEmpty()) {
         UserDialogPrims.confirm((Dump('') + Dump("It doesn't make sense that 'outer' is equal to or smaller than 'inner.' ") + Dump(" Please reset the sliders and press Setup again.")));
         throw new Exception.StopInterrupt;
       }
       else {
-        procedures.restart();
+        procedures["RESTART"]();
       }
       world.ticker.reset();
     } catch (e) {
@@ -73,8 +75,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var restart = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     world.patches().ask(function() {
       if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("initial-density"))) {
         SelfManager.self().setPatchVariable("pcolor", 9.9);
@@ -84,13 +88,17 @@ var procedures = (function() {
       }
     }, true);
     world.ticker.reset();
-  };
-  var go = function() {
-    world.patches().ask(function() { procedures.pickNewColor(); }, true);
+  });
+  procs["restart"] = temp;
+  procs["RESTART"] = temp;
+  temp = (function() {
+    world.patches().ask(function() { procedures["PICK-NEW-COLOR"](); }, true);
     world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", SelfManager.self().getPatchVariable("new-color")); }, true);
     world.ticker.tick();
-  };
-  var pickNewColor = function() {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     var activator = SelfManager.self().getPatchVariable("inner-neighbors").agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 9.9); }).size();
     var inhibitor = SelfManager.self().getPatchVariable("outer-neighbors").agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 9.9); }).size();
     var difference = (activator - (world.observer.getGlobal("ratio") * inhibitor));
@@ -102,11 +110,13 @@ var procedures = (function() {
         SelfManager.self().setPatchVariable("new-color", 0);
       }
     }
-  };
-  var ellipseIn = function(xRadius, yRadius) {
+  });
+  procs["pickNewColor"] = temp;
+  procs["PICK-NEW-COLOR"] = temp;
+  temp = (function(xRadius, yRadius) {
     try {
       throw new Exception.ReportInterrupt(SelfManager.self().inRadius(world.patches(), ListPrims.max(ListPrims.list(xRadius, yRadius))).agentFilter(function() {
-        return Prims.gte(1, (Prims.div(NLMath.pow(procedures.xdistance(SelfManager.myself()), 2), NLMath.pow(xRadius, 2)) + Prims.div(NLMath.pow(procedures.ydistance(SelfManager.myself()), 2), NLMath.pow(yRadius, 2))));
+        return Prims.gte(1, (Prims.div(NLMath.pow(procedures["XDISTANCE"](SelfManager.myself()), 2), NLMath.pow(xRadius, 2)) + Prims.div(NLMath.pow(procedures["YDISTANCE"](SelfManager.myself()), 2), NLMath.pow(yRadius, 2))));
       }));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
@@ -116,11 +126,13 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var ellipseRing = function(outxRadius, outyRadius, inxRadius, inyRadius) {
+  });
+  procs["ellipseIn"] = temp;
+  procs["ELLIPSE-IN"] = temp;
+  temp = (function(outxRadius, outyRadius, inxRadius, inyRadius) {
     try {
       throw new Exception.ReportInterrupt(SelfManager.self().inRadius(world.patches(), ListPrims.max(ListPrims.list(outxRadius, outyRadius))).agentFilter(function() {
-        return (Prims.gte(1, (Prims.div(NLMath.pow(procedures.xdistance(SelfManager.myself()), 2), NLMath.pow(outxRadius, 2)) + Prims.div(NLMath.pow(procedures.ydistance(SelfManager.myself()), 2), NLMath.pow(outyRadius, 2)))) && Prims.lt(1, (Prims.div(NLMath.pow(procedures.xdistance(SelfManager.myself()), 2), NLMath.pow(inxRadius, 2)) + Prims.div(NLMath.pow(procedures.ydistance(SelfManager.myself()), 2), NLMath.pow(inyRadius, 2)))));
+        return (Prims.gte(1, (Prims.div(NLMath.pow(procedures["XDISTANCE"](SelfManager.myself()), 2), NLMath.pow(outxRadius, 2)) + Prims.div(NLMath.pow(procedures["YDISTANCE"](SelfManager.myself()), 2), NLMath.pow(outyRadius, 2)))) && Prims.lt(1, (Prims.div(NLMath.pow(procedures["XDISTANCE"](SelfManager.myself()), 2), NLMath.pow(inxRadius, 2)) + Prims.div(NLMath.pow(procedures["YDISTANCE"](SelfManager.myself()), 2), NLMath.pow(inyRadius, 2)))));
       }));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
@@ -130,8 +142,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var xdistance = function(otherPatch) {
+  });
+  procs["ellipseRing"] = temp;
+  procs["ELLIPSE-RING"] = temp;
+  temp = (function(otherPatch) {
     try {
       throw new Exception.ReportInterrupt(SelfManager.self().distanceXY(otherPatch.projectionBy(function() { return SelfManager.self().getPatchVariable("pxcor"); }), SelfManager.self().getPatchVariable("pycor")));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
@@ -142,8 +156,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var ydistance = function(otherPatch) {
+  });
+  procs["xdistance"] = temp;
+  procs["XDISTANCE"] = temp;
+  temp = (function(otherPatch) {
     try {
       throw new Exception.ReportInterrupt(SelfManager.self().distanceXY(SelfManager.self().getPatchVariable("pxcor"), otherPatch.projectionBy(function() { return SelfManager.self().getPatchVariable("pycor"); })));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
@@ -154,25 +170,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  return {
-    "ELLIPSE-IN":ellipseIn,
-    "ELLIPSE-RING":ellipseRing,
-    "GO":go,
-    "PICK-NEW-COLOR":pickNewColor,
-    "RESTART":restart,
-    "SETUP":setup,
-    "XDISTANCE":xdistance,
-    "YDISTANCE":ydistance,
-    "ellipseIn":ellipseIn,
-    "ellipseRing":ellipseRing,
-    "go":go,
-    "pickNewColor":pickNewColor,
-    "restart":restart,
-    "setup":setup,
-    "xdistance":xdistance,
-    "ydistance":ydistance
-  };
+  });
+  procs["ydistance"] = temp;
+  procs["YDISTANCE"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("initial-density", 50);
 world.observer.setGlobal("ratio", 0.35);

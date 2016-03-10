@@ -66,7 +66,9 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
     BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
     BreedManager.setDefaultShape(world.links().getSpecialName(), "small-arrow-link")
@@ -89,11 +91,13 @@ var procedures = (function() {
     world.turtles().ask(function() {
       SelfManager.self().setXY(Prims.div((SelfManager.self().getVariable("xcor") * (world.topology.maxPxcor - 1)), (Prims.div(world.observer.getGlobal("grid-size"), 2) - 0.5)), Prims.div((SelfManager.self().getVariable("ycor") * (world.topology.maxPycor - 1)), (Prims.div(world.observer.getGlobal("grid-size"), 2) - 0.5)));
     }, true);
-    procedures.updateGlobals();
-    procedures.updateVisuals();
+    procedures["UPDATE-GLOBALS"]();
+    procedures["UPDATE-VISUALS"]();
     world.ticker.reset();
-  };
-  var go = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     world.turtles().ask(function() { SelfManager.self().setVariable("new-val", 0); }, true);
     world.turtles().ask(function() {
       var recipients = LinkPrims.outLinkNeighbors("ACTIVE-LINKS");
@@ -111,11 +115,13 @@ var procedures = (function() {
       }
     }, true);
     world.turtles().ask(function() { SelfManager.self().setVariable("val", SelfManager.self().getVariable("new-val")); }, true);
-    procedures.updateGlobals();
-    procedures.updateVisuals();
+    procedures["UPDATE-GLOBALS"]();
+    procedures["UPDATE-VISUALS"]();
     world.ticker.tick();
-  };
-  var rewireALink = function() {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     if (world.linkManager.linksOfBreed("ACTIVE-LINKS").nonEmpty()) {
       ListPrims.oneOf(world.linkManager.linksOfBreed("ACTIVE-LINKS")).ask(function() {
         SelfManager.self().setVariable("breed", world.linkManager.linksOfBreed("INACTIVE-LINKS"));
@@ -126,41 +132,36 @@ var procedures = (function() {
         SelfManager.self().setVariable('hidden?', false)
       }, true);
     }
-  };
-  var updateGlobals = function() {
+  });
+  procs["rewireALink"] = temp;
+  procs["REWIRE-A-LINK"] = temp;
+  temp = (function() {
     world.observer.setGlobal("total-val", ListPrims.sum(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("val"); })));
     world.observer.setGlobal("max-val", ListPrims.max(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("val"); })));
     if (world.linkManager.linksOfBreed("ACTIVE-LINKS").nonEmpty()) {
       world.observer.setGlobal("max-flow", ListPrims.max(world.linkManager.linksOfBreed("ACTIVE-LINKS").projectionBy(function() { return SelfManager.self().getVariable("current-flow"); })));
       world.observer.setGlobal("mean-flow", ListPrims.mean(world.linkManager.linksOfBreed("ACTIVE-LINKS").projectionBy(function() { return SelfManager.self().getVariable("current-flow"); })));
     }
-  };
-  var updateVisuals = function() {
-    world.turtles().ask(function() { procedures.updateNodeAppearance(); }, true);
-    world.linkManager.linksOfBreed("ACTIVE-LINKS").ask(function() { procedures.updateLinkAppearance(); }, true);
-  };
-  var updateNodeAppearance = function() {
+  });
+  procs["updateGlobals"] = temp;
+  procs["UPDATE-GLOBALS"] = temp;
+  temp = (function() {
+    world.turtles().ask(function() { procedures["UPDATE-NODE-APPEARANCE"](); }, true);
+    world.linkManager.linksOfBreed("ACTIVE-LINKS").ask(function() { procedures["UPDATE-LINK-APPEARANCE"](); }, true);
+  });
+  procs["updateVisuals"] = temp;
+  procs["UPDATE-VISUALS"] = temp;
+  temp = (function() {
     SelfManager.self().setVariable("size", (0.1 + (5 * NLMath.sqrt(Prims.div(SelfManager.self().getVariable("val"), world.observer.getGlobal("total-val"))))));
-  };
-  var updateLinkAppearance = function() {
+  });
+  procs["updateNodeAppearance"] = temp;
+  procs["UPDATE-NODE-APPEARANCE"] = temp;
+  temp = (function() {
     SelfManager.self().setVariable("color", ColorModel.scaleColor(5, Prims.div(SelfManager.self().getVariable("current-flow"), ((2 * world.observer.getGlobal("mean-flow")) + 1.0E-5)), -0.4, 1));
-  };
-  return {
-    "GO":go,
-    "REWIRE-A-LINK":rewireALink,
-    "SETUP":setup,
-    "UPDATE-GLOBALS":updateGlobals,
-    "UPDATE-LINK-APPEARANCE":updateLinkAppearance,
-    "UPDATE-NODE-APPEARANCE":updateNodeAppearance,
-    "UPDATE-VISUALS":updateVisuals,
-    "go":go,
-    "rewireALink":rewireALink,
-    "setup":setup,
-    "updateGlobals":updateGlobals,
-    "updateLinkAppearance":updateLinkAppearance,
-    "updateNodeAppearance":updateNodeAppearance,
-    "updateVisuals":updateVisuals
-  };
+  });
+  procs["updateLinkAppearance"] = temp;
+  procs["UPDATE-LINK-APPEARANCE"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("link-chance", 50);
 world.observer.setGlobal("grid-size", 9);

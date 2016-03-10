@@ -68,11 +68,15 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
-    procedures.setupCircle(world.observer.getGlobal("radius"),world.observer.getGlobal("number"));
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
+    procedures["SETUP-CIRCLE"](world.observer.getGlobal("radius"),world.observer.getGlobal("number"));
     plotManager.setupPlots();
-  };
-  var setupCircle = function(r, n) {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function(r, n) {
     world.clearAll();
     BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
     world.turtleManager.createOrderedTurtles(n, "").ask(function() {
@@ -80,29 +84,39 @@ var procedures = (function() {
       SelfManager.self().fd(r);
       SelfManager.self().right(90);
     }, true);
-  };
-  var allCircle = function() {
-    procedures.circle(world.observer.getGlobal("radius"));
+  });
+  procs["setupCircle"] = temp;
+  procs["SETUP-CIRCLE"] = temp;
+  temp = (function() {
+    procedures["CIRCLE"](world.observer.getGlobal("radius"));
     notImplemented('display', undefined)();
-  };
-  var circle = function(r) {
-    world.turtles().ask(function() { procedures.moveAlongCircle(r); }, true);
+  });
+  procs["allCircle"] = temp;
+  procs["ALL-CIRCLE"] = temp;
+  temp = (function(r) {
+    world.turtles().ask(function() { procedures["MOVE-ALONG-CIRCLE"](r); }, true);
     if (world.observer.getGlobal("plot?")) {
       plotManager.updatePlots();
     }
-  };
-  var moveAlongCircle = function(r) {
+  });
+  procs["circle"] = temp;
+  procs["CIRCLE"] = temp;
+  temp = (function(r) {
     SelfManager.self().fd((Prims.div((3.141592653589793 * r), 180) * Prims.div(world.observer.getGlobal("speed"), 50)));
     SelfManager.self().right(Prims.div(world.observer.getGlobal("speed"), 50));
-  };
-  var zeroCircle = function() {
+  });
+  procs["moveAlongCircle"] = temp;
+  procs["MOVE-ALONG-CIRCLE"] = temp;
+  temp = (function() {
     world.turtleManager.getTurtle(0).ask(function() {
       SelfManager.self().penManager.lowerPen();
-      procedures.moveAlongCircle(world.observer.getGlobal("radius"));
+      procedures["MOVE-ALONG-CIRCLE"](world.observer.getGlobal("radius"));
     }, true);
     notImplemented('display', undefined)();
-  };
-  var drawCircle = function() {
+  });
+  procs["zeroCircle"] = temp;
+  procs["ZERO-CIRCLE"] = temp;
+  temp = (function() {
     world.clearDrawing();
     world.turtleManager.createTurtles(1, "").ask(function() {
       SelfManager.self().setVariable("color", (5 - 3));
@@ -111,23 +125,10 @@ var procedures = (function() {
       SelfManager.self().stamp();
       SelfManager.self().die();
     }, true);
-  };
-  return {
-    "ALL-CIRCLE":allCircle,
-    "CIRCLE":circle,
-    "DRAW-CIRCLE":drawCircle,
-    "MOVE-ALONG-CIRCLE":moveAlongCircle,
-    "SETUP":setup,
-    "SETUP-CIRCLE":setupCircle,
-    "ZERO-CIRCLE":zeroCircle,
-    "allCircle":allCircle,
-    "circle":circle,
-    "drawCircle":drawCircle,
-    "moveAlongCircle":moveAlongCircle,
-    "setup":setup,
-    "setupCircle":setupCircle,
-    "zeroCircle":zeroCircle
-  };
+  });
+  procs["drawCircle"] = temp;
+  procs["DRAW-CIRCLE"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("radius", 20);
 world.observer.setGlobal("speed", 25);

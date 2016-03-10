@@ -89,7 +89,9 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
     world.observer.setGlobal("predator-color-visible", [255, 0, 0, 100]);
     world.observer.setGlobal("predator-color-invisible", [200, 200, 200, 100]);
@@ -103,24 +105,28 @@ var procedures = (function() {
     world.observer.setGlobal("wiggle?", true);
     world.observer.setGlobal("camouflage?", true);
     world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
-    procedures.setupBacteria();
-    procedures.setupPredator();
+    procedures["SETUP-BACTERIA"]();
+    procedures["SETUP-PREDATOR"]();
     world.ticker.reset();
-  };
-  var setupBacteria = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     Tasks.forEach(Tasks.commandTask(function() {
       var taskArguments = arguments;
       world.turtleManager.createTurtles(world.observer.getGlobal("initial-bacteria-per-variation"), "BACTERIA").ask(function() {
         SelfManager.self().setVariable("label-color", 0);
         SelfManager.self().setVariable("size", 1);
         SelfManager.self().setVariable("variation", taskArguments[0]);
-        procedures.makeFlagella();
+        procedures["MAKE-FLAGELLA"]();
         SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
       }, true);
     }), [1, 2, 3, 4, 5, 6]);
-    procedures.visualizeBacteria();
-  };
-  var setupPredator = function() {
+    procedures["VISUALIZE-BACTERIA"]();
+  });
+  procs["setupBacteria"] = temp;
+  procs["SETUP-BACTERIA"] = temp;
+  temp = (function() {
     world.turtleManager.createTurtles(1, "PREDATORS").ask(function() {
       SelfManager.self().setVariable("shape", "circle");
       SelfManager.self().setVariable("color", world.observer.getGlobal("predator-color-visible"));
@@ -129,8 +135,10 @@ var procedures = (function() {
       SelfManager.self().fd(-1);
       SelfManager.self().hideTurtle(true);;
     }, true);
-  };
-  var makeFlagella = function() {
+  });
+  procs["setupPredator"] = temp;
+  procs["SETUP-PREDATOR"] = temp;
+  temp = (function() {
     var flagellaShape = (Dump('') + Dump("flagella-") + Dump(SelfManager.self().getVariable("variation")));
     SelfManager.self().hatch(1, "").ask(function() {
       SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("FLAGELLA"));
@@ -144,30 +152,38 @@ var procedures = (function() {
         SelfManager.self().tie();
       }, true);
     }, true);
-  };
-  var go = function() {
-    procedures.checkCaught();
-    procedures.movePredator();
-    procedures.moveBacteria();
-    world.turtleManager.turtlesOfBreed("FLAGELLA").ask(function() { procedures.moveFlagella(); }, true);
-    procedures.visualizeBacteria();
-    procedures.visualizeRemovalSpots();
+  });
+  procs["makeFlagella"] = temp;
+  procs["MAKE-FLAGELLA"] = temp;
+  temp = (function() {
+    procedures["CHECK-CAUGHT"]();
+    procedures["MOVE-PREDATOR"]();
+    procedures["MOVE-BACTERIA"]();
+    world.turtleManager.turtlesOfBreed("FLAGELLA").ask(function() { procedures["MOVE-FLAGELLA"](); }, true);
+    procedures["VISUALIZE-BACTERIA"]();
+    procedures["VISUALIZE-REMOVAL-SPOTS"]();
     world.ticker.tick();
-  };
-  var death = function() {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     world.observer.setGlobal("bacteria-caught", (world.observer.getGlobal("bacteria-caught") + 1));
-    procedures.makeARemovalSpot();
+    procedures["MAKE-A-REMOVAL-SPOT"]();
     LinkPrims.outLinkNeighbors("LINKS").ask(function() { SelfManager.self().die(); }, true);
     SelfManager.self().die();
-  };
-  var makeARemovalSpot = function() {
+  });
+  procs["death"] = temp;
+  procs["DEATH"] = temp;
+  temp = (function() {
     SelfManager.self().hatch(1, "").ask(function() {
       SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("REMOVAL-SPOTS"));
       SelfManager.self().setVariable("size", 1.5);
       SelfManager.self().setVariable("countdown", 30);
     }, true);
-  };
-  var moveBacteria = function() {
+  });
+  procs["makeARemovalSpot"] = temp;
+  procs["MAKE-A-REMOVAL-SPOT"] = temp;
+  temp = (function() {
     world.turtleManager.turtlesOfBreed("BACTERIA").ask(function() {
       if (world.observer.getGlobal("wiggle?")) {
         SelfManager.self().right((Prims.randomFloat(25) - Prims.randomFloat(25)));
@@ -179,8 +195,10 @@ var procedures = (function() {
         SelfManager.self().right(180);
       }
     }, true);
-  };
-  var movePredator = function() {
+  });
+  procs["moveBacteria"] = temp;
+  procs["MOVE-BACTERIA"] = temp;
+  temp = (function() {
     if (Prims.equality(world.getPatchAt(MousePrims.getX(), MousePrims.getY()), world.observer.getGlobal("predator-location"))) {
       world.observer.setGlobal("tick-counter", (world.observer.getGlobal("tick-counter") + 1));
     }
@@ -201,15 +219,19 @@ var procedures = (function() {
       world.observer.setGlobal("predator-location", world.getPatchAt(SelfManager.self().getVariable("xcor"), SelfManager.self().getVariable("ycor")));
       SelfManager.self().setVariable("hidden?", !MousePrims.isInside());
     }, true);
-  };
-  var moveFlagella = function() {
+  });
+  procs["movePredator"] = temp;
+  procs["MOVE-PREDATOR"] = temp;
+  temp = (function() {
     var flagellaSwing = 15;
     var flagellaSpeed = 60;
     var newSwing = (flagellaSwing * NLMath.sin((flagellaSpeed * world.ticker.tickCount())));
     var myBacteria = ListPrims.oneOf(LinkPrims.inLinkNeighbors("LINKS"));
     SelfManager.self().setVariable("heading", (myBacteria.projectionBy(function() { return SelfManager.self().getVariable("heading"); }) + newSwing));
-  };
-  var checkCaught = function() {
+  });
+  procs["moveFlagella"] = temp;
+  procs["MOVE-FLAGELLA"] = temp;
+  temp = (function() {
     try {
       if ((!MousePrims.isDown() || !MousePrims.isInside())) {
         throw new Exception.StopInterrupt;
@@ -220,11 +242,11 @@ var procedures = (function() {
       if (!prey.nonEmpty()) {
         throw new Exception.StopInterrupt;
       }
-      ListPrims.oneOf(prey).ask(function() { procedures.death(); }, true);
+      ListPrims.oneOf(prey).ask(function() { procedures["DEATH"](); }, true);
       ListPrims.oneOf(world.turtleManager.turtlesOfBreed("BACTERIA")).ask(function() {
         SelfManager.self().hatch(1, "").ask(function() {
           SelfManager.self().right(Prims.random(360));
-          procedures.makeFlagella();
+          procedures["MAKE-FLAGELLA"]();
         }, true);
       }, true);
     } catch (e) {
@@ -234,8 +256,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var visualizeBacteria = function() {
+  });
+  procs["checkCaught"] = temp;
+  procs["CHECK-CAUGHT"] = temp;
+  temp = (function() {
     world.turtleManager.turtlesOfBreed("BACTERIA").ask(function() {
       if (Prims.equality(world.observer.getGlobal("visualize-variation"), "# flagella as label")) {
         SelfManager.self().setVariable("label", (Dump('') + Dump(SelfManager.self().getVariable("variation")) + Dump("     ")));
@@ -253,8 +277,10 @@ var procedures = (function() {
     world.turtleManager.turtlesOfBreed("FLAGELLA").ask(function() {
       SelfManager.self().setVariable("hidden?", ListPrims.member(world.observer.getGlobal("visualize-variation"), ["as color only", "# flagella as label", "none"]));
     }, true);
-  };
-  var visualizeRemovalSpots = function() {
+  });
+  procs["visualizeBacteria"] = temp;
+  procs["VISUALIZE-BACTERIA"] = temp;
+  temp = (function() {
     world.turtleManager.turtlesOfBreed("REMOVAL-SPOTS").ask(function() {
       SelfManager.self().setVariable("countdown", (SelfManager.self().getVariable("countdown") - 1));
       SelfManager.self().setVariable("color", ListPrims.lput((SelfManager.self().getVariable("countdown") * 4), [0, 100, 0]));
@@ -262,35 +288,10 @@ var procedures = (function() {
         SelfManager.self().die();
       }
     }, true);
-  };
-  return {
-    "CHECK-CAUGHT":checkCaught,
-    "DEATH":death,
-    "GO":go,
-    "MAKE-A-REMOVAL-SPOT":makeARemovalSpot,
-    "MAKE-FLAGELLA":makeFlagella,
-    "MOVE-BACTERIA":moveBacteria,
-    "MOVE-FLAGELLA":moveFlagella,
-    "MOVE-PREDATOR":movePredator,
-    "SETUP":setup,
-    "SETUP-BACTERIA":setupBacteria,
-    "SETUP-PREDATOR":setupPredator,
-    "VISUALIZE-BACTERIA":visualizeBacteria,
-    "VISUALIZE-REMOVAL-SPOTS":visualizeRemovalSpots,
-    "checkCaught":checkCaught,
-    "death":death,
-    "go":go,
-    "makeARemovalSpot":makeARemovalSpot,
-    "makeFlagella":makeFlagella,
-    "moveBacteria":moveBacteria,
-    "moveFlagella":moveFlagella,
-    "movePredator":movePredator,
-    "setup":setup,
-    "setupBacteria":setupBacteria,
-    "setupPredator":setupPredator,
-    "visualizeBacteria":visualizeBacteria,
-    "visualizeRemovalSpots":visualizeRemovalSpots
-  };
+  });
+  procs["visualizeRemovalSpots"] = temp;
+  procs["VISUALIZE-REMOVAL-SPOTS"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("initial-bacteria-per-variation", 5);
 world.observer.setGlobal("visualize-variation", "flagella and color");

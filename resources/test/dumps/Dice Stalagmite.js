@@ -89,7 +89,9 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
     world.observer.setGlobal("single-outcomes", []);
     world.observer.setGlobal("pair-outcomes", []);
@@ -113,21 +115,23 @@ var procedures = (function() {
       return (Prims.equality(SelfManager.self().getPatchVariable("pxcor"), -1) || Prims.equality(SelfManager.self().getPatchVariable("pxcor"), 0));
     }));
     world.ticker.reset();
-  };
-  var go = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     try {
       if ((world.observer.getGlobal("stop-at-top?") && Prims.turtlesOn(world.observer.getGlobal("top-row")).nonEmpty())) {
         UserDialogPrims.confirm("The top has been reached. Turn STOP-AT-TOP? off to keep going.");
         throw new Exception.StopInterrupt;
       }
       if (!world.observer.getGlobal("stop-at-top?")) {
-        procedures.bumpDown(world.turtleManager.turtlesOfBreed("STACKED-DICE").agentFilter(function() { return Prims.lt(SelfManager.self().getPatchVariable("pxcor"), 0); }));
-        procedures.bumpDown(world.turtleManager.turtlesOfBreed("STACKED-DICE").agentFilter(function() { return Prims.gt(SelfManager.self().getPatchVariable("pxcor"), 0); }));
+        procedures["BUMP-DOWN"](world.turtleManager.turtlesOfBreed("STACKED-DICE").agentFilter(function() { return Prims.lt(SelfManager.self().getPatchVariable("pxcor"), 0); }));
+        procedures["BUMP-DOWN"](world.turtleManager.turtlesOfBreed("STACKED-DICE").agentFilter(function() { return Prims.gt(SelfManager.self().getPatchVariable("pxcor"), 0); }));
       }
-      procedures.rollDice();
+      procedures["ROLL-DICE"]();
       while ((world.turtleManager.turtlesOfBreed("SINGLE-DICE").nonEmpty() || world.turtleManager.turtlesOfBreed("PAIRED-DICE").nonEmpty())) {
-        procedures.movePairedDice();
-        procedures.moveSingleDice();
+        procedures["MOVE-PAIRED-DICE"]();
+        procedures["MOVE-SINGLE-DICE"]();
         notImplemented('display', undefined)();
       }
       world.ticker.tick();
@@ -138,8 +142,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var rollDice = function() {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     world.observer.getGlobal("generators").ask(function() {
       SelfManager.self().sprout(1, "PAIRED-DICE").ask(function() {
         SelfManager.self().setVariable("color", 9.9);
@@ -160,8 +166,10 @@ var procedures = (function() {
     world.turtleManager.turtlesOfBreed("SINGLE-DICE").ask(function() {
       world.observer.setGlobal("single-outcomes", ListPrims.lput(SelfManager.self().getVariable("die-value"), world.observer.getGlobal("single-outcomes")));
     }, true);
-  };
-  var movePairedDice = function() {
+  });
+  procs["rollDice"] = temp;
+  procs["ROLL-DICE"] = temp;
+  temp = (function() {
     if (world.turtleManager.turtlesOfBreed("PAIRED-DICE").agentFilter(function() {
       return !Prims.equality(SelfManager.self().getVariable("pair-sum"), SelfManager.self().getPatchVariable("column"));
     }).nonEmpty()) {
@@ -170,33 +178,39 @@ var procedures = (function() {
     else {
       world.turtleManager.turtlesOfBreed("PAIRED-DICE").ask(function() {
         if (Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor)) {
-          procedures.pairedDieCheckVisible();
+          procedures["PAIRED-DIE-CHECK-VISIBLE"]();
         }
-        procedures.fall();
+        procedures["FALL"]();
       }, true);
     }
-  };
-  var moveSingleDice = function() {
+  });
+  procs["movePairedDice"] = temp;
+  procs["MOVE-PAIRED-DICE"] = temp;
+  temp = (function() {
     var howMany = world.turtleManager.turtlesOfBreed("SINGLE-DICE").size();
     if (Prims.gt(howMany, 0)) {
-      world.turtleManager.turtlesOfBreed("SINGLE-DICE").minOneOf(function() { return SelfManager.self().getPatchVariable("pycor"); }).ask(function() { procedures.moveSingleDie(); }, true);
+      world.turtleManager.turtlesOfBreed("SINGLE-DICE").minOneOf(function() { return SelfManager.self().getPatchVariable("pycor"); }).ask(function() { procedures["MOVE-SINGLE-DIE"](); }, true);
     }
     if (Prims.gt(howMany, 1)) {
-      world.turtleManager.turtlesOfBreed("SINGLE-DICE").maxOneOf(function() { return SelfManager.self().getPatchVariable("pycor"); }).ask(function() { procedures.moveSingleDie(); }, true);
+      world.turtleManager.turtlesOfBreed("SINGLE-DICE").maxOneOf(function() { return SelfManager.self().getPatchVariable("pycor"); }).ask(function() { procedures["MOVE-SINGLE-DIE"](); }, true);
     }
-  };
-  var moveSingleDie = function() {
+  });
+  procs["moveSingleDice"] = temp;
+  procs["MOVE-SINGLE-DICE"] = temp;
+  temp = (function() {
     if (!Prims.equality(SelfManager.self().getVariable("die-value"), SelfManager.self().getPatchVariable("column"))) {
       SelfManager.self().fd(1);
     }
     else {
       if (Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor)) {
-        procedures.singleDieCheckVisible();
+        procedures["SINGLE-DIE-CHECK-VISIBLE"]();
       }
-      procedures.fall();
+      procedures["FALL"]();
     }
-  };
-  var fall = function() {
+  });
+  procs["moveSingleDie"] = temp;
+  procs["MOVE-SINGLE-DIE"] = temp;
+  temp = (function() {
     SelfManager.self().setVariable("heading", 180);
     if ((Prims.gt(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor) && !Prims.breedOn("STACKED-DICE", SelfManager.self().patchAhead(1)).nonEmpty())) {
       SelfManager.self().fd(1);
@@ -206,8 +220,10 @@ var procedures = (function() {
       SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("STACKED-DICE"));
       SelfManager.self().setVariable("shape", oldShape);
     }
-  };
-  var singleDieCheckVisible = function() {
+  });
+  procs["fall"] = temp;
+  procs["FALL"] = temp;
+  temp = (function() {
     try {
       if (Prims.equality(world.observer.getGlobal("single-outcomes"), [])) {
         throw new Exception.StopInterrupt;
@@ -231,8 +247,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var pairedDieCheckVisible = function() {
+  });
+  procs["singleDieCheckVisible"] = temp;
+  procs["SINGLE-DIE-CHECK-VISIBLE"] = temp;
+  temp = (function() {
     try {
       if (Prims.equality(world.observer.getGlobal("pair-outcomes"), [])) {
         throw new Exception.StopInterrupt;
@@ -256,8 +274,10 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var bumpDown = function(candidates) {
+  });
+  procs["pairedDieCheckVisible"] = temp;
+  procs["PAIRED-DIE-CHECK-VISIBLE"] = temp;
+  temp = (function(candidates) {
     while (candidates.agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pycor"), (world.topology.maxPycor - 2)); }).nonEmpty()) {
       candidates.ask(function() {
         if (Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor)) {
@@ -266,28 +286,9 @@ var procedures = (function() {
         SelfManager.self().fd(1);
       }, true);
     }
-  };
-  return {
-    "BUMP-DOWN":bumpDown,
-    "FALL":fall,
-    "GO":go,
-    "MOVE-PAIRED-DICE":movePairedDice,
-    "MOVE-SINGLE-DICE":moveSingleDice,
-    "MOVE-SINGLE-DIE":moveSingleDie,
-    "PAIRED-DIE-CHECK-VISIBLE":pairedDieCheckVisible,
-    "ROLL-DICE":rollDice,
-    "SETUP":setup,
-    "SINGLE-DIE-CHECK-VISIBLE":singleDieCheckVisible,
-    "bumpDown":bumpDown,
-    "fall":fall,
-    "go":go,
-    "movePairedDice":movePairedDice,
-    "moveSingleDice":moveSingleDice,
-    "moveSingleDie":moveSingleDie,
-    "pairedDieCheckVisible":pairedDieCheckVisible,
-    "rollDice":rollDice,
-    "setup":setup,
-    "singleDieCheckVisible":singleDieCheckVisible
-  };
+  });
+  procs["bumpDown"] = temp;
+  procs["BUMP-DOWN"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("stop-at-top?", false);

@@ -131,24 +131,28 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.turtleManager.clearTurtles();
     plotManager.clearAllPlots();
     world.turtleManager.createTurtles(world.observer.getGlobal("number"), "").ask(function() {
       SelfManager.self().setVariable("color", ListPrims.item(Prims.random(world.observer.getGlobal("colors")), [5, 15, 25, 35, 45, 55, 65, 85, 95, 125]));
       SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
-      procedures.moveOffWall();
+      procedures["MOVE-OFF-WALL"]();
     }, true);
     world.ticker.reset();
-  };
-  var go = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     try {
       if (Prims.equality(ListPrims.variance(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("color"); })), 0)) {
         throw new Exception.StopInterrupt;
       }
       world.turtles().ask(function() {
         SelfManager.self().right((Prims.random(50) - Prims.random(50)));
-        procedures.meet();
+        procedures["MEET"]();
         if (Prims.equality(SelfManager.self().patchAhead(0.5).projectionBy(function() { return SelfManager.self().getPatchVariable("pcolor"); }), 0)) {
           SelfManager.self().fd(0.5);
         }
@@ -156,7 +160,7 @@ var procedures = (function() {
           SelfManager.self().right(Prims.random(360));
         }
       }, true);
-      procedures.findTopSpecies();
+      procedures["FIND-TOP-SPECIES"]();
       world.ticker.tick();
     } catch (e) {
       if (e instanceof Exception.StopInterrupt) {
@@ -165,14 +169,18 @@ var procedures = (function() {
         throw e;
       }
     }
-  };
-  var meet = function() {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
     var candidate = ListPrims.oneOf(SelfManager.self().turtlesAt(1, 0));
     if (!Prims.equality(candidate, Nobody)) {
       SelfManager.self().setVariable("color", candidate.projectionBy(function() { return SelfManager.self().getVariable("color"); }));
     }
-  };
-  var findTopSpecies = function() {
+  });
+  procs["meet"] = temp;
+  procs["MEET"] = temp;
+  temp = (function() {
     var winningAmount = 0;
     Tasks.forEach(Tasks.commandTask(function() {
       var taskArguments = arguments;
@@ -182,50 +190,43 @@ var procedures = (function() {
       }
     }), ColorModel.BASE_COLORS);
     world.observer.setGlobal("max-percent", Prims.div((100 * winningAmount), world.turtles().size()));
-  };
-  var placeWall = function() {
+  });
+  procs["findTopSpecies"] = temp;
+  procs["FIND-TOP-SPECIES"] = temp;
+  temp = (function() {
     if (MousePrims.isDown()) {
       world.patches().agentFilter(function() {
         return (Prims.equality(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), world.topology.maxPycor) || Prims.equality(SelfManager.self().getPatchVariable("pycor"), NLMath.round(MousePrims.getY())));
       }).ask(function() {
         SelfManager.self().setPatchVariable("pcolor", 9.9);
-        SelfManager.self().turtlesHere().ask(function() { procedures.moveOffWall(); }, true);
+        SelfManager.self().turtlesHere().ask(function() { procedures["MOVE-OFF-WALL"](); }, true);
       }, true);
       notImplemented('display', undefined)();
     }
-  };
-  var removeWall = function() {
+  });
+  procs["placeWall"] = temp;
+  procs["PLACE-WALL"] = temp;
+  temp = (function() {
     if (MousePrims.isDown()) {
       world.patches().agentFilter(function() {
         return Prims.equality(SelfManager.self().getPatchVariable("pycor"), NLMath.round(MousePrims.getY()));
       }).ask(function() { SelfManager.self().setPatchVariable("pcolor", 0); }, true);
       notImplemented('display', undefined)();
     }
-  };
-  var removeAllWalls = function() { world.clearPatches(); };
-  var moveOffWall = function() {
+  });
+  procs["removeWall"] = temp;
+  procs["REMOVE-WALL"] = temp;
+  temp = (function() { world.clearPatches(); });
+  procs["removeAllWalls"] = temp;
+  procs["REMOVE-ALL-WALLS"] = temp;
+  temp = (function() {
     while (!Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 0)) {
       SelfManager.self().moveTo(ListPrims.oneOf(SelfManager.self().getNeighbors()));
     }
-  };
-  return {
-    "FIND-TOP-SPECIES":findTopSpecies,
-    "GO":go,
-    "MEET":meet,
-    "MOVE-OFF-WALL":moveOffWall,
-    "PLACE-WALL":placeWall,
-    "REMOVE-ALL-WALLS":removeAllWalls,
-    "REMOVE-WALL":removeWall,
-    "SETUP":setup,
-    "findTopSpecies":findTopSpecies,
-    "go":go,
-    "meet":meet,
-    "moveOffWall":moveOffWall,
-    "placeWall":placeWall,
-    "removeAllWalls":removeAllWalls,
-    "removeWall":removeWall,
-    "setup":setup
-  };
+  });
+  procs["moveOffWall"] = temp;
+  procs["MOVE-OFF-WALL"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("colors", 5);
 world.observer.setGlobal("number", 300);

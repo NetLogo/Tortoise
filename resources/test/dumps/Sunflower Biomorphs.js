@@ -51,7 +51,9 @@ var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
 var procedures = (function() {
-  var setup = function() {
+  var procs = {};
+  var temp = undefined;
+  temp = (function() {
     world.clearAll();
     world.turtleManager.createTurtles((world.observer.getGlobal("rows") * world.observer.getGlobal("columns")), "SPAWNERS").ask(function() {
       SelfManager.self().setVariable("num-colors", (Prims.random(14) + 1));
@@ -60,11 +62,13 @@ var procedures = (function() {
       SelfManager.self().setVariable("size-modifier", Prims.randomFloat(2));
       SelfManager.self().hideTurtle(true);;
     }, true);
-    procedures.arrangeSpawners();
+    procedures["ARRANGE-SPAWNERS"]();
     world.observer.setGlobal("first-parent", Nobody);
     world.ticker.reset();
-  };
-  var arrangeSpawners = function() {
+  });
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
+  temp = (function() {
     var i = 0;
     while (Prims.lt(i, (world.observer.getGlobal("rows") * world.observer.getGlobal("columns")))) {
       world.turtleManager.getTurtle(i).ask(function() {
@@ -74,8 +78,10 @@ var procedures = (function() {
       }, true);
       i = (i + 1);
     }
-  };
-  var go = function() {
+  });
+  procs["arrangeSpawners"] = temp;
+  procs["ARRANGE-SPAWNERS"] = temp;
+  temp = (function() {
     world.turtleManager.turtlesOfBreed("SPAWNERS").ask(function() {
       SelfManager.self().hatch(1, "PETALS").ask(function() {
         SelfManager.self().setVariable("parent", SelfManager.myself());
@@ -97,10 +103,12 @@ var procedures = (function() {
     }, true);
     world.ticker.tick();
     if (MousePrims.isDown()) {
-      procedures.handleMouseDown();
+      procedures["HANDLE-MOUSE-DOWN"]();
     }
-  };
-  var repopulateFromTwo = function(parent1, parent2) {
+  });
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function(parent1, parent2) {
     world.turtleManager.turtlesOfBreed("PETALS").ask(function() { SelfManager.self().die(); }, true);
     world.turtleManager.turtlesOfBreed("SPAWNERS").ask(function() {
       if (world.observer.getGlobal("controlled-mutation?")) {
@@ -114,8 +122,10 @@ var procedures = (function() {
         SelfManager.self().setVariable("size-modifier", 1.5);
       }
     }, true);
-  };
-  var repopulateFromOne = function(parent1) {
+  });
+  procs["repopulateFromTwo"] = temp;
+  procs["REPOPULATE-FROM-TWO"] = temp;
+  temp = (function(parent1) {
     world.turtleManager.turtlesOfBreed("PETALS").ask(function() { SelfManager.self().die(); }, true);
     world.turtleManager.turtlesOfBreed("SPAWNERS").ask(function() {
       if (world.observer.getGlobal("controlled-mutation?")) {
@@ -129,15 +139,17 @@ var procedures = (function() {
         SelfManager.self().setVariable("size-modifier", 1.5);
       }
     }, true);
-  };
-  var handleMouseDown = function() {
+  });
+  procs["repopulateFromOne"] = temp;
+  procs["REPOPULATE-FROM-ONE"] = temp;
+  temp = (function() {
     var newParent = world.turtleManager.turtlesOfBreed("SPAWNERS").minOneOf(function() { return SelfManager.self().distanceXY(MousePrims.getX(), MousePrims.getY()); });
     if (world.observer.getGlobal("asexual?")) {
-      procedures.repopulateFromOne(newParent);
+      procedures["REPOPULATE-FROM-ONE"](newParent);
     }
     else {
       if (!Prims.equality(world.observer.getGlobal("first-parent"), Nobody)) {
-        procedures.repopulateFromTwo(world.observer.getGlobal("first-parent"),newParent);
+        procedures["REPOPULATE-FROM-TWO"](world.observer.getGlobal("first-parent"),newParent);
         world.observer.setGlobal("first-parent", Nobody);
         world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", 0); }, true);
       }
@@ -153,21 +165,10 @@ var procedures = (function() {
     while (MousePrims.isDown()) {
     
     }
-  };
-  return {
-    "ARRANGE-SPAWNERS":arrangeSpawners,
-    "GO":go,
-    "HANDLE-MOUSE-DOWN":handleMouseDown,
-    "REPOPULATE-FROM-ONE":repopulateFromOne,
-    "REPOPULATE-FROM-TWO":repopulateFromTwo,
-    "SETUP":setup,
-    "arrangeSpawners":arrangeSpawners,
-    "go":go,
-    "handleMouseDown":handleMouseDown,
-    "repopulateFromOne":repopulateFromOne,
-    "repopulateFromTwo":repopulateFromTwo,
-    "setup":setup
-  };
+  });
+  procs["handleMouseDown"] = temp;
+  procs["HANDLE-MOUSE-DOWN"] = temp;
+  return procs;
 })();
 world.observer.setGlobal("rows", 5);
 world.observer.setGlobal("columns", 5);
