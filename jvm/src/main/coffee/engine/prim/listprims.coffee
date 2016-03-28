@@ -269,9 +269,13 @@ module.exports =
     sort: (xs) ->
       type = NLType(xs)
       if type.isList()
-        filtered     = _.filter(xs, (x) -> x isnt Nobody)
-        forAll       = (f) -> _.all(filtered, f)
         agentClasses = [Turtle, Patch, Link]
+        findIsSortable =
+          (x) ->
+            (NLType(x).isNumber() or NLType(x).isString() or
+              (_(agentClasses).some((aClass) -> x instanceof aClass) and x.id isnt -1))
+        filtered = _.filter(xs, findIsSortable)
+        forAll   = (f) -> _.all(filtered, f)
         if _(filtered).isEmpty()
           filtered
         else if forAll((x) -> NLType(x).isNumber())

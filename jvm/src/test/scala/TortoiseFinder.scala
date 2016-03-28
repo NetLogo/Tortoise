@@ -246,8 +246,7 @@ private[tortoise] object Freebies {
   private val sortingHeteroListStr = "sorting heterogeneous lists doesn't work"
   private val sortingHeteroListReporterNames = Seq(
     "Lists::Sort2",
-    "Lists::Sort3",
-    "Lists::Sort5"
+    "Lists::Sort3"
   )
 
 }
