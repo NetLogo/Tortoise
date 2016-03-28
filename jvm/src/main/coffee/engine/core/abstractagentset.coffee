@@ -50,7 +50,9 @@ module.exports =
 
     # (Array[(Number, Number)]) => AbstractAgentSet[T]
     atPoints: (points) ->
-      require('./agentset/atpoints').call(this, points)
+      getSelf    =        => @_lazyGetSelfManager().self()
+      getPatchAt = (x, y) => @_lazyGetWorld().getPatchAt(x, y)
+      require('./agentset/atpoints')(getSelf, getPatchAt).call(this, points)
 
     # (Array[T]) => AbstractAgentSet[T]
     copyWithNewAgents: (agents) ->

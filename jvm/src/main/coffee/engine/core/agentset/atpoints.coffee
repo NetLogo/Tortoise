@@ -28,15 +28,15 @@ getPatchesAtPoints = (patchAt, points) ->
         throw new Error("Invalid list of points: #{Dumper(points)}")
   _(points).map(f).reject((x) -> x is Nobody).value()
 
-# (Array[Any]) => AbstractAgentSet[T]
+# (() => Agent, (Number, Number) => Patch) => (Array[Any]) => AbstractAgentSet[T]
 module.exports =
-  (points) ->
+  (getSelf, getPatchAt) -> (points) ->
 
     contains = (x) => @contains(x)
 
     breedName = @getSpecialName()
 
-    patchAt = genPatchGrabber(@_lazyGetSelfManager().self(), window.world.getPatchAt) # NO!
+    patchAt = genPatchGrabber(getSelf(), getPatchAt)
     patches = getPatchesAtPoints(patchAt, points)
 
     newAgents =
