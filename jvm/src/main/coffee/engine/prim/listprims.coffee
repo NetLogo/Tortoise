@@ -269,23 +269,54 @@ module.exports =
     sort: (xs) ->
       type = NLType(xs)
       if type.isList()
-        agentClasses = [Turtle, Patch, Link]
-        findIsSortable =
-          (x) ->
-            (NLType(x).isNumber() or NLType(x).isString() or
-              (_(agentClasses).some((aClass) -> x instanceof aClass) and x.id isnt -1))
-        filtered = _.filter(xs, findIsSortable)
-        forAll   = (f) -> _.all(filtered, f)
-        if _(filtered).isEmpty()
-          filtered
-        else if forAll((x) -> NLType(x).isNumber())
-          filtered.sort((x, y) -> Comparator.numericCompare(x, y).toInt)
-        else if forAll((x) -> NLType(x).isString())
-          filtered.sort()
-        else if _(agentClasses).some((agentClass) -> forAll((x) -> x instanceof agentClass))
-          stableSort(filtered)((x, y) -> x.compare(y).toInt)
-        else
-          throw new Error("We don't know how to sort your kind here!")
+
+        # data SortableType =
+        Number = {}
+        String = {}
+        Agent  = {}
+        None   = {}
+
+        f =
+          (acc, x) ->
+
+            xType =
+              if NLType(x).isNumber()
+                Number
+              else if NLType(x).isString()
+                String
+              else if ((x instanceof Turtle) or (x instanceof Patch) or (x instanceof Link)) and (x.id isnt -1)
+                Agent
+              else
+                None
+
+            [type, arr] = acc
+
+            switch xType
+              when Number # Numbers trump all
+                switch type
+                  when Number then [Number, arr.concat([x])]
+                  else             [Number, [x]]
+              when String # Strings trump agents
+                switch type
+                  when String      then [String, arr.concat([x])]
+                  when Agent, None then [String, [x]]
+                  else                  acc
+              when Agent
+                switch type
+                  when Agent then [Agent, arr.concat([x])]
+                  when None  then [Agent, [x]]
+                  else            acc
+              else acc
+
+        [filteredType, filteredItems] = _(xs).reduce(f, [None, []])
+
+        switch filteredType
+          when None   then filteredItems
+          when Number then filteredItems.sort((x, y) -> Comparator.numericCompare(x, y).toInt)
+          when String then filteredItems.sort()
+          when Agent  then stableSort(filteredItems)((x, y) -> x.compare(y).toInt)
+          else             throw new Error("We don't know how to sort your kind here!")
+
       else if type.isAgentSet()
         xs.sort()
       else

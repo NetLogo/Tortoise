@@ -69,7 +69,7 @@ class TestReporters extends ReporterTests with TortoiseFinder {
   import Freebies._
   override val freebies = Map(
     "Misc::Version" -> "Assumes JVM NetLogo version numbers"
-  ) ++ sortingHeteroListReporters ++ evalNotSupportedReporters ++ incErrorDetectReporters
+  ) ++ evalNotSupportedReporters ++ incErrorDetectReporters
 }
 
 class TestCommands extends CommandTests with TortoiseFinder {
@@ -89,7 +89,6 @@ private[tortoise] object Freebies {
 
   def incErrorDetectReporters    = asFreebieMap(incErrorDetectReporterNames,    incErrorDetectStr)
   def evalNotSupportedReporters  = asFreebieMap(evalNotSupportedReporterNames,  evalNotSupportedStr)
-  def sortingHeteroListReporters = asFreebieMap(sortingHeteroListReporterNames, sortingHeteroListStr)
 
   private def asFreebieMap(names: Seq[String], msg: String) = names.map(_ -> msg).toMap
 
@@ -240,13 +239,6 @@ private[tortoise] object Freebies {
     "CommandTasks::*ToString4",
     "CommandTasks::*ToString5",
     "CommandTasks::*ToString6"
-  )
-
-  // obscure
-  private val sortingHeteroListStr = "sorting heterogeneous lists doesn't work"
-  private val sortingHeteroListReporterNames = Seq(
-    "Lists::Sort2",
-    "Lists::Sort3"
   )
 
 }
