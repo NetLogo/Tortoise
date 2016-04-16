@@ -1,6 +1,5 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_                = require('lodash')
 Dump             = require('../dump')
 AbstractAgentSet = require('../core/abstractagentset')
 Link             = require('../core/link')
@@ -14,6 +13,9 @@ Exception        = require('util/exception')
 NLMath           = require('util/nlmath')
 stableSort       = require('util/stablesort')
 
+{ all, exists, filter, find, findIndex, foldl, head, isEmpty, length: arrayLength, last, sortBy, tail } = require('brazierjs/array')
+{ id, pipeline }                                                                                        = require('brazierjs/function')
+
 # For most of this stuff, Lodashing it is no good, since Lodash doesn't handle strings correctly.  Could use Underscore.string... --JAB (5/5/14)
 module.exports =
   class ListPrims
@@ -25,7 +27,7 @@ module.exports =
 
     # [T] @ (Array[T]|String) => Array[T]|String
     butFirst: (xs) ->
-      xs[1..]
+      tail(xs)
 
     # [T] @ (Array[T]|String) => Array[T]|String
     butLast: (xs) ->
@@ -33,11 +35,11 @@ module.exports =
 
     # [T] @ (String|Array[T]) => Boolean
     empty: (xs) ->
-      xs.length is 0
+      isEmpty(xs)
 
     # [Item] @ (Array[Item]) => Item
     first: (xs) ->
-      xs[0]
+      head(xs)
 
     # [Item] @ (Item, Array[Item]) => Array[Item]
     fput: (x, xs) ->
@@ -49,11 +51,11 @@ module.exports =
 
     # [Item] @ (Array[Item]) => Item
     last: (xs) ->
-      xs[xs.length - 1]
+      last(xs)
 
     # [T] @ (Array[T]) => Number
     length: (xs) ->
-      xs.length
+      arrayLength(xs)
 
     # [T] @ (T*) => Array[T]
     list: (xs...) ->
@@ -75,7 +77,7 @@ module.exports =
 
     # (Array[Number]) => Number
     median: (xs) ->
-      nums   = _(xs).filter((x) -> NLType(x).isNumber()).sortBy().value()
+      nums   = pipeline(filter((x) -> NLType(x).isNumber()), sortBy(id))(xs)
       length = nums.length
 
       if length isnt 0
@@ -93,7 +95,7 @@ module.exports =
     member: (x, xs) ->
       type = NLType(xs)
       if type.isList()
-        _(xs).some((y) => @_equality(x, y))
+        exists((y) => @_equality(x, y))(xs)
       else if type.isString()
         xs.indexOf(x) isnt -1
       else # agentset
@@ -110,7 +112,7 @@ module.exports =
         (xs) =>
           pairs = []
           for x in xs
-            pair = _(pairs).find(([item, c]) => @_equality(item, x))
+            pair = find(([item, c]) => @_equality(item, x))(pairs)
             if pair?
               pair[1] += 1
             else
@@ -127,7 +129,7 @@ module.exports =
                 [bests, bestCount]
               else
                 [bests.concat([item]), bestCount]
-          _(xsToCounts).foldl(f, [[], 0])
+          foldl(f)([[], 0])(xsToCounts)
 
       [result, []] = calculateModes(genItemCountPairs(items))
       result
@@ -165,7 +167,7 @@ module.exports =
 
       index =
         if type.isList()
-          _(xs).findIndex((y) => @_equality(x, y))
+          findIndex((y) => @_equality(x, y))(xs) ? -1
         else
           xs.indexOf(x)
 
@@ -178,7 +180,7 @@ module.exports =
     remove: (x, xs) ->
       type = NLType(xs)
       if type.isList()
-        _(xs).filter((y) => not @_equality(x, y)).value()
+        filter((y) => not @_equality(x, y))(xs)
       else
         xs.replace(new RegExp(x, "g"), "")
 
@@ -192,7 +194,7 @@ module.exports =
             hash   = @_hasher(x)
             values = accSet[hash]
             if values?
-              if not _(values).some((y) => @_equality(x, y))
+              if not exists((y) => @_equality(x, y))(values)
                 accArr.push(x)
                 values.push(x)
             else
@@ -245,7 +247,7 @@ module.exports =
           else
             acc.push(x)
             acc
-      _(xs).foldl(f, [])
+      foldl(f)([])(xs)
 
     # [T] @ (Array[T]) => Array[T]
     shuffle: (xs) ->
@@ -308,7 +310,7 @@ module.exports =
                   else            acc
               else acc
 
-        [filteredType, filteredItems] = _(xs).reduce(f, [None, []])
+        [filteredType, filteredItems] = foldl(f)([None, []])(xs)
 
         switch filteredType
           when None   then filteredItems
@@ -357,7 +359,7 @@ module.exports =
       nums = xs.filter((x) -> NLType(x).isNumber())
       if nums.length > 1
         mean       = @sum(xs) / xs.length
-        squareDiff = _(xs).foldl(((acc, x) -> acc + StrictMath.pow(x - mean, 2)), 0)
+        squareDiff = foldl((acc, x) -> acc + StrictMath.pow(x - mean, 2))(0)(xs)
         stdDev     = StrictMath.sqrt(squareDiff / (nums.length - 1))
         NLMath.validateNumber(stdDev)
       else
@@ -377,15 +379,15 @@ module.exports =
 
     # [T] @ (Array[T]) => Number
     variance: (xs) ->
-      numbers = _(xs).filter((x) -> NLType(x).isNumber())
-      count   = numbers.size()
+      numbers = filter((x) -> NLType(x).isNumber())(xs)
+      count   = numbers.length
 
       if count < 2
         throw new Error("Can't find the variance of a list without at least two numbers")
 
-      sum  = numbers.foldl(((acc, x) -> acc + x), 0)
+      sum  = numbers.reduce(((acc, x) -> acc + x), 0)
       mean = sum / count
-      squareOfDifference = numbers.foldl(((acc, x) -> acc + StrictMath.pow(x - mean, 2)), 0)
+      squareOfDifference = numbers.reduce(((acc, x) -> acc + StrictMath.pow(x - mean, 2)), 0)
       squareOfDifference / (count - 1)
 
     # Prodding at this code is like poking a beehive with a stick... --JAB (7/30/14)

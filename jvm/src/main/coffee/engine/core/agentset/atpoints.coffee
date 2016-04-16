@@ -2,10 +2,12 @@
 
 # Eventually, all of the error-checking crap should move to the "middle layer" of the engine,
 # and then this awful dependency on `Dumper` can go away.  --JAB (1/7/16)
-_      = require('lodash')
 Dumper = require('../../dump')
 Nobody = require('../nobody')
 NLType = require('../typechecker')
+
+{ filter, flatMap, map, unique } = require('brazierjs/array')
+{ pipeline }                     = require('brazierjs/function')
 
 # In this file: `this.type` is `AbstractAgentSet[T]`
 
@@ -26,13 +28,13 @@ getPatchesAtPoints = (patchAt, points) ->
         patchAt(point...)
       else
         throw new Error("Invalid list of points: #{Dumper(points)}")
-  _(points).map(f).reject((x) -> x is Nobody).value()
+  pipeline(map(f), filter((x) -> x isnt Nobody))(points)
 
 # (() => Agent, (Number, Number) => Patch) => (Array[Any]) => AbstractAgentSet[T]
 module.exports =
   (getSelf, getPatchAt) -> (points) ->
 
-    contains = (x) => @contains(x)
+    filterContaining = filter((x) => @contains(x))
 
     breedName = @getSpecialName()
 
@@ -42,19 +44,21 @@ module.exports =
     newAgents =
       if NLType(this).isPatchSet()
         if breedName is "patches"
-          _(patches)
+          patches
         else
-          _(patches).filter(contains)
+          filterContaining(patches)
       else if NLType(this).isTurtleSet()
-        turtlesOnPatches = _(patches).map((p) -> p.turtlesHere().toArray()).flatten().uniq()
+        turtlesOnPatches = pipeline(flatMap((p) -> p.turtlesHere().toArray()), unique)(patches)
         if breedName is "turtles"
           turtlesOnPatches
         else if breedName? # Breed set
           upperBreedName = breedName.toUpperCase()
-          turtlesOnPatches.filter((x) -> upperBreedName is x.getBreedName())
+          filter((x) -> upperBreedName is x.getBreedName())(turtlesOnPatches)
         else
-          turtlesOnPatches.filter(contains)
+          filterContaining(turtlesOnPatches)
       else
         []
 
-    @copyWithNewAgents(newAgents.uniq().value())
+    copyThatFloppy = (x) => @copyWithNewAgents.call(this, x)
+
+    pipeline(unique, copyThatFloppy)(newAgents)

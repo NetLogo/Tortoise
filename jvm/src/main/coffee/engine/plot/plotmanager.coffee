@@ -1,7 +1,9 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_      = require('lodash')
-JSType = require('util/typechecker')
+{ filter, forEach, map, toObject, zip } = require('brazierjs/array')
+{ flip, pipeline }                      = require('brazierjs/function')
+{ values }                              = require('brazierjs/object')
+{ isNumber }                            = require('brazierjs/type')
 
 module.exports = class PlotManager
 
@@ -10,12 +12,13 @@ module.exports = class PlotManager
 
   # (Array[Plot]) => PlotManager
   constructor: (plots) ->
+    toName        = (p) -> p.name.toUpperCase()
     @_currentPlot = plots[plots.length - 1]
-    @_plotMap     = _(plots.map((p) -> p.name.toUpperCase())).zipObject(plots).value()
+    @_plotMap     = pipeline(map(toName), flip(zip)(plots), toObject)(plots)
 
   # () => Unit
   clearAllPlots: ->
-    _(@_plotMap).forEach((plot) -> plot.clear(); return).value()
+    @_forAllPlots((plot) -> plot.clear())
     return
 
   # () => Unit
@@ -37,7 +40,7 @@ module.exports = class PlotManager
   drawHistogramFrom: (list) ->
     @_withPlot(
       (plot) ->
-        numbers = _(list).filter((x) -> JSType(x).isNumber()).value()
+        numbers = filter(isNumber)(list)
         plot.drawHistogramFrom(numbers)
     )
     return
@@ -145,7 +148,7 @@ module.exports = class PlotManager
 
   # () => Unit
   setupPlots: =>
-    _(@_plotMap).forEach((plot) -> plot.setup(); return).value()
+    @_forAllPlots((plot) -> plot.update())
     return
 
   # (Number, Number) => Unit
@@ -160,7 +163,7 @@ module.exports = class PlotManager
 
   # () => Unit
   updatePlots: =>
-    _(@_plotMap).forEach((plot) -> plot.update(); return).value()
+    @_forAllPlots((plot) -> plot.update())
     return
 
   # (String, String) => (() => Unit) => Unit
@@ -173,6 +176,11 @@ module.exports = class PlotManager
     else
       f()
     @_currentPlot = oldPlot
+    return
+
+  # ((Plot) => Unit) => Unit
+  _forAllPlots: (f) ->
+    pipeline(values, forEach(f))(@_plotMap)
     return
 
   # [T] @ ((Plot) => T) => T

@@ -1,7 +1,9 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_      = require('lodash')
 NLMath = require('util/nlmath')
+
+{ forEach, map } = require('brazierjs/array')
+{ rangeUntil }   = require('brazierjs/number')
 
 module.exports =
   class LayoutManager
@@ -34,7 +36,7 @@ module.exports =
 
       turtles = nodeSet.shuffled().toArray()
 
-      _(0).range(turtles.length).forEach(
+      forEach(
         (i) ->
           turtle          = turtles[i]
           agt[i]          = turtle
@@ -42,13 +44,13 @@ module.exports =
           ax[i]           = 0.0
           ay[i]           = 0.0
           return
-      ).value()
+      )(rangeUntil(0)(turtles.length))
 
       [ax, ay, tMap, agt]
 
     # (LinkSet, Object[Number, Number], Number) => Array[Number]
     _calcDegreeCounts: (links, idToIndexMap, nodeCount) ->
-      baseCounts = _(0).range(nodeCount).map(-> 0).value()
+      baseCounts = map(-> 0)(rangeUntil(0)(nodeCount))
       links.forEach(
         ({ end1: t1, end2: t2 }) ->
           f = (turtle) ->
@@ -171,13 +173,13 @@ module.exports =
       calculateXCor  = bounded(minX, maxX)
       calculateYCor  = bounded(minY, maxY)
 
-      _(0).range(nodeCount).forEach(
+      forEach(
         (i) ->
           turtle = agt[i]
           newX = calculateXCor(turtle.xcor + calculateLimit(ax[i]))
           newY = calculateYCor(turtle.ycor + calculateLimit(ay[i]))
           turtle.setXY(newX, newY)
           return
-      ).value()
+      )(rangeUntil(0)(nodeCount))
 
       return

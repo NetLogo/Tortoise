@@ -1,6 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_ = require('lodash')
+{ pipeline } = require('brazierjs/function')
 
 # type PrintFunc = (String) => Unit
 
@@ -21,7 +21,7 @@ module.exports =
         agentStr    = if agentOrZero is 0 then "observer" else dump(agentOrZero)
         "#{agentStr}: #{s}"
 
-    writeAfter  = (fs...) -> _.flow(fs..., printFunc)
+    writeAfter  = (fs...) -> pipeline(fs..., printFunc)
 
     print = writeAfter(dump, newLine)
     type  = writeAfter(dump)

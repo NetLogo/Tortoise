@@ -1,10 +1,12 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_              = require('lodash')
 inCone         = require('./incone')
 Topology       = require('./topology')
 StrictMath     = require('shim/strictmath')
 abstractMethod = require('util/abstractmethoderror')
+
+{ filter, unique } = require('brazierjs/array')
+{ pipeline }       = require('brazierjs/function')
 
 { AgentException, TopologyInterrupt } = require('util/exception')
 
@@ -53,7 +55,7 @@ module.exports =
     # couldn't strike a better balance. --JAB (7/30/14)
     # (Array[Patch]) => Array[Patch]
     _filterNeighbors: (neighbors) ->
-      _(neighbors).filter((patch) -> patch isnt false).uniq().value()
+      pipeline(filter((patch) -> patch isnt false), unique)(neighbors)
 
     # (Number, Number, Number, Number) => Number
     distanceXY: (x1, y1, x2, y2) ->

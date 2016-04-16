@@ -1,7 +1,10 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_        = require('lodash')
 Topology = require('./topology')
+
+{ foldl, map } = require('brazierjs/array')
+{ pipeline }   = require('brazierjs/function')
+{ rangeUntil } = require('brazierjs/number')
 
 module.exports =
   class Torus extends Topology
@@ -20,7 +23,10 @@ module.exports =
     # Overrides the default `Topology.diffuse` --JAB (8/6/14)
     # (String, Number) => Unit
     diffuse: (varName, coefficient) ->
-      scratch = _(0).range(@width).map(-> []).value()
+
+      scratch = map(-> [])(rangeUntil(0)(@width))
+
+      getScratch = (nb) => scratch[nb.pxcor - @minPxcor][nb.pycor - @minPycor]
 
       @_getPatches().forEach((patch) =>
         scratch[patch.pxcor - @minPxcor][patch.pycor - @minPycor] = patch.getVariable(varName)
@@ -36,7 +42,7 @@ module.exports =
            @_getPatchNorthWest(pxcor, pycor), @_getPatchSouth(pxcor, pycor),
            @_getPatchNorth(pxcor, pycor), @_getPatchSouthEast(pxcor, pycor),
            @_getPatchEast(pxcor, pycor), @_getPatchNorthEast(pxcor, pycor)]
-        diffusalSum = _(orderedNeighbors).map((nb) => scratch[nb.pxcor - @minPxcor][nb.pycor - @minPycor]).reduce((acc, x) -> acc + x)
+        diffusalSum = pipeline(map(getScratch), foldl((acc, x) -> acc + x)(0))(orderedNeighbors)
         patch.setVariable(varName, patch.getVariable(varName) * (1.0 - coefficient) + (diffusalSum / 8) * coefficient)
         return
       )

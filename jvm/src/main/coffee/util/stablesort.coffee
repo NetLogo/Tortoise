@@ -1,8 +1,9 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_ = require('lodash')
+{ zip }        = require('brazierjs/array')
+{ rangeUntil } = require('brazierjs/number')
 
-# [T] @ (Array[T]) => ((T, T) => Int) => Array[T]
+# [T] @ (Array[(T, U)]) => ((U, T) => Int) => Array[T]
 module.exports =
   (arr) -> (f) ->
     sortFunc =
@@ -14,4 +15,6 @@ module.exports =
           -1
         else
           1
-    _(0).range(arr.length).zip(arr).value().sort(sortFunc).map((pair) -> pair[1])
+
+    pairs = zip(rangeUntil(0)(arr.length))(arr)
+    pairs.sort(sortFunc).map((pair) -> pair[1])

@@ -1,8 +1,11 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_          = require('lodash')
 { Pen }    = require('./pen')
 StrictMath = require('shim/strictmath')
+
+{ filter, forEach, isEmpty, map, maxBy, toObject, zip } = require('brazierjs/array')
+{ flip, pipeline }                                      = require('brazierjs/function')
+{ values }                                              = require('brazierjs/object')
 
 { StopInterrupt: Stop } = require('util/exception')
 
@@ -16,9 +19,10 @@ module.exports = class Plot
 
   # (String, Array[Pen], PlotOps, String, String, Boolean, Number, Number, Number, Number, () => (Unit | Stop), () => (Unit | Stop)) => Plot
   constructor: (@name, pens = [], @_ops, @xLabel, @yLabel, @isLegendEnabled = true, @isAutoplotting = true, @xMin = 0, @xMax = 10, @yMin = 0, @yMax = 10, @_setupThis = (->), @_updateThis = (->)) ->
+    toName           = (p) -> p.name.toUpperCase()
     @_currentPen     = pens[0]
     @_originalBounds = [@xMin, @xMax, @yMin, @yMax]
-    @_penMap         = _(pens).map((p) -> p.name.toUpperCase()).zipObject(pens).value()
+    @_penMap         = pipeline(map(toName), flip(zip)(pens), toObject)(pens)
     @clear()
 
   # () => Unit
@@ -27,16 +31,20 @@ module.exports = class Plot
     @_ops.reset(this)
     @_resize()
 
-    _(@_penMap).filter((x) -> x.isTemp).forEach((x) => delete @_penMap[x.name.toUpperCase()]; return).value()
-    _(@_penMap).forEach((pen) => pen.reset(); @_ops.registerPen(pen); return).value()
+    pens      = values(@_penMap)
+    deletePen = ((x) => delete @_penMap[x.name.toUpperCase()]; return)
+    resetPen  = ((pen) => pen.reset(); @_ops.registerPen(pen); return)
+
+    pipeline(filter((x) -> x.isTemp), forEach(deletePen))(pens)
+    pipeline(forEach(resetPen))(pens)
 
     if @_currentPen?.isTemp
       @_currentPen =
-        if _(@_penMap).size() is 0
+        if isEmpty(pens)
           @_penMap.DEFAULT = new Pen("DEFAULT", @_ops.makePenOps)
           @_penMap.DEFAULT
         else
-          _(@_penMap).toArray().value()[0]
+          pens[0]
 
     return
 
@@ -139,7 +147,7 @@ module.exports = class Plot
   setup: ->
     setupResult = @_setupThis()
     if not (setupResult instanceof Stop)
-      _(@_penMap).forEach((pen) -> pen.setup(); return).value()
+      pipeline(values, forEach((pen) -> pen.setup(); return))(@_penMap)
     return
 
   # (Number, Number) => Unit
@@ -164,7 +172,7 @@ module.exports = class Plot
   update: ->
     updateResult = @_updateThis()
     if not (updateResult instanceof Stop)
-      _(@_penMap).forEach((pen) -> pen.update(); return).value()
+      pipeline(values, forEach((pen) -> pen.update(); return))(@_penMap)
     return
 
   # () => Unit
@@ -203,7 +211,9 @@ module.exports = class Plot
   #
   # (Pen) => Unit
   _verifyHistogramSize: (pen) ->
-    penYMax = _(pen.getPoints()).filter(({ x }) => x >= @xMin and x <= @xMax).max((p) -> p.y).y
+    isWithinBounds = ({ x }) => x >= @xMin and x <= @xMax
+    highestPoint   = pipeline(filter(isWithinBounds), maxBy((p) -> p.y))(pen.getPoints())
+    penYMax        = highestPoint?.y ? 0
     if penYMax > @yMax and @isAutoplotting
       @yMax = penYMax
     @_resize()
@@ -216,7 +226,7 @@ module.exports = class Plot
 
       bounds        = pen.bounds()
       currentBounds = [@xMin, @xMax, @yMin, @yMax]
-      [minXs, maxXs, minYs, maxYs] = _(bounds).zip(currentBounds).value()
+      [minXs, maxXs, minYs, maxYs] = zip(bounds)(currentBounds)
 
       bumpMin = ([newMin, currentMin], currentMax) ->
         if newMin < currentMin

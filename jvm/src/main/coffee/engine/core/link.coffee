@@ -1,6 +1,5 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_                = require('lodash')
 AbstractAgentSet = require('./abstractagentset')
 ColorModel       = require('./colormodel')
 linkCompare      = require('./structure/linkcompare')

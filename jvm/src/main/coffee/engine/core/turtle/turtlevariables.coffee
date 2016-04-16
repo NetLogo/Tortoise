@@ -1,10 +1,11 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_          = require('lodash')
 ColorModel = require('engine/core/colormodel')
 NLType     = require('../typechecker')
 StrictMath = require('shim/strictmath')
 NLMath     = require('util/nlmath')
+
+{ clone } = require('brazierjs/object')
 
 { ImmutableVariableSpec, MutableVariableSpec } = require('../structure/variablespec')
 { ignoring, TopologyInterrupt }                = require('util/exception')
@@ -183,7 +184,7 @@ _handleTiesForHeadingChange = (seenTurtlesSet, dh) ->
             theta = @towards(turtle) + dh
             newX  = x + r * NLMath.squash(NLMath.sin(theta))
             newY  = y + r * NLMath.squash(NLMath.cos(theta))
-            turtle.setXY(newX, newY, _.clone(seenTurtlesSet))
+            turtle.setXY(newX, newY, clone(seenTurtlesSet))
           false
         catch ex
           if ex instanceof TopologyInterrupt
@@ -192,7 +193,7 @@ _handleTiesForHeadingChange = (seenTurtlesSet, dh) ->
             throw ex
 
       if mode is "fixed" and not wentBoom
-        turtle.right(dh, _.clone(seenTurtlesSet))
+        turtle.right(dh, clone(seenTurtlesSet))
 
   )
 

@@ -1,9 +1,13 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_          = require('lodash')
 NLMath     = require('util/nlmath')
 JSType     = require('util/typechecker')
 StrictMath = require('shim/strictmath')
+
+{ foldl, map }  = require('brazierjs/array')
+{ pipeline }    = require('brazierjs/function')
+{ rangeUntil }  = require('brazierjs/number')
+{ pairs }       = require('brazierjs/object')
 
 # type ColorNumber = Number
 # type ColorName   = String
@@ -34,7 +38,7 @@ keyToComponents = (key) ->
 ColorMax = 140
 
 # Array[ColorNumber]
-BaseColors = _(0).range(ColorMax / 10).map((n) -> (n * 10) + 5).value()
+BaseColors = map((n) -> (n * 10) + 5)(rangeUntil(0)(ColorMax / 10))
 
 # Object[ColorName, Number]
 NamesToIndicesMap =
@@ -265,7 +269,7 @@ module.exports = {
           [v, dist]
         else
           acc
-    _(RGBMap).pairs().foldl(f, [0, Number.MAX_VALUE])[0]
+    pipeline(pairs, foldl(f)([0, Number.MAX_VALUE]))(RGBMap)[0]
 
   # CoffeeScript code from the Scala code in Headless' './parser-core/src/main/core/Color.scala',
   # which was translated from Java code that came from a C snippet at www.compuphase.com/cmetric.htm

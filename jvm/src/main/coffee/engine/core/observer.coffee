@@ -6,11 +6,12 @@ Ride    = { toInt: 1 }
 Follow  = { toInt: 2 }
 Watch   = { toInt: 3 }
 
-_               = require('lodash')
 agentToInt      = require('./agenttoint')
 Nobody          = require('./nobody')
 NLType          = require('./typechecker')
 VariableManager = require('./structure/variablemanager')
+
+{ difference, forEach } = require('brazierjs/array')
 
 { ExtraVariableSpec } = require('./structure/variablespec')
 
@@ -36,11 +37,11 @@ module.exports =
 
       globalSpecs       = @_globalNames.map((name) -> new ExtraVariableSpec(name))
       @_varManager      = new VariableManager(this, globalSpecs)
-      @_codeGlobalNames = _(@_globalNames).difference(@_interfaceGlobalNames).value()
+      @_codeGlobalNames = difference(@_interfaceGlobalNames)(@_globalNames)
 
     # () => Unit
     clearCodeGlobals: ->
-      _(@_codeGlobalNames).forEach((name) => @_varManager[name] = 0; return).value()
+      forEach((name) => @_varManager[name] = 0; return)(@_codeGlobalNames)
       return
 
     # (Turtle) => Unit

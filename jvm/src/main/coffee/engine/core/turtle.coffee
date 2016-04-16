@@ -1,6 +1,5 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_                 = require('lodash')
 AbstractAgentSet  = require('./abstractagentset')
 ColorModel        = require('engine/core/colormodel')
 Nobody            = require('./nobody')
@@ -11,6 +10,9 @@ VariableManager   = require('./structure/variablemanager')
 makePenLines      = require('./turtle/makepenlines')
 Comparator        = require('util/comparator')
 NLMath            = require('util/nlmath')
+
+{ foldl, forEach, map, uniqueBy } = require('brazierjs/array')
+{ rangeUntil }                    = require('brazierjs/number')
 
 { PenManager, PenStatus: { Down, Erase } }             = require('./structure/penmanager')
 { ExtraVariableSpec }                                  = require('./structure/variablespec')
@@ -292,9 +294,10 @@ module.exports =
 
     # (Number, String) => TurtleSet
     hatch: (n, breedName) ->
-      isNameValid = breedName? and not _(breedName).isEmpty()
+      num         = if n >= 0 then n else 0
+      isNameValid = breedName? and breedName isnt ""
       breed       = if isNameValid then @world.breedManager.get(breedName) else @_breed
-      newTurtles  = _(0).range(n).map(=> @_makeTurtleCopy(breed)).value()
+      newTurtles  = map(=> @_makeTurtleCopy(breed))(rangeUntil(0)(num))
       new TurtleSet(newTurtles)
 
     # (Breed) => Turtle
@@ -302,10 +305,10 @@ module.exports =
       shape    = if breed is @_breed then @_givenShape else undefined
       turtle   = @_createTurtle(@_color, @_heading, @xcor, @ycor, breed, @_label, @_labelcolor, @_hidden, @_size, shape, (self) => @penManager.clone(@_genUpdate(self)))
       varNames = @_varNamesForBreed(breed)
-      _(varNames).forEach((varName) =>
+      forEach((varName) =>
         turtle.setVariable(varName, @getVariable(varName))
         return
-      ).value()
+      )(varNames)
       turtle
 
     # (Breed) => Array[String]
@@ -388,7 +391,7 @@ module.exports =
         mode  = @penManager.getMode().toString()
         { minPxcor, maxPxcor, minPycor, maxPycor } = @world.topology
         lines = makePenLines(x, y, NLMath.normalizeHeading(@_heading), dist, minPxcor - 0.5, maxPxcor + 0.5, minPycor - 0.5, maxPycor + 0.5)
-        _(lines).forEach(({ x1, y1, x2, y2 }) => @_registerLineDraw(x1, y1, x2, y2, color, size, mode); return).value()
+        forEach(({ x1, y1, x2, y2 }) => @_registerLineDraw(x1, y1, x2, y2, color, size, mode); return)(lines)
       return
 
     # Unfortunately, we can't just throw out `_breedShape` and grab the shape from our
@@ -420,17 +423,22 @@ module.exports =
           else
             [fixeds, others.concat([turtle])]
 
-      [fixeds, others] = _(links).foldl(f, [[], []])
+      [fixeds, others] = foldl(f)([[], []])(links)
 
       { fixeds: fixeds, others: others }
 
     # () => Array[Turtle]
     _tiedTurtles: ->
       { fixeds, others } = @_tiedTurtlesRaw()
-      _(fixeds.concat(others)).unique(false, (x) -> x.id).value()
+      @_uniqueTurtles(fixeds.concat(others))
 
+    # () => Array[Turtle]
     _fixedTiedTurtles: ->
-      _(@_tiedTurtlesRaw().fixeds).unique(false, (x) -> x.id).value()
+      @_uniqueTurtles(@_tiedTurtlesRaw().fixeds)
+
+    # (Array[Turtle]) => Array[Turtle]
+    _uniqueTurtles: (turtles) ->
+      uniqueBy((t) -> t.id)(turtles)
 
     # (Array[String]) => VariableManager
     _genVarManager: (extraVarNames) ->

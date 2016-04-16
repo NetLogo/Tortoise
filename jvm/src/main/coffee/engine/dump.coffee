@@ -1,8 +1,9 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_      = require('lodash')
 NLType = require('./core/typechecker')
 Tasks  = require('./prim/tasks')
+
+{ map } = require('brazierjs/array')
 
 # Needs a name here since it's recursive --JAB (4/16/14)
 # (Any, Boolean) => String
@@ -10,7 +11,7 @@ Dump =
   (x, isReadable = false) ->
     type = NLType(x)
     if type.isList()
-      itemStr = _(x).map((y) -> Dump(y, isReadable)).value().join(" ")
+      itemStr = map((y) -> Dump(y, isReadable))(x).join(" ")
       "[#{itemStr}]"
     else if type.isReporterTask()
       "(reporter task)"

@@ -25,7 +25,6 @@ See below for links to each license.
 | Library Name         | License                                                               |
 | -------------------- | ------------                                                          |
 | json4s               | [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0.html) |
-| lodash               | [MIT License](opensource.org/licenses/MIT)                            |
 | mori                 | [Eclipse Public License](https://www.eclipse.org/legal/epl-v10.html)  |
 | scalaz               | [BSD 3-Clause License](http://opensource.org/licenses/BSD-3-Clause)   |
 

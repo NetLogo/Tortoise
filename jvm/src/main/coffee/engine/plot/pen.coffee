@@ -1,8 +1,11 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_          = require('lodash')
 StrictMath = require('shim/strictmath')
-JSType     = require('util/typechecker')
+
+{ countBy, filter, forEach, map } = require('brazierjs/array')
+{ id, pipeline }                  = require('brazierjs/function')
+{ pairs }                         = require('brazierjs/object')
+{ isNumber }                      = require('brazierjs/type')
 
 # data PenMode =
 Up   = {}
@@ -101,14 +104,22 @@ module.exports.Pen = class Pen
 
   # (Array[Number], Number, Number) => Unit
   drawHistogramFrom: (ys, xMin, xMax) ->
+
     @reset(true)
+
     interval        = @getInterval()
+    isValid         = (x) => (xMin / interval) <= x <= (xMax / interval)
     determineBucket = (x) -> StrictMath.round((x / interval) * (1 + 3.2e-15)) # See 'Histogram.scala' in Headless for explanation --JAB (10/21/15)
-    numbers         = _(ys).filter((y) -> JSType(y).isNumber())
-    buckets         = numbers.map(determineBucket)
-    validBuckets    = buckets.filter((x) => (xMin / interval) <= x <= (xMax / interval))
-    bucketsToCounts = validBuckets.countBy()
-    bucketsToCounts.forEach((count, bucketNum) => @addXY(Number(bucketNum) * interval, count); return).value()
+    plotBucket      = (([bucketNum, count]) => @addXY(Number(bucketNum) * interval, count); return)
+
+    pipeline(filter(isNumber)
+           , map(determineBucket)
+           , filter(isValid)
+           , countBy(id)
+           , pairs
+           , forEach(plotBucket)
+           )(ys)
+
     return
 
   # () => Number

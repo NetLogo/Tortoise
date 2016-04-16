@@ -1,12 +1,14 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_          = require('lodash')
 ColorModel = require('engine/core/colormodel')
 Nobody     = require('../nobody')
 Turtle     = require('../turtle')
 TurtleSet  = require('../turtleset')
 Builtins   = require('../structure/builtins')
 IDManager  = require('./idmanager')
+
+{ map }        = require('brazierjs/array')
+{ rangeUntil } = require('brazierjs/number')
 
 { DeathInterrupt, ignoring }  = require('util/exception')
 
@@ -31,21 +33,23 @@ module.exports =
 
     # (Number, String) => TurtleSet
     createOrderedTurtles: (n, breedName) ->
-      turtles = _(0).range(n).map(
-        (num) =>
-          color   = ColorModel.nthColor(num)
-          heading = (360 * num) / n
+      num     = if n >= 0 then n else 0
+      turtles = map(
+        (index) =>
+          color   = ColorModel.nthColor(index)
+          heading = (360 * index) / num
           @_createTurtle(color, heading, 0, 0, @_breedManager.get(breedName))
-      ).value()
+      )(rangeUntil(0)(num))
       new TurtleSet(turtles)
 
     # (Number, String, Number, Number) => TurtleSet
     createTurtles: (n, breedName, xcor = 0, ycor = 0) ->
-      turtles = _(0).range(n).map(=>
+      num     = if n >= 0 then n else 0
+      turtles = map(=>
         color   = ColorModel.randomColor(@_nextInt)
         heading = @_nextInt(360)
         @_createTurtle(color, heading, xcor, ycor, @_breedManager.get(breedName))
-      ).value()
+      )(rangeUntil(0)(num))
       new TurtleSet(turtles)
 
     # (Number) => Agent

@@ -1,6 +1,5 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_                = require('lodash')
 AbstractAgentSet = require('../core/abstractagentset')
 Link             = require('../core/link')
 LinkSet          = require('../core/linkset')
@@ -14,6 +13,8 @@ StrictMath       = require('shim/strictmath')
 Exception        = require('util/exception')
 NLMath           = require('util/nlmath')
 Timer            = require('util/timer')
+
+{ flatMap, flattenDeep, isEmpty, map } = require('brazierjs/array')
 
 { MersenneTwisterFast }                          = require('shim/engine-scala')
 { EQUALS: EQ, GREATER_THAN: GT, LESS_THAN: LT, } = require('util/comparator')
@@ -44,11 +45,11 @@ module.exports =
         else if type.isPatchSet()
           x.toArray()
         else if type.isTurtleSet()
-          _(x.iterator().toArray()).map((t) -> t.getPatchHere()).value()
+          map((t) -> t.getPatchHere())(x.iterator().toArray())
         else
           throw new Error("`breed-on` unsupported for class '#{typeof(x)}'")
 
-      turtles = _(patches).map((p) -> p.breedHereArray(breedName)).flatten().value()
+      turtles = flatMap((p) -> p.breedHereArray(breedName))(patches)
       new TurtleSet(turtles)
 
     # (Number, Number) => Number
@@ -252,7 +253,7 @@ module.exports =
     turtlesOn: (agentsOrAgent) ->
       type = NLType(agentsOrAgent)
       if type.isAgentSet()
-        turtles = _(agentsOrAgent.iterator().toArray()).map((agent) -> agent.turtlesHere().toArray()).flatten().value()
+        turtles = flatMap((agent) -> agent.turtlesHere().toArray())(agentsOrAgent.iterator().toArray())
         new TurtleSet(turtles)
       else
         agentsOrAgent.turtlesHere()
@@ -268,8 +269,8 @@ module.exports =
 
     # [T <: Agent, U <: AbstractAgentSet[T], V <: (Array[T]|T|AbstractAgentSet[T])] @ (Array[V], T.Class, U.Class) => U
     _createAgentSet: (inputs, tClass, outClass) ->
-      flattened = _(inputs).flattenDeep().value()
-      if _(flattened).isEmpty()
+      flattened = flattenDeep(inputs)
+      if isEmpty(flattened)
         new outClass([])
       else if flattened.length is 1
         head = flattened[0]

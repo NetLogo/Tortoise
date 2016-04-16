@@ -26,7 +26,7 @@ class Nashorn {
   val versionNumber: String = engine.getFactory.getEngineVersion
 
   val engineScope = engine.getBindings(ScriptContext.ENGINE_SCOPE)
-  engineScope.put("window", engineScope) // Some libraries (e.g. lodash) expect to find a `window` object --JAB (8/21/14)
+  engineScope.put("window", engineScope) // Some libraries expect to find a `window` object --JAB (8/21/14)
 
   // ensure exact matching results
   engine.put("StrictMath", Strict)

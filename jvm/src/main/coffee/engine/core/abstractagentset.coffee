@@ -1,12 +1,15 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_              = require('lodash')
 Nobody         = require('./nobody')
 projectionSort = require('./projectionsort')
 NLType         = require('./typechecker')
 Seq            = require('util/seq')
 Shufflerator   = require('util/shufflerator')
 stableSort     = require('util/stablesort')
+
+{ foldl, map } = require('brazierjs/array')
+{ pipeline }   = require('brazierjs/function')
+{ keys }       = require('brazierjs/object')
 
 { DeathInterrupt: Death } = require('util/exception')
 
@@ -159,13 +162,19 @@ module.exports =
       collectWinners =
         ([winners, numAdded], agents) ->
           if numAdded < n
-            _(agents).foldl(appendAgent, [winners, numAdded])
+            foldl(appendAgent)([winners, numAdded])(agents)
           else
             [winners, numAdded]
 
-      valueToAgentsMap = @shufflerator().toArray().reduce(groupByValue, {})
-      agentLists       = _(valueToAgentsMap).keys().map(parseFloat).value().sort(cStyleComparator).map((value) -> valueToAgentsMap[value])
-      [best, []]       = _(agentLists).foldl(collectWinners, [[], 0])
+      valueToAgentsMap = foldl(groupByValue)({})(@shufflerator().toArray())
+      [best, []] =
+        pipeline(keys
+               , map(parseFloat)
+               , ((x) -> x.sort(cStyleComparator))
+               , map((value) -> valueToAgentsMap[value])
+               , foldl(collectWinners)([[], 0])
+               )(valueToAgentsMap)
+
       @_generateFrom(best)
 
     # (Array[T]) => T

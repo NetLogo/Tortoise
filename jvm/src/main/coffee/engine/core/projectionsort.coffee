@@ -1,9 +1,12 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_          = require('lodash')
 NLType     = require('./typechecker')
 Comparator = require('util/comparator')
 stableSort = require('util/stablesort')
+
+{ filter, foldl, head, isEmpty, map } = require('brazierjs/array')
+{ pipeline }                          = require('brazierjs/function')
+{ pairs }                             = require('brazierjs/object')
 
 NumberKey = "number"
 StringKey = "string"
@@ -16,7 +19,7 @@ initializeDictionary = (keys, generator) ->
     (acc, key) ->
       acc[key] = generator(key)
       acc
-  _(keys).foldl(f, {})
+  foldl(f)({})(keys)
 
 # [T <: Agent, U] @ (Array[T]) => ((T) => U) => Array[T]
 module.exports =
@@ -46,9 +49,8 @@ module.exports =
           acc
 
       baseAcc            = initializeDictionary([NumberKey, StringKey, AgentKey, OtherKey], -> [])
-      typeNameToPairsMap = _(agents).foldl(mapBuildFunc, baseAcc)
-
-      typesInMap = _(typeNameToPairsMap).omit(_.isEmpty).keys().value()
+      typeNameToPairsMap = foldl(mapBuildFunc)(baseAcc)(agents)
+      typesInMap         = pipeline(pairs, filter(([_, x]) -> not isEmpty(x)), map(head))(typeNameToPairsMap)
 
       [typeName, sortingFunc] =
         switch typesInMap.join(" ")
@@ -57,6 +59,6 @@ module.exports =
           when AgentKey  then [AgentKey,  ([[], a1], [[], a2]) -> a1.compare(a2).toInt]
           else                throw new Error("SORT-ON works on numbers, strings, or agents of the same type.")
 
-      pairs = typeNameToPairsMap[typeName]
+      agentValuePairs = typeNameToPairsMap[typeName]
 
-      stableSort(pairs)(sortingFunc).map(([x, []]) -> x)
+      map(head)(stableSort(agentValuePairs)(sortingFunc))

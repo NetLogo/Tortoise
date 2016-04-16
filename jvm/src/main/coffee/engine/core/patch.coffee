@@ -1,10 +1,11 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_               = require('lodash')
 Nobody          = require('./nobody')
 TurtleSet       = require('./turtleset')
 VariableManager = require('./structure/variablemanager')
 Comparator      = require('util/comparator')
+
+{ filter } = require('brazierjs/array')
 
 { DeathInterrupt: Death, TopologyInterrupt } = require('util/exception')
 { Setters, VariableSpecs }                   = require('./patch/patchvariables')
@@ -13,9 +14,8 @@ Comparator      = require('util/comparator')
 module.exports =
   class Patch
 
-    _varManager:       undefined # VariableManager
-
-    _turtles: undefined # Array[Turtle]
+    _turtles:    undefined # Array[Turtle]
+    _varManager: undefined # VariableManager
 
     # (Number, Number, Number, World, (Updatable) => (String*) => Unit, () => Unit, () => Unit, () => Unit, (String) => LinkSet, Number, String, Number) => Patch
     constructor: (@id, @pxcor, @pycor, @world, @_genUpdate, @_declareNonBlackPatch, @_decrementPatchLabelCount
@@ -100,7 +100,7 @@ module.exports =
 
     # (String) => Array[Turtle]
     breedHereArray: (breedName) ->
-      _(@_turtles).filter((turtle) -> turtle.getBreedName() is breedName).value()
+      filter((turtle) -> turtle.getBreedName() is breedName)(@_turtles)
 
     # (Number, Number) => TurtleSet
     turtlesAt: (dx, dy) ->

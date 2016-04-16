@@ -1,6 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_ = require('lodash')
+{ difference } = require('brazierjs/array')
 
 { ExtraVariableSpec, ImmutableVariableSpec, MutableVariableSpec } = require('./variablespec')
 
@@ -22,15 +22,15 @@ module.exports =
     refineBy: (oldNames, newNames) ->
       invalidatedSetter = (name) -> (value) -> throw new Error("#{name} is no longer a valid variable.")
 
-      obsoletedNames = _(oldNames).difference(newNames).value()
-      freshNames     = _(newNames).difference(oldNames).value()
+      obsoletedNames = difference(newNames)(oldNames)
+      freshNames     = difference(oldNames)(newNames)
       specs          = freshNames.map((name) -> new ExtraVariableSpec(name))
 
       for name in obsoletedNames
         @_defineProperty(name, { get: undefined, set: invalidatedSetter(name), configurable: true })
 
       @_addVarsBySpec(specs)
-      @_names = _(@_names).difference(obsoletedNames).value().concat(freshNames)
+      @_names = difference(obsoletedNames)(@_names).concat(freshNames)
 
       return
 

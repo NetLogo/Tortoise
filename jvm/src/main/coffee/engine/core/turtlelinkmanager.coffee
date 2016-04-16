@@ -1,9 +1,10 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-_                         = require('lodash')
-LinkSet                   = require('./linkset')
-Nobody                    = require('./nobody')
-TurtleSet                 = require('./turtleset')
+LinkSet   = require('./linkset')
+Nobody    = require('./nobody')
+TurtleSet = require('./turtleset')
+
+{ find, unique } = require('brazierjs/array')
 
 { DeathInterrupt, ignoring } = require('util/exception')
 
@@ -21,25 +22,15 @@ mustNotBeUndirected = (breed) ->
   else
     undefined
 
-# [T] @ (Array[T]) => Array[T]
-uniques = (ls) ->
-  _(ls).unique().value()
-
-# (Array[Link]) => Array[Link]
-uniqueLinks = uniques
-
-# (Array[Turtle]) => Array[Turtle]
-uniqueTurtles = uniques
-
 # Used by functions that search both `_linksIn` and `_linksOut`, since links are often duplicated in them. --JAB (11/24/14)
 # (Array[Link]) => LinkSet
 linkSetOf = (links) ->
-  new LinkSet(uniqueLinks(links))
+  new LinkSet(unique(links))
 
 # Used by neighbor-finding functions, since we could get duplicate turtles through breeded links. --JAB (11/24/14)
 # (Array[Turtle]) => TurtleSet
 turtleSetOf = (turtles) ->
-  new TurtleSet(uniqueTurtles(turtles))
+  new TurtleSet(unique(turtles))
 
 # (String) => (Link) => Boolean
 linkBreedMatches = (breedName) -> (link) ->
@@ -63,7 +54,7 @@ module.exports =
 
     # (String, Turtle) => Link
     inLinkFrom: (breedName, otherTurtle) ->
-      _(@_linksIn).find((l) -> l.end1 is otherTurtle and linkBreedMatches(breedName)(l)) ? Nobody
+      find((l) -> l.end1 is otherTurtle and linkBreedMatches(breedName)(l))(@_linksIn) ? Nobody
 
     # (String) => TurtleSet
     inLinkNeighbors: (breedName) ->
@@ -111,7 +102,7 @@ module.exports =
 
     # (String, Turtle) => Link
     outLinkTo: (breedName, otherTurtle) ->
-      _(@_linksOut).find((l) -> l.end2 is otherTurtle and linkBreedMatches(breedName)(l)) ? Nobody
+      find((l) -> l.end2 is otherTurtle and linkBreedMatches(breedName)(l))(@_linksOut) ? Nobody
 
     # (Link) => Unit
     remove: (link) ->
