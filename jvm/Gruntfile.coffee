@@ -1,12 +1,13 @@
 module.exports = (grunt) ->
 
   massAlias =
-    (glob, base) ->
-      files = grunt.file.expand({ filter: 'isFile' }, glob)
-      regex = new RegExp(".*?/" + base + "/(.*)\.js")
+    (glob, base, prefix = "") ->
+      files      = grunt.file.expand({ filter: 'isFile' }, glob)
+      truePrefix = if prefix is "" then "" else "#{prefix}/"
+      regex      = new RegExp(".*?/" + base + "/(.*)\.js")
       splitter = (file) ->
         alias = file.match(regex)[1]
-        "#{file}:#{alias}"
+        "#{file}:#{prefix}#{alias}"
       files.map(splitter)
 
   grunt.initConfig({
