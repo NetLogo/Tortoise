@@ -197,8 +197,6 @@ private[tortoise] object Freebies {
     "Random::OneOfWithAgentSets",
     "Random::RejectBadSeeds",
     "ReporterTasks::NotEnoughInputs",
-    "Run::RunRejectExtraArgumentsIfFirstArgIsString",
-    "Run::RunResultRejectExtraArgumentsIfFirstArgIsString",
     "Sort::SortingTypeErrors",
     "Sort::sort-by-catches-java-7-general-contract-violation-error",
     "Sort::sort-on-rejects-mixed-types",

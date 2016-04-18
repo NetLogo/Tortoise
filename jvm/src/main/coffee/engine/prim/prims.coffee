@@ -247,12 +247,24 @@ module.exports =
 
     # ((Task, Any*) | String) => Unit
     run: (f, args...) ->
-      f(args...)
+      if NLType(f).isString()
+        if args.length is 0
+          throw new Error("`run` is not yet implemented for strings")
+        else
+          throw new Error("run doesn't accept further inputs if the first is a string")
+      else
+        f(args...)
       return
 
     # ((Task, Any*) | String) => Any
     runResult: (f, args...) ->
-      f(args...)
+      if NLType(f).isString()
+        if args.length is 0
+          throw new Error("`run-result` is not yet implemented for strings")
+        else
+          throw new Error("runresult doesn't accept further inputs if the first is a string")
+      else
+        f(args...)
 
     # [T <: (Array[Turtle]|Turtle|AbstractAgentSet[Turtle])] @ (T*) => TurtleSet
     turtleSet: (inputs...) ->
