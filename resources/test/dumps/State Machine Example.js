@@ -81,7 +81,7 @@ var procedures = (function() {
           SelfManager.self().setVariable("steps", (SelfManager.self().getVariable("steps") - 1));
         }
         else {
-          (SelfManager.self().getVariable("next-task"))();
+          Prims.run(SelfManager.self().getVariable("next-task"));
           procedures["WIGGLE"]();
         }
         SelfManager.self().fd(1);

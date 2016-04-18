@@ -436,7 +436,7 @@ var procedures = (function() {
       }
       world.turtleManager.turtlesOfBreed("SCOUTS").ask(function() {
         try {
-          (SelfManager.self().getVariable("next-task"))();
+          Prims.run(SelfManager.self().getVariable("next-task"));
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
             return e;

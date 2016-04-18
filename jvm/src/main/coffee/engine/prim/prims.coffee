@@ -245,6 +245,15 @@ module.exports =
         sum -= StrictMath.log(1 - @_rng.nextDouble())
       q
 
+    # ((Task, Any*) | String) => Unit
+    run: (f, args...) ->
+      f(args...)
+      return
+
+    # ((Task, Any*) | String) => Any
+    runResult: (f, args...) ->
+      f(args...)
+
     # [T <: (Array[Turtle]|Turtle|AbstractAgentSet[Turtle])] @ (T*) => TurtleSet
     turtleSet: (inputs...) ->
       @_createAgentSet(inputs, Turtle, TurtleSet)

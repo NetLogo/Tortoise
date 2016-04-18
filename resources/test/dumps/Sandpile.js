@@ -135,7 +135,7 @@ var procedures = (function() {
     world.observer.setGlobal("selected-color", 55);
     world.observer.setGlobal("selected-patch", Nobody);
     world.patches().ask(function() {
-      SelfManager.self().setPatchVariable("n", (setupTask)());
+      SelfManager.self().setPatchVariable("n", Prims.runResult(setupTask));
       SelfManager.self().setPatchVariable("n-stack", []);
       SelfManager.self().setPatchVariable("base-color", world.observer.getGlobal("default-color"));
     }, true);
