@@ -8,7 +8,7 @@ val nlDependencyVersion       = "5.2.0-9b3d5bb"
 
 val parserJsDependencyVersion = "0.0.1-9b3d5bb"
 
-val scalazVersion             = "7.2.0"
+val scalazVersion             = "7.2.2"
 
 val commonSettings =
   // Keep this up here so things get published to the correct places
@@ -110,7 +110,7 @@ lazy val tortoise = CrossProject("tortoise", file("."), new CrossType {
       Seq(
         "com.lihaoyi" %%%! "utest" % "0.3.1",
         "org.nlogo"   %%%! "parser-js" % parserJsDependencyVersion,
-        "com.github.japgolly.fork.scalaz" %%%! "scalaz-core" % scalazVersion)
+        "org.scalaz" %%% "scalaz-core" % scalazVersion)
     })
 
 lazy val tortoiseJS  = tortoise.js

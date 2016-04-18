@@ -46,7 +46,6 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks('grunt-coffeelint');
   grunt.loadNpmTasks('grunt-contrib-coffee')
   grunt.loadNpmTasks('grunt-contrib-copy')
-  grunt.loadNpmTasks('grunt-contrib-rename')
 
   grunt.task.registerTask('fix_require', 'Changes "require" varname to "tortoise_require"', ->
     filepath    = './target/classes/js/tortoise-engine.js'
