@@ -10,7 +10,7 @@ cache:
 
 jdk: oraclejdk8
 language: scala
-scala: 2.11.7
+scala: 2.11.8
 env:
   global:
     - TRAVIS=true
