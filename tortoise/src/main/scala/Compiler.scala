@@ -175,7 +175,8 @@ object Compiler extends CompilerLike {
       s"""|if (typeof javax !== "undefined") {
           |  modelConfig.dialog = {
           |    confirm: ${jsFunction(Seq("str"), "return true;")},
-          |    notify:  ${jsFunction(Seq("str"))}
+          |    notify:  ${jsFunction(Seq("str"))},
+          |    yesOrNo: ${jsFunction(Seq("str"), "return true;")}
           |  }
           |}""".stripMargin
 
