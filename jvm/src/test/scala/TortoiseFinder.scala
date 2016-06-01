@@ -77,7 +77,9 @@ class TestCommands extends CommandTests with TortoiseFinder {
   override val freebies = Map[String, String](
     // requires handling of non-local exit (see in JVM NetLogo: `NonLocalExit`, `_report`, `_foreach`, `_run`)
     "Every::EveryLosesScope"  -> "NetLogo Web does not support distinct jobs"
-  ) ++ incErrorDetectCommands ++ emptyInitBlockCommands ++ evalNotSupportedCommands ++ cmdTaskRepMismatchCommands
+  ) ++ incErrorDetectCommands ++ emptyInitBlockCommands ++
+       evalNotSupportedCommands ++ cmdTaskRepMismatchCommands ++
+       lameCommands
 }
 
 private[tortoise] object Freebies {
@@ -86,6 +88,7 @@ private[tortoise] object Freebies {
   def emptyInitBlockCommands     = asFreebieMap(emptyInitBlockCommandNames,     emptyInitBlockStr)
   def evalNotSupportedCommands   = asFreebieMap(evalNotSupportedCommandNames,   evalNotSupportedStr)
   def cmdTaskRepMismatchCommands = asFreebieMap(cmdTaskRepMismatchCommandNames, cmdTaskRepMismatchStr)
+  def lameCommands               = asFreebieMap(lameCommandNames,               lameCommandStr)
 
   def incErrorDetectReporters    = asFreebieMap(incErrorDetectReporterNames,    incErrorDetectStr)
   def evalNotSupportedReporters  = asFreebieMap(evalNotSupportedReporterNames,  evalNotSupportedStr)
@@ -237,6 +240,11 @@ private[tortoise] object Freebies {
     "CommandTasks::*ToString4",
     "CommandTasks::*ToString5",
     "CommandTasks::*ToString6"
+  )
+
+  private val lameCommandStr = "This test is LAME!"
+  private val lameCommandNames = Seq(
+    "UserReporters::UserReporters"
   )
 
 }
