@@ -30,6 +30,11 @@ if (typeof javax !== "undefined") {
   }
 }
 if (typeof javax !== "undefined") {
+  modelConfig.inspect = {
+    inspect: function(agent) {}
+  }
+}
+if (typeof javax !== "undefined") {
   modelConfig.output = {
     clear: function() {},
     write: function(str) { context.getWriter().print(str); }
@@ -96,6 +101,7 @@ modelConfig.plots = [(function() {
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "GAS-MOLECULES", singular: "gas-molecule", varNames: ["speed", "mass", "energy", "last-collision", "molecule-type", "momentum-instant", "momentum-difference"] }, { name: "FLASHES", singular: "flash", varNames: ["birthday"] }, { name: "BROKEN-WALLS", singular: "broken-wall", varNames: [] }])([], [])(["initial-oxygen-molecules", "initial-gas-temperature", "bond-energy-released", "activation-energy", "initial-hydrogen-molecules", "pressure-limit-container", "show-wall-hits?", "highlight-product?", "tick-advance-amount", "max-tick-advance-amount", "box-edge", "avg-speed", "avg-energy", "length-horizontal-surface", "length-vertical-surface", "pressure-history", "pressure", "temperature", "box-intact?", "molecule-size", "margin-outside-box", "number-oxygen-molecules", "number-hydrogen-molecules", "number-water-molecules"], ["initial-oxygen-molecules", "initial-gas-temperature", "bond-energy-released", "activation-energy", "initial-hydrogen-molecules", "pressure-limit-container", "show-wall-hits?", "highlight-product?"], [], -20, 20, -20, 20, 10.0, false, false, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;
+var InspectPrims = workspace.inspectPrims;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;

@@ -30,6 +30,11 @@ if (typeof javax !== "undefined") {
   }
 }
 if (typeof javax !== "undefined") {
+  modelConfig.inspect = {
+    inspect: function(agent) {}
+  }
+}
+if (typeof javax !== "undefined") {
   modelConfig.output = {
     clear: function() {},
     write: function(str) { context.getWriter().print(str); }
@@ -43,6 +48,7 @@ if (typeof javax !== "undefined") {
 modelConfig.plots = [];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["yvel", "ypos"], [])(["friction", "frequency", "amplitude"], ["friction", "frequency", "amplitude"], [], 0, 160, -80, 80, 3.0, false, false, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;
+var InspectPrims = workspace.inspectPrims;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;

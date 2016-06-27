@@ -30,6 +30,11 @@ if (typeof javax !== "undefined") {
   }
 }
 if (typeof javax !== "undefined") {
+  modelConfig.inspect = {
+    inspect: function(agent) {}
+  }
+}
+if (typeof javax !== "undefined") {
   modelConfig.output = {
     clear: function() {},
     write: function(str) { context.getWriter().print(str); }
@@ -43,6 +48,7 @@ if (typeof javax !== "undefined") {
 modelConfig.plots = [];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["flockmates", "nearest-neighbor"], [])(["population", "max-align-turn", "max-cohere-turn", "max-separate-turn", "vision", "minimum-separation"], ["population", "max-align-turn", "max-cohere-turn", "max-separate-turn", "vision", "minimum-separation"], [], -35, 35, -35, 35, 7.0, true, true, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;
+var InspectPrims = workspace.inspectPrims;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;

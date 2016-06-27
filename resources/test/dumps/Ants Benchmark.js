@@ -30,6 +30,11 @@ if (typeof javax !== "undefined") {
   }
 }
 if (typeof javax !== "undefined") {
+  modelConfig.inspect = {
+    inspect: function(agent) {}
+  }
+}
+if (typeof javax !== "undefined") {
   modelConfig.output = {
     clear: function() {},
     write: function(str) { context.getWriter().print(str); }
@@ -52,6 +57,7 @@ modelConfig.plots = [(function() {
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["carrying-food?", "drop-size"], [])(["diffusion-rate", "evaporation-rate", "plot?", "ants", "result"], ["diffusion-rate", "evaporation-rate", "plot?", "ants"], ["chemical", "food", "nest?", "nest-scent", "food-source-number"], -50, 50, -50, 50, 5.0, false, false, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;
+var InspectPrims = workspace.inspectPrims;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;

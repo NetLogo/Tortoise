@@ -30,6 +30,11 @@ if (typeof javax !== "undefined") {
   }
 }
 if (typeof javax !== "undefined") {
+  modelConfig.inspect = {
+    inspect: function(agent) {}
+  }
+}
+if (typeof javax !== "undefined") {
   modelConfig.output = {
     clear: function() {},
     write: function(str) { context.getWriter().print(str); }
@@ -71,6 +76,7 @@ modelConfig.plots = [(function() {
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["happy?", "my-group-site"], [])(["tolerance", "number", "num-groups", "group-sites", "boring-groups"], ["tolerance", "number", "num-groups"], [], -80, 1, -55, 55, 5.0, true, false, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;
+var InspectPrims = workspace.inspectPrims;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;

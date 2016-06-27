@@ -30,6 +30,11 @@ if (typeof javax !== "undefined") {
   }
 }
 if (typeof javax !== "undefined") {
+  modelConfig.inspect = {
+    inspect: function(agent) {}
+  }
+}
+if (typeof javax !== "undefined") {
   modelConfig.output = {
     clear: function() {},
     write: function(str) { context.getWriter().print(str); }
@@ -43,6 +48,7 @@ if (typeof javax !== "undefined") {
 modelConfig.plots = [];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "PAGES", singular: "page", varNames: ["rank", "new-rank", "visits"] }, { name: "SURFERS", singular: "surfer", varNames: ["current-page"] }])([], [])(["damping-factor", "calculation-method", "watch-surfers?", "number-of-surfers", "network-choice", "show-page-ranks?", "total-rank", "max-rank"], ["damping-factor", "calculation-method", "watch-surfers?", "number-of-surfers", "network-choice", "show-page-ranks?"], [], -10, 10, -10, 10, 20.0, false, false, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;
+var InspectPrims = workspace.inspectPrims;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;

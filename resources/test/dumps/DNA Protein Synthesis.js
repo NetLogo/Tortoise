@@ -30,6 +30,11 @@ if (typeof javax !== "undefined") {
   }
 }
 if (typeof javax !== "undefined") {
+  modelConfig.inspect = {
+    inspect: function(agent) {}
+  }
+}
+if (typeof javax !== "undefined") {
   modelConfig.output = {
     clear: function() {},
     write: function(str) { context.getWriter().print(str); }
@@ -43,6 +48,7 @@ if (typeof javax !== "undefined") {
 modelConfig.plots = [];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "GENES", singular: "gene", varNames: ["gene-number", "strand", "code", "start-position", "end-position"] }, { name: "NUCLEOTIDES", singular: "nucleotide", varNames: ["gene-number", "strand", "value", "place"] }, { name: "PROMOTERS", singular: "promoter", varNames: ["gene-number", "strand"] }, { name: "TERMINATORS", singular: "terminator", varNames: ["gene-number", "strand"] }, { name: "MRNA-NUCLEOTIDES", singular: "mrna-nucleotide", varNames: ["gene-number", "strand", "value", "place"] }, { name: "MRNAS", singular: "mrna", varNames: ["gene-number", "strand", "code", "cap-type", "traveling?", "released?"] }, { name: "TRNAS", singular: "trna", varNames: ["gene-number", "strand"] }, { name: "TRNA-NUCLEOTIDES", singular: "trna-nucleotide", varNames: ["gene-number", "strand", "value", "place"] }, { name: "AMINO-ACIDS", singular: "amino-acid", varNames: ["gene-number", "strand", "value", "place"] }, { name: "PROTEINS", singular: "protein", varNames: ["gene-number", "strand", "value"] }, { name: "TAGS", singular: "tag", varNames: ["value"] }, { name: "TAGLINES", singular: "tagline", varNames: [], isDirected: false }, { name: "BACKBONES", singular: "backbone", varNames: [], isDirected: true }])([], [])(["initial-dna-string", "user-created-code", "#-nucleotides-affected", "mutation-type", "show-genes?", "current-instruction", "codon-to-amino-acid-key", "original-dna-string", "duplicate-dna-string", "duplicate-ribosome-ycor", "original-ribosome-ycor", "duplicate-dna-ycor", "original-dna-ycor", "nucleotide-spacing", "nucleo-tag-color", "terminator-color", "gene-color-counter", "original-strand-gene-counter", "duplicate-strand-gene-counter", "original-display-mrna-counter", "duplicate-display-mrna-counter", "mrnas-traveling", "mrnas-released", "replicate-dna-event?", "show-genes-event?", "event-1-triggered?", "event-2-triggered?", "event-3-triggered?", "event-4-triggered?", "event-6-triggered?", "event-7-triggered?", "event-8-triggered?", "event-9-triggered?", "event-1-completed?", "event-2-completed?", "event-3-completed?", "event-4-completed?", "event-6-completed?", "event-7-completed?", "event-8-completed?", "event-9-completed?"], ["initial-dna-string", "user-created-code", "#-nucleotides-affected", "mutation-type", "show-genes?"], [], 0, 30, -8, 7, 24.0, true, true, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;
+var InspectPrims = workspace.inspectPrims;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;

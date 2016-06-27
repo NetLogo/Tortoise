@@ -30,6 +30,11 @@ if (typeof javax !== "undefined") {
   }
 }
 if (typeof javax !== "undefined") {
+  modelConfig.inspect = {
+    inspect: function(agent) {}
+  }
+}
+if (typeof javax !== "undefined") {
   modelConfig.output = {
     clear: function() {},
     write: function(str) { context.getWriter().print(str); }
@@ -43,6 +48,7 @@ if (typeof javax !== "undefined") {
 modelConfig.plots = [];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "ROCKETS", singular: "rocket", varNames: ["terminal-y-vel"] }, { name: "FRAGS", singular: "frag", varNames: ["dim"] }])(["col", "x-vel", "y-vel"], [])(["trails?", "fireworks", "fragments", "initial-x-vel", "initial-y-vel", "gravity", "fade-amount", "countdown"], ["trails?", "fireworks", "fragments", "initial-x-vel", "initial-y-vel", "gravity", "fade-amount"], [], -90, 90, -90, 90, 3.0, true, false, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;
+var InspectPrims = workspace.inspectPrims;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;

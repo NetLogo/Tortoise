@@ -30,6 +30,11 @@ if (typeof javax !== "undefined") {
   }
 }
 if (typeof javax !== "undefined") {
+  modelConfig.inspect = {
+    inspect: function(agent) {}
+  }
+}
+if (typeof javax !== "undefined") {
   modelConfig.output = {
     clear: function() {},
     write: function(str) { context.getWriter().print(str); }
@@ -72,6 +77,7 @@ modelConfig.plots = [(function() {
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["infected?", "resistant?", "virus-check-timer"], [])(["gain-resistance-chance", "recovery-chance", "virus-spread-chance", "number-of-nodes", "virus-check-frequency", "initial-outbreak-size", "average-node-degree"], ["gain-resistance-chance", "recovery-chance", "virus-spread-chance", "number-of-nodes", "virus-check-frequency", "initial-outbreak-size", "average-node-degree"], [], -20, 20, -20, 20, 11.0, false, false, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;
+var InspectPrims = workspace.inspectPrims;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;

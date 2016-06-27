@@ -30,6 +30,11 @@ if (typeof javax !== "undefined") {
   }
 }
 if (typeof javax !== "undefined") {
+  modelConfig.inspect = {
+    inspect: function(agent) {}
+  }
+}
+if (typeof javax !== "undefined") {
   modelConfig.output = {
     clear: function() {},
     write: function(str) { context.getWriter().print(str); }
@@ -60,6 +65,7 @@ modelConfig.plots = [(function() {
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["clock", "threshold", "reset-level", "window"], [])(["number", "cycle-length", "flash-length", "flashes-to-reset", "show-dark-fireflies?", "strategy"], ["number", "cycle-length", "flash-length", "flashes-to-reset", "show-dark-fireflies?", "strategy"], [], -35, 35, -35, 35, 6.0, true, true, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;
+var InspectPrims = workspace.inspectPrims;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;

@@ -30,6 +30,11 @@ if (typeof javax !== "undefined") {
   }
 }
 if (typeof javax !== "undefined") {
+  modelConfig.inspect = {
+    inspect: function(agent) {}
+  }
+}
+if (typeof javax !== "undefined") {
   modelConfig.output = {
     clear: function() {},
     write: function(str) { context.getWriter().print(str); }
@@ -43,6 +48,7 @@ if (typeof javax !== "undefined") {
 modelConfig.plots = [];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["ideal-temp", "output-heat", "unhappiness"], [])(["bug-count", "evaporation-rate", "diffusion-rate", "random-move-chance", "min-ideal-temp", "max-ideal-temp", "max-output-heat", "min-output-heat", "result"], ["bug-count", "evaporation-rate", "diffusion-rate", "random-move-chance", "min-ideal-temp", "max-ideal-temp", "max-output-heat", "min-output-heat"], ["temp"], -50, 50, -50, 50, 5.0, true, true, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;
+var InspectPrims = workspace.inspectPrims;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;

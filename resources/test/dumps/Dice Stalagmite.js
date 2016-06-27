@@ -30,6 +30,11 @@ if (typeof javax !== "undefined") {
   }
 }
 if (typeof javax !== "undefined") {
+  modelConfig.inspect = {
+    inspect: function(agent) {}
+  }
+}
+if (typeof javax !== "undefined") {
   modelConfig.output = {
     clear: function() {},
     write: function(str) { context.getWriter().print(str); }
@@ -81,6 +86,7 @@ modelConfig.plots = [(function() {
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "PAIRED-DICE", singular: "paired-die", varNames: ["pair-sum"] }, { name: "SINGLE-DICE", singular: "single-die", varNames: [] }, { name: "STACKED-DICE", singular: "stacked-die", varNames: [] }])(["die-value"], [])(["stop-at-top?", "generators", "top-row", "single-outcomes", "pair-outcomes"], ["stop-at-top?"], ["column"], -10, 26, 0, 51, 10.0, true, true, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;
+var InspectPrims = workspace.inspectPrims;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
