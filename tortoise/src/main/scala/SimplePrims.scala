@@ -249,6 +249,8 @@ object SimplePrims {
         case _: prim.etc._type  => "PrintPrims.type"
         case _: prim.etc._write => "PrintPrims.write"
 
+        case _: prim.etc._inspect => "InspectPrims.inspect"
+
         // Output
         case _: prim.etc._clearoutput => "OutputPrims.clear"
         case _: prim.etc._outputprint => "OutputPrims.print"

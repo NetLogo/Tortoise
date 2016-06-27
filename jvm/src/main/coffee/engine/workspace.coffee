@@ -19,6 +19,7 @@ SelfPrims     = require('./prim/selfprims')
 RNG           = require('util/rng')
 Timer         = require('util/timer')
 
+{ Config: InspectConfig,    Prims: InspectPrims }    = require('./prim/inspectprims')
 { Config: MouseConfig,      Prims: MousePrims }      = require('./prim/mouseprims')
 { Config: OutputConfig,     Prims: OutputPrims }     = require('./prim/outputprims')
 { Config: PrintConfig,      Prims: PrintPrims }      = require('./prim/printprims')
@@ -34,6 +35,7 @@ module.exports =
     worldArgs = arguments # If you want `Workspace` to take more parameters--parameters not related to `World`--just keep returning new functions
 
     dialogConfig  = modelConfig?.dialog  ? new UserDialogConfig
+    inspectConfig = modelConfig?.inspect ? new InspectConfig
     mouseConfig   = modelConfig?.mouse   ? new MouseConfig
     outputConfig  = modelConfig?.output  ? new OutputConfig
     plots         = modelConfig?.plots   ? []
@@ -56,6 +58,7 @@ module.exports =
     linkPrims       = new LinkPrims(world)
     listPrims       = new ListPrims(Hasher, prims.equality.bind(prims), rng.nextInt)
 
+    inspectPrims    = new InspectPrims(inspectConfig, Dump)
     mousePrims      = new MousePrims(mouseConfig)
     outputPrims     = new OutputPrims(outputConfig, Dump)
     printPrims      = new PrintPrims(printConfig, Dump)
@@ -64,6 +67,7 @@ module.exports =
     {
       selfManager
       breedManager
+      inspectPrims
       layoutManager
       linkPrims
       listPrims

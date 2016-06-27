@@ -70,7 +70,7 @@ object Compiler extends CompilerLike {
     val interfaceInit = JsStatement("interfaceInit", interfaceGlobalJs, Seq("world", "procedures", "modelConfig"))
     TortoiseLoader.integrateSymbols(init ++ plotConfig ++ procedures
                                          :+ outputConfig :+ dialogConfig
-                                         :+ worldConfig :+ interfaceInit)
+                                         :+ inspectConfig :+ worldConfig :+ interfaceInit)
   }
 
   def compileReporter(logo:          String,
@@ -183,6 +183,20 @@ object Compiler extends CompilerLike {
           |}""".stripMargin
 
     JsStatement("modelConfig.dialog", defaultConfig, Seq("modelConfig"))
+
+  }
+
+  private def inspectConfig: JsStatement = {
+
+    // If `javax` exists, we're in Nashorn, and, therefore, testing --JAB (3/2/15)
+    val defaultConfig =
+      s"""|if (typeof javax !== "undefined") {
+          |  modelConfig.inspect = {
+          |    inspect: ${jsFunction(Seq("agent"))}
+          |  }
+          |}""".stripMargin
+
+    JsStatement("modelConfig.inspect", defaultConfig, Seq("modelConfig"))
 
   }
 
