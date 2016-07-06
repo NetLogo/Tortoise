@@ -110,6 +110,11 @@ module.exports =
       @_updateVarsByName("heading", "size", "midpointx", "midpointy")
       return
 
+    # () => Unit
+    watchMe: ->
+      @world.observer.watch(this)
+      return
+
     # () => String
     toString: ->
       if not @isDead()
