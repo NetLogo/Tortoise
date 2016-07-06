@@ -1,18 +1,15 @@
 import AddSettings.sbtFiles
-import bintray.Keys.{ bintray => bintrayTask, bintrayOrganization, repository => bintrayRepository }
 import org.scalajs.sbtplugin.cross.{ CrossProject, CrossType }
 import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport.{ fullOptJS, packageJSDependencies }
 import org.scalastyle.sbt.ScalastylePlugin.scalastyle
 
-val nlDependencyVersion       = "5.2.0-bf59ee5"
+val nlDependencyVersion       = "5.2.0-a3b26bb"
 
-val parserJsDependencyVersion = "0.0.1-bf59ee5"
+val parserJsDependencyVersion = "0.0.1-a3b26bb"
 
-val scalazVersion             = "7.2.2"
+val scalazVersion             = "7.2.4"
 
 val commonSettings =
-  // Keep this up here so things get published to the correct places
-  bintraySettings ++
   Seq(
     organization  := "org.nlogo",
     licenses      += ("GPL-2.0", url("http://opensource.org/licenses/GPL-2.0")),
@@ -23,13 +20,13 @@ val commonSettings =
     scalacOptions ++=
       "-deprecation -unchecked -feature -Xcheckinit -encoding us-ascii -target:jvm-1.7 -Xlint -Xfatal-warnings -Ywarn-value-discard -language:_".split(" ").toSeq,
     // Dependencies
-    resolvers           += bintray.Opts.resolver.repo("netlogo", "NetLogoHeadless"),
+    resolvers           += sbt.Resolver.bintrayRepo("netlogo", "NetLogoHeadless"),
     libraryDependencies ++= Seq(
       "org.nlogo" % "netlogoheadless" % nlDependencyVersion,
       "org.mozilla" % "rhino" % "1.7.7", // see jsengine/Rhino.scala for more information
-      "org.json4s" %% "json4s-native" % "3.3.0",
+      "org.json4s" %% "json4s-native" % "3.4.0",
       "org.scalaz" %% "scalaz-core" % scalazVersion,
-      "com.lihaoyi" %% "scalatags" % "0.5.3" % "test",
+      "com.lihaoyi" %% "scalatags" % "0.5.4" % "test",
       "org.scalatest" %% "scalatest" % "2.2.1" % "test",
       "org.skyscreamer" % "jsonassert" % "1.3.0" % "test",
       "org.reflections" % "reflections" % "0.9.10" % "test",
@@ -42,8 +39,8 @@ val commonSettings =
     resourceDirectory in Test    := (baseDirectory in root).value / "resources" / "test",
     // Build and publication settings
     isSnapshot                         := true, // Used by the publish-versioned plugin
-    bintrayRepository in bintrayTask   := "TortoiseAux",
-    bintrayOrganization in bintrayTask := Some("netlogo"),
+    bintrayRepository    := "TortoiseAux",
+    bintrayOrganization  := Option("netlogo"),
     // Logging and Output settings
     ivyLoggingLevel                 := UpdateLogging.Quiet, // only log problems plz
     onLoadMessage                   := "",

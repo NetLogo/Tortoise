@@ -1,19 +1,15 @@
 scalacOptions += "-deprecation"
 
 libraryDependencies +=
-  "classycle" % "classycle" % "1.4.1" from
-    "http://ccl.northwestern.edu/devel/classycle-1.4.1.jar"
+  "classycle" % "classycle" % "1.4.2" from
+    "http://ccl-artifacts.s3-website-us-east-1.amazonaws.com/classycle-1.4.2.jar"
 
 resolvers += Resolver.url(
   "bintray-sbt-plugin-releases",
     url("http://dl.bintray.com/content/sbt/sbt-plugin-releases"))(
         Resolver.ivyStylePatterns)
 
-addSbtPlugin("me.lessis" % "bintray-sbt" % "0.1.2")
-
-// prevents noise from bintray stuff
-libraryDependencies +=
-  "org.slf4j" % "slf4j-nop" % "1.7.12"
+addSbtPlugin("me.lessis" % "bintray-sbt" % "0.3.0")
 
 resolvers += Resolver.url(
   "publish-versioned-plugin-releases",
@@ -22,7 +18,7 @@ resolvers += Resolver.url(
 
 addSbtPlugin("org.nlogo" % "publish-versioned-plugin" % "2.0")
 
-addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.8")
+addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.10")
 
 resolvers += "sonatype-releases" at "https://oss.sonatype.org/content/repositories/releases/"
 
