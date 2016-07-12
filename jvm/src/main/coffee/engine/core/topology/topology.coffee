@@ -68,6 +68,54 @@ module.exports =
       [x2, y2] = agent.getCoords()
       @distanceXY(x1, y1, x2, y2)
 
+    # (Number, Number, Number, Number, Number, Number) => Number
+    distanceToLine: (x1, y1, x2, y2, xcor, ycor) ->
+
+      closestPoint = (x1, y1, x2, y2, xDiff, yDiff) ->
+        # all this math determines a point on the line defined by the endpoints of the
+        # link nearest to the given point --??? (??/??/??)
+        u = ((x1 - x2) * xDiff + (y1 - y2) * yDiff) / (xDiff * xDiff + yDiff * yDiff)
+        x = x2 + u * xDiff
+        y = y2 + u * yDiff
+        { x, y }
+
+      # since this is a segment not a continuous line we have to check the bounds
+      # we know it's a point on the line, so if it's in the bounding box then
+      # we're good and just return that point. ev 10/12/06
+      isInBounds = (x1, y1, x2, y2, pointX, pointY) ->
+
+        [bottom, top] =
+          if y1 > y2
+            [y2, y1]
+          else
+            [y1, y2]
+
+        [left, right] =
+          if x1 > x2
+            [x2, x1]
+          else
+            [x1, x2]
+
+        pointX <= right and pointX >= left and pointY <= top and pointY >= bottom
+
+      wrappedX1   = @wrapX(x1)
+      wrappedX2   = @wrapX(x2)
+      wrappedXcor = @wrapX(xcor)
+
+      wrappedY1   = @wrapY(y1)
+      wrappedY2   = @wrapY(y2)
+      wrappedYcor = @wrapY(ycor)
+
+      xDiff = wrappedX2 - wrappedX1
+      yDiff = wrappedY2 - wrappedY1
+
+      { x: closestX, y: closestY } = closestPoint(wrappedXcor, wrappedYcor, wrappedX1, wrappedY1, xDiff, yDiff)
+
+      if isInBounds(wrappedX1, wrappedY1, wrappedX2, wrappedY2, closestX, closestY)
+        @distanceXY(closestX, closestY, wrappedXcor, wrappedYcor)
+      else
+        Math.min(@distanceXY(x1, y1, xcor, ycor), @distanceXY(x2, y2, xcor, ycor))
+
     # (Number, Number, Number, Number) => Number
     towards: (x1, y1, x2, y2) ->
       @_towards(x1, y1, x2, y2, @_shortestX, @_shortestY)
