@@ -177,7 +177,6 @@ private[tortoise] object Freebies {
     "Interaction::Interaction5",
     "Interaction::Interaction13",
     "Interaction::PatchTriesTurtleReporter",
-    "Links::LinkCantChangeBreeds",
     "Links::LinksNotAllowed",
     "Links::LinkNotAllowed",
     "Links::LinkCreationTypeChecking",

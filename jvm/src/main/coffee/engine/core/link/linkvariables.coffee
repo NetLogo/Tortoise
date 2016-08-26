@@ -23,10 +23,10 @@ setBreed = (breed) ->
       @world.breedManager.get(breed)
     else if type.isAgentSet()
       specialName = breed.getSpecialName()
-      if specialName?
+      if specialName? and @world.breedManager.get(specialName).isLinky()
         @world.breedManager.get(specialName)
       else
-        throw new Error("You can't set BREED to a non-breed agentset.")
+        throw new Error("You can't set BREED to a non-link-breed agentset.")
     else
       breed
 
