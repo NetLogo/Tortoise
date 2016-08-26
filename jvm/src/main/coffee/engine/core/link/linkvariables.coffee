@@ -46,6 +46,8 @@ setBreed = (breed) ->
   if trueBreed isnt @world.breedManager.links()
     @world.breedManager.links().add(this)
 
+  @_refreshName()
+
   return
 
 # (Number) => Unit

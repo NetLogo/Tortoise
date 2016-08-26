@@ -24,6 +24,7 @@ module.exports =
     # type RegLinkStampFunc = (Number, Number, Number, Number, Number, Number, Number, RGB, String, Number, String) => Unit
 
     _breed:            undefined # Breed
+    _name:             undefined # String
     _updateVarsByName: undefined # (String*) => Unit
     _varManager:       undefined # VariableManager
 
@@ -51,6 +52,10 @@ module.exports =
     # () => Number
     getBreedOrdinal: ->
       @_breed.ordinal
+
+    # Unit -> String
+    getName: ->
+      @_name
 
     # (String) => Any
     getVariable: (varName) ->
@@ -108,7 +113,7 @@ module.exports =
     # () => String
     toString: ->
       if not @isDead()
-        "(#{@_breed.singular} #{@end1.id} #{@end2.id})"
+        "(#{@getName()})"
       else
         "nobody"
 
@@ -182,6 +187,11 @@ module.exports =
       midY  = @getMidpointY()
 
       @_registerLinkStamp(e1x, e1y, e2x, e2y, midX, midY, stampHeading, color, @_shape, @_thickness, @isDirected, @getSize(), @_isHidden, mode.name)
+      return
+
+    # Unit -> Unit
+    _refreshName: ->
+      @_name = "#{@_breed.singular} #{@end1.id} #{@end2.id}"
       return
 
     # (Breed) => Array[String]

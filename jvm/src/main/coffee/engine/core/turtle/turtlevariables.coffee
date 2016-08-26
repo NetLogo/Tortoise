@@ -106,6 +106,8 @@ setBreed = (breed) ->
   if trueBreed isnt @world.breedManager.turtles()
     @world.breedManager.turtles().add(this)
 
+  @_refreshName()
+
   return
 
 # (Number) => Unit

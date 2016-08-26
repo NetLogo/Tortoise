@@ -37,6 +37,7 @@ module.exports =
 
     _breed:            undefined # Breed
     _breedShape:       undefined # String
+    _name:             undefined # String
     _updateVarsByName: undefined # (String*) => Unit
     _varManager:       undefined # VariableManager
 
@@ -65,6 +66,10 @@ module.exports =
     # () => String
     getBreedName: ->
       @_breed.name
+
+    # Unit -> String
+    getName: ->
+      @_name
 
     # (Number) => Boolean
     canMove: (distance) ->
@@ -360,7 +365,7 @@ module.exports =
     # () => String
     toString: ->
       if not @isDead()
-        "(#{@_breed.singular} #{@id})"
+        "(#{@getName()})"
       else
         "nobody"
 
@@ -449,6 +454,11 @@ module.exports =
     # (String) => Unit
     _genVarUpdate: (varName) ->
       @_updateVarsByName(varName)
+      return
+
+    # Unit -> Unit
+    _refreshName: ->
+      @_name = "#{@_breed.singular} #{@id}"
       return
 
     # (Number, Number, IDSet) => Unit

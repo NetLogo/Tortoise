@@ -23,6 +23,9 @@ module.exports =
       @_turtles          = []
       @_varManager       = @_genVarManager(@world.patchesOwnNames)
 
+    getName: ->
+      "patch #{@pxcor} #{@pycor}"
+
     # (String) => Any
     getVariable: (varName) ->
       @_varManager[varName]
@@ -137,7 +140,7 @@ module.exports =
 
     # () => String
     toString: ->
-      "(patch #{@pxcor} #{@pycor})"
+      "(#{@getName()})"
 
     # () => Unit
     reset: ->
