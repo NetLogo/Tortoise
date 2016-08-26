@@ -138,6 +138,10 @@ module.exports =
     compare: (x) ->
       Comparator.numericCompare(@id, x.id)
 
+    # Unit -> Unit
+    isDead: ->
+      false
+
     # () => String
     toString: ->
       "(#{@getName()})"
