@@ -133,7 +133,7 @@ module.exports = class Plot
     )
     return
 
-  # (Number) => Unit
+  # (Number|RGB) => Unit
   setPenColor: (color) ->
     @_withPen((pen) -> pen.setColor(color))
     return

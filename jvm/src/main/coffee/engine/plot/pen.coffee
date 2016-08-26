@@ -6,6 +6,7 @@ StrictMath = require('shim/strictmath')
 { id, pipeline }                  = require('brazierjs/function')
 { pairs }                         = require('brazierjs/object')
 { isNumber }                      = require('brazierjs/type')
+ColorModel                        = require('engine/core/colormodel')
 
 # data PenMode =
 Up   = {}
@@ -157,10 +158,11 @@ module.exports.Pen = class Pen
     @_ops.updateMode(@_state.displayMode)
     return
 
-  # (Number) => Unit
+  # (Number|RGB) => Unit
   setColor: (color) ->
-    @_state.color = color
-    @_ops.updateColor(color)
+    trueColor = if isNumber(color) then color else ColorModel.nearestColorNumberOfRGB(color...)
+    @_state.color = trueColor
+    @_ops.updateColor(trueColor)
     return
 
   # P.S. I find it _hilarious_ that this can take '0' and negative numbers --JAB (9/22/14)
