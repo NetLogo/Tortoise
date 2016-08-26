@@ -35,6 +35,11 @@ if (typeof javax !== "undefined") {
     write: function(str) { context.getWriter().print(str); }
   }
 }
+if (typeof javax !== "undefined") {
+  modelConfig.world = {
+    resizeWorld: function(agent) {}
+  }
+}
 modelConfig.plots = [];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["flockmates", "nearest-neighbor"], [])(["population", "max-align-turn", "max-cohere-turn", "max-separate-turn", "vision", "minimum-separation"], ["population", "max-align-turn", "max-cohere-turn", "max-separate-turn", "vision", "minimum-separation"], [], -35, 35, -35, 35, 7.0, true, true, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;

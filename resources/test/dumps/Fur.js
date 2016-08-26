@@ -35,6 +35,11 @@ if (typeof javax !== "undefined") {
     write: function(str) { context.getWriter().print(str); }
   }
 }
+if (typeof javax !== "undefined") {
+  modelConfig.world = {
+    resizeWorld: function(agent) {}
+  }
+}
 modelConfig.plots = [];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])(["initial-density", "ratio", "inner-radius-x", "inner-radius-y", "outer-radius-x", "outer-radius-y"], ["initial-density", "ratio", "inner-radius-x", "inner-radius-y", "outer-radius-x", "outer-radius-y"], ["new-color", "inner-neighbors", "outer-neighbors"], -30, 30, -30, 30, 5.0, true, true, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;

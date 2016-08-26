@@ -35,6 +35,11 @@ if (typeof javax !== "undefined") {
     write: function(str) { context.getWriter().print(str); }
   }
 }
+if (typeof javax !== "undefined") {
+  modelConfig.world = {
+    resizeWorld: function(agent) {}
+  }
+}
 modelConfig.plots = [];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "PARTICLES", singular: "particle", varNames: ["speed", "mass"] }])([], [])(["number", "largest-particle-size", "color-scheme", "smallest-particle-size", "result", "tick-length", "box-edge", "colliding-particles", "sorted-colliding-particles", "colliding-particle-1", "colliding-particle-2", "original-tick-length", "last-view-update", "manage-view-updates?", "view-update-rate"], ["number", "largest-particle-size", "color-scheme", "smallest-particle-size"], [], -40, 40, -40, 40, 6.0, false, false, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;

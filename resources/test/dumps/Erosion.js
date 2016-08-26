@@ -35,6 +35,11 @@ if (typeof javax !== "undefined") {
     write: function(str) { context.getWriter().print(str); }
   }
 }
+if (typeof javax !== "undefined") {
+  modelConfig.world = {
+    resizeWorld: function(agent) {}
+  }
+}
 modelConfig.plots = [];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])(["terrain-smoothness", "rainfall", "bumpy?", "soil-hardness", "hill?", "show-water?", "drains", "land"], ["terrain-smoothness", "rainfall", "bumpy?", "soil-hardness", "hill?"], ["elevation", "water", "drain?"], -50, 50, -50, 50, 4.0, false, false, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;

@@ -35,6 +35,11 @@ if (typeof javax !== "undefined") {
     write: function(str) { context.getWriter().print(str); }
   }
 }
+if (typeof javax !== "undefined") {
+  modelConfig.world = {
+    resizeWorld: function(agent) {}
+  }
+}
 modelConfig.plots = [];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["ideal-temp", "output-heat", "unhappiness"], [])(["bug-count", "evaporation-rate", "diffusion-rate", "random-move-chance", "min-ideal-temp", "max-ideal-temp", "max-output-heat", "min-output-heat", "result"], ["bug-count", "evaporation-rate", "diffusion-rate", "random-move-chance", "min-ideal-temp", "max-ideal-temp", "max-output-heat", "min-output-heat"], ["temp"], -50, 50, -50, 50, 5.0, true, true, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;

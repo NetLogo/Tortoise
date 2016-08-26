@@ -35,6 +35,11 @@ if (typeof javax !== "undefined") {
     write: function(str) { context.getWriter().print(str); }
   }
 }
+if (typeof javax !== "undefined") {
+  modelConfig.world = {
+    resizeWorld: function(agent) {}
+  }
+}
 modelConfig.plots = [];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "CELLS", singular: "cell", varNames: ["hex-neighbors", "live-neighbor-count", "eligible?"] }])([], [])(["one-neighbor?", "two-neighbors?", "three-neighbors?", "four-neighbors?", "five-neighbors?", "six-neighbors?", "switches", "eligibles"], ["one-neighbor?", "two-neighbors?", "three-neighbors?", "four-neighbors?", "five-neighbors?", "six-neighbors?"], [], -50, 50, -50, 50, 4.0, false, false, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;

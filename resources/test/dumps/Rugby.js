@@ -35,6 +35,11 @@ if (typeof javax !== "undefined") {
     write: function(str) { context.getWriter().print(str); }
   }
 }
+if (typeof javax !== "undefined") {
+  modelConfig.world = {
+    resizeWorld: function(agent) {}
+  }
+}
 modelConfig.plots = [];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["start-patch"], [])(["kick-line", "goal-size", "goal-pos", "show-level-curves?", "current-max", "col", "ang", "best-dist", "analytic", "try-line", "histogram-area", "kicks", "goals"], ["kick-line", "goal-size", "goal-pos", "show-level-curves?"], ["score", "left-angle", "right-angle", "goal-angle", "slope"], 0, 60, 0, 80, 6.0, false, false, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;

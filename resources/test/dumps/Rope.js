@@ -35,6 +35,11 @@ if (typeof javax !== "undefined") {
     write: function(str) { context.getWriter().print(str); }
   }
 }
+if (typeof javax !== "undefined") {
+  modelConfig.world = {
+    resizeWorld: function(agent) {}
+  }
+}
 modelConfig.plots = [];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["yvel", "ypos"], [])(["friction", "frequency", "amplitude"], ["friction", "frequency", "amplitude"], [], 0, 160, -80, 80, 3.0, false, false, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;

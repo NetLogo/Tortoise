@@ -35,6 +35,11 @@ if (typeof javax !== "undefined") {
     write: function(str) { context.getWriter().print(str); }
   }
 }
+if (typeof javax !== "undefined") {
+  modelConfig.world = {
+    resizeWorld: function(agent) {}
+  }
+}
 modelConfig.plots = [];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "SPAWNERS", singular: "spawner", varNames: ["num-colors", "step-size", "turn-increment", "size-modifier"] }, { name: "PETALS", singular: "petal", varNames: ["step-size", "size-modifier", "parent"] }])([], [])(["rows", "columns", "mutation", "asexual?", "controlled-mutation?", "first-parent"], ["rows", "columns", "mutation", "asexual?", "controlled-mutation?"], [], -17, 17, -17, 17, 12.0, false, false, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;

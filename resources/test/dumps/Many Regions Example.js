@@ -35,6 +35,11 @@ if (typeof javax !== "undefined") {
     write: function(str) { context.getWriter().print(str); }
   }
 }
+if (typeof javax !== "undefined") {
+  modelConfig.world = {
+    resizeWorld: function(agent) {}
+  }
+}
 modelConfig.plots = [];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])(["number-of-regions", "number-of-turtles-per-region", "regions"], ["number-of-regions", "number-of-turtles-per-region"], ["region"], -32, 32, -16, 16, 13.0, true, true, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;
