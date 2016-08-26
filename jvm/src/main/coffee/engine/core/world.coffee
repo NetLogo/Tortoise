@@ -37,8 +37,8 @@ module.exports =
     _patchesAllBlack:          undefined # Boolean
     _patchesWithLabels:        undefined # Number
 
-    # (MiniWorkspace, Array[String], Array[String], Array[String], Number, Number, Number, Number, Number, Boolean, Boolean, ShapeMap, ShapeMap, () => Unit) => World
-    constructor: (miniWorkspace, globalNames, interfaceGlobalNames, @patchesOwnNames, minPxcor, maxPxcor, minPycor
+    # (MiniWorkspace, WorldConfig, Array[String], Array[String], Array[String], Number, Number, Number, Number, Number, Boolean, Boolean, ShapeMap, ShapeMap, () => Unit) => World
+    constructor: (miniWorkspace, @_config, globalNames, interfaceGlobalNames, @patchesOwnNames, minPxcor, maxPxcor, minPycor
                 , maxPycor, @patchSize, wrappingAllowedInX, wrappingAllowedInY, @turtleShapeMap, linkShapeMap
                 , onTickFunction) ->
       { selfManager: @selfManager, updater: @_updater, rng: @rng
@@ -105,14 +105,19 @@ module.exports =
       if not (minPxcor <= 0 <= maxPxcor and minPycor <= 0 <= maxPycor)
         throw new Error("You must include the point (0, 0) in the world.")
 
-      # For some reason, JVM NetLogo doesn't restart `who` ordering after `resize-world`; even the test for this is existentially confused. --JAB (4/3/14)
-      @turtleManager._clearTurtlesSuspended()
+      if (minPxcor isnt @topology?.minPxcor or minPycor isnt @topology?.minPycor or
+          maxPxcor isnt @topology?.maxPxcor or maxPycor isnt @topology?.maxPycor)
 
-      @changeTopology(wrapsInX, wrapsInY, minPxcor, maxPxcor, minPycor, maxPycor)
-      @_createPatches()
-      @_declarePatchesAllBlack()
-      @_resetPatchLabelCount()
-      @_updater.updated(this)("width", "height", "minPxcor", "minPycor", "maxPxcor", "maxPycor")
+        @_config.resizeWorld()
+
+        # For some reason, JVM NetLogo doesn't restart `who` ordering after `resize-world`; even the test for this is existentially confused. --JAB (4/3/14)
+        @turtleManager._clearTurtlesSuspended()
+
+        @changeTopology(wrapsInX, wrapsInY, minPxcor, maxPxcor, minPycor, maxPycor)
+        @_createPatches()
+        @_declarePatchesAllBlack()
+        @_resetPatchLabelCount()
+        @_updater.updated(this)("width", "height", "minPxcor", "minPycor", "maxPxcor", "maxPycor")
 
       return
 

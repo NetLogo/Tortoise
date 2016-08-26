@@ -68,7 +68,9 @@ object Compiler extends CompilerLike {
         identity)).mkString("\n")
 
     val interfaceInit = JsStatement("interfaceInit", interfaceGlobalJs, Seq("world", "procedures", "modelConfig"))
-    TortoiseLoader.integrateSymbols(init ++ plotConfig ++ procedures :+ outputConfig :+ dialogConfig :+ interfaceInit)
+    TortoiseLoader.integrateSymbols(init ++ plotConfig ++ procedures
+                                         :+ outputConfig :+ dialogConfig
+                                         :+ worldConfig :+ interfaceInit)
   }
 
   def compileReporter(logo:          String,
@@ -181,6 +183,19 @@ object Compiler extends CompilerLike {
           |}""".stripMargin
 
     JsStatement("modelConfig.dialog", defaultConfig, Seq("modelConfig"))
+
+  }
+
+  private def worldConfig: JsStatement = {
+
+    val defaultConfig =
+      s"""|if (typeof javax !== "undefined") {
+          |  modelConfig.world = {
+          |    resizeWorld: ${jsFunction(Seq("agent"))}
+          |  }
+          |}""".stripMargin
+
+    JsStatement("modelConfig.world", defaultConfig, Seq("modelConfig"))
 
   }
 

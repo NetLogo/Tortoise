@@ -1,5 +1,9 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
+class WorldConfig
+  # Unit -> Unit
+  constructor: (@resizeWorld = (->)) ->
+
 Dump          = require('./dump')
 Hasher        = require('./hasher')
 Updater       = require('./updater')
@@ -34,6 +38,7 @@ module.exports =
     outputConfig  = modelConfig?.output  ? new OutputConfig
     plots         = modelConfig?.plots   ? []
     printConfig   = modelConfig?.print   ? new PrintConfig
+    worldConfig   = modelConfig?.world   ? new WorldConfig
 
     rng         = new RNG
 
@@ -45,7 +50,7 @@ module.exports =
     timer        = new Timer
     updater      = new Updater
 
-    world           = new World(new MiniWorkspace(selfManager, updater, breedManager, rng, plotManager), worldArgs...)
+    world           = new World(new MiniWorkspace(selfManager, updater, breedManager, rng, plotManager), worldConfig, worldArgs...)
     layoutManager   = new LayoutManager(world, rng.nextDouble)
 
     linkPrims       = new LinkPrims(world)
