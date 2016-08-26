@@ -52,6 +52,7 @@ module.exports =
 
     # (String, Turtle) => Boolean
     isLinkNeighbor: (breedName, turtle) ->
+      @_mustBeUndirected(breedName)
       @isOutLinkNeighbor(breedName, turtle) or @isInLinkNeighbor(breedName, turtle)
 
     # (String, Turtle) => Boolean
