@@ -10,9 +10,9 @@ IDManager   = require('./idmanager')
 SortedLinks = require('./sortedlinks')
 stableSort  = require('util/stablesort')
 
-{ contains, filter, map } = require('brazierjs/array')
-{ pipeline }              = require('brazierjs/function')
-{ values }                = require('brazierjs/object')
+{ contains, exists, filter, isEmpty, map } = require('brazierjs/array')
+{ pipeline }                               = require('brazierjs/function')
+{ pairs, values }                          = require('brazierjs/object')
 
 module.exports =
 
@@ -89,6 +89,19 @@ module.exports =
         @_linkArrCache = @_links.toArray()
       @_linkArrCache
 
+    # Link -> Breed -> String -> Unit
+    trackBreedChange: (link, breed, oldBreedName) ->
+      { end1, end2, isDirected } = link
+      @_errorIfBreedIsIncompatible(breed.name)
+      existingLink = @getLink(end1.id, end2.id, breed.name)
+      if existingLink isnt link and existingLink isnt Nobody
+        throw new Error("there is already a #{breed.singular.toUpperCase()} \
+                         with endpoints #{end1.getName()} and #{end2.getName()}")
+      else
+        @_removeFromSets(end1.id, end2.id, isDirected, oldBreedName)
+        @_insertIntoSets(end1.id, end2.id, isDirected, breed.name)
+      return
+
     # (Link) => Unit
     _removeLink: (link) =>
       l = @_links.find(({id}) -> id is link.id)
@@ -102,6 +115,7 @@ module.exports =
 
     # (Boolean, Turtle, Turtle, String) => Link
     _createLink: (isDirected, from, to, breedName) ->
+
       [end1, end2] =
         if from.id < to.id or isDirected
           [from, to]
@@ -115,7 +129,6 @@ module.exports =
         @_updater.updated(link)(Builtins.linkExtras...)
         @_links.insert(link)
         @_linkArrCache = undefined
-        @_insertIntoSets(end1.id, end2.id, isDirected, breedName)
         link
       else
         Nobody
@@ -125,6 +138,26 @@ module.exports =
       isLink = (other) -> other isnt Nobody
       links  = pipeline(map(mkLink), filter(isLink))(turtles.toArray())
       new LinkSet(links)
+
+    # String -> Unit
+    _errorIfBreedIsIncompatible: (breedName) ->
+      if (breedName is   "LINKS" and @_hasBreededs()) or
+         (breedName isnt "LINKS" and @_hasUnbreededs())
+        throw new Error("You cannot have both breeded and unbreeded links in the same world.")
+      return
+
+    # Unit -> Boolean
+    _hasBreededs: ->
+      allPairs = pairs(@_linksTo).concat(pairs(@_linksFrom))
+      exists(
+        ([key, value]) ->
+          key isnt "LINKS" and exists((x) -> not isEmpty(x))(values(value))
+      )(allPairs)
+
+    # Unit -> Boolean
+    _hasUnbreededs: ->
+      hasUnbreededs = (bin) -> exists((x) -> not isEmpty(x))(values(bin["LINKS"] ? {}))
+      hasUnbreededs(@_linksFrom) or hasUnbreededs(@_linksTo)
 
     # (Number, Number, Boolean, String) => Unit
     _insertIntoSets: (fromID, toID, isDirected, breedName) ->

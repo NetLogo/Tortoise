@@ -8,20 +8,6 @@ TurtleSet = require('./turtleset')
 
 { DeathInterrupt, ignoring } = require('util/exception')
 
-# (Breed) => String
-mustNotBeDirected = (breed) ->
-  if breed.isDirected()
-    "#{breed.name} is a directed breed."
-  else
-    undefined
-
-# (Breed) => String
-mustNotBeUndirected = (breed) ->
-  if breed.isUndirected()
-    "#{breed} is an undirected breed."
-  else
-    undefined
-
 # Used by functions that search both `_linksIn` and `_linksOut`, since links are often duplicated in them. --JAB (11/24/14)
 # (Array[Link]) => LinkSet
 linkSetOf = (links) ->
@@ -74,6 +60,7 @@ module.exports =
 
     # (String, Turtle) => Link
     linkWith: (breedName, otherTurtle) ->
+      @_mustBeUndirected(breedName)
       outLink = @outLinkTo(breedName, otherTurtle)
       if outLink isnt Nobody
         outLink
@@ -146,3 +133,15 @@ module.exports =
     # (Link, Boolean) => Boolean
     _isCorrectlyDirected: (link, isDirected) ->
       isDirected is @_breedManager.get(link.getBreedName()).isDirected()
+
+    # (String) => Unit
+    _mustBeUndirected: (breedName) ->
+      if @_breedManager.get(breedName).isDirected()
+        throw new Error("#{breedName} is a directed breed.")
+      return
+
+    # (String) => Unit
+    _mustBeDirected: (breedName) ->
+      if not @_breedManager.get(breedName).isDirected()
+        throw new Error("#{breedName} is an undirected breed.")
+      return
