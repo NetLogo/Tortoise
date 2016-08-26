@@ -39,7 +39,7 @@ module.exports =
 
     # (MiniWorkspace, WorldConfig, Array[String], Array[String], Array[String], Number, Number, Number, Number, Number, Boolean, Boolean, ShapeMap, ShapeMap, () => Unit) => World
     constructor: (miniWorkspace, @_config, globalNames, interfaceGlobalNames, @patchesOwnNames, minPxcor, maxPxcor, minPycor
-                , maxPycor, @patchSize, wrappingAllowedInX, wrappingAllowedInY, @turtleShapeMap, linkShapeMap
+                , maxPycor, @patchSize, wrappingAllowedInX, wrappingAllowedInY, @turtleShapeMap, @linkShapeMap
                 , onTickFunction) ->
       { selfManager: @selfManager, updater: @_updater, rng: @rng
       , breedManager: @breedManager, plotManager: @_plotManager } = miniWorkspace
@@ -52,7 +52,7 @@ module.exports =
         maxPxcor: maxPxcor,
         maxPycor: maxPycor,
         linkBreeds: "XXX IMPLEMENT ME",
-        linkShapeList: linkShapeMap,
+        linkShapeList: @linkShapeMap,
         patchSize: @patchSize,
         patchesAllBlack: @_patchesAllBlack,
         patchesWithLabels: @_patchesWithLabels,
