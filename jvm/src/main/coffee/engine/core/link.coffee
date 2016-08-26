@@ -117,6 +117,10 @@ module.exports =
       else
         "nobody"
 
+    # () => (Number, Number)
+    getCoords: ->
+      [@getMidpointX(), @getMidpointY()]
+
     # () => Number
     getHeading: ->
       try @world.topology.towards(@end1.xcor, @end1.ycor, @end2.xcor, @end2.ycor)
