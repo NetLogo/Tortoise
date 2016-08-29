@@ -34,9 +34,7 @@ module.exports =
       @_myself = @_self
       @_self   = agent
 
-      res = ignoring(DeathInterrupt)(f)
-
-      @_self   = oldAgent
-      @_myself = oldMyself
-
-      res
+      try ignoring(DeathInterrupt)(f)
+      finally
+        @_self   = oldAgent
+        @_myself = oldMyself
