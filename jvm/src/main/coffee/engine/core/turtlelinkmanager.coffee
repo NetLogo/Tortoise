@@ -8,6 +8,11 @@ TurtleSet = require('./turtleset')
 
 { DeathInterrupt, ignoring } = require('util/exception')
 
+# data Directedness =
+Undirected = {}
+Directed = {}
+Either = {}
+
 # Used by functions that search both `_linksIn` and `_linksOut`, since links are often duplicated in them. --JAB (11/24/14)
 # (Array[Link]) => LinkSet
 linkSetOf = (links) ->
@@ -18,9 +23,12 @@ linkSetOf = (links) ->
 turtleSetOf = (turtles) ->
   new TurtleSet(unique(turtles))
 
-# (String) => (Link) => Boolean
-linkBreedMatches = (breedName) -> (link) ->
-  breedName is "LINKS" or breedName is link.getBreedName()
+# String -> Directedness -> Link -> Boolean
+linkBreedMatches = (breedName) -> (directedness) -> (link) ->
+  (breedName is "LINKS" or breedName is link.getBreedName()) and
+    (directedness is Either or
+      (link.isDirected and directedness is Directed) or
+      (not link.isDirected and directedness is Undirected))
 
 module.exports =
   class LinkManager
@@ -40,11 +48,11 @@ module.exports =
 
     # (String, Turtle) => Link
     inLinkFrom: (breedName, otherTurtle) ->
-      find((l) -> l.end1 is otherTurtle and linkBreedMatches(breedName)(l))(@_linksIn) ? Nobody
+      @_findLink('end1', otherTurtle, breedName, Directed, @_linksIn)
 
     # (String) => TurtleSet
     inLinkNeighbors: (breedName) ->
-      turtleSetOf(@_neighborsIn(breedName, true))
+      turtleSetOf(@_neighborsIn(breedName, Directed))
 
     # (String, Turtle) => Boolean
     isInLinkNeighbor: (breedName, turtle) ->
@@ -53,7 +61,8 @@ module.exports =
     # (String, Turtle) => Boolean
     isLinkNeighbor: (breedName, turtle) ->
       @_mustBeUndirected(breedName)
-      @isOutLinkNeighbor(breedName, turtle) or @isInLinkNeighbor(breedName, turtle)
+      @_findLink('end2', turtle, breedName, Undirected, @_linksOut) isnt Nobody or
+        @_findLink('end1', turtle, breedName, Undirected, @_linksIn) isnt Nobody
 
     # (String, Turtle) => Boolean
     isOutLinkNeighbor: (breedName, turtle) ->
@@ -62,35 +71,36 @@ module.exports =
     # (String, Turtle) => Link
     linkWith: (breedName, otherTurtle) ->
       @_mustBeUndirected(breedName)
-      outLink = @outLinkTo(breedName, otherTurtle)
+      outLink = @_findLink('end2', otherTurtle, breedName, Undirected, @_linksOut)
       if outLink isnt Nobody
         outLink
       else
-        @inLinkFrom(breedName, otherTurtle)
+        @_findLink('end1', otherTurtle, breedName, Undirected, @_linksIn)
 
     # (String) => TurtleSet
     linkNeighbors: (breedName) ->
-      turtleSetOf(@_neighborsIn(breedName, false).concat(@_neighborsOut(breedName, false)))
+      turtleSetOf(@_neighborsIn(breedName, Undirected).concat(@_neighborsOut(breedName, Undirected)))
 
     # (String) => LinkSet
     myInLinks: (breedName) ->
-      new LinkSet(@_linksIn.filter(linkBreedMatches(breedName)))
+      new LinkSet(@_linksIn.filter(linkBreedMatches(breedName)(Directed)))
 
     # (String) => LinkSet
     myLinks: (breedName) ->
-      linkSetOf(@_linksIn.filter(linkBreedMatches(breedName)).concat(@_linksOut.filter(linkBreedMatches(breedName))))
+      linkSetOf(@_linksIn.filter(linkBreedMatches(breedName)(Either)).
+         concat(@_linksOut.filter(linkBreedMatches(breedName)(Either))))
 
     # (String) => LinkSet
     myOutLinks: (breedName) ->
-      new LinkSet(@_linksOut.filter(linkBreedMatches(breedName)))
+      new LinkSet(@_linksOut.filter(linkBreedMatches(breedName)(Directed)))
 
     # (String) => TurtleSet
     outLinkNeighbors: (breedName) ->
-      turtleSetOf(@_neighborsOut(breedName, true))
+      turtleSetOf(@_neighborsOut(breedName, Directed))
 
     # (String, Turtle) => Link
     outLinkTo: (breedName, otherTurtle) ->
-      find((l) -> l.end2 is otherTurtle and linkBreedMatches(breedName)(l))(@_linksOut) ? Nobody
+      @_findLink('end2', otherTurtle, breedName, Directed, @_linksOut)
 
     # (Link) => Unit
     remove: (link) ->
@@ -119,21 +129,21 @@ module.exports =
       @_linksIn.concat(@_linksOut).forEach((link) -> link.updateEndRelatedVars(); return)
       return
 
-    # (String, Boolean) => Array[Turtle]
-    _neighborsOut: (breedName, isDirected) ->
-      @_filterNeighbors(@_linksOut, breedName, isDirected).map((l) -> l.end2)
+    # (String, Directedness) => Array[Turtle]
+    _neighborsOut: (breedName, directedness) ->
+      @_filterNeighbors(@_linksOut, breedName, directedness).map((l) -> l.end2)
 
-    # (String, Boolean) => Array[Turtle]
-    _neighborsIn: (breedName, isDirected) ->
-      @_filterNeighbors(@_linksIn, breedName, isDirected).map((l) -> l.end1)
+    # (String, Directedness) => Array[Turtle]
+    _neighborsIn: (breedName, directedness) ->
+      @_filterNeighbors(@_linksIn, breedName, directedness).map((l) -> l.end1)
 
-    # (Array[Link], String, Boolean) => Array[Link]
-    _filterNeighbors: (neighborArr, breedName, isDirected) ->
-      neighborArr.filter((link) => linkBreedMatches(breedName)(link) and @_isCorrectlyDirected(link, isDirected))
+    # (Array[Link], String, Directedness) => Array[Link]
+    _filterNeighbors: (neighborArr, breedName, directedness) ->
+      neighborArr.filter((link) => linkBreedMatches(breedName)(directedness)(link))
 
-    # (Link, Boolean) => Boolean
-    _isCorrectlyDirected: (link, isDirected) ->
-      isDirected is @_breedManager.get(link.getBreedName()).isDirected()
+    # String -> Turtle -> String -> Directedness -> Array Link -> Agent
+    _findLink: (key, otherTurtle, breedName, directedness, linkRegistry) ->
+      find((l) -> l[key] is otherTurtle and linkBreedMatches(breedName)(directedness)(l))(linkRegistry) ? Nobody
 
     # (String) => Unit
     _mustBeUndirected: (breedName) ->
