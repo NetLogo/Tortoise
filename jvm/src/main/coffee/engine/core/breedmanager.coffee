@@ -32,6 +32,10 @@ class Breed
       @members.splice(@_getAgentIndex(newAgent), howManyToThrowOut = 0, whatToInsert = newAgent)
     return
 
+  # Agent -> Boolean
+  contains: (agent) ->
+    @members[@_getAgentIndex(agent)] is agent
+
   # (Agent) => Unit
   remove: (agent) ->
     @members.splice(@_getAgentIndex(agent), howManyToThrowOut = 1)

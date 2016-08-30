@@ -103,10 +103,10 @@ setBreed = (breed) ->
 
   setBreedShape.call(this, trueBreed.getShape())
 
-  if trueBreed isnt @world.breedManager.turtles()
-    @world.breedManager.turtles().add(this)
-
   @_refreshName()
+
+  if not @world.breedManager.turtles().contains(this)
+    @world.breedManager.turtles().add(this)
 
   return
 

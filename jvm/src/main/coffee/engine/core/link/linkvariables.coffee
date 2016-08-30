@@ -45,10 +45,10 @@ setBreed = (breed) ->
 
   setShape.call(this, trueBreed.getShape())
 
-  if trueBreed isnt @world.breedManager.links()
-    @world.breedManager.links().add(this)
-
   @_refreshName()
+
+  if not @world.breedManager.links().contains(this)
+    @world.breedManager.links().add(this)
 
   return
 
