@@ -68,8 +68,8 @@ module.exports =
       findFunc =
         (link) ->
           link.getBreedName().toLowerCase() is breedName.toLowerCase() and
-            (link.end1.id is fromId and link.end2.id is toId) or
-            (not isDirected and link.end1.id is toId and link.end2.id is fromId)
+            ((link.end1.id is fromId and link.end2.id is toId) or
+             (not isDirected and link.end1.id is toId and link.end2.id is fromId))
 
       @_links.find(findFunc) ? Nobody
 
