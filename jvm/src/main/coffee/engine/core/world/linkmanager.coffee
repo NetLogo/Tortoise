@@ -96,9 +96,7 @@ module.exports =
       @_linkArrCache = undefined
       if @_links.isEmpty() then @_notifyIsUndirected()
 
-      remove = (set, id1, id2) -> if set? then set[id1] = filter((x) -> x isnt id2)(set[id1])
-      remove(@_linksFrom[link.getBreedName()], link.end1.id, link.end2.id)
-      if not link.isDirected then remove(@_linksTo[link.getBreedName()], link.end2.id, link.end1.id)
+      @_removeFromSets(link.end1.id, link.end2.id, link.isDirected, link.getBreedName())
 
       return
 
@@ -150,3 +148,10 @@ module.exports =
     _linkExists: (id1, id2, isDirected, breedName) ->
       weCanHaz = pipeline(values, contains(id2))
       weCanHaz(@_linksFrom[breedName]?[id1] ? {}) or (not isDirected and weCanHaz(@_linksTo[breedName]?[id1] ? {}))
+
+    # Number -> Number -> Boolean -> String -> Unit
+    _removeFromSets: (fromID, toID, isDirected, breedName) ->
+      remove = (set, id1, id2) -> if set?[id1]? then set[id1] = filter((x) -> x isnt id2)(set[id1])
+      remove(@_linksFrom[breedName], fromID, toID)
+      if not isDirected then remove(@_linksTo[breedName], toID, fromID)
+      return
