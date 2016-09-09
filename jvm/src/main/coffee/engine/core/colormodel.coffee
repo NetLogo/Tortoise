@@ -113,7 +113,7 @@ module.exports = {
   colorToRGB: (color) ->
     type = JSType(color)
     if type.isNumber()
-      RGBCache[StrictMath.floor(color * 10)]
+      RGBCache[StrictMath.floor(@wrapColor(color) * 10)]
     else if type.isArray()
       color.map(StrictMath.round)
     else if type.isString()
@@ -253,7 +253,7 @@ module.exports = {
 
   # (ColorNumber) => Number
   _colorIntegral: (color) ->
-    StrictMath.floor(color / 10)
+    StrictMath.floor(@wrapColor(color) / 10)
 
   # (ColorName) => RGB
   _nameToRGB: (name) ->
