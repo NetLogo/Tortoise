@@ -121,9 +121,16 @@ module.exports = {
     else
       throw new Error("Unrecognized color format: #{color}")
 
-  # (ColorNumber) => HSB
+  # [T <: ColorNumber|RGB] @ (T) => HSB
   colorToHSB: (color) ->
-    [r, g, b] = @colorToRGB(color)
+    type = JSType(color)
+    [r, g, b] =
+      if type.isNumber()
+        @colorToRGB(color)
+      else if type.isArray()
+        color
+      else
+        throw new Error("Unrecognized color format: #{color}")
     @rgbToHSB(r, g, b)
 
   # (RGB...) => RGB
