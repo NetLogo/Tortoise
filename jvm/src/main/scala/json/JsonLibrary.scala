@@ -24,6 +24,7 @@ object JsonLibrary {
       case JsObject(props) => JObject(props.map { case (k, v) => JField(k, toNative(v)) }.toList)
     }
 
+  // scalastyle:off cyclomatic.complexity
   def toTortoise(n: Native): TortoiseJson =
     n match {
       case JNull | JNothing => JsNull
@@ -36,6 +37,7 @@ object JsonLibrary {
       case JArray(a)        => JsArray(a.map(toTortoise).toList)
       case JObject(props)   => JsObject(fields(props.map { case JField(k, v) => (k, toTortoise(v)) }: _*))
     }
+  // scalastyle:on cyclomatic.complexity
 
   def nativeToString(n: Native): String =
     compact(render(n))
