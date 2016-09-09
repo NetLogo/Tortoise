@@ -203,7 +203,7 @@ module.exports = {
     saturation = if max is 0 then 0 else difference / max
     brightness = max / 255
 
-    [hue * 360, saturation * 100, brightness * 100]
+    [hue * 360, saturation * 100, brightness * 100].map((x) -> NLMath.precision(x, 3))
 
   # [T <: ColorNumber|RGB] @ (T) => T
   wrapColor: (color) ->
