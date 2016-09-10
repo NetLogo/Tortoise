@@ -18,6 +18,14 @@ module.exports = {
     fn.isReporter = true
     fn
 
+  # [Result] @ (Product => Result, Array[Any]) => Result
+  apply: (fn, args) ->
+    if args.length >= fn.length
+      fn.apply(fn, args)
+    else
+      pluralStr = if fn.length is 1 then "" else "s"
+      throw new Error("anonymous procedure expected #{fn.length} input#{pluralStr}, but only got #{args.length}")
+
   # [Result] @ (Product => Result, Array[Any]*) => Array[Result]
   map: (fn, lists...) ->
     @_processLists(fn, lists, "map")
