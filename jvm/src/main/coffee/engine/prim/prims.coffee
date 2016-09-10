@@ -277,6 +277,18 @@ module.exports =
       else
         f(args...)
 
+    # (Any) => Unit
+    stdout: (x) ->
+      dumpedX = @_dumper(x)
+      if console?
+        console.log(dumpedX)
+      else if print?
+        print(dumpedX)
+      else
+        throw new Error("We don't know how to output text on this platform.  \
+                         But, if it helps you any, here's the thing you wanted to see: #{dumpedX}")
+      return
+
     # [T <: (Array[Turtle]|Turtle|AbstractAgentSet[Turtle])] @ (T*) => TurtleSet
     turtleSet: (inputs...) ->
       @_createAgentSet(inputs, Turtle, TurtleSet)

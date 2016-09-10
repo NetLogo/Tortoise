@@ -326,6 +326,7 @@ object SimplePrims {
         case _: prim.etc._layoutradial     => "LayoutManager.layoutRadial"
         case _: prim.etc._layouttutte      => "LayoutManager.layoutTutte"
         case _: prim.etc._changetopology   => "world.changeTopology"
+        case _: prim.etc._stdout           => "Prims.stdout"
         case _: prim.etc._usermessage      => "UserDialogPrims.confirm"
         case _: prim.etc._exportoutput     => "ExportPrims.exportOutput"
 
