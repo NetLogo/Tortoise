@@ -285,7 +285,7 @@ trait CommandPrims extends PrimUtils {
       case VariableSetter(setValue) =>
         setValue(arg(1))
       case x =>
-        failCompilation(s"unknown settable: ${x.getClass.getName}", s.instruction.token)
+        failCompilation("This isn't something you can use \"set\" on.", s.instruction.token)
     }
   }
 
