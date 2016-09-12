@@ -25,7 +25,7 @@ var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.pl
 if (typeof javax !== "undefined") {
   modelConfig.dialog = {
     confirm: function(str) { return true; },
-    notify:  function(str) {},
+    notify: function(str) {},
     yesOrNo: function(str) { return true; }
   }
 }
@@ -43,6 +43,7 @@ if (typeof javax !== "undefined") {
 modelConfig.plots = [];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])(["hue", "saturation", "brightness", "rgb-red", "rgb-green", "rgb-blue", "hsb-as-rgb", "hsb-color", "rgb-color"], ["hue", "saturation", "brightness", "rgb-red", "rgb-green", "rgb-blue"], [], 0, 9, 0, 9, 45.0, true, true, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;
+var ExportPrims = workspace.exportPrims;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;

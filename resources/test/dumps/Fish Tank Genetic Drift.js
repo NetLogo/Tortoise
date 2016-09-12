@@ -25,7 +25,7 @@ var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.pl
 if (typeof javax !== "undefined") {
   modelConfig.dialog = {
     confirm: function(str) { return true; },
-    notify:  function(str) {},
+    notify: function(str) {},
     yesOrNo: function(str) { return true; }
   }
 }
@@ -199,6 +199,7 @@ modelConfig.plots = [(function() {
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "FISH", singular: "a-fish", varNames: ["sex", "bearing"] }, { name: "FISH-PARTS", singular: "a-fish-part", varNames: [] }, { name: "SOMATIC-CELLS", singular: "somatic-cell", varNames: ["sex"] }, { name: "GAMETE-CELLS", singular: "gamete-cell", varNames: ["sex"] }, { name: "ALLELES", singular: "allele", varNames: ["gene", "value", "owned-by-fish?", "side"] }, { name: "FISH-BONES", singular: "a-fish-bones", varNames: ["countdown"] }, { name: "FISH-ZYGOTES", singular: "a-fish-zygote", varNames: [] }, { name: "MOUSE-CURSORS", singular: "mouse-cursor", varNames: [] }])([], [])(["initial-alleles-big-b", "see-body-cells?", "initial-alleles-big-t", "initial-alleles-big-g", "initial-alleles-big-f", "carrying-capacity", "see-fish?", "see-sex-cells?", "auto-replace?", "initial-females", "#-big-b-alleles", "#-small-b-alleles", "#-big-t-alleles", "#-small-t-alleles", "#-big-f-alleles", "#-small-f-alleles", "#-big-g-alleles", "#-small-g-alleles", "#-y-chromosomes", "#-x-chromosomes", "water-color", "green-dorsal-fin-color", "no-green-dorsal-fin-color", "yellow-tail-fin-color", "no-yellow-tail-fin-color", "male-color", "female-color", "spots-shape", "no-spots-shape", "forked-tail-shape", "no-forked-tail-shape", "#-of-green-dorsal-fins", "#-of-no-green-dorsal-fins", "#-of-yellow-tail-fins", "#-of-no-yellow-tail-fins", "#-of-spots", "#-of-no-spots", "#-of-forked-tails", "#-of-no-forked-tails", "#-of-males", "#-of-females", "mouse-continuous-down?", "num-fish-removed", "num-fish-born", "num-fish-in-tank", "fish-forward-step", "gamete-forward-step", "intra-chromosome-pair-spacing", "inter-chromosome-pair-spacing", "size-of-karyotype-background-for-cells", "initial-#-females", "initial-#-males"], ["initial-alleles-big-b", "see-body-cells?", "initial-alleles-big-t", "initial-alleles-big-g", "initial-alleles-big-f", "carrying-capacity", "see-fish?", "see-sex-cells?", "auto-replace?", "initial-females"], ["type-of-patch", "divider-here?"], 0, 29, 0, 15, 28.0, false, false, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;
+var ExportPrims = workspace.exportPrims;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;

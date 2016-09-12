@@ -25,7 +25,7 @@ var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.pl
 if (typeof javax !== "undefined") {
   modelConfig.dialog = {
     confirm: function(str) { return true; },
-    notify:  function(str) {},
+    notify: function(str) {},
     yesOrNo: function(str) { return true; }
   }
 }
@@ -194,6 +194,7 @@ modelConfig.plots = [(function() {
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "PARTICLES", singular: "particle", varNames: ["speed", "mass", "energy", "last-collision"] }])([], [])(["number-of-particles", "collide?", "trace?", "init-particle-speed", "particle-mass", "tick-delta", "max-tick-delta", "init-avg-speed", "init-avg-energy", "avg-speed", "avg-energy", "fast", "medium", "slow", "percent-fast", "percent-medium", "percent-slow"], ["number-of-particles", "collide?", "trace?", "init-particle-speed", "particle-mass"], [], -40, 40, -40, 40, 4.0, true, true, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;
+var ExportPrims = workspace.exportPrims;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;

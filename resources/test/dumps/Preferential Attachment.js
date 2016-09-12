@@ -25,7 +25,7 @@ var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.pl
 if (typeof javax !== "undefined") {
   modelConfig.dialog = {
     confirm: function(str) { return true; },
-    notify:  function(str) {},
+    notify: function(str) {},
     yesOrNo: function(str) { return true; }
   }
 }
@@ -103,6 +103,7 @@ modelConfig.plots = [(function() {
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])(["plot?", "layout?"], ["plot?", "layout?"], [], -45, 45, -45, 45, 5.0, false, false, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;
+var ExportPrims = workspace.exportPrims;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;

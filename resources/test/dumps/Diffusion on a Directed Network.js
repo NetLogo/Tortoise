@@ -25,7 +25,7 @@ var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.pl
 if (typeof javax !== "undefined") {
   modelConfig.dialog = {
     confirm: function(str) { return true; },
-    notify:  function(str) {},
+    notify: function(str) {},
     yesOrNo: function(str) { return true; }
   }
 }
@@ -58,6 +58,7 @@ modelConfig.plots = [(function() {
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "ACTIVE-LINKS", singular: "active-link", varNames: [], isDirected: true }, { name: "INACTIVE-LINKS", singular: "inactive-link", varNames: [], isDirected: true }])(["val", "new-val"], ["current-flow"])(["link-chance", "grid-size", "diffusion-rate", "total-val", "max-val", "max-flow", "mean-flow"], ["link-chance", "grid-size", "diffusion-rate"], [], -10, 10, -10, 10, 20.0, false, false, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;
+var ExportPrims = workspace.exportPrims;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;

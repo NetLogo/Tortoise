@@ -25,7 +25,7 @@ var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.pl
 if (typeof javax !== "undefined") {
   modelConfig.dialog = {
     confirm: function(str) { return true; },
-    notify:  function(str) {},
+    notify: function(str) {},
     yesOrNo: function(str) { return true; }
   }
 }
@@ -43,6 +43,7 @@ if (typeof javax !== "undefined") {
 modelConfig.plots = [];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "SPAWNERS", singular: "spawner", varNames: ["num-colors", "step-size", "turn-increment", "size-modifier"] }, { name: "PETALS", singular: "petal", varNames: ["step-size", "size-modifier", "parent"] }])([], [])(["rows", "columns", "mutation", "asexual?", "controlled-mutation?", "first-parent"], ["rows", "columns", "mutation", "asexual?", "controlled-mutation?"], [], -17, 17, -17, 17, 12.0, false, false, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;
+var ExportPrims = workspace.exportPrims;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;

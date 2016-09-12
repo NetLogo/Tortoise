@@ -25,7 +25,7 @@ var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.pl
 if (typeof javax !== "undefined") {
   modelConfig.dialog = {
     confirm: function(str) { return true; },
-    notify:  function(str) {},
+    notify: function(str) {},
     yesOrNo: function(str) { return true; }
   }
 }
@@ -43,6 +43,7 @@ if (typeof javax !== "undefined") {
 modelConfig.plots = [];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "CELLS", singular: "cell", varNames: ["hex-neighbors", "live-neighbor-count", "eligible?"] }])([], [])(["one-neighbor?", "two-neighbors?", "three-neighbors?", "four-neighbors?", "five-neighbors?", "six-neighbors?", "switches", "eligibles"], ["one-neighbor?", "two-neighbors?", "three-neighbors?", "four-neighbors?", "five-neighbors?", "six-neighbors?"], [], -50, 50, -50, 50, 4.0, false, false, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;
+var ExportPrims = workspace.exportPrims;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;

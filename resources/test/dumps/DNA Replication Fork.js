@@ -25,7 +25,7 @@ var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.pl
 if (typeof javax !== "undefined") {
   modelConfig.dialog = {
     confirm: function(str) { return true; },
-    notify:  function(str) {},
+    notify: function(str) {},
     yesOrNo: function(str) { return true; }
   }
 }
@@ -43,6 +43,7 @@ if (typeof javax !== "undefined") {
 modelConfig.plots = [];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "PHOSPHATES", singular: "phosphate", varNames: [] }, { name: "NUCLEOSIDES", singular: "nucleoside", varNames: ["class", "value", "place"] }, { name: "NUCLEOTIDES", singular: "nucleotide", varNames: ["class", "value", "place", "unwound?", "unzipped-stage"] }, { name: "POLYMERASES", singular: "polymerase", varNames: ["locked-state"] }, { name: "HELICASES", singular: "helicase", varNames: [] }, { name: "TOPOISOMERASES", singular: "topoisomerase", varNames: ["locked?"] }, { name: "TOPOISOMERASES-GEARS", singular: "topoisomerase-gear", varNames: [] }, { name: "PRIMASES", singular: "primase", varNames: [] }, { name: "NUCLEOTIDE-TAGS", singular: "nucleotide-tag", varNames: ["value"] }, { name: "ENZYME-TAGS", singular: "enzyme-tag", varNames: [] }, { name: "MOUSE-CURSORS", singular: "mouse-cursor", varNames: [] }, { name: "CHROMOSOME-BUILDERS", singular: "initial-chromosomes-builder", varNames: [] }, { name: "OLD-STAIRS", singular: "old-stair", varNames: [], isDirected: false }, { name: "NEW-STAIRS", singular: "new-stair", varNames: [], isDirected: false }, { name: "TAGLINES", singular: "tagline", varNames: [], isDirected: false }, { name: "GEARLINES", singular: "gearline", varNames: [], isDirected: true }, { name: "CURSOR-DRAGS", singular: "cursor-drag", varNames: [], isDirected: true }, { name: "BACKBONES", singular: "backbone", varNames: [], isDirected: true }])([], [])(["dna-strand-length", "nucleo-labels?", "enzyme-labels?", "substitutions?", "free-nucleosides", "time-limit", "initial-length-dna", "mouse-continuous-down?", "instruction", "cursor-detect-color", "cursor-drag-color", "wound-dna-color", "unwound-dna-color", "nucleo-tag-color", "enzyme-tag-color", "nucleoside-color", "polymerase-color-0", "polymerase-color-1", "polymerase-color-2", "polymerase-color-3", "helicase-color-0", "helicase-color-1", "topoisomerase-color-0", "topoisomerase-color-1", "primase-color-0", "primase-color-1", "final-time", "total-deletion-mutations-top-strand", "total-substitution-mutations-top-strand", "total-correct-duplications-top-strand", "total-deletion-mutations-bottom-strand", "total-substitution-mutations-bottom-strand", "total-correct-duplications-bottom-strand", "lock-radius", "mouse-drag-radius", "molecule-step", "wind-angle", "length-of-simulation", "time-remaining", "current-instruction", "using-time-limit", "simulation-started?", "cell-divided?", "simulation-ended?", "cell-message-shown?", "timer-message-shown?"], ["dna-strand-length", "nucleo-labels?", "enzyme-labels?", "substitutions?", "free-nucleosides", "time-limit"], [], 0, 16, -5, 4, 50.0, true, true, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;
+var ExportPrims = workspace.exportPrims;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;

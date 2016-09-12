@@ -25,7 +25,7 @@ var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.pl
 if (typeof javax !== "undefined") {
   modelConfig.dialog = {
     confirm: function(str) { return true; },
-    notify:  function(str) {},
+    notify: function(str) {},
     yesOrNo: function(str) { return true; }
   }
 }
@@ -81,6 +81,7 @@ modelConfig.plots = [(function() {
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "REMOVAL-SPOTS", singular: "removal-spot", varNames: ["countdown"] }, { name: "BACTERIA", singular: "bacterium", varNames: ["variation"] }, { name: "FLAGELLA", singular: "flagellum", varNames: [] }, { name: "PREDATORS", singular: "predator", varNames: [] }, { name: "CONNECTORS", singular: "connector", varNames: [], isDirected: true }])([], [])(["initial-bacteria-per-variation", "visualize-variation", "bacteria-caught", "wiggle?", "camouflage?", "tick-counter", "predator-location", "speed-scalar", "predator-color-visible", "predator-color-invisible", "bacteria-default-color", "flagella-size"], ["initial-bacteria-per-variation", "visualize-variation"], [], -14, 14, -14, 14, 16.0, true, true, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;
+var ExportPrims = workspace.exportPrims;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;

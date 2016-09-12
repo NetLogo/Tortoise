@@ -25,7 +25,7 @@ var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.pl
 if (typeof javax !== "undefined") {
   modelConfig.dialog = {
     confirm: function(str) { return true; },
-    notify:  function(str) {},
+    notify: function(str) {},
     yesOrNo: function(str) { return true; }
   }
 }
@@ -58,6 +58,7 @@ modelConfig.plots = [(function() {
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "WATERS", singular: "water", varNames: [] }, { name: "OILS", singular: "oil", varNames: [] }])([], [])(["num-water", "num-lipids", "water-water-force", "water-oil-force", "too-close-force", "random-force", "lipid-length", "interaction-distance", "too-close-distance"], ["num-water", "num-lipids", "water-water-force", "water-oil-force", "too-close-force", "random-force"], [], -25, 25, -25, 25, 10.0, true, true, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;
+var ExportPrims = workspace.exportPrims;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;

@@ -25,7 +25,7 @@ var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.pl
 if (typeof javax !== "undefined") {
   modelConfig.dialog = {
     confirm: function(str) { return true; },
-    notify:  function(str) {},
+    notify: function(str) {},
     yesOrNo: function(str) { return true; }
   }
 }
@@ -63,6 +63,7 @@ modelConfig.plots = [(function() {
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "MONARCHS", singular: "monarch", varNames: [] }, { name: "VICEROYS", singular: "viceroy", varNames: [] }, { name: "BIRDS", singular: "bird", varNames: ["memory"] }])([], [])(["memory-duration", "mutation-rate", "memory-size", "carrying-capacity-monarchs", "carrying-capacity-viceroys", "carrying-capacity-birds", "color-range-begin", "color-range-end", "reproduction-chance"], ["memory-duration", "mutation-rate", "memory-size"], [], -20, 20, -20, 20, 10.0, true, true, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;
+var ExportPrims = workspace.exportPrims;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;

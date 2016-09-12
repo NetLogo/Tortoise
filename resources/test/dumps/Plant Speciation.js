@@ -25,7 +25,7 @@ var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.pl
 if (typeof javax !== "undefined") {
   modelConfig.dialog = {
     confirm: function(str) { return true; },
-    notify:  function(str) {},
+    notify: function(str) {},
     yesOrNo: function(str) { return true; }
   }
 }
@@ -158,6 +158,7 @@ modelConfig.plots = [(function() {
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["tolerance", "fitness", "flower-time", "seedling?", "will-die?"], [])(["chance-tolerance-mutation", "tolerance-mutation-stdev", "plants-per-patch", "frontier-sharpness", "chance-flower-time-mutation", "flower-time-mutation-stdev", "pollen-radius", "flower-duration", "show-labels-as", "visualize-time-steps", "plant-type", "initial-tolerance", "genetics-model", "day", "year", "old-year", "end-of-days-counter", "transition-time?", "old-visualize-time-steps-state", "chance-death-per-year", "chance-seed-dispersal", "average-number-offspring", "percent-same-flowering-time"], ["chance-tolerance-mutation", "tolerance-mutation-stdev", "plants-per-patch", "frontier-sharpness", "chance-flower-time-mutation", "flower-time-mutation-stdev", "pollen-radius", "flower-duration", "show-labels-as", "visualize-time-steps", "plant-type", "initial-tolerance", "genetics-model"], ["metal", "barrier?"], 0, 25, 0, 9, 26.0, false, false, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;
+var ExportPrims = workspace.exportPrims;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;

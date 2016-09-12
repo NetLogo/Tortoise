@@ -25,7 +25,7 @@ var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.pl
 if (typeof javax !== "undefined") {
   modelConfig.dialog = {
     confirm: function(str) { return true; },
-    notify:  function(str) {},
+    notify: function(str) {},
     yesOrNo: function(str) { return true; }
   }
 }
@@ -145,6 +145,7 @@ modelConfig.plots = [(function() {
 })()];
 var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "LEAVES", singular: "leaf", varNames: ["water-level", "sugar-level", "attachedness", "chlorophyll", "carotene", "anthocyanin"] }, { name: "DEAD-LEAVES", singular: "dead-leaf", varNames: [] }, { name: "RAINDROPS", singular: "raindrop", varNames: ["location", "amount-of-water"] }, { name: "SUNS", singular: "sun", varNames: [] }])([], [])(["number-of-leaves", "wind-factor", "temperature", "rain-intensity", "sun-intensity", "start-sugar-mean", "start-sugar-stddev", "leaf-display-mode", "bottom-line", "evaporation-temp"], ["number-of-leaves", "wind-factor", "temperature", "rain-intensity", "sun-intensity", "start-sugar-mean", "start-sugar-stddev", "leaf-display-mode"], [], -17, 17, -17, 17, 10.0, false, false, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;
+var ExportPrims = workspace.exportPrims;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
