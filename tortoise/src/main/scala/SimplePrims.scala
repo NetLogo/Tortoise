@@ -321,6 +321,7 @@ object SimplePrims {
         case _: prim.etc._layoutspring     => "LayoutManager.layoutSpring"
         case _: prim.etc._changetopology   => "world.changeTopology"
         case _: prim.etc._usermessage      => "UserDialogPrims.confirm"
+        case _: prim.etc._exportoutput     => "ExportPrims.exportOutput"
 
         // Unimplemented
         case _: prim.etc._display     => "notImplemented('display', undefined)"
