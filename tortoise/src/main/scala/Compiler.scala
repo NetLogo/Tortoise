@@ -155,47 +155,31 @@ object Compiler extends CompilerLike {
       handlers.reporter(defs.head.statements.stmts(1).args(0))
   }
 
-  private def outputConfig: JsStatement = {
+  private def outputConfig: JsStatement =
+    genConfig("output", Map("clear" -> jsFunction(),
+                            "write" -> jsFunction(Seq("str"), "context.getWriter().print(str);")))
+
+  private def dialogConfig: JsStatement =
+    genConfig("dialog", Map("confirm" -> jsFunction(Seq("str"), "return true;"),
+                            "notify"  -> jsFunction(Seq("str")),
+                            "yesOrNo" -> jsFunction(Seq("str"), "return true;")))
+
+
+  private def worldConfig: JsStatement =
+    genConfig("world", Map("resizeWorld" -> jsFunction(Seq("agent"))))
+
+  private def genConfig(configName: String, functionDefs: Map[String, String]): JsStatement = {
+
+    val configPath = s"modelConfig.$configName"
+    val defsStr    = functionDefs.map { case (k, v) => s"$k: $v" }.mkString("{\n|    ", ",\n|    ", "\n|  }")
 
     // If `javax` exists, we're in Nashorn, and, therefore, testing --JAB (3/2/15)
-    val defaultConfig =
+    val configStr =
       s"""|if (typeof javax !== "undefined") {
-          |  modelConfig.output = {
-          |    clear: ${jsFunction()},
-          |    write: ${jsFunction(Seq("str"), "context.getWriter().print(str);")}
-          |  }
+          |  $configPath = $defsStr
           |}""".stripMargin
 
-    JsStatement("modelConfig.output", defaultConfig, Seq("modelConfig"))
-
-  }
-
-  private def dialogConfig: JsStatement = {
-
-    // If `javax` exists, we're in Nashorn, and, therefore, testing --JAB (3/2/15)
-    val defaultConfig =
-      s"""|if (typeof javax !== "undefined") {
-          |  modelConfig.dialog = {
-          |    confirm: ${jsFunction(Seq("str"), "return true;")},
-          |    notify:  ${jsFunction(Seq("str"))},
-          |    yesOrNo: ${jsFunction(Seq("str"), "return true;")}
-          |  }
-          |}""".stripMargin
-
-    JsStatement("modelConfig.dialog", defaultConfig, Seq("modelConfig"))
-
-  }
-
-  private def worldConfig: JsStatement = {
-
-    val defaultConfig =
-      s"""|if (typeof javax !== "undefined") {
-          |  modelConfig.world = {
-          |    resizeWorld: ${jsFunction(Seq("agent"))}
-          |  }
-          |}""".stripMargin
-
-    JsStatement("modelConfig.world", defaultConfig, Seq("modelConfig"))
+    JsStatement(configPath, configStr, Seq("modelConfig"))
 
   }
 
