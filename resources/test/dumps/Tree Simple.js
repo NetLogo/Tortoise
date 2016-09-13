@@ -25,6 +25,7 @@ var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.pl
 if (typeof javax !== "undefined") {
   modelConfig.dialog = {
     confirm: function(str) { return true; },
+    input: function(str) { return 'dummy implementation'; },
     notify: function(str) {},
     yesOrNo: function(str) { return true; }
   }
