@@ -161,6 +161,7 @@ object Compiler extends CompilerLike {
 
   private def dialogConfig: JsStatement =
     genConfig("dialog", Map("confirm" -> jsFunction(Seq("str"), "return true;"),
+                            "input"   -> jsFunction(Seq("str"), "return 'dummy implementation';"),
                             "notify"  -> jsFunction(Seq("str")),
                             "yesOrNo" -> jsFunction(Seq("str"), "return true;")))
 

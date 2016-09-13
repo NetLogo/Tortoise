@@ -199,6 +199,7 @@ object SimplePrims {
         case _: prim.etc._dateandtime       => "Prims.dateAndTime"
         case _: prim.etc._nanotime          => "Prims.nanoTime"
         case _: prim.etc._useryesorno       => "UserDialogPrims.yesOrNo"
+        case _: prim.etc._userinput         => "UserDialogPrims.input"
 
       }
   }
