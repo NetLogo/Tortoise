@@ -122,7 +122,7 @@ class TestBasics extends DockingSuite {
 
   test("timer") { implicit fixture => import fixture._
     testCommand("reset-timer")
-    compare("floor timer")
+    compare("floor timer < 5")
   }
 
   test("resize world") { implicit fixture => import fixture._
