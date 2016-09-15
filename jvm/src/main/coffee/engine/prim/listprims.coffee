@@ -345,12 +345,14 @@ module.exports =
 
       f =
         (x, y) ->
-          if taskIsTrue(x, y)
-            -1
-          else if taskIsTrue(y, x)
-            1
-          else
+          xy = taskIsTrue(x, y)
+          yx = taskIsTrue(y, x)
+          if xy is yx
             0
+          else if xy
+            -1
+          else
+            1
 
       stableSort(arr)(f)
 
