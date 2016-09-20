@@ -3,7 +3,7 @@
 package org.nlogo.tortoise
 package dock
 
-import org.nlogo.core.{ Model, View }
+import org.nlogo.core.{ Model, View, WorldDimensions }
 
 class TestLabels extends DockingSuite {
   test("turtle label - string") { implicit fixture => import fixture._
@@ -31,7 +31,7 @@ class TestLabels extends DockingSuite {
     testCommand("ask patch 0 0 [ set plabel [1 2 3] ]")
   }
   test("patch label - mixed") { implicit fixture => import fixture._
-    declare(Model(widgets = List(View(minPxcor = -1, maxPxcor = 1, minPycor = -1, maxPycor = 1))))
+    declare(Model(widgets = List(View(dimensions = WorldDimensions(minPxcor = -1, maxPxcor = 1, minPycor = -1, maxPycor = 1)))))
     testCommand("ask n-of 3 patches [ set plabel self ]")
     testCommand("""ask one-of patches with [plabel != ""] [ set plabel "" ]""")
     testCommand("""ask one-of patches with [plabel != ""] [ set plabel "" ]""")

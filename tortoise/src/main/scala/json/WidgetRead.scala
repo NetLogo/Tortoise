@@ -6,10 +6,12 @@ import
   java.lang.{ Boolean => JBoolean, Double => JDouble, Integer => JInteger }
 
 import
-  org.nlogo.core.{ Button, Chooseable, Chooser, Col, Direction, Horizontal,
-    InputBox, InputBoxType, LogoList, Monitor, Num, Output, Pen,
-    Plot, Slider, Str, Switch, StrCommand, StrReporter,
-    TextBox, UpdateMode, Vertical, View, Widget }
+  org.nlogo.core.{ AgentKind, BoxedValue, Button, Chooseable, Chooser, Direction, Horizontal,
+                   InputBox, LogoList, Monitor, NumericInput, Output, Pen,
+                   Plot, Slider, StringInput, Switch,
+                   TextBox, UpdateMode, Vertical, View, Widget, WorldDimensions },
+    NumericInput.{ ColorLabel, NumberLabel },
+    StringInput.{ CommandLabel, StringLabel, ReporterLabel }
 
 import
   scalaz.{ syntax, Scalaz, Validation, NonEmptyList, ValidationNel },
@@ -40,6 +42,26 @@ object WidgetRead {
     }
   }
 
+  implicit object tortoiseJs2AgentKind extends JsonReader[TortoiseJson, AgentKind] {
+    def apply(t: TortoiseJson): ValidationNel[String, AgentKind] = t match {
+      case JsString(s) if s.toUpperCase == "OBSERVER"  =>
+        AgentKind.Observer.successNel
+      case JsString(s) if s.toUpperCase == "TURTLE"  =>
+        AgentKind.Turtle.successNel
+      case JsString(s) if s.toUpperCase == "PATCH"  =>
+        AgentKind.Patch.successNel
+      case JsString(s) if s.toUpperCase == "LINK"  =>
+        AgentKind.Link.successNel
+      case other                                        =>
+        s"Agent kind can only be 'Observer', 'Turtle', 'Patch', or 'Link' but was $other".failureNel
+    }
+  }
+
+  implicit object tortoiseJs2WorldDimensions extends JsonReader[TortoiseJson, WorldDimensions] {
+    override def apply(t: TortoiseJson): ValidationNel[String, WorldDimensions] =
+      Jsonify.reader[JsObject, WorldDimensions](t.asInstanceOf[JsObject])
+  }
+
   implicit object tortoiseJs2OptionString extends JsonReader[TortoiseJson, Option[String]] {
     override def read(key: String, json: Option[TortoiseJson]): ValidationNel[String, Option[String]] =
       json.map(j =>
@@ -55,6 +77,21 @@ object WidgetRead {
               }
   }
 
+  implicit object tortoiseJs2OptionChar extends JsonReader[TortoiseJson, Option[Char]] {
+    override def read(key: String, json: Option[TortoiseJson]): ValidationNel[String, Option[Char]] =
+      json.map(j =>
+          apply(j).leftMap(value => NonEmptyList(s"$value is an invalid value for $key")))
+            .getOrElse(None.successNel)
+
+            def apply(t: TortoiseJson): ValidationNel[String, Option[Char]] =
+              t match {
+                case JsNull                       => None.successNel
+                case JsString("NIL")              => None.successNel
+                case JsString(s) if s.length == 1 => Some(s.head).successNel
+                case other                        => other.toString.failureNel
+              }
+  }
+
   implicit object tortoiseJs2Direction extends JsonReader[TortoiseJson, Direction] {
     def apply(t: TortoiseJson): ValidationNel[String, Direction] = t match {
       case JsString(s) if s.toUpperCase == "HORIZONTAL" =>
@@ -66,13 +103,25 @@ object WidgetRead {
     }
   }
 
-  implicit object tortoiseJs2InputBoxType extends JsonReader[TortoiseJson, InputBoxType] {
-    private def invalidType(s: String): String = s"Invalid input box type $s"
-    def apply(t: TortoiseJson): ValidationNel[String, InputBoxType] = t match {
-      case JsString(s) =>
-        List(Num, Str, StrReporter, StrCommand, Col).find(_.name == s).toSuccess(NonEmptyList(invalidType(s)))
-      case other => invalidType(other.toString).failureNel
+  implicit object tortoiseJs2BoxedValue extends JsonReader[TortoiseJson, BoxedValue] {
+
+    private val stringDisplayToLabelMap = Set(CommandLabel, ReporterLabel, StringLabel).map(x => x.display -> x).toMap
+
+    def apply(t: TortoiseJson): ValidationNel[String, BoxedValue] = {
+      t.asInstanceOf[JsObject].props.toSeq.sortBy(_._1) match {
+        case Seq(("type", JsString(label)), ("value", JsInt(value))) if label == ColorLabel.display =>
+          NumericInput(value, ColorLabel).successNel
+        case Seq(("type", JsString(label)), ("value", JsInt(value))) if label == NumberLabel.display =>
+          NumericInput(value, NumberLabel).successNel
+        case Seq(("type",  JsString(label)), ("value", JsDouble(value))) if label == NumberLabel.display =>
+          NumericInput(value, NumberLabel).successNel
+        case Seq(("multiline", JsBool(multiline)), ("type", JsString(label)), ("value", JsString(value))) =>
+          StringInput(value, stringDisplayToLabelMap(label), multiline).successNel
+        case other =>
+          (s"Invalid input box: $other").failureNel
+      }
     }
+
   }
 
   implicit object tortoiseJs2Chooseable extends JsonReader[TortoiseJson, List[Chooseable]] {
@@ -116,33 +165,24 @@ object WidgetRead {
           acc.flatMap(l => Jsonify.reader[JsObject, Pen](j).map(newPen => l :+ newPen))
         case (acc, other) => penListError
       }
-      case other        => penListError
+      case other => penListError
     }
   }
 
-  private val readerMap: Map[String, JsObject => ValidationNel[String, Widget]] =
+  private val readerMap: Map[String, JsObject => ValidationNel[String, Widget]] = {
     Map(
       "button"   -> Jsonify.reader[JsObject, Button],
       "chooser"  -> Jsonify.reader[JsObject, Chooser],
-      "inputBox" -> inputBoxReader _,
+      "inputBox" -> Jsonify.reader[JsObject, InputBox],
       "monitor"  -> Jsonify.reader[JsObject, Monitor],
       "output"   -> Jsonify.reader[JsObject, Output],
-      "pen"      -> Jsonify.reader[JsObject, Pen],
       "plot"     -> Jsonify.reader[JsObject, Plot],
       "slider"   -> Jsonify.reader[JsObject, Slider],
       "switch"   -> Jsonify.reader[JsObject, Switch],
       "textBox"  -> Jsonify.reader[JsObject, TextBox],
       "view"     -> Jsonify.reader[JsObject, View]
     )
-
-  private def inputBoxReader(j: JsObject): ValidationNel[String, Widget] =
-    j.props.get("boxtype").toSuccess(NonEmptyList("must supply boxtype for inputBox"))
-      .flatMap(tortoiseJs2InputBoxType)
-      .flatMap {
-        case Num => Jsonify.reader[JsObject, InputBox[Double]](j)
-        case Col => Jsonify.reader[JsObject, InputBox[Int]](j)
-        case _   => Jsonify.reader[JsObject, InputBox[String]](j)
-      }
+  }
 
   def unapply(widgetType: String): Option[JsObject => ValidationNel[String, Widget]] =
     readerMap.get(widgetType)

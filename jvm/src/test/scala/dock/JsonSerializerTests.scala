@@ -9,6 +9,7 @@ import
 import
   org.nlogo.{ core, mirror, nvm, tortoise },
     core.{ AgentKind, Model, ShapeList, ShapeParser, View },
+      ShapeList.shapesToMap,
     mirror.{ Mirrorable, Mirrorables, Mirroring },
     nvm.CompilerFlags,
     tortoise.json.JsonSerializer
@@ -132,7 +133,7 @@ class JsonSerializerTests extends FixtureSuite with Matchers {
 
   test("JsonSerializer shapes") { implicit fixture =>
 
-    val shapeList = new ShapeList(AgentKind.Turtle, Model.defaultShapes)
+    val shapeList = new ShapeList(AgentKind.Turtle, shapesToMap(Model.defaultShapes))
 
     val shapes = Seq(
         "default" ->

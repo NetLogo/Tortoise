@@ -208,23 +208,23 @@ object SimplePrims {
   object TypeCheck {
     def unapply(r: Reporter): Option[String] =
       PartialFunction.condOpt(r) {
-        case _: prim.etc._isagent          => s"isValidAgent()"
-        case _: prim.etc._isagentset       => s"isAgentSet()"
-        case _: prim.etc._isboolean        => s"isBoolean()"
-        case x: prim.etc._isbreed          => s"isBreed(${jsString(x.breedName)})"
-        case _: prim.etc._iscommandtask    => s"isCommandTask()"
-        case _: prim.etc._isdirectedlink   => s"isDirectedLink()"
-        case _: prim.etc._islink           => s"isValidLink()"
-        case _: prim.etc._islinkset        => s"isLinkSet()"
-        case _: prim.etc._islist           => s"isList()"
-        case _: prim.etc._isnumber         => s"isNumber()"
-        case _: prim.etc._ispatch          => s"isPatch()"
-        case _: prim.etc._ispatchset       => s"isPatchSet()"
-        case _: prim.etc._isreportertask   => s"isReporterTask()"
-        case _: prim.etc._isstring         => s"isString()"
-        case _: prim.etc._isturtle         => s"isValidTurtle()"
-        case _: prim.etc._isturtleset      => s"isTurtleSet()"
-        case _: prim.etc._isundirectedlink => s"isUndirectedLink()"
+        case _: prim.etc._isagent             => s"isValidAgent()"
+        case _: prim.etc._isagentset          => s"isAgentSet()"
+        case _: prim.etc._isanonymouscommand  => s"isCommandLambda()"
+        case _: prim.etc._isanonymousreporter => s"isReporterLambda()"
+        case _: prim.etc._isboolean           => s"isBoolean()"
+        case x: prim.etc._isbreed             => s"isBreed(${jsString(x.breedName)})"
+        case _: prim.etc._isdirectedlink      => s"isDirectedLink()"
+        case _: prim.etc._islink              => s"isValidLink()"
+        case _: prim.etc._islinkset           => s"isLinkSet()"
+        case _: prim.etc._islist              => s"isList()"
+        case _: prim.etc._isnumber            => s"isNumber()"
+        case _: prim.etc._ispatch             => s"isPatch()"
+        case _: prim.etc._ispatchset          => s"isPatchSet()"
+        case _: prim.etc._isstring            => s"isString()"
+        case _: prim.etc._isturtle            => s"isValidTurtle()"
+        case _: prim.etc._isturtleset         => s"isTurtleSet()"
+        case _: prim.etc._isundirectedlink    => s"isUndirectedLink()"
       }
   }
 
@@ -232,8 +232,8 @@ object SimplePrims {
     def unapply(c: Command): Option[String] =
       PartialFunction.condOpt(c) {
         case _: prim._done                         => ""
+        case _: prim._stop                         => "throw new Exception.StopInterrupt"
         case _: prim.etc._observercode             => ""
-        case _: prim.etc._stop                     => "throw new Exception.StopInterrupt"
         case _: prim.etc._hideturtle               => "SelfManager.self().hideTurtle(true);"
         case _: prim.etc._showturtle               => "SelfManager.self().hideTurtle(false);"
         case _: prim.etc._stopinspecting           => ""

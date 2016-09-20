@@ -86,6 +86,7 @@ trait ReporterPrims extends PrimUtils {
       case p: prim._const                 => handlers.literal(p.value)
       case lv: prim._letvariable          => handlers.ident(lv.let.name)
       case pv: prim._procedurevariable    => handlers.ident(pv.name)
+      case lv: prim._lambdavariable       => handlers.ident(lv.name)
       case call: prim._callreport         =>
         s"""procedures["${call.name}"](${args.mkString(",")})"""
 
@@ -158,10 +159,9 @@ trait ReporterPrims extends PrimUtils {
       case p: prim.etc._outlinkneighbors => s"LinkPrims.outLinkNeighbors(${jsString(fixBN(p.breedName))})"
       case p: prim.etc._outlinkto        => s"LinkPrims.outLinkTo(${jsString(fixBN(p.breedName))}, ${arg(0)})"
 
-      // Tasks
-      case tv: prim._taskvariable => s"taskArguments[${tv.vn - 1}]"
-      case _:  prim._reportertask => s"Tasks.reporterTask(${handlers.fun(r.args(0), isReporter = true, isTask = true)})"
-      case _:  prim._commandtask  => s"Tasks.commandTask(${handlers.fun(r.args(0), isReporter = false, isTask = true)})"
+      case l: prim._reporterlambda => s"Tasks.reporterTask(${handlers.task(r.args(0), isReporter = true, args = l.argumentNames.map(handlers.ident))})"
+      case l: prim._commandlambda  => s"Tasks.commandTask(${handlers.task(r.args(0), isReporter = false, args = l.argumentNames.map(handlers.ident))})"
+
       case rr: prim.etc._runresult =>
         s"Prims.runResult(${args.mkString(", ")})"
 
@@ -226,13 +226,13 @@ trait CommandPrims extends PrimUtils {
       case _: prim.etc._hidelink         => "SelfManager.self().setVariable('hidden?', true)"
       case _: prim.etc._showlink         => "SelfManager.self().setVariable('hidden?', false)"
       case call: prim._call              => generateCall(call, args)
-      case _: prim.etc._report           => s"throw new Exception.ReportInterrupt(${arg(0)});"
+      case _: prim._report               => s"throw new Exception.ReportInterrupt(${arg(0)});"
       case _: prim.etc._ignore           => s"${arg(0)};"
       case l: prim._let                  =>
-        s"var ${handlers.ident(l.let.name)} = ${arg(0)};"
+        l.let.map(inner => s"var ${handlers.ident(inner.name)} = ${arg(0)};").getOrElse("")
       case _: prim.etc._withlocalrandomness =>
         s"workspace.rng.withClone(function() { ${handlers.commands(s.args(0))} })"
-      case _: prim.etc._run              =>
+      case _: prim._run =>
         s"Prims.run(${args.mkString(", ")});"
       case _: prim.etc._foreach          =>
         val lists = args.init.mkString(", ")
@@ -267,13 +267,15 @@ trait CommandPrims extends PrimUtils {
   def generateSet(s: Statement)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
     def arg(i: Int) = handlers.reporter(s.args(i))
     s.args(0).asInstanceOf[ReporterApp].reporter match {
-      case p: prim._letvariable                 =>
+      case p: prim._letvariable =>
         s"${handlers.ident(p.let.name)} = ${arg(1)};"
-      case p: prim._procedurevariable           =>
+      case p: prim._procedurevariable =>
         s"${handlers.ident(p.name)} = ${arg(1)};"
-      case VariableSetter(setValue)             =>
+      case p: prim._lambdavariable =>
+        s"${handlers.ident(p.name)} = ${arg(1)};"
+      case VariableSetter(setValue) =>
         setValue(arg(1))
-      case x                                    =>
+      case x =>
         failCompilation(s"unknown settable: ${x.getClass.getName}", s.instruction.token)
     }
   }

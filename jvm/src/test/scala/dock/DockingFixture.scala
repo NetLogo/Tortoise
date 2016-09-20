@@ -227,13 +227,13 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
   def open(path: String, dimensions: Option[(Int, Int, Int, Int)]) {
     require(!opened)
     super.open(path)
-    val model = ModelReader.parseModel(FileIO.file2String(path), workspace.parser)
+    val model = ModelReader.parseModel(FileIO.file2String(path), workspace.parser, Map())
 
     val finalModel = dimensions match {
       case None => model
       case Some((minx, maxx, miny, maxy)) =>
         model.copy(widgets = model.widgets.updated(model.widgets.indexOf(model.view),
-          model.view.copy(minPxcor = minx, maxPxcor = maxx, minPycor = miny, maxPycor = maxy)))
+          model.view.copy(dimensions = model.view.dimensions.copy(minPxcor = minx, maxPxcor = maxx, minPycor = miny, maxPycor = maxy))))
     }
     workspace.setDimensions(finalModel.view.dimensions)
 

@@ -3,8 +3,12 @@
 package org.nlogo.tortoise.json
 
 import
-  org.nlogo.core.{ Button, Chooseable, Chooser, Col, Horizontal, InputBox, LogoList, Monitor, Num,
-    Output, Pen, Plot, Slider,  Str, Switch, TextBox, UpdateMode, View, Widget }
+  org.nlogo.core.{ AgentKind, Button, Chooseable, Chooser, Horizontal, InputBox, LogoList, Monitor,
+                   NumericInput, Output, Pen, Plot, Slider, StringInput, Switch, TextBox,
+                   UpdateMode, View, Widget, WorldDimensions },
+    AgentKind.Turtle,
+    NumericInput.{ ColorLabel, NumberLabel },
+    StringInput.StringLabel
 
 import
   scalaz.Scalaz.ToValidationOps
@@ -14,36 +18,34 @@ import
 
 object WidgetSamples {
 
-  val slider         = Slider("abc", 1, 2, 3, 4, "foobar", "5", "25", 10.0, "1", Some("bazzes"), Horizontal)
-  val reporterSlider = Slider("abc", 1, 2, 3, 4, "foobar", "0", "count turtles", 10.0, "count turtles / 100", Some("bazzes"), Horizontal)
-  val switch         = Switch("abc", 1, 2, 3, 4, "foobar", true)
-  val buttonNoName   = Button(None, 1, 2, 3, 4, "foobar", false, "TURTLE", "A")
-  val buttonBadAgent = Button(None, 1, 2, 3, 4, "foobar", false, "FLUBBER", "A")
-  val buttonWithName = Button(Some("press this"), 1, 2, 3, 4, "foobar", false)
+  val slider         = Slider(Option("foobar"), 1, 2, 3, 4, Option("abc"), "5", "25", 10.0, "1", Some("bazzes"), Horizontal)
+  val reporterSlider = Slider(Option("foobar"), 1, 2, 3, 4, Option("abc"), "0", "count turtles", 10.0, "count turtles / 100", Some("bazzes"), Horizontal)
+  val switch         = Switch(Option("foobar"), 1, 2, 3, 4, Option("abc"), true)
+  val buttonNoName   = Button(Option("foobar"), 1, 2, 3, 4, None, false, Turtle, Option('A'))
+  val buttonWithName = Button(Option("foobar"), 1, 2, 3, 4, Some("press this"), false)
   val chooser        = {
     val choices = List(
       Chooseable(Double.box(10.0)),
       Chooseable("def"),
       Chooseable(LogoList("xyz")),
       Chooseable(Boolean.box(false)))
-    Chooser("abc", 1, 2, 3, 4, "foobar", choices, 0)
+    Chooser(Option("foobar"), 1, 2, 3, 4, Option("abc"), choices, 0)
   }
-  val inputBoxDouble = InputBox[Double](1, 2, 3, 4, "foobar", 25.0, false, Num)
-  val inputBoxInt    = InputBox[Int](1, 2, 3, 4, "foobar", 15, false, Col)
-  val inputBoxString = InputBox[String](1, 2, 3, 4, "foobar", "baz", false, Str)
-  val monitor        = Monitor(Some("abc"), 1, 2, 3, 4, "reporter", 3, 10)
-  val monitorNil     = Monitor(None, 1, 2, 3, 4, "reporter", 3, 10)
-  val pen            = Pen("abc", 2, 0, 15, true, "setup", "update")
+  val inputBoxDouble = InputBox(Option("foobar"), 1, 2, 3, 4, NumericInput(25.0, NumberLabel))
+  val inputBoxInt    = InputBox(Option("foobar"), 1, 2, 3, 4, NumericInput(15, ColorLabel))
+  val inputBoxString = InputBox(Option("foobar"), 1, 2, 3, 4, StringInput("baz", StringLabel, false))
+  val monitor        = Monitor(Some("reporter"), 1, 2, 3, 4, Option("abc"), 3, 10)
+  val monitorNil     = Monitor(Some("reporter"), 1, 2, 3, 4, None, 3, 10)
   val plot           = {
     val pen = Pen("abc", 2, 0, 15, true, "setup", "update")
-    Plot("abc", 1, 2, 3, 4,
-      "time", "height", 0, 100, 50, 200,
+    Plot(Option("abc"), 1, 2, 3, 4,
+      Option("time"), Option("height"), 0, 100, 50, 200,
       autoPlotOn = true, legendOn = false,
       setupCode = "setup", updateCode = "update", pens = List(pen))
   }
   val ouput          = Output(1, 2, 3, 4, 10)
-  val textBox        = TextBox("abc", 1, 2, 3, 4, 10, 25.0, false)
-  val view           = View(1, 2, 3, 4, 25.0, 8, true, false, 10, 9, 8, 7, UpdateMode.Continuous, false, "tocks", 50.0)
+  val textBox        = TextBox(Option("abc"), 1, 2, 3, 4, 10, 25.0, false)
+  val view           = View(1, 2, 3, 4, WorldDimensions(10, 9, 8, 7, 25.0, true, false), 8, UpdateMode.Continuous, false, Option("tocks"), 50.0)
 
   val penJson = JsObject(fields(
     "type"       -> JsString("pen"),
@@ -67,7 +69,7 @@ object WidgetSamples {
     "slider" -> locatableJsObject(
       "type"      -> JsString("slider"),
       "display"   -> JsString("abc"),
-      "varName"   -> JsString("foobar"),
+      "variable"  -> JsString("foobar"),
       "min"       -> JsString("5"),
       "max"       -> JsString("25"),
       "default"   -> JsDouble(10.0),
@@ -76,17 +78,17 @@ object WidgetSamples {
       "step"      -> JsString("1")),
 
     "switch" -> locatableJsObject(
-      "type"    -> JsString("switch"),
-      "display" -> JsString("abc"),
-      "varName" -> JsString("foobar"),
-      "on"      -> JsBool(true)),
+      "type"     -> JsString("switch"),
+      "display"  -> JsString("abc"),
+      "variable" -> JsString("foobar"),
+      "on"       -> JsBool(true)),
 
     "buttonNoName" -> locatableJsObject(
       "type"                   -> JsString("button"),
       "source"                 -> JsString("foobar"),
       "forever"                -> JsBool(false),
       "disableUntilTicksStart" -> JsBool(false),
-      "buttonType"             -> JsString("TURTLE"),
+      "buttonKind"             -> JsString("Turtle"),
       "actionKey"              -> JsString("A")),
 
     "buttonWithName" -> locatableJsObject(
@@ -95,13 +97,12 @@ object WidgetSamples {
       "source"                 -> JsString("foobar"),
       "forever"                -> JsBool(false),
       "disableUntilTicksStart" -> JsBool(false),
-      "buttonType"             -> JsString("OBSERVER"),
-      "actionKey"              -> JsNull),
+      "buttonKind"             -> JsString("Observer")),
 
     "chooser" -> locatableJsObject(
       "type"          -> JsString("chooser"),
       "display"       -> JsString("abc"),
-      "varName"       -> JsString("foobar"),
+      "variable"      -> JsString("foobar"),
       "currentChoice" -> JsInt(0),
       "choices"       -> JsArray(Seq(
         JsDouble(10.0),
@@ -111,25 +112,32 @@ object WidgetSamples {
       ))),
 
     "inputBox[Double]" -> locatableJsObject(
-        "type"      -> JsString("inputBox"),
-        "varName"   -> JsString("foobar"),
-        "value"     -> JsDouble(25.0),
-        "multiline" -> JsBool(false),
-        "boxtype"   -> JsString(Num.name)),
+        "type"       -> JsString("inputBox"),
+        "variable"   -> JsString("foobar"),
+        "boxedValue" -> JsObject(fields(
+          "value" -> JsDouble(25.0),
+          "type"  -> JsString(NumberLabel.display)
+        ))
+    ),
 
     "inputBox[Int]" -> locatableJsObject(
       "type"      -> JsString("inputBox"),
-      "varName"   -> JsString("foobar"),
-      "value"     -> JsInt(15),
-      "multiline" -> JsBool(false),
-      "boxtype"   -> JsString(Col.name)),
+      "variable"  -> JsString("foobar"),
+      "boxedValue" -> JsObject(fields(
+        "value" -> JsInt(15),
+        "type"  -> JsString(ColorLabel.display)
+      ))
+    ),
 
     "inputBox[String]" -> locatableJsObject(
       "type"      -> JsString("inputBox"),
-      "varName"   -> JsString("foobar"),
-      "value"     -> JsString("baz"),
-      "multiline" -> JsBool(false),
-      "boxtype"   -> JsString(Str.name)),
+      "variable"  -> JsString("foobar"),
+      "boxedValue" -> JsObject(fields(
+        "value" -> JsString("baz"),
+        "multiline" -> JsBool(false),
+        "type"  -> JsString(StringLabel.display)
+      ))
+    ),
 
     "monitor" -> locatableJsObject(
       "type"      -> JsString("monitor"),
@@ -143,8 +151,6 @@ object WidgetSamples {
       "source"    -> JsString("reporter"),
       "precision" -> JsInt(3),
       "fontSize"  -> JsInt(10)),
-
-    "pen" -> penJson,
 
     "plot" -> locatableJsObject(
         "type"       -> JsString("plot"),
@@ -174,18 +180,21 @@ object WidgetSamples {
 
     "view"    -> locatableJsObject(
       "type"               -> JsString("view"),
-      "patchSize"          -> JsDouble(25.0),
       "fontSize"           -> JsInt(8),
-      "wrappingAllowedInX" -> JsBool(true),
-      "wrappingAllowedInY" -> JsBool(false),
-      "minPxcor"           -> JsInt(10),
-      "maxPxcor"           -> JsInt(9),
-      "minPycor"           -> JsInt(8),
-      "maxPycor"           -> JsInt(7),
       "updateMode"         -> JsString("Continuous"),
       "showTickCounter"    -> JsBool(false),
       "tickCounterLabel"   -> JsString("tocks"),
-      "frameRate"          -> JsDouble(50.0))
+      "frameRate"          -> JsDouble(50.0),
+      "dimensions"         -> JsObject(fields(
+        "patchSize"          -> JsDouble(25.0),
+        "wrappingAllowedInX" -> JsBool(true),
+        "wrappingAllowedInY" -> JsBool(false),
+        "minPxcor"           -> JsInt(10),
+        "maxPxcor"           -> JsInt(9),
+        "minPycor"           -> JsInt(8),
+        "maxPycor"           -> JsInt(7)
+      ))
+    )
   )
 
   def testWidgets: Map[String, Widget] = Map(
@@ -199,7 +208,6 @@ object WidgetSamples {
     "inputBox[String]" -> inputBoxString,
     "monitor"          -> monitor,
     "monitorNil"       -> monitorNil,
-    "pen"              -> pen,
     "plot"             -> plot,
     "ouput"            -> ouput,
     "textBox"          -> textBox,

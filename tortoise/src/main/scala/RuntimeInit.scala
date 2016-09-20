@@ -19,8 +19,8 @@ import
 class RuntimeInit(program: Program, model: Model, onTickFunction: String = jsFunction()) {
 
   def init: Seq[TortoiseSymbol] = Seq(
-    JsDeclare("turtleShapes", shapeList(new ShapeList(AgentKind.Turtle, model.turtleShapes))),
-    JsDeclare("linkShapes",   shapeList(new ShapeList(AgentKind.Link,   model.linkShapes))),
+    JsDeclare("turtleShapes", shapeList(new ShapeList(AgentKind.Turtle, ShapeList.shapesToMap(model.turtleShapes)))),
+    JsDeclare("linkShapes",   shapeList(new ShapeList(AgentKind.Link,   ShapeList.shapesToMap(model.linkShapes)))),
 
     WorkspaceInit(Seq(Seq(genBreedObjects), genBreedsOwnArgs, genWorkspaceArgs), Seq("turtleShapes", "linkShapes")),
 

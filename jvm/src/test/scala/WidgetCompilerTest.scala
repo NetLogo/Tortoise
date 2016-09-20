@@ -10,11 +10,9 @@ import
     JsonLibrary.{ toNative, nativeToString },
     JsonReader._,
     TortoiseJson.{ fields, JsArray, JsBool, JsInt, JsObject, JsString },
-    WidgetSamples.{ buttonBadAgent => invalidButtonWidget,
-                    buttonNoName   => turtleButtonWidget,
+    WidgetSamples.{ buttonNoName   => turtleButtonWidget,
                     buttonWithName => buttonWidget,
                     monitor        => monitorWidget,
-                    pen            => penWidget,
                     plot           => plotWidget,
                     reporterSlider,
                     slider         => sliderWidget,
@@ -129,10 +127,10 @@ class WidgetCompilerTest extends FunSuite {
       reporterSlider.copy(min = "error", max = "error", step = "error"),
       Seq("slider", "min", "max", "step")),
     ("monitor",
-      monitorWidget.copy(source = "error"),
+      monitorWidget.copy(source = Option("error")),
       Seq("abc", "reporter", "monitor")),
     ("button",
-      buttonWidget.copy(source = "fatal-error"),
+      buttonWidget.copy(source = Option("fatal-error")),
       Seq("press this", "source", "button")),
     ("plot",
       plotWidget.copy(setupCode = "fatal-error"),
@@ -147,21 +145,21 @@ class WidgetCompilerTest extends FunSuite {
       }
 
    test("errors on bad pen widgets") {
-     val badPenPlot = plotWidget.copy(pens = List(penWidget.copy(setupCode = "fatal-error")))
+     val badPenPlot = plotWidget.copy(pens = List(plotWidget.pens.head.copy(setupCode = "fatal-error")))
      compileWidget(badPenPlot)
        .asInstanceOf[CompiledPlot].plotWidgetCompilation
        .fold(
          es  => fail("expected plot compilation to succeed, pen compilation to fail"),
          { pwc =>
-            assert(pwc.compiledPens.forall(_.widgetCompilation.isFailure))
-            assertHasErrors(pwc.compiledPens.head , "pen", "abc", "setup")
+            assert(pwc.compiledPens.forall(_.updateableCompilation.isFailure))
+            assert(
+              pwc.compiledPens.head.updateableCompilation.fold(
+                es =>
+                  Seq("pen", "abc", "setup").forall(
+                    name => es.list.toList.exists(_.getMessage.contains(name))),
+                success => fail("compilation should have failed")))
          })
    }
-
-  test("compileWidgets errors when the wrong kind of agent is asked to do something") {
-    intercept[IllegalArgumentException] { compileWidget(invalidButtonWidget) }
-    ()
-  }
 
   test("compileWidgets errors when two plots with the same name are detected") {
     intercept[CompilerException] { compileWidgets(plotWidget, plotWidget) }

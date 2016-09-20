@@ -13,33 +13,21 @@ trait Handlers extends EveryIDProvider {
 
   def prims: Prims
 
-  def fun(node:          AstNode,
-          isReporter:    Boolean = false,
-          isTask:        Boolean = false)
-    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
-    val taskHeader =
-      if (isTask)
-        "var taskArguments = arguments;\n"
-      else
-        ""
-    val body = taskHeader +
-      (if (isReporter)
-        s"return ${reporter(node)};"
-      else
-        commands(node))
-    def isTrivialReporter(node: AstNode): Boolean =
-      node match {
-        case block: ReporterBlock =>
-          isTrivialReporter(block.app)
-        case app: ReporterApp =>
-          app.args.isEmpty && app.reporter.isInstanceOf[Pure]
-        case _ =>
-          false
-      }
-    if (body.isEmpty)
-      jsFunction()
-    else
-      jsFunction(body = body)
+  def fun(node: AstNode, isReporter: Boolean = false)
+         (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
+    val body = if (isReporter) s"return ${reporter(node)};" else commands(node)
+    jsFunction(body = body)
+  }
+
+  def task(node: AstNode, isReporter: Boolean = false, args: Seq[String] = Seq())
+          (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
+    val body = if (isReporter) s"return ${reporter(node)};" else commands(node)
+    val pluralStr = if (args.length != 1) "s" else ""
+    val fullBody = s"""if (arguments.length < ${args.length}) {
+                      |  throw new Error("anonymous procedure expected ${args.length} input$pluralStr, but only got " + arguments.length);
+                      |}
+                      |$body""".stripMargin
+    jsFunction(args = args, body = fullBody)
   }
 
   // The "abstract" syntax trees we get from the front end aren't totally abstract in that they have

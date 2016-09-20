@@ -6,8 +6,9 @@ import
   JsonReader.JsonSequenceReader
 
 import
-  org.nlogo.core.{ Button, Chooser, Col, InputBox,
-    InputBoxType, Monitor, Num, Output, Pen, Plot, Slider, Switch, TextBox, View, Widget }
+  org.nlogo.core.{ Button, Chooser, InputBox, Monitor, NumericInput, Output
+                 , Pen, Plot, Slider, StringInput, Switch, TextBox, View, Widget },
+    NumericInput.{ ColorLabel }
 
 import
   scalaz.{ Scalaz, ValidationNel },
@@ -47,7 +48,7 @@ object WidgetToJson {
         (w match {
           case b: Button      => Jsonify.writer[Button, TortoiseJson](b)
           case c: Chooser     => Jsonify.writer[Chooser, TortoiseJson](c)
-          case i: InputBox[_] => new InputBoxConverter(i).toJsonObj
+          case i: InputBox    => Jsonify.writer[InputBox, TortoiseJson](i)
           case m: Monitor     => Jsonify.writer[Monitor, TortoiseJson](m)
           case o: Output      => Jsonify.writer[Output, TortoiseJson](o)
           case p: Pen         => Jsonify.writer[Pen, TortoiseJson](p)
@@ -60,25 +61,4 @@ object WidgetToJson {
     }
     // scalastyle:on cyclomatic.complexity
 
-  class InputBoxConverter(target: InputBox[_]) extends JsonWritable {
-    import WidgetWrite._
-    def jsonVal(a: Any, boxtype: InputBoxType): TortoiseJson =
-      (boxtype, a) match {
-        case (Col, i: Int)    => JsInt(i)
-        case (Num, d: Double) => JsDouble(d)
-        case (_,   s: String) => JsString(s)
-        case _                => throw new Exception("Invalid inputbox!")
-      }
-
-    val toJsonObj = JsObject(fields(
-      "type"      -> "inputBox",
-      "varName"   -> target.varName,
-      "left"      -> JsInt(target.left),
-      "top"       -> JsInt(target.top),
-      "right"     -> JsInt(target.right),
-      "bottom"    -> JsInt(target.bottom),
-      "multiline" -> JsBool(target.multiline),
-      "value"     -> jsonVal(target.value, target.boxtype),
-      "boxtype"   -> target.boxtype.name))
-  }
 }

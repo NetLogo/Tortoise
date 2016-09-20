@@ -64,8 +64,8 @@ object BrowserCompilerTest extends TestSuite {
     }
 
     "testModelWithCompileWidget"-{
-      val slider = Slider(display = "steps", varName = "steps")
-      val compiledModel = compileModel(validModel.copy(widgets = slider::validModel.widgets))
+      val slider = Slider(display = Option("steps"), variable = Option("steps"))
+      val compiledModel = compileModel(validModel.copy(widgets = slider +: validModel.widgets))
       assert(isSuccess(compiledModel))
       withWidget(compiledModel, "slider", { slider =>
         assert(slider[JsObject]("compilation").apply[Boolean]("success"))
@@ -74,8 +74,8 @@ object BrowserCompilerTest extends TestSuite {
     }
 
     "TestModelWithInvalidWidgets"-{
-      val invalidSlider = Slider(display = "steps", varName = "steps", min = "qwerty")
-      val compiledModel = compileModel(validModel.copy(widgets = invalidSlider::validModel.widgets))
+      val invalidSlider = Slider(display = Option("steps"), variable = Option("steps"), min = "qwerty")
+      val compiledModel = compileModel(validModel.copy(widgets = invalidSlider +: validModel.widgets))
       assert(isSuccess(compiledModel))
       withWidget(compiledModel, "slider", {slider =>
           assert(slider[JsObject]("compilation").apply[Boolean]("success") == false)
@@ -91,7 +91,7 @@ object BrowserCompilerTest extends TestSuite {
     }
 
     "testReturnsErrorWhenCommandsAreOfWrongType"-{
-      val formattedModel = ModelReader.formatModel(validModel, literalParser)
+      val formattedModel = ModelReader.formatModel(validModel)
       val commands       = toNative(JsString("foobar"))
       val compiledModel  = withBrowserCompiler(_.fromNlogo(formattedModel, commands))
       assert(! isSuccess(compiledModel))
@@ -115,7 +115,7 @@ object BrowserCompilerTest extends TestSuite {
       val exportResult = withBrowserCompiler(_.exportNlogo(modelToCompilationRequest(validModel)))
       assert(exportResult[Boolean]("success"))
       val exportedNlogo = exportResult[String]("result")
-      val parsedModel = ModelReader.parseModel(exportedNlogo, literalParser)
+      val parsedModel = ModelReader.parseModel(exportedNlogo, literalParser, Map())
       assert(parsedModel.code                   == validModel.code)
       assert(parsedModel.info                   == validModel.info)
       assert(parsedModel.widgets                == validModel.widgets)
@@ -208,7 +208,7 @@ object BrowserCompilerTest extends TestSuite {
 
   private def compileModel(m: Model, commands: Seq[String] = Seq()): JsObject =
     withBrowserCompiler { b =>
-      val formattedModel    = ModelReader.formatModel(m, literalParser)
+      val formattedModel    = ModelReader.formatModel(m)
       val formattedCommands = toNative(JsArray(commands.map(s => JsString(s))))
       b.fromNlogo(formattedModel, formattedCommands)
     }

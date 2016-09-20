@@ -13,10 +13,10 @@ Dump =
     if type.isList()
       itemStr = map((y) -> Dump(y, isReadable))(x).join(" ")
       "[#{itemStr}]"
-    else if type.isReporterTask()
-      "(reporter task)"
-    else if type.isCommandTask()
-      "(command task)"
+    else if type.isReporterLambda()
+      "(anonymous reporter)"
+    else if type.isCommandLambda()
+      "(anonymous command)"
     else if type.isString()
       if isReadable then '"' + x + '"' else x
     else

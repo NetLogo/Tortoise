@@ -78,8 +78,9 @@ object PlotCompiler {
         jsArrayString(_, "\n"), es => alertFailure(es.mkString(", ")))
 
       val args =
-        Seq("name", "pens", "plotOps", jsString(sanitizeNil(xAxis)), jsString(sanitizeNil(yAxis)),
-          legendOn, autoPlotOn, xmin, xmax, ymin, ymax, "setup", "update").mkString(", ")
+        Seq("name", "pens", "plotOps", jsString(sanitizeNil(xAxis.getOrElse(""))),
+            jsString(sanitizeNil(yAxis.getOrElse(""))), legendOn, autoPlotOn, xmin,
+            xmax, ymin, ymax, "setup", "update").mkString(", ")
 
       val plotConstructor =
         s"""|var name    = '$cleanDisplay';
@@ -117,8 +118,7 @@ object PlotCompiler {
       def showPenErrors(pen: Pen)(ces: NonEmptyList[Exception]): ErrorAlert =
         ErrorAlert(ces.map(_.getMessage).list.toList)
 
-      compiledPen.widgetCompilation.fold(
-        showPenErrors(compiledPen.pen), constructNewPen(compiledPen.pen))
+      compiledPen.updateableCompilation.fold(showPenErrors(compiledPen.pen), constructNewPen(compiledPen.pen))
     }
   }
 

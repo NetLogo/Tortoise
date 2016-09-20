@@ -24,12 +24,7 @@ class CompiledPlot(val plot:               Plot,
                    val plotWidgetCompilation: ValidationNel[Exception, PlotWidgetCompilation])
   extends CompiledWidget(plot, plotWidgetCompilation)
 
-class CompiledPen(val pen:               Pen,
-                  updateableCompilation: ValidationNel[Exception, UpdateableCompilation])
-  extends CompiledWidget(pen, updateableCompilation) {
-    override val widgetCompilation: ValidationNel[Exception, UpdateableCompilation] =
-      updateableCompilation
-  }
+case class CompiledPen(pen: Pen, updateableCompilation: ValidationNel[Exception, UpdateableCompilation])
 
 object CompiledWidget {
 
@@ -46,8 +41,12 @@ object CompiledWidget {
     }
 
   implicit object compiledPen2Json extends JsonWriter[CompiledPen] {
-    def apply(compiledPen: CompiledPen): TortoiseJson =
-      compiledWidgetToJson(compiledPen)
+    def apply(compiledPen: CompiledPen): TortoiseJson = {
+      val javascriptObject = Jsonify.writer[Pen, TortoiseJson](compiledPen.pen).asInstanceOf[JsObject]
+      compiledPen.updateableCompilation.fold(
+        decorateFailure(javascriptObject),
+        decorateSuccess(javascriptObject))
+    }
   }
 
   implicit object compiledPens2Json extends JsonWriter[Seq[CompiledPen]] {
@@ -137,6 +136,7 @@ object WidgetCompilation {
   }
 
   implicit object widgetCompilation2Json extends JsonWriter[WidgetCompilation] {
+    import CompiledWidget.compiledPens2Json
     def apply(widgetCompilation: WidgetCompilation): TortoiseJson =
       widgetCompilation match {
         case NotCompiled              => JsObject(fields())

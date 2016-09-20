@@ -9,10 +9,7 @@ import
   jsengine.Nashorn
 
 import
-  json.WidgetSamples.{
-    pen  => penWidget,
-    plot => plotWidget
-  }
+  json.WidgetSamples.{ plot => plotWidget }
 
 import
   org.scalatest.{ FunSuite, OneInstancePerTest }
@@ -58,7 +55,7 @@ class PlotCompilerTest extends FunSuite with OneInstancePerTest {
   }
 
   test("returns valid javascript when pens have errors") {
-    val errantPen = new CompiledPen(penWidget, new Exception("pen has problems").failureNel)
+    val errantPen = new CompiledPen(plotWidget.pens.head, new Exception("pen has problems").failureNel)
     val widgetCompilation =
       PlotWidgetCompilation("function() {}", "function() {}", Seq(errantPen)).successNel[Exception]
     val generatedJs = compilePlotWidgetV(widgetCompilation)
@@ -67,7 +64,7 @@ class PlotCompilerTest extends FunSuite with OneInstancePerTest {
   }
 
   test("returns multiple errors when there are multiple pen errors") {
-    val errantPens = new CompiledPen(penWidget, NonEmptyList(new Exception("pen a has problems"), new Exception("pen b has problems")).failure)
+    val errantPens = new CompiledPen(plotWidget.pens.head, NonEmptyList(new Exception("pen a has problems"), new Exception("pen b has problems")).failure)
     val widgetCompilation =
       PlotWidgetCompilation("function() {}", "function() {}", Seq(errantPens)).successNel[Exception]
     val generatedJs = compilePlotWidgetV(widgetCompilation)

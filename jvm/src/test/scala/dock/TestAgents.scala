@@ -3,7 +3,7 @@
 package org.nlogo.tortoise
 package dock
 
-import org.nlogo.core.{ Model, View}
+import org.nlogo.core.{ Model, View, WorldDimensions }
 import org.nlogo.tortoise.tags.SlowTest
 
 class TestAgents extends DockingSuite {
@@ -14,7 +14,7 @@ class TestAgents extends DockingSuite {
   }
 
   test("world dimensions 2", SlowTest) { implicit fixture => import fixture._
-    declare(Model(widgets = List(View(minPxcor = -3, maxPxcor = 4, minPycor = -5, maxPycor = 6))))
+    declare(Model(widgets = List(View(dimensions = WorldDimensions(minPxcor = -3, maxPxcor = 4, minPycor = -5, maxPycor = 6)))))
     compare("(list min-pxcor max-pxcor min-pycor max-pycor)")
     compare("(list world-width world-height)")
   }
@@ -229,7 +229,7 @@ class TestAgents extends DockingSuite {
   }
 
   test("dimensions", SlowTest) { implicit fixture => import fixture._
-    declare(Model(widgets = List(View(minPxcor = -1, maxPxcor = 2, minPycor = -3, maxPycor = 4))))
+    declare(Model(widgets = List(View(dimensions = WorldDimensions(minPxcor = -1, maxPxcor = 2, minPycor = -3, maxPycor = 4)))))
     testCommand("output-print min-pxcor")
   }
 
@@ -344,7 +344,6 @@ class TestAgents extends DockingSuite {
   }
 
   test("shape downcasing", SlowTest) { implicit fixture => import fixture._
-    workspace.world.turtleShapeList.add(DummyShape("turtle"))
     testCommand("""crt 1 [ set shape "TURTLE" output-print shape ]""")
   }
 

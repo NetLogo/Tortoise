@@ -55,7 +55,7 @@ object CompiledModel {
                         compiler:      CompilerLike  = Compiler)
               (implicit compilerFlags: CompilerFlags): ValidationNel[Exception, CompiledModel] = {
     val validation =
-      try fromModel(ModelReader.parseModel(contents, CompilerUtilities))
+      try fromModel(ModelReader.parseModel(contents, CompilerUtilities, Map()))
       catch {
         case e: RuntimeException => e.failureNel
       }

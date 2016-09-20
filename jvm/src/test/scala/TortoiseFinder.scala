@@ -68,8 +68,8 @@ private[tortoise] trait TortoiseFinder extends Finder with BeforeAndAfterAll wit
 class TestReporters extends ReporterTests with TortoiseFinder {
   import Freebies._
   override val freebies = Map(
-    "Misc::Version" -> "Assumes JVM NetLogo version numbers"
-  ) ++ evalNotSupportedReporters ++ incErrorDetectReporters
+    "Version::Version_2D" -> "Assumes JVM NetLogo version numbers"
+  ) ++ evalNotSupportedReporters ++ incErrorDetectReporters ++ cmdTaskRepMismatchCommands
 }
 
 class TestCommands extends CommandTests with TortoiseFinder {
@@ -78,8 +78,7 @@ class TestCommands extends CommandTests with TortoiseFinder {
     // requires handling of non-local exit (see in JVM NetLogo: `NonLocalExit`, `_report`, `_foreach`, `_run`)
     "Every::EveryLosesScope"  -> "NetLogo Web does not support distinct jobs"
   ) ++ incErrorDetectCommands ++ emptyInitBlockCommands ++
-       evalNotSupportedCommands ++ cmdTaskRepMismatchCommands ++
-       lameCommands
+       evalNotSupportedCommands ++ lameCommands
 }
 
 private[tortoise] object Freebies {
@@ -98,9 +97,8 @@ private[tortoise] object Freebies {
   // Significant: Requires the optimizer to be turned on
   private val emptyInitBlockStr = "ASSUMES OPTIMIZATION: empty init block"
   private val emptyInitBlockCommandNames = Seq(
-    "Death::TurtleDiesWhileIteratingOverItsSet",
-    "Interaction::Interaction3b1",
-    "Interaction::Interaction3b2",
+    "DeadTurtles::TurtleDiesWhileIteratingOverItsSet",
+    "Interaction::Interaction3b",
     "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksFrom",
     "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksTo",
     "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksWith",
@@ -116,7 +114,6 @@ private[tortoise] object Freebies {
     "Lists::ListFirst1",
     "Lists::ListReplaceIt2",
     "Lists::ReduceEmpty",
-    "Lists::MapNotEnoughInputs",
     "Lists::ListItem1",
     "Lists::ListItem2",
     "Lists::ListLast1",
@@ -155,49 +152,44 @@ private[tortoise] object Freebies {
   private val incErrorDetectCommandNames = Seq(
     "Agentsets::Agentsets2",
     "Agentsets::Agentsets3",
-    "Agentsets::Agentsets4",
+    "Agentsets::Agentsets4_2D",
     "Agentsets::LinkAgentsetDeadLinks",
-    "AgentsetBuilding::TurtleSet",
-    "AgentsetBuilding::PatchSet2",
-    "AgentsetBuilding::LinkSet",
-    "AnyAll::All5",
+    "AgentsetBuilding::TurtleSet_2D",
+    "AgentsetBuilding::PatchSet2_2D",
+    "AgentsetBuilding::LinkSet_2D",
+    "AnyAll::All5_2D",
     "Ask::AskAllTurtles",
     "Ask::AskAllPatches",
     "Breeds::SetBreedToNonBreed",
-    "CommandTasks::*WrongTypeOfTask1",
-    "CommandTasks::WrongTypeOfTask2",
-    "CommandTasks::NotEnoughInputs",
-    "CommandTasks::NotEnoughInputsForeach",
+    "CommandLambda::*WrongTypeOfTask1",
+    "CommandLambda::WrongTypeOfTask2",
     "ComparingAgents::ComparingLinks",
-    "Death::DeadTurtles1",
-    "Death::DeadTurtles2",
-    "Death::DeadTurtles5",
-    "Death::DeadTurtles6",
+    "DeadTurtles::DeadTurtles1",
+    "DeadTurtles::DeadTurtles5",
+    "DeadTurtles::DeadTurtles6",
     "Face::FaceAgentset",
     "Interaction::Interaction5",
     "Interaction::Interaction13",
     "Interaction::PatchTriesTurtleReporter",
     "Links::LinksNotAllowed",
-    "Links::LinkNotAllowed",
-    "Links::LinkCreationTypeChecking",
+    "Links::LinkNotAllowed_2D",
+    "Links::LinkCreationTypeChecking_2D",
     "Lists::RemoveBug997FirstArgMustBeStringIfSecondArgIsString",
     "Lists::FilterTypeError",
     "Math::CatchNumbersOutsideDoubleRangeOfIntegers",
-    "MoveTo::MoveTo",
-    "Patch::SetVariableRuntime",
-    "RGB::PatchesRGBColor",
+    "MoveTo::MoveTo_2D",
+    "Patch::SetVariableRuntime_2D",
+    "RGB::PatchesRGBColor_2D",
     "RGB::TurtlesRGBColor",
     "RGB::LinksRGBColor",
     "Random::RandomOneOfWithLists",
     "Random::RandomNOfWithLists",
     "Random::OneOfWithAgentSets",
     "Random::RejectBadSeeds",
-    "ReporterTasks::NotEnoughInputs",
     "Sort::SortingTypeErrors",
-    "Sort::sort-by-catches-java-7-general-contract-violation-error",
     "Sort::sort-on-rejects-mixed-types",
     "Turtles::Turtles1a",
-    "TurtlesOn::TurtlesOn1",
+    "TurtlesOn::TurtlesOn1_2D",
     "TypeChecking::AgentClassChecking1",
     "TypeChecking::AgentClassChecking3a",
     "TypeChecking::AgentClassChecking3b"
@@ -219,6 +211,7 @@ private[tortoise] object Freebies {
     "ControlStructures::Run6",
     "ControlStructures::Run7",
     "ControlStructures::Run8",
+    "Errors::CarefullyWithLambda2",
     "Run::LuisIzquierdoRun1",
     "Run::LuisIzquierdoRun2",
     "Run::LuisIzquierdoRunResult1",
@@ -229,15 +222,15 @@ private[tortoise] object Freebies {
   // requires Tortoise compiler changes
   private val cmdTaskRepMismatchStr = "command task string representation doesn't match"
   private val cmdTaskRepMismatchCommandNames = Seq(
-    "CommandTasks::*ToString3",
-    "CommandTasks::*ToString4",
-    "CommandTasks::*ToString5",
-    "CommandTasks::*ToString6"
+    "CommandLambda::*ToString3",
+    "CommandLambda::*ToString4",
+    "CommandLambda::*ToString5",
+    "CommandLambda::*ToString6"
   )
 
   private val lameCommandStr = "This test is LAME!"
   private val lameCommandNames = Seq(
-    "UserReporters::UserReporters"
+    "UserPrimitives::UserReporters_Headless"
   )
 
 }

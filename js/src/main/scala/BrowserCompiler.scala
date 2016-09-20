@@ -66,7 +66,7 @@ class BrowserCompiler {
       for {
         tortoiseReq   <- readNative[JsObject](exportRequest)
         parsedRequest <- ExportRequest.read(tortoiseReq).leftMap(_.map(FailureString))
-      } yield ModelReader.formatModel(parsedRequest.toModel, literalParser)
+      } yield ModelReader.formatModel(parsedRequest.toModel)
 
     JsonLibrary.toNative(model.leftMap(_.map(fail => fail: TortoiseFailure)).toJsonObj)
   }

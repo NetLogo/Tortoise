@@ -41,7 +41,7 @@ class WidgetCompiler(compileCommand:  String => CompiledStringV,
   private def compileWidget(w: Widget): CompiledWidget =
     w match {
       case p: Plot    =>
-        val cleanDisplay = sanitizeNil(p.display)
+        val cleanDisplay = sanitizeNil(p.display.getOrElse(""))
 
         val Seq(compiledSetup, compiledUpdate) =
           Seq("setup" -> p.setupCode, "update" -> p.updateCode).map {
@@ -93,19 +93,19 @@ class WidgetCompiler(compileCommand:  String => CompiledStringV,
     def sanitizeSource(s: String) =
       s.replace("\\n", "\n").replace("\\\\", "\\").replace("\\\"", "\"")
 
-    compileCommand(sanitizeSource(askWithKind(b.buttonType.toUpperCase)(b.source)))
-      .contextualizeError("button", b.display.getOrElse(b.source), "source")
-      .map(SourceCompilation.apply)
+    compileCommand(sanitizeSource(askWithKind(b.buttonKind.toString.toUpperCase)(b.source.getOrElse(""))))
+      .contextualizeError("button", b.display.orElse(b.source).getOrElse(""), "source")
+      .map(SourceCompilation.apply _)
   }
 
   private def compileMonitor(m: Monitor): ExceptionValidation[SourceCompilation] =
-    compileReporter(m.source)
-      .contextualizeError("monitor", m.display.getOrElse(m.source), "reporter")
-      .map(SourceCompilation.apply)
+    compileReporter(m.source.getOrElse(""))
+      .contextualizeError("monitor", m.display.orElse(m.source).getOrElse(""), "reporter")
+      .map(SourceCompilation.apply _)
 
   private def compileSlider(s: Slider): ExceptionValidation[SliderCompilation] = {
     def sliderError(name: String, reporter: String): ExceptionValidation[String] =
-      compileReporter(reporter).contextualizeError("slider", s.display, name)
+      compileReporter(reporter).contextualizeError("slider", s.display.getOrElse(s.varName), name)
 
     val Seq(max, min, step) =
       Seq("min" -> s.min, "max" -> s.max, "step" -> s.step).map((sliderError _).tupled)
