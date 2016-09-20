@@ -142,6 +142,10 @@ module.exports =
     getSize: ->
       @world.topology.distanceXY(@end1.xcor, @end1.ycor, @end2.xcor, @end2.ycor)
 
+    # (String) => Boolean
+    isBreed: (breedName) ->
+      @_breed.name.toUpperCase() is breedName.toUpperCase()
+
     # () => Boolean
     isDead: ->
       @id is -1
