@@ -13,7 +13,7 @@ StrictMath       = require('shim/strictmath')
 Exception        = require('util/exception')
 NLMath           = require('util/nlmath')
 Timer            = require('util/timer')
-
+Gamma            = require('./gamma')
 { flatMap, flattenDeep, isEmpty, map } = require('brazierjs/array')
 
 { MersenneTwisterFast }                          = require('shim/engine-scala')
@@ -245,6 +245,12 @@ module.exports =
         sum -= StrictMath.log(1 - @_rng.nextDouble())
       q
 
+    # (Number, Number) => Number
+    randomGamma: (alpha, lambda) ->
+      if alpha <= 0 || lambda <= 0
+        throw new Error("Both Inputs to RANDOM-GAMMA must be positive.")
+      Gamma(@_rng, alpha, lambda)
+        
     # ((Task, Any*) | String) => Unit
     run: (f, args...) ->
       if NLType(f).isString()
