@@ -1,8 +1,6 @@
 StrictMath       = require('shim/strictmath')
 module.exports = (randomGenerator, alpha, lambda) ->
   a = alpha
-  aa = -1.0
-  aaa = -1.0
   b = 0.0
   c = 0.0
   d = 0.0
@@ -57,18 +55,17 @@ module.exports = (randomGenerator, alpha, lambda) ->
       p = b * randomGenerator.nextDouble()
       if p <= 1.0
         gds = StrictMath.exp(StrictMath.log(p) / a)
-        if StrictMath.log(randomGenerator.nextDouble()) <= ((a - 1.0) * StrictMath.log(gds))
-          gds / lambda
+        if StrictMath.log(randomGenerator.nextDouble()) <= -gds
+          return gds / lambda
       else
         gds = -1 * StrictMath.log((b - p) / a)
         if StrictMath.log(randomGenerator.nextDouble()) <= (a - 1.0) * StrictMath.log(gds)
-          gds / lambda
+          return gds / lambda
+
   else
-    if a != aa
-      aa = a
-      ss = a - 0.5
-      s = StrictMath.sqrt(ss)
-      d = 5.656854249 - 12.0 * s
+    ss = a - 0.5
+    s = StrictMath.sqrt(ss)
+    d = 5.656854249 - 12.0 * s
     loop
       v1 = 2.0 * randomGenerator.nextDouble() - 1.0
       v2 = 2.0 * randomGenerator.nextDouble() - 1.0
@@ -78,28 +75,25 @@ module.exports = (randomGenerator, alpha, lambda) ->
     x = s + 0.5 * t
     gds = x * x
     if t >= 0.0
-      gds / lambda
+      return gds / lambda
     u = randomGenerator.nextDouble()
     if d * u <= t * t * t
-      gds / lambda
-    
-    if a != aaa
-      aaa = a
-      r = 1.0 / a
-      q0 = (((((((((q9 * r + q8) * r + q7) * r + q6) * r + q5) * r + q4) * r + q3) * r + q3) * r + q2) * r + q1) * r
-      if a > 3.686
-        if a > 13.022
-          b = 1.77
-          si = 0.75
-          c = 0.1515 / s
-        else
-          b = 1.654 + 0.0076 * ss
-          si = 1.68 / s + 0.275
-          c = 0.062 / s + 0.024
+      return gds / lambda
+    r = 1.0 / a
+    q0 = ((((((((q9 * r + q8) * r + q7) * r + q6) * r + q5) * r + q4) * r + q3) * r + q2) * r + q1) * r
+    if a > 3.686
+      if a > 13.022
+        b = 1.77
+        si = 0.75
+        c = 0.1515 / s
       else
-        b = 0.463 + s - 0.178 * ss
-        si = 1.235
-        c = 0.195 / s - 0.079 + 0.016 * s
+        b = 1.654 + 0.0076 * ss
+        si = 1.68 / s + 0.275
+        c = 0.062 / s + 0.024
+    else
+      b = 0.463 + s - 0.178 * ss
+      si = 1.235
+      c = 0.195 / s - 0.079 + 0.016 * s
     if x > 0.0
       v = t / (s + s)
       if StrictMath.abs(v) > 0.25
@@ -107,10 +101,10 @@ module.exports = (randomGenerator, alpha, lambda) ->
       else
         q = q0 + 0.5 * t * t * ((((((((a9 * v + a8) * v + a7) * v + a6) * v + a5) * v + a4) * v  + a3) * v + a2) * v + a1) * v
       if StrictMath.log(1.0 - u) <= q
-        gds / lambda
+        return gds / lambda
     while true
       loop
-        e = -1 * StrictMath.log(randomGenerator.nextDouble())
+        e = -StrictMath.log(randomGenerator.nextDouble())
         u = randomGenerator.nextDouble()
         u = u + u - 1.0
         signU = if u > 0 then 1.0 else -1.0
@@ -128,4 +122,4 @@ module.exports = (randomGenerator, alpha, lambda) ->
           w = ((((((e7 * q + e6) * q + e5) * q + e4) * q + e3)  * q + e2) * q + e1) * q
         if c * u * signU <= w * StrictMath.exp(e - 0.5 * t * t)
           x = s + 0.5 * t
-          x * x / lambda
+          return x * x / lambda
