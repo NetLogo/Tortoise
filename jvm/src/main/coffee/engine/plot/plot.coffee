@@ -35,8 +35,8 @@ module.exports = class Plot
     deletePen = ((x) => delete @_penMap[x.name.toUpperCase()]; return)
     resetPen  = ((pen) => pen.reset(); @_ops.registerPen(pen); return)
 
-    pipeline(filter((x) -> x.isTemp), forEach(deletePen))(pens)
-    pipeline(forEach(resetPen))(pens)
+    pipeline(filter((x) ->  x.isTemp), forEach(deletePen))(pens)
+    pipeline(filter((x) -> !x.isTemp), forEach( resetPen))(pens)
 
     if @_currentPen?.isTemp
       @_currentPen =
