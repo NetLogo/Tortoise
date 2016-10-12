@@ -86,6 +86,8 @@ trait Handlers extends EveryIDProvider {
         |} catch (e) {
         |  if (e instanceof Exception.ReportInterrupt) {
         |    return e.message;
+        |  } else if (e instanceof Exception.StopInterrupt) {
+        |    throw new Error("STOP is not allowed inside TO-REPORT.");
         |  } else {
         |    throw e;
         |  }
