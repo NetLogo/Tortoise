@@ -97,7 +97,9 @@ trait Handlers extends EveryIDProvider {
     s"""|try {
         |${indented(commandJS)}
         |} catch (e) {
-        |  if (e instanceof Exception.StopInterrupt) {
+        |  if (e instanceof Exception.ReportInterrupt) {
+        |    throw new Error("REPORT can only be used inside TO-REPORT.");
+        |  } else if (e instanceof Exception.StopInterrupt) {
         |    return e;
         |  } else {
         |    throw e;
