@@ -234,7 +234,7 @@ trait CommandPrims extends PrimUtils {
       case _: prim._report               => s"throw new Exception.ReportInterrupt(${arg(0)});"
       case _: prim.etc._ignore           => s"${arg(0)};"
       case l: prim._let                  =>
-        l.let.map(inner => s"var ${handlers.ident(inner.name)} = ${arg(0)};").getOrElse("")
+        l.let.map(inner => s"let ${handlers.ident(inner.name)} = ${arg(0)};").getOrElse("")
       case _: prim.etc._withlocalrandomness =>
         s"workspace.rng.withClone(function() { ${handlers.commands(s.args(0))} })"
       case _: prim._run =>
@@ -267,7 +267,7 @@ trait CommandPrims extends PrimUtils {
       s"""procedures["${call.name}"](${args.mkString(",")});"""
     if (compilerFlags.propagationStyle == WidgetPropagation && compilerContext.blockLevel == 1) {
       val tmp = handlers.unusedVarname(call.token, "maybestop")
-      s"""|var $tmp = $callDecl
+      s"""|let $tmp = $callDecl
           |if ($tmp instanceof Exception.StopInterrupt) { return $tmp; }""".stripMargin
     } else
       callDecl
@@ -301,7 +301,7 @@ trait CommandPrims extends PrimUtils {
     val body = handlers.commands(w.args(1))
     val i = handlers.unusedVarname(w.command.token, "index")
     val j = handlers.unusedVarname(w.command.token, "repeatcount")
-    s"""|for (var $i = 0, $j = StrictMath.floor($count); $i < $j; $i++){
+    s"""|for (let $i = 0, $j = StrictMath.floor($count); $i < $j; $i++){
         |${indented(body)}
         |}""".stripMargin
   }
