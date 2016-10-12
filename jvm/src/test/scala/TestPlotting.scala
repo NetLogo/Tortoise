@@ -480,7 +480,7 @@ trait PlottingHelpers {
     evalNL(netlogo, model.compileReporter)
 
   protected def evalNLCommand(netlogo: String)(implicit nashorn: Nashorn): AnyRef =
-    evalNL(netlogo, model.compileCommand(_))
+    evalNL(netlogo, model.compileRawCommand)
 
   private def evalNL(netlogo: String, evaluator: (String) => CompiledModel.CompileResult[String])(implicit nashorn: Nashorn): AnyRef = {
     val result = evaluator(netlogo) valueOr ((nel) => throw new Exception(nel.list.toList.mkString))

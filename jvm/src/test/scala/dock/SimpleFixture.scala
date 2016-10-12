@@ -41,7 +41,7 @@ class SimpleFixture(nashorn: Nashorn) {
   private val procedures = NoProcedures
   private val program    = Program.empty()
 
-  private val compileCommands = Compiler.compileCommands(_: String, procedures, program)
+  private val compileCommands = Compiler.compileRawCommands(_: String, procedures, program)
   private val compileReporter = Compiler.compileReporter(_: String, procedures, program)
   private val eval            = nashorn.eval _
 

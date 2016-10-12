@@ -19,7 +19,7 @@ object TortoiseShell extends workspace.Shell {
     System.err.println("Tortoise Shell 1.0")
     for(line <- input.takeWhile(!isQuit(_)))
       printingExceptions {
-        run(Compiler.compileCommands(line, procedures, program))
+        run(Compiler.compileRawCommands(line, procedures, program))
       }
   }
 

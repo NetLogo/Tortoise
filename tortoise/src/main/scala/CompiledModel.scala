@@ -31,6 +31,10 @@ case class CompiledModel(compiledCode: String        = "",
     _.compileCommands(logo, procedures, program)
   }
 
+  def compileRawCommand(logo: String): CompileResult[String] = validate {
+    _.compileRawCommands(logo, procedures, program)
+  }
+
   private val validate: (CompilerLike => String) => CompileResult[String] = CompiledModel.validate(compiler)
 
 }

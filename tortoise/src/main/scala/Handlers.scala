@@ -35,7 +35,7 @@ trait Handlers extends EveryIDProvider {
   // objects, representing the concrete syntax of square brackets, but at this stage of compilation
   // the brackets are irrelevant.  So when we see a block we just immediately recurse into it.
 
-  def commands(node: AstNode, catchStop: Boolean = true)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String =
+  def commands(node: AstNode, catchStop: Boolean = true, isProc: Boolean = false)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String =
     incrementingContext { context =>
       node match {
         case block: CommandBlock =>
@@ -45,10 +45,10 @@ trait Handlers extends EveryIDProvider {
             statements.stmts.map(prims.generateCommand(_)(compilerFlags, context))
               .filter(_.nonEmpty)
               .mkString("\n")
-              if (catchStop && statements.nonLocalExit)
-                commandBlockContext(generatedJS)
-              else
-                generatedJS
+          if (isProc || (catchStop && statements.nonLocalExit))
+            commandBlockContext(generatedJS)
+          else
+            generatedJS
       }
     }
 

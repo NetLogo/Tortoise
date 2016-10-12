@@ -85,6 +85,12 @@ object Compiler extends CompilerLike {
             (implicit compilerFlags: CompilerFlags = CompilerFlags.Default): String =
     compile(logo, commands = true, oldProcedures, program)
 
+  override def compileRawCommands(logo:          String,
+                                  oldProcedures: ProceduresMap = NoProcedures,
+                                  program:       Program       = Program.empty())
+            (implicit compilerFlags: CompilerFlags = CompilerFlags.Default): String =
+    compile(logo, commands = true, oldProcedures, program, true)
+
   def compileMoreProcedures(model:         Model,
                             program:       Program,
                             oldProcedures: ProceduresMap)
@@ -120,7 +126,7 @@ object Compiler extends CompilerLike {
 
     val interface =
       {
-        val validatedCompileCommand = validate(s => compileCommands(s, procedures, program)) _
+        val validatedCompileCommand = validate(s => compileRawCommands(s, procedures, program)) _
         model.interfaceGlobalCommands.map(validatedCompileCommand)
       }
 
@@ -146,14 +152,15 @@ object Compiler extends CompilerLike {
   private def compile(logo:          String,
                       commands:      Boolean,
                       oldProcedures: ProceduresMap = NoProcedures,
-                      program:       Program       = Program.empty())
+                      program:       Program       = Program.empty(),
+                      raw:           Boolean       = false)
             (implicit compilerFlags: CompilerFlags = CompilerFlags.Default): String = {
     val header  = SourceWrapping.getHeader(AgentKind.Observer, commands)
     val footer  = SourceWrapping.getFooter(commands)
     val wrapped = s"$header$logo$footer"
     val (defs, _) = frontEnd.frontEnd(wrapped, oldProcedures = oldProcedures, program = program, extensionManager = NLWExtensionManager)
     if (commands)
-      handlers.commands(defs.head.statements)
+      handlers.commands(defs.head.statements, true, !raw)
     else
       handlers.reporter(defs.head.statements.stmts(1).args(0))
   }

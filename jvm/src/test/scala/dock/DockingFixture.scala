@@ -128,7 +128,7 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
     state = newState
     val expectedJson = "[" + JsonSerializer.serializeWithViewUpdates(update, drawingActionBuffer.grab()) + "]"
     val expectedOutput = workspace.outputAreaBuffer.toString
-    val compiledJS = Compiler.compileCommands(logo, workspace.procedures, workspace.world.program)
+    val compiledJS = Compiler.compileRawCommands(logo, workspace.procedures, workspace.world.program)
     val (exceptionOccurredInJS, (actualOutput, actualJson)) =
       try {
         (false, runJS(compiledJS))

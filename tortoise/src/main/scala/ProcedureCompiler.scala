@@ -28,7 +28,7 @@ class ProcedureCompiler(handlers: Handlers)(implicit compilerFlags: CompilerFlag
         val unwrappedBody = handlers.commands(pd.statements, false)
         handlers.reporterProcContext(unwrappedBody)
       } else
-        handlers.commands(pd.statements)
+        handlers.commands(pd.statements, true, true)
     val args = pd.procedure.args.map(handlers.ident)
     val functionJs = s"(${jsFunction(args = args, body = body)})"
     (functionJs, Seq(safeName, originalName).distinct)
