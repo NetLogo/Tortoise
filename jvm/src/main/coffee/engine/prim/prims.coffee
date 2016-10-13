@@ -285,6 +285,31 @@ module.exports =
       else
         agentsOrAgent.turtlesHere()
 
+    # (String) => Unit
+    uphill: (varName) ->
+      turtle = SelfManager.self()
+      patch = turtle.getPatchHere()
+      winningValue = -Infinity
+      winners = []
+      neighbors = patch.getNeighbors()
+
+      neighbors.forEach((neighbor) ->
+        value = neighbor.getPatchVariable(varName)
+        if NLType(value).isNumber()
+          if value >= winningValue
+            if value > winningValue
+              winningValue = value
+              winners = []
+            winners.push(neighbor)
+      )
+
+      if winners.length isnt 0
+        winner = winners[@_rng.nextInt(winners.length)]
+        turtle.face(winner)
+        turtle.moveTo(winner)
+
+      return
+
     # (String, Agent|Number) => String
     _genEveryKey: (commandID, agent) ->
       agentID =
