@@ -219,6 +219,7 @@ trait CommandPrims extends PrimUtils {
       case _: prim.etc._left             => s"SelfManager.self().right(-${arg(0)});"
       case _: prim.etc._diffuse          => s"world.topology.diffuse(${jsString(getReferenceName(s))}, ${arg(1)})"
       case _: prim.etc._uphill           => s"Prims.uphill(${jsString(getReferenceName(s))})"
+      case _: prim.etc._downhill         => s"Prims.downhill(${jsString(getReferenceName(s))})"
       case x: prim.etc._setdefaultshape  => s"BreedManager.setDefaultShape(${arg(0)}.getSpecialName(), ${arg(1)})"
       case _: prim.etc._hidelink         => "SelfManager.self().setVariable('hidden?', true)"
       case _: prim.etc._showlink         => "SelfManager.self().setVariable('hidden?', false)"
