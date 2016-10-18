@@ -184,7 +184,7 @@ module.exports =
       else
         agents[@_lazyGetNextIntFunc()(agents.length)]
 
-    # (Number, (Number, Number) => Boolean, () => Number) => T
+    # (Number, (Number, Number) => Boolean, () => Number) => Array[T]
     _findBestOf: (worstPossible, findIsBetter, f) ->
       foldFunc =
         ([currentBest, currentWinners], agent) =>
