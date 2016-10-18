@@ -1,24 +1,24 @@
 import scala.util.Try
 
-// If you get an error like this: 'java.io.IOException: Cannot run program "npm": error=2, No such file or directory',
-// install NPM onto your path (`apt install node npm` for Linux users), and then install the Grunt command line tools
-// (`sudo npm install -g grunt-cli`).  Ensure that NodeJS is runnable by typing `node`, or Grunt will fail.  If Node
-// Node isn't there, try something like `sudo ln -s /usr/bin/nodejs /usr/local/bin/node` and then try again. --JAB (7/21/14)
+// If you get an error like this: 'java.io.IOException: Cannot run program "yarn": error=2, No such file or directory',
+// install Yarn (see https://yarnpkg.com/en/docs/install), and then install the Grunt command line tools
+// (`sudo yarn install -g grunt-cli`).  Ensure that NodeJS is runnable by typing `node`, or Grunt will fail.  If
+// Node isn't there, try something like `sudo ln -s /usr/bin/nodejs /usr/local/bin/node` and then try again. --JAB (7/21/14) (10/18/16)
 
-lazy val npm = inputKey[Unit]("Runs NPM commands from within SBT")
+lazy val yarn = inputKey[Unit]("Runs Yarn commands from within SBT")
 
-npm := {
+yarn := {
   val args = sbt.complete.Parsers.spaceDelimited("<arg>").parsed
-  Process("npm" +: args, baseDirectory.value).!(streams.value.log)
+  Process("yarn" +: args, baseDirectory.value).!(streams.value.log)
 }
 
 
 
-lazy val npmInstall = taskKey[Seq[File]]("Runs `npm install` from within SBT")
+lazy val yarnInstall = taskKey[Seq[File]]("Runs `yarn install` from within SBT")
 
-npmInstall := {
+yarnInstall := {
   if (nodeDeps.value.isEmpty || (nodeDeps.value exists (_.olderThan(packageJson.value))))
-    Process(Seq("npm", "install"), baseDirectory.value).!(streams.value.log)
+    Process(Seq("yarn", "install"), baseDirectory.value).!(streams.value.log)
   nodeDeps.value
 }
 
@@ -36,7 +36,7 @@ grunt := {
   Seq()
 }
 
-grunt := (grunt.dependsOn(npmInstall)).value
+grunt := (grunt.dependsOn(yarnInstall)).value
 
 resourceGenerators in Compile += grunt.taskValue
 
@@ -47,7 +47,7 @@ watchSources ++= allJSSources.value
 lazy val installGrunt = Def.task[Unit] {
   val versionStr = Try(Process(Seq("grunt", "--version")).!!).toOption getOrElse "Grunt's not there"
   if (!versionStr.contains("grunt-cli"))
-    Process(Seq("npm", "install", "-g", "grunt-cli"), baseDirectory.value).!(streams.value.log)
+    Process(Seq("yarn", "global", "add", "grunt-cli"), baseDirectory.value).!(streams.value.log)
 }
 
 lazy val packageJson = Def.task[File] {

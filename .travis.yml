@@ -18,6 +18,7 @@ env:
 before_install:
   - git submodule update --init --recursive
 install:
+  - npm install -g yarn
   - sbt update
 script:
   - cat /usr/lib/jvm/java-8-oracle/release
