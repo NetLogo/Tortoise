@@ -250,7 +250,7 @@ module.exports =
       if alpha <= 0 || lambda <= 0
         throw new Error("Both Inputs to RANDOM-GAMMA must be positive.")
       Gamma(@_rng, alpha, lambda)
-        
+
     # ((Task, Any*) | String) => Unit
     run: (f, args...) ->
       if NLType(f).isString()
@@ -287,42 +287,25 @@ module.exports =
 
     # (String) => Unit
     uphill: (varName) ->
-      turtle = SelfManager.self()
-      patch = turtle.getPatchHere()
-      winningValue = -Infinity
-      winners = []
-      neighbors = patch.getNeighbors()
-
-      neighbors.forEach((neighbor) ->
-        value = neighbor.getPatchVariable(varName)
-        if NLType(value).isNumber()
-          if value >= winningValue
-            if value > winningValue
-              winningValue = value
-              winners = []
-            winners.push(neighbor)
-      )
-
-      if winners.length isnt 0
-        winner = winners[@_rng.nextInt(winners.length)]
-        turtle.face(winner)
-        turtle.moveTo(winner)
-
-      return
+      @_moveUpOrDownhill(-Infinity, ((result, currentBest) -> result > currentBest), varName)
 
     # (String) => Unit
     downhill: (varName) ->
+      @_moveUpOrDownhill(Infinity, ((result, currentBest) -> result < currentBest), varName)
+
+    #(Number, (Number, Number) => Boolean, String)
+    _moveUpOrDownhill: (worstPossible, findIsBetter, varName) ->
       turtle = SelfManager.self()
       patch = turtle.getPatchHere()
-      winningValue = Infinity
+      winningValue = worstPossible
       winners = []
       neighbors = patch.getNeighbors()
 
       neighbors.forEach((neighbor) ->
         value = neighbor.getPatchVariable(varName)
         if NLType(value).isNumber()
-          if value <= winningValue
-            if value < winningValue
+          if findIsBetter(value, winningValue) or winningValue == value
+            if findIsBetter(value, winningValue)
               winningValue = value
               winners = []
             winners.push(neighbor)
@@ -334,7 +317,6 @@ module.exports =
         turtle.moveTo(winner)
 
       return
-
 
     # (String, Agent|Number) => String
     _genEveryKey: (commandID, agent) ->
