@@ -558,7 +558,7 @@ trait PlottingHelpers {
   protected case object Down extends PenMode { override def toPenModeStr = "Down" }
   protected case object Up   extends PenMode { override def toPenModeStr = "Up" }
 
-  protected def testPlotting(name: String, tags: Tag*)(testFun: (Nashorn) => Unit): Unit = {
+  protected lazy val nashorn = {
 
     val preCode =
       """var PenBundle = tortoise_require('engine/plot/pen');
@@ -595,12 +595,17 @@ trait PlottingHelpers {
         |  }
         |};""".stripMargin
 
-    val nashorn = new Nashorn
-    nashorn.eval(preCode)
-    nashorn.eval(model.compiledCode)
+    val n = new Nashorn
+    n.eval(preCode)
+    n
 
-    test(name, tags: _*)(testFun(nashorn))
+  }
 
+  protected def testPlotting(name: String, tags: Tag*)(testFun: (Nashorn) => Unit): Unit = {
+    test(name, tags: _*) {
+      nashorn.eval(model.compiledCode)
+      testFun(nashorn)
+    }
   }
 
   protected val pathToPlot  = "plotManager._currentPlot"
