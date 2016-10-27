@@ -287,19 +287,27 @@ module.exports =
 
     # (String) => Unit
     uphill: (varName) ->
-      @_moveUpOrDownhill(-Infinity, ((result, currentBest) -> result > currentBest), varName)
+      @_moveUpOrDownhill(-Infinity, ((result, currentBest) -> result > currentBest), varName, false)
+
+    # (String) => Unit
+    uphill4: (varName) ->
+      @_moveUpOrDownhill(-Infinity, ((result, currentBest) -> result > currentBest), varName, true)
 
     # (String) => Unit
     downhill: (varName) ->
-      @_moveUpOrDownhill(Infinity, ((result, currentBest) -> result < currentBest), varName)
+      @_moveUpOrDownhill(Infinity, ((result, currentBest) -> result < currentBest), varName, false)
+
+    # (String) => Unit
+    downhill4: (varName) ->
+      @_moveUpOrDownhill(Infinity, ((result, currentBest) -> result < currentBest), varName, true)
 
     #(Number, (Number, Number) => Boolean, String)
-    _moveUpOrDownhill: (worstPossible, findIsBetter, varName) ->
+    _moveUpOrDownhill: (worstPossible, findIsBetter, varName, is4) ->
       turtle = SelfManager.self()
       patch = turtle.getPatchHere()
       winningValue = worstPossible
       winners = []
-      neighbors = patch.getNeighbors()
+      neighbors = if is4 then patch.getNeighbors4() else patch.getNeighbors()
 
       neighbors.forEach((neighbor) ->
         value = neighbor.getPatchVariable(varName)
