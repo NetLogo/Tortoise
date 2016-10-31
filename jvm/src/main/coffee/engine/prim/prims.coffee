@@ -19,6 +19,11 @@ Gamma            = require('./gamma')
 { MersenneTwisterFast }                          = require('shim/engine-scala')
 { EQUALS: EQ, GREATER_THAN: GT, LESS_THAN: LT, } = require('util/comparator')
 
+getNeighbors  = (patch) -> patch.getNeighbors()
+getNeighbors4 = (patch) -> patch.getNeighbors4()
+lessThan      = (a, b)  -> a < b
+greaterThan   = (a, b)  -> a > b
+
 module.exports =
   class Prims
 
@@ -287,36 +292,41 @@ module.exports =
 
     # (String) => Unit
     uphill: (varName) ->
-      @_moveUpOrDownhill(-Infinity, ((result, currentBest) -> result > currentBest), varName, false)
+      @_moveUpOrDownhill(-Infinity, greaterThan, getNeighbors, varName)
+      return
 
     # (String) => Unit
     uphill4: (varName) ->
-      @_moveUpOrDownhill(-Infinity, ((result, currentBest) -> result > currentBest), varName, true)
+      @_moveUpOrDownhill(-Infinity, greaterThan, getNeighbors4, varName)
+      return
 
     # (String) => Unit
     downhill: (varName) ->
-      @_moveUpOrDownhill(Infinity, ((result, currentBest) -> result < currentBest), varName, false)
+      @_moveUpOrDownhill(Infinity, lessThan, getNeighbors, varName)
+      return
 
     # (String) => Unit
     downhill4: (varName) ->
-      @_moveUpOrDownhill(Infinity, ((result, currentBest) -> result < currentBest), varName, true)
+      @_moveUpOrDownhill(Infinity, lessThan, getNeighbors4, varName)
+      return
 
-    #(Number, (Number, Number) => Boolean, String)
-    _moveUpOrDownhill: (worstPossible, findIsBetter, varName, is4) ->
-      turtle = SelfManager.self()
-      patch = turtle.getPatchHere()
+    # (Number, (Number, Number) => Boolean, (Patch) => PatchSet, String) => Unit
+    _moveUpOrDownhill: (worstPossible, findIsBetter, getNeighbors, varName) ->
+
+      turtle       = SelfManager.self()
+      patch        = turtle.getPatchHere()
       winningValue = worstPossible
-      winners = []
-      neighbors = if is4 then patch.getNeighbors4() else patch.getNeighbors()
+      winners      = []
 
-      neighbors.forEach((neighbor) ->
-        value = neighbor.getPatchVariable(varName)
-        if NLType(value).isNumber()
-          if findIsBetter(value, winningValue) or winningValue == value
+      getNeighbors(patch).forEach(
+        (neighbor) ->
+          value = neighbor.getPatchVariable(varName)
+          if NLType(value).isNumber()
             if findIsBetter(value, winningValue)
               winningValue = value
-              winners = []
-            winners.push(neighbor)
+              winners      = [neighbor]
+            else if winningValue is value
+              winners.push(neighbor)
       )
 
       if winners.length isnt 0 and findIsBetter(winningValue, patch.getPatchVariable(varName))
