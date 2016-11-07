@@ -13,8 +13,21 @@ module.exports =
 
     # (TurtleSet, Number) => Unit
     layoutCircle: (agentsOrList, radius) ->
-      type = NLType(agentsOrList)
-      if type.isList() then @_arrangeInCircle(agentsOrList, radius) else @_arrangeInCircle(agentsOrList.shufflerator().toArray(), radius)
+
+      turtles = if NLType(agentsOrList).isList() then agentsOrList else agentsOrList.shufflerator().toArray()
+      n       = turtles.length
+      midx    = @_world.topology.minPxcor + NLMath.floor(@_world.topology.width / 2)
+      midy    = @_world.topology.minPycor + NLMath.floor(@_world.topology.height / 2)
+
+      rangeUntil(0)(n).forEach(
+        (i) ->
+          heading = (i * 360) / n
+          turtle  = turtles[i]
+          turtle.patchAtHeadingAndDistance(heading, radius)
+          turtle.setXY(midx, midy)
+          turtle.setVariable("heading", heading)
+          turtle.jumpIfAble(radius)
+      )
 
     # (TurtleSet, LinkSet, Number, Number, Number) => Unit
     layoutSpring: (nodeSet, linkSet, spr, len, rep) ->
@@ -196,16 +209,3 @@ module.exports =
       )(rangeUntil(0)(nodeCount))
 
       return
-
-    #(Array[Turtle], Number) => Unit
-    _arrangeInCircle: (turtles, radius) ->
-      n    = turtles.length
-      midx = @_world.topology.minPxcor + NLMath.floor(@_world.topology.width / 2)
-      midy = @_world.topology.minPycor + NLMath.floor(@_world.topology.height / 2)
-      for i in [0...n]
-        turtle  = turtles[i]
-        heading = (i * 360) / n
-        turtle.patchAtHeadingAndDistance(heading, radius)
-        turtle.setXY(midx, midy)
-        turtle.setVariable("heading", heading)
-        turtle.jumpIfAble(radius)
