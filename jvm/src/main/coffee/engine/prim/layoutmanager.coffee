@@ -44,6 +44,66 @@ module.exports =
 
       return
 
+    # (TurtleSet, LinkSet, Number) => Unit
+    layoutTutte: (nodeSet, linkSet, radius) ->
+      anchors = []
+      linkSet.forEach(
+        ({ end1: t1, end2: t2 }) ->
+          if not nodeSet.contains(t1) and t1 not in anchors
+            anchors.push(t1)
+          if not nodeSet.contains(t2) and t2 not in anchors
+            anchors.push(t2))
+      @layoutCircle(anchors, radius)
+
+      n   = nodeSet.length()
+      agt = nodeSet.shuffled().toArray()
+      ax  = []
+      ay  = []
+      for i in [0...n]
+        t  = agt[i]
+        fx = 0
+        fy = 0
+        degree = 0
+        for link in @_world.links().toArray()
+          t1 = link.end1
+          t2 = link.end2
+          if (t1 == t or t2 == t) and linkSet.contains(link)
+            other = t1
+            if t == t1
+              other = t2
+            fx += other.xcor
+            fy += other.ycor
+            degree++
+
+        fx /=  degree
+        fy /=  degree
+        fx -= t.xcor
+        fy -= t.ycor
+
+        limit = 100
+        if fx > limit
+          fx = limit
+        else if fx < -limit
+          fx = -limit
+        if fy > limit
+          fy = limit
+        else if fy < -limit
+          fy = -limit
+        fx += t.xcor
+        fy += t.ycor
+        if fx > @_world.topology.maxPxcor
+          fx = @_world.topology.maxPxcor
+        else if fx < @_world.topology.minPxcor
+          fx = @_world.topology.minPxcor
+        if fy > @_world.topology.maxPycor
+          fy = @_world.topology.maxPycor
+        else if fy < @_world.topology.minPycor
+          fy = @_world.topology.minPycor
+
+        ax[i] = fx
+        ay[i] = fy
+      @_reposition(agt, ax, ay)
+
     # (TurtleSet) => (Array[Number], Array[Number], Object[Number, Number], Array[Turtle])
     _initialize: (nodeSet) ->
 
