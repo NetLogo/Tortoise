@@ -465,6 +465,22 @@ object Model {
                 |set event-8-triggered? true
                 |set event-9-triggered? true
               """.stripMargin
+    ),
+    Model(
+      path = "models/Code Examples/Hill Climbing Example.nlogo",
+      repetitions = 30
+    ),
+    Model(
+      path = "models/Sample Models/Biology/Ants.nlogo",
+      repetitions = 80
+    ),
+    Model(
+      path = "models/Sample Models/Chemistry & Physics/Lennard-Jones.nlogo",
+      repetitions = 40
+    ),
+    Model(
+      path = "models/Sample Models/Computer Science/Unverified/Simulated Annealing.nlogo",
+      repetitions = 25
     )
   )
 }
