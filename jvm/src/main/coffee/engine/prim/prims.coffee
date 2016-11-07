@@ -319,7 +319,7 @@ module.exports =
             winners.push(neighbor)
       )
 
-      if winners.length isnt 0
+      if winners.length isnt 0 and findIsBetter(winningValue, patch.getPatchVariable(varName))
         winner = winners[@_rng.nextInt(winners.length)]
         turtle.face(winner)
         turtle.moveTo(winner)
