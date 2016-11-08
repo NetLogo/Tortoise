@@ -2,8 +2,9 @@
 
 NLMath = require('util/nlmath')
 
-{ forEach, map } = require('brazierjs/array')
-{ rangeUntil }   = require('brazierjs/number')
+{ filter, flatMap, foldl, forEach, map, unique, zip } = require('brazierjs/array')
+{ pipeline }                                          = require('brazierjs/function')
+{ rangeUntil }                                        = require('brazierjs/number')
 
 module.exports =
   class LayoutManager
@@ -46,63 +47,62 @@ module.exports =
 
     # (TurtleSet, LinkSet, Number) => Unit
     layoutTutte: (nodeSet, linkSet, radius) ->
-      anchors = []
-      linkSet.forEach(
-        ({ end1: t1, end2: t2 }) ->
-          if not nodeSet.contains(t1) and t1 not in anchors
-            anchors.push(t1)
-          if not nodeSet.contains(t2) and t2 not in anchors
-            anchors.push(t2))
+
+      anchors =
+        pipeline(
+          flatMap(({ end1, end2 }) -> [end1, end2])
+        , unique
+        , filter((t) -> not nodeSet.contains(t))
+        )(linkSet.toArray())
+
       @layoutCircle(anchors, radius)
 
-      n   = nodeSet.length()
-      agt = nodeSet.shuffled().toArray()
-      ax  = []
-      ay  = []
-      for i in [0...n]
-        t  = agt[i]
-        fx = 0
-        fy = 0
-        degree = 0
-        for link in @_world.links().toArray()
-          t1 = link.end1
-          t2 = link.end2
-          if (t1 == t or t2 == t) and linkSet.contains(link)
-            other = t1
-            if t == t1
-              other = t2
-            fx += other.xcor
-            fy += other.ycor
-            degree++
+      turtleXYTriplets =
+        nodeSet.shuffled().toArray().map(
+          (turtle) =>
 
-        fx /=  degree
-        fy /=  degree
-        fx -= t.xcor
-        fy -= t.ycor
+            computeCor =
+              (turtle, neighbors, degree) -> (getCor, max, min) ->
 
-        limit = 100
-        if fx > limit
-          fx = limit
-        else if fx < -limit
-          fx = -limit
-        if fy > limit
-          fy = limit
-        else if fy < -limit
-          fy = -limit
-        fx += t.xcor
-        fy += t.ycor
-        if fx > @_world.topology.maxPxcor
-          fx = @_world.topology.maxPxcor
-        else if fx < @_world.topology.minPxcor
-          fx = @_world.topology.minPxcor
-        if fy > @_world.topology.maxPycor
-          fy = @_world.topology.maxPycor
-        else if fy < @_world.topology.minPycor
-          fy = @_world.topology.minPycor
+                value = pipeline(map(getCor), foldl((a, b) -> a + b)(0))(neighbors)
 
-        ax[i] = fx
-        ay[i] = fy
-      @_reposition(agt, ax, ay)
+                adjustedValue = (value / degree) - getCor(turtle)
+
+                limit = 100 # This voodoo magic makes absolutely no sense to me --JAB (11/7/16)
+                limitedValue =
+                  if adjustedValue > limit
+                    limit
+                  else if adjustedValue < -limit
+                    -limit
+                  else
+                    adjustedValue
+
+                readjustedValue = limitedValue + getCor(turtle)
+
+                if readjustedValue > max
+                  max
+                else if readjustedValue < min
+                  min
+                else
+                  readjustedValue
+
+            allOfMyLinks  = turtle.linkManager._linksIn.concat(turtle.linkManager._linksOut)
+            relevantLinks = pipeline(unique, filter((link) -> linkSet.contains(link)))(allOfMyLinks)
+            neighbors     = relevantLinks.map(({ end1, end2 }) -> if end1 is turtle then end2 else end1)
+            degree        = relevantLinks.length
+
+            compute = computeCor(turtle, neighbors, degree)
+
+            x = compute(((t) -> t.xcor), @_world.topology.maxPxcor, @_world.topology.minPxcor)
+            y = compute(((t) -> t.ycor), @_world.topology.maxPycor, @_world.topology.minPycor)
+
+            [turtle, x, y]
+
+        )
+
+      turtleXYTriplets.forEach(([turtle, x, y]) -> turtle.setXY(x, y))
+
+      return
 
     # (TurtleSet) => (Array[Number], Array[Number], Object[Number, Number], Array[Turtle])
     _initialize: (nodeSet) ->
