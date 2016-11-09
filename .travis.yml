@@ -9,6 +9,7 @@ cache:
   - $HOME/.sbt/launchers
 
 jdk: oraclejdk8
+node_js: "5"
 language: scala
 scala: 2.11.8
 env:
@@ -16,9 +17,11 @@ env:
     - TRAVIS=true
     - TRAVIS_JVM_OPTS="-Xss6m -Xmx1560M -Xms1560M -client -Xverify:none -XX:MaxMetaspaceSize=512M"
 before_install:
+  - nvm install 5
+  - nvm use 5
+  - npm install -g yarn
   - git submodule update --init --recursive
 install:
-  - npm install -g yarn
   - sbt update
 script:
   - cat /usr/lib/jvm/java-8-oracle/release
