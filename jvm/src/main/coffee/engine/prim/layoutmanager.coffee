@@ -1,10 +1,50 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 NLMath = require('util/nlmath')
+NLType = require('../core/typechecker')
 
-{ filter, flatMap, foldl, forEach, map, unique, zip } = require('brazierjs/array')
+{contains, filter, flatMap, foldl, forEach, map, unique, zip } = require('brazierjs/array')
 { pipeline }                                          = require('brazierjs/function')
 { rangeUntil }                                        = require('brazierjs/number')
+
+class TreeNode
+  val: undefined
+  parent: undefined
+  children: undefined
+  angle: undefined
+
+  constructor: (@val, @parent) ->
+    @children = []
+    @angle = 0.0
+
+  getDepth: ->
+    i = 0
+    if @parent?
+      1 + @parent.getDepth()
+    else
+      0
+
+  getWeight: ->
+    myWeight = @children.length + 1
+    maxChildWeight = 0.0
+    @children.forEach((child) ->
+      cweight = child.getWeight()
+      if cweight > maxChildWeight
+        maxChildWeight = cweight)
+    maxChildWeight *= 0.8
+    Math.max(maxChildWeight, myWeight)
+
+  layoutRadial: (arcStart, arcEnd) ->
+    @angle = (arcStart + arcEnd) / 2
+    weightSum = 0
+    @children.forEach((child) -> weightSum += child.getWeight())
+
+    childStart = arcStart
+    @children.forEach((child) ->
+      childEnd = childStart + (arcEnd - arcStart) * child.getWeight() / weightSum
+      child.layoutRadial(childStart, childEnd)
+      childStart = childEnd)
+
 
 module.exports =
   class LayoutManager
@@ -104,7 +144,56 @@ module.exports =
 
       return
 
-    # (TurtleSet) => (Array[Number], Array[Number], Object[Number, Number], Array[Turtle])
+    # (TurtleSet, LinkSet, RootAgent) => Unit
+    layoutRadial: (nodeSet, linkSet, root) ->
+      rootX = (@_world.topology.maxPxcor + @_world.topology.minPxcor) / 2
+      rootY = (@_world.topology.maxPycor + @_world.topology.minPycor) / 2
+
+      nodeTable = []
+      queue = []
+      rootNode = new TreeNode(root, null)
+      queue.push(rootNode)
+      nodeTable[rootNode.val.id] = rootNode
+
+      lastNode = rootNode
+
+      allowedTurtles = undefined
+      breed = ""
+      if !linkSet.getSpecialName()?
+        allowedTurtles = []
+        breed = "LINKS"
+        linkSet.forEach(({end1, end2}) ->
+          allowedTurtles.push(end1)
+          allowedTurtles.push(end2))
+      else
+        breed = linkSet.getSpecialName().toUpperCase()
+
+      while queue.length > 0
+        node = queue.shift()
+        lastNode = node
+        node.val.linkManager.linkNeighbors(breed).forEach((t) ->
+          if nodeSet.contains(t) and !nodeTable[t.id]? and (!allowedTurtles? or contains(t)(allowedTurtles))
+            child = new TreeNode(t, node)
+            node.children.push(child)
+            nodeTable[t.id] = child
+            queue.push(child))
+
+      rootNode.layoutRadial(0, 360)
+
+      maxDepth = lastNode.getDepth() + .2
+      if maxDepth < 1 then maxDepth = 1
+      xDistToEdge = Math.min(@_world.topology.maxPxcor - rootX, rootX - @_world.topology.minPxcor)
+      yDistToEdge = Math.min(@_world.topology.maxPycor - rootY, rootY - @_world.topology.minPycor)
+      distToEdge = Math.min(xDistToEdge, yDistToEdge)
+      layerGap = distToEdge / maxDepth
+
+      for _,node of nodeTable
+        t = node.val
+        t.setXY(rootX, rootY)
+        t.setVariable("heading", node.angle)
+        t.jumpIfAble(node.getDepth() * layerGap)
+
+        # (TurtleSet) => (Array[Number], Array[Number], Object[Number, Number], Array[Turtle])
     _initialize: (nodeSet) ->
 
       ax   = []
