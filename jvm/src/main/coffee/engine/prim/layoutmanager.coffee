@@ -213,7 +213,7 @@ module.exports =
 
       return
 
-        # (TurtleSet) => (Array[Number], Array[Number], Object[Number, Number], Array[Turtle])
+    # (TurtleSet) => (Array[Number], Array[Number], Object[Number, Number], Array[Turtle])
     _initialize: (nodeSet) ->
 
       ax   = []
@@ -274,7 +274,7 @@ module.exports =
 
           # links that are connecting high degree nodes should not
           # be as springy, to help prevent "jittering" behavior -FD
-          div = Math.max((degCount1 + degCount2) / 2.0, 1.0)
+          div = NLMath.max((degCount1 + degCount2) / 2.0, 1.0)
 
           [dx, dy] =
           if dist is 0
@@ -304,23 +304,20 @@ module.exports =
     _updateXYArraysForAll: (ax, ay, agents, degCounts, nodeCount, rep) ->
       for i in [0...nodeCount]
 
-        t1       = agents[i]
-        [x1, y1] = t1.getCoords()
+        t1 = agents[i]
 
         for j in [(i + 1)...nodeCount]
-
-          t2       = agents[j]
-          [x2, y2] = t2.getCoords()
-          div      = Math.max((degCounts[i] + degCounts[j]) / 2.0, 1.0)
+          t2  = agents[j]
+          div = NLMath.max((degCounts[i] + degCounts[j]) / 2.0, 1.0)
 
           [dx, dy] =
-            if x2 is x1 and y2 is y1
+            if t2.xcor is t1.xcor and t2.ycor is t1.ycor
               ang   = 360 * @_nextDouble()
               newDX = -(rep / div * NLMath.squash(NLMath.sin(ang)))
               newDY = -(rep / div * NLMath.squash(NLMath.cos(ang)))
               [newDX, newDY]
             else
-              dist  = NLMath.distance4_2D(x1, y1, x2, y2)
+              dist  = NLMath.distance4_2D(t1.xcor, t1.ycor, t2.xcor, t2.ycor)
               f     = rep / (dist * dist) / div
               newDX = -(f * (t2.xcor - t1.xcor) / dist)
               newDY = -(f * (t2.ycor - t1.ycor) / dist)
