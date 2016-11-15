@@ -481,6 +481,14 @@ object Model {
     Model(
       path = "models/Sample Models/Computer Science/Unverified/Simulated Annealing.nlogo",
       repetitions = 25
+    ),
+    Model(
+      path = "models/Code Examples/Fully Connected Network Example.nlogo",
+      repetitions = 0
+    ),
+    Model(
+      path = "models/Code Examples/Network Example.nlogo",
+      repetitions = 30
     )
   )
 }

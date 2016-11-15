@@ -101,6 +101,7 @@ private[tortoise] object Freebies {
   private val emptyInitBlockStr = "ASSUMES OPTIMIZATION: empty init block"
   private val emptyInitBlockCommandNames = Seq(
     "DeadTurtles::TurtleDiesWhileIteratingOverItsSet",
+    "Layouts::TestLayoutCircleSetsHeadingsCorrectlyTurtleset",
     "Interaction::Interaction3b",
     "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksFrom",
     "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksTo",
