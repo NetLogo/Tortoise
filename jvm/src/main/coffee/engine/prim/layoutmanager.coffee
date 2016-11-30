@@ -5,6 +5,7 @@ NLType = require('../core/typechecker')
 
 { contains, filter, flatMap, foldl, forEach, map, maxBy, unique, zip } = require('brazierjs/array')
 { id, pipeline }                                                       = require('brazierjs/function')
+{ fold }                                                               = require('brazierjs/maybe')
 { rangeUntil }                                                         = require('brazierjs/number')
 { values }                                                             = require('brazierjs/object')
 
@@ -38,7 +39,7 @@ class TreeNode
     @_turtle
 
   getWeight: ->
-    maxChildWeight = pipeline(map((c) -> c.getWeight()), maxBy(id), (x) -> x ? 0)(@_children)
+    maxChildWeight = pipeline(map((c) -> c.getWeight()), maxBy(id), fold(-> 0)(id))(@_children)
     NLMath.max(maxChildWeight * 0.8, @_children.length + 1)
 
   layoutRadial: (arcStart, arcEnd) ->

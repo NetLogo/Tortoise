@@ -3,6 +3,8 @@
 Iterator = require('./iterator')
 
 { all, contains, exists, filter, find, forEach, foldl } = require('brazierjs/array')
+{ id, pipeline                                        } = require('brazierjs/function')
+{ fold                                                } = require('brazierjs/maybe')
 
 # If you want at the items, use `toArray`!  NO ONE BUT `toArray` SHOULD TOUCH `_items`! --JAB (7/21/14)
 module.exports =
@@ -45,7 +47,7 @@ module.exports =
 
     # ((T) => Boolean) => T
     find: (pred) ->
-      find(pred)(@toArray())
+      pipeline(find(pred), fold(-> undefined)(id))(@toArray())
 
     # ((T) => Unit) => Unit
     forEach: (f) ->

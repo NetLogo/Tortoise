@@ -13,8 +13,9 @@ Exception        = require('util/exception')
 NLMath           = require('util/nlmath')
 stableSort       = require('util/stablesort')
 
-{ all, exists, filter, find, findIndex, foldl, head, isEmpty, length: arrayLength, last, sortBy, tail } = require('brazierjs/array')
-{ id, pipeline }                                                                                        = require('brazierjs/function')
+{ all, exists, filter, find, findIndex, foldl, isEmpty, length: arrayLength, last, sortBy, tail } = require('brazierjs/array')
+{ id, pipeline }                                                                                  = require('brazierjs/function')
+{ fold         }                                                                                  = require('brazierjs/maybe')
 
 module.exports =
   class ListPrims
@@ -38,7 +39,7 @@ module.exports =
 
     # [Item] @ (Array[Item]) => Item
     first: (xs) ->
-      head(xs)
+      xs[0]
 
     # [Item] @ (Item, Array[Item]) => Array[Item]
     fput: (x, xs) ->
@@ -111,11 +112,10 @@ module.exports =
         (xs) =>
           pairs = []
           for x in xs
-            pair = find(([item, c]) => @_equality(item, x))(pairs)
-            if pair?
-              pair[1] += 1
-            else
-              pairs.push([x, 1])
+            pushNewPair    =        -> pairs.push([x, 1])
+            incrementCount = (pair) -> pair[1] += 1
+            pairMaybe      = find(([item, c]) => @_equality(item, x))(pairs)
+            fold(pushNewPair)(incrementCount)(pairMaybe)
           pairs
 
       calculateModes =
@@ -166,7 +166,7 @@ module.exports =
 
       index =
         if type.isList()
-          findIndex((y) => @_equality(x, y))(xs) ? -1
+          pipeline(findIndex((y) => @_equality(x, y)), fold(-> -1)(id))(xs)
         else
           xs.indexOf(x)
 

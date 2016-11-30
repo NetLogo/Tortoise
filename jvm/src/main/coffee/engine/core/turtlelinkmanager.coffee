@@ -5,6 +5,8 @@ Nobody    = require('./nobody')
 TurtleSet = require('./turtleset')
 
 { find, unique } = require('brazierjs/array')
+{ id, pipeline } = require('brazierjs/function')
+{ fold         } = require('brazierjs/maybe')
 
 { DeathInterrupt, ignoring } = require('util/exception')
 
@@ -143,7 +145,8 @@ module.exports =
 
     # String -> Turtle -> String -> Directedness -> Array Link -> Agent
     _findLink: (key, otherTurtle, breedName, directedness, linkRegistry) ->
-      find((l) -> l[key] is otherTurtle and linkBreedMatches(breedName)(directedness)(l))(linkRegistry) ? Nobody
+      linkDoesMatch = (l) -> l[key] is otherTurtle and linkBreedMatches(breedName)(directedness)(l)
+      pipeline(find(linkDoesMatch), fold(-> Nobody)(id))(linkRegistry)
 
     # (String) => Unit
     _mustBeUndirected: (breedName) ->

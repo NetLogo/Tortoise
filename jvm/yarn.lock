@@ -189,9 +189,9 @@ braces@^1.8.2:
     preserve "^0.2.0"
     repeat-element "^1.1.2"
 
-brazierjs@1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/brazierjs/-/brazierjs-1.1.1.tgz#c01600b52db3b36cb431378c453c5b567210e333"
+brazierjs@2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/brazierjs/-/brazierjs-2.0.0.tgz#c49ebb853958ea591b9f6c36e854e82ee55789a9"
 
 brorand@^1.0.1:
   version "1.0.6"

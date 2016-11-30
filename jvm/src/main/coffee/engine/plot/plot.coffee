@@ -4,7 +4,8 @@
 StrictMath = require('shim/strictmath')
 
 { filter, forEach, isEmpty, map, maxBy, toObject, zip } = require('brazierjs/array')
-{ flip, pipeline }                                      = require('brazierjs/function')
+{ flip, id, pipeline }                                  = require('brazierjs/function')
+{ fold }                                                = require('brazierjs/maybe')
 { values }                                              = require('brazierjs/object')
 
 { StopInterrupt: Stop } = require('util/exception')
@@ -212,8 +213,7 @@ module.exports = class Plot
   # (Pen) => Unit
   _verifyHistogramSize: (pen) ->
     isWithinBounds = ({ x }) => x >= @xMin and x <= @xMax
-    highestPoint   = pipeline(filter(isWithinBounds), maxBy((p) -> p.y))(pen.getPoints())
-    penYMax        = highestPoint?.y ? 0
+    penYMax        = pipeline(filter(isWithinBounds), map((p) -> p.y), maxBy(id), fold(-> 0)(id))(pen.getPoints())
     if penYMax > @yMax and @isAutoplotting
       @yMax = penYMax
     @_resize()

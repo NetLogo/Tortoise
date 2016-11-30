@@ -4,9 +4,9 @@ NLType     = require('./typechecker')
 Comparator = require('util/comparator')
 stableSort = require('util/stablesort')
 
-{ filter, foldl, head, isEmpty, map } = require('brazierjs/array')
-{ pipeline }                          = require('brazierjs/function')
-{ pairs }                             = require('brazierjs/object')
+{ filter, foldl, isEmpty, map } = require('brazierjs/array')
+{ pipeline }                    = require('brazierjs/function')
+{ pairs }                       = require('brazierjs/object')
 
 NumberKey = "number"
 StringKey = "string"
@@ -48,9 +48,10 @@ module.exports =
           acc[key].push(pair)
           acc
 
+      first              = ([x, _]) -> x
       baseAcc            = initializeDictionary([NumberKey, StringKey, AgentKey, OtherKey], -> [])
       typeNameToPairsMap = foldl(mapBuildFunc)(baseAcc)(agents)
-      typesInMap         = pipeline(pairs, filter(([_, x]) -> not isEmpty(x)), map(head))(typeNameToPairsMap)
+      typesInMap         = pipeline(pairs, filter(([_, x]) -> not isEmpty(x)), map(first))(typeNameToPairsMap)
 
       [typeName, sortingFunc] =
         switch typesInMap.join(" ")
@@ -61,4 +62,4 @@ module.exports =
 
       agentValuePairs = typeNameToPairsMap[typeName]
 
-      map(head)(stableSort(agentValuePairs)(sortingFunc))
+      map(first)(stableSort(agentValuePairs)(sortingFunc))

@@ -1,8 +1,8 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-{ all, head, length, map } = require('brazierjs/array')
-{ pipeline }               = require('brazierjs/function')
-{ rangeUntil }             = require('brazierjs/number')
+{ all, length, map } = require('brazierjs/array')
+{ pipeline }         = require('brazierjs/function')
+{ rangeUntil }       = require('brazierjs/number')
 
 Exception = require('util/exception')
 
@@ -42,11 +42,11 @@ module.exports = {
   # [Result] @ (Product => Result, Array[Array[Any]], String) => Array[Result]
   _processLists: (fn, lists, primName) ->
     numLists = lists.length
-    h        = lists[0]
+    head     = lists[0]
     if numLists is 1
-      pipeline(head, map(fn))(lists)
-    else if all((l) -> l.length is h.length)(lists)
-      for i in [0...h.length]
+      map(fn)(head)
+    else if all((l) -> l.length is head.length)(lists)
+      for i in [0...head.length]
         fn(map((list) -> list[i])(lists)...)
     else
       throw new Error("All the list arguments to #{primName.toUpperCase()} must be the same length.")
