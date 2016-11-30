@@ -16,7 +16,6 @@ stableSort       = require('util/stablesort')
 { all, exists, filter, find, findIndex, foldl, head, isEmpty, length: arrayLength, last, sortBy, tail } = require('brazierjs/array')
 { id, pipeline }                                                                                        = require('brazierjs/function')
 
-# For most of this stuff, Lodashing it is no good, since Lodash doesn't handle strings correctly.  Could use Underscore.string... --JAB (5/5/14)
 module.exports =
   class ListPrims
 
