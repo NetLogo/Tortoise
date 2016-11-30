@@ -94,7 +94,7 @@ trait ReporterPrims extends PrimUtils {
       case _: prim._unaryminus         => s" -${arg(0)}" // The space is important, because these can be nested --JAB (6/12/14)
       case _: prim._not                => s"!${arg(0)}"
       case _: prim._count              => s"${arg(0)}.size()"
-      case _: prim._any                => s"${arg(0)}.nonEmpty()"
+      case _: prim._any                => s"!${arg(0)}.isEmpty()"
       case _: prim._word               => ("''" +: args).map(arg => s"Dump($arg)").mkString("(", " + ", ")")
       case _: prim._of                 => generateOf(r)
       case _: prim.etc._ifelsevalue    => s"(${arg(0)} ? ${arg(1)} : ${arg(2)})"

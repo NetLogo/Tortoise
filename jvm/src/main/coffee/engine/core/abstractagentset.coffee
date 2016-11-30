@@ -3,27 +3,26 @@
 Nobody         = require('./nobody')
 projectionSort = require('./projectionsort')
 NLType         = require('./typechecker')
-Seq            = require('util/seq')
+Iterator       = require('util/iterator')
 Shufflerator   = require('util/shufflerator')
 stableSort     = require('util/stablesort')
 
-{ foldl, map } = require('brazierjs/array')
-{ pipeline }   = require('brazierjs/function')
-{ keys }       = require('brazierjs/object')
+{ all, contains, exists, filter, foldl, forEach, map } = require('brazierjs/array')
+{ pipeline                                           } = require('brazierjs/function')
+{ keys                                               } = require('brazierjs/object')
 
 { DeathInterrupt: Death } = require('util/exception')
 
 # Never instantiate this class directly --JAB (5/7/14)
 module.exports =
-  class AbstractAgentSet extends Seq
+  class AbstractAgentSet
 
     @_nextInt:     undefined # (Number) => Number
     @_selfManager: undefined # SelfManager
     @_world:       undefined # World
 
     # (Array[T], String, String) => AbstractAgentSet
-    constructor: (agents, @_agentTypeName, @_specialName) ->
-      super(agents)
+    constructor: (@_agentArr, @_agentTypeName, @_specialName) ->
 
     # (() => Boolean) => AbstractAgentSet[T]
     agentFilter: (f) ->
@@ -31,7 +30,7 @@ module.exports =
 
     # (() => Boolean) => Boolean
     agentAll: (f) ->
-      @every(@_lazyGetSelfManager().askAgent(f))
+      all(@_lazyGetSelfManager().askAgent(f))(@toArray())
 
     # (() => Any, Boolean) => Unit
     ask: (f, shouldShuffle) ->
@@ -57,13 +56,38 @@ module.exports =
       getPatchAt = (x, y) => @_lazyGetWorld().getPatchAt(x, y)
       require('./agentset/atpoints')(getSelf, getPatchAt).call(this, points)
 
+    # (T) => Boolean
+    contains: (item) ->
+      contains(item)(@toArray())
+
     # (Array[T]) => AbstractAgentSet[T]
     copyWithNewAgents: (agents) ->
       @_generateFrom(agents)
 
+    # ((T) => Boolean) => Boolean
+    exists: (pred) ->
+      exists(pred)(@toArray())
+
+    # ((T) => Boolean) => Seq[T]
+    filter: (pred) ->
+      @_generateFrom(filter(pred)(@toArray()))
+
+    # ((T) => Unit) => Unit
+    forEach: (f) ->
+      forEach(f)(@toArray())
+      return
+
     # () => String
     getSpecialName: ->
       @_specialName
+
+    # () => Boolean
+    isEmpty: ->
+      @size() is 0
+
+    # () => Iterator
+    iterator: ->
+      new Iterator(@_agentArr)
 
     # (() => Number) => AbstractAgentSet[T]
     maxesBy: (f) ->
@@ -115,6 +139,10 @@ module.exports =
     shufflerator: ->
       new Shufflerator(@toArray(), ((agent) -> agent?.id >= 0), @_lazyGetNextIntFunc())
 
+    # () => Number
+    size: ->
+      @toArray().length
+
     # () => Array[T]
     sort: ->
       if @isEmpty()
@@ -128,8 +156,8 @@ module.exports =
 
     # () => Array[T]
     toArray: ->
-      @_items = @iterator().toArray() # Prune out dead agents --JAB (7/21/14)
-      @_items[..]
+      @_agentArr = @iterator().toArray() # Prune out dead agents --JAB (7/21/14)
+      @_agentArr[..]
 
     # () => String
     toString: ->
@@ -199,7 +227,7 @@ module.exports =
           else
             [currentBest, currentWinners]
 
-      [[], winners] = @foldl(foldFunc, [worstPossible, []])
+      [[], winners] = foldl(foldFunc)([worstPossible, []])(@toArray())
       winners
 
     # [U] @ (() => U) => Array[T]
@@ -240,8 +268,8 @@ module.exports =
     _lazyGetWorld: ->
       if @_world?
         @_world
-      else if @_items[0]?
-        @_world = @_items[0].world
+      else if @_agentArr[0]?
+        @_world = @_agentArr[0].world
         @_world
       else
         undefined
