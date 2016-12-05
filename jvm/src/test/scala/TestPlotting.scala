@@ -353,6 +353,21 @@ class TestPlotting extends FunSuite with PlottingHelpers {
 
   }
 
+  testPlotting("setup-plots") { (nashorn) =>
+
+    implicit val n    = nashorn
+    implicit val axis = Y
+
+    setPlot(Plots.ClassPlot.name)
+    setup()
+    assertAxisRangeIs(0, 250)
+    setAxisRange(4, 8)
+    assertAxisRangeIs(4, 8)
+    setupPlots()
+    assertAxisRangeIs(0, 250)
+
+  }
+
 }
 
 trait PlottingHelpers {
@@ -524,6 +539,8 @@ trait PlottingHelpers {
   protected def setDisplayMode(mode: DisplayMode)(implicit n: Nashorn) = evalNLCommand(s"set-plot-pen-mode ${mode.toInt}")
   protected def setPlot(name: String)            (implicit n: Nashorn) = evalNLCommand(s"""set-current-plot "$name"""")
   protected def setPen(name: String)             (implicit n: Nashorn) = evalNLCommand(s"""set-current-plot-pen "$name"""")
+  protected def setup()                          (implicit n: Nashorn) = evalNLCommand("setup")
+  protected def setupPlots()                     (implicit n: Nashorn) = evalNLCommand("setup-plots")
 
   protected def setAxisRange(min: Double, max: Double)(implicit n: Nashorn, axis: Axis) =
     evalNLCommand(s"set-plot-${axis.toAxisStr}-range $min $max")

@@ -148,7 +148,7 @@ module.exports = class PlotManager
 
   # () => Unit
   setupPlots: =>
-    @_forAllPlots((plot) -> plot.update())
+    @_forAllPlots((plot) -> plot.setup())
     return
 
   # (Number, Number) => Unit
