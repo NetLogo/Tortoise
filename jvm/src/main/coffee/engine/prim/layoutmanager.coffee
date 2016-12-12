@@ -119,17 +119,17 @@ module.exports =
           div = Math.max((degCounts[i] + degCounts[j]) / 2.0, 1.0)
 
           [dx, dy] =
-          if t2.xcor is t1.xcor and t2.ycor is t1.ycor
-            ang   = 360 * @_nextDouble()
-            newDX = -(rep / div * NLMath.squash(NLMath.sin(ang)))
-            newDY = -(rep / div * NLMath.squash(NLMath.cos(ang)))
-            [newDX, newDY]
-          else
-            dist  = t1.distance(t2)
-            f     = rep / (dist * dist) / div
-            newDX = -(f * (t2.xcor - t1.xcor) / dist)
-            newDY = -(f * (t2.ycor - t1.ycor) / dist)
-            [newDX, newDY]
+            if t2.xcor is t1.xcor and t2.ycor is t1.ycor
+              ang   = 360 * @_nextDouble()
+              newDX = -(rep / div * NLMath.squash(NLMath.sin(ang)))
+              newDY = -(rep / div * NLMath.squash(NLMath.cos(ang)))
+              [newDX, newDY]
+            else
+              dist  = t1.distance(t2)
+              f     = rep / (dist * dist) / div
+              newDX = -(f * (t2.xcor - t1.xcor) / dist)
+              newDY = -(f * (t2.ycor - t1.ycor) / dist)
+              [newDX, newDY]
 
           ax[i] += dx
           ay[i] += dy
