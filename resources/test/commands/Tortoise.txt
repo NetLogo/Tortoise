@@ -35,3 +35,8 @@ MapExtension
   nlmap:get (nlmap:remove (nlmap:add basic "grapes" 9001) "grapes") "oranges" => 6
   nlmap:get (nlmap:remove (nlmap:add basic "grapes" 9001) "apples") "grapes" => 9001
   nlmap:get (nlmap:remove (nlmap:add basic "grapes" 9001) "apples") "oranges" => 6
+
+CodapExtension
+  extensions [codap]
+  O> codap:init ([[] ->])
+  O> codap:call (nlmap:from-list [])
