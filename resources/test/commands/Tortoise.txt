@@ -7,3 +7,31 @@
 Smoke
   2 + 2 => 4
   netlogo-web? => true
+
+MapExtension
+  extensions [nlmap]
+  globals [ basic ]
+  O> set basic (nlmap:from-list [["apples" 4] ["oranges" 6]])
+  nlmap:to-list (nlmap:from-list []) => []
+  nlmap:to-list (nlmap:from-list [["apples" 4] ["oranges" 6]]) => [["apples" 4] ["oranges" 6]]
+  nlmap:to-list (nlmap:add basic "grapes" 9001) => [["apples" 4] ["oranges" 6] ["grapes" 9001]]
+  nlmap:to-list (nlmap:remove basic "apples") => [["oranges" 6]]
+  nlmap:to-list (nlmap:remove basic "oranges") => [["apples" 4]]
+  nlmap:to-list (nlmap:remove basic "grapes") => [["apples" 4] ["oranges" 6]]
+  nlmap:to-list (nlmap:remove (nlmap:add basic "grapes" 9001) "grapes") => [["apples" 4] ["oranges" 6]]
+  nlmap:is-map? basic => true
+  nlmap:is-map? [] => false
+  nlmap:is-map? 49 => false
+  nlmap:is-map? true => false
+  nlmap:is-map? false => false
+  nlmap:is-map? "string" => false
+  nlmap:is-map? nobody => false
+  nlmap:get basic "apples" => 4
+  nlmap:get basic "oranges" => 6
+  nlmap:get (nlmap:remove basic "apples") "oranges" => 6
+  nlmap:get (nlmap:add basic "grapes" 9001) "grapes" => 9001
+  nlmap:get (nlmap:add basic "grapes" 9001) "oranges" => 6
+  nlmap:get (nlmap:remove (nlmap:add basic "grapes" 9001) "grapes") "apples" => 4
+  nlmap:get (nlmap:remove (nlmap:add basic "grapes" 9001) "grapes") "oranges" => 6
+  nlmap:get (nlmap:remove (nlmap:add basic "grapes" 9001) "apples") "grapes" => 9001
+  nlmap:get (nlmap:remove (nlmap:add basic "grapes" 9001) "apples") "oranges" => 6

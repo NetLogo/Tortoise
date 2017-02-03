@@ -33,12 +33,26 @@ private trait Extension {
 
 }
 
+private object NLMapExtension extends Extension {
+
+  private val fromList = ExtensionPrim(extReporter(List(    ListType),                           WildcardType), "from-list")
+  private val   toList = ExtensionPrim(extReporter(List(WildcardType),                               ListType),   "to-list")
+  private val    isMap = ExtensionPrim(extReporter(List(WildcardType),                            BooleanType),   "is-map?")
+  private val      get = ExtensionPrim(extReporter(List(WildcardType, StringType),               WildcardType),       "get")
+  private val   remove = ExtensionPrim(extReporter(List(WildcardType, StringType),               WildcardType),    "remove")
+  private val      add = ExtensionPrim(extReporter(List(WildcardType, StringType, WildcardType), WildcardType),       "add")
+
+  override def getName : String             = "nlmap"
+  override def getPrims: Seq[ExtensionPrim] = Seq(fromList, toList, isMap, get, remove, add)
+
+}
+
 object NLWExtensionManager extends ExtensionManager {
 
   import org.nlogo.core.{ CompilerException, Token }
 
   private val primNameToPrimMap: Map[String, Primitive] = {
-    val extensions   = Seq[Extension]()
+    val extensions   = Seq(NLMapExtension)
     val extPrimPairs = extensions.flatMap(extension => extension.getPrims.map(prim => (extension.getName, prim)))
     val shoutedPairs = extPrimPairs.map { case (extName, ExtensionPrim(prim, name)) => (s"$extName:$name".toUpperCase, prim) }
     shoutedPairs.toMap
