@@ -91,7 +91,10 @@ object Compiler extends CompilerLike {
                   (implicit compilerFlags: CompilerFlags):
                   (Seq[ProcedureDefinition], Program, ProceduresMap) = {
     val (defs, results): (Seq[ProcedureDefinition], StructureResults) =
-      frontEnd.frontEnd(model.code, program = program, oldProcedures = oldProcedures)
+      frontEnd.frontEnd(model.code,
+                        program = program,
+                        oldProcedures = oldProcedures,
+                        extensionManager = NLWExtensionManager)
     (defs, results.program, results.procedures)
   }
 
@@ -148,7 +151,7 @@ object Compiler extends CompilerLike {
     val header  = SourceWrapping.getHeader(AgentKind.Observer, commands)
     val footer  = SourceWrapping.getFooter(commands)
     val wrapped = s"$header$logo$footer"
-    val (defs, _) = frontEnd.frontEnd(wrapped, oldProcedures = oldProcedures, program = program)
+    val (defs, _) = frontEnd.frontEnd(wrapped, oldProcedures = oldProcedures, program = program, extensionManager = NLWExtensionManager)
     if (commands)
       handlers.commands(defs.head.statements)
     else

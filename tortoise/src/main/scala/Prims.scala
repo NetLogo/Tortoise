@@ -165,6 +165,11 @@ trait ReporterPrims extends PrimUtils {
       case rr: prim.etc._runresult =>
         s"Prims.runResult(${args.mkString(", ")})"
 
+      case x: prim._externreport =>
+        val ExtensionPrimRegex = """_externreport\(([^:]+):([^)]+)\)""".r
+        val ExtensionPrimRegex(extName, primName) = x.toString
+        s"Extensions[${jsString(extName)}].prims[${jsString(primName)}]($commaArgs)"
+
       case _ if compilerFlags.generateUnimplemented =>
         generateNotImplementedStub(r.reporter.getClass.getName.drop(1))
       case _                                        =>
@@ -237,6 +242,10 @@ trait CommandPrims extends PrimUtils {
       case _: prim.etc._foreach          =>
         val lists = args.init.mkString(", ")
         s"Tasks.forEach(${arg(s.args.size - 1)}, $lists);"
+      case x: prim._extern =>
+        val ExtensionPrimRegex = """_extern\(([^:]+):([^)]+)\)""".r
+        val ExtensionPrimRegex(extName, primName) = x.toString
+        s"Extensions[${jsString(extName)}].prims[${jsString(primName)}]($commaArgs);"
       case _ if compilerFlags.generateUnimplemented =>
         s"${generateNotImplementedStub(s.command.getClass.getName.drop(1))};"
       case _                                        =>

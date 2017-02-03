@@ -10,6 +10,7 @@ require('./agentmodel')
 require('./engine/workspace')
 require('./engine/prim/prims')
 require('./engine/prim/tasks')
+require('./extensions/all')
 require('./util/notimplemented')
 
 module.exports = ->

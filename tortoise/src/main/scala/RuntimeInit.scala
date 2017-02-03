@@ -56,7 +56,11 @@ class RuntimeInit(program: Program, model: Model, onTickFunction: String = jsFun
     JsRequire("AgentModel",     "agentmodel"),
     JsRequire("Meta",           "meta"),
     JsRequire("Random",         "shim/random"),
-    JsRequire("StrictMath",     "shim/strictmath"))
+    JsRequire("StrictMath",     "shim/strictmath"),
+
+    JsRequire("Extensions",     "extensions/all")
+
+  )
 
   private def genBreedObjects: String = {
     val breedObjects = (program.breeds.values ++ program.linkBreeds.values).map {
