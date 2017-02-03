@@ -33,12 +33,12 @@ grunt := {
   installGrunt.value
   if (allJSSources.value exists (_.newerThan(targetJS)))
     Process("grunt", baseDirectory.value).!(streams.value.log)
-  Seq() // Wrong, but it works how I want it to...
+  Seq()
 }
 
-grunt <<= grunt.dependsOn(npmInstall)
+grunt := (grunt.dependsOn(npmInstall)).value
 
-resourceGenerators in Compile <+= grunt
+resourceGenerators in Compile += grunt.taskValue
 
 watchSources ++= allJSSources.value
 
