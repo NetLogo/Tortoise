@@ -91,6 +91,7 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
             Dump.logoObject(
               evalJS(compiledJS))
           }
+          ()
         }
       case _: RuntimeError =>
         try {
@@ -169,6 +170,8 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
 
       assert(headlessRNGState == nashornRNGState, "divergent RNG state")
 
+      ()
+
     }
   }
 
@@ -225,9 +228,10 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
   }
 
   def open(path: String, dimensions: Option[(Int, Int, Int, Int)]) {
+    import scala.io.Codec.UTF8
     require(!opened)
     super.open(path)
-    val model = ModelReader.parseModel(FileIO.file2String(path), workspace.parser, Map())
+    val model = ModelReader.parseModel(FileIO.fileToString(path)(UTF8), workspace.parser, Map())
 
     val finalModel = dimensions match {
       case None => model

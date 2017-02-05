@@ -61,8 +61,10 @@ class WidgetCompilerTest extends FunSuite {
 
   def compileWidget(w: Widget): CompiledWidget = compileWidgets(w).head
 
-  def assertHasWidgetData(compiledWidget: CompiledWidget, widgetData: Widget): Unit =
+  def assertHasWidgetData(compiledWidget: CompiledWidget, widgetData: Widget): Unit = {
     assert(compiledWidget.widgetData == widgetData)
+    ()
+  }
 
   def assertIsSuccess(compiledWidget: CompiledWidget): Unit =
     compiledWidget.widgetCompilation.fold(_ => fail("expected success"), _ => ())
@@ -70,18 +72,22 @@ class WidgetCompilerTest extends FunSuite {
   def assertIsFailure(compiledWidget: CompiledWidget): Unit =
     compiledWidget.widgetCompilation.fold(_ => (), _ => fail("expected failure"))
 
-  def assertHasErrors(compiledWidget: CompiledWidget, errors: String*): Unit =
+  def assertHasErrors(compiledWidget: CompiledWidget, errors: String*): Unit = {
     assert(
       compiledWidget.widgetCompilation.fold(
         es      =>
           errors.forall(
             name => es.list.toList.exists(_.getMessage.contains(name))),
         success => fail("compilation should have failed")))
+    ()
+  }
 
-  def assertContains(jsObject: JavascriptObject, jsonObject: JsObject): Unit =
+  def assertContains(jsObject: JavascriptObject, jsonObject: JsObject): Unit = {
     assert(
       jsObject.jsonSerializableSubobject.props.filterKeys(jsonObject.props.keySet.contains) ==
         jsonObject.props)
+    ()
+  }
 
   def assertHasFunctions(jsObject: JavascriptObject, values: Map[String, JsFunction]): Unit =
     values.foreach {

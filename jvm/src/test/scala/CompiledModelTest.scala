@@ -126,6 +126,7 @@ class CompiledModelTest extends FunSuite {
     val actualCode   =
       genActualValidation(code) valueOr { case NonEmptyList(head, _) => fail(codeFailedWithError(code, head)) }
     assertResult(expectedCode)(actualCode)
+    ()
   }
 
   private def isInvalid(code:                String,
@@ -148,6 +149,7 @@ class CompiledModelTest extends FunSuite {
     assertResult(expected.start)(observed.start)
     assertResult(expected.end)(observed.end)
     assertResult(expected.filename)(observed.filename)
+    ()
   }
 
   private def unsafeGenModelFromCode(code: String): CompiledModel =

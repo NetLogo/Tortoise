@@ -14,11 +14,11 @@ import
   org.mozilla.javascript.{ ConsString, JavaScriptException }
 
 import
-  org.scalatest.{ FunSuite, TestFailedException }
+  org.scalatest.{ exceptions, FunSuite },
+    exceptions.TestFailedException
 
 import
-  scala.{ collection, io, util },
-    collection.JavaConversions._,
+  scala.{ io, util },
     io.Source,
     util.matching.Regex
 
@@ -30,8 +30,9 @@ class ModelDumpTests extends FunSuite {
     rhinoEngine.eval(engineSource)
     rhinoEngine.function("function(s) { return (new BrowserCompiler()).fromNlogo(s); }") andThen {
       compilationObject =>
+        import scala.collection.JavaConverters.mapAsScalaMap
         val compilation  = compilationObject.asInstanceOf[JMap[String, AnyRef]]
-        val widgetString = compilation("widgets").asInstanceOf[ConsString].toString
+        val widgetString = mapAsScalaMap(compilation)("widgets").asInstanceOf[ConsString].toString
         val widgets      = rhinoEngine.eval(widgetString).asInstanceOf[JList[AnyRef]]
         (compilation, widgets)
     }
@@ -40,14 +41,18 @@ class ModelDumpTests extends FunSuite {
   for (path <- Model.models.map(_.path).distinct) {
     test(s"outputs correct model javascript for ${path}") {
       try {
-        val modelContents                = Source.fromFile(path).mkString
-        val (compilationResult, widgets) = compilationFunction(Array[Object](modelContents))
-        val modelResult = compilationResult("model").asInstanceOf[JMap[String,AnyRef]]
+        import scala.collection.JavaConverters.{ collectionAsScalaIterable, mapAsScalaMap }
+        val modelContents                  = Source.fromFile(path).mkString
+        val (compilationResultJ, widgetsJ) = compilationFunction(Array[Object](modelContents))
+        val compilationResult              = mapAsScalaMap(compilationResultJ)
+        val widgets                        = collectionAsScalaIterable(widgetsJ)
+        val modelResult                    = compilationResult("model").asInstanceOf[JMap[String,AnyRef]]
         assert(modelResult.get("success").asInstanceOf[Boolean])
 
         val genaratedJs = cleanJsNumbers(modelResult.get("result").toString.trim)
         loggingGeneratedJs(genaratedJs, path) {
           assertResult(archivedCompilation(path))(genaratedJs)
+          ()
         }
 
         assert(widgets.nonEmpty)

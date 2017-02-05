@@ -65,6 +65,7 @@ class TortoiseLoaderTest extends FunSuite {
 
   def testCompile(expectedCompilation: String, components: TortoiseSymbol*): Unit = {
     assertResult(expectedCompilation)(integrateSymbols(components).dropRight(1)) // drop trailing \n
+    ()
   }
 
   def testFails(components: TortoiseSymbol*): Unit = {
@@ -128,7 +129,7 @@ class TortoiseLoaderPropertyTests extends FunSuite with GeneratorDrivenPropertyC
   val requires =
     for (s <- compilationIdent) yield JsRequire(s, s"tortoise/$s")
 
-  val requireSets = Gen.listOf { requires }
+  val requireSets = Gen.nonEmptyListOf { requires }
 
   val declarationAndRequireSets = requireSets.flatMap { (rs) =>
     Gen.listOf {

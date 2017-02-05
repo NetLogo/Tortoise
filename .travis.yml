@@ -11,7 +11,7 @@ cache:
 jdk: oraclejdk8
 node_js: "5"
 language: scala
-scala: 2.11.8
+scala: 2.12.1
 env:
   global:
     - TRAVIS=true
