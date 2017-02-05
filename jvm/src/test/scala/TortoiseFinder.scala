@@ -69,7 +69,8 @@ class TestReporters extends ReporterTests with TortoiseFinder {
   import Freebies._
   override val freebies = Map(
     "Version::Version_2D" -> "Assumes JVM NetLogo version numbers"
-  ) ++ evalNotSupportedReporters ++ incErrorDetectReporters ++ cmdTaskRepMismatchCommands
+  ) ++ evalNotSupportedReporters ++ incErrorDetectReporters ++ cmdTaskRepMismatchCommands ++
+  fixedOnHexyBranchReporters
 }
 
 class TestCommands extends CommandTests with TortoiseFinder {
@@ -78,7 +79,7 @@ class TestCommands extends CommandTests with TortoiseFinder {
     // requires handling of non-local exit (see in JVM NetLogo: `NonLocalExit`, `_report`, `_foreach`, `_run`)
     "Every::EveryLosesScope"  -> "NetLogo Web does not support distinct jobs"
   ) ++ incErrorDetectCommands ++ emptyInitBlockCommands ++
-       evalNotSupportedCommands ++ lameCommands
+       evalNotSupportedCommands ++ lameCommands ++ fixedOnHexyBranchCommands
 }
 
 private[tortoise] object Freebies {
@@ -88,9 +89,11 @@ private[tortoise] object Freebies {
   def evalNotSupportedCommands   = asFreebieMap(evalNotSupportedCommandNames,   evalNotSupportedStr)
   def cmdTaskRepMismatchCommands = asFreebieMap(cmdTaskRepMismatchCommandNames, cmdTaskRepMismatchStr)
   def lameCommands               = asFreebieMap(lameCommandNames,               lameCommandStr)
+  def fixedOnHexyBranchCommands  = asFreebieMap(fixedOnHexyBranchCommandNames,  fixedOnHexyBranchStr)
 
   def incErrorDetectReporters    = asFreebieMap(incErrorDetectReporterNames,    incErrorDetectStr)
   def evalNotSupportedReporters  = asFreebieMap(evalNotSupportedReporterNames,  evalNotSupportedStr)
+  def fixedOnHexyBranchReporters = asFreebieMap(fixedOnHexyBranchReporterNames, fixedOnHexyBranchStr)
 
   private def asFreebieMap(names: Seq[String], msg: String) = names.map(_ -> msg).toMap
 
@@ -194,6 +197,22 @@ private[tortoise] object Freebies {
     "TypeChecking::AgentClassChecking3a",
     "TypeChecking::AgentClassChecking3b"
     )
+
+  private val fixedOnHexyBranchStr = "this scoping/early abort test is fixed on the 'wip-hexy' branch"
+  private val fixedOnHexyBranchReporterNames = Seq(
+    "CommandLambda::LoopBindings1",
+    "CommandLambda::StopFromLambda2",
+    "CommandLambda::ReportFromLambda2"
+  )
+  private val fixedOnHexyBranchCommandNames = Seq(
+    "Stop::StopFromForeach1",
+    "Stop::StopFromForeach2",
+    "Stop::StopFromForeach3",
+    "Stop::StopFromForeachInsideReporterProcedure",
+    "Stop::StopFromNestedForeachInsideReporterProcedure",
+    "Stop::ReportFromForeachInsideProcedure",
+    "Stop::StopLambda1"
+  )
 
   // perhaps never to be supported
   private val evalNotSupportedStr = "run/runresult on strings not supported"
