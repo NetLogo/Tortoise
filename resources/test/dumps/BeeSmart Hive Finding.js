@@ -2,6 +2,7 @@ var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
+var Extensions = tortoise_require('extensions/all');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
 var Meta = tortoise_require('meta');
@@ -133,7 +134,7 @@ var procedures = (function() {
       }, true);
     }, true);
     var i = 0;
-    for (var _index_3050_3056 = 0, _repeatcount_3050_3056 = StrictMath.floor(world.turtleManager.turtlesOfBreed("SITES").size()); _index_3050_3056 < _repeatcount_3050_3056; _index_3050_3056++){
+    for (var _index_3202_3208 = 0, _repeatcount_3202_3208 = StrictMath.floor(world.turtleManager.turtlesOfBreed("SITES").size()); _index_3202_3208 < _repeatcount_3202_3208; _index_3202_3208++){
       world.turtleManager.getTurtleOfBreed("SITES", i).ask(function() {
         SelfManager.self().setVariable("quality", ListPrims.item(i, world.observer.getGlobal("quality-list")));
         SelfManager.self().setVariable("label", SelfManager.self().getVariable("quality"));
@@ -185,7 +186,9 @@ var procedures = (function() {
   procs["SETUP-TASKS"] = temp;
   temp = (function() {
     world.observer.setGlobal("watch-dance-task", Tasks.commandTask(function() {
-      var taskArguments = arguments;
+      if (arguments.length < 0) {
+        throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
+      }
       if (Prims.gt(SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("SCOUTS").agentFilter(function() { return SelfManager.self().getVariable("piping?"); }), 3).size(), 0)) {
         SelfManager.self().setVariable("target", ListPrims.oneOf(world.turtleManager.turtlesOfBreed("SCOUTS").agentFilter(function() { return SelfManager.self().getVariable("piping?"); })).projectionBy(function() { return SelfManager.self().getVariable("target"); }));
         SelfManager.self().setVariable("color", SelfManager.self().getVariable("target").projectionBy(function() { return SelfManager.self().getVariable("color"); }));
@@ -223,7 +226,9 @@ var procedures = (function() {
   procs["WATCH-DANCE"] = temp;
   temp = (function() {
     world.observer.setGlobal("discover-task", Tasks.commandTask(function() {
-      var taskArguments = arguments;
+      if (arguments.length < 0) {
+        throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
+      }
       if (Prims.lt(SelfManager.self().getVariable("bee-timer"), 0)) {
         SelfManager.self().setVariable("next-task", world.observer.getGlobal("go-home-task"));
         SelfManager.self().setVariable("task-string", "going-home");
@@ -262,7 +267,9 @@ var procedures = (function() {
   procs["DISCOVER"] = temp;
   temp = (function() {
     world.observer.setGlobal("inspect-hive-task", Tasks.commandTask(function() {
-      var taskArguments = arguments;
+      if (arguments.length < 0) {
+        throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
+      }
       if (Prims.lt(SelfManager.self().getVariable("bee-timer"), 0)) {
         SelfManager.self().setVariable("next-task", world.observer.getGlobal("go-home-task"));
         SelfManager.self().setVariable("task-string", "going-home");
@@ -275,9 +282,10 @@ var procedures = (function() {
           SelfManager.self().fd(1);
         }
         SelfManager.self().setVariable("on-site?", true);
-        if (Prims.gt(SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("SCOUTS").agentFilter(function() {
+        var nearbyScouts = SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("SCOUTS").agentFilter(function() {
           return (SelfManager.self().getVariable("on-site?") && Prims.equality(SelfManager.self().getVariable("target"), SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("target"); })));
-        }), 3).size(), world.observer.getGlobal("quorum"))) {
+        }), 3);
+        if (Prims.gt(nearbyScouts.size(), world.observer.getGlobal("quorum"))) {
           SelfManager.self().setVariable("next-task", world.observer.getGlobal("go-home-task"));
           SelfManager.self().setVariable("task-string", "going-home");
           SelfManager.self().setVariable("on-site?", false);
@@ -298,7 +306,9 @@ var procedures = (function() {
   procs["INSPECT-HIVE"] = temp;
   temp = (function() {
     world.observer.setGlobal("go-home-task", Tasks.commandTask(function() {
-      var taskArguments = arguments;
+      if (arguments.length < 0) {
+        throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
+      }
       if (Prims.lt(SelfManager.self().distance(SelfManager.self().getVariable("my-home")), 1)) {
         if (SelfManager.self().getVariable("no-discovery?")) {
           SelfManager.self().setVariable("next-task", world.observer.getGlobal("watch-dance-task"));
@@ -329,7 +339,9 @@ var procedures = (function() {
   procs["GO-HOME"] = temp;
   temp = (function() {
     world.observer.setGlobal("dance-task", Tasks.commandTask(function() {
-      var taskArguments = arguments;
+      if (arguments.length < 0) {
+        throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
+      }
       if (Prims.gt(SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("SCOUTS").agentFilter(function() { return SelfManager.self().getVariable("piping?"); }), 3).size(), 0)) {
         SelfManager.self().penManager.raisePen();
         SelfManager.self().setVariable("next-task", world.observer.getGlobal("pipe-task"));
@@ -370,7 +382,7 @@ var procedures = (function() {
             else {
               SelfManager.self().penManager.raisePen();
             }
-            for (var _index_14706_14712 = 0, _repeatcount_14706_14712 = StrictMath.floor(2); _index_14706_14712 < _repeatcount_14706_14712; _index_14706_14712++){
+            for (var _index_14598_14604 = 0, _repeatcount_14598_14604 = StrictMath.floor(2); _index_14598_14604 < _repeatcount_14598_14604; _index_14598_14604++){
               procedures["WAGGLE"]();
               procedures["MAKE-SEMICIRCLE"]();
             }
@@ -384,7 +396,9 @@ var procedures = (function() {
   procs["DANCE"] = temp;
   temp = (function() {
     world.observer.setGlobal("re-visit-task", Tasks.commandTask(function() {
-      var taskArguments = arguments;
+      if (arguments.length < 0) {
+        throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
+      }
       if (Prims.gt(SelfManager.self().getVariable("bee-timer"), 0)) {
         SelfManager.self().setVariable("bee-timer", (SelfManager.self().getVariable("bee-timer") - 1));
       }
@@ -410,7 +424,9 @@ var procedures = (function() {
   procs["RE-VISIT"] = temp;
   temp = (function() {
     world.observer.setGlobal("pipe-task", Tasks.commandTask(function() {
-      var taskArguments = arguments;
+      if (arguments.length < 0) {
+        throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
+      }
       procedures["MOVE-AROUND"]();
       if (Prims.equality(SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("SCOUTS").agentFilter(function() { return SelfManager.self().getVariable("piping?"); }), 5).size(), SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("SCOUTS"), 5).size())) {
         SelfManager.self().setVariable("bee-timer", (SelfManager.self().getVariable("bee-timer") - 1));
@@ -425,7 +441,9 @@ var procedures = (function() {
   procs["PIPE"] = temp;
   temp = (function() {
     world.observer.setGlobal("take-off-task", Tasks.commandTask(function() {
-      var taskArguments = arguments;
+      if (arguments.length < 0) {
+        throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
+      }
       if (Prims.gt(SelfManager.self().distance(SelfManager.self().getVariable("target")), 1)) {
         SelfManager.self().face(SelfManager.self().getVariable("target"));
         SelfManager.self().fd(1);
@@ -472,7 +490,7 @@ var procedures = (function() {
     if (Prims.equality(SelfManager.self().getVariable("circle-switch"), 1)) {
       SelfManager.self().face(SelfManager.self().getVariable("target"));
       SelfManager.self().right(-90);
-      for (var _index_17139_17145 = 0, _repeatcount_17139_17145 = StrictMath.floor(numOfTurns); _index_17139_17145 < _repeatcount_17139_17145; _index_17139_17145++){
+      for (var _index_17104_17110 = 0, _repeatcount_17104_17110 = StrictMath.floor(numOfTurns); _index_17104_17110 < _repeatcount_17104_17110; _index_17104_17110++){
         SelfManager.self().right(-anglePerTurn);
         SelfManager.self().fd((Prims.div(semicircle, 180) * anglePerTurn));
       }
@@ -480,7 +498,7 @@ var procedures = (function() {
     if (Prims.equality(SelfManager.self().getVariable("circle-switch"), -1)) {
       SelfManager.self().face(SelfManager.self().getVariable("target"));
       SelfManager.self().right(90);
-      for (var _index_17286_17292 = 0, _repeatcount_17286_17292 = StrictMath.floor(numOfTurns); _index_17286_17292 < _repeatcount_17286_17292; _index_17286_17292++){
+      for (var _index_17257_17263 = 0, _repeatcount_17257_17263 = StrictMath.floor(numOfTurns); _index_17257_17263 < _repeatcount_17257_17263; _index_17257_17263++){
         SelfManager.self().right(anglePerTurn);
         SelfManager.self().fd((Prims.div(semicircle, 180) * anglePerTurn));
       }
@@ -497,7 +515,7 @@ var procedures = (function() {
     var waggleSwitch = 1;
     SelfManager.self().right(-60);
     SelfManager.self().fd(0.4);
-    for (var _index_17864_17870 = 0, _repeatcount_17864_17870 = StrictMath.floor(Prims.div((SelfManager.self().getVariable("dist-to-hive") - 2), 2)); _index_17864_17870 < _repeatcount_17864_17870; _index_17864_17870++){
+    for (var _index_17921_17927 = 0, _repeatcount_17921_17927 = StrictMath.floor(Prims.div((SelfManager.self().getVariable("dist-to-hive") - 2), 2)); _index_17921_17927 < _repeatcount_17921_17927; _index_17921_17927++){
       if (Prims.equality(waggleSwitch, 1)) {
         SelfManager.self().right(120);
         SelfManager.self().fd(0.8);
@@ -540,7 +558,7 @@ var procedures = (function() {
   procs["MOVE-AROUND"] = temp;
   temp = (function() {
     var i = 0;
-    for (var _index_18652_18658 = 0, _repeatcount_18652_18658 = StrictMath.floor(world.turtleManager.turtlesOfBreed("SITES").size()); _index_18652_18658 < _repeatcount_18652_18658; _index_18652_18658++){
+    for (var _index_18496_18502 = 0, _repeatcount_18496_18502 = StrictMath.floor(world.turtleManager.turtlesOfBreed("SITES").size()); _index_18496_18502 < _repeatcount_18496_18502; _index_18496_18502++){
       plotManager.setCurrentPlot("on-site");
       plotManager.setCurrentPen((Dump('') + Dump("site") + Dump(i)));
       plotManager.plotValue(world.turtleManager.turtlesOfBreed("SCOUTS").agentFilter(function() {

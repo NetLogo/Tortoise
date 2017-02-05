@@ -42,8 +42,35 @@ if (typeof javax !== "undefined") {
     resizeWorld: function(agent) {}
   }
 }
-modelConfig.plots = [];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])(["edge"], ["edge"], [], -12, 12, -12, 12, 14.0, true, true, turtleShapes, linkShapes, function(){});
+modelConfig.plots = [(function() {
+  var name    = 'Food in each pile';
+  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
+  var pens    = [new PenBundle.Pen('food-in-pile1', plotOps.makePenOps, false, new PenBundle.State(85.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
+    workspace.rng.withAux(function() {
+      plotManager.withTemporaryContext('Food in each pile', 'food-in-pile1')(function() {
+        plotManager.plotPoint(world.ticker.tickCount(), ListPrims.sum(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 85); }).projectionBy(function() { return SelfManager.self().getPatchVariable("food"); })));;
+      });
+    });
+  }),
+  new PenBundle.Pen('food-in-pile2', plotOps.makePenOps, false, new PenBundle.State(95.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
+    workspace.rng.withAux(function() {
+      plotManager.withTemporaryContext('Food in each pile', 'food-in-pile2')(function() {
+        plotManager.plotPoint(world.ticker.tickCount(), ListPrims.sum(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 95); }).projectionBy(function() { return SelfManager.self().getPatchVariable("food"); })));;
+      });
+    });
+  }),
+  new PenBundle.Pen('food-in-pile3', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
+    workspace.rng.withAux(function() {
+      plotManager.withTemporaryContext('Food in each pile', 'food-in-pile3')(function() {
+        plotManager.plotPoint(world.ticker.tickCount(), ListPrims.sum(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 105); }).projectionBy(function() { return SelfManager.self().getPatchVariable("food"); })));;
+      });
+    });
+  })];
+  var setup   = function() {};
+  var update  = function() {};
+  return new Plot(name, pens, plotOps, "time", "food", false, true, 0.0, 50.0, 0.0, 120.0, setup, update);
+})()];
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])(["diffusion-rate", "evaporation-rate", "population"], ["diffusion-rate", "evaporation-rate", "population"], ["chemical", "food", "nest?", "nest-scent", "food-source-number"], -35, 35, -35, 35, 7.0, false, false, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;
 var ExportPrims = workspace.exportPrims;
 var LayoutManager = workspace.layoutManager;
@@ -64,45 +91,211 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     world.clearAll();
-    world.patches().ask(function() {
-      if (((Prims.equality(SelfManager.self().getPatchVariable("pxcor"), 0) && Prims.gte(SelfManager.self().getPatchVariable("pycor"), 0)) && Prims.lte(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("edge")))) {
-        SelfManager.self().setPatchVariable("pcolor", 15);
-      }
-      if (((Prims.equality(SelfManager.self().getPatchVariable("pxcor"), world.observer.getGlobal("edge")) && Prims.gte(SelfManager.self().getPatchVariable("pycor"), 0)) && Prims.lte(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("edge")))) {
-        SelfManager.self().setPatchVariable("pcolor", 15);
-      }
-      if (((Prims.equality(SelfManager.self().getPatchVariable("pycor"), 0) && Prims.gte(SelfManager.self().getPatchVariable("pxcor"), 0)) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), world.observer.getGlobal("edge")))) {
-        SelfManager.self().setPatchVariable("pcolor", 15);
-      }
-      if (((Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("edge")) && Prims.gte(SelfManager.self().getPatchVariable("pxcor"), 0)) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), world.observer.getGlobal("edge")))) {
-        SelfManager.self().setPatchVariable("pcolor", 15);
-      }
+    BreedManager.setDefaultShape(world.turtles().getSpecialName(), "bug")
+    world.turtleManager.createTurtles(world.observer.getGlobal("population"), "").ask(function() {
+      SelfManager.self().setVariable("size", 2);
+      SelfManager.self().setVariable("color", 15);
     }, true);
+    procedures["SETUP-PATCHES"]();
     world.ticker.reset();
   });
-  procs["setupCorner"] = temp;
-  procs["SETUP-CORNER"] = temp;
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
   temp = (function() {
-    world.clearAll();
-    var halfedge = NLMath.toInt(Prims.div(world.observer.getGlobal("edge"), 2));
     world.patches().ask(function() {
-      if (((Prims.equality(SelfManager.self().getPatchVariable("pxcor"),  -halfedge) && Prims.gte(SelfManager.self().getPatchVariable("pycor"),  -halfedge)) && Prims.lte(SelfManager.self().getPatchVariable("pycor"), (0 + halfedge)))) {
-        SelfManager.self().setPatchVariable("pcolor", 105);
+      procedures["SETUP-NEST"]();
+      procedures["SETUP-FOOD"]();
+      procedures["RECOLOR-PATCH"]();
+    }, true);
+  });
+  procs["setupPatches"] = temp;
+  procs["SETUP-PATCHES"] = temp;
+  temp = (function() {
+    SelfManager.self().setPatchVariable("nest?", Prims.lt(SelfManager.self().distanceXY(0, 0), 5));
+    SelfManager.self().setPatchVariable("nest-scent", (200 - SelfManager.self().distanceXY(0, 0)));
+  });
+  procs["setupNest"] = temp;
+  procs["SETUP-NEST"] = temp;
+  temp = (function() {
+    if (Prims.lt(SelfManager.self().distanceXY((0.6 * world.topology.maxPxcor), 0), 5)) {
+      SelfManager.self().setPatchVariable("food-source-number", 1);
+    }
+    if (Prims.lt(SelfManager.self().distanceXY((-0.6 * world.topology.maxPxcor), (-0.6 * world.topology.maxPycor)), 5)) {
+      SelfManager.self().setPatchVariable("food-source-number", 2);
+    }
+    if (Prims.lt(SelfManager.self().distanceXY((-0.8 * world.topology.maxPxcor), (0.8 * world.topology.maxPycor)), 5)) {
+      SelfManager.self().setPatchVariable("food-source-number", 3);
+    }
+    if (Prims.gt(SelfManager.self().getPatchVariable("food-source-number"), 0)) {
+      SelfManager.self().setPatchVariable("food", ListPrims.oneOf([1, 2]));
+    }
+  });
+  procs["setupFood"] = temp;
+  procs["SETUP-FOOD"] = temp;
+  temp = (function() {
+    if (SelfManager.self().getPatchVariable("nest?")) {
+      SelfManager.self().setPatchVariable("pcolor", 115);
+    }
+    else {
+      if (Prims.gt(SelfManager.self().getPatchVariable("food"), 0)) {
+        if (Prims.equality(SelfManager.self().getPatchVariable("food-source-number"), 1)) {
+          SelfManager.self().setPatchVariable("pcolor", 85);
+        }
+        if (Prims.equality(SelfManager.self().getPatchVariable("food-source-number"), 2)) {
+          SelfManager.self().setPatchVariable("pcolor", 95);
+        }
+        if (Prims.equality(SelfManager.self().getPatchVariable("food-source-number"), 3)) {
+          SelfManager.self().setPatchVariable("pcolor", 105);
+        }
       }
-      if (((Prims.equality(SelfManager.self().getPatchVariable("pxcor"), (0 + halfedge)) && Prims.gte(SelfManager.self().getPatchVariable("pycor"),  -halfedge)) && Prims.lte(SelfManager.self().getPatchVariable("pycor"), (0 + halfedge)))) {
-        SelfManager.self().setPatchVariable("pcolor", 105);
+      else {
+        SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(55, SelfManager.self().getPatchVariable("chemical"), 0.1, 5));
       }
-      if (((Prims.equality(SelfManager.self().getPatchVariable("pycor"),  -halfedge) && Prims.gte(SelfManager.self().getPatchVariable("pxcor"),  -halfedge)) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), (0 + halfedge)))) {
-        SelfManager.self().setPatchVariable("pcolor", 105);
-      }
-      if (((Prims.equality(SelfManager.self().getPatchVariable("pycor"), (0 + halfedge)) && Prims.gte(SelfManager.self().getPatchVariable("pxcor"),  -halfedge)) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), (0 + halfedge)))) {
-        SelfManager.self().setPatchVariable("pcolor", 105);
+    }
+  });
+  procs["recolorPatch"] = temp;
+  procs["RECOLOR-PATCH"] = temp;
+  temp = (function() {
+    world.turtles().ask(function() {
+      try {
+        if (Prims.gte(SelfManager.self().getVariable("who"), world.ticker.tickCount())) {
+          throw new Exception.StopInterrupt;
+        }
+        if (Prims.equality(SelfManager.self().getVariable("color"), 15)) {
+          procedures["LOOK-FOR-FOOD"]();
+        }
+        else {
+          procedures["RETURN-TO-NEST"]();
+        }
+        procedures["WIGGLE"]();
+        SelfManager.self().fd(1);
+      } catch (e) {
+        if (e instanceof Exception.StopInterrupt) {
+          return e;
+        } else {
+          throw e;
+        }
       }
     }, true);
-    world.ticker.reset();
+    world.topology.diffuse("chemical", Prims.div(world.observer.getGlobal("diffusion-rate"), 100))
+    world.patches().ask(function() {
+      SelfManager.self().setPatchVariable("chemical", Prims.div((SelfManager.self().getPatchVariable("chemical") * (100 - world.observer.getGlobal("evaporation-rate"))), 100));
+      procedures["RECOLOR-PATCH"]();
+    }, true);
+    world.ticker.tick();
   });
-  procs["setupCenter"] = temp;
-  procs["SETUP-CENTER"] = temp;
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
+    if (SelfManager.self().getPatchVariable("nest?")) {
+      SelfManager.self().setVariable("color", 15);
+      SelfManager.self().right(180);
+    }
+    else {
+      SelfManager.self().setPatchVariable("chemical", (SelfManager.self().getPatchVariable("chemical") + 60));
+      procedures["UPHILL-NEST-SCENT"]();
+    }
+  });
+  procs["returnToNest"] = temp;
+  procs["RETURN-TO-NEST"] = temp;
+  temp = (function() {
+    try {
+      if (Prims.gt(SelfManager.self().getPatchVariable("food"), 0)) {
+        SelfManager.self().setVariable("color", (25 + 1));
+        SelfManager.self().setPatchVariable("food", (SelfManager.self().getPatchVariable("food") - 1));
+        SelfManager.self().right(180);
+        throw new Exception.StopInterrupt;
+      }
+      if ((Prims.gte(SelfManager.self().getPatchVariable("chemical"), 0.05) && Prims.lt(SelfManager.self().getPatchVariable("chemical"), 2))) {
+        procedures["UPHILL-CHEMICAL"]();
+      }
+    } catch (e) {
+      if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
+  });
+  procs["lookForFood"] = temp;
+  procs["LOOK-FOR-FOOD"] = temp;
+  temp = (function() {
+    var scentAhead = procedures["CHEMICAL-SCENT-AT-ANGLE"](0);
+    var scentRight = procedures["CHEMICAL-SCENT-AT-ANGLE"](45);
+    var scentLeft = procedures["CHEMICAL-SCENT-AT-ANGLE"](-45);
+    if ((Prims.gt(scentRight, scentAhead) || Prims.gt(scentLeft, scentAhead))) {
+      if (Prims.gt(scentRight, scentLeft)) {
+        SelfManager.self().right(45);
+      }
+      else {
+        SelfManager.self().right(-45);
+      }
+    }
+  });
+  procs["uphillChemical"] = temp;
+  procs["UPHILL-CHEMICAL"] = temp;
+  temp = (function() {
+    var scentAhead = procedures["NEST-SCENT-AT-ANGLE"](0);
+    var scentRight = procedures["NEST-SCENT-AT-ANGLE"](45);
+    var scentLeft = procedures["NEST-SCENT-AT-ANGLE"](-45);
+    if ((Prims.gt(scentRight, scentAhead) || Prims.gt(scentLeft, scentAhead))) {
+      if (Prims.gt(scentRight, scentLeft)) {
+        SelfManager.self().right(45);
+      }
+      else {
+        SelfManager.self().right(-45);
+      }
+    }
+  });
+  procs["uphillNestScent"] = temp;
+  procs["UPHILL-NEST-SCENT"] = temp;
+  temp = (function() {
+    SelfManager.self().right(Prims.random(40));
+    SelfManager.self().right(-Prims.random(40));
+    if (!SelfManager.self().canMove(1)) {
+      SelfManager.self().right(180);
+    }
+  });
+  procs["wiggle"] = temp;
+  procs["WIGGLE"] = temp;
+  temp = (function(angle) {
+    try {
+      var p = SelfManager.self().patchRightAndAhead(angle, 1);
+      if (Prims.equality(p, Nobody)) {
+        throw new Exception.ReportInterrupt(0);
+      }
+      throw new Exception.ReportInterrupt(p.projectionBy(function() { return SelfManager.self().getPatchVariable("nest-scent"); }));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
+  });
+  procs["nestScentAtAngle"] = temp;
+  procs["NEST-SCENT-AT-ANGLE"] = temp;
+  temp = (function(angle) {
+    try {
+      var p = SelfManager.self().patchRightAndAhead(angle, 1);
+      if (Prims.equality(p, Nobody)) {
+        throw new Exception.ReportInterrupt(0);
+      }
+      throw new Exception.ReportInterrupt(p.projectionBy(function() { return SelfManager.self().getPatchVariable("chemical"); }));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
+  });
+  procs["chemicalScentAtAngle"] = temp;
+  procs["CHEMICAL-SCENT-AT-ANGLE"] = temp;
   return procs;
 })();
-world.observer.setGlobal("edge", 8);
+world.observer.setGlobal("diffusion-rate", 50);
+world.observer.setGlobal("evaporation-rate", 10);
+world.observer.setGlobal("population", 125);

@@ -166,7 +166,11 @@ _handleTiesForHeadingChange = (seenTurtlesSet, dh) ->
 
   [x, y] = @getCoords()
 
-  turtleModePairs = @linkManager.tieLinks().map(({ end1, end2, tiemode }) => [(if end1 is this then end2 else end1), tiemode])
+  turtleModePairs =
+    @linkManager.myOutLinks("LINKS").toArray().map(
+      ({ end1, end2, tiemode }) =>
+        [(if end1 is this then end2 else end1), tiemode]
+    )
 
   seenTurtlesSet[@id] = true
   filteredPairs = turtleModePairs.filter(

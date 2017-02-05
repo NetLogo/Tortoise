@@ -42,8 +42,19 @@ if (typeof javax !== "undefined") {
     resizeWorld: function(agent) {}
   }
 }
-modelConfig.plots = [];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])(["edge"], ["edge"], [], -12, 12, -12, 12, 14.0, true, true, turtleShapes, linkShapes, function(){});
+modelConfig.plots = [(function() {
+  var name    = 'global energy';
+  var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
+  var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
+    workspace.rng.withAux(function() {
+      plotManager.withTemporaryContext('global energy', 'default')(function() { plotManager.plotValue(world.observer.getGlobal("global-energy"));; });
+    });
+  })];
+  var setup   = function() {};
+  var update  = function() {};
+  return new Plot(name, pens, plotOps, "time", "energy", false, true, 0.0, 10.0, 0.0, 10.0, setup, update);
+})()];
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])(["cooling-rate", "swap-radius", "accept-equal-changes?", "temperature", "global-energy"], ["cooling-rate", "swap-radius", "accept-equal-changes?"], ["brightness"], 0, 29, 0, 29, 14.0, true, true, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;
 var ExportPrims = workspace.exportPrims;
 var LayoutManager = workspace.layoutManager;
@@ -64,45 +75,108 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     world.clearAll();
-    world.patches().ask(function() {
-      if (((Prims.equality(SelfManager.self().getPatchVariable("pxcor"), 0) && Prims.gte(SelfManager.self().getPatchVariable("pycor"), 0)) && Prims.lte(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("edge")))) {
-        SelfManager.self().setPatchVariable("pcolor", 15);
-      }
-      if (((Prims.equality(SelfManager.self().getPatchVariable("pxcor"), world.observer.getGlobal("edge")) && Prims.gte(SelfManager.self().getPatchVariable("pycor"), 0)) && Prims.lte(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("edge")))) {
-        SelfManager.self().setPatchVariable("pcolor", 15);
-      }
-      if (((Prims.equality(SelfManager.self().getPatchVariable("pycor"), 0) && Prims.gte(SelfManager.self().getPatchVariable("pxcor"), 0)) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), world.observer.getGlobal("edge")))) {
-        SelfManager.self().setPatchVariable("pcolor", 15);
-      }
-      if (((Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("edge")) && Prims.gte(SelfManager.self().getPatchVariable("pxcor"), 0)) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), world.observer.getGlobal("edge")))) {
-        SelfManager.self().setPatchVariable("pcolor", 15);
-      }
-    }, true);
+    ListPrims.nOf(Prims.div(world.patches().size(), 2), world.patches()).ask(function() { SelfManager.self().setPatchVariable("brightness", 1); }, true);
+    world.patches().ask(function() { procedures["UPDATE-VISUAL"](); }, true);
+    world.observer.setGlobal("global-energy", ListPrims.sum(world.patches().projectionBy(function() { return procedures["FIND-ENERGY"](); })));
+    world.observer.setGlobal("temperature", 1);
     world.ticker.reset();
   });
-  procs["setupCorner"] = temp;
-  procs["SETUP-CORNER"] = temp;
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
   temp = (function() {
-    world.clearAll();
-    var halfedge = NLMath.toInt(Prims.div(world.observer.getGlobal("edge"), 2));
-    world.patches().ask(function() {
-      if (((Prims.equality(SelfManager.self().getPatchVariable("pxcor"),  -halfedge) && Prims.gte(SelfManager.self().getPatchVariable("pycor"),  -halfedge)) && Prims.lte(SelfManager.self().getPatchVariable("pycor"), (0 + halfedge)))) {
-        SelfManager.self().setPatchVariable("pcolor", 105);
-      }
-      if (((Prims.equality(SelfManager.self().getPatchVariable("pxcor"), (0 + halfedge)) && Prims.gte(SelfManager.self().getPatchVariable("pycor"),  -halfedge)) && Prims.lte(SelfManager.self().getPatchVariable("pycor"), (0 + halfedge)))) {
-        SelfManager.self().setPatchVariable("pcolor", 105);
-      }
-      if (((Prims.equality(SelfManager.self().getPatchVariable("pycor"),  -halfedge) && Prims.gte(SelfManager.self().getPatchVariable("pxcor"),  -halfedge)) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), (0 + halfedge)))) {
-        SelfManager.self().setPatchVariable("pcolor", 105);
-      }
-      if (((Prims.equality(SelfManager.self().getPatchVariable("pycor"), (0 + halfedge)) && Prims.gte(SelfManager.self().getPatchVariable("pxcor"),  -halfedge)) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), (0 + halfedge)))) {
-        SelfManager.self().setPatchVariable("pcolor", 105);
-      }
-    }, true);
-    world.ticker.reset();
+    for (var _index_289_295 = 0, _repeatcount_289_295 = StrictMath.floor(1000); _index_289_295 < _repeatcount_289_295; _index_289_295++){
+      ListPrims.oneOf(world.patches()).ask(function() { procedures["TRY-SWAP"](); }, true);
+    }
+    world.observer.setGlobal("temperature", (world.observer.getGlobal("temperature") * (1 - Prims.div(world.observer.getGlobal("cooling-rate"), 100))));
+    world.observer.setGlobal("global-energy", ListPrims.sum(world.patches().projectionBy(function() { return procedures["FIND-ENERGY"](); })));
+    world.ticker.tick();
   });
-  procs["setupCenter"] = temp;
-  procs["SETUP-CENTER"] = temp;
+  procs["go"] = temp;
+  procs["GO"] = temp;
+  temp = (function() {
+    SelfManager.self().setPatchVariable("pcolor", (SelfManager.self().getPatchVariable("brightness") * 9.9));
+  });
+  procs["updateVisual"] = temp;
+  procs["UPDATE-VISUAL"] = temp;
+  temp = (function(oldEnergy, newEnergy) {
+    try {
+      throw new Exception.ReportInterrupt(((Prims.lt(newEnergy, oldEnergy) || (world.observer.getGlobal("accept-equal-changes?") && Prims.equality(newEnergy, oldEnergy))) || Prims.lt(Prims.randomFloat(1), world.observer.getGlobal("temperature"))));
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
+  });
+  procs["acceptChange_p"] = temp;
+  procs["ACCEPT-CHANGE?"] = temp;
+  temp = (function() {
+    try {
+      var p2 = ListPrims.oneOf(SelfManager.self().inRadius(world.patches(), world.observer.getGlobal("swap-radius")));
+      if (Prims.equality(SelfManager.self().getPatchVariable("brightness"), p2.projectionBy(function() { return SelfManager.self().getPatchVariable("brightness"); }))) {
+        throw new Exception.StopInterrupt;
+      }
+      var affectedPatches = Prims.patchSet(SelfManager.self(), p2, SelfManager.self().getNeighbors4(), p2.projectionBy(function() { return SelfManager.self().getNeighbors4(); }));
+      var oldEnergy = ListPrims.sum(affectedPatches.projectionBy(function() { return procedures["FIND-ENERGY"](); }));
+      procedures["SWAP-VALUES"](SelfManager.self(),p2);
+      var newEnergy = ListPrims.sum(affectedPatches.projectionBy(function() { return procedures["FIND-ENERGY"](); }));
+      if (procedures["ACCEPT-CHANGE?"](oldEnergy,newEnergy)) {
+        procedures["UPDATE-VISUAL"]();
+        p2.ask(function() { procedures["UPDATE-VISUAL"](); }, true);
+      }
+      else {
+        procedures["SWAP-VALUES"](SelfManager.self(),p2);
+      }
+    } catch (e) {
+      if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
+  });
+  procs["trySwap"] = temp;
+  procs["TRY-SWAP"] = temp;
+  temp = (function(p1, p2) {
+    var temp = p1.projectionBy(function() { return SelfManager.self().getPatchVariable("brightness"); });
+    p1.ask(function() {
+      SelfManager.self().setPatchVariable("brightness", p2.projectionBy(function() { return SelfManager.self().getPatchVariable("brightness"); }));
+    }, true);
+    p2.ask(function() { SelfManager.self().setPatchVariable("brightness", temp); }, true);
+  });
+  procs["swapValues"] = temp;
+  procs["SWAP-VALUES"] = temp;
+  temp = (function() {
+    try {
+      var unhappiness = 0;
+      SelfManager.self().patchAt(0, 1).ask(function() {
+        unhappiness = (unhappiness + NLMath.pow((SelfManager.self().getPatchVariable("brightness") - SelfManager.myself().projectionBy(function() { return SelfManager.self().getPatchVariable("brightness"); })), 2));
+      }, true);
+      SelfManager.self().patchAt(0, -1).ask(function() {
+        unhappiness = (unhappiness + NLMath.pow((SelfManager.self().getPatchVariable("brightness") - SelfManager.myself().projectionBy(function() { return SelfManager.self().getPatchVariable("brightness"); })), 2));
+      }, true);
+      SelfManager.self().patchAt(1, 0).ask(function() {
+        unhappiness = ((unhappiness + 1) - NLMath.pow((SelfManager.self().getPatchVariable("brightness") - SelfManager.myself().projectionBy(function() { return SelfManager.self().getPatchVariable("brightness"); })), 2));
+      }, true);
+      SelfManager.self().patchAt(-1, 0).ask(function() {
+        unhappiness = ((unhappiness + 1) - NLMath.pow((SelfManager.self().getPatchVariable("brightness") - SelfManager.myself().projectionBy(function() { return SelfManager.self().getPatchVariable("brightness"); })), 2));
+      }, true);
+      throw new Exception.ReportInterrupt(unhappiness);
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
+  });
+  procs["findEnergy"] = temp;
+  procs["FIND-ENERGY"] = temp;
   return procs;
 })();
-world.observer.setGlobal("edge", 8);
+world.observer.setGlobal("cooling-rate", 1);
+world.observer.setGlobal("swap-radius", 1);
+world.observer.setGlobal("accept-equal-changes?", false);

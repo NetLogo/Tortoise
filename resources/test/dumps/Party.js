@@ -2,6 +2,7 @@ var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
+var Extensions = tortoise_require('extensions/all');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
 var Meta = tortoise_require('meta');
@@ -157,7 +158,7 @@ var procedures = (function() {
       var malcontents = world.turtles().agentFilter(function() {
         return !ListPrims.member(SelfManager.self().getPatchHere(), world.observer.getGlobal("group-sites"));
       });
-      if (!malcontents.nonEmpty()) {
+      if (!!malcontents.isEmpty()) {
         throw new Exception.StopInterrupt;
       }
       malcontents.ask(function() { SelfManager.self().fd(1); }, true);
@@ -195,7 +196,7 @@ var procedures = (function() {
       SelfManager.self().setVariable("heading", 0);
     }
     SelfManager.self().fd(4);
-    while (SelfPrims.other(SelfManager.self().turtlesHere()).nonEmpty()) {
+    while (!SelfPrims.other(SelfManager.self().turtlesHere()).isEmpty()) {
       if (SelfManager.self().canMove(2)) {
         SelfManager.self().fd(1);
       }

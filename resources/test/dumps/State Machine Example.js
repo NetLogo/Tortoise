@@ -2,6 +2,7 @@ var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
+var Extensions = tortoise_require('extensions/all');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
 var Meta = tortoise_require('meta');
@@ -73,7 +74,9 @@ var procedures = (function() {
       SelfManager.self().setVariable("color", 9.9);
       SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
       SelfManager.self().setVariable("next-task", Tasks.commandTask(function() {
-        var taskArguments = arguments;
+        if (arguments.length < 0) {
+          throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
+        }
         procedures["SEARCH-FOR-CHIP"]();
       }));
       SelfManager.self().setVariable("size", 5);
@@ -117,7 +120,9 @@ var procedures = (function() {
       SelfManager.self().setVariable("color", 25);
       SelfManager.self().setVariable("steps", 20);
       SelfManager.self().setVariable("next-task", Tasks.commandTask(function() {
-        var taskArguments = arguments;
+        if (arguments.length < 0) {
+          throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
+        }
         procedures["FIND-NEW-PILE"]();
       }));
     }
@@ -127,7 +132,9 @@ var procedures = (function() {
   temp = (function() {
     if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 45)) {
       SelfManager.self().setVariable("next-task", Tasks.commandTask(function() {
-        var taskArguments = arguments;
+        if (arguments.length < 0) {
+          throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
+        }
         procedures["PUT-DOWN-CHIP"]();
       }));
     }
@@ -140,7 +147,9 @@ var procedures = (function() {
       SelfManager.self().setVariable("color", 9.9);
       SelfManager.self().setVariable("steps", 20);
       SelfManager.self().setVariable("next-task", Tasks.commandTask(function() {
-        var taskArguments = arguments;
+        if (arguments.length < 0) {
+          throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
+        }
         procedures["GET-AWAY"]();
       }));
     }
@@ -150,7 +159,9 @@ var procedures = (function() {
   temp = (function() {
     if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 0)) {
       SelfManager.self().setVariable("next-task", Tasks.commandTask(function() {
-        var taskArguments = arguments;
+        if (arguments.length < 0) {
+          throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
+        }
         procedures["SEARCH-FOR-CHIP"]();
       }));
     }

@@ -2,6 +2,7 @@ var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
+var Extensions = tortoise_require('extensions/all');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
 var Meta = tortoise_require('meta');
@@ -125,7 +126,7 @@ var procedures = (function() {
   temp = (function() {
     SelfManager.self().right(Prims.randomFloat(360));
     SelfManager.self().fd(Prims.randomFloat(10));
-    if (SelfPrims.other(SelfManager.self().turtlesHere()).nonEmpty()) {
+    if (!SelfPrims.other(SelfManager.self().turtlesHere()).isEmpty()) {
       procedures["FIND-NEW-SPOT"]();
     }
     SelfManager.self().moveTo(SelfManager.self().getPatchHere());

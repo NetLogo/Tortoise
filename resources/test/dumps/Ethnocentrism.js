@@ -2,6 +2,7 @@ var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
+var Extensions = tortoise_require('extensions/all');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
 var Meta = tortoise_require('meta');
@@ -184,7 +185,7 @@ var procedures = (function() {
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    var emptyPatches = world.patches().agentFilter(function() { return !SelfManager.self().turtlesHere().nonEmpty(); });
+    var emptyPatches = world.patches().agentFilter(function() { return !!SelfManager.self().turtlesHere().isEmpty(); });
     var howMany = ListPrims.min(ListPrims.list(world.observer.getGlobal("immigrants-per-day"), emptyPatches.size()));
     ListPrims.nOf(howMany, emptyPatches).ask(function() { procedures["CREATE-TURTLE"](); }, true);
   });
@@ -228,7 +229,7 @@ var procedures = (function() {
   procs["INTERACT"] = temp;
   temp = (function() {
     if (Prims.lt(Prims.randomFloat(1), SelfManager.self().getVariable("ptr"))) {
-      var destination = ListPrims.oneOf(SelfManager.self().getNeighbors4().agentFilter(function() { return !SelfManager.self().turtlesHere().nonEmpty(); }));
+      var destination = ListPrims.oneOf(SelfManager.self().getNeighbors4().agentFilter(function() { return !!SelfManager.self().turtlesHere().isEmpty(); }));
       if (!Prims.equality(destination, Nobody)) {
         SelfManager.self().hatch(1, "").ask(function() {
           SelfManager.self().moveTo(destination);

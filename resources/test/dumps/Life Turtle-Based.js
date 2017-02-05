@@ -2,6 +2,7 @@ var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
+var Extensions = tortoise_require('extensions/all');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
 var Meta = tortoise_require('meta');
@@ -107,7 +108,7 @@ var procedures = (function() {
       }
     }, true);
     world.patches().ask(function() {
-      if ((!SelfManager.self().breedHere("CELLS").nonEmpty() && Prims.equality(SelfManager.self().getPatchVariable("live-neighbors"), 3))) {
+      if ((!!SelfManager.self().breedHere("CELLS").isEmpty() && Prims.equality(SelfManager.self().getPatchVariable("live-neighbors"), 3))) {
         procedures["BIRTH"]();
       }
       SelfManager.self().setPatchVariable("live-neighbors", 0);
@@ -117,7 +118,7 @@ var procedures = (function() {
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    var erasing_p = Prims.breedOn("CELLS", world.getPatchAt(MousePrims.getX(), MousePrims.getY())).nonEmpty();
+    var erasing_p = !Prims.breedOn("CELLS", world.getPatchAt(MousePrims.getX(), MousePrims.getY())).isEmpty();
     while (MousePrims.isDown()) {
       world.getPatchAt(MousePrims.getX(), MousePrims.getY()).ask(function() {
         if (erasing_p) {
@@ -133,7 +134,7 @@ var procedures = (function() {
   procs["drawCells"] = temp;
   procs["DRAW-CELLS"] = temp;
   temp = (function() {
-    if (!SelfManager.self().breedHere("CELLS").nonEmpty()) {
+    if (!!SelfManager.self().breedHere("CELLS").isEmpty()) {
       SelfManager.self().turtlesHere().ask(function() { SelfManager.self().die(); }, true);
       SelfManager.self().sprout(1, "CELLS").ask(function() { SelfManager.self().setVariable("color", 9.9); }, true);
       procedures["UPDATE"]();
@@ -152,7 +153,7 @@ var procedures = (function() {
   temp = (function() {
     SelfManager.self().breedHere("BABIES").ask(function() { SelfManager.self().die(); }, true);
     var n = Prims.breedOn("CELLS", SelfManager.self().getNeighbors()).size();
-    if (SelfManager.self().breedHere("CELLS").nonEmpty()) {
+    if (!SelfManager.self().breedHere("CELLS").isEmpty()) {
       if ((Prims.equality(n, 2) || Prims.equality(n, 3))) {
         SelfManager.self().breedHere("CELLS").ask(function() { SelfManager.self().setVariable("color", 9.9); }, true);
       }

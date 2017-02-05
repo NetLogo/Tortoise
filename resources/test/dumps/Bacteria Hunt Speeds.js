@@ -2,6 +2,7 @@ var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
+var Extensions = tortoise_require('extensions/all');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
 var Meta = tortoise_require('meta');
@@ -55,10 +56,12 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('# of bacteria for each variation', undefined)(function() {
         plotManager.clearPlot();
-        Tasks.forEach(Tasks.commandTask(function() {
-          var taskArguments = arguments;
-          plotManager.setCurrentPen((Dump('') + Dump(taskArguments[0]) + Dump(" ")));
-          plotManager.plotPoint(taskArguments[0], world.turtleManager.turtlesOfBreed("BACTERIA").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("variation"), taskArguments[0]); }).size());
+        Tasks.forEach(Tasks.commandTask(function(thisVariation) {
+          if (arguments.length < 1) {
+            throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+          }
+          plotManager.setCurrentPen((Dump('') + Dump(thisVariation) + Dump(" ")));
+          plotManager.plotPoint(thisVariation, world.turtleManager.turtlesOfBreed("BACTERIA").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("variation"), thisVariation); }).size());
         }), [1, 2, 3, 4, 5, 6]);;
       });
     });
@@ -70,7 +73,7 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('pen 1', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Avg. # of flagella per bacteria', 'pen 1')(function() {
-        if (world.turtleManager.turtlesOfBreed("BACTERIA").nonEmpty()) {
+        if (!world.turtleManager.turtlesOfBreed("BACTERIA").isEmpty()) {
           plotManager.plotPoint(world.ticker.tickCount(), ListPrims.mean(world.turtleManager.turtlesOfBreed("BACTERIA").projectionBy(function() { return SelfManager.self().getVariable("variation"); })));
         };
       });
@@ -120,12 +123,14 @@ var procedures = (function() {
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    Tasks.forEach(Tasks.commandTask(function() {
-      var taskArguments = arguments;
+    Tasks.forEach(Tasks.commandTask(function(thisVariation) {
+      if (arguments.length < 1) {
+        throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+      }
       world.turtleManager.createTurtles(world.observer.getGlobal("initial-bacteria-per-variation"), "BACTERIA").ask(function() {
         SelfManager.self().setVariable("label-color", 0);
         SelfManager.self().setVariable("size", 1);
-        SelfManager.self().setVariable("variation", taskArguments[0]);
+        SelfManager.self().setVariable("variation", thisVariation);
         procedures["MAKE-FLAGELLA"]();
         SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
       }, true);
@@ -198,7 +203,7 @@ var procedures = (function() {
       }
       SelfManager.self().fd((SelfManager.self().getVariable("variation") * world.observer.getGlobal("speed-scalar")));
       var predatorsInFrontOfMe = SelfManager.self().inCone(world.turtleManager.turtlesOfBreed("PREDATORS"), 2, 120);
-      if ((!world.observer.getGlobal("camouflage?") && predatorsInFrontOfMe.nonEmpty())) {
+      if ((!world.observer.getGlobal("camouflage?") && !predatorsInFrontOfMe.isEmpty())) {
         SelfManager.self().face(ListPrims.oneOf(predatorsInFrontOfMe));
         SelfManager.self().right(180);
       }
@@ -247,7 +252,7 @@ var procedures = (function() {
       var prey = ListPrims.oneOf(world.turtleManager.turtlesOfBreed("PREDATORS")).projectionBy(function() {
         return SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("BACTERIA"), Prims.div(SelfManager.self().getVariable("size"), 2));
       });
-      if (!prey.nonEmpty()) {
+      if (!!prey.isEmpty()) {
         throw new Exception.StopInterrupt;
       }
       ListPrims.oneOf(prey).ask(function() { procedures["DEATH"](); }, true);

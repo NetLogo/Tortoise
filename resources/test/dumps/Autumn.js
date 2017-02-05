@@ -2,6 +2,7 @@ var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
+var Extensions = tortoise_require('extensions/all');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
 var Meta = tortoise_require('meta');
@@ -89,7 +90,7 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('chlorophyll', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Leaf averages', 'chlorophyll')(function() {
-        if (world.turtleManager.turtlesOfBreed("LEAVES").nonEmpty()) {
+        if (!world.turtleManager.turtlesOfBreed("LEAVES").isEmpty()) {
           plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed("LEAVES").projectionBy(function() { return SelfManager.self().getVariable("chlorophyll"); })));
         };
       });
@@ -98,7 +99,7 @@ modelConfig.plots = [(function() {
   new PenBundle.Pen('water', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Leaf averages', 'water')(function() {
-        if (world.turtleManager.turtlesOfBreed("LEAVES").nonEmpty()) {
+        if (!world.turtleManager.turtlesOfBreed("LEAVES").isEmpty()) {
           plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed("LEAVES").projectionBy(function() { return SelfManager.self().getVariable("water-level"); })));
         };
       });
@@ -107,7 +108,7 @@ modelConfig.plots = [(function() {
   new PenBundle.Pen('sugar', plotOps.makePenOps, false, new PenBundle.State(5.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Leaf averages', 'sugar')(function() {
-        if (world.turtleManager.turtlesOfBreed("LEAVES").nonEmpty()) {
+        if (!world.turtleManager.turtlesOfBreed("LEAVES").isEmpty()) {
           plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed("LEAVES").projectionBy(function() { return SelfManager.self().getVariable("sugar-level"); })));
         };
       });
@@ -116,7 +117,7 @@ modelConfig.plots = [(function() {
   new PenBundle.Pen('carotene', plotOps.makePenOps, false, new PenBundle.State(45.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Leaf averages', 'carotene')(function() {
-        if (world.turtleManager.turtlesOfBreed("LEAVES").nonEmpty()) {
+        if (!world.turtleManager.turtlesOfBreed("LEAVES").isEmpty()) {
           plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed("LEAVES").projectionBy(function() { return SelfManager.self().getVariable("carotene"); })));
         };
       });
@@ -125,7 +126,7 @@ modelConfig.plots = [(function() {
   new PenBundle.Pen('anthocyanin', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Leaf averages', 'anthocyanin')(function() {
-        if (world.turtleManager.turtlesOfBreed("LEAVES").nonEmpty()) {
+        if (!world.turtleManager.turtlesOfBreed("LEAVES").isEmpty()) {
           plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed("LEAVES").projectionBy(function() { return SelfManager.self().getVariable("anthocyanin"); })));
         };
       });
@@ -134,7 +135,7 @@ modelConfig.plots = [(function() {
   new PenBundle.Pen('attachedness', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Leaf averages', 'attachedness')(function() {
-        if (world.turtleManager.turtlesOfBreed("LEAVES").nonEmpty()) {
+        if (!world.turtleManager.turtlesOfBreed("LEAVES").isEmpty()) {
           plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed("LEAVES").projectionBy(function() { return SelfManager.self().getVariable("attachedness"); })));
         };
       });
@@ -144,7 +145,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "Time", "", true, true, 0.0, 10.0, 0.0, 10.0, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "LEAVES", singular: "leaf", varNames: ["water-level", "sugar-level", "attachedness", "chlorophyll", "carotene", "anthocyanin"] }, { name: "DEAD-LEAVES", singular: "dead-leaf", varNames: [] }, { name: "RAINDROPS", singular: "raindrop", varNames: ["location", "amount-of-water"] }, { name: "SUNS", singular: "sun", varNames: [] }])([], [])(["number-of-leaves", "wind-factor", "temperature", "rain-intensity", "sun-intensity", "start-sugar-mean", "start-sugar-stddev", "leaf-display-mode", "bottom-line", "evaporation-temp"], ["number-of-leaves", "wind-factor", "temperature", "rain-intensity", "sun-intensity", "start-sugar-mean", "start-sugar-stddev", "leaf-display-mode"], [], -17, 17, -17, 17, 10.0, false, false, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "LEAVES", singular: "leaf", varNames: ["water-level", "sugar-level", "attachedness", "chlorophyll", "carotene", "anthocyanin"] }, { name: "DEAD-LEAVES", singular: "dead-leaf", varNames: [] }, { name: "RAINDROPS", singular: "raindrop", varNames: ["location", "amount-of-water"] }, { name: "SUNS", singular: "sun", varNames: [] }])([], [])(["number-of-leaves", "wind-factor", "temperature", "rain-intensity", "sun-intensity", "start-sugar-mean", "start-sugar-stddev", "leaf-display-mode", "bottom-line", "evaporation-temp"], ["number-of-leaves", "wind-factor", "temperature", "rain-intensity", "sun-intensity", "start-sugar-mean", "start-sugar-stddev", "leaf-display-mode"], [], -17, 17, -17, 17, 14.0, false, false, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;
 var ExportPrims = workspace.exportPrims;
 var LayoutManager = workspace.layoutManager;
@@ -193,7 +194,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
-      if (!world.turtleManager.turtlesOfBreed("LEAVES").nonEmpty()) {
+      if (!!world.turtleManager.turtlesOfBreed("LEAVES").isEmpty()) {
         throw new Exception.StopInterrupt;
       }
       procedures["MAKE-WIND-BLOW"]();
@@ -211,42 +212,12 @@ var procedures = (function() {
       world.turtleManager.turtlesOfBreed("LEAVES").agentFilter(function() { return Prims.lte(SelfManager.self().getVariable("ycor"), world.observer.getGlobal("bottom-line")); }).ask(function() { SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("DEAD-LEAVES")); }, true);
       world.turtleManager.turtlesOfBreed("LEAVES").agentFilter(function() { return Prims.lt(SelfManager.self().getVariable("water-level"), 1); }).ask(function() { SelfManager.self().setVariable("attachedness", 0); }, true);
       world.turtleManager.turtlesOfBreed("LEAVES").ask(function() {
-        if (Prims.lt(SelfManager.self().getVariable("chlorophyll"), 0)) {
-          SelfManager.self().setVariable("chlorophyll", 0);
-        }
-        if (Prims.gt(SelfManager.self().getVariable("chlorophyll"), 100)) {
-          SelfManager.self().setVariable("chlorophyll", 100);
-        }
-        if (Prims.lt(SelfManager.self().getVariable("water-level"), 0)) {
-          SelfManager.self().setVariable("water-level", 0);
-        }
-        if (Prims.gt(SelfManager.self().getVariable("water-level"), 100)) {
-          SelfManager.self().setVariable("water-level", 100);
-        }
-        if (Prims.lt(SelfManager.self().getVariable("sugar-level"), 0)) {
-          SelfManager.self().setVariable("sugar-level", 0);
-        }
-        if (Prims.gt(SelfManager.self().getVariable("sugar-level"), 100)) {
-          SelfManager.self().setVariable("sugar-level", 100);
-        }
-        if (Prims.lt(SelfManager.self().getVariable("carotene"), 0)) {
-          SelfManager.self().setVariable("carotene", 0);
-        }
-        if (Prims.gt(SelfManager.self().getVariable("carotene"), 100)) {
-          SelfManager.self().setVariable("carotene", 100);
-        }
-        if (Prims.lt(SelfManager.self().getVariable("anthocyanin"), 0)) {
-          SelfManager.self().setVariable("anthocyanin", 0);
-        }
-        if (Prims.gt(SelfManager.self().getVariable("anthocyanin"), 100)) {
-          SelfManager.self().setVariable("anthocyanin", 100);
-        }
-        if (Prims.lt(SelfManager.self().getVariable("attachedness"), 0)) {
-          SelfManager.self().setVariable("attachedness", 0);
-        }
-        if (Prims.gt(SelfManager.self().getVariable("attachedness"), 100)) {
-          SelfManager.self().setVariable("attachedness", 100);
-        }
+        SelfManager.self().setVariable("chlorophyll", procedures["CLIP"](SelfManager.self().getVariable("chlorophyll")));
+        SelfManager.self().setVariable("water-level", procedures["CLIP"](SelfManager.self().getVariable("water-level")));
+        SelfManager.self().setVariable("sugar-level", procedures["CLIP"](SelfManager.self().getVariable("sugar-level")));
+        SelfManager.self().setVariable("carotene", procedures["CLIP"](SelfManager.self().getVariable("carotene")));
+        SelfManager.self().setVariable("anthocyanin", procedures["CLIP"](SelfManager.self().getVariable("anthocyanin")));
+        SelfManager.self().setVariable("attachedness", procedures["CLIP"](SelfManager.self().getVariable("attachedness")));
       }, true);
       world.ticker.tick();
     } catch (e) {
@@ -259,6 +230,26 @@ var procedures = (function() {
   });
   procs["go"] = temp;
   procs["GO"] = temp;
+  temp = (function(value) {
+    try {
+      if (Prims.lt(value, 0)) {
+        throw new Exception.ReportInterrupt(0);
+      }
+      if (Prims.gt(value, 100)) {
+        throw new Exception.ReportInterrupt(100);
+      }
+      throw new Exception.ReportInterrupt(value);
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else {
+        throw e;
+      }
+    }
+  });
+  procs["clip"] = temp;
+  procs["CLIP"] = temp;
   temp = (function() {
     world.turtleManager.turtlesOfBreed("LEAVES").ask(function() {
       if (Prims.equality(Prims.random(2), 1)) {
@@ -335,7 +326,7 @@ var procedures = (function() {
       var nearbyRaindrops = SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("RAINDROPS"), 2).agentFilter(function() {
         return (Prims.equality(SelfManager.self().getVariable("location"), "in leaves") && Prims.gte(SelfManager.self().getVariable("amount-of-water"), 0));
       });
-      if (nearbyRaindrops.nonEmpty()) {
+      if (!nearbyRaindrops.isEmpty()) {
         var myRaindrop = nearbyRaindrops.minOneOf(function() { return SelfManager.self().distance(SelfManager.myself()); });
         SelfManager.self().setVariable("water-level", (SelfManager.self().getVariable("water-level") + (myRaindrop.projectionBy(function() { return SelfManager.self().getVariable("amount-of-water"); }) * 0.2)));
         myRaindrop.ask(function() {
@@ -490,7 +481,7 @@ var procedures = (function() {
 })();
 world.observer.setGlobal("number-of-leaves", 278);
 world.observer.setGlobal("wind-factor", 3);
-world.observer.setGlobal("temperature", 10);
+world.observer.setGlobal("temperature", 11);
 world.observer.setGlobal("rain-intensity", 19);
 world.observer.setGlobal("sun-intensity", 97);
 world.observer.setGlobal("start-sugar-mean", 50);

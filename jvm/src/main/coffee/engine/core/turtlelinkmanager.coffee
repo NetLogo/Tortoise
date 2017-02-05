@@ -4,57 +4,49 @@ LinkSet   = require('./linkset')
 Nobody    = require('./nobody')
 TurtleSet = require('./turtleset')
 
-{ find, unique } = require('brazierjs/array')
-{ id, pipeline } = require('brazierjs/function')
-{ fold         } = require('brazierjs/maybe')
+{ filter, map, unique } = require('brazierjs/array')
+{ pipeline }            = require('brazierjs/function')
 
 { DeathInterrupt, ignoring } = require('util/exception')
 
-# data Directedness =
-Undirected = {}
-Directed = {}
-Either = {}
+# data Directedness
+All = {}
+In  = {}
+Out = {}
 
-# Used by functions that search both `_linksIn` and `_linksOut`, since links are often duplicated in them. --JAB (11/24/14)
-# (Array[Link]) => LinkSet
-linkSetOf = (links) ->
-  new LinkSet(unique(links))
+# Number -> Link -> Turtle
+otherEnd = (sourceID) -> ({ end1, end2 }) ->
+  if end1.id is sourceID then end2 else end1
 
-# Used by neighbor-finding functions, since we could get duplicate turtles through breeded links. --JAB (11/24/14)
-# (Array[Turtle]) => TurtleSet
-turtleSetOf = (turtles) ->
-  new TurtleSet(unique(turtles))
-
-# String -> Directedness -> Link -> Boolean
-linkBreedMatches = (breedName) -> (directedness) -> (link) ->
+# String -> Directedness -> Number -> Link -> Boolean
+linkBreedMatches = (breedName) -> (directedness) -> (ownerID) -> (link) ->
   (breedName is "LINKS" or breedName is link.getBreedName()) and
-    (directedness is Either or
-      (link.isDirected and directedness is Directed) or
-      (not link.isDirected and directedness is Undirected))
+    ((directedness is All) or
+     (not link.isDirected) or
+     (directedness is In  and link.end2.id is ownerID) or
+     (directedness is Out and link.end1.id is ownerID))
 
 module.exports =
   class LinkManager
 
-    @_linksOut: undefined # Array[Link]
-    @_linksIn:  undefined # Array[Link]
+    @_links: undefined # Array[(Link, Directedness)]
 
-    # (Number, BreedManager) => LinkManager
-    constructor: (@_ownerID, @_breedManager) ->
+    # (Number, BreedManager, (Number) => Number) => LinkManager
+    constructor: (@_ownerID, @_breedManager, @_randomInt) ->
       @_clear()
 
     # (Link) => Unit
     add: (link) ->
-      arr = if link.end1.id is @_ownerID then @_linksOut else @_linksIn
-      arr.push(link)
+      @_links.push(link)
       return
 
     # (String, Turtle) => Link
     inLinkFrom: (breedName, otherTurtle) ->
-      @_findLink('end1', otherTurtle, breedName, Directed, @_linksIn)
+      @_findLink(otherTurtle, breedName, In)
 
     # (String) => TurtleSet
     inLinkNeighbors: (breedName) ->
-      turtleSetOf(@_neighborsIn(breedName, Directed))
+      @_neighbors(breedName, In)
 
     # (String, Turtle) => Boolean
     isInLinkNeighbor: (breedName, turtle) ->
@@ -62,9 +54,7 @@ module.exports =
 
     # (String, Turtle) => Boolean
     isLinkNeighbor: (breedName, turtle) ->
-      @_mustBeUndirected(breedName)
-      @_findLink('end2', turtle, breedName, Undirected, @_linksOut) isnt Nobody or
-        @_findLink('end1', turtle, breedName, Undirected, @_linksIn) isnt Nobody
+      @isOutLinkNeighbor(breedName, turtle) or @isInLinkNeighbor(breedName, turtle)
 
     # (String, Turtle) => Boolean
     isOutLinkNeighbor: (breedName, turtle) ->
@@ -72,90 +62,74 @@ module.exports =
 
     # (String, Turtle) => Link
     linkWith: (breedName, otherTurtle) ->
-      @_mustBeUndirected(breedName)
-      outLink = @_findLink('end2', otherTurtle, breedName, Undirected, @_linksOut)
-      if outLink isnt Nobody
-        outLink
-      else
-        @_findLink('end1', otherTurtle, breedName, Undirected, @_linksIn)
+      @_findLink(otherTurtle, breedName, All)
 
     # (String) => TurtleSet
     linkNeighbors: (breedName) ->
-      turtleSetOf(@_neighborsIn(breedName, Undirected).concat(@_neighborsOut(breedName, Undirected)))
+      @_neighbors(breedName, All)
 
     # (String) => LinkSet
     myInLinks: (breedName) ->
-      new LinkSet(@_linksIn.filter(linkBreedMatches(breedName)(Directed)))
+      new LinkSet(@_links.filter(linkBreedMatches(breedName)(In)(@_ownerID)))
 
     # (String) => LinkSet
     myLinks: (breedName) ->
-      linkSetOf(@_linksIn.filter(linkBreedMatches(breedName)(Either)).
-         concat(@_linksOut.filter(linkBreedMatches(breedName)(Either))))
+      new LinkSet(@_links.filter(linkBreedMatches(breedName)(All)(@_ownerID)))
 
     # (String) => LinkSet
     myOutLinks: (breedName) ->
-      new LinkSet(@_linksOut.filter(linkBreedMatches(breedName)(Directed)))
+      new LinkSet(@_links.filter(linkBreedMatches(breedName)(Out)(@_ownerID)))
 
     # (String) => TurtleSet
     outLinkNeighbors: (breedName) ->
-      turtleSetOf(@_neighborsOut(breedName, Directed))
+      @_neighbors(breedName, Out)
 
     # (String, Turtle) => Link
     outLinkTo: (breedName, otherTurtle) ->
-      @_findLink('end2', otherTurtle, breedName, Directed, @_linksOut)
+      @_findLink(otherTurtle, breedName, Out)
 
     # (Link) => Unit
     remove: (link) ->
-      arr = if link.end1.id is @_ownerID then @_linksOut else @_linksIn
-      arr.splice(arr.indexOf(link), 1)
+      @_links.splice(@_links.indexOf(link), 1)
       return
-
-    # () => Array[Link]
-    tieLinks: ->
-      @_linksIn.filter((link) -> not link.isDirected).concat(@_linksOut)
 
     # () => Unit
     _clear: ->
-      oldLinks = if @_linksOut? and @_linksIn? then @_linksIn.concat(@_linksOut) else []
-      @_linksOut = []
-      @_linksIn  = []
+      oldLinks = @_links ? []
+      @_links = []
 
-      # Purposely done after resetting the arrays so that calls to `TurtleLinkManager.remove` in `Link.die` don't spend
+      # Purposely done after resetting the array so that calls to `TurtleLinkManager.remove` in `Link.die` don't spend
       # a ton of time iterating through long arrays that are in the process of being wiped out. --JAB (11/24/14)
       oldLinks.forEach((link) -> ignoring(DeathInterrupt)(() => link.die()))
 
       return
 
+    # Turtle -> String -> Directedness -> Agent
+    _findLink: (otherTurtle, breedName, directedness) ->
+
+      linkDoesMatch =
+        (l) =>
+          otherEnd(@_ownerID)(l) is otherTurtle and linkBreedMatches(breedName)(directedness)(@_ownerID)(l)
+
+      links = @_links.filter(linkDoesMatch)
+
+      if links.length is 0
+        Nobody
+      else if links.length is 1
+        links[0]
+      else
+        links[@_randomInt(links.length)]
+
+    # String -> Directedness -> TurtleSet
+    _neighbors: (breedName, directedness) ->
+      pipeline(
+        filter(linkBreedMatches(breedName)(directedness)(@_ownerID))
+      , map(otherEnd(@_ownerID))
+      , unique
+      , ((turtles) -> new TurtleSet(turtles))
+      )(@_links)
+
     # () => Unit
     _refresh: ->
-      @_linksIn.concat(@_linksOut).forEach((link) -> link.updateEndRelatedVars(); return)
-      return
-
-    # (String, Directedness) => Array[Turtle]
-    _neighborsOut: (breedName, directedness) ->
-      @_filterNeighbors(@_linksOut, breedName, directedness).map((l) -> l.end2)
-
-    # (String, Directedness) => Array[Turtle]
-    _neighborsIn: (breedName, directedness) ->
-      @_filterNeighbors(@_linksIn, breedName, directedness).map((l) -> l.end1)
-
-    # (Array[Link], String, Directedness) => Array[Link]
-    _filterNeighbors: (neighborArr, breedName, directedness) ->
-      neighborArr.filter((link) => linkBreedMatches(breedName)(directedness)(link))
-
-    # String -> Turtle -> String -> Directedness -> Array Link -> Agent
-    _findLink: (key, otherTurtle, breedName, directedness, linkRegistry) ->
-      linkDoesMatch = (l) -> l[key] is otherTurtle and linkBreedMatches(breedName)(directedness)(l)
-      pipeline(find(linkDoesMatch), fold(-> Nobody)(id))(linkRegistry)
-
-    # (String) => Unit
-    _mustBeUndirected: (breedName) ->
-      if @_breedManager.get(breedName).isDirected()
-        throw new Error("#{breedName} is a directed breed.")
-      return
-
-    # (String) => Unit
-    _mustBeDirected: (breedName) ->
-      if not @_breedManager.get(breedName).isDirected()
-        throw new Error("#{breedName} is an undirected breed.")
+      @_links.forEach((link) -> link.updateEndRelatedVars(); return)
       return

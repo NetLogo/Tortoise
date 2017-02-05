@@ -2,6 +2,7 @@ var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
+var Extensions = tortoise_require('extensions/all');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
 var Meta = tortoise_require('meta');
@@ -68,7 +69,7 @@ var procedures = (function() {
         SelfManager.self().setPatchVariable("inner-neighbors", procedures["ELLIPSE-IN"](world.observer.getGlobal("inner-radius-x"),world.observer.getGlobal("inner-radius-y")));
         SelfManager.self().setPatchVariable("outer-neighbors", procedures["ELLIPSE-RING"](world.observer.getGlobal("outer-radius-x"),world.observer.getGlobal("outer-radius-y"),world.observer.getGlobal("inner-radius-x"),world.observer.getGlobal("inner-radius-y")));
       }, true);
-      if (world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("outer-neighbors").size(), 0); }).nonEmpty()) {
+      if (!world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("outer-neighbors").size(), 0); }).isEmpty()) {
         UserDialogPrims.confirm((Dump('') + Dump("It doesn't make sense that 'outer' is equal to or smaller than 'inner.' ") + Dump(" Please reset the sliders and press Setup again.")));
         throw new Exception.StopInterrupt;
       }

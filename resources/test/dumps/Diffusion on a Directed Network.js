@@ -2,6 +2,7 @@ var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
+var Extensions = tortoise_require('extensions/all');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
 var Meta = tortoise_require('meta');
@@ -109,7 +110,7 @@ var procedures = (function() {
     world.turtles().ask(function() { SelfManager.self().setVariable("new-val", 0); }, true);
     world.turtles().ask(function() {
       var recipients = LinkPrims.outLinkNeighbors("ACTIVE-LINKS");
-      if (recipients.nonEmpty()) {
+      if (!recipients.isEmpty()) {
         var valToKeep = (SelfManager.self().getVariable("val") * (1 - Prims.div(world.observer.getGlobal("diffusion-rate"), 100)));
         SelfManager.self().setVariable("new-val", (SelfManager.self().getVariable("new-val") + valToKeep));
         var valIncrement = Prims.div((SelfManager.self().getVariable("val") - valToKeep), recipients.size());
@@ -130,7 +131,7 @@ var procedures = (function() {
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    if (world.linkManager.linksOfBreed("ACTIVE-LINKS").nonEmpty()) {
+    if (!world.linkManager.linksOfBreed("ACTIVE-LINKS").isEmpty()) {
       ListPrims.oneOf(world.linkManager.linksOfBreed("ACTIVE-LINKS")).ask(function() {
         SelfManager.self().setVariable("breed", world.linkManager.linksOfBreed("INACTIVE-LINKS"));
         SelfManager.self().setVariable('hidden?', true)
@@ -146,7 +147,7 @@ var procedures = (function() {
   temp = (function() {
     world.observer.setGlobal("total-val", ListPrims.sum(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("val"); })));
     world.observer.setGlobal("max-val", ListPrims.max(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("val"); })));
-    if (world.linkManager.linksOfBreed("ACTIVE-LINKS").nonEmpty()) {
+    if (!world.linkManager.linksOfBreed("ACTIVE-LINKS").isEmpty()) {
       world.observer.setGlobal("max-flow", ListPrims.max(world.linkManager.linksOfBreed("ACTIVE-LINKS").projectionBy(function() { return SelfManager.self().getVariable("current-flow"); })));
       world.observer.setGlobal("mean-flow", ListPrims.mean(world.linkManager.linksOfBreed("ACTIVE-LINKS").projectionBy(function() { return SelfManager.self().getVariable("current-flow"); })));
     }

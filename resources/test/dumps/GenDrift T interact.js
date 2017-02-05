@@ -2,6 +2,7 @@ var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
+var Extensions = tortoise_require('extensions/all');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
 var Meta = tortoise_require('meta');
@@ -190,9 +191,11 @@ var procedures = (function() {
   procs["MEET"] = temp;
   temp = (function() {
     var winningAmount = 0;
-    Tasks.forEach(Tasks.commandTask(function() {
-      var taskArguments = arguments;
-      var howMany = world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), taskArguments[0]); }).size();
+    Tasks.forEach(Tasks.commandTask(function(c) {
+      if (arguments.length < 1) {
+        throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+      }
+      var howMany = world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), c); }).size();
       if (Prims.gt(howMany, winningAmount)) {
         winningAmount = howMany;
       }

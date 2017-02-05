@@ -2,6 +2,7 @@ var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
+var Extensions = tortoise_require('extensions/all');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
 var Meta = tortoise_require('meta');
@@ -123,9 +124,11 @@ var procedures = (function() {
       if (!world.observer.getGlobal("gone?")) {
         throw new Exception.StopInterrupt;
       }
-      on_pList = Tasks.map(Tasks.reporterTask(function() {
-        var taskArguments = arguments;
-        return taskArguments[0].projectionBy(function() { return SelfManager.self().getPatchVariable("on?"); });
+      on_pList = Tasks.map(Tasks.reporterTask(function(p) {
+        if (arguments.length < 1) {
+          throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+        }
+        return p.projectionBy(function() { return SelfManager.self().getPatchVariable("on?"); });
       }), ListPrims.sort(world.patches().agentFilter(function() {
         return Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("row"));
       })));
@@ -316,7 +319,7 @@ var procedures = (function() {
       SelfManager.self().setVariable("color", world.observer.getGlobal("background"));
     }
     SelfManager.self().setVariable("heading", 90);
-    for (var _index_5599_5605 = 0, _repeatcount_5599_5605 = StrictMath.floor(4); _index_5599_5605 < _repeatcount_5599_5605; _index_5599_5605++){
+    for (var _index_5606_5612 = 0, _repeatcount_5606_5612 = StrictMath.floor(4); _index_5606_5612 < _repeatcount_5606_5612; _index_5606_5612++){
       SelfManager.self().setPatchVariable("pcolor", SelfManager.self().getVariable("color"));
       SelfManager.self().right(90);
       SelfManager.self().fd(1);

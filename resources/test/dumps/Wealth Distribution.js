@@ -2,6 +2,7 @@ var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
+var Extensions = tortoise_require('extensions/all');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
 var Meta = tortoise_require('meta');
@@ -104,9 +105,11 @@ modelConfig.plots = [(function() {
         plotManager.resetPen();
         plotManager.setPenInterval(Prims.div(100, world.observer.getGlobal("num-people")));
         plotManager.plotValue(0);
-        Tasks.forEach(Tasks.commandTask(function() {
-          var taskArguments = arguments;
-          plotManager.plotValue(taskArguments[0]);
+        Tasks.forEach(Tasks.commandTask(function(_0) {
+          if (arguments.length < 1) {
+            throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+          }
+          plotManager.plotValue(_0);
         }), world.observer.getGlobal("lorenz-points"));;
       });
     });

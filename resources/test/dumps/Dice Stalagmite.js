@@ -2,6 +2,7 @@ var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
+var Extensions = tortoise_require('extensions/all');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
 var Meta = tortoise_require('meta');
@@ -49,9 +50,11 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Single Dice', 'default')(function() {
         plotManager.drawHistogramFrom(world.observer.getGlobal("single-outcomes"));
         var maxbar = ListPrims.modes(world.observer.getGlobal("single-outcomes"));
-        var maxrange = ListPrims.length(world.observer.getGlobal("single-outcomes").filter(Tasks.reporterTask(function() {
-          var taskArguments = arguments;
-          return Prims.equality(taskArguments[0], ListPrims.item(0, maxbar));
+        var maxrange = ListPrims.length(world.observer.getGlobal("single-outcomes").filter(Tasks.reporterTask(function(outcome) {
+          if (arguments.length < 1) {
+            throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+          }
+          return Prims.equality(outcome, ListPrims.item(0, maxbar));
         })));
         plotManager.setYRange(0, ListPrims.max(ListPrims.list(51, maxrange)));;
       });
@@ -68,9 +71,11 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Pair Sums', 'default')(function() {
         plotManager.drawHistogramFrom(world.observer.getGlobal("pair-outcomes"));
         var maxbar = ListPrims.modes(world.observer.getGlobal("pair-outcomes"));
-        var maxrange = ListPrims.length(world.observer.getGlobal("pair-outcomes").filter(Tasks.reporterTask(function() {
-          var taskArguments = arguments;
-          return Prims.equality(taskArguments[0], ListPrims.item(0, maxbar));
+        var maxrange = ListPrims.length(world.observer.getGlobal("pair-outcomes").filter(Tasks.reporterTask(function(outcome) {
+          if (arguments.length < 1) {
+            throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+          }
+          return Prims.equality(outcome, ListPrims.item(0, maxbar));
         })));
         plotManager.setYRange(0, ListPrims.max(ListPrims.list(51, maxrange)));;
       });
@@ -128,7 +133,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
-      if ((world.observer.getGlobal("stop-at-top?") && Prims.turtlesOn(world.observer.getGlobal("top-row")).nonEmpty())) {
+      if ((world.observer.getGlobal("stop-at-top?") && !Prims.turtlesOn(world.observer.getGlobal("top-row")).isEmpty())) {
         UserDialogPrims.confirm("The top has been reached. Turn STOP-AT-TOP? off to keep going.");
         throw new Exception.StopInterrupt;
       }
@@ -137,7 +142,7 @@ var procedures = (function() {
         procedures["BUMP-DOWN"](world.turtleManager.turtlesOfBreed("STACKED-DICE").agentFilter(function() { return Prims.gt(SelfManager.self().getPatchVariable("pxcor"), 0); }));
       }
       procedures["ROLL-DICE"]();
-      while ((world.turtleManager.turtlesOfBreed("SINGLE-DICE").nonEmpty() || world.turtleManager.turtlesOfBreed("PAIRED-DICE").nonEmpty())) {
+      while ((!world.turtleManager.turtlesOfBreed("SINGLE-DICE").isEmpty() || !world.turtleManager.turtlesOfBreed("PAIRED-DICE").isEmpty())) {
         procedures["MOVE-PAIRED-DICE"]();
         procedures["MOVE-SINGLE-DICE"]();
         notImplemented('display', undefined)();
@@ -178,9 +183,9 @@ var procedures = (function() {
   procs["rollDice"] = temp;
   procs["ROLL-DICE"] = temp;
   temp = (function() {
-    if (world.turtleManager.turtlesOfBreed("PAIRED-DICE").agentFilter(function() {
+    if (!world.turtleManager.turtlesOfBreed("PAIRED-DICE").agentFilter(function() {
       return !Prims.equality(SelfManager.self().getVariable("pair-sum"), SelfManager.self().getPatchVariable("column"));
-    }).nonEmpty()) {
+    }).isEmpty()) {
       world.turtleManager.turtlesOfBreed("PAIRED-DICE").ask(function() { SelfManager.self().fd(1); }, true);
     }
     else {
@@ -220,7 +225,7 @@ var procedures = (function() {
   procs["MOVE-SINGLE-DIE"] = temp;
   temp = (function() {
     SelfManager.self().setVariable("heading", 180);
-    if ((Prims.gt(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor) && !Prims.breedOn("STACKED-DICE", SelfManager.self().patchAhead(1)).nonEmpty())) {
+    if ((Prims.gt(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor) && !!Prims.breedOn("STACKED-DICE", SelfManager.self().patchAhead(1)).isEmpty())) {
       SelfManager.self().fd(1);
     }
     else {
@@ -237,13 +242,17 @@ var procedures = (function() {
         throw new Exception.StopInterrupt;
       }
       var mode = ListPrims.first(ListPrims.modes(world.observer.getGlobal("single-outcomes")));
-      var heightOfTallestColumn = ListPrims.length(world.observer.getGlobal("single-outcomes").filter(Tasks.reporterTask(function() {
-        var taskArguments = arguments;
-        return Prims.equality(taskArguments[0], mode);
+      var heightOfTallestColumn = ListPrims.length(world.observer.getGlobal("single-outcomes").filter(Tasks.reporterTask(function(outcome) {
+        if (arguments.length < 1) {
+          throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+        }
+        return Prims.equality(outcome, mode);
       })));
-      var heightOfMyColumn = ListPrims.length(world.observer.getGlobal("single-outcomes").filter(Tasks.reporterTask(function() {
-        var taskArguments = arguments;
-        return Prims.equality(taskArguments[0], SelfManager.self().getVariable("die-value"));
+      var heightOfMyColumn = ListPrims.length(world.observer.getGlobal("single-outcomes").filter(Tasks.reporterTask(function(outcome) {
+        if (arguments.length < 1) {
+          throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+        }
+        return Prims.equality(outcome, SelfManager.self().getVariable("die-value"));
       })));
       if (Prims.gte((heightOfTallestColumn - heightOfMyColumn), (world.topology.height - 2))) {
         SelfManager.self().die();
@@ -264,13 +273,17 @@ var procedures = (function() {
         throw new Exception.StopInterrupt;
       }
       var mode = ListPrims.first(ListPrims.modes(world.observer.getGlobal("pair-outcomes")));
-      var heightOfTallestColumn = ListPrims.length(world.observer.getGlobal("pair-outcomes").filter(Tasks.reporterTask(function() {
-        var taskArguments = arguments;
-        return Prims.equality(taskArguments[0], mode);
+      var heightOfTallestColumn = ListPrims.length(world.observer.getGlobal("pair-outcomes").filter(Tasks.reporterTask(function(outcome) {
+        if (arguments.length < 1) {
+          throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+        }
+        return Prims.equality(outcome, mode);
       })));
-      var heightOfMyColumn = ListPrims.length(world.observer.getGlobal("pair-outcomes").filter(Tasks.reporterTask(function() {
-        var taskArguments = arguments;
-        return Prims.equality(taskArguments[0], SelfManager.self().getVariable("pair-sum"));
+      var heightOfMyColumn = ListPrims.length(world.observer.getGlobal("pair-outcomes").filter(Tasks.reporterTask(function(outcome) {
+        if (arguments.length < 1) {
+          throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+        }
+        return Prims.equality(outcome, SelfManager.self().getVariable("pair-sum"));
       })));
       if (Prims.gte((heightOfTallestColumn - heightOfMyColumn), (world.topology.height - 2))) {
         SelfManager.self().die();
@@ -286,7 +299,7 @@ var procedures = (function() {
   procs["pairedDieCheckVisible"] = temp;
   procs["PAIRED-DIE-CHECK-VISIBLE"] = temp;
   temp = (function(candidates) {
-    while (candidates.agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pycor"), (world.topology.maxPycor - 2)); }).nonEmpty()) {
+    while (!candidates.agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pycor"), (world.topology.maxPycor - 2)); }).isEmpty()) {
       candidates.ask(function() {
         if (Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor)) {
           SelfManager.self().die();

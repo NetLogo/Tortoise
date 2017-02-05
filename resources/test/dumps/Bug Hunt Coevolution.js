@@ -2,6 +2,7 @@ var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
+var Extensions = tortoise_require('extensions/all');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
 var Meta = tortoise_require('meta');
@@ -185,14 +186,14 @@ var procedures = (function() {
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    if (world.turtleManager.turtlesOfBreed("BUGS").nonEmpty()) {
+    if (!world.turtleManager.turtlesOfBreed("BUGS").isEmpty()) {
       world.observer.setGlobal("avg-bug-speed", ListPrims.mean(world.turtleManager.turtlesOfBreed("BUGS").projectionBy(function() { return SelfManager.self().getVariable("speed"); })));
       world.observer.setGlobal("avg-bug-vision", ListPrims.mean(world.turtleManager.turtlesOfBreed("BUGS").projectionBy(function() { return SelfManager.self().getVariable("vision"); })));
     }
     else {
       world.observer.setGlobal("avg-bug-speed", 0);
     }
-    if (world.turtleManager.turtlesOfBreed("BIRDS").nonEmpty()) {
+    if (!world.turtleManager.turtlesOfBreed("BIRDS").isEmpty()) {
       world.observer.setGlobal("avg-bird-speed", ListPrims.mean(world.turtleManager.turtlesOfBreed("BIRDS").projectionBy(function() { return SelfManager.self().getVariable("speed"); })));
       world.observer.setGlobal("avg-bird-vision", ListPrims.mean(world.turtleManager.turtlesOfBreed("BIRDS").projectionBy(function() { return SelfManager.self().getVariable("vision"); })));
     }
@@ -204,7 +205,7 @@ var procedures = (function() {
   procs["UPDATE-VARIABLES"] = temp;
   temp = (function() {
     var worstBird = Nobody;
-    if (((Prims.equality(NLMath.mod(world.observer.getGlobal("total-caught"), world.observer.getGlobal("reproduce-birds-after-eating")), 0) && Prims.gt(world.observer.getGlobal("total-caught"), 0)) && world.turtleManager.turtlesOfBreed("BIRDS").nonEmpty())) {
+    if (((Prims.equality(NLMath.mod(world.observer.getGlobal("total-caught"), world.observer.getGlobal("reproduce-birds-after-eating")), 0) && Prims.gt(world.observer.getGlobal("total-caught"), 0)) && !world.turtleManager.turtlesOfBreed("BIRDS").isEmpty())) {
       worstBird = world.turtleManager.turtlesOfBreed("BIRDS").minOneOf(function() { return SelfManager.self().getVariable("eaten"); });
       worstBird.ask(function() {
         LinkPrims.outLinkNeighbors("LINKS").ask(function() {
@@ -225,12 +226,12 @@ var procedures = (function() {
     var allPredators = Prims.turtleSet(world.turtleManager.turtlesOfBreed("BIRDS"), world.turtleManager.turtlesOfBreed("PLAYERS"));
     world.turtleManager.turtlesOfBreed("BUGS").ask(function() {
       SelfManager.self().fd((SelfManager.self().getVariable("speed") * world.observer.getGlobal("speed-factor")));
-      if (SelfManager.self().inCone(allPredators, SelfManager.self().getVariable("vision"), 120).nonEmpty()) {
+      if (!SelfManager.self().inCone(allPredators, SelfManager.self().getVariable("vision"), 120).isEmpty()) {
         candidatePredators = SelfManager.self().inCone(allPredators, SelfManager.self().getVariable("vision"), 120);
-        if ((Prims.equality(world.observer.getGlobal("bug-flee-strategy"), "any") && candidatePredators.nonEmpty())) {
+        if ((Prims.equality(world.observer.getGlobal("bug-flee-strategy"), "any") && !candidatePredators.isEmpty())) {
           predator = ListPrims.oneOf(candidatePredators);
         }
-        if ((Prims.equality(world.observer.getGlobal("bug-flee-strategy"), "nearest") && candidatePredators.nonEmpty())) {
+        if ((Prims.equality(world.observer.getGlobal("bug-flee-strategy"), "nearest") && !candidatePredators.isEmpty())) {
           predator = candidatePredators.minOneOf(function() { return SelfManager.self().distance(SelfManager.myself()); });
         }
         targetHeading = (180 + SelfManager.self().towards(predator));
@@ -253,7 +254,7 @@ var procedures = (function() {
     var assignedTarget_p = false;
     world.turtleManager.turtlesOfBreed("BIRDS").ask(function() {
       candidateBugs = SelfManager.self().inCone(world.turtleManager.turtlesOfBreed("BUGS"), world.observer.getGlobal("initial-bird-vision"), 120);
-      if (candidateBugs.nonEmpty()) {
+      if (!candidateBugs.isEmpty()) {
         closestBug = candidateBugs.minOneOf(function() { return SelfManager.self().distance(SelfManager.myself()); });
         if ((Prims.equality(SelfManager.self().getVariable("target"), Nobody) && Prims.equality(world.observer.getGlobal("bug-pursuit-strategy"), "lock on one"))) {
           preyAgent = closestBug;
@@ -315,7 +316,7 @@ var procedures = (function() {
     var snapMouseYcor = MousePrims.getY();
     if ((MousePrims.isDown() && MousePrims.isInside())) {
       localBugs = Prims.breedOn("BUGS", world.getPatchAt(snapMouseXcor, snapMouseYcor));
-      if (localBugs.nonEmpty()) {
+      if (!localBugs.isEmpty()) {
         world.observer.setGlobal("total-caught", (world.observer.getGlobal("total-caught") + 1));
         ListPrims.oneOf(localBugs).ask(function() {
           speedOfCaught = SelfManager.self().getVariable("speed");
@@ -352,7 +353,7 @@ var procedures = (function() {
   temp = (function() {
     var speedOfCaught = 0;
     world.turtleManager.turtlesOfBreed("BIRDS").ask(function() {
-      if (SelfManager.self().breedHere("BUGS").nonEmpty()) {
+      if (!SelfManager.self().breedHere("BUGS").isEmpty()) {
         world.observer.setGlobal("total-caught", (world.observer.getGlobal("total-caught") + 1));
         SelfManager.self().setVariable("eaten", (SelfManager.self().getVariable("eaten") + 1));
         ListPrims.oneOf(SelfManager.self().breedHere("BUGS")).ask(function() {
@@ -531,20 +532,20 @@ var procedures = (function() {
     if (Prims.equality(NLMath.mod(world.ticker.tickCount(), 100), 1)) {
       plotManager.setCurrentPlot("Avg. Vision vs. Time");
       plotManager.setCurrentPen("bugs");
-      if (world.turtleManager.turtlesOfBreed("BUGS").nonEmpty()) {
+      if (!world.turtleManager.turtlesOfBreed("BUGS").isEmpty()) {
         plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("avg-bug-vision"));
       }
       plotManager.setCurrentPen("birds");
-      if (world.turtleManager.turtlesOfBreed("BIRDS").nonEmpty()) {
+      if (!world.turtleManager.turtlesOfBreed("BIRDS").isEmpty()) {
         plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("avg-bird-vision"));
       }
       plotManager.setCurrentPlot("Avg. Speed vs. Time");
       plotManager.setCurrentPen("bugs");
-      if (world.turtleManager.turtlesOfBreed("BUGS").nonEmpty()) {
+      if (!world.turtleManager.turtlesOfBreed("BUGS").isEmpty()) {
         plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("avg-bug-speed"));
       }
       plotManager.setCurrentPen("birds");
-      if (world.turtleManager.turtlesOfBreed("BIRDS").nonEmpty()) {
+      if (!world.turtleManager.turtlesOfBreed("BIRDS").isEmpty()) {
         plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("avg-bird-speed"));
       }
       plotManager.setCurrentPlot("Speed of Bugs");

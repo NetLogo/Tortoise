@@ -2,6 +2,7 @@ var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
+var Extensions = tortoise_require('extensions/all');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
 var Meta = tortoise_require('meta');
@@ -95,9 +96,9 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('left', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('avg. tolerance', 'left')(function() {
-        if (world.turtles().agentFilter(function() {
+        if (!world.turtles().agentFilter(function() {
           return Prims.lt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
-        }).nonEmpty()) {
+        }).isEmpty()) {
           plotManager.plotPoint(world.observer.getGlobal("year"), ListPrims.mean(world.turtles().agentFilter(function() {
             return Prims.lt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
           }).projectionBy(function() { return SelfManager.self().getVariable("tolerance"); })));
@@ -108,9 +109,9 @@ modelConfig.plots = [(function() {
   new PenBundle.Pen('right', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('avg. tolerance', 'right')(function() {
-        if (world.turtles().agentFilter(function() {
+        if (!world.turtles().agentFilter(function() {
           return Prims.gt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
-        }).nonEmpty()) {
+        }).isEmpty()) {
           plotManager.plotPoint(world.observer.getGlobal("year"), ListPrims.mean(world.turtles().agentFilter(function() {
             return Prims.gt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
           }).projectionBy(function() { return SelfManager.self().getVariable("tolerance"); })));
@@ -127,11 +128,11 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('simultaneous flowering', 'default')(function() {
-        if ((world.turtles().agentFilter(function() {
+        if ((!world.turtles().agentFilter(function() {
           return Prims.gt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
-        }).nonEmpty() && world.turtles().agentFilter(function() {
+        }).isEmpty() && !world.turtles().agentFilter(function() {
           return Prims.lt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
-        }).nonEmpty())) {
+        }).isEmpty())) {
           var n = 0;
           var m = 0;
           var avg = ListPrims.mean(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("tolerance"); }));
@@ -296,9 +297,11 @@ var procedures = (function() {
         potentialMates = ListPrims.sort(ListPrims.nOf(10, nearbyTurtles));
         potentialMates = ListPrims.fput(SelfManager.self(), potentialMates);
       }
-      var compatibilities = Tasks.map(Tasks.reporterTask(function() {
-        var taskArguments = arguments;
-        return procedures["COMPATIBILITY"](SelfManager.self(),taskArguments[0]);
+      var compatibilities = Tasks.map(Tasks.reporterTask(function(potentialMate) {
+        if (arguments.length < 1) {
+          throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+        }
+        return procedures["COMPATIBILITY"](SelfManager.self(),potentialMate);
       }), potentialMates);
       var mate = procedures["PICK-WEIGHTED"](potentialMates,compatibilities);
       SelfManager.self().hatch(Prims.randomPoisson(world.observer.getGlobal("average-number-offspring")), "").ask(function() {
@@ -436,16 +439,20 @@ var procedures = (function() {
   temp = (function(options, weights) {
     try {
       var wsum = 0;
-      Tasks.forEach(Tasks.commandTask(function() {
-        var taskArguments = arguments;
-        wsum = (wsum + taskArguments[0]);
+      Tasks.forEach(Tasks.commandTask(function(weight) {
+        if (arguments.length < 1) {
+          throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+        }
+        wsum = (wsum + weight);
       }), weights);
       var wret = (wsum * Prims.randomFloat(1));
       var ret = 0;
       wsum = 0;
-      Tasks.forEach(Tasks.commandTask(function() {
-        var taskArguments = arguments;
-        wsum = (wsum + taskArguments[0]);
+      Tasks.forEach(Tasks.commandTask(function(weight) {
+        if (arguments.length < 1) {
+          throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+        }
+        wsum = (wsum + weight);
         if (Prims.gt(wsum, wret)) {
           throw new Exception.ReportInterrupt(ListPrims.item(ret, options));
         }

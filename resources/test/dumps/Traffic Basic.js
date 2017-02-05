@@ -2,6 +2,7 @@ var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
+var Extensions = tortoise_require('extensions/all');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
 var Meta = tortoise_require('meta');
@@ -107,7 +108,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       if (Prims.gt(world.observer.getGlobal("number-of-cars"), world.topology.width)) {
-        UserDialogPrims.confirm((Dump('') + Dump("There are too many cars for the amount of road.  Please decrease the NUMBER-OF-CARS slider to below ") + Dump((world.topology.width + 1)) + Dump(" and press the SETUP button again.  The setup has stopped.")));
+        UserDialogPrims.confirm((Dump('') + Dump("There are too many cars for the amount of road. ") + Dump("Please decrease the NUMBER-OF-CARS slider to below ") + Dump((world.topology.width + 1)) + Dump(" and press the SETUP button again. ") + Dump("The setup has stopped.")));
         throw new Exception.StopInterrupt;
       }
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "car")
@@ -133,7 +134,7 @@ var procedures = (function() {
   procs["setupCars"] = temp;
   procs["SETUP-CARS"] = temp;
   temp = (function() {
-    if (SelfPrims.other(SelfManager.self().turtlesHere()).nonEmpty()) {
+    if (!SelfPrims.other(SelfManager.self().turtlesHere()).isEmpty()) {
       SelfManager.self().fd(1);
       procedures["SEPARATE-CARS"]();
     }

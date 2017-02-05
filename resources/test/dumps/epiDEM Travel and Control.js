@@ -2,6 +2,7 @@ var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
+var Extensions = tortoise_require('extensions/all');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
 var Meta = tortoise_require('meta');
@@ -102,7 +103,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "hours", "% total pop.", true, true, 0.0, 10.0, 0.0, 10.0, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["infected?", "cured?", "inoculated?", "isolated?", "hospitalized?", "infection-length", "isolation-tendency", "hospital-going-tendency", "continent", "ambulance?", "susceptible-0", "nb-infected", "nb-recovered"], [])(["initial-people", "average-isolation-tendency", "inoculation-chance", "initial-ambulance", "average-hospital-going-tendency", "infection-chance", "recovery-chance", "links?", "intra-mobility", "travel?", "travel-tendency", "average-recovery-time", "recovery-time", "nb-infected-previous", "border", "angle", "beta-n", "gamma", "r0"], ["initial-people", "average-isolation-tendency", "inoculation-chance", "initial-ambulance", "average-hospital-going-tendency", "infection-chance", "recovery-chance", "links?", "intra-mobility", "travel?", "travel-tendency", "average-recovery-time"], [], -12, 12, -12, 12, 19.0, false, false, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["infected?", "cured?", "inoculated?", "isolated?", "hospitalized?", "infection-length", "recovery-time", "isolation-tendency", "hospital-going-tendency", "continent", "ambulance?", "susceptible?", "nb-infected", "nb-recovered"], [])(["initial-people", "average-isolation-tendency", "inoculation-chance", "initial-ambulance", "average-hospital-going-tendency", "infection-chance", "recovery-chance", "links?", "intra-mobility", "travel?", "travel-tendency", "average-recovery-time", "nb-infected-previous", "border", "angle", "beta-n", "gamma", "r0"], ["initial-people", "average-isolation-tendency", "inoculation-chance", "initial-ambulance", "average-hospital-going-tendency", "infection-chance", "recovery-chance", "links?", "intra-mobility", "travel?", "travel-tendency", "average-recovery-time"], [], -12, 12, -12, 12, 19.0, false, false, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;
 var ExportPrims = workspace.exportPrims;
 var LayoutManager = workspace.layoutManager;
@@ -154,7 +155,7 @@ var procedures = (function() {
       SelfManager.self().setVariable("hospitalized?", false);
       SelfManager.self().setVariable("ambulance?", false);
       SelfManager.self().setVariable("infected?", false);
-      SelfManager.self().setVariable("susceptible-0", 1);
+      SelfManager.self().setVariable("susceptible?", true);
       procedures["ASSIGN-TENDENCY"]();
       if (Prims.equality(SelfManager.self().getVariable("continent"), 1)) {
         SelfManager.self().setVariable("shape", "square");
@@ -165,12 +166,12 @@ var procedures = (function() {
       SelfManager.self().setVariable("size", 0.5);
       if (Prims.lt(Prims.randomFloat(100), 5)) {
         SelfManager.self().setVariable("infected?", true);
-        SelfManager.self().setVariable("susceptible-0", 0);
-        SelfManager.self().setVariable("infection-length", Prims.random(world.observer.getGlobal("recovery-time")));
+        SelfManager.self().setVariable("susceptible?", false);
+        SelfManager.self().setVariable("infection-length", Prims.random(SelfManager.self().getVariable("recovery-time")));
       }
       if ((!SelfManager.self().getVariable("infected?") && Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("inoculation-chance")))) {
         SelfManager.self().setVariable("inoculated?", true);
-        SelfManager.self().setVariable("susceptible-0", 0);
+        SelfManager.self().setVariable("susceptible?", false);
       }
       else {
         SelfManager.self().setVariable("inoculated?", false);
@@ -198,6 +199,7 @@ var procedures = (function() {
       SelfManager.self().setVariable("hospitalized?", false);
       SelfManager.self().setVariable("infected?", false);
       SelfManager.self().setVariable("inoculated?", false);
+      SelfManager.self().setVariable("susceptible?", false);
       SelfManager.self().setVariable("ambulance?", true);
       SelfManager.self().setVariable("shape", "person");
       SelfManager.self().setVariable("color", 45);
@@ -208,12 +210,12 @@ var procedures = (function() {
   temp = (function() {
     SelfManager.self().setVariable("isolation-tendency", Prims.div(Prims.randomNormal(world.observer.getGlobal("average-isolation-tendency"), world.observer.getGlobal("average-isolation-tendency")), 4));
     SelfManager.self().setVariable("hospital-going-tendency", Prims.div(Prims.randomNormal(world.observer.getGlobal("average-hospital-going-tendency"), world.observer.getGlobal("average-hospital-going-tendency")), 4));
-    world.observer.setGlobal("recovery-time", Prims.div(Prims.randomNormal(world.observer.getGlobal("average-recovery-time"), world.observer.getGlobal("average-recovery-time")), 4));
-    if (Prims.gt(world.observer.getGlobal("recovery-time"), (world.observer.getGlobal("average-recovery-time") * 2))) {
-      world.observer.setGlobal("recovery-time", (world.observer.getGlobal("average-recovery-time") * 2));
+    SelfManager.self().setVariable("recovery-time", Prims.div(Prims.randomNormal(world.observer.getGlobal("average-recovery-time"), world.observer.getGlobal("average-recovery-time")), 4));
+    if (Prims.gt(SelfManager.self().getVariable("recovery-time"), (world.observer.getGlobal("average-recovery-time") * 2))) {
+      SelfManager.self().setVariable("recovery-time", (world.observer.getGlobal("average-recovery-time") * 2));
     }
-    if (Prims.lt(world.observer.getGlobal("recovery-time"), 0)) {
-      world.observer.setGlobal("recovery-time", 0);
+    if (Prims.lt(SelfManager.self().getVariable("recovery-time"), 0)) {
+      SelfManager.self().setVariable("recovery-time", 0);
     }
     if (Prims.gt(SelfManager.self().getVariable("isolation-tendency"), (world.observer.getGlobal("average-isolation-tendency") * 2))) {
       SelfManager.self().setVariable("isolation-tendency", (world.observer.getGlobal("average-isolation-tendency") * 2));
@@ -387,7 +389,7 @@ var procedures = (function() {
   temp = (function() {
     SelfManager.self().setVariable("infection-length", (SelfManager.self().getVariable("infection-length") + 1));
     if (!SelfManager.self().getVariable("hospitalized?")) {
-      if (Prims.gt(SelfManager.self().getVariable("infection-length"), world.observer.getGlobal("recovery-time"))) {
+      if (Prims.gt(SelfManager.self().getVariable("infection-length"), SelfManager.self().getVariable("recovery-time"))) {
         if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("recovery-chance"))) {
           SelfManager.self().setVariable("infected?", false);
           SelfManager.self().setVariable("cured?", true);
@@ -396,7 +398,7 @@ var procedures = (function() {
       }
     }
     else {
-      if (Prims.gt(SelfManager.self().getVariable("infection-length"), Prims.div(world.observer.getGlobal("recovery-time"), 5))) {
+      if (Prims.gt(SelfManager.self().getVariable("infection-length"), Prims.div(SelfManager.self().getVariable("recovery-time"), 5))) {
         SelfManager.self().setVariable("infected?", false);
         SelfManager.self().setVariable("cured?", true);
         SelfManager.self().setVariable("nb-recovered", (SelfManager.self().getVariable("nb-recovered") + 1));
@@ -464,7 +466,7 @@ var procedures = (function() {
     var newRecovered = ListPrims.sum(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("nb-recovered"); }));
     world.observer.setGlobal("nb-infected-previous", ((world.turtles().agentFilter(function() { return SelfManager.self().getVariable("infected?"); }).size() + newRecovered) - newInfected));
     var susceptibleT = ((world.observer.getGlobal("initial-people") - world.turtles().agentFilter(function() { return SelfManager.self().getVariable("infected?"); }).size()) - world.turtles().agentFilter(function() { return SelfManager.self().getVariable("cured?"); }).size());
-    var s0 = ListPrims.sum(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("susceptible-0"); }));
+    var s0 = world.turtles().agentFilter(function() { return SelfManager.self().getVariable("susceptible?"); }).size();
     if (Prims.lt(world.observer.getGlobal("nb-infected-previous"), 10)) {
       world.observer.setGlobal("beta-n", 0);
     }

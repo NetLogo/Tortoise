@@ -2,6 +2,7 @@ var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
+var Extensions = tortoise_require('extensions/all');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
 var Meta = tortoise_require('meta');
@@ -87,7 +88,7 @@ var procedures = (function() {
       SelfManager.self().setVariable("color", 105);
     }, true);
     world.turtleManager.createTurtles(world.observer.getGlobal("num-lipids"), "OILS").ask(function() {
-      var partner = ListPrims.oneOf(world.turtleManager.turtlesOfBreed("WATERS").agentFilter(function() { return !LinkPrims.myLinks("LINKS").nonEmpty(); }));
+      var partner = ListPrims.oneOf(world.turtleManager.turtlesOfBreed("WATERS").agentFilter(function() { return !!LinkPrims.myLinks("LINKS").isEmpty(); }));
       SelfManager.self().moveTo(partner);
       SelfManager.self().fd(world.observer.getGlobal("lipid-length"));
       LinkPrims.createLinkWith(partner, "LINKS").ask(function() {}, false);

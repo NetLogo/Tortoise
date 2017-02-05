@@ -2,6 +2,7 @@ var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
+var Extensions = tortoise_require('extensions/all');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
 var Meta = tortoise_require('meta');
@@ -165,25 +166,31 @@ var procedures = (function() {
     var nodeList = ListPrims.sort(nodeset);
     var neighborChoiceList = ListPrims.sublist(nodeList, 0, k);
     ListPrims.item(k, nodeList).ask(function() {
-      Tasks.forEach(Tasks.commandTask(function() {
-        var taskArguments = arguments;
+      Tasks.forEach(Tasks.commandTask(function(neighbor) {
+        if (arguments.length < 1) {
+          throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+        }
         if (Prims.equality(Prims.random(2), 0)) {
-          LinkPrims.createLinkTo(taskArguments[0], "LINKS").ask(function() {}, false);
+          LinkPrims.createLinkTo(neighbor, "LINKS").ask(function() {}, false);
         }
         else {
-          LinkPrims.createLinkFrom(taskArguments[0], "LINKS").ask(function() {}, false);
+          LinkPrims.createLinkFrom(neighbor, "LINKS").ask(function() {}, false);
         }
       }), neighborChoiceList);
       neighborChoiceList = ListPrims.sentence(Tasks.nValues(k, Tasks.reporterTask(function() {
-        var taskArguments = arguments;
+        if (arguments.length < 0) {
+          throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
+        }
         return SelfManager.self();
       })), neighborChoiceList);
     }, true);
-    Tasks.forEach(Tasks.commandTask(function() {
-      var taskArguments = arguments;
-      taskArguments[0].ask(function() {
+    Tasks.forEach(Tasks.commandTask(function(node) {
+      if (arguments.length < 1) {
+        throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+      }
+      node.ask(function() {
         var tempNeighborList = neighborChoiceList;
-        for (var _index_3025_3031 = 0, _repeatcount_3025_3031 = StrictMath.floor(k); _index_3025_3031 < _repeatcount_3025_3031; _index_3025_3031++){
+        for (var _index_3060_3066 = 0, _repeatcount_3060_3066 = StrictMath.floor(k); _index_3060_3066 < _repeatcount_3060_3066; _index_3060_3066++){
           var neighbor = ListPrims.oneOf(tempNeighborList);
           tempNeighborList = ListPrims.remove(neighbor, tempNeighborList);
           neighborChoiceList = ListPrims.fput(neighbor, neighborChoiceList);
@@ -195,7 +202,9 @@ var procedures = (function() {
           }
         }
         neighborChoiceList = ListPrims.sentence(Tasks.nValues(k, Tasks.reporterTask(function() {
-          var taskArguments = arguments;
+          if (arguments.length < 0) {
+            throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
+          }
           return SelfManager.self();
         })), neighborChoiceList);
       }, true);
@@ -210,7 +219,7 @@ var procedures = (function() {
   procs["DO-LAYOUT"] = temp;
   temp = (function() {
     if (Prims.equality(world.observer.getGlobal("calculation-method"), "diffusion")) {
-      if (world.turtleManager.turtlesOfBreed("SURFERS").nonEmpty()) {
+      if (!world.turtleManager.turtlesOfBreed("SURFERS").isEmpty()) {
         world.turtleManager.turtlesOfBreed("SURFERS").ask(function() { SelfManager.self().die(); }, true);
       }
       world.links().ask(function() {
@@ -219,7 +228,7 @@ var procedures = (function() {
       }, true);
       world.turtleManager.turtlesOfBreed("PAGES").ask(function() { SelfManager.self().setVariable("new-rank", 0); }, true);
       world.turtleManager.turtlesOfBreed("PAGES").ask(function() {
-        if (LinkPrims.outLinkNeighbors("LINKS").nonEmpty()) {
+        if (!LinkPrims.outLinkNeighbors("LINKS").isEmpty()) {
           var rankIncrement = Prims.div(SelfManager.self().getVariable("rank"), LinkPrims.outLinkNeighbors("LINKS").size());
           LinkPrims.outLinkNeighbors("LINKS").ask(function() {
             SelfManager.self().setVariable("new-rank", (SelfManager.self().getVariable("new-rank") + rankIncrement));
@@ -258,7 +267,7 @@ var procedures = (function() {
       world.turtleManager.turtlesOfBreed("SURFERS").ask(function() {
         var oldPage = SelfManager.self().getVariable("current-page");
         SelfManager.self().getVariable("current-page").ask(function() { SelfManager.self().setVariable("visits", (SelfManager.self().getVariable("visits") + 1)); }, true);
-        if ((Prims.lte(Prims.randomFloat(1), world.observer.getGlobal("damping-factor")) && SelfManager.self().getVariable("current-page").projectionBy(function() { return LinkPrims.myOutLinks("LINKS"); }).nonEmpty())) {
+        if ((Prims.lte(Prims.randomFloat(1), world.observer.getGlobal("damping-factor")) && !SelfManager.self().getVariable("current-page").projectionBy(function() { return LinkPrims.myOutLinks("LINKS"); }).isEmpty())) {
           SelfManager.self().setVariable("current-page", ListPrims.oneOf(SelfManager.self().getVariable("current-page").projectionBy(function() { return LinkPrims.outLinkNeighbors("LINKS"); })));
         }
         else {

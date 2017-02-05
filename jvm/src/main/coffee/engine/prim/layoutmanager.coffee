@@ -134,7 +134,7 @@ module.exports =
                 else
                   readjustedValue
 
-            allOfMyLinks  = turtle.linkManager._linksIn.concat(turtle.linkManager._linksOut)
+            allOfMyLinks  = turtle.linkManager.myLinks("LINKS").toArray()
             relevantLinks = pipeline(unique, filter((link) -> linkSet.contains(link)))(allOfMyLinks)
             neighbors     = relevantLinks.map(({ end1, end2 }) -> if end1 is turtle then end2 else end1)
             degree        = relevantLinks.length
@@ -268,10 +268,7 @@ module.exports =
           [t1Index, degCount1] = indexAndCountOf(t1)
           [t2Index, degCount2] = indexAndCountOf(t2)
 
-          [x1, y1] = t1.getCoords()
-          [x2, y2] = t2.getCoords()
-
-          dist = NLMath.distance4_2D(x1, y1, x2, y2)
+          dist = t1.distance(t2)
 
           # links that are connecting high degree nodes should not
           # be as springy, to help prevent "jittering" behavior -FD
@@ -304,25 +301,23 @@ module.exports =
     # (Array[Number], Array[Number], Array[Turtle], Array[Number], Number, Number) => Unit
     _updateXYArraysForAll: (ax, ay, agents, degCounts, nodeCount, rep) ->
       for i in [0...nodeCount]
-
         t1 = agents[i]
-
         for j in [(i + 1)...nodeCount]
           t2  = agents[j]
           div = NLMath.max((degCounts[i] + degCounts[j]) / 2.0, 1.0)
 
           [dx, dy] =
-            if t2.xcor is t1.xcor and t2.ycor is t1.ycor
-              ang   = 360 * @_nextDouble()
-              newDX = -(rep / div * NLMath.squash(NLMath.sin(ang)))
-              newDY = -(rep / div * NLMath.squash(NLMath.cos(ang)))
-              [newDX, newDY]
-            else
-              dist  = NLMath.distance4_2D(t1.xcor, t1.ycor, t2.xcor, t2.ycor)
-              f     = rep / (dist * dist) / div
-              newDX = -(f * (t2.xcor - t1.xcor) / dist)
-              newDY = -(f * (t2.ycor - t1.ycor) / dist)
-              [newDX, newDY]
+          if t2.xcor is t1.xcor and t2.ycor is t1.ycor
+            ang   = 360 * @_nextDouble()
+            newDX = -(rep / div * NLMath.squash(NLMath.sin(ang)))
+            newDY = -(rep / div * NLMath.squash(NLMath.cos(ang)))
+            [newDX, newDY]
+          else
+            dist  = t1.distance(t2)
+            f     = rep / (dist * dist) / div
+            newDX = -(f * (t2.xcor - t1.xcor) / dist)
+            newDY = -(f * (t2.ycor - t1.ycor) / dist)
+            [newDX, newDY]
 
           ax[i] += dx
           ay[i] += dy

@@ -51,7 +51,7 @@ module.exports =
       @_updateVarsByName = @_genUpdate(this)
 
       @penManager  = genPenManager(this)
-      @linkManager = new TurtleLinkManager(@id, @world.breedManager)
+      @linkManager = new TurtleLinkManager(@id, @world.breedManager, @world.rng.nextInt)
 
       varNames     = @_varNamesForBreed(breed)
       @_varManager = @_genVarManager(varNames)
@@ -419,7 +419,7 @@ module.exports =
 
     # () => { "fixeds": Array[Turtle], "others": Array[Turtle] }
     _tiedTurtlesRaw: ->
-      links = @linkManager.tieLinks().filter((l) -> l.tiemode isnt "none")
+      links = @linkManager.myOutLinks("LINKS").toArray().filter((l) -> l.tiemode isnt "none")
       f =
         ([fixeds, others], { end1, end2, tiemode }) =>
           turtle = if end1 is this then end2 else end1

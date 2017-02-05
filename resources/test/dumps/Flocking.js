@@ -2,6 +2,7 @@ var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
+var Extensions = tortoise_require('extensions/all');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
 var Meta = tortoise_require('meta');
@@ -67,6 +68,7 @@ var procedures = (function() {
       SelfManager.self().setVariable("color", ((45 - 2) + Prims.random(7)));
       SelfManager.self().setVariable("size", 1.5);
       SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
+      SelfManager.self().setVariable("flockmates", new TurtleSet([]));
     }, true);
     world.ticker.reset();
   });
@@ -74,7 +76,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     world.turtles().ask(function() { procedures["FLOCK"](); }, true);
-    for (var _index_443_449 = 0, _repeatcount_443_449 = StrictMath.floor(5); _index_443_449 < _repeatcount_443_449; _index_443_449++){
+    for (var _index_475_481 = 0, _repeatcount_475_481 = StrictMath.floor(5); _index_475_481 < _repeatcount_475_481; _index_475_481++){
       world.turtles().ask(function() { SelfManager.self().fd(0.2); }, true);
       notImplemented('display', undefined)();
     }
@@ -84,7 +86,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     procedures["FIND-FLOCKMATES"]();
-    if (SelfManager.self().getVariable("flockmates").nonEmpty()) {
+    if (!SelfManager.self().getVariable("flockmates").isEmpty()) {
       procedures["FIND-NEAREST-NEIGHBOR"]();
       if (Prims.lt(SelfManager.self().distance(SelfManager.self().getVariable("nearest-neighbor")), world.observer.getGlobal("minimum-separation"))) {
         procedures["SEPARATE"]();

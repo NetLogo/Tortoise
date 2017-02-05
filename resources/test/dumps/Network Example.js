@@ -43,7 +43,7 @@ if (typeof javax !== "undefined") {
   }
 }
 modelConfig.plots = [];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])(["edge"], ["edge"], [], -12, 12, -12, 12, 14.0, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])(["number-of-nodes", "number-of-links"], ["number-of-nodes", "number-of-links"], [], -20, 20, -20, 20, 10.0, false, false, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;
 var ExportPrims = workspace.exportPrims;
 var LayoutManager = workspace.layoutManager;
@@ -64,45 +64,39 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     world.clearAll();
-    world.patches().ask(function() {
-      if (((Prims.equality(SelfManager.self().getPatchVariable("pxcor"), 0) && Prims.gte(SelfManager.self().getPatchVariable("pycor"), 0)) && Prims.lte(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("edge")))) {
-        SelfManager.self().setPatchVariable("pcolor", 15);
-      }
-      if (((Prims.equality(SelfManager.self().getPatchVariable("pxcor"), world.observer.getGlobal("edge")) && Prims.gte(SelfManager.self().getPatchVariable("pycor"), 0)) && Prims.lte(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("edge")))) {
-        SelfManager.self().setPatchVariable("pcolor", 15);
-      }
-      if (((Prims.equality(SelfManager.self().getPatchVariable("pycor"), 0) && Prims.gte(SelfManager.self().getPatchVariable("pxcor"), 0)) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), world.observer.getGlobal("edge")))) {
-        SelfManager.self().setPatchVariable("pcolor", 15);
-      }
-      if (((Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("edge")) && Prims.gte(SelfManager.self().getPatchVariable("pxcor"), 0)) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), world.observer.getGlobal("edge")))) {
-        SelfManager.self().setPatchVariable("pcolor", 15);
-      }
+    BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
+    world.turtleManager.createTurtles(world.observer.getGlobal("number-of-nodes"), "").ask(function() {
+      SelfManager.self().setVariable("color", 105);
+      SelfManager.self().setVariable("size", 2);
     }, true);
+    LayoutManager.layoutCircle(world.turtles(), (Prims.div(world.topology.width, 2) - 2));
     world.ticker.reset();
   });
-  procs["setupCorner"] = temp;
-  procs["SETUP-CORNER"] = temp;
+  procs["setup"] = temp;
+  procs["SETUP"] = temp;
   temp = (function() {
-    world.clearAll();
-    var halfedge = NLMath.toInt(Prims.div(world.observer.getGlobal("edge"), 2));
-    world.patches().ask(function() {
-      if (((Prims.equality(SelfManager.self().getPatchVariable("pxcor"),  -halfedge) && Prims.gte(SelfManager.self().getPatchVariable("pycor"),  -halfedge)) && Prims.lte(SelfManager.self().getPatchVariable("pycor"), (0 + halfedge)))) {
-        SelfManager.self().setPatchVariable("pcolor", 105);
+    try {
+      if (!!world.turtles().isEmpty()) {
+        throw new Exception.StopInterrupt;
       }
-      if (((Prims.equality(SelfManager.self().getPatchVariable("pxcor"), (0 + halfedge)) && Prims.gte(SelfManager.self().getPatchVariable("pycor"),  -halfedge)) && Prims.lte(SelfManager.self().getPatchVariable("pycor"), (0 + halfedge)))) {
-        SelfManager.self().setPatchVariable("pcolor", 105);
+      ListPrims.oneOf(world.turtles()).ask(function() {
+        LinkPrims.createLinkWith(ListPrims.oneOf(SelfPrims.other(world.turtles())), "LINKS").ask(function() {}, false);
+      }, true);
+      while (Prims.gt(world.links().size(), world.observer.getGlobal("number-of-links"))) {
+        ListPrims.oneOf(world.links()).ask(function() { SelfManager.self().die(); }, true);
       }
-      if (((Prims.equality(SelfManager.self().getPatchVariable("pycor"),  -halfedge) && Prims.gte(SelfManager.self().getPatchVariable("pxcor"),  -halfedge)) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), (0 + halfedge)))) {
-        SelfManager.self().setPatchVariable("pcolor", 105);
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      if (((Prims.equality(SelfManager.self().getPatchVariable("pycor"), (0 + halfedge)) && Prims.gte(SelfManager.self().getPatchVariable("pxcor"),  -halfedge)) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), (0 + halfedge)))) {
-        SelfManager.self().setPatchVariable("pcolor", 105);
-      }
-    }, true);
-    world.ticker.reset();
+    }
   });
-  procs["setupCenter"] = temp;
-  procs["SETUP-CENTER"] = temp;
+  procs["go"] = temp;
+  procs["GO"] = temp;
   return procs;
 })();
-world.observer.setGlobal("edge", 8);
+world.observer.setGlobal("number-of-nodes", 30);
+world.observer.setGlobal("number-of-links", 20);

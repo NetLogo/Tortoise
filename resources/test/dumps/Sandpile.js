@@ -2,6 +2,7 @@ var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
+var Extensions = tortoise_require('extensions/all');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
 var Meta = tortoise_require('meta');
@@ -61,17 +62,22 @@ modelConfig.plots = [(function() {
         if ((Prims.equality(NLMath.mod(world.ticker.tickCount(), 100), 0) && !ListPrims.empty(world.observer.getGlobal("sizes")))) {
           plotManager.resetPen();
           var counts = Tasks.nValues((1 + ListPrims.max(world.observer.getGlobal("sizes"))), Tasks.reporterTask(function() {
-            var taskArguments = arguments;
+            if (arguments.length < 0) {
+              throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
+            }
             return 0;
           }));
-          Tasks.forEach(Tasks.commandTask(function() {
-            var taskArguments = arguments;
-            counts = ListPrims.replaceItem(taskArguments[0], counts, (1 + ListPrims.item(taskArguments[0], counts)));
+          Tasks.forEach(Tasks.commandTask(function(theSize) {
+            if (arguments.length < 1) {
+              throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+            }
+            counts = ListPrims.replaceItem(theSize, counts, (1 + ListPrims.item(theSize, counts)));
           }), world.observer.getGlobal("sizes"));
           var s = 0;
-          Tasks.forEach(Tasks.commandTask(function() {
-            var taskArguments = arguments;
-            var c = taskArguments[0];
+          Tasks.forEach(Tasks.commandTask(function(c) {
+            if (arguments.length < 1) {
+              throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+            }
             if ((Prims.gt(s, 0) && Prims.gt(c, 0))) {
               plotManager.plotPoint(NLMath.log(s, 10), NLMath.log(c, 10));
             }
@@ -93,17 +99,22 @@ modelConfig.plots = [(function() {
         if ((Prims.equality(NLMath.mod(world.ticker.tickCount(), 100), 0) && !ListPrims.empty(world.observer.getGlobal("lifetimes")))) {
           plotManager.resetPen();
           var counts = Tasks.nValues((1 + ListPrims.max(world.observer.getGlobal("lifetimes"))), Tasks.reporterTask(function() {
-            var taskArguments = arguments;
+            if (arguments.length < 0) {
+              throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
+            }
             return 0;
           }));
-          Tasks.forEach(Tasks.commandTask(function() {
-            var taskArguments = arguments;
-            counts = ListPrims.replaceItem(taskArguments[0], counts, (1 + ListPrims.item(taskArguments[0], counts)));
+          Tasks.forEach(Tasks.commandTask(function(lifetime) {
+            if (arguments.length < 1) {
+              throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+            }
+            counts = ListPrims.replaceItem(lifetime, counts, (1 + ListPrims.item(lifetime, counts)));
           }), world.observer.getGlobal("lifetimes"));
           var l = 0;
-          Tasks.forEach(Tasks.commandTask(function() {
-            var taskArguments = arguments;
-            var c = taskArguments[0];
+          Tasks.forEach(Tasks.commandTask(function(c) {
+            if (arguments.length < 1) {
+              throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+            }
             if ((Prims.gt(l, 0) && Prims.gt(c, 0))) {
               plotManager.plotPoint(NLMath.log(l, 10), NLMath.log(c, 10));
             }
@@ -158,7 +169,9 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function(initial) {
     procedures["SETUP"](Tasks.reporterTask(function() {
-      var taskArguments = arguments;
+      if (arguments.length < 0) {
+        throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
+      }
       return initial;
     }));
   });
@@ -166,7 +179,9 @@ var procedures = (function() {
   procs["SETUP-UNIFORM"] = temp;
   temp = (function() {
     procedures["SETUP"](Tasks.reporterTask(function() {
-      var taskArguments = arguments;
+      if (arguments.length < 0) {
+        throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
+      }
       return Prims.random(4);
     }));
   });
@@ -187,7 +202,7 @@ var procedures = (function() {
       var results = procedures["STABILIZE"](world.observer.getGlobal("animate-avalanches?"));
       var avalanchePatches = ListPrims.first(results);
       var lifetime = ListPrims.last(results);
-      if (avalanchePatches.nonEmpty()) {
+      if (!avalanchePatches.isEmpty()) {
         world.observer.setGlobal("sizes", ListPrims.lput(avalanchePatches.size(), world.observer.getGlobal("sizes")));
         world.observer.setGlobal("lifetimes", ListPrims.lput(lifetime, world.observer.getGlobal("lifetimes")));
       }
@@ -242,9 +257,9 @@ var procedures = (function() {
       var activePatches = world.patches().agentFilter(function() { return Prims.gt(SelfManager.self().getPatchVariable("n"), 3); });
       var iters = 0;
       var avalanchePatches = new PatchSet([]);
-      while (activePatches.nonEmpty()) {
+      while (!activePatches.isEmpty()) {
         var overloadedPatches = activePatches.agentFilter(function() { return Prims.gt(SelfManager.self().getPatchVariable("n"), 3); });
-        if (overloadedPatches.nonEmpty()) {
+        if (!overloadedPatches.isEmpty()) {
           iters = (iters + 1);
         }
         overloadedPatches.ask(function() {

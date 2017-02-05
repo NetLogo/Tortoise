@@ -2,6 +2,7 @@ var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
+var Extensions = tortoise_require('extensions/all');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
 var Meta = tortoise_require('meta');
@@ -108,7 +109,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "Time", "Number of agents", false, true, 0.0, 10.0, 0.0, 1.0, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["incumbent?", "in-team?", "downtime", "explored?"], ["new-collaboration?"])(["layout?", "p", "q", "team-size", "plot?", "max-downtime", "newcomer", "component-size", "giant-component-size", "components"], ["layout?", "p", "q", "team-size", "plot?", "max-downtime"], [], -50, 50, -50, 50, 4.0, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["incumbent?", "in-team?", "downtime", "explored?"], ["new-collaboration?"])(["layout?", "p", "q", "team-size", "max-downtime", "newcomer", "component-size", "giant-component-size", "components"], ["layout?", "p", "q", "team-size", "max-downtime"], [], -50, 50, -50, 50, 4.0, true, true, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;
 var ExportPrims = workspace.exportPrims;
 var LayoutManager = workspace.layoutManager;
@@ -195,11 +196,11 @@ var procedures = (function() {
         newTeamMember = world.observer.getGlobal("newcomer");
       }
       else {
-        if ((Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("q")) && world.turtles().agentFilter(function() {
-          return (SelfManager.self().getVariable("in-team?") && LinkPrims.linkNeighbors("LINKS").agentFilter(function() { return !SelfManager.self().getVariable("in-team?"); }).nonEmpty());
-        }).nonEmpty())) {
+        if ((Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("q")) && !world.turtles().agentFilter(function() {
+          return (SelfManager.self().getVariable("in-team?") && !LinkPrims.linkNeighbors("LINKS").agentFilter(function() { return !SelfManager.self().getVariable("in-team?"); }).isEmpty());
+        }).isEmpty())) {
           newTeamMember = ListPrims.oneOf(world.turtles().agentFilter(function() {
-            return (!SelfManager.self().getVariable("in-team?") && LinkPrims.linkNeighbors("LINKS").agentFilter(function() { return SelfManager.self().getVariable("in-team?"); }).nonEmpty());
+            return (!SelfManager.self().getVariable("in-team?") && !LinkPrims.linkNeighbors("LINKS").agentFilter(function() { return SelfManager.self().getVariable("in-team?"); }).isEmpty());
           }));
         }
         else {
@@ -309,5 +310,4 @@ world.observer.setGlobal("layout?", true);
 world.observer.setGlobal("p", 40);
 world.observer.setGlobal("q", 65);
 world.observer.setGlobal("team-size", 4);
-world.observer.setGlobal("plot?", true);
 world.observer.setGlobal("max-downtime", 40);

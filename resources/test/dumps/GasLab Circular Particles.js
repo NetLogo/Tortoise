@@ -2,6 +2,7 @@ var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
+var Extensions = tortoise_require('extensions/all');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
 var Meta = tortoise_require('meta');
@@ -203,26 +204,30 @@ var procedures = (function() {
       SelfManager.self().setVariable("energy", procedures["KINETIC-ENERGY"]());
       procedures["RECOLOR"]();
     }, true);
-    Tasks.forEach(Tasks.commandTask(function() {
-      var taskArguments = arguments;
-      taskArguments[0].ask(function() {
+    Tasks.forEach(Tasks.commandTask(function(theParticle) {
+      if (arguments.length < 1) {
+        throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+      }
+      theParticle.ask(function() {
         procedures["POSITION-RANDOMLY"]();
         while (procedures["OVERLAPPING?"]()) {
           procedures["POSITION-RANDOMLY"]();
         }
       }, true);
-    }), ListPrims.sortBy(Tasks.reporterTask(function() {
-      var taskArguments = arguments;
-      return Prims.gt(taskArguments[0].projectionBy(function() { return SelfManager.self().getVariable("size"); }), taskArguments[1].projectionBy(function() { return SelfManager.self().getVariable("size"); }));
+    }), ListPrims.sortBy(Tasks.reporterTask(function(a, b) {
+      if (arguments.length < 2) {
+        throw new Error("anonymous procedure expected 2 inputs, but only got " + arguments.length);
+      }
+      return Prims.gt(a.projectionBy(function() { return SelfManager.self().getVariable("size"); }), b.projectionBy(function() { return SelfManager.self().getVariable("size"); }));
     }), world.turtleManager.turtlesOfBreed("PARTICLES")));
   });
   procs["makeParticles"] = temp;
   procs["MAKE-PARTICLES"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(SelfPrims.other(SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("PARTICLES"), Prims.div((SelfManager.self().getVariable("size") + world.observer.getGlobal("largest-particle-size")), 2)).agentFilter(function() {
+      throw new Exception.ReportInterrupt(!SelfPrims.other(SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("PARTICLES"), Prims.div((SelfManager.self().getVariable("size") + world.observer.getGlobal("largest-particle-size")), 2)).agentFilter(function() {
         return Prims.lt(SelfManager.self().distance(SelfManager.myself()), Prims.div((SelfManager.self().getVariable("size") + SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("size"); })), 2));
-      })).nonEmpty());
+      })).isEmpty());
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -268,17 +273,21 @@ var procedures = (function() {
   procs["UPDATE-VARIABLES"] = temp;
   temp = (function() {
     if (NLType(world.observer.getGlobal("particle2")).isValidTurtle()) {
-      world.observer.setGlobal("collisions", world.observer.getGlobal("collisions").filter(Tasks.reporterTask(function() {
-        var taskArguments = arguments;
-        return (((!Prims.equality(ListPrims.item(1, taskArguments[0]), world.observer.getGlobal("particle1")) && !Prims.equality(ListPrims.item(2, taskArguments[0]), world.observer.getGlobal("particle1"))) && !Prims.equality(ListPrims.item(1, taskArguments[0]), world.observer.getGlobal("particle2"))) && !Prims.equality(ListPrims.item(2, taskArguments[0]), world.observer.getGlobal("particle2")));
+      world.observer.setGlobal("collisions", world.observer.getGlobal("collisions").filter(Tasks.reporterTask(function(theCollision) {
+        if (arguments.length < 1) {
+          throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+        }
+        return (((!Prims.equality(ListPrims.item(1, theCollision), world.observer.getGlobal("particle1")) && !Prims.equality(ListPrims.item(2, theCollision), world.observer.getGlobal("particle1"))) && !Prims.equality(ListPrims.item(1, theCollision), world.observer.getGlobal("particle2"))) && !Prims.equality(ListPrims.item(2, theCollision), world.observer.getGlobal("particle2")));
       })));
       world.observer.getGlobal("particle2").ask(function() { procedures["CHECK-FOR-WALL-COLLISION"](); }, true);
       world.observer.getGlobal("particle2").ask(function() { procedures["CHECK-FOR-PARTICLE-COLLISION"](); }, true);
     }
     else {
-      world.observer.setGlobal("collisions", world.observer.getGlobal("collisions").filter(Tasks.reporterTask(function() {
-        var taskArguments = arguments;
-        return (!Prims.equality(ListPrims.item(1, taskArguments[0]), world.observer.getGlobal("particle1")) && !Prims.equality(ListPrims.item(2, taskArguments[0]), world.observer.getGlobal("particle1")));
+      world.observer.setGlobal("collisions", world.observer.getGlobal("collisions").filter(Tasks.reporterTask(function(theCollision) {
+        if (arguments.length < 1) {
+          throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+        }
+        return (!Prims.equality(ListPrims.item(1, theCollision), world.observer.getGlobal("particle1")) && !Prims.equality(ListPrims.item(2, theCollision), world.observer.getGlobal("particle1")));
       })));
     }
     if (!Prims.equality(world.observer.getGlobal("particle1"), Nobody)) {
@@ -287,9 +296,11 @@ var procedures = (function() {
     if (!Prims.equality(world.observer.getGlobal("particle1"), Nobody)) {
       world.observer.getGlobal("particle1").ask(function() { procedures["CHECK-FOR-PARTICLE-COLLISION"](); }, true);
     }
-    world.observer.setGlobal("collisions", world.observer.getGlobal("collisions").filter(Tasks.reporterTask(function() {
-      var taskArguments = arguments;
-      return (!Prims.equality(ListPrims.item(1, taskArguments[0]), world.observer.getGlobal("particle1")) || !Prims.equality(ListPrims.item(2, taskArguments[0]), world.observer.getGlobal("particle2")));
+    world.observer.setGlobal("collisions", world.observer.getGlobal("collisions").filter(Tasks.reporterTask(function(theCollision) {
+      if (arguments.length < 1) {
+        throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+      }
+      return (!Prims.equality(ListPrims.item(1, theCollision), world.observer.getGlobal("particle1")) || !Prims.equality(ListPrims.item(2, theCollision), world.observer.getGlobal("particle2")));
     })));
     world.observer.setGlobal("particle1", Nobody);
     world.observer.setGlobal("particle2", Nobody);
@@ -363,10 +374,12 @@ var procedures = (function() {
         throw new Exception.StopInterrupt;
       }
       var winner = ListPrims.first(world.observer.getGlobal("collisions"));
-      Tasks.forEach(Tasks.commandTask(function() {
-        var taskArguments = arguments;
-        if (Prims.lt(ListPrims.first(taskArguments[0]), ListPrims.first(winner))) {
-          winner = taskArguments[0];
+      Tasks.forEach(Tasks.commandTask(function(theCollision) {
+        if (arguments.length < 1) {
+          throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+        }
+        if (Prims.lt(ListPrims.first(theCollision), ListPrims.first(winner))) {
+          winner = theCollision;
         }
       }), world.observer.getGlobal("collisions"));
       var dt = ListPrims.item(0, winner);

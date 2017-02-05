@@ -2,6 +2,7 @@ var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
+var Extensions = tortoise_require('extensions/all');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
 var Meta = tortoise_require('meta');
@@ -119,7 +120,7 @@ var procedures = (function() {
       world.observer.setGlobal("total", (world.observer.getGlobal("total") + 1));
       procedures["COLORIZE"]();
     }, true);
-    while (activePatches.nonEmpty()) {
+    while (!activePatches.isEmpty()) {
       var overloadedPatches = activePatches.agentFilter(function() { return Prims.gt(SelfManager.self().getPatchVariable("n"), 3); });
       overloadedPatches.ask(function() {
         SelfManager.self().setPatchVariable("n", (SelfManager.self().getPatchVariable("n") - 4));

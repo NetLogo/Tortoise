@@ -2,6 +2,7 @@ var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
+var Extensions = tortoise_require('extensions/all');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
 var Meta = tortoise_require('meta');
@@ -209,7 +210,7 @@ var procedures = (function() {
   procs["setupCars"] = temp;
   procs["SETUP-CARS"] = temp;
   temp = (function() {
-    SelfManager.self().moveTo(ListPrims.oneOf(world.observer.getGlobal("roads").agentFilter(function() { return !Prims.turtlesOn(SelfManager.self()).nonEmpty(); })));
+    SelfManager.self().moveTo(ListPrims.oneOf(world.observer.getGlobal("roads").agentFilter(function() { return !!Prims.turtlesOn(SelfManager.self()).isEmpty(); })));
   });
   procs["putOnEmptyRoad"] = temp;
   procs["PUT-ON-EMPTY-ROAD"] = temp;
@@ -328,10 +329,10 @@ var procedures = (function() {
   procs["SET-CAR-SPEED"] = temp;
   temp = (function(deltaX, deltaY) {
     var turtlesAhead = SelfManager.self().turtlesAt(deltaX, deltaY);
-    if (turtlesAhead.nonEmpty()) {
-      if (turtlesAhead.agentFilter(function() {
+    if (!turtlesAhead.isEmpty()) {
+      if (!turtlesAhead.agentFilter(function() {
         return !Prims.equality(SelfManager.self().getVariable("up-car?"), SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("up-car?"); }));
-      }).nonEmpty()) {
+      }).isEmpty()) {
         SelfManager.self().setVariable("speed", 0);
       }
       else {

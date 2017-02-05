@@ -2,6 +2,7 @@ var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
+var Extensions = tortoise_require('extensions/all');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
 var Meta = tortoise_require('meta');
@@ -72,40 +73,56 @@ var procedures = (function() {
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    world.patches().ask(function() {
-      SelfManager.self().setPatchVariable("total", ListPrims.sum(SelfManager.self().getNeighbors().projectionBy(function() { return SelfManager.self().getPatchVariable("vote"); })));
-    }, true);
-    world.patches().ask(function() {
-      if (Prims.gt(SelfManager.self().getPatchVariable("total"), 5)) {
-        SelfManager.self().setPatchVariable("vote", 1);
-      }
-      if (Prims.lt(SelfManager.self().getPatchVariable("total"), 3)) {
-        SelfManager.self().setPatchVariable("vote", 0);
-      }
-      if (Prims.equality(SelfManager.self().getPatchVariable("total"), 4)) {
-        if (world.observer.getGlobal("change-vote-if-tied?")) {
-          SelfManager.self().setPatchVariable("vote", (1 - SelfManager.self().getPatchVariable("vote")));
-        }
-      }
-      if (Prims.equality(SelfManager.self().getPatchVariable("total"), 5)) {
-        if (world.observer.getGlobal("award-close-calls-to-loser?")) {
-          SelfManager.self().setPatchVariable("vote", 0);
-        }
-        else {
+    try {
+      var anyVotesChanged_p = false;
+      world.patches().ask(function() {
+        SelfManager.self().setPatchVariable("total", ListPrims.sum(SelfManager.self().getNeighbors().projectionBy(function() { return SelfManager.self().getPatchVariable("vote"); })));
+      }, true);
+      world.patches().ask(function() {
+        var previousVote = SelfManager.self().getPatchVariable("vote");
+        if (Prims.gt(SelfManager.self().getPatchVariable("total"), 5)) {
           SelfManager.self().setPatchVariable("vote", 1);
         }
-      }
-      if (Prims.equality(SelfManager.self().getPatchVariable("total"), 3)) {
-        if (world.observer.getGlobal("award-close-calls-to-loser?")) {
-          SelfManager.self().setPatchVariable("vote", 1);
-        }
-        else {
+        if (Prims.lt(SelfManager.self().getPatchVariable("total"), 3)) {
           SelfManager.self().setPatchVariable("vote", 0);
         }
+        if (Prims.equality(SelfManager.self().getPatchVariable("total"), 4)) {
+          if (world.observer.getGlobal("change-vote-if-tied?")) {
+            SelfManager.self().setPatchVariable("vote", (1 - SelfManager.self().getPatchVariable("vote")));
+          }
+        }
+        if (Prims.equality(SelfManager.self().getPatchVariable("total"), 5)) {
+          if (world.observer.getGlobal("award-close-calls-to-loser?")) {
+            SelfManager.self().setPatchVariable("vote", 0);
+          }
+          else {
+            SelfManager.self().setPatchVariable("vote", 1);
+          }
+        }
+        if (Prims.equality(SelfManager.self().getPatchVariable("total"), 3)) {
+          if (world.observer.getGlobal("award-close-calls-to-loser?")) {
+            SelfManager.self().setPatchVariable("vote", 1);
+          }
+          else {
+            SelfManager.self().setPatchVariable("vote", 0);
+          }
+        }
+        if (!Prims.equality(SelfManager.self().getPatchVariable("vote"), previousVote)) {
+          anyVotesChanged_p = true;
+        }
+        procedures["RECOLOR-PATCH"]();
+      }, true);
+      if (!anyVotesChanged_p) {
+        throw new Exception.StopInterrupt;
       }
-      procedures["RECOLOR-PATCH"]();
-    }, true);
-    world.ticker.tick();
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["go"] = temp;
   procs["GO"] = temp;

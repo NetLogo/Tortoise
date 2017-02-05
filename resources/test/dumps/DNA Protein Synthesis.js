@@ -2,6 +2,7 @@ var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
+var Extensions = tortoise_require('extensions/all');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
 var Meta = tortoise_require('meta');
@@ -133,13 +134,13 @@ var procedures = (function() {
     }
     if (Prims.equality(world.observer.getGlobal("initial-dna-string"), "random (short strand)")) {
       var initialLengthDna = 12;
-      for (var _index_6516_6522 = 0, _repeatcount_6516_6522 = StrictMath.floor(initialLengthDna); _index_6516_6522 < _repeatcount_6516_6522; _index_6516_6522++){
+      for (var _index_6358_6364 = 0, _repeatcount_6358_6364 = StrictMath.floor(initialLengthDna); _index_6358_6364 < _repeatcount_6358_6364; _index_6358_6364++){
         world.observer.setGlobal("original-dna-string", (Dump('') + Dump(world.observer.getGlobal("original-dna-string")) + Dump(procedures["RANDOM-BASE-LETTER-DNA"]())));
       }
     }
     if (Prims.equality(world.observer.getGlobal("initial-dna-string"), "random (long strand)")) {
       var initialLengthDna = 56;
-      for (var _index_6708_6714 = 0, _repeatcount_6708_6714 = StrictMath.floor(initialLengthDna); _index_6708_6714 < _repeatcount_6708_6714; _index_6708_6714++){
+      for (var _index_6550_6556 = 0, _repeatcount_6550_6556 = StrictMath.floor(initialLengthDna); _index_6550_6556 < _repeatcount_6550_6556; _index_6550_6556++){
         world.observer.setGlobal("original-dna-string", (Dump('') + Dump(world.observer.getGlobal("original-dna-string")) + Dump(procedures["RANDOM-BASE-LETTER-DNA"]())));
       }
     }
@@ -198,7 +199,7 @@ var procedures = (function() {
     world.turtleManager.createTurtles(1, "").ask(function() {
       SelfManager.self().setVariable("heading", 90);
       SelfManager.self().fd(1);
-      for (var _index_8361_8367 = 0, _repeatcount_8361_8367 = StrictMath.floor(ListPrims.length(dnaString)); _index_8361_8367 < _repeatcount_8361_8367; _index_8361_8367++){
+      for (var _index_8203_8209 = 0, _repeatcount_8203_8209 = StrictMath.floor(ListPrims.length(dnaString)); _index_8203_8209 < _repeatcount_8203_8209; _index_8203_8209++){
         SelfManager.self().hatch(1, "").ask(function() {
           SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("NUCLEOTIDES"));
           SelfManager.self().setVariable("strand", strandType);
@@ -224,7 +225,7 @@ var procedures = (function() {
     var triplet = "";
     var itemPosition = 0;
     var lastItemKept = ListPrims.length(dnaString);
-    for (var _index_9081_9087 = 0, _repeatcount_9081_9087 = StrictMath.floor(ListPrims.length(dnaString)); _index_9081_9087 < _repeatcount_9081_9087; _index_9081_9087++){
+    for (var _index_8923_8929 = 0, _repeatcount_8923_8929 = StrictMath.floor(ListPrims.length(dnaString)); _index_8923_8929 < _repeatcount_8923_8929; _index_8923_8929++){
       var firstItem = ListPrims.item(0, remainingDna);
       remainingDna = ListPrims.removeItem(0, remainingDna);
       lastLastItem = lastItem;
@@ -254,7 +255,7 @@ var procedures = (function() {
       var endOfGene_p = false;
       var tripletCounter = 0;
       var newCode = SelfManager.self().getVariable("code");
-      for (var _index_10154_10160 = 0, _repeatcount_10154_10160 = StrictMath.floor(NLMath.floor(Prims.div(ListPrims.length(SelfManager.self().getVariable("code")), 3))); _index_10154_10160 < _repeatcount_10154_10160; _index_10154_10160++){
+      for (var _index_9996_10002 = 0, _repeatcount_9996_10002 = StrictMath.floor(NLMath.floor(Prims.div(ListPrims.length(SelfManager.self().getVariable("code")), 3))); _index_9996_10002 < _repeatcount_9996_10002; _index_9996_10002++){
         var thisTriplet = (Dump('') + Dump(ListPrims.item((0 + (tripletCounter * 3)), SelfManager.self().getVariable("code"))) + Dump(ListPrims.item((1 + (tripletCounter * 3)), SelfManager.self().getVariable("code"))) + Dump(ListPrims.item((2 + (tripletCounter * 3)), SelfManager.self().getVariable("code"))));
         if ((((Prims.equality(thisTriplet, "TAG") || Prims.equality(thisTriplet, "TGA")) || Prims.equality(thisTriplet, "TAA")) && !endOfGene_p)) {
           SelfManager.self().setVariable("end-position", (tripletCounter * 3));
@@ -276,7 +277,7 @@ var procedures = (function() {
       var thisGene = SelfManager.self();
       SelfManager.self().setVariable("heading", 90);
       SelfManager.self().fd(0.1);
-      for (var _index_10883_10889 = 0, _repeatcount_10883_10889 = StrictMath.floor(SelfManager.self().getVariable("start-position")); _index_10883_10889 < _repeatcount_10883_10889; _index_10883_10889++){
+      for (var _index_10725_10731 = 0, _repeatcount_10725_10731 = StrictMath.floor(SelfManager.self().getVariable("start-position")); _index_10725_10731 < _repeatcount_10725_10731; _index_10725_10731++){
         SelfManager.self().fd(0.45);
       }
       var geneColor = procedures["NEXT-GENE-COLOR"]();
@@ -328,7 +329,7 @@ var procedures = (function() {
             SelfManager.self().tie();
           }, true);
           var codeToTranscribe = SelfManager.self().getVariable("code");
-          for (var _index_12580_12586 = 0, _repeatcount_12580_12586 = StrictMath.floor(ListPrims.length(SelfManager.self().getVariable("code"))); _index_12580_12586 < _repeatcount_12580_12586; _index_12580_12586++){
+          for (var _index_12422_12428 = 0, _repeatcount_12422_12428 = StrictMath.floor(ListPrims.length(SelfManager.self().getVariable("code"))); _index_12422_12428 < _repeatcount_12422_12428; _index_12422_12428++){
             SelfManager.self().hatch(1, "").ask(function() {
               SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("MRNA-NUCLEOTIDES"));
               SelfManager.self().setVariable("value", ListPrims.first(codeToTranscribe));
@@ -357,7 +358,7 @@ var procedures = (function() {
       var numberOfTripletsInList = NLMath.floor(Prims.div(ListPrims.length(SelfManager.self().getVariable("code")), 3));
       var thisTriplet = "";
       var tripletCounter = 0;
-      for (var _index_13285_13291 = 0, _repeatcount_13285_13291 = StrictMath.floor(numberOfTripletsInList); _index_13285_13291 < _repeatcount_13285_13291; _index_13285_13291++){
+      for (var _index_13127_13133 = 0, _repeatcount_13127_13133 = StrictMath.floor(numberOfTripletsInList); _index_13127_13133 < _repeatcount_13127_13133; _index_13127_13133++){
         thisTriplet = (Dump('') + Dump(procedures["COMPLEMENTARY-MRNA-BASE"](ListPrims.item((0 + (tripletCounter * 3)), SelfManager.self().getVariable("code")))) + Dump(procedures["COMPLEMENTARY-MRNA-BASE"](ListPrims.item((1 + (tripletCounter * 3)), SelfManager.self().getVariable("code")))) + Dump(procedures["COMPLEMENTARY-MRNA-BASE"](ListPrims.item((2 + (tripletCounter * 3)), SelfManager.self().getVariable("code")))));
         procedures["BUILD-TRNA-FOR-THIS-TRIPLET"](thisTriplet,tripletCounter);
         tripletCounter = (tripletCounter + 1);
@@ -617,13 +618,15 @@ var procedures = (function() {
       return ((Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("AMINO-ACIDS")) && Prims.equality(strandType, SelfManager.self().getVariable("strand"))) && Prims.equality(SelfManager.self().getVariable("gene-number"), thisGeneNumber));
     });
     var orderedAminoAcids = theseAminoAcids.sortOn(function() { return SelfManager.self().getVariable("who"); });
-    Tasks.forEach(Tasks.commandTask(function() {
-      var taskArguments = arguments;
-      thisProteinValue = (Dump('') + Dump(thisProteinValue) + Dump("-") + Dump(taskArguments[0].projectionBy(function() { return SelfManager.self().getVariable("value"); })));
+    Tasks.forEach(Tasks.commandTask(function(theAminoAcid) {
+      if (arguments.length < 1) {
+        throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+      }
+      thisProteinValue = (Dump('') + Dump(thisProteinValue) + Dump("-") + Dump(theAminoAcid.projectionBy(function() { return SelfManager.self().getVariable("value"); })));
     }), orderedAminoAcids);
-    if (!world.turtleManager.turtlesOfBreed("PROTEINS").agentFilter(function() {
+    if (!!world.turtleManager.turtlesOfBreed("PROTEINS").agentFilter(function() {
       return (Prims.equality(SelfManager.self().getVariable("strand"), strandType) && Prims.equality(SelfManager.self().getVariable("value"), thisProteinValue));
-    }).nonEmpty()) {
+    }).isEmpty()) {
       SelfManager.self().hatch(1, "").ask(function() {
         SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("PROTEINS"));
         SelfManager.self().setVariable("value", thisProteinValue);
@@ -762,18 +765,18 @@ var procedures = (function() {
     var lociCounter = 0;
     var dnaAtAndAfterTarget = ListPrims.substring(mutatingCopyOfDnaString, targetLoci, ListPrims.length(mutatingCopyOfDnaString));
     if (Prims.equality(world.observer.getGlobal("mutation-type"), "deletion")) {
-      for (var _index_24144_24150 = 0, _repeatcount_24144_24150 = StrictMath.floor(world.observer.getGlobal("#-nucleotides-affected")); _index_24144_24150 < _repeatcount_24144_24150; _index_24144_24150++){
+      for (var _index_24046_24052 = 0, _repeatcount_24046_24052 = StrictMath.floor(world.observer.getGlobal("#-nucleotides-affected")); _index_24046_24052 < _repeatcount_24046_24052; _index_24046_24052++){
         mutatingCopyOfDnaString = ListPrims.removeItem(targetLoci, mutatingCopyOfDnaString);
       }
     }
     if (Prims.equality(world.observer.getGlobal("mutation-type"), "substitution")) {
-      for (var _index_24309_24315 = 0, _repeatcount_24309_24315 = StrictMath.floor(world.observer.getGlobal("#-nucleotides-affected")); _index_24309_24315 < _repeatcount_24309_24315; _index_24309_24315++){
+      for (var _index_24232_24238 = 0, _repeatcount_24232_24238 = StrictMath.floor(world.observer.getGlobal("#-nucleotides-affected")); _index_24232_24238 < _repeatcount_24232_24238; _index_24232_24238++){
         mutatingCopyOfDnaString = ListPrims.replaceItem((targetLoci + lociCounter), mutatingCopyOfDnaString, procedures["RANDOM-BASE-LETTER-DNA"]());
         lociCounter = (lociCounter + 1);
       }
     }
     if (Prims.equality(world.observer.getGlobal("mutation-type"), "insertion")) {
-      for (var _index_24549_24555 = 0, _repeatcount_24549_24555 = StrictMath.floor(world.observer.getGlobal("#-nucleotides-affected")); _index_24549_24555 < _repeatcount_24549_24555; _index_24549_24555++){
+      for (var _index_24499_24505 = 0, _repeatcount_24499_24505 = StrictMath.floor(world.observer.getGlobal("#-nucleotides-affected")); _index_24499_24505 < _repeatcount_24499_24505; _index_24499_24505++){
         dnaAtAndAfterTarget = (Dump('') + Dump(procedures["RANDOM-BASE-LETTER-DNA"]()) + Dump(dnaAtAndAfterTarget));
       }
       mutatingCopyOfDnaString = (Dump('') + Dump(dnaBeforeTarget) + Dump(dnaAtAndAfterTarget));
@@ -808,9 +811,11 @@ var procedures = (function() {
   procs["INITIALIZE-CODON-TO-AMINO-ACID-KEY"] = temp;
   temp = (function(thisCodon) {
     try {
-      throw new Exception.ReportInterrupt(ListPrims.item(1, ListPrims.item(0, world.observer.getGlobal("codon-to-amino-acid-key").filter(Tasks.reporterTask(function() {
-        var taskArguments = arguments;
-        return Prims.equality(ListPrims.first(taskArguments[0]), thisCodon);
+      throw new Exception.ReportInterrupt(ListPrims.item(1, ListPrims.item(0, world.observer.getGlobal("codon-to-amino-acid-key").filter(Tasks.reporterTask(function(pair) {
+        if (arguments.length < 1) {
+          throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+        }
+        return Prims.equality(ListPrims.first(pair), thisCodon);
       })))));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
@@ -926,7 +931,7 @@ var procedures = (function() {
     try {
       var newString = dnaString;
       var nextItem = 0;
-      for (var _index_28762_28768 = 0, _repeatcount_28762_28768 = StrictMath.floor(ListPrims.length(dnaString)); _index_28762_28768 < _repeatcount_28762_28768; _index_28762_28768++){
+      for (var _index_28752_28758 = 0, _repeatcount_28752_28758 = StrictMath.floor(ListPrims.length(dnaString)); _index_28752_28758 < _repeatcount_28752_28758; _index_28752_28758++){
         newString = ListPrims.replaceItem(nextItem, newString, procedures["COMPLEMENTARY-MRNA-BASE"](ListPrims.item(nextItem, newString)));
         nextItem = (nextItem + 1);
       }
@@ -946,7 +951,7 @@ var procedures = (function() {
     try {
       var newString = dnaString;
       var nextItem = 0;
-      for (var _index_29228_29234 = 0, _repeatcount_29228_29234 = StrictMath.floor(ListPrims.length(dnaString)); _index_29228_29234 < _repeatcount_29228_29234; _index_29228_29234++){
+      for (var _index_29218_29224 = 0, _repeatcount_29218_29224 = StrictMath.floor(ListPrims.length(dnaString)); _index_29218_29224 < _repeatcount_29218_29224; _index_29218_29224++){
         newString = ListPrims.replaceItem(nextItem, newString, procedures["REPLACE-NON-NUCLEOTIDE-CHARACTER"](ListPrims.item(nextItem, newString)));
         nextItem = (nextItem + 1);
       }
@@ -1007,9 +1012,11 @@ var procedures = (function() {
     if ((Prims.gte(i, 1) && Prims.lte(i, ListPrims.length(procedures["INSTRUCTIONS"]())))) {
       world.observer.setGlobal("current-instruction", i);
       OutputPrims.clear();
-      Tasks.forEach(Tasks.commandTask(function() {
-        var taskArguments = arguments;
-        OutputPrims.print(taskArguments[0]);
+      Tasks.forEach(Tasks.commandTask(function(_0) {
+        if (arguments.length < 1) {
+          throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+        }
+        OutputPrims.print(_0);
       }), ListPrims.item((world.observer.getGlobal("current-instruction") - 1), procedures["INSTRUCTIONS"]()));
     }
   });

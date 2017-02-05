@@ -2,6 +2,7 @@ var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
+var Extensions = tortoise_require('extensions/all');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
 var Meta = tortoise_require('meta');
@@ -150,12 +151,12 @@ var procedures = (function() {
     var targetPatch = ListPrims.oneOf(SelfManager.self().getNeighbors());
     if (world.observer.getGlobal("agents-seek-resources?")) {
       var candidateMoves = SelfManager.self().getNeighbors().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "new"); });
-      if (candidateMoves.nonEmpty()) {
+      if (!candidateMoves.isEmpty()) {
         targetPatch = ListPrims.oneOf(candidateMoves);
       }
       else {
         candidateMoves = SelfManager.self().getNeighbors().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "recycled"); });
-        if (candidateMoves.nonEmpty()) {
+        if (!candidateMoves.isEmpty()) {
           targetPatch = ListPrims.oneOf(candidateMoves);
         }
       }

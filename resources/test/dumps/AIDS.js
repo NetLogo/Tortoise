@@ -2,6 +2,7 @@ var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
+var Extensions = tortoise_require('extensions/all');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
 var Meta = tortoise_require('meta');
@@ -315,7 +316,7 @@ var procedures = (function() {
   procs["TEST"] = temp;
   temp = (function() {
     try {
-      if (world.turtles().nonEmpty()) {
+      if (!world.turtles().isEmpty()) {
         throw new Exception.ReportInterrupt((Prims.div(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("infected?"); }).size(), world.turtles().size()) * 100));
       }
       else {

@@ -2,6 +2,7 @@ var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
+var Extensions = tortoise_require('extensions/all');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
 var Meta = tortoise_require('meta');
@@ -110,7 +111,7 @@ var procedures = (function() {
   procs["setupBalls"] = temp;
   procs["SETUP-BALLS"] = temp;
   temp = (function() {
-    while (world.turtles().nonEmpty()) {
+    while (!world.turtles().isEmpty()) {
       world.turtles().ask(function() { procedures["MOVE"](); }, true);
       notImplemented('display', undefined)();
     }

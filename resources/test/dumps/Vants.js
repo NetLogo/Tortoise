@@ -2,6 +2,7 @@ var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
+var Extensions = tortoise_require('extensions/all');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
 var Meta = tortoise_require('meta');
@@ -74,9 +75,11 @@ var procedures = (function() {
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    Tasks.forEach(Tasks.commandTask(function() {
-      var taskArguments = arguments;
-      taskArguments[0].ask(function() {
+    Tasks.forEach(Tasks.commandTask(function(t) {
+      if (arguments.length < 1) {
+        throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+      }
+      t.ask(function() {
         SelfManager.self().fd(1);
         procedures["TURN"]();
       }, true);
@@ -86,9 +89,11 @@ var procedures = (function() {
   procs["goForward"] = temp;
   procs["GO-FORWARD"] = temp;
   temp = (function() {
-    Tasks.forEach(Tasks.commandTask(function() {
-      var taskArguments = arguments;
-      taskArguments[0].ask(function() {
+    Tasks.forEach(Tasks.commandTask(function(t) {
+      if (arguments.length < 1) {
+        throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+      }
+      t.ask(function() {
         procedures["TURN"]();
         SelfManager.self().fd(-1);
       }, true);

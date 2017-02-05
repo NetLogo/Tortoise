@@ -2,6 +2,7 @@ var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
+var Extensions = tortoise_require('extensions/all');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
 var Meta = tortoise_require('meta');
@@ -170,9 +171,11 @@ var procedures = (function() {
   procs["BUTTERFLIES-GET-EATEN"] = temp;
   temp = (function(c) {
     try {
-      Tasks.forEach(Tasks.commandTask(function() {
-        var taskArguments = arguments;
-        if (Prims.equality(ListPrims.item(0, taskArguments[0]), c)) {
+      Tasks.forEach(Tasks.commandTask(function(i) {
+        if (arguments.length < 1) {
+          throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+        }
+        if (Prims.equality(ListPrims.item(0, i), c)) {
           throw new Exception.ReportInterrupt(true);
         }
       }), SelfManager.self().getVariable("memory"));
@@ -197,13 +200,17 @@ var procedures = (function() {
   procs["rememberColor"] = temp;
   procs["REMEMBER-COLOR"] = temp;
   temp = (function() {
-    SelfManager.self().setVariable("memory", Tasks.map(Tasks.reporterTask(function() {
-      var taskArguments = arguments;
-      return ListPrims.list(ListPrims.item(0, taskArguments[0]), (1 + ListPrims.item(1, taskArguments[0])));
+    SelfManager.self().setVariable("memory", Tasks.map(Tasks.reporterTask(function(i) {
+      if (arguments.length < 1) {
+        throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+      }
+      return ListPrims.list(ListPrims.item(0, i), (1 + ListPrims.item(1, i)));
     }), SelfManager.self().getVariable("memory")));
-    SelfManager.self().setVariable("memory", SelfManager.self().getVariable("memory").filter(Tasks.reporterTask(function() {
-      var taskArguments = arguments;
-      return Prims.lte(ListPrims.item(1, taskArguments[0]), world.observer.getGlobal("memory-duration"));
+    SelfManager.self().setVariable("memory", SelfManager.self().getVariable("memory").filter(Tasks.reporterTask(function(i) {
+      if (arguments.length < 1) {
+        throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+      }
+      return Prims.lte(ListPrims.item(1, i), world.observer.getGlobal("memory-duration"));
     })));
   });
   procs["birdsForget"] = temp;

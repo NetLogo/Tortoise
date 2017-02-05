@@ -2,6 +2,7 @@ var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
 var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
+var Extensions = tortoise_require('extensions/all');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
 var Meta = tortoise_require('meta');
@@ -109,7 +110,7 @@ var procedures = (function() {
       SelfManager.self().setVariable("color", [255, 255, 255, 100]);
       SelfManager.self().setVariable("hidden?", true);
     }, true);
-    for (var _index_8928_8934 = 0, _repeatcount_8928_8934 = StrictMath.floor(world.observer.getGlobal("free-nucleosides")); _index_8928_8934 < _repeatcount_8928_8934; _index_8928_8934++){
+    for (var _index_8948_8954 = 0, _repeatcount_8948_8954 = StrictMath.floor(world.observer.getGlobal("free-nucleosides")); _index_8948_8954 < _repeatcount_8948_8954; _index_8948_8954++){
       procedures["MAKE-A-NUCLEOSIDE"]();
     }
     procedures["MAKE-INITIAL-DNA-STRIP"]();
@@ -230,7 +231,7 @@ var procedures = (function() {
       SelfManager.self().fd(1);
     }, true);
     world.turtleManager.turtlesOfBreed("CHROMOSOME-BUILDERS").ask(function() {
-      for (var _index_11850_11856 = 0, _repeatcount_11850_11856 = StrictMath.floor(world.observer.getGlobal("initial-length-dna")); _index_11850_11856 < _repeatcount_11850_11856; _index_11850_11856++){
+      for (var _index_11870_11876 = 0, _repeatcount_11870_11876 = StrictMath.floor(world.observer.getGlobal("initial-length-dna")); _index_11870_11876 < _repeatcount_11870_11876; _index_11870_11876++){
         placeCounter = (placeCounter + 1);
         SelfManager.self().hatch(1, "").ask(function() {
           SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("NUCLEOTIDES"));
@@ -330,15 +331,18 @@ var procedures = (function() {
       world.ticker.tick();
     }
     if ((world.observer.getGlobal("cell-divided?") && !world.observer.getGlobal("cell-message-shown?"))) {
-      procedures["CALCULATE-MUTATIONS"]();
       if (Prims.equality(world.observer.getGlobal("final-time"), 0)) {
         world.observer.setGlobal("final-time", workspace.timer.elapsed());
       }
+      procedures["CALCULATE-MUTATIONS"]();
       UserDialogPrims.confirm((Dump('') + Dump("You have cued the cell division.  Let's see how you did in replicating ") + Dump("an exact copy of the DNA.")));
       UserDialogPrims.confirm(procedures["USER-MESSAGE-STRING-FOR-MUTATIONS"]());
       world.observer.setGlobal("cell-message-shown?", true);
     }
     if (((world.observer.getGlobal("using-time-limit") && Prims.lte(world.observer.getGlobal("time-remaining"), 0)) && !world.observer.getGlobal("timer-message-shown?"))) {
+      if (Prims.equality(world.observer.getGlobal("final-time"), 0)) {
+        world.observer.setGlobal("final-time", world.observer.getGlobal("length-of-simulation"));
+      }
       procedures["CALCULATE-MUTATIONS"]();
       UserDialogPrims.confirm((Dump('') + Dump("The timer has expired.  Let's see how you did in replicating ") + Dump("an exact copy of it.")));
       UserDialogPrims.confirm(procedures["USER-MESSAGE-STRING-FOR-MUTATIONS"]());
@@ -397,7 +401,7 @@ var procedures = (function() {
   procs["visualizeAgents"] = temp;
   procs["VISUALIZE-AGENTS"] = temp;
   temp = (function() {
-    for (var _index_17539_17545 = 0, _repeatcount_17539_17545 = StrictMath.floor(world.observer.getGlobal("initial-length-dna")); _index_17539_17545 < _repeatcount_17539_17545; _index_17539_17545++){
+    for (var _index_17643_17649 = 0, _repeatcount_17643_17649 = StrictMath.floor(world.observer.getGlobal("initial-length-dna")); _index_17643_17649 < _repeatcount_17643_17649; _index_17643_17649++){
       procedures["WIND-DNA"]();
     }
   });
@@ -405,7 +409,7 @@ var procedures = (function() {
   procs["WIND-INITIAL-DNA-INTO-BUNDLE"] = temp;
   temp = (function() {
     var woundNucleotides = world.turtleManager.turtlesOfBreed("NUCLEOTIDES").agentFilter(function() { return !SelfManager.self().getVariable("unwound?"); });
-    if (woundNucleotides.nonEmpty()) {
+    if (!woundNucleotides.isEmpty()) {
       var maxWoundPlace = ListPrims.max(woundNucleotides.projectionBy(function() { return SelfManager.self().getVariable("place"); }));
       woundNucleotides.agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("place"), maxWoundPlace); }).ask(function() {
         SelfManager.self().right(-world.observer.getGlobal("wind-angle"));
@@ -421,7 +425,7 @@ var procedures = (function() {
     var unwoundNucleotides = world.turtleManager.turtlesOfBreed("NUCLEOTIDES").agentFilter(function() {
       return ((SelfManager.self().getVariable("unwound?") && !Prims.equality(SelfManager.self().getVariable("class"), "copy-of-dna-bottom")) && !Prims.equality(SelfManager.self().getVariable("class"), "copy-of-dna-top"));
     });
-    if (unwoundNucleotides.nonEmpty()) {
+    if (!unwoundNucleotides.isEmpty()) {
       var minUnwoundPlace = ListPrims.min(unwoundNucleotides.projectionBy(function() { return SelfManager.self().getVariable("place"); }));
       unwoundNucleotides.agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("place"), minUnwoundPlace); }).ask(function() {
         SelfManager.self().right(world.observer.getGlobal("wind-angle"));
@@ -472,19 +476,19 @@ var procedures = (function() {
     world.turtleManager.turtlesOfBreed("HELICASES").ask(function() {
       var thisHelicase = SelfManager.self();
       var unzippedNucleotides = world.turtleManager.turtlesOfBreed("NUCLEOTIDES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("unzipped-stage"), 0); });
-      if (unzippedNucleotides.nonEmpty()) {
+      if (!unzippedNucleotides.isEmpty()) {
         lowestPlace = unzippedNucleotides.minOneOf(function() { return SelfManager.self().getVariable("place"); });
       }
       var availableNucleotides = unzippedNucleotides.agentFilter(function() {
         return (Prims.lt(SelfManager.self().distance(thisHelicase), 1) && procedures["ARE-PREVIOUS-NUCLEOTIDES-UNZIPPED?"]());
       });
-      if (availableNucleotides.nonEmpty()) {
+      if (!availableNucleotides.isEmpty()) {
         var lowestValueNucleotide = availableNucleotides.minOneOf(function() { return SelfManager.self().getVariable("place"); });
         lowestValueNucleotide.ask(function() {
           var base = SelfManager.self();
           var basePlace = SelfManager.self().getVariable("place");
           var otherBase = SelfPrims.other(world.turtleManager.turtlesOfBreed("NUCLEOTIDES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("place"), basePlace); }));
-          if (otherBase.nonEmpty()) {
+          if (!otherBase.isEmpty()) {
             SelfManager.self().setVariable("unzipped-stage", 1);
             otherBase.ask(function() { SelfManager.self().setVariable("unzipped-stage", 1); }, true);
           }
@@ -544,22 +548,22 @@ var procedures = (function() {
         potentialNucleosideReadyToGearToPolymerase = nucleosidesReadyToGearToPolymerase;
       }
       var nucleotidesReadyToGearToPolymerase = world.turtleManager.turtlesOfBreed("NUCLEOTIDES").agentFilter(function() {
-        return (((!LinkPrims.myLinks("OLD-STAIRS").nonEmpty() && !LinkPrims.myLinks("NEW-STAIRS").nonEmpty()) && (Prims.equality(SelfManager.self().getVariable("class"), "original-dna-bottom") || Prims.equality(SelfManager.self().getVariable("class"), "original-dna-top"))) && Prims.lt(SelfManager.self().distance(SelfManager.myself()), world.observer.getGlobal("lock-radius")));
+        return (((!!LinkPrims.myLinks("OLD-STAIRS").isEmpty() && !!LinkPrims.myLinks("NEW-STAIRS").isEmpty()) && (Prims.equality(SelfManager.self().getVariable("class"), "original-dna-bottom") || Prims.equality(SelfManager.self().getVariable("class"), "original-dna-top"))) && Prims.lt(SelfManager.self().distance(SelfManager.myself()), world.observer.getGlobal("lock-radius")));
       });
-      if (((nucleotidesReadyToGearToPolymerase.nonEmpty() && procedures["ALL-BASE-PAIRS-UNWOUND?"]()) && !procedures["BEING-DRAGGED-BY-CURSOR?"]())) {
+      if (((!nucleotidesReadyToGearToPolymerase.isEmpty() && procedures["ALL-BASE-PAIRS-UNWOUND?"]()) && !procedures["BEING-DRAGGED-BY-CURSOR?"]())) {
         targetNucleotideReadyToGearToPolymerase = nucleotidesReadyToGearToPolymerase.minOneOf(function() { return SelfManager.self().distance(SelfManager.myself()); });
         targetXcor = targetNucleotideReadyToGearToPolymerase.projectionBy(function() { return SelfManager.self().getVariable("xcor"); });
         targetYcor = targetNucleotideReadyToGearToPolymerase.projectionBy(function() { return SelfManager.self().getVariable("ycor"); });
         targetClass = targetNucleotideReadyToGearToPolymerase.projectionBy(function() { return SelfManager.self().getVariable("class"); });
         SelfManager.self().setXY(targetXcor, targetYcor);
       }
-      if ((!nucleotidesReadyToGearToPolymerase.nonEmpty() || SelfPrims.other(SelfManager.self().breedHere("POLYMERASES")).nonEmpty())) {
+      if ((!!nucleotidesReadyToGearToPolymerase.isEmpty() || !SelfPrims.other(SelfManager.self().breedHere("POLYMERASES")).isEmpty())) {
         SelfManager.self().setVariable("locked-state", 0);
       }
-      if ((((nucleotidesReadyToGearToPolymerase.nonEmpty() && procedures["ALL-BASE-PAIRS-UNWOUND?"]()) && Prims.equality(potentialNucleosideReadyToGearToPolymerase, Nobody)) && !SelfPrims.other(SelfManager.self().breedHere("POLYMERASES")).nonEmpty())) {
+      if ((((!nucleotidesReadyToGearToPolymerase.isEmpty() && procedures["ALL-BASE-PAIRS-UNWOUND?"]()) && Prims.equality(potentialNucleosideReadyToGearToPolymerase, Nobody)) && !!SelfPrims.other(SelfManager.self().breedHere("POLYMERASES")).isEmpty())) {
         SelfManager.self().setVariable("locked-state", 1);
       }
-      if ((((!Prims.equality(targetNucleotideReadyToGearToPolymerase, Nobody) && procedures["ALL-BASE-PAIRS-UNWOUND?"]()) && !Prims.equality(potentialNucleosideReadyToGearToPolymerase, Nobody)) && !SelfPrims.other(SelfManager.self().breedHere("POLYMERASES")).nonEmpty())) {
+      if ((((!Prims.equality(targetNucleotideReadyToGearToPolymerase, Nobody) && procedures["ALL-BASE-PAIRS-UNWOUND?"]()) && !Prims.equality(potentialNucleosideReadyToGearToPolymerase, Nobody)) && !!SelfPrims.other(SelfManager.self().breedHere("POLYMERASES")).isEmpty())) {
         SelfManager.self().setVariable("locked-state", 2);
         if ((procedures["WOULD-THESE-NUCLEOTIDES-PAIR-CORRECTLY?"](targetNucleotideReadyToGearToPolymerase,potentialNucleosideReadyToGearToPolymerase) || world.observer.getGlobal("substitutions?"))) {
           potentialNucleosideReadyToGearToPolymerase.ask(function() {
@@ -609,11 +613,11 @@ var procedures = (function() {
     var targetClass = "";
     var woundNucleotides = world.turtleManager.turtlesOfBreed("NUCLEOTIDES").agentFilter(function() { return !SelfManager.self().getVariable("unwound?"); });
     world.turtleManager.turtlesOfBreed("TOPOISOMERASES").ask(function() {
-      if (woundNucleotides.nonEmpty()) {
+      if (!woundNucleotides.isEmpty()) {
         var targetPrimasesReadyToGearToTopoisomerase = world.turtleManager.turtlesOfBreed("PRIMASES").agentFilter(function() {
           return Prims.lt(SelfManager.self().distance(SelfManager.myself()), world.observer.getGlobal("lock-radius"));
         });
-        if (targetPrimasesReadyToGearToTopoisomerase.nonEmpty()) {
+        if (!targetPrimasesReadyToGearToTopoisomerase.isEmpty()) {
           var targetPrimaseReadyToGearToTopoisomerase = ListPrims.oneOf(targetPrimasesReadyToGearToTopoisomerase);
           SelfManager.self().setVariable("locked?", true);
           if (!MousePrims.isDown()) {
@@ -644,7 +648,7 @@ var procedures = (function() {
     world.observer.setGlobal("total-correct-duplications-bottom-strand", 0);
     var originalNucleotides = world.turtleManager.turtlesOfBreed("NUCLEOTIDES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("class"), "original-dna-top"); });
     originalNucleotides.ask(function() {
-      if (!LinkPrims.myLinks("NEW-STAIRS").nonEmpty()) {
+      if (!!LinkPrims.myLinks("NEW-STAIRS").isEmpty()) {
         world.observer.setGlobal("total-deletion-mutations-top-strand", (world.observer.getGlobal("total-deletion-mutations-top-strand") + 1));
       }
       if (Prims.gte(LinkPrims.myLinks("NEW-STAIRS").size(), 1)) {
@@ -658,7 +662,7 @@ var procedures = (function() {
     }, true);
     originalNucleotides = world.turtleManager.turtlesOfBreed("NUCLEOTIDES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("class"), "original-dna-bottom"); });
     originalNucleotides.ask(function() {
-      if (!LinkPrims.myLinks("NEW-STAIRS").nonEmpty()) {
+      if (!!LinkPrims.myLinks("NEW-STAIRS").isEmpty()) {
         world.observer.setGlobal("total-deletion-mutations-bottom-strand", (world.observer.getGlobal("total-deletion-mutations-bottom-strand") + 1));
       }
       if (Prims.gte(LinkPrims.myLinks("NEW-STAIRS").size(), 1)) {
@@ -686,7 +690,7 @@ var procedures = (function() {
       var draggableMolecules = allMoveableMolecules.agentFilter(function() {
         return (!procedures["BEING-DRAGGED-BY-CURSOR?"]() && Prims.lte(SelfManager.self().distance(SelfManager.myself()), world.observer.getGlobal("mouse-drag-radius")));
       });
-      if (((!currentMouseDown_p && MousePrims.isInside()) && draggableMolecules.nonEmpty())) {
+      if (((!currentMouseDown_p && MousePrims.isInside()) && !draggableMolecules.isEmpty())) {
         SelfManager.self().setVariable("color", world.observer.getGlobal("cursor-detect-color"));
         SelfManager.self().setVariable("hidden?", false);
         SelfManager.self().right(4);
@@ -695,7 +699,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("color", world.observer.getGlobal("cursor-drag-color"));
         SelfManager.self().setVariable("hidden?", false);
       }
-      if ((((!world.observer.getGlobal("mouse-continuous-down?") && currentMouseDown_p) && !procedures["IS-THIS-CURSOR-DRAGGING-ANYTHING?"]()) && draggableMolecules.nonEmpty())) {
+      if ((((!world.observer.getGlobal("mouse-continuous-down?") && currentMouseDown_p) && !procedures["IS-THIS-CURSOR-DRAGGING-ANYTHING?"]()) && !draggableMolecules.isEmpty())) {
         targetTurtle = draggableMolecules.minOneOf(function() { return SelfManager.self().distance(SelfManager.myself()); });
         targetTurtle.ask(function() { SelfManager.self().setXY(pMouseXcor, pMouseYcor); }, true);
         LinkPrims.createLinkTo(targetTurtle, "CURSOR-DRAGS").ask(function() {
@@ -792,7 +796,7 @@ var procedures = (function() {
   procs["TIME-REMAINING-TO-DISPLAY"] = temp;
   temp = (function() {
     try {
-      if (LinkPrims.outLinkNeighbors("CURSOR-DRAGS").nonEmpty()) {
+      if (!LinkPrims.outLinkNeighbors("CURSOR-DRAGS").isEmpty()) {
         throw new Exception.ReportInterrupt(true);
       }
       else {
@@ -811,7 +815,7 @@ var procedures = (function() {
   procs["IS-THIS-CURSOR-DRAGGING-ANYTHING?"] = temp;
   temp = (function() {
     try {
-      if (LinkPrims.myInLinks("CURSOR-DRAGS").nonEmpty()) {
+      if (!LinkPrims.myInLinks("CURSOR-DRAGS").isEmpty()) {
         throw new Exception.ReportInterrupt(true);
       }
       else {
@@ -830,7 +834,7 @@ var procedures = (function() {
   procs["BEING-DRAGGED-BY-CURSOR?"] = temp;
   temp = (function() {
     try {
-      if (world.turtleManager.turtlesOfBreed("NUCLEOTIDES").agentFilter(function() { return !SelfManager.self().getVariable("unwound?"); }).nonEmpty()) {
+      if (!world.turtleManager.turtlesOfBreed("NUCLEOTIDES").agentFilter(function() { return !SelfManager.self().getVariable("unwound?"); }).isEmpty()) {
         throw new Exception.ReportInterrupt(false);
       }
       else {
@@ -907,7 +911,7 @@ var procedures = (function() {
       });
       var canContinueToUnzip_p = false;
       if (Prims.lt(myPlace, world.observer.getGlobal("dna-strand-length"))) {
-        if ((nextNucleotidesAvailable.nonEmpty() && procedures["ARE-PREVIOUS-NUCLEOTIDES-UNZIPPED?"]())) {
+        if ((!nextNucleotidesAvailable.isEmpty() && procedures["ARE-PREVIOUS-NUCLEOTIDES-UNZIPPED?"]())) {
           canContinueToUnzip_p = true;
         }
         else {
@@ -934,12 +938,12 @@ var procedures = (function() {
       var myPlace = SelfManager.self().getVariable("place");
       var previousNucleotides = world.turtleManager.turtlesOfBreed("NUCLEOTIDES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("place"), (myPlace - 1)); });
       var valueToReturn = false;
-      if (!previousNucleotides.nonEmpty()) {
+      if (!!previousNucleotides.isEmpty()) {
         valueToReturn = true;
       }
       else {
         var previousNucleotidesAreUnzipped = previousNucleotides.agentFilter(function() { return Prims.gt(SelfManager.self().getVariable("unzipped-stage"), 0); });
-        if (previousNucleotidesAreUnzipped.nonEmpty()) {
+        if (!previousNucleotidesAreUnzipped.isEmpty()) {
           valueToReturn = true;
         }
         else {
@@ -997,9 +1001,11 @@ var procedures = (function() {
     if ((Prims.gte(i, 1) && Prims.lte(i, ListPrims.length(procedures["INSTRUCTIONS"]())))) {
       world.observer.setGlobal("current-instruction", i);
       OutputPrims.clear();
-      Tasks.forEach(Tasks.commandTask(function() {
-        var taskArguments = arguments;
-        OutputPrims.print(taskArguments[0]);
+      Tasks.forEach(Tasks.commandTask(function(_0) {
+        if (arguments.length < 1) {
+          throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+        }
+        OutputPrims.print(_0);
       }), ListPrims.item((world.observer.getGlobal("current-instruction") - 1), procedures["INSTRUCTIONS"]()));
     }
   });
