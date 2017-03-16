@@ -165,16 +165,16 @@ module.exports =
       nodeTable = {}
       nodeTable[rootNode.getTurtle().id] = rootNode
 
-      [breedName, turtleIsAllowed] =
+      turtleIsAllowed =
         if not linkSet.getSpecialName()?
           allowedTurtleIDs =
             pipeline(
               flatMap(({ end1, end2 }) -> [end1, end2])
             , foldl((acc, { id }) -> acc[id] = true; acc)({})
             )(linkSet.toArray())
-          ["LINKS", ({ id }) -> allowedTurtleIDs[id] is true]
+          ({ id }) -> allowedTurtleIDs[id] is true
         else
-          [linkSet.getSpecialName().toUpperCase(), -> true]
+          -> true
 
       visitNeighbors =
         (queue, last) ->
@@ -182,7 +182,7 @@ module.exports =
             last
           else
             node = queue.shift()
-            node.getTurtle().linkManager.linkNeighbors(breedName).forEach(
+            node.getTurtle().linkManager.neighborsIn(linkSet).forEach(
               (t) ->
                 if nodeSet.contains(t) and (not nodeTable[t.id]?) and turtleIsAllowed(t)
                   child = new TreeNode(t, node.getDepth() + 1)

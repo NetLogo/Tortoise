@@ -4,8 +4,8 @@ LinkSet   = require('./linkset')
 Nobody    = require('./nobody')
 TurtleSet = require('./turtleset')
 
-{ filter, map, unique } = require('brazierjs/array')
-{ pipeline }            = require('brazierjs/function')
+{ filter, flatMap, map, unique } = require('brazierjs/array')
+{ pipeline }                     = require('brazierjs/function')
 
 { DeathInterrupt, ignoring } = require('util/exception')
 
@@ -119,6 +119,25 @@ module.exports =
         links[0]
       else
         links[@_randomInt(links.length)]
+
+    # (LinkSet) => Array[Turtle]
+    neighborsIn: (linkSet) ->
+
+      collectOtherEnd =
+        ({ end1, end2 }) =>
+          isEnd1 = end1.id is @_ownerID
+          isEnd2 = end2.id is @_ownerID
+          if isEnd1 and (not isEnd2)
+            [end2]
+          else if isEnd2 and (not isEnd1)
+            [end1]
+          else
+            []
+
+      pipeline(
+        flatMap(collectOtherEnd)
+      , unique
+      )(linkSet.toArray())
 
     # String -> Directedness -> TurtleSet
     _neighbors: (breedName, directedness) ->
