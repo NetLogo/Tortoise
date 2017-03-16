@@ -48,8 +48,18 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('current', plotOps.makePenOps, false, new PenBundle.State(55.0, 5.0, PenBundle.DisplayMode.Bar), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('wealth distribution', 'current')(function() {
-        plotManager.setYRange(0, 40);
-        plotManager.drawHistogramFrom(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("wealth"); }));;
+        try {
+          plotManager.setYRange(0, 40);
+          plotManager.drawHistogramFrom(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("wealth"); }));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   })];
@@ -61,12 +71,36 @@ modelConfig.plots = [(function() {
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('top 10%', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('wealth by percent', 'top 10%')(function() { plotManager.plotValue(procedures["TOP-10-PCT-WEALTH"]());; });
+      plotManager.withTemporaryContext('wealth by percent', 'top 10%')(function() {
+        try {
+          plotManager.plotValue(procedures["TOP-10-PCT-WEALTH"]());
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
+      });
     });
   }),
   new PenBundle.Pen('bottom 50%', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('wealth by percent', 'bottom 50%')(function() { plotManager.plotValue(procedures["BOTTOM-50-PCT-WEALTH"]());; });
+      plotManager.withTemporaryContext('wealth by percent', 'bottom 50%')(function() {
+        try {
+          plotManager.plotValue(procedures["BOTTOM-50-PCT-WEALTH"]());
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
+      });
     });
   })];
   var setup   = function() {};
@@ -93,32 +127,62 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    world.turtleManager.createTurtles(500, "").ask(function() {
-      SelfManager.self().setVariable("wealth", 100);
-      SelfManager.self().setVariable("shape", "circle");
-      SelfManager.self().setVariable("color", 55);
-      SelfManager.self().setVariable("size", 2);
-      SelfManager.self().setXY(SelfManager.self().getVariable("wealth"), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
-    }, true);
-    world.ticker.reset();
+    try {
+      world.clearAll();
+      world.turtleManager.createTurtles(500, "").ask(function() {
+        SelfManager.self().setVariable("wealth", 100);
+        SelfManager.self().setVariable("shape", "circle");
+        SelfManager.self().setVariable("color", 55);
+        SelfManager.self().setVariable("size", 2);
+        SelfManager.self().setXY(SelfManager.self().getVariable("wealth"), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
+      }, true);
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    world.turtles().agentFilter(function() { return Prims.gt(SelfManager.self().getVariable("wealth"), 0); }).ask(function() { procedures["TRANSACT"](); }, true);
-    world.turtles().ask(function() {
-      if (Prims.lte(SelfManager.self().getVariable("wealth"), world.topology.maxPxcor)) {
-        SelfManager.self().setVariable("xcor", SelfManager.self().getVariable("wealth"));
+    try {
+      world.turtles().agentFilter(function() { return Prims.gt(SelfManager.self().getVariable("wealth"), 0); }).ask(function() { procedures["TRANSACT"](); }, true);
+      world.turtles().ask(function() {
+        if (Prims.lte(SelfManager.self().getVariable("wealth"), world.topology.maxPxcor)) {
+          SelfManager.self().setVariable("xcor", SelfManager.self().getVariable("wealth"));
+        }
+      }, true);
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-    }, true);
-    world.ticker.tick();
+    }
   });
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    SelfManager.self().setVariable("wealth", (SelfManager.self().getVariable("wealth") - 1));
-    ListPrims.oneOf(SelfPrims.other(world.turtles())).ask(function() { SelfManager.self().setVariable("wealth", (SelfManager.self().getVariable("wealth") + 1)); }, true);
+    try {
+      SelfManager.self().setVariable("wealth", (SelfManager.self().getVariable("wealth") - 1));
+      ListPrims.oneOf(SelfPrims.other(world.turtles())).ask(function() { SelfManager.self().setVariable("wealth", (SelfManager.self().getVariable("wealth") + 1)); }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["transact"] = temp;
   procs["TRANSACT"] = temp;
@@ -129,6 +193,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -143,6 +209,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }

@@ -48,27 +48,69 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('low', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Class Plot', 'low')(function() {
-        plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); }).size());;
+        try {
+          plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); }).size());
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   }),
   new PenBundle.Pen('mid', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Class Plot', 'mid')(function() {
-        plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); }).size());;
+        try {
+          plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); }).size());
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   }),
   new PenBundle.Pen('up', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Class Plot', 'up')(function() {
-        plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 105); }).size());;
+        try {
+          plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 105); }).size());
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   })];
   var setup   = function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('Class Plot', undefined)(function() { plotManager.setYRange(0, world.observer.getGlobal("num-people"));; });
+      plotManager.withTemporaryContext('Class Plot', undefined)(function() {
+        try {
+          plotManager.setYRange(0, world.observer.getGlobal("num-people"));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
+      });
     });
   };
   var update  = function() {};
@@ -79,19 +121,41 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Bar), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Class Histogram', 'default')(function() {
-        plotManager.resetPen();
-        plotManager.setPenColor(15);
-        plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); }).size());
-        plotManager.setPenColor(55);
-        plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); }).size());
-        plotManager.setPenColor(105);
-        plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 105); }).size());;
+        try {
+          plotManager.resetPen();
+          plotManager.setPenColor(15);
+          plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); }).size());
+          plotManager.setPenColor(55);
+          plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); }).size());
+          plotManager.setPenColor(105);
+          plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 105); }).size());
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   })];
   var setup   = function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('Class Histogram', undefined)(function() { plotManager.setYRange(0, world.observer.getGlobal("num-people"));; });
+      plotManager.withTemporaryContext('Class Histogram', undefined)(function() {
+        try {
+          plotManager.setYRange(0, world.observer.getGlobal("num-people"));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
+      });
     });
   };
   var update  = function() {};
@@ -102,23 +166,43 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('lorenz', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Lorenz Curve', 'lorenz')(function() {
-        plotManager.resetPen();
-        plotManager.setPenInterval(Prims.div(100, world.observer.getGlobal("num-people")));
-        plotManager.plotValue(0);
-        Tasks.forEach(Tasks.commandTask(function(_0) {
-          if (arguments.length < 1) {
-            throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+        try {
+          plotManager.resetPen();
+          plotManager.setPenInterval(Prims.div(100, world.observer.getGlobal("num-people")));
+          plotManager.plotValue(0);
+          Tasks.forEach(Tasks.commandTask(function(_0) {
+            if (arguments.length < 1) {
+              throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+            }
+            plotManager.plotValue(_0);
+          }), world.observer.getGlobal("lorenz-points"));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
           }
-          plotManager.plotValue(_0);
-        }), world.observer.getGlobal("lorenz-points"));;
+        };
       });
     });
   }),
   new PenBundle.Pen('equal', plotOps.makePenOps, false, new PenBundle.State(0.0, 100.0, PenBundle.DisplayMode.Line), function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Lorenz Curve', 'equal')(function() {
-        plotManager.plotValue(0);
-        plotManager.plotValue(100);;
+        try {
+          plotManager.plotValue(0);
+          plotManager.plotValue(100);
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   }, function() {})];
@@ -131,7 +215,17 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Gini-Index v. Time', 'default')(function() {
-        plotManager.plotValue(Prims.div(Prims.div(world.observer.getGlobal("gini-index-reserve"), world.observer.getGlobal("num-people")), 0.5));;
+        try {
+          plotManager.plotValue(Prims.div(Prims.div(world.observer.getGlobal("gini-index-reserve"), world.observer.getGlobal("num-people")), 0.5));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   })];
@@ -159,126 +253,206 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    world.observer.setGlobal("max-grain", 50);
-    procedures["SETUP-PATCHES"]();
-    procedures["SETUP-TURTLES"]();
-    procedures["UPDATE-LORENZ-AND-GINI"]();
-    world.ticker.reset();
+    try {
+      world.clearAll();
+      world.observer.setGlobal("max-grain", 50);
+      procedures["SETUP-PATCHES"]();
+      procedures["SETUP-TURTLES"]();
+      procedures["UPDATE-LORENZ-AND-GINI"]();
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    world.patches().ask(function() {
-      SelfManager.self().setPatchVariable("max-grain-here", 0);
-      if (Prims.lte(Prims.randomFloat(100), world.observer.getGlobal("percent-best-land"))) {
-        SelfManager.self().setPatchVariable("max-grain-here", world.observer.getGlobal("max-grain"));
-        SelfManager.self().setPatchVariable("grain-here", SelfManager.self().getPatchVariable("max-grain-here"));
-      }
-    }, true);
-    for (var _index_1278_1284 = 0, _repeatcount_1278_1284 = StrictMath.floor(5); _index_1278_1284 < _repeatcount_1278_1284; _index_1278_1284++){
-      world.patches().agentFilter(function() { return !Prims.equality(SelfManager.self().getPatchVariable("max-grain-here"), 0); }).ask(function() {
-        SelfManager.self().setPatchVariable("grain-here", SelfManager.self().getPatchVariable("max-grain-here"));
+    try {
+      world.patches().ask(function() {
+        SelfManager.self().setPatchVariable("max-grain-here", 0);
+        if (Prims.lte(Prims.randomFloat(100), world.observer.getGlobal("percent-best-land"))) {
+          SelfManager.self().setPatchVariable("max-grain-here", world.observer.getGlobal("max-grain"));
+          SelfManager.self().setPatchVariable("grain-here", SelfManager.self().getPatchVariable("max-grain-here"));
+        }
       }, true);
-      world.topology.diffuse("grain-here", 0.25)
+      for (let _index_1278_1284 = 0, _repeatcount_1278_1284 = StrictMath.floor(5); _index_1278_1284 < _repeatcount_1278_1284; _index_1278_1284++){
+        world.patches().agentFilter(function() { return !Prims.equality(SelfManager.self().getPatchVariable("max-grain-here"), 0); }).ask(function() {
+          SelfManager.self().setPatchVariable("grain-here", SelfManager.self().getPatchVariable("max-grain-here"));
+        }, true);
+        world.topology.diffuse("grain-here", 0.25)
+      }
+      for (let _index_1408_1414 = 0, _repeatcount_1408_1414 = StrictMath.floor(10); _index_1408_1414 < _repeatcount_1408_1414; _index_1408_1414++){
+        world.topology.diffuse("grain-here", 0.25)
+      }
+      world.patches().ask(function() {
+        SelfManager.self().setPatchVariable("grain-here", NLMath.floor(SelfManager.self().getPatchVariable("grain-here")));
+        SelfManager.self().setPatchVariable("max-grain-here", SelfManager.self().getPatchVariable("grain-here"));
+        procedures["RECOLOR-PATCH"]();
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    for (var _index_1408_1414 = 0, _repeatcount_1408_1414 = StrictMath.floor(10); _index_1408_1414 < _repeatcount_1408_1414; _index_1408_1414++){
-      world.topology.diffuse("grain-here", 0.25)
-    }
-    world.patches().ask(function() {
-      SelfManager.self().setPatchVariable("grain-here", NLMath.floor(SelfManager.self().getPatchVariable("grain-here")));
-      SelfManager.self().setPatchVariable("max-grain-here", SelfManager.self().getPatchVariable("grain-here"));
-      procedures["RECOLOR-PATCH"]();
-    }, true);
   });
   procs["setupPatches"] = temp;
   procs["SETUP-PATCHES"] = temp;
   temp = (function() {
-    SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(45, SelfManager.self().getPatchVariable("grain-here"), 0, world.observer.getGlobal("max-grain")));
+    try {
+      SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(45, SelfManager.self().getPatchVariable("grain-here"), 0, world.observer.getGlobal("max-grain")));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["recolorPatch"] = temp;
   procs["RECOLOR-PATCH"] = temp;
   temp = (function() {
-    BreedManager.setDefaultShape(world.turtles().getSpecialName(), "person")
-    world.turtleManager.createTurtles(world.observer.getGlobal("num-people"), "").ask(function() {
-      SelfManager.self().moveTo(ListPrims.oneOf(world.patches()));
-      SelfManager.self().setVariable("size", 1.5);
-      procedures["SET-INITIAL-TURTLE-VARS"]();
-      SelfManager.self().setVariable("age", Prims.random(SelfManager.self().getVariable("life-expectancy")));
-    }, true);
-    procedures["RECOLOR-TURTLES"]();
+    try {
+      BreedManager.setDefaultShape(world.turtles().getSpecialName(), "person")
+      world.turtleManager.createTurtles(world.observer.getGlobal("num-people"), "").ask(function() {
+        SelfManager.self().moveTo(ListPrims.oneOf(world.patches()));
+        SelfManager.self().setVariable("size", 1.5);
+        procedures["SET-INITIAL-TURTLE-VARS"]();
+        SelfManager.self().setVariable("age", Prims.random(SelfManager.self().getVariable("life-expectancy")));
+      }, true);
+      procedures["RECOLOR-TURTLES"]();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setupTurtles"] = temp;
   procs["SETUP-TURTLES"] = temp;
   temp = (function() {
-    SelfManager.self().setVariable("age", 0);
-    SelfManager.self().face(ListPrims.oneOf(SelfManager.self().getNeighbors4()));
-    SelfManager.self().setVariable("life-expectancy", (world.observer.getGlobal("life-expectancy-min") + Prims.random(((world.observer.getGlobal("life-expectancy-max") - world.observer.getGlobal("life-expectancy-min")) + 1))));
-    SelfManager.self().setVariable("metabolism", (1 + Prims.random(world.observer.getGlobal("metabolism-max"))));
-    SelfManager.self().setVariable("wealth", (SelfManager.self().getVariable("metabolism") + Prims.random(50)));
-    SelfManager.self().setVariable("vision", (1 + Prims.random(world.observer.getGlobal("max-vision"))));
+    try {
+      SelfManager.self().setVariable("age", 0);
+      SelfManager.self().face(ListPrims.oneOf(SelfManager.self().getNeighbors4()));
+      SelfManager.self().setVariable("life-expectancy", (world.observer.getGlobal("life-expectancy-min") + Prims.random(((world.observer.getGlobal("life-expectancy-max") - world.observer.getGlobal("life-expectancy-min")) + 1))));
+      SelfManager.self().setVariable("metabolism", (1 + Prims.random(world.observer.getGlobal("metabolism-max"))));
+      SelfManager.self().setVariable("wealth", (SelfManager.self().getVariable("metabolism") + Prims.random(50)));
+      SelfManager.self().setVariable("vision", (1 + Prims.random(world.observer.getGlobal("max-vision"))));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setInitialTurtleVars"] = temp;
   procs["SET-INITIAL-TURTLE-VARS"] = temp;
   temp = (function() {
-    var maxWealth = ListPrims.max(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("wealth"); }));
-    world.turtles().ask(function() {
-      if (Prims.lte(SelfManager.self().getVariable("wealth"), Prims.div(maxWealth, 3))) {
-        SelfManager.self().setVariable("color", 15);
-      }
-      else {
-        if (Prims.lte(SelfManager.self().getVariable("wealth"), Prims.div((maxWealth * 2), 3))) {
-          SelfManager.self().setVariable("color", 55);
+    try {
+      let maxWealth = ListPrims.max(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("wealth"); }));
+      world.turtles().ask(function() {
+        if (Prims.lte(SelfManager.self().getVariable("wealth"), Prims.div(maxWealth, 3))) {
+          SelfManager.self().setVariable("color", 15);
         }
         else {
-          SelfManager.self().setVariable("color", 105);
+          if (Prims.lte(SelfManager.self().getVariable("wealth"), Prims.div((maxWealth * 2), 3))) {
+            SelfManager.self().setVariable("color", 55);
+          }
+          else {
+            SelfManager.self().setVariable("color", 105);
+          }
         }
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-    }, true);
+    }
   });
   procs["recolorTurtles"] = temp;
   procs["RECOLOR-TURTLES"] = temp;
   temp = (function() {
-    world.turtles().ask(function() { procedures["TURN-TOWARDS-GRAIN"](); }, true);
-    procedures["HARVEST"]();
-    world.turtles().ask(function() { procedures["MOVE-EAT-AGE-DIE"](); }, true);
-    procedures["RECOLOR-TURTLES"]();
-    if (Prims.equality(NLMath.mod(world.ticker.tickCount(), world.observer.getGlobal("grain-growth-interval")), 0)) {
-      world.patches().ask(function() { procedures["GROW-GRAIN"](); }, true);
+    try {
+      world.turtles().ask(function() { procedures["TURN-TOWARDS-GRAIN"](); }, true);
+      procedures["HARVEST"]();
+      world.turtles().ask(function() { procedures["MOVE-EAT-AGE-DIE"](); }, true);
+      procedures["RECOLOR-TURTLES"]();
+      if (Prims.equality(NLMath.mod(world.ticker.tickCount(), world.observer.getGlobal("grain-growth-interval")), 0)) {
+        world.patches().ask(function() { procedures["GROW-GRAIN"](); }, true);
+      }
+      procedures["UPDATE-LORENZ-AND-GINI"]();
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    procedures["UPDATE-LORENZ-AND-GINI"]();
-    world.ticker.tick();
   });
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    SelfManager.self().setVariable("heading", 0);
-    var bestDirection = 0;
-    var bestAmount = procedures["GRAIN-AHEAD"]();
-    SelfManager.self().setVariable("heading", 90);
-    if (Prims.gt(procedures["GRAIN-AHEAD"](), bestAmount)) {
-      bestDirection = 90;
-      bestAmount = procedures["GRAIN-AHEAD"]();
+    try {
+      SelfManager.self().setVariable("heading", 0);
+      let bestDirection = 0;
+      let bestAmount = procedures["GRAIN-AHEAD"]();
+      SelfManager.self().setVariable("heading", 90);
+      if (Prims.gt(procedures["GRAIN-AHEAD"](), bestAmount)) {
+        bestDirection = 90;
+        bestAmount = procedures["GRAIN-AHEAD"]();
+      }
+      SelfManager.self().setVariable("heading", 180);
+      if (Prims.gt(procedures["GRAIN-AHEAD"](), bestAmount)) {
+        bestDirection = 180;
+        bestAmount = procedures["GRAIN-AHEAD"]();
+      }
+      SelfManager.self().setVariable("heading", 270);
+      if (Prims.gt(procedures["GRAIN-AHEAD"](), bestAmount)) {
+        bestDirection = 270;
+        bestAmount = procedures["GRAIN-AHEAD"]();
+      }
+      SelfManager.self().setVariable("heading", bestDirection);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    SelfManager.self().setVariable("heading", 180);
-    if (Prims.gt(procedures["GRAIN-AHEAD"](), bestAmount)) {
-      bestDirection = 180;
-      bestAmount = procedures["GRAIN-AHEAD"]();
-    }
-    SelfManager.self().setVariable("heading", 270);
-    if (Prims.gt(procedures["GRAIN-AHEAD"](), bestAmount)) {
-      bestDirection = 270;
-      bestAmount = procedures["GRAIN-AHEAD"]();
-    }
-    SelfManager.self().setVariable("heading", bestDirection);
   });
   procs["turnTowardsGrain"] = temp;
   procs["TURN-TOWARDS-GRAIN"] = temp;
   temp = (function() {
     try {
-      var total = 0;
-      var howFar = 1;
-      for (var _index_4005_4011 = 0, _repeatcount_4005_4011 = StrictMath.floor(SelfManager.self().getVariable("vision")); _index_4005_4011 < _repeatcount_4005_4011; _index_4005_4011++){
+      let total = 0;
+      let howFar = 1;
+      for (let _index_4005_4011 = 0, _repeatcount_4005_4011 = StrictMath.floor(SelfManager.self().getVariable("vision")); _index_4005_4011 < _repeatcount_4005_4011; _index_4005_4011++){
         total = (total + SelfManager.self().patchAhead(howFar).projectionBy(function() { return SelfManager.self().getPatchVariable("grain-here"); }));
         howFar = (howFar + 1);
       }
@@ -287,6 +461,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -295,49 +471,89 @@ var procedures = (function() {
   procs["grainAhead"] = temp;
   procs["GRAIN-AHEAD"] = temp;
   temp = (function() {
-    if (Prims.lt(SelfManager.self().getPatchVariable("grain-here"), SelfManager.self().getPatchVariable("max-grain-here"))) {
-      SelfManager.self().setPatchVariable("grain-here", (SelfManager.self().getPatchVariable("grain-here") + world.observer.getGlobal("num-grain-grown")));
-      if (Prims.gt(SelfManager.self().getPatchVariable("grain-here"), SelfManager.self().getPatchVariable("max-grain-here"))) {
-        SelfManager.self().setPatchVariable("grain-here", SelfManager.self().getPatchVariable("max-grain-here"));
+    try {
+      if (Prims.lt(SelfManager.self().getPatchVariable("grain-here"), SelfManager.self().getPatchVariable("max-grain-here"))) {
+        SelfManager.self().setPatchVariable("grain-here", (SelfManager.self().getPatchVariable("grain-here") + world.observer.getGlobal("num-grain-grown")));
+        if (Prims.gt(SelfManager.self().getPatchVariable("grain-here"), SelfManager.self().getPatchVariable("max-grain-here"))) {
+          SelfManager.self().setPatchVariable("grain-here", SelfManager.self().getPatchVariable("max-grain-here"));
+        }
+        procedures["RECOLOR-PATCH"]();
       }
-      procedures["RECOLOR-PATCH"]();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["growGrain"] = temp;
   procs["GROW-GRAIN"] = temp;
   temp = (function() {
-    world.turtles().ask(function() {
-      SelfManager.self().setVariable("wealth", NLMath.floor((SelfManager.self().getVariable("wealth") + Prims.div(SelfManager.self().getPatchVariable("grain-here"), SelfManager.self().turtlesHere().size()))));
-    }, true);
-    world.turtles().ask(function() {
-      SelfManager.self().setPatchVariable("grain-here", 0);
-      procedures["RECOLOR-PATCH"]();
-    }, true);
+    try {
+      world.turtles().ask(function() {
+        SelfManager.self().setVariable("wealth", NLMath.floor((SelfManager.self().getVariable("wealth") + Prims.div(SelfManager.self().getPatchVariable("grain-here"), SelfManager.self().turtlesHere().size()))));
+      }, true);
+      world.turtles().ask(function() {
+        SelfManager.self().setPatchVariable("grain-here", 0);
+        procedures["RECOLOR-PATCH"]();
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["harvest"] = temp;
   procs["HARVEST"] = temp;
   temp = (function() {
-    SelfManager.self().fd(1);
-    SelfManager.self().setVariable("wealth", (SelfManager.self().getVariable("wealth") - SelfManager.self().getVariable("metabolism")));
-    SelfManager.self().setVariable("age", (SelfManager.self().getVariable("age") + 1));
-    if ((Prims.lt(SelfManager.self().getVariable("wealth"), 0) || Prims.gte(SelfManager.self().getVariable("age"), SelfManager.self().getVariable("life-expectancy")))) {
-      procedures["SET-INITIAL-TURTLE-VARS"]();
+    try {
+      SelfManager.self().fd(1);
+      SelfManager.self().setVariable("wealth", (SelfManager.self().getVariable("wealth") - SelfManager.self().getVariable("metabolism")));
+      SelfManager.self().setVariable("age", (SelfManager.self().getVariable("age") + 1));
+      if ((Prims.lt(SelfManager.self().getVariable("wealth"), 0) || Prims.gte(SelfManager.self().getVariable("age"), SelfManager.self().getVariable("life-expectancy")))) {
+        procedures["SET-INITIAL-TURTLE-VARS"]();
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["moveEatAgeDie"] = temp;
   procs["MOVE-EAT-AGE-DIE"] = temp;
   temp = (function() {
-    var sortedWealths = ListPrims.sort(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("wealth"); }));
-    var totalWealth = ListPrims.sum(sortedWealths);
-    var wealthSumSoFar = 0;
-    var index = 0;
-    world.observer.setGlobal("gini-index-reserve", 0);
-    world.observer.setGlobal("lorenz-points", []);
-    for (var _index_6031_6037 = 0, _repeatcount_6031_6037 = StrictMath.floor(world.observer.getGlobal("num-people")); _index_6031_6037 < _repeatcount_6031_6037; _index_6031_6037++){
-      wealthSumSoFar = (wealthSumSoFar + ListPrims.item(index, sortedWealths));
-      world.observer.setGlobal("lorenz-points", ListPrims.lput((Prims.div(wealthSumSoFar, totalWealth) * 100), world.observer.getGlobal("lorenz-points")));
-      index = (index + 1);
-      world.observer.setGlobal("gini-index-reserve", ((world.observer.getGlobal("gini-index-reserve") + Prims.div(index, world.observer.getGlobal("num-people"))) - Prims.div(wealthSumSoFar, totalWealth)));
+    try {
+      let sortedWealths = ListPrims.sort(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("wealth"); }));
+      let totalWealth = ListPrims.sum(sortedWealths);
+      let wealthSumSoFar = 0;
+      let index = 0;
+      world.observer.setGlobal("gini-index-reserve", 0);
+      world.observer.setGlobal("lorenz-points", []);
+      for (let _index_6031_6037 = 0, _repeatcount_6031_6037 = StrictMath.floor(world.observer.getGlobal("num-people")); _index_6031_6037 < _repeatcount_6031_6037; _index_6031_6037++){
+        wealthSumSoFar = (wealthSumSoFar + ListPrims.item(index, sortedWealths));
+        world.observer.setGlobal("lorenz-points", ListPrims.lput((Prims.div(wealthSumSoFar, totalWealth) * 100), world.observer.getGlobal("lorenz-points")));
+        index = (index + 1);
+        world.observer.setGlobal("gini-index-reserve", ((world.observer.getGlobal("gini-index-reserve") + Prims.div(index, world.observer.getGlobal("num-people"))) - Prims.div(wealthSumSoFar, totalWealth)));
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["updateLorenzAndGini"] = temp;

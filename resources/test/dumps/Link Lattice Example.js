@@ -63,28 +63,48 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    world.patches().ask(function() { SelfManager.self().sprout(1, "TURTLES").ask(function() {}, true); }, true);
-    world.turtles().ask(function() {
-      LinkPrims.createLinksWith(Prims.turtlesOn(SelfManager.self().getNeighbors4()), "LINKS").ask(function() {}, false);
-    }, true);
-    world.ticker.reset();
+    try {
+      world.clearAll();
+      world.patches().ask(function() { SelfManager.self().sprout(1, "TURTLES").ask(function() {}, true); }, true);
+      world.turtles().ask(function() {
+        LinkPrims.createLinksWith(Prims.turtlesOn(SelfManager.self().getNeighbors4()), "LINKS").ask(function() {}, false);
+      }, true);
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setupSquare"] = temp;
   procs["SETUP-SQUARE"] = temp;
   temp = (function() {
-    world.clearAll();
-    world.patches().ask(function() { SelfManager.self().sprout(1, "TURTLES").ask(function() {}, true); }, true);
-    world.turtles().ask(function() {
-      LinkPrims.createLinksWith(SelfManager.self().turtlesAt(0, 1), "LINKS").ask(function() {}, false);
-      LinkPrims.createLinksWith(SelfManager.self().turtlesAt(1, 0), "LINKS").ask(function() {}, false);
-      if (Prims.equality(NLMath.mod(SelfManager.self().getPatchVariable("pxcor"), 2), 0)) {
-        LinkPrims.createLinksWith(SelfManager.self().turtlesAt(1, -1), "LINKS").ask(function() {}, false);
-        LinkPrims.createLinksWith(SelfManager.self().turtlesAt(-1, -1), "LINKS").ask(function() {}, false);
-        SelfManager.self().setVariable("ycor", (SelfManager.self().getVariable("ycor") - 0.5));
+    try {
+      world.clearAll();
+      world.patches().ask(function() { SelfManager.self().sprout(1, "TURTLES").ask(function() {}, true); }, true);
+      world.turtles().ask(function() {
+        LinkPrims.createLinksWith(SelfManager.self().turtlesAt(0, 1), "LINKS").ask(function() {}, false);
+        LinkPrims.createLinksWith(SelfManager.self().turtlesAt(1, 0), "LINKS").ask(function() {}, false);
+        if (Prims.equality(NLMath.mod(SelfManager.self().getPatchVariable("pxcor"), 2), 0)) {
+          LinkPrims.createLinksWith(SelfManager.self().turtlesAt(1, -1), "LINKS").ask(function() {}, false);
+          LinkPrims.createLinksWith(SelfManager.self().turtlesAt(-1, -1), "LINKS").ask(function() {}, false);
+          SelfManager.self().setVariable("ycor", (SelfManager.self().getVariable("ycor") - 0.5));
+        }
+      }, true);
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-    }, true);
-    world.ticker.reset();
+    }
   });
   procs["setupHex"] = temp;
   procs["SETUP-HEX"] = temp;

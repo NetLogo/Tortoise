@@ -47,12 +47,36 @@ modelConfig.plots = [(function() {
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('recyclers', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('Population', 'recyclers')(function() { plotManager.plotValue(world.turtleManager.turtlesOfBreed("RECYCLERS").size());; });
+      plotManager.withTemporaryContext('Population', 'recyclers')(function() {
+        try {
+          plotManager.plotValue(world.turtleManager.turtlesOfBreed("RECYCLERS").size());
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
+      });
     });
   }),
   new PenBundle.Pen('wastefuls', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('Population', 'wastefuls')(function() { plotManager.plotValue(world.turtleManager.turtlesOfBreed("WASTEFULS").size());; });
+      plotManager.withTemporaryContext('Population', 'wastefuls')(function() {
+        try {
+          plotManager.plotValue(world.turtleManager.turtlesOfBreed("WASTEFULS").size());
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
+      });
     });
   })];
   var setup   = function() {};
@@ -64,21 +88,51 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('new', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Land Use', 'new')(function() {
-        plotManager.plotValue((Prims.div(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "new"); }).size(), world.patches().size()) * 100));;
+        try {
+          plotManager.plotValue((Prims.div(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "new"); }).size(), world.patches().size()) * 100));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   }),
   new PenBundle.Pen('recycled', plotOps.makePenOps, false, new PenBundle.State(65.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Land Use', 'recycled')(function() {
-        plotManager.plotValue((Prims.div(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "recycled"); }).size(), world.patches().size()) * 100));;
+        try {
+          plotManager.plotValue((Prims.div(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "recycled"); }).size(), world.patches().size()) * 100));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   }),
   new PenBundle.Pen('waste', plotOps.makePenOps, false, new PenBundle.State(44.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Land Use', 'waste')(function() {
-        plotManager.plotValue((Prims.div(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "waste"); }).size(), world.patches().size()) * 100));;
+        try {
+          plotManager.plotValue((Prims.div(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "waste"); }).size(), world.patches().size()) * 100));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   })];
@@ -106,131 +160,201 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    BreedManager.setDefaultShape(world.turtles().getSpecialName(), "person")
-    world.turtleManager.createTurtles(world.observer.getGlobal("num-recyclers"), "RECYCLERS").ask(function() { SelfManager.self().setVariable("color", 105); }, true);
-    world.turtleManager.createTurtles(world.observer.getGlobal("num-wastefuls"), "WASTEFULS").ask(function() { SelfManager.self().setVariable("color", 15); }, true);
-    world.turtles().ask(function() {
-      SelfManager.self().setVariable("size", 1.5);
-      SelfManager.self().setXY(Prims.randomPatchCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomPatchCoord(world.topology.minPycor, world.topology.maxPycor));
-      SelfManager.self().setVariable("energy", Prims.div(world.observer.getGlobal("max-stored-energy"), 2));
-    }, true);
-    world.patches().ask(function() {
-      SelfManager.self().setPatchVariable("resource-type", "new");
-      procedures["UPDATE-PATCH"]();
-    }, true);
-    world.ticker.reset();
+    try {
+      world.clearAll();
+      BreedManager.setDefaultShape(world.turtles().getSpecialName(), "person")
+      world.turtleManager.createTurtles(world.observer.getGlobal("num-recyclers"), "RECYCLERS").ask(function() { SelfManager.self().setVariable("color", 105); }, true);
+      world.turtleManager.createTurtles(world.observer.getGlobal("num-wastefuls"), "WASTEFULS").ask(function() { SelfManager.self().setVariable("color", 15); }, true);
+      world.turtles().ask(function() {
+        SelfManager.self().setVariable("size", 1.5);
+        SelfManager.self().setXY(Prims.randomPatchCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomPatchCoord(world.topology.minPycor, world.topology.maxPycor));
+        SelfManager.self().setVariable("energy", Prims.div(world.observer.getGlobal("max-stored-energy"), 2));
+      }, true);
+      world.patches().ask(function() {
+        SelfManager.self().setPatchVariable("resource-type", "new");
+        procedures["UPDATE-PATCH"]();
+      }, true);
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    world.turtleManager.turtlesOfBreed("RECYCLERS").ask(function() { procedures["RECYCLER-PROCESS-PATCH"](); }, true);
-    world.turtleManager.turtlesOfBreed("WASTEFULS").ask(function() { procedures["WASTEFUL-PROCESS-PATCH"](); }, true);
-    world.turtles().ask(function() {
-      procedures["MOVE"]();
-      if (Prims.gt(SelfManager.self().getVariable("energy"), world.observer.getGlobal("max-stored-energy"))) {
-        SelfManager.self().setVariable("energy", world.observer.getGlobal("max-stored-energy"));
+    try {
+      world.turtleManager.turtlesOfBreed("RECYCLERS").ask(function() { procedures["RECYCLER-PROCESS-PATCH"](); }, true);
+      world.turtleManager.turtlesOfBreed("WASTEFULS").ask(function() { procedures["WASTEFUL-PROCESS-PATCH"](); }, true);
+      world.turtles().ask(function() {
+        procedures["MOVE"]();
+        if (Prims.gt(SelfManager.self().getVariable("energy"), world.observer.getGlobal("max-stored-energy"))) {
+          SelfManager.self().setVariable("energy", world.observer.getGlobal("max-stored-energy"));
+        }
+        if (Prims.lt(SelfManager.self().getVariable("energy"), 0)) {
+          SelfManager.self().die();
+        }
+      }, true);
+      if (world.observer.getGlobal("show-energy?")) {
+        world.turtles().ask(function() { SelfManager.self().setVariable("label", NLMath.round(SelfManager.self().getVariable("energy"))); }, true);
       }
-      if (Prims.lt(SelfManager.self().getVariable("energy"), 0)) {
-        SelfManager.self().die();
+      else {
+        world.turtles().ask(function() { SelfManager.self().setVariable("label", ""); }, true);
       }
-    }, true);
-    if (world.observer.getGlobal("show-energy?")) {
-      world.turtles().ask(function() { SelfManager.self().setVariable("label", NLMath.round(SelfManager.self().getVariable("energy"))); }, true);
+      procedures["UPDATE-ENVIRONMENT"]();
+      world.patches().ask(function() { procedures["UPDATE-PATCH"](); }, true);
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    else {
-      world.turtles().ask(function() { SelfManager.self().setVariable("label", ""); }, true);
-    }
-    procedures["UPDATE-ENVIRONMENT"]();
-    world.patches().ask(function() { procedures["UPDATE-PATCH"](); }, true);
-    world.ticker.tick();
   });
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    var targetPatch = ListPrims.oneOf(SelfManager.self().getNeighbors());
-    if (world.observer.getGlobal("agents-seek-resources?")) {
-      var candidateMoves = SelfManager.self().getNeighbors().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "new"); });
-      if (!candidateMoves.isEmpty()) {
-        targetPatch = ListPrims.oneOf(candidateMoves);
-      }
-      else {
-        candidateMoves = SelfManager.self().getNeighbors().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "recycled"); });
+    try {
+      let targetPatch = ListPrims.oneOf(SelfManager.self().getNeighbors());
+      if (world.observer.getGlobal("agents-seek-resources?")) {
+        let candidateMoves = SelfManager.self().getNeighbors().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "new"); });
         if (!candidateMoves.isEmpty()) {
           targetPatch = ListPrims.oneOf(candidateMoves);
         }
+        else {
+          candidateMoves = SelfManager.self().getNeighbors().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "recycled"); });
+          if (!candidateMoves.isEmpty()) {
+            targetPatch = ListPrims.oneOf(candidateMoves);
+          }
+        }
+      }
+      SelfManager.self().face(targetPatch);
+      SelfManager.self().moveTo(targetPatch);
+      SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") - 1));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
-    SelfManager.self().face(targetPatch);
-    SelfManager.self().moveTo(targetPatch);
-    SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") - 1));
   });
   procs["move"] = temp;
   procs["MOVE"] = temp;
   temp = (function() {
-    if (Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "new")) {
-      if (Prims.lte(SelfManager.self().getVariable("energy"), (world.observer.getGlobal("max-stored-energy") - 2))) {
-        SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") + 2));
-      }
-    }
-    else {
-      if (Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "recycled")) {
-        if (Prims.lte(SelfManager.self().getVariable("energy"), (world.observer.getGlobal("max-stored-energy") - 1))) {
-          SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") + 1));
+    try {
+      if (Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "new")) {
+        if (Prims.lte(SelfManager.self().getVariable("energy"), (world.observer.getGlobal("max-stored-energy") - 2))) {
+          SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") + 2));
         }
       }
       else {
-        SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") - world.observer.getGlobal("recycling-waste-cost")));
-        SelfManager.self().setPatchVariable("resource-type", "recycled");
+        if (Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "recycled")) {
+          if (Prims.lte(SelfManager.self().getVariable("energy"), (world.observer.getGlobal("max-stored-energy") - 1))) {
+            SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") + 1));
+          }
+        }
+        else {
+          SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") - world.observer.getGlobal("recycling-waste-cost")));
+          SelfManager.self().setPatchVariable("resource-type", "recycled");
+        }
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
   });
   procs["recyclerProcessPatch"] = temp;
   procs["RECYCLER-PROCESS-PATCH"] = temp;
   temp = (function() {
-    if (Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "new")) {
-      if (Prims.lte(SelfManager.self().getVariable("energy"), (world.observer.getGlobal("max-stored-energy") - 4))) {
-        SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") + 4));
-        SelfManager.self().setPatchVariable("resource-type", "waste");
-      }
-    }
-    else {
-      if (Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "recycled")) {
-        if (Prims.lte(SelfManager.self().getVariable("energy"), (world.observer.getGlobal("max-stored-energy") - 2))) {
-          SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") + 2));
+    try {
+      if (Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "new")) {
+        if (Prims.lte(SelfManager.self().getVariable("energy"), (world.observer.getGlobal("max-stored-energy") - 4))) {
+          SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") + 4));
           SelfManager.self().setPatchVariable("resource-type", "waste");
         }
+      }
+      else {
+        if (Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "recycled")) {
+          if (Prims.lte(SelfManager.self().getVariable("energy"), (world.observer.getGlobal("max-stored-energy") - 2))) {
+            SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") + 2));
+            SelfManager.self().setPatchVariable("resource-type", "waste");
+          }
+        }
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
   });
   procs["wastefulProcessPatch"] = temp;
   procs["WASTEFUL-PROCESS-PATCH"] = temp;
   temp = (function() {
-    if (Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "new")) {
-      SelfManager.self().setPatchVariable("pcolor", 55);
-    }
-    else {
-      if (Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "recycled")) {
-        SelfManager.self().setPatchVariable("pcolor", 65);
+    try {
+      if (Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "new")) {
+        SelfManager.self().setPatchVariable("pcolor", 55);
       }
       else {
-        SelfManager.self().setPatchVariable("pcolor", (45 - 1));
+        if (Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "recycled")) {
+          SelfManager.self().setPatchVariable("pcolor", 65);
+        }
+        else {
+          SelfManager.self().setPatchVariable("pcolor", (45 - 1));
+        }
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
   });
   procs["updatePatch"] = temp;
   procs["UPDATE-PATCH"] = temp;
   temp = (function() {
-    world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "recycled"); }).ask(function() {
-      if (Prims.lt(Prims.random(100), Prims.div(world.observer.getGlobal("resource-regeneration"), 10))) {
-        SelfManager.self().setPatchVariable("resource-type", "new");
+    try {
+      world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "recycled"); }).ask(function() {
+        if (Prims.lt(Prims.random(100), Prims.div(world.observer.getGlobal("resource-regeneration"), 10))) {
+          SelfManager.self().setPatchVariable("resource-type", "new");
+        }
+      }, true);
+      world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "waste"); }).ask(function() {
+        if ((Prims.equality(Prims.random(5), 0) && Prims.lt(Prims.random(100), Prims.div(world.observer.getGlobal("resource-regeneration"), 10)))) {
+          SelfManager.self().setPatchVariable("resource-type", "new");
+        }
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-    }, true);
-    world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "waste"); }).ask(function() {
-      if ((Prims.equality(Prims.random(5), 0) && Prims.lt(Prims.random(100), Prims.div(world.observer.getGlobal("resource-regeneration"), 10)))) {
-        SelfManager.self().setPatchVariable("resource-type", "new");
-      }
-    }, true);
+    }
   });
   procs["updateEnvironment"] = temp;
   procs["UPDATE-ENVIRONMENT"] = temp;

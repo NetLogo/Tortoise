@@ -63,749 +63,1019 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    world.observer.setGlobal("replicate-dna-event?", false);
-    world.observer.setGlobal("show-genes-event?", false);
-    world.observer.setGlobal("event-1-triggered?", false);
-    world.observer.setGlobal("event-2-triggered?", false);
-    world.observer.setGlobal("event-3-triggered?", false);
-    world.observer.setGlobal("event-4-triggered?", false);
-    world.observer.setGlobal("event-6-triggered?", false);
-    world.observer.setGlobal("event-7-triggered?", false);
-    world.observer.setGlobal("event-8-triggered?", false);
-    world.observer.setGlobal("event-9-triggered?", false);
-    world.observer.setGlobal("event-1-completed?", false);
-    world.observer.setGlobal("event-2-completed?", false);
-    world.observer.setGlobal("event-3-completed?", false);
-    world.observer.setGlobal("event-4-completed?", false);
-    world.observer.setGlobal("event-6-completed?", false);
-    world.observer.setGlobal("event-7-completed?", false);
-    world.observer.setGlobal("event-8-completed?", false);
-    world.observer.setGlobal("event-9-completed?", false);
-    world.observer.setGlobal("mrnas-traveling", []);
-    world.observer.setGlobal("mrnas-released", []);
-    world.observer.setGlobal("codon-to-amino-acid-key", []);
-    world.observer.setGlobal("original-dna-string", "");
-    world.observer.setGlobal("duplicate-dna-string", "");
-    world.observer.setGlobal("duplicate-ribosome-ycor", -7);
-    world.observer.setGlobal("original-ribosome-ycor", 4);
-    world.observer.setGlobal("duplicate-dna-ycor", -2);
-    world.observer.setGlobal("original-dna-ycor", 1);
-    world.observer.setGlobal("gene-color-counter", 1);
-    world.observer.setGlobal("nucleotide-spacing", 0.45);
-    world.observer.setGlobal("original-strand-gene-counter", 0);
-    world.observer.setGlobal("duplicate-strand-gene-counter", 0);
-    world.observer.setGlobal("original-display-mrna-counter", 0);
-    world.observer.setGlobal("duplicate-display-mrna-counter", 0);
-    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("PROMOTERS").getSpecialName(), "start")
-    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("TERMINATORS").getSpecialName(), "end")
-    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("TAGS").getSpecialName(), "empty")
-    world.observer.setGlobal("terminator-color", [255, 0, 0, 150]);
-    world.observer.setGlobal("nucleo-tag-color", [255, 255, 255, 120]);
-    procedures["INITIALIZE-CODON-TO-AMINO-ACID-KEY"]();
-    procedures["SETUP-STARTING-DNA"]();
-    procedures["VISUALIZE-ALL-GENES"]();
-    world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", (105 - 4)); }, true);
-    world.patches().agentFilter(function() { return Prims.gt(SelfManager.self().getPatchVariable("pycor"), 2); }).ask(function() { SelfManager.self().setPatchVariable("pcolor", (105 - 3.5)); }, true);
-    world.patches().agentFilter(function() { return Prims.lt(SelfManager.self().getPatchVariable("pycor"), 0); }).ask(function() { SelfManager.self().setPatchVariable("pcolor", (55 - 4)); }, true);
-    world.patches().agentFilter(function() { return Prims.lt(SelfManager.self().getPatchVariable("pycor"), -3); }).ask(function() { SelfManager.self().setPatchVariable("pcolor", (55 - 3.5)); }, true);
-    procedures["SHOW-INSTRUCTION"](1);
-    world.ticker.reset();
+    try {
+      world.clearAll();
+      world.observer.setGlobal("replicate-dna-event?", false);
+      world.observer.setGlobal("show-genes-event?", false);
+      world.observer.setGlobal("event-1-triggered?", false);
+      world.observer.setGlobal("event-2-triggered?", false);
+      world.observer.setGlobal("event-3-triggered?", false);
+      world.observer.setGlobal("event-4-triggered?", false);
+      world.observer.setGlobal("event-6-triggered?", false);
+      world.observer.setGlobal("event-7-triggered?", false);
+      world.observer.setGlobal("event-8-triggered?", false);
+      world.observer.setGlobal("event-9-triggered?", false);
+      world.observer.setGlobal("event-1-completed?", false);
+      world.observer.setGlobal("event-2-completed?", false);
+      world.observer.setGlobal("event-3-completed?", false);
+      world.observer.setGlobal("event-4-completed?", false);
+      world.observer.setGlobal("event-6-completed?", false);
+      world.observer.setGlobal("event-7-completed?", false);
+      world.observer.setGlobal("event-8-completed?", false);
+      world.observer.setGlobal("event-9-completed?", false);
+      world.observer.setGlobal("mrnas-traveling", []);
+      world.observer.setGlobal("mrnas-released", []);
+      world.observer.setGlobal("codon-to-amino-acid-key", []);
+      world.observer.setGlobal("original-dna-string", "");
+      world.observer.setGlobal("duplicate-dna-string", "");
+      world.observer.setGlobal("duplicate-ribosome-ycor", -7);
+      world.observer.setGlobal("original-ribosome-ycor", 4);
+      world.observer.setGlobal("duplicate-dna-ycor", -2);
+      world.observer.setGlobal("original-dna-ycor", 1);
+      world.observer.setGlobal("gene-color-counter", 1);
+      world.observer.setGlobal("nucleotide-spacing", 0.45);
+      world.observer.setGlobal("original-strand-gene-counter", 0);
+      world.observer.setGlobal("duplicate-strand-gene-counter", 0);
+      world.observer.setGlobal("original-display-mrna-counter", 0);
+      world.observer.setGlobal("duplicate-display-mrna-counter", 0);
+      BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("PROMOTERS").getSpecialName(), "start")
+      BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("TERMINATORS").getSpecialName(), "end")
+      BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("TAGS").getSpecialName(), "empty")
+      world.observer.setGlobal("terminator-color", [255, 0, 0, 150]);
+      world.observer.setGlobal("nucleo-tag-color", [255, 255, 255, 120]);
+      procedures["INITIALIZE-CODON-TO-AMINO-ACID-KEY"]();
+      procedures["SETUP-STARTING-DNA"]();
+      procedures["VISUALIZE-ALL-GENES"]();
+      world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", (105 - 4)); }, true);
+      world.patches().agentFilter(function() { return Prims.gt(SelfManager.self().getPatchVariable("pycor"), 2); }).ask(function() { SelfManager.self().setPatchVariable("pcolor", (105 - 3.5)); }, true);
+      world.patches().agentFilter(function() { return Prims.lt(SelfManager.self().getPatchVariable("pycor"), 0); }).ask(function() { SelfManager.self().setPatchVariable("pcolor", (55 - 4)); }, true);
+      world.patches().agentFilter(function() { return Prims.lt(SelfManager.self().getPatchVariable("pycor"), -3); }).ask(function() { SelfManager.self().setPatchVariable("pcolor", (55 - 3.5)); }, true);
+      procedures["SHOW-INSTRUCTION"](1);
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    procedures["SETUP-DNA-STRING"]();
-    procedures["BUILD-GENES-FROM-DNA"]("original",world.observer.getGlobal("original-dna-string"));
-    procedures["MAKE-A-NUCLEOTIDE-CHAIN-FOR-DNA-STRING"]("original",world.observer.getGlobal("original-dna-string"));
-    procedures["PLACE-DNA"]("original");
-    procedures["BUILD-MRNA-FOR-EACH-GENE"]("original");
-    procedures["BUILD-PROTEIN-FROM-MRNA"]("original");
-    procedures["PLACE-TRNAS"]("original");
-    procedures["HIDE-MRNA"]("original");
-    procedures["HIDE-TRNA"]("original");
-    procedures["HIDE-GENES"]("original");
+    try {
+      procedures["SETUP-DNA-STRING"]();
+      procedures["BUILD-GENES-FROM-DNA"]("original",world.observer.getGlobal("original-dna-string"));
+      procedures["MAKE-A-NUCLEOTIDE-CHAIN-FOR-DNA-STRING"]("original",world.observer.getGlobal("original-dna-string"));
+      procedures["PLACE-DNA"]("original");
+      procedures["BUILD-MRNA-FOR-EACH-GENE"]("original");
+      procedures["BUILD-PROTEIN-FROM-MRNA"]("original");
+      procedures["PLACE-TRNAS"]("original");
+      procedures["HIDE-MRNA"]("original");
+      procedures["HIDE-TRNA"]("original");
+      procedures["HIDE-GENES"]("original");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setupStartingDna"] = temp;
   procs["SETUP-STARTING-DNA"] = temp;
   temp = (function() {
-    if (Prims.equality(world.observer.getGlobal("initial-dna-string"), "from user-created-code")) {
-      world.observer.setGlobal("original-dna-string", procedures["DNA-STRING-WITH-NON-NUCLEOTIDE-CHARACTERS-REPLACED"](world.observer.getGlobal("user-created-code")));
-    }
-    if (Prims.equality(world.observer.getGlobal("initial-dna-string"), "random (short strand)")) {
-      var initialLengthDna = 12;
-      for (var _index_6358_6364 = 0, _repeatcount_6358_6364 = StrictMath.floor(initialLengthDna); _index_6358_6364 < _repeatcount_6358_6364; _index_6358_6364++){
-        world.observer.setGlobal("original-dna-string", (Dump('') + Dump(world.observer.getGlobal("original-dna-string")) + Dump(procedures["RANDOM-BASE-LETTER-DNA"]())));
+    try {
+      if (Prims.equality(world.observer.getGlobal("initial-dna-string"), "from user-created-code")) {
+        world.observer.setGlobal("original-dna-string", procedures["DNA-STRING-WITH-NON-NUCLEOTIDE-CHARACTERS-REPLACED"](world.observer.getGlobal("user-created-code")));
       }
-    }
-    if (Prims.equality(world.observer.getGlobal("initial-dna-string"), "random (long strand)")) {
-      var initialLengthDna = 56;
-      for (var _index_6550_6556 = 0, _repeatcount_6550_6556 = StrictMath.floor(initialLengthDna); _index_6550_6556 < _repeatcount_6550_6556; _index_6550_6556++){
-        world.observer.setGlobal("original-dna-string", (Dump('') + Dump(world.observer.getGlobal("original-dna-string")) + Dump(procedures["RANDOM-BASE-LETTER-DNA"]())));
+      if (Prims.equality(world.observer.getGlobal("initial-dna-string"), "random (short strand)")) {
+        let initialLengthDna = 12;
+        for (let _index_6358_6364 = 0, _repeatcount_6358_6364 = StrictMath.floor(initialLengthDna); _index_6358_6364 < _repeatcount_6358_6364; _index_6358_6364++){
+          world.observer.setGlobal("original-dna-string", (Dump('') + Dump(world.observer.getGlobal("original-dna-string")) + Dump(procedures["RANDOM-BASE-LETTER-DNA"]())));
+        }
       }
-    }
-    if (Prims.equality(world.observer.getGlobal("initial-dna-string"), "no genes (short strand)")) {
-      world.observer.setGlobal("original-dna-string", "ATTATATCGTAG");
-    }
-    if (Prims.equality(world.observer.getGlobal("initial-dna-string"), "no genes (long strand)")) {
-      world.observer.setGlobal("original-dna-string", "GATATTTGGTAGCCCGAGAAGTGGTTTTTCAGATAACAGAGGTGGAGCAGCTTTTAG");
-    }
-    if (Prims.equality(world.observer.getGlobal("initial-dna-string"), "1 short gene")) {
-      world.observer.setGlobal("original-dna-string", "ATTATGTGGTAG");
-    }
-    if (Prims.equality(world.observer.getGlobal("initial-dna-string"), "1 long gene")) {
-      world.observer.setGlobal("original-dna-string", "GGGATGGACACCTTATCATTTGCTACTAGCGACCAGTTTGAGTAGCTTCGTCGGTGA");
-    }
-    if (Prims.equality(world.observer.getGlobal("initial-dna-string"), "2 sequential genes")) {
-      world.observer.setGlobal("original-dna-string", "AGTATGAAAACCCACGAGTGGTAGCCCGAGATTGAGATGTGGTTTTTCAGATAACAG");
-    }
-    if (Prims.equality(world.observer.getGlobal("initial-dna-string"), "2 nested genes")) {
-      world.observer.setGlobal("original-dna-string", "GTTATGAGGGGGACCCGAGATGTGGTTTTTGAAATAGACAAGTAGACCCTAATAGAC");
-    }
-    if (Prims.equality(world.observer.getGlobal("initial-dna-string"), "3 sequential genes")) {
-      world.observer.setGlobal("original-dna-string", "GATATGTGGTAGCCCGAGATGTGGTTTTTCAGATAACAGATGTGGAGCAGCTTTTAG");
+      if (Prims.equality(world.observer.getGlobal("initial-dna-string"), "random (long strand)")) {
+        let initialLengthDna = 56;
+        for (let _index_6550_6556 = 0, _repeatcount_6550_6556 = StrictMath.floor(initialLengthDna); _index_6550_6556 < _repeatcount_6550_6556; _index_6550_6556++){
+          world.observer.setGlobal("original-dna-string", (Dump('') + Dump(world.observer.getGlobal("original-dna-string")) + Dump(procedures["RANDOM-BASE-LETTER-DNA"]())));
+        }
+      }
+      if (Prims.equality(world.observer.getGlobal("initial-dna-string"), "no genes (short strand)")) {
+        world.observer.setGlobal("original-dna-string", "ATTATATCGTAG");
+      }
+      if (Prims.equality(world.observer.getGlobal("initial-dna-string"), "no genes (long strand)")) {
+        world.observer.setGlobal("original-dna-string", "GATATTTGGTAGCCCGAGAAGTGGTTTTTCAGATAACAGAGGTGGAGCAGCTTTTAG");
+      }
+      if (Prims.equality(world.observer.getGlobal("initial-dna-string"), "1 short gene")) {
+        world.observer.setGlobal("original-dna-string", "ATTATGTGGTAG");
+      }
+      if (Prims.equality(world.observer.getGlobal("initial-dna-string"), "1 long gene")) {
+        world.observer.setGlobal("original-dna-string", "GGGATGGACACCTTATCATTTGCTACTAGCGACCAGTTTGAGTAGCTTCGTCGGTGA");
+      }
+      if (Prims.equality(world.observer.getGlobal("initial-dna-string"), "2 sequential genes")) {
+        world.observer.setGlobal("original-dna-string", "AGTATGAAAACCCACGAGTGGTAGCCCGAGATTGAGATGTGGTTTTTCAGATAACAG");
+      }
+      if (Prims.equality(world.observer.getGlobal("initial-dna-string"), "2 nested genes")) {
+        world.observer.setGlobal("original-dna-string", "GTTATGAGGGGGACCCGAGATGTGGTTTTTGAAATAGACAAGTAGACCCTAATAGAC");
+      }
+      if (Prims.equality(world.observer.getGlobal("initial-dna-string"), "3 sequential genes")) {
+        world.observer.setGlobal("original-dna-string", "GATATGTGGTAGCCCGAGATGTGGTTTTTCAGATAACAGATGTGGAGCAGCTTTTAG");
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["setupDnaString"] = temp;
   procs["SETUP-DNA-STRING"] = temp;
   temp = (function(strandType) {
-    var dna = Prims.turtleSet(world.turtleManager.turtlesOfBreed("GENES"), world.turtleManager.turtlesOfBreed("NUCLEOTIDES"), world.turtleManager.turtlesOfBreed("PROMOTERS"), world.turtleManager.turtlesOfBreed("TERMINATORS"));
-    dna.agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("strand"), strandType); }).ask(function() {
-      if (Prims.equality(strandType, "original")) {
-        SelfManager.self().setVariable("ycor", world.observer.getGlobal("original-dna-ycor"));
+    try {
+      let dna = Prims.turtleSet(world.turtleManager.turtlesOfBreed("GENES"), world.turtleManager.turtlesOfBreed("NUCLEOTIDES"), world.turtleManager.turtlesOfBreed("PROMOTERS"), world.turtleManager.turtlesOfBreed("TERMINATORS"));
+      dna.agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("strand"), strandType); }).ask(function() {
+        if (Prims.equality(strandType, "original")) {
+          SelfManager.self().setVariable("ycor", world.observer.getGlobal("original-dna-ycor"));
+        }
+        if (Prims.equality(strandType, "duplicate")) {
+          SelfManager.self().setVariable("ycor", world.observer.getGlobal("duplicate-dna-ycor"));
+        }
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      if (Prims.equality(strandType, "duplicate")) {
-        SelfManager.self().setVariable("ycor", world.observer.getGlobal("duplicate-dna-ycor"));
-      }
-    }, true);
+    }
   });
   procs["placeDna"] = temp;
   procs["PLACE-DNA"] = temp;
   temp = (function(strandType) {
-    world.turtleManager.turtlesOfBreed("TRNAS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("strand"), strandType); }).ask(function() {
-      if (Prims.equality(strandType, "original")) {
-        SelfManager.self().setVariable("ycor", (world.observer.getGlobal("original-ribosome-ycor") + 1));
+    try {
+      world.turtleManager.turtlesOfBreed("TRNAS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("strand"), strandType); }).ask(function() {
+        if (Prims.equality(strandType, "original")) {
+          SelfManager.self().setVariable("ycor", (world.observer.getGlobal("original-ribosome-ycor") + 1));
+        }
+        if (Prims.equality(strandType, "duplicate")) {
+          SelfManager.self().setVariable("ycor", (world.observer.getGlobal("duplicate-ribosome-ycor") + 1));
+        }
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      if (Prims.equality(strandType, "duplicate")) {
-        SelfManager.self().setVariable("ycor", (world.observer.getGlobal("duplicate-ribosome-ycor") + 1));
-      }
-    }, true);
+    }
   });
   procs["placeTrnas"] = temp;
   procs["PLACE-TRNAS"] = temp;
   temp = (function(strandType, dnaString) {
-    var previousNucleotide = Nobody;
-    var placeCounter = 0;
-    world.turtleManager.createTurtles(1, "").ask(function() {
-      SelfManager.self().setVariable("heading", 90);
-      SelfManager.self().fd(1);
-      for (var _index_8203_8209 = 0, _repeatcount_8203_8209 = StrictMath.floor(ListPrims.length(dnaString)); _index_8203_8209 < _repeatcount_8203_8209; _index_8203_8209++){
-        SelfManager.self().hatch(1, "").ask(function() {
-          SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("NUCLEOTIDES"));
-          SelfManager.self().setVariable("strand", strandType);
-          SelfManager.self().setVariable("value", ListPrims.item(placeCounter, dnaString));
-          SelfManager.self().setVariable("shape", (Dump('') + Dump("nucleotide-") + Dump(SelfManager.self().getVariable("value"))));
-          SelfManager.self().setVariable("heading", 0);
-          SelfManager.self().setVariable("place", placeCounter);
-          procedures["ATTACH-TAG"](5,0.5,SelfManager.self().getVariable("value"),world.observer.getGlobal("nucleo-tag-color"));
-          placeCounter = (placeCounter + 1);
-        }, true);
-        SelfManager.self().fd(world.observer.getGlobal("nucleotide-spacing"));
+    try {
+      let previousNucleotide = Nobody;
+      let placeCounter = 0;
+      world.turtleManager.createTurtles(1, "").ask(function() {
+        SelfManager.self().setVariable("heading", 90);
+        SelfManager.self().fd(1);
+        for (let _index_8203_8209 = 0, _repeatcount_8203_8209 = StrictMath.floor(ListPrims.length(dnaString)); _index_8203_8209 < _repeatcount_8203_8209; _index_8203_8209++){
+          SelfManager.self().hatch(1, "").ask(function() {
+            SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("NUCLEOTIDES"));
+            SelfManager.self().setVariable("strand", strandType);
+            SelfManager.self().setVariable("value", ListPrims.item(placeCounter, dnaString));
+            SelfManager.self().setVariable("shape", (Dump('') + Dump("nucleotide-") + Dump(SelfManager.self().getVariable("value"))));
+            SelfManager.self().setVariable("heading", 0);
+            SelfManager.self().setVariable("place", placeCounter);
+            procedures["ATTACH-TAG"](5,0.5,SelfManager.self().getVariable("value"),world.observer.getGlobal("nucleo-tag-color"));
+            placeCounter = (placeCounter + 1);
+          }, true);
+          SelfManager.self().fd(world.observer.getGlobal("nucleotide-spacing"));
+        }
+        SelfManager.self().die();
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      SelfManager.self().die();
-    }, true);
+    }
   });
   procs["makeANucleotideChainForDnaString"] = temp;
   procs["MAKE-A-NUCLEOTIDE-CHAIN-FOR-DNA-STRING"] = temp;
   temp = (function(strandType, dnaString) {
-    var remainingDna = dnaString;
-    var thisItem = "";
-    var lastItem = "";
-    var lastLastItem = "";
-    var triplet = "";
-    var itemPosition = 0;
-    var lastItemKept = ListPrims.length(dnaString);
-    for (var _index_8923_8929 = 0, _repeatcount_8923_8929 = StrictMath.floor(ListPrims.length(dnaString)); _index_8923_8929 < _repeatcount_8923_8929; _index_8923_8929++){
-      var firstItem = ListPrims.item(0, remainingDna);
-      remainingDna = ListPrims.removeItem(0, remainingDna);
-      lastLastItem = lastItem;
-      lastItem = thisItem;
-      thisItem = firstItem;
-      triplet = (Dump('') + Dump(lastLastItem) + Dump(lastItem) + Dump(thisItem));
-      if (Prims.equality(triplet, "ATG")) {
-        world.turtleManager.createTurtles(1, "GENES").ask(function() {
-          SelfManager.self().setVariable("hidden?", true);
-          SelfManager.self().setVariable("strand", strandType);
-          if (Prims.equality(SelfManager.self().getVariable("strand"), "original")) {
-            world.observer.setGlobal("original-strand-gene-counter", (world.observer.getGlobal("original-strand-gene-counter") + 1));
-            SelfManager.self().setVariable("gene-number", world.observer.getGlobal("original-strand-gene-counter"));
-          }
-          if (Prims.equality(SelfManager.self().getVariable("strand"), "duplicate")) {
-            world.observer.setGlobal("duplicate-strand-gene-counter", (world.observer.getGlobal("duplicate-strand-gene-counter") + 1));
-            SelfManager.self().setVariable("gene-number", world.observer.getGlobal("duplicate-strand-gene-counter"));
-          }
-          SelfManager.self().setVariable("start-position", itemPosition);
-          SelfManager.self().setVariable("end-position", ListPrims.length(world.observer.getGlobal("original-dna-string")));
-          SelfManager.self().setVariable("code", (Dump('') + Dump(triplet) + Dump(ListPrims.substring(dnaString, (itemPosition + 1), ListPrims.length(dnaString)))));
-        }, true);
-      }
-      itemPosition = (itemPosition + 1);
-    }
-    world.turtleManager.turtlesOfBreed("GENES").ask(function() {
-      var endOfGene_p = false;
-      var tripletCounter = 0;
-      var newCode = SelfManager.self().getVariable("code");
-      for (var _index_9996_10002 = 0, _repeatcount_9996_10002 = StrictMath.floor(NLMath.floor(Prims.div(ListPrims.length(SelfManager.self().getVariable("code")), 3))); _index_9996_10002 < _repeatcount_9996_10002; _index_9996_10002++){
-        var thisTriplet = (Dump('') + Dump(ListPrims.item((0 + (tripletCounter * 3)), SelfManager.self().getVariable("code"))) + Dump(ListPrims.item((1 + (tripletCounter * 3)), SelfManager.self().getVariable("code"))) + Dump(ListPrims.item((2 + (tripletCounter * 3)), SelfManager.self().getVariable("code"))));
-        if ((((Prims.equality(thisTriplet, "TAG") || Prims.equality(thisTriplet, "TGA")) || Prims.equality(thisTriplet, "TAA")) && !endOfGene_p)) {
-          SelfManager.self().setVariable("end-position", (tripletCounter * 3));
-          newCode = ListPrims.substring(SelfManager.self().getVariable("code"), 0, SelfManager.self().getVariable("end-position"));
-          endOfGene_p = true;
+    try {
+      let remainingDna = dnaString;
+      let thisItem = "";
+      let lastItem = "";
+      let lastLastItem = "";
+      let triplet = "";
+      let itemPosition = 0;
+      let lastItemKept = ListPrims.length(dnaString);
+      for (let _index_8923_8929 = 0, _repeatcount_8923_8929 = StrictMath.floor(ListPrims.length(dnaString)); _index_8923_8929 < _repeatcount_8923_8929; _index_8923_8929++){
+        let firstItem = ListPrims.item(0, remainingDna);
+        remainingDna = ListPrims.removeItem(0, remainingDna);
+        lastLastItem = lastItem;
+        lastItem = thisItem;
+        thisItem = firstItem;
+        triplet = (Dump('') + Dump(lastLastItem) + Dump(lastItem) + Dump(thisItem));
+        if (Prims.equality(triplet, "ATG")) {
+          world.turtleManager.createTurtles(1, "GENES").ask(function() {
+            SelfManager.self().setVariable("hidden?", true);
+            SelfManager.self().setVariable("strand", strandType);
+            if (Prims.equality(SelfManager.self().getVariable("strand"), "original")) {
+              world.observer.setGlobal("original-strand-gene-counter", (world.observer.getGlobal("original-strand-gene-counter") + 1));
+              SelfManager.self().setVariable("gene-number", world.observer.getGlobal("original-strand-gene-counter"));
+            }
+            if (Prims.equality(SelfManager.self().getVariable("strand"), "duplicate")) {
+              world.observer.setGlobal("duplicate-strand-gene-counter", (world.observer.getGlobal("duplicate-strand-gene-counter") + 1));
+              SelfManager.self().setVariable("gene-number", world.observer.getGlobal("duplicate-strand-gene-counter"));
+            }
+            SelfManager.self().setVariable("start-position", itemPosition);
+            SelfManager.self().setVariable("end-position", ListPrims.length(world.observer.getGlobal("original-dna-string")));
+            SelfManager.self().setVariable("code", (Dump('') + Dump(triplet) + Dump(ListPrims.substring(dnaString, (itemPosition + 1), ListPrims.length(dnaString)))));
+          }, true);
         }
-        tripletCounter = (tripletCounter + 1);
+        itemPosition = (itemPosition + 1);
       }
-      tripletCounter = 0;
-      endOfGene_p = false;
-      SelfManager.self().setVariable("code", newCode);
-    }, true);
+      world.turtleManager.turtlesOfBreed("GENES").ask(function() {
+        let endOfGene_p = false;
+        let tripletCounter = 0;
+        let newCode = SelfManager.self().getVariable("code");
+        for (let _index_9996_10002 = 0, _repeatcount_9996_10002 = StrictMath.floor(NLMath.floor(Prims.div(ListPrims.length(SelfManager.self().getVariable("code")), 3))); _index_9996_10002 < _repeatcount_9996_10002; _index_9996_10002++){
+          let thisTriplet = (Dump('') + Dump(ListPrims.item((0 + (tripletCounter * 3)), SelfManager.self().getVariable("code"))) + Dump(ListPrims.item((1 + (tripletCounter * 3)), SelfManager.self().getVariable("code"))) + Dump(ListPrims.item((2 + (tripletCounter * 3)), SelfManager.self().getVariable("code"))));
+          if ((((Prims.equality(thisTriplet, "TAG") || Prims.equality(thisTriplet, "TGA")) || Prims.equality(thisTriplet, "TAA")) && !endOfGene_p)) {
+            SelfManager.self().setVariable("end-position", (tripletCounter * 3));
+            newCode = ListPrims.substring(SelfManager.self().getVariable("code"), 0, SelfManager.self().getVariable("end-position"));
+            endOfGene_p = true;
+          }
+          tripletCounter = (tripletCounter + 1);
+        }
+        tripletCounter = 0;
+        endOfGene_p = false;
+        SelfManager.self().setVariable("code", newCode);
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["buildGenesFromDna"] = temp;
   procs["BUILD-GENES-FROM-DNA"] = temp;
   temp = (function(strandType) {
-    world.turtleManager.turtlesOfBreed("GENES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("strand"), strandType); }).ask(function() {
-      var thisCode = SelfManager.self().getVariable("code");
-      var thisGene = SelfManager.self();
-      SelfManager.self().setVariable("heading", 90);
-      SelfManager.self().fd(0.1);
-      for (var _index_10725_10731 = 0, _repeatcount_10725_10731 = StrictMath.floor(SelfManager.self().getVariable("start-position")); _index_10725_10731 < _repeatcount_10725_10731; _index_10725_10731++){
-        SelfManager.self().fd(0.45);
-      }
-      var geneColor = procedures["NEXT-GENE-COLOR"]();
-      var geneColorWithTransparency = ListPrims.sentence(ColorModel.colorToRGB(geneColor), 110);
-      var geneColorLabel = ListPrims.sentence(ColorModel.colorToRGB(geneColor), 250);
-      SelfManager.self().hatch(1, "").ask(function() {
-        SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("PROMOTERS"));
-        SelfManager.self().setVariable("color", geneColorWithTransparency);
-        SelfManager.self().setVariable("size", 3);
-        SelfManager.self().setVariable("hidden?", false);
-        procedures["ATTACH-TAG"](142,1.7,(Dump('') + Dump("start:") + Dump(SelfManager.self().getVariable("gene-number"))),geneColorLabel);
-        LinkPrims.createLinkFrom(thisGene, "BACKBONES").ask(function() {
-          SelfManager.self().setVariable("hidden?", true);
-          SelfManager.self().setVariable("tie-mode", "fixed");
-          SelfManager.self().tie();
-        }, true);
+    try {
+      world.turtleManager.turtlesOfBreed("GENES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("strand"), strandType); }).ask(function() {
+        let thisCode = SelfManager.self().getVariable("code");
+        let thisGene = SelfManager.self();
+        SelfManager.self().setVariable("heading", 90);
+        SelfManager.self().fd(0.1);
+        for (let _index_10725_10731 = 0, _repeatcount_10725_10731 = StrictMath.floor(SelfManager.self().getVariable("start-position")); _index_10725_10731 < _repeatcount_10725_10731; _index_10725_10731++){
+          SelfManager.self().fd(0.45);
+        }
+        let geneColor = procedures["NEXT-GENE-COLOR"]();
+        let geneColorWithTransparency = ListPrims.sentence(ColorModel.colorToRGB(geneColor), 110);
+        let geneColorLabel = ListPrims.sentence(ColorModel.colorToRGB(geneColor), 250);
         SelfManager.self().hatch(1, "").ask(function() {
-          SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("TERMINATORS"));
-          SelfManager.self().fd((ListPrims.length(thisCode) * 0.45));
-          procedures["ATTACH-TAG"](142,1.7,(Dump('') + Dump("end:") + Dump(SelfManager.self().getVariable("gene-number"))),geneColorLabel);
+          SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("PROMOTERS"));
+          SelfManager.self().setVariable("color", geneColorWithTransparency);
+          SelfManager.self().setVariable("size", 3);
+          SelfManager.self().setVariable("hidden?", false);
+          procedures["ATTACH-TAG"](142,1.7,(Dump('') + Dump("start:") + Dump(SelfManager.self().getVariable("gene-number"))),geneColorLabel);
           LinkPrims.createLinkFrom(thisGene, "BACKBONES").ask(function() {
             SelfManager.self().setVariable("hidden?", true);
             SelfManager.self().setVariable("tie-mode", "fixed");
             SelfManager.self().tie();
           }, true);
-        }, true);
-      }, true);
-      SelfManager.self().hatch(1, "").ask(function() {
-        var thisMrna = SelfManager.self();
-        SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("MRNAS"));
-        SelfManager.self().setVariable("traveling?", false);
-        SelfManager.self().setVariable("released?", false);
-        SelfManager.self().setVariable("code", procedures["MRNA-STRING-FROM-DNA-STRING"](SelfManager.self().getVariable("code")));
-        SelfManager.self().setVariable("cap-type", "start");
-        SelfManager.self().setVariable("shape", "mrna-start");
-        SelfManager.self().setVariable("hidden?", false);
-        LinkPrims.createLinkFrom(thisGene, "BACKBONES").ask(function() {
-          SelfManager.self().setVariable("hidden?", true);
-          SelfManager.self().setVariable("tie-mode", "fixed");
-          SelfManager.self().tie();
+          SelfManager.self().hatch(1, "").ask(function() {
+            SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("TERMINATORS"));
+            SelfManager.self().fd((ListPrims.length(thisCode) * 0.45));
+            procedures["ATTACH-TAG"](142,1.7,(Dump('') + Dump("end:") + Dump(SelfManager.self().getVariable("gene-number"))),geneColorLabel);
+            LinkPrims.createLinkFrom(thisGene, "BACKBONES").ask(function() {
+              SelfManager.self().setVariable("hidden?", true);
+              SelfManager.self().setVariable("tie-mode", "fixed");
+              SelfManager.self().tie();
+            }, true);
+          }, true);
         }, true);
         SelfManager.self().hatch(1, "").ask(function() {
-          SelfManager.self().setVariable("cap-type", "stop");
-          SelfManager.self().setVariable("shape", "mrna-stop");
-          var nucleotideCounter = 0;
-          LinkPrims.createLinkFrom(thisMrna, "BACKBONES").ask(function() {
+          let thisMrna = SelfManager.self();
+          SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("MRNAS"));
+          SelfManager.self().setVariable("traveling?", false);
+          SelfManager.self().setVariable("released?", false);
+          SelfManager.self().setVariable("code", procedures["MRNA-STRING-FROM-DNA-STRING"](SelfManager.self().getVariable("code")));
+          SelfManager.self().setVariable("cap-type", "start");
+          SelfManager.self().setVariable("shape", "mrna-start");
+          SelfManager.self().setVariable("hidden?", false);
+          LinkPrims.createLinkFrom(thisGene, "BACKBONES").ask(function() {
             SelfManager.self().setVariable("hidden?", true);
             SelfManager.self().setVariable("tie-mode", "fixed");
             SelfManager.self().tie();
           }, true);
-          var codeToTranscribe = SelfManager.self().getVariable("code");
-          for (var _index_12422_12428 = 0, _repeatcount_12422_12428 = StrictMath.floor(ListPrims.length(SelfManager.self().getVariable("code"))); _index_12422_12428 < _repeatcount_12422_12428; _index_12422_12428++){
-            SelfManager.self().hatch(1, "").ask(function() {
-              SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("MRNA-NUCLEOTIDES"));
-              SelfManager.self().setVariable("value", ListPrims.first(codeToTranscribe));
-              SelfManager.self().setVariable("shape", (Dump('') + Dump("mrna-") + Dump(SelfManager.self().getVariable("value"))));
-              SelfManager.self().setVariable("heading", 180);
-              procedures["ATTACH-TAG"](175,0.9,SelfManager.self().getVariable("value"),world.observer.getGlobal("nucleo-tag-color"));
-              LinkPrims.createLinkFrom(thisMrna, "BACKBONES").ask(function() {
-                SelfManager.self().setVariable("hidden?", true);
-                SelfManager.self().setVariable("tie-mode", "fixed");
-                SelfManager.self().tie();
-              }, true);
+          SelfManager.self().hatch(1, "").ask(function() {
+            SelfManager.self().setVariable("cap-type", "stop");
+            SelfManager.self().setVariable("shape", "mrna-stop");
+            let nucleotideCounter = 0;
+            LinkPrims.createLinkFrom(thisMrna, "BACKBONES").ask(function() {
+              SelfManager.self().setVariable("hidden?", true);
+              SelfManager.self().setVariable("tie-mode", "fixed");
+              SelfManager.self().tie();
             }, true);
-            codeToTranscribe = ListPrims.removeItem(0, codeToTranscribe);
-            SelfManager.self().fd(world.observer.getGlobal("nucleotide-spacing"));
-          }
+            let codeToTranscribe = SelfManager.self().getVariable("code");
+            for (let _index_12422_12428 = 0, _repeatcount_12422_12428 = StrictMath.floor(ListPrims.length(SelfManager.self().getVariable("code"))); _index_12422_12428 < _repeatcount_12422_12428; _index_12422_12428++){
+              SelfManager.self().hatch(1, "").ask(function() {
+                SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("MRNA-NUCLEOTIDES"));
+                SelfManager.self().setVariable("value", ListPrims.first(codeToTranscribe));
+                SelfManager.self().setVariable("shape", (Dump('') + Dump("mrna-") + Dump(SelfManager.self().getVariable("value"))));
+                SelfManager.self().setVariable("heading", 180);
+                procedures["ATTACH-TAG"](175,0.9,SelfManager.self().getVariable("value"),world.observer.getGlobal("nucleo-tag-color"));
+                LinkPrims.createLinkFrom(thisMrna, "BACKBONES").ask(function() {
+                  SelfManager.self().setVariable("hidden?", true);
+                  SelfManager.self().setVariable("tie-mode", "fixed");
+                  SelfManager.self().tie();
+                }, true);
+              }, true);
+              codeToTranscribe = ListPrims.removeItem(0, codeToTranscribe);
+              SelfManager.self().fd(world.observer.getGlobal("nucleotide-spacing"));
+            }
+          }, true);
         }, true);
       }, true);
-    }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["buildMrnaForEachGene"] = temp;
   procs["BUILD-MRNA-FOR-EACH-GENE"] = temp;
   temp = (function(strandType) {
-    world.turtleManager.turtlesOfBreed("MRNAS").agentFilter(function() {
-      return (Prims.equality(SelfManager.self().getVariable("cap-type"), "start") && Prims.equality(SelfManager.self().getVariable("strand"), strandType));
-    }).ask(function() {
-      var numberOfTripletsInList = NLMath.floor(Prims.div(ListPrims.length(SelfManager.self().getVariable("code")), 3));
-      var thisTriplet = "";
-      var tripletCounter = 0;
-      for (var _index_13127_13133 = 0, _repeatcount_13127_13133 = StrictMath.floor(numberOfTripletsInList); _index_13127_13133 < _repeatcount_13127_13133; _index_13127_13133++){
-        thisTriplet = (Dump('') + Dump(procedures["COMPLEMENTARY-MRNA-BASE"](ListPrims.item((0 + (tripletCounter * 3)), SelfManager.self().getVariable("code")))) + Dump(procedures["COMPLEMENTARY-MRNA-BASE"](ListPrims.item((1 + (tripletCounter * 3)), SelfManager.self().getVariable("code")))) + Dump(procedures["COMPLEMENTARY-MRNA-BASE"](ListPrims.item((2 + (tripletCounter * 3)), SelfManager.self().getVariable("code")))));
-        procedures["BUILD-TRNA-FOR-THIS-TRIPLET"](thisTriplet,tripletCounter);
-        tripletCounter = (tripletCounter + 1);
+    try {
+      world.turtleManager.turtlesOfBreed("MRNAS").agentFilter(function() {
+        return (Prims.equality(SelfManager.self().getVariable("cap-type"), "start") && Prims.equality(SelfManager.self().getVariable("strand"), strandType));
+      }).ask(function() {
+        let numberOfTripletsInList = NLMath.floor(Prims.div(ListPrims.length(SelfManager.self().getVariable("code")), 3));
+        let thisTriplet = "";
+        let tripletCounter = 0;
+        for (let _index_13127_13133 = 0, _repeatcount_13127_13133 = StrictMath.floor(numberOfTripletsInList); _index_13127_13133 < _repeatcount_13127_13133; _index_13127_13133++){
+          thisTriplet = (Dump('') + Dump(procedures["COMPLEMENTARY-MRNA-BASE"](ListPrims.item((0 + (tripletCounter * 3)), SelfManager.self().getVariable("code")))) + Dump(procedures["COMPLEMENTARY-MRNA-BASE"](ListPrims.item((1 + (tripletCounter * 3)), SelfManager.self().getVariable("code")))) + Dump(procedures["COMPLEMENTARY-MRNA-BASE"](ListPrims.item((2 + (tripletCounter * 3)), SelfManager.self().getVariable("code")))));
+          procedures["BUILD-TRNA-FOR-THIS-TRIPLET"](thisTriplet,tripletCounter);
+          tripletCounter = (tripletCounter + 1);
+        }
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-    }, true);
+    }
   });
   procs["buildProteinFromMrna"] = temp;
   procs["BUILD-PROTEIN-FROM-MRNA"] = temp;
   temp = (function(thisTriplet, tripletCounter) {
-    var thisTrna = Nobody;
-    SelfManager.self().hatch(1, "").ask(function() {
-      SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("TRNAS"));
-      thisTrna = SelfManager.self();
-      SelfManager.self().setVariable("shape", "tRNA-core");
-      SelfManager.self().setVariable("size", 1.2);
-      SelfManager.self().setVariable("heading", 0);
+    try {
+      let thisTrna = Nobody;
       SelfManager.self().hatch(1, "").ask(function() {
-        SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("AMINO-ACIDS"));
-        SelfManager.self().setVariable("value", procedures["WHICH-PROTEIN-FOR-THIS-CODON"](thisTriplet));
-        SelfManager.self().setVariable("shape", (Dump('') + Dump("amino-") + Dump(SelfManager.self().getVariable("value"))));
+        SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("TRNAS"));
+        thisTrna = SelfManager.self();
+        SelfManager.self().setVariable("shape", "tRNA-core");
+        SelfManager.self().setVariable("size", 1.2);
         SelfManager.self().setVariable("heading", 0);
-        SelfManager.self().setVariable("size", 2);
+        SelfManager.self().hatch(1, "").ask(function() {
+          SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("AMINO-ACIDS"));
+          SelfManager.self().setVariable("value", procedures["WHICH-PROTEIN-FOR-THIS-CODON"](thisTriplet));
+          SelfManager.self().setVariable("shape", (Dump('') + Dump("amino-") + Dump(SelfManager.self().getVariable("value"))));
+          SelfManager.self().setVariable("heading", 0);
+          SelfManager.self().setVariable("size", 2);
+          SelfManager.self().fd(1);
+          LinkPrims.createLinkFrom(thisTrna, "BACKBONES").ask(function() {
+            SelfManager.self().setVariable("hidden?", true);
+            SelfManager.self().setVariable("tie-mode", "free");
+            SelfManager.self().tie();
+          }, true);
+          procedures["ATTACH-TAG"](20,0.8,SelfManager.self().getVariable("value"),world.observer.getGlobal("nucleo-tag-color"));
+        }, true);
+        SelfManager.self().hatch(1, "").ask(function() {
+          SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("TRNA-NUCLEOTIDES"));
+          SelfManager.self().setVariable("shape", (Dump('') + Dump("trna-") + Dump(ListPrims.item(0, thisTriplet))));
+          SelfManager.self().setVariable("heading", -155);
+          SelfManager.self().fd(1.1);
+          SelfManager.self().setVariable("heading", 0);
+          LinkPrims.createLinkFrom(thisTrna, "BACKBONES").ask(function() {
+            SelfManager.self().setVariable("hidden?", true);
+            SelfManager.self().setVariable("tie-mode", "fixed");
+            SelfManager.self().tie();
+          }, true);
+          SelfManager.self().hatch(1, "").ask(function() {
+            SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("TRNA-NUCLEOTIDES"));
+            SelfManager.self().setVariable("shape", (Dump('') + Dump("trna-") + Dump(ListPrims.item(1, thisTriplet))));
+            SelfManager.self().setVariable("heading", 90);
+            SelfManager.self().fd(0.45);
+            SelfManager.self().setVariable("heading", 0);
+            LinkPrims.createLinkFrom(thisTrna, "BACKBONES").ask(function() {
+              SelfManager.self().setVariable("hidden?", true);
+              SelfManager.self().setVariable("tie-mode", "fixed");
+              SelfManager.self().tie();
+            }, true);
+          }, true);
+          SelfManager.self().hatch(1, "").ask(function() {
+            SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("TRNA-NUCLEOTIDES"));
+            SelfManager.self().setVariable("shape", (Dump('') + Dump("trna-") + Dump(ListPrims.item(2, thisTriplet))));
+            SelfManager.self().setVariable("heading", 90);
+            SelfManager.self().fd(0.9);
+            SelfManager.self().setVariable("heading", 0);
+            LinkPrims.createLinkFrom(thisTrna, "BACKBONES").ask(function() {
+              SelfManager.self().setVariable("hidden?", true);
+              SelfManager.self().setVariable("tie-mode", "fixed");
+              SelfManager.self().tie();
+            }, true);
+          }, true);
+        }, true);
         SelfManager.self().fd(1);
-        LinkPrims.createLinkFrom(thisTrna, "BACKBONES").ask(function() {
-          SelfManager.self().setVariable("hidden?", true);
-          SelfManager.self().setVariable("tie-mode", "free");
-          SelfManager.self().tie();
-        }, true);
-        procedures["ATTACH-TAG"](20,0.8,SelfManager.self().getVariable("value"),world.observer.getGlobal("nucleo-tag-color"));
-      }, true);
-      SelfManager.self().hatch(1, "").ask(function() {
-        SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("TRNA-NUCLEOTIDES"));
-        SelfManager.self().setVariable("shape", (Dump('') + Dump("trna-") + Dump(ListPrims.item(0, thisTriplet))));
-        SelfManager.self().setVariable("heading", -155);
-        SelfManager.self().fd(1.1);
+        SelfManager.self().setVariable("heading", 90);
+        SelfManager.self().fd((world.observer.getGlobal("nucleotide-spacing") + ((world.observer.getGlobal("nucleotide-spacing") * 3) * tripletCounter)));
         SelfManager.self().setVariable("heading", 0);
-        LinkPrims.createLinkFrom(thisTrna, "BACKBONES").ask(function() {
-          SelfManager.self().setVariable("hidden?", true);
-          SelfManager.self().setVariable("tie-mode", "fixed");
-          SelfManager.self().tie();
-        }, true);
-        SelfManager.self().hatch(1, "").ask(function() {
-          SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("TRNA-NUCLEOTIDES"));
-          SelfManager.self().setVariable("shape", (Dump('') + Dump("trna-") + Dump(ListPrims.item(1, thisTriplet))));
-          SelfManager.self().setVariable("heading", 90);
-          SelfManager.self().fd(0.45);
-          SelfManager.self().setVariable("heading", 0);
-          LinkPrims.createLinkFrom(thisTrna, "BACKBONES").ask(function() {
-            SelfManager.self().setVariable("hidden?", true);
-            SelfManager.self().setVariable("tie-mode", "fixed");
-            SelfManager.self().tie();
-          }, true);
-        }, true);
-        SelfManager.self().hatch(1, "").ask(function() {
-          SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("TRNA-NUCLEOTIDES"));
-          SelfManager.self().setVariable("shape", (Dump('') + Dump("trna-") + Dump(ListPrims.item(2, thisTriplet))));
-          SelfManager.self().setVariable("heading", 90);
-          SelfManager.self().fd(0.9);
-          SelfManager.self().setVariable("heading", 0);
-          LinkPrims.createLinkFrom(thisTrna, "BACKBONES").ask(function() {
-            SelfManager.self().setVariable("hidden?", true);
-            SelfManager.self().setVariable("tie-mode", "fixed");
-            SelfManager.self().tie();
-          }, true);
-        }, true);
       }, true);
-      SelfManager.self().fd(1);
-      SelfManager.self().setVariable("heading", 90);
-      SelfManager.self().fd((world.observer.getGlobal("nucleotide-spacing") + ((world.observer.getGlobal("nucleotide-spacing") * 3) * tripletCounter)));
-      SelfManager.self().setVariable("heading", 0);
-    }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["buildTrnaForThisTriplet"] = temp;
   procs["BUILD-TRNA-FOR-THIS-TRIPLET"] = temp;
   temp = (function(direction, displacement, labelValue, colorValue) {
-    SelfManager.self().hatch(1, "").ask(function() {
-      SelfManager.self().setVariable("heading", direction);
-      SelfManager.self().fd(displacement);
-      SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("TAGS"));
-      SelfManager.self().setVariable("label", labelValue);
-      SelfManager.self().setVariable("size", 0.1);
-      SelfManager.self().setVariable("label-color", colorValue);
-      LinkPrims.createLinkWith(SelfManager.myself(), "TAGLINES").ask(function() {
-        SelfManager.self().setVariable("tie-mode", "fixed");
-        SelfManager.self().setVariable("hidden?", true);
-        SelfManager.self().tie();
+    try {
+      SelfManager.self().hatch(1, "").ask(function() {
+        SelfManager.self().setVariable("heading", direction);
+        SelfManager.self().fd(displacement);
+        SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("TAGS"));
+        SelfManager.self().setVariable("label", labelValue);
+        SelfManager.self().setVariable("size", 0.1);
+        SelfManager.self().setVariable("label-color", colorValue);
+        LinkPrims.createLinkWith(SelfManager.myself(), "TAGLINES").ask(function() {
+          SelfManager.self().setVariable("tie-mode", "fixed");
+          SelfManager.self().setVariable("hidden?", true);
+          SelfManager.self().tie();
+        }, true);
       }, true);
-    }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["attachTag"] = temp;
   procs["ATTACH-TAG"] = temp;
   temp = (function() {
-    Prims.turtleSet(world.turtleManager.turtlesOfBreed("PROMOTERS"), world.turtleManager.turtlesOfBreed("TERMINATORS")).ask(function() {
-      LinkPrims.linkNeighbors("LINKS").ask(function() { SelfManager.self().setVariable("hidden?", !world.observer.getGlobal("show-genes?")); }, true);
-      SelfManager.self().setVariable("hidden?", !world.observer.getGlobal("show-genes?"));
-    }, true);
+    try {
+      Prims.turtleSet(world.turtleManager.turtlesOfBreed("PROMOTERS"), world.turtleManager.turtlesOfBreed("TERMINATORS")).ask(function() {
+        LinkPrims.linkNeighbors("TAGLINES").ask(function() { SelfManager.self().setVariable("hidden?", !world.observer.getGlobal("show-genes?")); }, true);
+        SelfManager.self().setVariable("hidden?", !world.observer.getGlobal("show-genes?"));
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["visualizeAllGenes"] = temp;
   procs["VISUALIZE-ALL-GENES"] = temp;
   temp = (function(strandType) {
-    Prims.turtleSet(world.turtleManager.turtlesOfBreed("PROMOTERS"), world.turtleManager.turtlesOfBreed("TERMINATORS")).agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("strand"), strandType); }).ask(function() {
-      LinkPrims.linkNeighbors("LINKS").ask(function() { SelfManager.self().setVariable("hidden?", true); }, true);
-      SelfManager.self().setVariable("hidden?", true);
-    }, true);
+    try {
+      Prims.turtleSet(world.turtleManager.turtlesOfBreed("PROMOTERS"), world.turtleManager.turtlesOfBreed("TERMINATORS")).agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("strand"), strandType); }).ask(function() {
+        LinkPrims.linkNeighbors("TAGLINES").ask(function() { SelfManager.self().setVariable("hidden?", true); }, true);
+        SelfManager.self().setVariable("hidden?", true);
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["hideGenes"] = temp;
   procs["HIDE-GENES"] = temp;
   temp = (function(strandType) {
-    Prims.turtleSet(world.turtleManager.turtlesOfBreed("MRNAS"), world.turtleManager.turtlesOfBreed("MRNA-NUCLEOTIDES")).agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("strand"), strandType); }).ask(function() {
-      LinkPrims.linkNeighbors("TAGLINES").ask(function() { SelfManager.self().setVariable("hidden?", true); }, true);
-      SelfManager.self().setVariable("hidden?", true);
-    }, true);
+    try {
+      Prims.turtleSet(world.turtleManager.turtlesOfBreed("MRNAS"), world.turtleManager.turtlesOfBreed("MRNA-NUCLEOTIDES")).agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("strand"), strandType); }).ask(function() {
+        LinkPrims.linkNeighbors("TAGLINES").ask(function() { SelfManager.self().setVariable("hidden?", true); }, true);
+        SelfManager.self().setVariable("hidden?", true);
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["hideMrna"] = temp;
   procs["HIDE-MRNA"] = temp;
   temp = (function(strandType) {
-    Prims.turtleSet(world.turtleManager.turtlesOfBreed("TRNAS"), world.turtleManager.turtlesOfBreed("TRNA-NUCLEOTIDES"), world.turtleManager.turtlesOfBreed("AMINO-ACIDS")).agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("strand"), strandType); }).ask(function() {
-      LinkPrims.linkNeighbors("TAGLINES").ask(function() { SelfManager.self().setVariable("hidden?", true); }, true);
-      SelfManager.self().setVariable("hidden?", true);
-    }, true);
+    try {
+      Prims.turtleSet(world.turtleManager.turtlesOfBreed("TRNAS"), world.turtleManager.turtlesOfBreed("TRNA-NUCLEOTIDES"), world.turtleManager.turtlesOfBreed("AMINO-ACIDS")).agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("strand"), strandType); }).ask(function() {
+        LinkPrims.linkNeighbors("TAGLINES").ask(function() { SelfManager.self().setVariable("hidden?", true); }, true);
+        SelfManager.self().setVariable("hidden?", true);
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["hideTrna"] = temp;
   procs["HIDE-TRNA"] = temp;
   temp = (function(strandType) {
-    var theseGenes = world.turtleManager.turtlesOfBreed("GENES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("strand"), strandType); });
-    if (Prims.equality(theseGenes.size(), 0)) {
-      procedures["DISPLAY-USER-MESSAGE-NO-GENES"]();
-    }
-    if (Prims.equality(strandType, "original")) {
-      world.observer.setGlobal("original-display-mrna-counter", (world.observer.getGlobal("original-display-mrna-counter") + 1));
-      if (Prims.gt(world.observer.getGlobal("original-display-mrna-counter"), theseGenes.size())) {
-        world.observer.setGlobal("original-display-mrna-counter", 1);
+    try {
+      let theseGenes = world.turtleManager.turtlesOfBreed("GENES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("strand"), strandType); });
+      if (Prims.equality(theseGenes.size(), 0)) {
+        procedures["DISPLAY-USER-MESSAGE-NO-GENES"]();
       }
-      world.turtleManager.turtlesOfBreed("MRNAS").agentFilter(function() {
-        return (Prims.equality(SelfManager.self().getVariable("strand"), strandType) && Prims.equality(SelfManager.self().getVariable("cap-type"), "start"));
-      }).ask(function() {
-        if (!Prims.equality(SelfManager.self().getVariable("gene-number"), world.observer.getGlobal("original-display-mrna-counter"))) {
-          LinkPrims.outLinkNeighbors("BACKBONES").ask(function() {
+      if (Prims.equality(strandType, "original")) {
+        world.observer.setGlobal("original-display-mrna-counter", (world.observer.getGlobal("original-display-mrna-counter") + 1));
+        if (Prims.gt(world.observer.getGlobal("original-display-mrna-counter"), theseGenes.size())) {
+          world.observer.setGlobal("original-display-mrna-counter", 1);
+        }
+        world.turtleManager.turtlesOfBreed("MRNAS").agentFilter(function() {
+          return (Prims.equality(SelfManager.self().getVariable("strand"), strandType) && Prims.equality(SelfManager.self().getVariable("cap-type"), "start"));
+        }).ask(function() {
+          if (!Prims.equality(SelfManager.self().getVariable("gene-number"), world.observer.getGlobal("original-display-mrna-counter"))) {
+            LinkPrims.outLinkNeighbors("BACKBONES").ask(function() {
+              SelfManager.self().setVariable("hidden?", true);
+              LinkPrims.linkNeighbors("TAGLINES").ask(function() { SelfManager.self().setVariable("hidden?", true); }, true);
+            }, true);
             SelfManager.self().setVariable("hidden?", true);
-            LinkPrims.linkNeighbors("TAGLINES").ask(function() { SelfManager.self().setVariable("hidden?", true); }, true);
-          }, true);
-          SelfManager.self().setVariable("hidden?", true);
-        }
-        else {
-          LinkPrims.outLinkNeighbors("BACKBONES").ask(function() {
+          }
+          else {
+            LinkPrims.outLinkNeighbors("BACKBONES").ask(function() {
+              SelfManager.self().setVariable("hidden?", false);
+              LinkPrims.linkNeighbors("TAGLINES").ask(function() { SelfManager.self().setVariable("hidden?", false); }, true);
+            }, true);
             SelfManager.self().setVariable("hidden?", false);
-            LinkPrims.linkNeighbors("TAGLINES").ask(function() { SelfManager.self().setVariable("hidden?", false); }, true);
-          }, true);
-          SelfManager.self().setVariable("hidden?", false);
-        }
-        SelfManager.self().setVariable("traveling?", false);
-        SelfManager.self().setVariable("released?", false);
-        SelfManager.self().setVariable("ycor", world.observer.getGlobal("original-dna-ycor"));
-      }, true);
-    }
-    if (Prims.equality(strandType, "duplicate")) {
-      world.observer.setGlobal("duplicate-display-mrna-counter", (world.observer.getGlobal("duplicate-display-mrna-counter") + 1));
-      if (Prims.gt(world.observer.getGlobal("duplicate-display-mrna-counter"), theseGenes.size())) {
-        world.observer.setGlobal("duplicate-display-mrna-counter", 1);
+          }
+          SelfManager.self().setVariable("traveling?", false);
+          SelfManager.self().setVariable("released?", false);
+          SelfManager.self().setVariable("ycor", world.observer.getGlobal("original-dna-ycor"));
+        }, true);
       }
-      world.turtleManager.turtlesOfBreed("MRNAS").agentFilter(function() {
-        return (Prims.equality(SelfManager.self().getVariable("strand"), strandType) && Prims.equality(SelfManager.self().getVariable("cap-type"), "start"));
-      }).ask(function() {
-        if (!Prims.equality(SelfManager.self().getVariable("gene-number"), world.observer.getGlobal("duplicate-display-mrna-counter"))) {
-          LinkPrims.outLinkNeighbors("BACKBONES").ask(function() {
+      if (Prims.equality(strandType, "duplicate")) {
+        world.observer.setGlobal("duplicate-display-mrna-counter", (world.observer.getGlobal("duplicate-display-mrna-counter") + 1));
+        if (Prims.gt(world.observer.getGlobal("duplicate-display-mrna-counter"), theseGenes.size())) {
+          world.observer.setGlobal("duplicate-display-mrna-counter", 1);
+        }
+        world.turtleManager.turtlesOfBreed("MRNAS").agentFilter(function() {
+          return (Prims.equality(SelfManager.self().getVariable("strand"), strandType) && Prims.equality(SelfManager.self().getVariable("cap-type"), "start"));
+        }).ask(function() {
+          if (!Prims.equality(SelfManager.self().getVariable("gene-number"), world.observer.getGlobal("duplicate-display-mrna-counter"))) {
+            LinkPrims.outLinkNeighbors("BACKBONES").ask(function() {
+              SelfManager.self().setVariable("hidden?", true);
+              LinkPrims.linkNeighbors("TAGLINES").ask(function() { SelfManager.self().setVariable("hidden?", true); }, true);
+            }, true);
             SelfManager.self().setVariable("hidden?", true);
-            LinkPrims.linkNeighbors("TAGLINES").ask(function() { SelfManager.self().setVariable("hidden?", true); }, true);
-          }, true);
-          SelfManager.self().setVariable("hidden?", true);
-        }
-        else {
-          LinkPrims.outLinkNeighbors("BACKBONES").ask(function() {
+          }
+          else {
+            LinkPrims.outLinkNeighbors("BACKBONES").ask(function() {
+              SelfManager.self().setVariable("hidden?", false);
+              LinkPrims.linkNeighbors("TAGLINES").ask(function() { SelfManager.self().setVariable("hidden?", false); }, true);
+            }, true);
             SelfManager.self().setVariable("hidden?", false);
-            LinkPrims.linkNeighbors("TAGLINES").ask(function() { SelfManager.self().setVariable("hidden?", false); }, true);
-          }, true);
-          SelfManager.self().setVariable("hidden?", false);
-        }
-        SelfManager.self().setVariable("traveling?", false);
-        SelfManager.self().setVariable("released?", false);
-        SelfManager.self().setVariable("ycor", world.observer.getGlobal("duplicate-dna-ycor"));
-      }, true);
+          }
+          SelfManager.self().setVariable("traveling?", false);
+          SelfManager.self().setVariable("released?", false);
+          SelfManager.self().setVariable("ycor", world.observer.getGlobal("duplicate-dna-ycor"));
+        }, true);
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["showNextMrna"] = temp;
   procs["SHOW-NEXT-MRNA"] = temp;
   temp = (function(strandType) {
-    var thisGeneNumber = procedures["GENE-NUMBER-FOR-THIS-STRAND"](strandType);
-    world.turtleManager.turtlesOfBreed("MRNAS").agentFilter(function() {
-      return (((Prims.equality(SelfManager.self().getVariable("strand"), strandType) && Prims.equality(SelfManager.self().getVariable("cap-type"), "start")) && SelfManager.self().getVariable("released?")) && Prims.equality(SelfManager.self().getVariable("gene-number"), thisGeneNumber));
-    }).ask(function() {
-      world.turtleManager.turtlesOfBreed("TRNAS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("strand"), strandType); }).ask(function() {
-        if (Prims.equality(SelfManager.self().getVariable("gene-number"), thisGeneNumber)) {
-          LinkPrims.outLinkNeighbors("BACKBONES").ask(function() {
+    try {
+      let thisGeneNumber = procedures["GENE-NUMBER-FOR-THIS-STRAND"](strandType);
+      world.turtleManager.turtlesOfBreed("MRNAS").agentFilter(function() {
+        return (((Prims.equality(SelfManager.self().getVariable("strand"), strandType) && Prims.equality(SelfManager.self().getVariable("cap-type"), "start")) && SelfManager.self().getVariable("released?")) && Prims.equality(SelfManager.self().getVariable("gene-number"), thisGeneNumber));
+      }).ask(function() {
+        world.turtleManager.turtlesOfBreed("TRNAS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("strand"), strandType); }).ask(function() {
+          if (Prims.equality(SelfManager.self().getVariable("gene-number"), thisGeneNumber)) {
+            LinkPrims.outLinkNeighbors("BACKBONES").ask(function() {
+              SelfManager.self().setVariable("hidden?", false);
+              LinkPrims.linkNeighbors("TAGLINES").ask(function() { SelfManager.self().setVariable("hidden?", false); }, true);
+            }, true);
             SelfManager.self().setVariable("hidden?", false);
-            LinkPrims.linkNeighbors("TAGLINES").ask(function() { SelfManager.self().setVariable("hidden?", false); }, true);
-          }, true);
-          SelfManager.self().setVariable("hidden?", false);
-        }
-        else {
-          LinkPrims.outLinkNeighbors("BACKBONES").ask(function() {
+          }
+          else {
+            LinkPrims.outLinkNeighbors("BACKBONES").ask(function() {
+              SelfManager.self().setVariable("hidden?", true);
+              LinkPrims.linkNeighbors("TAGLINES").ask(function() { SelfManager.self().setVariable("hidden?", true); }, true);
+            }, true);
             SelfManager.self().setVariable("hidden?", true);
-            LinkPrims.linkNeighbors("TAGLINES").ask(function() { SelfManager.self().setVariable("hidden?", true); }, true);
-          }, true);
-          SelfManager.self().setVariable("hidden?", true);
-        }
+          }
+        }, true);
       }, true);
-    }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["showNextTrna"] = temp;
   procs["SHOW-NEXT-TRNA"] = temp;
   temp = (function() {
-    UserDialogPrims.confirm("There are no genes in this strand of DNA. A specific sequence of 3 nucleotides is required for a gene");
+    try {
+      UserDialogPrims.confirm("There are no genes in this strand of DNA. A specific sequence of 3 nucleotides is required for a gene");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["displayUserMessageNoGenes"] = temp;
   procs["DISPLAY-USER-MESSAGE-NO-GENES"] = temp;
   temp = (function(strandType) {
-    var makeProtein_p = false;
-    var thisGeneNumber = procedures["GENE-NUMBER-FOR-THIS-STRAND"](strandType);
-    world.turtleManager.turtlesOfBreed("MRNAS").agentFilter(function() {
-      return (((Prims.equality(SelfManager.self().getVariable("strand"), strandType) && Prims.equality(SelfManager.self().getVariable("cap-type"), "start")) && SelfManager.self().getVariable("released?")) && Prims.equality(SelfManager.self().getVariable("gene-number"), thisGeneNumber));
-    }).ask(function() {
-      world.turtleManager.turtlesOfBreed("TRNAS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("strand"), strandType); }).ask(function() {
-        if (Prims.equality(SelfManager.self().getVariable("gene-number"), thisGeneNumber)) {
-          LinkPrims.outLinkNeighbors("BACKBONES").ask(function() {
-            makeProtein_p = true;
-            SelfManager.self().setVariable("hidden?", true);
-            if (Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("AMINO-ACIDS"))) {
-              SelfManager.self().setVariable("hidden?", false);
-              LinkPrims.linkNeighbors("TAGLINES").ask(function() { SelfManager.self().setVariable("hidden?", false); }, true);
-            }
-            else {
+    try {
+      let makeProtein_p = false;
+      let thisGeneNumber = procedures["GENE-NUMBER-FOR-THIS-STRAND"](strandType);
+      world.turtleManager.turtlesOfBreed("MRNAS").agentFilter(function() {
+        return (((Prims.equality(SelfManager.self().getVariable("strand"), strandType) && Prims.equality(SelfManager.self().getVariable("cap-type"), "start")) && SelfManager.self().getVariable("released?")) && Prims.equality(SelfManager.self().getVariable("gene-number"), thisGeneNumber));
+      }).ask(function() {
+        world.turtleManager.turtlesOfBreed("TRNAS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("strand"), strandType); }).ask(function() {
+          if (Prims.equality(SelfManager.self().getVariable("gene-number"), thisGeneNumber)) {
+            LinkPrims.outLinkNeighbors("BACKBONES").ask(function() {
+              makeProtein_p = true;
+              SelfManager.self().setVariable("hidden?", true);
+              if (Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("AMINO-ACIDS"))) {
+                SelfManager.self().setVariable("hidden?", false);
+                LinkPrims.linkNeighbors("TAGLINES").ask(function() { SelfManager.self().setVariable("hidden?", false); }, true);
+              }
+              else {
+                SelfManager.self().setVariable("hidden?", true);
+                LinkPrims.linkNeighbors("TAGLINES").ask(function() { SelfManager.self().setVariable("hidden?", true); }, true);
+              }
+            }, true);
+          }
+          else {
+            LinkPrims.outLinkNeighbors("BACKBONES").ask(function() {
               SelfManager.self().setVariable("hidden?", true);
               LinkPrims.linkNeighbors("TAGLINES").ask(function() { SelfManager.self().setVariable("hidden?", true); }, true);
-            }
-          }, true);
-        }
-        else {
-          LinkPrims.outLinkNeighbors("BACKBONES").ask(function() {
+            }, true);
             SelfManager.self().setVariable("hidden?", true);
-            LinkPrims.linkNeighbors("TAGLINES").ask(function() { SelfManager.self().setVariable("hidden?", true); }, true);
-          }, true);
+          }
           SelfManager.self().setVariable("hidden?", true);
+        }, true);
+        if (makeProtein_p) {
+          procedures["MAKE-PROTEIN"](strandType);
         }
-        SelfManager.self().setVariable("hidden?", true);
       }, true);
-      if (makeProtein_p) {
-        procedures["MAKE-PROTEIN"](strandType);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-    }, true);
+    }
   });
   procs["releaseNextProtein"] = temp;
   procs["RELEASE-NEXT-PROTEIN"] = temp;
   temp = (function(strandType) {
-    var thisGeneNumber = procedures["GENE-NUMBER-FOR-THIS-STRAND"](strandType);
-    var thisProteinValue = "";
-    var theseAminoAcids = world.turtleManager.turtlesOfBreed("AMINO-ACIDS").agentFilter(function() {
-      return ((Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("AMINO-ACIDS")) && Prims.equality(strandType, SelfManager.self().getVariable("strand"))) && Prims.equality(SelfManager.self().getVariable("gene-number"), thisGeneNumber));
-    });
-    var orderedAminoAcids = theseAminoAcids.sortOn(function() { return SelfManager.self().getVariable("who"); });
-    Tasks.forEach(Tasks.commandTask(function(theAminoAcid) {
-      if (arguments.length < 1) {
-        throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+    try {
+      let thisGeneNumber = procedures["GENE-NUMBER-FOR-THIS-STRAND"](strandType);
+      let thisProteinValue = "";
+      let theseAminoAcids = world.turtleManager.turtlesOfBreed("AMINO-ACIDS").agentFilter(function() {
+        return ((Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("AMINO-ACIDS")) && Prims.equality(strandType, SelfManager.self().getVariable("strand"))) && Prims.equality(SelfManager.self().getVariable("gene-number"), thisGeneNumber));
+      });
+      let orderedAminoAcids = theseAminoAcids.sortOn(function() { return SelfManager.self().getVariable("who"); });
+      Tasks.forEach(Tasks.commandTask(function(theAminoAcid) {
+        if (arguments.length < 1) {
+          throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+        }
+        thisProteinValue = (Dump('') + Dump(thisProteinValue) + Dump("-") + Dump(theAminoAcid.projectionBy(function() { return SelfManager.self().getVariable("value"); })));
+      }), orderedAminoAcids);
+      if (!!world.turtleManager.turtlesOfBreed("PROTEINS").agentFilter(function() {
+        return (Prims.equality(SelfManager.self().getVariable("strand"), strandType) && Prims.equality(SelfManager.self().getVariable("value"), thisProteinValue));
+      }).isEmpty()) {
+        SelfManager.self().hatch(1, "").ask(function() {
+          SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("PROTEINS"));
+          SelfManager.self().setVariable("value", thisProteinValue);
+          SelfManager.self().setVariable("hidden?", true);
+          SelfManager.self().setXY(0, 0);
+        }, true);
       }
-      thisProteinValue = (Dump('') + Dump(thisProteinValue) + Dump("-") + Dump(theAminoAcid.projectionBy(function() { return SelfManager.self().getVariable("value"); })));
-    }), orderedAminoAcids);
-    if (!!world.turtleManager.turtlesOfBreed("PROTEINS").agentFilter(function() {
-      return (Prims.equality(SelfManager.self().getVariable("strand"), strandType) && Prims.equality(SelfManager.self().getVariable("value"), thisProteinValue));
-    }).isEmpty()) {
-      SelfManager.self().hatch(1, "").ask(function() {
-        SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("PROTEINS"));
-        SelfManager.self().setVariable("value", thisProteinValue);
-        SelfManager.self().setVariable("hidden?", true);
-        SelfManager.self().setXY(0, 0);
-      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["makeProtein"] = temp;
   procs["MAKE-PROTEIN"] = temp;
   temp = (function(strandType) {
-    world.turtleManager.turtlesOfBreed("MRNAS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("strand"), strandType); }).ask(function() {
-      SelfManager.self().setVariable("traveling?", true);
-      SelfManager.self().setVariable("released?", false);
-    }, true);
+    try {
+      world.turtleManager.turtlesOfBreed("MRNAS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("strand"), strandType); }).ask(function() {
+        SelfManager.self().setVariable("traveling?", true);
+        SelfManager.self().setVariable("released?", false);
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["releaseNextMrnaFromNucleus"] = temp;
   procs["RELEASE-NEXT-MRNA-FROM-NUCLEUS"] = temp;
   temp = (function() {
-    procedures["VISUALIZE-ALL-GENES"]();
-    if (world.observer.getGlobal("event-1-triggered?")) {
-      procedures["SHOW-NEXT-MRNA"]("original");
-      world.observer.setGlobal("event-1-triggered?", false);
-      world.observer.setGlobal("event-1-completed?", true);
-      world.observer.setGlobal("event-2-completed?", false);
-      world.observer.setGlobal("event-3-completed?", false);
-      world.observer.setGlobal("event-4-completed?", false);
+    try {
+      procedures["VISUALIZE-ALL-GENES"]();
+      if (world.observer.getGlobal("event-1-triggered?")) {
+        procedures["SHOW-NEXT-MRNA"]("original");
+        world.observer.setGlobal("event-1-triggered?", false);
+        world.observer.setGlobal("event-1-completed?", true);
+        world.observer.setGlobal("event-2-completed?", false);
+        world.observer.setGlobal("event-3-completed?", false);
+        world.observer.setGlobal("event-4-completed?", false);
+      }
+      if ((world.observer.getGlobal("event-2-triggered?") && world.observer.getGlobal("event-1-completed?"))) {
+        procedures["RELEASE-NEXT-MRNA-FROM-NUCLEUS"]("original");
+        world.observer.setGlobal("event-2-triggered?", false);
+        world.observer.setGlobal("event-3-completed?", false);
+        world.observer.setGlobal("event-4-completed?", false);
+      }
+      if ((world.observer.getGlobal("event-3-triggered?") && world.observer.getGlobal("event-2-completed?"))) {
+        procedures["SHOW-NEXT-TRNA"]("original");
+        world.observer.setGlobal("event-3-triggered?", false);
+        world.observer.setGlobal("event-3-completed?", true);
+        world.observer.setGlobal("event-4-completed?", false);
+      }
+      if ((world.observer.getGlobal("event-4-triggered?") && world.observer.getGlobal("event-3-completed?"))) {
+        procedures["RELEASE-NEXT-PROTEIN"]("original");
+        world.observer.setGlobal("event-4-triggered?", false);
+        world.observer.setGlobal("event-4-completed?", true);
+      }
+      if (world.observer.getGlobal("event-6-triggered?")) {
+        procedures["SHOW-NEXT-MRNA"]("duplicate");
+        world.observer.setGlobal("event-6-triggered?", false);
+        world.observer.setGlobal("event-6-completed?", true);
+        world.observer.setGlobal("event-7-completed?", false);
+        world.observer.setGlobal("event-8-completed?", false);
+        world.observer.setGlobal("event-9-completed?", false);
+      }
+      if ((world.observer.getGlobal("event-7-triggered?") && world.observer.getGlobal("event-6-completed?"))) {
+        procedures["RELEASE-NEXT-MRNA-FROM-NUCLEUS"]("duplicate");
+        world.observer.setGlobal("event-7-triggered?", false);
+        world.observer.setGlobal("event-8-completed?", false);
+        world.observer.setGlobal("event-9-completed?", false);
+      }
+      if ((world.observer.getGlobal("event-8-triggered?") && world.observer.getGlobal("event-7-completed?"))) {
+        procedures["SHOW-NEXT-TRNA"]("duplicate");
+        world.observer.setGlobal("event-8-triggered?", false);
+        world.observer.setGlobal("event-8-completed?", true);
+        world.observer.setGlobal("event-9-completed?", false);
+      }
+      if ((world.observer.getGlobal("event-9-triggered?") && world.observer.getGlobal("event-8-completed?"))) {
+        procedures["RELEASE-NEXT-PROTEIN"]("duplicate");
+        world.observer.setGlobal("event-9-triggered?", false);
+        world.observer.setGlobal("event-9-completed?", true);
+      }
+      procedures["MOVE-MRNA-MOLECULES-OUT-OF-NUCLEUS"]();
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    if ((world.observer.getGlobal("event-2-triggered?") && world.observer.getGlobal("event-1-completed?"))) {
-      procedures["RELEASE-NEXT-MRNA-FROM-NUCLEUS"]("original");
-      world.observer.setGlobal("event-2-triggered?", false);
-      world.observer.setGlobal("event-3-completed?", false);
-      world.observer.setGlobal("event-4-completed?", false);
-    }
-    if ((world.observer.getGlobal("event-3-triggered?") && world.observer.getGlobal("event-2-completed?"))) {
-      procedures["SHOW-NEXT-TRNA"]("original");
-      world.observer.setGlobal("event-3-triggered?", false);
-      world.observer.setGlobal("event-3-completed?", true);
-      world.observer.setGlobal("event-4-completed?", false);
-    }
-    if ((world.observer.getGlobal("event-4-triggered?") && world.observer.getGlobal("event-3-completed?"))) {
-      procedures["RELEASE-NEXT-PROTEIN"]("original");
-      world.observer.setGlobal("event-4-triggered?", false);
-      world.observer.setGlobal("event-4-completed?", true);
-    }
-    if (world.observer.getGlobal("event-6-triggered?")) {
-      procedures["SHOW-NEXT-MRNA"]("duplicate");
-      world.observer.setGlobal("event-6-triggered?", false);
-      world.observer.setGlobal("event-6-completed?", true);
-      world.observer.setGlobal("event-7-completed?", false);
-      world.observer.setGlobal("event-8-completed?", false);
-      world.observer.setGlobal("event-9-completed?", false);
-    }
-    if ((world.observer.getGlobal("event-7-triggered?") && world.observer.getGlobal("event-6-completed?"))) {
-      procedures["RELEASE-NEXT-MRNA-FROM-NUCLEUS"]("duplicate");
-      world.observer.setGlobal("event-7-triggered?", false);
-      world.observer.setGlobal("event-8-completed?", false);
-      world.observer.setGlobal("event-9-completed?", false);
-    }
-    if ((world.observer.getGlobal("event-8-triggered?") && world.observer.getGlobal("event-7-completed?"))) {
-      procedures["SHOW-NEXT-TRNA"]("duplicate");
-      world.observer.setGlobal("event-8-triggered?", false);
-      world.observer.setGlobal("event-8-completed?", true);
-      world.observer.setGlobal("event-9-completed?", false);
-    }
-    if ((world.observer.getGlobal("event-9-triggered?") && world.observer.getGlobal("event-8-completed?"))) {
-      procedures["RELEASE-NEXT-PROTEIN"]("duplicate");
-      world.observer.setGlobal("event-9-triggered?", false);
-      world.observer.setGlobal("event-9-completed?", true);
-    }
-    procedures["MOVE-MRNA-MOLECULES-OUT-OF-NUCLEUS"]();
-    world.ticker.tick();
   });
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    world.turtleManager.turtlesOfBreed("MRNAS").agentFilter(function() {
-      return (SelfManager.self().getVariable("traveling?") && Prims.equality(SelfManager.self().getVariable("cap-type"), "start"));
-    }).ask(function() {
-      if (Prims.equality(SelfManager.self().getVariable("strand"), "original")) {
-        if (Prims.lt(SelfManager.self().getVariable("ycor"), world.observer.getGlobal("original-ribosome-ycor"))) {
-          SelfManager.self().setVariable("ycor", (SelfManager.self().getVariable("ycor") + 0.1));
+    try {
+      world.turtleManager.turtlesOfBreed("MRNAS").agentFilter(function() {
+        return (SelfManager.self().getVariable("traveling?") && Prims.equality(SelfManager.self().getVariable("cap-type"), "start"));
+      }).ask(function() {
+        if (Prims.equality(SelfManager.self().getVariable("strand"), "original")) {
+          if (Prims.lt(SelfManager.self().getVariable("ycor"), world.observer.getGlobal("original-ribosome-ycor"))) {
+            SelfManager.self().setVariable("ycor", (SelfManager.self().getVariable("ycor") + 0.1));
+          }
+          if (Prims.gte(SelfManager.self().getVariable("ycor"), world.observer.getGlobal("original-ribosome-ycor"))) {
+            SelfManager.self().setVariable("traveling?", false);
+            SelfManager.self().setVariable("released?", true);
+            world.observer.setGlobal("event-2-completed?", true);
+          }
         }
-        if (Prims.gte(SelfManager.self().getVariable("ycor"), world.observer.getGlobal("original-ribosome-ycor"))) {
-          SelfManager.self().setVariable("traveling?", false);
-          SelfManager.self().setVariable("released?", true);
-          world.observer.setGlobal("event-2-completed?", true);
+        if (Prims.equality(SelfManager.self().getVariable("strand"), "duplicate")) {
+          if (Prims.gt(SelfManager.self().getVariable("ycor"), world.observer.getGlobal("duplicate-ribosome-ycor"))) {
+            SelfManager.self().setVariable("ycor", (SelfManager.self().getVariable("ycor") - 0.1));
+          }
+          if (Prims.lte(SelfManager.self().getVariable("ycor"), world.observer.getGlobal("duplicate-ribosome-ycor"))) {
+            SelfManager.self().setVariable("traveling?", false);
+            SelfManager.self().setVariable("released?", true);
+            world.observer.setGlobal("event-7-completed?", true);
+          }
         }
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      if (Prims.equality(SelfManager.self().getVariable("strand"), "duplicate")) {
-        if (Prims.gt(SelfManager.self().getVariable("ycor"), world.observer.getGlobal("duplicate-ribosome-ycor"))) {
-          SelfManager.self().setVariable("ycor", (SelfManager.self().getVariable("ycor") - 0.1));
-        }
-        if (Prims.lte(SelfManager.self().getVariable("ycor"), world.observer.getGlobal("duplicate-ribosome-ycor"))) {
-          SelfManager.self().setVariable("traveling?", false);
-          SelfManager.self().setVariable("released?", true);
-          world.observer.setGlobal("event-7-completed?", true);
-        }
-      }
-    }, true);
+    }
   });
   procs["moveMrnaMoleculesOutOfNucleus"] = temp;
   procs["MOVE-MRNA-MOLECULES-OUT-OF-NUCLEUS"] = temp;
   temp = (function() {
-    OutputPrims.clear();
-    var originalProteins = world.turtleManager.turtlesOfBreed("PROTEINS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("strand"), "original"); });
-    OutputPrims.print("Proteins Produced");
-    OutputPrims.print((Dump('') + Dump("from original DNA  = ") + Dump(originalProteins.size())));
-    OutputPrims.print("::::::::::::::::::");
-    originalProteins.ask(function() {
-      OutputPrims.print((Dump('') + Dump("Orig.Gene #") + Dump(SelfManager.self().getVariable("gene-number")) + Dump(" > Protein:")));
-      OutputPrims.print(SelfManager.self().getVariable("value"));
-      OutputPrims.print("");
-    }, true);
-    OutputPrims.print("==================");
-    var duplicateProteins = world.turtleManager.turtlesOfBreed("PROTEINS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("strand"), "duplicate"); });
-    OutputPrims.print("Proteins Produced");
-    OutputPrims.print((Dump('') + Dump("from copy of DNA = ") + Dump(duplicateProteins.size())));
-    OutputPrims.print("::::::::::::::::::");
-    duplicateProteins.ask(function() {
-      OutputPrims.print((Dump('') + Dump("Copy.Gene #") + Dump(SelfManager.self().getVariable("gene-number")) + Dump(" > Protein:")));
-      OutputPrims.print(SelfManager.self().getVariable("value"));
-      OutputPrims.print("");
-    }, true);
+    try {
+      OutputPrims.clear();
+      let originalProteins = world.turtleManager.turtlesOfBreed("PROTEINS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("strand"), "original"); });
+      OutputPrims.print("Proteins Produced");
+      OutputPrims.print((Dump('') + Dump("from original DNA  = ") + Dump(originalProteins.size())));
+      OutputPrims.print("::::::::::::::::::");
+      originalProteins.ask(function() {
+        OutputPrims.print((Dump('') + Dump("Orig.Gene #") + Dump(SelfManager.self().getVariable("gene-number")) + Dump(" > Protein:")));
+        OutputPrims.print(SelfManager.self().getVariable("value"));
+        OutputPrims.print("");
+      }, true);
+      OutputPrims.print("==================");
+      let duplicateProteins = world.turtleManager.turtlesOfBreed("PROTEINS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("strand"), "duplicate"); });
+      OutputPrims.print("Proteins Produced");
+      OutputPrims.print((Dump('') + Dump("from copy of DNA = ") + Dump(duplicateProteins.size())));
+      OutputPrims.print("::::::::::::::::::");
+      duplicateProteins.ask(function() {
+        OutputPrims.print((Dump('') + Dump("Copy.Gene #") + Dump(SelfManager.self().getVariable("gene-number")) + Dump(" > Protein:")));
+        OutputPrims.print(SelfManager.self().getVariable("value"));
+        OutputPrims.print("");
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["showProteinProduction"] = temp;
   procs["SHOW-PROTEIN-PRODUCTION"] = temp;
   temp = (function() {
-    var positionCounter = 0;
-    world.observer.setGlobal("duplicate-strand-gene-counter", 0);
-    var cleanDuplicateDnaString = world.observer.getGlobal("original-dna-string");
-    var mutatingCopyOfDnaString = world.observer.getGlobal("original-dna-string");
-    var targetLoci = Prims.random((ListPrims.length(mutatingCopyOfDnaString) - world.observer.getGlobal("#-nucleotides-affected")));
-    var dnaAtTarget = ListPrims.item(targetLoci, mutatingCopyOfDnaString);
-    var dnaBeforeTarget = ListPrims.substring(mutatingCopyOfDnaString, 0, targetLoci);
-    var lociCounter = 0;
-    var dnaAtAndAfterTarget = ListPrims.substring(mutatingCopyOfDnaString, targetLoci, ListPrims.length(mutatingCopyOfDnaString));
-    if (Prims.equality(world.observer.getGlobal("mutation-type"), "deletion")) {
-      for (var _index_24046_24052 = 0, _repeatcount_24046_24052 = StrictMath.floor(world.observer.getGlobal("#-nucleotides-affected")); _index_24046_24052 < _repeatcount_24046_24052; _index_24046_24052++){
-        mutatingCopyOfDnaString = ListPrims.removeItem(targetLoci, mutatingCopyOfDnaString);
+    try {
+      let positionCounter = 0;
+      world.observer.setGlobal("duplicate-strand-gene-counter", 0);
+      let cleanDuplicateDnaString = world.observer.getGlobal("original-dna-string");
+      let mutatingCopyOfDnaString = world.observer.getGlobal("original-dna-string");
+      let targetLoci = Prims.random((ListPrims.length(mutatingCopyOfDnaString) - world.observer.getGlobal("#-nucleotides-affected")));
+      let dnaAtTarget = ListPrims.item(targetLoci, mutatingCopyOfDnaString);
+      let dnaBeforeTarget = ListPrims.substring(mutatingCopyOfDnaString, 0, targetLoci);
+      let lociCounter = 0;
+      let dnaAtAndAfterTarget = ListPrims.substring(mutatingCopyOfDnaString, targetLoci, ListPrims.length(mutatingCopyOfDnaString));
+      if (Prims.equality(world.observer.getGlobal("mutation-type"), "deletion")) {
+        for (let _index_24050_24056 = 0, _repeatcount_24050_24056 = StrictMath.floor(world.observer.getGlobal("#-nucleotides-affected")); _index_24050_24056 < _repeatcount_24050_24056; _index_24050_24056++){
+          mutatingCopyOfDnaString = ListPrims.removeItem(targetLoci, mutatingCopyOfDnaString);
+        }
+      }
+      if (Prims.equality(world.observer.getGlobal("mutation-type"), "substitution")) {
+        for (let _index_24236_24242 = 0, _repeatcount_24236_24242 = StrictMath.floor(world.observer.getGlobal("#-nucleotides-affected")); _index_24236_24242 < _repeatcount_24236_24242; _index_24236_24242++){
+          mutatingCopyOfDnaString = ListPrims.replaceItem((targetLoci + lociCounter), mutatingCopyOfDnaString, procedures["RANDOM-BASE-LETTER-DNA"]());
+          lociCounter = (lociCounter + 1);
+        }
+      }
+      if (Prims.equality(world.observer.getGlobal("mutation-type"), "insertion")) {
+        for (let _index_24503_24509 = 0, _repeatcount_24503_24509 = StrictMath.floor(world.observer.getGlobal("#-nucleotides-affected")); _index_24503_24509 < _repeatcount_24503_24509; _index_24503_24509++){
+          dnaAtAndAfterTarget = (Dump('') + Dump(procedures["RANDOM-BASE-LETTER-DNA"]()) + Dump(dnaAtAndAfterTarget));
+        }
+        mutatingCopyOfDnaString = (Dump('') + Dump(dnaBeforeTarget) + Dump(dnaAtAndAfterTarget));
+      }
+      world.observer.setGlobal("duplicate-dna-string", mutatingCopyOfDnaString);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
-    if (Prims.equality(world.observer.getGlobal("mutation-type"), "substitution")) {
-      for (var _index_24232_24238 = 0, _repeatcount_24232_24238 = StrictMath.floor(world.observer.getGlobal("#-nucleotides-affected")); _index_24232_24238 < _repeatcount_24232_24238; _index_24232_24238++){
-        mutatingCopyOfDnaString = ListPrims.replaceItem((targetLoci + lociCounter), mutatingCopyOfDnaString, procedures["RANDOM-BASE-LETTER-DNA"]());
-        lociCounter = (lociCounter + 1);
-      }
-    }
-    if (Prims.equality(world.observer.getGlobal("mutation-type"), "insertion")) {
-      for (var _index_24499_24505 = 0, _repeatcount_24499_24505 = StrictMath.floor(world.observer.getGlobal("#-nucleotides-affected")); _index_24499_24505 < _repeatcount_24499_24505; _index_24499_24505++){
-        dnaAtAndAfterTarget = (Dump('') + Dump(procedures["RANDOM-BASE-LETTER-DNA"]()) + Dump(dnaAtAndAfterTarget));
-      }
-      mutatingCopyOfDnaString = (Dump('') + Dump(dnaBeforeTarget) + Dump(dnaAtAndAfterTarget));
-    }
-    world.observer.setGlobal("duplicate-dna-string", mutatingCopyOfDnaString);
   });
   procs["makeDuplicateDnaString"] = temp;
   procs["MAKE-DUPLICATE-DNA-STRING"] = temp;
   temp = (function() {
-    var turtlesToRemove = Prims.turtleSet(world.turtleManager.turtlesOfBreed("NUCLEOTIDES"), world.turtleManager.turtlesOfBreed("MRNAS"), world.turtleManager.turtlesOfBreed("TRNAS"), world.turtleManager.turtlesOfBreed("GENES"), world.turtleManager.turtlesOfBreed("PROMOTERS"), world.turtleManager.turtlesOfBreed("TERMINATORS"), world.turtleManager.turtlesOfBreed("AMINO-ACIDS"), world.turtleManager.turtlesOfBreed("MRNA-NUCLEOTIDES"));
-    turtlesToRemove.agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("strand"), "duplicate"); }).ask(function() {
-      LinkPrims.linkNeighbors("TAGLINES").ask(function() { SelfManager.self().die(); }, true);
-      SelfManager.self().die();
-    }, true);
-    procedures["MAKE-DUPLICATE-DNA-STRING"]();
-    procedures["BUILD-GENES-FROM-DNA"]("duplicate",world.observer.getGlobal("duplicate-dna-string"));
-    procedures["MAKE-A-NUCLEOTIDE-CHAIN-FOR-DNA-STRING"]("duplicate",world.observer.getGlobal("duplicate-dna-string"));
-    procedures["PLACE-DNA"]("duplicate");
-    procedures["BUILD-MRNA-FOR-EACH-GENE"]("duplicate");
-    procedures["BUILD-PROTEIN-FROM-MRNA"]("duplicate");
-    procedures["PLACE-TRNAS"]("duplicate");
-    procedures["HIDE-MRNA"]("duplicate");
-    procedures["HIDE-TRNA"]("duplicate");
-    procedures["HIDE-GENES"]("duplicate");
+    try {
+      let turtlesToRemove = Prims.turtleSet(world.turtleManager.turtlesOfBreed("NUCLEOTIDES"), world.turtleManager.turtlesOfBreed("MRNAS"), world.turtleManager.turtlesOfBreed("TRNAS"), world.turtleManager.turtlesOfBreed("GENES"), world.turtleManager.turtlesOfBreed("PROMOTERS"), world.turtleManager.turtlesOfBreed("TERMINATORS"), world.turtleManager.turtlesOfBreed("AMINO-ACIDS"), world.turtleManager.turtlesOfBreed("MRNA-NUCLEOTIDES"));
+      turtlesToRemove.agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("strand"), "duplicate"); }).ask(function() {
+        LinkPrims.linkNeighbors("TAGLINES").ask(function() { SelfManager.self().die(); }, true);
+        SelfManager.self().die();
+      }, true);
+      procedures["MAKE-DUPLICATE-DNA-STRING"]();
+      procedures["BUILD-GENES-FROM-DNA"]("duplicate",world.observer.getGlobal("duplicate-dna-string"));
+      procedures["MAKE-A-NUCLEOTIDE-CHAIN-FOR-DNA-STRING"]("duplicate",world.observer.getGlobal("duplicate-dna-string"));
+      procedures["PLACE-DNA"]("duplicate");
+      procedures["BUILD-MRNA-FOR-EACH-GENE"]("duplicate");
+      procedures["BUILD-PROTEIN-FROM-MRNA"]("duplicate");
+      procedures["PLACE-TRNAS"]("duplicate");
+      procedures["HIDE-MRNA"]("duplicate");
+      procedures["HIDE-TRNA"]("duplicate");
+      procedures["HIDE-GENES"]("duplicate");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["replicateDna"] = temp;
   procs["REPLICATE-DNA"] = temp;
   temp = (function() {
-    world.observer.setGlobal("codon-to-amino-acid-key", [["UUU", "Phe"], ["UUC", "Phe"], ["UUA", "Leu"], ["UUG", "Leu"], ["CUU", "Leu"], ["CUC", "Leu"], ["CUA", "Leu"], ["CUG", "Leu"], ["AUU", "Ile"], ["AUC", "Ile"], ["AUA", "Ile"], ["AUG", "Met"], ["GUU", "Val"], ["GUC", "Val"], ["GUA", "Val"], ["GUG", "Val"], ["UCU", "Ser"], ["UCC", "Ser"], ["UCA", "Ser"], ["UCG", "Ser"], ["CCU", "Pro"], ["CCC", "Pro"], ["CCA", "Pro"], ["CCG", "Pro"], ["ACU", "Thr"], ["ACC", "Thr"], ["ACA", "Thr"], ["ACG", "Thr"], ["GCU", "Ala"], ["GCC", "Ala"], ["GCA", "Ala"], ["GCG", "Ala"], ["UAU", "Tyr"], ["UAC", "Tyr"], ["UAA", "Stop"], ["UAG", "Stop"], ["CAU", "His"], ["CAC", "His"], ["CAA", "Gln"], ["CAG", "Gln"], ["AAU", "Asn"], ["AAC", "Asn"], ["AAA", "Lys"], ["AAG", "Lys"], ["GAU", "Asp"], ["GAC", "Asp"], ["GAA", "Glu"], ["GAG", "Glu"], ["UGU", "Cys"], ["UGC", "Cys"], ["UGA", "Stop"], ["UGG", "Trp"], ["CGU", "Arg"], ["CGC", "Arg"], ["CGA", "Arg"], ["CGG", "Arg"], ["AGU", "Ser"], ["AGC", "Ser"], ["AGA", "Arg"], ["AGG", "Arg"], ["GGU", "Gly"], ["GGC", "Gly"], ["GGA", "Gly"], ["GGG", "Gly"]]);
+    try {
+      world.observer.setGlobal("codon-to-amino-acid-key", [["UUU", "Phe"], ["UUC", "Phe"], ["UUA", "Leu"], ["UUG", "Leu"], ["CUU", "Leu"], ["CUC", "Leu"], ["CUA", "Leu"], ["CUG", "Leu"], ["AUU", "Ile"], ["AUC", "Ile"], ["AUA", "Ile"], ["AUG", "Met"], ["GUU", "Val"], ["GUC", "Val"], ["GUA", "Val"], ["GUG", "Val"], ["UCU", "Ser"], ["UCC", "Ser"], ["UCA", "Ser"], ["UCG", "Ser"], ["CCU", "Pro"], ["CCC", "Pro"], ["CCA", "Pro"], ["CCG", "Pro"], ["ACU", "Thr"], ["ACC", "Thr"], ["ACA", "Thr"], ["ACG", "Thr"], ["GCU", "Ala"], ["GCC", "Ala"], ["GCA", "Ala"], ["GCG", "Ala"], ["UAU", "Tyr"], ["UAC", "Tyr"], ["UAA", "Stop"], ["UAG", "Stop"], ["CAU", "His"], ["CAC", "His"], ["CAA", "Gln"], ["CAG", "Gln"], ["AAU", "Asn"], ["AAC", "Asn"], ["AAA", "Lys"], ["AAG", "Lys"], ["GAU", "Asp"], ["GAC", "Asp"], ["GAA", "Glu"], ["GAG", "Glu"], ["UGU", "Cys"], ["UGC", "Cys"], ["UGA", "Stop"], ["UGG", "Trp"], ["CGU", "Arg"], ["CGC", "Arg"], ["CGA", "Arg"], ["CGG", "Arg"], ["AGU", "Ser"], ["AGC", "Ser"], ["AGA", "Arg"], ["AGG", "Arg"], ["GGU", "Gly"], ["GGC", "Gly"], ["GGA", "Gly"], ["GGG", "Gly"]]);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["initializeCodonToAminoAcidKey"] = temp;
   procs["INITIALIZE-CODON-TO-AMINO-ACID-KEY"] = temp;
@@ -821,6 +1091,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -830,8 +1102,8 @@ var procedures = (function() {
   procs["WHICH-PROTEIN-FOR-THIS-CODON"] = temp;
   temp = (function() {
     try {
-      var r = Prims.random(4);
-      var letterToReport = "";
+      let r = Prims.random(4);
+      let letterToReport = "";
       if (Prims.equality(r, 0)) {
         letterToReport = "A";
       }
@@ -849,6 +1121,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -858,7 +1132,7 @@ var procedures = (function() {
   procs["RANDOM-BASE-LETTER-DNA"] = temp;
   temp = (function(base) {
     try {
-      var baseToReport = "";
+      let baseToReport = "";
       if (Prims.equality(base, "A")) {
         baseToReport = "U";
       }
@@ -879,6 +1153,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -899,6 +1175,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -908,7 +1186,7 @@ var procedures = (function() {
   procs["NEXT-GENE-COLOR"] = temp;
   temp = (function(strandType) {
     try {
-      var thisGeneNumber = 0;
+      let thisGeneNumber = 0;
       if (Prims.equality(strandType, "original")) {
         thisGeneNumber = world.observer.getGlobal("original-display-mrna-counter");
       }
@@ -920,6 +1198,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -929,9 +1209,9 @@ var procedures = (function() {
   procs["GENE-NUMBER-FOR-THIS-STRAND"] = temp;
   temp = (function(dnaString) {
     try {
-      var newString = dnaString;
-      var nextItem = 0;
-      for (var _index_28752_28758 = 0, _repeatcount_28752_28758 = StrictMath.floor(ListPrims.length(dnaString)); _index_28752_28758 < _repeatcount_28752_28758; _index_28752_28758++){
+      let newString = dnaString;
+      let nextItem = 0;
+      for (let _index_28754_28760 = 0, _repeatcount_28754_28760 = StrictMath.floor(ListPrims.length(dnaString)); _index_28754_28760 < _repeatcount_28754_28760; _index_28754_28760++){
         newString = ListPrims.replaceItem(nextItem, newString, procedures["COMPLEMENTARY-MRNA-BASE"](ListPrims.item(nextItem, newString)));
         nextItem = (nextItem + 1);
       }
@@ -940,6 +1220,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -949,9 +1231,9 @@ var procedures = (function() {
   procs["MRNA-STRING-FROM-DNA-STRING"] = temp;
   temp = (function(dnaString) {
     try {
-      var newString = dnaString;
-      var nextItem = 0;
-      for (var _index_29218_29224 = 0, _repeatcount_29218_29224 = StrictMath.floor(ListPrims.length(dnaString)); _index_29218_29224 < _repeatcount_29218_29224; _index_29218_29224++){
+      let newString = dnaString;
+      let nextItem = 0;
+      for (let _index_29220_29226 = 0, _repeatcount_29220_29226 = StrictMath.floor(ListPrims.length(dnaString)); _index_29220_29226 < _repeatcount_29220_29226; _index_29220_29226++){
         newString = ListPrims.replaceItem(nextItem, newString, procedures["REPLACE-NON-NUCLEOTIDE-CHARACTER"](ListPrims.item(nextItem, newString)));
         nextItem = (nextItem + 1);
       }
@@ -963,6 +1245,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -972,7 +1256,7 @@ var procedures = (function() {
   procs["DNA-STRING-WITH-NON-NUCLEOTIDE-CHARACTERS-REPLACED"] = temp;
   temp = (function(nucleotideCharacter) {
     try {
-      var characterToReturn = nucleotideCharacter;
+      let characterToReturn = nucleotideCharacter;
       if ((((!Prims.equality(nucleotideCharacter, "A") && !Prims.equality(nucleotideCharacter, "T")) && !Prims.equality(nucleotideCharacter, "C")) && !Prims.equality(nucleotideCharacter, "G"))) {
         characterToReturn = procedures["RANDOM-BASE-LETTER-DNA"]();
       }
@@ -981,6 +1265,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -995,6 +1281,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -1002,22 +1290,56 @@ var procedures = (function() {
   });
   procs["currentInstructionLabel"] = temp;
   procs["CURRENT-INSTRUCTION-LABEL"] = temp;
-  temp = (function() { procedures["SHOW-INSTRUCTION"]((world.observer.getGlobal("current-instruction") + 1)); });
+  temp = (function() {
+    try {
+      procedures["SHOW-INSTRUCTION"]((world.observer.getGlobal("current-instruction") + 1));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
+  });
   procs["nextInstruction"] = temp;
   procs["NEXT-INSTRUCTION"] = temp;
-  temp = (function() { procedures["SHOW-INSTRUCTION"]((world.observer.getGlobal("current-instruction") - 1)); });
+  temp = (function() {
+    try {
+      procedures["SHOW-INSTRUCTION"]((world.observer.getGlobal("current-instruction") - 1));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
+  });
   procs["previousInstruction"] = temp;
   procs["PREVIOUS-INSTRUCTION"] = temp;
   temp = (function(i) {
-    if ((Prims.gte(i, 1) && Prims.lte(i, ListPrims.length(procedures["INSTRUCTIONS"]())))) {
-      world.observer.setGlobal("current-instruction", i);
-      OutputPrims.clear();
-      Tasks.forEach(Tasks.commandTask(function(_0) {
-        if (arguments.length < 1) {
-          throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
-        }
-        OutputPrims.print(_0);
-      }), ListPrims.item((world.observer.getGlobal("current-instruction") - 1), procedures["INSTRUCTIONS"]()));
+    try {
+      if ((Prims.gte(i, 1) && Prims.lte(i, ListPrims.length(procedures["INSTRUCTIONS"]())))) {
+        world.observer.setGlobal("current-instruction", i);
+        OutputPrims.clear();
+        Tasks.forEach(Tasks.commandTask(function(_0) {
+          if (arguments.length < 1) {
+            throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+          }
+          OutputPrims.print(_0);
+        }), ListPrims.item((world.observer.getGlobal("current-instruction") - 1), procedures["INSTRUCTIONS"]()));
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["showInstruction"] = temp;
@@ -1029,6 +1351,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -1037,28 +1361,38 @@ var procedures = (function() {
   procs["instructions"] = temp;
   procs["INSTRUCTIONS"] = temp;
   temp = (function() {
-    if ((((world.observer.getGlobal("event-1-triggered?") || world.observer.getGlobal("event-2-triggered?")) || world.observer.getGlobal("event-3-triggered?")) || world.observer.getGlobal("event-4-triggered?"))) {
-      world.observer.setGlobal("event-4-completed?", false);
-      if (((world.observer.getGlobal("event-1-triggered?") || world.observer.getGlobal("event-2-triggered?")) || world.observer.getGlobal("event-3-triggered?"))) {
-        world.observer.setGlobal("event-3-completed?", false);
-        if ((world.observer.getGlobal("event-1-triggered?") || world.observer.getGlobal("event-2-triggered?"))) {
-          world.observer.setGlobal("event-2-completed?", false);
-          if (world.observer.getGlobal("event-1-triggered?")) {
-            world.observer.setGlobal("event-1-completed?", false);
+    try {
+      if ((((world.observer.getGlobal("event-1-triggered?") || world.observer.getGlobal("event-2-triggered?")) || world.observer.getGlobal("event-3-triggered?")) || world.observer.getGlobal("event-4-triggered?"))) {
+        world.observer.setGlobal("event-4-completed?", false);
+        if (((world.observer.getGlobal("event-1-triggered?") || world.observer.getGlobal("event-2-triggered?")) || world.observer.getGlobal("event-3-triggered?"))) {
+          world.observer.setGlobal("event-3-completed?", false);
+          if ((world.observer.getGlobal("event-1-triggered?") || world.observer.getGlobal("event-2-triggered?"))) {
+            world.observer.setGlobal("event-2-completed?", false);
+            if (world.observer.getGlobal("event-1-triggered?")) {
+              world.observer.setGlobal("event-1-completed?", false);
+            }
           }
         }
       }
-    }
-    if ((((world.observer.getGlobal("event-6-triggered?") || world.observer.getGlobal("event-7-triggered?")) || world.observer.getGlobal("event-8-triggered?")) || world.observer.getGlobal("event-9-triggered?"))) {
-      world.observer.setGlobal("event-9-completed?", false);
-      if (((world.observer.getGlobal("event-6-triggered?") || world.observer.getGlobal("event-7-triggered?")) || world.observer.getGlobal("event-8-triggered?"))) {
-        world.observer.setGlobal("event-8-completed?", false);
-        if ((world.observer.getGlobal("event-6-triggered?") || world.observer.getGlobal("event-7-triggered?"))) {
-          world.observer.setGlobal("event-7-completed?", false);
-          if (world.observer.getGlobal("event-6-triggered?")) {
-            world.observer.setGlobal("event-6-completed?", false);
+      if ((((world.observer.getGlobal("event-6-triggered?") || world.observer.getGlobal("event-7-triggered?")) || world.observer.getGlobal("event-8-triggered?")) || world.observer.getGlobal("event-9-triggered?"))) {
+        world.observer.setGlobal("event-9-completed?", false);
+        if (((world.observer.getGlobal("event-6-triggered?") || world.observer.getGlobal("event-7-triggered?")) || world.observer.getGlobal("event-8-triggered?"))) {
+          world.observer.setGlobal("event-8-completed?", false);
+          if ((world.observer.getGlobal("event-6-triggered?") || world.observer.getGlobal("event-7-triggered?"))) {
+            world.observer.setGlobal("event-7-completed?", false);
+            if (world.observer.getGlobal("event-6-triggered?")) {
+              world.observer.setGlobal("event-6-completed?", false);
+            }
           }
         }
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
   });

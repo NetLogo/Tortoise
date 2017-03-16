@@ -63,41 +63,61 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    world.turtleManager.createTurtles(1, "").ask(function() {
-      SelfManager.self().setVariable("shape", "line");
-      SelfManager.self().setVariable("color", world.observer.getGlobal("init-color"));
-      SelfManager.self().setXY(world.observer.getGlobal("init-x"), world.observer.getGlobal("init-y"));
-      SelfManager.self().setVariable("heading", 0);
-      SelfManager.self().penManager.lowerPen();
-    }, true);
-    world.ticker.reset();
+    try {
+      world.clearAll();
+      world.turtleManager.createTurtles(1, "").ask(function() {
+        SelfManager.self().setVariable("shape", "line");
+        SelfManager.self().setVariable("color", world.observer.getGlobal("init-color"));
+        SelfManager.self().setXY(world.observer.getGlobal("init-x"), world.observer.getGlobal("init-y"));
+        SelfManager.self().setVariable("heading", 0);
+        SelfManager.self().penManager.lowerPen();
+      }, true);
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    world.turtles().ask(function() {
-      SelfManager.self().setVariable("new?", false);
-      SelfManager.self().penManager.lowerPen();
-    }, true);
-    world.turtles().agentFilter(function() { return !SelfManager.self().getVariable("new?"); }).ask(function() {
-      SelfManager.self().fd(4);
-      SelfManager.self().right(15);
-      SelfManager.self().fd(8);
-      SelfManager.self().hatch(1, "").ask(function() { SelfManager.self().setVariable("new?", true); }, true);
-      SelfManager.self().setVariable("color", (SelfManager.self().getVariable("color") + world.observer.getGlobal("color-inc")));
-      SelfManager.self().right(180);
-      SelfManager.self().jumpIfAble(8);
-      SelfManager.self().right(180);
-      SelfManager.self().right(-15);
-      SelfManager.self().fd(4);
-      SelfManager.self().right(-15);
-      SelfManager.self().hatch(1, "").ask(function() { SelfManager.self().setVariable("new?", true); }, true);
-      SelfManager.self().setVariable("color", (SelfManager.self().getVariable("color") + world.observer.getGlobal("color-inc")));
-      SelfManager.self().fd(8);
-      SelfManager.self().die();
-    }, true);
-    world.ticker.tick();
+    try {
+      world.turtles().ask(function() {
+        SelfManager.self().setVariable("new?", false);
+        SelfManager.self().penManager.lowerPen();
+      }, true);
+      world.turtles().agentFilter(function() { return !SelfManager.self().getVariable("new?"); }).ask(function() {
+        SelfManager.self().fd(4);
+        SelfManager.self().right(15);
+        SelfManager.self().fd(8);
+        SelfManager.self().hatch(1, "").ask(function() { SelfManager.self().setVariable("new?", true); }, true);
+        SelfManager.self().setVariable("color", (SelfManager.self().getVariable("color") + world.observer.getGlobal("color-inc")));
+        SelfManager.self().right(180);
+        SelfManager.self().jumpIfAble(8);
+        SelfManager.self().right(180);
+        SelfManager.self().right(-15);
+        SelfManager.self().fd(4);
+        SelfManager.self().right(-15);
+        SelfManager.self().hatch(1, "").ask(function() { SelfManager.self().setVariable("new?", true); }, true);
+        SelfManager.self().setVariable("color", (SelfManager.self().getVariable("color") + world.observer.getGlobal("color-inc")));
+        SelfManager.self().fd(8);
+        SelfManager.self().die();
+      }, true);
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["go"] = temp;
   procs["GO"] = temp;

@@ -63,54 +63,74 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
-    world.turtleManager.createTurtles(world.topology.width, "").ask(function() {
-      SelfManager.self().setVariable("xcor", SelfManager.self().getVariable("who"));
-      SelfManager.self().setVariable("color", 15);
-      SelfManager.self().setVariable("size", 1.5);
-      if (Prims.equality(SelfManager.self().getPatchVariable("pxcor"), world.topology.maxPxcor)) {
-        SelfManager.self().setVariable("color", 105);
+    try {
+      world.clearAll();
+      BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
+      world.turtleManager.createTurtles(world.topology.width, "").ask(function() {
+        SelfManager.self().setVariable("xcor", SelfManager.self().getVariable("who"));
+        SelfManager.self().setVariable("color", 15);
+        SelfManager.self().setVariable("size", 1.5);
+        if (Prims.equality(SelfManager.self().getPatchVariable("pxcor"), world.topology.maxPxcor)) {
+          SelfManager.self().setVariable("color", 105);
+        }
+        if (Prims.equality(SelfManager.self().getPatchVariable("pxcor"), world.topology.minPxcor)) {
+          SelfManager.self().setVariable("color", 55);
+        }
+      }, true);
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      if (Prims.equality(SelfManager.self().getPatchVariable("pxcor"), world.topology.minPxcor)) {
-        SelfManager.self().setVariable("color", 55);
-      }
-    }, true);
-    world.ticker.reset();
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); }).ask(function() {
-      if (Prims.gt(world.ticker.tickCount(), 100)) {
-        SelfManager.self().setVariable("ypos", (world.observer.getGlobal("amplitude") * NLMath.sin((world.observer.getGlobal("frequency") * world.ticker.tickCount()))));
+    try {
+      world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); }).ask(function() {
+        if (Prims.gt(world.ticker.tickCount(), 100)) {
+          SelfManager.self().setVariable("ypos", (world.observer.getGlobal("amplitude") * NLMath.sin((world.observer.getGlobal("frequency") * world.ticker.tickCount()))));
+        }
+        else {
+          SelfManager.self().setVariable("ypos", ((Prims.div(world.ticker.tickCount(), 100) * world.observer.getGlobal("amplitude")) * NLMath.sin((world.observer.getGlobal("frequency") * world.ticker.tickCount()))));
+        }
+        if (!Prims.equality(SelfManager.self().patchAt(0, (SelfManager.self().getVariable("ypos") - SelfManager.self().getVariable("ycor"))), Nobody)) {
+          SelfManager.self().setVariable("ycor", SelfManager.self().getVariable("ypos"));
+          SelfManager.self().hideTurtle(false);;
+        }
+        else {
+          SelfManager.self().hideTurtle(true);;
+        }
+      }, true);
+      world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); }).ask(function() {
+        SelfManager.self().setVariable("yvel", (SelfManager.self().getVariable("yvel") + ((world.turtleManager.getTurtle((SelfManager.self().getVariable("who") - 1)).projectionBy(function() { return SelfManager.self().getVariable("ypos"); }) - SelfManager.self().getVariable("ypos")) + (world.turtleManager.getTurtle((SelfManager.self().getVariable("who") + 1)).projectionBy(function() { return SelfManager.self().getVariable("ypos"); }) - SelfManager.self().getVariable("ypos")))));
+        SelfManager.self().setVariable("yvel", (Prims.div((1000 - world.observer.getGlobal("friction")), 1000) * SelfManager.self().getVariable("yvel")));
+      }, true);
+      world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); }).ask(function() {
+        SelfManager.self().setVariable("ypos", (SelfManager.self().getVariable("ypos") + SelfManager.self().getVariable("yvel")));
+        if (!Prims.equality(SelfManager.self().patchAt(0, (SelfManager.self().getVariable("ypos") - SelfManager.self().getVariable("ycor"))), Nobody)) {
+          SelfManager.self().setVariable("ycor", SelfManager.self().getVariable("ypos"));
+          SelfManager.self().hideTurtle(false);;
+        }
+        else {
+          SelfManager.self().hideTurtle(true);;
+        }
+      }, true);
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      else {
-        SelfManager.self().setVariable("ypos", ((Prims.div(world.ticker.tickCount(), 100) * world.observer.getGlobal("amplitude")) * NLMath.sin((world.observer.getGlobal("frequency") * world.ticker.tickCount()))));
-      }
-      if (!Prims.equality(SelfManager.self().patchAt(0, (SelfManager.self().getVariable("ypos") - SelfManager.self().getVariable("ycor"))), Nobody)) {
-        SelfManager.self().setVariable("ycor", SelfManager.self().getVariable("ypos"));
-        SelfManager.self().hideTurtle(false);;
-      }
-      else {
-        SelfManager.self().hideTurtle(true);;
-      }
-    }, true);
-    world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); }).ask(function() {
-      SelfManager.self().setVariable("yvel", (SelfManager.self().getVariable("yvel") + ((world.turtleManager.getTurtle((SelfManager.self().getVariable("who") - 1)).projectionBy(function() { return SelfManager.self().getVariable("ypos"); }) - SelfManager.self().getVariable("ypos")) + (world.turtleManager.getTurtle((SelfManager.self().getVariable("who") + 1)).projectionBy(function() { return SelfManager.self().getVariable("ypos"); }) - SelfManager.self().getVariable("ypos")))));
-      SelfManager.self().setVariable("yvel", (Prims.div((1000 - world.observer.getGlobal("friction")), 1000) * SelfManager.self().getVariable("yvel")));
-    }, true);
-    world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); }).ask(function() {
-      SelfManager.self().setVariable("ypos", (SelfManager.self().getVariable("ypos") + SelfManager.self().getVariable("yvel")));
-      if (!Prims.equality(SelfManager.self().patchAt(0, (SelfManager.self().getVariable("ypos") - SelfManager.self().getVariable("ycor"))), Nobody)) {
-        SelfManager.self().setVariable("ycor", SelfManager.self().getVariable("ypos"));
-        SelfManager.self().hideTurtle(false);;
-      }
-      else {
-        SelfManager.self().hideTurtle(true);;
-      }
-    }, true);
-    world.ticker.tick();
+    }
   });
   procs["go"] = temp;
   procs["GO"] = temp;

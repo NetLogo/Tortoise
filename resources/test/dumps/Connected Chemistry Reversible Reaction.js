@@ -47,7 +47,19 @@ modelConfig.plots = [(function() {
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(25.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('Volume vs. Time', 'default')(function() { plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("volume"));; });
+      plotManager.withTemporaryContext('Volume vs. Time', 'default')(function() {
+        try {
+          plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("volume"));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
+      });
     });
   })];
   var setup   = function() {};
@@ -59,8 +71,18 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Pressure vs. Time', 'default')(function() {
-        if (Prims.gt(ListPrims.length(world.observer.getGlobal("pressure-history")), 10)) {
-          plotManager.plotPoint(world.ticker.tickCount(), ListPrims.mean(world.observer.getGlobal("pressure-history")));
+        try {
+          if (Prims.gt(ListPrims.length(world.observer.getGlobal("pressure-history")), 10)) {
+            plotManager.plotPoint(world.ticker.tickCount(), ListPrims.mean(world.observer.getGlobal("pressure-history")));
+          }
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
         };
       });
     });
@@ -73,7 +95,19 @@ modelConfig.plots = [(function() {
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('Temperature vs. Time', 'default')(function() { plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("temperature"));; });
+      plotManager.withTemporaryContext('Temperature vs. Time', 'default')(function() {
+        try {
+          plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("temperature"));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
+      });
     });
   })];
   var setup   = function() {};
@@ -85,21 +119,51 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('H2', plotOps.makePenOps, false, new PenBundle.State(5.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Number of molecules', 'H2')(function() {
-        plotManager.plotPoint(world.ticker.tickCount(), world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("molecule-type"), "hydrogen"); }).size());;
+        try {
+          plotManager.plotPoint(world.ticker.tickCount(), world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("molecule-type"), "hydrogen"); }).size());
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   }),
   new PenBundle.Pen('N2', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Number of molecules', 'N2')(function() {
-        plotManager.plotPoint(world.ticker.tickCount(), world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("molecule-type"), "nitrogen"); }).size());;
+        try {
+          plotManager.plotPoint(world.ticker.tickCount(), world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("molecule-type"), "nitrogen"); }).size());
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   }),
   new PenBundle.Pen('NH3', plotOps.makePenOps, false, new PenBundle.State(97.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Number of molecules', 'NH3')(function() {
-        plotManager.plotPoint(world.ticker.tickCount(), world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("molecule-type"), "nh3"); }).size());;
+        try {
+          plotManager.plotPoint(world.ticker.tickCount(), world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("molecule-type"), "nh3"); }).size());
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   })];
@@ -127,82 +191,152 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    world.observer.setGlobal("run-go?", true);
-    world.observer.setGlobal("number-forward-reactions", 0);
-    world.observer.setGlobal("number-reverse-reactions", 0);
-    world.observer.setGlobal("scale-factor-energy-to-temp", 4);
-    world.observer.setGlobal("scale-factor-temp-to-energy", Prims.div(1, world.observer.getGlobal("scale-factor-energy-to-temp")));
-    world.observer.setGlobal("outside-energy", (world.observer.getGlobal("initial-gas-temp") * world.observer.getGlobal("scale-factor-temp-to-energy")));
-    world.observer.setGlobal("difference-bond-energies", 20);
-    world.observer.setGlobal("activation-energy", 80);
-    world.observer.setGlobal("energy-increment", 5);
-    world.observer.setGlobal("min-outside-energy", 0);
-    world.observer.setGlobal("max-outside-energy", 100);
-    world.observer.setGlobal("particle-size", 1.3);
-    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("PARTICLES").getSpecialName(), "circle")
-    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("FLASHES").getSpecialName(), "square")
-    world.observer.setGlobal("piston-color", 55);
-    world.observer.setGlobal("insulated-wall-color", 45);
-    world.observer.setGlobal("max-tick-advance-amount", 0.1);
-    world.observer.setGlobal("box-edge-y", (world.topology.maxPycor - 1));
-    world.observer.setGlobal("box-edge-x", (world.topology.maxPxcor - 1));
-    world.observer.setGlobal("piston-position", (world.observer.getGlobal("init-wall-position") - world.observer.getGlobal("box-edge-x")));
-    procedures["DRAW-BOX-PISTON"]();
-    procedures["RECALCULATE-WALL-COLOR"]();
-    procedures["CALCULATE-VOLUME"]();
-    procedures["MAKE-PARTICLES"]();
-    world.observer.setGlobal("pressure-history", []);
-    procedures["CALCULATE-PRESSURE-AND-TEMPERATURE"]();
-    world.ticker.reset();
+    try {
+      world.clearAll();
+      world.observer.setGlobal("run-go?", true);
+      world.observer.setGlobal("number-forward-reactions", 0);
+      world.observer.setGlobal("number-reverse-reactions", 0);
+      world.observer.setGlobal("scale-factor-energy-to-temp", 4);
+      world.observer.setGlobal("scale-factor-temp-to-energy", Prims.div(1, world.observer.getGlobal("scale-factor-energy-to-temp")));
+      world.observer.setGlobal("outside-energy", (world.observer.getGlobal("initial-gas-temp") * world.observer.getGlobal("scale-factor-temp-to-energy")));
+      world.observer.setGlobal("difference-bond-energies", 20);
+      world.observer.setGlobal("activation-energy", 80);
+      world.observer.setGlobal("energy-increment", 5);
+      world.observer.setGlobal("min-outside-energy", 0);
+      world.observer.setGlobal("max-outside-energy", 100);
+      world.observer.setGlobal("particle-size", 1.3);
+      BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("PARTICLES").getSpecialName(), "circle")
+      BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("FLASHES").getSpecialName(), "square")
+      world.observer.setGlobal("piston-color", 55);
+      world.observer.setGlobal("insulated-wall-color", 45);
+      world.observer.setGlobal("max-tick-advance-amount", 0.1);
+      world.observer.setGlobal("box-edge-y", (world.topology.maxPycor - 1));
+      world.observer.setGlobal("box-edge-x", (world.topology.maxPxcor - 1));
+      world.observer.setGlobal("piston-position", (world.observer.getGlobal("init-wall-position") - world.observer.getGlobal("box-edge-x")));
+      procedures["DRAW-BOX-PISTON"]();
+      procedures["RECALCULATE-WALL-COLOR"]();
+      procedures["CALCULATE-VOLUME"]();
+      procedures["MAKE-PARTICLES"]();
+      world.observer.setGlobal("pressure-history", []);
+      procedures["CALCULATE-PRESSURE-AND-TEMPERATURE"]();
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    world.turtleManager.createTurtles(world.observer.getGlobal("#-h2"), "PARTICLES").ask(function() { procedures["SETUP-HYDROGEN-PARTICLE"](); }, true);
-    world.turtleManager.createTurtles(world.observer.getGlobal("#-n2"), "PARTICLES").ask(function() { procedures["SETUP-NITROGEN-PARTICLE"](); }, true);
-    world.turtleManager.createTurtles(world.observer.getGlobal("#-nh3"), "PARTICLES").ask(function() { procedures["SETUP-AMMONIA-PARTICLE"](); }, true);
-    procedures["CALCULATE-TICK-ADVANCE-AMOUNT"]();
+    try {
+      world.turtleManager.createTurtles(world.observer.getGlobal("#-h2"), "PARTICLES").ask(function() { procedures["SETUP-HYDROGEN-PARTICLE"](); }, true);
+      world.turtleManager.createTurtles(world.observer.getGlobal("#-n2"), "PARTICLES").ask(function() { procedures["SETUP-NITROGEN-PARTICLE"](); }, true);
+      world.turtleManager.createTurtles(world.observer.getGlobal("#-nh3"), "PARTICLES").ask(function() { procedures["SETUP-AMMONIA-PARTICLE"](); }, true);
+      procedures["CALCULATE-TICK-ADVANCE-AMOUNT"]();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["makeParticles"] = temp;
   procs["MAKE-PARTICLES"] = temp;
   temp = (function() {
-    SelfManager.self().setVariable("shape", "hydrogen");
-    SelfManager.self().setVariable("molecule-type", "hydrogen");
-    SelfManager.self().setVariable("mass", 2);
-    procedures["SET-OTHER-PARTICLE-ATTRIBUTES"]();
+    try {
+      SelfManager.self().setVariable("shape", "hydrogen");
+      SelfManager.self().setVariable("molecule-type", "hydrogen");
+      SelfManager.self().setVariable("mass", 2);
+      procedures["SET-OTHER-PARTICLE-ATTRIBUTES"]();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setupHydrogenParticle"] = temp;
   procs["SETUP-HYDROGEN-PARTICLE"] = temp;
   temp = (function() {
-    SelfManager.self().setVariable("size", world.observer.getGlobal("particle-size"));
-    SelfManager.self().setVariable("shape", "nitrogen");
-    SelfManager.self().setVariable("molecule-type", "nitrogen");
-    SelfManager.self().setVariable("mass", 14);
-    procedures["SET-OTHER-PARTICLE-ATTRIBUTES"]();
+    try {
+      SelfManager.self().setVariable("size", world.observer.getGlobal("particle-size"));
+      SelfManager.self().setVariable("shape", "nitrogen");
+      SelfManager.self().setVariable("molecule-type", "nitrogen");
+      SelfManager.self().setVariable("mass", 14);
+      procedures["SET-OTHER-PARTICLE-ATTRIBUTES"]();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setupNitrogenParticle"] = temp;
   procs["SETUP-NITROGEN-PARTICLE"] = temp;
   temp = (function() {
-    SelfManager.self().setVariable("shape", "nh3");
-    SelfManager.self().setVariable("molecule-type", "nh3");
-    SelfManager.self().setVariable("mass", 10);
-    procedures["SET-OTHER-PARTICLE-ATTRIBUTES"]();
+    try {
+      SelfManager.self().setVariable("shape", "nh3");
+      SelfManager.self().setVariable("molecule-type", "nh3");
+      SelfManager.self().setVariable("mass", 10);
+      procedures["SET-OTHER-PARTICLE-ATTRIBUTES"]();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setupAmmoniaParticle"] = temp;
   procs["SETUP-AMMONIA-PARTICLE"] = temp;
   temp = (function() {
-    SelfManager.self().setVariable("size", world.observer.getGlobal("particle-size"));
-    SelfManager.self().setVariable("last-collision", Nobody);
-    SelfManager.self().setVariable("energy", (world.observer.getGlobal("initial-gas-temp") * world.observer.getGlobal("scale-factor-temp-to-energy")));
-    SelfManager.self().setVariable("speed", procedures["SPEED-FROM-ENERGY"]());
-    procedures["RANDOM-POSITION"]();
+    try {
+      SelfManager.self().setVariable("size", world.observer.getGlobal("particle-size"));
+      SelfManager.self().setVariable("last-collision", Nobody);
+      SelfManager.self().setVariable("energy", (world.observer.getGlobal("initial-gas-temp") * world.observer.getGlobal("scale-factor-temp-to-energy")));
+      SelfManager.self().setVariable("speed", procedures["SPEED-FROM-ENERGY"]());
+      procedures["RANDOM-POSITION"]();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setOtherParticleAttributes"] = temp;
   procs["SET-OTHER-PARTICLE-ATTRIBUTES"] = temp;
   temp = (function() {
-    SelfManager.self().setXY(((1 - world.observer.getGlobal("box-edge-x")) + Prims.randomFloat(((world.observer.getGlobal("box-edge-x") + world.observer.getGlobal("piston-position")) - 3))), ((1 - world.observer.getGlobal("box-edge-y")) + Prims.randomFloat(((2 * world.observer.getGlobal("box-edge-y")) - 2))));
-    SelfManager.self().setVariable("heading", Prims.randomFloat(360));
+    try {
+      SelfManager.self().setXY(((1 - world.observer.getGlobal("box-edge-x")) + Prims.randomFloat(((world.observer.getGlobal("box-edge-x") + world.observer.getGlobal("piston-position")) - 3))), ((1 - world.observer.getGlobal("box-edge-y")) + Prims.randomFloat(((2 * world.observer.getGlobal("box-edge-y")) - 2))));
+      SelfManager.self().setVariable("heading", Prims.randomFloat(360));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["randomPosition"] = temp;
   procs["RANDOM-POSITION"] = temp;
@@ -229,7 +363,9 @@ var procedures = (function() {
       plotManager.updatePlots();
       notImplemented('display', undefined)();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -239,149 +375,249 @@ var procedures = (function() {
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    if (!world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.gt(SelfManager.self().getVariable("speed"), 0); }).isEmpty()) {
-      world.observer.setGlobal("tick-advance-amount", ListPrims.min(ListPrims.list(Prims.div(1, NLMath.ceil(ListPrims.max(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("speed"); })))), world.observer.getGlobal("max-tick-advance-amount"))));
-    }
-    else {
-      world.observer.setGlobal("tick-advance-amount", world.observer.getGlobal("max-tick-advance-amount"));
+    try {
+      if (!world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.gt(SelfManager.self().getVariable("speed"), 0); }).isEmpty()) {
+        world.observer.setGlobal("tick-advance-amount", ListPrims.min(ListPrims.list(Prims.div(1, NLMath.ceil(ListPrims.max(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("speed"); })))), world.observer.getGlobal("max-tick-advance-amount"))));
+      }
+      else {
+        world.observer.setGlobal("tick-advance-amount", world.observer.getGlobal("max-tick-advance-amount"));
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["calculateTickAdvanceAmount"] = temp;
   procs["CALCULATE-TICK-ADVANCE-AMOUNT"] = temp;
   temp = (function() {
-    if (!Prims.equality(SelfManager.self().patchAhead((SelfManager.self().getVariable("speed") * world.observer.getGlobal("tick-advance-amount"))), SelfManager.self().getPatchHere())) {
-      SelfManager.self().setVariable("last-collision", Nobody);
+    try {
+      if (!Prims.equality(SelfManager.self().patchAhead((SelfManager.self().getVariable("speed") * world.observer.getGlobal("tick-advance-amount"))), SelfManager.self().getPatchHere())) {
+        SelfManager.self().setVariable("last-collision", Nobody);
+      }
+      SelfManager.self().jumpIfAble((SelfManager.self().getVariable("speed") * world.observer.getGlobal("tick-advance-amount")));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    SelfManager.self().jumpIfAble((SelfManager.self().getVariable("speed") * world.observer.getGlobal("tick-advance-amount")));
   });
   procs["move"] = temp;
   procs["MOVE"] = temp;
   temp = (function() {
-    if (world.observer.getGlobal("insulated-walls?")) {
-      world.observer.setGlobal("wall-color", world.observer.getGlobal("insulated-wall-color"));
+    try {
+      if (world.observer.getGlobal("insulated-walls?")) {
+        world.observer.setGlobal("wall-color", world.observer.getGlobal("insulated-wall-color"));
+      }
+      else {
+        world.observer.setGlobal("wall-color", ColorModel.scaleColor(15, world.observer.getGlobal("outside-energy"), -60, (world.observer.getGlobal("max-outside-energy") + 100)));
+      }
+      world.patches().agentFilter(function() { return !SelfManager.self().getPatchVariable("insulated?"); }).ask(function() { SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("wall-color")); }, true);
+      world.turtleManager.turtlesOfBreed("FLASHES").agentFilter(function() { return Prims.gt((world.ticker.tickCount() - SelfManager.self().getVariable("birthday")), 0.4); }).ask(function() { SelfManager.self().die(); }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    else {
-      world.observer.setGlobal("wall-color", ColorModel.scaleColor(15, world.observer.getGlobal("outside-energy"), -60, (world.observer.getGlobal("max-outside-energy") + 100)));
-    }
-    world.patches().agentFilter(function() { return !SelfManager.self().getPatchVariable("insulated?"); }).ask(function() { SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("wall-color")); }, true);
-    world.turtleManager.turtlesOfBreed("FLASHES").agentFilter(function() { return Prims.gt((world.ticker.tickCount() - SelfManager.self().getVariable("birthday")), 0.4); }).ask(function() { SelfManager.self().die(); }, true);
   });
   procs["recalculateWallColor"] = temp;
   procs["RECALCULATE-WALL-COLOR"] = temp;
   temp = (function() {
-    var hitHydrogen = world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() {
-      return (Prims.lte(SelfManager.self().distance(SelfManager.myself()), 1) && Prims.equality(SelfManager.self().getVariable("molecule-type"), "hydrogen"));
-    });
-    if ((Prims.gte(hitHydrogen.size(), 3) && Prims.equality(Prims.random(2), 0))) {
-      if (Prims.lt(SelfManager.self().getVariable("speed"), 0)) {
-        SelfManager.self().setVariable("speed", 0);
+    try {
+      let hitHydrogen = world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() {
+        return (Prims.lte(SelfManager.self().distance(SelfManager.myself()), 1) && Prims.equality(SelfManager.self().getVariable("molecule-type"), "hydrogen"));
+      });
+      if ((Prims.gte(hitHydrogen.size(), 3) && Prims.equality(Prims.random(2), 0))) {
+        if (Prims.lt(SelfManager.self().getVariable("speed"), 0)) {
+          SelfManager.self().setVariable("speed", 0);
+        }
+        let reactants = ListPrims.nOf(3, hitHydrogen);
+        let totalInputEnergy = (SelfManager.self().getVariable("energy") + ListPrims.sum(reactants.projectionBy(function() { return SelfManager.self().getVariable("energy"); })));
+        if (Prims.gt(totalInputEnergy, world.observer.getGlobal("activation-energy"))) {
+          let totalOutputEnergy = (totalInputEnergy + world.observer.getGlobal("difference-bond-energies"));
+          SelfManager.self().setVariable("molecule-type", "nh3");
+          SelfManager.self().setVariable("shape", "nh3");
+          SelfManager.self().setVariable("mass", 10);
+          SelfManager.self().setVariable("energy", Prims.div((totalOutputEnergy * 10), 20));
+          SelfManager.self().setVariable("speed", NLMath.sqrt((2 * Prims.div(SelfManager.self().getVariable("energy"), SelfManager.self().getVariable("mass")))));
+          SelfManager.self().hatch(1, "").ask(function() { SelfManager.self().setVariable("heading", (SelfManager.self().getVariable("heading") + 180)); }, true);
+          reactants.ask(function() { SelfManager.self().die(); }, true);
+          world.observer.setGlobal("number-forward-reactions", (world.observer.getGlobal("number-forward-reactions") + 1));
+        }
       }
-      var reactants = ListPrims.nOf(3, hitHydrogen);
-      var totalInputEnergy = (SelfManager.self().getVariable("energy") + ListPrims.sum(reactants.projectionBy(function() { return SelfManager.self().getVariable("energy"); })));
-      if (Prims.gt(totalInputEnergy, world.observer.getGlobal("activation-energy"))) {
-        var totalOutputEnergy = (totalInputEnergy + world.observer.getGlobal("difference-bond-energies"));
-        SelfManager.self().setVariable("molecule-type", "nh3");
-        SelfManager.self().setVariable("shape", "nh3");
-        SelfManager.self().setVariable("mass", 10);
-        SelfManager.self().setVariable("energy", Prims.div((totalOutputEnergy * 10), 20));
-        SelfManager.self().setVariable("speed", NLMath.sqrt((2 * Prims.div(SelfManager.self().getVariable("energy"), SelfManager.self().getVariable("mass")))));
-        SelfManager.self().hatch(1, "").ask(function() { SelfManager.self().setVariable("heading", (SelfManager.self().getVariable("heading") + 180)); }, true);
-        reactants.ask(function() { SelfManager.self().die(); }, true);
-        world.observer.setGlobal("number-forward-reactions", (world.observer.getGlobal("number-forward-reactions") + 1));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
   });
   procs["checkForForwardReaction"] = temp;
   procs["CHECK-FOR-FORWARD-REACTION"] = temp;
   temp = (function() {
-    var hitNh3 = world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() {
-      return ((Prims.lte(SelfManager.self().distance(SelfManager.myself()), 1) && Prims.equality(SelfManager.self().getVariable("molecule-type"), "nh3")) && !Prims.equality(SelfManager.self(), SelfManager.myself()));
-    });
-    if ((Prims.gte(hitNh3.size(), 1) && Prims.equality(Prims.random(2), 0))) {
-      var reactants = ListPrims.nOf(1, hitNh3);
-      var totalInputEnergy = (SelfManager.self().getVariable("energy") + ListPrims.sum(reactants.projectionBy(function() { return SelfManager.self().getVariable("energy"); })));
-      if (Prims.gt(totalInputEnergy, world.observer.getGlobal("activation-energy"))) {
-        var totalOutputEnergy = (totalInputEnergy - world.observer.getGlobal("difference-bond-energies"));
-        SelfManager.self().setVariable("molecule-type", "nitrogen");
-        SelfManager.self().setVariable("shape", "nitrogen");
-        SelfManager.self().setVariable("mass", 14);
-        SelfManager.self().setVariable("energy", Prims.div((totalOutputEnergy * 14), 20));
-        SelfManager.self().setVariable("speed", procedures["SPEED-FROM-ENERGY"]());
-        SelfManager.self().hatch(3, "").ask(function() {
-          SelfManager.self().setVariable("molecule-type", "hydrogen");
-          SelfManager.self().setVariable("shape", "hydrogen");
-          SelfManager.self().setVariable("mass", 2);
-          SelfManager.self().setVariable("energy", Prims.div((totalOutputEnergy * 2), 20));
+    try {
+      let hitNh3 = world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() {
+        return ((Prims.lte(SelfManager.self().distance(SelfManager.myself()), 1) && Prims.equality(SelfManager.self().getVariable("molecule-type"), "nh3")) && !Prims.equality(SelfManager.self(), SelfManager.myself()));
+      });
+      if ((Prims.gte(hitNh3.size(), 1) && Prims.equality(Prims.random(2), 0))) {
+        let reactants = ListPrims.nOf(1, hitNh3);
+        let totalInputEnergy = (SelfManager.self().getVariable("energy") + ListPrims.sum(reactants.projectionBy(function() { return SelfManager.self().getVariable("energy"); })));
+        if (Prims.gt(totalInputEnergy, world.observer.getGlobal("activation-energy"))) {
+          let totalOutputEnergy = (totalInputEnergy - world.observer.getGlobal("difference-bond-energies"));
+          SelfManager.self().setVariable("molecule-type", "nitrogen");
+          SelfManager.self().setVariable("shape", "nitrogen");
+          SelfManager.self().setVariable("mass", 14);
+          SelfManager.self().setVariable("energy", Prims.div((totalOutputEnergy * 14), 20));
           SelfManager.self().setVariable("speed", procedures["SPEED-FROM-ENERGY"]());
-          SelfManager.self().setVariable("heading", Prims.random(360));
-        }, true);
-        reactants.ask(function() { SelfManager.self().die(); }, true);
-        world.observer.setGlobal("number-reverse-reactions", (world.observer.getGlobal("number-reverse-reactions") + 1));
+          SelfManager.self().hatch(3, "").ask(function() {
+            SelfManager.self().setVariable("molecule-type", "hydrogen");
+            SelfManager.self().setVariable("shape", "hydrogen");
+            SelfManager.self().setVariable("mass", 2);
+            SelfManager.self().setVariable("energy", Prims.div((totalOutputEnergy * 2), 20));
+            SelfManager.self().setVariable("speed", procedures["SPEED-FROM-ENERGY"]());
+            SelfManager.self().setVariable("heading", Prims.random(360));
+          }, true);
+          reactants.ask(function() { SelfManager.self().die(); }, true);
+          world.observer.setGlobal("number-reverse-reactions", (world.observer.getGlobal("number-reverse-reactions") + 1));
+        }
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
   });
   procs["checkForReverseReaction"] = temp;
   procs["CHECK-FOR-REVERSE-REACTION"] = temp;
   temp = (function() {
-    if (Prims.gt(world.observer.getGlobal("outside-energy"), 20)) {
-      world.observer.setGlobal("outside-energy", (world.observer.getGlobal("outside-energy") - world.observer.getGlobal("energy-increment")));
+    try {
+      if (Prims.gt(world.observer.getGlobal("outside-energy"), 20)) {
+        world.observer.setGlobal("outside-energy", (world.observer.getGlobal("outside-energy") - world.observer.getGlobal("energy-increment")));
+      }
+      else {
+        world.observer.setGlobal("outside-energy", 0);
+      }
+      if (Prims.lte(world.observer.getGlobal("outside-energy"), 0)) {
+        world.observer.setGlobal("outside-energy", world.observer.getGlobal("min-outside-energy"));
+        UserDialogPrims.confirm((Dump('') + Dump("You are currently trying to cool the walls of the container below ") + Dump("absolute zero (OK or -273C).  Absolute zero is the lowest theoretical ") + Dump("temperature for all matter in the universe and has never been ") + Dump("achieved in a real-world laboratory")));
+      }
+      procedures["RECALCULATE-WALL-COLOR"]();
+      world.observer.getGlobal("heatable-walls").ask(function() { SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("wall-color")); }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    else {
-      world.observer.setGlobal("outside-energy", 0);
-    }
-    if (Prims.lte(world.observer.getGlobal("outside-energy"), 0)) {
-      world.observer.setGlobal("outside-energy", world.observer.getGlobal("min-outside-energy"));
-      UserDialogPrims.confirm((Dump('') + Dump("You are currently trying to cool the walls of the container below ") + Dump("absolute zero (OK or -273C).  Absolute zero is the lowest theoretical ") + Dump("temperature for all matter in the universe and has never been ") + Dump("achieved in a real-world laboratory")));
-    }
-    procedures["RECALCULATE-WALL-COLOR"]();
-    world.observer.getGlobal("heatable-walls").ask(function() { SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("wall-color")); }, true);
   });
   procs["cool"] = temp;
   procs["COOL"] = temp;
   temp = (function() {
-    world.observer.setGlobal("outside-energy", (world.observer.getGlobal("outside-energy") + world.observer.getGlobal("energy-increment")));
-    if (Prims.gt(world.observer.getGlobal("outside-energy"), world.observer.getGlobal("max-outside-energy"))) {
-      world.observer.setGlobal("outside-energy", world.observer.getGlobal("max-outside-energy"));
-      UserDialogPrims.confirm((Dump('') + Dump("You have reached the maximum allowable temperature for the walls of the container in this model.")));
+    try {
+      world.observer.setGlobal("outside-energy", (world.observer.getGlobal("outside-energy") + world.observer.getGlobal("energy-increment")));
+      if (Prims.gt(world.observer.getGlobal("outside-energy"), world.observer.getGlobal("max-outside-energy"))) {
+        world.observer.setGlobal("outside-energy", world.observer.getGlobal("max-outside-energy"));
+        UserDialogPrims.confirm((Dump('') + Dump("You have reached the maximum allowable temperature for the walls of the container in this model.")));
+      }
+      procedures["RECALCULATE-WALL-COLOR"]();
+      world.observer.getGlobal("heatable-walls").ask(function() { SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("wall-color")); }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    procedures["RECALCULATE-WALL-COLOR"]();
-    world.observer.getGlobal("heatable-walls").ask(function() { SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("wall-color")); }, true);
   });
   procs["heat"] = temp;
   procs["HEAT"] = temp;
   temp = (function() {
-    world.observer.setGlobal("pressure", (15 * ListPrims.sum(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("momentum-difference"); }))));
-    if (Prims.gt(ListPrims.length(world.observer.getGlobal("pressure-history")), 10)) {
-      world.observer.setGlobal("pressure-history", ListPrims.lput(world.observer.getGlobal("pressure"), ListPrims.butFirst(world.observer.getGlobal("pressure-history"))));
-    }
-    else {
-      world.observer.setGlobal("pressure-history", ListPrims.lput(world.observer.getGlobal("pressure"), world.observer.getGlobal("pressure-history")));
-    }
-    world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() { SelfManager.self().setVariable("momentum-difference", 0); }, true);
-    if (!world.turtleManager.turtlesOfBreed("PARTICLES").isEmpty()) {
-      world.observer.setGlobal("temperature", (ListPrims.mean(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("energy"); })) * world.observer.getGlobal("scale-factor-energy-to-temp")));
+    try {
+      world.observer.setGlobal("pressure", (15 * ListPrims.sum(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("momentum-difference"); }))));
+      if (Prims.gt(ListPrims.length(world.observer.getGlobal("pressure-history")), 10)) {
+        world.observer.setGlobal("pressure-history", ListPrims.lput(world.observer.getGlobal("pressure"), ListPrims.butFirst(world.observer.getGlobal("pressure-history"))));
+      }
+      else {
+        world.observer.setGlobal("pressure-history", ListPrims.lput(world.observer.getGlobal("pressure"), world.observer.getGlobal("pressure-history")));
+      }
+      world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() { SelfManager.self().setVariable("momentum-difference", 0); }, true);
+      if (!world.turtleManager.turtlesOfBreed("PARTICLES").isEmpty()) {
+        world.observer.setGlobal("temperature", (ListPrims.mean(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("energy"); })) * world.observer.getGlobal("scale-factor-energy-to-temp")));
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["calculatePressureAndTemperature"] = temp;
   procs["CALCULATE-PRESSURE-AND-TEMPERATURE"] = temp;
   temp = (function() {
-    world.observer.setGlobal("length-horizontal-surface", (((2 * (world.observer.getGlobal("box-edge-x") - 1)) + 1) - NLMath.abs((world.observer.getGlobal("piston-position") - world.observer.getGlobal("box-edge-x")))));
-    world.observer.setGlobal("length-vertical-surface", ((2 * (world.observer.getGlobal("box-edge-y") - 1)) + 1));
-    world.observer.setGlobal("volume", ((world.observer.getGlobal("length-horizontal-surface") * world.observer.getGlobal("length-vertical-surface")) * 1));
+    try {
+      world.observer.setGlobal("length-horizontal-surface", (((2 * (world.observer.getGlobal("box-edge-x") - 1)) + 1) - NLMath.abs((world.observer.getGlobal("piston-position") - world.observer.getGlobal("box-edge-x")))));
+      world.observer.setGlobal("length-vertical-surface", ((2 * (world.observer.getGlobal("box-edge-y") - 1)) + 1));
+      world.observer.setGlobal("volume", ((world.observer.getGlobal("length-horizontal-surface") * world.observer.getGlobal("length-vertical-surface")) * 1));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["calculateVolume"] = temp;
   procs["CALCULATE-VOLUME"] = temp;
   temp = (function() {
-    world.observer.setGlobal("number-forward-reactions", 0);
-    world.observer.setGlobal("number-reverse-reactions", 0);
+    try {
+      world.observer.setGlobal("number-forward-reactions", 0);
+      world.observer.setGlobal("number-reverse-reactions", 0);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["resetReactionCounters"] = temp;
   procs["RESET-REACTION-COUNTERS"] = temp;
   temp = (function() {
     try {
-      var newPatch = 0;
-      var newPx = 0;
-      var newPy = 0;
+      let newPatch = 0;
+      let newPx = 0;
+      let newPy = 0;
       if ((!SelfManager.self().getPatchVariable("wall?") && SelfManager.self().patchAt(SelfManager.self().dx(), SelfManager.self().dy()).projectionBy(function() { return !SelfManager.self().getPatchVariable("wall?"); }))) {
         throw new Exception.StopInterrupt;
       }
@@ -401,7 +637,9 @@ var procedures = (function() {
       }
       world.getPatchAt(newPx, newPy).ask(function() { procedures["MAKE-A-FLASH"](); }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -411,62 +649,92 @@ var procedures = (function() {
   procs["bounce"] = temp;
   procs["BOUNCE"] = temp;
   temp = (function() {
-    SelfManager.self().sprout(1, "TURTLES").ask(function() {
-      SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("FLASHES"));
-      SelfManager.self().setVariable("birthday", world.ticker.tickCount());
-      SelfManager.self().setVariable("color", [0, 0, 0, 100]);
-    }, true);
+    try {
+      SelfManager.self().sprout(1, "TURTLES").ask(function() {
+        SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("FLASHES"));
+        SelfManager.self().setVariable("birthday", world.ticker.tickCount());
+        SelfManager.self().setVariable("color", [0, 0, 0, 100]);
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["makeAFlash"] = temp;
   procs["MAKE-A-FLASH"] = temp;
   temp = (function() {
-    var candidate = 0;
-    if (Prims.equality(SelfPrims.other(SelfManager.self().breedHere("PARTICLES")).size(), 1)) {
-      candidate = ListPrims.oneOf(SelfPrims.other(SelfManager.self().breedHere("PARTICLES").agentFilter(function() {
-        return (Prims.lt(SelfManager.self(), SelfManager.myself()) && !Prims.equality(SelfManager.myself(), SelfManager.self().getVariable("last-collision")));
-      })));
-      if ((!Prims.equality(candidate, Nobody) && (Prims.gt(SelfManager.self().getVariable("speed"), 0) || Prims.gt(candidate.projectionBy(function() { return SelfManager.self().getVariable("speed"); }), 0)))) {
-        procedures["COLLIDE-WITH"](candidate);
-        SelfManager.self().setVariable("last-collision", candidate);
-        candidate.ask(function() { SelfManager.self().setVariable("last-collision", SelfManager.myself()); }, true);
+    try {
+      let candidate = 0;
+      if (Prims.equality(SelfPrims.other(SelfManager.self().breedHere("PARTICLES")).size(), 1)) {
+        candidate = ListPrims.oneOf(SelfPrims.other(SelfManager.self().breedHere("PARTICLES").agentFilter(function() {
+          return (Prims.lt(SelfManager.self(), SelfManager.myself()) && !Prims.equality(SelfManager.myself(), SelfManager.self().getVariable("last-collision")));
+        })));
+        if ((!Prims.equality(candidate, Nobody) && (Prims.gt(SelfManager.self().getVariable("speed"), 0) || Prims.gt(candidate.projectionBy(function() { return SelfManager.self().getVariable("speed"); }), 0)))) {
+          procedures["COLLIDE-WITH"](candidate);
+          SelfManager.self().setVariable("last-collision", candidate);
+          candidate.ask(function() { SelfManager.self().setVariable("last-collision", SelfManager.myself()); }, true);
+        }
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
   });
   procs["checkForCollision"] = temp;
   procs["CHECK-FOR-COLLISION"] = temp;
   temp = (function(otherParticle) {
-    var mass2 = 0;
-    var speed2 = 0;
-    var heading2 = 0;
-    var theta = 0;
-    var v1t = 0;
-    var v1l = 0;
-    var v2t = 0;
-    var v2l = 0;
-    var vcm = 0;
-    mass2 = otherParticle.projectionBy(function() { return SelfManager.self().getVariable("mass"); });
-    speed2 = otherParticle.projectionBy(function() { return SelfManager.self().getVariable("speed"); });
-    heading2 = otherParticle.projectionBy(function() { return SelfManager.self().getVariable("heading"); });
-    theta = Prims.randomFloat(360);
-    v1t = (SelfManager.self().getVariable("speed") * NLMath.cos((theta - SelfManager.self().getVariable("heading"))));
-    v1l = (SelfManager.self().getVariable("speed") * NLMath.sin((theta - SelfManager.self().getVariable("heading"))));
-    v2t = (speed2 * NLMath.cos((theta - heading2)));
-    v2l = (speed2 * NLMath.sin((theta - heading2)));
-    vcm = Prims.div(((SelfManager.self().getVariable("mass") * v1t) + (mass2 * v2t)), (SelfManager.self().getVariable("mass") + mass2));
-    v1t = ((2 * vcm) - v1t);
-    v2t = ((2 * vcm) - v2t);
-    SelfManager.self().setVariable("speed", NLMath.sqrt((NLMath.pow(v1t, 2) + NLMath.pow(v1l, 2))));
-    SelfManager.self().setVariable("energy", ((0.5 * SelfManager.self().getVariable("mass")) * NLMath.pow(SelfManager.self().getVariable("speed"), 2)));
-    if ((!Prims.equality(v1l, 0) || !Prims.equality(v1t, 0))) {
-      SelfManager.self().setVariable("heading", (theta - NLMath.atan(v1l, v1t)));
-    }
-    otherParticle.ask(function() {
-      SelfManager.self().setVariable("speed", NLMath.sqrt((NLMath.pow(v2t, 2) + NLMath.pow(v2l, 2))));
+    try {
+      let mass2 = 0;
+      let speed2 = 0;
+      let heading2 = 0;
+      let theta = 0;
+      let v1t = 0;
+      let v1l = 0;
+      let v2t = 0;
+      let v2l = 0;
+      let vcm = 0;
+      mass2 = otherParticle.projectionBy(function() { return SelfManager.self().getVariable("mass"); });
+      speed2 = otherParticle.projectionBy(function() { return SelfManager.self().getVariable("speed"); });
+      heading2 = otherParticle.projectionBy(function() { return SelfManager.self().getVariable("heading"); });
+      theta = Prims.randomFloat(360);
+      v1t = (SelfManager.self().getVariable("speed") * NLMath.cos((theta - SelfManager.self().getVariable("heading"))));
+      v1l = (SelfManager.self().getVariable("speed") * NLMath.sin((theta - SelfManager.self().getVariable("heading"))));
+      v2t = (speed2 * NLMath.cos((theta - heading2)));
+      v2l = (speed2 * NLMath.sin((theta - heading2)));
+      vcm = Prims.div(((SelfManager.self().getVariable("mass") * v1t) + (mass2 * v2t)), (SelfManager.self().getVariable("mass") + mass2));
+      v1t = ((2 * vcm) - v1t);
+      v2t = ((2 * vcm) - v2t);
+      SelfManager.self().setVariable("speed", NLMath.sqrt((NLMath.pow(v1t, 2) + NLMath.pow(v1l, 2))));
       SelfManager.self().setVariable("energy", ((0.5 * SelfManager.self().getVariable("mass")) * NLMath.pow(SelfManager.self().getVariable("speed"), 2)));
-      if ((!Prims.equality(v2l, 0) || !Prims.equality(v2t, 0))) {
-        SelfManager.self().setVariable("heading", (theta - NLMath.atan(v2l, v2t)));
+      if ((!Prims.equality(v1l, 0) || !Prims.equality(v1t, 0))) {
+        SelfManager.self().setVariable("heading", (theta - NLMath.atan(v1l, v1t)));
       }
-    }, true);
+      otherParticle.ask(function() {
+        SelfManager.self().setVariable("speed", NLMath.sqrt((NLMath.pow(v2t, 2) + NLMath.pow(v2l, 2))));
+        SelfManager.self().setVariable("energy", ((0.5 * SelfManager.self().getVariable("mass")) * NLMath.pow(SelfManager.self().getVariable("speed"), 2)));
+        if ((!Prims.equality(v2l, 0) || !Prims.equality(v2t, 0))) {
+          SelfManager.self().setVariable("heading", (theta - NLMath.atan(v2l, v2t)));
+        }
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["collideWith"] = temp;
   procs["COLLIDE-WITH"] = temp;
@@ -481,7 +749,9 @@ var procedures = (function() {
         throw new Exception.StopInterrupt;
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -491,61 +761,91 @@ var procedures = (function() {
   procs["checkMovePiston"] = temp;
   procs["CHECK-MOVE-PISTON"] = temp;
   temp = (function(dist) {
-    if (Prims.gt(dist, 0)) {
-      if (Prims.lt((world.observer.getGlobal("piston-position") + dist), (world.observer.getGlobal("box-edge-x") - 1))) {
-        procedures["UNDRAW-PISTON"]();
-        world.observer.setGlobal("piston-position", (world.observer.getGlobal("piston-position") + dist));
-        procedures["DRAW-BOX-PISTON"]();
+    try {
+      if (Prims.gt(dist, 0)) {
+        if (Prims.lt((world.observer.getGlobal("piston-position") + dist), (world.observer.getGlobal("box-edge-x") - 1))) {
+          procedures["UNDRAW-PISTON"]();
+          world.observer.setGlobal("piston-position", (world.observer.getGlobal("piston-position") + dist));
+          procedures["DRAW-BOX-PISTON"]();
+        }
+        else {
+          procedures["UNDRAW-PISTON"]();
+          world.observer.setGlobal("piston-position", (world.observer.getGlobal("box-edge-x") - 1));
+          procedures["DRAW-BOX-PISTON"]();
+        }
+        procedures["CALCULATE-VOLUME"]();
       }
-      else {
-        procedures["UNDRAW-PISTON"]();
-        world.observer.setGlobal("piston-position", (world.observer.getGlobal("box-edge-x") - 1));
-        procedures["DRAW-BOX-PISTON"]();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      procedures["CALCULATE-VOLUME"]();
     }
   });
   procs["pistonOut"] = temp;
   procs["PISTON-OUT"] = temp;
   temp = (function() {
-    world.patches().ask(function() {
-      SelfManager.self().setPatchVariable("insulated?", true);
-      SelfManager.self().setPatchVariable("wall?", false);
-    }, true);
-    world.observer.setGlobal("heatable-walls", world.patches().agentFilter(function() {
-      return ((Prims.equality(SelfManager.self().getPatchVariable("pxcor"), (-1 * world.observer.getGlobal("box-edge-x"))) && Prims.lte(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), world.observer.getGlobal("box-edge-y"))) || ((Prims.equality(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), world.observer.getGlobal("box-edge-y")) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), world.observer.getGlobal("piston-position"))) && Prims.lte(NLMath.abs(SelfManager.self().getPatchVariable("pxcor")), world.observer.getGlobal("box-edge-x"))));
-    }));
-    world.observer.getGlobal("heatable-walls").ask(function() {
-      SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("wall-color"));
-      SelfManager.self().setPatchVariable("insulated?", false);
-      SelfManager.self().setPatchVariable("wall?", true);
-    }, true);
-    world.observer.setGlobal("piston-wall", world.patches().agentFilter(function() {
-      return (Prims.equality(SelfManager.self().getPatchVariable("pxcor"), NLMath.round(world.observer.getGlobal("piston-position"))) && Prims.lt(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), world.observer.getGlobal("box-edge-y")));
-    }));
-    world.observer.getGlobal("piston-wall").ask(function() {
-      SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("piston-color"));
-      SelfManager.self().setPatchVariable("wall?", true);
-    }, true);
-    world.patches().agentFilter(function() {
-      return ((Prims.gt(SelfManager.self().getPatchVariable("pxcor"), NLMath.round(world.observer.getGlobal("piston-position"))) && Prims.lt(NLMath.abs(SelfManager.self().getPatchVariable("pxcor")), world.observer.getGlobal("box-edge-x"))) && Prims.equality(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), world.observer.getGlobal("box-edge-y")));
-    }).ask(function() {
-      SelfManager.self().setPatchVariable("pcolor", 5);
-      SelfManager.self().setPatchVariable("wall?", true);
-    }, true);
-    world.patches().agentFilter(function() {
-      return (Prims.equality(SelfManager.self().getPatchVariable("pxcor"), world.observer.getGlobal("box-edge-x")) && Prims.lte(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), world.observer.getGlobal("box-edge-y")));
-    }).ask(function() {
-      SelfManager.self().setPatchVariable("pcolor", 5);
-      SelfManager.self().setPatchVariable("wall?", true);
-    }, true);
+    try {
+      world.patches().ask(function() {
+        SelfManager.self().setPatchVariable("insulated?", true);
+        SelfManager.self().setPatchVariable("wall?", false);
+      }, true);
+      world.observer.setGlobal("heatable-walls", world.patches().agentFilter(function() {
+        return ((Prims.equality(SelfManager.self().getPatchVariable("pxcor"), (-1 * world.observer.getGlobal("box-edge-x"))) && Prims.lte(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), world.observer.getGlobal("box-edge-y"))) || ((Prims.equality(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), world.observer.getGlobal("box-edge-y")) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), world.observer.getGlobal("piston-position"))) && Prims.lte(NLMath.abs(SelfManager.self().getPatchVariable("pxcor")), world.observer.getGlobal("box-edge-x"))));
+      }));
+      world.observer.getGlobal("heatable-walls").ask(function() {
+        SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("wall-color"));
+        SelfManager.self().setPatchVariable("insulated?", false);
+        SelfManager.self().setPatchVariable("wall?", true);
+      }, true);
+      world.observer.setGlobal("piston-wall", world.patches().agentFilter(function() {
+        return (Prims.equality(SelfManager.self().getPatchVariable("pxcor"), NLMath.round(world.observer.getGlobal("piston-position"))) && Prims.lt(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), world.observer.getGlobal("box-edge-y")));
+      }));
+      world.observer.getGlobal("piston-wall").ask(function() {
+        SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("piston-color"));
+        SelfManager.self().setPatchVariable("wall?", true);
+      }, true);
+      world.patches().agentFilter(function() {
+        return ((Prims.gt(SelfManager.self().getPatchVariable("pxcor"), NLMath.round(world.observer.getGlobal("piston-position"))) && Prims.lt(NLMath.abs(SelfManager.self().getPatchVariable("pxcor")), world.observer.getGlobal("box-edge-x"))) && Prims.equality(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), world.observer.getGlobal("box-edge-y")));
+      }).ask(function() {
+        SelfManager.self().setPatchVariable("pcolor", 5);
+        SelfManager.self().setPatchVariable("wall?", true);
+      }, true);
+      world.patches().agentFilter(function() {
+        return (Prims.equality(SelfManager.self().getPatchVariable("pxcor"), world.observer.getGlobal("box-edge-x")) && Prims.lte(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), world.observer.getGlobal("box-edge-y")));
+      }).ask(function() {
+        SelfManager.self().setPatchVariable("pcolor", 5);
+        SelfManager.self().setPatchVariable("wall?", true);
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["drawBoxPiston"] = temp;
   procs["DRAW-BOX-PISTON"] = temp;
   temp = (function() {
-    world.patches().agentFilter(function() {
-      return (Prims.equality(SelfManager.self().getPatchVariable("pxcor"), NLMath.round(world.observer.getGlobal("piston-position"))) && Prims.lt(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), world.observer.getGlobal("box-edge-y")));
-    }).ask(function() { SelfManager.self().setPatchVariable("pcolor", 0); }, true);
+    try {
+      world.patches().agentFilter(function() {
+        return (Prims.equality(SelfManager.self().getPatchVariable("pxcor"), NLMath.round(world.observer.getGlobal("piston-position"))) && Prims.lt(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), world.observer.getGlobal("box-edge-y")));
+      }).ask(function() { SelfManager.self().setPatchVariable("pcolor", 0); }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["undrawPiston"] = temp;
   procs["UNDRAW-PISTON"] = temp;
@@ -556,6 +856,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -570,6 +872,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -584,6 +888,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }

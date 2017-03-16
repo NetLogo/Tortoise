@@ -63,94 +63,154 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    world.observer.setGlobal("show-water?", true);
-    world.patches().ask(function() {
-      if (world.observer.getGlobal("bumpy?")) {
-        if (world.observer.getGlobal("hill?")) {
-          SelfManager.self().setPatchVariable("elevation", (((-100 * Prims.div(SelfManager.self().distanceXY(0, 0), world.topology.maxPxcor)) + 100) + Prims.random(100)));
+    try {
+      world.clearAll();
+      world.observer.setGlobal("show-water?", true);
+      world.patches().ask(function() {
+        if (world.observer.getGlobal("bumpy?")) {
+          if (world.observer.getGlobal("hill?")) {
+            SelfManager.self().setPatchVariable("elevation", (((-100 * Prims.div(SelfManager.self().distanceXY(0, 0), world.topology.maxPxcor)) + 100) + Prims.random(100)));
+          }
+          else {
+            SelfManager.self().setPatchVariable("elevation", Prims.random(125));
+          }
         }
         else {
-          SelfManager.self().setPatchVariable("elevation", Prims.random(125));
+          SelfManager.self().setPatchVariable("elevation", 100);
+        }
+        SelfManager.self().setPatchVariable("water", 0);
+        SelfManager.self().setPatchVariable("drain?", false);
+      }, true);
+      if (world.observer.getGlobal("bumpy?")) {
+        for (let _index_729_735 = 0, _repeatcount_729_735 = StrictMath.floor(world.observer.getGlobal("terrain-smoothness")); _index_729_735 < _repeatcount_729_735; _index_729_735++){
+          world.topology.diffuse("elevation", 0.5)
         }
       }
-      else {
-        SelfManager.self().setPatchVariable("elevation", 100);
-      }
-      SelfManager.self().setPatchVariable("water", 0);
-      SelfManager.self().setPatchVariable("drain?", false);
-    }, true);
-    if (world.observer.getGlobal("bumpy?")) {
-      for (var _index_729_735 = 0, _repeatcount_729_735 = StrictMath.floor(world.observer.getGlobal("terrain-smoothness")); _index_729_735 < _repeatcount_729_735; _index_729_735++){
-        world.topology.diffuse("elevation", 0.5)
+      world.patches().agentFilter(function() { return !Prims.equality(SelfManager.self().getNeighbors().size(), 8); }).ask(function() {
+        SelfManager.self().setPatchVariable("drain?", true);
+        SelfManager.self().setPatchVariable("elevation", -10000000);
+      }, true);
+      world.observer.setGlobal("drains", world.patches().agentFilter(function() { return SelfManager.self().getPatchVariable("drain?"); }));
+      world.observer.setGlobal("land", world.patches().agentFilter(function() { return !SelfManager.self().getPatchVariable("drain?"); }));
+      world.observer.getGlobal("land").ask(function() { procedures["RECOLOR"](); }, true);
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
-    world.patches().agentFilter(function() { return !Prims.equality(SelfManager.self().getNeighbors().size(), 8); }).ask(function() {
-      SelfManager.self().setPatchVariable("drain?", true);
-      SelfManager.self().setPatchVariable("elevation", -10000000);
-    }, true);
-    world.observer.setGlobal("drains", world.patches().agentFilter(function() { return SelfManager.self().getPatchVariable("drain?"); }));
-    world.observer.setGlobal("land", world.patches().agentFilter(function() { return !SelfManager.self().getPatchVariable("drain?"); }));
-    world.observer.getGlobal("land").ask(function() { procedures["RECOLOR"](); }, true);
-    world.ticker.reset();
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    if ((Prims.equality(SelfManager.self().getPatchVariable("water"), 0) || !world.observer.getGlobal("show-water?"))) {
-      SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(9.9, SelfManager.self().getPatchVariable("elevation"), -250, 100));
-    }
-    else {
-      SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(105, ListPrims.min(ListPrims.list(SelfManager.self().getPatchVariable("water"), 75)), 100, -10));
+    try {
+      if ((Prims.equality(SelfManager.self().getPatchVariable("water"), 0) || !world.observer.getGlobal("show-water?"))) {
+        SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(9.9, SelfManager.self().getPatchVariable("elevation"), -250, 100));
+      }
+      else {
+        SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(105, ListPrims.min(ListPrims.list(SelfManager.self().getPatchVariable("water"), 75)), 100, -10));
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["recolor"] = temp;
   procs["RECOLOR"] = temp;
   temp = (function() {
-    world.observer.setGlobal("show-water?", true);
-    world.observer.getGlobal("land").ask(function() { procedures["RECOLOR"](); }, true);
+    try {
+      world.observer.setGlobal("show-water?", true);
+      world.observer.getGlobal("land").ask(function() { procedures["RECOLOR"](); }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["showWater"] = temp;
   procs["SHOW-WATER"] = temp;
   temp = (function() {
-    world.observer.setGlobal("show-water?", false);
-    world.observer.getGlobal("land").ask(function() { procedures["RECOLOR"](); }, true);
+    try {
+      world.observer.setGlobal("show-water?", false);
+      world.observer.getGlobal("land").ask(function() { procedures["RECOLOR"](); }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["hideWater"] = temp;
   procs["HIDE-WATER"] = temp;
   temp = (function() {
-    world.observer.getGlobal("land").ask(function() {
-      if (Prims.lt(Prims.randomFloat(1), world.observer.getGlobal("rainfall"))) {
-        SelfManager.self().setPatchVariable("water", (SelfManager.self().getPatchVariable("water") + 1));
+    try {
+      world.observer.getGlobal("land").ask(function() {
+        if (Prims.lt(Prims.randomFloat(1), world.observer.getGlobal("rainfall"))) {
+          SelfManager.self().setPatchVariable("water", (SelfManager.self().getPatchVariable("water") + 1));
+        }
+      }, true);
+      world.observer.getGlobal("land").ask(function() {
+        if (Prims.gt(SelfManager.self().getPatchVariable("water"), 0)) {
+          procedures["FLOW"]();
+        }
+      }, true);
+      world.observer.getGlobal("drains").ask(function() {
+        SelfManager.self().setPatchVariable("water", 0);
+        SelfManager.self().setPatchVariable("elevation", -10000000);
+      }, true);
+      world.observer.getGlobal("land").ask(function() { procedures["RECOLOR"](); }, true);
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-    }, true);
-    world.observer.getGlobal("land").ask(function() {
-      if (Prims.gt(SelfManager.self().getPatchVariable("water"), 0)) {
-        procedures["FLOW"]();
-      }
-    }, true);
-    world.observer.getGlobal("drains").ask(function() {
-      SelfManager.self().setPatchVariable("water", 0);
-      SelfManager.self().setPatchVariable("elevation", -10000000);
-    }, true);
-    world.observer.getGlobal("land").ask(function() { procedures["RECOLOR"](); }, true);
-    world.ticker.tick();
+    }
   });
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    var target = SelfManager.self().getNeighbors().minOneOf(function() {
-      return (SelfManager.self().getPatchVariable("elevation") + SelfManager.self().getPatchVariable("water"));
-    });
-    var amount = ListPrims.min(ListPrims.list(SelfManager.self().getPatchVariable("water"), (0.5 * (((SelfManager.self().getPatchVariable("elevation") + SelfManager.self().getPatchVariable("water")) - target.projectionBy(function() { return SelfManager.self().getPatchVariable("elevation"); })) - target.projectionBy(function() { return SelfManager.self().getPatchVariable("water"); })))));
-    if (Prims.gt(amount, 0)) {
-      var erosion = (amount * (1 - world.observer.getGlobal("soil-hardness")));
-      SelfManager.self().setPatchVariable("elevation", (SelfManager.self().getPatchVariable("elevation") - erosion));
-      amount = ListPrims.min(ListPrims.list(SelfManager.self().getPatchVariable("water"), (0.5 * (((SelfManager.self().getPatchVariable("elevation") + SelfManager.self().getPatchVariable("water")) - target.projectionBy(function() { return SelfManager.self().getPatchVariable("elevation"); })) - target.projectionBy(function() { return SelfManager.self().getPatchVariable("water"); })))));
-      SelfManager.self().setPatchVariable("water", (SelfManager.self().getPatchVariable("water") - amount));
-      target.ask(function() {
-        SelfManager.self().setPatchVariable("water", (SelfManager.self().getPatchVariable("water") + amount));
-      }, true);
+    try {
+      let target = SelfManager.self().getNeighbors().minOneOf(function() {
+        return (SelfManager.self().getPatchVariable("elevation") + SelfManager.self().getPatchVariable("water"));
+      });
+      let amount = ListPrims.min(ListPrims.list(SelfManager.self().getPatchVariable("water"), (0.5 * (((SelfManager.self().getPatchVariable("elevation") + SelfManager.self().getPatchVariable("water")) - target.projectionBy(function() { return SelfManager.self().getPatchVariable("elevation"); })) - target.projectionBy(function() { return SelfManager.self().getPatchVariable("water"); })))));
+      if (Prims.gt(amount, 0)) {
+        let erosion = (amount * (1 - world.observer.getGlobal("soil-hardness")));
+        SelfManager.self().setPatchVariable("elevation", (SelfManager.self().getPatchVariable("elevation") - erosion));
+        amount = ListPrims.min(ListPrims.list(SelfManager.self().getPatchVariable("water"), (0.5 * (((SelfManager.self().getPatchVariable("elevation") + SelfManager.self().getPatchVariable("water")) - target.projectionBy(function() { return SelfManager.self().getPatchVariable("elevation"); })) - target.projectionBy(function() { return SelfManager.self().getPatchVariable("water"); })))));
+        SelfManager.self().setPatchVariable("water", (SelfManager.self().getPatchVariable("water") - amount));
+        target.ask(function() {
+          SelfManager.self().setPatchVariable("water", (SelfManager.self().getPatchVariable("water") + amount));
+        }, true);
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["flow"] = temp;

@@ -48,13 +48,35 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('flashing', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Flashing Fireflies', 'flashing')(function() {
-        plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 45); }).size());;
+        try {
+          plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 45); }).size());
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   })];
   var setup   = function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('Flashing Fireflies', undefined)(function() { plotManager.setYRange(0, world.observer.getGlobal("number"));; });
+      plotManager.withTemporaryContext('Flashing Fireflies', undefined)(function() {
+        try {
+          plotManager.setYRange(0, world.observer.getGlobal("number"));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
+      });
     });
   };
   var update  = function() {};
@@ -80,74 +102,134 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    world.turtleManager.createTurtles(world.observer.getGlobal("number"), "").ask(function() {
-      SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
-      SelfManager.self().setVariable("shape", "butterfly");
-      SelfManager.self().setVariable("clock", Prims.random(NLMath.round(world.observer.getGlobal("cycle-length"))));
-      SelfManager.self().setVariable("threshold", world.observer.getGlobal("flash-length"));
-      if (Prims.equality(world.observer.getGlobal("strategy"), "delay")) {
-        SelfManager.self().setVariable("reset-level", SelfManager.self().getVariable("threshold"));
-        SelfManager.self().setVariable("window", -1);
+    try {
+      world.clearAll();
+      world.turtleManager.createTurtles(world.observer.getGlobal("number"), "").ask(function() {
+        SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
+        SelfManager.self().setVariable("shape", "butterfly");
+        SelfManager.self().setVariable("clock", Prims.random(NLMath.round(world.observer.getGlobal("cycle-length"))));
+        SelfManager.self().setVariable("threshold", world.observer.getGlobal("flash-length"));
+        if (Prims.equality(world.observer.getGlobal("strategy"), "delay")) {
+          SelfManager.self().setVariable("reset-level", SelfManager.self().getVariable("threshold"));
+          SelfManager.self().setVariable("window", -1);
+        }
+        else {
+          SelfManager.self().setVariable("reset-level", 0);
+          SelfManager.self().setVariable("window", (SelfManager.self().getVariable("threshold") + 1));
+        }
+        SelfManager.self().setVariable("size", 2);
+        procedures["RECOLOR"]();
+      }, true);
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      else {
-        SelfManager.self().setVariable("reset-level", 0);
-        SelfManager.self().setVariable("window", (SelfManager.self().getVariable("threshold") + 1));
-      }
-      SelfManager.self().setVariable("size", 2);
-      procedures["RECOLOR"]();
-    }, true);
-    world.ticker.reset();
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    world.turtles().ask(function() {
-      procedures["MOVE"]();
-      procedures["INCREMENT-CLOCK"]();
-      if ((Prims.gt(SelfManager.self().getVariable("clock"), SelfManager.self().getVariable("window")) && Prims.gte(SelfManager.self().getVariable("clock"), SelfManager.self().getVariable("threshold")))) {
-        procedures["LOOK"]();
+    try {
+      world.turtles().ask(function() {
+        procedures["MOVE"]();
+        procedures["INCREMENT-CLOCK"]();
+        if ((Prims.gt(SelfManager.self().getVariable("clock"), SelfManager.self().getVariable("window")) && Prims.gte(SelfManager.self().getVariable("clock"), SelfManager.self().getVariable("threshold")))) {
+          procedures["LOOK"]();
+        }
+      }, true);
+      world.turtles().ask(function() { procedures["RECOLOR"](); }, true);
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-    }, true);
-    world.turtles().ask(function() { procedures["RECOLOR"](); }, true);
-    world.ticker.tick();
+    }
   });
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    if (Prims.lt(SelfManager.self().getVariable("clock"), SelfManager.self().getVariable("threshold"))) {
-      SelfManager.self().hideTurtle(false);;
-      SelfManager.self().setVariable("color", 45);
-    }
-    else {
-      SelfManager.self().setVariable("color", (5 - 2));
-      if (world.observer.getGlobal("show-dark-fireflies?")) {
+    try {
+      if (Prims.lt(SelfManager.self().getVariable("clock"), SelfManager.self().getVariable("threshold"))) {
         SelfManager.self().hideTurtle(false);;
+        SelfManager.self().setVariable("color", 45);
       }
       else {
-        SelfManager.self().hideTurtle(true);;
+        SelfManager.self().setVariable("color", (5 - 2));
+        if (world.observer.getGlobal("show-dark-fireflies?")) {
+          SelfManager.self().hideTurtle(false);;
+        }
+        else {
+          SelfManager.self().hideTurtle(true);;
+        }
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
   });
   procs["recolor"] = temp;
   procs["RECOLOR"] = temp;
   temp = (function() {
-    SelfManager.self().right((Prims.randomFloat(90) - Prims.randomFloat(90)));
-    SelfManager.self().fd(1);
+    try {
+      SelfManager.self().right((Prims.randomFloat(90) - Prims.randomFloat(90)));
+      SelfManager.self().fd(1);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["move"] = temp;
   procs["MOVE"] = temp;
   temp = (function() {
-    SelfManager.self().setVariable("clock", (SelfManager.self().getVariable("clock") + 1));
-    if (Prims.equality(SelfManager.self().getVariable("clock"), world.observer.getGlobal("cycle-length"))) {
-      SelfManager.self().setVariable("clock", 0);
+    try {
+      SelfManager.self().setVariable("clock", (SelfManager.self().getVariable("clock") + 1));
+      if (Prims.equality(SelfManager.self().getVariable("clock"), world.observer.getGlobal("cycle-length"))) {
+        SelfManager.self().setVariable("clock", 0);
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["incrementClock"] = temp;
   procs["INCREMENT-CLOCK"] = temp;
   temp = (function() {
-    if (Prims.gte(SelfManager.self().inRadius(world.turtles(), 1).agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 45); }).size(), world.observer.getGlobal("flashes-to-reset"))) {
-      SelfManager.self().setVariable("clock", SelfManager.self().getVariable("reset-level"));
+    try {
+      if (Prims.gte(SelfManager.self().inRadius(world.turtles(), 1).agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 45); }).size(), world.observer.getGlobal("flashes-to-reset"))) {
+        SelfManager.self().setVariable("clock", SelfManager.self().getVariable("reset-level"));
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["look"] = temp;

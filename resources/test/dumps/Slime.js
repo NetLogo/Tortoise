@@ -63,45 +63,75 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    world.turtleManager.createTurtles(world.observer.getGlobal("population"), "").ask(function() {
-      SelfManager.self().setVariable("color", 15);
-      SelfManager.self().setVariable("size", 2);
-      SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
-    }, true);
-    world.patches().ask(function() { SelfManager.self().setPatchVariable("chemical", 0); }, true);
-    world.ticker.reset();
+    try {
+      world.clearAll();
+      world.turtleManager.createTurtles(world.observer.getGlobal("population"), "").ask(function() {
+        SelfManager.self().setVariable("color", 15);
+        SelfManager.self().setVariable("size", 2);
+        SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
+      }, true);
+      world.patches().ask(function() { SelfManager.self().setPatchVariable("chemical", 0); }, true);
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    world.turtles().ask(function() {
-      if (Prims.gt(SelfManager.self().getPatchVariable("chemical"), world.observer.getGlobal("sniff-threshold"))) {
-        procedures["TURN-TOWARD-CHEMICAL"]();
+    try {
+      world.turtles().ask(function() {
+        if (Prims.gt(SelfManager.self().getPatchVariable("chemical"), world.observer.getGlobal("sniff-threshold"))) {
+          procedures["TURN-TOWARD-CHEMICAL"]();
+        }
+        SelfManager.self().right(((Prims.randomFloat(world.observer.getGlobal("wiggle-angle")) - Prims.randomFloat(world.observer.getGlobal("wiggle-angle"))) + world.observer.getGlobal("wiggle-bias")));
+        SelfManager.self().fd(1);
+        SelfManager.self().setPatchVariable("chemical", (SelfManager.self().getPatchVariable("chemical") + 2));
+      }, true);
+      world.topology.diffuse("chemical", 1)
+      world.patches().ask(function() {
+        SelfManager.self().setPatchVariable("chemical", (SelfManager.self().getPatchVariable("chemical") * 0.9));
+        SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(55, SelfManager.self().getPatchVariable("chemical"), 0.1, 3));
+      }, true);
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      SelfManager.self().right(((Prims.randomFloat(world.observer.getGlobal("wiggle-angle")) - Prims.randomFloat(world.observer.getGlobal("wiggle-angle"))) + world.observer.getGlobal("wiggle-bias")));
-      SelfManager.self().fd(1);
-      SelfManager.self().setPatchVariable("chemical", (SelfManager.self().getPatchVariable("chemical") + 2));
-    }, true);
-    world.topology.diffuse("chemical", 1)
-    world.patches().ask(function() {
-      SelfManager.self().setPatchVariable("chemical", (SelfManager.self().getPatchVariable("chemical") * 0.9));
-      SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(55, SelfManager.self().getPatchVariable("chemical"), 0.1, 3));
-    }, true);
-    world.ticker.tick();
+    }
   });
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    var ahead = SelfManager.self().patchAhead(1).projectionBy(function() { return SelfManager.self().getPatchVariable("chemical"); });
-    var myright = SelfManager.self().patchRightAndAhead(world.observer.getGlobal("sniff-angle"), 1).projectionBy(function() { return SelfManager.self().getPatchVariable("chemical"); });
-    var myleft = SelfManager.self().patchLeftAndAhead(world.observer.getGlobal("sniff-angle"), 1).projectionBy(function() { return SelfManager.self().getPatchVariable("chemical"); });
-    if ((Prims.gte(myright, ahead) && Prims.gte(myright, myleft))) {
-      SelfManager.self().right(world.observer.getGlobal("sniff-angle"));
-    }
-    else {
-      if (Prims.gte(myleft, ahead)) {
-        SelfManager.self().right(-world.observer.getGlobal("sniff-angle"));
+    try {
+      let ahead = SelfManager.self().patchAhead(1).projectionBy(function() { return SelfManager.self().getPatchVariable("chemical"); });
+      let myright = SelfManager.self().patchRightAndAhead(world.observer.getGlobal("sniff-angle"), 1).projectionBy(function() { return SelfManager.self().getPatchVariable("chemical"); });
+      let myleft = SelfManager.self().patchLeftAndAhead(world.observer.getGlobal("sniff-angle"), 1).projectionBy(function() { return SelfManager.self().getPatchVariable("chemical"); });
+      if ((Prims.gte(myright, ahead) && Prims.gte(myright, myleft))) {
+        SelfManager.self().right(world.observer.getGlobal("sniff-angle"));
+      }
+      else {
+        if (Prims.gte(myleft, ahead)) {
+          SelfManager.self().right(-world.observer.getGlobal("sniff-angle"));
+        }
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
   });

@@ -72,137 +72,247 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    world.ticker.reset();
-    procedures["SETUP-TURTLES"]();
-    procedures["SETUP-PATCHES"]();
-    procedures["DO-PLOTTING"]();
+    try {
+      world.clearAll();
+      world.ticker.reset();
+      procedures["SETUP-TURTLES"]();
+      procedures["SETUP-PATCHES"]();
+      procedures["DO-PLOTTING"]();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    workspace.rng.setSeed(337);
-    workspace.timer.reset();
-    procedures["SETUP"]();
-    for (var _index_332_338 = 0, _repeatcount_332_338 = StrictMath.floor(800); _index_332_338 < _repeatcount_332_338; _index_332_338++){
-      procedures["GO"]();
+    try {
+      workspace.rng.setSeed(337);
+      workspace.timer.reset();
+      procedures["SETUP"]();
+      for (let _index_332_338 = 0, _repeatcount_332_338 = StrictMath.floor(800); _index_332_338 < _repeatcount_332_338; _index_332_338++){
+        procedures["GO"]();
+      }
+      world.observer.setGlobal("result", workspace.timer.elapsed());
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    world.observer.setGlobal("result", workspace.timer.elapsed());
   });
   procs["benchmark"] = temp;
   procs["BENCHMARK"] = temp;
   temp = (function() {
-    BreedManager.setDefaultShape(world.turtles().getSpecialName(), "bug")
-    world.turtleManager.createOrderedTurtles(world.observer.getGlobal("ants"), "").ask(function() {
-      SelfManager.self().setVariable("size", 2);
-      SelfManager.self().right(Prims.randomFloat(360));
-      SelfManager.self().setVariable("color", 15);
-      SelfManager.self().setVariable("carrying-food?", false);
-    }, true);
+    try {
+      BreedManager.setDefaultShape(world.turtles().getSpecialName(), "bug")
+      world.turtleManager.createOrderedTurtles(world.observer.getGlobal("ants"), "").ask(function() {
+        SelfManager.self().setVariable("size", 2);
+        SelfManager.self().right(Prims.randomFloat(360));
+        SelfManager.self().setVariable("color", 15);
+        SelfManager.self().setVariable("carrying-food?", false);
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setupTurtles"] = temp;
   procs["SETUP-TURTLES"] = temp;
   temp = (function() {
-    world.patches().ask(function() {
-      SelfManager.self().setPatchVariable("chemical", 0);
-      SelfManager.self().setPatchVariable("food", 0);
-      SelfManager.self().setPatchVariable("food-source-number", -1);
-      procedures["SETUP-NEST"]();
-      procedures["SETUP-FOOD"]();
-      procedures["UPDATE-DISPLAY"]();
-    }, true);
+    try {
+      world.patches().ask(function() {
+        SelfManager.self().setPatchVariable("chemical", 0);
+        SelfManager.self().setPatchVariable("food", 0);
+        SelfManager.self().setPatchVariable("food-source-number", -1);
+        procedures["SETUP-NEST"]();
+        procedures["SETUP-FOOD"]();
+        procedures["UPDATE-DISPLAY"]();
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setupPatches"] = temp;
   procs["SETUP-PATCHES"] = temp;
   temp = (function() {
-    SelfManager.self().setPatchVariable("nest?", Prims.lt(SelfManager.self().distanceXY(0, 0), 5));
-    SelfManager.self().setPatchVariable("nest-scent", (200 - SelfManager.self().distanceXY(0, 0)));
+    try {
+      SelfManager.self().setPatchVariable("nest?", Prims.lt(SelfManager.self().distanceXY(0, 0), 5));
+      SelfManager.self().setPatchVariable("nest-scent", (200 - SelfManager.self().distanceXY(0, 0)));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setupNest"] = temp;
   procs["SETUP-NEST"] = temp;
   temp = (function() {
-    if (Prims.lt(SelfManager.self().distanceXY((0.6 * world.topology.maxPxcor), 0), 5)) {
-      SelfManager.self().setPatchVariable("food-source-number", 1);
-    }
-    if (Prims.lt(SelfManager.self().distanceXY((-0.6 * world.topology.maxPxcor), (-0.6 * world.topology.maxPycor)), 5)) {
-      SelfManager.self().setPatchVariable("food-source-number", 2);
-    }
-    if (Prims.lt(SelfManager.self().distanceXY((-0.8 * world.topology.maxPxcor), (0.8 * world.topology.maxPycor)), 5)) {
-      SelfManager.self().setPatchVariable("food-source-number", 3);
-    }
-    if (Prims.gt(SelfManager.self().getPatchVariable("food-source-number"), 0)) {
-      SelfManager.self().setPatchVariable("food", (1 + Prims.random(2)));
+    try {
+      if (Prims.lt(SelfManager.self().distanceXY((0.6 * world.topology.maxPxcor), 0), 5)) {
+        SelfManager.self().setPatchVariable("food-source-number", 1);
+      }
+      if (Prims.lt(SelfManager.self().distanceXY((-0.6 * world.topology.maxPxcor), (-0.6 * world.topology.maxPycor)), 5)) {
+        SelfManager.self().setPatchVariable("food-source-number", 2);
+      }
+      if (Prims.lt(SelfManager.self().distanceXY((-0.8 * world.topology.maxPxcor), (0.8 * world.topology.maxPycor)), 5)) {
+        SelfManager.self().setPatchVariable("food-source-number", 3);
+      }
+      if (Prims.gt(SelfManager.self().getPatchVariable("food-source-number"), 0)) {
+        SelfManager.self().setPatchVariable("food", (1 + Prims.random(2)));
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["setupFood"] = temp;
   procs["SETUP-FOOD"] = temp;
   temp = (function() {
-    if (SelfManager.self().getPatchVariable("nest?")) {
-      SelfManager.self().setPatchVariable("pcolor", 115);
-    }
-    else {
-      if (Prims.gt(SelfManager.self().getPatchVariable("food"), 0)) {
-        if (Prims.equality(SelfManager.self().getPatchVariable("food-source-number"), 1)) {
-          SelfManager.self().setPatchVariable("pcolor", 85);
-        }
-        if (Prims.equality(SelfManager.self().getPatchVariable("food-source-number"), 2)) {
-          SelfManager.self().setPatchVariable("pcolor", 95);
-        }
-        if (Prims.equality(SelfManager.self().getPatchVariable("food-source-number"), 3)) {
-          SelfManager.self().setPatchVariable("pcolor", 105);
-        }
+    try {
+      if (SelfManager.self().getPatchVariable("nest?")) {
+        SelfManager.self().setPatchVariable("pcolor", 115);
       }
       else {
-        SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(55, SelfManager.self().getPatchVariable("chemical"), 0.1, 5));
+        if (Prims.gt(SelfManager.self().getPatchVariable("food"), 0)) {
+          if (Prims.equality(SelfManager.self().getPatchVariable("food-source-number"), 1)) {
+            SelfManager.self().setPatchVariable("pcolor", 85);
+          }
+          if (Prims.equality(SelfManager.self().getPatchVariable("food-source-number"), 2)) {
+            SelfManager.self().setPatchVariable("pcolor", 95);
+          }
+          if (Prims.equality(SelfManager.self().getPatchVariable("food-source-number"), 3)) {
+            SelfManager.self().setPatchVariable("pcolor", 105);
+          }
+        }
+        else {
+          SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(55, SelfManager.self().getPatchVariable("chemical"), 0.1, 5));
+        }
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
   });
   procs["updateDisplay"] = temp;
   procs["UPDATE-DISPLAY"] = temp;
   temp = (function() {
-    world.turtles().ask(function() { procedures["GO-TURTLES"](); }, true);
-    world.topology.diffuse("chemical", Prims.div(world.observer.getGlobal("diffusion-rate"), 100))
-    world.patches().ask(function() { procedures["GO-PATCHES"](); }, true);
-    world.ticker.tick();
-    procedures["DO-PLOTTING"]();
+    try {
+      world.turtles().ask(function() { procedures["GO-TURTLES"](); }, true);
+      world.topology.diffuse("chemical", Prims.div(world.observer.getGlobal("diffusion-rate"), 100))
+      world.patches().ask(function() { procedures["GO-PATCHES"](); }, true);
+      world.ticker.tick();
+      procedures["DO-PLOTTING"]();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    if (Prims.lt(SelfManager.self().getVariable("who"), world.ticker.tickCount())) {
-      if (SelfManager.self().getVariable("carrying-food?")) {
-        SelfManager.self().setVariable("color", (25 + 1));
-        procedures["RETURN-TO-NEST"]();
+    try {
+      if (Prims.lt(SelfManager.self().getVariable("who"), world.ticker.tickCount())) {
+        if (SelfManager.self().getVariable("carrying-food?")) {
+          SelfManager.self().setVariable("color", (25 + 1));
+          procedures["RETURN-TO-NEST"]();
+        }
+        else {
+          SelfManager.self().setVariable("color", 15);
+          procedures["LOOK-FOR-FOOD"]();
+        }
       }
-      else {
-        SelfManager.self().setVariable("color", 15);
-        procedures["LOOK-FOR-FOOD"]();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
   });
   procs["goTurtles"] = temp;
   procs["GO-TURTLES"] = temp;
   temp = (function() {
-    SelfManager.self().setPatchVariable("chemical", Prims.div((SelfManager.self().getPatchVariable("chemical") * (100 - world.observer.getGlobal("evaporation-rate"))), 100));
-    procedures["UPDATE-DISPLAY"]();
+    try {
+      SelfManager.self().setPatchVariable("chemical", Prims.div((SelfManager.self().getPatchVariable("chemical") * (100 - world.observer.getGlobal("evaporation-rate"))), 100));
+      procedures["UPDATE-DISPLAY"]();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["goPatches"] = temp;
   procs["GO-PATCHES"] = temp;
   temp = (function() {
-    if (SelfManager.self().getPatchVariable("nest?")) {
-      SelfManager.self().setVariable("carrying-food?", false);
-      SelfManager.self().right(180);
-      SelfManager.self().fd(1);
-    }
-    else {
-      SelfManager.self().setPatchVariable("chemical", (SelfManager.self().getPatchVariable("chemical") + SelfManager.self().getVariable("drop-size")));
-      SelfManager.self().setVariable("drop-size", (SelfManager.self().getVariable("drop-size") - 1.5));
-      if (Prims.lt(SelfManager.self().getVariable("drop-size"), 1)) {
-        SelfManager.self().setVariable("drop-size", 1);
+    try {
+      if (SelfManager.self().getPatchVariable("nest?")) {
+        SelfManager.self().setVariable("carrying-food?", false);
+        SelfManager.self().right(180);
+        SelfManager.self().fd(1);
       }
-      procedures["UPHILL-NEST-SCENT"]();
-      procedures["WIGGLE"]();
-      SelfManager.self().fd(1);
+      else {
+        SelfManager.self().setPatchVariable("chemical", (SelfManager.self().getPatchVariable("chemical") + SelfManager.self().getVariable("drop-size")));
+        SelfManager.self().setVariable("drop-size", (SelfManager.self().getVariable("drop-size") - 1.5));
+        if (Prims.lt(SelfManager.self().getVariable("drop-size"), 1)) {
+          SelfManager.self().setVariable("drop-size", 1);
+        }
+        procedures["UPHILL-NEST-SCENT"]();
+        procedures["WIGGLE"]();
+        SelfManager.self().fd(1);
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["returnToNest"] = temp;
@@ -230,7 +340,9 @@ var procedures = (function() {
         }
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -240,48 +352,78 @@ var procedures = (function() {
   procs["lookForFood"] = temp;
   procs["LOOK-FOR-FOOD"] = temp;
   temp = (function() {
-    procedures["WIGGLE"]();
-    var scentAhead = SelfManager.self().patchAhead(1).projectionBy(function() { return SelfManager.self().getPatchVariable("chemical"); });
-    var scentRight = procedures["CHEMICAL-SCENT"](45);
-    var scentLeft = procedures["CHEMICAL-SCENT"](-45);
-    if ((Prims.gt(scentRight, scentAhead) || Prims.gt(scentLeft, scentAhead))) {
-      if (Prims.gt(scentRight, scentLeft)) {
-        SelfManager.self().right(45);
+    try {
+      procedures["WIGGLE"]();
+      let scentAhead = SelfManager.self().patchAhead(1).projectionBy(function() { return SelfManager.self().getPatchVariable("chemical"); });
+      let scentRight = procedures["CHEMICAL-SCENT"](45);
+      let scentLeft = procedures["CHEMICAL-SCENT"](-45);
+      if ((Prims.gt(scentRight, scentAhead) || Prims.gt(scentLeft, scentAhead))) {
+        if (Prims.gt(scentRight, scentLeft)) {
+          SelfManager.self().right(45);
+        }
+        else {
+          SelfManager.self().right(-45);
+        }
       }
-      else {
-        SelfManager.self().right(-45);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
   });
   procs["uphillChemical"] = temp;
   procs["UPHILL-CHEMICAL"] = temp;
   temp = (function() {
-    procedures["WIGGLE"]();
-    var scentAhead = SelfManager.self().patchAhead(1).projectionBy(function() { return SelfManager.self().getPatchVariable("nest-scent"); });
-    var scentRight = procedures["GET-NEST-SCENT"](45);
-    var scentLeft = procedures["GET-NEST-SCENT"](-45);
-    if ((Prims.gt(scentRight, scentAhead) || Prims.gt(scentLeft, scentAhead))) {
-      if (Prims.gt(scentRight, scentLeft)) {
-        SelfManager.self().right(45);
+    try {
+      procedures["WIGGLE"]();
+      let scentAhead = SelfManager.self().patchAhead(1).projectionBy(function() { return SelfManager.self().getPatchVariable("nest-scent"); });
+      let scentRight = procedures["GET-NEST-SCENT"](45);
+      let scentLeft = procedures["GET-NEST-SCENT"](-45);
+      if ((Prims.gt(scentRight, scentAhead) || Prims.gt(scentLeft, scentAhead))) {
+        if (Prims.gt(scentRight, scentLeft)) {
+          SelfManager.self().right(45);
+        }
+        else {
+          SelfManager.self().right(-45);
+        }
       }
-      else {
-        SelfManager.self().right(-45);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
   });
   procs["uphillNestScent"] = temp;
   procs["UPHILL-NEST-SCENT"] = temp;
   temp = (function() {
-    SelfManager.self().right((Prims.random(40) - Prims.random(40)));
-    if (!SelfManager.self().canMove(1)) {
-      SelfManager.self().right(180);
+    try {
+      SelfManager.self().right((Prims.random(40) - Prims.random(40)));
+      if (!SelfManager.self().canMove(1)) {
+        SelfManager.self().right(180);
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["wiggle"] = temp;
   procs["WIGGLE"] = temp;
   temp = (function(angle) {
     try {
-      var p = SelfManager.self().patchRightAndAhead(angle, 1);
+      let p = SelfManager.self().patchRightAndAhead(angle, 1);
       if (!Prims.equality(p, Nobody)) {
         throw new Exception.ReportInterrupt(p.projectionBy(function() { return SelfManager.self().getPatchVariable("nest-scent"); }));
       }
@@ -290,6 +432,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -299,7 +443,7 @@ var procedures = (function() {
   procs["GET-NEST-SCENT"] = temp;
   temp = (function(angle) {
     try {
-      var p = SelfManager.self().patchRightAndAhead(angle, 1);
+      let p = SelfManager.self().patchRightAndAhead(angle, 1);
       if (!Prims.equality(p, Nobody)) {
         throw new Exception.ReportInterrupt(p.projectionBy(function() { return SelfManager.self().getPatchVariable("chemical"); }));
       }
@@ -308,6 +452,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -328,7 +474,9 @@ var procedures = (function() {
       plotManager.setCurrentPen("food-in-pile3");
       plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 105); }).size());
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;

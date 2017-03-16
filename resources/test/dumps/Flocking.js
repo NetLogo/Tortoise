@@ -63,66 +63,136 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    world.turtleManager.createTurtles(world.observer.getGlobal("population"), "").ask(function() {
-      SelfManager.self().setVariable("color", ((45 - 2) + Prims.random(7)));
-      SelfManager.self().setVariable("size", 1.5);
-      SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
-      SelfManager.self().setVariable("flockmates", new TurtleSet([]));
-    }, true);
-    world.ticker.reset();
+    try {
+      world.clearAll();
+      world.turtleManager.createTurtles(world.observer.getGlobal("population"), "").ask(function() {
+        SelfManager.self().setVariable("color", ((45 - 2) + Prims.random(7)));
+        SelfManager.self().setVariable("size", 1.5);
+        SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
+        SelfManager.self().setVariable("flockmates", new TurtleSet([]));
+      }, true);
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    world.turtles().ask(function() { procedures["FLOCK"](); }, true);
-    for (var _index_475_481 = 0, _repeatcount_475_481 = StrictMath.floor(5); _index_475_481 < _repeatcount_475_481; _index_475_481++){
-      world.turtles().ask(function() { SelfManager.self().fd(0.2); }, true);
-      notImplemented('display', undefined)();
+    try {
+      world.turtles().ask(function() { procedures["FLOCK"](); }, true);
+      for (let _index_475_481 = 0, _repeatcount_475_481 = StrictMath.floor(5); _index_475_481 < _repeatcount_475_481; _index_475_481++){
+        world.turtles().ask(function() { SelfManager.self().fd(0.2); }, true);
+        notImplemented('display', undefined)();
+      }
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    world.ticker.tick();
   });
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    procedures["FIND-FLOCKMATES"]();
-    if (!SelfManager.self().getVariable("flockmates").isEmpty()) {
-      procedures["FIND-NEAREST-NEIGHBOR"]();
-      if (Prims.lt(SelfManager.self().distance(SelfManager.self().getVariable("nearest-neighbor")), world.observer.getGlobal("minimum-separation"))) {
-        procedures["SEPARATE"]();
+    try {
+      procedures["FIND-FLOCKMATES"]();
+      if (!SelfManager.self().getVariable("flockmates").isEmpty()) {
+        procedures["FIND-NEAREST-NEIGHBOR"]();
+        if (Prims.lt(SelfManager.self().distance(SelfManager.self().getVariable("nearest-neighbor")), world.observer.getGlobal("minimum-separation"))) {
+          procedures["SEPARATE"]();
+        }
+        else {
+          procedures["ALIGN"]();
+          procedures["COHERE"]();
+        }
       }
-      else {
-        procedures["ALIGN"]();
-        procedures["COHERE"]();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
   });
   procs["flock"] = temp;
   procs["FLOCK"] = temp;
   temp = (function() {
-    SelfManager.self().setVariable("flockmates", SelfPrims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("vision"))));
+    try {
+      SelfManager.self().setVariable("flockmates", SelfPrims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("vision"))));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["findFlockmates"] = temp;
   procs["FIND-FLOCKMATES"] = temp;
   temp = (function() {
-    SelfManager.self().setVariable("nearest-neighbor", SelfManager.self().getVariable("flockmates").minOneOf(function() { return SelfManager.self().distance(SelfManager.myself()); }));
+    try {
+      SelfManager.self().setVariable("nearest-neighbor", SelfManager.self().getVariable("flockmates").minOneOf(function() { return SelfManager.self().distance(SelfManager.myself()); }));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["findNearestNeighbor"] = temp;
   procs["FIND-NEAREST-NEIGHBOR"] = temp;
   temp = (function() {
-    procedures["TURN-AWAY"](SelfManager.self().getVariable("nearest-neighbor").projectionBy(function() { return SelfManager.self().getVariable("heading"); }),world.observer.getGlobal("max-separate-turn"));
+    try {
+      procedures["TURN-AWAY"](SelfManager.self().getVariable("nearest-neighbor").projectionBy(function() { return SelfManager.self().getVariable("heading"); }),world.observer.getGlobal("max-separate-turn"));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["separate"] = temp;
   procs["SEPARATE"] = temp;
   temp = (function() {
-    procedures["TURN-TOWARDS"](procedures["AVERAGE-FLOCKMATE-HEADING"](),world.observer.getGlobal("max-align-turn"));
+    try {
+      procedures["TURN-TOWARDS"](procedures["AVERAGE-FLOCKMATE-HEADING"](),world.observer.getGlobal("max-align-turn"));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["align"] = temp;
   procs["ALIGN"] = temp;
   temp = (function() {
     try {
-      var xComponent = ListPrims.sum(SelfManager.self().getVariable("flockmates").projectionBy(function() { return SelfManager.self().dx(); }));
-      var yComponent = ListPrims.sum(SelfManager.self().getVariable("flockmates").projectionBy(function() { return SelfManager.self().dy(); }));
+      let xComponent = ListPrims.sum(SelfManager.self().getVariable("flockmates").projectionBy(function() { return SelfManager.self().dx(); }));
+      let yComponent = ListPrims.sum(SelfManager.self().getVariable("flockmates").projectionBy(function() { return SelfManager.self().dy(); }));
       if ((Prims.equality(xComponent, 0) && Prims.equality(yComponent, 0))) {
         throw new Exception.ReportInterrupt(SelfManager.self().getVariable("heading"));
       }
@@ -133,6 +203,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -141,14 +213,24 @@ var procedures = (function() {
   procs["averageFlockmateHeading"] = temp;
   procs["AVERAGE-FLOCKMATE-HEADING"] = temp;
   temp = (function() {
-    procedures["TURN-TOWARDS"](procedures["AVERAGE-HEADING-TOWARDS-FLOCKMATES"](),world.observer.getGlobal("max-cohere-turn"));
+    try {
+      procedures["TURN-TOWARDS"](procedures["AVERAGE-HEADING-TOWARDS-FLOCKMATES"](),world.observer.getGlobal("max-cohere-turn"));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["cohere"] = temp;
   procs["COHERE"] = temp;
   temp = (function() {
     try {
-      var xComponent = ListPrims.mean(SelfManager.self().getVariable("flockmates").projectionBy(function() { return NLMath.sin((SelfManager.self().towards(SelfManager.myself()) + 180)); }));
-      var yComponent = ListPrims.mean(SelfManager.self().getVariable("flockmates").projectionBy(function() { return NLMath.cos((SelfManager.self().towards(SelfManager.myself()) + 180)); }));
+      let xComponent = ListPrims.mean(SelfManager.self().getVariable("flockmates").projectionBy(function() { return NLMath.sin((SelfManager.self().towards(SelfManager.myself()) + 180)); }));
+      let yComponent = ListPrims.mean(SelfManager.self().getVariable("flockmates").projectionBy(function() { return NLMath.cos((SelfManager.self().towards(SelfManager.myself()) + 180)); }));
       if ((Prims.equality(xComponent, 0) && Prims.equality(yComponent, 0))) {
         throw new Exception.ReportInterrupt(SelfManager.self().getVariable("heading"));
       }
@@ -159,6 +241,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -167,26 +251,56 @@ var procedures = (function() {
   procs["averageHeadingTowardsFlockmates"] = temp;
   procs["AVERAGE-HEADING-TOWARDS-FLOCKMATES"] = temp;
   temp = (function(newHeading, maxTurn) {
-    procedures["TURN-AT-MOST"](NLMath.subtractHeadings(newHeading, SelfManager.self().getVariable("heading")),maxTurn);
+    try {
+      procedures["TURN-AT-MOST"](NLMath.subtractHeadings(newHeading, SelfManager.self().getVariable("heading")),maxTurn);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["turnTowards"] = temp;
   procs["TURN-TOWARDS"] = temp;
   temp = (function(newHeading, maxTurn) {
-    procedures["TURN-AT-MOST"](NLMath.subtractHeadings(SelfManager.self().getVariable("heading"), newHeading),maxTurn);
+    try {
+      procedures["TURN-AT-MOST"](NLMath.subtractHeadings(SelfManager.self().getVariable("heading"), newHeading),maxTurn);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["turnAway"] = temp;
   procs["TURN-AWAY"] = temp;
   temp = (function(turn, maxTurn) {
-    if (Prims.gt(NLMath.abs(turn), maxTurn)) {
-      if (Prims.gt(turn, 0)) {
-        SelfManager.self().right(maxTurn);
+    try {
+      if (Prims.gt(NLMath.abs(turn), maxTurn)) {
+        if (Prims.gt(turn, 0)) {
+          SelfManager.self().right(maxTurn);
+        }
+        else {
+          SelfManager.self().right(-maxTurn);
+        }
       }
       else {
-        SelfManager.self().right(-maxTurn);
+        SelfManager.self().right(turn);
       }
-    }
-    else {
-      SelfManager.self().right(turn);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["turnAtMost"] = temp;

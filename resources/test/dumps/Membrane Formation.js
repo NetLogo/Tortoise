@@ -48,9 +48,19 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('ratio', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Hydrophobic Isolation', 'ratio')(function() {
-        plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed("OILS").projectionBy(function() {
-          return Prims.div(SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("OILS"), world.observer.getGlobal("interaction-distance")).size(), SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("interaction-distance")).agentFilter(function() { return !LinkPrims.isLinkNeighbor("LINKS", SelfManager.myself()); }).size());
-        })));;
+        try {
+          plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed("OILS").projectionBy(function() {
+            return Prims.div(SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("OILS"), world.observer.getGlobal("interaction-distance")).size(), SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("interaction-distance")).agentFilter(function() { return !LinkPrims.isLinkNeighbor("LINKS", SelfManager.myself()); }).size());
+          })));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   })];
@@ -78,68 +88,118 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    world.observer.setGlobal("lipid-length", 2);
-    world.observer.setGlobal("interaction-distance", 4);
-    world.observer.setGlobal("too-close-distance", 1.3);
-    BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
-    world.turtleManager.createTurtles((world.observer.getGlobal("num-water") + world.observer.getGlobal("num-lipids")), "WATERS").ask(function() {
-      SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
-      SelfManager.self().setVariable("color", 105);
-    }, true);
-    world.turtleManager.createTurtles(world.observer.getGlobal("num-lipids"), "OILS").ask(function() {
-      var partner = ListPrims.oneOf(world.turtleManager.turtlesOfBreed("WATERS").agentFilter(function() { return !!LinkPrims.myLinks("LINKS").isEmpty(); }));
-      SelfManager.self().moveTo(partner);
-      SelfManager.self().fd(world.observer.getGlobal("lipid-length"));
-      LinkPrims.createLinkWith(partner, "LINKS").ask(function() {}, false);
-      SelfManager.self().setVariable("color", 25);
-      partner.ask(function() { SelfManager.self().setVariable("color", 115); }, true);
-    }, true);
-    world.ticker.reset();
+    try {
+      world.clearAll();
+      world.observer.setGlobal("lipid-length", 2);
+      world.observer.setGlobal("interaction-distance", 4);
+      world.observer.setGlobal("too-close-distance", 1.3);
+      BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
+      world.turtleManager.createTurtles((world.observer.getGlobal("num-water") + world.observer.getGlobal("num-lipids")), "WATERS").ask(function() {
+        SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
+        SelfManager.self().setVariable("color", 105);
+      }, true);
+      world.turtleManager.createTurtles(world.observer.getGlobal("num-lipids"), "OILS").ask(function() {
+        let partner = ListPrims.oneOf(world.turtleManager.turtlesOfBreed("WATERS").agentFilter(function() { return !!LinkPrims.myLinks("LINKS").isEmpty(); }));
+        SelfManager.self().moveTo(partner);
+        SelfManager.self().fd(world.observer.getGlobal("lipid-length"));
+        LinkPrims.createLinkWith(partner, "LINKS").ask(function() {}, false);
+        SelfManager.self().setVariable("color", 25);
+        partner.ask(function() { SelfManager.self().setVariable("color", 115); }, true);
+      }, true);
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    world.turtles().ask(function() {
-      procedures["INTERACT-WITH-NEIGHBOR"]();
-      procedures["REPEL-TOO-CLOSE-NEIGHBOR"]();
-      procedures["INTERACT-WITH-PARTNER"]();
-    }, true);
-    world.ticker.tick();
+    try {
+      world.turtles().ask(function() {
+        procedures["INTERACT-WITH-NEIGHBOR"]();
+        procedures["REPEL-TOO-CLOSE-NEIGHBOR"]();
+        procedures["INTERACT-WITH-PARTNER"]();
+      }, true);
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    var near = ListPrims.oneOf(SelfPrims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("interaction-distance")).agentFilter(function() { return !LinkPrims.isLinkNeighbor("LINKS", SelfManager.myself()); })));
-    if (!Prims.equality(near, Nobody)) {
-      SelfManager.self().face(near);
-      if (Prims.equality(near.projectionBy(function() { return SelfManager.self().getVariable("breed"); }), SelfManager.self().getVariable("breed"))) {
-        SelfManager.self().fd(world.observer.getGlobal("water-water-force"));
+    try {
+      let near = ListPrims.oneOf(SelfPrims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("interaction-distance")).agentFilter(function() { return !LinkPrims.isLinkNeighbor("LINKS", SelfManager.myself()); })));
+      if (!Prims.equality(near, Nobody)) {
+        SelfManager.self().face(near);
+        if (Prims.equality(near.projectionBy(function() { return SelfManager.self().getVariable("breed"); }), SelfManager.self().getVariable("breed"))) {
+          SelfManager.self().fd(world.observer.getGlobal("water-water-force"));
+        }
+        else {
+          SelfManager.self().fd(world.observer.getGlobal("water-oil-force"));
+        }
       }
-      else {
-        SelfManager.self().fd(world.observer.getGlobal("water-oil-force"));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
   });
   procs["interactWithNeighbor"] = temp;
   procs["INTERACT-WITH-NEIGHBOR"] = temp;
   temp = (function() {
-    var tooNear = ListPrims.oneOf(SelfPrims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("too-close-distance"))));
-    if (!Prims.equality(tooNear, Nobody)) {
-      SelfManager.self().face(tooNear);
-      SelfManager.self().fd(world.observer.getGlobal("too-close-force"));
+    try {
+      let tooNear = ListPrims.oneOf(SelfPrims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("too-close-distance"))));
+      if (!Prims.equality(tooNear, Nobody)) {
+        SelfManager.self().face(tooNear);
+        SelfManager.self().fd(world.observer.getGlobal("too-close-force"));
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["repelTooCloseNeighbor"] = temp;
   procs["REPEL-TOO-CLOSE-NEIGHBOR"] = temp;
   temp = (function() {
-    var partner = ListPrims.oneOf(LinkPrims.linkNeighbors("LINKS"));
-    if (!Prims.equality(partner, Nobody)) {
-      SelfManager.self().face(partner);
-      SelfManager.self().fd((SelfManager.self().distance(partner) - world.observer.getGlobal("lipid-length")));
+    try {
+      let partner = ListPrims.oneOf(LinkPrims.linkNeighbors("LINKS"));
+      if (!Prims.equality(partner, Nobody)) {
+        SelfManager.self().face(partner);
+        SelfManager.self().fd((SelfManager.self().distance(partner) - world.observer.getGlobal("lipid-length")));
+      }
+      SelfManager.self().right(-Prims.random(360));
+      SelfManager.self().fd(world.observer.getGlobal("random-force"));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    SelfManager.self().right(-Prims.random(360));
-    SelfManager.self().fd(world.observer.getGlobal("random-force"));
   });
   procs["interactWithPartner"] = temp;
   procs["INTERACT-WITH-PARTNER"] = temp;

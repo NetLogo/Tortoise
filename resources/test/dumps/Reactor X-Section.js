@@ -47,17 +47,53 @@ modelConfig.plots = [(function() {
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('power-rated', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('Power', 'power-rated')(function() { plotManager.plotValue(world.observer.getGlobal("power-rated"));; });
+      plotManager.withTemporaryContext('Power', 'power-rated')(function() {
+        try {
+          plotManager.plotValue(world.observer.getGlobal("power-rated"));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
+      });
     });
   }),
   new PenBundle.Pen('avg-power', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('Power', 'avg-power')(function() { plotManager.plotValue(world.observer.getGlobal("average-power"));; });
+      plotManager.withTemporaryContext('Power', 'avg-power')(function() {
+        try {
+          plotManager.plotValue(world.observer.getGlobal("average-power"));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
+      });
     });
   })];
   var setup   = function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('Power', undefined)(function() { plotManager.setYRange(0, (3 * world.observer.getGlobal("power-rated")));; });
+      plotManager.withTemporaryContext('Power', undefined)(function() {
+        try {
+          plotManager.setYRange(0, (3 * world.observer.getGlobal("power-rated")));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
+      });
     });
   };
   var update  = function() {};
@@ -83,88 +119,138 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
-    procedures["SETUP-GLOBALS"]();
-    world.patches().ask(function() {
-      SelfManager.self().setPatchVariable("x", NLMath.abs(SelfManager.self().getPatchVariable("pxcor")));
-      SelfManager.self().setPatchVariable("y", NLMath.abs(SelfManager.self().getPatchVariable("pycor")));
-      SelfManager.self().setPatchVariable("rod?", false);
-      procedures["BUILD-REACTOR"]();
-      procedures["SETUP-NUCLEAR-FUEL"]();
-    }, true);
-    procedures["SETUP-CONTROL-RODS"]();
-    world.ticker.reset();
+    try {
+      world.clearAll();
+      BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
+      procedures["SETUP-GLOBALS"]();
+      world.patches().ask(function() {
+        SelfManager.self().setPatchVariable("x", NLMath.abs(SelfManager.self().getPatchVariable("pxcor")));
+        SelfManager.self().setPatchVariable("y", NLMath.abs(SelfManager.self().getPatchVariable("pycor")));
+        SelfManager.self().setPatchVariable("rod?", false);
+        procedures["BUILD-REACTOR"]();
+        procedures["SETUP-NUCLEAR-FUEL"]();
+      }, true);
+      procedures["SETUP-CONTROL-RODS"]();
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    world.observer.setGlobal("power", 0);
-    world.observer.setGlobal("old-power", 0);
-    world.observer.setGlobal("old-power-2", 0);
-    world.observer.setGlobal("old-power-3", 0);
-    world.observer.setGlobal("old-power-4", 0);
-    world.observer.setGlobal("r", Prims.div(world.observer.getGlobal("reactor-size"), 2));
-    world.observer.setGlobal("rod-length", world.observer.getGlobal("rod-depth"));
-    world.observer.setGlobal("n-rods", (Prims.div(world.observer.getGlobal("reactor-size"), (world.observer.getGlobal("rod-spacing") + 1)) - 1));
+    try {
+      world.observer.setGlobal("power", 0);
+      world.observer.setGlobal("old-power", 0);
+      world.observer.setGlobal("old-power-2", 0);
+      world.observer.setGlobal("old-power-3", 0);
+      world.observer.setGlobal("old-power-4", 0);
+      world.observer.setGlobal("r", Prims.div(world.observer.getGlobal("reactor-size"), 2));
+      world.observer.setGlobal("rod-length", world.observer.getGlobal("rod-depth"));
+      world.observer.setGlobal("n-rods", (Prims.div(world.observer.getGlobal("reactor-size"), (world.observer.getGlobal("rod-spacing") + 1)) - 1));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setupGlobals"] = temp;
   procs["SETUP-GLOBALS"] = temp;
   temp = (function() {
-    if (((Prims.equality(SelfManager.self().getPatchVariable("x"), world.observer.getGlobal("r")) && Prims.lte(SelfManager.self().getPatchVariable("y"), world.observer.getGlobal("r"))) || (Prims.equality(SelfManager.self().getPatchVariable("y"), world.observer.getGlobal("r")) && Prims.lte(SelfManager.self().getPatchVariable("x"), world.observer.getGlobal("r"))))) {
-      SelfManager.self().setPatchVariable("pcolor", 5);
-      SelfManager.self().setPatchVariable("rod?", false);
+    try {
+      if (((Prims.equality(SelfManager.self().getPatchVariable("x"), world.observer.getGlobal("r")) && Prims.lte(SelfManager.self().getPatchVariable("y"), world.observer.getGlobal("r"))) || (Prims.equality(SelfManager.self().getPatchVariable("y"), world.observer.getGlobal("r")) && Prims.lte(SelfManager.self().getPatchVariable("x"), world.observer.getGlobal("r"))))) {
+        SelfManager.self().setPatchVariable("pcolor", 5);
+        SelfManager.self().setPatchVariable("rod?", false);
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["buildReactor"] = temp;
   procs["BUILD-REACTOR"] = temp;
   temp = (function() {
-    if (((Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 0) && Prims.lt(SelfManager.self().getPatchVariable("x"), world.observer.getGlobal("r"))) && Prims.lt(SelfManager.self().getPatchVariable("y"), world.observer.getGlobal("r")))) {
-      SelfManager.self().setPatchVariable("pcolor", 15);
+    try {
+      if (((Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 0) && Prims.lt(SelfManager.self().getPatchVariable("x"), world.observer.getGlobal("r"))) && Prims.lt(SelfManager.self().getPatchVariable("y"), world.observer.getGlobal("r")))) {
+        SelfManager.self().setPatchVariable("pcolor", 15);
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["setupNuclearFuel"] = temp;
   procs["SETUP-NUCLEAR-FUEL"] = temp;
   temp = (function() {
-    if (Prims.gt(world.observer.getGlobal("rod-depth"), world.observer.getGlobal("reactor-size"))) {
-      world.observer.setGlobal("rod-depth", world.observer.getGlobal("reactor-size"));
-    }
-    if (((Prims.equality(world.observer.getGlobal("rod-spacing"), 5) || Prims.equality(world.observer.getGlobal("rod-spacing"), 6)) && Prims.equality(world.observer.getGlobal("reactor-size"), 10))) {
-      UserDialogPrims.confirm("Spacing too large for reactor size.  Spacing set to 4.");
-      world.observer.setGlobal("rod-spacing", 4);
-      world.observer.setGlobal("n-rods", 1);
-    }
-    var rodX = ((1 - world.observer.getGlobal("r")) + world.observer.getGlobal("rod-spacing"));
-    if (((Prims.equality(world.observer.getGlobal("rod-spacing"), 2) && !Prims.equality(world.observer.getGlobal("reactor-size"), 30)) && !Prims.equality(world.observer.getGlobal("reactor-size"), 60))) {
-      rodX = (rodX + 1);
-    }
-    if ((Prims.equality(world.observer.getGlobal("rod-spacing"), 3) && !Prims.equality(NLMath.mod(world.observer.getGlobal("reactor-size"), 20), 0))) {
-      world.observer.setGlobal("n-rods", (world.observer.getGlobal("n-rods") + 1));
-      rodX = (rodX - 1);
-    }
-    if ((Prims.equality(world.observer.getGlobal("rod-spacing"), 5) && ((Prims.equality(world.observer.getGlobal("reactor-size"), 20) || Prims.equality(world.observer.getGlobal("reactor-size"), 40)) || Prims.equality(world.observer.getGlobal("reactor-size"), 70)))) {
-      if (Prims.equality(world.observer.getGlobal("reactor-size"), 20)) {
+    try {
+      if (Prims.gt(world.observer.getGlobal("rod-depth"), world.observer.getGlobal("reactor-size"))) {
+        world.observer.setGlobal("rod-depth", world.observer.getGlobal("reactor-size"));
+      }
+      if (((Prims.equality(world.observer.getGlobal("rod-spacing"), 5) || Prims.equality(world.observer.getGlobal("rod-spacing"), 6)) && Prims.equality(world.observer.getGlobal("reactor-size"), 10))) {
+        UserDialogPrims.confirm("Spacing too large for reactor size.  Spacing set to 4.");
+        world.observer.setGlobal("rod-spacing", 4);
+        world.observer.setGlobal("n-rods", 1);
+      }
+      let rodX = ((1 - world.observer.getGlobal("r")) + world.observer.getGlobal("rod-spacing"));
+      if (((Prims.equality(world.observer.getGlobal("rod-spacing"), 2) && !Prims.equality(world.observer.getGlobal("reactor-size"), 30)) && !Prims.equality(world.observer.getGlobal("reactor-size"), 60))) {
         rodX = (rodX + 1);
       }
-      else {
-        rodX = (rodX + 2);
-      }
-    }
-    if ((Prims.equality(world.observer.getGlobal("rod-spacing"), 6) && Prims.equality(NLMath.mod(world.observer.getGlobal("reactor-size"), 20), 0))) {
-      world.observer.setGlobal("n-rods", (world.observer.getGlobal("n-rods") + 1));
-      if (Prims.equality(world.observer.getGlobal("reactor-size"), 80)) {
-        rodX = (rodX - 2);
-      }
-      else {
+      if ((Prims.equality(world.observer.getGlobal("rod-spacing"), 3) && !Prims.equality(NLMath.mod(world.observer.getGlobal("reactor-size"), 20), 0))) {
+        world.observer.setGlobal("n-rods", (world.observer.getGlobal("n-rods") + 1));
         rodX = (rodX - 1);
       }
+      if ((Prims.equality(world.observer.getGlobal("rod-spacing"), 5) && ((Prims.equality(world.observer.getGlobal("reactor-size"), 20) || Prims.equality(world.observer.getGlobal("reactor-size"), 40)) || Prims.equality(world.observer.getGlobal("reactor-size"), 70)))) {
+        if (Prims.equality(world.observer.getGlobal("reactor-size"), 20)) {
+          rodX = (rodX + 1);
+        }
+        else {
+          rodX = (rodX + 2);
+        }
+      }
+      if ((Prims.equality(world.observer.getGlobal("rod-spacing"), 6) && Prims.equality(NLMath.mod(world.observer.getGlobal("reactor-size"), 20), 0))) {
+        world.observer.setGlobal("n-rods", (world.observer.getGlobal("n-rods") + 1));
+        if (Prims.equality(world.observer.getGlobal("reactor-size"), 80)) {
+          rodX = (rodX - 2);
+        }
+        else {
+          rodX = (rodX - 1);
+        }
+      }
+      for (let _index_1937_1943 = 0, _repeatcount_1937_1943 = StrictMath.floor(world.observer.getGlobal("n-rods")); _index_1937_1943 < _repeatcount_1937_1943; _index_1937_1943++){
+        world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pxcor"), rodX); }).ask(function() { SelfManager.self().setPatchVariable("rod?", true); }, true);
+        rodX = ((rodX + world.observer.getGlobal("rod-spacing")) + 1);
+      }
+      world.patches().ask(function() { procedures["BUILD-REACTOR"](); }, true);
+      procedures["PLACE-CONTROL-RODS"]();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    for (var _index_1937_1943 = 0, _repeatcount_1937_1943 = StrictMath.floor(world.observer.getGlobal("n-rods")); _index_1937_1943 < _repeatcount_1937_1943; _index_1937_1943++){
-      world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pxcor"), rodX); }).ask(function() { SelfManager.self().setPatchVariable("rod?", true); }, true);
-      rodX = ((rodX + world.observer.getGlobal("rod-spacing")) + 1);
-    }
-    world.patches().ask(function() { procedures["BUILD-REACTOR"](); }, true);
-    procedures["PLACE-CONTROL-RODS"]();
   });
   procs["setupControlRods"] = temp;
   procs["SETUP-CONTROL-RODS"] = temp;
@@ -191,7 +277,9 @@ var procedures = (function() {
       }
       procedures["REACT"]();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -211,7 +299,9 @@ var procedures = (function() {
       world.observer.setGlobal("rod-length", world.observer.getGlobal("rod-depth"));
       procedures["REACT"]();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -221,65 +311,105 @@ var procedures = (function() {
   procs["manuReact"] = temp;
   procs["MANU-REACT"] = temp;
   temp = (function() {
-    procedures["PLACE-CONTROL-RODS"]();
-    world.observer.setGlobal("power", 0);
-    world.turtles().ask(function() {
-      SelfManager.self().fd(1);
-      if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 5)) {
-        SelfManager.self().die();
+    try {
+      procedures["PLACE-CONTROL-RODS"]();
+      world.observer.setGlobal("power", 0);
+      world.turtles().ask(function() {
+        SelfManager.self().fd(1);
+        if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 5)) {
+          SelfManager.self().die();
+        }
+        if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15)) {
+          procedures["FISSION"]();
+        }
+      }, true);
+      world.observer.setGlobal("average-power", Prims.div(((((world.observer.getGlobal("power") + world.observer.getGlobal("old-power")) + world.observer.getGlobal("old-power-2")) + world.observer.getGlobal("old-power-3")) + world.observer.getGlobal("old-power-4")), 5));
+      world.observer.setGlobal("power-change", (world.observer.getGlobal("power") - world.observer.getGlobal("old-power")));
+      world.observer.setGlobal("old-power-4", world.observer.getGlobal("old-power-3"));
+      world.observer.setGlobal("old-power-3", world.observer.getGlobal("old-power-2"));
+      world.observer.setGlobal("old-power-2", world.observer.getGlobal("old-power"));
+      world.observer.setGlobal("old-power", world.observer.getGlobal("power"));
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15)) {
-        procedures["FISSION"]();
-      }
-    }, true);
-    world.observer.setGlobal("average-power", Prims.div(((((world.observer.getGlobal("power") + world.observer.getGlobal("old-power")) + world.observer.getGlobal("old-power-2")) + world.observer.getGlobal("old-power-3")) + world.observer.getGlobal("old-power-4")), 5));
-    world.observer.setGlobal("power-change", (world.observer.getGlobal("power") - world.observer.getGlobal("old-power")));
-    world.observer.setGlobal("old-power-4", world.observer.getGlobal("old-power-3"));
-    world.observer.setGlobal("old-power-3", world.observer.getGlobal("old-power-2"));
-    world.observer.setGlobal("old-power-2", world.observer.getGlobal("old-power"));
-    world.observer.setGlobal("old-power", world.observer.getGlobal("power"));
-    world.ticker.tick();
+    }
   });
   procs["react"] = temp;
   procs["REACT"] = temp;
   temp = (function() {
-    var whom = Nobody;
-    world.turtleManager.createTurtles(1, "").ask(function() {
-      SelfManager.self().setVariable("color", 45);
-      SelfManager.self().setVariable("xcor", (Prims.random((world.observer.getGlobal("reactor-size") - 2)) - world.observer.getGlobal("r")));
-      SelfManager.self().setVariable("ycor", (Prims.random((world.observer.getGlobal("reactor-size") - 2)) - world.observer.getGlobal("r")));
-      whom = SelfManager.self();
-      if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 5)) {
-        SelfManager.self().die();
+    try {
+      let whom = Nobody;
+      world.turtleManager.createTurtles(1, "").ask(function() {
+        SelfManager.self().setVariable("color", 45);
+        SelfManager.self().setVariable("xcor", (Prims.random((world.observer.getGlobal("reactor-size") - 2)) - world.observer.getGlobal("r")));
+        SelfManager.self().setVariable("ycor", (Prims.random((world.observer.getGlobal("reactor-size") - 2)) - world.observer.getGlobal("r")));
+        whom = SelfManager.self();
+        if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 5)) {
+          SelfManager.self().die();
+        }
+      }, true);
+      if (Prims.equality(whom, Nobody)) {
+        procedures["RELEASE-NEUTRON"]();
       }
-    }, true);
-    if (Prims.equality(whom, Nobody)) {
-      procedures["RELEASE-NEUTRON"]();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["releaseNeutron"] = temp;
   procs["RELEASE-NEUTRON"] = temp;
   temp = (function() {
-    world.patches().agentFilter(function() { return SelfManager.self().getPatchVariable("rod?"); }).ask(function() {
-      if (Prims.gte(SelfManager.self().getPatchVariable("pycor"), (world.observer.getGlobal("r") - world.observer.getGlobal("rod-length")))) {
-        SelfManager.self().setPatchVariable("pcolor", 5);
+    try {
+      world.patches().agentFilter(function() { return SelfManager.self().getPatchVariable("rod?"); }).ask(function() {
+        if (Prims.gte(SelfManager.self().getPatchVariable("pycor"), (world.observer.getGlobal("r") - world.observer.getGlobal("rod-length")))) {
+          SelfManager.self().setPatchVariable("pcolor", 5);
+        }
+        else {
+          SelfManager.self().setPatchVariable("pcolor", 0);
+        }
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      else {
-        SelfManager.self().setPatchVariable("pcolor", 0);
-      }
-    }, true);
+    }
   });
   procs["placeControlRods"] = temp;
   procs["PLACE-CONTROL-RODS"] = temp;
   temp = (function() {
-    SelfManager.self().right(Prims.random(360));
-    if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15)) {
-      if (world.observer.getGlobal("spend-fuel?")) {
-        SelfManager.self().setPatchVariable("pcolor", 35);
+    try {
+      SelfManager.self().right(Prims.random(360));
+      if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15)) {
+        if (world.observer.getGlobal("spend-fuel?")) {
+          SelfManager.self().setPatchVariable("pcolor", 35);
+        }
+        let gain = Prims.div(1, SelfManager.self().turtlesHere().size());
+        world.observer.setGlobal("power", (world.observer.getGlobal("power") + gain));
+        SelfManager.self().hatch(((2 + Prims.random(2)) * gain), "").ask(function() { SelfManager.self().right(Prims.random(360)); }, true);
       }
-      var gain = Prims.div(1, SelfManager.self().turtlesHere().size());
-      world.observer.setGlobal("power", (world.observer.getGlobal("power") + gain));
-      SelfManager.self().hatch(((2 + Prims.random(2)) * gain), "").ask(function() { SelfManager.self().right(Prims.random(360)); }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["fission"] = temp;

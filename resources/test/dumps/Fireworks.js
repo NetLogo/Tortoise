@@ -63,83 +63,143 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
-    world.ticker.reset();
+    try {
+      world.clearAll();
+      BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    if (!!world.turtles().isEmpty()) {
-      if (Prims.equality(world.observer.getGlobal("countdown"), 0)) {
-        procedures["INIT-ROCKETS"]();
-        world.observer.setGlobal("countdown", (world.observer.getGlobal("trails?") ? 30 : 10));
+    try {
+      if (!!world.turtles().isEmpty()) {
+        if (Prims.equality(world.observer.getGlobal("countdown"), 0)) {
+          procedures["INIT-ROCKETS"]();
+          world.observer.setGlobal("countdown", (world.observer.getGlobal("trails?") ? 30 : 10));
+        }
+        else {
+          world.observer.setGlobal("countdown", (world.observer.getGlobal("countdown") - 1));
+        }
       }
-      else {
-        world.observer.setGlobal("countdown", (world.observer.getGlobal("countdown") - 1));
+      world.turtles().ask(function() { procedures["PROJECTILE-MOTION"](); }, true);
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
-    world.turtles().ask(function() { procedures["PROJECTILE-MOTION"](); }, true);
-    world.ticker.tick();
   });
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    world.clearDrawing();
-    world.turtleManager.createTurtles(Prims.random(world.observer.getGlobal("fireworks")), "ROCKETS").ask(function() {
-      SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), world.topology.minPycor);
-      SelfManager.self().setVariable("x-vel", (Prims.randomFloat((2 * world.observer.getGlobal("initial-x-vel"))) - world.observer.getGlobal("initial-x-vel")));
-      SelfManager.self().setVariable("y-vel", (Prims.randomFloat(world.observer.getGlobal("initial-y-vel")) + (world.observer.getGlobal("initial-y-vel") * 2)));
-      SelfManager.self().setVariable("col", ListPrims.oneOf(ColorModel.BASE_COLORS));
-      SelfManager.self().setVariable("color", (SelfManager.self().getVariable("col") + 2));
-      SelfManager.self().setVariable("size", 2);
-      SelfManager.self().setVariable("terminal-y-vel", Prims.randomFloat(4));
-    }, true);
+    try {
+      world.clearDrawing();
+      world.turtleManager.createTurtles(Prims.random(world.observer.getGlobal("fireworks")), "ROCKETS").ask(function() {
+        SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), world.topology.minPycor);
+        SelfManager.self().setVariable("x-vel", (Prims.randomFloat((2 * world.observer.getGlobal("initial-x-vel"))) - world.observer.getGlobal("initial-x-vel")));
+        SelfManager.self().setVariable("y-vel", (Prims.randomFloat(world.observer.getGlobal("initial-y-vel")) + (world.observer.getGlobal("initial-y-vel") * 2)));
+        SelfManager.self().setVariable("col", ListPrims.oneOf(ColorModel.BASE_COLORS));
+        SelfManager.self().setVariable("color", (SelfManager.self().getVariable("col") + 2));
+        SelfManager.self().setVariable("size", 2);
+        SelfManager.self().setVariable("terminal-y-vel", Prims.randomFloat(4));
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["initRockets"] = temp;
   procs["INIT-ROCKETS"] = temp;
   temp = (function() {
-    SelfManager.self().setVariable("y-vel", (SelfManager.self().getVariable("y-vel") - Prims.div(world.observer.getGlobal("gravity"), 5)));
-    SelfManager.self().setVariable("heading", NLMath.atan(SelfManager.self().getVariable("x-vel"), SelfManager.self().getVariable("y-vel")));
-    var moveAmount = NLMath.sqrt((NLMath.pow(SelfManager.self().getVariable("x-vel"), 2) + NLMath.pow(SelfManager.self().getVariable("y-vel"), 2)));
-    if (!SelfManager.self().canMove(moveAmount)) {
-      SelfManager.self().die();
-    }
-    SelfManager.self().fd(NLMath.sqrt((NLMath.pow(SelfManager.self().getVariable("x-vel"), 2) + NLMath.pow(SelfManager.self().getVariable("y-vel"), 2))));
-    if (Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("ROCKETS"))) {
-      if (Prims.lt(SelfManager.self().getVariable("y-vel"), SelfManager.self().getVariable("terminal-y-vel"))) {
-        procedures["EXPLODE"]();
+    try {
+      SelfManager.self().setVariable("y-vel", (SelfManager.self().getVariable("y-vel") - Prims.div(world.observer.getGlobal("gravity"), 5)));
+      SelfManager.self().setVariable("heading", NLMath.atan(SelfManager.self().getVariable("x-vel"), SelfManager.self().getVariable("y-vel")));
+      let moveAmount = NLMath.sqrt((NLMath.pow(SelfManager.self().getVariable("x-vel"), 2) + NLMath.pow(SelfManager.self().getVariable("y-vel"), 2)));
+      if (!SelfManager.self().canMove(moveAmount)) {
         SelfManager.self().die();
       }
-    }
-    else {
-      procedures["FADE"]();
+      SelfManager.self().fd(NLMath.sqrt((NLMath.pow(SelfManager.self().getVariable("x-vel"), 2) + NLMath.pow(SelfManager.self().getVariable("y-vel"), 2))));
+      if (Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("ROCKETS"))) {
+        if (Prims.lt(SelfManager.self().getVariable("y-vel"), SelfManager.self().getVariable("terminal-y-vel"))) {
+          procedures["EXPLODE"]();
+          SelfManager.self().die();
+        }
+      }
+      else {
+        procedures["FADE"]();
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["projectileMotion"] = temp;
   procs["PROJECTILE-MOTION"] = temp;
   temp = (function() {
-    SelfManager.self().hatch(world.observer.getGlobal("fragments"), "FRAGS").ask(function() {
-      SelfManager.self().setVariable("dim", 0);
-      SelfManager.self().right(Prims.random(360));
-      SelfManager.self().setVariable("size", 1);
-      SelfManager.self().setVariable("x-vel", ((((SelfManager.self().getVariable("x-vel") * 0.5) + SelfManager.self().dx()) + Prims.randomFloat(2)) - 1));
-      SelfManager.self().setVariable("y-vel", ((((SelfManager.self().getVariable("y-vel") * 0.3) + SelfManager.self().dy()) + Prims.randomFloat(2)) - 1));
-      if (world.observer.getGlobal("trails?")) {
-        SelfManager.self().penManager.lowerPen();
+    try {
+      SelfManager.self().hatch(world.observer.getGlobal("fragments"), "FRAGS").ask(function() {
+        SelfManager.self().setVariable("dim", 0);
+        SelfManager.self().right(Prims.random(360));
+        SelfManager.self().setVariable("size", 1);
+        SelfManager.self().setVariable("x-vel", ((((SelfManager.self().getVariable("x-vel") * 0.5) + SelfManager.self().dx()) + Prims.randomFloat(2)) - 1));
+        SelfManager.self().setVariable("y-vel", ((((SelfManager.self().getVariable("y-vel") * 0.3) + SelfManager.self().dy()) + Prims.randomFloat(2)) - 1));
+        if (world.observer.getGlobal("trails?")) {
+          SelfManager.self().penManager.lowerPen();
+        }
+        else {
+          SelfManager.self().penManager.raisePen();
+        }
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      else {
-        SelfManager.self().penManager.raisePen();
-      }
-    }, true);
+    }
   });
   procs["explode"] = temp;
   procs["EXPLODE"] = temp;
   temp = (function() {
-    SelfManager.self().setVariable("dim", (SelfManager.self().getVariable("dim") - Prims.div(world.observer.getGlobal("fade-amount"), 10)));
-    SelfManager.self().setVariable("color", ColorModel.scaleColor(SelfManager.self().getVariable("col"), SelfManager.self().getVariable("dim"), -5, 0.5));
-    if (Prims.lt(SelfManager.self().getVariable("color"), (SelfManager.self().getVariable("col") - 3.5))) {
-      SelfManager.self().die();
+    try {
+      SelfManager.self().setVariable("dim", (SelfManager.self().getVariable("dim") - Prims.div(world.observer.getGlobal("fade-amount"), 10)));
+      SelfManager.self().setVariable("color", ColorModel.scaleColor(SelfManager.self().getVariable("col"), SelfManager.self().getVariable("dim"), -5, 0.5));
+      if (Prims.lt(SelfManager.self().getVariable("color"), (SelfManager.self().getVariable("col") - 3.5))) {
+        SelfManager.self().die();
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["fade"] = temp;

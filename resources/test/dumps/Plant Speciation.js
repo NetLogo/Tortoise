@@ -48,18 +48,38 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('left', plotOps.makePenOps, false, new PenBundle.State(55.0, 5.0, PenBundle.DisplayMode.Bar), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('tolerances', 'left')(function() {
-        plotManager.drawHistogramFrom(world.turtles().agentFilter(function() {
-          return Prims.lt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
-        }).projectionBy(function() { return SelfManager.self().getVariable("tolerance"); }));;
+        try {
+          plotManager.drawHistogramFrom(world.turtles().agentFilter(function() {
+            return Prims.lt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
+          }).projectionBy(function() { return SelfManager.self().getVariable("tolerance"); }));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   }),
   new PenBundle.Pen('right', plotOps.makePenOps, false, new PenBundle.State(105.0, 5.0, PenBundle.DisplayMode.Bar), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('tolerances', 'right')(function() {
-        plotManager.drawHistogramFrom(world.turtles().agentFilter(function() {
-          return Prims.gt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
-        }).projectionBy(function() { return SelfManager.self().getVariable("tolerance"); }));;
+        try {
+          plotManager.drawHistogramFrom(world.turtles().agentFilter(function() {
+            return Prims.gt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
+          }).projectionBy(function() { return SelfManager.self().getVariable("tolerance"); }));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   })];
@@ -72,18 +92,38 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('left', plotOps.makePenOps, false, new PenBundle.State(55.0, 15.0, PenBundle.DisplayMode.Bar), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('flower-times', 'left')(function() {
-        plotManager.drawHistogramFrom(world.turtles().agentFilter(function() {
-          return Prims.lt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
-        }).projectionBy(function() { return SelfManager.self().getVariable("flower-time"); }));;
+        try {
+          plotManager.drawHistogramFrom(world.turtles().agentFilter(function() {
+            return Prims.lt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
+          }).projectionBy(function() { return SelfManager.self().getVariable("flower-time"); }));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   }),
   new PenBundle.Pen('right', plotOps.makePenOps, false, new PenBundle.State(105.0, 15.0, PenBundle.DisplayMode.Bar), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('flower-times', 'right')(function() {
-        plotManager.drawHistogramFrom(world.turtles().agentFilter(function() {
-          return Prims.gt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
-        }).projectionBy(function() { return SelfManager.self().getVariable("flower-time"); }));;
+        try {
+          plotManager.drawHistogramFrom(world.turtles().agentFilter(function() {
+            return Prims.gt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
+          }).projectionBy(function() { return SelfManager.self().getVariable("flower-time"); }));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   })];
@@ -96,12 +136,22 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('left', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('avg. tolerance', 'left')(function() {
-        if (!world.turtles().agentFilter(function() {
-          return Prims.lt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
-        }).isEmpty()) {
-          plotManager.plotPoint(world.observer.getGlobal("year"), ListPrims.mean(world.turtles().agentFilter(function() {
+        try {
+          if (!world.turtles().agentFilter(function() {
             return Prims.lt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
-          }).projectionBy(function() { return SelfManager.self().getVariable("tolerance"); })));
+          }).isEmpty()) {
+            plotManager.plotPoint(world.observer.getGlobal("year"), ListPrims.mean(world.turtles().agentFilter(function() {
+              return Prims.lt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
+            }).projectionBy(function() { return SelfManager.self().getVariable("tolerance"); })));
+          }
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
         };
       });
     });
@@ -109,12 +159,22 @@ modelConfig.plots = [(function() {
   new PenBundle.Pen('right', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('avg. tolerance', 'right')(function() {
-        if (!world.turtles().agentFilter(function() {
-          return Prims.gt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
-        }).isEmpty()) {
-          plotManager.plotPoint(world.observer.getGlobal("year"), ListPrims.mean(world.turtles().agentFilter(function() {
+        try {
+          if (!world.turtles().agentFilter(function() {
             return Prims.gt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
-          }).projectionBy(function() { return SelfManager.self().getVariable("tolerance"); })));
+          }).isEmpty()) {
+            plotManager.plotPoint(world.observer.getGlobal("year"), ListPrims.mean(world.turtles().agentFilter(function() {
+              return Prims.gt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
+            }).projectionBy(function() { return SelfManager.self().getVariable("tolerance"); })));
+          }
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
         };
       });
     });
@@ -128,28 +188,38 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('simultaneous flowering', 'default')(function() {
-        if ((!world.turtles().agentFilter(function() {
-          return Prims.gt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
-        }).isEmpty() && !world.turtles().agentFilter(function() {
-          return Prims.lt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
-        }).isEmpty())) {
-          var n = 0;
-          var m = 0;
-          var avg = ListPrims.mean(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("tolerance"); }));
-          for (var _index_215_221 = 0, _repeatcount_215_221 = StrictMath.floor(500); _index_215_221 < _repeatcount_215_221; _index_215_221++){
-            var r = ListPrims.oneOf(world.turtles().agentFilter(function() {
-              return Prims.gt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
-            }));
-            var s = ListPrims.oneOf(world.turtles().agentFilter(function() {
-              return Prims.lt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
-            }));
-            if (Prims.lt(NLMath.abs((r.projectionBy(function() { return SelfManager.self().getVariable("flower-time"); }) - s.projectionBy(function() { return SelfManager.self().getVariable("flower-time"); }))), world.observer.getGlobal("flower-duration"))) {
-              m = (m + 1);
+        try {
+          if ((!world.turtles().agentFilter(function() {
+            return Prims.gt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
+          }).isEmpty() && !world.turtles().agentFilter(function() {
+            return Prims.lt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
+          }).isEmpty())) {
+            let n = 0;
+            let m = 0;
+            let avg = ListPrims.mean(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("tolerance"); }));
+            for (let _index_215_221 = 0, _repeatcount_215_221 = StrictMath.floor(500); _index_215_221 < _repeatcount_215_221; _index_215_221++){
+              let r = ListPrims.oneOf(world.turtles().agentFilter(function() {
+                return Prims.gt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
+              }));
+              let s = ListPrims.oneOf(world.turtles().agentFilter(function() {
+                return Prims.lt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
+              }));
+              if (Prims.lt(NLMath.abs((r.projectionBy(function() { return SelfManager.self().getVariable("flower-time"); }) - s.projectionBy(function() { return SelfManager.self().getVariable("flower-time"); }))), world.observer.getGlobal("flower-duration"))) {
+                m = (m + 1);
+              }
+              n = (n + 1);
             }
-            n = (n + 1);
+            world.observer.setGlobal("percent-same-flowering-time", NLMath.precision((Prims.div(m, n) * 100), 1));
+            plotManager.plotPoint(world.observer.getGlobal("year"), (Prims.div(m, n) * 100));
           }
-          world.observer.setGlobal("percent-same-flowering-time", NLMath.precision((Prims.div(m, n) * 100), 1));
-          plotManager.plotPoint(world.observer.getGlobal("year"), (Prims.div(m, n) * 100));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
         };
       });
     });
@@ -178,275 +248,415 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    world.observer.setGlobal("day", 0);
-    world.observer.setGlobal("old-year", 0);
-    world.observer.setGlobal("year", 0);
-    world.observer.setGlobal("end-of-days-counter", 0);
-    world.observer.setGlobal("percent-same-flowering-time", 0);
-    world.observer.setGlobal("chance-death-per-year", 10);
-    world.observer.setGlobal("chance-seed-dispersal", 50);
-    world.observer.setGlobal("average-number-offspring", 3);
-    world.observer.setGlobal("transition-time?", false);
-    world.observer.setGlobal("old-visualize-time-steps-state", world.observer.getGlobal("visualize-time-steps"));
-    world.patches().ask(function() {
-      SelfManager.self().setPatchVariable("barrier?", false);
-      procedures["SETUP-TWO-REGIONS"]();
-      SelfManager.self().setPatchVariable("pcolor", procedures["CALC-PATCH-COLOR"](SelfManager.self().getPatchVariable("metal")));
-    }, true);
-    world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pxcor"), world.topology.minPxcor); }).ask(function() {
-      SelfManager.self().sprout(world.observer.getGlobal("plants-per-patch"), "TURTLES").ask(function() {
-        if (Prims.equality(world.observer.getGlobal("initial-tolerance"), "all no tolerance")) {
-          SelfManager.self().setVariable("tolerance", 0);
-        }
-        if (Prims.equality(world.observer.getGlobal("initial-tolerance"), "all full tolerance")) {
-          SelfManager.self().setVariable("tolerance", 100);
-        }
-        if (Prims.equality(world.observer.getGlobal("initial-tolerance"), "random tolerances")) {
-          SelfManager.self().setVariable("tolerance", Prims.randomFloat(100));
-        }
-        SelfManager.self().setVariable("flower-time", Prims.div(365, 2));
-        SelfManager.self().setVariable("heading", Prims.random(360));
-        SelfManager.self().fd(Prims.randomFloat(0.5));
-        SelfManager.self().setVariable("fitness", 1);
-        SelfManager.self().setVariable("shape", "plant");
-        SelfManager.self().setVariable("seedling?", false);
-        SelfManager.self().setVariable("will-die?", false);
-        SelfManager.self().setVariable("color", procedures["CALC-PLANT-COLOR"](SelfManager.self().getVariable("tolerance")));
+    try {
+      world.clearAll();
+      world.observer.setGlobal("day", 0);
+      world.observer.setGlobal("old-year", 0);
+      world.observer.setGlobal("year", 0);
+      world.observer.setGlobal("end-of-days-counter", 0);
+      world.observer.setGlobal("percent-same-flowering-time", 0);
+      world.observer.setGlobal("chance-death-per-year", 10);
+      world.observer.setGlobal("chance-seed-dispersal", 50);
+      world.observer.setGlobal("average-number-offspring", 3);
+      world.observer.setGlobal("transition-time?", false);
+      world.observer.setGlobal("old-visualize-time-steps-state", world.observer.getGlobal("visualize-time-steps"));
+      world.patches().ask(function() {
+        SelfManager.self().setPatchVariable("barrier?", false);
+        procedures["SETUP-TWO-REGIONS"]();
+        SelfManager.self().setPatchVariable("pcolor", procedures["CALC-PATCH-COLOR"](SelfManager.self().getPatchVariable("metal")));
       }, true);
-    }, true);
-    world.ticker.reset();
+      world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pxcor"), world.topology.minPxcor); }).ask(function() {
+        SelfManager.self().sprout(world.observer.getGlobal("plants-per-patch"), "TURTLES").ask(function() {
+          if (Prims.equality(world.observer.getGlobal("initial-tolerance"), "all no tolerance")) {
+            SelfManager.self().setVariable("tolerance", 0);
+          }
+          if (Prims.equality(world.observer.getGlobal("initial-tolerance"), "all full tolerance")) {
+            SelfManager.self().setVariable("tolerance", 100);
+          }
+          if (Prims.equality(world.observer.getGlobal("initial-tolerance"), "random tolerances")) {
+            SelfManager.self().setVariable("tolerance", Prims.randomFloat(100));
+          }
+          SelfManager.self().setVariable("flower-time", Prims.div(365, 2));
+          SelfManager.self().setVariable("heading", Prims.random(360));
+          SelfManager.self().fd(Prims.randomFloat(0.5));
+          SelfManager.self().setVariable("fitness", 1);
+          SelfManager.self().setVariable("shape", "plant");
+          SelfManager.self().setVariable("seedling?", false);
+          SelfManager.self().setVariable("will-die?", false);
+          SelfManager.self().setVariable("color", procedures["CALC-PLANT-COLOR"](SelfManager.self().getVariable("tolerance")));
+        }, true);
+      }, true);
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    SelfManager.self().setPatchVariable("metal", NLMath.precision(Prims.div(100, (1 + NLMath.exp((world.observer.getGlobal("frontier-sharpness") * (Prims.div((world.topology.maxPxcor + world.topology.minPxcor), 2) - SelfManager.self().getPatchVariable("pxcor")))))), 0));
+    try {
+      SelfManager.self().setPatchVariable("metal", NLMath.precision(Prims.div(100, (1 + NLMath.exp((world.observer.getGlobal("frontier-sharpness") * (Prims.div((world.topology.maxPxcor + world.topology.minPxcor), 2) - SelfManager.self().getPatchVariable("pxcor")))))), 0));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setupTwoRegions"] = temp;
   procs["SETUP-TWO-REGIONS"] = temp;
   temp = (function() {
-    procedures["CHECK-LABELS"]();
-    if (!Prims.equality(world.observer.getGlobal("old-visualize-time-steps-state"), world.observer.getGlobal("visualize-time-steps"))) {
-      world.turtles().ask(function() { procedures["REDRAW-PLANTS-AS-FULL-SIZED-PLANTS"](); }, true);
+    try {
+      procedures["CHECK-LABELS"]();
+      if (!Prims.equality(world.observer.getGlobal("old-visualize-time-steps-state"), world.observer.getGlobal("visualize-time-steps"))) {
+        world.turtles().ask(function() { procedures["REDRAW-PLANTS-AS-FULL-SIZED-PLANTS"](); }, true);
+      }
+      if (Prims.equality(world.observer.getGlobal("visualize-time-steps"), "years")) {
+        world.observer.setGlobal("day", 0);
+        world.observer.setGlobal("year", (world.observer.getGlobal("year") + 1));
+        world.turtles().ask(function() { procedures["REDRAW-PLANTS-AS-FULL-SIZED-PLANTS"](); }, true);
+        procedures["DO-START-OF-NEW-YEAR-EVENTS"]();
+      }
+      if (Prims.equality(world.observer.getGlobal("visualize-time-steps"), "days")) {
+        procedures["VISUALIZE-BLOOM"]();
+        procedures["DO-END-OF-DAYS-EVENTS"]();
+      }
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    if (Prims.equality(world.observer.getGlobal("visualize-time-steps"), "years")) {
-      world.observer.setGlobal("day", 0);
-      world.observer.setGlobal("year", (world.observer.getGlobal("year") + 1));
-      world.turtles().ask(function() { procedures["REDRAW-PLANTS-AS-FULL-SIZED-PLANTS"](); }, true);
-      procedures["DO-START-OF-NEW-YEAR-EVENTS"]();
-    }
-    if (Prims.equality(world.observer.getGlobal("visualize-time-steps"), "days")) {
-      procedures["VISUALIZE-BLOOM"]();
-      procedures["DO-END-OF-DAYS-EVENTS"]();
-    }
-    world.ticker.tick();
   });
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    if (Prims.gt(world.observer.getGlobal("year"), world.observer.getGlobal("old-year"))) {
-      procedures["DO-REPRODUCTION"]();
-      procedures["MARK-TURTLES-TO-KILL"]();
-      procedures["KILL-MARKED-TURTLES"]();
-      world.observer.setGlobal("old-year", world.observer.getGlobal("year"));
+    try {
+      if (Prims.gt(world.observer.getGlobal("year"), world.observer.getGlobal("old-year"))) {
+        procedures["DO-REPRODUCTION"]();
+        procedures["MARK-TURTLES-TO-KILL"]();
+        procedures["KILL-MARKED-TURTLES"]();
+        world.observer.setGlobal("old-year", world.observer.getGlobal("year"));
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["doStartOfNewYearEvents"] = temp;
   procs["DO-START-OF-NEW-YEAR-EVENTS"] = temp;
   temp = (function() {
-    if (Prims.equality(world.observer.getGlobal("day"), 365)) {
-      if (Prims.equality(world.observer.getGlobal("transition-time?"), false)) {
-        procedures["DO-REPRODUCTION"]();
-        procedures["MARK-TURTLES-TO-KILL"]();
-        world.observer.setGlobal("transition-time?", true);
-      }
-      if (world.observer.getGlobal("transition-time?")) {
-        world.observer.setGlobal("end-of-days-counter", (world.observer.getGlobal("end-of-days-counter") + 1));
-        world.turtles().agentFilter(function() { return SelfManager.self().getVariable("seedling?"); }).ask(function() { procedures["VISUALIZE-SEEDLING-GROWTH"](); }, true);
-        world.turtles().agentFilter(function() { return SelfManager.self().getVariable("will-die?"); }).ask(function() {
-          SelfManager.self().setVariable("size", (1 - Prims.div(world.observer.getGlobal("end-of-days-counter"), 10)));
-        }, true);
-        if (Prims.gt(world.observer.getGlobal("end-of-days-counter"), 9)) {
-          world.observer.setGlobal("year", (world.observer.getGlobal("year") + 1));
-          world.observer.setGlobal("end-of-days-counter", 0);
-          world.observer.setGlobal("transition-time?", false);
-          world.observer.setGlobal("day", 0);
-          world.turtles().ask(function() { procedures["TURN-SEEDLINGS-INTO-FULL-PLANTS"](); }, true);
-          procedures["KILL-MARKED-TURTLES"]();
+    try {
+      if (Prims.equality(world.observer.getGlobal("day"), 365)) {
+        if (Prims.equality(world.observer.getGlobal("transition-time?"), false)) {
+          procedures["DO-REPRODUCTION"]();
+          procedures["MARK-TURTLES-TO-KILL"]();
+          world.observer.setGlobal("transition-time?", true);
+        }
+        if (world.observer.getGlobal("transition-time?")) {
+          world.observer.setGlobal("end-of-days-counter", (world.observer.getGlobal("end-of-days-counter") + 1));
+          world.turtles().agentFilter(function() { return SelfManager.self().getVariable("seedling?"); }).ask(function() { procedures["VISUALIZE-SEEDLING-GROWTH"](); }, true);
+          world.turtles().agentFilter(function() { return SelfManager.self().getVariable("will-die?"); }).ask(function() {
+            SelfManager.self().setVariable("size", (1 - Prims.div(world.observer.getGlobal("end-of-days-counter"), 10)));
+          }, true);
+          if (Prims.gt(world.observer.getGlobal("end-of-days-counter"), 9)) {
+            world.observer.setGlobal("year", (world.observer.getGlobal("year") + 1));
+            world.observer.setGlobal("end-of-days-counter", 0);
+            world.observer.setGlobal("transition-time?", false);
+            world.observer.setGlobal("day", 0);
+            world.turtles().ask(function() { procedures["TURN-SEEDLINGS-INTO-FULL-PLANTS"](); }, true);
+            procedures["KILL-MARKED-TURTLES"]();
+          }
         }
       }
-    }
-    else {
-      world.observer.setGlobal("day", (world.observer.getGlobal("day") + 1));
+      else {
+        world.observer.setGlobal("day", (world.observer.getGlobal("day") + 1));
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["doEndOfDaysEvents"] = temp;
   procs["DO-END-OF-DAYS-EVENTS"] = temp;
   temp = (function() {
-    world.turtles().ask(function() {
-      var potentialMates = [];
-      var nearbyTurtles = world.turtles();
-      if (Prims.lt(world.observer.getGlobal("pollen-radius"), (world.topology.maxPxcor - world.topology.minPxcor))) {
-        nearbyTurtles = SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("pollen-radius"));
-      }
-      var numCandidates = 10;
-      if (Prims.lt(nearbyTurtles.size(), 10)) {
-        potentialMates = ListPrims.sort(nearbyTurtles);
-      }
-      else {
-        potentialMates = ListPrims.sort(ListPrims.nOf(10, nearbyTurtles));
-        potentialMates = ListPrims.fput(SelfManager.self(), potentialMates);
-      }
-      var compatibilities = Tasks.map(Tasks.reporterTask(function(potentialMate) {
-        if (arguments.length < 1) {
-          throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+    try {
+      world.turtles().ask(function() {
+        let potentialMates = [];
+        let nearbyTurtles = world.turtles();
+        if (Prims.lt(world.observer.getGlobal("pollen-radius"), (world.topology.maxPxcor - world.topology.minPxcor))) {
+          nearbyTurtles = SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("pollen-radius"));
         }
-        return procedures["COMPATIBILITY"](SelfManager.self(),potentialMate);
-      }), potentialMates);
-      var mate = procedures["PICK-WEIGHTED"](potentialMates,compatibilities);
-      SelfManager.self().hatch(Prims.randomPoisson(world.observer.getGlobal("average-number-offspring")), "").ask(function() {
-        SelfManager.self().setVariable("seedling?", true);
-        SelfManager.self().setVariable("will-die?", false);
-        if (Prims.equality(world.observer.getGlobal("visualize-time-steps"), "days")) {
-          SelfManager.self().setVariable("size", 0);
+        let numCandidates = 10;
+        if (Prims.lt(nearbyTurtles.size(), 10)) {
+          potentialMates = ListPrims.sort(nearbyTurtles);
         }
         else {
-          SelfManager.self().setVariable("size", 1);
+          potentialMates = ListPrims.sort(ListPrims.nOf(10, nearbyTurtles));
+          potentialMates = ListPrims.fput(SelfManager.self(), potentialMates);
         }
-        if (Prims.equality(world.observer.getGlobal("genetics-model"), "avg. genotype")) {
-          SelfManager.self().setVariable("tolerance", Prims.div((SelfManager.self().getVariable("tolerance") + mate.projectionBy(function() { return SelfManager.self().getVariable("tolerance"); })), 2));
-          SelfManager.self().setVariable("flower-time", Prims.div((SelfManager.self().getVariable("flower-time") + mate.projectionBy(function() { return SelfManager.self().getVariable("flower-time"); })), 2));
+        let compatibilities = Tasks.map(Tasks.reporterTask(function(potentialMate) {
+          if (arguments.length < 1) {
+            throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+          }
+          return procedures["COMPATIBILITY"](SelfManager.self(),potentialMate);
+        }), potentialMates);
+        let mate = procedures["PICK-WEIGHTED"](potentialMates,compatibilities);
+        SelfManager.self().hatch(Prims.randomPoisson(world.observer.getGlobal("average-number-offspring")), "").ask(function() {
+          SelfManager.self().setVariable("seedling?", true);
+          SelfManager.self().setVariable("will-die?", false);
+          if (Prims.equality(world.observer.getGlobal("visualize-time-steps"), "days")) {
+            SelfManager.self().setVariable("size", 0);
+          }
+          else {
+            SelfManager.self().setVariable("size", 1);
+          }
+          if (Prims.equality(world.observer.getGlobal("genetics-model"), "avg. genotype")) {
+            SelfManager.self().setVariable("tolerance", Prims.div((SelfManager.self().getVariable("tolerance") + mate.projectionBy(function() { return SelfManager.self().getVariable("tolerance"); })), 2));
+            SelfManager.self().setVariable("flower-time", Prims.div((SelfManager.self().getVariable("flower-time") + mate.projectionBy(function() { return SelfManager.self().getVariable("flower-time"); })), 2));
+          }
+          if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("chance-tolerance-mutation"))) {
+            SelfManager.self().setVariable("tolerance", (SelfManager.self().getVariable("tolerance") + Prims.randomNormal(0, world.observer.getGlobal("tolerance-mutation-stdev"))));
+          }
+          if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("chance-flower-time-mutation"))) {
+            SelfManager.self().setVariable("flower-time", (SelfManager.self().getVariable("flower-time") + Prims.randomNormal(0, world.observer.getGlobal("flower-time-mutation-stdev"))));
+          }
+          if (Prims.lt(SelfManager.self().getVariable("tolerance"), 0)) {
+            SelfManager.self().setVariable("tolerance", 0);
+          }
+          if (Prims.gt(SelfManager.self().getVariable("tolerance"), 100)) {
+            SelfManager.self().setVariable("tolerance", 100);
+          }
+          if (Prims.lt(SelfManager.self().getVariable("flower-time"), 0)) {
+            SelfManager.self().setVariable("flower-time", 0);
+          }
+          if (Prims.gt(SelfManager.self().getVariable("flower-time"), 365)) {
+            SelfManager.self().setVariable("flower-time", 365);
+          }
+          SelfManager.self().setVariable("color", procedures["CALC-PLANT-COLOR"](SelfManager.self().getVariable("tolerance")));
+          procedures["MIGRATE-THIS-PLANT"]();
+        }, true);
+        if (Prims.equality(world.observer.getGlobal("plant-type"), "annual")) {
+          SelfManager.self().setVariable("will-die?", true);
         }
-        if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("chance-tolerance-mutation"))) {
-          SelfManager.self().setVariable("tolerance", (SelfManager.self().getVariable("tolerance") + Prims.randomNormal(0, world.observer.getGlobal("tolerance-mutation-stdev"))));
-        }
-        if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("chance-flower-time-mutation"))) {
-          SelfManager.self().setVariable("flower-time", (SelfManager.self().getVariable("flower-time") + Prims.randomNormal(0, world.observer.getGlobal("flower-time-mutation-stdev"))));
-        }
-        if (Prims.lt(SelfManager.self().getVariable("tolerance"), 0)) {
-          SelfManager.self().setVariable("tolerance", 0);
-        }
-        if (Prims.gt(SelfManager.self().getVariable("tolerance"), 100)) {
-          SelfManager.self().setVariable("tolerance", 100);
-        }
-        if (Prims.lt(SelfManager.self().getVariable("flower-time"), 0)) {
-          SelfManager.self().setVariable("flower-time", 0);
-        }
-        if (Prims.gt(SelfManager.self().getVariable("flower-time"), 365)) {
-          SelfManager.self().setVariable("flower-time", 365);
-        }
-        SelfManager.self().setVariable("color", procedures["CALC-PLANT-COLOR"](SelfManager.self().getVariable("tolerance")));
-        procedures["MIGRATE-THIS-PLANT"]();
       }, true);
-      if (Prims.equality(world.observer.getGlobal("plant-type"), "annual")) {
-        SelfManager.self().setVariable("will-die?", true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-    }, true);
+    }
   });
   procs["doReproduction"] = temp;
   procs["DO-REPRODUCTION"] = temp;
   temp = (function() {
-    world.turtles().ask(function() {
-      var t = Prims.div(SelfManager.self().getVariable("tolerance"), 100);
-      var m = Prims.div(SelfManager.self().getPatchVariable("metal"), 100);
-      SelfManager.self().setVariable("fitness", (((1 - m) * (1 - (0.4 * t))) + (m * (1 - (0.4 * (1 - t))))));
-      if (Prims.gt(Prims.randomFloat(1), SelfManager.self().getVariable("fitness"))) {
-        SelfManager.self().setVariable("will-die?", true);
+    try {
+      world.turtles().ask(function() {
+        let t = Prims.div(SelfManager.self().getVariable("tolerance"), 100);
+        let m = Prims.div(SelfManager.self().getPatchVariable("metal"), 100);
+        SelfManager.self().setVariable("fitness", (((1 - m) * (1 - (0.4 * t))) + (m * (1 - (0.4 * (1 - t))))));
+        if (Prims.gt(Prims.randomFloat(1), SelfManager.self().getVariable("fitness"))) {
+          SelfManager.self().setVariable("will-die?", true);
+        }
+        if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("chance-death-per-year"))) {
+          SelfManager.self().setVariable("will-die?", true);
+        }
+      }, true);
+      world.patches().ask(function() {
+        let overpopulation = (SelfManager.self().turtlesHere().size() - world.observer.getGlobal("plants-per-patch"));
+        if (Prims.gt(overpopulation, 0)) {
+          SelfManager.self().turtlesHere().minNOf(overpopulation, function() { return SelfManager.self().getVariable("fitness"); }).ask(function() { SelfManager.self().setVariable("will-die?", true); }, true);
+        }
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("chance-death-per-year"))) {
-        SelfManager.self().setVariable("will-die?", true);
-      }
-    }, true);
-    world.patches().ask(function() {
-      var overpopulation = (SelfManager.self().turtlesHere().size() - world.observer.getGlobal("plants-per-patch"));
-      if (Prims.gt(overpopulation, 0)) {
-        SelfManager.self().turtlesHere().minNOf(overpopulation, function() { return SelfManager.self().getVariable("fitness"); }).ask(function() { SelfManager.self().setVariable("will-die?", true); }, true);
-      }
-    }, true);
+    }
   });
   procs["markTurtlesToKill"] = temp;
   procs["MARK-TURTLES-TO-KILL"] = temp;
   temp = (function() {
-    if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("chance-seed-dispersal"))) {
-      SelfManager.self().moveTo(ListPrims.oneOf(SelfManager.self().getNeighbors()));
-      SelfManager.self().right(Prims.random(360));
-      SelfManager.self().fd(Prims.randomFloat(0.45));
+    try {
+      if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("chance-seed-dispersal"))) {
+        SelfManager.self().moveTo(ListPrims.oneOf(SelfManager.self().getNeighbors()));
+        SelfManager.self().right(Prims.random(360));
+        SelfManager.self().fd(Prims.randomFloat(0.45));
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["migrateThisPlant"] = temp;
   procs["MIGRATE-THIS-PLANT"] = temp;
   temp = (function() {
-    world.turtles().agentFilter(function() { return SelfManager.self().getVariable("will-die?"); }).ask(function() { SelfManager.self().die(); }, true);
+    try {
+      world.turtles().agentFilter(function() { return SelfManager.self().getVariable("will-die?"); }).ask(function() { SelfManager.self().die(); }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["killMarkedTurtles"] = temp;
   procs["KILL-MARKED-TURTLES"] = temp;
   temp = (function() {
-    if (SelfManager.self().getVariable("seedling?")) {
-      SelfManager.self().setVariable("seedling?", false);
+    try {
+      if (SelfManager.self().getVariable("seedling?")) {
+        SelfManager.self().setVariable("seedling?", false);
+      }
+      procedures["REDRAW-PLANTS-AS-FULL-SIZED-PLANTS"]();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    procedures["REDRAW-PLANTS-AS-FULL-SIZED-PLANTS"]();
   });
   procs["turnSeedlingsIntoFullPlants"] = temp;
   procs["TURN-SEEDLINGS-INTO-FULL-PLANTS"] = temp;
   temp = (function() {
-    world.patches().ask(function() {
-      if (Prims.equality(world.observer.getGlobal("show-labels-as"), "metal in soil")) {
-        SelfManager.self().setPatchVariable("plabel", SelfManager.self().getPatchVariable("metal"));
+    try {
+      world.patches().ask(function() {
+        if (Prims.equality(world.observer.getGlobal("show-labels-as"), "metal in soil")) {
+          SelfManager.self().setPatchVariable("plabel", SelfManager.self().getPatchVariable("metal"));
+        }
+        else {
+          SelfManager.self().setPatchVariable("plabel", "");
+        }
+      }, true);
+      world.turtles().ask(function() {
+        if (Prims.equality(world.observer.getGlobal("show-labels-as"), "metal tolerance")) {
+          SelfManager.self().setVariable("label", NLMath.precision(SelfManager.self().getVariable("tolerance"), 0));
+        }
+        if (Prims.equality(world.observer.getGlobal("show-labels-as"), "flower time")) {
+          SelfManager.self().setVariable("label", NLMath.precision(SelfManager.self().getVariable("flower-time"), 0));
+        }
+        if (Prims.equality(world.observer.getGlobal("show-labels-as"), "none")) {
+          SelfManager.self().setVariable("label", "");
+        }
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      else {
-        SelfManager.self().setPatchVariable("plabel", "");
-      }
-    }, true);
-    world.turtles().ask(function() {
-      if (Prims.equality(world.observer.getGlobal("show-labels-as"), "metal tolerance")) {
-        SelfManager.self().setVariable("label", NLMath.precision(SelfManager.self().getVariable("tolerance"), 0));
-      }
-      if (Prims.equality(world.observer.getGlobal("show-labels-as"), "flower time")) {
-        SelfManager.self().setVariable("label", NLMath.precision(SelfManager.self().getVariable("flower-time"), 0));
-      }
-      if (Prims.equality(world.observer.getGlobal("show-labels-as"), "none")) {
-        SelfManager.self().setVariable("label", "");
-      }
-    }, true);
+    }
   });
   procs["checkLabels"] = temp;
   procs["CHECK-LABELS"] = temp;
   temp = (function() {
-    SelfManager.self().setVariable("shape", "plant");
-    SelfManager.self().setVariable("size", 1);
+    try {
+      SelfManager.self().setVariable("shape", "plant");
+      SelfManager.self().setVariable("size", 1);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["redrawPlantsAsFullSizedPlants"] = temp;
   procs["REDRAW-PLANTS-AS-FULL-SIZED-PLANTS"] = temp;
   temp = (function() {
-    if (SelfManager.self().getVariable("seedling?")) {
-      SelfManager.self().setVariable("size", Prims.div(world.observer.getGlobal("end-of-days-counter"), 10));
+    try {
+      if (SelfManager.self().getVariable("seedling?")) {
+        SelfManager.self().setVariable("size", Prims.div(world.observer.getGlobal("end-of-days-counter"), 10));
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["visualizeSeedlingGrowth"] = temp;
   procs["VISUALIZE-SEEDLING-GROWTH"] = temp;
   temp = (function() {
-    world.turtles().ask(function() {
-      if ((Prims.gte(world.observer.getGlobal("day"), SelfManager.self().getVariable("flower-time")) && Prims.lte(world.observer.getGlobal("day"), (SelfManager.self().getVariable("flower-time") + world.observer.getGlobal("flower-duration"))))) {
-        SelfManager.self().setVariable("shape", "flower");
+    try {
+      world.turtles().ask(function() {
+        if ((Prims.gte(world.observer.getGlobal("day"), SelfManager.self().getVariable("flower-time")) && Prims.lte(world.observer.getGlobal("day"), (SelfManager.self().getVariable("flower-time") + world.observer.getGlobal("flower-duration"))))) {
+          SelfManager.self().setVariable("shape", "flower");
+        }
+        else {
+          SelfManager.self().setVariable("shape", "plant");
+        }
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      else {
-        SelfManager.self().setVariable("shape", "plant");
-      }
-    }, true);
+    }
   });
   procs["visualizeBloom"] = temp;
   procs["VISUALIZE-BLOOM"] = temp;
   temp = (function(options, weights) {
     try {
-      var wsum = 0;
+      let wsum = 0;
       Tasks.forEach(Tasks.commandTask(function(weight) {
         if (arguments.length < 1) {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
         }
         wsum = (wsum + weight);
       }), weights);
-      var wret = (wsum * Prims.randomFloat(1));
-      var ret = 0;
+      let wret = (wsum * Prims.randomFloat(1));
+      let ret = 0;
       wsum = 0;
       Tasks.forEach(Tasks.commandTask(function(weight) {
         if (arguments.length < 1) {
@@ -462,6 +672,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -471,7 +683,7 @@ var procedures = (function() {
   procs["PICK-WEIGHTED"] = temp;
   temp = (function(t1, t2) {
     try {
-      var diff = NLMath.abs((t1.projectionBy(function() { return SelfManager.self().getVariable("flower-time"); }) - t2.projectionBy(function() { return SelfManager.self().getVariable("flower-time"); })));
+      let diff = NLMath.abs((t1.projectionBy(function() { return SelfManager.self().getVariable("flower-time"); }) - t2.projectionBy(function() { return SelfManager.self().getVariable("flower-time"); })));
       if (Prims.lt(diff, world.observer.getGlobal("flower-duration"))) {
         throw new Exception.ReportInterrupt((world.observer.getGlobal("flower-duration") - diff));
       }
@@ -482,6 +694,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -496,6 +710,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -505,7 +721,7 @@ var procedures = (function() {
   procs["CALC-PATCH-COLOR"] = temp;
   temp = (function(t) {
     try {
-      var blackPcolor = ColorModel.genRGBFromComponents(0, 0, 0);
+      let blackPcolor = ColorModel.genRGBFromComponents(0, 0, 0);
       if (SelfManager.self().getPatchVariable("barrier?")) {
         throw new Exception.ReportInterrupt(blackPcolor);
       }
@@ -516,6 +732,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }

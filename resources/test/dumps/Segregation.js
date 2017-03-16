@@ -47,7 +47,19 @@ modelConfig.plots = [(function() {
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('percent', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('Percent Similar', 'percent')(function() { plotManager.plotValue(world.observer.getGlobal("percent-similar"));; });
+      plotManager.withTemporaryContext('Percent Similar', 'percent')(function() {
+        try {
+          plotManager.plotValue(world.observer.getGlobal("percent-similar"));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
+      });
     });
   })];
   var setup   = function() {};
@@ -59,7 +71,17 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(64.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Number-unhappy', 'default')(function() {
-        plotManager.plotValue(world.turtles().agentFilter(function() { return !SelfManager.self().getVariable("happy?"); }).size());;
+        try {
+          plotManager.plotValue(world.turtles().agentFilter(function() { return !SelfManager.self().getVariable("happy?"); }).size());
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   })];
@@ -87,15 +109,25 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    world.patches().ask(function() {
-      if (Prims.lt(Prims.random(100), world.observer.getGlobal("density"))) {
-        SelfManager.self().sprout(1, "TURTLES").ask(function() { SelfManager.self().setVariable("color", ListPrims.oneOf([15, 55])); }, true);
+    try {
+      world.clearAll();
+      world.patches().ask(function() {
+        if (Prims.lt(Prims.random(100), world.observer.getGlobal("density"))) {
+          SelfManager.self().sprout(1, "TURTLES").ask(function() { SelfManager.self().setVariable("color", ListPrims.oneOf([15, 55])); }, true);
+        }
+      }, true);
+      procedures["UPDATE-TURTLES"]();
+      procedures["UPDATE-GLOBALS"]();
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-    }, true);
-    procedures["UPDATE-TURTLES"]();
-    procedures["UPDATE-GLOBALS"]();
-    world.ticker.reset();
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
@@ -109,7 +141,9 @@ var procedures = (function() {
       procedures["UPDATE-GLOBALS"]();
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -119,50 +153,90 @@ var procedures = (function() {
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    world.turtles().agentFilter(function() { return !SelfManager.self().getVariable("happy?"); }).ask(function() { procedures["FIND-NEW-SPOT"](); }, true);
+    try {
+      world.turtles().agentFilter(function() { return !SelfManager.self().getVariable("happy?"); }).ask(function() { procedures["FIND-NEW-SPOT"](); }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["moveUnhappyTurtles"] = temp;
   procs["MOVE-UNHAPPY-TURTLES"] = temp;
   temp = (function() {
-    SelfManager.self().right(Prims.randomFloat(360));
-    SelfManager.self().fd(Prims.randomFloat(10));
-    if (!SelfPrims.other(SelfManager.self().turtlesHere()).isEmpty()) {
-      procedures["FIND-NEW-SPOT"]();
+    try {
+      SelfManager.self().right(Prims.randomFloat(360));
+      SelfManager.self().fd(Prims.randomFloat(10));
+      if (!SelfPrims.other(SelfManager.self().turtlesHere()).isEmpty()) {
+        procedures["FIND-NEW-SPOT"]();
+      }
+      SelfManager.self().moveTo(SelfManager.self().getPatchHere());
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    SelfManager.self().moveTo(SelfManager.self().getPatchHere());
   });
   procs["findNewSpot"] = temp;
   procs["FIND-NEW-SPOT"] = temp;
   temp = (function() {
-    world.turtles().ask(function() {
-      SelfManager.self().setVariable("similar-nearby", Prims.turtlesOn(SelfManager.self().getNeighbors()).agentFilter(function() {
-        return Prims.equality(SelfManager.self().getVariable("color"), SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("color"); }));
-      }).size());
-      SelfManager.self().setVariable("other-nearby", Prims.turtlesOn(SelfManager.self().getNeighbors()).agentFilter(function() {
-        return !Prims.equality(SelfManager.self().getVariable("color"), SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("color"); }));
-      }).size());
-      SelfManager.self().setVariable("total-nearby", (SelfManager.self().getVariable("similar-nearby") + SelfManager.self().getVariable("other-nearby")));
-      SelfManager.self().setVariable("happy?", Prims.gte(SelfManager.self().getVariable("similar-nearby"), Prims.div((world.observer.getGlobal("%-similar-wanted") * SelfManager.self().getVariable("total-nearby")), 100)));
-      if (Prims.equality(world.observer.getGlobal("visualization"), "old")) {
-        SelfManager.self().setVariable("shape", "default");
-      }
-      if (Prims.equality(world.observer.getGlobal("visualization"), "square-x")) {
-        if (SelfManager.self().getVariable("happy?")) {
-          SelfManager.self().setVariable("shape", "square");
+    try {
+      world.turtles().ask(function() {
+        SelfManager.self().setVariable("similar-nearby", Prims.turtlesOn(SelfManager.self().getNeighbors()).agentFilter(function() {
+          return Prims.equality(SelfManager.self().getVariable("color"), SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("color"); }));
+        }).size());
+        SelfManager.self().setVariable("other-nearby", Prims.turtlesOn(SelfManager.self().getNeighbors()).agentFilter(function() {
+          return !Prims.equality(SelfManager.self().getVariable("color"), SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("color"); }));
+        }).size());
+        SelfManager.self().setVariable("total-nearby", (SelfManager.self().getVariable("similar-nearby") + SelfManager.self().getVariable("other-nearby")));
+        SelfManager.self().setVariable("happy?", Prims.gte(SelfManager.self().getVariable("similar-nearby"), Prims.div((world.observer.getGlobal("%-similar-wanted") * SelfManager.self().getVariable("total-nearby")), 100)));
+        if (Prims.equality(world.observer.getGlobal("visualization"), "old")) {
+          SelfManager.self().setVariable("shape", "default");
         }
-        else {
-          SelfManager.self().setVariable("shape", "square-x");
+        if (Prims.equality(world.observer.getGlobal("visualization"), "square-x")) {
+          if (SelfManager.self().getVariable("happy?")) {
+            SelfManager.self().setVariable("shape", "square");
+          }
+          else {
+            SelfManager.self().setVariable("shape", "square-x");
+          }
         }
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-    }, true);
+    }
   });
   procs["updateTurtles"] = temp;
   procs["UPDATE-TURTLES"] = temp;
   temp = (function() {
-    var similarNeighbors = ListPrims.sum(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("similar-nearby"); }));
-    var totalNeighbors = ListPrims.sum(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("total-nearby"); }));
-    world.observer.setGlobal("percent-similar", (Prims.div(similarNeighbors, totalNeighbors) * 100));
-    world.observer.setGlobal("percent-unhappy", (Prims.div(world.turtles().agentFilter(function() { return !SelfManager.self().getVariable("happy?"); }).size(), world.turtles().size()) * 100));
+    try {
+      let similarNeighbors = ListPrims.sum(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("similar-nearby"); }));
+      let totalNeighbors = ListPrims.sum(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("total-nearby"); }));
+      world.observer.setGlobal("percent-similar", (Prims.div(similarNeighbors, totalNeighbors) * 100));
+      world.observer.setGlobal("percent-unhappy", (Prims.div(world.turtles().agentFilter(function() { return !SelfManager.self().getVariable("happy?"); }).size(), world.turtles().size()) * 100));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["updateGlobals"] = temp;
   procs["UPDATE-GLOBALS"] = temp;

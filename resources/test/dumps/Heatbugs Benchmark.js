@@ -63,28 +63,48 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    workspace.rng.setSeed(362);
-    procedures["SETUP"]();
-    workspace.timer.reset();
-    for (var _index_216_222 = 0, _repeatcount_216_222 = StrictMath.floor(1000); _index_216_222 < _repeatcount_216_222; _index_216_222++){
-      procedures["GO"]();
+    try {
+      workspace.rng.setSeed(362);
+      procedures["SETUP"]();
+      workspace.timer.reset();
+      for (let _index_216_222 = 0, _repeatcount_216_222 = StrictMath.floor(1000); _index_216_222 < _repeatcount_216_222; _index_216_222++){
+        procedures["GO"]();
+      }
+      world.observer.setGlobal("result", workspace.timer.elapsed());
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    world.observer.setGlobal("result", workspace.timer.elapsed());
   });
   procs["benchmark"] = temp;
   procs["BENCHMARK"] = temp;
   temp = (function() {
-    world.clearAll();
-    world.ticker.reset();
-    ListPrims.nOf(world.observer.getGlobal("bug-count"), world.patches()).ask(function() {
-      SelfManager.self().sprout(1, "TURTLES").ask(function() {
-        SelfManager.self().setVariable("color", 65);
-        SelfManager.self().setVariable("size", 1.75);
-        SelfManager.self().setVariable("ideal-temp", (world.observer.getGlobal("min-ideal-temp") + Prims.random(NLMath.abs((world.observer.getGlobal("max-ideal-temp") - world.observer.getGlobal("min-ideal-temp"))))));
-        SelfManager.self().setVariable("output-heat", (world.observer.getGlobal("min-output-heat") + Prims.random(NLMath.abs((world.observer.getGlobal("max-output-heat") - world.observer.getGlobal("min-output-heat"))))));
-        SelfManager.self().setVariable("unhappiness", NLMath.abs((SelfManager.self().getVariable("ideal-temp") - SelfManager.self().getPatchVariable("temp"))));
+    try {
+      world.clearAll();
+      world.ticker.reset();
+      ListPrims.nOf(world.observer.getGlobal("bug-count"), world.patches()).ask(function() {
+        SelfManager.self().sprout(1, "TURTLES").ask(function() {
+          SelfManager.self().setVariable("color", 65);
+          SelfManager.self().setVariable("size", 1.75);
+          SelfManager.self().setVariable("ideal-temp", (world.observer.getGlobal("min-ideal-temp") + Prims.random(NLMath.abs((world.observer.getGlobal("max-ideal-temp") - world.observer.getGlobal("min-ideal-temp"))))));
+          SelfManager.self().setVariable("output-heat", (world.observer.getGlobal("min-output-heat") + Prims.random(NLMath.abs((world.observer.getGlobal("max-output-heat") - world.observer.getGlobal("min-output-heat"))))));
+          SelfManager.self().setVariable("unhappiness", NLMath.abs((SelfManager.self().getVariable("ideal-temp") - SelfManager.self().getPatchVariable("temp"))));
+        }, true);
       }, true);
-    }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
@@ -98,7 +118,9 @@ var procedures = (function() {
       procedures["RECOLOR-PATCHES"]();
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -108,24 +130,44 @@ var procedures = (function() {
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    world.patches().ask(function() {
-      SelfManager.self().setPatchVariable("temp", (SelfManager.self().getPatchVariable("temp") * (1 - world.observer.getGlobal("evaporation-rate"))));
-      SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(15, SelfManager.self().getPatchVariable("temp"), 0, 500));
-    }, true);
+    try {
+      world.patches().ask(function() {
+        SelfManager.self().setPatchVariable("temp", (SelfManager.self().getPatchVariable("temp") * (1 - world.observer.getGlobal("evaporation-rate"))));
+        SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(15, SelfManager.self().getPatchVariable("temp"), 0, 500));
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["recolorPatches"] = temp;
   procs["RECOLOR-PATCHES"] = temp;
   temp = (function() {
-    SelfManager.self().setVariable("unhappiness", NLMath.abs((SelfManager.self().getVariable("ideal-temp") - SelfManager.self().getPatchVariable("temp"))));
-    if (Prims.equality(SelfManager.self().getVariable("unhappiness"), 0)) {
-      SelfManager.self().setPatchVariable("temp", (SelfManager.self().getPatchVariable("temp") + SelfManager.self().getVariable("output-heat")));
-    }
-    else {
-      var target = procedures["FIND-TARGET"]();
-      if ((!Prims.equality(SelfManager.self().getPatchHere(), target) || Prims.gt(world.observer.getGlobal("random-move-chance"), Prims.random(100)))) {
-        procedures["BUG-MOVE"](target);
+    try {
+      SelfManager.self().setVariable("unhappiness", NLMath.abs((SelfManager.self().getVariable("ideal-temp") - SelfManager.self().getPatchVariable("temp"))));
+      if (Prims.equality(SelfManager.self().getVariable("unhappiness"), 0)) {
+        SelfManager.self().setPatchVariable("temp", (SelfManager.self().getPatchVariable("temp") + SelfManager.self().getVariable("output-heat")));
       }
-      SelfManager.self().setPatchVariable("temp", (SelfManager.self().getPatchVariable("temp") + SelfManager.self().getVariable("output-heat")));
+      else {
+        let target = procedures["FIND-TARGET"]();
+        if ((!Prims.equality(SelfManager.self().getPatchHere(), target) || Prims.gt(world.observer.getGlobal("random-move-chance"), Prims.random(100)))) {
+          procedures["BUG-MOVE"](target);
+        }
+        SelfManager.self().setPatchVariable("temp", (SelfManager.self().getPatchVariable("temp") + SelfManager.self().getVariable("output-heat")));
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["step"] = temp;
@@ -142,6 +184,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -151,7 +195,7 @@ var procedures = (function() {
   procs["FIND-TARGET"] = temp;
   temp = (function(target) {
     try {
-      var tries = 0;
+      let tries = 0;
       if (!!Prims.turtlesOn(target).isEmpty()) {
         SelfManager.self().moveTo(target);
         throw new Exception.StopInterrupt;
@@ -165,7 +209,9 @@ var procedures = (function() {
         }
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;

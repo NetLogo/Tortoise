@@ -78,7 +78,9 @@ var procedures = (function() {
       }
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -88,35 +90,65 @@ var procedures = (function() {
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    world.patches().ask(function() {
-      if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("initial-density"))) {
-        SelfManager.self().setPatchVariable("pcolor", 9.9);
+    try {
+      world.patches().ask(function() {
+        if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("initial-density"))) {
+          SelfManager.self().setPatchVariable("pcolor", 9.9);
+        }
+        else {
+          SelfManager.self().setPatchVariable("pcolor", 0);
+        }
+      }, true);
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      else {
-        SelfManager.self().setPatchVariable("pcolor", 0);
-      }
-    }, true);
-    world.ticker.reset();
+    }
   });
   procs["restart"] = temp;
   procs["RESTART"] = temp;
   temp = (function() {
-    world.patches().ask(function() { procedures["PICK-NEW-COLOR"](); }, true);
-    world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", SelfManager.self().getPatchVariable("new-color")); }, true);
-    world.ticker.tick();
+    try {
+      world.patches().ask(function() { procedures["PICK-NEW-COLOR"](); }, true);
+      world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", SelfManager.self().getPatchVariable("new-color")); }, true);
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    var activator = SelfManager.self().getPatchVariable("inner-neighbors").agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 9.9); }).size();
-    var inhibitor = SelfManager.self().getPatchVariable("outer-neighbors").agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 9.9); }).size();
-    var difference = (activator - (world.observer.getGlobal("ratio") * inhibitor));
-    if (Prims.gt(difference, 0)) {
-      SelfManager.self().setPatchVariable("new-color", 9.9);
-    }
-    else {
-      if (Prims.lt(difference, 0)) {
-        SelfManager.self().setPatchVariable("new-color", 0);
+    try {
+      let activator = SelfManager.self().getPatchVariable("inner-neighbors").agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 9.9); }).size();
+      let inhibitor = SelfManager.self().getPatchVariable("outer-neighbors").agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 9.9); }).size();
+      let difference = (activator - (world.observer.getGlobal("ratio") * inhibitor));
+      if (Prims.gt(difference, 0)) {
+        SelfManager.self().setPatchVariable("new-color", 9.9);
+      }
+      else {
+        if (Prims.lt(difference, 0)) {
+          SelfManager.self().setPatchVariable("new-color", 0);
+        }
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
   });
@@ -131,6 +163,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -147,6 +181,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -161,6 +197,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -175,6 +213,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }

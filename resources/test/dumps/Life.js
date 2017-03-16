@@ -63,68 +63,128 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    world.patches().ask(function() { procedures["CELL-DEATH"](); }, true);
-    world.ticker.reset();
+    try {
+      world.clearAll();
+      world.patches().ask(function() { procedures["CELL-DEATH"](); }, true);
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setupBlank"] = temp;
   procs["SETUP-BLANK"] = temp;
   temp = (function() {
-    world.clearAll();
-    world.patches().ask(function() {
-      if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("initial-density"))) {
-        procedures["CELL-BIRTH"]();
+    try {
+      world.clearAll();
+      world.patches().ask(function() {
+        if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("initial-density"))) {
+          procedures["CELL-BIRTH"]();
+        }
+        else {
+          procedures["CELL-DEATH"]();
+        }
+      }, true);
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      else {
-        procedures["CELL-DEATH"]();
-      }
-    }, true);
-    world.ticker.reset();
+    }
   });
   procs["setupRandom"] = temp;
   procs["SETUP-RANDOM"] = temp;
   temp = (function() {
-    SelfManager.self().setPatchVariable("living?", true);
-    SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("fgcolor"));
+    try {
+      SelfManager.self().setPatchVariable("living?", true);
+      SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("fgcolor"));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["cellBirth"] = temp;
   procs["CELL-BIRTH"] = temp;
   temp = (function() {
-    SelfManager.self().setPatchVariable("living?", false);
-    SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("bgcolor"));
+    try {
+      SelfManager.self().setPatchVariable("living?", false);
+      SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("bgcolor"));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["cellDeath"] = temp;
   procs["CELL-DEATH"] = temp;
   temp = (function() {
-    world.patches().ask(function() {
-      SelfManager.self().setPatchVariable("live-neighbors", SelfManager.self().getNeighbors().agentFilter(function() { return SelfManager.self().getPatchVariable("living?"); }).size());
-    }, true);
-    world.patches().ask(function() {
-      if (Prims.equality(SelfManager.self().getPatchVariable("live-neighbors"), 3)) {
-        procedures["CELL-BIRTH"]();
-      }
-      else {
-        if (!Prims.equality(SelfManager.self().getPatchVariable("live-neighbors"), 2)) {
-          procedures["CELL-DEATH"]();
+    try {
+      world.patches().ask(function() {
+        SelfManager.self().setPatchVariable("live-neighbors", SelfManager.self().getNeighbors().agentFilter(function() { return SelfManager.self().getPatchVariable("living?"); }).size());
+      }, true);
+      world.patches().ask(function() {
+        if (Prims.equality(SelfManager.self().getPatchVariable("live-neighbors"), 3)) {
+          procedures["CELL-BIRTH"]();
         }
+        else {
+          if (!Prims.equality(SelfManager.self().getPatchVariable("live-neighbors"), 2)) {
+            procedures["CELL-DEATH"]();
+          }
+        }
+      }, true);
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-    }, true);
-    world.ticker.tick();
+    }
   });
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    var erasing_p = world.getPatchAt(MousePrims.getX(), MousePrims.getY()).projectionBy(function() { return SelfManager.self().getPatchVariable("living?"); });
-    while (MousePrims.isDown()) {
-      world.getPatchAt(MousePrims.getX(), MousePrims.getY()).ask(function() {
-        if (erasing_p) {
-          procedures["CELL-DEATH"]();
-        }
-        else {
-          procedures["CELL-BIRTH"]();
-        }
-      }, true);
-      notImplemented('display', undefined)();
+    try {
+      let erasing_p = world.getPatchAt(MousePrims.getX(), MousePrims.getY()).projectionBy(function() { return SelfManager.self().getPatchVariable("living?"); });
+      while (MousePrims.isDown()) {
+        world.getPatchAt(MousePrims.getX(), MousePrims.getY()).ask(function() {
+          if (erasing_p) {
+            procedures["CELL-DEATH"]();
+          }
+          else {
+            procedures["CELL-BIRTH"]();
+          }
+        }, true);
+        notImplemented('display', undefined)();
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["drawCells"] = temp;

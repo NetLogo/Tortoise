@@ -63,107 +63,179 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    BreedManager.setDefaultShape(world.turtles().getSpecialName(), "bug")
-    world.patches().ask(function() {
-      if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("density"))) {
-        SelfManager.self().setPatchVariable("pcolor", 45);
-      }
-    }, true);
-    world.turtleManager.createTurtles(world.observer.getGlobal("number"), "").ask(function() {
-      SelfManager.self().setVariable("color", 9.9);
-      SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
-      SelfManager.self().setVariable("next-task", Tasks.commandTask(function() {
-        if (arguments.length < 0) {
-          throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
+    try {
+      world.clearAll();
+      BreedManager.setDefaultShape(world.turtles().getSpecialName(), "bug")
+      world.patches().ask(function() {
+        if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("density"))) {
+          SelfManager.self().setPatchVariable("pcolor", 45);
         }
-        procedures["SEARCH-FOR-CHIP"]();
-      }));
-      SelfManager.self().setVariable("size", 5);
-    }, true);
-    world.ticker.reset();
+      }, true);
+      world.turtleManager.createTurtles(world.observer.getGlobal("number"), "").ask(function() {
+        SelfManager.self().setVariable("color", 9.9);
+        SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
+        SelfManager.self().setVariable("next-task", Tasks.commandTask(function() {
+          if (arguments.length < 0) {
+            throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
+          }
+          procedures["SEARCH-FOR-CHIP"]();
+        }));
+        SelfManager.self().setVariable("size", 5);
+      }, true);
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    world.turtles().ask(function() {
-      try {
-        if (Prims.gt(SelfManager.self().getVariable("steps"), 0)) {
-          SelfManager.self().setVariable("steps", (SelfManager.self().getVariable("steps") - 1));
+    try {
+      world.turtles().ask(function() {
+        try {
+          if (Prims.gt(SelfManager.self().getVariable("steps"), 0)) {
+            SelfManager.self().setVariable("steps", (SelfManager.self().getVariable("steps") - 1));
+          }
+          else {
+            Prims.run(SelfManager.self().getVariable("next-task"));
+            procedures["WIGGLE"]();
+          }
+          SelfManager.self().fd(1);
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
         }
-        else {
-          Prims.run(SelfManager.self().getVariable("next-task"));
-          procedures["WIGGLE"]();
-        }
-        SelfManager.self().fd(1);
-      } catch (e) {
-        if (e instanceof Exception.StopInterrupt) {
-          return e;
-        } else {
-          throw e;
-        }
+      }, true);
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-    }, true);
-    world.ticker.tick();
+    }
   });
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    SelfManager.self().right(Prims.random(50));
-    SelfManager.self().right(-Prims.random(50));
+    try {
+      SelfManager.self().right(Prims.random(50));
+      SelfManager.self().right(-Prims.random(50));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["wiggle"] = temp;
   procs["WIGGLE"] = temp;
   temp = (function() {
-    if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 45)) {
-      SelfManager.self().setPatchVariable("pcolor", 0);
-      SelfManager.self().setVariable("color", 25);
-      SelfManager.self().setVariable("steps", 20);
-      SelfManager.self().setVariable("next-task", Tasks.commandTask(function() {
-        if (arguments.length < 0) {
-          throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
-        }
-        procedures["FIND-NEW-PILE"]();
-      }));
+    try {
+      if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 45)) {
+        SelfManager.self().setPatchVariable("pcolor", 0);
+        SelfManager.self().setVariable("color", 25);
+        SelfManager.self().setVariable("steps", 20);
+        SelfManager.self().setVariable("next-task", Tasks.commandTask(function() {
+          if (arguments.length < 0) {
+            throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
+          }
+          procedures["FIND-NEW-PILE"]();
+        }));
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["searchForChip"] = temp;
   procs["SEARCH-FOR-CHIP"] = temp;
   temp = (function() {
-    if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 45)) {
-      SelfManager.self().setVariable("next-task", Tasks.commandTask(function() {
-        if (arguments.length < 0) {
-          throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
-        }
-        procedures["PUT-DOWN-CHIP"]();
-      }));
+    try {
+      if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 45)) {
+        SelfManager.self().setVariable("next-task", Tasks.commandTask(function() {
+          if (arguments.length < 0) {
+            throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
+          }
+          procedures["PUT-DOWN-CHIP"]();
+        }));
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["findNewPile"] = temp;
   procs["FIND-NEW-PILE"] = temp;
   temp = (function() {
-    if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 0)) {
-      SelfManager.self().setPatchVariable("pcolor", 45);
-      SelfManager.self().setVariable("color", 9.9);
-      SelfManager.self().setVariable("steps", 20);
-      SelfManager.self().setVariable("next-task", Tasks.commandTask(function() {
-        if (arguments.length < 0) {
-          throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
-        }
-        procedures["GET-AWAY"]();
-      }));
+    try {
+      if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 0)) {
+        SelfManager.self().setPatchVariable("pcolor", 45);
+        SelfManager.self().setVariable("color", 9.9);
+        SelfManager.self().setVariable("steps", 20);
+        SelfManager.self().setVariable("next-task", Tasks.commandTask(function() {
+          if (arguments.length < 0) {
+            throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
+          }
+          procedures["GET-AWAY"]();
+        }));
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["putDownChip"] = temp;
   procs["PUT-DOWN-CHIP"] = temp;
   temp = (function() {
-    if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 0)) {
-      SelfManager.self().setVariable("next-task", Tasks.commandTask(function() {
-        if (arguments.length < 0) {
-          throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
-        }
-        procedures["SEARCH-FOR-CHIP"]();
-      }));
+    try {
+      if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 0)) {
+        SelfManager.self().setVariable("next-task", Tasks.commandTask(function() {
+          if (arguments.length < 0) {
+            throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
+          }
+          procedures["SEARCH-FOR-CHIP"]();
+        }));
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["getAway"] = temp;

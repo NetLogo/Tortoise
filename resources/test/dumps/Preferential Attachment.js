@@ -52,18 +52,20 @@ modelConfig.plots = [(function() {
           if (!world.observer.getGlobal("plot?")) {
             throw new Exception.StopInterrupt;
           }
-          var maxDegree = ListPrims.max(world.turtles().projectionBy(function() { return LinkPrims.linkNeighbors("LINKS").size(); }));
+          let maxDegree = ListPrims.max(world.turtles().projectionBy(function() { return LinkPrims.linkNeighbors("LINKS").size(); }));
           plotManager.resetPen();
-          var degree = 1;
+          let degree = 1;
           while (Prims.lte(degree, maxDegree)) {
-            var matches = world.turtles().agentFilter(function() { return Prims.equality(LinkPrims.linkNeighbors("LINKS").size(), degree); });
+            let matches = world.turtles().agentFilter(function() { return Prims.equality(LinkPrims.linkNeighbors("LINKS").size(), degree); });
             if (!matches.isEmpty()) {
               plotManager.plotPoint(NLMath.log(degree, 10), NLMath.log(matches.size(), 10));
             }
             degree = (degree + 1);
           }
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
             return e;
           } else {
             throw e;
@@ -85,12 +87,14 @@ modelConfig.plots = [(function() {
           if (!world.observer.getGlobal("plot?")) {
             throw new Exception.StopInterrupt;
           }
-          var maxDegree = ListPrims.max(world.turtles().projectionBy(function() { return LinkPrims.linkNeighbors("LINKS").size(); }));
+          let maxDegree = ListPrims.max(world.turtles().projectionBy(function() { return LinkPrims.linkNeighbors("LINKS").size(); }));
           plotManager.resetPen();
           plotManager.setXRange(1, (maxDegree + 1));
           plotManager.drawHistogramFrom(world.turtles().projectionBy(function() { return LinkPrims.linkNeighbors("LINKS").size(); }));
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
             return e;
           } else {
             throw e;
@@ -123,33 +127,63 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
-    procedures["MAKE-NODE"](Nobody);
-    procedures["MAKE-NODE"](world.turtleManager.getTurtle(0));
-    world.ticker.reset();
+    try {
+      world.clearAll();
+      BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
+      procedures["MAKE-NODE"](Nobody);
+      procedures["MAKE-NODE"](world.turtleManager.getTurtle(0));
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    world.links().ask(function() { SelfManager.self().setVariable("color", 5); }, true);
-    procedures["MAKE-NODE"](procedures["FIND-PARTNER"]());
-    world.ticker.tick();
-    if (world.observer.getGlobal("layout?")) {
-      procedures["LAYOUT"]();
+    try {
+      world.links().ask(function() { SelfManager.self().setVariable("color", 5); }, true);
+      procedures["MAKE-NODE"](procedures["FIND-PARTNER"]());
+      world.ticker.tick();
+      if (world.observer.getGlobal("layout?")) {
+        procedures["LAYOUT"]();
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function(oldNode) {
-    world.turtleManager.createTurtles(1, "").ask(function() {
-      SelfManager.self().setVariable("color", 15);
-      if (!Prims.equality(oldNode, Nobody)) {
-        LinkPrims.createLinkWith(oldNode, "LINKS").ask(function() { SelfManager.self().setVariable("color", 55); }, true);
-        SelfManager.self().moveTo(oldNode);
-        SelfManager.self().fd(8);
+    try {
+      world.turtleManager.createTurtles(1, "").ask(function() {
+        SelfManager.self().setVariable("color", 15);
+        if (!Prims.equality(oldNode, Nobody)) {
+          LinkPrims.createLinkWith(oldNode, "LINKS").ask(function() { SelfManager.self().setVariable("color", 55); }, true);
+          SelfManager.self().moveTo(oldNode);
+          SelfManager.self().fd(8);
+        }
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-    }, true);
+    }
   });
   procs["makeNode"] = temp;
   procs["MAKE-NODE"] = temp;
@@ -160,6 +194,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -168,28 +204,48 @@ var procedures = (function() {
   procs["findPartner"] = temp;
   procs["FIND-PARTNER"] = temp;
   temp = (function() {
-    if (world.turtles().agentAll(function() { return Prims.lte(SelfManager.self().getVariable("size"), 1); })) {
-      world.turtles().ask(function() { SelfManager.self().setVariable("size", NLMath.sqrt(LinkPrims.linkNeighbors("LINKS").size())); }, true);
-    }
-    else {
-      world.turtles().ask(function() { SelfManager.self().setVariable("size", 1); }, true);
+    try {
+      if (world.turtles().agentAll(function() { return Prims.lte(SelfManager.self().getVariable("size"), 1); })) {
+        world.turtles().ask(function() { SelfManager.self().setVariable("size", NLMath.sqrt(LinkPrims.linkNeighbors("LINKS").size())); }, true);
+      }
+      else {
+        world.turtles().ask(function() { SelfManager.self().setVariable("size", 1); }, true);
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["resizeNodes"] = temp;
   procs["RESIZE-NODES"] = temp;
   temp = (function() {
-    for (var _index_2025_2031 = 0, _repeatcount_2025_2031 = StrictMath.floor(3); _index_2025_2031 < _repeatcount_2025_2031; _index_2025_2031++){
-      var factor = NLMath.sqrt(world.turtles().size());
-      LayoutManager.layoutSpring(world.turtles(), world.links(), Prims.div(1, factor), Prims.div(7, factor), Prims.div(1, factor));
-      notImplemented('display', undefined)();
+    try {
+      for (let _index_2025_2031 = 0, _repeatcount_2025_2031 = StrictMath.floor(3); _index_2025_2031 < _repeatcount_2025_2031; _index_2025_2031++){
+        let factor = NLMath.sqrt(world.turtles().size());
+        LayoutManager.layoutSpring(world.turtles(), world.links(), Prims.div(1, factor), Prims.div(7, factor), Prims.div(1, factor));
+        notImplemented('display', undefined)();
+      }
+      let xOffset = (ListPrims.max(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("xcor"); })) + ListPrims.min(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("xcor"); })));
+      let yOffset = (ListPrims.max(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("ycor"); })) + ListPrims.min(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("ycor"); })));
+      xOffset = procedures["LIMIT-MAGNITUDE"](xOffset,0.1);
+      yOffset = procedures["LIMIT-MAGNITUDE"](yOffset,0.1);
+      world.turtles().ask(function() {
+        SelfManager.self().setXY((SelfManager.self().getVariable("xcor") - Prims.div(xOffset, 2)), (SelfManager.self().getVariable("ycor") - Prims.div(yOffset, 2)));
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    var xOffset = (ListPrims.max(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("xcor"); })) + ListPrims.min(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("xcor"); })));
-    var yOffset = (ListPrims.max(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("ycor"); })) + ListPrims.min(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("ycor"); })));
-    xOffset = procedures["LIMIT-MAGNITUDE"](xOffset,0.1);
-    yOffset = procedures["LIMIT-MAGNITUDE"](yOffset,0.1);
-    world.turtles().ask(function() {
-      SelfManager.self().setXY((SelfManager.self().getVariable("xcor") - Prims.div(xOffset, 2)), (SelfManager.self().getVariable("ycor") - Prims.div(yOffset, 2)));
-    }, true);
   });
   procs["layout"] = temp;
   procs["LAYOUT"] = temp;
@@ -206,6 +262,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }

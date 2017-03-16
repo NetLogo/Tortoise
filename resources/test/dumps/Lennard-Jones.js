@@ -48,8 +48,18 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('energy per particle', 'default')(function() {
-        if (Prims.gt(world.ticker.tickCount(), 3)) {
-          plotManager.plotValue(Prims.div(world.observer.getGlobal("v-total"), world.observer.getGlobal("num-atoms")));
+        try {
+          if (Prims.gt(world.ticker.tickCount(), 3)) {
+            plotManager.plotValue(Prims.div(world.observer.getGlobal("v-total"), world.observer.getGlobal("num-atoms")));
+          }
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
         };
       });
     });
@@ -78,50 +88,80 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    world.ticker.reset();
-    world.observer.setGlobal("eps", 1);
-    world.observer.setGlobal("diameter", NLMath.sqrt(Prims.div(((world.observer.getGlobal("density") * world.topology.width) * world.topology.height), world.observer.getGlobal("num-atoms"))));
-    world.observer.setGlobal("max-move-dist", world.observer.getGlobal("diameter"));
-    world.observer.setGlobal("cutoff-dist", (2.5 * world.observer.getGlobal("diameter")));
-    world.observer.setGlobal("pot-offset",  -(4 * (NLMath.pow(Prims.div(world.observer.getGlobal("diameter"), world.observer.getGlobal("cutoff-dist")), 12) - NLMath.pow(Prims.div(world.observer.getGlobal("diameter"), world.observer.getGlobal("cutoff-dist")), 6))));
-    world.observer.setGlobal("v-total", procedures["CALC-V-TOTAL"]());
-    world.turtleManager.createTurtles(world.observer.getGlobal("num-atoms"), "").ask(function() {
-      SelfManager.self().setVariable("shape", "circle");
-      SelfManager.self().setVariable("size", world.observer.getGlobal("diameter"));
-      SelfManager.self().setVariable("color", 105);
-    }, true);
-    procedures["SETUP-ATOMS"]();
+    try {
+      world.clearAll();
+      world.ticker.reset();
+      world.observer.setGlobal("eps", 1);
+      world.observer.setGlobal("diameter", NLMath.sqrt(Prims.div(((world.observer.getGlobal("density") * world.topology.width) * world.topology.height), world.observer.getGlobal("num-atoms"))));
+      world.observer.setGlobal("max-move-dist", world.observer.getGlobal("diameter"));
+      world.observer.setGlobal("cutoff-dist", (2.5 * world.observer.getGlobal("diameter")));
+      world.observer.setGlobal("pot-offset",  -(4 * (NLMath.pow(Prims.div(world.observer.getGlobal("diameter"), world.observer.getGlobal("cutoff-dist")), 12) - NLMath.pow(Prims.div(world.observer.getGlobal("diameter"), world.observer.getGlobal("cutoff-dist")), 6))));
+      world.observer.setGlobal("v-total", procedures["CALC-V-TOTAL"]());
+      world.turtleManager.createTurtles(world.observer.getGlobal("num-atoms"), "").ask(function() {
+        SelfManager.self().setVariable("shape", "circle");
+        SelfManager.self().setVariable("size", world.observer.getGlobal("diameter"));
+        SelfManager.self().setVariable("color", 105);
+      }, true);
+      procedures["SETUP-ATOMS"]();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    for (var _index_827_833 = 0, _repeatcount_827_833 = StrictMath.floor(world.observer.getGlobal("num-atoms")); _index_827_833 < _repeatcount_827_833; _index_827_833++){
-      ListPrims.oneOf(world.turtles()).ask(function() { procedures["ATTEMPT-MOVE"](); }, true);
+    try {
+      for (let _index_827_833 = 0, _repeatcount_827_833 = StrictMath.floor(world.observer.getGlobal("num-atoms")); _index_827_833 < _repeatcount_827_833; _index_827_833++){
+        ListPrims.oneOf(world.turtles()).ask(function() { procedures["ATTEMPT-MOVE"](); }, true);
+      }
+      if (Prims.equality(NLMath.mod(world.ticker.tickCount(), world.observer.getGlobal("num-atoms")), 1)) {
+        procedures["TUNE-ACCEPTANCE-RATE"]();
+      }
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    if (Prims.equality(NLMath.mod(world.ticker.tickCount(), world.observer.getGlobal("num-atoms")), 1)) {
-      procedures["TUNE-ACCEPTANCE-RATE"]();
-    }
-    world.ticker.tick();
   });
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    world.observer.setGlobal("total-move-attempts", (world.observer.getGlobal("total-move-attempts") + 1));
-    world.observer.setGlobal("current-move-attempts", (world.observer.getGlobal("current-move-attempts") + 1));
-    var vOld = procedures["CALC-V"]();
-    var deltaX = ((Prims.randomFloat(2) * world.observer.getGlobal("max-move-dist")) - world.observer.getGlobal("max-move-dist"));
-    var deltaY = ((Prims.randomFloat(2) * world.observer.getGlobal("max-move-dist")) - world.observer.getGlobal("max-move-dist"));
-    SelfManager.self().setXY((SelfManager.self().getVariable("xcor") + deltaX), (SelfManager.self().getVariable("ycor") + deltaY));
-    var vNew = procedures["CALC-V"]();
-    var deltaV = (vNew - vOld);
-    if ((Prims.lt(vNew, vOld) || Prims.lt(Prims.randomFloat(1), NLMath.exp(Prims.div( -deltaV, world.observer.getGlobal("temperature")))))) {
-      world.observer.setGlobal("total-successful-moves", (world.observer.getGlobal("total-successful-moves") + 1));
-      world.observer.setGlobal("current-successful-moves", (world.observer.getGlobal("current-successful-moves") + 1));
-      world.observer.setGlobal("v-total", (world.observer.getGlobal("v-total") + deltaV));
-    }
-    else {
-      SelfManager.self().setXY((SelfManager.self().getVariable("xcor") - deltaX), (SelfManager.self().getVariable("ycor") - deltaY));
+    try {
+      world.observer.setGlobal("total-move-attempts", (world.observer.getGlobal("total-move-attempts") + 1));
+      world.observer.setGlobal("current-move-attempts", (world.observer.getGlobal("current-move-attempts") + 1));
+      let vOld = procedures["CALC-V"]();
+      let deltaX = ((Prims.randomFloat(2) * world.observer.getGlobal("max-move-dist")) - world.observer.getGlobal("max-move-dist"));
+      let deltaY = ((Prims.randomFloat(2) * world.observer.getGlobal("max-move-dist")) - world.observer.getGlobal("max-move-dist"));
+      SelfManager.self().setXY((SelfManager.self().getVariable("xcor") + deltaX), (SelfManager.self().getVariable("ycor") + deltaY));
+      let vNew = procedures["CALC-V"]();
+      let deltaV = (vNew - vOld);
+      if ((Prims.lt(vNew, vOld) || Prims.lt(Prims.randomFloat(1), NLMath.exp(Prims.div( -deltaV, world.observer.getGlobal("temperature")))))) {
+        world.observer.setGlobal("total-successful-moves", (world.observer.getGlobal("total-successful-moves") + 1));
+        world.observer.setGlobal("current-successful-moves", (world.observer.getGlobal("current-successful-moves") + 1));
+        world.observer.setGlobal("v-total", (world.observer.getGlobal("v-total") + deltaV));
+      }
+      else {
+        SelfManager.self().setXY((SelfManager.self().getVariable("xcor") - deltaX), (SelfManager.self().getVariable("ycor") - deltaY));
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["attemptMove"] = temp;
@@ -133,6 +173,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -142,13 +184,13 @@ var procedures = (function() {
   procs["CALC-V-TOTAL"] = temp;
   temp = (function() {
     try {
-      var v = 0;
+      let v = 0;
       SelfPrims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("cutoff-dist"))).ask(function() {
-        var rsquare = NLMath.pow(SelfManager.self().distance(SelfManager.myself()), 2);
-        var dsquare = (world.observer.getGlobal("diameter") * world.observer.getGlobal("diameter"));
-        var attractTerm = Prims.div(NLMath.pow(dsquare, 3), NLMath.pow(rsquare, 3));
-        var repelTerm = (attractTerm * attractTerm);
-        var vi = (((4 * world.observer.getGlobal("eps")) * (repelTerm - attractTerm)) + world.observer.getGlobal("pot-offset"));
+        let rsquare = NLMath.pow(SelfManager.self().distance(SelfManager.myself()), 2);
+        let dsquare = (world.observer.getGlobal("diameter") * world.observer.getGlobal("diameter"));
+        let attractTerm = Prims.div(NLMath.pow(dsquare, 3), NLMath.pow(rsquare, 3));
+        let repelTerm = (attractTerm * attractTerm);
+        let vi = (((4 * world.observer.getGlobal("eps")) * (repelTerm - attractTerm)) + world.observer.getGlobal("pot-offset"));
         v = (v + vi);
       }, true);
       throw new Exception.ReportInterrupt(v);
@@ -156,6 +198,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -170,6 +214,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -178,17 +224,27 @@ var procedures = (function() {
   procs["acceptRate"] = temp;
   procs["ACCEPT-RATE"] = temp;
   temp = (function() {
-    if (Prims.lt(procedures["ACCEPT-RATE"](), 0.5)) {
-      world.observer.setGlobal("max-move-dist", (world.observer.getGlobal("max-move-dist") * 0.95));
-    }
-    else {
-      world.observer.setGlobal("max-move-dist", (world.observer.getGlobal("max-move-dist") * 1.05));
-      if (Prims.gt(world.observer.getGlobal("max-move-dist"), world.observer.getGlobal("diameter"))) {
-        world.observer.setGlobal("max-move-dist", world.observer.getGlobal("diameter"));
+    try {
+      if (Prims.lt(procedures["ACCEPT-RATE"](), 0.5)) {
+        world.observer.setGlobal("max-move-dist", (world.observer.getGlobal("max-move-dist") * 0.95));
+      }
+      else {
+        world.observer.setGlobal("max-move-dist", (world.observer.getGlobal("max-move-dist") * 1.05));
+        if (Prims.gt(world.observer.getGlobal("max-move-dist"), world.observer.getGlobal("diameter"))) {
+          world.observer.setGlobal("max-move-dist", world.observer.getGlobal("diameter"));
+        }
+      }
+      world.observer.setGlobal("current-successful-moves", 0);
+      world.observer.setGlobal("current-move-attempts", 0);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
-    world.observer.setGlobal("current-successful-moves", 0);
-    world.observer.setGlobal("current-move-attempts", 0);
   });
   procs["tuneAcceptanceRate"] = temp;
   procs["TUNE-ACCEPTANCE-RATE"] = temp;
@@ -199,6 +255,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -207,38 +265,58 @@ var procedures = (function() {
   procs["energyPerParticle"] = temp;
   procs["ENERGY-PER-PARTICLE"] = temp;
   temp = (function() {
-    if (Prims.equality(world.observer.getGlobal("initial-config"), "HCP")) {
-      var l = NLMath.sqrt(world.observer.getGlobal("num-atoms"));
-      var rowDist = (NLMath.pow(2, Prims.div(1, 6)) * world.observer.getGlobal("diameter"));
-      var ypos = Prims.div(( -l * rowDist), 2);
-      var xpos = Prims.div(( -l * rowDist), 2);
-      var rNum = 0;
-      world.turtles().ask(function() {
-        if (Prims.gt(xpos, Prims.div((l * rowDist), 2))) {
-          rNum = (rNum + 1);
-          xpos = (Prims.div(( -l * rowDist), 2) + Prims.div((NLMath.mod(rNum, 2) * rowDist), 2));
-          ypos = (ypos + rowDist);
-        }
-        SelfManager.self().setXY(xpos, ypos);
-        xpos = (xpos + rowDist);
-      }, true);
-    }
-    if (Prims.equality(world.observer.getGlobal("initial-config"), "random")) {
-      world.turtles().ask(function() {
-        SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
-      }, true);
-      procedures["REMOVE-OVERLAP"]();
+    try {
+      if (Prims.equality(world.observer.getGlobal("initial-config"), "HCP")) {
+        let l = NLMath.sqrt(world.observer.getGlobal("num-atoms"));
+        let rowDist = (NLMath.pow(2, Prims.div(1, 6)) * world.observer.getGlobal("diameter"));
+        let ypos = Prims.div(( -l * rowDist), 2);
+        let xpos = Prims.div(( -l * rowDist), 2);
+        let rNum = 0;
+        world.turtles().ask(function() {
+          if (Prims.gt(xpos, Prims.div((l * rowDist), 2))) {
+            rNum = (rNum + 1);
+            xpos = (Prims.div(( -l * rowDist), 2) + Prims.div((NLMath.mod(rNum, 2) * rowDist), 2));
+            ypos = (ypos + rowDist);
+          }
+          SelfManager.self().setXY(xpos, ypos);
+          xpos = (xpos + rowDist);
+        }, true);
+      }
+      if (Prims.equality(world.observer.getGlobal("initial-config"), "random")) {
+        world.turtles().ask(function() {
+          SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
+        }, true);
+        procedures["REMOVE-OVERLAP"]();
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["setupAtoms"] = temp;
   procs["SETUP-ATOMS"] = temp;
   temp = (function() {
-    var rMin = (0.7 * world.observer.getGlobal("diameter"));
-    world.turtles().ask(function() {
-      while (procedures["OVERLAPPING"](rMin)) {
-        SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
+    try {
+      let rMin = (0.7 * world.observer.getGlobal("diameter"));
+      world.turtles().ask(function() {
+        while (procedures["OVERLAPPING"](rMin)) {
+          SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
+        }
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-    }, true);
+    }
   });
   procs["removeOverlap"] = temp;
   procs["REMOVE-OVERLAP"] = temp;
@@ -249,6 +327,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }

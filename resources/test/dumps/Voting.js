@@ -63,23 +63,33 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    world.patches().ask(function() {
-      SelfManager.self().setPatchVariable("vote", Prims.random(2));
-      procedures["RECOLOR-PATCH"]();
-    }, true);
-    world.ticker.reset();
+    try {
+      world.clearAll();
+      world.patches().ask(function() {
+        SelfManager.self().setPatchVariable("vote", Prims.random(2));
+        procedures["RECOLOR-PATCH"]();
+      }, true);
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
     try {
-      var anyVotesChanged_p = false;
+      let anyVotesChanged_p = false;
       world.patches().ask(function() {
         SelfManager.self().setPatchVariable("total", ListPrims.sum(SelfManager.self().getNeighbors().projectionBy(function() { return SelfManager.self().getPatchVariable("vote"); })));
       }, true);
       world.patches().ask(function() {
-        var previousVote = SelfManager.self().getPatchVariable("vote");
+        let previousVote = SelfManager.self().getPatchVariable("vote");
         if (Prims.gt(SelfManager.self().getPatchVariable("total"), 5)) {
           SelfManager.self().setPatchVariable("vote", 1);
         }
@@ -117,7 +127,9 @@ var procedures = (function() {
       }
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -127,11 +139,21 @@ var procedures = (function() {
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    if (Prims.equality(SelfManager.self().getPatchVariable("vote"), 0)) {
-      SelfManager.self().setPatchVariable("pcolor", 55);
-    }
-    else {
-      SelfManager.self().setPatchVariable("pcolor", 105);
+    try {
+      if (Prims.equality(SelfManager.self().getPatchVariable("vote"), 0)) {
+        SelfManager.self().setPatchVariable("pcolor", 55);
+      }
+      else {
+        SelfManager.self().setPatchVariable("pcolor", 105);
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["recolorPatch"] = temp;

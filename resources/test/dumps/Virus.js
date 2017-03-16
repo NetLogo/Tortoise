@@ -48,27 +48,69 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('sick', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Populations', 'sick')(function() {
-        plotManager.plotValue(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("sick?"); }).size());;
+        try {
+          plotManager.plotValue(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("sick?"); }).size());
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   }),
   new PenBundle.Pen('immune', plotOps.makePenOps, false, new PenBundle.State(5.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Populations', 'immune')(function() {
-        plotManager.plotValue(world.turtles().agentFilter(function() { return procedures["IMMUNE?"](); }).size());;
+        try {
+          plotManager.plotValue(world.turtles().agentFilter(function() { return procedures["IMMUNE?"](); }).size());
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   }),
   new PenBundle.Pen('healthy', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Populations', 'healthy')(function() {
-        plotManager.plotValue(world.turtles().agentFilter(function() { return (!SelfManager.self().getVariable("sick?") && !procedures["IMMUNE?"]()); }).size());;
+        try {
+          plotManager.plotValue(world.turtles().agentFilter(function() { return (!SelfManager.self().getVariable("sick?") && !procedures["IMMUNE?"]()); }).size());
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   }),
   new PenBundle.Pen('total', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('Populations', 'total')(function() { plotManager.plotValue(world.turtles().size());; });
+      plotManager.withTemporaryContext('Populations', 'total')(function() {
+        try {
+          plotManager.plotValue(world.turtles().size());
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
+      });
     });
   })];
   var setup   = function() {};
@@ -95,144 +137,284 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    procedures["SETUP-CONSTANTS"]();
-    procedures["SETUP-TURTLES"]();
-    procedures["UPDATE-GLOBAL-VARIABLES"]();
-    procedures["UPDATE-DISPLAY"]();
-    world.ticker.reset();
+    try {
+      world.clearAll();
+      procedures["SETUP-CONSTANTS"]();
+      procedures["SETUP-TURTLES"]();
+      procedures["UPDATE-GLOBAL-VARIABLES"]();
+      procedures["UPDATE-DISPLAY"]();
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    world.turtleManager.createTurtles(world.observer.getGlobal("number-people"), "").ask(function() {
-      SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
-      SelfManager.self().setVariable("age", Prims.random(world.observer.getGlobal("lifespan")));
-      SelfManager.self().setVariable("sick-time", 0);
-      SelfManager.self().setVariable("remaining-immunity", 0);
-      SelfManager.self().setVariable("size", 1.5);
-      procedures["GET-HEALTHY"]();
-    }, true);
-    ListPrims.nOf(10, world.turtles()).ask(function() { procedures["GET-SICK"](); }, true);
+    try {
+      world.turtleManager.createTurtles(world.observer.getGlobal("number-people"), "").ask(function() {
+        SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
+        SelfManager.self().setVariable("age", Prims.random(world.observer.getGlobal("lifespan")));
+        SelfManager.self().setVariable("sick-time", 0);
+        SelfManager.self().setVariable("remaining-immunity", 0);
+        SelfManager.self().setVariable("size", 1.5);
+        procedures["GET-HEALTHY"]();
+      }, true);
+      ListPrims.nOf(10, world.turtles()).ask(function() { procedures["GET-SICK"](); }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setupTurtles"] = temp;
   procs["SETUP-TURTLES"] = temp;
   temp = (function() {
-    SelfManager.self().setVariable("sick?", true);
-    SelfManager.self().setVariable("remaining-immunity", 0);
+    try {
+      SelfManager.self().setVariable("sick?", true);
+      SelfManager.self().setVariable("remaining-immunity", 0);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["getSick"] = temp;
   procs["GET-SICK"] = temp;
   temp = (function() {
-    SelfManager.self().setVariable("sick?", false);
-    SelfManager.self().setVariable("remaining-immunity", 0);
-    SelfManager.self().setVariable("sick-time", 0);
+    try {
+      SelfManager.self().setVariable("sick?", false);
+      SelfManager.self().setVariable("remaining-immunity", 0);
+      SelfManager.self().setVariable("sick-time", 0);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["getHealthy"] = temp;
   procs["GET-HEALTHY"] = temp;
   temp = (function() {
-    SelfManager.self().setVariable("sick?", false);
-    SelfManager.self().setVariable("sick-time", 0);
-    SelfManager.self().setVariable("remaining-immunity", world.observer.getGlobal("immunity-duration"));
+    try {
+      SelfManager.self().setVariable("sick?", false);
+      SelfManager.self().setVariable("sick-time", 0);
+      SelfManager.self().setVariable("remaining-immunity", world.observer.getGlobal("immunity-duration"));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["becomeImmune"] = temp;
   procs["BECOME-IMMUNE"] = temp;
   temp = (function() {
-    world.observer.setGlobal("lifespan", (50 * 52));
-    world.observer.setGlobal("carrying-capacity", 300);
-    world.observer.setGlobal("chance-reproduce", 1);
-    world.observer.setGlobal("immunity-duration", 52);
+    try {
+      world.observer.setGlobal("lifespan", (50 * 52));
+      world.observer.setGlobal("carrying-capacity", 300);
+      world.observer.setGlobal("chance-reproduce", 1);
+      world.observer.setGlobal("immunity-duration", 52);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setupConstants"] = temp;
   procs["SETUP-CONSTANTS"] = temp;
   temp = (function() {
-    world.turtles().ask(function() {
-      procedures["GET-OLDER"]();
-      procedures["MOVE"]();
-      if (SelfManager.self().getVariable("sick?")) {
-        procedures["RECOVER-OR-DIE"]();
+    try {
+      world.turtles().ask(function() {
+        procedures["GET-OLDER"]();
+        procedures["MOVE"]();
+        if (SelfManager.self().getVariable("sick?")) {
+          procedures["RECOVER-OR-DIE"]();
+        }
+        if (SelfManager.self().getVariable("sick?")) {
+          procedures["INFECT"]();
+        }
+        else {
+          procedures["REPRODUCE"]();
+        }
+      }, true);
+      procedures["UPDATE-GLOBAL-VARIABLES"]();
+      procedures["UPDATE-DISPLAY"]();
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      if (SelfManager.self().getVariable("sick?")) {
-        procedures["INFECT"]();
-      }
-      else {
-        procedures["REPRODUCE"]();
-      }
-    }, true);
-    procedures["UPDATE-GLOBAL-VARIABLES"]();
-    procedures["UPDATE-DISPLAY"]();
-    world.ticker.tick();
+    }
   });
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    if (Prims.gt(world.turtles().size(), 0)) {
-      world.observer.setGlobal("%infected", (Prims.div(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("sick?"); }).size(), world.turtles().size()) * 100));
-      world.observer.setGlobal("%immune", (Prims.div(world.turtles().agentFilter(function() { return procedures["IMMUNE?"](); }).size(), world.turtles().size()) * 100));
+    try {
+      if (Prims.gt(world.turtles().size(), 0)) {
+        world.observer.setGlobal("%infected", (Prims.div(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("sick?"); }).size(), world.turtles().size()) * 100));
+        world.observer.setGlobal("%immune", (Prims.div(world.turtles().agentFilter(function() { return procedures["IMMUNE?"](); }).size(), world.turtles().size()) * 100));
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["updateGlobalVariables"] = temp;
   procs["UPDATE-GLOBAL-VARIABLES"] = temp;
   temp = (function() {
-    world.turtles().ask(function() {
-      if (!Prims.equality(SelfManager.self().getVariable("shape"), world.observer.getGlobal("turtle-shape"))) {
-        SelfManager.self().setVariable("shape", world.observer.getGlobal("turtle-shape"));
+    try {
+      world.turtles().ask(function() {
+        if (!Prims.equality(SelfManager.self().getVariable("shape"), world.observer.getGlobal("turtle-shape"))) {
+          SelfManager.self().setVariable("shape", world.observer.getGlobal("turtle-shape"));
+        }
+        SelfManager.self().setVariable("color", (SelfManager.self().getVariable("sick?") ? 15 : (procedures["IMMUNE?"]() ? 5 : 55)));
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      SelfManager.self().setVariable("color", (SelfManager.self().getVariable("sick?") ? 15 : (procedures["IMMUNE?"]() ? 5 : 55)));
-    }, true);
+    }
   });
   procs["updateDisplay"] = temp;
   procs["UPDATE-DISPLAY"] = temp;
   temp = (function() {
-    SelfManager.self().setVariable("age", (SelfManager.self().getVariable("age") + 1));
-    if (Prims.gt(SelfManager.self().getVariable("age"), world.observer.getGlobal("lifespan"))) {
-      SelfManager.self().die();
-    }
-    if (procedures["IMMUNE?"]()) {
-      SelfManager.self().setVariable("remaining-immunity", (SelfManager.self().getVariable("remaining-immunity") - 1));
-    }
-    if (SelfManager.self().getVariable("sick?")) {
-      SelfManager.self().setVariable("sick-time", (SelfManager.self().getVariable("sick-time") + 1));
+    try {
+      SelfManager.self().setVariable("age", (SelfManager.self().getVariable("age") + 1));
+      if (Prims.gt(SelfManager.self().getVariable("age"), world.observer.getGlobal("lifespan"))) {
+        SelfManager.self().die();
+      }
+      if (procedures["IMMUNE?"]()) {
+        SelfManager.self().setVariable("remaining-immunity", (SelfManager.self().getVariable("remaining-immunity") - 1));
+      }
+      if (SelfManager.self().getVariable("sick?")) {
+        SelfManager.self().setVariable("sick-time", (SelfManager.self().getVariable("sick-time") + 1));
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["getOlder"] = temp;
   procs["GET-OLDER"] = temp;
   temp = (function() {
-    SelfManager.self().right(Prims.random(100));
-    SelfManager.self().right(-Prims.random(100));
-    SelfManager.self().fd(1);
+    try {
+      SelfManager.self().right(Prims.random(100));
+      SelfManager.self().right(-Prims.random(100));
+      SelfManager.self().fd(1);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["move"] = temp;
   procs["MOVE"] = temp;
   temp = (function() {
-    SelfPrims.other(SelfManager.self().turtlesHere().agentFilter(function() { return (!SelfManager.self().getVariable("sick?") && !procedures["IMMUNE?"]()); })).ask(function() {
-      if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("infectiousness"))) {
-        procedures["GET-SICK"]();
+    try {
+      SelfPrims.other(SelfManager.self().turtlesHere().agentFilter(function() { return (!SelfManager.self().getVariable("sick?") && !procedures["IMMUNE?"]()); })).ask(function() {
+        if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("infectiousness"))) {
+          procedures["GET-SICK"]();
+        }
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-    }, true);
+    }
   });
   procs["infect"] = temp;
   procs["INFECT"] = temp;
   temp = (function() {
-    if (Prims.gt(SelfManager.self().getVariable("sick-time"), world.observer.getGlobal("duration"))) {
-      if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("chance-recover"))) {
-        procedures["BECOME-IMMUNE"]();
+    try {
+      if (Prims.gt(SelfManager.self().getVariable("sick-time"), world.observer.getGlobal("duration"))) {
+        if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("chance-recover"))) {
+          procedures["BECOME-IMMUNE"]();
+        }
+        else {
+          SelfManager.self().die();
+        }
       }
-      else {
-        SelfManager.self().die();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
   });
   procs["recoverOrDie"] = temp;
   procs["RECOVER-OR-DIE"] = temp;
   temp = (function() {
-    if ((Prims.lt(world.turtles().size(), world.observer.getGlobal("carrying-capacity")) && Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("chance-reproduce")))) {
-      SelfManager.self().hatch(1, "").ask(function() {
-        SelfManager.self().setVariable("age", 1);
-        SelfManager.self().right(-45);
-        SelfManager.self().fd(1);
-        procedures["GET-HEALTHY"]();
-      }, true);
+    try {
+      if ((Prims.lt(world.turtles().size(), world.observer.getGlobal("carrying-capacity")) && Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("chance-reproduce")))) {
+        SelfManager.self().hatch(1, "").ask(function() {
+          SelfManager.self().setVariable("age", 1);
+          SelfManager.self().right(-45);
+          SelfManager.self().fd(1);
+          procedures["GET-HEALTHY"]();
+        }, true);
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["reproduce"] = temp;
@@ -244,6 +426,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -251,7 +435,19 @@ var procedures = (function() {
   });
   procs["immune_p"] = temp;
   procs["IMMUNE?"] = temp;
-  temp = (function() { procedures["SETUP-CONSTANTS"](); });
+  temp = (function() {
+    try {
+      procedures["SETUP-CONSTANTS"]();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
+  });
   procs["startup"] = temp;
   procs["STARTUP"] = temp;
   return procs;

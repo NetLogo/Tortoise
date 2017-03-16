@@ -48,13 +48,35 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('distance', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Distance from the origin', 'distance')(function() {
-        plotManager.plotValue(world.turtleManager.getTurtle(0).projectionBy(function() { return SelfManager.self().distanceXY(0, 0); }));;
+        try {
+          plotManager.plotValue(world.turtleManager.getTurtle(0).projectionBy(function() { return SelfManager.self().distanceXY(0, 0); }));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   })];
   var setup   = function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('Distance from the origin', undefined)(function() { plotManager.setYRange(0, world.topology.maxPxcor);; });
+      plotManager.withTemporaryContext('Distance from the origin', undefined)(function() {
+        try {
+          plotManager.setYRange(0, world.topology.maxPxcor);
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
+      });
     });
   };
   var update  = function() {};
@@ -80,60 +102,130 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    procedures["SETUP-CIRCLE"](world.observer.getGlobal("radius"),world.observer.getGlobal("number"));
-    world.ticker.reset();
+    try {
+      procedures["SETUP-CIRCLE"](world.observer.getGlobal("radius"),world.observer.getGlobal("number"));
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function(r, n) {
-    world.clearAll();
-    BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
-    world.turtleManager.createOrderedTurtles(n, "").ask(function() {
-      SelfManager.self().setVariable("size", 2);
-      SelfManager.self().fd(r);
-      SelfManager.self().right(90);
-    }, true);
+    try {
+      world.clearAll();
+      BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
+      world.turtleManager.createOrderedTurtles(n, "").ask(function() {
+        SelfManager.self().setVariable("size", 2);
+        SelfManager.self().fd(r);
+        SelfManager.self().right(90);
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setupCircle"] = temp;
   procs["SETUP-CIRCLE"] = temp;
   temp = (function() {
-    procedures["CIRCLE"](world.observer.getGlobal("radius"));
-    notImplemented('display', undefined)();
+    try {
+      procedures["CIRCLE"](world.observer.getGlobal("radius"));
+      notImplemented('display', undefined)();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["allCircle"] = temp;
   procs["ALL-CIRCLE"] = temp;
   temp = (function(r) {
-    world.turtles().ask(function() { procedures["MOVE-ALONG-CIRCLE"](r); }, true);
-    if (world.observer.getGlobal("plot?")) {
-      plotManager.updatePlots();
+    try {
+      world.turtles().ask(function() { procedures["MOVE-ALONG-CIRCLE"](r); }, true);
+      if (world.observer.getGlobal("plot?")) {
+        plotManager.updatePlots();
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["circle"] = temp;
   procs["CIRCLE"] = temp;
   temp = (function(r) {
-    SelfManager.self().fd((Prims.div((3.141592653589793 * r), 180) * Prims.div(world.observer.getGlobal("speed"), 50)));
-    SelfManager.self().right(Prims.div(world.observer.getGlobal("speed"), 50));
+    try {
+      SelfManager.self().fd((Prims.div((3.141592653589793 * r), 180) * Prims.div(world.observer.getGlobal("speed"), 50)));
+      SelfManager.self().right(Prims.div(world.observer.getGlobal("speed"), 50));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["moveAlongCircle"] = temp;
   procs["MOVE-ALONG-CIRCLE"] = temp;
   temp = (function() {
-    world.turtleManager.getTurtle(0).ask(function() {
-      SelfManager.self().penManager.lowerPen();
-      procedures["MOVE-ALONG-CIRCLE"](world.observer.getGlobal("radius"));
-    }, true);
-    notImplemented('display', undefined)();
+    try {
+      world.turtleManager.getTurtle(0).ask(function() {
+        SelfManager.self().penManager.lowerPen();
+        procedures["MOVE-ALONG-CIRCLE"](world.observer.getGlobal("radius"));
+      }, true);
+      notImplemented('display', undefined)();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["zeroCircle"] = temp;
   procs["ZERO-CIRCLE"] = temp;
   temp = (function() {
-    world.clearDrawing();
-    world.turtleManager.createTurtles(1, "").ask(function() {
-      SelfManager.self().setVariable("color", (5 - 3));
-      SelfManager.self().setVariable("size", (2 * world.observer.getGlobal("draw-radius")));
-      SelfManager.self().setVariable("shape", "circle");
-      SelfManager.self().stamp();
-      SelfManager.self().die();
-    }, true);
+    try {
+      world.clearDrawing();
+      world.turtleManager.createTurtles(1, "").ask(function() {
+        SelfManager.self().setVariable("color", (5 - 3));
+        SelfManager.self().setVariable("size", (2 * world.observer.getGlobal("draw-radius")));
+        SelfManager.self().setVariable("shape", "circle");
+        SelfManager.self().stamp();
+        SelfManager.self().die();
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["drawCircle"] = temp;
   procs["DRAW-CIRCLE"] = temp;

@@ -63,64 +63,114 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.observer.setGlobal("rules-shown?", false);
-    world.observer.setGlobal("gone?", false);
-    world.observer.setGlobal("old-rule", world.observer.getGlobal("rule"));
+    try {
+      world.observer.setGlobal("rules-shown?", false);
+      world.observer.setGlobal("gone?", false);
+      world.observer.setGlobal("old-rule", world.observer.getGlobal("rule"));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["startup"] = temp;
   procs["STARTUP"] = temp;
   temp = (function() {
-    workspace.rng.setSeed(4378);
-    procedures["SETUP-RANDOM"]();
-    workspace.timer.reset();
-    for (var _index_415_421 = 0, _repeatcount_415_421 = StrictMath.floor((10 * world.topology.height)); _index_415_421 < _repeatcount_415_421; _index_415_421++){
-      procedures["GO"]();
+    try {
+      workspace.rng.setSeed(4378);
+      procedures["SETUP-RANDOM"]();
+      workspace.timer.reset();
+      for (let _index_415_421 = 0, _repeatcount_415_421 = StrictMath.floor((10 * world.topology.height)); _index_415_421 < _repeatcount_415_421; _index_415_421++){
+        procedures["GO"]();
+      }
+      world.observer.setGlobal("result", workspace.timer.elapsed());
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    world.observer.setGlobal("result", workspace.timer.elapsed());
   });
   procs["benchmark"] = temp;
   procs["BENCHMARK"] = temp;
   temp = (function() {
-    world.clearPatches();
-    world.turtleManager.clearTurtles();
-    world.observer.setGlobal("row", world.topology.maxPycor);
-    procedures["REFRESH-RULES"]();
-    world.observer.setGlobal("gone?", false);
-    world.observer.setGlobal("rules-shown?", false);
+    try {
+      world.clearPatches();
+      world.turtleManager.clearTurtles();
+      world.observer.setGlobal("row", world.topology.maxPycor);
+      procedures["REFRESH-RULES"]();
+      world.observer.setGlobal("gone?", false);
+      world.observer.setGlobal("rules-shown?", false);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setupGeneral"] = temp;
   procs["SETUP-GENERAL"] = temp;
   temp = (function() {
-    procedures["SETUP-GENERAL"]();
-    world.patches().agentFilter(function() {
-      return Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("row"));
-    }).ask(function() {
-      SelfManager.self().setPatchVariable("on?", false);
-      SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("background"));
-    }, true);
-    world.getPatchAt(0, world.observer.getGlobal("row")).ask(function() {
-      SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("foreground"));
-      SelfManager.self().setPatchVariable("on?", true);
-    }, true);
-    world.ticker.reset();
+    try {
+      procedures["SETUP-GENERAL"]();
+      world.patches().agentFilter(function() {
+        return Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("row"));
+      }).ask(function() {
+        SelfManager.self().setPatchVariable("on?", false);
+        SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("background"));
+      }, true);
+      world.getPatchAt(0, world.observer.getGlobal("row")).ask(function() {
+        SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("foreground"));
+        SelfManager.self().setPatchVariable("on?", true);
+      }, true);
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["singleCell"] = temp;
   procs["SINGLE-CELL"] = temp;
   temp = (function() {
-    procedures["SETUP-GENERAL"]();
-    world.patches().agentFilter(function() {
-      return Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("row"));
-    }).ask(function() {
-      SelfManager.self().setPatchVariable("on?", Prims.lt(Prims.random(100), world.observer.getGlobal("density")));
-      procedures["COLOR-PATCH"]();
-    }, true);
-    world.ticker.reset();
+    try {
+      procedures["SETUP-GENERAL"]();
+      world.patches().agentFilter(function() {
+        return Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("row"));
+      }).ask(function() {
+        SelfManager.self().setPatchVariable("on?", Prims.lt(Prims.random(100), world.observer.getGlobal("density")));
+        procedures["COLOR-PATCH"]();
+      }, true);
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setupRandom"] = temp;
   procs["SETUP-RANDOM"] = temp;
   temp = (function() {
     try {
-      var on_pList = [];
+      let on_pList = [];
       if (!world.observer.getGlobal("gone?")) {
         throw new Exception.StopInterrupt;
       }
@@ -141,7 +191,9 @@ var procedures = (function() {
       }, true);
       world.observer.setGlobal("gone?", true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -174,7 +226,9 @@ var procedures = (function() {
       world.observer.setGlobal("gone?", true);
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -184,19 +238,39 @@ var procedures = (function() {
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    var leftOn_p = SelfManager.self().patchAt(-1, 0).projectionBy(function() { return SelfManager.self().getPatchVariable("on?"); });
-    var rightOn_p = SelfManager.self().patchAt(1, 0).projectionBy(function() { return SelfManager.self().getPatchVariable("on?"); });
-    var newValue = ((((((((((world.observer.getGlobal("iii") && leftOn_p) && SelfManager.self().getPatchVariable("on?")) && rightOn_p) || (((world.observer.getGlobal("iio") && leftOn_p) && SelfManager.self().getPatchVariable("on?")) && !rightOn_p)) || (((world.observer.getGlobal("ioi") && leftOn_p) && !SelfManager.self().getPatchVariable("on?")) && rightOn_p)) || (((world.observer.getGlobal("ioo") && leftOn_p) && !SelfManager.self().getPatchVariable("on?")) && !rightOn_p)) || (((world.observer.getGlobal("oii") && !leftOn_p) && SelfManager.self().getPatchVariable("on?")) && rightOn_p)) || (((world.observer.getGlobal("oio") && !leftOn_p) && SelfManager.self().getPatchVariable("on?")) && !rightOn_p)) || (((world.observer.getGlobal("ooi") && !leftOn_p) && !SelfManager.self().getPatchVariable("on?")) && rightOn_p)) || (((world.observer.getGlobal("ooo") && !leftOn_p) && !SelfManager.self().getPatchVariable("on?")) && !rightOn_p));
-    SelfManager.self().patchAt(0, -1).ask(function() { SelfManager.self().setPatchVariable("on?", newValue); }, true);
+    try {
+      let leftOn_p = SelfManager.self().patchAt(-1, 0).projectionBy(function() { return SelfManager.self().getPatchVariable("on?"); });
+      let rightOn_p = SelfManager.self().patchAt(1, 0).projectionBy(function() { return SelfManager.self().getPatchVariable("on?"); });
+      let newValue = ((((((((((world.observer.getGlobal("iii") && leftOn_p) && SelfManager.self().getPatchVariable("on?")) && rightOn_p) || (((world.observer.getGlobal("iio") && leftOn_p) && SelfManager.self().getPatchVariable("on?")) && !rightOn_p)) || (((world.observer.getGlobal("ioi") && leftOn_p) && !SelfManager.self().getPatchVariable("on?")) && rightOn_p)) || (((world.observer.getGlobal("ioo") && leftOn_p) && !SelfManager.self().getPatchVariable("on?")) && !rightOn_p)) || (((world.observer.getGlobal("oii") && !leftOn_p) && SelfManager.self().getPatchVariable("on?")) && rightOn_p)) || (((world.observer.getGlobal("oio") && !leftOn_p) && SelfManager.self().getPatchVariable("on?")) && !rightOn_p)) || (((world.observer.getGlobal("ooi") && !leftOn_p) && !SelfManager.self().getPatchVariable("on?")) && rightOn_p)) || (((world.observer.getGlobal("ooo") && !leftOn_p) && !SelfManager.self().getPatchVariable("on?")) && !rightOn_p));
+      SelfManager.self().patchAt(0, -1).ask(function() { SelfManager.self().setPatchVariable("on?", newValue); }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["doRule"] = temp;
   procs["DO-RULE"] = temp;
   temp = (function() {
-    if (SelfManager.self().getPatchVariable("on?")) {
-      SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("foreground"));
-    }
-    else {
-      SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("background"));
+    try {
+      if (SelfManager.self().getPatchVariable("on?")) {
+        SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("foreground"));
+      }
+      else {
+        SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("background"));
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["colorPatch"] = temp;
@@ -213,6 +287,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -221,33 +297,53 @@ var procedures = (function() {
   procs["bindigit"] = temp;
   procs["BINDIGIT"] = temp;
   temp = (function() {
-    if (Prims.equality(world.observer.getGlobal("rule"), world.observer.getGlobal("old-rule"))) {
-      if (!Prims.equality(world.observer.getGlobal("rule"), procedures["CALCULATE-RULE"]())) {
-        world.observer.setGlobal("rule", procedures["CALCULATE-RULE"]());
+    try {
+      if (Prims.equality(world.observer.getGlobal("rule"), world.observer.getGlobal("old-rule"))) {
+        if (!Prims.equality(world.observer.getGlobal("rule"), procedures["CALCULATE-RULE"]())) {
+          world.observer.setGlobal("rule", procedures["CALCULATE-RULE"]());
+        }
+      }
+      else {
+        procedures["EXTRAPOLATE-SWITCHES"]();
+      }
+      world.observer.setGlobal("old-rule", world.observer.getGlobal("rule"));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
-    else {
-      procedures["EXTRAPOLATE-SWITCHES"]();
-    }
-    world.observer.setGlobal("old-rule", world.observer.getGlobal("rule"));
   });
   procs["refreshRules"] = temp;
   procs["REFRESH-RULES"] = temp;
   temp = (function() {
-    world.observer.setGlobal("ooo", Prims.equality(procedures["BINDIGIT"](world.observer.getGlobal("rule"),0), 1));
-    world.observer.setGlobal("ooi", Prims.equality(procedures["BINDIGIT"](world.observer.getGlobal("rule"),1), 1));
-    world.observer.setGlobal("oio", Prims.equality(procedures["BINDIGIT"](world.observer.getGlobal("rule"),2), 1));
-    world.observer.setGlobal("oii", Prims.equality(procedures["BINDIGIT"](world.observer.getGlobal("rule"),3), 1));
-    world.observer.setGlobal("ioo", Prims.equality(procedures["BINDIGIT"](world.observer.getGlobal("rule"),4), 1));
-    world.observer.setGlobal("ioi", Prims.equality(procedures["BINDIGIT"](world.observer.getGlobal("rule"),5), 1));
-    world.observer.setGlobal("iio", Prims.equality(procedures["BINDIGIT"](world.observer.getGlobal("rule"),6), 1));
-    world.observer.setGlobal("iii", Prims.equality(procedures["BINDIGIT"](world.observer.getGlobal("rule"),7), 1));
+    try {
+      world.observer.setGlobal("ooo", Prims.equality(procedures["BINDIGIT"](world.observer.getGlobal("rule"),0), 1));
+      world.observer.setGlobal("ooi", Prims.equality(procedures["BINDIGIT"](world.observer.getGlobal("rule"),1), 1));
+      world.observer.setGlobal("oio", Prims.equality(procedures["BINDIGIT"](world.observer.getGlobal("rule"),2), 1));
+      world.observer.setGlobal("oii", Prims.equality(procedures["BINDIGIT"](world.observer.getGlobal("rule"),3), 1));
+      world.observer.setGlobal("ioo", Prims.equality(procedures["BINDIGIT"](world.observer.getGlobal("rule"),4), 1));
+      world.observer.setGlobal("ioi", Prims.equality(procedures["BINDIGIT"](world.observer.getGlobal("rule"),5), 1));
+      world.observer.setGlobal("iio", Prims.equality(procedures["BINDIGIT"](world.observer.getGlobal("rule"),6), 1));
+      world.observer.setGlobal("iii", Prims.equality(procedures["BINDIGIT"](world.observer.getGlobal("rule"),7), 1));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["extrapolateSwitches"] = temp;
   procs["EXTRAPOLATE-SWITCHES"] = temp;
   temp = (function() {
     try {
-      var rresult = 0;
+      let rresult = 0;
       if (world.observer.getGlobal("ooo")) {
         rresult = (rresult + 1);
       }
@@ -277,6 +373,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -285,51 +383,71 @@ var procedures = (function() {
   procs["calculateRule"] = temp;
   procs["CALCULATE-RULE"] = temp;
   temp = (function() {
-    procedures["SETUP-GENERAL"]();
-    var rules = procedures["LIST-RULES"]();
-    world.patches().agentFilter(function() { return Prims.gt(SelfManager.self().getPatchVariable("pycor"), (world.topology.maxPycor - 5)); }).ask(function() { SelfManager.self().setPatchVariable("pcolor", 5); }, true);
-    world.patches().agentFilter(function() {
-      return (Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.maxPycor) && Prims.equality(NLMath.mod((SelfManager.self().getPatchVariable("pxcor") + 1), NLMath.floor(Prims.div(world.topology.width, 8))), 0));
-    }).ask(function() {
-      SelfManager.self().sprout(1, "TURTLES").ask(function() {
-        SelfManager.self().setVariable("heading", 270);
-        SelfManager.self().fd(18);
-        procedures["PRINT-BLOCK"](ListPrims.item(0, ListPrims.item(SelfManager.self().getVariable("who"), rules)));
-        SelfManager.self().fd(2);
-        procedures["PRINT-BLOCK"](ListPrims.item(1, ListPrims.item(SelfManager.self().getVariable("who"), rules)));
-        SelfManager.self().fd(2);
-        procedures["PRINT-BLOCK"](ListPrims.item(2, ListPrims.item(SelfManager.self().getVariable("who"), rules)));
-        SelfManager.self().fd(-2);
-        SelfManager.self().setVariable("heading", 180);
-        SelfManager.self().fd(2);
-        SelfManager.self().setVariable("heading", 90);
-        procedures["PRINT-BLOCK"](ListPrims.item(3, ListPrims.item(SelfManager.self().getVariable("who"), rules)));
-        SelfManager.self().die();
+    try {
+      procedures["SETUP-GENERAL"]();
+      let rules = procedures["LIST-RULES"]();
+      world.patches().agentFilter(function() { return Prims.gt(SelfManager.self().getPatchVariable("pycor"), (world.topology.maxPycor - 5)); }).ask(function() { SelfManager.self().setPatchVariable("pcolor", 5); }, true);
+      world.patches().agentFilter(function() {
+        return (Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.maxPycor) && Prims.equality(NLMath.mod((SelfManager.self().getPatchVariable("pxcor") + 1), NLMath.floor(Prims.div(world.topology.width, 8))), 0));
+      }).ask(function() {
+        SelfManager.self().sprout(1, "TURTLES").ask(function() {
+          SelfManager.self().setVariable("heading", 270);
+          SelfManager.self().fd(18);
+          procedures["PRINT-BLOCK"](ListPrims.item(0, ListPrims.item(SelfManager.self().getVariable("who"), rules)));
+          SelfManager.self().fd(2);
+          procedures["PRINT-BLOCK"](ListPrims.item(1, ListPrims.item(SelfManager.self().getVariable("who"), rules)));
+          SelfManager.self().fd(2);
+          procedures["PRINT-BLOCK"](ListPrims.item(2, ListPrims.item(SelfManager.self().getVariable("who"), rules)));
+          SelfManager.self().fd(-2);
+          SelfManager.self().setVariable("heading", 180);
+          SelfManager.self().fd(2);
+          SelfManager.self().setVariable("heading", 90);
+          procedures["PRINT-BLOCK"](ListPrims.item(3, ListPrims.item(SelfManager.self().getVariable("who"), rules)));
+          SelfManager.self().die();
+        }, true);
       }, true);
-    }, true);
-    world.observer.setGlobal("rules-shown?", true);
+      world.observer.setGlobal("rules-shown?", true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["showRules"] = temp;
   procs["SHOW-RULES"] = temp;
   temp = (function(state) {
-    if (state) {
-      SelfManager.self().setVariable("color", world.observer.getGlobal("foreground"));
-    }
-    else {
-      SelfManager.self().setVariable("color", world.observer.getGlobal("background"));
-    }
-    SelfManager.self().setVariable("heading", 90);
-    for (var _index_5606_5612 = 0, _repeatcount_5606_5612 = StrictMath.floor(4); _index_5606_5612 < _repeatcount_5606_5612; _index_5606_5612++){
-      SelfManager.self().setPatchVariable("pcolor", SelfManager.self().getVariable("color"));
-      SelfManager.self().right(90);
-      SelfManager.self().fd(1);
+    try {
+      if (state) {
+        SelfManager.self().setVariable("color", world.observer.getGlobal("foreground"));
+      }
+      else {
+        SelfManager.self().setVariable("color", world.observer.getGlobal("background"));
+      }
+      SelfManager.self().setVariable("heading", 90);
+      for (let _index_5606_5612 = 0, _repeatcount_5606_5612 = StrictMath.floor(4); _index_5606_5612 < _repeatcount_5606_5612; _index_5606_5612++){
+        SelfManager.self().setPatchVariable("pcolor", SelfManager.self().getVariable("color"));
+        SelfManager.self().right(90);
+        SelfManager.self().fd(1);
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["printBlock"] = temp;
   procs["PRINT-BLOCK"] = temp;
   temp = (function() {
     try {
-      var rules = [];
+      let rules = [];
       rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("ooo"), [false, false, false]), rules);
       rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("ooi"), [false, false, true]), rules);
       rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("oio"), [false, true, false]), rules);
@@ -343,6 +461,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }

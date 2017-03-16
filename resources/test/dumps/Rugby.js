@@ -63,81 +63,141 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    procedures["SETUP-FIELD"]();
-    procedures["SETUP-BALLS"]();
-    world.observer.setGlobal("current-max", 0);
-    world.observer.setGlobal("best-dist", -1);
-    world.observer.setGlobal("kicks", 0);
-    world.observer.getGlobal("try-line").ask(function() { SelfManager.self().setPatchVariable("score", 0); }, true);
-    procedures["FIND-ANALYTIC-SOLUTION"]();
-    if (world.observer.getGlobal("show-level-curves?")) {
-      procedures["DRAW-LEVEL-CURVES"]();
+    try {
+      world.clearAll();
+      procedures["SETUP-FIELD"]();
+      procedures["SETUP-BALLS"]();
+      world.observer.setGlobal("current-max", 0);
+      world.observer.setGlobal("best-dist", -1);
+      world.observer.setGlobal("kicks", 0);
+      world.observer.getGlobal("try-line").ask(function() { SelfManager.self().setPatchVariable("score", 0); }, true);
+      procedures["FIND-ANALYTIC-SOLUTION"]();
+      if (world.observer.getGlobal("show-level-curves?")) {
+        procedures["DRAW-LEVEL-CURVES"]();
+      }
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    world.ticker.reset();
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    world.patches().ask(function() {
-      if (!Prims.equality(SelfManager.self().getNeighbors().size(), 8)) {
-        SelfManager.self().setPatchVariable("pcolor", 15);
+    try {
+      world.patches().ask(function() {
+        if (!Prims.equality(SelfManager.self().getNeighbors().size(), 8)) {
+          SelfManager.self().setPatchVariable("pcolor", 15);
+        }
+        if (((Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor) && Prims.gte(SelfManager.self().getPatchVariable("pxcor"), world.observer.getGlobal("goal-pos"))) && Prims.lt(SelfManager.self().getPatchVariable("pxcor"), (world.observer.getGlobal("goal-pos") + world.observer.getGlobal("goal-size"))))) {
+          SelfManager.self().setPatchVariable("pcolor", 55);
+        }
+      }, true);
+      world.observer.setGlobal("try-line", world.patches().agentFilter(function() {
+        return (Prims.equality(SelfManager.self().getPatchVariable("pxcor"), world.observer.getGlobal("kick-line")) && Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 0));
+      }));
+      world.observer.getGlobal("try-line").ask(function() { SelfManager.self().setPatchVariable("pcolor", 45); }, true);
+      world.observer.setGlobal("histogram-area", world.patches().agentFilter(function() {
+        return (Prims.lt(SelfManager.self().getPatchVariable("pxcor"), world.observer.getGlobal("kick-line")) && Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 0));
+      }));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      if (((Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor) && Prims.gte(SelfManager.self().getPatchVariable("pxcor"), world.observer.getGlobal("goal-pos"))) && Prims.lt(SelfManager.self().getPatchVariable("pxcor"), (world.observer.getGlobal("goal-pos") + world.observer.getGlobal("goal-size"))))) {
-        SelfManager.self().setPatchVariable("pcolor", 55);
-      }
-    }, true);
-    world.observer.setGlobal("try-line", world.patches().agentFilter(function() {
-      return (Prims.equality(SelfManager.self().getPatchVariable("pxcor"), world.observer.getGlobal("kick-line")) && Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 0));
-    }));
-    world.observer.getGlobal("try-line").ask(function() { SelfManager.self().setPatchVariable("pcolor", 45); }, true);
-    world.observer.setGlobal("histogram-area", world.patches().agentFilter(function() {
-      return (Prims.lt(SelfManager.self().getPatchVariable("pxcor"), world.observer.getGlobal("kick-line")) && Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 0));
-    }));
+    }
   });
   procs["setupField"] = temp;
   procs["SETUP-FIELD"] = temp;
   temp = (function() {
-    BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
-    world.observer.getGlobal("try-line").ask(function() {
-      SelfManager.self().sprout(1, "TURTLES").ask(function() {
-        SelfManager.self().setVariable("color", 25);
-        SelfManager.self().setVariable("start-patch", SelfManager.self().getPatchHere());
-        SelfManager.self().setVariable("heading", (Prims.randomFloat(90) + 90));
+    try {
+      BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
+      world.observer.getGlobal("try-line").ask(function() {
+        SelfManager.self().sprout(1, "TURTLES").ask(function() {
+          SelfManager.self().setVariable("color", 25);
+          SelfManager.self().setVariable("start-patch", SelfManager.self().getPatchHere());
+          SelfManager.self().setVariable("heading", (Prims.randomFloat(90) + 90));
+        }, true);
       }, true);
-    }, true);
-    procedures["PLOT-SCORES"]();
+      procedures["PLOT-SCORES"]();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setupBalls"] = temp;
   procs["SETUP-BALLS"] = temp;
   temp = (function() {
-    while (!world.turtles().isEmpty()) {
-      world.turtles().ask(function() { procedures["MOVE"](); }, true);
-      notImplemented('display', undefined)();
+    try {
+      while (!world.turtles().isEmpty()) {
+        world.turtles().ask(function() { procedures["MOVE"](); }, true);
+        notImplemented('display', undefined)();
+      }
+      world.observer.setGlobal("kicks", (world.observer.getGlobal("kicks") + world.observer.getGlobal("try-line").size()));
+      world.observer.setGlobal("goals", ListPrims.sum(world.observer.getGlobal("try-line").projectionBy(function() { return SelfManager.self().getPatchVariable("score"); })));
+      procedures["SETUP-BALLS"]();
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    world.observer.setGlobal("kicks", (world.observer.getGlobal("kicks") + world.observer.getGlobal("try-line").size()));
-    world.observer.setGlobal("goals", ListPrims.sum(world.observer.getGlobal("try-line").projectionBy(function() { return SelfManager.self().getPatchVariable("score"); })));
-    procedures["SETUP-BALLS"]();
-    world.ticker.tick();
   });
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    if ((Prims.gte(SelfManager.self().getPatchVariable("pxcor"), (world.topology.maxPxcor - 1)) || Prims.gte(SelfManager.self().getPatchVariable("pycor"), (world.topology.minPycor + 1)))) {
-      procedures["CHECK-PATCH"](procedures["NEXT-PATCH"]());
-      procedures["CHECK-PATCH"](SelfManager.self().patchAhead(1));
+    try {
+      if ((Prims.gte(SelfManager.self().getPatchVariable("pxcor"), (world.topology.maxPxcor - 1)) || Prims.gte(SelfManager.self().getPatchVariable("pycor"), (world.topology.minPycor + 1)))) {
+        procedures["CHECK-PATCH"](procedures["NEXT-PATCH"]());
+        procedures["CHECK-PATCH"](SelfManager.self().patchAhead(1));
+      }
+      SelfManager.self().fd(1);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    SelfManager.self().fd(1);
   });
   procs["move"] = temp;
   procs["MOVE"] = temp;
   temp = (function(thePatch) {
-    if (Prims.equality(thePatch.projectionBy(function() { return SelfManager.self().getPatchVariable("pcolor"); }), 15)) {
-      SelfManager.self().die();
-    }
-    if (Prims.equality(thePatch.projectionBy(function() { return SelfManager.self().getPatchVariable("pcolor"); }), 55)) {
-      SelfManager.self().getVariable("start-patch").ask(function() { SelfManager.self().setPatchVariable("score", (SelfManager.self().getPatchVariable("score") + 1)); }, true);
-      SelfManager.self().die();
+    try {
+      if (Prims.equality(thePatch.projectionBy(function() { return SelfManager.self().getPatchVariable("pcolor"); }), 15)) {
+        SelfManager.self().die();
+      }
+      if (Prims.equality(thePatch.projectionBy(function() { return SelfManager.self().getPatchVariable("pcolor"); }), 55)) {
+        SelfManager.self().getVariable("start-patch").ask(function() { SelfManager.self().setPatchVariable("score", (SelfManager.self().getPatchVariable("score") + 1)); }, true);
+        SelfManager.self().die();
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["checkPatch"] = temp;
@@ -161,6 +221,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -200,7 +262,9 @@ var procedures = (function() {
         }
       }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -210,31 +274,61 @@ var procedures = (function() {
   procs["plotScores"] = temp;
   procs["PLOT-SCORES"] = temp;
   temp = (function() {
-    world.patches().agentFilter(function() { return Prims.gt(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor); }).ask(function() { procedures["CALC-GOAL-ANGLE"](); }, true);
-    var winningPatch = world.observer.getGlobal("try-line").minOneOf(function() { return SelfManager.self().getPatchVariable("goal-angle"); });
-    winningPatch.ask(function() {
-      SelfManager.self().setPatchVariable("pcolor", 125);
-      SelfManager.self().patchAt(2, 0).ask(function() { SelfManager.self().setPatchVariable("plabel", SelfManager.self().getPatchVariable("pycor")); }, true);
-    }, true);
-    world.observer.setGlobal("analytic", winningPatch.projectionBy(function() { return SelfManager.self().getPatchVariable("pycor"); }));
+    try {
+      world.patches().agentFilter(function() { return Prims.gt(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor); }).ask(function() { procedures["CALC-GOAL-ANGLE"](); }, true);
+      let winningPatch = world.observer.getGlobal("try-line").minOneOf(function() { return SelfManager.self().getPatchVariable("goal-angle"); });
+      winningPatch.ask(function() {
+        SelfManager.self().setPatchVariable("pcolor", 125);
+        SelfManager.self().patchAt(2, 0).ask(function() { SelfManager.self().setPatchVariable("plabel", SelfManager.self().getPatchVariable("pycor")); }, true);
+      }, true);
+      world.observer.setGlobal("analytic", winningPatch.projectionBy(function() { return SelfManager.self().getPatchVariable("pycor"); }));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["findAnalyticSolution"] = temp;
   procs["FIND-ANALYTIC-SOLUTION"] = temp;
   temp = (function() {
-    world.patches().agentFilter(function() {
-      return (Prims.gt(SelfManager.self().getPatchVariable("pxcor"), world.observer.getGlobal("kick-line")) && Prims.lt(SelfManager.self().getPatchVariable("pcolor"), 10));
-    }).ask(function() {
-      if (Prims.gt(SelfManager.self().getPatchVariable("goal-angle"), 270)) {
-        SelfManager.self().setPatchVariable("pcolor", ((360 - NLMath.mod(SelfManager.self().getPatchVariable("goal-angle"), 10)) * 0.8));
+    try {
+      world.patches().agentFilter(function() {
+        return (Prims.gt(SelfManager.self().getPatchVariable("pxcor"), world.observer.getGlobal("kick-line")) && Prims.lt(SelfManager.self().getPatchVariable("pcolor"), 10));
+      }).ask(function() {
+        if (Prims.gt(SelfManager.self().getPatchVariable("goal-angle"), 270)) {
+          SelfManager.self().setPatchVariable("pcolor", ((360 - NLMath.mod(SelfManager.self().getPatchVariable("goal-angle"), 10)) * 0.8));
+        }
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-    }, true);
+    }
   });
   procs["drawLevelCurves"] = temp;
   procs["DRAW-LEVEL-CURVES"] = temp;
   temp = (function() {
-    SelfManager.self().setPatchVariable("left-angle", SelfManager.self().towardsXY((world.observer.getGlobal("goal-pos") - 0.5), (world.topology.minPycor + 0.5)));
-    SelfManager.self().setPatchVariable("right-angle", SelfManager.self().towardsXY(((world.observer.getGlobal("goal-pos") + world.observer.getGlobal("goal-size")) - 0.5), (world.topology.minPycor + 0.5)));
-    SelfManager.self().setPatchVariable("goal-angle", NLMath.mod((SelfManager.self().getPatchVariable("right-angle") - SelfManager.self().getPatchVariable("left-angle")), 360));
+    try {
+      SelfManager.self().setPatchVariable("left-angle", SelfManager.self().towardsXY((world.observer.getGlobal("goal-pos") - 0.5), (world.topology.minPycor + 0.5)));
+      SelfManager.self().setPatchVariable("right-angle", SelfManager.self().towardsXY(((world.observer.getGlobal("goal-pos") + world.observer.getGlobal("goal-size")) - 0.5), (world.topology.minPycor + 0.5)));
+      SelfManager.self().setPatchVariable("goal-angle", NLMath.mod((SelfManager.self().getPatchVariable("right-angle") - SelfManager.self().getPatchVariable("left-angle")), 360));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["calcGoalAngle"] = temp;
   procs["CALC-GOAL-ANGLE"] = temp;

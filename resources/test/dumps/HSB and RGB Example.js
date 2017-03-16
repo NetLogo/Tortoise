@@ -63,16 +63,26 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.observer.setGlobal("hsb-as-rgb", ColorModel.hsbToRGB(world.observer.getGlobal("hue"), world.observer.getGlobal("saturation"), world.observer.getGlobal("brightness")));
-    world.observer.setGlobal("hsb-color", ColorModel.nearestColorNumberOfHSB(world.observer.getGlobal("hue"), world.observer.getGlobal("saturation"), world.observer.getGlobal("brightness")));
-    procedures["QUADRANT"](-1,1).ask(function() { SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("hsb-as-rgb")); }, true);
-    procedures["QUADRANT"](1,1).ask(function() { SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("hsb-color")); }, true);
-    world.observer.setGlobal("rgb-color", ColorModel.nearestColorNumberOfRGB(world.observer.getGlobal("rgb-red"), world.observer.getGlobal("rgb-green"), world.observer.getGlobal("rgb-blue")));
-    procedures["QUADRANT"](-1,-1).ask(function() {
-      SelfManager.self().setPatchVariable("pcolor", ListPrims.list(world.observer.getGlobal("rgb-red"), world.observer.getGlobal("rgb-green"), world.observer.getGlobal("rgb-blue")));
-    }, true);
-    procedures["QUADRANT"](1,-1).ask(function() { SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("rgb-color")); }, true);
-    notImplemented('display', undefined)();
+    try {
+      world.observer.setGlobal("hsb-as-rgb", ColorModel.hsbToRGB(world.observer.getGlobal("hue"), world.observer.getGlobal("saturation"), world.observer.getGlobal("brightness")));
+      world.observer.setGlobal("hsb-color", ColorModel.nearestColorNumberOfHSB(world.observer.getGlobal("hue"), world.observer.getGlobal("saturation"), world.observer.getGlobal("brightness")));
+      procedures["QUADRANT"](-1,1).ask(function() { SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("hsb-as-rgb")); }, true);
+      procedures["QUADRANT"](1,1).ask(function() { SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("hsb-color")); }, true);
+      world.observer.setGlobal("rgb-color", ColorModel.nearestColorNumberOfRGB(world.observer.getGlobal("rgb-red"), world.observer.getGlobal("rgb-green"), world.observer.getGlobal("rgb-blue")));
+      procedures["QUADRANT"](-1,-1).ask(function() {
+        SelfManager.self().setPatchVariable("pcolor", ListPrims.list(world.observer.getGlobal("rgb-red"), world.observer.getGlobal("rgb-green"), world.observer.getGlobal("rgb-blue")));
+      }, true);
+      procedures["QUADRANT"](1,-1).ask(function() { SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("rgb-color")); }, true);
+      notImplemented('display', undefined)();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["go"] = temp;
   procs["GO"] = temp;
@@ -83,6 +93,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -97,6 +109,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }

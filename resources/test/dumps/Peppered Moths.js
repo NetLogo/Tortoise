@@ -47,29 +47,87 @@ modelConfig.plots = [(function() {
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('Light', plotOps.makePenOps, false, new PenBundle.State(45.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('Moth Colors Over Time', 'Light')(function() { plotManager.plotValue(world.observer.getGlobal("light-moths"));; });
+      plotManager.withTemporaryContext('Moth Colors Over Time', 'Light')(function() {
+        try {
+          plotManager.plotValue(world.observer.getGlobal("light-moths"));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
+      });
     });
   }),
   new PenBundle.Pen('Medium', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('Moth Colors Over Time', 'Medium')(function() { plotManager.plotValue(world.observer.getGlobal("medium-moths"));; });
+      plotManager.withTemporaryContext('Moth Colors Over Time', 'Medium')(function() {
+        try {
+          plotManager.plotValue(world.observer.getGlobal("medium-moths"));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
+      });
     });
   }),
   new PenBundle.Pen('Dark', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('Moth Colors Over Time', 'Dark')(function() { plotManager.plotValue(world.observer.getGlobal("dark-moths"));; });
+      plotManager.withTemporaryContext('Moth Colors Over Time', 'Dark')(function() {
+        try {
+          plotManager.plotValue(world.observer.getGlobal("dark-moths"));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
+      });
     });
   }),
   new PenBundle.Pen('Pollution', plotOps.makePenOps, false, new PenBundle.State(5.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Moth Colors Over Time', 'Pollution')(function() {
-        plotManager.plotValue(Prims.div((Prims.div(procedures["UPPER-BOUND"](), 3) * world.observer.getGlobal("darkness")), 8));;
+        try {
+          plotManager.plotValue(Prims.div((Prims.div(procedures["UPPER-BOUND"](), 3) * world.observer.getGlobal("darkness")), 8));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   })];
   var setup   = function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('Moth Colors Over Time', undefined)(function() { plotManager.setYRange(0, procedures["UPPER-BOUND"]());; });
+      plotManager.withTemporaryContext('Moth Colors Over Time', undefined)(function() {
+        try {
+          plotManager.setYRange(0, procedures["UPPER-BOUND"]());
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
+      });
     });
   };
   var update  = function() {};
@@ -101,6 +159,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -115,6 +175,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -129,6 +191,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -143,6 +207,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -151,139 +217,271 @@ var procedures = (function() {
   procs["upperBound"] = temp;
   procs["UPPER-BOUND"] = temp;
   temp = (function() {
-    world.clearAll();
-    procedures["SETUP-WORLD"]();
-    procedures["SETUP-MOTHS"]();
-    procedures["UPDATE-MONITORS"]();
-    world.ticker.reset();
+    try {
+      world.clearAll();
+      procedures["SETUP-WORLD"]();
+      procedures["SETUP-MOTHS"]();
+      procedures["UPDATE-MONITORS"]();
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    world.observer.setGlobal("darkness", 0);
-    world.observer.setGlobal("darkening?", true);
-    world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", procedures["ENV-COLOR"]()); }, true);
+    try {
+      world.observer.setGlobal("darkness", 0);
+      world.observer.setGlobal("darkening?", true);
+      world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", procedures["ENV-COLOR"]()); }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setupWorld"] = temp;
   procs["SETUP-WORLD"] = temp;
   temp = (function() {
-    world.turtleManager.createTurtles(world.observer.getGlobal("num-moths"), "MOTHS").ask(function() {
-      SelfManager.self().setVariable("color", procedures["RANDOM-COLOR"]());
-      procedures["MOTHS-PICK-SHAPE"]();
-      SelfManager.self().setVariable("age", Prims.random(3));
-      SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
-    }, true);
+    try {
+      world.turtleManager.createTurtles(world.observer.getGlobal("num-moths"), "MOTHS").ask(function() {
+        SelfManager.self().setVariable("color", procedures["RANDOM-COLOR"]());
+        procedures["MOTHS-PICK-SHAPE"]();
+        SelfManager.self().setVariable("age", Prims.random(3));
+        SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setupMoths"] = temp;
   procs["SETUP-MOTHS"] = temp;
   temp = (function() {
-    world.turtleManager.turtlesOfBreed("MOTHS").ask(function() {
-      procedures["MOTHS-MATE"]();
-      procedures["MOTHS-GRIM-REAPER"]();
-      procedures["MOTHS-GET-EATEN"]();
-      procedures["MOTHS-AGE"]();
-    }, true);
-    if (world.observer.getGlobal("cycle-pollution?")) {
-      procedures["CYCLE-POLLUTION"]();
+    try {
+      world.turtleManager.turtlesOfBreed("MOTHS").ask(function() {
+        procedures["MOTHS-MATE"]();
+        procedures["MOTHS-GRIM-REAPER"]();
+        procedures["MOTHS-GET-EATEN"]();
+        procedures["MOTHS-AGE"]();
+      }, true);
+      if (world.observer.getGlobal("cycle-pollution?")) {
+        procedures["CYCLE-POLLUTION"]();
+      }
+      world.ticker.tick();
+      procedures["UPDATE-MONITORS"]();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    world.ticker.tick();
-    procedures["UPDATE-MONITORS"]();
   });
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    if ((Prims.equality(SelfManager.self().getVariable("age"), 2) || Prims.equality(SelfManager.self().getVariable("age"), 3))) {
-      SelfManager.self().hatch(2, "").ask(function() {
-        if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("mutation"))) {
-          if (Prims.equality(Prims.random(2), 0)) {
-            SelfManager.self().setVariable("color", NLMath.round((SelfManager.self().getVariable("color") + Prims.div(Prims.randomFloat(world.observer.getGlobal("mutation")), 12.5))));
-            if (Prims.gte(SelfManager.self().getVariable("color"), 9)) {
-              SelfManager.self().setVariable("color", 9);
+    try {
+      if ((Prims.equality(SelfManager.self().getVariable("age"), 2) || Prims.equality(SelfManager.self().getVariable("age"), 3))) {
+        SelfManager.self().hatch(2, "").ask(function() {
+          if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("mutation"))) {
+            if (Prims.equality(Prims.random(2), 0)) {
+              SelfManager.self().setVariable("color", NLMath.round((SelfManager.self().getVariable("color") + Prims.div(Prims.randomFloat(world.observer.getGlobal("mutation")), 12.5))));
+              if (Prims.gte(SelfManager.self().getVariable("color"), 9)) {
+                SelfManager.self().setVariable("color", 9);
+              }
+            }
+            else {
+              SelfManager.self().setVariable("color", NLMath.round((SelfManager.self().getVariable("color") - Prims.div(Prims.randomFloat(world.observer.getGlobal("mutation")), 12.5))));
+              if ((Prims.lte(SelfManager.self().getVariable("color"), 1) || Prims.gte(SelfManager.self().getVariable("color"), 130))) {
+                SelfManager.self().setVariable("color", 1);
+              }
             }
           }
-          else {
-            SelfManager.self().setVariable("color", NLMath.round((SelfManager.self().getVariable("color") - Prims.div(Prims.randomFloat(world.observer.getGlobal("mutation")), 12.5))));
-            if ((Prims.lte(SelfManager.self().getVariable("color"), 1) || Prims.gte(SelfManager.self().getVariable("color"), 130))) {
-              SelfManager.self().setVariable("color", 1);
-            }
-          }
-        }
-        procedures["MOTHS-PICK-SHAPE"]();
-        SelfManager.self().setVariable("age", 0);
-        SelfManager.self().right(Prims.randomFloat(360));
-        SelfManager.self().fd(1);
-      }, true);
+          procedures["MOTHS-PICK-SHAPE"]();
+          SelfManager.self().setVariable("age", 0);
+          SelfManager.self().right(Prims.randomFloat(360));
+          SelfManager.self().fd(1);
+        }, true);
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["mothsMate"] = temp;
   procs["MOTHS-MATE"] = temp;
   temp = (function() {
-    if (Prims.lt(Prims.randomFloat(1000), ((world.observer.getGlobal("selection") * NLMath.abs((procedures["ENV-COLOR"]() - SelfManager.self().getVariable("color")))) + 200))) {
-      SelfManager.self().die();
+    try {
+      if (Prims.lt(Prims.randomFloat(1000), ((world.observer.getGlobal("selection") * NLMath.abs((procedures["ENV-COLOR"]() - SelfManager.self().getVariable("color")))) + 200))) {
+        SelfManager.self().die();
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["mothsGetEaten"] = temp;
   procs["MOTHS-GET-EATEN"] = temp;
   temp = (function() {
-    if (Prims.equality(Prims.random(13), 0)) {
-      SelfManager.self().die();
-    }
-    if (Prims.gt(world.turtleManager.turtlesOfBreed("MOTHS").size(), procedures["UPPER-BOUND"]())) {
-      if (Prims.equality(Prims.random(2), 0)) {
+    try {
+      if (Prims.equality(Prims.random(13), 0)) {
         SelfManager.self().die();
+      }
+      if (Prims.gt(world.turtleManager.turtlesOfBreed("MOTHS").size(), procedures["UPPER-BOUND"]())) {
+        if (Prims.equality(Prims.random(2), 0)) {
+          SelfManager.self().die();
+        }
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
   });
   procs["mothsGrimReaper"] = temp;
   procs["MOTHS-GRIM-REAPER"] = temp;
-  temp = (function() { SelfManager.self().setVariable("age", (SelfManager.self().getVariable("age") + 1)); });
+  temp = (function() {
+    try {
+      SelfManager.self().setVariable("age", (SelfManager.self().getVariable("age") + 1));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
+  });
   procs["mothsAge"] = temp;
   procs["MOTHS-AGE"] = temp;
   temp = (function() {
-    if (Prims.lt(SelfManager.self().getVariable("color"), 5)) {
-      SelfManager.self().setVariable("shape", "moth dark");
-    }
-    else {
-      SelfManager.self().setVariable("shape", "moth light");
+    try {
+      if (Prims.lt(SelfManager.self().getVariable("color"), 5)) {
+        SelfManager.self().setVariable("shape", "moth dark");
+      }
+      else {
+        SelfManager.self().setVariable("shape", "moth light");
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["mothsPickShape"] = temp;
   procs["MOTHS-PICK-SHAPE"] = temp;
   temp = (function() {
-    world.observer.setGlobal("light-moths", world.turtleManager.turtlesOfBreed("MOTHS").agentFilter(function() { return Prims.gte(SelfManager.self().getVariable("color"), 7); }).size());
-    world.observer.setGlobal("dark-moths", world.turtleManager.turtlesOfBreed("MOTHS").agentFilter(function() { return Prims.lte(SelfManager.self().getVariable("color"), 3); }).size());
-    world.observer.setGlobal("medium-moths", (world.turtleManager.turtlesOfBreed("MOTHS").size() - (world.observer.getGlobal("light-moths") + world.observer.getGlobal("dark-moths"))));
+    try {
+      world.observer.setGlobal("light-moths", world.turtleManager.turtlesOfBreed("MOTHS").agentFilter(function() { return Prims.gte(SelfManager.self().getVariable("color"), 7); }).size());
+      world.observer.setGlobal("dark-moths", world.turtleManager.turtlesOfBreed("MOTHS").agentFilter(function() { return Prims.lte(SelfManager.self().getVariable("color"), 3); }).size());
+      world.observer.setGlobal("medium-moths", (world.turtleManager.turtlesOfBreed("MOTHS").size() - (world.observer.getGlobal("light-moths") + world.observer.getGlobal("dark-moths"))));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["updateMonitors"] = temp;
   procs["UPDATE-MONITORS"] = temp;
   temp = (function() {
-    if (Prims.lte(world.observer.getGlobal("darkness"), (8 - procedures["DELTA-ENV"]()))) {
-      world.observer.setGlobal("darkness", (world.observer.getGlobal("darkness") + procedures["DELTA-ENV"]()));
-      world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", procedures["ENV-COLOR"]()); }, true);
-    }
-    else {
-      world.observer.setGlobal("darkening?", false);
+    try {
+      if (Prims.lte(world.observer.getGlobal("darkness"), (8 - procedures["DELTA-ENV"]()))) {
+        world.observer.setGlobal("darkness", (world.observer.getGlobal("darkness") + procedures["DELTA-ENV"]()));
+        world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", procedures["ENV-COLOR"]()); }, true);
+      }
+      else {
+        world.observer.setGlobal("darkening?", false);
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["polluteWorld"] = temp;
   procs["POLLUTE-WORLD"] = temp;
   temp = (function() {
-    if (Prims.gte(world.observer.getGlobal("darkness"), (0 + procedures["DELTA-ENV"]()))) {
-      world.observer.setGlobal("darkness", (world.observer.getGlobal("darkness") - procedures["DELTA-ENV"]()));
-      world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", procedures["ENV-COLOR"]()); }, true);
-    }
-    else {
-      world.observer.setGlobal("darkening?", true);
+    try {
+      if (Prims.gte(world.observer.getGlobal("darkness"), (0 + procedures["DELTA-ENV"]()))) {
+        world.observer.setGlobal("darkness", (world.observer.getGlobal("darkness") - procedures["DELTA-ENV"]()));
+        world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", procedures["ENV-COLOR"]()); }, true);
+      }
+      else {
+        world.observer.setGlobal("darkening?", true);
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["cleanUpWorld"] = temp;
   procs["CLEAN-UP-WORLD"] = temp;
   temp = (function() {
-    if (Prims.equality(world.observer.getGlobal("darkening?"), true)) {
-      procedures["POLLUTE-WORLD"]();
-    }
-    else {
-      procedures["CLEAN-UP-WORLD"]();
+    try {
+      if (Prims.equality(world.observer.getGlobal("darkening?"), true)) {
+        procedures["POLLUTE-WORLD"]();
+      }
+      else {
+        procedures["CLEAN-UP-WORLD"]();
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["cyclePollution"] = temp;

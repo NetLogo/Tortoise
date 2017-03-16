@@ -47,16 +47,38 @@ modelConfig.plots = [(function() {
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('average spin', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('Magnetization', 'average spin')(function() { plotManager.plotPoint(world.ticker.tickCount(), procedures["MAGNETIZATION"]());; });
+      plotManager.withTemporaryContext('Magnetization', 'average spin')(function() {
+        try {
+          plotManager.plotPoint(world.ticker.tickCount(), procedures["MAGNETIZATION"]());
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
+      });
     });
   }),
   new PenBundle.Pen('axis', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Magnetization', 'axis')(function() {
-        plotManager.disableAutoplotting();
-        plotManager.plotPoint(0, 0);
-        plotManager.plotPoint(1000000000000000, 0);
-        plotManager.enableAutoplotting();;
+        try {
+          plotManager.disableAutoplotting();
+          plotManager.plotPoint(0, 0);
+          plotManager.plotPoint(1000000000000000, 0);
+          plotManager.enableAutoplotting();
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   }, function() {})];
@@ -84,46 +106,86 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    world.patches().ask(function() {
-      if (Prims.lt(Prims.random(100), world.observer.getGlobal("probability-of-spin-up"))) {
-        SelfManager.self().setPatchVariable("spin", 1);
+    try {
+      world.clearAll();
+      world.patches().ask(function() {
+        if (Prims.lt(Prims.random(100), world.observer.getGlobal("probability-of-spin-up"))) {
+          SelfManager.self().setPatchVariable("spin", 1);
+        }
+        else {
+          SelfManager.self().setPatchVariable("spin", -1);
+        }
+        procedures["RECOLOR"]();
+      }, true);
+      world.observer.setGlobal("sum-of-spins", ListPrims.sum(world.patches().projectionBy(function() { return SelfManager.self().getPatchVariable("spin"); })));
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      else {
-        SelfManager.self().setPatchVariable("spin", -1);
-      }
-      procedures["RECOLOR"]();
-    }, true);
-    world.observer.setGlobal("sum-of-spins", ListPrims.sum(world.patches().projectionBy(function() { return SelfManager.self().getPatchVariable("spin"); })));
-    world.ticker.reset();
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    for (var _index_510_516 = 0, _repeatcount_510_516 = StrictMath.floor(1000); _index_510_516 < _repeatcount_510_516; _index_510_516++){
-      ListPrims.oneOf(world.patches()).ask(function() { procedures["UPDATE"](); }, true);
+    try {
+      for (let _index_510_516 = 0, _repeatcount_510_516 = StrictMath.floor(1000); _index_510_516 < _repeatcount_510_516; _index_510_516++){
+        ListPrims.oneOf(world.patches()).ask(function() { procedures["UPDATE"](); }, true);
+      }
+      world.ticker.tickAdvance(1000);
+      plotManager.updatePlots();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    world.ticker.tickAdvance(1000);
-    plotManager.updatePlots();
   });
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    var ediff = ((2 * SelfManager.self().getPatchVariable("spin")) * ListPrims.sum(SelfManager.self().getNeighbors4().projectionBy(function() { return SelfManager.self().getPatchVariable("spin"); })));
-    if ((Prims.lte(ediff, 0) || (Prims.gt(world.observer.getGlobal("temperature"), 0) && Prims.lt(Prims.randomFloat(1), NLMath.exp(Prims.div( -ediff, world.observer.getGlobal("temperature"))))))) {
-      SelfManager.self().setPatchVariable("spin",  -SelfManager.self().getPatchVariable("spin"));
-      world.observer.setGlobal("sum-of-spins", (world.observer.getGlobal("sum-of-spins") + (2 * SelfManager.self().getPatchVariable("spin"))));
-      procedures["RECOLOR"]();
+    try {
+      let ediff = ((2 * SelfManager.self().getPatchVariable("spin")) * ListPrims.sum(SelfManager.self().getNeighbors4().projectionBy(function() { return SelfManager.self().getPatchVariable("spin"); })));
+      if ((Prims.lte(ediff, 0) || (Prims.gt(world.observer.getGlobal("temperature"), 0) && Prims.lt(Prims.randomFloat(1), NLMath.exp(Prims.div( -ediff, world.observer.getGlobal("temperature"))))))) {
+        SelfManager.self().setPatchVariable("spin",  -SelfManager.self().getPatchVariable("spin"));
+        world.observer.setGlobal("sum-of-spins", (world.observer.getGlobal("sum-of-spins") + (2 * SelfManager.self().getPatchVariable("spin"))));
+        procedures["RECOLOR"]();
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["update"] = temp;
   procs["UPDATE"] = temp;
   temp = (function() {
-    if (Prims.equality(SelfManager.self().getPatchVariable("spin"), 1)) {
-      SelfManager.self().setPatchVariable("pcolor", (105 + 2));
-    }
-    else {
-      SelfManager.self().setPatchVariable("pcolor", (105 - 2));
+    try {
+      if (Prims.equality(SelfManager.self().getPatchVariable("spin"), 1)) {
+        SelfManager.self().setPatchVariable("pcolor", (105 + 2));
+      }
+      else {
+        SelfManager.self().setPatchVariable("pcolor", (105 - 2));
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["recolor"] = temp;
@@ -135,6 +197,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
