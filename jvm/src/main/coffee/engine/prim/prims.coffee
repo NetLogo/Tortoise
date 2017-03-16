@@ -24,6 +24,10 @@ getNeighbors4 = (patch) -> patch.getNeighbors4()
 lessThan      = (a, b)  -> a < b
 greaterThan   = (a, b)  -> a > b
 
+# (Number, Number, Number) => Array[Number]
+range = (lowerBound, upperBound, stepSize) ->
+  x for x in [lowerBound...upperBound] by stepSize
+
 module.exports =
   class Prims
 
@@ -255,6 +259,21 @@ module.exports =
       if alpha <= 0 || lambda <= 0
         throw new Error("Both Inputs to RANDOM-GAMMA must be positive.")
       Gamma(@_rng, alpha, lambda)
+
+    # (Number) => Array[Number]
+    rangeUnary: (upperBound) ->
+      range(0, upperBound, 1)
+
+    # (Number, Number) => Array[Number]
+    rangeBinary: (lowerBound, upperBound) ->
+      range(lowerBound, upperBound, 1)
+
+    # (Number, Number, Number) => Array[Number]
+    rangeTernary: (lowerBound, upperBound, stepSize) ->
+      if stepSize isnt 0
+        range(lowerBound, upperBound, stepSize)
+      else
+        throw new Error("The step-size for range must be non-zero.")
 
     # ((Task, Any*) | String) => Unit
     run: (f, args...) ->

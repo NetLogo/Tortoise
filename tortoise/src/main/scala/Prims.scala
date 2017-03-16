@@ -170,6 +170,9 @@ trait ReporterPrims extends PrimUtils {
         val ExtensionPrimRegex(extName, primName) = x.toString
         s"Extensions[${jsString(extName)}].prims[${jsString(primName)}]($commaArgs)"
 
+      case _: prim.etc._range =>
+        generateRange(args)
+
       case _ if compilerFlags.generateUnimplemented =>
         generateNotImplementedStub(r.reporter.getClass.getName.drop(1))
       case _                                        =>
@@ -185,6 +188,19 @@ trait ReporterPrims extends PrimUtils {
     val func   = handlers.fun(r.args(0), isReporter = true)
     s"$agents.projectionBy($func)"
   }
+
+  // The fact that there are three different functions for `range` is intentional--incredibly intentional.
+  // The engine has this to say on the matter (with me acting as ventriloquist):
+  // "Call with me with the correct number of arguments or GTFO."
+  // I will open a can of whoop-ass on anyone who thinks differently. --Stone Cold J. Bertsche (3/16/17)
+  def generateRange(args: Seq[String]): String =
+    args match {
+      case Seq(a)       => s"Prims.rangeUnary($a)"
+      case Seq(a, b)    => s"Prims.rangeBinary($a, $b)"
+      case Seq(a, b, c) => s"Prims.rangeTernary($a, $b, $c)"
+      case _            => throw new IllegalArgumentException("range expects at most three arguments")
+    }
+
 }
 
 trait CommandPrims extends PrimUtils {
