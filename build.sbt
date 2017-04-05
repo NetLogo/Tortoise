@@ -7,7 +7,7 @@ val nlDependencyVersion       = "6.0-9580e67"
 
 val parserJsDependencyVersion = "0.0.1-9580e67"
 
-val scalazVersion             = "7.2.8"
+val scalazVersion             = "7.2.10"
 
 val commonSettings =
   Seq(
@@ -24,12 +24,12 @@ val commonSettings =
     libraryDependencies ++= Seq(
       "org.nlogo" % "netlogoheadless" % nlDependencyVersion,
       "org.mozilla" % "rhino" % "1.7.7", // see jsengine/Rhino.scala for more information
-      "org.json4s" %% "json4s-native" % "3.5.0",
+      "org.json4s" %% "json4s-native" % "3.5.1",
       "org.scalaz" %% "scalaz-core" % scalazVersion,
-      "com.lihaoyi" %% "scalatags" % "0.6.2" % "test",
+      "com.lihaoyi" %% "scalatags" % "0.6.3" % "test",
       "org.scalatest" %% "scalatest" % "3.0.1" % "test",
-      "org.skyscreamer" % "jsonassert" % "1.4.0" % "test",
-      "org.reflections" % "reflections" % "0.9.10" % "test",
+      "org.skyscreamer" % "jsonassert" % "1.5.0" % "test",
+      "org.reflections" % "reflections" % "0.9.11" % "test",
       "org.scalacheck" %% "scalacheck" % "1.13.4" % "test",
       // Bring in headless test code/framework for our tests
       "org.nlogo" % "netlogoheadless" % nlDependencyVersion % "test" classifier "tests"),
