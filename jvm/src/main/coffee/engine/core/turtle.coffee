@@ -187,6 +187,10 @@ module.exports =
       @jumpIfAble(remaining)
       return
 
+    fdOne: () ->
+      @jumpIfAble(1)
+      return
+
     # (Number) => Boolean
     jumpIfAble: (distance) ->
       canMove = @canMove(distance)

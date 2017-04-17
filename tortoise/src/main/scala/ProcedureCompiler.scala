@@ -18,8 +18,9 @@ class ProcedureCompiler(handlers: Handlers)(implicit compilerFlags: CompilerFlag
   def compileProcedures(procedureDefs: Seq[ProcedureDefinition]): CompiledProceduresDictionary =
     procedureDefs.map(compileProcedureDef)
 
-  private def compileProcedureDef(pd:            ProcedureDefinition)
+  private def compileProcedureDef(originalPd:    ProcedureDefinition)
                         (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): (String, Seq[String]) = {
+    val pd = optimize.Optimizer(originalPd)
     val originalName = pd.procedure.name
     val safeName = handlers.ident(originalName)
     handlers.resetEveryID(safeName)
