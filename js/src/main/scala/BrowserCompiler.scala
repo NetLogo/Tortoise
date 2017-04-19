@@ -19,7 +19,7 @@ import
   scala.reflect.ClassTag
 
 import
-  scala.scalajs.js.annotation.JSExport
+  scala.scalajs.js.annotation.{ JSExport, JSExportTopLevel }
 
 import
   scalaz.{ NonEmptyList, Scalaz, std, Validation, ValidationNel },
@@ -27,7 +27,7 @@ import
     Scalaz.ToValidationOps,
     Validation.FlatMap.ValidationFlatMapRequested
 
-@JSExport("BrowserCompiler")
+@JSExportTopLevel("BrowserCompiler")
 class BrowserCompiler {
 
   import BrowserCompiler._
