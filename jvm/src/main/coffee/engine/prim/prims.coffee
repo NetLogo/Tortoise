@@ -197,12 +197,8 @@ module.exports =
     #
     # () => Number
     nanoTime: ->
-      nanos =
-        if performance?.now?
-          performance.now() * 1e3
-        else
-          Date.now() * 1e6
-      nanos | 0
+      nanos = (performance?.now?() ? Date.now()) * 1e6
+      StrictMath.floor(nanos)
 
     # [T <: (Array[Patch]|Patch|AbstractAgentSet[Patch])] @ (T*) => PatchSet
     patchSet: (inputs...) ->
