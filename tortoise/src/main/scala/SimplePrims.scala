@@ -281,6 +281,7 @@ object SimplePrims {
         case _: prim.etc._tie        => "SelfManager.self().tie"
         case _: prim.etc._untie      => "SelfManager.self().untie"
         case _: prim.etc._watchme    => "SelfManager.self().watchMe"
+        case _: optimize._fdlessthan1            => "SelfManager.self().fdLessThan1"
 
         // Plotting
         case _: prim.etc._autoplotoff            => "plotManager.disableAutoplotting"
