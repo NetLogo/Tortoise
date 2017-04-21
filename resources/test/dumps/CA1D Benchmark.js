@@ -431,7 +431,7 @@ var procedures = (function() {
       for (let _index_5606_5612 = 0, _repeatcount_5606_5612 = StrictMath.floor(4); _index_5606_5612 < _repeatcount_5606_5612; _index_5606_5612++){
         SelfManager.self().setPatchVariable("pcolor", SelfManager.self().getVariable("color"));
         SelfManager.self().right(90);
-        SelfManager.self().fd(1);
+        SelfManager.self().fdOne();
       }
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {

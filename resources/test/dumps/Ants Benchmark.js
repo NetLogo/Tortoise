@@ -293,7 +293,7 @@ var procedures = (function() {
       if (SelfManager.self().getPatchVariable("nest?")) {
         SelfManager.self().setVariable("carrying-food?", false);
         SelfManager.self().right(180);
-        SelfManager.self().fd(1);
+        SelfManager.self().fdOne();
       }
       else {
         SelfManager.self().setPatchVariable("chemical", (SelfManager.self().getPatchVariable("chemical") + SelfManager.self().getVariable("drop-size")));
@@ -303,7 +303,7 @@ var procedures = (function() {
         }
         procedures["UPHILL-NEST-SCENT"]();
         procedures["WIGGLE"]();
-        SelfManager.self().fd(1);
+        SelfManager.self().fdOne();
       }
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -327,16 +327,16 @@ var procedures = (function() {
         throw new Exception.StopInterrupt;
       }
       if (Prims.gt(SelfManager.self().getPatchVariable("chemical"), 2)) {
-        SelfManager.self().fd(1);
+        SelfManager.self().fdOne();
       }
       else {
         if (Prims.lt(SelfManager.self().getPatchVariable("chemical"), 0.05)) {
           procedures["WIGGLE"]();
-          SelfManager.self().fd(1);
+          SelfManager.self().fdOne();
         }
         else {
           procedures["UPHILL-CHEMICAL"]();
-          SelfManager.self().fd(1);
+          SelfManager.self().fdOne();
         }
       }
     } catch (e) {

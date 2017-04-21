@@ -212,7 +212,7 @@ var procedures = (function() {
     try {
       SelfManager.self().right(Prims.random(50));
       SelfManager.self().right(-Prims.random(50));
-      SelfManager.self().fd(1);
+      SelfManager.self().fdOne();
       SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") - 0.5));
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -266,7 +266,7 @@ var procedures = (function() {
     try {
       if (Prims.gt(SelfManager.self().getVariable("energy"), world.observer.getGlobal("birth-threshold"))) {
         SelfManager.self().setVariable("energy", Prims.div(SelfManager.self().getVariable("energy"), 2));
-        SelfManager.self().hatch(1, "").ask(function() { SelfManager.self().fd(1); }, true);
+        SelfManager.self().hatch(1, "").ask(function() { SelfManager.self().fdOne(); }, true);
       }
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {

@@ -91,7 +91,7 @@ var procedures = (function() {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
         }
         t.ask(function() {
-          SelfManager.self().fd(1);
+          SelfManager.self().fdOne();
           procedures["TURN"]();
         }, true);
       }), ListPrims.sort(world.turtles()));

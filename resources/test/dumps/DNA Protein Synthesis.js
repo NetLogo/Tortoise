@@ -249,7 +249,7 @@ var procedures = (function() {
       let placeCounter = 0;
       world.turtleManager.createTurtles(1, "").ask(function() {
         SelfManager.self().setVariable("heading", 90);
-        SelfManager.self().fd(1);
+        SelfManager.self().fdOne();
         for (let _index_8203_8209 = 0, _repeatcount_8203_8209 = StrictMath.floor(ListPrims.length(dnaString)); _index_8203_8209 < _repeatcount_8203_8209; _index_8203_8209++){
           SelfManager.self().hatch(1, "").ask(function() {
             SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("NUCLEOTIDES"));
@@ -472,7 +472,7 @@ var procedures = (function() {
           SelfManager.self().setVariable("shape", (Dump('') + Dump("amino-") + Dump(SelfManager.self().getVariable("value"))));
           SelfManager.self().setVariable("heading", 0);
           SelfManager.self().setVariable("size", 2);
-          SelfManager.self().fd(1);
+          SelfManager.self().fdOne();
           LinkPrims.createLinkFrom(thisTrna, "BACKBONES").ask(function() {
             SelfManager.self().setVariable("hidden?", true);
             SelfManager.self().setVariable("tie-mode", "free");
@@ -516,7 +516,7 @@ var procedures = (function() {
             }, true);
           }, true);
         }, true);
-        SelfManager.self().fd(1);
+        SelfManager.self().fdOne();
         SelfManager.self().setVariable("heading", 90);
         SelfManager.self().fd((world.observer.getGlobal("nucleotide-spacing") + ((world.observer.getGlobal("nucleotide-spacing") * 3) * tripletCounter)));
         SelfManager.self().setVariable("heading", 0);

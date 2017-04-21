@@ -283,6 +283,8 @@ object SimplePrims {
         case _: prim.etc._watchme    => "SelfManager.self().watchMe"
         case _: optimize._fdlessthan1            => "SelfManager.self().fdLessThan1"
 
+        case _: optimize._randomconst => "SelfManager.self().randomConst"
+
         // Plotting
         case _: prim.etc._autoplotoff            => "plotManager.disableAutoplotting"
         case _: prim.etc._autoploton             => "plotManager.enableAutoplotting"

@@ -204,7 +204,7 @@ var procedures = (function() {
     try {
       if (!SelfManager.self().getVariable("happy?")) {
         SelfManager.self().setVariable("heading", ListPrims.oneOf([90, 270]));
-        SelfManager.self().fd(1);
+        SelfManager.self().fdOne();
       }
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -227,7 +227,7 @@ var procedures = (function() {
       if (!!malcontents.isEmpty()) {
         throw new Exception.StopInterrupt;
       }
-      malcontents.ask(function() { SelfManager.self().fd(1); }, true);
+      malcontents.ask(function() { SelfManager.self().fdOne(); }, true);
       procedures["FIND-NEW-GROUPS"]();
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -269,7 +269,7 @@ var procedures = (function() {
       SelfManager.self().fd(4);
       while (!SelfPrims.other(SelfManager.self().turtlesHere()).isEmpty()) {
         if (SelfManager.self().canMove(2)) {
-          SelfManager.self().fd(1);
+          SelfManager.self().fdOne();
         }
         else {
           SelfManager.self().setVariable("xcor", (SelfManager.self().getVariable("xcor") - 1));

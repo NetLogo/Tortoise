@@ -91,7 +91,7 @@ var procedures = (function() {
           procedures["TURN-TOWARD-CHEMICAL"]();
         }
         SelfManager.self().right(((Prims.randomFloat(world.observer.getGlobal("wiggle-angle")) - Prims.randomFloat(world.observer.getGlobal("wiggle-angle"))) + world.observer.getGlobal("wiggle-bias")));
-        SelfManager.self().fd(1);
+        SelfManager.self().fdOne();
         SelfManager.self().setPatchVariable("chemical", (SelfManager.self().getPatchVariable("chemical") + 2));
       }, true);
       world.topology.diffuse("chemical", 1)

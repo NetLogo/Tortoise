@@ -370,7 +370,7 @@ var procedures = (function() {
         else {
           if (Prims.gt(SelfManager.self().distance(SelfManager.self().getVariable("target")), 2)) {
             SelfManager.self().face(SelfManager.self().getVariable("target"));
-            SelfManager.self().fd(1);
+            SelfManager.self().fdOne();
           }
           SelfManager.self().setVariable("on-site?", true);
           let nearbyScouts = SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("SCOUTS").agentFilter(function() {
@@ -587,7 +587,7 @@ var procedures = (function() {
         }
         if (Prims.gt(SelfManager.self().distance(SelfManager.self().getVariable("target")), 1)) {
           SelfManager.self().face(SelfManager.self().getVariable("target"));
-          SelfManager.self().fd(1);
+          SelfManager.self().fdOne();
         }
         else {
           SelfManager.self().setVariable("on-site?", true);
@@ -717,7 +717,7 @@ var procedures = (function() {
       if (!SelfManager.self().canMove(1)) {
         SelfManager.self().right(180);
       }
-      SelfManager.self().fd(1);
+      SelfManager.self().fdOne();
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         throw new Error("REPORT can only be used inside TO-REPORT.");
@@ -736,7 +736,7 @@ var procedures = (function() {
       SelfManager.self().fd(Prims.randomFloat(0.1));
       if (Prims.gt(SelfManager.self().distanceXY(0, 0), 4)) {
         SelfManager.self().faceXY(0, 0);
-        SelfManager.self().fd(1);
+        SelfManager.self().fdOne();
       }
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {

@@ -106,7 +106,7 @@ var procedures = (function() {
             Prims.run(SelfManager.self().getVariable("next-task"));
             procedures["WIGGLE"]();
           }
-          SelfManager.self().fd(1);
+          SelfManager.self().fdOne();
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
             throw new Error("REPORT can only be used inside TO-REPORT.");

@@ -177,7 +177,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       SelfManager.self().right((Prims.random(50) - Prims.random(50)));
-      SelfManager.self().fd(1);
+      SelfManager.self().fdOne();
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         throw new Error("REPORT can only be used inside TO-REPORT.");
@@ -214,7 +214,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("energy", NLMath.round(Prims.div(SelfManager.self().getVariable("energy"), 2)));
         SelfManager.self().hatch(1, "").ask(function() {
           SelfManager.self().right(Prims.random(360));
-          SelfManager.self().fd(1);
+          SelfManager.self().fdOne();
         }, true);
       }
     } catch (e) {
@@ -235,7 +235,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("energy", NLMath.round(Prims.div(SelfManager.self().getVariable("energy"), 2)));
         SelfManager.self().hatch(1, "").ask(function() {
           SelfManager.self().right(Prims.random(360));
-          SelfManager.self().fd(1);
+          SelfManager.self().fdOne();
         }, true);
       }
     } catch (e) {

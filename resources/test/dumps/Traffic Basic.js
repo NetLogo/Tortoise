@@ -188,7 +188,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       if (!SelfPrims.other(SelfManager.self().turtlesHere()).isEmpty()) {
-        SelfManager.self().fd(1);
+        SelfManager.self().fdOne();
         procedures["SEPARATE-CARS"]();
       }
     } catch (e) {

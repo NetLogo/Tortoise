@@ -20,25 +20,22 @@ package optimize {
       Syntax.commandSyntax(agentClassString = "-T--")
   }
 
+  class _randomconst extends Command {
+    override def syntax = 
+      Syntax.commandSyntax(agentClassString = "OTPL")
+  }
+
   object Optimizer {
     def apply(pd: ProcedureDefinition): ProcedureDefinition = {
-      // Fd1Transformer.visitProcedureDefinition(pd)
-      FdLessThan1Transformer.visitProcedureDefinition(pd)
-      // pd
+      Fd1Transformer.visitProcedureDefinition(pd)
     }
   }
 
   object Fd1Transformer extends AstTransformer {
     override def visitStatement(statement: Statement): Statement = {
-      statement.command match {
-        case f: _fd => statement.args(0) match {
-          case ra: ReporterApp => ra.reporter match {
-            case c: _const if c.value == 1 => statement.copy(command = new _fdone, args = Seq())
-            case _ => super.visitStatement(statement)
-          }
-          case _ => super.visitStatement(statement)
-        }
-        case _   => super.visitStatement(statement)
+      statement match {
+        case Statement(command: _fd, Seq(ReporterApp(reporter: _const, _, _)), _) if reporter.value == 1 => statement.copy(command = new _fdone, args = Seq())
+        case _ => super.visitStatement(statement)
       }
     }
   }
@@ -57,6 +54,15 @@ package optimize {
           case _ => super.visitStatement(statement)
         }
         case _ => super.visitStatement(statement)
+      }
+    }
+  }
+
+  object AnyOtherTransformer extends AstTransformer {
+    override def visitReporterApp(ra: ReporterApp): ReporterApp = {
+      ra match {
+        case ReporterApp(reporter: _any, Seq(other: _other, _*), _) => ra.copy(reporter = new _anyother)
+        case _ => super.visitReporterApp(ra)
       }
     }
   }

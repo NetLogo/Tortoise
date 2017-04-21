@@ -315,7 +315,7 @@ var procedures = (function() {
       procedures["PLACE-CONTROL-RODS"]();
       world.observer.setGlobal("power", 0);
       world.turtles().ask(function() {
-        SelfManager.self().fd(1);
+        SelfManager.self().fdOne();
         if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 5)) {
           SelfManager.self().die();
         }

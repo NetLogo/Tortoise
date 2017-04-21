@@ -285,7 +285,7 @@ var procedures = (function() {
       world.turtles().ask(function() {
         SelfManager.self().right(Prims.random(50));
         SelfManager.self().right(-Prims.random(50));
-        SelfManager.self().fd(1);
+        SelfManager.self().fdOne();
       }, true);
       procedures["BIRTH"]();
       procedures["DEATH"]();
@@ -304,7 +304,9 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
-      world.turtles().ask(function() { SelfManager.self().hatch(Prims.random(5), "").ask(function() { SelfManager.self().fd(1); }, true); }, true);
+      world.turtles().ask(function() {
+        SelfManager.self().hatch(Prims.random(5), "").ask(function() { SelfManager.self().fdOne(); }, true);
+      }, true);
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         throw new Error("REPORT can only be used inside TO-REPORT.");
