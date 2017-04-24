@@ -230,7 +230,7 @@ var procedures = (function() {
         if (!SelfManager.self().canMove(0.3)) {
           SelfManager.self().die();
         }
-        SelfManager.self().fd(0.3);
+        SelfManager.self().fdLessThan1(0.3);
       }, true);
       procedures["CREATE-SUNSHINE"]();
       procedures["REFLECT-RAYS-FROM-CLOUDS"]();
@@ -347,7 +347,7 @@ var procedures = (function() {
         if (!SelfManager.self().canMove(0.3)) {
           SelfManager.self().die();
         }
-        SelfManager.self().fd(0.3);
+        SelfManager.self().fdLessThan1(0.3);
         if (Prims.lte(SelfManager.self().getVariable("ycor"), world.observer.getGlobal("earth-top"))) {
           SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("HEATS"));
           SelfManager.self().right(Prims.random(45));

@@ -679,25 +679,25 @@ var procedures = (function() {
       SelfManager.self().setVariable("temp-y-dance", SelfManager.self().getVariable("ycor"));
       let waggleSwitch = 1;
       SelfManager.self().right(-60);
-      SelfManager.self().fd(0.4);
+      SelfManager.self().fdLessThan1(0.4);
       for (let _index_17897_17903 = 0, _repeatcount_17897_17903 = StrictMath.floor(Prims.div((SelfManager.self().getVariable("dist-to-hive") - 2), 2)); _index_17897_17903 < _repeatcount_17897_17903; _index_17897_17903++){
         if (Prims.equality(waggleSwitch, 1)) {
           SelfManager.self().right(120);
-          SelfManager.self().fd(0.8);
+          SelfManager.self().fdLessThan1(0.8);
         }
         if (Prims.equality(waggleSwitch, -1)) {
           SelfManager.self().right(-120);
-          SelfManager.self().fd(0.8);
+          SelfManager.self().fdLessThan1(0.8);
         }
         waggleSwitch = (waggleSwitch * -1);
       }
       if (Prims.equality(waggleSwitch, -1)) {
         SelfManager.self().right(-120);
-        SelfManager.self().fd(0.4);
+        SelfManager.self().fdLessThan1(0.4);
       }
       else {
         SelfManager.self().right(120);
-        SelfManager.self().fd(0.4);
+        SelfManager.self().fdLessThan1(0.4);
       }
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {

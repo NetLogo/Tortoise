@@ -343,7 +343,7 @@ var procedures = (function() {
               lastNucleotideBottomStrand = SelfManager.self();
             }, true);
           }, true);
-          SelfManager.self().fd(0.45);
+          SelfManager.self().fdLessThan1(0.45);
         }
         SelfManager.self().die();
       }, true);

@@ -347,9 +347,9 @@ var procedures = (function() {
         let thisCode = SelfManager.self().getVariable("code");
         let thisGene = SelfManager.self();
         SelfManager.self().setVariable("heading", 90);
-        SelfManager.self().fd(0.1);
+        SelfManager.self().fdLessThan1(0.1);
         for (let _index_10725_10731 = 0, _repeatcount_10725_10731 = StrictMath.floor(SelfManager.self().getVariable("start-position")); _index_10725_10731 < _repeatcount_10725_10731; _index_10725_10731++){
-          SelfManager.self().fd(0.45);
+          SelfManager.self().fdLessThan1(0.45);
         }
         let geneColor = procedures["NEXT-GENE-COLOR"]();
         let geneColorWithTransparency = ListPrims.sentence(ColorModel.colorToRGB(geneColor), 110);
@@ -495,7 +495,7 @@ var procedures = (function() {
             SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("TRNA-NUCLEOTIDES"));
             SelfManager.self().setVariable("shape", (Dump('') + Dump("trna-") + Dump(ListPrims.item(1, thisTriplet))));
             SelfManager.self().setVariable("heading", 90);
-            SelfManager.self().fd(0.45);
+            SelfManager.self().fdLessThan1(0.45);
             SelfManager.self().setVariable("heading", 0);
             LinkPrims.createLinkFrom(thisTrna, "BACKBONES").ask(function() {
               SelfManager.self().setVariable("hidden?", true);
@@ -507,7 +507,7 @@ var procedures = (function() {
             SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("TRNA-NUCLEOTIDES"));
             SelfManager.self().setVariable("shape", (Dump('') + Dump("trna-") + Dump(ListPrims.item(2, thisTriplet))));
             SelfManager.self().setVariable("heading", 90);
-            SelfManager.self().fd(0.9);
+            SelfManager.self().fdLessThan1(0.9);
             SelfManager.self().setVariable("heading", 0);
             LinkPrims.createLinkFrom(thisTrna, "BACKBONES").ask(function() {
               SelfManager.self().setVariable("hidden?", true);

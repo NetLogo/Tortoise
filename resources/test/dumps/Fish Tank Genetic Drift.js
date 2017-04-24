@@ -1391,7 +1391,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("shape", procedures["TAIL-SHAPE-PHENOTYPE"]());
         SelfManager.self().setVariable("color", procedures["TAIL-COLOR-PHENOTYPE"]());
         SelfManager.self().setVariable("heading", -90);
-        SelfManager.self().fd(0.4);
+        SelfManager.self().fdLessThan1(0.4);
         LinkPrims.createLinkFrom(thisFishBody, "LINKS").ask(function() {
           SelfManager.self().setVariable("hidden?", true);
           SelfManager.self().setVariable("tie-mode", "fixed");

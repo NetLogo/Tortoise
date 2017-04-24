@@ -27,7 +27,8 @@ package optimize {
 
   object Optimizer {
     def apply(pd: ProcedureDefinition): ProcedureDefinition = {
-      Fd1Transformer.visitProcedureDefinition(pd)
+      val newDef = Fd1Transformer.visitProcedureDefinition(pd)
+      FdLessThan1Transformer.visitProcedureDefinition(newDef)
     }
   }
 
@@ -42,17 +43,8 @@ package optimize {
 
   object FdLessThan1Transformer extends AstTransformer {
     override def visitStatement(statement: Statement): Statement = {
-      statement.command match {
-        case f: _fd => statement.args(0) match {
-          case ra: ReporterApp => ra.reporter match {
-            case c: _const => c.value match {
-              case d: java.lang.Double if ((d > -1) && (d < 1)) => statement.copy(command = new _fdlessthan1)
-              case _ => super.visitStatement(statement)
-            }
-            case _ => super.visitStatement(statement)
-          }
-          case _ => super.visitStatement(statement)
-        }
+      statement match {
+        case Statement(command: _fd, Seq(ReporterApp(_const(value: java.lang.Double), _, _)), _) if ((value > -1) && (value < 1)) => statement.copy(command = new _fdlessthan1)
         case _ => super.visitStatement(statement)
       }
     }
