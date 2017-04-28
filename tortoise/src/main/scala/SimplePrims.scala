@@ -91,6 +91,7 @@ object SimplePrims {
         case _: prim.etc._empty             => "ListPrims.empty"
         case _: prim.etc._first             => "ListPrims.first"
         case _: prim.etc._fput              => "ListPrims.fput"
+        case _: prim.etc._insertitem        => "ListPrims.insertItem"
         case _: prim.etc._item              => "ListPrims.item"
         case _: prim.etc._last              => "ListPrims.last"
         case _: prim.etc._length            => "ListPrims.length"

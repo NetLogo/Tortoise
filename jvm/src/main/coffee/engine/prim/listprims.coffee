@@ -45,6 +45,28 @@ module.exports =
     fput: (x, xs) ->
       [x].concat(xs)
 
+    # [Item] @ (Number, Array[Item]|String, Item) => Array[Item]|String
+    insertItem: (n, xs, x) ->
+      if n < 0
+        throw new Error("#{n} isn't greater than or equal to zero.")
+      else if n > xs.length
+        typeName = if NLType(xs).isList() then "list" else if NLType(xs).isString() then "string" else "unknown"
+        throw new Error("Can't find element #{n} of the #{typeName} #{Dump(xs)}, which is only of length #{xs.length}.")
+      else
+        if NLType(xs).isString()
+          if NLType(x).isString()
+            chars = xs.split('')
+            chars.splice(n, 0, x)
+            chars.join('')
+          else
+            throw new Error("INSERT-ITEM expected input to be a string but got the #{typeof(x)} #{Dump(x)} instead.")
+        else if NLType(xs).isList()
+          clone = xs[..]
+          clone.splice(n, 0, x)
+          clone
+        else
+          throw new Error("Unrecognized type of collection for `insert-item`: #{Dump(xs)}")
+
     # [Item] @ (Number, Array[Item]) => Item
     item: (n, xs) ->
       xs[n]
