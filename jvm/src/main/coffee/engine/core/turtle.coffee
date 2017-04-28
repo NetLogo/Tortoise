@@ -253,7 +253,7 @@ module.exports =
       if not @isDead()
         @_removeTurtle(@id)
         @_seppuku()
-        @linkManager._clear()
+        @linkManager.clear()
         @id = -1
         @getPatchHere().untrackTurtle(this)
         @world.observer.unfocus(this)

@@ -33,11 +33,22 @@ module.exports =
 
     # (Number, BreedManager, (Number) => Number) => LinkManager
     constructor: (@_ownerID, @_breedManager, @_randomInt) ->
-      @_clear()
+      @clear()
 
     # (Link) => Unit
     add: (link) ->
       @_links.push(link)
+      return
+
+    # () => Unit
+    clear: ->
+      oldLinks = @_links ? []
+      @_links = []
+
+      # Purposely done after resetting the array so that calls to `TurtleLinkManager.remove` in `Link.die` don't spend
+      # a ton of time iterating through long arrays that are in the process of being wiped out. --JAB (11/24/14)
+      oldLinks.forEach((link) -> ignoring(DeathInterrupt)(() => link.die()))
+
       return
 
     # (String, Turtle) => Link
@@ -91,17 +102,6 @@ module.exports =
     # (Link) => Unit
     remove: (link) ->
       @_links.splice(@_links.indexOf(link), 1)
-      return
-
-    # () => Unit
-    _clear: ->
-      oldLinks = @_links ? []
-      @_links = []
-
-      # Purposely done after resetting the array so that calls to `TurtleLinkManager.remove` in `Link.die` don't spend
-      # a ton of time iterating through long arrays that are in the process of being wiped out. --JAB (11/24/14)
-      oldLinks.forEach((link) -> ignoring(DeathInterrupt)(() => link.die()))
-
       return
 
     # Turtle -> String -> Directedness -> Agent

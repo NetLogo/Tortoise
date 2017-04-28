@@ -311,7 +311,7 @@ object SimplePrims {
         case _: prim.etc._clearpatches     => "world.clearPatches"
         case _: prim.etc._clearturtles     => "world.turtleManager.clearTurtles"
         case _: prim.etc._clearticks       => "world.ticker.clear"
-        case _: prim.etc._clearlinks       => "world.linkManager.clear"
+        case _: prim.etc._clearlinks       => "world.clearLinks"
         case _: prim.etc._resizeworld      => "world.resize"
         case _: prim.etc._setpatchsize     => "world.setPatchSize"
         case _: prim.etc._resetticks       => "world.ticker.reset"
