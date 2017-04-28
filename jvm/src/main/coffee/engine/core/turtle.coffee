@@ -196,10 +196,6 @@ module.exports =
       @jumpIfAble(distance)
       return
 
-    # randomConst: (range) ->
-    #   @randomNumber(range)
-    #   return
-
     # (Number) => Boolean
     jumpIfAble: (distance) ->
       canMove = @canMove(distance)

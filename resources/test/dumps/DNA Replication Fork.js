@@ -768,13 +768,13 @@ var procedures = (function() {
           targetClass = targetNucleotideReadyToGearToPolymerase.projectionBy(function() { return SelfManager.self().getVariable("class"); });
           SelfManager.self().setXY(targetXcor, targetYcor);
         }
-        if ((!!nucleotidesReadyToGearToPolymerase.isEmpty() || !SelfPrims.other(SelfManager.self().breedHere("POLYMERASES")).isEmpty())) {
+        if ((!!nucleotidesReadyToGearToPolymerase.isEmpty() || SelfPrims.anyOther(SelfManager.self().breedHere("POLYMERASES")))) {
           SelfManager.self().setVariable("locked-state", 0);
         }
-        if ((((!nucleotidesReadyToGearToPolymerase.isEmpty() && procedures["ALL-BASE-PAIRS-UNWOUND?"]()) && Prims.equality(potentialNucleosideReadyToGearToPolymerase, Nobody)) && !!SelfPrims.other(SelfManager.self().breedHere("POLYMERASES")).isEmpty())) {
+        if ((((!nucleotidesReadyToGearToPolymerase.isEmpty() && procedures["ALL-BASE-PAIRS-UNWOUND?"]()) && Prims.equality(potentialNucleosideReadyToGearToPolymerase, Nobody)) && !SelfPrims.anyOther(SelfManager.self().breedHere("POLYMERASES")))) {
           SelfManager.self().setVariable("locked-state", 1);
         }
-        if ((((!Prims.equality(targetNucleotideReadyToGearToPolymerase, Nobody) && procedures["ALL-BASE-PAIRS-UNWOUND?"]()) && !Prims.equality(potentialNucleosideReadyToGearToPolymerase, Nobody)) && !!SelfPrims.other(SelfManager.self().breedHere("POLYMERASES")).isEmpty())) {
+        if ((((!Prims.equality(targetNucleotideReadyToGearToPolymerase, Nobody) && procedures["ALL-BASE-PAIRS-UNWOUND?"]()) && !Prims.equality(potentialNucleosideReadyToGearToPolymerase, Nobody)) && !SelfPrims.anyOther(SelfManager.self().breedHere("POLYMERASES")))) {
           SelfManager.self().setVariable("locked-state", 2);
           if ((procedures["WOULD-THESE-NUCLEOTIDES-PAIR-CORRECTLY?"](targetNucleotideReadyToGearToPolymerase,potentialNucleosideReadyToGearToPolymerase) || world.observer.getGlobal("substitutions?"))) {
             potentialNucleosideReadyToGearToPolymerase.ask(function() {

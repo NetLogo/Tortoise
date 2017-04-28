@@ -267,7 +267,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("heading", 0);
       }
       SelfManager.self().fd(4);
-      while (!SelfPrims.other(SelfManager.self().turtlesHere()).isEmpty()) {
+      while (SelfPrims.anyOther(SelfManager.self().turtlesHere())) {
         if (SelfManager.self().canMove(2)) {
           SelfManager.self().fdOne();
         }

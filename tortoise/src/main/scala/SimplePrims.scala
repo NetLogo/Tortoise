@@ -59,6 +59,7 @@ object SimplePrims {
         case _: prim.etc._linkheading => "SelfPrims.linkHeading"
         case _: prim.etc._linklength  => "SelfPrims.linkLength"
         case _: prim._other           => "SelfPrims.other"
+        case _: optimize._anyother        => "SelfPrims.anyOther"
 
         // SelfManager
         case _: prim.etc._bothends                   => "SelfManager.self().bothEnds"
@@ -282,8 +283,6 @@ object SimplePrims {
         case _: prim.etc._untie      => "SelfManager.self().untie"
         case _: prim.etc._watchme    => "SelfManager.self().watchMe"
         case _: optimize._fdlessthan1            => "SelfManager.self().fdLessThan1"
-
-        case _: optimize._randomconst => "SelfManager.self().randomConst"
 
         // Plotting
         case _: prim.etc._autoplotoff            => "plotManager.disableAutoplotting"

@@ -171,7 +171,7 @@ var procedures = (function() {
     try {
       SelfManager.self().right(Prims.randomFloat(360));
       SelfManager.self().fd(Prims.randomFloat(10));
-      if (!SelfPrims.other(SelfManager.self().turtlesHere()).isEmpty()) {
+      if (SelfPrims.anyOther(SelfManager.self().turtlesHere())) {
         procedures["FIND-NEW-SPOT"]();
       }
       SelfManager.self().moveTo(SelfManager.self().getPatchHere());

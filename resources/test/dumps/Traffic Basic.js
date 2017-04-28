@@ -187,7 +187,7 @@ var procedures = (function() {
   procs["SETUP-CARS"] = temp;
   temp = (function() {
     try {
-      if (!SelfPrims.other(SelfManager.self().turtlesHere()).isEmpty()) {
+      if (SelfPrims.anyOther(SelfManager.self().turtlesHere())) {
         SelfManager.self().fdOne();
         procedures["SEPARATE-CARS"]();
       }

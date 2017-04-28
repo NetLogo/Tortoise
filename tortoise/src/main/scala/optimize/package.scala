@@ -3,11 +3,11 @@
 package org.nlogo.tortoise
 
 import
-  org.nlogo.core.{ Command, Syntax }
+  org.nlogo.core.{ Command, Syntax, Reporter }
 
 import
   org.nlogo.core.{ prim, AstTransformer, ProcedureDefinition, ReporterApp, Statement },
-    prim.{ _const, _fd }
+    prim.{ _const, _fd, _other, _any }
 
 package optimize {
   class _fdone extends Command {
@@ -20,15 +20,17 @@ package optimize {
       Syntax.commandSyntax(agentClassString = "-T--")
   }
 
-  class _randomconst extends Command {
+  class _anyother extends Reporter {
     override def syntax = 
-      Syntax.commandSyntax(agentClassString = "OTPL")
+      Syntax.reporterSyntax(right = List(Syntax.AgentsetType), ret = Syntax.BooleanType)
   }
 
   object Optimizer {
     def apply(pd: ProcedureDefinition): ProcedureDefinition = {
       val newDef = Fd1Transformer.visitProcedureDefinition(pd)
-      FdLessThan1Transformer.visitProcedureDefinition(newDef)
+      val newDef1 = FdLessThan1Transformer.visitProcedureDefinition(newDef)
+
+      AnyOtherTransformer.visitProcedureDefinition(newDef1)
     }
   }
 
@@ -53,7 +55,7 @@ package optimize {
   object AnyOtherTransformer extends AstTransformer {
     override def visitReporterApp(ra: ReporterApp): ReporterApp = {
       ra match {
-        case ReporterApp(reporter: _any, Seq(other: _other, _*), _) => ra.copy(reporter = new _anyother)
+        case ReporterApp(reporter: _any, Seq(ReporterApp(other: _other, otherArgs, _)), _) => ra.copy(reporter = new _anyother, otherArgs)
         case _ => super.visitReporterApp(ra)
       }
     }
