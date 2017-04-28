@@ -311,7 +311,7 @@ module.exports =
       turtle   = @_createTurtle(@_color, @_heading, @xcor, @ycor, breed, @_label, @_labelcolor, @_hidden, @_size, shape, (self) => @penManager.clone(@_genUpdate(self)))
       varNames = @_varNamesForBreed(breed)
       forEach((varName) =>
-        turtle.setVariable(varName, @getVariable(varName))
+        turtle.setVariable(varName, @getVariable(varName) ? 0)
         return
       )(varNames)
       turtle
