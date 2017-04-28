@@ -317,6 +317,13 @@ module.exports =
       else
         agentsOrAgent.turtlesHere()
 
+    # (Number) => Unit
+    wait: (seconds) ->
+      startTime = @nanoTime()
+      while ((@nanoTime() - startTime) / 1e9) < seconds
+        ; # Just chill out
+      return
+
     # (String) => Unit
     uphill: (varName) ->
       @_moveUpOrDownhill(-Infinity, greaterThan, getNeighbors, varName)
