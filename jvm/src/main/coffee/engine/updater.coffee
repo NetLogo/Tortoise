@@ -206,6 +206,7 @@ module.exports =
 
     # (Object[String, Any]) => Unit
     _reportDrawingEvent: (event) ->
+      @_hasUpdates = true
       @_updates[0].drawingEvents.push(event)
       return
 
