@@ -277,7 +277,7 @@ var procedures = (function() {
         }
         if (!SelfManager.self().getVariable("initial-scout?")) {
           if (Prims.lt(SelfManager.self().getVariable("bee-timer"), 0)) {
-            if (Prims.gt(SelfPrims.other(SelfManager.self().inCone(world.turtleManager.turtlesOfBreed("SCOUTS"), 3, 60)).size(), 0)) {
+            if (Prims.gt(SelfPrims.countOther(SelfManager.self().inCone(world.turtleManager.turtlesOfBreed("SCOUTS"), 3, 60)), 0)) {
               let observed = ListPrims.oneOf(SelfManager.self().inCone(world.turtleManager.turtlesOfBreed("SCOUTS"), 3, 60));
               if (Prims.equality(observed.projectionBy(function() { return SelfManager.self().getVariable("next-task"); }), world.observer.getGlobal("dance-task"))) {
                 if (Prims.lt(Prims.random((Prims.div(1, observed.projectionBy(function() { return SelfManager.self().getVariable("interest"); })) * 1000)), 1)) {

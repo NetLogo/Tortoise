@@ -35,11 +35,11 @@ module.exports =
     # [T] @ (AbstractAgentSet[T]) => Boolean
     anyOther: (agentSet) ->
       self = @_getSelf()
-      it = agentSet.iterator
-      while it.hasNext
-        if it.next() isnt self
-          true
-      false
+      agentSet.exists((agent) => agent isnt self)
+
+    countOther: (agentSet) ->
+      self = @_getSelf()
+      (agentSet.filter((agent) => agent isnt self)).size()
 
     # () => Number
     linkHeading: ->

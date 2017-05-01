@@ -593,7 +593,7 @@ var procedures = (function() {
   procs["CHECK-FOR-REACTION"] = temp;
   temp = (function() {
     try {
-      if (Prims.equality(SelfPrims.other(SelfManager.self().inRadius(SelfManager.self().breedHere("GAS-MOLECULES"), 1)).size(), 1)) {
+      if (Prims.equality(SelfPrims.countOther(SelfManager.self().inRadius(SelfManager.self().breedHere("GAS-MOLECULES"), 1)), 1)) {
         let candidate = ListPrims.oneOf(SelfPrims.other(SelfManager.self().breedHere("GAS-MOLECULES").agentFilter(function() {
           return (Prims.lt(SelfManager.self(), SelfManager.myself()) && !Prims.equality(SelfManager.myself(), SelfManager.self().getVariable("last-collision")));
         })));

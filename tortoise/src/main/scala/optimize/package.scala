@@ -7,7 +7,7 @@ import
 
 import
   org.nlogo.core.{ prim, AstTransformer, ProcedureDefinition, ReporterApp, Statement },
-    prim.{ _const, _fd, _other, _any }
+    prim.{ _const, _fd, _other, _any, _count }
 
 package optimize {
   class _fdone extends Command {
@@ -25,12 +25,17 @@ package optimize {
       Syntax.reporterSyntax(right = List(Syntax.AgentsetType), ret = Syntax.BooleanType)
   }
 
+  class _countother extends Reporter {
+    override def syntax = 
+      Syntax.reporterSyntax(right = List(Syntax.AgentsetType), ret = Syntax.BooleanType)
+  }
+
   object Optimizer {
     def apply(pd: ProcedureDefinition): ProcedureDefinition = {
       val newDef = Fd1Transformer.visitProcedureDefinition(pd)
       val newDef1 = FdLessThan1Transformer.visitProcedureDefinition(newDef)
-
-      AnyOtherTransformer.visitProcedureDefinition(newDef1)
+      val newDef2 = CountOtherTransformer.visitProcedureDefinition(newDef1)
+      AnyOtherTransformer.visitProcedureDefinition(newDef2)
     }
   }
 
@@ -55,7 +60,16 @@ package optimize {
   object AnyOtherTransformer extends AstTransformer {
     override def visitReporterApp(ra: ReporterApp): ReporterApp = {
       ra match {
-        case ReporterApp(reporter: _any, Seq(ReporterApp(other: _other, otherArgs, _)), _) => ra.copy(reporter = new _anyother, otherArgs)
+        case ReporterApp(reporter: _any, Seq(ReporterApp(other: _other, otherArgs, _)), _) => ra.copy(reporter = new _anyother, args = otherArgs)
+        case _ => super.visitReporterApp(ra)
+      }
+    }
+  }
+
+  object CountOtherTransformer extends AstTransformer {
+    override def visitReporterApp(ra: ReporterApp): ReporterApp = {
+      ra match {
+        case ReporterApp(reporter: _count, Seq(ReporterApp(other: _other, countArgs, _)), _) => ra.copy(reporter = new _countother, args = countArgs)
         case _ => super.visitReporterApp(ra)
       }
     }
