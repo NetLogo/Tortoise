@@ -63,31 +63,41 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    BreedManager.setDefaultShape(world.turtles().getSpecialName(), "planet")
-    world.turtleManager.createTurtles(1, "SUNS").ask(function() {
-      SelfManager.self().setVariable("size", 6);
-      SelfManager.self().setVariable("color", 45);
-    }, true);
-    world.turtleManager.createTurtles(5, "PLANETS").ask(function() {
-      SelfManager.self().setVariable("size", 2);
-      SelfManager.self().setVariable("color", (105 + Prims.random(3)));
-      SelfManager.self().fd((6 + Prims.randomFloat(12)));
-      LinkPrims.createLinkFrom(ListPrims.oneOf(world.turtleManager.turtlesOfBreed("SUNS")), "LINKS").ask(function() {
-        SelfManager.self().tie();
-        SelfManager.self().setVariable('hidden?', true)
+    try {
+      world.clearAll();
+      BreedManager.setDefaultShape(world.turtles().getSpecialName(), "planet")
+      world.turtleManager.createTurtles(1, "SUNS").ask(function() {
+        SelfManager.self().setVariable("size", 6);
+        SelfManager.self().setVariable("color", 45);
       }, true);
-      SelfManager.self().hatch(2, "MOONS").ask(function() {
-        SelfManager.self().setVariable("size", 0.5);
-        SelfManager.self().setVariable("color", (5 + Prims.random(3)));
-        SelfManager.self().fd((1 + Prims.randomFloat(3)));
-        LinkPrims.createLinkFrom(SelfManager.myself(), "LINKS").ask(function() {
+      world.turtleManager.createTurtles(5, "PLANETS").ask(function() {
+        SelfManager.self().setVariable("size", 2);
+        SelfManager.self().setVariable("color", (105 + Prims.random(3)));
+        SelfManager.self().fd((6 + Prims.randomFloat(12)));
+        LinkPrims.createLinkFrom(ListPrims.oneOf(world.turtleManager.turtlesOfBreed("SUNS")), "LINKS").ask(function() {
           SelfManager.self().tie();
           SelfManager.self().setVariable('hidden?', true)
         }, true);
+        SelfManager.self().hatch(2, "MOONS").ask(function() {
+          SelfManager.self().setVariable("size", 0.5);
+          SelfManager.self().setVariable("color", (5 + Prims.random(3)));
+          SelfManager.self().fd((1 + Prims.randomFloat(3)));
+          LinkPrims.createLinkFrom(SelfManager.myself(), "LINKS").ask(function() {
+            SelfManager.self().tie();
+            SelfManager.self().setVariable('hidden?', true)
+          }, true);
+        }, true);
       }, true);
-    }, true);
-    world.ticker.reset();
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;

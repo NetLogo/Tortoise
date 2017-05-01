@@ -3,11 +3,11 @@ import org.scalajs.sbtplugin.cross.{ CrossProject, CrossType }
 import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport.{ fullOptJS, packageJSDependencies }
 import org.scalastyle.sbt.ScalastylePlugin.scalastyle
 
-val nlDependencyVersion       = "6.0-67f21c7"
+val nlDependencyVersion       = "6.0.1-d7adf59"
 
-val parserJsDependencyVersion = "0.0.1-67f21c7"
+val parserJsDependencyVersion = "0.1.1-b0ffc94"
 
-val scalazVersion             = "7.2.4"
+val scalazVersion             = "7.2.10"
 
 val commonSettings =
   Seq(
@@ -16,21 +16,21 @@ val commonSettings =
     version       := "1.0",
     // Compilation settings
     crossPaths    := false, // we're not cross-building for different Scala versions
-    scalaVersion  := "2.11.8",
+    scalaVersion  := "2.12.1",
     scalacOptions ++=
-      "-deprecation -unchecked -feature -Xcheckinit -encoding us-ascii -target:jvm-1.7 -Xlint -Xfatal-warnings -Ywarn-value-discard -language:_ -Xmax-classfile-name 240".split(" ").toSeq,
+      "-deprecation -unchecked -feature -Xcheckinit -encoding us-ascii -Xlint -Xfatal-warnings -Ywarn-value-discard -language:_ -Xmax-classfile-name 240".split(" ").toSeq,
     // Dependencies
     resolvers           += sbt.Resolver.bintrayRepo("netlogo", "NetLogoHeadless"),
     libraryDependencies ++= Seq(
       "org.nlogo" % "netlogoheadless" % nlDependencyVersion,
       "org.mozilla" % "rhino" % "1.7.7", // see jsengine/Rhino.scala for more information
-      "org.json4s" %% "json4s-native" % "3.4.0",
+      "org.json4s" %% "json4s-native" % "3.5.1",
       "org.scalaz" %% "scalaz-core" % scalazVersion,
-      "com.lihaoyi" %% "scalatags" % "0.5.4" % "test",
-      "org.scalatest" %% "scalatest" % "2.2.1" % "test",
-      "org.skyscreamer" % "jsonassert" % "1.4.0" % "test",
-      "org.reflections" % "reflections" % "0.9.10" % "test",
-      "org.scalacheck" %% "scalacheck" % "1.12.1" % "test",
+      "com.lihaoyi" %% "scalatags" % "0.6.3" % "test",
+      "org.scalatest" %% "scalatest" % "3.0.1" % "test",
+      "org.skyscreamer" % "jsonassert" % "1.5.0" % "test",
+      "org.reflections" % "reflections" % "0.9.11" % "test",
+      "org.scalacheck" %% "scalacheck" % "1.13.4" % "test",
       // Bring in headless test code/framework for our tests
       "org.nlogo" % "netlogoheadless" % nlDependencyVersion % "test" classifier "tests"),
     ivyScala      := ivyScala.value map { _.copy(overrideScalaVersion = true) }, // needed to keep scala.js happy
@@ -105,7 +105,7 @@ lazy val tortoise = CrossProject("tortoise", file("."), new CrossType {
     libraryDependencies                  ++= {
       import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport.toScalaJSGroupID
       Seq(
-        "com.lihaoyi" %%%! "utest" % "0.3.1",
+        "com.lihaoyi" %%%! "utest" % "0.4.5",
         "org.nlogo"   %%%! "parser-js" % parserJsDependencyVersion,
         "org.scalaz" %%% "scalaz-core" % scalazVersion)
     })
@@ -136,8 +136,8 @@ lazy val netLogoWeb: Project = (project in file("netlogo-web")).
   settings(
     name                  := "NetLogoWebJS",
     libraryDependencies   ++= Seq(
-      "org.nlogo" % "netlogoheadless" % nlDependencyVersion % "test",
-      "org.scalatest" %% "scalatest" % "2.2.1" % "test"),
+      "org.nlogo" % "netlogoheadless" % nlDependencyVersion % "test"
+    ),
     // these tasks force the regeneration of the tortoise.js source on each build
     resourceGenerators in Compile += Def.task {
       (fullOptJS in Compile in tortoiseJS).value

@@ -48,14 +48,34 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('Infected', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Populations', 'Infected')(function() {
-        plotManager.plotValue(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("infected?"); }).size());;
+        try {
+          plotManager.plotValue(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("infected?"); }).size());
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   }),
   new PenBundle.Pen('Not Infected', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Populations', 'Not Infected')(function() {
-        plotManager.plotValue(world.turtles().agentFilter(function() { return !SelfManager.self().getVariable("infected?"); }).size());;
+        try {
+          plotManager.plotValue(world.turtles().agentFilter(function() { return !SelfManager.self().getVariable("infected?"); }).size());
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   })];
@@ -68,14 +88,34 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('Infection Rate', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Infection and Recovery Rates', 'Infection Rate')(function() {
-        plotManager.plotValue((world.observer.getGlobal("beta-n") * world.observer.getGlobal("nb-infected-previous")));;
+        try {
+          plotManager.plotValue((world.observer.getGlobal("beta-n") * world.observer.getGlobal("nb-infected-previous")));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   }),
   new PenBundle.Pen('Recovery Rate', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Infection and Recovery Rates', 'Recovery Rate')(function() {
-        plotManager.plotValue((world.observer.getGlobal("gamma") * world.observer.getGlobal("nb-infected-previous")));;
+        try {
+          plotManager.plotValue((world.observer.getGlobal("gamma") * world.observer.getGlobal("nb-infected-previous")));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   })];
@@ -88,14 +128,34 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('% infected', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Cumulative Infected and Recovered', '% infected')(function() {
-        plotManager.plotValue((Prims.div((world.turtles().agentFilter(function() { return SelfManager.self().getVariable("cured?"); }).size() + world.turtles().agentFilter(function() { return SelfManager.self().getVariable("infected?"); }).size()), world.observer.getGlobal("initial-people")) * 100));;
+        try {
+          plotManager.plotValue((Prims.div((world.turtles().agentFilter(function() { return SelfManager.self().getVariable("cured?"); }).size() + world.turtles().agentFilter(function() { return SelfManager.self().getVariable("infected?"); }).size()), world.observer.getGlobal("initial-people")) * 100));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   }),
   new PenBundle.Pen('% recovered', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Cumulative Infected and Recovered', '% recovered')(function() {
-        plotManager.plotValue((Prims.div(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("cured?"); }).size(), world.observer.getGlobal("initial-people")) * 100));;
+        try {
+          plotManager.plotValue((Prims.div(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("cured?"); }).size(), world.observer.getGlobal("initial-people")) * 100));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   })];
@@ -123,142 +183,212 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    procedures["SETUP-GLOBALS"]();
-    procedures["SETUP-PEOPLE"]();
-    procedures["SETUP-AMBULANCE"]();
-    world.ticker.reset();
+    try {
+      world.clearAll();
+      procedures["SETUP-GLOBALS"]();
+      procedures["SETUP-PEOPLE"]();
+      procedures["SETUP-AMBULANCE"]();
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    world.getPatchAt(Prims.div( -world.topology.maxPxcor, 2), 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
-    world.getPatchAt(Prims.div(world.topology.maxPxcor, 2), 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
-    world.observer.setGlobal("border", world.patches().agentFilter(function() {
-      return (Prims.equality(SelfManager.self().getPatchVariable("pxcor"), 0) && Prims.gte(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), 0));
-    }));
-    world.observer.getGlobal("border").ask(function() { SelfManager.self().setPatchVariable("pcolor", 45); }, true);
+    try {
+      world.getPatchAt(Prims.div( -world.topology.maxPxcor, 2), 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
+      world.getPatchAt(Prims.div(world.topology.maxPxcor, 2), 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
+      world.observer.setGlobal("border", world.patches().agentFilter(function() {
+        return (Prims.equality(SelfManager.self().getPatchVariable("pxcor"), 0) && Prims.gte(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), 0));
+      }));
+      world.observer.getGlobal("border").ask(function() { SelfManager.self().setPatchVariable("pcolor", 45); }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setupGlobals"] = temp;
   procs["SETUP-GLOBALS"] = temp;
   temp = (function() {
-    world.turtleManager.createTurtles(world.observer.getGlobal("initial-people"), "").ask(function() {
-      SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
-      if (Prims.lte(SelfManager.self().getVariable("xcor"), 0)) {
-        SelfManager.self().setVariable("continent", 1);
+    try {
+      world.turtleManager.createTurtles(world.observer.getGlobal("initial-people"), "").ask(function() {
+        SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
+        if (Prims.lte(SelfManager.self().getVariable("xcor"), 0)) {
+          SelfManager.self().setVariable("continent", 1);
+        }
+        else {
+          SelfManager.self().setVariable("continent", 2);
+        }
+        SelfManager.self().setVariable("cured?", false);
+        SelfManager.self().setVariable("isolated?", false);
+        SelfManager.self().setVariable("hospitalized?", false);
+        SelfManager.self().setVariable("ambulance?", false);
+        SelfManager.self().setVariable("infected?", false);
+        SelfManager.self().setVariable("susceptible?", true);
+        procedures["ASSIGN-TENDENCY"]();
+        if (Prims.equality(SelfManager.self().getVariable("continent"), 1)) {
+          SelfManager.self().setVariable("shape", "square");
+        }
+        else {
+          SelfManager.self().setVariable("shape", "circle");
+        }
+        SelfManager.self().setVariable("size", 0.5);
+        if (Prims.lt(Prims.randomFloat(100), 5)) {
+          SelfManager.self().setVariable("infected?", true);
+          SelfManager.self().setVariable("susceptible?", false);
+          SelfManager.self().setVariable("infection-length", Prims.random(SelfManager.self().getVariable("recovery-time")));
+        }
+        if ((!SelfManager.self().getVariable("infected?") && Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("inoculation-chance")))) {
+          SelfManager.self().setVariable("inoculated?", true);
+          SelfManager.self().setVariable("susceptible?", false);
+        }
+        else {
+          SelfManager.self().setVariable("inoculated?", false);
+        }
+        procedures["ASSIGN-COLOR"]();
+      }, true);
+      if (world.observer.getGlobal("links?")) {
+        procedures["MAKE-NETWORK"]();
       }
-      else {
-        SelfManager.self().setVariable("continent", 2);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      SelfManager.self().setVariable("cured?", false);
-      SelfManager.self().setVariable("isolated?", false);
-      SelfManager.self().setVariable("hospitalized?", false);
-      SelfManager.self().setVariable("ambulance?", false);
-      SelfManager.self().setVariable("infected?", false);
-      SelfManager.self().setVariable("susceptible?", true);
-      procedures["ASSIGN-TENDENCY"]();
-      if (Prims.equality(SelfManager.self().getVariable("continent"), 1)) {
-        SelfManager.self().setVariable("shape", "square");
-      }
-      else {
-        SelfManager.self().setVariable("shape", "circle");
-      }
-      SelfManager.self().setVariable("size", 0.5);
-      if (Prims.lt(Prims.randomFloat(100), 5)) {
-        SelfManager.self().setVariable("infected?", true);
-        SelfManager.self().setVariable("susceptible?", false);
-        SelfManager.self().setVariable("infection-length", Prims.random(SelfManager.self().getVariable("recovery-time")));
-      }
-      if ((!SelfManager.self().getVariable("infected?") && Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("inoculation-chance")))) {
-        SelfManager.self().setVariable("inoculated?", true);
-        SelfManager.self().setVariable("susceptible?", false);
-      }
-      else {
-        SelfManager.self().setVariable("inoculated?", false);
-      }
-      procedures["ASSIGN-COLOR"]();
-    }, true);
-    if (world.observer.getGlobal("links?")) {
-      procedures["MAKE-NETWORK"]();
     }
   });
   procs["setupPeople"] = temp;
   procs["SETUP-PEOPLE"] = temp;
   temp = (function() {
-    world.turtleManager.createTurtles(world.observer.getGlobal("initial-ambulance"), "").ask(function() {
-      if (Prims.lt(Prims.random(2), 1)) {
-        SelfManager.self().setVariable("continent", 1);
-        SelfManager.self().setXY(Prims.div( -world.topology.maxPxcor, 2), 0);
+    try {
+      world.turtleManager.createTurtles(world.observer.getGlobal("initial-ambulance"), "").ask(function() {
+        if (Prims.lt(Prims.random(2), 1)) {
+          SelfManager.self().setVariable("continent", 1);
+          SelfManager.self().setXY(Prims.div( -world.topology.maxPxcor, 2), 0);
+        }
+        else {
+          SelfManager.self().setVariable("continent", 2);
+          SelfManager.self().setXY(Prims.div(world.topology.maxPxcor, 2), 0);
+        }
+        SelfManager.self().setVariable("cured?", false);
+        SelfManager.self().setVariable("isolated?", false);
+        SelfManager.self().setVariable("hospitalized?", false);
+        SelfManager.self().setVariable("infected?", false);
+        SelfManager.self().setVariable("inoculated?", false);
+        SelfManager.self().setVariable("susceptible?", false);
+        SelfManager.self().setVariable("ambulance?", true);
+        SelfManager.self().setVariable("shape", "person");
+        SelfManager.self().setVariable("color", 45);
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      else {
-        SelfManager.self().setVariable("continent", 2);
-        SelfManager.self().setXY(Prims.div(world.topology.maxPxcor, 2), 0);
-      }
-      SelfManager.self().setVariable("cured?", false);
-      SelfManager.self().setVariable("isolated?", false);
-      SelfManager.self().setVariable("hospitalized?", false);
-      SelfManager.self().setVariable("infected?", false);
-      SelfManager.self().setVariable("inoculated?", false);
-      SelfManager.self().setVariable("susceptible?", false);
-      SelfManager.self().setVariable("ambulance?", true);
-      SelfManager.self().setVariable("shape", "person");
-      SelfManager.self().setVariable("color", 45);
-    }, true);
+    }
   });
   procs["setupAmbulance"] = temp;
   procs["SETUP-AMBULANCE"] = temp;
   temp = (function() {
-    SelfManager.self().setVariable("isolation-tendency", Prims.div(Prims.randomNormal(world.observer.getGlobal("average-isolation-tendency"), world.observer.getGlobal("average-isolation-tendency")), 4));
-    SelfManager.self().setVariable("hospital-going-tendency", Prims.div(Prims.randomNormal(world.observer.getGlobal("average-hospital-going-tendency"), world.observer.getGlobal("average-hospital-going-tendency")), 4));
-    SelfManager.self().setVariable("recovery-time", Prims.div(Prims.randomNormal(world.observer.getGlobal("average-recovery-time"), world.observer.getGlobal("average-recovery-time")), 4));
-    if (Prims.gt(SelfManager.self().getVariable("recovery-time"), (world.observer.getGlobal("average-recovery-time") * 2))) {
-      SelfManager.self().setVariable("recovery-time", (world.observer.getGlobal("average-recovery-time") * 2));
-    }
-    if (Prims.lt(SelfManager.self().getVariable("recovery-time"), 0)) {
-      SelfManager.self().setVariable("recovery-time", 0);
-    }
-    if (Prims.gt(SelfManager.self().getVariable("isolation-tendency"), (world.observer.getGlobal("average-isolation-tendency") * 2))) {
-      SelfManager.self().setVariable("isolation-tendency", (world.observer.getGlobal("average-isolation-tendency") * 2));
-    }
-    if (Prims.lt(SelfManager.self().getVariable("isolation-tendency"), 0)) {
-      SelfManager.self().setVariable("isolation-tendency", 0);
-    }
-    if (Prims.gt(SelfManager.self().getVariable("hospital-going-tendency"), (world.observer.getGlobal("average-hospital-going-tendency") * 2))) {
-      SelfManager.self().setVariable("hospital-going-tendency", (world.observer.getGlobal("average-hospital-going-tendency") * 2));
-    }
-    if (Prims.lt(SelfManager.self().getVariable("hospital-going-tendency"), 0)) {
-      SelfManager.self().setVariable("hospital-going-tendency", 0);
+    try {
+      SelfManager.self().setVariable("isolation-tendency", Prims.div(Prims.randomNormal(world.observer.getGlobal("average-isolation-tendency"), world.observer.getGlobal("average-isolation-tendency")), 4));
+      SelfManager.self().setVariable("hospital-going-tendency", Prims.div(Prims.randomNormal(world.observer.getGlobal("average-hospital-going-tendency"), world.observer.getGlobal("average-hospital-going-tendency")), 4));
+      SelfManager.self().setVariable("recovery-time", Prims.div(Prims.randomNormal(world.observer.getGlobal("average-recovery-time"), world.observer.getGlobal("average-recovery-time")), 4));
+      if (Prims.gt(SelfManager.self().getVariable("recovery-time"), (world.observer.getGlobal("average-recovery-time") * 2))) {
+        SelfManager.self().setVariable("recovery-time", (world.observer.getGlobal("average-recovery-time") * 2));
+      }
+      if (Prims.lt(SelfManager.self().getVariable("recovery-time"), 0)) {
+        SelfManager.self().setVariable("recovery-time", 0);
+      }
+      if (Prims.gt(SelfManager.self().getVariable("isolation-tendency"), (world.observer.getGlobal("average-isolation-tendency") * 2))) {
+        SelfManager.self().setVariable("isolation-tendency", (world.observer.getGlobal("average-isolation-tendency") * 2));
+      }
+      if (Prims.lt(SelfManager.self().getVariable("isolation-tendency"), 0)) {
+        SelfManager.self().setVariable("isolation-tendency", 0);
+      }
+      if (Prims.gt(SelfManager.self().getVariable("hospital-going-tendency"), (world.observer.getGlobal("average-hospital-going-tendency") * 2))) {
+        SelfManager.self().setVariable("hospital-going-tendency", (world.observer.getGlobal("average-hospital-going-tendency") * 2));
+      }
+      if (Prims.lt(SelfManager.self().getVariable("hospital-going-tendency"), 0)) {
+        SelfManager.self().setVariable("hospital-going-tendency", 0);
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["assignTendency"] = temp;
   procs["ASSIGN-TENDENCY"] = temp;
   temp = (function() {
-    if (SelfManager.self().getVariable("cured?")) {
-      SelfManager.self().setVariable("color", 55);
-    }
-    else {
-      if (SelfManager.self().getVariable("inoculated?")) {
-        SelfManager.self().setVariable("color", 105);
+    try {
+      if (SelfManager.self().getVariable("cured?")) {
+        SelfManager.self().setVariable("color", 55);
       }
       else {
-        if (SelfManager.self().getVariable("infected?")) {
-          SelfManager.self().setVariable("color", 15);
+        if (SelfManager.self().getVariable("inoculated?")) {
+          SelfManager.self().setVariable("color", 105);
         }
         else {
-          SelfManager.self().setVariable("color", 9.9);
+          if (SelfManager.self().getVariable("infected?")) {
+            SelfManager.self().setVariable("color", 15);
+          }
+          else {
+            SelfManager.self().setVariable("color", 9.9);
+          }
         }
       }
-    }
-    if (SelfManager.self().getVariable("ambulance?")) {
-      SelfManager.self().setVariable("color", 45);
+      if (SelfManager.self().getVariable("ambulance?")) {
+        SelfManager.self().setVariable("color", 45);
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["assignColor"] = temp;
   procs["ASSIGN-COLOR"] = temp;
   temp = (function() {
-    world.turtles().ask(function() {
-      LinkPrims.createLinksWith(Prims.turtlesOn(SelfManager.self().getNeighbors()), "LINKS").ask(function() {}, false);
-    }, true);
+    try {
+      world.turtles().ask(function() {
+        LinkPrims.createLinksWith(Prims.turtlesOn(SelfManager.self().getNeighbors()), "LINKS").ask(function() {}, false);
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["makeNetwork"] = temp;
   procs["MAKE-NETWORK"] = temp;
@@ -314,7 +444,9 @@ var procedures = (function() {
       }, true);
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -324,164 +456,244 @@ var procedures = (function() {
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    if (world.observer.getGlobal("travel?")) {
-      if ((Prims.lt(Prims.random(100), world.observer.getGlobal("travel-tendency")) && !SelfManager.self().getVariable("ambulance?"))) {
-        SelfManager.self().setVariable("xcor",  -SelfManager.self().getVariable("xcor"));
+    try {
+      if (world.observer.getGlobal("travel?")) {
+        if ((Prims.lt(Prims.random(100), world.observer.getGlobal("travel-tendency")) && !SelfManager.self().getVariable("ambulance?"))) {
+          SelfManager.self().setVariable("xcor",  -SelfManager.self().getVariable("xcor"));
+        }
       }
-    }
-    if (Prims.equality(SelfManager.self().getVariable("continent"), 1)) {
-      if (Prims.gt(SelfManager.self().getVariable("xcor"),  -0.5)) {
-        world.observer.setGlobal("angle", Prims.randomFloat(180));
-        var newPatch = SelfManager.self().patchAtHeadingAndDistance(world.observer.getGlobal("angle"), -1);
-        if (!Prims.equality(newPatch, Nobody)) {
-          SelfManager.self().moveTo(newPatch);
+      if (Prims.equality(SelfManager.self().getVariable("continent"), 1)) {
+        if (Prims.gt(SelfManager.self().getVariable("xcor"),  -0.5)) {
+          world.observer.setGlobal("angle", Prims.randomFloat(180));
+          let newPatch = SelfManager.self().patchAtHeadingAndDistance(world.observer.getGlobal("angle"), -1);
+          if (!Prims.equality(newPatch, Nobody)) {
+            SelfManager.self().moveTo(newPatch);
+          }
+        }
+        else {
+          if (Prims.lt(SelfManager.self().getVariable("xcor"), (world.topology.minPxcor + 0.5))) {
+            world.observer.setGlobal("angle", Prims.randomFloat(180));
+          }
+          else {
+            world.observer.setGlobal("angle", Prims.randomFloat(360));
+          }
+          SelfManager.self().right(world.observer.getGlobal("angle"));
+          if (SelfManager.self().getVariable("ambulance?")) {
+            SelfManager.self().fd((world.observer.getGlobal("intra-mobility") * 5));
+          }
+          else {
+            SelfManager.self().fd(world.observer.getGlobal("intra-mobility"));
+          }
         }
       }
       else {
-        if (Prims.lt(SelfManager.self().getVariable("xcor"), (world.topology.minPxcor + 0.5))) {
+        if (Prims.lt(SelfManager.self().getVariable("xcor"), 1)) {
           world.observer.setGlobal("angle", Prims.randomFloat(180));
+          let newPatch = SelfManager.self().patchAtHeadingAndDistance(world.observer.getGlobal("angle"), 1);
+          if (!Prims.equality(newPatch, Nobody)) {
+            SelfManager.self().moveTo(newPatch);
+          }
         }
         else {
-          world.observer.setGlobal("angle", Prims.randomFloat(360));
-        }
-        SelfManager.self().right(world.observer.getGlobal("angle"));
-        if (SelfManager.self().getVariable("ambulance?")) {
-          SelfManager.self().fd((world.observer.getGlobal("intra-mobility") * 5));
-        }
-        else {
-          SelfManager.self().fd(world.observer.getGlobal("intra-mobility"));
+          if (Prims.gt(SelfManager.self().getVariable("xcor"), (world.topology.maxPxcor - 1))) {
+            world.observer.setGlobal("angle", Prims.randomFloat(180));
+          }
+          else {
+            world.observer.setGlobal("angle", Prims.randomFloat(360));
+          }
+          SelfManager.self().right(-world.observer.getGlobal("angle"));
+          if (SelfManager.self().getVariable("ambulance?")) {
+            SelfManager.self().fd((world.observer.getGlobal("intra-mobility") * 5));
+          }
+          else {
+            SelfManager.self().fd(world.observer.getGlobal("intra-mobility"));
+          }
         }
       }
-    }
-    else {
-      if (Prims.lt(SelfManager.self().getVariable("xcor"), 1)) {
-        world.observer.setGlobal("angle", Prims.randomFloat(180));
-        var newPatch = SelfManager.self().patchAtHeadingAndDistance(world.observer.getGlobal("angle"), 1);
-        if (!Prims.equality(newPatch, Nobody)) {
-          SelfManager.self().moveTo(newPatch);
-        }
-      }
-      else {
-        if (Prims.gt(SelfManager.self().getVariable("xcor"), (world.topology.maxPxcor - 1))) {
-          world.observer.setGlobal("angle", Prims.randomFloat(180));
-        }
-        else {
-          world.observer.setGlobal("angle", Prims.randomFloat(360));
-        }
-        SelfManager.self().right(-world.observer.getGlobal("angle"));
-        if (SelfManager.self().getVariable("ambulance?")) {
-          SelfManager.self().fd((world.observer.getGlobal("intra-mobility") * 5));
-        }
-        else {
-          SelfManager.self().fd(world.observer.getGlobal("intra-mobility"));
-        }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
   });
   procs["move"] = temp;
   procs["MOVE"] = temp;
   temp = (function() {
-    SelfManager.self().setVariable("nb-infected", 0);
-    SelfManager.self().setVariable("nb-recovered", 0);
+    try {
+      SelfManager.self().setVariable("nb-infected", 0);
+      SelfManager.self().setVariable("nb-recovered", 0);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["clearCount"] = temp;
   procs["CLEAR-COUNT"] = temp;
   temp = (function() {
-    SelfManager.self().setVariable("infection-length", (SelfManager.self().getVariable("infection-length") + 1));
-    if (!SelfManager.self().getVariable("hospitalized?")) {
-      if (Prims.gt(SelfManager.self().getVariable("infection-length"), SelfManager.self().getVariable("recovery-time"))) {
-        if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("recovery-chance"))) {
+    try {
+      SelfManager.self().setVariable("infection-length", (SelfManager.self().getVariable("infection-length") + 1));
+      if (!SelfManager.self().getVariable("hospitalized?")) {
+        if (Prims.gt(SelfManager.self().getVariable("infection-length"), SelfManager.self().getVariable("recovery-time"))) {
+          if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("recovery-chance"))) {
+            SelfManager.self().setVariable("infected?", false);
+            SelfManager.self().setVariable("cured?", true);
+            SelfManager.self().setVariable("nb-recovered", (SelfManager.self().getVariable("nb-recovered") + 1));
+          }
+        }
+      }
+      else {
+        if (Prims.gt(SelfManager.self().getVariable("infection-length"), Prims.div(SelfManager.self().getVariable("recovery-time"), 5))) {
           SelfManager.self().setVariable("infected?", false);
           SelfManager.self().setVariable("cured?", true);
           SelfManager.self().setVariable("nb-recovered", (SelfManager.self().getVariable("nb-recovered") + 1));
         }
       }
-    }
-    else {
-      if (Prims.gt(SelfManager.self().getVariable("infection-length"), Prims.div(SelfManager.self().getVariable("recovery-time"), 5))) {
-        SelfManager.self().setVariable("infected?", false);
-        SelfManager.self().setVariable("cured?", true);
-        SelfManager.self().setVariable("nb-recovered", (SelfManager.self().getVariable("nb-recovered") + 1));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
   });
   procs["maybeRecover"] = temp;
   procs["MAYBE-RECOVER"] = temp;
   temp = (function() {
-    SelfManager.self().setVariable("isolated?", true);
-    SelfManager.self().moveTo(SelfManager.self().getPatchHere());
-    SelfManager.self().patchAt(0, 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", (5 - 3)); }, true);
+    try {
+      SelfManager.self().setVariable("isolated?", true);
+      SelfManager.self().moveTo(SelfManager.self().getPatchHere());
+      SelfManager.self().patchAt(0, 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", (5 - 3)); }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["isolate"] = temp;
   procs["ISOLATE"] = temp;
   temp = (function() {
-    SelfManager.self().setVariable("isolated?", false);
-    SelfManager.self().setVariable("hospitalized?", false);
-    SelfManager.self().patchAt(0, 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 0); }, true);
-    world.observer.getGlobal("border").ask(function() { SelfManager.self().setPatchVariable("pcolor", 45); }, true);
-    world.getPatchAt(Prims.div( -world.topology.maxPxcor, 2), 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
-    world.getPatchAt(Prims.div(world.topology.maxPxcor, 2), 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
+    try {
+      SelfManager.self().setVariable("isolated?", false);
+      SelfManager.self().setVariable("hospitalized?", false);
+      SelfManager.self().patchAt(0, 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 0); }, true);
+      world.observer.getGlobal("border").ask(function() { SelfManager.self().setPatchVariable("pcolor", 45); }, true);
+      world.getPatchAt(Prims.div( -world.topology.maxPxcor, 2), 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
+      world.getPatchAt(Prims.div(world.topology.maxPxcor, 2), 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["unisolate"] = temp;
   procs["UNISOLATE"] = temp;
   temp = (function() {
-    SelfManager.self().setVariable("hospitalized?", true);
-    SelfManager.self().setPatchVariable("pcolor", 0);
-    if (Prims.equality(SelfManager.self().getVariable("continent"), 1)) {
-      SelfManager.self().moveTo(world.getPatchAt(Prims.div( -world.topology.maxPxcor, 2), 0));
+    try {
+      SelfManager.self().setVariable("hospitalized?", true);
+      SelfManager.self().setPatchVariable("pcolor", 0);
+      if (Prims.equality(SelfManager.self().getVariable("continent"), 1)) {
+        SelfManager.self().moveTo(world.getPatchAt(Prims.div( -world.topology.maxPxcor, 2), 0));
+      }
+      else {
+        SelfManager.self().moveTo(world.getPatchAt(Prims.div(world.topology.maxPxcor, 2), 0));
+      }
+      SelfManager.self().setPatchVariable("pcolor", 9.9);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    else {
-      SelfManager.self().moveTo(world.getPatchAt(Prims.div(world.topology.maxPxcor, 2), 0));
-    }
-    SelfManager.self().setPatchVariable("pcolor", 9.9);
   });
   procs["hospitalize"] = temp;
   procs["HOSPITALIZE"] = temp;
   temp = (function() {
-    var caller = SelfManager.self();
-    var nearbyUninfected = Prims.turtlesOn(SelfManager.self().getNeighbors()).agentFilter(function() {
-      return ((!SelfManager.self().getVariable("infected?") && !SelfManager.self().getVariable("cured?")) && !SelfManager.self().getVariable("inoculated?"));
-    });
-    if (!Prims.equality(nearbyUninfected, Nobody)) {
-      nearbyUninfected.ask(function() {
-        if (LinkPrims.isLinkNeighbor("LINKS", caller)) {
-          if (Prims.lt(Prims.random(100), (world.observer.getGlobal("infection-chance") * 2))) {
-            SelfManager.self().setVariable("infected?", true);
-            SelfManager.self().setVariable("nb-infected", (SelfManager.self().getVariable("nb-infected") + 1));
+    try {
+      let caller = SelfManager.self();
+      let nearbyUninfected = Prims.turtlesOn(SelfManager.self().getNeighbors()).agentFilter(function() {
+        return ((!SelfManager.self().getVariable("infected?") && !SelfManager.self().getVariable("cured?")) && !SelfManager.self().getVariable("inoculated?"));
+      });
+      if (!Prims.equality(nearbyUninfected, Nobody)) {
+        nearbyUninfected.ask(function() {
+          if (LinkPrims.isLinkNeighbor("LINKS", caller)) {
+            if (Prims.lt(Prims.random(100), (world.observer.getGlobal("infection-chance") * 2))) {
+              SelfManager.self().setVariable("infected?", true);
+              SelfManager.self().setVariable("nb-infected", (SelfManager.self().getVariable("nb-infected") + 1));
+            }
           }
-        }
-        else {
-          if (Prims.lt(Prims.random(100), world.observer.getGlobal("infection-chance"))) {
-            SelfManager.self().setVariable("infected?", true);
-            SelfManager.self().setVariable("nb-infected", (SelfManager.self().getVariable("nb-infected") + 1));
+          else {
+            if (Prims.lt(Prims.random(100), world.observer.getGlobal("infection-chance"))) {
+              SelfManager.self().setVariable("infected?", true);
+              SelfManager.self().setVariable("nb-infected", (SelfManager.self().getVariable("nb-infected") + 1));
+            }
           }
-        }
-      }, true);
+        }, true);
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["infect"] = temp;
   procs["INFECT"] = temp;
   temp = (function() {
-    var newInfected = ListPrims.sum(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("nb-infected"); }));
-    var newRecovered = ListPrims.sum(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("nb-recovered"); }));
-    world.observer.setGlobal("nb-infected-previous", ((world.turtles().agentFilter(function() { return SelfManager.self().getVariable("infected?"); }).size() + newRecovered) - newInfected));
-    var susceptibleT = ((world.observer.getGlobal("initial-people") - world.turtles().agentFilter(function() { return SelfManager.self().getVariable("infected?"); }).size()) - world.turtles().agentFilter(function() { return SelfManager.self().getVariable("cured?"); }).size());
-    var s0 = world.turtles().agentFilter(function() { return SelfManager.self().getVariable("susceptible?"); }).size();
-    if (Prims.lt(world.observer.getGlobal("nb-infected-previous"), 10)) {
-      world.observer.setGlobal("beta-n", 0);
-    }
-    else {
-      world.observer.setGlobal("beta-n", Prims.div(newInfected, world.observer.getGlobal("nb-infected-previous")));
-    }
-    if (Prims.lt(world.observer.getGlobal("nb-infected-previous"), 5)) {
-      world.observer.setGlobal("gamma", 0);
-    }
-    else {
-      world.observer.setGlobal("gamma", Prims.div(newRecovered, world.observer.getGlobal("nb-infected-previous")));
-    }
-    if ((!Prims.equality((world.observer.getGlobal("initial-people") - susceptibleT), 0) && !Prims.equality(susceptibleT, 0))) {
-      world.observer.setGlobal("r0", Prims.div(NLMath.ln(Prims.div(s0, susceptibleT)), (world.observer.getGlobal("initial-people") - susceptibleT)));
-      world.observer.setGlobal("r0", (world.observer.getGlobal("r0") * s0));
+    try {
+      let newInfected = ListPrims.sum(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("nb-infected"); }));
+      let newRecovered = ListPrims.sum(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("nb-recovered"); }));
+      world.observer.setGlobal("nb-infected-previous", ((world.turtles().agentFilter(function() { return SelfManager.self().getVariable("infected?"); }).size() + newRecovered) - newInfected));
+      let susceptibleT = ((world.observer.getGlobal("initial-people") - world.turtles().agentFilter(function() { return SelfManager.self().getVariable("infected?"); }).size()) - world.turtles().agentFilter(function() { return SelfManager.self().getVariable("cured?"); }).size());
+      let s0 = world.turtles().agentFilter(function() { return SelfManager.self().getVariable("susceptible?"); }).size();
+      if (Prims.lt(world.observer.getGlobal("nb-infected-previous"), 10)) {
+        world.observer.setGlobal("beta-n", 0);
+      }
+      else {
+        world.observer.setGlobal("beta-n", Prims.div(newInfected, world.observer.getGlobal("nb-infected-previous")));
+      }
+      if (Prims.lt(world.observer.getGlobal("nb-infected-previous"), 5)) {
+        world.observer.setGlobal("gamma", 0);
+      }
+      else {
+        world.observer.setGlobal("gamma", Prims.div(newRecovered, world.observer.getGlobal("nb-infected-previous")));
+      }
+      if ((!Prims.equality((world.observer.getGlobal("initial-people") - susceptibleT), 0) && !Prims.equality(susceptibleT, 0))) {
+        world.observer.setGlobal("r0", Prims.div(NLMath.ln(Prims.div(s0, susceptibleT)), (world.observer.getGlobal("initial-people") - susceptibleT)));
+        world.observer.setGlobal("r0", (world.observer.getGlobal("r0") * s0));
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["calculateR0"] = temp;

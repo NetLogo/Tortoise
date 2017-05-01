@@ -47,12 +47,36 @@ modelConfig.plots = [(function() {
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('greedy', plotOps.makePenOps, false, new PenBundle.State(93.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('Cows over time', 'greedy')(function() { plotManager.plotValue(world.turtleManager.turtlesOfBreed("GREEDY-COWS").size());; });
+      plotManager.withTemporaryContext('Cows over time', 'greedy')(function() {
+        try {
+          plotManager.plotValue(world.turtleManager.turtlesOfBreed("GREEDY-COWS").size());
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
+      });
     });
   }),
   new PenBundle.Pen('cooperative', plotOps.makePenOps, false, new PenBundle.State(13.5, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('Cows over time', 'cooperative')(function() { plotManager.plotValue(world.turtleManager.turtlesOfBreed("COOPERATIVE-COWS").size());; });
+      plotManager.withTemporaryContext('Cows over time', 'cooperative')(function() {
+        try {
+          plotManager.plotValue(world.turtleManager.turtlesOfBreed("COOPERATIVE-COWS").size());
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
+      });
     });
   })];
   var setup   = function() {};
@@ -79,111 +103,211 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    procedures["SETUP-COWS"]();
-    world.patches().ask(function() {
-      SelfManager.self().setPatchVariable("grass", world.observer.getGlobal("max-grass-height"));
-      procedures["COLOR-GRASS"]();
-    }, true);
-    world.ticker.reset();
+    try {
+      world.clearAll();
+      procedures["SETUP-COWS"]();
+      world.patches().ask(function() {
+        SelfManager.self().setPatchVariable("grass", world.observer.getGlobal("max-grass-height"));
+        procedures["COLOR-GRASS"]();
+      }, true);
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    BreedManager.setDefaultShape(world.turtles().getSpecialName(), "cow")
-    world.turtleManager.createTurtles(world.observer.getGlobal("initial-cows"), "").ask(function() {
-      SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
-      SelfManager.self().setVariable("energy", (world.observer.getGlobal("metabolism") * 4));
-      if (Prims.lt(Prims.randomFloat(1), world.observer.getGlobal("cooperative-probability"))) {
-        SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("COOPERATIVE-COWS"));
-        SelfManager.self().setVariable("color", (15 - 1.5));
+    try {
+      BreedManager.setDefaultShape(world.turtles().getSpecialName(), "cow")
+      world.turtleManager.createTurtles(world.observer.getGlobal("initial-cows"), "").ask(function() {
+        SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
+        SelfManager.self().setVariable("energy", (world.observer.getGlobal("metabolism") * 4));
+        if (Prims.lt(Prims.randomFloat(1), world.observer.getGlobal("cooperative-probability"))) {
+          SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("COOPERATIVE-COWS"));
+          SelfManager.self().setVariable("color", (15 - 1.5));
+        }
+        else {
+          SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("GREEDY-COWS"));
+          SelfManager.self().setVariable("color", (95 - 2));
+        }
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      else {
-        SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("GREEDY-COWS"));
-        SelfManager.self().setVariable("color", (95 - 2));
-      }
-    }, true);
+    }
   });
   procs["setupCows"] = temp;
   procs["SETUP-COWS"] = temp;
   temp = (function() {
-    world.turtles().ask(function() {
-      procedures["MOVE"]();
-      procedures["EAT"]();
-      procedures["REPRODUCE"]();
-    }, true);
-    world.patches().ask(function() {
-      procedures["GROW-GRASS"]();
-      procedures["COLOR-GRASS"]();
-    }, true);
-    world.ticker.tick();
+    try {
+      world.turtles().ask(function() {
+        procedures["MOVE"]();
+        procedures["EAT"]();
+        procedures["REPRODUCE"]();
+      }, true);
+      world.patches().ask(function() {
+        procedures["GROW-GRASS"]();
+        procedures["COLOR-GRASS"]();
+      }, true);
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    if (Prims.gt(SelfManager.self().getVariable("energy"), world.observer.getGlobal("reproduction-threshold"))) {
-      SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") - world.observer.getGlobal("reproduction-cost")));
-      SelfManager.self().hatch(1, "").ask(function() {}, true);
+    try {
+      if (Prims.gt(SelfManager.self().getVariable("energy"), world.observer.getGlobal("reproduction-threshold"))) {
+        SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") - world.observer.getGlobal("reproduction-cost")));
+        SelfManager.self().hatch(1, "").ask(function() {}, true);
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["reproduce"] = temp;
   procs["REPRODUCE"] = temp;
   temp = (function() {
-    if (Prims.gte(SelfManager.self().getPatchVariable("grass"), world.observer.getGlobal("low-high-threshold"))) {
-      if (Prims.gte(world.observer.getGlobal("high-growth-chance"), Prims.randomFloat(100))) {
-        SelfManager.self().setPatchVariable("grass", (SelfManager.self().getPatchVariable("grass") + 1));
+    try {
+      if (Prims.gte(SelfManager.self().getPatchVariable("grass"), world.observer.getGlobal("low-high-threshold"))) {
+        if (Prims.gte(world.observer.getGlobal("high-growth-chance"), Prims.randomFloat(100))) {
+          SelfManager.self().setPatchVariable("grass", (SelfManager.self().getPatchVariable("grass") + 1));
+        }
       }
-    }
-    else {
-      if (Prims.gte(world.observer.getGlobal("low-growth-chance"), Prims.randomFloat(100))) {
-        SelfManager.self().setPatchVariable("grass", (SelfManager.self().getPatchVariable("grass") + 1));
+      else {
+        if (Prims.gte(world.observer.getGlobal("low-growth-chance"), Prims.randomFloat(100))) {
+          SelfManager.self().setPatchVariable("grass", (SelfManager.self().getPatchVariable("grass") + 1));
+        }
       }
-    }
-    if (Prims.gt(SelfManager.self().getPatchVariable("grass"), world.observer.getGlobal("max-grass-height"))) {
-      SelfManager.self().setPatchVariable("grass", world.observer.getGlobal("max-grass-height"));
+      if (Prims.gt(SelfManager.self().getPatchVariable("grass"), world.observer.getGlobal("max-grass-height"))) {
+        SelfManager.self().setPatchVariable("grass", world.observer.getGlobal("max-grass-height"));
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["growGrass"] = temp;
   procs["GROW-GRASS"] = temp;
   temp = (function() {
-    SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor((55 - 1), SelfManager.self().getPatchVariable("grass"), 0, (2 * world.observer.getGlobal("max-grass-height"))));
+    try {
+      SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor((55 - 1), SelfManager.self().getPatchVariable("grass"), 0, (2 * world.observer.getGlobal("max-grass-height"))));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["colorGrass"] = temp;
   procs["COLOR-GRASS"] = temp;
   temp = (function() {
-    SelfManager.self().right(Prims.random(360));
-    SelfManager.self().fd(world.observer.getGlobal("stride-length"));
-    SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") - world.observer.getGlobal("metabolism")));
-    if (Prims.lt(SelfManager.self().getVariable("energy"), 0)) {
-      SelfManager.self().die();
+    try {
+      SelfManager.self().right(Prims.random(360));
+      SelfManager.self().fd(world.observer.getGlobal("stride-length"));
+      SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") - world.observer.getGlobal("metabolism")));
+      if (Prims.lt(SelfManager.self().getVariable("energy"), 0)) {
+        SelfManager.self().die();
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["move"] = temp;
   procs["MOVE"] = temp;
   temp = (function() {
-    if (Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("COOPERATIVE-COWS"))) {
-      procedures["EAT-COOPERATIVE"]();
-    }
-    else {
-      if (Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("GREEDY-COWS"))) {
-        procedures["EAT-GREEDY"]();
+    try {
+      if (Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("COOPERATIVE-COWS"))) {
+        procedures["EAT-COOPERATIVE"]();
+      }
+      else {
+        if (Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("GREEDY-COWS"))) {
+          procedures["EAT-GREEDY"]();
+        }
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
   });
   procs["eat"] = temp;
   procs["EAT"] = temp;
   temp = (function() {
-    if (Prims.gt(SelfManager.self().getPatchVariable("grass"), world.observer.getGlobal("low-high-threshold"))) {
-      SelfManager.self().setPatchVariable("grass", (SelfManager.self().getPatchVariable("grass") - 1));
-      SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") + world.observer.getGlobal("grass-energy")));
+    try {
+      if (Prims.gt(SelfManager.self().getPatchVariable("grass"), world.observer.getGlobal("low-high-threshold"))) {
+        SelfManager.self().setPatchVariable("grass", (SelfManager.self().getPatchVariable("grass") - 1));
+        SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") + world.observer.getGlobal("grass-energy")));
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["eatCooperative"] = temp;
   procs["EAT-COOPERATIVE"] = temp;
   temp = (function() {
-    if (Prims.gt(SelfManager.self().getPatchVariable("grass"), 0)) {
-      SelfManager.self().setPatchVariable("grass", (SelfManager.self().getPatchVariable("grass") - 1));
-      SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") + world.observer.getGlobal("grass-energy")));
+    try {
+      if (Prims.gt(SelfManager.self().getPatchVariable("grass"), 0)) {
+        SelfManager.self().setPatchVariable("grass", (SelfManager.self().getPatchVariable("grass") - 1));
+        SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") + world.observer.getGlobal("grass-energy")));
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["eatGreedy"] = temp;

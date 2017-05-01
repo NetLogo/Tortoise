@@ -63,110 +63,190 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("CELLS").getSpecialName(), "circle")
-    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("BABIES").getSpecialName(), "dot")
-    world.patches().ask(function() { SelfManager.self().setPatchVariable("live-neighbors", 0); }, true);
-    world.ticker.reset();
+    try {
+      world.clearAll();
+      BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("CELLS").getSpecialName(), "circle")
+      BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("BABIES").getSpecialName(), "dot")
+      world.patches().ask(function() { SelfManager.self().setPatchVariable("live-neighbors", 0); }, true);
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setupBlank"] = temp;
   procs["SETUP-BLANK"] = temp;
   temp = (function() {
-    procedures["SETUP-BLANK"]();
-    world.patches().ask(function() {
-      if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("initial-density"))) {
-        SelfManager.self().sprout(1, "BABIES").ask(function() {}, true);
+    try {
+      procedures["SETUP-BLANK"]();
+      world.patches().ask(function() {
+        if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("initial-density"))) {
+          SelfManager.self().sprout(1, "BABIES").ask(function() {}, true);
+        }
+      }, true);
+      procedures["GO"]();
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-    }, true);
-    procedures["GO"]();
-    world.ticker.reset();
+    }
   });
   procs["setupRandom"] = temp;
   procs["SETUP-RANDOM"] = temp;
   temp = (function() {
-    SelfManager.self().sprout(1, "BABIES").ask(function() { SelfManager.self().setVariable("color", (65 + 1)); }, true);
+    try {
+      SelfManager.self().sprout(1, "BABIES").ask(function() { SelfManager.self().setVariable("color", (65 + 1)); }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["birth"] = temp;
   procs["BIRTH"] = temp;
   temp = (function() {
-    world.turtleManager.turtlesOfBreed("CELLS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 5); }).ask(function() { SelfManager.self().die(); }, true);
-    world.turtleManager.turtlesOfBreed("BABIES").ask(function() {
-      SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("CELLS"));
-      SelfManager.self().setVariable("color", 9.9);
-    }, true);
-    world.turtleManager.turtlesOfBreed("CELLS").ask(function() {
-      SelfManager.self().getNeighbors().ask(function() {
-        SelfManager.self().setPatchVariable("live-neighbors", (SelfManager.self().getPatchVariable("live-neighbors") + 1));
-      }, true);
-    }, true);
-    world.turtleManager.turtlesOfBreed("CELLS").ask(function() {
-      if ((Prims.equality(SelfManager.self().getPatchVariable("live-neighbors"), 2) || Prims.equality(SelfManager.self().getPatchVariable("live-neighbors"), 3))) {
+    try {
+      world.turtleManager.turtlesOfBreed("CELLS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 5); }).ask(function() { SelfManager.self().die(); }, true);
+      world.turtleManager.turtlesOfBreed("BABIES").ask(function() {
+        SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("CELLS"));
         SelfManager.self().setVariable("color", 9.9);
+      }, true);
+      world.turtleManager.turtlesOfBreed("CELLS").ask(function() {
+        SelfManager.self().getNeighbors().ask(function() {
+          SelfManager.self().setPatchVariable("live-neighbors", (SelfManager.self().getPatchVariable("live-neighbors") + 1));
+        }, true);
+      }, true);
+      world.turtleManager.turtlesOfBreed("CELLS").ask(function() {
+        if ((Prims.equality(SelfManager.self().getPatchVariable("live-neighbors"), 2) || Prims.equality(SelfManager.self().getPatchVariable("live-neighbors"), 3))) {
+          SelfManager.self().setVariable("color", 9.9);
+        }
+        else {
+          SelfManager.self().setVariable("color", 5);
+        }
+      }, true);
+      world.patches().ask(function() {
+        if ((!!SelfManager.self().breedHere("CELLS").isEmpty() && Prims.equality(SelfManager.self().getPatchVariable("live-neighbors"), 3))) {
+          procedures["BIRTH"]();
+        }
+        SelfManager.self().setPatchVariable("live-neighbors", 0);
+      }, true);
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      else {
-        SelfManager.self().setVariable("color", 5);
-      }
-    }, true);
-    world.patches().ask(function() {
-      if ((!!SelfManager.self().breedHere("CELLS").isEmpty() && Prims.equality(SelfManager.self().getPatchVariable("live-neighbors"), 3))) {
-        procedures["BIRTH"]();
-      }
-      SelfManager.self().setPatchVariable("live-neighbors", 0);
-    }, true);
-    world.ticker.tick();
+    }
   });
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    var erasing_p = !Prims.breedOn("CELLS", world.getPatchAt(MousePrims.getX(), MousePrims.getY())).isEmpty();
-    while (MousePrims.isDown()) {
-      world.getPatchAt(MousePrims.getX(), MousePrims.getY()).ask(function() {
-        if (erasing_p) {
-          procedures["ERASE"]();
-        }
-        else {
-          procedures["DRAW"]();
-        }
-      }, true);
-      notImplemented('display', undefined)();
+    try {
+      let erasing_p = !Prims.breedOn("CELLS", world.getPatchAt(MousePrims.getX(), MousePrims.getY())).isEmpty();
+      while (MousePrims.isDown()) {
+        world.getPatchAt(MousePrims.getX(), MousePrims.getY()).ask(function() {
+          if (erasing_p) {
+            procedures["ERASE"]();
+          }
+          else {
+            procedures["DRAW"]();
+          }
+        }, true);
+        notImplemented('display', undefined)();
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["drawCells"] = temp;
   procs["DRAW-CELLS"] = temp;
   temp = (function() {
-    if (!!SelfManager.self().breedHere("CELLS").isEmpty()) {
-      SelfManager.self().turtlesHere().ask(function() { SelfManager.self().die(); }, true);
-      SelfManager.self().sprout(1, "CELLS").ask(function() { SelfManager.self().setVariable("color", 9.9); }, true);
-      procedures["UPDATE"]();
-      SelfManager.self().getNeighbors().ask(function() { procedures["UPDATE"](); }, true);
+    try {
+      if (!!SelfManager.self().breedHere("CELLS").isEmpty()) {
+        SelfManager.self().turtlesHere().ask(function() { SelfManager.self().die(); }, true);
+        SelfManager.self().sprout(1, "CELLS").ask(function() { SelfManager.self().setVariable("color", 9.9); }, true);
+        procedures["UPDATE"]();
+        SelfManager.self().getNeighbors().ask(function() { procedures["UPDATE"](); }, true);
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["draw"] = temp;
   procs["DRAW"] = temp;
   temp = (function() {
-    SelfManager.self().turtlesHere().ask(function() { SelfManager.self().die(); }, true);
-    procedures["UPDATE"]();
-    SelfManager.self().getNeighbors().ask(function() { procedures["UPDATE"](); }, true);
+    try {
+      SelfManager.self().turtlesHere().ask(function() { SelfManager.self().die(); }, true);
+      procedures["UPDATE"]();
+      SelfManager.self().getNeighbors().ask(function() { procedures["UPDATE"](); }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["erase"] = temp;
   procs["ERASE"] = temp;
   temp = (function() {
-    SelfManager.self().breedHere("BABIES").ask(function() { SelfManager.self().die(); }, true);
-    var n = Prims.breedOn("CELLS", SelfManager.self().getNeighbors()).size();
-    if (!SelfManager.self().breedHere("CELLS").isEmpty()) {
-      if ((Prims.equality(n, 2) || Prims.equality(n, 3))) {
-        SelfManager.self().breedHere("CELLS").ask(function() { SelfManager.self().setVariable("color", 9.9); }, true);
+    try {
+      SelfManager.self().breedHere("BABIES").ask(function() { SelfManager.self().die(); }, true);
+      let n = Prims.breedOn("CELLS", SelfManager.self().getNeighbors()).size();
+      if (!SelfManager.self().breedHere("CELLS").isEmpty()) {
+        if ((Prims.equality(n, 2) || Prims.equality(n, 3))) {
+          SelfManager.self().breedHere("CELLS").ask(function() { SelfManager.self().setVariable("color", 9.9); }, true);
+        }
+        else {
+          SelfManager.self().breedHere("CELLS").ask(function() { SelfManager.self().setVariable("color", 5); }, true);
+        }
       }
       else {
-        SelfManager.self().breedHere("CELLS").ask(function() { SelfManager.self().setVariable("color", 5); }, true);
+        if (Prims.equality(n, 3)) {
+          SelfManager.self().sprout(1, "BABIES").ask(function() { SelfManager.self().setVariable("color", (65 + 1)); }, true);
+        }
+      }
+      SelfManager.self().setPatchVariable("live-neighbors", 0);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
-    else {
-      if (Prims.equality(n, 3)) {
-        SelfManager.self().sprout(1, "BABIES").ask(function() { SelfManager.self().setVariable("color", (65 + 1)); }, true);
-      }
-    }
-    SelfManager.self().setPatchVariable("live-neighbors", 0);
   });
   procs["update"] = temp;
   procs["UPDATE"] = temp;

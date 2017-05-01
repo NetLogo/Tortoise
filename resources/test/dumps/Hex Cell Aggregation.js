@@ -63,11 +63,21 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    procedures["SETUP-GRID"]();
-    procedures["READ-SWITCHES"]();
-    Prims.breedOn("CELLS", world.getPatchAt(0, 0)).ask(function() { procedures["BECOME-ALIVE"](); }, true);
-    world.ticker.reset();
+    try {
+      world.clearAll();
+      procedures["SETUP-GRID"]();
+      procedures["READ-SWITCHES"]();
+      Prims.breedOn("CELLS", world.getPatchAt(0, 0)).ask(function() { procedures["BECOME-ALIVE"](); }, true);
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
@@ -79,7 +89,9 @@ var procedures = (function() {
       ListPrims.oneOf(world.observer.getGlobal("eligibles")).ask(function() { procedures["BECOME-ALIVE"](); }, true);
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -89,82 +101,122 @@ var procedures = (function() {
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    SelfManager.self().hideTurtle(false);;
-    SelfManager.self().setVariable("eligible?", false);
-    world.observer.setGlobal("eligibles", ListPrims.remove(SelfManager.self(), world.observer.getGlobal("eligibles")));
-    SelfManager.self().getVariable("hex-neighbors").ask(function() {
-      SelfManager.self().setVariable("live-neighbor-count", (SelfManager.self().getVariable("live-neighbor-count") + 1));
-      if (Prims.equality(SelfManager.self().getVariable("live-neighbor-count"), 6)) {
-        SelfManager.self().setVariable("color", 15);
+    try {
+      SelfManager.self().hideTurtle(false);;
+      SelfManager.self().setVariable("eligible?", false);
+      world.observer.setGlobal("eligibles", ListPrims.remove(SelfManager.self(), world.observer.getGlobal("eligibles")));
+      SelfManager.self().getVariable("hex-neighbors").ask(function() {
+        SelfManager.self().setVariable("live-neighbor-count", (SelfManager.self().getVariable("live-neighbor-count") + 1));
+        if (Prims.equality(SelfManager.self().getVariable("live-neighbor-count"), 6)) {
+          SelfManager.self().setVariable("color", 15);
+        }
+        procedures["UPDATE-ELIGIBILITY"]();
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      procedures["UPDATE-ELIGIBILITY"]();
-    }, true);
+    }
   });
   procs["becomeAlive"] = temp;
   procs["BECOME-ALIVE"] = temp;
   temp = (function() {
-    if (SelfManager.self().getVariable("eligible?")) {
-      if (!ListPrims.member(SelfManager.self().getVariable("live-neighbor-count"), world.observer.getGlobal("switches"))) {
-        SelfManager.self().setVariable("eligible?", false);
-        world.observer.setGlobal("eligibles", ListPrims.remove(SelfManager.self(), world.observer.getGlobal("eligibles")));
+    try {
+      if (SelfManager.self().getVariable("eligible?")) {
+        if (!ListPrims.member(SelfManager.self().getVariable("live-neighbor-count"), world.observer.getGlobal("switches"))) {
+          SelfManager.self().setVariable("eligible?", false);
+          world.observer.setGlobal("eligibles", ListPrims.remove(SelfManager.self(), world.observer.getGlobal("eligibles")));
+        }
       }
-    }
-    else {
-      if ((SelfManager.self().getVariable("hidden?") && ListPrims.member(SelfManager.self().getVariable("live-neighbor-count"), world.observer.getGlobal("switches")))) {
-        SelfManager.self().setVariable("eligible?", true);
-        world.observer.setGlobal("eligibles", ListPrims.fput(SelfManager.self(), world.observer.getGlobal("eligibles")));
+      else {
+        if ((SelfManager.self().getVariable("hidden?") && ListPrims.member(SelfManager.self().getVariable("live-neighbor-count"), world.observer.getGlobal("switches")))) {
+          SelfManager.self().setVariable("eligible?", true);
+          world.observer.setGlobal("eligibles", ListPrims.fput(SelfManager.self(), world.observer.getGlobal("eligibles")));
+        }
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
   });
   procs["updateEligibility"] = temp;
   procs["UPDATE-ELIGIBILITY"] = temp;
   temp = (function() {
-    world.observer.setGlobal("switches", []);
-    if (world.observer.getGlobal("one-neighbor?")) {
-      world.observer.setGlobal("switches", ListPrims.lput(1, world.observer.getGlobal("switches")));
+    try {
+      world.observer.setGlobal("switches", []);
+      if (world.observer.getGlobal("one-neighbor?")) {
+        world.observer.setGlobal("switches", ListPrims.lput(1, world.observer.getGlobal("switches")));
+      }
+      if (world.observer.getGlobal("two-neighbors?")) {
+        world.observer.setGlobal("switches", ListPrims.lput(2, world.observer.getGlobal("switches")));
+      }
+      if (world.observer.getGlobal("three-neighbors?")) {
+        world.observer.setGlobal("switches", ListPrims.lput(3, world.observer.getGlobal("switches")));
+      }
+      if (world.observer.getGlobal("four-neighbors?")) {
+        world.observer.setGlobal("switches", ListPrims.lput(4, world.observer.getGlobal("switches")));
+      }
+      if (world.observer.getGlobal("five-neighbors?")) {
+        world.observer.setGlobal("switches", ListPrims.lput(5, world.observer.getGlobal("switches")));
+      }
+      if (world.observer.getGlobal("six-neighbors?")) {
+        world.observer.setGlobal("switches", ListPrims.lput(6, world.observer.getGlobal("switches")));
+      }
+      world.turtleManager.turtlesOfBreed("CELLS").ask(function() {
+        SelfManager.self().setVariable("eligible?", (SelfManager.self().getVariable("hidden?") && ListPrims.member(SelfManager.self().getVariable("live-neighbor-count"), world.observer.getGlobal("switches"))));
+      }, true);
+      world.observer.setGlobal("eligibles", world.turtleManager.turtlesOfBreed("CELLS").agentFilter(function() { return SelfManager.self().getVariable("eligible?"); }).projectionBy(function() { return SelfManager.self(); }));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    if (world.observer.getGlobal("two-neighbors?")) {
-      world.observer.setGlobal("switches", ListPrims.lput(2, world.observer.getGlobal("switches")));
-    }
-    if (world.observer.getGlobal("three-neighbors?")) {
-      world.observer.setGlobal("switches", ListPrims.lput(3, world.observer.getGlobal("switches")));
-    }
-    if (world.observer.getGlobal("four-neighbors?")) {
-      world.observer.setGlobal("switches", ListPrims.lput(4, world.observer.getGlobal("switches")));
-    }
-    if (world.observer.getGlobal("five-neighbors?")) {
-      world.observer.setGlobal("switches", ListPrims.lput(5, world.observer.getGlobal("switches")));
-    }
-    if (world.observer.getGlobal("six-neighbors?")) {
-      world.observer.setGlobal("switches", ListPrims.lput(6, world.observer.getGlobal("switches")));
-    }
-    world.turtleManager.turtlesOfBreed("CELLS").ask(function() {
-      SelfManager.self().setVariable("eligible?", (SelfManager.self().getVariable("hidden?") && ListPrims.member(SelfManager.self().getVariable("live-neighbor-count"), world.observer.getGlobal("switches"))));
-    }, true);
-    world.observer.setGlobal("eligibles", world.turtleManager.turtlesOfBreed("CELLS").agentFilter(function() { return SelfManager.self().getVariable("eligible?"); }).projectionBy(function() { return SelfManager.self(); }));
   });
   procs["readSwitches"] = temp;
   procs["READ-SWITCHES"] = temp;
   temp = (function() {
-    BreedManager.setDefaultShape(world.turtles().getSpecialName(), "hex")
-    world.patches().ask(function() {
-      SelfManager.self().sprout(1, "CELLS").ask(function() {
-        SelfManager.self().hideTurtle(true);;
-        SelfManager.self().setVariable("color", 25);
-        SelfManager.self().setVariable("eligible?", false);
+    try {
+      BreedManager.setDefaultShape(world.turtles().getSpecialName(), "hex")
+      world.patches().ask(function() {
+        SelfManager.self().sprout(1, "CELLS").ask(function() {
+          SelfManager.self().hideTurtle(true);;
+          SelfManager.self().setVariable("color", 25);
+          SelfManager.self().setVariable("eligible?", false);
+          if (Prims.equality(NLMath.mod(SelfManager.self().getPatchVariable("pxcor"), 2), 0)) {
+            SelfManager.self().setVariable("ycor", (SelfManager.self().getVariable("ycor") - 0.5));
+          }
+        }, true);
+      }, true);
+      world.turtleManager.turtlesOfBreed("CELLS").ask(function() {
         if (Prims.equality(NLMath.mod(SelfManager.self().getPatchVariable("pxcor"), 2), 0)) {
-          SelfManager.self().setVariable("ycor", (SelfManager.self().getVariable("ycor") - 0.5));
+          SelfManager.self().setVariable("hex-neighbors", Prims.breedOn("CELLS", world.patches().atPoints([[0, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0]])));
+        }
+        else {
+          SelfManager.self().setVariable("hex-neighbors", Prims.breedOn("CELLS", world.patches().atPoints([[0, 1], [1, 1], [1, 0], [0, -1], [-1, 0], [-1, 1]])));
         }
       }, true);
-    }, true);
-    world.turtleManager.turtlesOfBreed("CELLS").ask(function() {
-      if (Prims.equality(NLMath.mod(SelfManager.self().getPatchVariable("pxcor"), 2), 0)) {
-        SelfManager.self().setVariable("hex-neighbors", Prims.breedOn("CELLS", world.patches().atPoints([[0, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0]])));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      else {
-        SelfManager.self().setVariable("hex-neighbors", Prims.breedOn("CELLS", world.patches().atPoints([[0, 1], [1, 1], [1, 0], [0, -1], [-1, 0], [-1, 1]])));
-      }
-    }, true);
+    }
   });
   procs["setupGrid"] = temp;
   procs["SETUP-GRID"] = temp;

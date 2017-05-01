@@ -187,6 +187,15 @@ module.exports =
       @jumpIfAble(remaining)
       return
 
+    fdOne: () ->
+      @jumpIfAble(1)
+      return
+
+    # (Number) => Unit
+    fdLessThan1: (distance) ->
+      @jumpIfAble(distance)
+      return
+
     # (Number) => Boolean
     jumpIfAble: (distance) ->
       canMove = @canMove(distance)
@@ -253,7 +262,7 @@ module.exports =
       if not @isDead()
         @_removeTurtle(@id)
         @_seppuku()
-        @linkManager._clear()
+        @linkManager.clear()
         @id = -1
         @getPatchHere().untrackTurtle(this)
         @world.observer.unfocus(this)
@@ -311,7 +320,7 @@ module.exports =
       turtle   = @_createTurtle(@_color, @_heading, @xcor, @ycor, breed, @_label, @_labelcolor, @_hidden, @_size, shape, (self) => @penManager.clone(@_genUpdate(self)))
       varNames = @_varNamesForBreed(breed)
       forEach((varName) =>
-        turtle.setVariable(varName, @getVariable(varName))
+        turtle.setVariable(varName, @getVariable(varName) ? 0)
         return
       )(varNames)
       turtle

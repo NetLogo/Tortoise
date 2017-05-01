@@ -167,7 +167,7 @@ module.exports =
       @observer.resetPerspective()
       @turtleManager.clearTurtles()
       @clearPatches()
-      @linkManager.clear()
+      @clearLinks()
       @_declarePatchesAllBlack()
       @_resetPatchLabelCount()
       @ticker.clear()
@@ -178,6 +178,13 @@ module.exports =
     # () => Unit
     clearDrawing: ->
       @_updater.clearDrawing()
+      return
+
+    # () => Unit
+    clearLinks: ->
+      @linkManager.clear()
+      @turtles().ask((-> SelfManager.self().linkManager.clear()), false)
+      return
 
     # () => Unit
     clearPatches: ->

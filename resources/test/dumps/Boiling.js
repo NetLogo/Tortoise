@@ -47,7 +47,19 @@ modelConfig.plots = [(function() {
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('ave-heat', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('Average Heat', 'ave-heat')(function() { plotManager.plotValue(procedures["AVERAGE-HEAT"]());; });
+      plotManager.withTemporaryContext('Average Heat', 'ave-heat')(function() {
+        try {
+          plotManager.plotValue(procedures["AVERAGE-HEAT"]());
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
+      });
     });
   })];
   var setup   = function() {};
@@ -74,22 +86,42 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    world.patches().ask(function() {
-      SelfManager.self().setPatchVariable("heat", Prims.random(212));
-      SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(15, SelfManager.self().getPatchVariable("heat"), 0, 212));
-    }, true);
-    world.ticker.reset();
+    try {
+      world.clearAll();
+      world.patches().ask(function() {
+        SelfManager.self().setPatchVariable("heat", Prims.random(212));
+        SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(15, SelfManager.self().getPatchVariable("heat"), 0, 212));
+      }, true);
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    world.topology.diffuse("heat", 1)
-    world.patches().ask(function() {
-      SelfManager.self().setPatchVariable("heat", NLMath.mod((SelfManager.self().getPatchVariable("heat") + 5), 212));
-      SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(15, SelfManager.self().getPatchVariable("heat"), 0, 212));
-    }, true);
-    world.ticker.tick();
+    try {
+      world.topology.diffuse("heat", 1)
+      world.patches().ask(function() {
+        SelfManager.self().setPatchVariable("heat", NLMath.mod((SelfManager.self().getPatchVariable("heat") + 5), 212));
+        SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(15, SelfManager.self().getPatchVariable("heat"), 0, 212));
+      }, true);
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["go"] = temp;
   procs["GO"] = temp;
@@ -100,6 +132,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }

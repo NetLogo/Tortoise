@@ -119,508 +119,770 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    world.observer.setGlobal("total-caught", 0);
-    world.observer.setGlobal("histogram-interval-size", 1);
-    world.observer.setGlobal("old-show-initial-bug-vision-cone?", 0);
-    world.observer.setGlobal("old-vision-cone-distance", world.observer.getGlobal("initial-bug-vision"));
-    world.observer.setGlobal("reproduce-birds-after-eating", 25);
-    world.observer.setGlobal("speed-factor", 0.05);
-    world.observer.setGlobal("max-speed", 10);
-    world.observer.setGlobal("max-vision", 10);
-    world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
-    world.turtleManager.createTurtles(world.observer.getGlobal("number-bugs"), "BUGS").ask(function() {
-      SelfManager.self().setVariable("speed", world.observer.getGlobal("initial-bug-speed"));
-      procedures["ATTACH-VISION-CONE"]();
-    }, true);
-    world.turtleManager.turtlesOfBreed("BUGS").ask(function() {
-      SelfManager.self().setVariable("vision", world.observer.getGlobal("initial-bug-vision"));
-      SelfManager.self().setVariable("shape", "bug");
-      SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
-    }, true);
-    world.turtleManager.createTurtles(1, "PLAYERS").ask(function() {
-      SelfManager.self().setVariable("shape", "bird");
-      SelfManager.self().setVariable("color", 35);
-      SelfManager.self().setVariable("hidden?", true);
-    }, true);
-    world.turtleManager.createTurtles(world.observer.getGlobal("number-birds"), "BIRDS").ask(function() {
-      SelfManager.self().setVariable("vision", world.observer.getGlobal("initial-bird-vision"));
-      SelfManager.self().setVariable("shape", "bird-stationary");
-      SelfManager.self().setVariable("color", 35);
-      SelfManager.self().setVariable("hidden?", false);
-      SelfManager.self().setXY(Prims.random(100), Prims.random(100));
-      SelfManager.self().setVariable("speed", world.observer.getGlobal("initial-bird-speed"));
-      procedures["ATTACH-VISION-CONE"]();
-    }, true);
-    world.turtleManager.turtlesOfBreed("VISION-CONES").ask(function() { procedures["SET-VISUALIZE-VISION-CONE"](); }, true);
-    world.ticker.reset();
-    procedures["DO-PLOTS"]();
+    try {
+      world.clearAll();
+      world.observer.setGlobal("total-caught", 0);
+      world.observer.setGlobal("histogram-interval-size", 1);
+      world.observer.setGlobal("old-show-initial-bug-vision-cone?", 0);
+      world.observer.setGlobal("old-vision-cone-distance", world.observer.getGlobal("initial-bug-vision"));
+      world.observer.setGlobal("reproduce-birds-after-eating", 25);
+      world.observer.setGlobal("speed-factor", 0.05);
+      world.observer.setGlobal("max-speed", 10);
+      world.observer.setGlobal("max-vision", 10);
+      world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
+      world.turtleManager.createTurtles(world.observer.getGlobal("number-bugs"), "BUGS").ask(function() {
+        SelfManager.self().setVariable("speed", world.observer.getGlobal("initial-bug-speed"));
+        procedures["ATTACH-VISION-CONE"]();
+      }, true);
+      world.turtleManager.turtlesOfBreed("BUGS").ask(function() {
+        SelfManager.self().setVariable("vision", world.observer.getGlobal("initial-bug-vision"));
+        SelfManager.self().setVariable("shape", "bug");
+        SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
+      }, true);
+      world.turtleManager.createTurtles(1, "PLAYERS").ask(function() {
+        SelfManager.self().setVariable("shape", "bird");
+        SelfManager.self().setVariable("color", 35);
+        SelfManager.self().setVariable("hidden?", true);
+      }, true);
+      world.turtleManager.createTurtles(world.observer.getGlobal("number-birds"), "BIRDS").ask(function() {
+        SelfManager.self().setVariable("vision", world.observer.getGlobal("initial-bird-vision"));
+        SelfManager.self().setVariable("shape", "bird-stationary");
+        SelfManager.self().setVariable("color", 35);
+        SelfManager.self().setVariable("hidden?", false);
+        SelfManager.self().setXY(Prims.random(100), Prims.random(100));
+        SelfManager.self().setVariable("speed", world.observer.getGlobal("initial-bird-speed"));
+        procedures["ATTACH-VISION-CONE"]();
+      }, true);
+      world.turtleManager.turtlesOfBreed("VISION-CONES").ask(function() { procedures["SET-VISUALIZE-VISION-CONE"](); }, true);
+      world.ticker.reset();
+      procedures["DO-PLOTS"]();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    var parentVision = SelfManager.self().getVariable("vision");
-    SelfManager.self().hatch(1, "").ask(function() {
-      SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("VISION-CONES"));
-      LinkPrims.createLinkFrom(SelfManager.myself(), "LINKS").ask(function() { SelfManager.self().tie(); }, true);
-      SelfManager.self().setVariable("shape", "vision cone");
-      SelfManager.self().setVariable("color", 5);
-      SelfManager.self().setVariable("size", parentVision);
-      procedures["SET-VISUALIZE-VISION-CONE"]();
-    }, true);
+    try {
+      let parentVision = SelfManager.self().getVariable("vision");
+      SelfManager.self().hatch(1, "").ask(function() {
+        SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("VISION-CONES"));
+        LinkPrims.createLinkFrom(SelfManager.myself(), "LINKS").ask(function() { SelfManager.self().tie(); }, true);
+        SelfManager.self().setVariable("shape", "vision cone");
+        SelfManager.self().setVariable("color", 5);
+        SelfManager.self().setVariable("size", parentVision);
+        procedures["SET-VISUALIZE-VISION-CONE"]();
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["attachVisionCone"] = temp;
   procs["ATTACH-VISION-CONE"] = temp;
   temp = (function() {
-    procedures["CHECK-VISUALIZE-VISION-CONE-CHANGE"]();
-    procedures["CHECK-PLAYER-CAUGHT"]();
-    procedures["CHECK-BIRD-CATCH"]();
-    procedures["MOVE-PLAYER"]();
-    procedures["MOVE-BUGS"]();
-    procedures["MOVE-BIRDS"]();
-    procedures["REPRODUCE-BIRDS"]();
-    world.ticker.tick();
-    procedures["UPDATE-VARIABLES"]();
-    procedures["DO-PLOTS"]();
+    try {
+      procedures["CHECK-VISUALIZE-VISION-CONE-CHANGE"]();
+      procedures["CHECK-PLAYER-CAUGHT"]();
+      procedures["CHECK-BIRD-CATCH"]();
+      procedures["MOVE-PLAYER"]();
+      procedures["MOVE-BUGS"]();
+      procedures["MOVE-BIRDS"]();
+      procedures["REPRODUCE-BIRDS"]();
+      world.ticker.tick();
+      procedures["UPDATE-VARIABLES"]();
+      procedures["DO-PLOTS"]();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    if (!world.turtleManager.turtlesOfBreed("BUGS").isEmpty()) {
-      world.observer.setGlobal("avg-bug-speed", ListPrims.mean(world.turtleManager.turtlesOfBreed("BUGS").projectionBy(function() { return SelfManager.self().getVariable("speed"); })));
-      world.observer.setGlobal("avg-bug-vision", ListPrims.mean(world.turtleManager.turtlesOfBreed("BUGS").projectionBy(function() { return SelfManager.self().getVariable("vision"); })));
-    }
-    else {
-      world.observer.setGlobal("avg-bug-speed", 0);
-    }
-    if (!world.turtleManager.turtlesOfBreed("BIRDS").isEmpty()) {
-      world.observer.setGlobal("avg-bird-speed", ListPrims.mean(world.turtleManager.turtlesOfBreed("BIRDS").projectionBy(function() { return SelfManager.self().getVariable("speed"); })));
-      world.observer.setGlobal("avg-bird-vision", ListPrims.mean(world.turtleManager.turtlesOfBreed("BIRDS").projectionBy(function() { return SelfManager.self().getVariable("vision"); })));
-    }
-    else {
-      world.observer.setGlobal("avg-bird-speed", 0);
+    try {
+      if (!world.turtleManager.turtlesOfBreed("BUGS").isEmpty()) {
+        world.observer.setGlobal("avg-bug-speed", ListPrims.mean(world.turtleManager.turtlesOfBreed("BUGS").projectionBy(function() { return SelfManager.self().getVariable("speed"); })));
+        world.observer.setGlobal("avg-bug-vision", ListPrims.mean(world.turtleManager.turtlesOfBreed("BUGS").projectionBy(function() { return SelfManager.self().getVariable("vision"); })));
+      }
+      else {
+        world.observer.setGlobal("avg-bug-speed", 0);
+      }
+      if (!world.turtleManager.turtlesOfBreed("BIRDS").isEmpty()) {
+        world.observer.setGlobal("avg-bird-speed", ListPrims.mean(world.turtleManager.turtlesOfBreed("BIRDS").projectionBy(function() { return SelfManager.self().getVariable("speed"); })));
+        world.observer.setGlobal("avg-bird-vision", ListPrims.mean(world.turtleManager.turtlesOfBreed("BIRDS").projectionBy(function() { return SelfManager.self().getVariable("vision"); })));
+      }
+      else {
+        world.observer.setGlobal("avg-bird-speed", 0);
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["updateVariables"] = temp;
   procs["UPDATE-VARIABLES"] = temp;
   temp = (function() {
-    var worstBird = Nobody;
-    if (((Prims.equality(NLMath.mod(world.observer.getGlobal("total-caught"), world.observer.getGlobal("reproduce-birds-after-eating")), 0) && Prims.gt(world.observer.getGlobal("total-caught"), 0)) && !world.turtleManager.turtlesOfBreed("BIRDS").isEmpty())) {
-      worstBird = world.turtleManager.turtlesOfBreed("BIRDS").minOneOf(function() { return SelfManager.self().getVariable("eaten"); });
-      worstBird.ask(function() {
-        LinkPrims.outLinkNeighbors("LINKS").ask(function() {
-          SelfManager.self().setVariable("color", 15);
-          SelfManager.self().die();
-        }, true);
-        SelfManager.self().die();
-      }, true);
-      procedures["REPRODUCE-ONE-BIRD"]();
-    }
-  });
-  procs["reproduceBirds"] = temp;
-  procs["REPRODUCE-BIRDS"] = temp;
-  temp = (function() {
-    var targetHeading = 0;
-    var candidatePredators = Nobody;
-    var predator = Nobody;
-    var allPredators = Prims.turtleSet(world.turtleManager.turtlesOfBreed("BIRDS"), world.turtleManager.turtlesOfBreed("PLAYERS"));
-    world.turtleManager.turtlesOfBreed("BUGS").ask(function() {
-      SelfManager.self().fd((SelfManager.self().getVariable("speed") * world.observer.getGlobal("speed-factor")));
-      if (!SelfManager.self().inCone(allPredators, SelfManager.self().getVariable("vision"), 120).isEmpty()) {
-        candidatePredators = SelfManager.self().inCone(allPredators, SelfManager.self().getVariable("vision"), 120);
-        if ((Prims.equality(world.observer.getGlobal("bug-flee-strategy"), "any") && !candidatePredators.isEmpty())) {
-          predator = ListPrims.oneOf(candidatePredators);
-        }
-        if ((Prims.equality(world.observer.getGlobal("bug-flee-strategy"), "nearest") && !candidatePredators.isEmpty())) {
-          predator = candidatePredators.minOneOf(function() { return SelfManager.self().distance(SelfManager.myself()); });
-        }
-        targetHeading = (180 + SelfManager.self().towards(predator));
-        SelfManager.self().setVariable("heading", targetHeading);
-        SelfManager.self().setVariable("label-color", 0);
-        SelfManager.self().setVariable("label", "!");
-      }
-      else {
-        procedures["WIGGLE"]();
-        SelfManager.self().setVariable("label", "");
-      }
-    }, true);
-  });
-  procs["moveBugs"] = temp;
-  procs["MOVE-BUGS"] = temp;
-  temp = (function() {
-    var preyAgent = Nobody;
-    var candidateBugs = Nobody;
-    var closestBug = Nobody;
-    var assignedTarget_p = false;
-    world.turtleManager.turtlesOfBreed("BIRDS").ask(function() {
-      candidateBugs = SelfManager.self().inCone(world.turtleManager.turtlesOfBreed("BUGS"), world.observer.getGlobal("initial-bird-vision"), 120);
-      if (!candidateBugs.isEmpty()) {
-        closestBug = candidateBugs.minOneOf(function() { return SelfManager.self().distance(SelfManager.myself()); });
-        if ((Prims.equality(SelfManager.self().getVariable("target"), Nobody) && Prims.equality(world.observer.getGlobal("bug-pursuit-strategy"), "lock on one"))) {
-          preyAgent = closestBug;
-          SelfManager.self().setVariable("target", preyAgent);
-          SelfManager.self().setVariable("heading", SelfManager.self().towards(preyAgent));
-          SelfManager.self().setVariable("label-color", (15 - 2));
-          SelfManager.self().setVariable("label", "!");
-          assignedTarget_p = true;
-        }
-        if ((Prims.equality(world.observer.getGlobal("bug-pursuit-strategy"), "closest") && !Prims.equality(SelfManager.self().getVariable("target"), closestBug))) {
-          preyAgent = closestBug;
-          SelfManager.self().setVariable("target", preyAgent);
-          SelfManager.self().setVariable("heading", SelfManager.self().towards(preyAgent));
-          SelfManager.self().setVariable("label-color", (15 - 2));
-          SelfManager.self().setVariable("label", "!");
-          assignedTarget_p = true;
-        }
-        if (!Prims.equality(assignedTarget_p, false)) {
-          SelfManager.self().setVariable("target", Nobody);
-          SelfManager.self().setVariable("label", "");
-          procedures["WIGGLE"]();
-        }
-      }
-      else {
-        SelfManager.self().setVariable("target", Nobody);
-        SelfManager.self().setVariable("label", "");
-        procedures["WIGGLE"]();
-      }
-      SelfManager.self().fd((SelfManager.self().getVariable("speed") * world.observer.getGlobal("speed-factor")));
-    }, true);
-  });
-  procs["moveBirds"] = temp;
-  procs["MOVE-BIRDS"] = temp;
-  temp = (function() {
-    if (world.observer.getGlobal("wiggle?")) {
-      SelfManager.self().right(Prims.div((Prims.randomFloat(30) * 0.05), world.observer.getGlobal("speed-factor")));
-      SelfManager.self().right(-Prims.div((Prims.randomFloat(30) * 0.05), world.observer.getGlobal("speed-factor")));
-    }
-  });
-  procs["wiggle"] = temp;
-  procs["WIGGLE"] = temp;
-  temp = (function() {
-    if (MousePrims.isInside()) {
-      world.turtleManager.turtlesOfBreed("PLAYERS").ask(function() {
-        SelfManager.self().setXY(MousePrims.getX(), MousePrims.getY());
-        SelfManager.self().setVariable("hidden?", false);
-      }, true);
-    }
-    else {
-      world.turtleManager.turtlesOfBreed("PLAYERS").ask(function() { SelfManager.self().setVariable("hidden?", true); }, true);
-    }
-  });
-  procs["movePlayer"] = temp;
-  procs["MOVE-PLAYER"] = temp;
-  temp = (function() {
-    var speedOfCaught = 0;
-    var localBugs = 0;
-    var snapMouseXcor = MousePrims.getX();
-    var snapMouseYcor = MousePrims.getY();
-    if ((MousePrims.isDown() && MousePrims.isInside())) {
-      localBugs = Prims.breedOn("BUGS", world.getPatchAt(snapMouseXcor, snapMouseYcor));
-      if (!localBugs.isEmpty()) {
-        world.observer.setGlobal("total-caught", (world.observer.getGlobal("total-caught") + 1));
-        ListPrims.oneOf(localBugs).ask(function() {
-          speedOfCaught = SelfManager.self().getVariable("speed");
-          if (Prims.equality(speedOfCaught, 1)) {
-            world.observer.setGlobal("total-speed-6-caught", (world.observer.getGlobal("total-speed-6-caught") + 1));
-          }
-          if (Prims.equality(speedOfCaught, 2)) {
-            world.observer.setGlobal("total-speed-5-caught", (world.observer.getGlobal("total-speed-5-caught") + 1));
-          }
-          if (Prims.equality(speedOfCaught, 3)) {
-            world.observer.setGlobal("total-speed-4-caught", (world.observer.getGlobal("total-speed-4-caught") + 1));
-          }
-          if (Prims.equality(speedOfCaught, 4)) {
-            world.observer.setGlobal("total-speed-3-caught", (world.observer.getGlobal("total-speed-3-caught") + 1));
-          }
-          if (Prims.equality(speedOfCaught, 5)) {
-            world.observer.setGlobal("total-speed-2-caught", (world.observer.getGlobal("total-speed-2-caught") + 1));
-          }
-          if (Prims.equality(speedOfCaught, 6)) {
-            world.observer.setGlobal("total-speed-1-caught", (world.observer.getGlobal("total-speed-1-caught") + 1));
-          }
+    try {
+      let worstBird = Nobody;
+      if (((Prims.equality(NLMath.mod(world.observer.getGlobal("total-caught"), world.observer.getGlobal("reproduce-birds-after-eating")), 0) && Prims.gt(world.observer.getGlobal("total-caught"), 0)) && !world.turtleManager.turtlesOfBreed("BIRDS").isEmpty())) {
+        worstBird = world.turtleManager.turtlesOfBreed("BIRDS").minOneOf(function() { return SelfManager.self().getVariable("eaten"); });
+        worstBird.ask(function() {
           LinkPrims.outLinkNeighbors("LINKS").ask(function() {
             SelfManager.self().setVariable("color", 15);
             SelfManager.self().die();
           }, true);
           SelfManager.self().die();
         }, true);
-        procedures["REPRODUCE-ONE-BUG"]();
+        procedures["REPRODUCE-ONE-BIRD"]();
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
+  });
+  procs["reproduceBirds"] = temp;
+  procs["REPRODUCE-BIRDS"] = temp;
+  temp = (function() {
+    try {
+      let targetHeading = 0;
+      let candidatePredators = Nobody;
+      let predator = Nobody;
+      let allPredators = Prims.turtleSet(world.turtleManager.turtlesOfBreed("BIRDS"), world.turtleManager.turtlesOfBreed("PLAYERS"));
+      world.turtleManager.turtlesOfBreed("BUGS").ask(function() {
+        SelfManager.self().fd((SelfManager.self().getVariable("speed") * world.observer.getGlobal("speed-factor")));
+        if (!SelfManager.self().inCone(allPredators, SelfManager.self().getVariable("vision"), 120).isEmpty()) {
+          candidatePredators = SelfManager.self().inCone(allPredators, SelfManager.self().getVariable("vision"), 120);
+          if ((Prims.equality(world.observer.getGlobal("bug-flee-strategy"), "any") && !candidatePredators.isEmpty())) {
+            predator = ListPrims.oneOf(candidatePredators);
+          }
+          if ((Prims.equality(world.observer.getGlobal("bug-flee-strategy"), "nearest") && !candidatePredators.isEmpty())) {
+            predator = candidatePredators.minOneOf(function() { return SelfManager.self().distance(SelfManager.myself()); });
+          }
+          targetHeading = (180 + SelfManager.self().towards(predator));
+          SelfManager.self().setVariable("heading", targetHeading);
+          SelfManager.self().setVariable("label-color", 0);
+          SelfManager.self().setVariable("label", "!");
+        }
+        else {
+          procedures["WIGGLE"]();
+          SelfManager.self().setVariable("label", "");
+        }
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
+  });
+  procs["moveBugs"] = temp;
+  procs["MOVE-BUGS"] = temp;
+  temp = (function() {
+    try {
+      let preyAgent = Nobody;
+      let candidateBugs = Nobody;
+      let closestBug = Nobody;
+      let assignedTarget_p = false;
+      world.turtleManager.turtlesOfBreed("BIRDS").ask(function() {
+        candidateBugs = SelfManager.self().inCone(world.turtleManager.turtlesOfBreed("BUGS"), world.observer.getGlobal("initial-bird-vision"), 120);
+        if (!candidateBugs.isEmpty()) {
+          closestBug = candidateBugs.minOneOf(function() { return SelfManager.self().distance(SelfManager.myself()); });
+          if ((Prims.equality(SelfManager.self().getVariable("target"), Nobody) && Prims.equality(world.observer.getGlobal("bug-pursuit-strategy"), "lock on one"))) {
+            preyAgent = closestBug;
+            SelfManager.self().setVariable("target", preyAgent);
+            SelfManager.self().setVariable("heading", SelfManager.self().towards(preyAgent));
+            SelfManager.self().setVariable("label-color", (15 - 2));
+            SelfManager.self().setVariable("label", "!");
+            assignedTarget_p = true;
+          }
+          if ((Prims.equality(world.observer.getGlobal("bug-pursuit-strategy"), "closest") && !Prims.equality(SelfManager.self().getVariable("target"), closestBug))) {
+            preyAgent = closestBug;
+            SelfManager.self().setVariable("target", preyAgent);
+            SelfManager.self().setVariable("heading", SelfManager.self().towards(preyAgent));
+            SelfManager.self().setVariable("label-color", (15 - 2));
+            SelfManager.self().setVariable("label", "!");
+            assignedTarget_p = true;
+          }
+          if (!Prims.equality(assignedTarget_p, false)) {
+            SelfManager.self().setVariable("target", Nobody);
+            SelfManager.self().setVariable("label", "");
+            procedures["WIGGLE"]();
+          }
+        }
+        else {
+          SelfManager.self().setVariable("target", Nobody);
+          SelfManager.self().setVariable("label", "");
+          procedures["WIGGLE"]();
+        }
+        SelfManager.self().fd((SelfManager.self().getVariable("speed") * world.observer.getGlobal("speed-factor")));
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
+  });
+  procs["moveBirds"] = temp;
+  procs["MOVE-BIRDS"] = temp;
+  temp = (function() {
+    try {
+      if (world.observer.getGlobal("wiggle?")) {
+        SelfManager.self().right(Prims.div((Prims.randomFloat(30) * 0.05), world.observer.getGlobal("speed-factor")));
+        SelfManager.self().right(-Prims.div((Prims.randomFloat(30) * 0.05), world.observer.getGlobal("speed-factor")));
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
+  });
+  procs["wiggle"] = temp;
+  procs["WIGGLE"] = temp;
+  temp = (function() {
+    try {
+      if (MousePrims.isInside()) {
+        world.turtleManager.turtlesOfBreed("PLAYERS").ask(function() {
+          SelfManager.self().setXY(MousePrims.getX(), MousePrims.getY());
+          SelfManager.self().setVariable("hidden?", false);
+        }, true);
+      }
+      else {
+        world.turtleManager.turtlesOfBreed("PLAYERS").ask(function() { SelfManager.self().setVariable("hidden?", true); }, true);
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
+  });
+  procs["movePlayer"] = temp;
+  procs["MOVE-PLAYER"] = temp;
+  temp = (function() {
+    try {
+      let speedOfCaught = 0;
+      let localBugs = 0;
+      let snapMouseXcor = MousePrims.getX();
+      let snapMouseYcor = MousePrims.getY();
+      if ((MousePrims.isDown() && MousePrims.isInside())) {
+        localBugs = Prims.breedOn("BUGS", world.getPatchAt(snapMouseXcor, snapMouseYcor));
+        if (!localBugs.isEmpty()) {
+          world.observer.setGlobal("total-caught", (world.observer.getGlobal("total-caught") + 1));
+          ListPrims.oneOf(localBugs).ask(function() {
+            speedOfCaught = SelfManager.self().getVariable("speed");
+            if (Prims.equality(speedOfCaught, 1)) {
+              world.observer.setGlobal("total-speed-6-caught", (world.observer.getGlobal("total-speed-6-caught") + 1));
+            }
+            if (Prims.equality(speedOfCaught, 2)) {
+              world.observer.setGlobal("total-speed-5-caught", (world.observer.getGlobal("total-speed-5-caught") + 1));
+            }
+            if (Prims.equality(speedOfCaught, 3)) {
+              world.observer.setGlobal("total-speed-4-caught", (world.observer.getGlobal("total-speed-4-caught") + 1));
+            }
+            if (Prims.equality(speedOfCaught, 4)) {
+              world.observer.setGlobal("total-speed-3-caught", (world.observer.getGlobal("total-speed-3-caught") + 1));
+            }
+            if (Prims.equality(speedOfCaught, 5)) {
+              world.observer.setGlobal("total-speed-2-caught", (world.observer.getGlobal("total-speed-2-caught") + 1));
+            }
+            if (Prims.equality(speedOfCaught, 6)) {
+              world.observer.setGlobal("total-speed-1-caught", (world.observer.getGlobal("total-speed-1-caught") + 1));
+            }
+            LinkPrims.outLinkNeighbors("LINKS").ask(function() {
+              SelfManager.self().setVariable("color", 15);
+              SelfManager.self().die();
+            }, true);
+            SelfManager.self().die();
+          }, true);
+          procedures["REPRODUCE-ONE-BUG"]();
+        }
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
   });
   procs["checkPlayerCaught"] = temp;
   procs["CHECK-PLAYER-CAUGHT"] = temp;
   temp = (function() {
-    var speedOfCaught = 0;
-    world.turtleManager.turtlesOfBreed("BIRDS").ask(function() {
-      if (!SelfManager.self().breedHere("BUGS").isEmpty()) {
-        world.observer.setGlobal("total-caught", (world.observer.getGlobal("total-caught") + 1));
-        SelfManager.self().setVariable("eaten", (SelfManager.self().getVariable("eaten") + 1));
-        ListPrims.oneOf(SelfManager.self().breedHere("BUGS")).ask(function() {
-          speedOfCaught = SelfManager.self().getVariable("speed");
-          if (Prims.equality(speedOfCaught, 1)) {
-            world.observer.setGlobal("total-speed-6-caught", (world.observer.getGlobal("total-speed-6-caught") + 1));
-          }
-          if (Prims.equality(speedOfCaught, 2)) {
-            world.observer.setGlobal("total-speed-5-caught", (world.observer.getGlobal("total-speed-5-caught") + 1));
-          }
-          if (Prims.equality(speedOfCaught, 3)) {
-            world.observer.setGlobal("total-speed-4-caught", (world.observer.getGlobal("total-speed-4-caught") + 1));
-          }
-          if (Prims.equality(speedOfCaught, 4)) {
-            world.observer.setGlobal("total-speed-3-caught", (world.observer.getGlobal("total-speed-3-caught") + 1));
-          }
-          if (Prims.equality(speedOfCaught, 5)) {
-            world.observer.setGlobal("total-speed-2-caught", (world.observer.getGlobal("total-speed-2-caught") + 1));
-          }
-          if (Prims.equality(speedOfCaught, 6)) {
-            world.observer.setGlobal("total-speed-1-caught", (world.observer.getGlobal("total-speed-1-caught") + 1));
-          }
-          LinkPrims.outLinkNeighbors("LINKS").ask(function() {
-            SelfManager.self().setVariable("color", 15);
+    try {
+      let speedOfCaught = 0;
+      world.turtleManager.turtlesOfBreed("BIRDS").ask(function() {
+        if (!SelfManager.self().breedHere("BUGS").isEmpty()) {
+          world.observer.setGlobal("total-caught", (world.observer.getGlobal("total-caught") + 1));
+          SelfManager.self().setVariable("eaten", (SelfManager.self().getVariable("eaten") + 1));
+          ListPrims.oneOf(SelfManager.self().breedHere("BUGS")).ask(function() {
+            speedOfCaught = SelfManager.self().getVariable("speed");
+            if (Prims.equality(speedOfCaught, 1)) {
+              world.observer.setGlobal("total-speed-6-caught", (world.observer.getGlobal("total-speed-6-caught") + 1));
+            }
+            if (Prims.equality(speedOfCaught, 2)) {
+              world.observer.setGlobal("total-speed-5-caught", (world.observer.getGlobal("total-speed-5-caught") + 1));
+            }
+            if (Prims.equality(speedOfCaught, 3)) {
+              world.observer.setGlobal("total-speed-4-caught", (world.observer.getGlobal("total-speed-4-caught") + 1));
+            }
+            if (Prims.equality(speedOfCaught, 4)) {
+              world.observer.setGlobal("total-speed-3-caught", (world.observer.getGlobal("total-speed-3-caught") + 1));
+            }
+            if (Prims.equality(speedOfCaught, 5)) {
+              world.observer.setGlobal("total-speed-2-caught", (world.observer.getGlobal("total-speed-2-caught") + 1));
+            }
+            if (Prims.equality(speedOfCaught, 6)) {
+              world.observer.setGlobal("total-speed-1-caught", (world.observer.getGlobal("total-speed-1-caught") + 1));
+            }
+            LinkPrims.outLinkNeighbors("LINKS").ask(function() {
+              SelfManager.self().setVariable("color", 15);
+              SelfManager.self().die();
+            }, true);
             SelfManager.self().die();
           }, true);
-          SelfManager.self().die();
-        }, true);
-        SelfManager.self().setVariable("target", Nobody);
-        procedures["REPRODUCE-ONE-BUG"]();
+          SelfManager.self().setVariable("target", Nobody);
+          procedures["REPRODUCE-ONE-BUG"]();
+        }
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-    }, true);
+    }
   });
   procs["checkBirdCatch"] = temp;
   procs["CHECK-BIRD-CATCH"] = temp;
   temp = (function() {
-    ListPrims.oneOf(world.turtleManager.turtlesOfBreed("BUGS")).ask(function() {
-      SelfManager.self().hatch(1, "").ask(function() {
-        procedures["MUTATE-OFFSPRING-BUG"]();
-        SelfManager.self().setVariable("heading", Prims.randomFloat(360));
-        procedures["ATTACH-VISION-CONE"]();
-      }, true);
-    }, true);
-  });
-  procs["reproduceOneBug"] = temp;
-  procs["REPRODUCE-ONE-BUG"] = temp;
-  temp = (function() {
-    var birdEnergySplit = 0;
-    if (Prims.gt(world.turtleManager.turtlesOfBreed("BIRDS").size(), 0)) {
-      ListPrims.oneOf(world.turtleManager.turtlesOfBreed("BIRDS")).ask(function() {
-        birdEnergySplit = Prims.div(SelfManager.self().getVariable("eaten"), 2);
-        SelfManager.self().setVariable("eaten", birdEnergySplit);
+    try {
+      ListPrims.oneOf(world.turtleManager.turtlesOfBreed("BUGS")).ask(function() {
         SelfManager.self().hatch(1, "").ask(function() {
-          procedures["MUTATE-OFFSPRING-BIRD"]();
+          procedures["MUTATE-OFFSPRING-BUG"]();
           SelfManager.self().setVariable("heading", Prims.randomFloat(360));
           procedures["ATTACH-VISION-CONE"]();
         }, true);
       }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
+  });
+  procs["reproduceOneBug"] = temp;
+  procs["REPRODUCE-ONE-BUG"] = temp;
+  temp = (function() {
+    try {
+      let birdEnergySplit = 0;
+      if (Prims.gt(world.turtleManager.turtlesOfBreed("BIRDS").size(), 0)) {
+        ListPrims.oneOf(world.turtleManager.turtlesOfBreed("BIRDS")).ask(function() {
+          birdEnergySplit = Prims.div(SelfManager.self().getVariable("eaten"), 2);
+          SelfManager.self().setVariable("eaten", birdEnergySplit);
+          SelfManager.self().hatch(1, "").ask(function() {
+            procedures["MUTATE-OFFSPRING-BIRD"]();
+            SelfManager.self().setVariable("heading", Prims.randomFloat(360));
+            procedures["ATTACH-VISION-CONE"]();
+          }, true);
+        }, true);
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["reproduceOneBird"] = temp;
   procs["REPRODUCE-ONE-BIRD"] = temp;
   temp = (function() {
-    if (Prims.equality(Prims.random(2), 0)) {
-      SelfManager.self().setVariable("vision", (SelfManager.self().getVariable("vision") + Prims.randomFloat(world.observer.getGlobal("bug-vision-mutation"))));
-    }
-    else {
-      SelfManager.self().setVariable("vision", (SelfManager.self().getVariable("vision") - Prims.randomFloat(world.observer.getGlobal("bug-vision-mutation"))));
-    }
-    if (Prims.gt(SelfManager.self().getVariable("vision"), world.observer.getGlobal("max-vision"))) {
-      SelfManager.self().setVariable("vision", world.observer.getGlobal("max-vision"));
-    }
-    if (Prims.lt(SelfManager.self().getVariable("vision"), 0)) {
-      SelfManager.self().setVariable("vision", 0);
-    }
-    if (Prims.equality(Prims.random(2), 0)) {
-      SelfManager.self().setVariable("speed", (SelfManager.self().getVariable("speed") + Prims.randomFloat(world.observer.getGlobal("bug-speed-mutation"))));
-    }
-    else {
-      SelfManager.self().setVariable("speed", (SelfManager.self().getVariable("speed") - Prims.randomFloat(world.observer.getGlobal("bug-speed-mutation"))));
-    }
-    if (Prims.gt(SelfManager.self().getVariable("speed"), world.observer.getGlobal("max-speed"))) {
-      SelfManager.self().setVariable("speed", world.observer.getGlobal("max-speed"));
-    }
-    if (Prims.lt(SelfManager.self().getVariable("speed"), 0)) {
-      SelfManager.self().setVariable("speed", 0);
+    try {
+      if (Prims.equality(Prims.random(2), 0)) {
+        SelfManager.self().setVariable("vision", (SelfManager.self().getVariable("vision") + Prims.randomFloat(world.observer.getGlobal("bug-vision-mutation"))));
+      }
+      else {
+        SelfManager.self().setVariable("vision", (SelfManager.self().getVariable("vision") - Prims.randomFloat(world.observer.getGlobal("bug-vision-mutation"))));
+      }
+      if (Prims.gt(SelfManager.self().getVariable("vision"), world.observer.getGlobal("max-vision"))) {
+        SelfManager.self().setVariable("vision", world.observer.getGlobal("max-vision"));
+      }
+      if (Prims.lt(SelfManager.self().getVariable("vision"), 0)) {
+        SelfManager.self().setVariable("vision", 0);
+      }
+      if (Prims.equality(Prims.random(2), 0)) {
+        SelfManager.self().setVariable("speed", (SelfManager.self().getVariable("speed") + Prims.randomFloat(world.observer.getGlobal("bug-speed-mutation"))));
+      }
+      else {
+        SelfManager.self().setVariable("speed", (SelfManager.self().getVariable("speed") - Prims.randomFloat(world.observer.getGlobal("bug-speed-mutation"))));
+      }
+      if (Prims.gt(SelfManager.self().getVariable("speed"), world.observer.getGlobal("max-speed"))) {
+        SelfManager.self().setVariable("speed", world.observer.getGlobal("max-speed"));
+      }
+      if (Prims.lt(SelfManager.self().getVariable("speed"), 0)) {
+        SelfManager.self().setVariable("speed", 0);
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["mutateOffspringBug"] = temp;
   procs["MUTATE-OFFSPRING-BUG"] = temp;
   temp = (function() {
-    if (Prims.equality(Prims.random(2), 0)) {
-      SelfManager.self().setVariable("vision", (SelfManager.self().getVariable("vision") + Prims.randomFloat(world.observer.getGlobal("bird-vision-mutation"))));
-    }
-    else {
-      SelfManager.self().setVariable("vision", (SelfManager.self().getVariable("vision") - Prims.randomFloat(world.observer.getGlobal("bird-vision-mutation"))));
-    }
-    if (Prims.gt(SelfManager.self().getVariable("vision"), world.observer.getGlobal("max-vision"))) {
-      SelfManager.self().setVariable("vision", world.observer.getGlobal("max-vision"));
-    }
-    if (Prims.lt(SelfManager.self().getVariable("vision"), 0)) {
-      SelfManager.self().setVariable("vision", 0);
-    }
-    if (Prims.equality(Prims.random(2), 0)) {
-      SelfManager.self().setVariable("speed", (SelfManager.self().getVariable("speed") + Prims.randomFloat(world.observer.getGlobal("bird-speed-mutation"))));
-    }
-    else {
-      SelfManager.self().setVariable("speed", (SelfManager.self().getVariable("speed") - Prims.randomFloat(world.observer.getGlobal("bird-speed-mutation"))));
-    }
-    if (Prims.gt(SelfManager.self().getVariable("speed"), world.observer.getGlobal("max-speed"))) {
-      SelfManager.self().setVariable("speed", world.observer.getGlobal("max-speed"));
-    }
-    if (Prims.lt(SelfManager.self().getVariable("speed"), 0)) {
-      SelfManager.self().setVariable("speed", 0);
+    try {
+      if (Prims.equality(Prims.random(2), 0)) {
+        SelfManager.self().setVariable("vision", (SelfManager.self().getVariable("vision") + Prims.randomFloat(world.observer.getGlobal("bird-vision-mutation"))));
+      }
+      else {
+        SelfManager.self().setVariable("vision", (SelfManager.self().getVariable("vision") - Prims.randomFloat(world.observer.getGlobal("bird-vision-mutation"))));
+      }
+      if (Prims.gt(SelfManager.self().getVariable("vision"), world.observer.getGlobal("max-vision"))) {
+        SelfManager.self().setVariable("vision", world.observer.getGlobal("max-vision"));
+      }
+      if (Prims.lt(SelfManager.self().getVariable("vision"), 0)) {
+        SelfManager.self().setVariable("vision", 0);
+      }
+      if (Prims.equality(Prims.random(2), 0)) {
+        SelfManager.self().setVariable("speed", (SelfManager.self().getVariable("speed") + Prims.randomFloat(world.observer.getGlobal("bird-speed-mutation"))));
+      }
+      else {
+        SelfManager.self().setVariable("speed", (SelfManager.self().getVariable("speed") - Prims.randomFloat(world.observer.getGlobal("bird-speed-mutation"))));
+      }
+      if (Prims.gt(SelfManager.self().getVariable("speed"), world.observer.getGlobal("max-speed"))) {
+        SelfManager.self().setVariable("speed", world.observer.getGlobal("max-speed"));
+      }
+      if (Prims.lt(SelfManager.self().getVariable("speed"), 0)) {
+        SelfManager.self().setVariable("speed", 0);
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["mutateOffspringBird"] = temp;
   procs["MUTATE-OFFSPRING-BIRD"] = temp;
   temp = (function() {
-    if (!Prims.equality(world.observer.getGlobal("old-show-initial-bug-vision-cone?"), world.observer.getGlobal("show-vision-cone?"))) {
-      world.observer.setGlobal("old-show-initial-bug-vision-cone?", world.observer.getGlobal("show-vision-cone?"));
-      world.turtleManager.turtlesOfBreed("VISION-CONES").ask(function() { procedures["SET-VISUALIZE-VISION-CONE"](); }, true);
-    }
-    if (!Prims.equality(world.observer.getGlobal("old-vision-cone-distance"), world.observer.getGlobal("initial-bug-vision"))) {
-      world.observer.setGlobal("old-vision-cone-distance", world.observer.getGlobal("initial-bug-vision"));
-      world.turtleManager.turtlesOfBreed("VISION-CONES").ask(function() { procedures["SET-VISUALIZE-VISION-CONE"](); }, true);
+    try {
+      if (!Prims.equality(world.observer.getGlobal("old-show-initial-bug-vision-cone?"), world.observer.getGlobal("show-vision-cone?"))) {
+        world.observer.setGlobal("old-show-initial-bug-vision-cone?", world.observer.getGlobal("show-vision-cone?"));
+        world.turtleManager.turtlesOfBreed("VISION-CONES").ask(function() { procedures["SET-VISUALIZE-VISION-CONE"](); }, true);
+      }
+      if (!Prims.equality(world.observer.getGlobal("old-vision-cone-distance"), world.observer.getGlobal("initial-bug-vision"))) {
+        world.observer.setGlobal("old-vision-cone-distance", world.observer.getGlobal("initial-bug-vision"));
+        world.turtleManager.turtlesOfBreed("VISION-CONES").ask(function() { procedures["SET-VISUALIZE-VISION-CONE"](); }, true);
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["checkVisualizeVisionConeChange"] = temp;
   procs["CHECK-VISUALIZE-VISION-CONE-CHANGE"] = temp;
   temp = (function() {
-    var parentVision = ListPrims.oneOf(LinkPrims.inLinkNeighbors("LINKS")).projectionBy(function() { return SelfManager.self().getVariable("vision"); });
-    if (world.observer.getGlobal("show-vision-cone?")) {
-      SelfManager.self().setVariable("hidden?", false);
-      SelfManager.self().setVariable("size", (2 * parentVision));
-    }
-    else {
-      SelfManager.self().setVariable("hidden?", true);
-      SelfManager.self().setVariable("size", (2 * parentVision));
+    try {
+      let parentVision = ListPrims.oneOf(LinkPrims.inLinkNeighbors("LINKS")).projectionBy(function() { return SelfManager.self().getVariable("vision"); });
+      if (world.observer.getGlobal("show-vision-cone?")) {
+        SelfManager.self().setVariable("hidden?", false);
+        SelfManager.self().setVariable("size", (2 * parentVision));
+      }
+      else {
+        SelfManager.self().setVariable("hidden?", true);
+        SelfManager.self().setVariable("size", (2 * parentVision));
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["setVisualizeVisionCone"] = temp;
   procs["SET-VISUALIZE-VISION-CONE"] = temp;
-  temp = (function() { SelfManager.self().setVariable("color", (111 + SelfManager.self().getVariable("speed"))); });
+  temp = (function() {
+    try {
+      SelfManager.self().setVariable("color", (111 + SelfManager.self().getVariable("speed")));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
+  });
   procs["recolorShade"] = temp;
   procs["RECOLOR-SHADE"] = temp;
   temp = (function() {
-    if (Prims.equality(NLMath.floor(SelfManager.self().getVariable("speed")), 6)) {
-      SelfManager.self().setVariable("color", 15);
-    }
-    if (Prims.equality(NLMath.floor(SelfManager.self().getVariable("speed")), 5)) {
-      SelfManager.self().setVariable("color", 25);
-    }
-    if (Prims.equality(NLMath.floor(SelfManager.self().getVariable("speed")), 4)) {
-      SelfManager.self().setVariable("color", (45 - 1));
-    }
-    if (Prims.equality(NLMath.floor(SelfManager.self().getVariable("speed")), 3)) {
-      SelfManager.self().setVariable("color", 55);
-    }
-    if (Prims.equality(NLMath.floor(SelfManager.self().getVariable("speed")), 2)) {
-      SelfManager.self().setVariable("color", 105);
-    }
-    if (Prims.equality(NLMath.floor(SelfManager.self().getVariable("speed")), 1)) {
-      SelfManager.self().setVariable("color", 115);
-    }
-    if (Prims.gte(NLMath.floor(SelfManager.self().getVariable("speed")), 7)) {
-      SelfManager.self().setVariable("color", (5 - 2));
-    }
-    if (Prims.lt(NLMath.floor(SelfManager.self().getVariable("speed")), 1)) {
-      SelfManager.self().setVariable("color", (5 + 2));
+    try {
+      if (Prims.equality(NLMath.floor(SelfManager.self().getVariable("speed")), 6)) {
+        SelfManager.self().setVariable("color", 15);
+      }
+      if (Prims.equality(NLMath.floor(SelfManager.self().getVariable("speed")), 5)) {
+        SelfManager.self().setVariable("color", 25);
+      }
+      if (Prims.equality(NLMath.floor(SelfManager.self().getVariable("speed")), 4)) {
+        SelfManager.self().setVariable("color", (45 - 1));
+      }
+      if (Prims.equality(NLMath.floor(SelfManager.self().getVariable("speed")), 3)) {
+        SelfManager.self().setVariable("color", 55);
+      }
+      if (Prims.equality(NLMath.floor(SelfManager.self().getVariable("speed")), 2)) {
+        SelfManager.self().setVariable("color", 105);
+      }
+      if (Prims.equality(NLMath.floor(SelfManager.self().getVariable("speed")), 1)) {
+        SelfManager.self().setVariable("color", 115);
+      }
+      if (Prims.gte(NLMath.floor(SelfManager.self().getVariable("speed")), 7)) {
+        SelfManager.self().setVariable("color", (5 - 2));
+      }
+      if (Prims.lt(NLMath.floor(SelfManager.self().getVariable("speed")), 1)) {
+        SelfManager.self().setVariable("color", (5 + 2));
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["recolorRainbow"] = temp;
   procs["RECOLOR-RAINBOW"] = temp;
   temp = (function() {
-    if (Prims.equality(NLMath.mod(world.ticker.tickCount(), 100), 1)) {
-      plotManager.setCurrentPlot("Avg. Vision vs. Time");
-      plotManager.setCurrentPen("bugs");
-      if (!world.turtleManager.turtlesOfBreed("BUGS").isEmpty()) {
-        plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("avg-bug-vision"));
+    try {
+      if (Prims.equality(NLMath.mod(world.ticker.tickCount(), 100), 1)) {
+        plotManager.setCurrentPlot("Avg. Vision vs. Time");
+        plotManager.setCurrentPen("bugs");
+        if (!world.turtleManager.turtlesOfBreed("BUGS").isEmpty()) {
+          plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("avg-bug-vision"));
+        }
+        plotManager.setCurrentPen("birds");
+        if (!world.turtleManager.turtlesOfBreed("BIRDS").isEmpty()) {
+          plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("avg-bird-vision"));
+        }
+        plotManager.setCurrentPlot("Avg. Speed vs. Time");
+        plotManager.setCurrentPen("bugs");
+        if (!world.turtleManager.turtlesOfBreed("BUGS").isEmpty()) {
+          plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("avg-bug-speed"));
+        }
+        plotManager.setCurrentPen("birds");
+        if (!world.turtleManager.turtlesOfBreed("BIRDS").isEmpty()) {
+          plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("avg-bird-speed"));
+        }
+        plotManager.setCurrentPlot("Speed of Bugs");
+        procedures["PLOT-HISTOGRAMS-BUGS-SPEED"]();
+        plotManager.setCurrentPlot("Vision of Bugs");
+        procedures["PLOT-HISTOGRAMS-INITIAL-BUG-VISION"]();
+        plotManager.setCurrentPlot("Speed of Birds");
+        procedures["PLOT-HISTOGRAMS-INITIAL-BIRD-SPEED"]();
+        plotManager.setCurrentPlot("Vision of Birds");
+        procedures["PLOT-HISTOGRAMS-INITIAL-BIRD-VISION"]();
       }
-      plotManager.setCurrentPen("birds");
-      if (!world.turtleManager.turtlesOfBreed("BIRDS").isEmpty()) {
-        plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("avg-bird-vision"));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      plotManager.setCurrentPlot("Avg. Speed vs. Time");
-      plotManager.setCurrentPen("bugs");
-      if (!world.turtleManager.turtlesOfBreed("BUGS").isEmpty()) {
-        plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("avg-bug-speed"));
-      }
-      plotManager.setCurrentPen("birds");
-      if (!world.turtleManager.turtlesOfBreed("BIRDS").isEmpty()) {
-        plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("avg-bird-speed"));
-      }
-      plotManager.setCurrentPlot("Speed of Bugs");
-      procedures["PLOT-HISTOGRAMS-BUGS-SPEED"]();
-      plotManager.setCurrentPlot("Vision of Bugs");
-      procedures["PLOT-HISTOGRAMS-INITIAL-BUG-VISION"]();
-      plotManager.setCurrentPlot("Speed of Birds");
-      procedures["PLOT-HISTOGRAMS-INITIAL-BIRD-SPEED"]();
-      plotManager.setCurrentPlot("Vision of Birds");
-      procedures["PLOT-HISTOGRAMS-INITIAL-BIRD-VISION"]();
     }
   });
   procs["doPlots"] = temp;
   procs["DO-PLOTS"] = temp;
   temp = (function() {
-    plotManager.setCurrentPen("speed=1");
-    plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("total-speed-1-caught"));
-    plotManager.setCurrentPen("speed=2");
-    plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("total-speed-2-caught"));
-    plotManager.setCurrentPen("speed=3");
-    plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("total-speed-3-caught"));
-    plotManager.setCurrentPen("speed=4");
-    plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("total-speed-4-caught"));
-    plotManager.setCurrentPen("speed=5");
-    plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("total-speed-5-caught"));
-    plotManager.setCurrentPen("speed=6");
-    plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("total-speed-6-caught"));
+    try {
+      plotManager.setCurrentPen("speed=1");
+      plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("total-speed-1-caught"));
+      plotManager.setCurrentPen("speed=2");
+      plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("total-speed-2-caught"));
+      plotManager.setCurrentPen("speed=3");
+      plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("total-speed-3-caught"));
+      plotManager.setCurrentPen("speed=4");
+      plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("total-speed-4-caught"));
+      plotManager.setCurrentPen("speed=5");
+      plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("total-speed-5-caught"));
+      plotManager.setCurrentPen("speed=6");
+      plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("total-speed-6-caught"));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["plotCaught"] = temp;
   procs["PLOT-CAUGHT"] = temp;
   temp = (function() {
-    plotManager.setCurrentPen("speed=1");
-    plotManager.plotValue(world.turtleManager.turtlesOfBreed("BUGS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("speed"), 1); }).size());
-    plotManager.setCurrentPen("speed=2");
-    plotManager.plotValue(world.turtleManager.turtlesOfBreed("BUGS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("speed"), 2); }).size());
-    plotManager.setCurrentPen("speed=3");
-    plotManager.plotValue(world.turtleManager.turtlesOfBreed("BUGS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("speed"), 3); }).size());
-    plotManager.setCurrentPen("speed=4");
-    plotManager.plotValue(world.turtleManager.turtlesOfBreed("BUGS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("speed"), 4); }).size());
-    plotManager.setCurrentPen("speed=5");
-    plotManager.plotValue(world.turtleManager.turtlesOfBreed("BUGS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("speed"), 5); }).size());
-    plotManager.setCurrentPen("speed=6");
-    plotManager.plotValue(world.turtleManager.turtlesOfBreed("BUGS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("speed"), 6); }).size());
+    try {
+      plotManager.setCurrentPen("speed=1");
+      plotManager.plotValue(world.turtleManager.turtlesOfBreed("BUGS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("speed"), 1); }).size());
+      plotManager.setCurrentPen("speed=2");
+      plotManager.plotValue(world.turtleManager.turtlesOfBreed("BUGS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("speed"), 2); }).size());
+      plotManager.setCurrentPen("speed=3");
+      plotManager.plotValue(world.turtleManager.turtlesOfBreed("BUGS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("speed"), 3); }).size());
+      plotManager.setCurrentPen("speed=4");
+      plotManager.plotValue(world.turtleManager.turtlesOfBreed("BUGS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("speed"), 4); }).size());
+      plotManager.setCurrentPen("speed=5");
+      plotManager.plotValue(world.turtleManager.turtlesOfBreed("BUGS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("speed"), 5); }).size());
+      plotManager.setCurrentPen("speed=6");
+      plotManager.plotValue(world.turtleManager.turtlesOfBreed("BUGS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("speed"), 6); }).size());
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["plotPopulations"] = temp;
   procs["PLOT-POPULATIONS"] = temp;
   temp = (function() {
-    plotManager.setHistogramBarCount(10);
-    plotManager.setCurrentPen("#");
-    plotManager.setPenInterval(world.observer.getGlobal("histogram-interval-size"));
-    plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed("BUGS").projectionBy(function() { return SelfManager.self().getVariable("speed"); }));
+    try {
+      plotManager.setHistogramBarCount(10);
+      plotManager.setCurrentPen("#");
+      plotManager.setPenInterval(world.observer.getGlobal("histogram-interval-size"));
+      plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed("BUGS").projectionBy(function() { return SelfManager.self().getVariable("speed"); }));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["plotHistogramsBugsSpeed"] = temp;
   procs["PLOT-HISTOGRAMS-BUGS-SPEED"] = temp;
   temp = (function() {
-    plotManager.setHistogramBarCount(10);
-    plotManager.setCurrentPen("#");
-    plotManager.setPenInterval(world.observer.getGlobal("histogram-interval-size"));
-    plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed("BUGS").projectionBy(function() { return SelfManager.self().getVariable("vision"); }));
+    try {
+      plotManager.setHistogramBarCount(10);
+      plotManager.setCurrentPen("#");
+      plotManager.setPenInterval(world.observer.getGlobal("histogram-interval-size"));
+      plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed("BUGS").projectionBy(function() { return SelfManager.self().getVariable("vision"); }));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["plotHistogramsInitialBugVision"] = temp;
   procs["PLOT-HISTOGRAMS-INITIAL-BUG-VISION"] = temp;
   temp = (function() {
-    plotManager.setHistogramBarCount(10);
-    plotManager.setCurrentPen("#");
-    plotManager.setPenInterval(world.observer.getGlobal("histogram-interval-size"));
-    plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed("BIRDS").projectionBy(function() { return SelfManager.self().getVariable("speed"); }));
+    try {
+      plotManager.setHistogramBarCount(10);
+      plotManager.setCurrentPen("#");
+      plotManager.setPenInterval(world.observer.getGlobal("histogram-interval-size"));
+      plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed("BIRDS").projectionBy(function() { return SelfManager.self().getVariable("speed"); }));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["plotHistogramsInitialBirdSpeed"] = temp;
   procs["PLOT-HISTOGRAMS-INITIAL-BIRD-SPEED"] = temp;
   temp = (function() {
-    plotManager.setHistogramBarCount(10);
-    plotManager.setCurrentPen("#");
-    plotManager.setPenInterval(world.observer.getGlobal("histogram-interval-size"));
-    plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed("BIRDS").projectionBy(function() { return SelfManager.self().getVariable("vision"); }));
+    try {
+      plotManager.setHistogramBarCount(10);
+      plotManager.setCurrentPen("#");
+      plotManager.setPenInterval(world.observer.getGlobal("histogram-interval-size"));
+      plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed("BIRDS").projectionBy(function() { return SelfManager.self().getVariable("vision"); }));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["plotHistogramsInitialBirdVision"] = temp;
   procs["PLOT-HISTOGRAMS-INITIAL-BIRD-VISION"] = temp;

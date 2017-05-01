@@ -17,7 +17,7 @@ class TestTime extends SimpleSuite with GeneratorDrivenPropertyChecks {
       val DateRegex = raw"""(\d\d):(\d\d):(\d\d)\.(\d\d\d) (?:AM|PM) (\d\d)-([A-Z][a-z][a-z])-(2\d\d\d)""".r
       val months    = Set("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
 
-      forAll(Gen.wrap(Gen.const(fixture.evaluate("date-and-time")))) {
+      forAll(Gen.delay(Gen.const(fixture.evaluate("date-and-time")))) {
         time =>
 
           val timeStr = time.toString
@@ -39,7 +39,9 @@ class TestTime extends SimpleSuite with GeneratorDrivenPropertyChecks {
 
   }
 
-  private def assertWithinRange[T](x: => T, min: T, max: T)(implicit ev: Numeric[T]): Unit =
+  private def assertWithinRange[T](x: => T, min: T, max: T)(implicit ev: Numeric[T]): Unit = {
     assert(ev.lteq(x, max) && ev.gteq(x, min), s"$x is not within the range [$min, $max].")
+    ()
+  }
 
 }

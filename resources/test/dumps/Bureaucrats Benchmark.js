@@ -48,7 +48,17 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('average', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Average', 'average')(function() {
-        plotManager.plotPoint(world.ticker.tickCount(), Prims.div(world.observer.getGlobal("total"), world.patches().size()));;
+        try {
+          plotManager.plotPoint(world.ticker.tickCount(), Prims.div(world.observer.getGlobal("total"), world.patches().size()));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   })];
@@ -61,7 +71,9 @@ modelConfig.plots = [(function() {
             throw new Exception.StopInterrupt;
           }
         } catch (e) {
-          if (e instanceof Exception.StopInterrupt) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
             return e;
           } else {
             throw e;
@@ -92,58 +104,98 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    workspace.rng.setSeed(0);
-    workspace.timer.reset();
-    procedures["SETUP"]();
-    for (var _index_93_99 = 0, _repeatcount_93_99 = StrictMath.floor(5000); _index_93_99 < _repeatcount_93_99; _index_93_99++){
-      procedures["GO"]();
+    try {
+      workspace.rng.setSeed(0);
+      workspace.timer.reset();
+      procedures["SETUP"]();
+      for (let _index_93_99 = 0, _repeatcount_93_99 = StrictMath.floor(5000); _index_93_99 < _repeatcount_93_99; _index_93_99++){
+        procedures["GO"]();
+      }
+      world.observer.setGlobal("result", workspace.timer.elapsed());
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    world.observer.setGlobal("result", workspace.timer.elapsed());
   });
   procs["benchmark"] = temp;
   procs["BENCHMARK"] = temp;
   temp = (function() {
-    world.clearAll();
-    world.patches().ask(function() {
-      SelfManager.self().setPatchVariable("n", 2);
-      procedures["COLORIZE"]();
-    }, true);
-    world.observer.setGlobal("total", (2 * world.patches().size()));
-    world.ticker.reset();
+    try {
+      world.clearAll();
+      world.patches().ask(function() {
+        SelfManager.self().setPatchVariable("n", 2);
+        procedures["COLORIZE"]();
+      }, true);
+      world.observer.setGlobal("total", (2 * world.patches().size()));
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    var activePatches = Prims.patchSet(ListPrims.oneOf(world.patches()));
-    activePatches.ask(function() {
-      SelfManager.self().setPatchVariable("n", (SelfManager.self().getPatchVariable("n") + 1));
-      world.observer.setGlobal("total", (world.observer.getGlobal("total") + 1));
-      procedures["COLORIZE"]();
-    }, true);
-    while (!activePatches.isEmpty()) {
-      var overloadedPatches = activePatches.agentFilter(function() { return Prims.gt(SelfManager.self().getPatchVariable("n"), 3); });
-      overloadedPatches.ask(function() {
-        SelfManager.self().setPatchVariable("n", (SelfManager.self().getPatchVariable("n") - 4));
-        world.observer.setGlobal("total", (world.observer.getGlobal("total") - 4));
+    try {
+      let activePatches = Prims.patchSet(ListPrims.oneOf(world.patches()));
+      activePatches.ask(function() {
+        SelfManager.self().setPatchVariable("n", (SelfManager.self().getPatchVariable("n") + 1));
+        world.observer.setGlobal("total", (world.observer.getGlobal("total") + 1));
         procedures["COLORIZE"]();
-        SelfManager.self().getNeighbors4().ask(function() {
-          SelfManager.self().setPatchVariable("n", (SelfManager.self().getPatchVariable("n") + 1));
-          world.observer.setGlobal("total", (world.observer.getGlobal("total") + 1));
-          procedures["COLORIZE"]();
-        }, true);
       }, true);
-      activePatches = Prims.patchSet(overloadedPatches.projectionBy(function() { return SelfManager.self().getNeighbors4(); }));
+      while (!activePatches.isEmpty()) {
+        let overloadedPatches = activePatches.agentFilter(function() { return Prims.gt(SelfManager.self().getPatchVariable("n"), 3); });
+        overloadedPatches.ask(function() {
+          SelfManager.self().setPatchVariable("n", (SelfManager.self().getPatchVariable("n") - 4));
+          world.observer.setGlobal("total", (world.observer.getGlobal("total") - 4));
+          procedures["COLORIZE"]();
+          SelfManager.self().getNeighbors4().ask(function() {
+            SelfManager.self().setPatchVariable("n", (SelfManager.self().getPatchVariable("n") + 1));
+            world.observer.setGlobal("total", (world.observer.getGlobal("total") + 1));
+            procedures["COLORIZE"]();
+          }, true);
+        }, true);
+        activePatches = Prims.patchSet(overloadedPatches.projectionBy(function() { return SelfManager.self().getNeighbors4(); }));
+      }
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    world.ticker.tick();
   });
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    if (Prims.lte(SelfManager.self().getPatchVariable("n"), 3)) {
-      SelfManager.self().setPatchVariable("pcolor", ListPrims.item(SelfManager.self().getPatchVariable("n"), [83, 54, 45, 25]));
-    }
-    else {
-      SelfManager.self().setPatchVariable("pcolor", 15);
+    try {
+      if (Prims.lte(SelfManager.self().getPatchVariable("n"), 3)) {
+        SelfManager.self().setPatchVariable("pcolor", ListPrims.item(SelfManager.self().getPatchVariable("n"), [83, 54, 45, 25]));
+      }
+      else {
+        SelfManager.self().setPatchVariable("pcolor", 15);
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["colorize"] = temp;

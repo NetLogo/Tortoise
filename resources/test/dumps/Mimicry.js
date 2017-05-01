@@ -48,14 +48,34 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('Monarchs', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Average Colors Over Time', 'Monarchs')(function() {
-        plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed("MONARCHS").projectionBy(function() { return SelfManager.self().getVariable("color"); })));;
+        try {
+          plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed("MONARCHS").projectionBy(function() { return SelfManager.self().getVariable("color"); })));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   }),
   new PenBundle.Pen('Viceroys', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Average Colors Over Time', 'Viceroys')(function() {
-        plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed("VICEROYS").projectionBy(function() { return SelfManager.self().getVariable("color"); })));;
+        try {
+          plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed("VICEROYS").projectionBy(function() { return SelfManager.self().getVariable("color"); })));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   })];
@@ -83,87 +103,157 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    procedures["SETUP-VARIABLES"]();
-    procedures["SETUP-TURTLES"]();
-    world.ticker.reset();
+    try {
+      world.clearAll();
+      procedures["SETUP-VARIABLES"]();
+      procedures["SETUP-TURTLES"]();
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    world.observer.setGlobal("carrying-capacity-monarchs", 225);
-    world.observer.setGlobal("carrying-capacity-viceroys", 225);
-    world.observer.setGlobal("carrying-capacity-birds", 75);
-    world.observer.setGlobal("reproduction-chance", 4);
-    world.observer.setGlobal("color-range-begin", 15);
-    world.observer.setGlobal("color-range-end", 109);
+    try {
+      world.observer.setGlobal("carrying-capacity-monarchs", 225);
+      world.observer.setGlobal("carrying-capacity-viceroys", 225);
+      world.observer.setGlobal("carrying-capacity-birds", 75);
+      world.observer.setGlobal("reproduction-chance", 4);
+      world.observer.setGlobal("color-range-begin", 15);
+      world.observer.setGlobal("color-range-end", 109);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setupVariables"] = temp;
   procs["SETUP-VARIABLES"] = temp;
   temp = (function() {
-    world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
-    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("MONARCHS").getSpecialName(), "butterfly monarch")
-    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("VICEROYS").getSpecialName(), "butterfly viceroy")
-    world.turtleManager.createTurtles(world.observer.getGlobal("carrying-capacity-birds"), "BIRDS").ask(function() {
-      SelfManager.self().setVariable("color", 0);
-      SelfManager.self().setVariable("memory", []);
-      SelfManager.self().setVariable("shape", ListPrims.oneOf(["bird 1", "bird 2"]));
-    }, true);
-    world.turtleManager.createTurtles(world.observer.getGlobal("carrying-capacity-monarchs"), "MONARCHS").ask(function() { SelfManager.self().setVariable("color", 15); }, true);
-    world.turtleManager.createTurtles(world.observer.getGlobal("carrying-capacity-viceroys"), "VICEROYS").ask(function() { SelfManager.self().setVariable("color", 105); }, true);
-    world.turtles().ask(function() {
-      SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
-    }, true);
+    try {
+      world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
+      BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("MONARCHS").getSpecialName(), "butterfly monarch")
+      BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("VICEROYS").getSpecialName(), "butterfly viceroy")
+      world.turtleManager.createTurtles(world.observer.getGlobal("carrying-capacity-birds"), "BIRDS").ask(function() {
+        SelfManager.self().setVariable("color", 0);
+        SelfManager.self().setVariable("memory", []);
+        SelfManager.self().setVariable("shape", ListPrims.oneOf(["bird 1", "bird 2"]));
+      }, true);
+      world.turtleManager.createTurtles(world.observer.getGlobal("carrying-capacity-monarchs"), "MONARCHS").ask(function() { SelfManager.self().setVariable("color", 15); }, true);
+      world.turtleManager.createTurtles(world.observer.getGlobal("carrying-capacity-viceroys"), "VICEROYS").ask(function() { SelfManager.self().setVariable("color", 105); }, true);
+      world.turtles().ask(function() {
+        SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setupTurtles"] = temp;
   procs["SETUP-TURTLES"] = temp;
   temp = (function() {
-    world.turtleManager.turtlesOfBreed("BIRDS").ask(function() { procedures["BIRDS-MOVE"](); }, true);
-    world.turtles().agentFilter(function() {
-      return !Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("BIRDS"));
-    }).ask(function() { procedures["BUTTERFLIES-MOVE"](); }, true);
-    world.turtles().agentFilter(function() {
-      return !Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("BIRDS"));
-    }).ask(function() { procedures["BUTTERFLIES-GET-EATEN"](); }, true);
-    world.turtleManager.turtlesOfBreed("BIRDS").ask(function() { procedures["BIRDS-FORGET"](); }, true);
-    world.turtles().agentFilter(function() {
-      return !Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("BIRDS"));
-    }).ask(function() { procedures["BUTTERFLIES-REPRODUCE"](); }, true);
-    world.ticker.tick();
+    try {
+      world.turtleManager.turtlesOfBreed("BIRDS").ask(function() { procedures["BIRDS-MOVE"](); }, true);
+      world.turtles().agentFilter(function() {
+        return !Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("BIRDS"));
+      }).ask(function() { procedures["BUTTERFLIES-MOVE"](); }, true);
+      world.turtles().agentFilter(function() {
+        return !Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("BIRDS"));
+      }).ask(function() { procedures["BUTTERFLIES-GET-EATEN"](); }, true);
+      world.turtleManager.turtlesOfBreed("BIRDS").ask(function() { procedures["BIRDS-FORGET"](); }, true);
+      world.turtles().agentFilter(function() {
+        return !Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("BIRDS"));
+      }).ask(function() { procedures["BUTTERFLIES-REPRODUCE"](); }, true);
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    if (Prims.equality(SelfManager.self().getVariable("shape"), "bird 1")) {
-      SelfManager.self().setVariable("shape", "bird 2");
+    try {
+      if (Prims.equality(SelfManager.self().getVariable("shape"), "bird 1")) {
+        SelfManager.self().setVariable("shape", "bird 2");
+      }
+      else {
+        SelfManager.self().setVariable("shape", "bird 1");
+      }
+      SelfManager.self().setVariable("heading", (180 + Prims.random(180)));
+      SelfManager.self().fdOne();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    else {
-      SelfManager.self().setVariable("shape", "bird 1");
-    }
-    SelfManager.self().setVariable("heading", (180 + Prims.random(180)));
-    SelfManager.self().fd(1);
   });
   procs["birdsMove"] = temp;
   procs["BIRDS-MOVE"] = temp;
   temp = (function() {
-    SelfManager.self().right(Prims.random(100));
-    SelfManager.self().right(-Prims.random(100));
-    SelfManager.self().fd(1);
+    try {
+      SelfManager.self().right(Prims.random(100));
+      SelfManager.self().right(-Prims.random(100));
+      SelfManager.self().fdOne();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["butterfliesMove"] = temp;
   procs["BUTTERFLIES-MOVE"] = temp;
   temp = (function() {
-    var birdHere = ListPrims.oneOf(SelfManager.self().breedHere("BIRDS"));
-    if (!Prims.equality(birdHere, Nobody)) {
-      if (!birdHere.projectionBy(function() {
-        return procedures["COLOR-IN-MEMORY?"](SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("color"); }));
-      })) {
-        if (Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("MONARCHS"))) {
-          birdHere.ask(function() {
-            procedures["REMEMBER-COLOR"](SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("color"); }));
-          }, true);
+    try {
+      let birdHere = ListPrims.oneOf(SelfManager.self().breedHere("BIRDS"));
+      if (!Prims.equality(birdHere, Nobody)) {
+        if (!birdHere.projectionBy(function() {
+          return procedures["COLOR-IN-MEMORY?"](SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("color"); }));
+        })) {
+          if (Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("MONARCHS"))) {
+            birdHere.ask(function() {
+              procedures["REMEMBER-COLOR"](SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("color"); }));
+            }, true);
+          }
+          SelfManager.self().die();
         }
-        SelfManager.self().die();
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
   });
@@ -184,6 +274,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -192,51 +284,91 @@ var procedures = (function() {
   procs["colorInMemory_p"] = temp;
   procs["COLOR-IN-MEMORY?"] = temp;
   temp = (function(c) {
-    if (Prims.gte(ListPrims.length(SelfManager.self().getVariable("memory")), world.observer.getGlobal("memory-size"))) {
-      SelfManager.self().setVariable("memory", ListPrims.butFirst(SelfManager.self().getVariable("memory")));
+    try {
+      if (Prims.gte(ListPrims.length(SelfManager.self().getVariable("memory")), world.observer.getGlobal("memory-size"))) {
+        SelfManager.self().setVariable("memory", ListPrims.butFirst(SelfManager.self().getVariable("memory")));
+      }
+      SelfManager.self().setVariable("memory", ListPrims.lput(ListPrims.list(c, 0), SelfManager.self().getVariable("memory")));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    SelfManager.self().setVariable("memory", ListPrims.lput(ListPrims.list(c, 0), SelfManager.self().getVariable("memory")));
   });
   procs["rememberColor"] = temp;
   procs["REMEMBER-COLOR"] = temp;
   temp = (function() {
-    SelfManager.self().setVariable("memory", Tasks.map(Tasks.reporterTask(function(i) {
-      if (arguments.length < 1) {
-        throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+    try {
+      SelfManager.self().setVariable("memory", Tasks.map(Tasks.reporterTask(function(i) {
+        if (arguments.length < 1) {
+          throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+        }
+        return ListPrims.list(ListPrims.item(0, i), (1 + ListPrims.item(1, i)));
+      }), SelfManager.self().getVariable("memory")));
+      SelfManager.self().setVariable("memory", SelfManager.self().getVariable("memory").filter(Tasks.reporterTask(function(i) {
+        if (arguments.length < 1) {
+          throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+        }
+        return Prims.lte(ListPrims.item(1, i), world.observer.getGlobal("memory-duration"));
+      })));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      return ListPrims.list(ListPrims.item(0, i), (1 + ListPrims.item(1, i)));
-    }), SelfManager.self().getVariable("memory")));
-    SelfManager.self().setVariable("memory", SelfManager.self().getVariable("memory").filter(Tasks.reporterTask(function(i) {
-      if (arguments.length < 1) {
-        throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
-      }
-      return Prims.lte(ListPrims.item(1, i), world.observer.getGlobal("memory-duration"));
-    })));
+    }
   });
   procs["birdsForget"] = temp;
   procs["BIRDS-FORGET"] = temp;
   temp = (function() {
-    if (Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("MONARCHS"))) {
-      if (Prims.lt(Prims.random(world.turtleManager.turtlesOfBreed("MONARCHS").size()), (world.observer.getGlobal("carrying-capacity-monarchs") - world.turtleManager.turtlesOfBreed("MONARCHS").size()))) {
-        procedures["HATCH-BUTTERFLY"]();
+    try {
+      if (Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("MONARCHS"))) {
+        if (Prims.lt(Prims.random(world.turtleManager.turtlesOfBreed("MONARCHS").size()), (world.observer.getGlobal("carrying-capacity-monarchs") - world.turtleManager.turtlesOfBreed("MONARCHS").size()))) {
+          procedures["HATCH-BUTTERFLY"]();
+        }
       }
-    }
-    else {
-      if (Prims.lt(Prims.random(world.turtleManager.turtlesOfBreed("VICEROYS").size()), (world.observer.getGlobal("carrying-capacity-viceroys") - world.turtleManager.turtlesOfBreed("VICEROYS").size()))) {
-        procedures["HATCH-BUTTERFLY"]();
+      else {
+        if (Prims.lt(Prims.random(world.turtleManager.turtlesOfBreed("VICEROYS").size()), (world.observer.getGlobal("carrying-capacity-viceroys") - world.turtleManager.turtlesOfBreed("VICEROYS").size()))) {
+          procedures["HATCH-BUTTERFLY"]();
+        }
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
   });
   procs["butterfliesReproduce"] = temp;
   procs["BUTTERFLIES-REPRODUCE"] = temp;
   temp = (function() {
-    if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("reproduction-chance"))) {
-      SelfManager.self().hatch(1, "").ask(function() {
-        SelfManager.self().fd(1);
-        if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("mutation-rate"))) {
-          SelfManager.self().setVariable("color", ListPrims.oneOf(ListPrims.sublist(ColorModel.BASE_COLORS, 1, 10)));
-        }
-      }, true);
+    try {
+      if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("reproduction-chance"))) {
+        SelfManager.self().hatch(1, "").ask(function() {
+          SelfManager.self().fdOne();
+          if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("mutation-rate"))) {
+            SelfManager.self().setVariable("color", ListPrims.oneOf(ListPrims.sublist(ColorModel.BASE_COLORS, 1, 10)));
+          }
+        }, true);
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["hatchButterfly"] = temp;

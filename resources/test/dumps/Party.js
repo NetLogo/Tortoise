@@ -48,13 +48,35 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('Happy', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Number Happy', 'Happy')(function() {
-        plotManager.plotValue(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("happy?"); }).size());;
+        try {
+          plotManager.plotValue(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("happy?"); }).size());
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   })];
   var setup   = function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('Number Happy', undefined)(function() { plotManager.setYRange(0, world.observer.getGlobal("number"));; });
+      plotManager.withTemporaryContext('Number Happy', undefined)(function() {
+        try {
+          plotManager.setYRange(0, world.observer.getGlobal("number"));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
+      });
     });
   };
   var update  = function() {};
@@ -64,7 +86,19 @@ modelConfig.plots = [(function() {
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('Single Sex', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('Single Sex Groups', 'Single Sex')(function() { plotManager.plotValue(world.observer.getGlobal("boring-groups"));; });
+      plotManager.withTemporaryContext('Single Sex Groups', 'Single Sex')(function() {
+        try {
+          plotManager.plotValue(world.observer.getGlobal("boring-groups"));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
+      });
     });
   })];
   var setup   = function() {};
@@ -91,20 +125,30 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    world.observer.setGlobal("group-sites", world.patches().agentFilter(function() { return procedures["GROUP-SITE?"](); }));
-    BreedManager.setDefaultShape(world.turtles().getSpecialName(), "person")
-    world.turtleManager.createTurtles(world.observer.getGlobal("number"), "").ask(function() {
-      procedures["CHOOSE-SEX"]();
-      SelfManager.self().setVariable("size", 3);
-      SelfManager.self().setVariable("my-group-site", ListPrims.oneOf(world.observer.getGlobal("group-sites")));
-      SelfManager.self().moveTo(SelfManager.self().getVariable("my-group-site"));
-    }, true);
-    world.turtles().ask(function() { procedures["UPDATE-HAPPINESS"](); }, true);
-    procedures["COUNT-BORING-GROUPS"]();
-    procedures["UPDATE-LABELS"]();
-    world.turtles().ask(function() { procedures["SPREAD-OUT-VERTICALLY"](); }, true);
-    world.ticker.reset();
+    try {
+      world.clearAll();
+      world.observer.setGlobal("group-sites", world.patches().agentFilter(function() { return procedures["GROUP-SITE?"](); }));
+      BreedManager.setDefaultShape(world.turtles().getSpecialName(), "person")
+      world.turtleManager.createTurtles(world.observer.getGlobal("number"), "").ask(function() {
+        procedures["CHOOSE-SEX"]();
+        SelfManager.self().setVariable("size", 3);
+        SelfManager.self().setVariable("my-group-site", ListPrims.oneOf(world.observer.getGlobal("group-sites")));
+        SelfManager.self().moveTo(SelfManager.self().getVariable("my-group-site"));
+      }, true);
+      world.turtles().ask(function() { procedures["UPDATE-HAPPINESS"](); }, true);
+      procedures["COUNT-BORING-GROUPS"]();
+      procedures["UPDATE-LABELS"]();
+      world.turtles().ask(function() { procedures["SPREAD-OUT-VERTICALLY"](); }, true);
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
@@ -125,7 +169,9 @@ var procedures = (function() {
       }, true);
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -135,19 +181,39 @@ var procedures = (function() {
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    var total = SelfManager.self().turtlesHere().size();
-    var same = SelfManager.self().turtlesHere().agentFilter(function() {
-      return Prims.equality(SelfManager.self().getVariable("color"), SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("color"); }));
-    }).size();
-    var opposite = (total - same);
-    SelfManager.self().setVariable("happy?", Prims.lte(Prims.div(opposite, total), Prims.div(world.observer.getGlobal("tolerance"), 100)));
+    try {
+      let total = SelfManager.self().turtlesHere().size();
+      let same = SelfManager.self().turtlesHere().agentFilter(function() {
+        return Prims.equality(SelfManager.self().getVariable("color"), SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("color"); }));
+      }).size();
+      let opposite = (total - same);
+      SelfManager.self().setVariable("happy?", Prims.lte(Prims.div(opposite, total), Prims.div(world.observer.getGlobal("tolerance"), 100)));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["updateHappiness"] = temp;
   procs["UPDATE-HAPPINESS"] = temp;
   temp = (function() {
-    if (!SelfManager.self().getVariable("happy?")) {
-      SelfManager.self().setVariable("heading", ListPrims.oneOf([90, 270]));
-      SelfManager.self().fd(1);
+    try {
+      if (!SelfManager.self().getVariable("happy?")) {
+        SelfManager.self().setVariable("heading", ListPrims.oneOf([90, 270]));
+        SelfManager.self().fdOne();
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["leaveIfUnhappy"] = temp;
@@ -155,16 +221,18 @@ var procedures = (function() {
   temp = (function() {
     try {
       notImplemented('display', undefined)();
-      var malcontents = world.turtles().agentFilter(function() {
+      let malcontents = world.turtles().agentFilter(function() {
         return !ListPrims.member(SelfManager.self().getPatchHere(), world.observer.getGlobal("group-sites"));
       });
       if (!!malcontents.isEmpty()) {
         throw new Exception.StopInterrupt;
       }
-      malcontents.ask(function() { SelfManager.self().fd(1); }, true);
+      malcontents.ask(function() { SelfManager.self().fdOne(); }, true);
       procedures["FIND-NEW-GROUPS"]();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -175,12 +243,14 @@ var procedures = (function() {
   procs["FIND-NEW-GROUPS"] = temp;
   temp = (function() {
     try {
-      var groupInterval = NLMath.floor(Prims.div(world.topology.width, world.observer.getGlobal("num-groups")));
+      let groupInterval = NLMath.floor(Prims.div(world.topology.width, world.observer.getGlobal("num-groups")));
       throw new Exception.ReportInterrupt((((Prims.equality(SelfManager.self().getPatchVariable("pycor"), 0) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), 0)) && Prims.equality(NLMath.mod(SelfManager.self().getPatchVariable("pxcor"), groupInterval), 0)) && Prims.lt(NLMath.floor(Prims.div( -SelfManager.self().getPatchVariable("pxcor"), groupInterval)), world.observer.getGlobal("num-groups"))));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -189,36 +259,56 @@ var procedures = (function() {
   procs["groupSite_p"] = temp;
   procs["GROUP-SITE?"] = temp;
   temp = (function() {
-    if (procedures["WOMAN?"]()) {
-      SelfManager.self().setVariable("heading", 180);
-    }
-    else {
-      SelfManager.self().setVariable("heading", 0);
-    }
-    SelfManager.self().fd(4);
-    while (!SelfPrims.other(SelfManager.self().turtlesHere()).isEmpty()) {
-      if (SelfManager.self().canMove(2)) {
-        SelfManager.self().fd(1);
+    try {
+      if (procedures["WOMAN?"]()) {
+        SelfManager.self().setVariable("heading", 180);
       }
       else {
-        SelfManager.self().setVariable("xcor", (SelfManager.self().getVariable("xcor") - 1));
-        SelfManager.self().setVariable("ycor", 0);
-        SelfManager.self().fd(4);
+        SelfManager.self().setVariable("heading", 0);
+      }
+      SelfManager.self().fd(4);
+      while (SelfPrims.anyOther(SelfManager.self().turtlesHere())) {
+        if (SelfManager.self().canMove(2)) {
+          SelfManager.self().fdOne();
+        }
+        else {
+          SelfManager.self().setVariable("xcor", (SelfManager.self().getVariable("xcor") - 1));
+          SelfManager.self().setVariable("ycor", 0);
+          SelfManager.self().fd(4);
+        }
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
   });
   procs["spreadOutVertically"] = temp;
   procs["SPREAD-OUT-VERTICALLY"] = temp;
   temp = (function() {
-    world.observer.getGlobal("group-sites").ask(function() {
-      if (procedures["BORING?"]()) {
-        SelfManager.self().setPatchVariable("plabel-color", 5);
+    try {
+      world.observer.getGlobal("group-sites").ask(function() {
+        if (procedures["BORING?"]()) {
+          SelfManager.self().setPatchVariable("plabel-color", 5);
+        }
+        else {
+          SelfManager.self().setPatchVariable("plabel-color", 9.9);
+        }
+      }, true);
+      world.observer.setGlobal("boring-groups", world.observer.getGlobal("group-sites").agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("plabel-color"), 5); }).size());
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      else {
-        SelfManager.self().setPatchVariable("plabel-color", 9.9);
-      }
-    }, true);
-    world.observer.setGlobal("boring-groups", world.observer.getGlobal("group-sites").agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("plabel-color"), 5); }).size());
+    }
   });
   procs["countBoringGroups"] = temp;
   procs["COUNT-BORING-GROUPS"] = temp;
@@ -229,6 +319,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -237,11 +329,33 @@ var procedures = (function() {
   procs["boring_p"] = temp;
   procs["BORING?"] = temp;
   temp = (function() {
-    world.observer.getGlobal("group-sites").ask(function() { SelfManager.self().setPatchVariable("plabel", SelfManager.self().turtlesHere().size()); }, true);
+    try {
+      world.observer.getGlobal("group-sites").ask(function() { SelfManager.self().setPatchVariable("plabel", SelfManager.self().turtlesHere().size()); }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["updateLabels"] = temp;
   procs["UPDATE-LABELS"] = temp;
-  temp = (function() { SelfManager.self().setVariable("color", ListPrims.oneOf([135, 105])); });
+  temp = (function() {
+    try {
+      SelfManager.self().setVariable("color", ListPrims.oneOf([135, 105]));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
+  });
   procs["chooseSex"] = temp;
   procs["CHOOSE-SEX"] = temp;
   temp = (function() {
@@ -251,6 +365,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }

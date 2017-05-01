@@ -1069,6 +1069,10 @@ ieee754@^1.1.4:
   version "1.1.8"
   resolved "https://registry.yarnpkg.com/ieee754/-/ieee754-1.1.8.tgz#be33d40ac10ef1926701f6f08a2d86fbfd1ad3e4"
 
+iframe-phone@1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/iframe-phone/-/iframe-phone-1.2.0.tgz#e913fbf4f7964eeecccb7bb9acbaad55621e1c64"
+
 ignore@^3.0.9:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-3.2.0.tgz#8d88f03c3002a0ac52114db25d2c673b0bf1e435"

@@ -63,19 +63,29 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    ListPrims.nOf(100, world.patches()).ask(function() { SelfManager.self().setPatchVariable("pcolor", 120); }, true);
-    for (var _index_296_302 = 0, _repeatcount_296_302 = StrictMath.floor(20); _index_296_302 < _repeatcount_296_302; _index_296_302++){
-      world.topology.diffuse("pcolor", 1)
-    }
-    ListPrims.nOf(800, world.patches()).ask(function() {
-      SelfManager.self().sprout(1, "TURTLES").ask(function() {
-        SelfManager.self().setVariable("peak?", false);
-        SelfManager.self().setVariable("color", 15);
-        SelfManager.self().penManager.lowerPen();
+    try {
+      world.clearAll();
+      ListPrims.nOf(100, world.patches()).ask(function() { SelfManager.self().setPatchVariable("pcolor", 120); }, true);
+      for (let _index_296_302 = 0, _repeatcount_296_302 = StrictMath.floor(20); _index_296_302 < _repeatcount_296_302; _index_296_302++){
+        world.topology.diffuse("pcolor", 1)
+      }
+      ListPrims.nOf(800, world.patches()).ask(function() {
+        SelfManager.self().sprout(1, "TURTLES").ask(function() {
+          SelfManager.self().setVariable("peak?", false);
+          SelfManager.self().setVariable("color", 15);
+          SelfManager.self().penManager.lowerPen();
+        }, true);
       }, true);
-    }, true);
-    world.ticker.reset();
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
@@ -85,7 +95,7 @@ var procedures = (function() {
         throw new Exception.StopInterrupt;
       }
       world.turtles().ask(function() {
-        var oldPatch = SelfManager.self().getPatchHere();
+        let oldPatch = SelfManager.self().getPatchHere();
         Prims.uphill("pcolor")
         if (Prims.equality(oldPatch, SelfManager.self().getPatchHere())) {
           SelfManager.self().setVariable("peak?", true);
@@ -93,7 +103,9 @@ var procedures = (function() {
       }, true);
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;

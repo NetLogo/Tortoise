@@ -68,7 +68,7 @@ module.exports =
     exists: (pred) ->
       exists(pred)(@toArray())
 
-    # ((T) => Boolean) => Seq[T]
+    # ((T) => Boolean) => This[T]
     filter: (pred) ->
       @_generateFrom(filter(pred)(@toArray()))
 

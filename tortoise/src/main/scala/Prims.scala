@@ -170,6 +170,9 @@ trait ReporterPrims extends PrimUtils {
         val ExtensionPrimRegex(extName, primName) = x.toString
         s"Extensions[${jsString(extName)}].prims[${jsString(primName)}]($commaArgs)"
 
+      case _: prim.etc._range =>
+        generateRange(args)
+
       case _ if compilerFlags.generateUnimplemented =>
         generateNotImplementedStub(r.reporter.getClass.getName.drop(1))
       case _                                        =>
@@ -185,6 +188,19 @@ trait ReporterPrims extends PrimUtils {
     val func   = handlers.fun(r.args(0), isReporter = true)
     s"$agents.projectionBy($func)"
   }
+
+  // The fact that there are three different functions for `range` is intentional--incredibly intentional.
+  // The engine has this to say on the matter (with me acting as ventriloquist):
+  // "Call with me with the correct number of arguments or GTFO."
+  // I will open a can of whoop-ass on anyone who thinks differently. --Stone Cold J. Bertsche (3/16/17)
+  def generateRange(args: Seq[String]): String =
+    args match {
+      case Seq(a)       => s"Prims.rangeUnary($a)"
+      case Seq(a, b)    => s"Prims.rangeBinary($a, $b)"
+      case Seq(a, b, c) => s"Prims.rangeTernary($a, $b, $c)"
+      case _            => throw new IllegalArgumentException("range expects at most three arguments")
+    }
+
 }
 
 trait CommandPrims extends PrimUtils {
@@ -234,7 +250,7 @@ trait CommandPrims extends PrimUtils {
       case _: prim._report               => s"throw new Exception.ReportInterrupt(${arg(0)});"
       case _: prim.etc._ignore           => s"${arg(0)};"
       case l: prim._let                  =>
-        l.let.map(inner => s"var ${handlers.ident(inner.name)} = ${arg(0)};").getOrElse("")
+        l.let.map(inner => s"let ${handlers.ident(inner.name)} = ${arg(0)};").getOrElse("")
       case _: prim.etc._withlocalrandomness =>
         s"workspace.rng.withClone(function() { ${handlers.commands(s.args(0))} })"
       case _: prim._run =>
@@ -267,7 +283,7 @@ trait CommandPrims extends PrimUtils {
       s"""procedures["${call.name}"](${args.mkString(",")});"""
     if (compilerFlags.propagationStyle == WidgetPropagation && compilerContext.blockLevel == 1) {
       val tmp = handlers.unusedVarname(call.token, "maybestop")
-      s"""|var $tmp = $callDecl
+      s"""|let $tmp = $callDecl
           |if ($tmp instanceof Exception.StopInterrupt) { return $tmp; }""".stripMargin
     } else
       callDecl
@@ -301,7 +317,7 @@ trait CommandPrims extends PrimUtils {
     val body = handlers.commands(w.args(1))
     val i = handlers.unusedVarname(w.command.token, "index")
     val j = handlers.unusedVarname(w.command.token, "repeatcount")
-    s"""|for (var $i = 0, $j = StrictMath.floor($count); $i < $j; $i++){
+    s"""|for (let $i = 0, $j = StrictMath.floor($count); $i < $j; $i++){
         |${indented(body)}
         |}""".stripMargin
   }

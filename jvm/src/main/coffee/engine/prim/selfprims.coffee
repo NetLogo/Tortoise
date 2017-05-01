@@ -32,6 +32,15 @@ module.exports =
       self = @_getSelf()
       agentSet.filter((agent) => agent isnt self)
 
+    # [T] @ (AbstractAgentSet[T]) => Boolean
+    anyOther: (agentSet) ->
+      self = @_getSelf()
+      agentSet.exists((agent) => agent isnt self)
+
+    countOther: (agentSet) ->
+      self = @_getSelf()
+      (agentSet.filter((agent) => agent isnt self)).size()
+
     # () => Number
     linkHeading: ->
       @_getSelfSafe(linkType).getHeading()

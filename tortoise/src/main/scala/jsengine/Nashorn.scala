@@ -3,7 +3,8 @@
 package org.nlogo.tortoise.jsengine
 
 import java.io.{ PrintWriter, StringWriter }
-import javax.script.{ ScriptContext, ScriptEngineManager }
+import javax.script.ScriptContext
+import jdk.nashorn.api.scripting.NashornScriptEngineFactory
 
 import
   org.nlogo.{ api, core },
@@ -20,7 +21,7 @@ class Nashorn {
   // the (null) became necessary when we upgraded to sbt 0.13. I don't understand why.
   // classloaders, go figure! - ST 8/26/13
   // scalastyle:off null
-  val engine = new ScriptEngineManager(null).getEngineByName("nashorn").ensuring(_ != null, "JavaScript engine unavailable")
+  val engine = (new NashornScriptEngineFactory).getScriptEngine("--language=es6")
   // scalastyle:on null
 
   val versionNumber: String = engine.getFactory.getEngineVersion

@@ -63,28 +63,48 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    world.getPatchAt(0, 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 55); }, true);
-    world.turtleManager.createTurtles(world.observer.getGlobal("num-particles"), "").ask(function() {
-      SelfManager.self().setVariable("color", 15);
-      SelfManager.self().setVariable("size", 1.5);
-      SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
-    }, true);
-    world.ticker.reset();
+    try {
+      world.clearAll();
+      world.getPatchAt(0, 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 55); }, true);
+      world.turtleManager.createTurtles(world.observer.getGlobal("num-particles"), "").ask(function() {
+        SelfManager.self().setVariable("color", 15);
+        SelfManager.self().setVariable("size", 1.5);
+        SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
+      }, true);
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    world.turtles().ask(function() {
-      SelfManager.self().right(Prims.random(world.observer.getGlobal("wiggle-angle")));
-      SelfManager.self().right(-Prims.random(world.observer.getGlobal("wiggle-angle")));
-      SelfManager.self().fd(1);
-      if (!SelfManager.self().getNeighbors().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55); }).isEmpty()) {
-        SelfManager.self().setPatchVariable("pcolor", 55);
-        SelfManager.self().die();
+    try {
+      world.turtles().ask(function() {
+        SelfManager.self().right(Prims.random(world.observer.getGlobal("wiggle-angle")));
+        SelfManager.self().right(-Prims.random(world.observer.getGlobal("wiggle-angle")));
+        SelfManager.self().fdOne();
+        if (!SelfManager.self().getNeighbors().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55); }).isEmpty()) {
+          SelfManager.self().setPatchVariable("pcolor", 55);
+          SelfManager.self().die();
+        }
+      }, true);
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-    }, true);
-    world.ticker.tick();
+    }
   });
   procs["go"] = temp;
   procs["GO"] = temp;

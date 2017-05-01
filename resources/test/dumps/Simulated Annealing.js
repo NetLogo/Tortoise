@@ -47,7 +47,19 @@ modelConfig.plots = [(function() {
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('global energy', 'default')(function() { plotManager.plotValue(world.observer.getGlobal("global-energy"));; });
+      plotManager.withTemporaryContext('global energy', 'default')(function() {
+        try {
+          plotManager.plotValue(world.observer.getGlobal("global-energy"));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
+      });
     });
   })];
   var setup   = function() {};
@@ -74,27 +86,57 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    ListPrims.nOf(Prims.div(world.patches().size(), 2), world.patches()).ask(function() { SelfManager.self().setPatchVariable("brightness", 1); }, true);
-    world.patches().ask(function() { procedures["UPDATE-VISUAL"](); }, true);
-    world.observer.setGlobal("global-energy", ListPrims.sum(world.patches().projectionBy(function() { return procedures["FIND-ENERGY"](); })));
-    world.observer.setGlobal("temperature", 1);
-    world.ticker.reset();
+    try {
+      world.clearAll();
+      ListPrims.nOf(Prims.div(world.patches().size(), 2), world.patches()).ask(function() { SelfManager.self().setPatchVariable("brightness", 1); }, true);
+      world.patches().ask(function() { procedures["UPDATE-VISUAL"](); }, true);
+      world.observer.setGlobal("global-energy", ListPrims.sum(world.patches().projectionBy(function() { return procedures["FIND-ENERGY"](); })));
+      world.observer.setGlobal("temperature", 1);
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    for (var _index_289_295 = 0, _repeatcount_289_295 = StrictMath.floor(1000); _index_289_295 < _repeatcount_289_295; _index_289_295++){
-      ListPrims.oneOf(world.patches()).ask(function() { procedures["TRY-SWAP"](); }, true);
+    try {
+      for (let _index_289_295 = 0, _repeatcount_289_295 = StrictMath.floor(1000); _index_289_295 < _repeatcount_289_295; _index_289_295++){
+        ListPrims.oneOf(world.patches()).ask(function() { procedures["TRY-SWAP"](); }, true);
+      }
+      world.observer.setGlobal("temperature", (world.observer.getGlobal("temperature") * (1 - Prims.div(world.observer.getGlobal("cooling-rate"), 100))));
+      world.observer.setGlobal("global-energy", ListPrims.sum(world.patches().projectionBy(function() { return procedures["FIND-ENERGY"](); })));
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    world.observer.setGlobal("temperature", (world.observer.getGlobal("temperature") * (1 - Prims.div(world.observer.getGlobal("cooling-rate"), 100))));
-    world.observer.setGlobal("global-energy", ListPrims.sum(world.patches().projectionBy(function() { return procedures["FIND-ENERGY"](); })));
-    world.ticker.tick();
   });
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    SelfManager.self().setPatchVariable("pcolor", (SelfManager.self().getPatchVariable("brightness") * 9.9));
+    try {
+      SelfManager.self().setPatchVariable("pcolor", (SelfManager.self().getPatchVariable("brightness") * 9.9));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["updateVisual"] = temp;
   procs["UPDATE-VISUAL"] = temp;
@@ -105,6 +147,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -114,14 +158,14 @@ var procedures = (function() {
   procs["ACCEPT-CHANGE?"] = temp;
   temp = (function() {
     try {
-      var p2 = ListPrims.oneOf(SelfManager.self().inRadius(world.patches(), world.observer.getGlobal("swap-radius")));
+      let p2 = ListPrims.oneOf(SelfManager.self().inRadius(world.patches(), world.observer.getGlobal("swap-radius")));
       if (Prims.equality(SelfManager.self().getPatchVariable("brightness"), p2.projectionBy(function() { return SelfManager.self().getPatchVariable("brightness"); }))) {
         throw new Exception.StopInterrupt;
       }
-      var affectedPatches = Prims.patchSet(SelfManager.self(), p2, SelfManager.self().getNeighbors4(), p2.projectionBy(function() { return SelfManager.self().getNeighbors4(); }));
-      var oldEnergy = ListPrims.sum(affectedPatches.projectionBy(function() { return procedures["FIND-ENERGY"](); }));
+      let affectedPatches = Prims.patchSet(SelfManager.self(), p2, SelfManager.self().getNeighbors4(), p2.projectionBy(function() { return SelfManager.self().getNeighbors4(); }));
+      let oldEnergy = ListPrims.sum(affectedPatches.projectionBy(function() { return procedures["FIND-ENERGY"](); }));
       procedures["SWAP-VALUES"](SelfManager.self(),p2);
-      var newEnergy = ListPrims.sum(affectedPatches.projectionBy(function() { return procedures["FIND-ENERGY"](); }));
+      let newEnergy = ListPrims.sum(affectedPatches.projectionBy(function() { return procedures["FIND-ENERGY"](); }));
       if (procedures["ACCEPT-CHANGE?"](oldEnergy,newEnergy)) {
         procedures["UPDATE-VISUAL"]();
         p2.ask(function() { procedures["UPDATE-VISUAL"](); }, true);
@@ -130,7 +174,9 @@ var procedures = (function() {
         procedures["SWAP-VALUES"](SelfManager.self(),p2);
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -140,17 +186,27 @@ var procedures = (function() {
   procs["trySwap"] = temp;
   procs["TRY-SWAP"] = temp;
   temp = (function(p1, p2) {
-    var temp = p1.projectionBy(function() { return SelfManager.self().getPatchVariable("brightness"); });
-    p1.ask(function() {
-      SelfManager.self().setPatchVariable("brightness", p2.projectionBy(function() { return SelfManager.self().getPatchVariable("brightness"); }));
-    }, true);
-    p2.ask(function() { SelfManager.self().setPatchVariable("brightness", temp); }, true);
+    try {
+      let temp = p1.projectionBy(function() { return SelfManager.self().getPatchVariable("brightness"); });
+      p1.ask(function() {
+        SelfManager.self().setPatchVariable("brightness", p2.projectionBy(function() { return SelfManager.self().getPatchVariable("brightness"); }));
+      }, true);
+      p2.ask(function() { SelfManager.self().setPatchVariable("brightness", temp); }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["swapValues"] = temp;
   procs["SWAP-VALUES"] = temp;
   temp = (function() {
     try {
-      var unhappiness = 0;
+      let unhappiness = 0;
       SelfManager.self().patchAt(0, 1).ask(function() {
         unhappiness = (unhappiness + NLMath.pow((SelfManager.self().getPatchVariable("brightness") - SelfManager.myself().projectionBy(function() { return SelfManager.self().getPatchVariable("brightness"); })), 2));
       }, true);
@@ -168,6 +224,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }

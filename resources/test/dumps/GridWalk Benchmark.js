@@ -63,32 +63,62 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    workspace.rng.setSeed(362);
-    procedures["SETUP"]();
-    workspace.timer.reset();
-    for (var _index_73_79 = 0, _repeatcount_73_79 = StrictMath.floor(20000); _index_73_79 < _repeatcount_73_79; _index_73_79++){
-      procedures["GO"]();
+    try {
+      workspace.rng.setSeed(362);
+      procedures["SETUP"]();
+      workspace.timer.reset();
+      for (let _index_73_79 = 0, _repeatcount_73_79 = StrictMath.floor(20000); _index_73_79 < _repeatcount_73_79; _index_73_79++){
+        procedures["GO"]();
+      }
+      world.observer.setGlobal("result", workspace.timer.elapsed());
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    world.observer.setGlobal("result", workspace.timer.elapsed());
   });
   procs["benchmark"] = temp;
   procs["BENCHMARK"] = temp;
   temp = (function() {
-    world.clearAll();
-    world.ticker.reset();
-    world.turtleManager.createOrderedTurtles(1000, "").ask(function() {
-      SelfManager.self().moveTo(ListPrims.oneOf(world.patches()));
-      SelfManager.self().face(ListPrims.oneOf(SelfManager.self().getNeighbors4()));
-    }, true);
+    try {
+      world.clearAll();
+      world.ticker.reset();
+      world.turtleManager.createOrderedTurtles(1000, "").ask(function() {
+        SelfManager.self().moveTo(ListPrims.oneOf(world.patches()));
+        SelfManager.self().face(ListPrims.oneOf(SelfManager.self().getNeighbors4()));
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    world.turtles().ask(function() {
-      SelfManager.self().face(ListPrims.oneOf(SelfManager.self().getNeighbors4()));
-      SelfManager.self().fd(1);
-    }, true);
-    world.ticker.tick();
+    try {
+      world.turtles().ask(function() {
+        SelfManager.self().face(ListPrims.oneOf(SelfManager.self().getNeighbors4()));
+        SelfManager.self().fdOne();
+      }, true);
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["go"] = temp;
   procs["GO"] = temp;

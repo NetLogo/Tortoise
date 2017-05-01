@@ -45,26 +45,56 @@ if (typeof javax !== "undefined") {
 modelConfig.plots = [(function() {
   var name    = 'Network Status';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('susceptible', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
+  var pens    = [new PenBundle.Pen('susceptible', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Network Status', 'susceptible')(function() {
-        plotManager.plotValue((Prims.div(world.turtles().agentFilter(function() {
-          return (!SelfManager.self().getVariable("infected?") && !SelfManager.self().getVariable("resistant?"));
-        }).size(), world.turtles().size()) * 100));;
+        try {
+          plotManager.plotValue((Prims.div(world.turtles().agentFilter(function() {
+            return (!SelfManager.self().getVariable("infected?") && !SelfManager.self().getVariable("resistant?"));
+          }).size(), world.turtles().size()) * 100));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   }),
   new PenBundle.Pen('infected', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Network Status', 'infected')(function() {
-        plotManager.plotValue((Prims.div(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("infected?"); }).size(), world.turtles().size()) * 100));;
+        try {
+          plotManager.plotValue((Prims.div(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("infected?"); }).size(), world.turtles().size()) * 100));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   }),
   new PenBundle.Pen('resistant', plotOps.makePenOps, false, new PenBundle.State(5.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Network Status', 'resistant')(function() {
-        plotManager.plotValue((Prims.div(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("resistant?"); }).size(), world.turtles().size()) * 100));;
+        try {
+          plotManager.plotValue((Prims.div(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("resistant?"); }).size(), world.turtles().size()) * 100));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   })];
@@ -92,37 +122,67 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    procedures["SETUP-NODES"]();
-    procedures["SETUP-SPATIALLY-CLUSTERED-NETWORK"]();
-    ListPrims.nOf(world.observer.getGlobal("initial-outbreak-size"), world.turtles()).ask(function() { procedures["BECOME-INFECTED"](); }, true);
-    world.links().ask(function() { SelfManager.self().setVariable("color", 9.9); }, true);
-    world.ticker.reset();
+    try {
+      world.clearAll();
+      procedures["SETUP-NODES"]();
+      procedures["SETUP-SPATIALLY-CLUSTERED-NETWORK"]();
+      ListPrims.nOf(world.observer.getGlobal("initial-outbreak-size"), world.turtles()).ask(function() { procedures["BECOME-INFECTED"](); }, true);
+      world.links().ask(function() { SelfManager.self().setVariable("color", 9.9); }, true);
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
-    world.turtleManager.createTurtles(world.observer.getGlobal("number-of-nodes"), "").ask(function() {
-      SelfManager.self().setXY((Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor) * 0.95), (Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor) * 0.95));
-      procedures["BECOME-SUSCEPTIBLE"]();
-      SelfManager.self().setVariable("virus-check-timer", Prims.random(world.observer.getGlobal("virus-check-frequency")));
-    }, true);
+    try {
+      BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
+      world.turtleManager.createTurtles(world.observer.getGlobal("number-of-nodes"), "").ask(function() {
+        SelfManager.self().setXY((Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor) * 0.95), (Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor) * 0.95));
+        procedures["BECOME-SUSCEPTIBLE"]();
+        SelfManager.self().setVariable("virus-check-timer", Prims.random(world.observer.getGlobal("virus-check-frequency")));
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setupNodes"] = temp;
   procs["SETUP-NODES"] = temp;
   temp = (function() {
-    var numLinks = Prims.div((world.observer.getGlobal("average-node-degree") * world.observer.getGlobal("number-of-nodes")), 2);
-    while (Prims.lt(world.links().size(), numLinks)) {
-      ListPrims.oneOf(world.turtles()).ask(function() {
-        var choice = SelfPrims.other(world.turtles().agentFilter(function() { return !LinkPrims.isLinkNeighbor("LINKS", SelfManager.myself()); })).minOneOf(function() { return SelfManager.self().distance(SelfManager.myself()); });
-        if (!Prims.equality(choice, Nobody)) {
-          LinkPrims.createLinkWith(choice, "LINKS").ask(function() {}, false);
-        }
-      }, true);
-    }
-    for (var _index_1097_1103 = 0, _repeatcount_1097_1103 = StrictMath.floor(10); _index_1097_1103 < _repeatcount_1097_1103; _index_1097_1103++){
-      LayoutManager.layoutSpring(world.turtles(), world.links(), 0.3, Prims.div(world.topology.width, NLMath.sqrt(world.observer.getGlobal("number-of-nodes"))), 1);
+    try {
+      let numLinks = Prims.div((world.observer.getGlobal("average-node-degree") * world.observer.getGlobal("number-of-nodes")), 2);
+      while (Prims.lt(world.links().size(), numLinks)) {
+        ListPrims.oneOf(world.turtles()).ask(function() {
+          let choice = SelfPrims.other(world.turtles().agentFilter(function() { return !LinkPrims.isLinkNeighbor("LINKS", SelfManager.myself()); })).minOneOf(function() { return SelfManager.self().distance(SelfManager.myself()); });
+          if (!Prims.equality(choice, Nobody)) {
+            LinkPrims.createLinkWith(choice, "LINKS").ask(function() {}, false);
+          }
+        }, true);
+      }
+      for (let _index_1097_1103 = 0, _repeatcount_1097_1103 = StrictMath.floor(10); _index_1097_1103 < _repeatcount_1097_1103; _index_1097_1103++){
+        LayoutManager.layoutSpring(world.turtles(), world.links(), 0.3, Prims.div(world.topology.width, NLMath.sqrt(world.observer.getGlobal("number-of-nodes"))), 1);
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["setupSpatiallyClusteredNetwork"] = temp;
@@ -142,7 +202,9 @@ var procedures = (function() {
       procedures["DO-VIRUS-CHECKS"]();
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -152,51 +214,101 @@ var procedures = (function() {
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    SelfManager.self().setVariable("infected?", true);
-    SelfManager.self().setVariable("resistant?", false);
-    SelfManager.self().setVariable("color", 15);
+    try {
+      SelfManager.self().setVariable("infected?", true);
+      SelfManager.self().setVariable("resistant?", false);
+      SelfManager.self().setVariable("color", 15);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["becomeInfected"] = temp;
   procs["BECOME-INFECTED"] = temp;
   temp = (function() {
-    SelfManager.self().setVariable("infected?", false);
-    SelfManager.self().setVariable("resistant?", false);
-    SelfManager.self().setVariable("color", 55);
+    try {
+      SelfManager.self().setVariable("infected?", false);
+      SelfManager.self().setVariable("resistant?", false);
+      SelfManager.self().setVariable("color", 105);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["becomeSusceptible"] = temp;
   procs["BECOME-SUSCEPTIBLE"] = temp;
   temp = (function() {
-    SelfManager.self().setVariable("infected?", false);
-    SelfManager.self().setVariable("resistant?", true);
-    SelfManager.self().setVariable("color", 5);
-    LinkPrims.myLinks("LINKS").ask(function() { SelfManager.self().setVariable("color", (5 - 2)); }, true);
+    try {
+      SelfManager.self().setVariable("infected?", false);
+      SelfManager.self().setVariable("resistant?", true);
+      SelfManager.self().setVariable("color", 5);
+      LinkPrims.myLinks("LINKS").ask(function() { SelfManager.self().setVariable("color", (5 - 2)); }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["becomeResistant"] = temp;
   procs["BECOME-RESISTANT"] = temp;
   temp = (function() {
-    world.turtles().agentFilter(function() { return SelfManager.self().getVariable("infected?"); }).ask(function() {
-      LinkPrims.linkNeighbors("LINKS").agentFilter(function() { return !SelfManager.self().getVariable("resistant?"); }).ask(function() {
-        if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("virus-spread-chance"))) {
-          procedures["BECOME-INFECTED"]();
-        }
+    try {
+      world.turtles().agentFilter(function() { return SelfManager.self().getVariable("infected?"); }).ask(function() {
+        LinkPrims.linkNeighbors("LINKS").agentFilter(function() { return !SelfManager.self().getVariable("resistant?"); }).ask(function() {
+          if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("virus-spread-chance"))) {
+            procedures["BECOME-INFECTED"]();
+          }
+        }, true);
       }, true);
-    }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["spreadVirus"] = temp;
   procs["SPREAD-VIRUS"] = temp;
   temp = (function() {
-    world.turtles().agentFilter(function() {
-      return (SelfManager.self().getVariable("infected?") && Prims.equality(SelfManager.self().getVariable("virus-check-timer"), 0));
-    }).ask(function() {
-      if (Prims.lt(Prims.random(100), world.observer.getGlobal("recovery-chance"))) {
-        if (Prims.lt(Prims.random(100), world.observer.getGlobal("gain-resistance-chance"))) {
-          procedures["BECOME-RESISTANT"]();
+    try {
+      world.turtles().agentFilter(function() {
+        return (SelfManager.self().getVariable("infected?") && Prims.equality(SelfManager.self().getVariable("virus-check-timer"), 0));
+      }).ask(function() {
+        if (Prims.lt(Prims.random(100), world.observer.getGlobal("recovery-chance"))) {
+          if (Prims.lt(Prims.random(100), world.observer.getGlobal("gain-resistance-chance"))) {
+            procedures["BECOME-RESISTANT"]();
+          }
+          else {
+            procedures["BECOME-SUSCEPTIBLE"]();
+          }
         }
-        else {
-          procedures["BECOME-SUSCEPTIBLE"]();
-        }
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-    }, true);
+    }
   });
   procs["doVirusChecks"] = temp;
   procs["DO-VIRUS-CHECKS"] = temp;

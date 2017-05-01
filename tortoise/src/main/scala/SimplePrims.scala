@@ -59,6 +59,8 @@ object SimplePrims {
         case _: prim.etc._linkheading => "SelfPrims.linkHeading"
         case _: prim.etc._linklength  => "SelfPrims.linkLength"
         case _: prim._other           => "SelfPrims.other"
+        case _: optimize._anyother    => "SelfPrims.anyOther"
+        case _: optimize._countother  => "SelfPrims.countOther"
 
         // SelfManager
         case _: prim.etc._bothends                   => "SelfManager.self().bothEnds"
@@ -91,6 +93,7 @@ object SimplePrims {
         case _: prim.etc._empty             => "ListPrims.empty"
         case _: prim.etc._first             => "ListPrims.first"
         case _: prim.etc._fput              => "ListPrims.fput"
+        case _: prim.etc._insertitem        => "ListPrims.insertItem"
         case _: prim.etc._item              => "ListPrims.item"
         case _: prim.etc._last              => "ListPrims.last"
         case _: prim.etc._length            => "ListPrims.length"
@@ -232,6 +235,7 @@ object SimplePrims {
   object SimpleCommand {
     def unapply(c: Command): Option[String] =
       PartialFunction.condOpt(c) {
+        case _: optimize._fdone                    => "SelfManager.self().fdOne()"
         case _: prim._done                         => ""
         case _: prim._stop                         => "throw new Exception.StopInterrupt"
         case _: prim.etc._observercode             => ""
@@ -279,6 +283,7 @@ object SimplePrims {
         case _: prim.etc._tie        => "SelfManager.self().tie"
         case _: prim.etc._untie      => "SelfManager.self().untie"
         case _: prim.etc._watchme    => "SelfManager.self().watchMe"
+        case _: optimize._fdlessthan1            => "SelfManager.self().fdLessThan1"
 
         // Plotting
         case _: prim.etc._autoplotoff            => "plotManager.disableAutoplotting"
@@ -310,7 +315,7 @@ object SimplePrims {
         case _: prim.etc._clearpatches     => "world.clearPatches"
         case _: prim.etc._clearturtles     => "world.turtleManager.clearTurtles"
         case _: prim.etc._clearticks       => "world.ticker.clear"
-        case _: prim.etc._clearlinks       => "world.linkManager.clear"
+        case _: prim.etc._clearlinks       => "world.clearLinks"
         case _: prim.etc._resizeworld      => "world.resize"
         case _: prim.etc._setpatchsize     => "world.setPatchSize"
         case _: prim.etc._resetticks       => "world.ticker.reset"
@@ -331,6 +336,7 @@ object SimplePrims {
         case _: prim.etc._stdout           => "Prims.stdout"
         case _: prim.etc._usermessage      => "UserDialogPrims.confirm"
         case _: prim.etc._exportoutput     => "ExportPrims.exportOutput"
+        case _: prim.etc._wait             => "Prims.wait"
 
         // Unimplemented
         case _: prim.etc._display     => "notImplemented('display', undefined)"

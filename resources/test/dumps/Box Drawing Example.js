@@ -63,43 +63,63 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    world.patches().ask(function() {
-      if (((Prims.equality(SelfManager.self().getPatchVariable("pxcor"), 0) && Prims.gte(SelfManager.self().getPatchVariable("pycor"), 0)) && Prims.lte(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("edge")))) {
-        SelfManager.self().setPatchVariable("pcolor", 15);
+    try {
+      world.clearAll();
+      world.patches().ask(function() {
+        if (((Prims.equality(SelfManager.self().getPatchVariable("pxcor"), 0) && Prims.gte(SelfManager.self().getPatchVariable("pycor"), 0)) && Prims.lte(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("edge")))) {
+          SelfManager.self().setPatchVariable("pcolor", 15);
+        }
+        if (((Prims.equality(SelfManager.self().getPatchVariable("pxcor"), world.observer.getGlobal("edge")) && Prims.gte(SelfManager.self().getPatchVariable("pycor"), 0)) && Prims.lte(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("edge")))) {
+          SelfManager.self().setPatchVariable("pcolor", 15);
+        }
+        if (((Prims.equality(SelfManager.self().getPatchVariable("pycor"), 0) && Prims.gte(SelfManager.self().getPatchVariable("pxcor"), 0)) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), world.observer.getGlobal("edge")))) {
+          SelfManager.self().setPatchVariable("pcolor", 15);
+        }
+        if (((Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("edge")) && Prims.gte(SelfManager.self().getPatchVariable("pxcor"), 0)) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), world.observer.getGlobal("edge")))) {
+          SelfManager.self().setPatchVariable("pcolor", 15);
+        }
+      }, true);
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      if (((Prims.equality(SelfManager.self().getPatchVariable("pxcor"), world.observer.getGlobal("edge")) && Prims.gte(SelfManager.self().getPatchVariable("pycor"), 0)) && Prims.lte(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("edge")))) {
-        SelfManager.self().setPatchVariable("pcolor", 15);
-      }
-      if (((Prims.equality(SelfManager.self().getPatchVariable("pycor"), 0) && Prims.gte(SelfManager.self().getPatchVariable("pxcor"), 0)) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), world.observer.getGlobal("edge")))) {
-        SelfManager.self().setPatchVariable("pcolor", 15);
-      }
-      if (((Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("edge")) && Prims.gte(SelfManager.self().getPatchVariable("pxcor"), 0)) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), world.observer.getGlobal("edge")))) {
-        SelfManager.self().setPatchVariable("pcolor", 15);
-      }
-    }, true);
-    world.ticker.reset();
+    }
   });
   procs["setupCorner"] = temp;
   procs["SETUP-CORNER"] = temp;
   temp = (function() {
-    world.clearAll();
-    var halfedge = NLMath.toInt(Prims.div(world.observer.getGlobal("edge"), 2));
-    world.patches().ask(function() {
-      if (((Prims.equality(SelfManager.self().getPatchVariable("pxcor"),  -halfedge) && Prims.gte(SelfManager.self().getPatchVariable("pycor"),  -halfedge)) && Prims.lte(SelfManager.self().getPatchVariable("pycor"), (0 + halfedge)))) {
-        SelfManager.self().setPatchVariable("pcolor", 105);
+    try {
+      world.clearAll();
+      let halfedge = NLMath.toInt(Prims.div(world.observer.getGlobal("edge"), 2));
+      world.patches().ask(function() {
+        if (((Prims.equality(SelfManager.self().getPatchVariable("pxcor"),  -halfedge) && Prims.gte(SelfManager.self().getPatchVariable("pycor"),  -halfedge)) && Prims.lte(SelfManager.self().getPatchVariable("pycor"), (0 + halfedge)))) {
+          SelfManager.self().setPatchVariable("pcolor", 105);
+        }
+        if (((Prims.equality(SelfManager.self().getPatchVariable("pxcor"), (0 + halfedge)) && Prims.gte(SelfManager.self().getPatchVariable("pycor"),  -halfedge)) && Prims.lte(SelfManager.self().getPatchVariable("pycor"), (0 + halfedge)))) {
+          SelfManager.self().setPatchVariable("pcolor", 105);
+        }
+        if (((Prims.equality(SelfManager.self().getPatchVariable("pycor"),  -halfedge) && Prims.gte(SelfManager.self().getPatchVariable("pxcor"),  -halfedge)) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), (0 + halfedge)))) {
+          SelfManager.self().setPatchVariable("pcolor", 105);
+        }
+        if (((Prims.equality(SelfManager.self().getPatchVariable("pycor"), (0 + halfedge)) && Prims.gte(SelfManager.self().getPatchVariable("pxcor"),  -halfedge)) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), (0 + halfedge)))) {
+          SelfManager.self().setPatchVariable("pcolor", 105);
+        }
+      }, true);
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      if (((Prims.equality(SelfManager.self().getPatchVariable("pxcor"), (0 + halfedge)) && Prims.gte(SelfManager.self().getPatchVariable("pycor"),  -halfedge)) && Prims.lte(SelfManager.self().getPatchVariable("pycor"), (0 + halfedge)))) {
-        SelfManager.self().setPatchVariable("pcolor", 105);
-      }
-      if (((Prims.equality(SelfManager.self().getPatchVariable("pycor"),  -halfedge) && Prims.gte(SelfManager.self().getPatchVariable("pxcor"),  -halfedge)) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), (0 + halfedge)))) {
-        SelfManager.self().setPatchVariable("pcolor", 105);
-      }
-      if (((Prims.equality(SelfManager.self().getPatchVariable("pycor"), (0 + halfedge)) && Prims.gte(SelfManager.self().getPatchVariable("pxcor"),  -halfedge)) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), (0 + halfedge)))) {
-        SelfManager.self().setPatchVariable("pcolor", 105);
-      }
-    }, true);
-    world.ticker.reset();
+    }
   });
   procs["setupCenter"] = temp;
   procs["SETUP-CENTER"] = temp;

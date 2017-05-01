@@ -43,7 +43,7 @@ class JSIdentProviderTest extends FunSuite {
   }
 
   private implicit class TestString(str: String) {
-    def manglesTo(expected: String): Unit = assertResult(expected)(JSIdentProvider(str))
+    def manglesTo(expected: String): Unit = { assertResult(expected)(JSIdentProvider(str)); () }
   }
 
 }

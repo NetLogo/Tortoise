@@ -48,9 +48,19 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Bar), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Histogram', 'default')(function() {
-        plotManager.setXRange(0, NLMath.ceil((world.observer.getGlobal("max-val") + 0.5)));
-        plotManager.setHistogramBarCount(NLMath.ceil(NLMath.sqrt(world.turtles().size())));
-        plotManager.drawHistogramFrom(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("val"); }));;
+        try {
+          plotManager.setXRange(0, NLMath.ceil((world.observer.getGlobal("max-val") + 0.5)));
+          plotManager.setHistogramBarCount(NLMath.ceil(NLMath.sqrt(world.turtles().size())));
+          plotManager.drawHistogramFrom(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("val"); }));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   })];
@@ -78,95 +88,165 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
-    BreedManager.setDefaultShape(world.links().getSpecialName(), "small-arrow-link")
-    world.patches().agentFilter(function() {
-      return (Prims.lt(NLMath.abs(SelfManager.self().getPatchVariable("pxcor")), Prims.div(world.observer.getGlobal("grid-size"), 2)) && Prims.lt(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), Prims.div(world.observer.getGlobal("grid-size"), 2)));
-    }).ask(function() {
-      SelfManager.self().sprout(1, "TURTLES").ask(function() { SelfManager.self().setVariable("color", 105); }, true);
-    }, true);
-    world.turtles().ask(function() {
-      SelfManager.self().setVariable("val", 1);
-      var neighborNodes = Prims.turtleSet(SelfManager.self().getNeighbors4().projectionBy(function() { return SelfManager.self().turtlesHere(); }));
-      LinkPrims.createLinksTo(neighborNodes, "ACTIVE-LINKS").ask(function() {
-        SelfManager.self().setVariable("current-flow", 0);
-        if (Prims.gt(Prims.randomFloat(100), world.observer.getGlobal("link-chance"))) {
-          SelfManager.self().setVariable("breed", world.linkManager.linksOfBreed("INACTIVE-LINKS"));
-          SelfManager.self().setVariable('hidden?', true)
-        }
+    try {
+      world.clearAll();
+      BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
+      BreedManager.setDefaultShape(world.links().getSpecialName(), "small-arrow-link")
+      world.patches().agentFilter(function() {
+        return (Prims.lt(NLMath.abs(SelfManager.self().getPatchVariable("pxcor")), Prims.div(world.observer.getGlobal("grid-size"), 2)) && Prims.lt(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), Prims.div(world.observer.getGlobal("grid-size"), 2)));
+      }).ask(function() {
+        SelfManager.self().sprout(1, "TURTLES").ask(function() { SelfManager.self().setVariable("color", 105); }, true);
       }, true);
-    }, true);
-    world.turtles().ask(function() {
-      SelfManager.self().setXY(Prims.div((SelfManager.self().getVariable("xcor") * (world.topology.maxPxcor - 1)), (Prims.div(world.observer.getGlobal("grid-size"), 2) - 0.5)), Prims.div((SelfManager.self().getVariable("ycor") * (world.topology.maxPycor - 1)), (Prims.div(world.observer.getGlobal("grid-size"), 2) - 0.5)));
-    }, true);
-    procedures["UPDATE-GLOBALS"]();
-    procedures["UPDATE-VISUALS"]();
-    world.ticker.reset();
+      world.turtles().ask(function() {
+        SelfManager.self().setVariable("val", 1);
+        let neighborNodes = Prims.turtleSet(SelfManager.self().getNeighbors4().projectionBy(function() { return SelfManager.self().turtlesHere(); }));
+        LinkPrims.createLinksTo(neighborNodes, "ACTIVE-LINKS").ask(function() {
+          SelfManager.self().setVariable("current-flow", 0);
+          if (Prims.gt(Prims.randomFloat(100), world.observer.getGlobal("link-chance"))) {
+            SelfManager.self().setVariable("breed", world.linkManager.linksOfBreed("INACTIVE-LINKS"));
+            SelfManager.self().setVariable('hidden?', true)
+          }
+        }, true);
+      }, true);
+      world.turtles().ask(function() {
+        SelfManager.self().setXY(Prims.div((SelfManager.self().getVariable("xcor") * (world.topology.maxPxcor - 1)), (Prims.div(world.observer.getGlobal("grid-size"), 2) - 0.5)), Prims.div((SelfManager.self().getVariable("ycor") * (world.topology.maxPycor - 1)), (Prims.div(world.observer.getGlobal("grid-size"), 2) - 0.5)));
+      }, true);
+      procedures["UPDATE-GLOBALS"]();
+      procedures["UPDATE-VISUALS"]();
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    world.turtles().ask(function() { SelfManager.self().setVariable("new-val", 0); }, true);
-    world.turtles().ask(function() {
-      var recipients = LinkPrims.outLinkNeighbors("ACTIVE-LINKS");
-      if (!recipients.isEmpty()) {
-        var valToKeep = (SelfManager.self().getVariable("val") * (1 - Prims.div(world.observer.getGlobal("diffusion-rate"), 100)));
-        SelfManager.self().setVariable("new-val", (SelfManager.self().getVariable("new-val") + valToKeep));
-        var valIncrement = Prims.div((SelfManager.self().getVariable("val") - valToKeep), recipients.size());
-        recipients.ask(function() {
-          SelfManager.self().setVariable("new-val", (SelfManager.self().getVariable("new-val") + valIncrement));
-          LinkPrims.inLinkFrom("ACTIVE-LINKS", SelfManager.myself()).ask(function() { SelfManager.self().setVariable("current-flow", valIncrement); }, true);
-        }, true);
+    try {
+      world.turtles().ask(function() { SelfManager.self().setVariable("new-val", 0); }, true);
+      world.turtles().ask(function() {
+        let recipients = LinkPrims.outLinkNeighbors("ACTIVE-LINKS");
+        if (!recipients.isEmpty()) {
+          let valToKeep = (SelfManager.self().getVariable("val") * (1 - Prims.div(world.observer.getGlobal("diffusion-rate"), 100)));
+          SelfManager.self().setVariable("new-val", (SelfManager.self().getVariable("new-val") + valToKeep));
+          let valIncrement = Prims.div((SelfManager.self().getVariable("val") - valToKeep), recipients.size());
+          recipients.ask(function() {
+            SelfManager.self().setVariable("new-val", (SelfManager.self().getVariable("new-val") + valIncrement));
+            LinkPrims.inLinkFrom("ACTIVE-LINKS", SelfManager.myself()).ask(function() { SelfManager.self().setVariable("current-flow", valIncrement); }, true);
+          }, true);
+        }
+        else {
+          SelfManager.self().setVariable("new-val", (SelfManager.self().getVariable("new-val") + SelfManager.self().getVariable("val")));
+        }
+      }, true);
+      world.turtles().ask(function() { SelfManager.self().setVariable("val", SelfManager.self().getVariable("new-val")); }, true);
+      procedures["UPDATE-GLOBALS"]();
+      procedures["UPDATE-VISUALS"]();
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      else {
-        SelfManager.self().setVariable("new-val", (SelfManager.self().getVariable("new-val") + SelfManager.self().getVariable("val")));
-      }
-    }, true);
-    world.turtles().ask(function() { SelfManager.self().setVariable("val", SelfManager.self().getVariable("new-val")); }, true);
-    procedures["UPDATE-GLOBALS"]();
-    procedures["UPDATE-VISUALS"]();
-    world.ticker.tick();
+    }
   });
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    if (!world.linkManager.linksOfBreed("ACTIVE-LINKS").isEmpty()) {
-      ListPrims.oneOf(world.linkManager.linksOfBreed("ACTIVE-LINKS")).ask(function() {
-        SelfManager.self().setVariable("breed", world.linkManager.linksOfBreed("INACTIVE-LINKS"));
-        SelfManager.self().setVariable('hidden?', true)
-      }, true);
-      ListPrims.oneOf(world.linkManager.linksOfBreed("INACTIVE-LINKS")).ask(function() {
-        SelfManager.self().setVariable("breed", world.linkManager.linksOfBreed("ACTIVE-LINKS"));
-        SelfManager.self().setVariable('hidden?', false)
-      }, true);
+    try {
+      if (!world.linkManager.linksOfBreed("ACTIVE-LINKS").isEmpty()) {
+        ListPrims.oneOf(world.linkManager.linksOfBreed("ACTIVE-LINKS")).ask(function() {
+          SelfManager.self().setVariable("breed", world.linkManager.linksOfBreed("INACTIVE-LINKS"));
+          SelfManager.self().setVariable('hidden?', true)
+        }, true);
+        ListPrims.oneOf(world.linkManager.linksOfBreed("INACTIVE-LINKS")).ask(function() {
+          SelfManager.self().setVariable("breed", world.linkManager.linksOfBreed("ACTIVE-LINKS"));
+          SelfManager.self().setVariable('hidden?', false)
+        }, true);
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["rewireALink"] = temp;
   procs["REWIRE-A-LINK"] = temp;
   temp = (function() {
-    world.observer.setGlobal("total-val", ListPrims.sum(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("val"); })));
-    world.observer.setGlobal("max-val", ListPrims.max(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("val"); })));
-    if (!world.linkManager.linksOfBreed("ACTIVE-LINKS").isEmpty()) {
-      world.observer.setGlobal("max-flow", ListPrims.max(world.linkManager.linksOfBreed("ACTIVE-LINKS").projectionBy(function() { return SelfManager.self().getVariable("current-flow"); })));
-      world.observer.setGlobal("mean-flow", ListPrims.mean(world.linkManager.linksOfBreed("ACTIVE-LINKS").projectionBy(function() { return SelfManager.self().getVariable("current-flow"); })));
+    try {
+      world.observer.setGlobal("total-val", ListPrims.sum(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("val"); })));
+      world.observer.setGlobal("max-val", ListPrims.max(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("val"); })));
+      if (!world.linkManager.linksOfBreed("ACTIVE-LINKS").isEmpty()) {
+        world.observer.setGlobal("max-flow", ListPrims.max(world.linkManager.linksOfBreed("ACTIVE-LINKS").projectionBy(function() { return SelfManager.self().getVariable("current-flow"); })));
+        world.observer.setGlobal("mean-flow", ListPrims.mean(world.linkManager.linksOfBreed("ACTIVE-LINKS").projectionBy(function() { return SelfManager.self().getVariable("current-flow"); })));
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["updateGlobals"] = temp;
   procs["UPDATE-GLOBALS"] = temp;
   temp = (function() {
-    world.turtles().ask(function() { procedures["UPDATE-NODE-APPEARANCE"](); }, true);
-    world.linkManager.linksOfBreed("ACTIVE-LINKS").ask(function() { procedures["UPDATE-LINK-APPEARANCE"](); }, true);
+    try {
+      world.turtles().ask(function() { procedures["UPDATE-NODE-APPEARANCE"](); }, true);
+      world.linkManager.linksOfBreed("ACTIVE-LINKS").ask(function() { procedures["UPDATE-LINK-APPEARANCE"](); }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["updateVisuals"] = temp;
   procs["UPDATE-VISUALS"] = temp;
   temp = (function() {
-    SelfManager.self().setVariable("size", (0.1 + (5 * NLMath.sqrt(Prims.div(SelfManager.self().getVariable("val"), world.observer.getGlobal("total-val"))))));
+    try {
+      SelfManager.self().setVariable("size", (0.1 + (5 * NLMath.sqrt(Prims.div(SelfManager.self().getVariable("val"), world.observer.getGlobal("total-val"))))));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["updateNodeAppearance"] = temp;
   procs["UPDATE-NODE-APPEARANCE"] = temp;
   temp = (function() {
-    SelfManager.self().setVariable("color", ColorModel.scaleColor(5, Prims.div(SelfManager.self().getVariable("current-flow"), ((2 * world.observer.getGlobal("mean-flow")) + 1.0E-5)), -0.4, 1));
+    try {
+      SelfManager.self().setVariable("color", ColorModel.scaleColor(5, Prims.div(SelfManager.self().getVariable("current-flow"), ((2 * world.observer.getGlobal("mean-flow")) + 1.0E-5)), -0.4, 1));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["updateLinkAppearance"] = temp;
   procs["UPDATE-LINK-APPEARANCE"] = temp;

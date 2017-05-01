@@ -63,23 +63,33 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    world.turtleManager.createOrderedTurtles(10, "").ask(function() {
-      SelfManager.self().fd(5);
-      SelfManager.self().setVariable("color", 5);
-    }, true);
-    ListPrims.nOf(5, world.turtles()).ask(function() {
-      LinkPrims.createLinkWith(ListPrims.oneOf(SelfPrims.other(world.turtles())), "BLUE-LINKS").ask(function() {
-        SelfManager.self().setVariable("color", 105);
-        SelfManager.self().setVariable("weight", Prims.random(10));
-        SelfManager.self().setVariable("label", SelfManager.self().getVariable("weight"));
+    try {
+      world.clearAll();
+      world.turtleManager.createOrderedTurtles(10, "").ask(function() {
+        SelfManager.self().fd(5);
+        SelfManager.self().setVariable("color", 5);
       }, true);
-    }, true);
-    BreedManager.setDefaultShape(world.linkManager.linksOfBreed("RED-LINKS").getSpecialName(), "curved link")
-    ListPrims.nOf(5, world.turtles()).ask(function() {
-      LinkPrims.createLinkTo(ListPrims.oneOf(SelfPrims.other(world.turtles())), "RED-LINKS").ask(function() { SelfManager.self().setVariable("color", 15); }, true);
-    }, true);
-    world.ticker.reset();
+      ListPrims.nOf(5, world.turtles()).ask(function() {
+        LinkPrims.createLinkWith(ListPrims.oneOf(SelfPrims.other(world.turtles())), "BLUE-LINKS").ask(function() {
+          SelfManager.self().setVariable("color", 105);
+          SelfManager.self().setVariable("weight", Prims.random(10));
+          SelfManager.self().setVariable("label", SelfManager.self().getVariable("weight"));
+        }, true);
+      }, true);
+      BreedManager.setDefaultShape(world.linkManager.linksOfBreed("RED-LINKS").getSpecialName(), "curved link")
+      ListPrims.nOf(5, world.turtles()).ask(function() {
+        LinkPrims.createLinkTo(ListPrims.oneOf(SelfPrims.other(world.turtles())), "RED-LINKS").ask(function() { SelfManager.self().setVariable("color", 15); }, true);
+      }, true);
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;

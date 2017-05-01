@@ -8,7 +8,7 @@ import
     util.Random
 
 import
-  scala.scalajs.js.annotation.JSExport
+  scala.scalajs.js.annotation.{ JSExport, JSExportTopLevel }
 
 // MT home page has moved to
 //   http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html
@@ -153,7 +153,7 @@ object MersenneTwisterFast {
  * Constructor using a given seed.  Though you pass this seed in
  * as a long, it's best to make sure it's actually an integer.
  */
-@JSExport("MersenneTwisterFast")
+@JSExportTopLevel("MersenneTwisterFast")
 final class MersenneTwisterFast(seed: Long = System.nanoTime) extends Random with Serializable with Cloneable {
 
   private var __mt: Array[Int] = null

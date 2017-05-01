@@ -48,15 +48,25 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Bar), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Single Dice', 'default')(function() {
-        plotManager.drawHistogramFrom(world.observer.getGlobal("single-outcomes"));
-        var maxbar = ListPrims.modes(world.observer.getGlobal("single-outcomes"));
-        var maxrange = ListPrims.length(world.observer.getGlobal("single-outcomes").filter(Tasks.reporterTask(function(outcome) {
-          if (arguments.length < 1) {
-            throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+        try {
+          plotManager.drawHistogramFrom(world.observer.getGlobal("single-outcomes"));
+          let maxbar = ListPrims.modes(world.observer.getGlobal("single-outcomes"));
+          let maxrange = ListPrims.length(world.observer.getGlobal("single-outcomes").filter(Tasks.reporterTask(function(outcome) {
+            if (arguments.length < 1) {
+              throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+            }
+            return Prims.equality(outcome, ListPrims.item(0, maxbar));
+          })));
+          plotManager.setYRange(0, ListPrims.max(ListPrims.list(51, maxrange)));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
           }
-          return Prims.equality(outcome, ListPrims.item(0, maxbar));
-        })));
-        plotManager.setYRange(0, ListPrims.max(ListPrims.list(51, maxrange)));;
+        };
       });
     });
   })];
@@ -69,15 +79,25 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Bar), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Pair Sums', 'default')(function() {
-        plotManager.drawHistogramFrom(world.observer.getGlobal("pair-outcomes"));
-        var maxbar = ListPrims.modes(world.observer.getGlobal("pair-outcomes"));
-        var maxrange = ListPrims.length(world.observer.getGlobal("pair-outcomes").filter(Tasks.reporterTask(function(outcome) {
-          if (arguments.length < 1) {
-            throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+        try {
+          plotManager.drawHistogramFrom(world.observer.getGlobal("pair-outcomes"));
+          let maxbar = ListPrims.modes(world.observer.getGlobal("pair-outcomes"));
+          let maxrange = ListPrims.length(world.observer.getGlobal("pair-outcomes").filter(Tasks.reporterTask(function(outcome) {
+            if (arguments.length < 1) {
+              throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+            }
+            return Prims.equality(outcome, ListPrims.item(0, maxbar));
+          })));
+          plotManager.setYRange(0, ListPrims.max(ListPrims.list(51, maxrange)));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
           }
-          return Prims.equality(outcome, ListPrims.item(0, maxbar));
-        })));
-        plotManager.setYRange(0, ListPrims.max(ListPrims.list(51, maxrange)));;
+        };
       });
     });
   })];
@@ -105,29 +125,39 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    world.observer.setGlobal("single-outcomes", []);
-    world.observer.setGlobal("pair-outcomes", []);
-    world.patches().agentFilter(function() { return Prims.gt(SelfManager.self().getPatchVariable("pxcor"), 4); }).ask(function() {
-      SelfManager.self().setPatchVariable("column", NLMath.floor(Prims.div((SelfManager.self().getPatchVariable("pxcor") - 1), 2)));
-    }, true);
-    world.patches().agentFilter(function() { return Prims.lt(SelfManager.self().getPatchVariable("pxcor"), -4); }).ask(function() {
-      SelfManager.self().setPatchVariable("column", ((SelfManager.self().getPatchVariable("pxcor") - world.topology.minPxcor) + 1));
-    }, true);
-    world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", (5 + 3)); }, true);
-    world.patches().agentFilter(function() { return !Prims.equality(SelfManager.self().getPatchVariable("column"), 0); }).ask(function() {
-      if (Prims.equality(NLMath.mod(SelfManager.self().getPatchVariable("column"), 2), 0)) {
-        SelfManager.self().setPatchVariable("pcolor", 5);
+    try {
+      world.clearAll();
+      world.observer.setGlobal("single-outcomes", []);
+      world.observer.setGlobal("pair-outcomes", []);
+      world.patches().agentFilter(function() { return Prims.gt(SelfManager.self().getPatchVariable("pxcor"), 4); }).ask(function() {
+        SelfManager.self().setPatchVariable("column", NLMath.floor(Prims.div((SelfManager.self().getPatchVariable("pxcor") - 1), 2)));
+      }, true);
+      world.patches().agentFilter(function() { return Prims.lt(SelfManager.self().getPatchVariable("pxcor"), -4); }).ask(function() {
+        SelfManager.self().setPatchVariable("column", ((SelfManager.self().getPatchVariable("pxcor") - world.topology.minPxcor) + 1));
+      }, true);
+      world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", (5 + 3)); }, true);
+      world.patches().agentFilter(function() { return !Prims.equality(SelfManager.self().getPatchVariable("column"), 0); }).ask(function() {
+        if (Prims.equality(NLMath.mod(SelfManager.self().getPatchVariable("column"), 2), 0)) {
+          SelfManager.self().setPatchVariable("pcolor", 5);
+        }
+        else {
+          SelfManager.self().setPatchVariable("pcolor", (35 - 1));
+        }
+      }, true);
+      world.observer.setGlobal("top-row", world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.maxPycor); }));
+      world.observer.setGlobal("generators", world.observer.getGlobal("top-row").agentFilter(function() {
+        return (Prims.equality(SelfManager.self().getPatchVariable("pxcor"), -1) || Prims.equality(SelfManager.self().getPatchVariable("pxcor"), 0));
+      }));
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      else {
-        SelfManager.self().setPatchVariable("pcolor", (35 - 1));
-      }
-    }, true);
-    world.observer.setGlobal("top-row", world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.maxPycor); }));
-    world.observer.setGlobal("generators", world.observer.getGlobal("top-row").agentFilter(function() {
-      return (Prims.equality(SelfManager.self().getPatchVariable("pxcor"), -1) || Prims.equality(SelfManager.self().getPatchVariable("pxcor"), 0));
-    }));
-    world.ticker.reset();
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
@@ -149,7 +179,9 @@ var procedures = (function() {
       }
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -159,79 +191,129 @@ var procedures = (function() {
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    world.observer.getGlobal("generators").ask(function() {
-      SelfManager.self().sprout(1, "PAIRED-DICE").ask(function() {
-        SelfManager.self().setVariable("color", 9.9);
-        SelfManager.self().setVariable("die-value", (1 + Prims.random(6)));
-        SelfManager.self().setVariable("shape", (Dump('') + Dump("die ") + Dump(SelfManager.self().getVariable("die-value"))));
-        SelfManager.self().setVariable("heading", 90);
+    try {
+      world.observer.getGlobal("generators").ask(function() {
+        SelfManager.self().sprout(1, "PAIRED-DICE").ask(function() {
+          SelfManager.self().setVariable("color", 9.9);
+          SelfManager.self().setVariable("die-value", (1 + Prims.random(6)));
+          SelfManager.self().setVariable("shape", (Dump('') + Dump("die ") + Dump(SelfManager.self().getVariable("die-value"))));
+          SelfManager.self().setVariable("heading", 90);
+        }, true);
       }, true);
-    }, true);
-    world.turtleManager.turtlesOfBreed("PAIRED-DICE").ask(function() {
-      SelfManager.self().hatch(1, "SINGLE-DICE").ask(function() {
-        SelfManager.self().setVariable("heading", 270);
-        SelfManager.self().setVariable("shape", SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("shape"); }));
+      world.turtleManager.turtlesOfBreed("PAIRED-DICE").ask(function() {
+        SelfManager.self().hatch(1, "SINGLE-DICE").ask(function() {
+          SelfManager.self().setVariable("heading", 270);
+          SelfManager.self().setVariable("shape", SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("shape"); }));
+        }, true);
       }, true);
-    }, true);
-    var total = ListPrims.sum(world.turtleManager.turtlesOfBreed("PAIRED-DICE").projectionBy(function() { return SelfManager.self().getVariable("die-value"); }));
-    world.turtleManager.turtlesOfBreed("PAIRED-DICE").ask(function() { SelfManager.self().setVariable("pair-sum", total); }, true);
-    world.observer.setGlobal("pair-outcomes", ListPrims.lput(total, world.observer.getGlobal("pair-outcomes")));
-    world.turtleManager.turtlesOfBreed("SINGLE-DICE").ask(function() {
-      world.observer.setGlobal("single-outcomes", ListPrims.lput(SelfManager.self().getVariable("die-value"), world.observer.getGlobal("single-outcomes")));
-    }, true);
+      let total = ListPrims.sum(world.turtleManager.turtlesOfBreed("PAIRED-DICE").projectionBy(function() { return SelfManager.self().getVariable("die-value"); }));
+      world.turtleManager.turtlesOfBreed("PAIRED-DICE").ask(function() { SelfManager.self().setVariable("pair-sum", total); }, true);
+      world.observer.setGlobal("pair-outcomes", ListPrims.lput(total, world.observer.getGlobal("pair-outcomes")));
+      world.turtleManager.turtlesOfBreed("SINGLE-DICE").ask(function() {
+        world.observer.setGlobal("single-outcomes", ListPrims.lput(SelfManager.self().getVariable("die-value"), world.observer.getGlobal("single-outcomes")));
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["rollDice"] = temp;
   procs["ROLL-DICE"] = temp;
   temp = (function() {
-    if (!world.turtleManager.turtlesOfBreed("PAIRED-DICE").agentFilter(function() {
-      return !Prims.equality(SelfManager.self().getVariable("pair-sum"), SelfManager.self().getPatchVariable("column"));
-    }).isEmpty()) {
-      world.turtleManager.turtlesOfBreed("PAIRED-DICE").ask(function() { SelfManager.self().fd(1); }, true);
-    }
-    else {
-      world.turtleManager.turtlesOfBreed("PAIRED-DICE").ask(function() {
-        if (Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor)) {
-          procedures["PAIRED-DIE-CHECK-VISIBLE"]();
-        }
-        procedures["FALL"]();
-      }, true);
+    try {
+      if (!world.turtleManager.turtlesOfBreed("PAIRED-DICE").agentFilter(function() {
+        return !Prims.equality(SelfManager.self().getVariable("pair-sum"), SelfManager.self().getPatchVariable("column"));
+      }).isEmpty()) {
+        world.turtleManager.turtlesOfBreed("PAIRED-DICE").ask(function() { SelfManager.self().fdOne(); }, true);
+      }
+      else {
+        world.turtleManager.turtlesOfBreed("PAIRED-DICE").ask(function() {
+          if (Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor)) {
+            procedures["PAIRED-DIE-CHECK-VISIBLE"]();
+          }
+          procedures["FALL"]();
+        }, true);
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["movePairedDice"] = temp;
   procs["MOVE-PAIRED-DICE"] = temp;
   temp = (function() {
-    var howMany = world.turtleManager.turtlesOfBreed("SINGLE-DICE").size();
-    if (Prims.gt(howMany, 0)) {
-      world.turtleManager.turtlesOfBreed("SINGLE-DICE").minOneOf(function() { return SelfManager.self().getPatchVariable("pycor"); }).ask(function() { procedures["MOVE-SINGLE-DIE"](); }, true);
-    }
-    if (Prims.gt(howMany, 1)) {
-      world.turtleManager.turtlesOfBreed("SINGLE-DICE").maxOneOf(function() { return SelfManager.self().getPatchVariable("pycor"); }).ask(function() { procedures["MOVE-SINGLE-DIE"](); }, true);
+    try {
+      let howMany = world.turtleManager.turtlesOfBreed("SINGLE-DICE").size();
+      if (Prims.gt(howMany, 0)) {
+        world.turtleManager.turtlesOfBreed("SINGLE-DICE").minOneOf(function() { return SelfManager.self().getPatchVariable("pycor"); }).ask(function() { procedures["MOVE-SINGLE-DIE"](); }, true);
+      }
+      if (Prims.gt(howMany, 1)) {
+        world.turtleManager.turtlesOfBreed("SINGLE-DICE").maxOneOf(function() { return SelfManager.self().getPatchVariable("pycor"); }).ask(function() { procedures["MOVE-SINGLE-DIE"](); }, true);
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["moveSingleDice"] = temp;
   procs["MOVE-SINGLE-DICE"] = temp;
   temp = (function() {
-    if (!Prims.equality(SelfManager.self().getVariable("die-value"), SelfManager.self().getPatchVariable("column"))) {
-      SelfManager.self().fd(1);
-    }
-    else {
-      if (Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor)) {
-        procedures["SINGLE-DIE-CHECK-VISIBLE"]();
+    try {
+      if (!Prims.equality(SelfManager.self().getVariable("die-value"), SelfManager.self().getPatchVariable("column"))) {
+        SelfManager.self().fdOne();
       }
-      procedures["FALL"]();
+      else {
+        if (Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor)) {
+          procedures["SINGLE-DIE-CHECK-VISIBLE"]();
+        }
+        procedures["FALL"]();
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["moveSingleDie"] = temp;
   procs["MOVE-SINGLE-DIE"] = temp;
   temp = (function() {
-    SelfManager.self().setVariable("heading", 180);
-    if ((Prims.gt(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor) && !!Prims.breedOn("STACKED-DICE", SelfManager.self().patchAhead(1)).isEmpty())) {
-      SelfManager.self().fd(1);
-    }
-    else {
-      var oldShape = SelfManager.self().getVariable("shape");
-      SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("STACKED-DICE"));
-      SelfManager.self().setVariable("shape", oldShape);
+    try {
+      SelfManager.self().setVariable("heading", 180);
+      if ((Prims.gt(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor) && !!Prims.breedOn("STACKED-DICE", SelfManager.self().patchAhead(1)).isEmpty())) {
+        SelfManager.self().fdOne();
+      }
+      else {
+        let oldShape = SelfManager.self().getVariable("shape");
+        SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("STACKED-DICE"));
+        SelfManager.self().setVariable("shape", oldShape);
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["fall"] = temp;
@@ -241,14 +323,14 @@ var procedures = (function() {
       if (Prims.equality(world.observer.getGlobal("single-outcomes"), [])) {
         throw new Exception.StopInterrupt;
       }
-      var mode = ListPrims.first(ListPrims.modes(world.observer.getGlobal("single-outcomes")));
-      var heightOfTallestColumn = ListPrims.length(world.observer.getGlobal("single-outcomes").filter(Tasks.reporterTask(function(outcome) {
+      let mode = ListPrims.first(ListPrims.modes(world.observer.getGlobal("single-outcomes")));
+      let heightOfTallestColumn = ListPrims.length(world.observer.getGlobal("single-outcomes").filter(Tasks.reporterTask(function(outcome) {
         if (arguments.length < 1) {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
         }
         return Prims.equality(outcome, mode);
       })));
-      var heightOfMyColumn = ListPrims.length(world.observer.getGlobal("single-outcomes").filter(Tasks.reporterTask(function(outcome) {
+      let heightOfMyColumn = ListPrims.length(world.observer.getGlobal("single-outcomes").filter(Tasks.reporterTask(function(outcome) {
         if (arguments.length < 1) {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
         }
@@ -258,7 +340,9 @@ var procedures = (function() {
         SelfManager.self().die();
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -272,14 +356,14 @@ var procedures = (function() {
       if (Prims.equality(world.observer.getGlobal("pair-outcomes"), [])) {
         throw new Exception.StopInterrupt;
       }
-      var mode = ListPrims.first(ListPrims.modes(world.observer.getGlobal("pair-outcomes")));
-      var heightOfTallestColumn = ListPrims.length(world.observer.getGlobal("pair-outcomes").filter(Tasks.reporterTask(function(outcome) {
+      let mode = ListPrims.first(ListPrims.modes(world.observer.getGlobal("pair-outcomes")));
+      let heightOfTallestColumn = ListPrims.length(world.observer.getGlobal("pair-outcomes").filter(Tasks.reporterTask(function(outcome) {
         if (arguments.length < 1) {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
         }
         return Prims.equality(outcome, mode);
       })));
-      var heightOfMyColumn = ListPrims.length(world.observer.getGlobal("pair-outcomes").filter(Tasks.reporterTask(function(outcome) {
+      let heightOfMyColumn = ListPrims.length(world.observer.getGlobal("pair-outcomes").filter(Tasks.reporterTask(function(outcome) {
         if (arguments.length < 1) {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
         }
@@ -289,7 +373,9 @@ var procedures = (function() {
         SelfManager.self().die();
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -299,13 +385,23 @@ var procedures = (function() {
   procs["pairedDieCheckVisible"] = temp;
   procs["PAIRED-DIE-CHECK-VISIBLE"] = temp;
   temp = (function(candidates) {
-    while (!candidates.agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pycor"), (world.topology.maxPycor - 2)); }).isEmpty()) {
-      candidates.ask(function() {
-        if (Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor)) {
-          SelfManager.self().die();
-        }
-        SelfManager.self().fd(1);
-      }, true);
+    try {
+      while (!candidates.agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pycor"), (world.topology.maxPycor - 2)); }).isEmpty()) {
+        candidates.ask(function() {
+          if (Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor)) {
+            SelfManager.self().die();
+          }
+          SelfManager.self().fdOne();
+        }, true);
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["bumpDown"] = temp;

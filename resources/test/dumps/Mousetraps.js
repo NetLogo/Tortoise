@@ -47,7 +47,19 @@ modelConfig.plots = [(function() {
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('Traps triggered', 'default')(function() { plotManager.plotValue(world.observer.getGlobal("traps-triggered"));; });
+      plotManager.withTemporaryContext('Traps triggered', 'default')(function() {
+        try {
+          plotManager.plotValue(world.observer.getGlobal("traps-triggered"));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
+      });
     });
   })];
   var setup   = function() {};
@@ -58,7 +70,19 @@ modelConfig.plots = [(function() {
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('Balls in the air', 'default')(function() { plotManager.plotValue(world.turtles().size());; });
+      plotManager.withTemporaryContext('Balls in the air', 'default')(function() {
+        try {
+          plotManager.plotValue(world.turtles().size());
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
+      });
     });
   })];
   var setup   = function() {};
@@ -85,15 +109,25 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    world.observer.setGlobal("traps-triggered", 0);
-    world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", (105 + 3)); }, true);
-    BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
-    world.turtleManager.createTurtles(1, "").ask(function() {
-      SelfManager.self().setVariable("color", 9.9);
-      SelfManager.self().setVariable("size", 1.5);
-    }, true);
-    world.ticker.reset();
+    try {
+      world.clearAll();
+      world.observer.setGlobal("traps-triggered", 0);
+      world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", (105 + 3)); }, true);
+      BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
+      world.turtleManager.createTurtles(1, "").ask(function() {
+        SelfManager.self().setVariable("color", 9.9);
+        SelfManager.self().setVariable("size", 1.5);
+      }, true);
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
@@ -115,7 +149,9 @@ var procedures = (function() {
       }, true);
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -125,8 +161,18 @@ var procedures = (function() {
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    SelfManager.self().right(Prims.randomFloat(360));
-    SelfManager.self().fd(Prims.randomFloat(world.observer.getGlobal("max-distance")));
+    try {
+      SelfManager.self().right(Prims.randomFloat(360));
+      SelfManager.self().fd(Prims.randomFloat(world.observer.getGlobal("max-distance")));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["move"] = temp;
   procs["MOVE"] = temp;

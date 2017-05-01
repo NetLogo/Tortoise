@@ -63,14 +63,24 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
-    world.turtleManager.createTurtles(world.observer.getGlobal("number-of-nodes"), "").ask(function() {
-      SelfManager.self().setVariable("color", 105);
-      SelfManager.self().setVariable("size", 2);
-    }, true);
-    LayoutManager.layoutCircle(world.turtles(), (Prims.div(world.topology.width, 2) - 2));
-    world.ticker.reset();
+    try {
+      world.clearAll();
+      BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
+      world.turtleManager.createTurtles(world.observer.getGlobal("number-of-nodes"), "").ask(function() {
+        SelfManager.self().setVariable("color", 105);
+        SelfManager.self().setVariable("size", 2);
+      }, true);
+      LayoutManager.layoutCircle(world.turtles(), (Prims.div(world.topology.width, 2) - 2));
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
@@ -87,7 +97,9 @@ var procedures = (function() {
       }
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;

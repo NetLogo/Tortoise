@@ -3,7 +3,7 @@
 package org.nlogo.tortoise.json
 
 import
-  org.json4s.{ JArray, JBool, JDecimal, JDouble, JField, JInt, JLong, JNothing, JNull, JObject, JString, JValue, native },
+  org.json4s.{ JArray, JBool, JDecimal, JDouble, JField, JInt, JLong, JNothing, JNull, JObject, JSet, JString, JValue, native },
     native.JsonMethods.{ compact, render }
 
 import
@@ -36,6 +36,7 @@ object JsonLibrary {
       case JBool(b)         => JsBool(b)
       case JArray(a)        => JsArray(a.map(toTortoise).toList)
       case JObject(props)   => JsObject(fields(props.map { case JField(k, v) => (k, toTortoise(v)) }: _*))
+      case x                => throw new Exception(s"$x is a mysterious thing")
     }
   // scalastyle:on cyclomatic.complexity
 

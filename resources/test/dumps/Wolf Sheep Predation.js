@@ -47,19 +47,53 @@ modelConfig.plots = [(function() {
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('sheep', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('populations', 'sheep')(function() { plotManager.plotValue(world.turtleManager.turtlesOfBreed("SHEEP").size());; });
+      plotManager.withTemporaryContext('populations', 'sheep')(function() {
+        try {
+          plotManager.plotValue(world.turtleManager.turtlesOfBreed("SHEEP").size());
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
+      });
     });
   }),
   new PenBundle.Pen('wolves', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('populations', 'wolves')(function() { plotManager.plotValue(world.turtleManager.turtlesOfBreed("WOLVES").size());; });
+      plotManager.withTemporaryContext('populations', 'wolves')(function() {
+        try {
+          plotManager.plotValue(world.turtleManager.turtlesOfBreed("WOLVES").size());
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
+      });
     });
   }),
   new PenBundle.Pen('grass / 4', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('populations', 'grass / 4')(function() {
-        if (world.observer.getGlobal("grass?")) {
-          plotManager.plotValue(Prims.div(world.observer.getGlobal("grass"), 4));
+        try {
+          if (world.observer.getGlobal("grass?")) {
+            plotManager.plotValue(Prims.div(world.observer.getGlobal("grass"), 4));
+          }
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
         };
       });
     });
@@ -68,7 +102,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "time", "pop.", true, true, 0.0, 100.0, 0.0, 100.0, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "SHEEP", singular: "a-sheep", varNames: [] }, { name: "WOLVES", singular: "wolf", varNames: [] }])(["energy"], [])(["initial-number-sheep", "sheep-gain-from-food", "sheep-reproduce", "initial-number-wolves", "wolf-gain-from-food", "wolf-reproduce", "grass?", "grass-regrowth-time", "show-energy?", "grass"], ["initial-number-sheep", "sheep-gain-from-food", "sheep-reproduce", "initial-number-wolves", "wolf-gain-from-food", "wolf-reproduce", "grass?", "grass-regrowth-time", "show-energy?"], ["countdown"], -25, 25, -25, 25, 9.0, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "SHEEP", singular: "a-sheep", varNames: [] }, { name: "WOLVES", singular: "wolf", varNames: [] }])(["energy"], [])(["initial-number-sheep", "sheep-gain-from-food", "sheep-reproduce", "initial-number-wolves", "wolf-gain-from-food", "wolf-reproduce", "grass?", "grass-regrowth-time", "show-energy?", "grass", "max-sheep"], ["initial-number-sheep", "sheep-gain-from-food", "sheep-reproduce", "initial-number-wolves", "wolf-gain-from-food", "wolf-reproduce", "grass?", "grass-regrowth-time", "show-energy?"], ["countdown"], -25, 25, -25, 25, 9.0, true, true, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;
 var ExportPrims = workspace.exportPrims;
 var LayoutManager = workspace.layoutManager;
@@ -88,43 +122,58 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", 55); }, true);
-    if (world.observer.getGlobal("grass?")) {
-      world.patches().ask(function() {
-        SelfManager.self().setPatchVariable("pcolor", ListPrims.oneOf([55, 35]));
-        if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55)) {
-          SelfManager.self().setPatchVariable("countdown", world.observer.getGlobal("grass-regrowth-time"));
-        }
-        else {
-          SelfManager.self().setPatchVariable("countdown", Prims.random(world.observer.getGlobal("grass-regrowth-time")));
-        }
+    try {
+      world.clearAll();
+      world.observer.setGlobal("max-sheep", 100000);
+      world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", 55); }, true);
+      if (world.observer.getGlobal("grass?")) {
+        world.patches().ask(function() {
+          SelfManager.self().setPatchVariable("pcolor", ListPrims.oneOf([55, 35]));
+          if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55)) {
+            SelfManager.self().setPatchVariable("countdown", world.observer.getGlobal("grass-regrowth-time"));
+          }
+          else {
+            SelfManager.self().setPatchVariable("countdown", Prims.random(world.observer.getGlobal("grass-regrowth-time")));
+          }
+        }, true);
+      }
+      BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("SHEEP").getSpecialName(), "sheep")
+      world.turtleManager.createTurtles(world.observer.getGlobal("initial-number-sheep"), "SHEEP").ask(function() {
+        SelfManager.self().setVariable("color", 9.9);
+        SelfManager.self().setVariable("size", 1.5);
+        SelfManager.self().setVariable("label-color", (105 - 2));
+        SelfManager.self().setVariable("energy", Prims.random((2 * world.observer.getGlobal("sheep-gain-from-food"))));
+        SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
       }, true);
+      BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("WOLVES").getSpecialName(), "wolf")
+      world.turtleManager.createTurtles(world.observer.getGlobal("initial-number-wolves"), "WOLVES").ask(function() {
+        SelfManager.self().setVariable("color", 0);
+        SelfManager.self().setVariable("size", 2);
+        SelfManager.self().setVariable("energy", Prims.random((2 * world.observer.getGlobal("wolf-gain-from-food"))));
+        SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
+      }, true);
+      procedures["DISPLAY-LABELS"]();
+      world.observer.setGlobal("grass", world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55); }).size());
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("SHEEP").getSpecialName(), "sheep")
-    world.turtleManager.createTurtles(world.observer.getGlobal("initial-number-sheep"), "SHEEP").ask(function() {
-      SelfManager.self().setVariable("color", 9.9);
-      SelfManager.self().setVariable("size", 1.5);
-      SelfManager.self().setVariable("label-color", (105 - 2));
-      SelfManager.self().setVariable("energy", Prims.random((2 * world.observer.getGlobal("sheep-gain-from-food"))));
-      SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
-    }, true);
-    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("WOLVES").getSpecialName(), "wolf")
-    world.turtleManager.createTurtles(world.observer.getGlobal("initial-number-wolves"), "WOLVES").ask(function() {
-      SelfManager.self().setVariable("color", 0);
-      SelfManager.self().setVariable("size", 2);
-      SelfManager.self().setVariable("energy", Prims.random((2 * world.observer.getGlobal("wolf-gain-from-food"))));
-      SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
-    }, true);
-    procedures["DISPLAY-LABELS"]();
-    world.observer.setGlobal("grass", world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55); }).size());
-    world.ticker.reset();
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
     try {
       if (!!world.turtles().isEmpty()) {
+        throw new Exception.StopInterrupt;
+      }
+      if ((!!world.turtleManager.turtlesOfBreed("WOLVES").isEmpty() && Prims.gt(world.turtleManager.turtlesOfBreed("SHEEP").size(), world.observer.getGlobal("max-sheep")))) {
+        UserDialogPrims.confirm("The sheep have inherited the earth");
         throw new Exception.StopInterrupt;
       }
       world.turtleManager.turtlesOfBreed("SHEEP").ask(function() {
@@ -150,7 +199,9 @@ var procedures = (function() {
       world.ticker.tick();
       procedures["DISPLAY-LABELS"]();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -160,77 +211,157 @@ var procedures = (function() {
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    SelfManager.self().right(Prims.random(50));
-    SelfManager.self().right(-Prims.random(50));
-    SelfManager.self().fd(1);
+    try {
+      SelfManager.self().right(Prims.random(50));
+      SelfManager.self().right(-Prims.random(50));
+      SelfManager.self().fdOne();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["move"] = temp;
   procs["MOVE"] = temp;
   temp = (function() {
-    if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55)) {
-      SelfManager.self().setPatchVariable("pcolor", 35);
-      SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") + world.observer.getGlobal("sheep-gain-from-food")));
+    try {
+      if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55)) {
+        SelfManager.self().setPatchVariable("pcolor", 35);
+        SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") + world.observer.getGlobal("sheep-gain-from-food")));
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["eatGrass"] = temp;
   procs["EAT-GRASS"] = temp;
   temp = (function() {
-    if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("sheep-reproduce"))) {
-      SelfManager.self().setVariable("energy", Prims.div(SelfManager.self().getVariable("energy"), 2));
-      SelfManager.self().hatch(1, "").ask(function() {
-        SelfManager.self().right(Prims.randomFloat(360));
-        SelfManager.self().fd(1);
-      }, true);
+    try {
+      if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("sheep-reproduce"))) {
+        SelfManager.self().setVariable("energy", Prims.div(SelfManager.self().getVariable("energy"), 2));
+        SelfManager.self().hatch(1, "").ask(function() {
+          SelfManager.self().right(Prims.randomFloat(360));
+          SelfManager.self().fdOne();
+        }, true);
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["reproduceSheep"] = temp;
   procs["REPRODUCE-SHEEP"] = temp;
   temp = (function() {
-    if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("wolf-reproduce"))) {
-      SelfManager.self().setVariable("energy", Prims.div(SelfManager.self().getVariable("energy"), 2));
-      SelfManager.self().hatch(1, "").ask(function() {
-        SelfManager.self().right(Prims.randomFloat(360));
-        SelfManager.self().fd(1);
-      }, true);
+    try {
+      if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("wolf-reproduce"))) {
+        SelfManager.self().setVariable("energy", Prims.div(SelfManager.self().getVariable("energy"), 2));
+        SelfManager.self().hatch(1, "").ask(function() {
+          SelfManager.self().right(Prims.randomFloat(360));
+          SelfManager.self().fdOne();
+        }, true);
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["reproduceWolves"] = temp;
   procs["REPRODUCE-WOLVES"] = temp;
   temp = (function() {
-    var prey = ListPrims.oneOf(SelfManager.self().breedHere("SHEEP"));
-    if (!Prims.equality(prey, Nobody)) {
-      prey.ask(function() { SelfManager.self().die(); }, true);
-      SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") + world.observer.getGlobal("wolf-gain-from-food")));
+    try {
+      let prey = ListPrims.oneOf(SelfManager.self().breedHere("SHEEP"));
+      if (!Prims.equality(prey, Nobody)) {
+        prey.ask(function() { SelfManager.self().die(); }, true);
+        SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") + world.observer.getGlobal("wolf-gain-from-food")));
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["catchSheep"] = temp;
   procs["CATCH-SHEEP"] = temp;
   temp = (function() {
-    if (Prims.lt(SelfManager.self().getVariable("energy"), 0)) {
-      SelfManager.self().die();
+    try {
+      if (Prims.lt(SelfManager.self().getVariable("energy"), 0)) {
+        SelfManager.self().die();
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["death"] = temp;
   procs["DEATH"] = temp;
   temp = (function() {
-    if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 35)) {
-      if (Prims.lte(SelfManager.self().getPatchVariable("countdown"), 0)) {
-        SelfManager.self().setPatchVariable("pcolor", 55);
-        SelfManager.self().setPatchVariable("countdown", world.observer.getGlobal("grass-regrowth-time"));
+    try {
+      if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 35)) {
+        if (Prims.lte(SelfManager.self().getPatchVariable("countdown"), 0)) {
+          SelfManager.self().setPatchVariable("pcolor", 55);
+          SelfManager.self().setPatchVariable("countdown", world.observer.getGlobal("grass-regrowth-time"));
+        }
+        else {
+          SelfManager.self().setPatchVariable("countdown", (SelfManager.self().getPatchVariable("countdown") - 1));
+        }
       }
-      else {
-        SelfManager.self().setPatchVariable("countdown", (SelfManager.self().getPatchVariable("countdown") - 1));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
   });
   procs["growGrass"] = temp;
   procs["GROW-GRASS"] = temp;
   temp = (function() {
-    world.turtles().ask(function() { SelfManager.self().setVariable("label", ""); }, true);
-    if (world.observer.getGlobal("show-energy?")) {
-      world.turtleManager.turtlesOfBreed("WOLVES").ask(function() { SelfManager.self().setVariable("label", NLMath.round(SelfManager.self().getVariable("energy"))); }, true);
-      if (world.observer.getGlobal("grass?")) {
-        world.turtleManager.turtlesOfBreed("SHEEP").ask(function() { SelfManager.self().setVariable("label", NLMath.round(SelfManager.self().getVariable("energy"))); }, true);
+    try {
+      world.turtles().ask(function() { SelfManager.self().setVariable("label", ""); }, true);
+      if (world.observer.getGlobal("show-energy?")) {
+        world.turtleManager.turtlesOfBreed("WOLVES").ask(function() { SelfManager.self().setVariable("label", NLMath.round(SelfManager.self().getVariable("energy"))); }, true);
+        if (world.observer.getGlobal("grass?")) {
+          world.turtleManager.turtlesOfBreed("SHEEP").ask(function() { SelfManager.self().setVariable("label", NLMath.round(SelfManager.self().getVariable("energy"))); }, true);
+        }
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
   });

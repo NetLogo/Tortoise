@@ -48,21 +48,51 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('red car', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Car speeds', 'red car')(function() {
-        plotManager.plotValue(world.observer.getGlobal("sample-car").projectionBy(function() { return SelfManager.self().getVariable("speed"); }));;
+        try {
+          plotManager.plotValue(world.observer.getGlobal("sample-car").projectionBy(function() { return SelfManager.self().getVariable("speed"); }));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   }),
   new PenBundle.Pen('min speed', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Car speeds', 'min speed')(function() {
-        plotManager.plotValue(ListPrims.min(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("speed"); })));;
+        try {
+          plotManager.plotValue(ListPrims.min(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("speed"); })));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   }),
   new PenBundle.Pen('max speed', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Car speeds', 'max speed')(function() {
-        plotManager.plotValue(ListPrims.max(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("speed"); })));;
+        try {
+          plotManager.plotValue(ListPrims.max(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("speed"); })));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   })];
@@ -90,17 +120,37 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    world.patches().ask(function() { procedures["SETUP-ROAD"](); }, true);
-    procedures["SETUP-CARS"]();
-    world.observer.watch(world.observer.getGlobal("sample-car"));
-    world.ticker.reset();
+    try {
+      world.clearAll();
+      world.patches().ask(function() { procedures["SETUP-ROAD"](); }, true);
+      procedures["SETUP-CARS"]();
+      world.observer.watch(world.observer.getGlobal("sample-car"));
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    if ((Prims.lt(SelfManager.self().getPatchVariable("pycor"), 2) && Prims.gt(SelfManager.self().getPatchVariable("pycor"), -2))) {
-      SelfManager.self().setPatchVariable("pcolor", 9.9);
+    try {
+      if ((Prims.lt(SelfManager.self().getPatchVariable("pycor"), 2) && Prims.gt(SelfManager.self().getPatchVariable("pycor"), -2))) {
+        SelfManager.self().setPatchVariable("pcolor", 9.9);
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["setupRoad"] = temp;
@@ -124,7 +174,9 @@ var procedures = (function() {
       world.observer.setGlobal("sample-car", ListPrims.oneOf(world.turtles()));
       world.observer.getGlobal("sample-car").ask(function() { SelfManager.self().setVariable("color", 15); }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -134,41 +186,81 @@ var procedures = (function() {
   procs["setupCars"] = temp;
   procs["SETUP-CARS"] = temp;
   temp = (function() {
-    if (!SelfPrims.other(SelfManager.self().turtlesHere()).isEmpty()) {
-      SelfManager.self().fd(1);
-      procedures["SEPARATE-CARS"]();
+    try {
+      if (SelfPrims.anyOther(SelfManager.self().turtlesHere())) {
+        SelfManager.self().fdOne();
+        procedures["SEPARATE-CARS"]();
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["separateCars"] = temp;
   procs["SEPARATE-CARS"] = temp;
   temp = (function() {
-    world.turtles().ask(function() {
-      var carAhead = ListPrims.oneOf(Prims.turtlesOn(SelfManager.self().patchAhead(1)));
-      if (!Prims.equality(carAhead, Nobody)) {
-        procedures["SLOW-DOWN-CAR"](carAhead);
+    try {
+      world.turtles().ask(function() {
+        let carAhead = ListPrims.oneOf(Prims.turtlesOn(SelfManager.self().patchAhead(1)));
+        if (!Prims.equality(carAhead, Nobody)) {
+          procedures["SLOW-DOWN-CAR"](carAhead);
+        }
+        else {
+          procedures["SPEED-UP-CAR"]();
+        }
+        if (Prims.lt(SelfManager.self().getVariable("speed"), SelfManager.self().getVariable("speed-min"))) {
+          SelfManager.self().setVariable("speed", SelfManager.self().getVariable("speed-min"));
+        }
+        if (Prims.gt(SelfManager.self().getVariable("speed"), SelfManager.self().getVariable("speed-limit"))) {
+          SelfManager.self().setVariable("speed", SelfManager.self().getVariable("speed-limit"));
+        }
+        SelfManager.self().fd(SelfManager.self().getVariable("speed"));
+      }, true);
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      else {
-        procedures["SPEED-UP-CAR"]();
-      }
-      if (Prims.lt(SelfManager.self().getVariable("speed"), SelfManager.self().getVariable("speed-min"))) {
-        SelfManager.self().setVariable("speed", SelfManager.self().getVariable("speed-min"));
-      }
-      if (Prims.gt(SelfManager.self().getVariable("speed"), SelfManager.self().getVariable("speed-limit"))) {
-        SelfManager.self().setVariable("speed", SelfManager.self().getVariable("speed-limit"));
-      }
-      SelfManager.self().fd(SelfManager.self().getVariable("speed"));
-    }, true);
-    world.ticker.tick();
+    }
   });
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function(carAhead) {
-    SelfManager.self().setVariable("speed", (carAhead.projectionBy(function() { return SelfManager.self().getVariable("speed"); }) - world.observer.getGlobal("deceleration")));
+    try {
+      SelfManager.self().setVariable("speed", (carAhead.projectionBy(function() { return SelfManager.self().getVariable("speed"); }) - world.observer.getGlobal("deceleration")));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["slowDownCar"] = temp;
   procs["SLOW-DOWN-CAR"] = temp;
   temp = (function() {
-    SelfManager.self().setVariable("speed", (SelfManager.self().getVariable("speed") + world.observer.getGlobal("acceleration")));
+    try {
+      SelfManager.self().setVariable("speed", (SelfManager.self().getVariable("speed") + world.observer.getGlobal("acceleration")));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["speedUpCar"] = temp;
   procs["SPEED-UP-CAR"] = temp;

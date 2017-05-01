@@ -24,6 +24,10 @@ getNeighbors4 = (patch) -> patch.getNeighbors4()
 lessThan      = (a, b)  -> a < b
 greaterThan   = (a, b)  -> a > b
 
+# (Number, Number, Number) => Array[Number]
+range = (lowerBound, upperBound, stepSize) ->
+  x for x in [lowerBound...upperBound] by stepSize
+
 module.exports =
   class Prims
 
@@ -193,12 +197,8 @@ module.exports =
     #
     # () => Number
     nanoTime: ->
-      nanos =
-        if performance?.now?
-          performance.now() * 1e3
-        else
-          Date.now() * 1e6
-      nanos | 0
+      nanos = (performance?.now?() ? Date.now()) * 1e6
+      StrictMath.floor(nanos)
 
     # [T <: (Array[Patch]|Patch|AbstractAgentSet[Patch])] @ (T*) => PatchSet
     patchSet: (inputs...) ->
@@ -256,6 +256,21 @@ module.exports =
         throw new Error("Both Inputs to RANDOM-GAMMA must be positive.")
       Gamma(@_rng, alpha, lambda)
 
+    # (Number) => Array[Number]
+    rangeUnary: (upperBound) ->
+      range(0, upperBound, 1)
+
+    # (Number, Number) => Array[Number]
+    rangeBinary: (lowerBound, upperBound) ->
+      range(lowerBound, upperBound, 1)
+
+    # (Number, Number, Number) => Array[Number]
+    rangeTernary: (lowerBound, upperBound, stepSize) ->
+      if stepSize isnt 0
+        range(lowerBound, upperBound, stepSize)
+      else
+        throw new Error("The step-size for range must be non-zero.")
+
     # ((Task, Any*) | String) => Unit
     run: (f, args...) ->
       if NLType(f).isString()
@@ -301,6 +316,13 @@ module.exports =
         new TurtleSet(turtles)
       else
         agentsOrAgent.turtlesHere()
+
+    # (Number) => Unit
+    wait: (seconds) ->
+      startTime = @nanoTime()
+      while ((@nanoTime() - startTime) / 1e9) < seconds
+        ; # Just chill out
+      return
 
     # (String) => Unit
     uphill: (varName) ->

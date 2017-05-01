@@ -63,85 +63,135 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    procedures["SETUP-REGIONS"](world.observer.getGlobal("number-of-regions"));
-    procedures["COLOR-REGIONS"]();
-    procedures["SETUP-TURTLES"]();
-    world.ticker.reset();
+    try {
+      world.clearAll();
+      procedures["SETUP-REGIONS"](world.observer.getGlobal("number-of-regions"));
+      procedures["COLOR-REGIONS"]();
+      procedures["SETUP-TURTLES"]();
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    world.patches().agentFilter(function() { return !Prims.equality(SelfManager.self().getPatchVariable("region"), 0); }).ask(function() {
-      SelfManager.self().setPatchVariable("pcolor", (2 + (SelfManager.self().getPatchVariable("region") * 10)));
-      SelfManager.self().setPatchVariable("plabel-color", (SelfManager.self().getPatchVariable("pcolor") + 1));
-      SelfManager.self().setPatchVariable("plabel", SelfManager.self().getPatchVariable("region"));
-    }, true);
+    try {
+      world.patches().agentFilter(function() { return !Prims.equality(SelfManager.self().getPatchVariable("region"), 0); }).ask(function() {
+        SelfManager.self().setPatchVariable("pcolor", (2 + (SelfManager.self().getPatchVariable("region") * 10)));
+        SelfManager.self().setPatchVariable("plabel-color", (SelfManager.self().getPatchVariable("pcolor") + 1));
+        SelfManager.self().setPatchVariable("plabel", SelfManager.self().getPatchVariable("region"));
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["colorRegions"] = temp;
   procs["COLOR-REGIONS"] = temp;
   temp = (function() {
-    Tasks.forEach(Tasks.commandTask(function(regionNumber) {
-      if (arguments.length < 1) {
-        throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+    try {
+      Tasks.forEach(Tasks.commandTask(function(regionNumber) {
+        if (arguments.length < 1) {
+          throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+        }
+        let regionPatches = world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("region"), regionNumber); });
+        world.turtleManager.createTurtles(world.observer.getGlobal("number-of-turtles-per-region"), "").ask(function() {
+          SelfManager.self().moveTo(ListPrims.oneOf(regionPatches));
+          SelfManager.self().setVariable("color", (SelfManager.self().getPatchVariable("pcolor") + 3));
+        }, true);
+      }), Prims.rangeBinary(1, (ListPrims.length(world.observer.getGlobal("region-boundaries")) + 1)));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      var regionPatches = world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("region"), regionNumber); });
-      world.turtleManager.createTurtles(world.observer.getGlobal("number-of-turtles-per-region"), "").ask(function() {
-        SelfManager.self().moveTo(ListPrims.oneOf(regionPatches));
-        SelfManager.self().setVariable("color", (SelfManager.self().getPatchVariable("pcolor") + 3));
-      }, true);
-    }), Tasks.nValues(ListPrims.length(world.observer.getGlobal("region-boundaries")), Tasks.reporterTask(function(n) {
-      if (arguments.length < 1) {
-        throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
-      }
-      return (n + 1);
-    })));
+    }
   });
   procs["setupTurtles"] = temp;
   procs["SETUP-TURTLES"] = temp;
   temp = (function() {
-    world.turtles().ask(function() { procedures["MOVE"](); }, true);
-    world.ticker.tick();
+    try {
+      world.turtles().ask(function() { procedures["MOVE"](); }, true);
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    var currentRegion = SelfManager.self().getPatchVariable("region");
-    SelfManager.self().right(Prims.random(30));
-    SelfManager.self().right(-Prims.random(30));
-    SelfManager.self().fd(0.25);
-    procedures["KEEP-IN-REGION"](currentRegion);
+    try {
+      let currentRegion = SelfManager.self().getPatchVariable("region");
+      SelfManager.self().right(Prims.random(30));
+      SelfManager.self().right(-Prims.random(30));
+      SelfManager.self().fdLessThan1(0.25);
+      procedures["KEEP-IN-REGION"](currentRegion);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["move"] = temp;
   procs["MOVE"] = temp;
   temp = (function(numRegions) {
-    Tasks.forEach(Tasks.commandTask(function(_0) {
-      if (arguments.length < 1) {
-        throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+    try {
+      Tasks.forEach(Tasks.commandTask(function(_0) {
+        if (arguments.length < 1) {
+          throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+        }
+        procedures["DRAW-REGION-DIVISION"](_0);
+      }), procedures["REGION-DIVISIONS"](numRegions));
+      world.observer.setGlobal("region-boundaries", procedures["CALCULATE-REGION-BOUNDARIES"](numRegions));
+      let regionNumbers = Prims.rangeBinary(1, (numRegions + 1));
+      Tasks.forEach(Tasks.commandTask(function(boundaries, regionNumber) {
+        if (arguments.length < 2) {
+          throw new Error("anonymous procedure expected 2 inputs, but only got " + arguments.length);
+        }
+        world.patches().agentFilter(function() {
+          return (Prims.gte(SelfManager.self().getPatchVariable("pxcor"), ListPrims.first(boundaries)) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), ListPrims.last(boundaries)));
+        }).ask(function() { SelfManager.self().setPatchVariable("region", regionNumber); }, true);
+      }), world.observer.getGlobal("region-boundaries"), regionNumbers);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      procedures["DRAW-REGION-DIVISION"](_0);
-    }), procedures["REGION-DIVISIONS"](numRegions));
-    world.observer.setGlobal("region-boundaries", procedures["CALCULATE-REGION-BOUNDARIES"](numRegions));
-    var regionNumbers = Tasks.nValues(numRegions, Tasks.reporterTask(function(n) {
-      if (arguments.length < 1) {
-        throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
-      }
-      return (n + 1);
-    }));
-    Tasks.forEach(Tasks.commandTask(function(boundaries, regionNumber) {
-      if (arguments.length < 2) {
-        throw new Error("anonymous procedure expected 2 inputs, but only got " + arguments.length);
-      }
-      world.patches().agentFilter(function() {
-        return (Prims.gte(SelfManager.self().getPatchVariable("pxcor"), ListPrims.first(boundaries)) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), ListPrims.last(boundaries)));
-      }).ask(function() { SelfManager.self().setPatchVariable("region", regionNumber); }, true);
-    }), world.observer.getGlobal("region-boundaries"), regionNumbers);
+    }
   });
   procs["setupRegions"] = temp;
   procs["SETUP-REGIONS"] = temp;
   temp = (function(numRegions) {
     try {
-      var divisions = procedures["REGION-DIVISIONS"](numRegions);
+      let divisions = procedures["REGION-DIVISIONS"](numRegions);
       throw new Exception.ReportInterrupt(Tasks.map(Tasks.reporterTask(function(d1, d2) {
         if (arguments.length < 2) {
           throw new Error("anonymous procedure expected 2 inputs, but only got " + arguments.length);
@@ -152,6 +202,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -171,6 +223,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -179,34 +233,54 @@ var procedures = (function() {
   procs["regionDivisions"] = temp;
   procs["REGION-DIVISIONS"] = temp;
   temp = (function(x) {
-    world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pxcor"), x); }).ask(function() { SelfManager.self().setPatchVariable("pcolor", (5 + 1.5)); }, true);
-    world.turtleManager.createTurtles(1, "").ask(function() {
-      SelfManager.self().setXY(x, (world.topology.maxPycor + 0.5));
-      SelfManager.self().setVariable("heading", 0);
-      SelfManager.self().setVariable("color", (5 - 3));
-      SelfManager.self().penManager.lowerPen();
-      SelfManager.self().fd(world.topology.height);
-      SelfManager.self().setVariable("xcor", (SelfManager.self().getVariable("xcor") + Prims.div(1, world.patchSize)));
-      SelfManager.self().right(180);
-      SelfManager.self().setVariable("color", (5 + 3));
-      SelfManager.self().fd(world.topology.height);
-      SelfManager.self().die();
-    }, true);
+    try {
+      world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pxcor"), x); }).ask(function() { SelfManager.self().setPatchVariable("pcolor", (5 + 1.5)); }, true);
+      world.turtleManager.createTurtles(1, "").ask(function() {
+        SelfManager.self().setXY(x, (world.topology.maxPycor + 0.5));
+        SelfManager.self().setVariable("heading", 0);
+        SelfManager.self().setVariable("color", (5 - 3));
+        SelfManager.self().penManager.lowerPen();
+        SelfManager.self().fd(world.topology.height);
+        SelfManager.self().setVariable("xcor", (SelfManager.self().getVariable("xcor") + Prims.div(1, world.patchSize)));
+        SelfManager.self().right(180);
+        SelfManager.self().setVariable("color", (5 + 3));
+        SelfManager.self().fd(world.topology.height);
+        SelfManager.self().die();
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["drawRegionDivision"] = temp;
   procs["DRAW-REGION-DIVISION"] = temp;
   temp = (function(whichRegion) {
-    if (!Prims.equality(SelfManager.self().getPatchVariable("region"), whichRegion)) {
-      var regionMinPxcor = ListPrims.first(ListPrims.item((whichRegion - 1), world.observer.getGlobal("region-boundaries")));
-      var regionMaxPxcor = ListPrims.last(ListPrims.item((whichRegion - 1), world.observer.getGlobal("region-boundaries")));
-      var regionWidth = ((regionMaxPxcor - regionMinPxcor) + 1);
-      if (Prims.lt(SelfManager.self().getVariable("xcor"), regionMinPxcor)) {
-        SelfManager.self().setVariable("xcor", (SelfManager.self().getVariable("xcor") + regionWidth));
-      }
-      else {
-        if (Prims.gt(SelfManager.self().getVariable("xcor"), regionMaxPxcor)) {
-          SelfManager.self().setVariable("xcor", (SelfManager.self().getVariable("xcor") - regionWidth));
+    try {
+      if (!Prims.equality(SelfManager.self().getPatchVariable("region"), whichRegion)) {
+        let regionMinPxcor = ListPrims.first(ListPrims.item((whichRegion - 1), world.observer.getGlobal("region-boundaries")));
+        let regionMaxPxcor = ListPrims.last(ListPrims.item((whichRegion - 1), world.observer.getGlobal("region-boundaries")));
+        let regionWidth = ((regionMaxPxcor - regionMinPxcor) + 1);
+        if (Prims.lt(SelfManager.self().getVariable("xcor"), regionMinPxcor)) {
+          SelfManager.self().setVariable("xcor", (SelfManager.self().getVariable("xcor") + regionWidth));
         }
+        else {
+          if (Prims.gt(SelfManager.self().getVariable("xcor"), regionMaxPxcor)) {
+            SelfManager.self().setVariable("xcor", (SelfManager.self().getVariable("xcor") - regionWidth));
+          }
+        }
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
   });

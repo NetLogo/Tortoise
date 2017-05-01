@@ -47,12 +47,36 @@ modelConfig.plots = [(function() {
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('leaves', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('Leaves', 'leaves')(function() { plotManager.plotValue(world.turtleManager.turtlesOfBreed("LEAVES").size());; });
+      plotManager.withTemporaryContext('Leaves', 'leaves')(function() {
+        try {
+          plotManager.plotValue(world.turtleManager.turtlesOfBreed("LEAVES").size());
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
+      });
     });
   }),
   new PenBundle.Pen('dead leaves', plotOps.makePenOps, false, new PenBundle.State(35.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('Leaves', 'dead leaves')(function() { plotManager.plotValue(world.turtleManager.turtlesOfBreed("DEAD-LEAVES").size());; });
+      plotManager.withTemporaryContext('Leaves', 'dead leaves')(function() {
+        try {
+          plotManager.plotValue(world.turtleManager.turtlesOfBreed("DEAD-LEAVES").size());
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
+      });
     });
   })];
   var setup   = function() {};
@@ -63,22 +87,70 @@ modelConfig.plots = [(function() {
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('temperature', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('Weather conditions', 'temperature')(function() { plotManager.plotValue(world.observer.getGlobal("temperature"));; });
+      plotManager.withTemporaryContext('Weather conditions', 'temperature')(function() {
+        try {
+          plotManager.plotValue(world.observer.getGlobal("temperature"));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
+      });
     });
   }),
   new PenBundle.Pen('rain', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('Weather conditions', 'rain')(function() { plotManager.plotValue(world.observer.getGlobal("rain-intensity"));; });
+      plotManager.withTemporaryContext('Weather conditions', 'rain')(function() {
+        try {
+          plotManager.plotValue(world.observer.getGlobal("rain-intensity"));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
+      });
     });
   }),
   new PenBundle.Pen('wind', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('Weather conditions', 'wind')(function() { plotManager.plotValue(world.observer.getGlobal("wind-factor"));; });
+      plotManager.withTemporaryContext('Weather conditions', 'wind')(function() {
+        try {
+          plotManager.plotValue(world.observer.getGlobal("wind-factor"));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
+      });
     });
   }),
   new PenBundle.Pen('sunlight', plotOps.makePenOps, false, new PenBundle.State(45.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('Weather conditions', 'sunlight')(function() { plotManager.plotValue(world.observer.getGlobal("sun-intensity"));; });
+      plotManager.withTemporaryContext('Weather conditions', 'sunlight')(function() {
+        try {
+          plotManager.plotValue(world.observer.getGlobal("sun-intensity"));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
+      });
     });
   })];
   var setup   = function() {};
@@ -90,8 +162,18 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('chlorophyll', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Leaf averages', 'chlorophyll')(function() {
-        if (!world.turtleManager.turtlesOfBreed("LEAVES").isEmpty()) {
-          plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed("LEAVES").projectionBy(function() { return SelfManager.self().getVariable("chlorophyll"); })));
+        try {
+          if (!world.turtleManager.turtlesOfBreed("LEAVES").isEmpty()) {
+            plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed("LEAVES").projectionBy(function() { return SelfManager.self().getVariable("chlorophyll"); })));
+          }
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
         };
       });
     });
@@ -99,8 +181,18 @@ modelConfig.plots = [(function() {
   new PenBundle.Pen('water', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Leaf averages', 'water')(function() {
-        if (!world.turtleManager.turtlesOfBreed("LEAVES").isEmpty()) {
-          plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed("LEAVES").projectionBy(function() { return SelfManager.self().getVariable("water-level"); })));
+        try {
+          if (!world.turtleManager.turtlesOfBreed("LEAVES").isEmpty()) {
+            plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed("LEAVES").projectionBy(function() { return SelfManager.self().getVariable("water-level"); })));
+          }
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
         };
       });
     });
@@ -108,8 +200,18 @@ modelConfig.plots = [(function() {
   new PenBundle.Pen('sugar', plotOps.makePenOps, false, new PenBundle.State(5.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Leaf averages', 'sugar')(function() {
-        if (!world.turtleManager.turtlesOfBreed("LEAVES").isEmpty()) {
-          plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed("LEAVES").projectionBy(function() { return SelfManager.self().getVariable("sugar-level"); })));
+        try {
+          if (!world.turtleManager.turtlesOfBreed("LEAVES").isEmpty()) {
+            plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed("LEAVES").projectionBy(function() { return SelfManager.self().getVariable("sugar-level"); })));
+          }
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
         };
       });
     });
@@ -117,8 +219,18 @@ modelConfig.plots = [(function() {
   new PenBundle.Pen('carotene', plotOps.makePenOps, false, new PenBundle.State(45.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Leaf averages', 'carotene')(function() {
-        if (!world.turtleManager.turtlesOfBreed("LEAVES").isEmpty()) {
-          plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed("LEAVES").projectionBy(function() { return SelfManager.self().getVariable("carotene"); })));
+        try {
+          if (!world.turtleManager.turtlesOfBreed("LEAVES").isEmpty()) {
+            plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed("LEAVES").projectionBy(function() { return SelfManager.self().getVariable("carotene"); })));
+          }
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
         };
       });
     });
@@ -126,8 +238,18 @@ modelConfig.plots = [(function() {
   new PenBundle.Pen('anthocyanin', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Leaf averages', 'anthocyanin')(function() {
-        if (!world.turtleManager.turtlesOfBreed("LEAVES").isEmpty()) {
-          plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed("LEAVES").projectionBy(function() { return SelfManager.self().getVariable("anthocyanin"); })));
+        try {
+          if (!world.turtleManager.turtlesOfBreed("LEAVES").isEmpty()) {
+            plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed("LEAVES").projectionBy(function() { return SelfManager.self().getVariable("anthocyanin"); })));
+          }
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
         };
       });
     });
@@ -135,8 +257,18 @@ modelConfig.plots = [(function() {
   new PenBundle.Pen('attachedness', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Leaf averages', 'attachedness')(function() {
-        if (!world.turtleManager.turtlesOfBreed("LEAVES").isEmpty()) {
-          plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed("LEAVES").projectionBy(function() { return SelfManager.self().getVariable("attachedness"); })));
+        try {
+          if (!world.turtleManager.turtlesOfBreed("LEAVES").isEmpty()) {
+            plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed("LEAVES").projectionBy(function() { return SelfManager.self().getVariable("attachedness"); })));
+          }
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
         };
       });
     });
@@ -165,30 +297,40 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    world.observer.setGlobal("bottom-line", (world.topology.minPycor + 1));
-    world.observer.setGlobal("evaporation-temp", 30);
-    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("RAINDROPS").getSpecialName(), "circle")
-    BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("SUNS").getSpecialName(), "circle")
-    world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", (105 - 2)); }, true);
-    world.patches().agentFilter(function() { return Prims.lt(SelfManager.self().getPatchVariable("pycor"), (world.topology.minPycor + 2)); }).ask(function() { SelfManager.self().setPatchVariable("pcolor", 55); }, true);
-    world.turtleManager.createTurtles(world.observer.getGlobal("number-of-leaves"), "LEAVES").ask(function() {
-      SelfManager.self().setVariable("chlorophyll", (50 + Prims.random(50)));
-      SelfManager.self().setVariable("water-level", (75 + Prims.random(25)));
-      SelfManager.self().setVariable("sugar-level", Prims.randomNormal(world.observer.getGlobal("start-sugar-mean"), world.observer.getGlobal("start-sugar-stddev")));
-      SelfManager.self().setVariable("carotene", Prims.random(100));
-      procedures["CHANGE-COLOR"]();
-      SelfManager.self().setVariable("attachedness", (100 + Prims.random(50)));
-      SelfManager.self().fd(NLMath.sqrt(Prims.randomFloat(100)));
-    }, true);
-    world.patches().agentFilter(function() {
-      return (((((Prims.equality(SelfManager.self().getPatchVariable("pxcor"), 0) && Prims.lte(SelfManager.self().getPatchVariable("pycor"), 5)) || Prims.equality(NLMath.abs(SelfManager.self().getPatchVariable("pxcor")), (SelfManager.self().getPatchVariable("pycor") + 2))) && Prims.lt(SelfManager.self().getPatchVariable("pycor"), 4)) || Prims.equality(NLMath.abs(SelfManager.self().getPatchVariable("pxcor")), (SelfManager.self().getPatchVariable("pycor") + 8))) && Prims.lt(SelfManager.self().getPatchVariable("pycor"), 3));
-    }).ask(function() { SelfManager.self().setPatchVariable("pcolor", 35); }, true);
-    world.turtleManager.createTurtles(1, "SUNS").ask(function() {
-      SelfManager.self().setXY((world.topology.maxPxcor - 2), (world.topology.maxPycor - 3));
-      procedures["SHOW-INTENSITY"]();
-    }, true);
-    world.ticker.reset();
+    try {
+      world.clearAll();
+      world.observer.setGlobal("bottom-line", (world.topology.minPycor + 1));
+      world.observer.setGlobal("evaporation-temp", 30);
+      BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("RAINDROPS").getSpecialName(), "circle")
+      BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("SUNS").getSpecialName(), "circle")
+      world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", (105 - 2)); }, true);
+      world.patches().agentFilter(function() { return Prims.lt(SelfManager.self().getPatchVariable("pycor"), (world.topology.minPycor + 2)); }).ask(function() { SelfManager.self().setPatchVariable("pcolor", 55); }, true);
+      world.turtleManager.createTurtles(world.observer.getGlobal("number-of-leaves"), "LEAVES").ask(function() {
+        SelfManager.self().setVariable("chlorophyll", (50 + Prims.random(50)));
+        SelfManager.self().setVariable("water-level", (75 + Prims.random(25)));
+        SelfManager.self().setVariable("sugar-level", Prims.randomNormal(world.observer.getGlobal("start-sugar-mean"), world.observer.getGlobal("start-sugar-stddev")));
+        SelfManager.self().setVariable("carotene", Prims.random(100));
+        procedures["CHANGE-COLOR"]();
+        SelfManager.self().setVariable("attachedness", (100 + Prims.random(50)));
+        SelfManager.self().fd(NLMath.sqrt(Prims.randomFloat(100)));
+      }, true);
+      world.patches().agentFilter(function() {
+        return (((((Prims.equality(SelfManager.self().getPatchVariable("pxcor"), 0) && Prims.lte(SelfManager.self().getPatchVariable("pycor"), 5)) || Prims.equality(NLMath.abs(SelfManager.self().getPatchVariable("pxcor")), (SelfManager.self().getPatchVariable("pycor") + 2))) && Prims.lt(SelfManager.self().getPatchVariable("pycor"), 4)) || Prims.equality(NLMath.abs(SelfManager.self().getPatchVariable("pxcor")), (SelfManager.self().getPatchVariable("pycor") + 8))) && Prims.lt(SelfManager.self().getPatchVariable("pycor"), 3));
+      }).ask(function() { SelfManager.self().setPatchVariable("pcolor", 35); }, true);
+      world.turtleManager.createTurtles(1, "SUNS").ask(function() {
+        SelfManager.self().setXY((world.topology.maxPxcor - 2), (world.topology.maxPycor - 3));
+        procedures["SHOW-INTENSITY"]();
+      }, true);
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
@@ -221,7 +363,9 @@ var procedures = (function() {
       }, true);
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -243,6 +387,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -251,69 +397,109 @@ var procedures = (function() {
   procs["clip"] = temp;
   procs["CLIP"] = temp;
   temp = (function() {
-    world.turtleManager.turtlesOfBreed("LEAVES").ask(function() {
-      if (Prims.equality(Prims.random(2), 1)) {
-        SelfManager.self().right((10 * world.observer.getGlobal("wind-factor")));
+    try {
+      world.turtleManager.turtlesOfBreed("LEAVES").ask(function() {
+        if (Prims.equality(Prims.random(2), 1)) {
+          SelfManager.self().right((10 * world.observer.getGlobal("wind-factor")));
+        }
+        else {
+          SelfManager.self().right(-(10 * world.observer.getGlobal("wind-factor")));
+        }
+        SelfManager.self().setVariable("attachedness", (SelfManager.self().getVariable("attachedness") - world.observer.getGlobal("wind-factor")));
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      else {
-        SelfManager.self().right(-(10 * world.observer.getGlobal("wind-factor")));
-      }
-      SelfManager.self().setVariable("attachedness", (SelfManager.self().getVariable("attachedness") - world.observer.getGlobal("wind-factor")));
-    }, true);
+    }
   });
   procs["makeWindBlow"] = temp;
   procs["MAKE-WIND-BLOW"] = temp;
   temp = (function() {
-    world.turtleManager.createTurtles(world.observer.getGlobal("rain-intensity"), "RAINDROPS").ask(function() {
-      SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), world.topology.maxPycor);
-      SelfManager.self().setVariable("heading", 180);
-      SelfManager.self().fd((0.5 - Prims.randomFloat(1)));
-      SelfManager.self().setVariable("size", 0.3);
-      SelfManager.self().setVariable("color", 5);
-      SelfManager.self().setVariable("location", "falling");
-      SelfManager.self().setVariable("amount-of-water", 10);
-    }, true);
-    world.turtleManager.turtlesOfBreed("RAINDROPS").ask(function() { SelfManager.self().fd(Prims.randomFloat(2)); }, true);
+    try {
+      world.turtleManager.createTurtles(world.observer.getGlobal("rain-intensity"), "RAINDROPS").ask(function() {
+        SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), world.topology.maxPycor);
+        SelfManager.self().setVariable("heading", 180);
+        SelfManager.self().fd((0.5 - Prims.randomFloat(1)));
+        SelfManager.self().setVariable("size", 0.3);
+        SelfManager.self().setVariable("color", 5);
+        SelfManager.self().setVariable("location", "falling");
+        SelfManager.self().setVariable("amount-of-water", 10);
+      }, true);
+      world.turtleManager.turtlesOfBreed("RAINDROPS").ask(function() { SelfManager.self().fd(Prims.randomFloat(2)); }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["makeRainFall"] = temp;
   procs["MAKE-RAIN-FALL"] = temp;
   temp = (function() {
-    world.turtleManager.turtlesOfBreed("RAINDROPS").agentFilter(function() {
-      return (Prims.equality(SelfManager.self().getVariable("location"), "falling") && Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55));
-    }).ask(function() {
-      SelfManager.self().setVariable("location", "in roots");
-      SelfManager.self().face(world.getPatchAt(0, SelfManager.self().getVariable("ycor")));
-    }, true);
-    world.turtleManager.turtlesOfBreed("RAINDROPS").agentFilter(function() {
-      return (Prims.equality(SelfManager.self().getVariable("location"), "in roots") && Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 35));
-    }).ask(function() {
-      SelfManager.self().face(world.getPatchAt(0, 0));
-      SelfManager.self().setVariable("location", "in trunk");
-    }, true);
-    world.turtleManager.turtlesOfBreed("RAINDROPS").agentFilter(function() {
-      return (Prims.equality(SelfManager.self().getVariable("location"), "in trunk") && Prims.equality(SelfManager.self().getPatchHere(), world.getPatchAt(0, 0)));
-    }).ask(function() {
-      SelfManager.self().setVariable("location", "in leaves");
-      SelfManager.self().setVariable("heading", Prims.random(360));
-    }, true);
-    world.turtleManager.turtlesOfBreed("RAINDROPS").agentFilter(function() {
-      return (Prims.equality(SelfManager.self().getVariable("location"), "in leaves") && Prims.lte(SelfManager.self().getVariable("amount-of-water"), 0.5));
-    }).ask(function() { SelfManager.self().die(); }, true);
-    world.turtleManager.turtlesOfBreed("RAINDROPS").agentFilter(function() {
-      return ((Prims.equality(SelfManager.self().getVariable("location"), "in trunk") || Prims.equality(SelfManager.self().getVariable("location"), "in leaves")) && ((Prims.gt(SelfManager.self().getVariable("ycor"), ListPrims.max(world.turtleManager.turtlesOfBreed("LEAVES").projectionBy(function() { return SelfManager.self().getVariable("ycor"); }))) || Prims.gt(SelfManager.self().getVariable("xcor"), ListPrims.max(world.turtleManager.turtlesOfBreed("LEAVES").projectionBy(function() { return SelfManager.self().getVariable("xcor"); })))) || Prims.lt(SelfManager.self().getVariable("xcor"), ListPrims.min(world.turtleManager.turtlesOfBreed("LEAVES").projectionBy(function() { return SelfManager.self().getVariable("xcor"); })))));
-    }).ask(function() { SelfManager.self().die(); }, true);
+    try {
+      world.turtleManager.turtlesOfBreed("RAINDROPS").agentFilter(function() {
+        return (Prims.equality(SelfManager.self().getVariable("location"), "falling") && Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55));
+      }).ask(function() {
+        SelfManager.self().setVariable("location", "in roots");
+        SelfManager.self().face(world.getPatchAt(0, SelfManager.self().getVariable("ycor")));
+      }, true);
+      world.turtleManager.turtlesOfBreed("RAINDROPS").agentFilter(function() {
+        return (Prims.equality(SelfManager.self().getVariable("location"), "in roots") && Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 35));
+      }).ask(function() {
+        SelfManager.self().face(world.getPatchAt(0, 0));
+        SelfManager.self().setVariable("location", "in trunk");
+      }, true);
+      world.turtleManager.turtlesOfBreed("RAINDROPS").agentFilter(function() {
+        return (Prims.equality(SelfManager.self().getVariable("location"), "in trunk") && Prims.equality(SelfManager.self().getPatchHere(), world.getPatchAt(0, 0)));
+      }).ask(function() {
+        SelfManager.self().setVariable("location", "in leaves");
+        SelfManager.self().setVariable("heading", Prims.random(360));
+      }, true);
+      world.turtleManager.turtlesOfBreed("RAINDROPS").agentFilter(function() {
+        return (Prims.equality(SelfManager.self().getVariable("location"), "in leaves") && Prims.lte(SelfManager.self().getVariable("amount-of-water"), 0.5));
+      }).ask(function() { SelfManager.self().die(); }, true);
+      world.turtleManager.turtlesOfBreed("RAINDROPS").agentFilter(function() {
+        return ((Prims.equality(SelfManager.self().getVariable("location"), "in trunk") || Prims.equality(SelfManager.self().getVariable("location"), "in leaves")) && ((Prims.gt(SelfManager.self().getVariable("ycor"), ListPrims.max(world.turtleManager.turtlesOfBreed("LEAVES").projectionBy(function() { return SelfManager.self().getVariable("ycor"); }))) || Prims.gt(SelfManager.self().getVariable("xcor"), ListPrims.max(world.turtleManager.turtlesOfBreed("LEAVES").projectionBy(function() { return SelfManager.self().getVariable("xcor"); })))) || Prims.lt(SelfManager.self().getVariable("xcor"), ListPrims.min(world.turtleManager.turtlesOfBreed("LEAVES").projectionBy(function() { return SelfManager.self().getVariable("xcor"); })))));
+      }).ask(function() { SelfManager.self().die(); }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["moveWater"] = temp;
   procs["MOVE-WATER"] = temp;
   temp = (function() {
-    SelfManager.self().setVariable("color", ColorModel.scaleColor(45, world.observer.getGlobal("sun-intensity"), 0, 150));
-    SelfManager.self().setVariable("size", Prims.div(world.observer.getGlobal("sun-intensity"), 10));
-    SelfManager.self().setVariable("label", (Dump('') + Dump(world.observer.getGlobal("sun-intensity")) + Dump("%")));
-    if (Prims.lt(world.observer.getGlobal("sun-intensity"), 50)) {
-      SelfManager.self().setVariable("label-color", 45);
-    }
-    else {
-      SelfManager.self().setVariable("label-color", 0);
+    try {
+      SelfManager.self().setVariable("color", ColorModel.scaleColor(45, world.observer.getGlobal("sun-intensity"), 0, 150));
+      SelfManager.self().setVariable("size", Prims.div(world.observer.getGlobal("sun-intensity"), 10));
+      SelfManager.self().setVariable("label", (Dump('') + Dump(world.observer.getGlobal("sun-intensity")) + Dump("%")));
+      if (Prims.lt(world.observer.getGlobal("sun-intensity"), 50)) {
+        SelfManager.self().setVariable("label-color", 45);
+      }
+      else {
+        SelfManager.self().setVariable("label-color", 0);
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["showIntensity"] = temp;
@@ -323,11 +509,11 @@ var procedures = (function() {
       if (Prims.lt(world.observer.getGlobal("temperature"), 10)) {
         throw new Exception.StopInterrupt;
       }
-      var nearbyRaindrops = SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("RAINDROPS"), 2).agentFilter(function() {
+      let nearbyRaindrops = SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("RAINDROPS"), 2).agentFilter(function() {
         return (Prims.equality(SelfManager.self().getVariable("location"), "in leaves") && Prims.gte(SelfManager.self().getVariable("amount-of-water"), 0));
       });
       if (!nearbyRaindrops.isEmpty()) {
-        var myRaindrop = nearbyRaindrops.minOneOf(function() { return SelfManager.self().distance(SelfManager.myself()); });
+        let myRaindrop = nearbyRaindrops.minOneOf(function() { return SelfManager.self().distance(SelfManager.myself()); });
         SelfManager.self().setVariable("water-level", (SelfManager.self().getVariable("water-level") + (myRaindrop.projectionBy(function() { return SelfManager.self().getVariable("amount-of-water"); }) * 0.2)));
         myRaindrop.ask(function() {
           SelfManager.self().setVariable("amount-of-water", (SelfManager.self().getVariable("amount-of-water") * 0.8));
@@ -340,7 +526,9 @@ var procedures = (function() {
         SelfManager.self().setVariable("attachedness", (SelfManager.self().getVariable("attachedness") - 1));
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -350,26 +538,46 @@ var procedures = (function() {
   procs["adjustWater"] = temp;
   procs["ADJUST-WATER"] = temp;
   temp = (function() {
-    if (Prims.lt(world.observer.getGlobal("temperature"), 15)) {
-      SelfManager.self().setVariable("chlorophyll", (SelfManager.self().getVariable("chlorophyll") - (0.5 * (15 - world.observer.getGlobal("temperature")))));
-    }
-    if (Prims.gt(world.observer.getGlobal("sun-intensity"), 75)) {
-      SelfManager.self().setVariable("chlorophyll", (SelfManager.self().getVariable("chlorophyll") - (0.5 * (world.observer.getGlobal("sun-intensity") - 75))));
-    }
-    if ((Prims.gt(world.observer.getGlobal("temperature"), 15) && Prims.gt(world.observer.getGlobal("sun-intensity"), 20))) {
-      SelfManager.self().setVariable("chlorophyll", (SelfManager.self().getVariable("chlorophyll") + 1));
+    try {
+      if (Prims.lt(world.observer.getGlobal("temperature"), 15)) {
+        SelfManager.self().setVariable("chlorophyll", (SelfManager.self().getVariable("chlorophyll") - (0.5 * (15 - world.observer.getGlobal("temperature")))));
+      }
+      if (Prims.gt(world.observer.getGlobal("sun-intensity"), 75)) {
+        SelfManager.self().setVariable("chlorophyll", (SelfManager.self().getVariable("chlorophyll") - (0.5 * (world.observer.getGlobal("sun-intensity") - 75))));
+      }
+      if ((Prims.gt(world.observer.getGlobal("temperature"), 15) && Prims.gt(world.observer.getGlobal("sun-intensity"), 20))) {
+        SelfManager.self().setVariable("chlorophyll", (SelfManager.self().getVariable("chlorophyll") + 1));
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["adjustChlorophyll"] = temp;
   procs["ADJUST-CHLOROPHYLL"] = temp;
   temp = (function() {
-    if (((Prims.gt(SelfManager.self().getVariable("water-level"), 1) && Prims.gt(world.observer.getGlobal("sun-intensity"), 20)) && Prims.gt(SelfManager.self().getVariable("chlorophyll"), 1))) {
-      SelfManager.self().setVariable("water-level", (SelfManager.self().getVariable("water-level") - 0.5));
-      SelfManager.self().setVariable("chlorophyll", (SelfManager.self().getVariable("chlorophyll") - 0.5));
-      SelfManager.self().setVariable("sugar-level", (SelfManager.self().getVariable("sugar-level") + 1));
-      SelfManager.self().setVariable("attachedness", (SelfManager.self().getVariable("attachedness") + 5));
+    try {
+      if (((Prims.gt(SelfManager.self().getVariable("water-level"), 1) && Prims.gt(world.observer.getGlobal("sun-intensity"), 20)) && Prims.gt(SelfManager.self().getVariable("chlorophyll"), 1))) {
+        SelfManager.self().setVariable("water-level", (SelfManager.self().getVariable("water-level") - 0.5));
+        SelfManager.self().setVariable("chlorophyll", (SelfManager.self().getVariable("chlorophyll") - 0.5));
+        SelfManager.self().setVariable("sugar-level", (SelfManager.self().getVariable("sugar-level") + 1));
+        SelfManager.self().setVariable("attachedness", (SelfManager.self().getVariable("attachedness") + 5));
+      }
+      SelfManager.self().setVariable("sugar-level", (SelfManager.self().getVariable("sugar-level") - 0.5));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    SelfManager.self().setVariable("sugar-level", (SelfManager.self().getVariable("sugar-level") - 0.5));
   });
   procs["adjustSugar"] = temp;
   procs["ADJUST-SUGAR"] = temp;
@@ -379,12 +587,14 @@ var procedures = (function() {
         throw new Exception.StopInterrupt;
       }
       if (Prims.gt(SelfManager.self().getVariable("ycor"), world.observer.getGlobal("bottom-line"))) {
-        var targetXcor = ((SelfManager.self().getVariable("xcor") + Prims.randomFloat(world.observer.getGlobal("wind-factor"))) - Prims.randomFloat(world.observer.getGlobal("wind-factor")));
+        let targetXcor = ((SelfManager.self().getVariable("xcor") + Prims.randomFloat(world.observer.getGlobal("wind-factor"))) - Prims.randomFloat(world.observer.getGlobal("wind-factor")));
         SelfManager.self().faceXY(targetXcor, world.observer.getGlobal("bottom-line"));
         SelfManager.self().fd(Prims.randomFloat((0.7 * ListPrims.max(ListPrims.list(world.observer.getGlobal("wind-factor"), 0.5)))));
       }
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -394,50 +604,70 @@ var procedures = (function() {
   procs["fallIfNecessary"] = temp;
   procs["FALL-IF-NECESSARY"] = temp;
   temp = (function() {
-    if (((Prims.lt(world.observer.getGlobal("temperature"), 20) && Prims.gt(SelfManager.self().getVariable("sugar-level"), 0)) && Prims.gt(SelfManager.self().getVariable("water-level"), 0))) {
-      SelfManager.self().setVariable("sugar-level", (SelfManager.self().getVariable("sugar-level") - 1));
-      SelfManager.self().setVariable("water-level", (SelfManager.self().getVariable("water-level") - 1));
-      SelfManager.self().setVariable("anthocyanin", (SelfManager.self().getVariable("anthocyanin") + 1));
-    }
-    if (Prims.gt(SelfManager.self().getVariable("chlorophyll"), 50)) {
-      SelfManager.self().setVariable("color", ColorModel.scaleColor(55, SelfManager.self().getVariable("chlorophyll"), 150, -50));
-    }
-    else {
-      if (Prims.lt(NLMath.abs((SelfManager.self().getVariable("anthocyanin") - SelfManager.self().getVariable("carotene"))), 10)) {
-        SelfManager.self().setVariable("color", ColorModel.scaleColor(25, SelfManager.self().getVariable("carotene"), 150, -50));
+    try {
+      if (((Prims.lt(world.observer.getGlobal("temperature"), 20) && Prims.gt(SelfManager.self().getVariable("sugar-level"), 0)) && Prims.gt(SelfManager.self().getVariable("water-level"), 0))) {
+        SelfManager.self().setVariable("sugar-level", (SelfManager.self().getVariable("sugar-level") - 1));
+        SelfManager.self().setVariable("water-level", (SelfManager.self().getVariable("water-level") - 1));
+        SelfManager.self().setVariable("anthocyanin", (SelfManager.self().getVariable("anthocyanin") + 1));
       }
-      if (Prims.gt(SelfManager.self().getVariable("anthocyanin"), (SelfManager.self().getVariable("carotene") + 10))) {
-        SelfManager.self().setVariable("color", ColorModel.scaleColor(15, SelfManager.self().getVariable("anthocyanin"), 170, -50));
+      if (Prims.gt(SelfManager.self().getVariable("chlorophyll"), 50)) {
+        SelfManager.self().setVariable("color", ColorModel.scaleColor(55, SelfManager.self().getVariable("chlorophyll"), 150, -50));
       }
-      if (Prims.gt(SelfManager.self().getVariable("carotene"), (SelfManager.self().getVariable("anthocyanin") + 10))) {
-        SelfManager.self().setVariable("color", ColorModel.scaleColor(45, SelfManager.self().getVariable("carotene"), 150, -50));
+      else {
+        if (Prims.lt(NLMath.abs((SelfManager.self().getVariable("anthocyanin") - SelfManager.self().getVariable("carotene"))), 10)) {
+          SelfManager.self().setVariable("color", ColorModel.scaleColor(25, SelfManager.self().getVariable("carotene"), 150, -50));
+        }
+        if (Prims.gt(SelfManager.self().getVariable("anthocyanin"), (SelfManager.self().getVariable("carotene") + 10))) {
+          SelfManager.self().setVariable("color", ColorModel.scaleColor(15, SelfManager.self().getVariable("anthocyanin"), 170, -50));
+        }
+        if (Prims.gt(SelfManager.self().getVariable("carotene"), (SelfManager.self().getVariable("anthocyanin") + 10))) {
+          SelfManager.self().setVariable("color", ColorModel.scaleColor(45, SelfManager.self().getVariable("carotene"), 150, -50));
+        }
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
   });
   procs["changeColor"] = temp;
   procs["CHANGE-COLOR"] = temp;
   temp = (function() {
-    if (Prims.equality(world.observer.getGlobal("leaf-display-mode"), "solid")) {
-      SelfManager.self().setVariable("shape", "default");
-    }
-    else {
-      if (Prims.equality(world.observer.getGlobal("leaf-display-mode"), "chlorophyll")) {
-        procedures["SET-SHAPE-FOR-VALUE"](SelfManager.self().getVariable("chlorophyll"));
+    try {
+      if (Prims.equality(world.observer.getGlobal("leaf-display-mode"), "solid")) {
+        SelfManager.self().setVariable("shape", "default");
       }
-      if (Prims.equality(world.observer.getGlobal("leaf-display-mode"), "water")) {
-        procedures["SET-SHAPE-FOR-VALUE"](SelfManager.self().getVariable("water-level"));
+      else {
+        if (Prims.equality(world.observer.getGlobal("leaf-display-mode"), "chlorophyll")) {
+          procedures["SET-SHAPE-FOR-VALUE"](SelfManager.self().getVariable("chlorophyll"));
+        }
+        if (Prims.equality(world.observer.getGlobal("leaf-display-mode"), "water")) {
+          procedures["SET-SHAPE-FOR-VALUE"](SelfManager.self().getVariable("water-level"));
+        }
+        if (Prims.equality(world.observer.getGlobal("leaf-display-mode"), "sugar")) {
+          procedures["SET-SHAPE-FOR-VALUE"](SelfManager.self().getVariable("sugar-level"));
+        }
+        if (Prims.equality(world.observer.getGlobal("leaf-display-mode"), "carotene")) {
+          procedures["SET-SHAPE-FOR-VALUE"](SelfManager.self().getVariable("carotene"));
+        }
+        if (Prims.equality(world.observer.getGlobal("leaf-display-mode"), "anthocyanin")) {
+          procedures["SET-SHAPE-FOR-VALUE"](SelfManager.self().getVariable("anthocyanin"));
+        }
+        if (Prims.equality(world.observer.getGlobal("leaf-display-mode"), "attachedness")) {
+          procedures["SET-SHAPE-FOR-VALUE"](SelfManager.self().getVariable("attachedness"));
+        }
       }
-      if (Prims.equality(world.observer.getGlobal("leaf-display-mode"), "sugar")) {
-        procedures["SET-SHAPE-FOR-VALUE"](SelfManager.self().getVariable("sugar-level"));
-      }
-      if (Prims.equality(world.observer.getGlobal("leaf-display-mode"), "carotene")) {
-        procedures["SET-SHAPE-FOR-VALUE"](SelfManager.self().getVariable("carotene"));
-      }
-      if (Prims.equality(world.observer.getGlobal("leaf-display-mode"), "anthocyanin")) {
-        procedures["SET-SHAPE-FOR-VALUE"](SelfManager.self().getVariable("anthocyanin"));
-      }
-      if (Prims.equality(world.observer.getGlobal("leaf-display-mode"), "attachedness")) {
-        procedures["SET-SHAPE-FOR-VALUE"](SelfManager.self().getVariable("attachedness"));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
   });
@@ -450,6 +680,8 @@ var procedures = (function() {
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
       }
@@ -458,20 +690,30 @@ var procedures = (function() {
   procs["attachedLeaves"] = temp;
   procs["ATTACHED-LEAVES"] = temp;
   temp = (function(value) {
-    if (Prims.gt(value, 75)) {
-      SelfManager.self().setVariable("shape", "default");
-    }
-    else {
-      if (Prims.lte(value, 25)) {
-        SelfManager.self().setVariable("shape", "default one-quarter");
+    try {
+      if (Prims.gt(value, 75)) {
+        SelfManager.self().setVariable("shape", "default");
       }
       else {
-        if (Prims.lte(value, 50)) {
-          SelfManager.self().setVariable("shape", "default half");
+        if (Prims.lte(value, 25)) {
+          SelfManager.self().setVariable("shape", "default one-quarter");
         }
         else {
-          SelfManager.self().setVariable("shape", "default three-quarter");
+          if (Prims.lte(value, 50)) {
+            SelfManager.self().setVariable("shape", "default half");
+          }
+          else {
+            SelfManager.self().setVariable("shape", "default three-quarter");
+          }
         }
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
   });

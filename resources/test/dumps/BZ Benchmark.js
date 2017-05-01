@@ -63,54 +63,94 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    workspace.rng.setSeed(5454);
-    workspace.timer.reset();
-    procedures["SETUP"]();
-    for (var _index_105_111 = 0, _repeatcount_105_111 = StrictMath.floor(20); _index_105_111 < _repeatcount_105_111; _index_105_111++){
-      procedures["GO"]();
+    try {
+      workspace.rng.setSeed(5454);
+      workspace.timer.reset();
+      procedures["SETUP"]();
+      for (let _index_105_111 = 0, _repeatcount_105_111 = StrictMath.floor(20); _index_105_111 < _repeatcount_105_111; _index_105_111++){
+        procedures["GO"]();
+      }
+      world.observer.setGlobal("result", workspace.timer.elapsed());
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    world.observer.setGlobal("result", workspace.timer.elapsed());
   });
   procs["benchmark"] = temp;
   procs["BENCHMARK"] = temp;
   temp = (function() {
-    world.clearAll();
-    world.ticker.reset();
-    world.patches().ask(function() {
-      SelfManager.self().setPatchVariable("state", Prims.random((world.observer.getGlobal("n") + 1)));
-      SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(15, SelfManager.self().getPatchVariable("state"), 0, world.observer.getGlobal("n")));
-    }, true);
+    try {
+      world.clearAll();
+      world.ticker.reset();
+      world.patches().ask(function() {
+        SelfManager.self().setPatchVariable("state", Prims.random((world.observer.getGlobal("n") + 1)));
+        SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(15, SelfManager.self().getPatchVariable("state"), 0, world.observer.getGlobal("n")));
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    world.patches().ask(function() { procedures["FIND-NEW-STATE"](); }, true);
-    world.patches().ask(function() {
-      SelfManager.self().setPatchVariable("state", SelfManager.self().getPatchVariable("new-state"));
-      SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(15, SelfManager.self().getPatchVariable("state"), 0, world.observer.getGlobal("n")));
-    }, true);
-    world.ticker.tick();
+    try {
+      world.patches().ask(function() { procedures["FIND-NEW-STATE"](); }, true);
+      world.patches().ask(function() {
+        SelfManager.self().setPatchVariable("state", SelfManager.self().getPatchVariable("new-state"));
+        SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(15, SelfManager.self().getPatchVariable("state"), 0, world.observer.getGlobal("n")));
+      }, true);
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    if (Prims.equality(SelfManager.self().getPatchVariable("state"), world.observer.getGlobal("n"))) {
-      SelfManager.self().setPatchVariable("new-state", 0);
-    }
-    else {
-      var a = SelfManager.self().getNeighbors().agentFilter(function() {
-        return (Prims.gt(SelfManager.self().getPatchVariable("state"), 0) && Prims.lt(SelfManager.self().getPatchVariable("state"), world.observer.getGlobal("n")));
-      }).size();
-      var b = SelfManager.self().getNeighbors().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("state"), world.observer.getGlobal("n")); }).size();
-      if (Prims.equality(SelfManager.self().getPatchVariable("state"), 0)) {
-        SelfManager.self().setPatchVariable("new-state", (NLMath.toInt(Prims.div(a, world.observer.getGlobal("k1"))) + NLMath.toInt(Prims.div(b, world.observer.getGlobal("k2")))));
+    try {
+      if (Prims.equality(SelfManager.self().getPatchVariable("state"), world.observer.getGlobal("n"))) {
+        SelfManager.self().setPatchVariable("new-state", 0);
       }
       else {
-        var s = (SelfManager.self().getPatchVariable("state") + ListPrims.sum(SelfManager.self().getNeighbors().projectionBy(function() { return SelfManager.self().getPatchVariable("state"); })));
-        SelfManager.self().setPatchVariable("new-state", (NLMath.toInt(Prims.div(s, ((a + b) + 1))) + world.observer.getGlobal("g")));
+        let a = SelfManager.self().getNeighbors().agentFilter(function() {
+          return (Prims.gt(SelfManager.self().getPatchVariable("state"), 0) && Prims.lt(SelfManager.self().getPatchVariable("state"), world.observer.getGlobal("n")));
+        }).size();
+        let b = SelfManager.self().getNeighbors().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("state"), world.observer.getGlobal("n")); }).size();
+        if (Prims.equality(SelfManager.self().getPatchVariable("state"), 0)) {
+          SelfManager.self().setPatchVariable("new-state", (NLMath.toInt(Prims.div(a, world.observer.getGlobal("k1"))) + NLMath.toInt(Prims.div(b, world.observer.getGlobal("k2")))));
+        }
+        else {
+          let s = (SelfManager.self().getPatchVariable("state") + ListPrims.sum(SelfManager.self().getNeighbors().projectionBy(function() { return SelfManager.self().getPatchVariable("state"); })));
+          SelfManager.self().setPatchVariable("new-state", (NLMath.toInt(Prims.div(s, ((a + b) + 1))) + world.observer.getGlobal("g")));
+        }
+        if (Prims.gt(SelfManager.self().getPatchVariable("new-state"), world.observer.getGlobal("n"))) {
+          SelfManager.self().setPatchVariable("new-state", world.observer.getGlobal("n"));
+        }
       }
-      if (Prims.gt(SelfManager.self().getPatchVariable("new-state"), world.observer.getGlobal("n"))) {
-        SelfManager.self().setPatchVariable("new-state", world.observer.getGlobal("n"));
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
     }
   });

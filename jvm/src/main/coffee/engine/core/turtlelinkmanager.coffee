@@ -4,8 +4,8 @@ LinkSet   = require('./linkset')
 Nobody    = require('./nobody')
 TurtleSet = require('./turtleset')
 
-{ filter, map, unique } = require('brazierjs/array')
-{ pipeline }            = require('brazierjs/function')
+{ filter, flatMap, map, unique } = require('brazierjs/array')
+{ pipeline }                     = require('brazierjs/function')
 
 { DeathInterrupt, ignoring } = require('util/exception')
 
@@ -33,11 +33,22 @@ module.exports =
 
     # (Number, BreedManager, (Number) => Number) => LinkManager
     constructor: (@_ownerID, @_breedManager, @_randomInt) ->
-      @_clear()
+      @clear()
 
     # (Link) => Unit
     add: (link) ->
       @_links.push(link)
+      return
+
+    # () => Unit
+    clear: ->
+      oldLinks = @_links ? []
+      @_links = []
+
+      # Purposely done after resetting the array so that calls to `TurtleLinkManager.remove` in `Link.die` don't spend
+      # a ton of time iterating through long arrays that are in the process of being wiped out. --JAB (11/24/14)
+      oldLinks.forEach((link) -> ignoring(DeathInterrupt)(() => link.die()))
+
       return
 
     # (String, Turtle) => Link
@@ -93,17 +104,6 @@ module.exports =
       @_links.splice(@_links.indexOf(link), 1)
       return
 
-    # () => Unit
-    _clear: ->
-      oldLinks = @_links ? []
-      @_links = []
-
-      # Purposely done after resetting the array so that calls to `TurtleLinkManager.remove` in `Link.die` don't spend
-      # a ton of time iterating through long arrays that are in the process of being wiped out. --JAB (11/24/14)
-      oldLinks.forEach((link) -> ignoring(DeathInterrupt)(() => link.die()))
-
-      return
-
     # Turtle -> String -> Directedness -> Agent
     _findLink: (otherTurtle, breedName, directedness) ->
 
@@ -119,6 +119,25 @@ module.exports =
         links[0]
       else
         links[@_randomInt(links.length)]
+
+    # (LinkSet) => Array[Turtle]
+    neighborsIn: (linkSet) ->
+
+      collectOtherEnd =
+        ({ end1, end2 }) =>
+          isEnd1 = end1.id is @_ownerID
+          isEnd2 = end2.id is @_ownerID
+          if isEnd1 and (not isEnd2)
+            [end2]
+          else if isEnd2 and (not isEnd1)
+            [end1]
+          else
+            []
+
+      pipeline(
+        flatMap(collectOtherEnd)
+      , unique
+      )(linkSet.toArray())
 
     # String -> Directedness -> TurtleSet
     _neighbors: (breedName, directedness) ->

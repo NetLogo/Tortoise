@@ -63,53 +63,93 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
-    world.turtleManager.createTurtles(world.observer.getGlobal("num-vants"), "").ask(function() {
-      SelfManager.self().face(ListPrims.oneOf(SelfManager.self().getNeighbors4()));
-      SelfManager.self().setVariable("color", 15);
-      SelfManager.self().setVariable("size", 6);
-    }, true);
-    world.ticker.reset();
+    try {
+      world.clearAll();
+      world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
+      world.turtleManager.createTurtles(world.observer.getGlobal("num-vants"), "").ask(function() {
+        SelfManager.self().face(ListPrims.oneOf(SelfManager.self().getNeighbors4()));
+        SelfManager.self().setVariable("color", 15);
+        SelfManager.self().setVariable("size", 6);
+      }, true);
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    Tasks.forEach(Tasks.commandTask(function(t) {
-      if (arguments.length < 1) {
-        throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+    try {
+      Tasks.forEach(Tasks.commandTask(function(t) {
+        if (arguments.length < 1) {
+          throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+        }
+        t.ask(function() {
+          SelfManager.self().fdOne();
+          procedures["TURN"]();
+        }, true);
+      }), ListPrims.sort(world.turtles()));
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      t.ask(function() {
-        SelfManager.self().fd(1);
-        procedures["TURN"]();
-      }, true);
-    }), ListPrims.sort(world.turtles()));
-    world.ticker.tick();
+    }
   });
   procs["goForward"] = temp;
   procs["GO-FORWARD"] = temp;
   temp = (function() {
-    Tasks.forEach(Tasks.commandTask(function(t) {
-      if (arguments.length < 1) {
-        throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+    try {
+      Tasks.forEach(Tasks.commandTask(function(t) {
+        if (arguments.length < 1) {
+          throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
+        }
+        t.ask(function() {
+          procedures["TURN"]();
+          SelfManager.self().fd(-1);
+        }, true);
+      }), ListPrims.reverse(ListPrims.sort(world.turtles())));
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      t.ask(function() {
-        procedures["TURN"]();
-        SelfManager.self().fd(-1);
-      }, true);
-    }), ListPrims.reverse(ListPrims.sort(world.turtles())));
-    world.ticker.tick();
+    }
   });
   procs["goReverse"] = temp;
   procs["GO-REVERSE"] = temp;
   temp = (function() {
-    if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 9.9)) {
-      SelfManager.self().setPatchVariable("pcolor", 0);
-      SelfManager.self().right(90);
-    }
-    else {
-      SelfManager.self().setPatchVariable("pcolor", 9.9);
-      SelfManager.self().right(-90);
+    try {
+      if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 9.9)) {
+        SelfManager.self().setPatchVariable("pcolor", 0);
+        SelfManager.self().right(90);
+      }
+      else {
+        SelfManager.self().setPatchVariable("pcolor", 9.9);
+        SelfManager.self().right(-90);
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["turn"] = temp;

@@ -35,7 +35,8 @@ trait Handlers extends EveryIDProvider {
   // objects, representing the concrete syntax of square brackets, but at this stage of compilation
   // the brackets are irrelevant.  So when we see a block we just immediately recurse into it.
 
-  def commands(node: AstNode, catchStop: Boolean = true)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String =
+  def commands(node: AstNode, catchStop: Boolean = true, isProc: Boolean = false)
+              (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String =
     incrementingContext { context =>
       node match {
         case block: CommandBlock =>
@@ -45,10 +46,10 @@ trait Handlers extends EveryIDProvider {
             statements.stmts.map(prims.generateCommand(_)(compilerFlags, context))
               .filter(_.nonEmpty)
               .mkString("\n")
-              if (catchStop && statements.nonLocalExit)
-                commandBlockContext(generatedJS)
-              else
-                generatedJS
+          if (isProc || (catchStop && statements.nonLocalExit))
+            commandBlockContext(generatedJS)
+          else
+            generatedJS
       }
     }
 
@@ -86,6 +87,8 @@ trait Handlers extends EveryIDProvider {
         |} catch (e) {
         |  if (e instanceof Exception.ReportInterrupt) {
         |    return e.message;
+        |  } else if (e instanceof Exception.StopInterrupt) {
+        |    throw new Error("STOP is not allowed inside TO-REPORT.");
         |  } else {
         |    throw e;
         |  }
@@ -95,7 +98,9 @@ trait Handlers extends EveryIDProvider {
     s"""|try {
         |${indented(commandJS)}
         |} catch (e) {
-        |  if (e instanceof Exception.StopInterrupt) {
+        |  if (e instanceof Exception.ReportInterrupt) {
+        |    throw new Error("REPORT can only be used inside TO-REPORT.");
+        |  } else if (e instanceof Exception.StopInterrupt) {
         |    return e;
         |  } else {
         |    throw e;

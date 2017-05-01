@@ -63,37 +63,57 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.clearAll();
-    world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", 5); }, true);
-    world.getPatchAt(world.observer.getGlobal("start-x"), world.observer.getGlobal("start-y")).ask(function() { SelfManager.self().setPatchVariable("pcolor", 55); }, true);
-    world.turtleManager.createTurtles(1, "SEARCHERS").ask(function() {
-      SelfManager.self().setVariable("heading", 0);
-      SelfManager.self().setVariable("color", 15);
-      SelfManager.self().setVariable("size", 0.2);
-      SelfManager.self().setVariable("shape", "circle");
-      SelfManager.self().setXY(world.observer.getGlobal("start-x"), world.observer.getGlobal("start-y"));
-    }, true);
-    world.turtleManager.createTurtles(1, "CENTERS").ask(function() {
-      SelfManager.self().setVariable("color", 105);
-      SelfManager.self().setVariable("size", 0.1);
-      SelfManager.self().setVariable("shape", "circle");
-      SelfManager.self().setXY(world.observer.getGlobal("start-x"), world.observer.getGlobal("start-y"));
-    }, true);
-    world.ticker.reset();
+    try {
+      world.clearAll();
+      world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", 5); }, true);
+      world.getPatchAt(world.observer.getGlobal("start-x"), world.observer.getGlobal("start-y")).ask(function() { SelfManager.self().setPatchVariable("pcolor", 55); }, true);
+      world.turtleManager.createTurtles(1, "SEARCHERS").ask(function() {
+        SelfManager.self().setVariable("heading", 0);
+        SelfManager.self().setVariable("color", 15);
+        SelfManager.self().setVariable("size", 0.2);
+        SelfManager.self().setVariable("shape", "circle");
+        SelfManager.self().setXY(world.observer.getGlobal("start-x"), world.observer.getGlobal("start-y"));
+      }, true);
+      world.turtleManager.createTurtles(1, "CENTERS").ask(function() {
+        SelfManager.self().setVariable("color", 105);
+        SelfManager.self().setVariable("size", 0.1);
+        SelfManager.self().setVariable("shape", "circle");
+        SelfManager.self().setXY(world.observer.getGlobal("start-x"), world.observer.getGlobal("start-y"));
+      }, true);
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", 5); }, true);
-    world.turtleManager.turtlesOfBreed("CENTERS").ask(function() { SelfManager.self().setXY(world.observer.getGlobal("start-x"), world.observer.getGlobal("start-y")); }, true);
-    world.turtleManager.turtlesOfBreed("SEARCHERS").ask(function() {
-      SelfManager.self().setXY(world.observer.getGlobal("start-x"), world.observer.getGlobal("start-y"));
-      SelfManager.self().setPatchVariable("pcolor", 55);
-      SelfManager.self().right(5);
-      SelfManager.self().fd(world.observer.getGlobal("distance-of-travel"));
-      SelfManager.self().setPatchVariable("pcolor", 0);
-    }, true);
-    world.ticker.tick();
+    try {
+      world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", 5); }, true);
+      world.turtleManager.turtlesOfBreed("CENTERS").ask(function() { SelfManager.self().setXY(world.observer.getGlobal("start-x"), world.observer.getGlobal("start-y")); }, true);
+      world.turtleManager.turtlesOfBreed("SEARCHERS").ask(function() {
+        SelfManager.self().setXY(world.observer.getGlobal("start-x"), world.observer.getGlobal("start-y"));
+        SelfManager.self().setPatchVariable("pcolor", 55);
+        SelfManager.self().right(5);
+        SelfManager.self().fd(world.observer.getGlobal("distance-of-travel"));
+        SelfManager.self().setPatchVariable("pcolor", 0);
+      }, true);
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["go"] = temp;
   procs["GO"] = temp;

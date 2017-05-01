@@ -46,38 +46,48 @@ modelConfig.plots = [(function() {
   var name    = 'Link counts';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('newcomer-newcomer', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {}),
-  new PenBundle.Pen('newcomer-incumbent', plotOps.makePenOps, false, new PenBundle.State(55.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {}),
+  new PenBundle.Pen('newcomer-incumbent', plotOps.makePenOps, false, new PenBundle.State(75.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {}),
   new PenBundle.Pen('incumbent-incumbent', plotOps.makePenOps, false, new PenBundle.State(45.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {}),
   new PenBundle.Pen('previous collaborators', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {})];
   var setup   = function() {};
   var update  = function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Link counts', undefined)(function() {
-        var total = 0;
-        plotManager.setCurrentPen("previous collaborators");
-        plotManager.raisePen();
-        plotManager.plotPoint(world.ticker.tickCount(), total);
-        total = (total + world.links().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); }).size());
-        plotManager.lowerPen();
-        plotManager.plotPoint(world.ticker.tickCount(), total);
-        plotManager.setCurrentPen("incumbent-incumbent");
-        plotManager.raisePen();
-        plotManager.plotPoint(world.ticker.tickCount(), total);
-        total = (total + world.links().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 45); }).size());
-        plotManager.lowerPen();
-        plotManager.plotPoint(world.ticker.tickCount(), total);
-        plotManager.setCurrentPen("newcomer-incumbent");
-        plotManager.raisePen();
-        plotManager.plotPoint(world.ticker.tickCount(), total);
-        total = (total + world.links().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); }).size());
-        plotManager.lowerPen();
-        plotManager.plotPoint(world.ticker.tickCount(), total);
-        plotManager.setCurrentPen("newcomer-newcomer");
-        plotManager.raisePen();
-        plotManager.plotPoint(world.ticker.tickCount(), total);
-        total = (total + world.links().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 105); }).size());
-        plotManager.lowerPen();
-        plotManager.plotPoint(world.ticker.tickCount(), total);;
+        try {
+          let total = 0;
+          plotManager.setCurrentPen("previous collaborators");
+          plotManager.raisePen();
+          plotManager.plotPoint(world.ticker.tickCount(), total);
+          total = (total + world.links().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); }).size());
+          plotManager.lowerPen();
+          plotManager.plotPoint(world.ticker.tickCount(), total);
+          plotManager.setCurrentPen("incumbent-incumbent");
+          plotManager.raisePen();
+          plotManager.plotPoint(world.ticker.tickCount(), total);
+          total = (total + world.links().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 45); }).size());
+          plotManager.lowerPen();
+          plotManager.plotPoint(world.ticker.tickCount(), total);
+          plotManager.setCurrentPen("newcomer-incumbent");
+          plotManager.raisePen();
+          plotManager.plotPoint(world.ticker.tickCount(), total);
+          total = (total + world.links().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 75); }).size());
+          plotManager.lowerPen();
+          plotManager.plotPoint(world.ticker.tickCount(), total);
+          plotManager.setCurrentPen("newcomer-newcomer");
+          plotManager.raisePen();
+          plotManager.plotPoint(world.ticker.tickCount(), total);
+          total = (total + world.links().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 105); }).size());
+          plotManager.lowerPen();
+          plotManager.plotPoint(world.ticker.tickCount(), total);
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   };
@@ -88,7 +98,17 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('% of agents in the giant component', 'default')(function() {
-        plotManager.plotPoint(world.ticker.tickCount(), Prims.div(world.observer.getGlobal("giant-component-size"), world.turtles().size()));;
+        try {
+          plotManager.plotPoint(world.ticker.tickCount(), Prims.div(world.observer.getGlobal("giant-component-size"), world.turtles().size()));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   })];
@@ -101,7 +121,17 @@ modelConfig.plots = [(function() {
   var pens    = [new PenBundle.Pen('default', plotOps.makePenOps, false, new PenBundle.State(0.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Average component size', 'default')(function() {
-        plotManager.plotPoint(world.ticker.tickCount(), ListPrims.mean(world.observer.getGlobal("components")));;
+        try {
+          plotManager.plotPoint(world.ticker.tickCount(), ListPrims.mean(world.observer.getGlobal("components")));
+        } catch (e) {
+          if (e instanceof Exception.ReportInterrupt) {
+            throw new Error("REPORT can only be used inside TO-REPORT.");
+          } else if (e instanceof Exception.StopInterrupt) {
+            return e;
+          } else {
+            throw e;
+          }
+        };
       });
     });
   })];
@@ -129,132 +159,202 @@ var procedures = (function() {
   var procs = {};
   var temp = undefined;
   temp = (function() {
-    world.turtleManager.createTurtles(1, "").ask(function() {
-      SelfManager.self().setVariable("color", (105 + 1));
-      SelfManager.self().setVariable("size", 1.8);
-      SelfManager.self().setVariable("incumbent?", false);
-      SelfManager.self().setVariable("in-team?", false);
-      world.observer.setGlobal("newcomer", SelfManager.self());
-      SelfManager.self().setVariable("downtime", 0);
-      SelfManager.self().setVariable("explored?", false);
-    }, true);
+    try {
+      world.turtleManager.createTurtles(1, "").ask(function() {
+        SelfManager.self().setVariable("color", (105 + 1));
+        SelfManager.self().setVariable("size", 1.8);
+        SelfManager.self().setVariable("incumbent?", false);
+        SelfManager.self().setVariable("in-team?", false);
+        world.observer.setGlobal("newcomer", SelfManager.self());
+        SelfManager.self().setVariable("downtime", 0);
+        SelfManager.self().setVariable("explored?", false);
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["makeNewcomer"] = temp;
   procs["MAKE-NEWCOMER"] = temp;
   temp = (function() {
-    world.clearAll();
-    BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
-    for (var _index_1053_1059 = 0, _repeatcount_1053_1059 = StrictMath.floor(world.observer.getGlobal("team-size")); _index_1053_1059 < _repeatcount_1053_1059; _index_1053_1059++){
-      procedures["MAKE-NEWCOMER"]();
+    try {
+      world.clearAll();
+      BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
+      for (let _index_1053_1059 = 0, _repeatcount_1053_1059 = StrictMath.floor(world.observer.getGlobal("team-size")); _index_1053_1059 < _repeatcount_1053_1059; _index_1053_1059++){
+        procedures["MAKE-NEWCOMER"]();
+      }
+      world.turtles().ask(function() {
+        SelfManager.self().setVariable("in-team?", true);
+        SelfManager.self().setVariable("incumbent?", true);
+      }, true);
+      procedures["TIE-COLLABORATORS"]();
+      procedures["COLOR-COLLABORATIONS"]();
+      world.turtles().ask(function() {
+        SelfManager.self().setVariable("heading", (Prims.div(360, world.observer.getGlobal("team-size")) * SelfManager.self().getVariable("who")));
+        SelfManager.self().fd(1.75);
+        SelfManager.self().setVariable("in-team?", false);
+      }, true);
+      procedures["FIND-ALL-COMPONENTS"]();
+      world.ticker.reset();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    world.turtles().ask(function() {
-      SelfManager.self().setVariable("in-team?", true);
-      SelfManager.self().setVariable("incumbent?", true);
-    }, true);
-    procedures["TIE-COLLABORATORS"]();
-    procedures["COLOR-COLLABORATIONS"]();
-    world.turtles().ask(function() {
-      SelfManager.self().setVariable("heading", (Prims.div(360, world.observer.getGlobal("team-size")) * SelfManager.self().getVariable("who")));
-      SelfManager.self().fd(1.75);
-      SelfManager.self().setVariable("in-team?", false);
-    }, true);
-    procedures["FIND-ALL-COMPONENTS"]();
-    world.ticker.reset();
   });
   procs["setup"] = temp;
   procs["SETUP"] = temp;
   temp = (function() {
-    world.turtles().ask(function() {
-      SelfManager.self().setVariable("incumbent?", true);
-      SelfManager.self().setVariable("color", (5 - 1.5));
-      SelfManager.self().setVariable("size", 0.9);
-    }, true);
-    world.links().ask(function() { SelfManager.self().setVariable("new-collaboration?", false); }, true);
-    procedures["PICK-TEAM-MEMBERS"]();
-    procedures["TIE-COLLABORATORS"]();
-    procedures["COLOR-COLLABORATIONS"]();
-    world.turtles().ask(function() {
-      if (Prims.gt(SelfManager.self().getVariable("downtime"), world.observer.getGlobal("max-downtime"))) {
-        SelfManager.self().die();
+    try {
+      world.turtles().ask(function() {
+        SelfManager.self().setVariable("incumbent?", true);
+        SelfManager.self().setVariable("color", (5 - 1.5));
+        SelfManager.self().setVariable("size", 0.9);
+      }, true);
+      world.links().ask(function() { SelfManager.self().setVariable("new-collaboration?", false); }, true);
+      procedures["PICK-TEAM-MEMBERS"]();
+      procedures["TIE-COLLABORATORS"]();
+      procedures["COLOR-COLLABORATIONS"]();
+      world.turtles().ask(function() {
+        if (Prims.gt(SelfManager.self().getVariable("downtime"), world.observer.getGlobal("max-downtime"))) {
+          SelfManager.self().die();
+        }
+        SelfManager.self().setVariable("in-team?", false);
+        SelfManager.self().setVariable("downtime", (SelfManager.self().getVariable("downtime") + 1));
+      }, true);
+      if (world.observer.getGlobal("layout?")) {
+        procedures["LAYOUT"]();
       }
-      SelfManager.self().setVariable("in-team?", false);
-      SelfManager.self().setVariable("downtime", (SelfManager.self().getVariable("downtime") + 1));
-    }, true);
-    if (world.observer.getGlobal("layout?")) {
-      procedures["LAYOUT"]();
+      procedures["FIND-ALL-COMPONENTS"]();
+      world.ticker.tick();
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
-    procedures["FIND-ALL-COMPONENTS"]();
-    world.ticker.tick();
   });
   procs["go"] = temp;
   procs["GO"] = temp;
   temp = (function() {
-    var newTeamMember = Nobody;
-    for (var _index_2105_2111 = 0, _repeatcount_2105_2111 = StrictMath.floor(world.observer.getGlobal("team-size")); _index_2105_2111 < _repeatcount_2105_2111; _index_2105_2111++){
-      if (Prims.gte(Prims.randomFloat(100), world.observer.getGlobal("p"))) {
-        procedures["MAKE-NEWCOMER"]();
-        newTeamMember = world.observer.getGlobal("newcomer");
-      }
-      else {
-        if ((Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("q")) && !world.turtles().agentFilter(function() {
-          return (SelfManager.self().getVariable("in-team?") && !LinkPrims.linkNeighbors("LINKS").agentFilter(function() { return !SelfManager.self().getVariable("in-team?"); }).isEmpty());
-        }).isEmpty())) {
-          newTeamMember = ListPrims.oneOf(world.turtles().agentFilter(function() {
-            return (!SelfManager.self().getVariable("in-team?") && !LinkPrims.linkNeighbors("LINKS").agentFilter(function() { return SelfManager.self().getVariable("in-team?"); }).isEmpty());
-          }));
+    try {
+      let newTeamMember = Nobody;
+      for (let _index_2105_2111 = 0, _repeatcount_2105_2111 = StrictMath.floor(world.observer.getGlobal("team-size")); _index_2105_2111 < _repeatcount_2105_2111; _index_2105_2111++){
+        if (Prims.gte(Prims.randomFloat(100), world.observer.getGlobal("p"))) {
+          procedures["MAKE-NEWCOMER"]();
+          newTeamMember = world.observer.getGlobal("newcomer");
         }
         else {
-          newTeamMember = ListPrims.oneOf(world.turtles().agentFilter(function() { return !SelfManager.self().getVariable("in-team?"); }));
+          if ((Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("q")) && !world.turtles().agentFilter(function() {
+            return (SelfManager.self().getVariable("in-team?") && !LinkPrims.linkNeighbors("LINKS").agentFilter(function() { return !SelfManager.self().getVariable("in-team?"); }).isEmpty());
+          }).isEmpty())) {
+            newTeamMember = ListPrims.oneOf(world.turtles().agentFilter(function() {
+              return (!SelfManager.self().getVariable("in-team?") && !LinkPrims.linkNeighbors("LINKS").agentFilter(function() { return SelfManager.self().getVariable("in-team?"); }).isEmpty());
+            }));
+          }
+          else {
+            newTeamMember = ListPrims.oneOf(world.turtles().agentFilter(function() { return !SelfManager.self().getVariable("in-team?"); }));
+          }
         }
+        newTeamMember.ask(function() {
+          SelfManager.self().setVariable("in-team?", true);
+          SelfManager.self().setVariable("downtime", 0);
+          SelfManager.self().setVariable("size", 1.8);
+          SelfManager.self().setVariable("color", (SelfManager.self().getVariable("incumbent?") ? (45 + 2) : (105 + 1)));
+        }, true);
       }
-      newTeamMember.ask(function() {
-        SelfManager.self().setVariable("in-team?", true);
-        SelfManager.self().setVariable("downtime", 0);
-        SelfManager.self().setVariable("size", 1.8);
-        SelfManager.self().setVariable("color", (SelfManager.self().getVariable("incumbent?") ? (45 + 2) : (105 + 1)));
-      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["pickTeamMembers"] = temp;
   procs["PICK-TEAM-MEMBERS"] = temp;
   temp = (function() {
-    world.turtles().agentFilter(function() { return SelfManager.self().getVariable("in-team?"); }).ask(function() {
-      LinkPrims.createLinksWith(SelfPrims.other(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("in-team?"); })), "LINKS").ask(function() {
-        SelfManager.self().setVariable("new-collaboration?", true);
-        SelfManager.self().setVariable("thickness", 0.3);
+    try {
+      world.turtles().agentFilter(function() { return SelfManager.self().getVariable("in-team?"); }).ask(function() {
+        LinkPrims.createLinksWith(SelfPrims.other(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("in-team?"); })), "LINKS").ask(function() {
+          SelfManager.self().setVariable("new-collaboration?", true);
+          SelfManager.self().setVariable("thickness", 0.3);
+        }, true);
       }, true);
-    }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
+    }
   });
   procs["tieCollaborators"] = temp;
   procs["TIE-COLLABORATORS"] = temp;
   temp = (function() {
-    world.links().agentFilter(function() {
-      return (SelfManager.self().getVariable("end1").projectionBy(function() { return SelfManager.self().getVariable("in-team?"); }) && SelfManager.self().getVariable("end2").projectionBy(function() { return SelfManager.self().getVariable("in-team?"); }));
-    }).ask(function() {
-      if (SelfManager.self().getVariable("new-collaboration?")) {
-        if ((SelfManager.self().getVariable("end1").projectionBy(function() { return SelfManager.self().getVariable("incumbent?"); }) && SelfManager.self().getVariable("end2").projectionBy(function() { return SelfManager.self().getVariable("incumbent?"); }))) {
-          SelfManager.self().setVariable("color", 45);
-        }
-        else {
-          if ((SelfManager.self().getVariable("end1").projectionBy(function() { return SelfManager.self().getVariable("incumbent?"); }) || SelfManager.self().getVariable("end2").projectionBy(function() { return SelfManager.self().getVariable("incumbent?"); }))) {
-            SelfManager.self().setVariable("color", 55);
+    try {
+      world.links().agentFilter(function() {
+        return (SelfManager.self().getVariable("end1").projectionBy(function() { return SelfManager.self().getVariable("in-team?"); }) && SelfManager.self().getVariable("end2").projectionBy(function() { return SelfManager.self().getVariable("in-team?"); }));
+      }).ask(function() {
+        if (SelfManager.self().getVariable("new-collaboration?")) {
+          if ((SelfManager.self().getVariable("end1").projectionBy(function() { return SelfManager.self().getVariable("incumbent?"); }) && SelfManager.self().getVariable("end2").projectionBy(function() { return SelfManager.self().getVariable("incumbent?"); }))) {
+            SelfManager.self().setVariable("color", 45);
           }
           else {
-            SelfManager.self().setVariable("color", 105);
+            if ((SelfManager.self().getVariable("end1").projectionBy(function() { return SelfManager.self().getVariable("incumbent?"); }) || SelfManager.self().getVariable("end2").projectionBy(function() { return SelfManager.self().getVariable("incumbent?"); }))) {
+              SelfManager.self().setVariable("color", 75);
+            }
+            else {
+              SelfManager.self().setVariable("color", 105);
+            }
           }
         }
+        else {
+          SelfManager.self().setVariable("color", 15);
+        }
+      }, true);
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
       }
-      else {
-        SelfManager.self().setVariable("color", 15);
-      }
-    }, true);
+    }
   });
   procs["colorCollaborations"] = temp;
   procs["COLOR-COLLABORATIONS"] = temp;
   temp = (function() {
-    for (var _index_4155_4161 = 0, _repeatcount_4155_4161 = StrictMath.floor(12); _index_4155_4161 < _repeatcount_4155_4161; _index_4155_4161++){
-      LayoutManager.layoutSpring(world.turtles(), world.links(), 0.18, 0.01, 1.2);
-      notImplemented('display', undefined)();
+    try {
+      for (let _index_4159_4165 = 0, _repeatcount_4159_4165 = StrictMath.floor(12); _index_4159_4165 < _repeatcount_4159_4165; _index_4159_4165++){
+        LayoutManager.layoutSpring(world.turtles(), world.links(), 0.18, 0.01, 1.2);
+        notImplemented('display', undefined)();
+      }
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
+        return e;
+      } else {
+        throw e;
+      }
     }
   });
   procs["layout"] = temp;
@@ -265,7 +365,7 @@ var procedures = (function() {
       world.observer.setGlobal("giant-component-size", 0);
       world.turtles().ask(function() { SelfManager.self().setVariable("explored?", false); }, true);
       while (true) {
-        var start = ListPrims.oneOf(world.turtles().agentFilter(function() { return !SelfManager.self().getVariable("explored?"); }));
+        let start = ListPrims.oneOf(world.turtles().agentFilter(function() { return !SelfManager.self().getVariable("explored?"); }));
         if (Prims.equality(start, Nobody)) {
           throw new Exception.StopInterrupt;
         }
@@ -277,7 +377,9 @@ var procedures = (function() {
         world.observer.setGlobal("components", ListPrims.lput(world.observer.getGlobal("component-size"), world.observer.getGlobal("components")));
       };
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -295,7 +397,9 @@ var procedures = (function() {
       world.observer.setGlobal("component-size", (world.observer.getGlobal("component-size") + 1));
       LinkPrims.linkNeighbors("LINKS").ask(function() { procedures["EXPLORE"](); }, true);
     } catch (e) {
-      if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.ReportInterrupt) {
+        throw new Error("REPORT can only be used inside TO-REPORT.");
+      } else if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
