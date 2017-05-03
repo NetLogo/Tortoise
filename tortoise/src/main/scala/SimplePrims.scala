@@ -260,6 +260,9 @@ object SimplePrims {
         case _: prim.etc._outputtype  => "OutputPrims.type"
         case _: prim.etc._outputwrite => "OutputPrims.write"
 
+        // Optimizations
+        case _: Optimizer._fdone          => "SelfManager.self()._optimalFdOne"
+
         // SelfManager
         case _: prim._fd             => "SelfManager.self().fd"
         case _: prim._jump           => "SelfManager.self().jumpIfAble"
