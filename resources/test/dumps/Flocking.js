@@ -88,7 +88,7 @@ var procedures = (function() {
     try {
       world.turtles().ask(function() { procedures["FLOCK"](); }, true);
       for (let _index_475_481 = 0, _repeatcount_475_481 = StrictMath.floor(5); _index_475_481 < _repeatcount_475_481; _index_475_481++){
-        world.turtles().ask(function() { SelfManager.self().fd(0.2); }, true);
+        world.turtles().ask(function() { SelfManager.self()._optimalFdLessThan1(0.2); }, true);
         notImplemented('display', undefined)();
       }
       world.ticker.tick();

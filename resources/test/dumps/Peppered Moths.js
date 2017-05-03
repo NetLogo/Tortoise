@@ -318,7 +318,7 @@ var procedures = (function() {
           procedures["MOTHS-PICK-SHAPE"]();
           SelfManager.self().setVariable("age", 0);
           SelfManager.self().right(Prims.randomFloat(360));
-          SelfManager.self().fd(1);
+          SelfManager.self()._optimalFdOne();
         }, true);
       }
     } catch (e) {

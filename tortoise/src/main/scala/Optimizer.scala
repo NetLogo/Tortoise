@@ -64,4 +64,11 @@ object Optimizer {
     }
   }
 
+  def apply(pd: ProcedureDefinition): ProcedureDefinition = {
+    val newDef = Fd1Transformer.visitProcedureDefinition(pd)
+    val newDef1 = FdLessThan1Transformer.visitProcedureDefinition(newDef)
+    val newDef2 = CountOtherTransformer.visitProcedureDefinition(newDef1)
+    AnyOtherTransformer.visitProcedureDefinition(newDef2)
+  }
+
 }

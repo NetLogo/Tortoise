@@ -229,7 +229,7 @@ var procedures = (function() {
       if (!world.turtleManager.turtlesOfBreed("PAIRED-DICE").agentFilter(function() {
         return !Prims.equality(SelfManager.self().getVariable("pair-sum"), SelfManager.self().getPatchVariable("column"));
       }).isEmpty()) {
-        world.turtleManager.turtlesOfBreed("PAIRED-DICE").ask(function() { SelfManager.self().fd(1); }, true);
+        world.turtleManager.turtlesOfBreed("PAIRED-DICE").ask(function() { SelfManager.self()._optimalFdOne(); }, true);
       }
       else {
         world.turtleManager.turtlesOfBreed("PAIRED-DICE").ask(function() {
@@ -275,7 +275,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       if (!Prims.equality(SelfManager.self().getVariable("die-value"), SelfManager.self().getPatchVariable("column"))) {
-        SelfManager.self().fd(1);
+        SelfManager.self()._optimalFdOne();
       }
       else {
         if (Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor)) {
@@ -299,7 +299,7 @@ var procedures = (function() {
     try {
       SelfManager.self().setVariable("heading", 180);
       if ((Prims.gt(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor) && !!Prims.breedOn("STACKED-DICE", SelfManager.self().patchAhead(1)).isEmpty())) {
-        SelfManager.self().fd(1);
+        SelfManager.self()._optimalFdOne();
       }
       else {
         let oldShape = SelfManager.self().getVariable("shape");
@@ -391,7 +391,7 @@ var procedures = (function() {
           if (Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor)) {
             SelfManager.self().die();
           }
-          SelfManager.self().fd(1);
+          SelfManager.self()._optimalFdOne();
         }, true);
       }
     } catch (e) {

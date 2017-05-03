@@ -322,7 +322,7 @@ var procedures = (function() {
   procs["REMOVE-OVERLAP"] = temp;
   temp = (function(rMin) {
     try {
-      throw new Exception.ReportInterrupt(!SelfPrims.other(SelfManager.self().inRadius(world.turtles(), rMin)).isEmpty());
+      throw new Exception.ReportInterrupt(SelfPrims._optimalAnyOther(SelfManager.self().inRadius(world.turtles(), rMin)));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {

@@ -299,7 +299,7 @@ var procedures = (function() {
       world.turtleManager.createTurtles(1, "").ask(function() {
         SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("CHROMOSOME-BUILDERS"));
         SelfManager.self().setVariable("heading", 90);
-        SelfManager.self().fd(1);
+        SelfManager.self()._optimalFdOne();
       }, true);
       world.turtleManager.turtlesOfBreed("CHROMOSOME-BUILDERS").ask(function() {
         for (let _index_11870_11876 = 0, _repeatcount_11870_11876 = StrictMath.floor(world.observer.getGlobal("initial-length-dna")); _index_11870_11876 < _repeatcount_11870_11876; _index_11870_11876++){
@@ -343,7 +343,7 @@ var procedures = (function() {
               lastNucleotideBottomStrand = SelfManager.self();
             }, true);
           }, true);
-          SelfManager.self().fd(0.45);
+          SelfManager.self()._optimalFdLessThan1(0.45);
         }
         SelfManager.self().die();
       }, true);
@@ -768,13 +768,13 @@ var procedures = (function() {
           targetClass = targetNucleotideReadyToGearToPolymerase.projectionBy(function() { return SelfManager.self().getVariable("class"); });
           SelfManager.self().setXY(targetXcor, targetYcor);
         }
-        if ((!!nucleotidesReadyToGearToPolymerase.isEmpty() || !SelfPrims.other(SelfManager.self().breedHere("POLYMERASES")).isEmpty())) {
+        if ((!!nucleotidesReadyToGearToPolymerase.isEmpty() || SelfPrims._optimalAnyOther(SelfManager.self().breedHere("POLYMERASES")))) {
           SelfManager.self().setVariable("locked-state", 0);
         }
-        if ((((!nucleotidesReadyToGearToPolymerase.isEmpty() && procedures["ALL-BASE-PAIRS-UNWOUND?"]()) && Prims.equality(potentialNucleosideReadyToGearToPolymerase, Nobody)) && !!SelfPrims.other(SelfManager.self().breedHere("POLYMERASES")).isEmpty())) {
+        if ((((!nucleotidesReadyToGearToPolymerase.isEmpty() && procedures["ALL-BASE-PAIRS-UNWOUND?"]()) && Prims.equality(potentialNucleosideReadyToGearToPolymerase, Nobody)) && !SelfPrims._optimalAnyOther(SelfManager.self().breedHere("POLYMERASES")))) {
           SelfManager.self().setVariable("locked-state", 1);
         }
-        if ((((!Prims.equality(targetNucleotideReadyToGearToPolymerase, Nobody) && procedures["ALL-BASE-PAIRS-UNWOUND?"]()) && !Prims.equality(potentialNucleosideReadyToGearToPolymerase, Nobody)) && !!SelfPrims.other(SelfManager.self().breedHere("POLYMERASES")).isEmpty())) {
+        if ((((!Prims.equality(targetNucleotideReadyToGearToPolymerase, Nobody) && procedures["ALL-BASE-PAIRS-UNWOUND?"]()) && !Prims.equality(potentialNucleosideReadyToGearToPolymerase, Nobody)) && !SelfPrims._optimalAnyOther(SelfManager.self().breedHere("POLYMERASES")))) {
           SelfManager.self().setVariable("locked-state", 2);
           if ((procedures["WOULD-THESE-NUCLEOTIDES-PAIR-CORRECTLY?"](targetNucleotideReadyToGearToPolymerase,potentialNucleosideReadyToGearToPolymerase) || world.observer.getGlobal("substitutions?"))) {
             potentialNucleosideReadyToGearToPolymerase.ask(function() {

@@ -343,7 +343,7 @@ var procedures = (function() {
     try {
       SelfManager.self().right(Prims.random(100));
       SelfManager.self().right(-Prims.random(100));
-      SelfManager.self().fd(1);
+      SelfManager.self()._optimalFdOne();
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         throw new Error("REPORT can only be used inside TO-REPORT.");
@@ -403,7 +403,7 @@ var procedures = (function() {
         SelfManager.self().hatch(1, "").ask(function() {
           SelfManager.self().setVariable("age", 1);
           SelfManager.self().right(-45);
-          SelfManager.self().fd(1);
+          SelfManager.self()._optimalFdOne();
           procedures["GET-HEALTHY"]();
         }, true);
       }

@@ -159,10 +159,14 @@ object Compiler extends CompilerLike {
     val footer  = SourceWrapping.getFooter(commands)
     val wrapped = s"$header$logo$footer"
     val (defs, _) = frontEnd.frontEnd(wrapped, oldProcedures = oldProcedures, program = program, extensionManager = NLWExtensionManager)
-    if (commands)
-      handlers.commands(defs.head.statements, true, !raw)
+    val pd = if (compilerFlags.optimizationsEnabled)
+      Optimizer(defs.head)
     else
-      handlers.reporter(defs.head.statements.stmts(1).args(0))
+      defs.head
+    if (commands)
+      handlers.commands(pd.statements, true, !raw)
+    else
+      handlers.reporter(pd.statements.stmts(1).args(0))
   }
 
   private def outputConfig: JsStatement =

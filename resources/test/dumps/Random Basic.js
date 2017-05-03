@@ -188,14 +188,14 @@ var procedures = (function() {
       world.observer.getGlobal("the-messenger").ask(function() {
         SelfManager.self().face(it);
         while (Prims.gt(SelfManager.self().distance(it), 3)) {
-          SelfManager.self().fd(1);
+          SelfManager.self()._optimalFdOne();
           notImplemented('display', undefined)();
         }
         SelfManager.self().die();
       }, true);
       it.ask(function() {
         procedures["CREATE-FRAME"]();
-        SelfManager.self().fd(1);
+        SelfManager.self()._optimalFdOne();
         if (Prims.equality(SelfManager.self().getVariable("ycor"), world.observer.getGlobal("max-y-histogram"))) {
           world.observer.setGlobal("time-to-stop?", true);
         }

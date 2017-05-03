@@ -277,7 +277,7 @@ var procedures = (function() {
         }
         if (!SelfManager.self().getVariable("initial-scout?")) {
           if (Prims.lt(SelfManager.self().getVariable("bee-timer"), 0)) {
-            if (Prims.gt(SelfPrims.other(SelfManager.self().inCone(world.turtleManager.turtlesOfBreed("SCOUTS"), 3, 60)).size(), 0)) {
+            if (Prims.gt(SelfPrims._optimalCountOther(SelfManager.self().inCone(world.turtleManager.turtlesOfBreed("SCOUTS"), 3, 60)), 0)) {
               let observed = ListPrims.oneOf(SelfManager.self().inCone(world.turtleManager.turtlesOfBreed("SCOUTS"), 3, 60));
               if (Prims.equality(observed.projectionBy(function() { return SelfManager.self().getVariable("next-task"); }), world.observer.getGlobal("dance-task"))) {
                 if (Prims.lt(Prims.random((Prims.div(1, observed.projectionBy(function() { return SelfManager.self().getVariable("interest"); })) * 1000)), 1)) {
@@ -370,7 +370,7 @@ var procedures = (function() {
         else {
           if (Prims.gt(SelfManager.self().distance(SelfManager.self().getVariable("target")), 2)) {
             SelfManager.self().face(SelfManager.self().getVariable("target"));
-            SelfManager.self().fd(1);
+            SelfManager.self()._optimalFdOne();
           }
           SelfManager.self().setVariable("on-site?", true);
           let nearbyScouts = SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("SCOUTS").agentFilter(function() {
@@ -587,7 +587,7 @@ var procedures = (function() {
         }
         if (Prims.gt(SelfManager.self().distance(SelfManager.self().getVariable("target")), 1)) {
           SelfManager.self().face(SelfManager.self().getVariable("target"));
-          SelfManager.self().fd(1);
+          SelfManager.self()._optimalFdOne();
         }
         else {
           SelfManager.self().setVariable("on-site?", true);
@@ -679,25 +679,25 @@ var procedures = (function() {
       SelfManager.self().setVariable("temp-y-dance", SelfManager.self().getVariable("ycor"));
       let waggleSwitch = 1;
       SelfManager.self().right(-60);
-      SelfManager.self().fd(0.4);
+      SelfManager.self()._optimalFdLessThan1(0.4);
       for (let _index_17897_17903 = 0, _repeatcount_17897_17903 = StrictMath.floor(Prims.div((SelfManager.self().getVariable("dist-to-hive") - 2), 2)); _index_17897_17903 < _repeatcount_17897_17903; _index_17897_17903++){
         if (Prims.equality(waggleSwitch, 1)) {
           SelfManager.self().right(120);
-          SelfManager.self().fd(0.8);
+          SelfManager.self()._optimalFdLessThan1(0.8);
         }
         if (Prims.equality(waggleSwitch, -1)) {
           SelfManager.self().right(-120);
-          SelfManager.self().fd(0.8);
+          SelfManager.self()._optimalFdLessThan1(0.8);
         }
         waggleSwitch = (waggleSwitch * -1);
       }
       if (Prims.equality(waggleSwitch, -1)) {
         SelfManager.self().right(-120);
-        SelfManager.self().fd(0.4);
+        SelfManager.self()._optimalFdLessThan1(0.4);
       }
       else {
         SelfManager.self().right(120);
-        SelfManager.self().fd(0.4);
+        SelfManager.self()._optimalFdLessThan1(0.4);
       }
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -717,7 +717,7 @@ var procedures = (function() {
       if (!SelfManager.self().canMove(1)) {
         SelfManager.self().right(180);
       }
-      SelfManager.self().fd(1);
+      SelfManager.self()._optimalFdOne();
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         throw new Error("REPORT can only be used inside TO-REPORT.");
@@ -736,7 +736,7 @@ var procedures = (function() {
       SelfManager.self().fd(Prims.randomFloat(0.1));
       if (Prims.gt(SelfManager.self().distanceXY(0, 0), 4)) {
         SelfManager.self().faceXY(0, 0);
-        SelfManager.self().fd(1);
+        SelfManager.self()._optimalFdOne();
       }
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {

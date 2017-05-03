@@ -145,7 +145,7 @@ var procedures = (function() {
       let currentRegion = SelfManager.self().getPatchVariable("region");
       SelfManager.self().right(Prims.random(30));
       SelfManager.self().right(-Prims.random(30));
-      SelfManager.self().fd(0.25);
+      SelfManager.self()._optimalFdLessThan1(0.25);
       procedures["KEEP-IN-REGION"](currentRegion);
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {

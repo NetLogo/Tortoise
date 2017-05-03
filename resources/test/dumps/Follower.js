@@ -182,7 +182,7 @@ var procedures = (function() {
         }
       }, true);
       world.turtles().ask(function() { procedures["TURN-TURTLE"](); }, true);
-      world.turtles().ask(function() { SelfManager.self().fd(1); }, true);
+      world.turtles().ask(function() { SelfManager.self()._optimalFdOne(); }, true);
       world.ticker.tick();
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {

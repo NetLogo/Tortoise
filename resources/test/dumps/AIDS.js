@@ -387,7 +387,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       SelfManager.self().right(Prims.randomFloat(360));
-      SelfManager.self().fd(1);
+      SelfManager.self()._optimalFdOne();
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         throw new Error("REPORT can only be used inside TO-REPORT.");

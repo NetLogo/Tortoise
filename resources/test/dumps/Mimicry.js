@@ -202,7 +202,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("shape", "bird 1");
       }
       SelfManager.self().setVariable("heading", (180 + Prims.random(180)));
-      SelfManager.self().fd(1);
+      SelfManager.self()._optimalFdOne();
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         throw new Error("REPORT can only be used inside TO-REPORT.");
@@ -219,7 +219,7 @@ var procedures = (function() {
     try {
       SelfManager.self().right(Prims.random(100));
       SelfManager.self().right(-Prims.random(100));
-      SelfManager.self().fd(1);
+      SelfManager.self()._optimalFdOne();
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         throw new Error("REPORT can only be used inside TO-REPORT.");
@@ -355,7 +355,7 @@ var procedures = (function() {
     try {
       if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("reproduction-chance"))) {
         SelfManager.self().hatch(1, "").ask(function() {
-          SelfManager.self().fd(1);
+          SelfManager.self()._optimalFdOne();
           if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("mutation-rate"))) {
             SelfManager.self().setVariable("color", ListPrims.oneOf(ListPrims.sublist(ColorModel.BASE_COLORS, 1, 10)));
           }

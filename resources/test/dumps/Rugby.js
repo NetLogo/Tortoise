@@ -168,7 +168,7 @@ var procedures = (function() {
         procedures["CHECK-PATCH"](procedures["NEXT-PATCH"]());
         procedures["CHECK-PATCH"](SelfManager.self().patchAhead(1));
       }
-      SelfManager.self().fd(1);
+      SelfManager.self()._optimalFdOne();
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         throw new Error("REPORT can only be used inside TO-REPORT.");

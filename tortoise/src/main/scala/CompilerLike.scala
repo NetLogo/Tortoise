@@ -47,7 +47,9 @@ import CompilerFlags.{ PropagationStyle, NoPropagation }
 case class CompilerFlags(
   generateUnimplemented: Boolean,
   onTickCallback:        String          = "function(){}",
-  propagationStyle:      PropagationStyle = NoPropagation)
+  propagationStyle:      PropagationStyle = NoPropagation,
+  optimizationsEnabled:   Boolean         = true
+  )
 
 object CompilerFlags {
   implicit val Default = CompilerFlags(generateUnimplemented = false)

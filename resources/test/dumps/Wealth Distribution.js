@@ -514,7 +514,7 @@ var procedures = (function() {
   procs["HARVEST"] = temp;
   temp = (function() {
     try {
-      SelfManager.self().fd(1);
+      SelfManager.self()._optimalFdOne();
       SelfManager.self().setVariable("wealth", (SelfManager.self().getVariable("wealth") - SelfManager.self().getVariable("metabolism")));
       SelfManager.self().setVariable("age", (SelfManager.self().getVariable("age") + 1));
       if ((Prims.lt(SelfManager.self().getVariable("wealth"), 0) || Prims.gte(SelfManager.self().getVariable("age"), SelfManager.self().getVariable("life-expectancy")))) {

@@ -107,7 +107,7 @@ var procedures = (function() {
     try {
       world.turtles().ask(function() {
         SelfManager.self().face(ListPrims.oneOf(SelfManager.self().getNeighbors4()));
-        SelfManager.self().fd(1);
+        SelfManager.self()._optimalFdOne();
       }, true);
       world.ticker.tick();
     } catch (e) {
