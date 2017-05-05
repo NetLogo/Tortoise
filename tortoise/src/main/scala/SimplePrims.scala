@@ -60,6 +60,9 @@ object SimplePrims {
         case _: prim.etc._linklength  => "SelfPrims.linkLength"
         case _: prim._other           => "SelfPrims.other"
 
+        // Optimizations
+        case _: Optimizer._anyother   => "SelfPrims._optimalAnyOther"
+
         // SelfManager
         case _: prim.etc._bothends                   => "SelfManager.self().bothEnds"
         case _: prim.etc._canmove                    => "SelfManager.self().canMove"
