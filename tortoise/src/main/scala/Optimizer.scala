@@ -50,4 +50,18 @@ object Optimizer {
     }
   }
 
+  class _countother extends Reporter {
+    override def syntax = 
+      Syntax.reporterSyntax(right = List(Syntax.AgentsetType), ret = Syntax.BooleanType)
+  }
+
+  object CountOtherTransformer extends AstTransformer {
+    override def visitReporterApp(ra: ReporterApp): ReporterApp = {
+      ra match {
+        case ReporterApp(reporter: _count, Seq(ReporterApp(other: _other, countArgs, _)), _) => ra.copy(reporter = new _countother, args = countArgs)
+        case _ => super.visitReporterApp(ra)
+      }
+    }
+  }
+
 }

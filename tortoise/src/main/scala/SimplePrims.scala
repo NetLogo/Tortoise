@@ -62,6 +62,7 @@ object SimplePrims {
 
         // Optimizations
         case _: Optimizer._anyother   => "SelfPrims._optimalAnyOther"
+        case _: Optimizer._countother => "SelfPrims._optimalCountOther"
 
         // SelfManager
         case _: prim.etc._bothends                   => "SelfManager.self().bothEnds"
