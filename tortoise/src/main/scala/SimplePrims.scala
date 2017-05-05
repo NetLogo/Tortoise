@@ -261,7 +261,8 @@ object SimplePrims {
         case _: prim.etc._outputwrite => "OutputPrims.write"
 
         // Optimizations
-        case _: Optimizer._fdone          => "SelfManager.self()._optimalFdOne"
+        case _: Optimizer._fdone       => "SelfManager.self()._optimalFdOne"
+        case _: Optimizer._fdlessthan1 => "SelfManager.self()._optimalFdLessThan1"
 
         // SelfManager
         case _: prim._fd             => "SelfManager.self().fd"

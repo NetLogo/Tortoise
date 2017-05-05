@@ -192,6 +192,11 @@ module.exports =
       @jumpIfAble(1)
       return
 
+    # (Number) => Unit
+    _optimalFdLessThan1: (distance) ->
+      @jumpIfAble(distance)
+      return
+
     # (Number) => Boolean
     jumpIfAble: (distance) ->
       canMove = @canMove(distance)

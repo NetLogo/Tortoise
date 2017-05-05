@@ -22,4 +22,18 @@ object Optimizer {
   	}
 	}
 
+	class _fdlessthan1 extends Command {
+    override def syntax = 
+      Syntax.commandSyntax(agentClassString = "-T--")
+  }
+
+  object FdLessThan1Transformer extends AstTransformer {
+    override def visitStatement(statement: Statement): Statement = {
+      statement match {
+        case Statement(command: _fd, Seq(ReporterApp(_const(value: java.lang.Double), _, _)), _) if ((value > -1) && (value < 1)) => statement.copy(command = new _fdlessthan1)
+        case _ => super.visitStatement(statement)
+      }
+    }
+  }
+
 }
