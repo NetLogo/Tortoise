@@ -1,18 +1,25 @@
+// (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
+
 package org.nlogo.tortoise
+
+import
+  java.lang.{ Double => JDouble }
 
 import
   org.nlogo.core.{ Command, Syntax, Reporter }
 
-import 
+import
   org.nlogo.core.{ prim, AstTransformer, ProcedureDefinition, ReporterApp, Statement },
     prim.{ _const, _fd, _other, _any, _count }
 
 object Optimizer {
 
+  // scalastyle:off class.name
   class _fdone extends Command {
-    override def syntax =
+    override def syntax: Syntax =
       Syntax.commandSyntax(agentClassString = "-T--")
   }
+
   object Fd1Transformer extends AstTransformer {
     override def visitStatement(statement: Statement): Statement = {
       statement match {
@@ -23,21 +30,23 @@ object Optimizer {
   }
 
   class _fdlessthan1 extends Command {
-    override def syntax = 
+    override def syntax: Syntax =
       Syntax.commandSyntax(agentClassString = "-T--")
   }
 
   object FdLessThan1Transformer extends AstTransformer {
     override def visitStatement(statement: Statement): Statement = {
       statement match {
-        case Statement(command: _fd, Seq(ReporterApp(_const(value: java.lang.Double), _, _)), _) if ((value > -1) && (value < 1)) => statement.copy(command = new _fdlessthan1)
-        case _ => super.visitStatement(statement)
+        case Statement(command: _fd, Seq(ReporterApp(_const(value: JDouble), _, _)), _) if ((value > -1) && (value < 1)) =>
+          statement.copy(command = new _fdlessthan1)
+        case _ =>
+          super.visitStatement(statement)
       }
     }
   }
 
   class _anyother extends Reporter {
-    override def syntax = 
+    override def syntax: Syntax =
       Syntax.reporterSyntax(right = List(Syntax.AgentsetType), ret = Syntax.BooleanType)
   }
 
@@ -51,9 +60,10 @@ object Optimizer {
   }
 
   class _countother extends Reporter {
-    override def syntax = 
+    override def syntax: Syntax =
       Syntax.reporterSyntax(right = List(Syntax.AgentsetType), ret = Syntax.BooleanType)
   }
+  // scalastyle:on class.name
 
   object CountOtherTransformer extends AstTransformer {
     override def visitReporterApp(ra: ReporterApp): ReporterApp = {
