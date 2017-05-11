@@ -5,7 +5,7 @@ import org.scalastyle.sbt.ScalastylePlugin.scalastyle
 
 val nlDependencyVersion       = "6.0.1-d7adf59"
 
-val parserJsDependencyVersion = "0.1.1-b0ffc94"
+val parserJsDependencyVersion = "0.1.1-d7adf59"
 
 val scalazVersion             = "7.2.10"
 
