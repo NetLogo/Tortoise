@@ -182,7 +182,7 @@ module.exports =
       else
         arr[@_nextInt(arr.length)]
 
-    # [Item, Container <: (Array[Item]|String|AbstractAgentSet[Item])] @ (Item, Container) => Number|Boolean
+    # [Item, Container <: (Array[Item]|String)] @ (Item, Container) => Number|Boolean
     position: (x, xs) ->
       type = NLType(xs)
 
