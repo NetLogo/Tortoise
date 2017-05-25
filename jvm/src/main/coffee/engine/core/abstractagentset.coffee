@@ -7,9 +7,9 @@ Iterator       = require('util/iterator')
 Shufflerator   = require('util/shufflerator')
 stableSort     = require('util/stablesort')
 
-{ all, contains, exists, filter, foldl, forEach, map } = require('brazierjs/array')
-{ pipeline                                           } = require('brazierjs/function')
-{ keys                                               } = require('brazierjs/object')
+{ foldl, map } = require('brazierjs/array')
+{ pipeline   } = require('brazierjs/function')
+{ keys       } = require('brazierjs/object')
 
 { DeathInterrupt: Death } = require('util/exception')
 
@@ -30,7 +30,7 @@ module.exports =
 
     # (() => Boolean) => Boolean
     agentAll: (f) ->
-      all(@_lazyGetSelfManager().askAgent(f))(@toArray())
+      @iterator().all(@_lazyGetSelfManager().askAgent(f))
 
     # (() => Any, Boolean) => Unit
     ask: (f, shouldShuffle) ->
@@ -58,7 +58,7 @@ module.exports =
 
     # (T) => Boolean
     contains: (item) ->
-      contains(item)(@toArray())
+      @iterator().contains(item)
 
     # (Array[T]) => AbstractAgentSet[T]
     copyWithNewAgents: (agents) ->
@@ -66,15 +66,15 @@ module.exports =
 
     # ((T) => Boolean) => Boolean
     exists: (pred) ->
-      exists(pred)(@toArray())
+      @iterator().exists(pred)
 
     # ((T) => Boolean) => Seq[T]
     filter: (pred) ->
-      @_generateFrom(filter(pred)(@toArray()))
+      @_generateFrom(@iterator().filter(pred))
 
     # ((T) => Unit) => Unit
     forEach: (f) ->
-      forEach(f)(@toArray())
+      @iterator().forEach(f)
       return
 
     # () => String

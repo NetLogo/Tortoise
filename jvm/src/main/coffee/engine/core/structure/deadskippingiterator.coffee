@@ -12,6 +12,27 @@ module.exports =
       super(items)
       @_i = 0
 
+    all: (f) ->
+      for x in @_items when not x.isDead()
+        if not f(x)
+          return false
+      true
+
+    contains: (x) ->
+      for y in @_items when not x.isDead()
+        if x is y # Wrong!
+          return true
+      false
+
+    exists: (f) ->
+      for x in @_items when not x.isDead()
+        if f(x)
+          return true
+      false
+
+    filter: (f) ->
+      x for x in @_items when (not x.isDead()) and f(x)
+
     # [U] @ ((T) => U) => Array[U]
     map: (f) ->
       acc = []

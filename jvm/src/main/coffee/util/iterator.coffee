@@ -9,6 +9,27 @@ module.exports =
     constructor: (items) ->
       @_items = items[..]
 
+    all: (f) ->
+      for x in @_items
+        if not f(x)
+          return false
+      true
+
+    contains: (x) ->
+      for y in @_items
+        if x is y # Wrong!
+          return true
+      false
+
+    exists: (f) ->
+      for x in @_items
+        if f(x)
+          return true
+      false
+
+    filter: (f) ->
+      x for x in @_items when f(x)
+
     # [U] @ ((T) => U) => Array[U]
     map: (f) ->
       @_items.map(f)
