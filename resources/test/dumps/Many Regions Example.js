@@ -234,7 +234,7 @@ var procedures = (function() {
   procs["REGION-DIVISIONS"] = temp;
   temp = (function(x) {
     try {
-      world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pxcor"), x); }).ask(function() { SelfManager.self().setPatchVariable("pcolor", (5 + 1.5)); }, true);
+      world._optimalPatchCol(x).ask(function() { SelfManager.self().setPatchVariable("pcolor", (5 + 1.5)); }, true);
       world.turtleManager.createTurtles(1, "").ask(function() {
         SelfManager.self().setXY(x, (world.topology.maxPycor + 0.5));
         SelfManager.self().setVariable("heading", 0);

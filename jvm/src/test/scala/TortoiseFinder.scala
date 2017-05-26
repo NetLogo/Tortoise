@@ -190,6 +190,7 @@ private[tortoise] object Freebies {
     "Random::RandomNOfWithLists",
     "Random::OneOfWithAgentSets",
     "Random::RejectBadSeeds",
+    "Sort::SortByBadReporter",
     "Sort::SortingTypeErrors",
     "Sort::sort-on-rejects-mixed-types",
     "Sum::SumOfExceedsNumericRange",

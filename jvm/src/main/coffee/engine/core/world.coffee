@@ -253,6 +253,23 @@ module.exports =
 
       return
 
+    # (Number) => PatchSet
+    _optimalPatchCol: (xcor) ->
+      ret = []
+      if (xcor >= @topology.minPxcor and xcor <= @topology.maxPxcor)
+        result = for y in [@topology.minPycor..@topology.maxPycor]
+          p = @getPatchAt(xcor, y)
+        ret = [].concat(result...)
+      new PatchSet(ret)
+
+    _optimalPatchRow: (ycor) ->
+      ret = []
+      if (ycor >= @topology.minPycor and ycor <= @topology.maxPycor)
+        result = for x in [@topology.minPxcor..@topology.maxPxcor]
+          p = @getPatchAt(x, ycor)
+        ret = [].concat(result...)
+      new PatchSet(ret)
+
     # () => Unit
     _incrementPatchLabelCount: =>
       @_setPatchLabelCount((count) -> count + 1)

@@ -142,9 +142,7 @@ var procedures = (function() {
     try {
       world.turtleManager.turtlesOfBreed("CLOUDS").ask(function() { SelfManager.self().fd(SelfManager.self().getVariable("cloud-speed")); }, true);
       procedures["RUN-SUNSHINE"]();
-      world.patches().agentFilter(function() {
-        return Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("earth-top"));
-      }).ask(function() { procedures["UPDATE-ALBEDO"](); }, true);
+      world._optimalPatchRow(world.observer.getGlobal("earth-top")).ask(function() { procedures["UPDATE-ALBEDO"](); }, true);
       procedures["RUN-HEAT"]();
       procedures["RUN-IR"]();
       procedures["RUN-CO2"]();

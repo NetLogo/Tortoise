@@ -123,9 +123,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       procedures["SETUP-GENERAL"]();
-      world.patches().agentFilter(function() {
-        return Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("row"));
-      }).ask(function() {
+      world._optimalPatchRow(world.observer.getGlobal("row")).ask(function() {
         SelfManager.self().setPatchVariable("on?", false);
         SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("background"));
       }, true);
@@ -149,9 +147,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       procedures["SETUP-GENERAL"]();
-      world.patches().agentFilter(function() {
-        return Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("row"));
-      }).ask(function() {
+      world._optimalPatchRow(world.observer.getGlobal("row")).ask(function() {
         SelfManager.self().setPatchVariable("on?", Prims.lt(Prims.random(100), world.observer.getGlobal("density")));
         procedures["COLOR-PATCH"]();
       }, true);
@@ -179,13 +175,9 @@ var procedures = (function() {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
         }
         return p.projectionBy(function() { return SelfManager.self().getPatchVariable("on?"); });
-      }, "[[p] -> [on?] of p]"), ListPrims.sort(world.patches().agentFilter(function() {
-        return Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("row"));
-      })));
+      }, "[[p] -> [on?] of p]"), ListPrims.sort(world._optimalPatchRow(world.observer.getGlobal("row"))));
       procedures["SETUP-GENERAL"]();
-      world.patches().agentFilter(function() {
-        return Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("row"));
-      }).ask(function() {
+      world._optimalPatchRow(world.observer.getGlobal("row")).ask(function() {
         SelfManager.self().setPatchVariable("on?", ListPrims.item((SelfManager.self().getPatchVariable("pxcor") + world.topology.maxPxcor), on_pList));
         procedures["COLOR-PATCH"]();
       }, true);
@@ -216,13 +208,9 @@ var procedures = (function() {
           throw new Exception.StopInterrupt;
         }
       }
-      world.patches().agentFilter(function() {
-        return Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("row"));
-      }).ask(function() { procedures["DO-RULE"](); }, true);
+      world._optimalPatchRow(world.observer.getGlobal("row")).ask(function() { procedures["DO-RULE"](); }, true);
       world.observer.setGlobal("row", (world.observer.getGlobal("row") - 1));
-      world.patches().agentFilter(function() {
-        return Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("row"));
-      }).ask(function() { procedures["COLOR-PATCH"](); }, true);
+      world._optimalPatchRow(world.observer.getGlobal("row")).ask(function() { procedures["COLOR-PATCH"](); }, true);
       world.observer.setGlobal("gone?", true);
       world.ticker.tick();
     } catch (e) {
