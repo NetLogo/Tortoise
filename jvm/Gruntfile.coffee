@@ -7,7 +7,7 @@ module.exports = (grunt) ->
       regex      = new RegExp(".*?/" + base + "/(.*)\.js")
       splitter = (file) ->
         alias = file.match(regex)[1]
-        "#{file}:#{prefix}#{alias}"
+        "#{file}:#{truePrefix}#{alias}"
       files.map(splitter)
 
   grunt.initConfig({
