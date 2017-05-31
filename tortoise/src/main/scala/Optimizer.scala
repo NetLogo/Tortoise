@@ -7,8 +7,8 @@ import
     Syntax.{ NumberType, PatchsetType }
 
 import
-  org.nlogo.core.{ prim, AstTransformer, ProcedureDefinition, ReporterApp, Statement, NetLogoCore, ReporterBlock },
-    prim.{ _const, _fd, _other, _any, _count, _with, _patches, _procedurevariable, _patchvariable, _observervariable, _equal }
+  org.nlogo.core.{ prim, AstTransformer, ProcedureDefinition, ReporterApp, Statement, NetLogoCore, CommandBlock, ReporterBlock },
+    prim.{ _const, _createturtles, _fd, _other, _any, _count, _with, _patches, _procedurevariable, _patchvariable, _observervariable, _equal }
 
 object Optimizer {
 
@@ -36,6 +36,20 @@ object Optimizer {
       statement match {
         case Statement(command: _fd, Seq(ReporterApp(_const(value: java.lang.Double), _, _)), _) if ((value > -1) && (value < 1)) =>
           statement.copy(command = new _fdlessthan1)
+        case _ => super.visitStatement(statement)
+      }
+    }
+  }
+
+  class _crtfast(val breedName: String) extends Command {
+    override def syntax = 
+      Syntax.commandSyntax(agentClassString = "-T--")
+  }
+  object CrtFastTransformer extends AstTransformer {
+    override def visitStatement(statement: Statement): Statement = {
+      statement match {
+        case Statement(command: _createturtles, Seq(ReporterApp(reporter: _const, args, loc), cmdBlock: CommandBlock), _) if cmdBlock.statements.stmts.isEmpty =>
+          statement.copy(command = new _crtfast(command.breedName: String), args = Seq(new ReporterApp(reporter, args, loc), cmdBlock))
         case _ => super.visitStatement(statement)
       }
     }
@@ -120,7 +134,8 @@ object Optimizer {
     val newDef1 = FdLessThan1Transformer.visitProcedureDefinition(newDef)
     val newDef2 = CountOtherTransformer.visitProcedureDefinition(newDef1)
     val newDef3 = WithTransformer.visitProcedureDefinition(newDef2)
-    AnyOtherTransformer.visitProcedureDefinition(newDef3)
+    val newDef4 = CrtFastTransformer.visitProcedureDefinition(newDef3)
+    AnyOtherTransformer.visitProcedureDefinition(newDef4)
   }
 
 }

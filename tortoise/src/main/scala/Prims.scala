@@ -239,6 +239,7 @@ trait CommandPrims extends PrimUtils {
       case p: prim._carefully            => generateCarefully(s, p)
       case _: prim._createturtles        => generateCreateTurtles(s, ordered = false)
       case _: prim._createorderedturtles => generateCreateTurtles(s, ordered = true)
+      case _: Optimizer._crtfast         => optimalGenerateCreateTurtles(s, ordered = false)
       case _: prim._sprout               => generateSprout(s)
       case p: prim.etc._createlinkfrom   => generateCreateLink(s, "createLinkFrom",  p.breedName)
       case p: prim.etc._createlinksfrom  => generateCreateLink(s, "createLinksFrom", p.breedName)
@@ -403,6 +404,18 @@ trait CommandPrims extends PrimUtils {
       }
     val body = handlers.fun(s.args(1))
     genAsk(s"world.turtleManager.$name($n, ${jsString(breed)})", true, body)
+  }
+
+  def optimalGenerateCreateTurtles(s: Statement, ordered: Boolean)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
+    val n = handlers.reporter(s.args(0))
+    val name = if (ordered) "createOrderedTurtles" else "createTurtles"
+    val breed = 
+      s.command match {
+        case x: Optimizer._crtfast => x.breedName
+        case x => throw new IllegalArgumentException("How did you get here with class of type " + x.getClass.getName)
+      }
+    val body = handlers.fun(s.args(1))
+    s"world.turtleManager.$name($n, ${jsString(breed)});"
   }
 
   def generateSprout(s: Statement)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {

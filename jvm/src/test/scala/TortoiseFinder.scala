@@ -79,14 +79,13 @@ class TestCommands extends CommandTests with TortoiseFinder {
   override val freebies = Map[String, String](
     // requires handling of non-local exit (see in JVM NetLogo: `NonLocalExit`, `_report`, `_foreach`, `_run`)
     "Every::EveryLosesScope"  -> "NetLogo Web does not support distinct jobs"
-  ) ++ incErrorDetectCommands ++ emptyInitBlockCommands ++
+  ) ++ incErrorDetectCommands ++
        evalNotSupportedCommands ++ lameCommands
 }
 
 private[tortoise] object Freebies {
 
   def incErrorDetectCommands     = asFreebieMap(incErrorDetectCommandNames,     incErrorDetectStr)
-  def emptyInitBlockCommands     = asFreebieMap(emptyInitBlockCommandNames,     emptyInitBlockStr)
   def evalNotSupportedCommands   = asFreebieMap(evalNotSupportedCommandNames,   evalNotSupportedStr)
   def cmdTaskRepMismatchCommands = asFreebieMap(cmdTaskRepMismatchCommandNames, cmdTaskRepMismatchStr)
   def lameCommands               = asFreebieMap(lameCommandNames,               lameCommandStr)
@@ -95,21 +94,6 @@ private[tortoise] object Freebies {
   def evalNotSupportedReporters  = asFreebieMap(evalNotSupportedReporterNames,  evalNotSupportedStr)
 
   private def asFreebieMap(names: Seq[String], msg: String) = names.map(_ -> msg).toMap
-
-  // Significant: Requires the optimizer to be turned on
-  private val emptyInitBlockStr = "ASSUMES OPTIMIZATION: empty init block"
-  private val emptyInitBlockCommandNames = Seq(
-    "DeadTurtles::TurtleDiesWhileIteratingOverItsSet",
-    "Layouts::TestLayoutCircleSetsHeadingsCorrectlyTurtleset",
-    "Interaction::Interaction3b",
-    "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksFrom",
-    "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksTo",
-    "RandomOrderInitialization::TestRandomOrderInitializationCreateLinksWith",
-    "TurtlesHere::TurtlesHereCheckOrder1",
-    "TurtlesHere::TurtlesHereCheckOrder2",
-    "TurtlesHere::TurtlesHereCheckOrder3",
-    "TurtlesHere::TurtlesHereCheckOrder4"
-  )
 
   private val incErrorDetectStr = "Tortoise error detection and reporting not complete"
   private val incErrorDetectReporterNames = Seq(
