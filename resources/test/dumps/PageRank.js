@@ -111,7 +111,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
-      world.turtleManager.createTurtles(11, "PAGES").ask(function() {}, true);
+      world.turtleManager.createTurtles(11, "PAGES");
       world.turtleManager.getTurtleOfBreed("PAGES", 0).ask(function() {
         SelfManager.self().setVariable("color", 105);
         LinkPrims.createLinkFrom(world.turtleManager.getTurtleOfBreed("PAGES", 3), "LINKS").ask(function() {}, false);
@@ -151,7 +151,7 @@ var procedures = (function() {
   procs["CREATE-NETWORK-EXAMPLE-1"] = temp;
   temp = (function() {
     try {
-      world.turtleManager.createTurtles(8, "PAGES").ask(function() {}, true);
+      world.turtleManager.createTurtles(8, "PAGES");
       world.turtleManager.getTurtleOfBreed("PAGES", 0).ask(function() { SelfManager.self().die(); }, true);
       world.turtleManager.getTurtleOfBreed("PAGES", 1).ask(function() {
         LinkPrims.createLinksFrom(Prims.turtleSet(world.turtleManager.getTurtleOfBreed("PAGES", 2), world.turtleManager.getTurtleOfBreed("PAGES", 3), world.turtleManager.getTurtleOfBreed("PAGES", 5), world.turtleManager.getTurtleOfBreed("PAGES", 6)), "LINKS").ask(function() {}, false);
