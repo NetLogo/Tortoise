@@ -240,7 +240,9 @@ trait CommandPrims extends PrimUtils {
       case _: prim._createturtles        => generateCreateTurtles(s, ordered = false)
       case _: prim._createorderedturtles => generateCreateTurtles(s, ordered = true)
       case _: Optimizer._crtfast         => optimalGenerateCreateTurtles(s, ordered = false)
+      case _: Optimizer._crofast         => optimalGenerateCreateTurtles(s, ordered = true)
       case _: prim._sprout               => generateSprout(s)
+      case _: Optimizer._sproutfast      => optimalGenerateSprout(s)
       case p: prim.etc._createlinkfrom   => generateCreateLink(s, "createLinkFrom",  p.breedName)
       case p: prim.etc._createlinksfrom  => generateCreateLink(s, "createLinksFrom", p.breedName)
       case p: prim.etc._createlinkto     => generateCreateLink(s, "createLinkTo",    p.breedName)
@@ -412,6 +414,7 @@ trait CommandPrims extends PrimUtils {
     val breed = 
       s.command match {
         case x: Optimizer._crtfast => x.breedName
+        case x: Optimizer._crofast => x.breedName
         case x => throw new IllegalArgumentException("How did you get here with class of type " + x.getClass.getName)
       }
     val body = handlers.fun(s.args(1))
@@ -425,6 +428,18 @@ trait CommandPrims extends PrimUtils {
     val trueBreedName = if (breedName.nonEmpty) breedName else "TURTLES"
     val sprouted = s"SelfManager.self().sprout($n, ${jsString(trueBreedName)})"
     genAsk(sprouted, true, body)
+  }
+
+  def optimalGenerateSprout(s: Statement)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
+    val n = handlers.reporter(s.args(0))
+    val body = handlers.fun(s.args(1))
+    val breedName = s.command match {
+      case x: Optimizer._sproutfast => x.breedName
+      case x => throw new IllegalArgumentException("How did you get here with class of type " + x.getClass.getName)
+    }
+    val trueBreedName = if (breedName.nonEmpty) breedName else "TURTLES"
+    val sprouted = s"SelfManager.self().sprout($n, ${jsString(trueBreedName)})"
+    sprouted
   }
 
   def generateHatch(s: Statement, breedName: String)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
