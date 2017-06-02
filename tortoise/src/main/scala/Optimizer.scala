@@ -6,7 +6,7 @@ import
 
 import 
   org.nlogo.core.{ prim, AstTransformer, ProcedureDefinition, ReporterApp, Statement, NetLogoCore, ReporterBlock, CommandBlock },
-    prim.{ _const, _fd, _other, _any, _count, _with, _patches, _procedurevariable, _patchvariable, _observervariable, _equal, _createturtles }
+    prim.{ _const, _fd, _other, _any, _count, _with, _patches, _procedurevariable, _patchvariable, _observervariable, _equal, _createturtles, _createorderedturtles }
 
 object Optimizer {
 
@@ -46,6 +46,26 @@ object Optimizer {
       statement match {
         case Statement(command: _createturtles, Seq(ReporterApp(reporter: _const, args, loc), cmdBlock: CommandBlock), _) if cmdBlock.statements.stmts.isEmpty =>
           statement.copy(command = new _crtfast(command.breedName: String), args = Seq(new ReporterApp(reporter, args, loc), cmdBlock))
+        // case Statement(command: _createturtles, Seq(_, cmdBlock: CommandBlock), _) if cmdBlock.statements.stmts.isEmpty =>
+        //   statement.copy(command = new _crtfast(command.breedName: String))
+        case _ => super.visitStatement(statement)
+      }
+    }
+  }
+
+  class _crofast(val breedName: String) extends Command {
+    override def syntax = 
+      Syntax.commandSyntax(agentClassString = "-T--")
+  }
+  object CroFastTransformer extends AstTransformer {
+    override def visitStatement(statement: Statement): Statement = {
+      statement match {
+        // case Statement(command: _createorderedturtles, Seq(ReporterApp(reporter: _const, args, loc), cmdBlock: CommandBlock), _) if cmdBlock.statements.stmts.isEmpty => {
+        //   println("create ordered")
+        //   statement.copy(command = new _crofast(command.breedName: String), args = Seq(new ReporterApp(reporter, args, loc), cmdBlock))
+        // }
+        case Statement(command: _createorderedturtles, Seq(_, cmdBlock: CommandBlock), _) if cmdBlock.statements.stmts.isEmpty =>
+          statement.copy(command = new _crofast(command.breedName: String))
         case _ => super.visitStatement(statement)
       }
     }
@@ -131,6 +151,7 @@ object Optimizer {
     val newDef2 = CountOtherTransformer.visitProcedureDefinition(newDef1)
     val newDef3 = WithTransformer.visitProcedureDefinition(newDef2)
     val newDef4 = CrtFastTransformer.visitProcedureDefinition(newDef3)
-    AnyOtherTransformer.visitProcedureDefinition(newDef4)
+    val newDef5 = CroFastTransformer.visitProcedureDefinition(newDef4)
+    AnyOtherTransformer.visitProcedureDefinition(newDef5)
   }
 }
