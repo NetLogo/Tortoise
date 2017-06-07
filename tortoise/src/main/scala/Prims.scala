@@ -242,7 +242,6 @@ trait CommandPrims extends PrimUtils {
       case _: Optimizer._crtfast         => optimalGenerateCreateTurtles(s, ordered = false)
       case _: Optimizer._crofast         => optimalGenerateCreateTurtles(s, ordered = true)
       case _: prim._sprout               => generateSprout(s)
-      case _: Optimizer._sproutfast      => optimalGenerateSprout(s)
       case p: prim.etc._createlinkfrom   => generateCreateLink(s, "createLinkFrom",  p.breedName)
       case p: prim.etc._createlinksfrom  => generateCreateLink(s, "createLinksFrom", p.breedName)
       case p: prim.etc._createlinkto     => generateCreateLink(s, "createLinkTo",    p.breedName)
@@ -252,6 +251,7 @@ trait CommandPrims extends PrimUtils {
       case _: prim.etc._every            => generateEvery(s)
       case _: prim.etc._error            => s"throw new Error(${arg(0)});"
       case h: prim._hatch                => generateHatch(s, h.breedName)
+      case h: Optimizer._hatchfast       => optimalGenerateHatch(s, h.breedName)
       case _: prim._bk                   => s"SelfManager.self().fd(-${arg(0)});"
       case _: prim.etc._left             => s"SelfManager.self().right(-${arg(0)});"
       case _: prim.etc._diffuse          => s"world.topology.diffuse(${jsString(getReferenceName(s))}, ${arg(1)})"
@@ -430,22 +430,16 @@ trait CommandPrims extends PrimUtils {
     genAsk(sprouted, true, body)
   }
 
-  def optimalGenerateSprout(s: Statement)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
-    val n = handlers.reporter(s.args(0))
-    val body = handlers.fun(s.args(1))
-    val breedName = s.command match {
-      case x: Optimizer._sproutfast => x.breedName
-      case x => throw new IllegalArgumentException("How did you get here with class of type " + x.getClass.getName)
-    }
-    val trueBreedName = if (breedName.nonEmpty) breedName else "TURTLES"
-    val sprouted = s"SelfManager.self().sprout($n, ${jsString(trueBreedName)})"
-    sprouted
-  }
-
   def generateHatch(s: Statement, breedName: String)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
     val n = handlers.reporter(s.args(0))
     val body = handlers.fun(s.args(1))
     genAsk(s"SelfManager.self().hatch($n, ${jsString(breedName)})", true, body)
+  }
+
+  def optimalGenerateHatch(s: Statement, breedName: String)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
+    val n = handlers.reporter(s.args(0))
+    val body = handlers.fun(s.args(1))
+    s"SelfManager.self().hatch($n, ${jsString(breedName)})"
   }
 
   def generateEvery(w: Statement)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
