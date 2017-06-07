@@ -114,6 +114,7 @@ object Compiler extends CompilerLike {
         compileMoreProcedures(model, prog, procs)
       }
 
+    implicit val context   = new CompilerContext(model.code)
     val compiledProcedures = new ProcedureCompiler(handlers).compileProcedures(procedureDefs)
 
     val compiledWidgets =
@@ -155,10 +156,11 @@ object Compiler extends CompilerLike {
                       program:       Program       = Program.empty(),
                       raw:           Boolean       = false)
             (implicit compilerFlags: CompilerFlags = CompilerFlags.Default): String = {
-    val header  = SourceWrapping.getHeader(AgentKind.Observer, commands)
-    val footer  = SourceWrapping.getFooter(commands)
-    val wrapped = s"$header$logo$footer"
-    val (defs, _) = frontEnd.frontEnd(wrapped, oldProcedures = oldProcedures, program = program, extensionManager = NLWExtensionManager)
+    val header           = SourceWrapping.getHeader(AgentKind.Observer, commands)
+    val footer           = SourceWrapping.getFooter(commands)
+    val wrapped          = s"$header$logo$footer"
+    implicit val context = new CompilerContext(wrapped)
+    val (defs, _)        = frontEnd.frontEnd(wrapped, oldProcedures = oldProcedures, program = program, extensionManager = NLWExtensionManager)
     val pd = if (compilerFlags.optimizationsEnabled)
       Optimizer(defs.head)
     else
