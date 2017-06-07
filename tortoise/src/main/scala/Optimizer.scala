@@ -6,7 +6,7 @@ import
 
 import 
   org.nlogo.core.{ prim, AstTransformer, ProcedureDefinition, ReporterApp, Statement, NetLogoCore, ReporterBlock, CommandBlock },
-    prim.{ _const, _fd, _other, _any, _count, _with, _patches, _procedurevariable, _patchvariable, _observervariable, _equal, _createturtles, _createorderedturtles, _hatch }
+    prim.{ _const, _fd, _other, _any, _count, _with, _patches, _procedurevariable, _patchvariable, _observervariable, _equal, _createturtles, _createorderedturtles, _hatch, _sprout }
 
 object Optimizer {
 
@@ -45,6 +45,19 @@ object Optimizer {
     override def visitStatement(statement: Statement): Statement = {
       statement match {
         case Statement(command: _hatch, Seq(_, cmdBlock: CommandBlock), _) if cmdBlock.statements.stmts.isEmpty => statement.copy(command = new _hatchfast(command.breedName: String))
+        case _ => super.visitStatement(statement)
+      }
+    }
+  }
+
+  class _sproutfast(val breedName: String) extends Command {
+    override def syntax = 
+      Syntax.commandSyntax(agentClassString = "--P-")
+  }
+  object SproutFastTransformer extends AstTransformer {
+    override def visitStatement(statement: Statement): Statement = {
+      statement match {
+        case Statement(command: _sprout, Seq(_, cmdBlock: CommandBlock), _) if cmdBlock.statements.stmts.isEmpty => statement.copy(command = new _sproutfast(command.breedName: String))
         case _ => super.visitStatement(statement)
       }
     }
@@ -160,6 +173,7 @@ object Optimizer {
     val newDef4 = CrtFastTransformer.visitProcedureDefinition(newDef3)
     val newDef5 = CroFastTransformer.visitProcedureDefinition(newDef4)
     val newDef6 = HatchFastTransformer.visitProcedureDefinition(newDef5)
-    AnyOtherTransformer.visitProcedureDefinition(newDef6)
+    val newDef7 = SproutFastTransformer.visitProcedureDefinition(newDef6)
+    AnyOtherTransformer.visitProcedureDefinition(newDef7)
   }
 }
