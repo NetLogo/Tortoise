@@ -65,7 +65,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       world.clearAll();
-      world.patches().ask(function() { SelfManager.self().sprout(1, "TURTLES").ask(function() {}, true); }, true);
+      world.patches().ask(function() { SelfManager.self().sprout(1, "TURTLES") }, true);
       world.turtles().ask(function() {
         LinkPrims.createLinksWith(Prims.turtlesOn(SelfManager.self().getNeighbors4()), "LINKS").ask(function() {}, false);
       }, true);
@@ -85,7 +85,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       world.clearAll();
-      world.patches().ask(function() { SelfManager.self().sprout(1, "TURTLES").ask(function() {}, true); }, true);
+      world.patches().ask(function() { SelfManager.self().sprout(1, "TURTLES") }, true);
       world.turtles().ask(function() {
         LinkPrims.createLinksWith(SelfManager.self().turtlesAt(0, 1), "LINKS").ask(function() {}, false);
         LinkPrims.createLinksWith(SelfManager.self().turtlesAt(1, 0), "LINKS").ask(function() {}, false);
