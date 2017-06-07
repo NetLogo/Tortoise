@@ -1315,7 +1315,7 @@ var procedures = (function() {
             throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
           }
           OutputPrims.print(_0);
-        }), ListPrims.item((world.observer.getGlobal("current-instruction") - 1), procedures["INSTRUCTIONS"]()));
+        }, "output-print"), ListPrims.item((world.observer.getGlobal("current-instruction") - 1), procedures["INSTRUCTIONS"]()));
       }
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {

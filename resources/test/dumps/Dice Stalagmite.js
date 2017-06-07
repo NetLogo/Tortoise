@@ -56,7 +56,7 @@ modelConfig.plots = [(function() {
               throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
             }
             return Prims.equality(outcome, ListPrims.item(0, maxbar));
-          })));
+          }, "[ outcome -> outcome = item 0 maxbar ]")));
           plotManager.setYRange(0, ListPrims.max(ListPrims.list(51, maxrange)));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -87,7 +87,7 @@ modelConfig.plots = [(function() {
               throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
             }
             return Prims.equality(outcome, ListPrims.item(0, maxbar));
-          })));
+          }, "[ outcome -> outcome = item 0 maxbar ]")));
           plotManager.setYRange(0, ListPrims.max(ListPrims.list(51, maxrange)));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -329,13 +329,13 @@ var procedures = (function() {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
         }
         return Prims.equality(outcome, mode);
-      })));
+      }, "[ outcome -> outcome = mode]")));
       let heightOfMyColumn = ListPrims.length(world.observer.getGlobal("single-outcomes").filter(Tasks.reporterTask(function(outcome) {
         if (arguments.length < 1) {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
         }
         return Prims.equality(outcome, SelfManager.self().getVariable("die-value"));
-      })));
+      }, "[ outcome -> outcome = die-value]")));
       if (Prims.gte((heightOfTallestColumn - heightOfMyColumn), (world.topology.height - 2))) {
         SelfManager.self().die();
       }
@@ -362,13 +362,13 @@ var procedures = (function() {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
         }
         return Prims.equality(outcome, mode);
-      })));
+      }, "[ outcome -> outcome = mode ]")));
       let heightOfMyColumn = ListPrims.length(world.observer.getGlobal("pair-outcomes").filter(Tasks.reporterTask(function(outcome) {
         if (arguments.length < 1) {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
         }
         return Prims.equality(outcome, SelfManager.self().getVariable("pair-sum"));
-      })));
+      }, "[ outcome -> outcome = pair-sum ]")));
       if (Prims.gte((heightOfTallestColumn - heightOfMyColumn), (world.topology.height - 2))) {
         SelfManager.self().die();
       }

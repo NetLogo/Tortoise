@@ -175,7 +175,7 @@ modelConfig.plots = [(function() {
               throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
             }
             plotManager.plotValue(_0);
-          }), world.observer.getGlobal("lorenz-points"));
+          }, "plot"), world.observer.getGlobal("lorenz-points"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
             throw new Error("REPORT can only be used inside TO-REPORT.");

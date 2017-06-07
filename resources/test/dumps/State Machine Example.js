@@ -79,7 +79,7 @@ var procedures = (function() {
             throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
           }
           procedures["SEARCH-FOR-CHIP"]();
-        }));
+        }, "[ -> search-for-chip ]"));
         SelfManager.self().setVariable("size", 5);
       }, true);
       world.ticker.reset();
@@ -157,7 +157,7 @@ var procedures = (function() {
             throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
           }
           procedures["FIND-NEW-PILE"]();
-        }));
+        }, "[ -> find-new-pile ]"));
       }
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -179,7 +179,7 @@ var procedures = (function() {
             throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
           }
           procedures["PUT-DOWN-CHIP"]();
-        }));
+        }, "[ -> put-down-chip ]"));
       }
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -204,7 +204,7 @@ var procedures = (function() {
             throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
           }
           procedures["GET-AWAY"]();
-        }));
+        }, "[ -> get-away ]"));
       }
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -226,7 +226,7 @@ var procedures = (function() {
             throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
           }
           procedures["SEARCH-FOR-CHIP"]();
-        }));
+        }, "[ -> search-for-chip ]"));
       }
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {

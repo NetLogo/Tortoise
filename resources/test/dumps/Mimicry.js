@@ -268,7 +268,7 @@ var procedures = (function() {
         if (Prims.equality(ListPrims.item(0, i), c)) {
           throw new Exception.ReportInterrupt(true);
         }
-      }), SelfManager.self().getVariable("memory"));
+      }, "[ i -> if item 0 i = c [ report true ] ]"), SelfManager.self().getVariable("memory"));
       throw new Exception.ReportInterrupt(false);
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
@@ -308,13 +308,13 @@ var procedures = (function() {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
         }
         return ListPrims.list(ListPrims.item(0, i), (1 + ListPrims.item(1, i)));
-      }), SelfManager.self().getVariable("memory")));
+      }, "[ i -> list (item 0 i) (1 + item 1 i) ]"), SelfManager.self().getVariable("memory")));
       SelfManager.self().setVariable("memory", SelfManager.self().getVariable("memory").filter(Tasks.reporterTask(function(i) {
         if (arguments.length < 1) {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
         }
         return Prims.lte(ListPrims.item(1, i), world.observer.getGlobal("memory-duration"));
-      })));
+      }, "[ i -> item 1 i <= memory-duration ]")));
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         throw new Error("REPORT can only be used inside TO-REPORT.");

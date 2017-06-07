@@ -136,7 +136,7 @@ var procedures = (function() {
             throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
           }
           return (((!Prims.equality(ListPrims.item(1, collision), world.observer.getGlobal("colliding-particle-1")) && !Prims.equality(ListPrims.item(2, collision), world.observer.getGlobal("colliding-particle-1"))) && !Prims.equality(ListPrims.item(1, collision), world.observer.getGlobal("colliding-particle-2"))) && !Prims.equality(ListPrims.item(2, collision), world.observer.getGlobal("colliding-particle-2")));
-        })));
+        }, "[ [collision] ->\n      item 1 collision != colliding-particle-1 and\n      item 2 collision != colliding-particle-1 and\n      item 1 collision != colliding-particle-2 and\n      item 2 collision != colliding-particle-2]")));
         world.observer.getGlobal("colliding-particle-2").ask(function() { procedures["CHECK-FOR-WALL-COLLISION"](); }, true);
         world.observer.getGlobal("colliding-particle-2").ask(function() { procedures["CHECK-FOR-PARTICLE-COLLISION"](); }, true);
       }
@@ -146,7 +146,7 @@ var procedures = (function() {
             throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
           }
           return (!Prims.equality(ListPrims.item(1, collision), world.observer.getGlobal("colliding-particle-1")) && !Prims.equality(ListPrims.item(2, collision), world.observer.getGlobal("colliding-particle-1")));
-        })));
+        }, "[ [collision] ->\n      item 1 collision != colliding-particle-1 and\n      item 2 collision != colliding-particle-1]")));
       }
       if (!Prims.equality(world.observer.getGlobal("colliding-particle-1"), Nobody)) {
         world.observer.getGlobal("colliding-particle-1").ask(function() { procedures["CHECK-FOR-WALL-COLLISION"](); }, true);
@@ -341,7 +341,7 @@ var procedures = (function() {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
         }
         return (!Prims.equality(ListPrims.item(1, collision), world.observer.getGlobal("colliding-particle-1")) || !Prims.equality(ListPrims.item(2, collision), world.observer.getGlobal("colliding-particle-2")));
-      })));
+      }, "[ [collision] ->\n    item 1 collision != colliding-particle-1 or\n    item 2 collision != colliding-particle-2]")));
       world.observer.setGlobal("colliding-particle-1", Nobody);
       world.observer.setGlobal("colliding-particle-2", Nobody);
       world.observer.setGlobal("tick-length", world.observer.getGlobal("original-tick-length"));
@@ -356,7 +356,7 @@ var procedures = (function() {
         if (Prims.lt(ListPrims.first(collision), ListPrims.first(winner))) {
           winner = collision;
         }
-      }), world.observer.getGlobal("colliding-particles"));
+      }, "[ [collision] -> if first collision < first winner [set winner collision]]"), world.observer.getGlobal("colliding-particles"));
       let dt = ListPrims.item(0, winner);
       if (Prims.gt(dt, 0)) {
         if (Prims.lte((dt - world.ticker.tickCount()), 1)) {

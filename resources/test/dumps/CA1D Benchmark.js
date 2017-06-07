@@ -179,7 +179,7 @@ var procedures = (function() {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
         }
         return p.projectionBy(function() { return SelfManager.self().getPatchVariable("on?"); });
-      }), ListPrims.sort(world.patches().agentFilter(function() {
+      }, "[[p] -> [on?] of p]"), ListPrims.sort(world.patches().agentFilter(function() {
         return Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("row"));
       })));
       procedures["SETUP-GENERAL"]();

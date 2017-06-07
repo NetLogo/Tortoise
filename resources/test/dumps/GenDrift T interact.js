@@ -334,7 +334,7 @@ var procedures = (function() {
         if (Prims.gt(howMany, winningAmount)) {
           winningAmount = howMany;
         }
-      }), ColorModel.BASE_COLORS);
+      }, "[ c ->\n    let how-many count turtles with [color = c]\n    if how-many > winning-amount\n      [ set winning-amount how-many ]\n  ]"), ColorModel.BASE_COLORS);
       world.observer.setGlobal("max-percent", Prims.div((100 * winningAmount), world.turtles().size()));
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {

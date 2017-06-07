@@ -94,7 +94,7 @@ var procedures = (function() {
           SelfManager.self()._optimalFdOne();
           procedures["TURN"]();
         }, true);
-      }), ListPrims.sort(world.turtles()));
+      }, "[ t ->\n    ask t [\n      fd 1\n      turn\n    ]\n  ]"), ListPrims.sort(world.turtles()));
       world.ticker.tick();
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -118,7 +118,7 @@ var procedures = (function() {
           procedures["TURN"]();
           SelfManager.self().fd(-1);
         }, true);
-      }), ListPrims.reverse(ListPrims.sort(world.turtles())));
+      }, "[ t ->\n    ask t [\n      turn\n      bk 1\n    ]\n  ]"), ListPrims.reverse(ListPrims.sort(world.turtles())));
       world.ticker.tick();
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {

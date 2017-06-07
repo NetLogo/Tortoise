@@ -79,13 +79,13 @@ modelConfig.plots = [(function() {
                 throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
               }
               return 0;
-            }));
+            }, "[0]"));
             Tasks.forEach(Tasks.commandTask(function(theSize) {
               if (arguments.length < 1) {
                 throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
               }
               counts = ListPrims.replaceItem(theSize, counts, (1 + ListPrims.item(theSize, counts)));
-            }), world.observer.getGlobal("sizes"));
+            }, "[ the-size ->\n    set counts replace-item the-size counts (1 + item the-size counts)\n  ]"), world.observer.getGlobal("sizes"));
             let s = 0;
             Tasks.forEach(Tasks.commandTask(function(c) {
               if (arguments.length < 1) {
@@ -95,7 +95,7 @@ modelConfig.plots = [(function() {
                 plotManager.plotPoint(NLMath.log(s, 10), NLMath.log(c, 10));
               }
               s = (s + 1);
-            }), counts);
+            }, "[ c ->\n    ; We only care about plotting avalanches (s > 0), but dropping s = 0\n    ; from the counts list is actually more awkward than just ignoring it\n    if (s > 0 and c > 0) [\n      plotxy (log s 10) (log c 10)\n    ]\n    set s s + 1\n  ]"), counts);
           }
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -126,13 +126,13 @@ modelConfig.plots = [(function() {
                 throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
               }
               return 0;
-            }));
+            }, "[0]"));
             Tasks.forEach(Tasks.commandTask(function(lifetime) {
               if (arguments.length < 1) {
                 throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
               }
               counts = ListPrims.replaceItem(lifetime, counts, (1 + ListPrims.item(lifetime, counts)));
-            }), world.observer.getGlobal("lifetimes"));
+            }, "[ lifetime ->\n    set counts replace-item lifetime counts (1 + item lifetime counts)\n  ]"), world.observer.getGlobal("lifetimes"));
             let l = 0;
             Tasks.forEach(Tasks.commandTask(function(c) {
               if (arguments.length < 1) {
@@ -142,7 +142,7 @@ modelConfig.plots = [(function() {
                 plotManager.plotPoint(NLMath.log(l, 10), NLMath.log(c, 10));
               }
               l = (l + 1);
-            }), counts);
+            }, "[ c ->\n    ; We only care about plotting avalanches (l > 0), but dropping l = 0\n    ; from the counts list is actually more awkward than just ignoring it\n    if (l > 0 and c > 0) [\n      plotxy (log l 10) (log c 10)\n    ]\n    set l l + 1\n  ]"), counts);
           }
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -216,7 +216,7 @@ var procedures = (function() {
           throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
         }
         return initial;
-      }));
+      }, "[ -> initial ]"));
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         throw new Error("REPORT can only be used inside TO-REPORT.");
@@ -236,7 +236,7 @@ var procedures = (function() {
           throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
         }
         return Prims.random(4);
-      }));
+      }, "[ -> random 4 ]"));
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         throw new Error("REPORT can only be used inside TO-REPORT.");
