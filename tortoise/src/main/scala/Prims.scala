@@ -6,7 +6,7 @@ import
   CompilerFlags.WidgetPropagation
 
 import
-  JsOps.{ indented, jsString }
+  JsOps.{ indented, jsString, jsStringEscaped }
 
 import
   org.nlogo.core.{ CommandBlock, CompilerException, prim, Reporter, ReporterApp, Statement, Token }
@@ -159,8 +159,14 @@ trait ReporterPrims extends PrimUtils {
       case p: prim.etc._outlinkneighbors => s"LinkPrims.outLinkNeighbors(${jsString(fixBN(p.breedName))})"
       case p: prim.etc._outlinkto        => s"LinkPrims.outLinkTo(${jsString(fixBN(p.breedName))}, ${arg(0)})"
 
-      case l: prim._reporterlambda => s"Tasks.reporterTask(${handlers.task(r.args(0), isReporter = true, args = l.argumentNames.map(handlers.ident))})"
-      case l: prim._commandlambda  => s"Tasks.commandTask(${handlers.task(r.args(0), isReporter = false, args = l.argumentNames.map(handlers.ident))})"
+      case l: prim._reporterlambda => {
+        val localSource = getSourceInRange(compilerContext.source, r.sourceLocation.start, r.sourceLocation.end)
+        s"Tasks.reporterTask(${handlers.task(r.args(0), isReporter = true, args = l.argumentNames.map(handlers.ident))}, ${jsStringEscaped(localSource)})"
+      }
+      case l: prim._commandlambda  => {
+        val localSource = getSourceInRange(compilerContext.source, r.sourceLocation.start, r.sourceLocation.end)
+        s"Tasks.commandTask(${handlers.task(r.args(0), isReporter = false, args = l.argumentNames.map(handlers.ident))}, ${jsStringEscaped(localSource)})"
+      }
 
       case rr: prim.etc._runresult =>
         s"Prims.runResult(${args.mkString(", ")})"
@@ -182,6 +188,13 @@ trait ReporterPrims extends PrimUtils {
   }
   // scalastyle:on method.length
   // scalastyle:on cyclomatic.complexity
+
+  private def getSourceInRange(source: String, start: Int, end: Int): String = {
+    if (end < source.length)
+      source.substring(start, end)
+    else
+      source
+  }
 
   def generateOf(r: ReporterApp)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
     val agents = handlers.reporter(r.args(1))

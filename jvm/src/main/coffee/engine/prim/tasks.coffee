@@ -9,13 +9,15 @@ Exception = require('util/exception')
 module.exports = {
 
   # (Function) => Function
-  commandTask: (fn) ->
+  commandTask: (fn, body) ->
     fn.isReporter = false
+    fn.nlogoBody = body
     fn
 
   # (Function) => Function
-  reporterTask: (fn) ->
+  reporterTask: (fn, body) ->
     fn.isReporter = true
+    fn.nlogoBody = body
     fn
 
   # [Result] @ (Product => Result, Array[Any]) => Result

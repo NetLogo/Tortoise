@@ -14,9 +14,9 @@ Dump =
       itemStr = map((y) -> Dump(y, isReadable))(x).join(" ")
       "[#{itemStr}]"
     else if type.isReporterLambda()
-      "(anonymous reporter)"
+      "(anonymous reporter: #{x.nlogoBody})"
     else if type.isCommandLambda()
-      "(anonymous command)"
+      "(anonymous command: #{x.nlogoBody})"
     else if type.isString()
       if isReadable then '"' + x + '"' else x
     else
