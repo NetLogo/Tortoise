@@ -19,8 +19,9 @@ private[tortoise] trait TestLogger extends BrowserReporter {
 
   protected val nashorn = new Nashorn {
     override def run(script: String): (String, String) = {
-      jsBlobs.append(script)
-      super.run(script)
+      val wrapped = wrapInFunction(script)
+      jsBlobs.append(wrapped)
+      runWithoutWrapping(wrapped)
     }
 
     override def eval(script: String): AnyRef = {

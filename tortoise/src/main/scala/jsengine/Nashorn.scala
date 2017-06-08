@@ -38,10 +38,7 @@ class Nashorn {
   // returns anything that got output-printed along the way, and any JSON
   // generated too
   def run(script: String): (String, String) = {
-    val sw = new StringWriter
-    engine.getContext.setWriter(new PrintWriter(sw))
-    engine.eval(s"(function () {\n $script \n }).call(this);")
-    (sw.toString, engine.eval("JSON.stringify(Updater.collectUpdates())").toString)
+    runWithoutWrapping(wrapInFunction(script))
   }
 
   def eval(script: String): AnyRef =
@@ -68,6 +65,16 @@ class Nashorn {
       case x =>
         x
     }
+
+  protected def runWithoutWrapping(script: String): (String, String) = {
+    val sw = new StringWriter
+    engine.getContext.setWriter(new PrintWriter(sw))
+    engine.eval(script)
+    (sw.toString, engine.eval("JSON.stringify(Updater.collectUpdates())").toString)
+  }
+
+  protected def wrapInFunction(script: String): String =
+    s"(function () {\n $script \n }).call(this);"
 
 }
 

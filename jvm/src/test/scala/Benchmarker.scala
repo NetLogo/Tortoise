@@ -106,8 +106,8 @@ object Benchmarker extends App {
         val jsV =
           for {
             model       <- modelV
-            caJS        <- model.compileCommand("ca")
-            benchmarkJS <- model.compileCommand("benchmark")
+            caJS        <- model.compileRawCommand("ca")
+            benchmarkJS <- model.compileRawCommand("benchmark")
             resultJS    <- model.compileReporter("result")
           } yield s"${model.compiledCode};$caJS;$benchmarkJS;$resultJS;"
 
@@ -175,4 +175,3 @@ object Benchmarker extends App {
   private case class Benchmark(name: String, results: Seq[Result])
 
 }
-
