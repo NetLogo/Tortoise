@@ -2,9 +2,10 @@
 
 CURR_DIR=`dirname $0`
 if [ `uname -s` = Linux ] ; then
-  # use JAVA_HOME from Travis if there is one
-  if [ -z "$TRAVIS" ] ; then
+  if [ -z "$JENKINS_URL" ] ; then
     export JAVA_HOME=/usr/lib/jvm/java-8-oracle
+  else
+    export JAVA_HOME=/usr
   fi
 else
   if [ `uname -s` = Darwin ] ; then
@@ -35,6 +36,12 @@ if [ ! -f $SBT_LAUNCH ] ; then
   curl -s -S -L -f $URL -o $SBT_LAUNCH || exit
 fi
 
+if [ -z $JENKINS_URL ] ; then
+  JAVA_OPTS="$XSS $XMX $XX"
+else
+  JAVA_OPTS="$XSS $XMX $XX -Dsbt.log.noformat=true"
+fi
+
 # Windows/Cygwin users need these settings
 if [[ `uname -s` == *CYGWIN* ]] ; then
 
@@ -44,12 +51,6 @@ if [[ `uname -s` == *CYGWIN* ]] ; then
   XMX=-Xmx2048m
   SBT_LAUNCH=`cygpath -w $SBT_LAUNCH`
 
-fi
-
-if [ "$TRAVIS" == "true" ]; then
-  JAVA_OPTS="$TRAVIS_JVM_OPTS"
-else
-  JAVA_OPTS="$XSS $XMX $XX"
 fi
 
 "$JAVA" \
