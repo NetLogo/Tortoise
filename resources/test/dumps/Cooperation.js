@@ -178,7 +178,7 @@ var procedures = (function() {
     try {
       if (Prims.gt(SelfManager.self().getVariable("energy"), world.observer.getGlobal("reproduction-threshold"))) {
         SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") - world.observer.getGlobal("reproduction-cost")));
-        SelfManager.self().hatch(1, "").ask(function() {}, true);
+        SelfManager.self().hatch(1, "");
       }
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {

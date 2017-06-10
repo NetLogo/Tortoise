@@ -86,7 +86,7 @@ var procedures = (function() {
       procedures["SETUP-BLANK"]();
       world.patches().ask(function() {
         if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("initial-density"))) {
-          SelfManager.self().sprout(1, "BABIES").ask(function() {}, true);
+          SelfManager.self().sprout(1, "BABIES");
         }
       }, true);
       procedures["GO"]();

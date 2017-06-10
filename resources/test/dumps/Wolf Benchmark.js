@@ -105,14 +105,14 @@ var procedures = (function() {
           }
         }, true);
       }
-      world.turtleManager.createOrderedTurtles(world.observer.getGlobal("init-sheep"), "SHEEP").ask(function() {}, true);
+      world.turtleManager.createOrderedTurtles(world.observer.getGlobal("init-sheep"), "SHEEP");
       world.turtleManager.turtlesOfBreed("SHEEP").ask(function() {
         SelfManager.self().setVariable("color", 9.9);
         SelfManager.self().setVariable("energy", Prims.randomFloat((2 * world.observer.getGlobal("sheep-metabolism"))));
         SelfManager.self().setVariable("shape", "sheep");
         SelfManager.self().setXY(Prims.random(world.topology.width), Prims.random(world.topology.height));
       }, true);
-      world.turtleManager.createOrderedTurtles(world.observer.getGlobal("init-wolves"), "WOLVES").ask(function() {}, true);
+      world.turtleManager.createOrderedTurtles(world.observer.getGlobal("init-wolves"), "WOLVES");
       world.turtleManager.turtlesOfBreed("WOLVES").ask(function() {
         SelfManager.self().setVariable("color", 0);
         SelfManager.self().setVariable("energy", Prims.randomFloat((2 * world.observer.getGlobal("wolf-metabolism"))));
