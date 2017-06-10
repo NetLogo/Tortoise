@@ -57,17 +57,8 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
   var opened = false
   val netLogoCode = new StringBuilder
 
-  workspace.flags =
-    nvm.CompilerFlags(
-      useOptimizer = false, // since the Tortoise compiler sees the unoptimized code
-                            //   and some optimizations may affect results ordering
-                            //   and/or RNG interaction -ST
-                            // When the optimizer goes on, the code for `create-turtle*`
-                            //  (and probably, `hatch`, `sprout` `create-link*`) needs to
-                            //  stop shuffling through the agentset when the given block
-                            //  is empty --JAB (12/5/14)
-      useGenerator = false  // so we don't need ASM. also to save time
-    )
+  // so we don't need ASM, so no generator. also to save time
+  workspace.flags = nvm.CompilerFlags(useOptimizer = true, useGenerator = false)
 
   def compare(reporter: String) {
     runReporter(Reporter(reporter,

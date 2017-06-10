@@ -21,7 +21,8 @@ object Optimizer {
   object Fd1Transformer extends AstTransformer {
     override def visitStatement(statement: Statement): Statement = {
       statement match {
-        case Statement(command: _fd, Seq(ReporterApp(reporter: _const, _, _)), _) if reporter.value == 1 => statement.copy(command = new _fdone, args = Seq())
+        case Statement(command: _fd, Seq(ReporterApp(reporter: _const, _, _)), _) if reporter.value == 1 =>
+          statement.copy(command = new _fdone, args = Seq())
         case _ => super.visitStatement(statement)
       }
     }
@@ -43,39 +44,45 @@ object Optimizer {
   }
 
   class _hatchfast(val breedName: String) extends Command {
-    override def syntax = 
+    override def syntax: Syntax =
       Syntax.commandSyntax(agentClassString = "-T--")
   }
+
   object HatchFastTransformer extends AstTransformer {
     override def visitStatement(statement: Statement): Statement = {
       statement match {
-        case Statement(command: _hatch, Seq(_, cmdBlock: CommandBlock), _) if cmdBlock.statements.stmts.isEmpty => statement.copy(command = new _hatchfast(command.breedName: String))
+        case Statement(command: _hatch, Seq(_, cmdBlock: CommandBlock), _) if cmdBlock.statements.stmts.isEmpty =>
+          statement.copy(command = new _hatchfast(command.breedName: String))
         case _ => super.visitStatement(statement)
       }
     }
   }
 
   class _sproutfast(val breedName: String) extends Command {
-    override def syntax = 
+    override def syntax: Syntax =
       Syntax.commandSyntax(agentClassString = "--P-")
   }
+
   object SproutFastTransformer extends AstTransformer {
     override def visitStatement(statement: Statement): Statement = {
       statement match {
-        case Statement(command: _sprout, Seq(_, cmdBlock: CommandBlock), _) if cmdBlock.statements.stmts.isEmpty => statement.copy(command = new _sproutfast(command.breedName: String))
+        case Statement(command: _sprout, Seq(_, cmdBlock: CommandBlock), _) if cmdBlock.statements.stmts.isEmpty =>
+          statement.copy(command = new _sproutfast(command.breedName: String))
         case _ => super.visitStatement(statement)
       }
     }
   }
 
   class _crtfast(val breedName: String) extends Command {
-    override def syntax = 
+    override def syntax: Syntax =
       Syntax.commandSyntax(agentClassString = "-T--")
   }
+
   object CrtFastTransformer extends AstTransformer {
     override def visitStatement(statement: Statement): Statement = {
       statement match {
-        case Statement(command: _createturtles, Seq(ReporterApp(reporter: _const, args, loc), cmdBlock: CommandBlock), _) if cmdBlock.statements.stmts.isEmpty =>
+        case Statement(command: _createturtles, Seq(ReporterApp(reporter: _const, args, loc), cmdBlock: CommandBlock), _)
+             if cmdBlock.statements.stmts.isEmpty =>
           statement.copy(command = new _crtfast(command.breedName: String), args = Seq(new ReporterApp(reporter, args, loc), cmdBlock))
         case _ => super.visitStatement(statement)
       }
@@ -83,9 +90,10 @@ object Optimizer {
   }
 
   class _crofast(val breedName: String) extends Command {
-    override def syntax = 
+    override def syntax: Syntax =
       Syntax.commandSyntax(agentClassString = "-T--")
   }
+
   object CroFastTransformer extends AstTransformer {
     override def visitStatement(statement: Statement): Statement = {
       statement match {
@@ -104,7 +112,8 @@ object Optimizer {
   object AnyOtherTransformer extends AstTransformer {
     override def visitReporterApp(ra: ReporterApp): ReporterApp = {
       ra match {
-        case ReporterApp(reporter: _any, Seq(ReporterApp(other: _other, otherArgs, _)), _) => ra.copy(reporter = new _anyother, args = otherArgs)
+        case ReporterApp(reporter: _any, Seq(ReporterApp(other: _other, otherArgs, _)), _) =>
+          ra.copy(reporter = new _anyother, args = otherArgs)
         case _ => super.visitReporterApp(ra)
       }
     }
@@ -118,7 +127,8 @@ object Optimizer {
   object CountOtherTransformer extends AstTransformer {
     override def visitReporterApp(ra: ReporterApp): ReporterApp = {
       ra match {
-        case ReporterApp(reporter: _count, Seq(ReporterApp(other: _other, countArgs, _)), _) => ra.copy(reporter = new _countother, args = countArgs)
+        case ReporterApp(reporter: _count, Seq(ReporterApp(other: _other, countArgs, _)), _) =>
+          ra.copy(reporter = new _countother, args = countArgs)
         case _ => super.visitReporterApp(ra)
       }
     }
@@ -170,16 +180,16 @@ object Optimizer {
     }
   }
 
-  def apply(pd: ProcedureDefinition): ProcedureDefinition = {
-    val newDef = Fd1Transformer.visitProcedureDefinition(pd)
-    val newDef1 = FdLessThan1Transformer.visitProcedureDefinition(newDef)
-    val newDef2 = CountOtherTransformer.visitProcedureDefinition(newDef1)
-    val newDef3 = WithTransformer.visitProcedureDefinition(newDef2)
-    val newDef4 = CrtFastTransformer.visitProcedureDefinition(newDef3)
-    val newDef5 = CroFastTransformer.visitProcedureDefinition(newDef4)
-    val newDef6 = HatchFastTransformer.visitProcedureDefinition(newDef5)
-    val newDef7 = SproutFastTransformer.visitProcedureDefinition(newDef6)
-    AnyOtherTransformer.visitProcedureDefinition(newDef7)
-  }
+  def apply(pd: ProcedureDefinition): ProcedureDefinition =
+    (Fd1Transformer        .visitProcedureDefinition _ andThen
+     FdLessThan1Transformer.visitProcedureDefinition   andThen
+     CountOtherTransformer .visitProcedureDefinition   andThen
+     WithTransformer       .visitProcedureDefinition   andThen
+     CrtFastTransformer    .visitProcedureDefinition   andThen
+     CroFastTransformer    .visitProcedureDefinition   andThen
+     HatchFastTransformer  .visitProcedureDefinition   andThen
+     SproutFastTransformer .visitProcedureDefinition   andThen
+     AnyOtherTransformer   .visitProcedureDefinition
+    )(pd)
 
 }
