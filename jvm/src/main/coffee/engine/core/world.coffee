@@ -127,7 +127,7 @@ module.exports =
       @_updater.updated(this)("wrappingAllowedInX", "wrappingAllowedInY")
       return
 
-    # (Number, Number) => Patch
+    # (Number, Number) => Agent
     getPatchAt: (x, y) =>
       try
         roundedX  = @_roundXCor(x)
@@ -255,19 +255,21 @@ module.exports =
 
     # (Number) => PatchSet
     _optimalPatchCol: (xcor) ->
-      ret = []
-      if (xcor >= @topology.minPxcor and xcor <= @topology.maxPxcor)
-        result = for y in [@topology.minPycor..@topology.maxPycor]
-          p = @getPatchAt(xcor, y)
-        ret = [].concat(result...)
-      new PatchSet(ret)
+      { maxPxcor: maxX, maxPycor: maxY, minPxcor: minX, minPycor: minY } = @topology
+      @_optimalPatchSequence(xcor, minX, maxX, minY, maxY, (y) => @getPatchAt(xcor, y))
 
+    # (Number) => PatchSet
     _optimalPatchRow: (ycor) ->
-      ret = []
-      if (ycor >= @topology.minPycor and ycor <= @topology.maxPycor)
-        result = for x in [@topology.minPxcor..@topology.maxPxcor]
-          p = @getPatchAt(x, ycor)
-        ret = [].concat(result...)
+      { maxPxcor: maxX, maxPycor: maxY, minPxcor: minX, minPycor: minY } = @topology
+      @_optimalPatchSequence(ycor, minY, maxY, minX, maxX, (x) => @getPatchAt(x, ycor))
+
+    # (Number, Number, Number, Number, Number, (Number) => Agent) => PatchSet
+    _optimalPatchSequence: (cor, boundaryMin, boundaryMax, seqStart, seqEnd, getPatch) ->
+      ret =
+        if boundaryMin <= cor <= boundaryMax
+          [].concat(getPatch(n) for n in [seqStart..seqEnd]...)
+        else
+          []
       new PatchSet(ret)
 
     # () => Unit

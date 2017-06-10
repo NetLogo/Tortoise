@@ -1,17 +1,20 @@
+// (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
+
 package org.nlogo.tortoise
 
 import
   org.nlogo.core.{ Command, Syntax, Reporter },
     Syntax.{ NumberType, PatchsetType }
 
-import 
+import
   org.nlogo.core.{ prim, AstTransformer, ProcedureDefinition, ReporterApp, Statement, NetLogoCore, ReporterBlock },
     prim.{ _const, _fd, _other, _any, _count, _with, _patches, _procedurevariable, _patchvariable, _observervariable, _equal }
 
 object Optimizer {
 
+  // scalastyle:off class.name
   class _fdone extends Command {
-    override def syntax =
+    override def syntax: Syntax =
       Syntax.commandSyntax(agentClassString = "-T--")
   }
   object Fd1Transformer extends AstTransformer {
@@ -24,21 +27,22 @@ object Optimizer {
   }
 
   class _fdlessthan1 extends Command {
-    override def syntax = 
+    override def syntax: Syntax =
       Syntax.commandSyntax(agentClassString = "-T--")
   }
 
   object FdLessThan1Transformer extends AstTransformer {
     override def visitStatement(statement: Statement): Statement = {
       statement match {
-        case Statement(command: _fd, Seq(ReporterApp(_const(value: java.lang.Double), _, _)), _) if ((value > -1) && (value < 1)) => statement.copy(command = new _fdlessthan1)
+        case Statement(command: _fd, Seq(ReporterApp(_const(value: java.lang.Double), _, _)), _) if ((value > -1) && (value < 1)) =>
+          statement.copy(command = new _fdlessthan1)
         case _ => super.visitStatement(statement)
       }
     }
   }
 
   class _anyother extends Reporter {
-    override def syntax = 
+    override def syntax: Syntax =
       Syntax.reporterSyntax(right = List(Syntax.AgentsetType), ret = Syntax.BooleanType)
   }
 
@@ -52,7 +56,7 @@ object Optimizer {
   }
 
   class _countother extends Reporter {
-    override def syntax = 
+    override def syntax: Syntax =
       Syntax.reporterSyntax(right = List(Syntax.AgentsetType), ret = Syntax.BooleanType)
   }
 
@@ -66,14 +70,15 @@ object Optimizer {
   }
 
   class _patchcol extends Reporter {
-    override def syntax = 
+    override def syntax: Syntax =
       Syntax.reporterSyntax(ret = PatchsetType, right = List(NumberType))
   }
 
   class _patchrow extends Reporter {
-    override def syntax = 
+    override def syntax: Syntax =
       Syntax.reporterSyntax(ret = PatchsetType, right = List(NumberType))
   }
+  // scalastyle:on class.name
 
   object WithTransformer extends AstTransformer {
     val pxcor: Int = NetLogoCore.agentVariables.implicitPatchVariableTypeMap.keys.toList.indexOf("PXCOR")
@@ -94,7 +99,7 @@ object Optimizer {
       }
     }
     object PatchVarEqualExpression {
-      def unapply(repApp: ReporterApp): Option[(_patchvariable, ReporterApp)] = 
+      def unapply(repApp: ReporterApp): Option[(_patchvariable, ReporterApp)] =
         repApp match {
           case ReporterApp(equal: _equal, Seq(ReporterApp(p: _patchvariable, patchArgs, patchSrc), newRa: ReporterApp), _) => Some((p, newRa))
           case ReporterApp(equal: _equal, Seq(newRa: ReporterApp, ReporterApp(p: _patchvariable, patchArgs, patchSrc)), _) => Some((p, newRa))
@@ -103,9 +108,8 @@ object Optimizer {
     }
     override def visitReporterApp(ra: ReporterApp): ReporterApp = {
       ra match {
-        case ReporterApp(reporter: _with, Seq(ReporterApp(patches: _patches, _, _), ReporterBlock(PatchVarEqualExpression(p, newRa), _)), _) => {
+        case ReporterApp(reporter: _with, Seq(ReporterApp(patches: _patches, _, _), ReporterBlock(PatchVarEqualExpression(p, newRa), _)), _) =>
           patchRegion(p, newRa, ra)
-        }
         case _ => super.visitReporterApp(ra)
       }
     }
@@ -118,4 +122,5 @@ object Optimizer {
     val newDef3 = WithTransformer.visitProcedureDefinition(newDef2)
     AnyOtherTransformer.visitProcedureDefinition(newDef3)
   }
+
 }
