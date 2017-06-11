@@ -5,7 +5,7 @@ TurtleSet       = require('./turtleset')
 VariableManager = require('./structure/variablemanager')
 Comparator      = require('util/comparator')
 
-{ filter } = require('brazierjs/array')
+{ filter, foldl } = require('brazierjs/array')
 
 { DeathInterrupt: Death, TopologyInterrupt } = require('util/exception')
 { Setters, VariableSpecs }                   = require('./patch/patchvariables')
@@ -168,3 +168,14 @@ module.exports =
     _genVarUpdate: (varName) ->
       @_genUpdate(this)(varName)
       return
+
+    # (String) => Number
+    _optimalNSum: (varName) ->
+      f =
+        (acc, neighbor) ->
+          x = neighbor.getVariable(varName)
+          if NLType(x).isNumber()
+            acc + x
+          else
+            throw new Exception("noSumOfListWithNonNumbers, #{x}")
+      foldl(f)(0)(@getNeighbors().iterator().toArray())

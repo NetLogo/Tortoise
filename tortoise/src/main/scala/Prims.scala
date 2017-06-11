@@ -135,6 +135,8 @@ trait ReporterPrims extends PrimUtils {
         val agents = arg(1)
         s"$agents.sortOn(${handlers.fun(r.args(0), true)})"
 
+      case ns: Optimizer._nsum => generateOptimalNSum(r, ns.varName)
+
       // Lookup by breed
       case b: prim._breed                 => s"world.turtleManager.turtlesOfBreed(${jsString(b.breedName)})"
       case b: prim.etc._breedsingular     => s"world.turtleManager.getTurtleOfBreed(${jsString(b.breedName)}, ${arg(0)})"
@@ -200,6 +202,10 @@ trait ReporterPrims extends PrimUtils {
     val agents = handlers.reporter(r.args(1))
     val func   = handlers.fun(r.args(0), isReporter = true)
     s"$agents.projectionBy($func)"
+  }
+
+  def generateOptimalNSum(r: ReporterApp, varName: String)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
+    s"SelfManager.self()._optimalNSum(${jsString(varName)})"
   }
 
   // The fact that there are three different functions for `range` is intentional--incredibly intentional.

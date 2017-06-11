@@ -8,8 +8,8 @@ import
 
 import
   org.nlogo.core.{ prim, AstTransformer, ProcedureDefinition, ReporterApp, Statement, NetLogoCore, CommandBlock, ReporterBlock },
-    prim.{ _any, _const, _count, _createorderedturtles, _createturtles, _fd, _hatch, _other, _patches, _sprout, _with
-         , _procedurevariable, _patchvariable, _observervariable, _equal }
+    prim.{ _any, _const, _count, _createorderedturtles, _createturtles, _equal, _fd, _hatch, _neighbors
+         , _observervariable, _of, _other, _patches, _patchvariable, _procedurevariable, _sprout, _sum, _with }
 
 object Optimizer {
 
@@ -134,6 +134,31 @@ object Optimizer {
     }
   }
 
+  class _nsum(val varName: String) extends Reporter {
+    override def syntax: Syntax =
+      Syntax.reporterSyntax(right = List(Syntax.AgentsetType), ret = Syntax.NumberType, agentClassString = "-TP-")
+  }
+
+  object NSumTransformer extends AstTransformer {
+    override def visitReporterApp(ra: ReporterApp): ReporterApp = {
+      ra match {
+        case ReporterApp(
+               _: _sum
+               , Seq(
+                   ReporterApp(
+                     _: _of
+                   , Seq(ReporterBlock(ReporterApp(p: _patchvariable, _, _), _), ReporterApp(_: _neighbors, _, _))
+                   , _
+                   )
+                 )
+               , _
+               ) =>
+          ra.copy(reporter = new _nsum(p.displayName.toLowerCase))
+        case _ => super.visitReporterApp(ra)
+      }
+    }
+  }
+
   class _patchcol extends Reporter {
     override def syntax: Syntax =
       Syntax.reporterSyntax(ret = PatchsetType, right = List(NumberType))
@@ -189,6 +214,7 @@ object Optimizer {
      CroFastTransformer    .visitProcedureDefinition   andThen
      HatchFastTransformer  .visitProcedureDefinition   andThen
      SproutFastTransformer .visitProcedureDefinition   andThen
+     NSumTransformer       .visitProcedureDefinition   andThen
      AnyOtherTransformer   .visitProcedureDefinition
     )(pd)
 
