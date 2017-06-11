@@ -389,9 +389,7 @@ trait CommandPrims extends PrimUtils {
   def generateCreateLink(s: Statement, name: String, breedName: String)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
     val other = handlers.reporter(s.args(0))
     // This is so that we don't shuffle unnecessarily.  FD 10/31/2013
-    val nonEmptyCommandBlock =
-      s.args(1).asInstanceOf[CommandBlock]
-        .statements.stmts.nonEmpty
+    val nonEmptyCommandBlock = s.args(1).asInstanceOf[CommandBlock].statements.stmts.nonEmpty
     val body = handlers.fun(s.args(1))
     genAsk(s"LinkPrims.$name($other, ${jsString(fixBN(breedName))})", nonEmptyCommandBlock, body)
   }
