@@ -40,8 +40,8 @@ class TestMath extends DockingSuite {
     declare("globals [g]")
     testCommand("set g 5")
     compare("g mod 3")
-    // TODO compare("(- g) mod 3")
-    // TODO compare("g mod -3")
+    compare("(- g) mod 3")
+    compare("g mod -3")
   }
 
   test("sum") { implicit fixture => import fixture._
