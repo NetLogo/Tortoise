@@ -46,10 +46,8 @@ class TestMath extends DockingSuite {
 
   test("sum") { implicit fixture => import fixture._
     declare(Model(code = "to-report compute report sum [pycor] of neighbors end", widgets = List(View.square(1))))
-    // first make sure just doing the computation doesn't make the RNG diverge
-    testCommand("ask patches [ let s compute ]")
-    // might as well check the result too
-    testCommand("ask patches [ output-print compute ]")
+    testCommand("ask patches [ let s compute ]") // first make sure just doing the computation doesn't make the RNG diverge
+    testCommand("ask patches [ output-print compute ]") // might as well check the result too
   }
 
   test("int") { implicit fixture => import fixture._
