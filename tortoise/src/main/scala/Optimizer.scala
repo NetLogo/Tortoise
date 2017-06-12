@@ -9,7 +9,7 @@ import
 import
   org.nlogo.core.{ prim, AstTransformer, ProcedureDefinition, ReporterApp, Statement, NetLogoCore, CommandBlock, ReporterBlock },
     prim.{ _any, _const, _count, _createorderedturtles, _createturtles, _equal, _fd, _hatch, _neighbors
-         , _observervariable, _of, _other, _patches, _patchvariable, _procedurevariable, _sprout, _sum, _with }
+         , _observervariable, _of, _oneof, _other, _patches, _patchvariable, _procedurevariable, _sprout, _sum, _with }
 
 object Optimizer {
 
@@ -134,6 +134,21 @@ object Optimizer {
     }
   }
 
+  class _oneofwith extends Reporter {
+    override def syntax: Syntax =
+      Syntax.reporterSyntax(right = List(Syntax.AgentsetType, Syntax.ReporterBlockType), ret = Syntax.AgentType)
+  }
+
+  object OneOfWithTransformer extends AstTransformer {
+    override def visitReporterApp(ra: ReporterApp): ReporterApp = {
+      ra match {
+        case ReporterApp(_: _oneof, Seq(ReporterApp(_: _with, args, _)), _) =>
+          ra.copy(reporter = new _oneofwith, args = args)
+        case _ => super.visitReporterApp(ra)
+      }
+    }
+  }
+
   class _nsum(val varName: String) extends Reporter {
     override def syntax: Syntax =
       Syntax.reporterSyntax(right = List(Syntax.AgentsetType), ret = Syntax.NumberType, agentClassString = "-TP-")
@@ -215,6 +230,7 @@ object Optimizer {
      HatchFastTransformer  .visitProcedureDefinition   andThen
      SproutFastTransformer .visitProcedureDefinition   andThen
      NSumTransformer       .visitProcedureDefinition   andThen
+     OneOfWithTransformer  .visitProcedureDefinition   andThen
      AnyOtherTransformer   .visitProcedureDefinition
     )(pd)
 

@@ -30,6 +30,14 @@ module.exports =
           f(next)
       return
 
+    # [U >: T] @ ((T) => Boolean, U) => U
+    find: (f, dflt) ->
+      while @_hasNext()
+        next = @_next()
+        if @_itemIsValid(next) and (f(next) is true)
+          return next
+      dflt
+
     # () => Array[T]
     toArray: ->
       acc = []

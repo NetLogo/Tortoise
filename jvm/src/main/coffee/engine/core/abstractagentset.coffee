@@ -273,3 +273,14 @@ module.exports =
         @_world
       else
         undefined
+
+    # (() => Boolean) => Agent
+    _optimalOneOfWith: (f) ->
+      finder =
+        (x) ->
+          y = x.projectionBy(f)
+          if y is true or y is false
+            y
+          else
+            throw new Error("withExpectedBooleanValue #{x} #{y}")
+      @shufflerator().find(finder, Nobody)

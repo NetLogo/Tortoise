@@ -137,6 +137,10 @@ trait ReporterPrims extends PrimUtils {
 
       case ns: Optimizer._nsum => generateOptimalNSum(r, ns.varName)
 
+      case _: Optimizer._oneofwith =>
+        val agents = arg(0)
+        s"$agents._optimalOneOfWith(${handlers.fun(r.args(1), true)})"
+
       // Lookup by breed
       case b: prim._breed                 => s"world.turtleManager.turtlesOfBreed(${jsString(b.breedName)})"
       case b: prim.etc._breedsingular     => s"world.turtleManager.getTurtleOfBreed(${jsString(b.breedName)}, ${arg(0)})"
