@@ -157,7 +157,7 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
 
       val truncateDecimals = (s: String) => s.replaceAllLiterally(".0 ", " ")
       val headlessRNGState = truncateDecimals(workspace.world.mainRNG.save)
-      val nashornRNGState  = truncateDecimals(nashorn.eval("Random.save()").asInstanceOf[String])
+      val nashornRNGState  = truncateDecimals(nashorn.eval("Random.save();").asInstanceOf[String])
 
       assert(headlessRNGState == nashornRNGState, "divergent RNG state")
 
@@ -167,12 +167,12 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
   }
 
   private def updatedJsonModels(expectedJson: String, actualJson: String) : (String, String) = {
-    nashorn.eval(s"expectedUpdates = JSON.parse('${sortedJSON(expectedJson)}')")
-    nashorn.eval(s"actualUpdates   = JSON.parse('${sortedJSON(actualJson)}')")
-    nashorn.eval("expectedModel.updates(expectedUpdates)")
-    nashorn.eval("actualModel.updates(actualUpdates)")
-    val expectedModel = nashorn.eval("JSON.stringify(expectedModel)").asInstanceOf[String]
-    val actualModel = nashorn.eval("JSON.stringify(actualModel)").asInstanceOf[String]
+    nashorn.eval(s"expectedUpdates = JSON.parse('${sortedJSON(expectedJson)}');")
+    nashorn.eval(s"actualUpdates   = JSON.parse('${sortedJSON(actualJson)}');")
+    nashorn.eval("expectedModel.updates(expectedUpdates);")
+    nashorn.eval("actualModel.updates(actualUpdates);")
+    val expectedModel = nashorn.eval("JSON.stringify(expectedModel);").asInstanceOf[String]
+    val actualModel = nashorn.eval("JSON.stringify(actualModel);").asInstanceOf[String]
     (expectedModel, actualModel)
   }
 
@@ -266,8 +266,8 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
     evalJS(js)
     evalJS(s"var widgets = ${WidgetCompiler.formatWidgets(result.widgets)};")
     state = Map()
-    nashorn.eval("expectedModel = new AgentModel")
-    nashorn.eval("actualModel = new AgentModel")
+    nashorn.eval("expectedModel = new AgentModel;")
+    nashorn.eval("actualModel = new AgentModel;")
     opened = true
     runCommand(Command("clear-all random-seed 0"))
   }
