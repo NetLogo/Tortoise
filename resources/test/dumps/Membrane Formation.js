@@ -99,7 +99,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("color", 105);
       }, true);
       world.turtleManager.createTurtles(world.observer.getGlobal("num-lipids"), "OILS").ask(function() {
-        let partner = ListPrims.oneOf(world.turtleManager.turtlesOfBreed("WATERS").agentFilter(function() { return !!LinkPrims.myLinks("LINKS").isEmpty(); }));
+        let partner = world.turtleManager.turtlesOfBreed("WATERS")._optimalOneOfWith(function() { return !!LinkPrims.myLinks("LINKS").isEmpty(); });
         SelfManager.self().moveTo(partner);
         SelfManager.self().fd(world.observer.getGlobal("lipid-length"));
         LinkPrims.createLinkWith(partner, "LINKS").ask(function() {}, false);

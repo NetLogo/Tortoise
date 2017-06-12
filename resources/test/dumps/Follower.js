@@ -206,7 +206,7 @@ var procedures = (function() {
       if (Prims.equality(Prims.random(2), 0)) {
         yd =  -yd;
       }
-      let candidate = ListPrims.oneOf(SelfManager.self().turtlesAt(xd, yd).agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("follower"), Nobody); }));
+      let candidate = SelfManager.self().turtlesAt(xd, yd)._optimalOneOfWith(function() { return Prims.equality(SelfManager.self().getVariable("follower"), Nobody); });
       if (Prims.equality(candidate, Nobody)) {
         throw new Exception.StopInterrupt;
       }

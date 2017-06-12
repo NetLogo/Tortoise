@@ -439,9 +439,9 @@ var procedures = (function() {
   procs["MAKE-A-FLASH"] = temp;
   temp = (function() {
     try {
-      let centerPatch = ListPrims.oneOf(world.patches().agentFilter(function() {
+      let centerPatch = world.patches()._optimalOneOfWith(function() {
         return (Prims.equality(SelfManager.self().getPatchVariable("pxcor"), 0) && Prims.equality(SelfManager.self().getPatchVariable("pycor"), 0));
-      }));
+      });
       world.turtleManager.turtlesOfBreed("BROKEN-WALLS").ask(function() {
         SelfManager.self().setVariable("heading", SelfManager.self().towards(centerPatch));
         SelfManager.self().setVariable("heading", (SelfManager.self().getVariable("heading") + 180));

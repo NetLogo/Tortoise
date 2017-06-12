@@ -85,9 +85,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       let anyVotesChanged_p = false;
-      world.patches().ask(function() {
-        SelfManager.self().setPatchVariable("total", ListPrims.sum(SelfManager.self().getNeighbors().projectionBy(function() { return SelfManager.self().getPatchVariable("vote"); })));
-      }, true);
+      world.patches().ask(function() { SelfManager.self().setPatchVariable("total", SelfManager.self()._optimalNSum("vote")); }, true);
       world.patches().ask(function() {
         let previousVote = SelfManager.self().getPatchVariable("vote");
         if (Prims.gt(SelfManager.self().getPatchVariable("total"), 5)) {

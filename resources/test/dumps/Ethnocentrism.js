@@ -352,7 +352,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       if (Prims.lt(Prims.randomFloat(1), SelfManager.self().getVariable("ptr"))) {
-        let destination = ListPrims.oneOf(SelfManager.self().getNeighbors4().agentFilter(function() { return !!SelfManager.self().turtlesHere().isEmpty(); }));
+        let destination = SelfManager.self().getNeighbors4()._optimalOneOfWith(function() { return !!SelfManager.self().turtlesHere().isEmpty(); });
         if (!Prims.equality(destination, Nobody)) {
           SelfManager.self().hatch(1, "").ask(function() {
             SelfManager.self().moveTo(destination);

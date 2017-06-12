@@ -261,7 +261,7 @@ var procedures = (function() {
           throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
         }
         if (Prims.gt(SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("SCOUTS").agentFilter(function() { return SelfManager.self().getVariable("piping?"); }), 3).size(), 0)) {
-          SelfManager.self().setVariable("target", ListPrims.oneOf(world.turtleManager.turtlesOfBreed("SCOUTS").agentFilter(function() { return SelfManager.self().getVariable("piping?"); })).projectionBy(function() { return SelfManager.self().getVariable("target"); }));
+          SelfManager.self().setVariable("target", world.turtleManager.turtlesOfBreed("SCOUTS")._optimalOneOfWith(function() { return SelfManager.self().getVariable("piping?"); }).projectionBy(function() { return SelfManager.self().getVariable("target"); }));
           SelfManager.self().setVariable("color", SelfManager.self().getVariable("target").projectionBy(function() { return SelfManager.self().getVariable("color"); }));
           SelfManager.self().setVariable("next-task", world.observer.getGlobal("pipe-task"));
           SelfManager.self().setVariable("task-string", "piping");
@@ -458,7 +458,7 @@ var procedures = (function() {
           SelfManager.self().setVariable("next-task", world.observer.getGlobal("pipe-task"));
           SelfManager.self().setVariable("task-string", "piping");
           SelfManager.self().setVariable("bee-timer", 20);
-          SelfManager.self().setVariable("target", ListPrims.oneOf(world.turtleManager.turtlesOfBreed("SCOUTS").agentFilter(function() { return SelfManager.self().getVariable("piping?"); })).projectionBy(function() { return SelfManager.self().getVariable("target"); }));
+          SelfManager.self().setVariable("target", world.turtleManager.turtlesOfBreed("SCOUTS")._optimalOneOfWith(function() { return SelfManager.self().getVariable("piping?"); }).projectionBy(function() { return SelfManager.self().getVariable("target"); }));
           SelfManager.self().setVariable("color", SelfManager.self().getVariable("target").projectionBy(function() { return SelfManager.self().getVariable("color"); }));
           SelfManager.self().setVariable("piping?", true);
         }

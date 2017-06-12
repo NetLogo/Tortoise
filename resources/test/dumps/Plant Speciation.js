@@ -198,12 +198,12 @@ modelConfig.plots = [(function() {
             let m = 0;
             let avg = ListPrims.mean(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("tolerance"); }));
             for (let _index_215_221 = 0, _repeatcount_215_221 = StrictMath.floor(500); _index_215_221 < _repeatcount_215_221; _index_215_221++){
-              let r = ListPrims.oneOf(world.turtles().agentFilter(function() {
+              let r = world.turtles()._optimalOneOfWith(function() {
                 return Prims.gt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
-              }));
-              let s = ListPrims.oneOf(world.turtles().agentFilter(function() {
+              });
+              let s = world.turtles()._optimalOneOfWith(function() {
                 return Prims.lt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
-              }));
+              });
               if (Prims.lt(NLMath.abs((r.projectionBy(function() { return SelfManager.self().getVariable("flower-time"); }) - s.projectionBy(function() { return SelfManager.self().getVariable("flower-time"); }))), world.observer.getGlobal("flower-duration"))) {
                 m = (m + 1);
               }

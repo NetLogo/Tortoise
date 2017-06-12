@@ -660,9 +660,9 @@ var procedures = (function() {
           procedures["POSITION-AND-LINK-ALLELES"](SelfManager.self(),n,"left");
           procedures["POSITION-AND-LINK-ALLELES"](SelfManager.self(),n,"right");
         }, "[ n ->\n      ;; assign one of the alleles to appear on the left side of the chromosome pair\n      position-and-link-alleles self n \"left\"\n      ;; assign the other allele to appear on the right side\n      position-and-link-alleles self n \"right\"\n    ]"), [1, 2, 3, 4]);
-        ListPrims.oneOf(world.turtleManager.turtlesOfBreed("ALLELES").agentFilter(function() {
+        world.turtleManager.turtlesOfBreed("ALLELES")._optimalOneOfWith(function() {
           return ((!SelfManager.self().getVariable("owned-by-fish?") && Prims.equality(SelfManager.self().getVariable("gene"), 5)) && Prims.equality(SelfManager.self().getVariable("value"), "X"));
-        })).ask(function() {
+        }).ask(function() {
           SelfManager.self().setVariable("owned-by-fish?", true);
           SelfManager.self().setVariable("size", 1.2);
           SelfManager.self().setVariable("xcor", ((world.observer.getGlobal("inter-chromosome-pair-spacing") * 4) + 0.1));
@@ -680,9 +680,9 @@ var procedures = (function() {
         else {
           lastSexAllele = "X";
         }
-        ListPrims.oneOf(world.turtleManager.turtlesOfBreed("ALLELES").agentFilter(function() {
+        world.turtleManager.turtlesOfBreed("ALLELES")._optimalOneOfWith(function() {
           return ((!SelfManager.self().getVariable("owned-by-fish?") && Prims.equality(SelfManager.self().getVariable("gene"), 5)) && Prims.equality(SelfManager.self().getVariable("value"), lastSexAllele));
-        })).ask(function() {
+        }).ask(function() {
           SelfManager.self().setVariable("owned-by-fish?", true);
           SelfManager.self().setVariable("size", 1.2);
           SelfManager.self().setVariable("xcor", (((world.observer.getGlobal("inter-chromosome-pair-spacing") * 4) + world.observer.getGlobal("intra-chromosome-pair-spacing")) + 0.1));
@@ -718,9 +718,9 @@ var procedures = (function() {
         sideShift = 0;
       }
       pairShiftRight = ((world.observer.getGlobal("inter-chromosome-pair-spacing") * geneNumber) - 0.45);
-      ListPrims.oneOf(world.turtleManager.turtlesOfBreed("ALLELES").agentFilter(function() {
+      world.turtleManager.turtlesOfBreed("ALLELES")._optimalOneOfWith(function() {
         return (!SelfManager.self().getVariable("owned-by-fish?") && Prims.equality(SelfManager.self().getVariable("gene"), geneNumber));
-      })).ask(function() {
+      }).ask(function() {
         SelfManager.self().setVariable("owned-by-fish?", true);
         SelfManager.self().setVariable("side", whichSide);
         SelfManager.self().setVariable("size", 1.2);
@@ -810,7 +810,7 @@ var procedures = (function() {
         world.observer.setGlobal("gamete-forward-step", 1);
       }
       world.turtleManager.turtlesOfBreed("GAMETE-CELLS").ask(function() {
-        myZygote = ListPrims.oneOf(world.turtleManager.turtlesOfBreed("FISH-ZYGOTES").agentFilter(function() { return LinkPrims.isInLinkNeighbor("LINKS", SelfManager.myself()); }));
+        myZygote = world.turtleManager.turtlesOfBreed("FISH-ZYGOTES")._optimalOneOfWith(function() { return LinkPrims.isInLinkNeighbor("LINKS", SelfManager.myself()); });
         distanceToZygote = SelfManager.self().distance(myZygote);
         if (Prims.gt(distanceToZygote, 0)) {
           SelfManager.self().face(myZygote);
@@ -904,7 +904,7 @@ var procedures = (function() {
         if (Prims.gt(allAlleles.agentFilter(function() {
           return (Prims.equality(SelfManager.self().getVariable("gene"), thisGene) && Prims.equality(SelfManager.self().getVariable("side"), "left"));
         }).size(), 1)) {
-          ListPrims.oneOf(allAlleles.agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("gene"), thisGene); })).ask(function() {
+          allAlleles._optimalOneOfWith(function() { return Prims.equality(SelfManager.self().getVariable("gene"), thisGene); }).ask(function() {
             SelfManager.self().setVariable("heading", 90);
             SelfManager.self().fd(world.observer.getGlobal("intra-chromosome-pair-spacing"));
             SelfManager.self().setVariable("side", "right");
@@ -913,7 +913,7 @@ var procedures = (function() {
         if (Prims.gt(allAlleles.agentFilter(function() {
           return (Prims.equality(SelfManager.self().getVariable("gene"), thisGene) && Prims.equality(SelfManager.self().getVariable("side"), "right"));
         }).size(), 1)) {
-          ListPrims.oneOf(allAlleles.agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("gene"), thisGene); })).ask(function() {
+          allAlleles._optimalOneOfWith(function() { return Prims.equality(SelfManager.self().getVariable("gene"), thisGene); }).ask(function() {
             SelfManager.self().setVariable("heading", 90);
             SelfManager.self().fd(-world.observer.getGlobal("intra-chromosome-pair-spacing"));
             SelfManager.self().setVariable("side", "left");
@@ -941,7 +941,7 @@ var procedures = (function() {
       let potentialMates = Nobody;
       let allFishAndFishZygotes = Nobody;
       if (!world.turtleManager.turtlesOfBreed("SOMATIC-CELLS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("sex"), "male"); }).isEmpty()) {
-        ListPrims.oneOf(world.turtleManager.turtlesOfBreed("SOMATIC-CELLS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("sex"), "male"); })).ask(function() {
+        world.turtleManager.turtlesOfBreed("SOMATIC-CELLS")._optimalOneOfWith(function() { return Prims.equality(SelfManager.self().getVariable("sex"), "male"); }).ask(function() {
           dad = SelfManager.self();
           xcorDad = SelfManager.self().getVariable("xcor");
         }, true);

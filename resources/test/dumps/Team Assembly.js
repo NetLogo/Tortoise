@@ -260,12 +260,12 @@ var procedures = (function() {
           if ((Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("q")) && !world.turtles().agentFilter(function() {
             return (SelfManager.self().getVariable("in-team?") && !LinkPrims.linkNeighbors("LINKS").agentFilter(function() { return !SelfManager.self().getVariable("in-team?"); }).isEmpty());
           }).isEmpty())) {
-            newTeamMember = ListPrims.oneOf(world.turtles().agentFilter(function() {
+            newTeamMember = world.turtles()._optimalOneOfWith(function() {
               return (!SelfManager.self().getVariable("in-team?") && !LinkPrims.linkNeighbors("LINKS").agentFilter(function() { return SelfManager.self().getVariable("in-team?"); }).isEmpty());
-            }));
+            });
           }
           else {
-            newTeamMember = ListPrims.oneOf(world.turtles().agentFilter(function() { return !SelfManager.self().getVariable("in-team?"); }));
+            newTeamMember = world.turtles()._optimalOneOfWith(function() { return !SelfManager.self().getVariable("in-team?"); });
           }
         }
         newTeamMember.ask(function() {
@@ -365,7 +365,7 @@ var procedures = (function() {
       world.observer.setGlobal("giant-component-size", 0);
       world.turtles().ask(function() { SelfManager.self().setVariable("explored?", false); }, true);
       while (true) {
-        let start = ListPrims.oneOf(world.turtles().agentFilter(function() { return !SelfManager.self().getVariable("explored?"); }));
+        let start = world.turtles()._optimalOneOfWith(function() { return !SelfManager.self().getVariable("explored?"); });
         if (Prims.equality(start, Nobody)) {
           throw new Exception.StopInterrupt;
         }

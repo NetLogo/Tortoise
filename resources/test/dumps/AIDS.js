@@ -402,9 +402,9 @@ var procedures = (function() {
   procs["MOVE"] = temp;
   temp = (function() {
     try {
-      let potentialPartner = ListPrims.oneOf(SelfManager.self().turtlesAt(-1, 0).agentFilter(function() {
+      let potentialPartner = SelfManager.self().turtlesAt(-1, 0)._optimalOneOfWith(function() {
         return (!SelfManager.self().getVariable("coupled?") && Prims.equality(SelfManager.self().getVariable("shape"), "person lefty"));
-      }));
+      });
       if (!Prims.equality(potentialPartner, Nobody)) {
         if (Prims.lt(Prims.randomFloat(10), potentialPartner.projectionBy(function() { return SelfManager.self().getVariable("coupling-tendency"); }))) {
           SelfManager.self().setVariable("partner", potentialPartner);

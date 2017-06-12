@@ -309,7 +309,7 @@ var procedures = (function() {
   procs["SETUP-CARS"] = temp;
   temp = (function() {
     try {
-      SelfManager.self().moveTo(ListPrims.oneOf(world.observer.getGlobal("roads").agentFilter(function() { return !!Prims.turtlesOn(SelfManager.self()).isEmpty(); })));
+      SelfManager.self().moveTo(world.observer.getGlobal("roads")._optimalOneOfWith(function() { return !!Prims.turtlesOn(SelfManager.self()).isEmpty(); }));
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         throw new Error("REPORT can only be used inside TO-REPORT.");

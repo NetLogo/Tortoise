@@ -137,7 +137,7 @@ var procedures = (function() {
           SelfManager.self().setPatchVariable("new-state", (NLMath.toInt(Prims.div(a, world.observer.getGlobal("k1"))) + NLMath.toInt(Prims.div(b, world.observer.getGlobal("k2")))));
         }
         else {
-          let s = (SelfManager.self().getPatchVariable("state") + ListPrims.sum(SelfManager.self().getNeighbors().projectionBy(function() { return SelfManager.self().getPatchVariable("state"); })));
+          let s = (SelfManager.self().getPatchVariable("state") + SelfManager.self()._optimalNSum("state"));
           SelfManager.self().setPatchVariable("new-state", (NLMath.toInt(Prims.div(s, ((a + b) + 1))) + world.observer.getGlobal("g")));
         }
         if (Prims.gt(SelfManager.self().getPatchVariable("new-state"), world.observer.getGlobal("n"))) {

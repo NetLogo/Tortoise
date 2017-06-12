@@ -182,9 +182,9 @@ var procedures = (function() {
   procs["SELECT-RANDOM-VALUE"] = temp;
   temp = (function() {
     try {
-      let it = ListPrims.oneOf(world.turtleManager.turtlesOfBreed("COLUMN-COUNTERS").agentFilter(function() {
+      let it = world.turtleManager.turtlesOfBreed("COLUMN-COUNTERS")._optimalOneOfWith(function() {
         return Prims.equality(SelfManager.self().getVariable("my-column"), world.observer.getGlobal("the-messenger").projectionBy(function() { return SelfManager.self().getVariable("label"); }));
-      }));
+      });
       world.observer.getGlobal("the-messenger").ask(function() {
         SelfManager.self().face(it);
         while (Prims.gt(SelfManager.self().distance(it), 3)) {
