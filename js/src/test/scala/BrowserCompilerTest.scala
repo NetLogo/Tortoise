@@ -82,6 +82,18 @@ object BrowserCompilerTest extends TestSuite {
           assert(slider[JsObject]("compilation").apply[JsArray]("messages").elems.nonEmpty) })
     }
 
+    "TestModelWithExtension"-{
+      val compiledModel = compileModel(validModel.copy(code = "extensions [codap] to go codap:init [->] end " + validModel.code))
+      assert(isSuccess(compiledModel))
+      assert(compiledModel.apply[JsObject]("model").apply[String]("result").contains("""Extensions["CODAP"].prims["INIT"]("""))
+    }
+
+    "TestModelWithBadExtension"-{
+      val compiledModel = compileModel(validModel.copy(code = "to go nodap:init [->] end " + validModel.code))
+      assert(isSuccess(compiledModel) == false)
+      assert(compiledModel.apply[JsObject]("model").apply[JsArray]("result").apply[JsObject](0).apply[String]("message") == "No such primitive: NODAP:INIT")
+    }
+
     "testCompilesCommands"-{
       val compiledModel = compileModel(validModel, Seq("ask turtles [fd 1]"))
       val commands      = compiledModel[JsArray]("commands")

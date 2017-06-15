@@ -1,0 +1,36 @@
+{
+  "name": "nlmap",
+  "prims": [
+    {
+      "name":       "from-list",
+      "actionName": "from-list",
+      "argTypes":   ["list"],
+      "returnType": "wildcard"
+    }, {
+      "name":       "to-list",
+      "actionName": "to-list",
+      "argTypes":   ["wildcard"],
+      "returnType": "list"
+    }, {
+      "name":       "is-map?",
+      "actionName": "is-map?",
+      "argTypes":   ["wildcard"],
+      "returnType": "boolean"
+    }, {
+      "name":       "get",
+      "actionName": "get",
+      "argTypes":   ["wildcard", "string"],
+      "returnType": "wildcard"
+    }, {
+      "name":       "remove",
+      "actionName": "remove",
+      "argTypes":   ["wildcard", "string"],
+      "returnType": "wildcard"
+    }, {
+      "name":       "add",
+      "actionName": "add",
+      "argTypes":   ["wildcard", "string", "wildcard"],
+      "returnType": "wildcard"
+    }
+  ]
+}

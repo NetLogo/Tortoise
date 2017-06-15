@@ -1,0 +1,14 @@
+{
+  "name": "codap",
+  "prims": [
+    {
+      "name":       "init",
+      "actionName": "init",
+      "argTypes":   ["command"]
+    }, {
+      "name":       "call",
+      "actionName": "call",
+      "argTypes":   ["wildcard"]
+    }
+  ]
+}

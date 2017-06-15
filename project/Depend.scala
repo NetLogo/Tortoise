@@ -106,6 +106,10 @@ check absenceOfPackageCycles > 1 in org.nlogo.tortoise.*
 
 [json4s] = org.json4s.*
 
+[play-json] = play.api.libs.json.*
+
+[scalajs-js] = scala.scalajs.js.*
+
 [nashorn] = javax.script.* jdk.nashorn.api.scripting.*
 
 [rhino] = org.mozilla.javascript.*
@@ -114,7 +118,7 @@ check absenceOfPackageCycles > 1 in org.nlogo.tortoise.*
 
 [testing] = org.scalatest.* org.scalautils.* org.scalactic.* org.scalacheck.* org.jmock.* org.hamcrest.* org.nlogo.headless.test.* scalatags.*
 
-[libs] = [stdlib-j] [stdlib-s] [headless-AWT] [json4s] [nashorn] [rhino] [scalaz] [testing]
+[libs] = [stdlib-j] [stdlib-s] [headless-AWT] [json4s] [play-json] [scalajs-js] [nashorn] [rhino] [scalaz] [testing]
 """)
     }
 

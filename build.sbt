@@ -31,6 +31,7 @@ val commonSettings =
       "org.skyscreamer" % "jsonassert" % "1.5.0" % "test",
       "org.reflections" % "reflections" % "0.9.11" % "test",
       "org.scalacheck" %% "scalacheck" % "1.13.4" % "test",
+      "com.typesafe.play" %% "play-json" % "2.6.0-RC2",
       // Bring in headless test code/framework for our tests
       "org.nlogo" % "netlogoheadless" % nlDependencyVersion % "test" classifier "tests"),
     ivyScala      := ivyScala.value map { _.copy(overrideScalaVersion = true) }, // needed to keep scala.js happy
@@ -107,7 +108,8 @@ lazy val tortoise = CrossProject("tortoise", file("."), new CrossType {
       Seq(
         "com.lihaoyi" %%%! "utest" % "0.4.5",
         "org.nlogo"   %%%! "parser-js" % parserJsDependencyVersion,
-        "org.scalaz" %%% "scalaz-core" % scalazVersion)
+        "org.scalaz" %%% "scalaz-core" % scalazVersion,
+        "com.typesafe.play" %%% "play-json" % "2.6.0-RC2")
     })
 
 lazy val tortoiseJS  = tortoise.js
