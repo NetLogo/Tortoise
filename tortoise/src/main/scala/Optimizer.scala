@@ -81,9 +81,8 @@ object Optimizer {
   object CrtFastTransformer extends AstTransformer {
     override def visitStatement(statement: Statement): Statement = {
       statement match {
-        case Statement(command: _createturtles, Seq(ReporterApp(reporter: _const, args, loc), cmdBlock: CommandBlock), _)
-             if cmdBlock.statements.stmts.isEmpty =>
-          statement.copy(command = new _crtfast(command.breedName: String), args = Seq(new ReporterApp(reporter, args, loc), cmdBlock))
+        case Statement(command: _createturtles, Seq(_, cmdBlock: CommandBlock), _) if cmdBlock.statements.stmts.isEmpty =>
+          statement.copy(command = new _crtfast(command.breedName: String))
         case _ => super.visitStatement(statement)
       }
     }
