@@ -45,13 +45,14 @@ object CompilerLike {
 import CompilerFlags.{ PropagationStyle, NoPropagation }
 
 case class CompilerFlags(
-  generateUnimplemented: Boolean,
-  onTickCallback:        String          = "function(){}",
-  propagationStyle:      PropagationStyle = NoPropagation,
-  optimizationsEnabled:   Boolean         = true
+  generateUnimplemented:  Boolean,
+  onTickCallback:         String           = "function(){}",
+  propagationStyle:       PropagationStyle = NoPropagation,
+  optimizationsEnabled:   Boolean          = true
   )
 
 object CompilerFlags {
+
   implicit val Default = CompilerFlags(generateUnimplemented = false)
 
   sealed trait PropagationStyle
@@ -59,6 +60,7 @@ object CompilerFlags {
   case object NoPropagation     extends PropagationStyle
   // propagate out stops from called procedures to the first level
   case object WidgetPropagation extends PropagationStyle
+
 }
 
 // this is incremented each time a block of statements is entered
