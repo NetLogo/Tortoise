@@ -2,9 +2,7 @@
 
 package org.nlogo.tortoise.dock
 
-import
-  org.json4s.{ native, string2JsonInput },
-    native.JsonMethods.{ compact, pretty, parse, render => jsRender }
+import play.api.libs.json.{ Json }
 
 import
   org.nlogo.{ core, mirror, nvm, tortoise },
@@ -48,11 +46,11 @@ class JsonSerializerTests extends FixtureSuite with Matchers {
           |  },
           |  "patches":{
           |
-          |  }
+          |  },
           |  "world": {
-          |  }
+          |  },
           |  "links": {
-          |  }
+          |  },
           |  "observer": {
           |  }
           |}""".stripMargin,
@@ -65,11 +63,11 @@ class JsonSerializerTests extends FixtureSuite with Matchers {
           |  },
           |  "patches":{
           |
-          |  }
+          |  },
           |  "world": {
-          |  }
+          |  },
           |  "links": {
-          |  }
+          |  },
           |  "observer": {
           |  }
           |}""".stripMargin,
@@ -79,11 +77,11 @@ class JsonSerializerTests extends FixtureSuite with Matchers {
           |  },
           |  "patches":{
           |
-          |  }
+          |  },
           |  "world": {
-          |  }
+          |  },
           |  "links": {
-          |  }
+          |  },
           |  "observer": {
           |    "0":{"targetAgent":[1,0],"perspective":3}
           |  }
@@ -97,17 +95,17 @@ class JsonSerializerTests extends FixtureSuite with Matchers {
           |  },
           |  "patches":{
           |
-          |  }
+          |  },
           |  "world": {
-          |  }
+          |  },
           |  "links": {
-          |  }
+          |  },
           |  "observer": {
           |    "0":{"targetAgent":[1,-1]}
           |  }
           |}""".stripMargin)
       .map {
-        case (cmd, json) => (cmd, jsRender(parse(json)))
+        case (cmd, json) => (cmd, Json.stringify(Json.parse(json)))
       }
 
     // so we don't need ASM, and to save time - ST 11/14/13
@@ -122,13 +120,11 @@ class JsonSerializerTests extends FixtureSuite with Matchers {
         fixture.workspace.command(cmd)
 
         val (nextState, update) = Mirroring.diffs(previousState, mirrorables)
-        val json                = jsRender(parse(JsonSerializer.serialize(update)))
-        val format              = compact _
-        format(json) should equal(format(expectedJSON))
+        val json                = Json.stringify(Json.parse(JsonSerializer.serialize(update)))
+        json should equal(expectedJSON)
         nextState
 
     }
-
   }
 
   test("JsonSerializer shapes") { implicit fixture =>
@@ -196,13 +192,13 @@ class JsonSerializerTests extends FixtureSuite with Matchers {
              |  }]
              |}""".stripMargin
       ) map {
-        case (shapeName, json) => (shapeList.shape(shapeName), jsRender(parse(json)))
+        case (shapeName, json) => (shapeList.shape(shapeName), Json.stringify(Json.parse(json)))
       }
 
     shapes foreach {
       case (shape, expectedJSON) =>
-        val json = jsRender(parse(JsonSerializer.serialize(shape)))
-        pretty(json) should equal(pretty(expectedJSON))
+        val json = Json.stringify(Json.parse(JsonSerializer.serialize(shape)))
+        json should equal(expectedJSON)
     }
 
   }

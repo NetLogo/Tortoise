@@ -17,11 +17,8 @@ import
     TortoiseJson.{ fields, JsArray, JsObject, JsString },
     WidgetToJson.widget2Json
 
-import
-  scala.{ collection, scalajs },
-    collection.immutable.ListMap,
-    scalajs.js,
-      js.JSON
+import scala.collection.immutable.ListMap
+import play.api.libs.json.Json
 
 import utest._
 
@@ -203,8 +200,13 @@ object BrowserCompilerTest extends TestSuite {
   private def withWidget(compiledModel: JsObject, widgetType: String, f: JsObject => Unit): Unit = {
     // this song and dance is to turn a string with Javascript Objects containing functions
     // into TortoiseJson objects
-    val widgetsString = compiledModel[String]("widgets")
-    val widgetsJson = JsonLibrary.toTortoise(js.eval(widgetsString))
+
+    // this is horrendous and I will be punished in a future life for it
+    // the Play JSON library doesn't handle functions in Json.parse()
+    // they appear to it as naked strings and it barfs
+    // so we have to clear them out somehow - JMB 6/16/17
+    val widgetsString = compiledModel[String]("widgets").replaceAll("function()", "\"function()").replaceAll("; }", "; }\"")
+    val widgetsJson = JsonLibrary.toTortoise(Json.parse(widgetsString))
     widgetsJson match {
       case JsArray(elems) =>
         val compiledWidgets = elems.collect { case jo : JsObject => jo }

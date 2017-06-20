@@ -24,7 +24,6 @@ val commonSettings =
     libraryDependencies ++= Seq(
       "org.nlogo" % "netlogoheadless" % nlDependencyVersion,
       "org.mozilla" % "rhino" % "1.7.7", // see jsengine/Rhino.scala for more information
-      "org.json4s" %% "json4s-native" % "3.5.1",
       "org.scalaz" %% "scalaz-core" % scalazVersion,
       "com.lihaoyi" %% "scalatags" % "0.6.3" % "test",
       "org.scalatest" %% "scalatest" % "3.0.1" % "test",

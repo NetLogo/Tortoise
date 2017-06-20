@@ -190,7 +190,7 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
   private def sortedJSON(rawJSON: String): String = {
 
     import scala.math.Ordering
-    import org.json4s.{ JArray, JObject, JValue, native }, native.JsonMethods.{ compact, parse, render }
+    import play.api.libs.json.{ Json, JsObject, JsArray, JsValue }
 
     def denumerify(s: String): String =
       if (s.forall(_.isDigit)) s"_$s" else s
@@ -203,20 +203,19 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
         }
     }
 
-    def sort(j: JValue): JValue =
+    def sort(j: JsValue): JsValue =
       j match {
-        case JArray(elems) =>
-          JArray(elems.map(sort))
-        case JObject(fields) =>
-          JObject(fields.sortBy(_._1)(nashornOrdering).map {
+        case JsArray(elems) =>
+          JsArray(elems.map(sort))
+        case JsObject(fields) =>
+          JsObject(fields.toSeq.sortBy(_._1)(nashornOrdering).map {
             case (k, v) => (denumerify(k), sort(v))
           })
         case other =>
           other
       }
 
-    compact(render(sort(parse(rawJSON))))
-
+    Json.stringify(sort(Json.parse(rawJSON)))
   }
 
   // use single-patch world by default to keep generated JSON to a minimum
