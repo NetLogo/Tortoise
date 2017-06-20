@@ -71,7 +71,7 @@ class TestReporters extends ReporterTests with TortoiseFinder {
   import Freebies._
   override val freebies = Map(
     "Version::Version_2D" -> "Assumes JVM NetLogo version numbers"
-  ) ++ evalNotSupportedReporters ++ incErrorDetectReporters ++ cmdTaskRepMismatchCommands
+  ) ++ evalNotSupportedReporters ++ incErrorDetectReporters ++ taskStringReprReporters
 }
 
 class TestCommands extends CommandTests with TortoiseFinder {
@@ -79,19 +79,18 @@ class TestCommands extends CommandTests with TortoiseFinder {
   override val freebies = Map[String, String](
     // requires handling of non-local exit (see in JVM NetLogo: `NonLocalExit`, `_report`, `_foreach`, `_run`)
     "Every::EveryLosesScope"  -> "NetLogo Web does not support distinct jobs"
-  ) ++ incErrorDetectCommands ++
-       evalNotSupportedCommands ++ lameCommands
+  ) ++ incErrorDetectCommands ++ evalNotSupportedCommands ++ lameCommands
 }
 
 private[tortoise] object Freebies {
 
   def incErrorDetectCommands     = asFreebieMap(incErrorDetectCommandNames,     incErrorDetectStr)
   def evalNotSupportedCommands   = asFreebieMap(evalNotSupportedCommandNames,   evalNotSupportedStr)
-  def cmdTaskRepMismatchCommands = asFreebieMap(cmdTaskRepMismatchCommandNames, cmdTaskRepMismatchStr)
   def lameCommands               = asFreebieMap(lameCommandNames,               lameCommandStr)
 
   def incErrorDetectReporters    = asFreebieMap(incErrorDetectReporterNames,    incErrorDetectStr)
   def evalNotSupportedReporters  = asFreebieMap(evalNotSupportedReporterNames,  evalNotSupportedStr)
+  def taskStringReprReporters    = asFreebieMap(taskStringReprNames,            taskStringReprStr)
 
   private def asFreebieMap(names: Seq[String], msg: String) = names.map(_ -> msg).toMap
 
@@ -209,13 +208,15 @@ private[tortoise] object Freebies {
     "Run::run-evaluate-string-input-only-once"
   )
 
-  // requires Tortoise compiler changes
-  private val cmdTaskRepMismatchStr = "command task string representation doesn't match"
-  private val cmdTaskRepMismatchCommandNames = Seq(
+  private val taskStringReprStr = "task string representation is out of sync"
+  private val taskStringReprNames = Seq(
+    "CommandLambda::*ToString1",
+    "CommandLambda::*ToString2",
     "CommandLambda::*ToString3",
     "CommandLambda::*ToString4",
     "CommandLambda::*ToString5",
-    "CommandLambda::*ToString6"
+    "CommandLambda::*ToString7",
+    "ReporterLambda::PrintReporterLambda"
   )
 
   private val lameCommandStr = "This test is LAME!"

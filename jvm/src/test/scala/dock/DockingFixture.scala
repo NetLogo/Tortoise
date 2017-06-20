@@ -22,7 +22,8 @@ import
       lang.Fixture,
       headlessTest.{ RuntimeError, TestMode, Command, Reporter, CompileError, Success },
     core.{ model, Model },
-      model.ModelReader
+      model.ModelReader,
+    nvm.Optimizations.{ Command => OCommand, OptimizationList, Reporter => OReporter }
 
 import
   org.scalatest.{ Assertions, exceptions, fixture },
@@ -57,8 +58,19 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
   var opened = false
   val netLogoCode = new StringBuilder
 
+  val implementedOptimizations = {
+    val commands  = (OCommand,  Seq("CroFast", "CrtFast", "Fd1", "FdLessThan1", "HatchFast", "SproutFast"))
+    val reporters = (OReporter, Seq("AnyOther", "CountOther", "Nsum", "OneOfWith", "With", "PatchVariableDouble"))
+    Seq(commands, reporters).flatMap {
+      case (typ, optNames) =>
+        optNames.map(
+          (optName) => typ -> s"org.nlogo.compile.middle.optimize.$optName"
+        )
+    } :+ (OReporter -> "org.nlogo.compile.optimize.Constants")
+  }
+
   // so we don't need ASM, so no generator. also to save time
-  workspace.flags = nvm.CompilerFlags(useOptimizer = true, useGenerator = false)
+  workspace.flags = nvm.CompilerFlags(useOptimizer = true, useGenerator = false, optimizations = implementedOptimizations)
 
   def compare(reporter: String) {
     runReporter(Reporter(reporter,

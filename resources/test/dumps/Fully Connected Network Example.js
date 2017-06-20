@@ -65,7 +65,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       world.clearAll();
-      world.turtleManager.createTurtles(world.observer.getGlobal("num-nodes"), "").ask(function() {}, true);
+      world.turtleManager.createTurtles(world.observer.getGlobal("num-nodes"), "");
       LayoutManager.layoutCircle(world.turtles(), (Prims.div(world.topology.width, 2) - 1));
       world.turtles().ask(function() { LinkPrims.createLinksWith(SelfPrims.other(world.turtles()), "LINKS").ask(function() {}, false); }, true);
     } catch (e) {
