@@ -8,12 +8,12 @@ Turtle    = require('./core/turtle')
 World     = require('./core/world')
 Exception = require('util/exception')
 
-ignored = ["", ""]
+ignored = ["", -> ""]
 
 # type ID           = String
 # type Key          = String
-# type Value        = Any
-# type UpdateEntry  = Object[Key, Value]
+# type Getter       = (Any) -> Any
+# type UpdateEntry  = Object[Key, Getter]
 # type UpdateSet    = Object[ID, UpdateEntry]
 # type _US          = UpdateSet
 # type DrawingEvent = Object[String, Any]
@@ -88,15 +88,15 @@ module.exports =
 
       [entry, objMap] =
         if obj instanceof Turtle
-          [update.turtles, @_turtleMap(obj)]
+          [update.turtles, @_turtleMap]
         else if obj instanceof Patch
-          [update.patches, @_patchMap(obj)]
+          [update.patches, @_patchMap]
         else if obj instanceof Link
-          [update.links, @_linkMap(obj)]
+          [update.links, @_linkMap]
         else if obj instanceof World
-          [update.world, @_worldMap(obj)]
+          [update.world, @_worldMap]
         else if obj instanceof Observer
-          [update.observer, @_observerMap(obj)]
+          [update.observer, @_observerMap]
         else
           throw new Error("Unrecognized update type")
 
@@ -111,8 +111,8 @@ module.exports =
         mapping = objMap[v]
         if mapping?
           if mapping isnt ignored
-            [varName, value]     = mapping
-            entryUpdate[varName] = value
+            [varName, getter]    = mapping
+            entryUpdate[varName] = getter(obj)
             entry[obj.id]        = entryUpdate
         else
           throw new Error("Unknown #{obj.constructor.name} variable for update: #{v}")
@@ -120,51 +120,51 @@ module.exports =
       return
 
 
-    # (Turtle) => Object[EngineKey, (Key, Value)]
-    _turtleMap: (turtle) -> {
-      breed:         ["BREED",       turtle.getBreedName()]
-      color:         ["COLOR",       turtle._color]
-      heading:       ["HEADING",     turtle._heading]
-      id:            ["WHO",         turtle.id]
-      'label-color': ["LABEL-COLOR", turtle._labelcolor]
-      'hidden?':     ["HIDDEN?",     turtle._hidden]
-      label:         ["LABEL",       Dump(turtle._label)]
-      'pen-size':    ["PEN-SIZE",    turtle.penManager.getSize()]
-      'pen-mode':    ["PEN-MODE",    turtle.penManager.getMode().toString()]
-      shape:         ["SHAPE",       turtle._getShape()]
-      size:          ["SIZE",        turtle._size]
-      xcor:          ["XCOR",        turtle.xcor]
-      ycor:          ["YCOR",        turtle.ycor]
+    # (Turtle) => Object[EngineKey, (Key, Getter)]
+    _turtleMap: {
+      breed:         ["BREED",       (turtle) -> turtle.getBreedName()]
+      color:         ["COLOR",       (turtle) -> turtle._color]
+      heading:       ["HEADING",     (turtle) -> turtle._heading]
+      id:            ["WHO",         (turtle) -> turtle.id]
+      'label-color': ["LABEL-COLOR", (turtle) -> turtle._labelcolor]
+      'hidden?':     ["HIDDEN?",     (turtle) -> turtle._hidden]
+      label:         ["LABEL",       (turtle) -> Dump(turtle._label)]
+      'pen-size':    ["PEN-SIZE",    (turtle) -> turtle.penManager.getSize()]
+      'pen-mode':    ["PEN-MODE",    (turtle) -> turtle.penManager.getMode().toString()]
+      shape:         ["SHAPE",       (turtle) -> turtle._getShape()]
+      size:          ["SIZE",        (turtle) -> turtle._size]
+      xcor:          ["XCOR",        (turtle) -> turtle.xcor]
+      ycor:          ["YCOR",        (turtle) -> turtle.ycor]
     }
 
-    # (Patch) => Object[EngineKey, (Key, Value)]
-    _patchMap: (patch) -> {
-      id:             ["WHO",          patch.id]
-      pcolor:         ["PCOLOR",       patch._pcolor]
-      plabel:         ["PLABEL",       Dump(patch._plabel)]
-      'plabel-color': ["PLABEL-COLOR", patch._plabelcolor]
-      pxcor:          ["PXCOR",        patch.pxcor]
-      pycor:          ["PYCOR",        patch.pycor]
+    # (Patch) => Object[EngineKey, (Key, Getter)]
+    _patchMap: {
+      id:             ["WHO",          (patch) -> patch.id]
+      pcolor:         ["PCOLOR",       (patch) -> patch._pcolor]
+      plabel:         ["PLABEL",       (patch) -> Dump(patch._plabel)]
+      'plabel-color': ["PLABEL-COLOR", (patch) -> patch._plabelcolor]
+      pxcor:          ["PXCOR",        (patch) -> patch.pxcor]
+      pycor:          ["PYCOR",        (patch) -> patch.pycor]
     }
 
-    # (Link) => Object[EngineKey, (Key, Value)]
-    _linkMap: (link) -> {
-      breed:         ["BREED",       link.getBreedName()]
-      color:         ["COLOR",       link._color]
-      end1:          ["END1",        link.end1.id]
-      end2:          ["END2",        link.end2.id]
-      heading:       ["HEADING",     @_withDefault(link.getHeading.bind(link))(0)]
-      'hidden?':     ["HIDDEN?",     link._isHidden]
-      id:            ["ID",          link.id]
-      'directed?':   ["DIRECTED?",   link.isDirected]
-      label:         ["LABEL",       Dump(link._label)]
-      'label-color': ["LABEL-COLOR", link._labelcolor]
-      midpointx:     ["MIDPOINTX",   link.getMidpointX()]
-      midpointy:     ["MIDPOINTY",   link.getMidpointY()]
-      shape:         ["SHAPE",       link._shape]
-      size:          ["SIZE",        link.getSize()]
-      thickness:     ["THICKNESS",   link._thickness]
-      'tie-mode':    ["TIE-MODE",    link.tiemode]
+    # (Link) => Object[EngineKey, (Key, Getter)]
+    _linkMap: {
+      breed:         ["BREED",       (link) -> link.getBreedName()]
+      color:         ["COLOR",       (link) -> link._color]
+      end1:          ["END1",        (link) -> link.end1.id]
+      end2:          ["END2",        (link) -> link.end2.id]
+      heading:       ["HEADING",     (link) -> (try link.getHeading() catch _ then 0)]
+      'hidden?':     ["HIDDEN?",     (link) -> link._isHidden]
+      id:            ["ID",          (link) -> link.id]
+      'directed?':   ["DIRECTED?",   (link) -> link.isDirected]
+      label:         ["LABEL",       (link) -> Dump(link._label)]
+      'label-color': ["LABEL-COLOR", (link) -> link._labelcolor]
+      midpointx:     ["MIDPOINTX",   (link) -> link.getMidpointX()]
+      midpointy:     ["MIDPOINTY",   (link) -> link.getMidpointY()]
+      shape:         ["SHAPE",       (link) -> link._shape]
+      size:          ["SIZE",        (link) -> link.getSize()]
+      thickness:     ["THICKNESS",   (link) -> link._thickness]
+      'tie-mode':    ["TIE-MODE",    (link) -> link.tiemode]
       lcolor:        ignored
       llabel:        ignored
       llabelcolor:   ignored
@@ -173,29 +173,29 @@ module.exports =
       lshape:        ignored
     }
 
-    # (World) => Object[EngineKey, (Key, Value)]
-    _worldMap: (world) -> {
-      height:                     ["worldHeight",               world.topology.height]
-      id:                         ["WHO",                       world.id]
-      patchesAllBlack:            ["patchesAllBlack",           world._patchesAllBlack]
-      patchesWithLabels:          ["patchesWithLabels",         world._patchesWithLabels]
-      maxPxcor:                   ["MAXPXCOR",                  world.topology.maxPxcor]
-      maxPycor:                   ["MAXPYCOR",                  world.topology.maxPycor]
-      minPxcor:                   ["MINPXCOR",                  world.topology.minPxcor]
-      minPycor:                   ["MINPYCOR",                  world.topology.minPycor]
-      patchSize:                  ["patchSize",                 world.patchSize]
-      ticks:                      ["ticks",                     world.ticker._count]
-      unbreededLinksAreDirected:  ["unbreededLinksAreDirected", world.breedManager.links().isDirected()]
-      width:                      ["worldWidth",                world.topology.width]
-      wrappingAllowedInX:         ["wrappingAllowedInX",        world.topology._wrapInX]
-      wrappingAllowedInY:         ["wrappingAllowedInY",        world.topology._wrapInY]
+    # (World) => Object[EngineKey, (Key, Getter)]
+    _worldMap: {
+      height:                     ["worldHeight",               (world) -> world.topology.height]
+      id:                         ["WHO",                       (world) -> world.id]
+      patchesAllBlack:            ["patchesAllBlack",           (world) -> world._patchesAllBlack]
+      patchesWithLabels:          ["patchesWithLabels",         (world) -> world._patchesWithLabels]
+      maxPxcor:                   ["MAXPXCOR",                  (world) -> world.topology.maxPxcor]
+      maxPycor:                   ["MAXPYCOR",                  (world) -> world.topology.maxPycor]
+      minPxcor:                   ["MINPXCOR",                  (world) -> world.topology.minPxcor]
+      minPycor:                   ["MINPYCOR",                  (world) -> world.topology.minPycor]
+      patchSize:                  ["patchSize",                 (world) -> world.patchSize]
+      ticks:                      ["ticks",                     (world) -> world.ticker._count]
+      unbreededLinksAreDirected:  ["unbreededLinksAreDirected", (world) -> world.breedManager.links().isDirected()]
+      width:                      ["worldWidth",                (world) -> world.topology.width]
+      wrappingAllowedInX:         ["wrappingAllowedInX",        (world) -> world.topology._wrapInX]
+      wrappingAllowedInY:         ["wrappingAllowedInY",        (world) -> world.topology._wrapInY]
     }
 
-    # (Observer) => Object[EngineKey, (Key, Value)]
-    _observerMap: (observer) -> {
-      id:          ["WHO",         observer.id]
-      perspective: ["perspective", observer._perspective.toInt]
-      targetAgent: ["targetAgent", observer._getTargetAgentUpdate()]
+    # (Observer) => Object[EngineKey, (Key, Getter)]
+    _observerMap: {
+      id:          ["WHO",         (observer) -> observer.id]
+      perspective: ["perspective", (observer) -> observer._perspective.toInt]
+      targetAgent: ["targetAgent", (observer) -> observer._getTargetAgentUpdate()]
     }
 
     # (String, Number, UpdateEntry) => Unit
@@ -215,9 +215,3 @@ module.exports =
       @_hasUpdates = false
       @_updates    = [new Update()]
       return
-
-    # [T] @ (() => T) => (T) => T
-    _withDefault: (thunk) -> (defaultValue) ->
-      try thunk()
-      catch ex
-        defaultValue
