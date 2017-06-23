@@ -21,12 +21,12 @@ class V8 {
     case ex: Exception => Try(throw new Exception("Node.js does not appear to be installed correctly on this machine.", ex))
   }).get
 
-  private val process = Process(Seq("node", "-p"))
+  private val process = Process(Seq("node", "-p", "--use_strict"))
 
   // NOTE: Each call to `eval` creates a new `node` process; the environment is not persisted across processes --JAB (1/30/14)
   def eval(js: String): String = {
 
-    val is     = s"window=global;${V8.depsStr};$js".toIS
+    val is     = s"var window=global;var ${V8.depsStr};$js".toIS
     val result = (process #< is).lineStream.toList.mkString("\n")
     is.close()
 
