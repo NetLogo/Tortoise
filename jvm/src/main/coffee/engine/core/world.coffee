@@ -307,12 +307,14 @@ module.exports =
 
     # () => Unit
     _declarePatchesAllBlack: ->
-      @_patchesAllBlack = true
-      @_updater.updated(this)("patchesAllBlack")
+      if not @_patchesAllBlack
+        @_patchesAllBlack = true
+        @_updater.updated(this)("patchesAllBlack")
       return
 
     # () => Unit
     _declarePatchesNotAllBlack: =>
-      @_patchesAllBlack = false
-      @_updater.updated(this)("patchesAllBlack")
+      if @_patchesAllBlack
+        @_patchesAllBlack = false
+        @_updater.updated(this)("patchesAllBlack")
       return
