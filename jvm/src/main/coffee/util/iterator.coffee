@@ -17,7 +17,7 @@ module.exports =
 
     contains: (x) ->
       for y in @_items
-        if x is y # Wrong!
+        if x is y
           return true
       false
 

@@ -20,7 +20,7 @@ module.exports =
 
     contains: (x) ->
       for y in @_items when not x.isDead()
-        if x is y # Wrong!
+        if x is y
           return true
       false
 
