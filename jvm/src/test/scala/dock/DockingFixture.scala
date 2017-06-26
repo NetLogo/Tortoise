@@ -286,7 +286,6 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
 
   // these two are super helpful when running failing tests
   // to show the javascript before it gets executed.
-  // TODO: what is the difference between eval and run?
   def evalJS(javascript: String) = {
     nashorn.eval(javascript)
   }
