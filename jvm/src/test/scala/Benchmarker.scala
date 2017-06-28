@@ -28,7 +28,13 @@ object Benchmarker extends App {
   // The reason for this is that they cause both Nashorn and V8 to run out of memory when they are run.
   // In response to that, you might say, "But they run fine in `TestBenchmarks`!", but I suspect that
   // that is due to those tests not running the standard benchmarking commands (`ca benchmark result`) --JAB (2/4/14)
-  private val benchmarkModels = Seq("BZ Benchmark")
+  private val benchmarkModels =
+    Seq(
+      "BZ Benchmark",
+      "FireBig Benchmark",
+      "GridWalk Benchmark",
+      "Wolf Benchmark"
+    )
 
   private val engineToEvalMap = Seq(Nashorn, SpiderMonkey, V8).map(engine => engine -> engine.freshEval _).toMap
 
@@ -96,7 +102,7 @@ object Benchmarker extends App {
 
     modelNameFilePairs map {
       case (name, file) =>
-
+        println(s"Running $name")
         val source = Source.fromFile(file)
         val nlogo  = source.mkString
         source.close()
@@ -157,14 +163,15 @@ object Benchmarker extends App {
       if (others.contains("--quick"))
         (Seq("BZ Benchmark"), 1, engineLookup(V8))
       else {
-        val iters    = pairings.get("--count") orElse pairings.get("--iters") orElse pairings.get("--num") map (_.head.toInt) getOrElse 3
-        val engines  = pairings.get("--engine") map (seq => seq map (_.toLowerCase) flatMap {
+        val chosenModels = pairings.get("--model") orElse pairings.get("--models") getOrElse benchmarkModels
+        val iters        = pairings.get("--count") orElse pairings.get("--iters") orElse pairings.get("--num") map (_.head.toInt) getOrElse 3
+        val engines      = pairings.get("--engine") map (seq => seq map (_.toLowerCase) flatMap {
           case "node" | "v8" | "google" | "chrome"     => engineLookup(V8)
           case "mozilla" | "firefox" | "spidermonkey"  => engineLookup(SpiderMonkey)
           case "java" | "oracle" | "rhino" | "nashorn" => engineLookup(Nashorn)
           case _                                       => Map[JSEngineCompanion, (String) => String]()
         }) map (_.distinct.toMap) getOrElse engineToEvalMap
-        (benchmarkModels, iters, engines)
+        (chosenModels, iters, engines)
       }
 
     (dirStr, models, iters, engines, comments)
