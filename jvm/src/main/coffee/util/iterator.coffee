@@ -9,24 +9,28 @@ module.exports =
     constructor: (items) ->
       @_items = items[..]
 
+    # ((T) => Boolean) => Boolean
     all: (f) ->
       for x in @_items
         if not f(x)
           return false
       true
 
+    # (T) => Boolean
     contains: (x) ->
       for y in @_items
         if x is y
           return true
       false
 
+    # ((T) => Boolean) => Boolean
     exists: (f) ->
       for x in @_items
         if f(x)
           return true
       false
 
+    # ((T) => Boolean) => Array[T]
     filter: (f) ->
       x for x in @_items when f(x)
 
