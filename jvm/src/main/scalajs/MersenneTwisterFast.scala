@@ -188,7 +188,8 @@ final class MersenneTwisterFast(seed: Long = System.nanoTime) extends Random wit
    */
   @JSExport
   def save(): String = {
-    val result: StringBuilder = new StringBuilder(MersenneTwisterFast.IDENTIFIER + " " + __mag01(0) + " " + __mag01(1) + " " + mti + " " + __nextNextGaussian + " " + __haveNextNextGaussian)
+    val gaussianStr = if (__nextNextGaussian == __nextNextGaussian.toInt) (__nextNextGaussian + ".0") else __nextNextGaussian
+    val result: StringBuilder = new StringBuilder(MersenneTwisterFast.IDENTIFIER + " " + __mag01(0) + " " + __mag01(1) + " " + mti + " " + gaussianStr + " " + __haveNextNextGaussian)
     var i: Int = 0
     while (i < MersenneTwisterFast.N) {
       result.append(" ")
