@@ -20,6 +20,7 @@ RNG           = require('util/rng')
 Timer         = require('util/timer')
 
 { Config: ExportConfig,     Prims: ExportPrims }     = require('./prim/exportprims')
+{ Config: ImportConfig,     Prims: ImportPrims }     = require('./prim/importprims')
 { Config: MouseConfig,      Prims: MousePrims }      = require('./prim/mouseprims')
 { Config: OutputConfig,     Prims: OutputPrims }     = require('./prim/outputprims')
 { Config: PrintConfig,      Prims: PrintPrims }      = require('./prim/printprims')
@@ -36,6 +37,7 @@ module.exports =
 
     dialogConfig  = modelConfig?.dialog    ? new UserDialogConfig
     exportConfig  = modelConfig?.exporting ? new ExportConfig
+    importConfig  = modelConfig?.importing ? new ImportConfig
     mouseConfig   = modelConfig?.mouse     ? new MouseConfig
     outputConfig  = modelConfig?.output    ? new OutputConfig
     plots         = modelConfig?.plots     ? []
@@ -59,6 +61,7 @@ module.exports =
     listPrims       = new ListPrims(Hasher, prims.equality.bind(prims), rng.nextInt)
 
     exportPrims     = new ExportPrims(exportConfig)
+    importPrims     = new ImportPrims(importConfig)
     mousePrims      = new MousePrims(mouseConfig)
     outputPrims     = new OutputPrims(outputConfig, Dump)
     printPrims      = new PrintPrims(printConfig, Dump)
@@ -68,6 +71,7 @@ module.exports =
       selfManager
       breedManager
       exportPrims
+      importPrims
       layoutManager
       linkPrims
       listPrims

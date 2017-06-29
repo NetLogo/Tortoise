@@ -188,6 +188,9 @@ object Compiler extends CompilerLike {
   private def exportingConfig: JsStatement =
     genConfig("exporting", Map("output" -> jsFunction(Seq("filename"))))
 
+  private def importingConfig: JsStatement =
+    genConfig("importing", Map("drawing" -> jsFunction(Seq("filename"))))
+
   private def genConfig(configName: String, functionDefs: Map[String, String]): JsStatement = {
 
     val configPath = s"modelConfig.$configName"
