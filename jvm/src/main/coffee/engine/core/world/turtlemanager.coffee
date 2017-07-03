@@ -12,6 +12,8 @@ IDManager  = require('./idmanager')
 
 { DeathInterrupt, ignoring }  = require('util/exception')
 
+ignorantly = ignoring(DeathInterrupt)
+
 module.exports =
   class TurtleManager
 
@@ -27,7 +29,7 @@ module.exports =
 
     # () => Unit
     clearTurtles: ->
-      @turtles().forEach((turtle) -> ignoring(DeathInterrupt)(() => turtle.die()))
+      @turtles().forEach((turtle) -> ignorantly(() => turtle.die()))
       @_idManager.reset()
       return
 

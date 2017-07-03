@@ -2,6 +2,8 @@
 
 { DeathInterrupt, ignoring } = require('util/exception')
 
+ignorantly = ignoring(DeathInterrupt)
+
 module.exports =
   class SelfManager
 
@@ -26,15 +28,19 @@ module.exports =
       else
         throw new Error("There is no agent for MYSELF to refer to.")
 
+    # Switch from letting CoffeeScript bind "this" to handling it manually to avoid creating extra anonymous functions
+    # They add GC pressure, causing runtime slowdown - JMB 07/2017
     # [T] @ (() => T) => (Agent) => T
-    askAgent: (f) => (agent) =>
-      oldMyself = @_myself
-      oldAgent  = @_self
+    askAgent: (f) =>
+      at = this
+      (agent) ->
+        oldMyself = at._myself
+        oldAgent  = at._self
 
-      @_myself = @_self
-      @_self   = agent
+        at._myself = at._self
+        at._self   = agent
 
-      try ignoring(DeathInterrupt)(f)
-      finally
-        @_self   = oldAgent
-        @_myself = oldMyself
+        try ignorantly(f)
+        finally
+          at._self   = oldAgent
+          at._myself = oldMyself

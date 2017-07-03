@@ -201,13 +201,45 @@ module.exports =
     getNeighbors4: (pxcor, pycor) ->
       new PatchSet(@topology.getNeighbors4(pxcor, pycor))
 
+    # The wrapping and rounding below is setup to avoid creating extra anonymous functions.
+    # We could just use @ and fat arrows => but CoffeeScript uses anon funcs to bind `this`.
+    # Those anon funcs cause GC pressure and runtime slowdown, so we have to manually setup
+    # the context somehow.  A lot of rounding and wrapping goes on in models.  -JMB 07/2017
+
+    # (Number) => Number
+    _thisWrapX: (x) =>
+      @topology.wrapX(x)
+
+    # (Number) => Number
+    _thisWrapY: (y) =>
+      @topology.wrapY(y)
+
     # (Number) => Number
     _roundXCor: (x) ->
-      @_roundCoordinate(x, (s) => @topology.wrapX(s))
+      wrappedX = @_wrapC(x, @_thisWrapX)
+      @_roundCoordinate(wrappedX)
 
-      # (Number) => Number
+    # (Number) => Number
     _roundYCor: (y) ->
-      @_roundCoordinate(y, (s) => @topology.wrapY(s))
+      wrappedY = @_wrapC(y, @_thisWrapY)
+      @_roundCoordinate(wrappedY)
+
+    # Similarly, using try/catch as an expression creates extra anon funcs, so we get
+    # this value manually as well.  -JMB 07/2017
+
+    # (Number, (Number) => Number) => Number
+    _wrapC: (c, wrapper) ->
+      wrappedC = undefined
+      try
+        wrappedC = wrapper(c)
+      catch error
+        trueError =
+          if error instanceof TopologyInterrupt
+            new TopologyInterrupt("Cannot access patches beyond the limits of current world.")
+          else
+            error
+        throw trueError
+      wrappedC
 
     # Boy, oh, boy!  Headless has only this to say about this code: "floor() is slow so we
     # don't use it".  I have a lot more to say!  This code is kind of nuts, but we can't
@@ -218,19 +250,8 @@ module.exports =
     # `0` (whereas, sensically, we should only do that starting at `0.5`).  But... we
     # don't live in an ideal world, so I'll just replicate Headless' silly behavior here.
     # --JAB (12/6/14)
-    # (Number, (Number) => Number) => Number
-    _roundCoordinate: (c, wrapFunc) ->
-      wrappedC =
-        try
-          wrapFunc(c)
-        catch error
-          trueError =
-            if error instanceof TopologyInterrupt
-              new TopologyInterrupt("Cannot access patches beyond the limits of current world.")
-            else
-              error
-          throw trueError
-
+    # (Number) => Number
+    _roundCoordinate: (wrappedC) ->
       if wrappedC > 0
         (wrappedC + 0.5) | 0
       else
