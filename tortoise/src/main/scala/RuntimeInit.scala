@@ -26,7 +26,6 @@ class RuntimeInit(program: Program, model: Model, onTickFunction: String = jsFun
 
     workspaceDeclare("BreedManager"),
     workspaceDeclare("ExportPrims"),
-    workspaceDeclare("ImportPrims"),
     workspaceDeclare("LayoutManager"),
     workspaceDeclare("LinkPrims"),
     workspaceDeclare("ListPrims"),
