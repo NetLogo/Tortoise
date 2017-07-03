@@ -571,9 +571,9 @@ var procedures = (function() {
   temp = (function() {
     try {
       if (Prims.equality(SelfPrims._optimalCountOther(SelfManager.self().breedHere("PARTICLES")), 1)) {
-        let candidate = ListPrims.oneOf(SelfPrims.other(SelfManager.self().breedHere("PARTICLES").agentFilter(function() {
+        let candidate = ListPrims.oneOf(SelfManager.self().breedHere("PARTICLES")._optimalOtherWith(function() {
           return (Prims.lt(SelfManager.self().getVariable("who"), SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("who"); })) && !Prims.equality(SelfManager.myself(), SelfManager.self().getVariable("last-collision")));
-        })));
+        }));
         if ((!Prims.equality(candidate, Nobody) && (Prims.gt(SelfManager.self().getVariable("speed"), 0) || Prims.gt(candidate.projectionBy(function() { return SelfManager.self().getVariable("speed"); }), 0)))) {
           procedures["COLLIDE-WITH"](candidate);
           SelfManager.self().setVariable("last-collision", candidate);

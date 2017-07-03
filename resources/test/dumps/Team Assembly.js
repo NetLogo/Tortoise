@@ -290,7 +290,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       world.turtles().agentFilter(function() { return SelfManager.self().getVariable("in-team?"); }).ask(function() {
-        LinkPrims.createLinksWith(SelfPrims.other(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("in-team?"); })), "LINKS").ask(function() {
+        LinkPrims.createLinksWith(world.turtles()._optimalOtherWith(function() { return SelfManager.self().getVariable("in-team?"); }), "LINKS").ask(function() {
           SelfManager.self().setVariable("new-collaboration?", true);
           SelfManager.self().setVariable("thickness", 0.3);
         }, true);

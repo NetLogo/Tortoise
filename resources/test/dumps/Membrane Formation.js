@@ -141,7 +141,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
-      let near = ListPrims.oneOf(SelfPrims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("interaction-distance")).agentFilter(function() { return !LinkPrims.isLinkNeighbor("LINKS", SelfManager.myself()); })));
+      let near = ListPrims.oneOf(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("interaction-distance"))._optimalOtherWith(function() { return !LinkPrims.isLinkNeighbor("LINKS", SelfManager.myself()); }));
       if (!Prims.equality(near, Nobody)) {
         SelfManager.self().face(near);
         if (Prims.equality(near.projectionBy(function() { return SelfManager.self().getVariable("breed"); }), SelfManager.self().getVariable("breed"))) {

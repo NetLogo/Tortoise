@@ -658,7 +658,7 @@ var procedures = (function() {
           lowestValueNucleotide.ask(function() {
             let base = SelfManager.self();
             let basePlace = SelfManager.self().getVariable("place");
-            let otherBase = SelfPrims.other(world.turtleManager.turtlesOfBreed("NUCLEOTIDES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("place"), basePlace); }));
+            let otherBase = world.turtleManager.turtlesOfBreed("NUCLEOTIDES")._optimalOtherWith(function() { return Prims.equality(SelfManager.self().getVariable("place"), basePlace); });
             if (!otherBase.isEmpty()) {
               SelfManager.self().setVariable("unzipped-stage", 1);
               otherBase.ask(function() { SelfManager.self().setVariable("unzipped-stage", 1); }, true);

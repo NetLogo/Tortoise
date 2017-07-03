@@ -152,7 +152,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
-      let ediff = ((2 * SelfManager.self().getPatchVariable("spin")) * ListPrims.sum(SelfManager.self().getNeighbors4().projectionBy(function() { return SelfManager.self().getPatchVariable("spin"); })));
+      let ediff = ((2 * SelfManager.self().getPatchVariable("spin")) * SelfManager.self()._optimalNSum4("spin"));
       if ((Prims.lte(ediff, 0) || (Prims.gt(world.observer.getGlobal("temperature"), 0) && Prims.lt(Prims.randomFloat(1), NLMath.exp(Prims.div( -ediff, world.observer.getGlobal("temperature"))))))) {
         SelfManager.self().setPatchVariable("spin",  -SelfManager.self().getPatchVariable("spin"));
         world.observer.setGlobal("sum-of-spins", (world.observer.getGlobal("sum-of-spins") + (2 * SelfManager.self().getPatchVariable("spin"))));

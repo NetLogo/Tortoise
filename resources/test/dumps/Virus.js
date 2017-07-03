@@ -358,7 +358,7 @@ var procedures = (function() {
   procs["MOVE"] = temp;
   temp = (function() {
     try {
-      SelfPrims.other(SelfManager.self().turtlesHere().agentFilter(function() { return (!SelfManager.self().getVariable("sick?") && !procedures["IMMUNE?"]()); })).ask(function() {
+      SelfManager.self().turtlesHere()._optimalOtherWith(function() { return (!SelfManager.self().getVariable("sick?") && !procedures["IMMUNE?"]()); }).ask(function() {
         if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("infectiousness"))) {
           procedures["GET-SICK"]();
         }

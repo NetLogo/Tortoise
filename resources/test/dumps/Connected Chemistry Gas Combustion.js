@@ -594,9 +594,9 @@ var procedures = (function() {
   temp = (function() {
     try {
       if (Prims.equality(SelfPrims._optimalCountOther(SelfManager.self().inRadius(SelfManager.self().breedHere("GAS-MOLECULES"), 1)), 1)) {
-        let candidate = ListPrims.oneOf(SelfPrims.other(SelfManager.self().breedHere("GAS-MOLECULES").agentFilter(function() {
+        let candidate = ListPrims.oneOf(SelfManager.self().breedHere("GAS-MOLECULES")._optimalOtherWith(function() {
           return (Prims.lt(SelfManager.self(), SelfManager.myself()) && !Prims.equality(SelfManager.myself(), SelfManager.self().getVariable("last-collision")));
-        })));
+        }));
         if ((!Prims.equality(candidate, Nobody) && (Prims.gt(SelfManager.self().getVariable("speed"), 0) || Prims.gt(candidate.projectionBy(function() { return SelfManager.self().getVariable("speed"); }), 0)))) {
           procedures["COLLIDE-WITH"](candidate);
           candidate.ask(function() { SelfManager.self().penManager.raisePen(); }, true);

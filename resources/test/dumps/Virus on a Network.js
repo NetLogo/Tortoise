@@ -166,7 +166,7 @@ var procedures = (function() {
       let numLinks = Prims.div((world.observer.getGlobal("average-node-degree") * world.observer.getGlobal("number-of-nodes")), 2);
       while (Prims.lt(world.links().size(), numLinks)) {
         ListPrims.oneOf(world.turtles()).ask(function() {
-          let choice = SelfPrims.other(world.turtles().agentFilter(function() { return !LinkPrims.isLinkNeighbor("LINKS", SelfManager.myself()); })).minOneOf(function() { return SelfManager.self().distance(SelfManager.myself()); });
+          let choice = world.turtles()._optimalOtherWith(function() { return !LinkPrims.isLinkNeighbor("LINKS", SelfManager.myself()); }).minOneOf(function() { return SelfManager.self().distance(SelfManager.myself()); });
           if (!Prims.equality(choice, Nobody)) {
             LinkPrims.createLinkWith(choice, "LINKS").ask(function() {}, false);
           }
