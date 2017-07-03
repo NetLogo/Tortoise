@@ -169,13 +169,20 @@ module.exports =
       @_genUpdate(this)(varName)
       return
 
+    # (PatchSet, String) => Number
+    _neighborSum: (nbs, varName) ->
+      f = (acc, neighbor) ->
+        x = neighbor.getVariable(varName)
+        if NLType(x).isNumber()
+          acc + x
+        else
+          throw new Exception("noSumOfListWithNonNumbers, #{x}")
+      foldl(f)(0)(nbs.iterator().toArray())
+
     # (String) => Number
     _optimalNSum: (varName) ->
-      f =
-        (acc, neighbor) ->
-          x = neighbor.getVariable(varName)
-          if NLType(x).isNumber()
-            acc + x
-          else
-            throw new Exception("noSumOfListWithNonNumbers, #{x}")
-      foldl(f)(0)(@getNeighbors().iterator().toArray())
+      @_neighborSum(@getNeighbors(), varName)
+
+    # (String) => Number
+    _optimalNSum4: (varName) ->
+      @_neighborSum(@getNeighbors4(), varName)

@@ -274,6 +274,20 @@ module.exports =
       else
         undefined
 
+    _optimalOtherWith: (f) ->
+      self = @_lazyGetSelfManager().self()
+      filterer =
+        (x) ->
+          if x != self
+            y = x.projectionBy(f)
+            if y is true or y is false
+              y
+            else
+              throw new Error("withExpectedBooleanValue #{x} #{y}")
+          else
+            false
+      @copyWithNewAgents(@iterator().filter(filterer))
+
     # (() => Boolean) => Agent
     _optimalOneOfWith: (f) ->
       finder =

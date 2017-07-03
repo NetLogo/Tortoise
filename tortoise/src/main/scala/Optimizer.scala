@@ -8,7 +8,7 @@ import
 
 import
   org.nlogo.core.{ prim, AstTransformer, ProcedureDefinition, ReporterApp, Statement, NetLogoCore, CommandBlock, ReporterBlock },
-    prim.{ _any, _const, _count, _createorderedturtles, _createturtles, _equal, _fd, _hatch, _neighbors
+    prim.{ _any, _const, _count, _createorderedturtles, _createturtles, _equal, _fd, _hatch, _neighbors, _neighbors4
          , _observervariable, _of, _oneof, _other, _patches, _patchvariable, _procedurevariable, _sprout, _sum, _with }
 
 object Optimizer {
@@ -148,29 +148,69 @@ object Optimizer {
     }
   }
 
-  class _nsum(val varName: String) extends Reporter {
+  class _otherwith extends Reporter {
     override def syntax: Syntax =
-      Syntax.reporterSyntax(right = List(Syntax.AgentsetType), ret = Syntax.NumberType, agentClassString = "-TP-")
+      Syntax.reporterSyntax(right = List(Syntax.AgentsetType, Syntax.ReporterBlockType), ret = Syntax.AgentsetType)
+    }
+
+  object OtherWithTransformer extends AstTransformer {
+    override def visitReporterApp(ra: ReporterApp): ReporterApp = {
+      ra match {
+        case ReporterApp(_: _other, Seq(ReporterApp(_: _with, otherArgs, _)), _) =>
+          ra.copy(reporter = new _otherwith, args = otherArgs)
+        case _ => super.visitReporterApp(ra)
+      }
+    }
   }
 
-  object NSumTransformer extends AstTransformer {
+  object WithOtherTransformer extends AstTransformer {
     override def visitReporterApp(ra: ReporterApp): ReporterApp = {
+      ra match {
+        case ReporterApp(_: _with, Seq(ReporterApp(_: _other, otherArgs, _), x), _) =>
+          ra.copy(reporter = new _otherwith, args = otherArgs :+ x)
+        case _ => super.visitReporterApp(ra)
+      }
+    }
+  }
+
+  class NeighborTransformer extends AstTransformer {
+    def visitNeighbor(ra: ReporterApp, check: Reporter => Boolean, make: String => Reporter): ReporterApp = {
       ra match {
         case ReporterApp(
                _: _sum
                , Seq(
                    ReporterApp(
                      _: _of
-                   , Seq(ReporterBlock(ReporterApp(p: _patchvariable, _, _), _), ReporterApp(_: _neighbors, _, _))
+                   , Seq(ReporterBlock(ReporterApp(p: _patchvariable, _, _), _), rapp: ReporterApp)
                    , _
                    )
                  )
                , _
-               ) =>
-          ra.copy(reporter = new _nsum(p.displayName.toLowerCase))
+             ) if check(rapp.reporter) =>
+          ra.copy(reporter = make(p.displayName.toLowerCase))
         case _ => super.visitReporterApp(ra)
       }
     }
+  }
+
+  class _nsum(val varName: String) extends Reporter {
+    override def syntax: Syntax =
+      Syntax.reporterSyntax(right = List(Syntax.AgentsetType), ret = Syntax.NumberType, agentClassString = "-TP-")
+  }
+
+  object NSumTransformer extends NeighborTransformer {
+    override def visitReporterApp(ra: ReporterApp): ReporterApp =
+      visitNeighbor(ra, (r) => r.isInstanceOf[_neighbors], (s) => new _nsum(s))
+  }
+
+  class _nsum4(val varName: String) extends Reporter {
+    override def syntax: Syntax =
+      Syntax.reporterSyntax(right = List(Syntax.AgentsetType), ret = Syntax.NumberType, agentClassString = "-TP-")
+  }
+
+  object NSum4Transformer extends NeighborTransformer {
+    override def visitReporterApp(ra: ReporterApp): ReporterApp =
+      visitNeighbor(ra, (r) => r.isInstanceOf[_neighbors4], (s) => new _nsum4(s))
   }
 
   class _patchcol extends Reporter {
@@ -229,8 +269,11 @@ object Optimizer {
      HatchFastTransformer  .visitProcedureDefinition   andThen
      SproutFastTransformer .visitProcedureDefinition   andThen
      NSumTransformer       .visitProcedureDefinition   andThen
+     NSum4Transformer      .visitProcedureDefinition   andThen
      OneOfWithTransformer  .visitProcedureDefinition   andThen
-     AnyOtherTransformer   .visitProcedureDefinition
+     AnyOtherTransformer   .visitProcedureDefinition   andThen
+     WithOtherTransformer  .visitProcedureDefinition   andThen
+     OtherWithTransformer  .visitProcedureDefinition
     )(pd)
 
 }

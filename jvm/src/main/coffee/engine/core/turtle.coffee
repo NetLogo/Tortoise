@@ -201,6 +201,10 @@ module.exports =
     _optimalNSum: (varName) ->
       @getPatchHere()._optimalNSum(varName)
 
+    # (String) => Number
+    _optimalNSum4: (varName) ->
+      @getPatchHere()._optimalNSum4(varName)
+
     # (Number) => Boolean
     jumpIfAble: (distance) ->
       canMove = @canMove(distance)

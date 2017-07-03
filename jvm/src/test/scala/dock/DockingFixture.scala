@@ -60,7 +60,12 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
 
   val implementedOptimizations = {
     val commands  = (OCommand,  Seq("CroFast", "CrtFast", "Fd1", "FdLessThan1", "HatchFast", "SproutFast"))
-    val reporters = (OReporter, Seq("AnyOther", "CountOther", "Nsum", "OneOfWith", "With", "PatchVariableDouble", "TurtleVariableDouble"))
+    val reporters = (OReporter,
+      Seq(
+        "AnyOther", "CountOther", "Nsum", "Nsum4", "OneOfWith", "With", "PatchVariableDouble",
+        "TurtleVariableDouble", "OtherWith", "WithOther"
+      )
+    )
     Seq(commands, reporters).flatMap {
       case (typ, optNames) =>
         optNames.map(
@@ -164,13 +169,14 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
     } else {
       assertResult(expectedOutput)(actualOutput)
       val (expectedModel, actualModel) = updatedJsonModels(expectedJson, actualJson)
-      org.skyscreamer.jsonassert.JSONAssert.assertEquals(
-        expectedModel, actualModel, true)  // strict = true
 
       val headlessRNGState = workspace.world.mainRNG.save
       val nashornRNGState  = nashorn.eval("Random.save();").asInstanceOf[String]
 
       assert(headlessRNGState == nashornRNGState, "divergent RNG state")
+
+      org.skyscreamer.jsonassert.JSONAssert.assertEquals(
+        expectedModel, actualModel, true)  // strict = true
 
       ()
 

@@ -136,6 +136,11 @@ trait ReporterPrims extends PrimUtils {
         s"$agents.sortOn(${handlers.fun(r.args(0), true)})"
 
       case ns: Optimizer._nsum => generateOptimalNSum(r, ns.varName)
+      case ns: Optimizer._nsum4 => generateOptimalNSum4(r, ns.varName)
+
+      case _: Optimizer._otherwith =>
+        val agents = arg(0)
+        s"$agents._optimalOtherWith(${handlers.fun(r.args(1), true)})"
 
       case _: Optimizer._oneofwith =>
         val agents = arg(0)
@@ -210,6 +215,10 @@ trait ReporterPrims extends PrimUtils {
 
   def generateOptimalNSum(r: ReporterApp, varName: String)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
     s"SelfManager.self()._optimalNSum(${jsString(varName)})"
+  }
+
+  def generateOptimalNSum4(r: ReporterApp, varName: String)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
+    s"SelfManager.self()._optimalNSum4(${jsString(varName)})"
   }
 
   // The fact that there are three different functions for `range` is intentional--incredibly intentional.
