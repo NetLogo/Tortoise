@@ -18,6 +18,7 @@ pipeline {
         sh "./sbt tortoiseJVM/test:compile"
         sh "./sbt tortoiseJVM/test:fast"
         sh "./sbt tortoiseJVM/test:language"
+        sh "./sbt tortoiseJVM/test:crawl"
         sh "./sbt tortoiseJVM/depend"
         junit 'jvm/target/test-reports/*.xml'
       }
