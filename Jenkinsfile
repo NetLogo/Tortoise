@@ -31,6 +31,22 @@ pipeline {
         junit 'js/target/test-reports/*.xml'
       }
     }
+
+    stage('NetLogoWeb') {
+      steps {
+        sh "./sbt netLogoWeb/test"
+        junit 'netlogo-web/target/test-reports/*.xml'
+      }
+    }
+
+    stage('ScalaStyle') {
+      steps {
+        sh "./sbt tortoiseCore/scalastyle"
+        sh "./sbt tortoiseJVM/scalastyle"
+        sh "./sbt tortoiseJS/scalastyle"
+        sh "./sbt macrosCore/scalastyle"
+      }
+    }
   }
 
   post {

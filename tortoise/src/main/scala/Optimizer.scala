@@ -14,6 +14,7 @@ import
 object Optimizer {
 
   // scalastyle:off class.name
+  // scalastyle:off number.of.types
   class _fdone extends Command {
     override def syntax: Syntax =
       Syntax.commandSyntax(agentClassString = "-T--")
@@ -222,6 +223,7 @@ object Optimizer {
     override def syntax: Syntax =
       Syntax.reporterSyntax(ret = PatchsetType, right = List(NumberType))
   }
+  // scalastyle:on number.of.types
   // scalastyle:on class.name
 
   object WithTransformer extends AstTransformer {
