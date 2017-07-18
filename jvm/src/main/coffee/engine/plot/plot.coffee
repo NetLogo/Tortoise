@@ -196,7 +196,7 @@ module.exports = class Plot
     oldPen       = @_currentPen
     @_currentPen = @_getPenByName(penName)
     f()
-    @_currentPlot = oldPen
+    @_currentPen = oldPen
     return
 
   # (String) => Pen

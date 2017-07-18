@@ -19,6 +19,17 @@ class TestPlotting extends FunSuite with PlottingHelpers {
     ()
   }
 
+  testPlotting("Default plot pen is the first one") { (nashorn) =>
+    implicit val n = nashorn
+    setPlot(Plots.ClassPlot.name)
+    assertPenNameIs(Plots.ClassPlot.Pens.Low.name)
+    setupPlots()
+    assertPenNameIs(Plots.ClassPlot.Pens.Low.name)
+    setup()
+    assertPenNameIs(Plots.ClassPlot.Pens.Low.name)
+    ()
+  }
+
   testPlotting("auto-plot-on / auto-plot-off") { (nashorn) =>
 
     import Plots._
