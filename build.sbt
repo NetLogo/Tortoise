@@ -3,9 +3,9 @@ import org.scalajs.sbtplugin.cross.{ CrossProject, CrossType }
 import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport.{ fullOptJS, packageJSDependencies }
 import org.scalastyle.sbt.ScalastylePlugin.scalastyle
 
-val nlDependencyVersion       = "6.0.1-839717c"
+val nlDependencyVersion       = "6.0.2-RC1-1debab9"
 
-val parserJsDependencyVersion = "0.1.1-c334e9b"
+val parserJsDependencyVersion = "0.2.0-d492194"
 
 val scalazVersion             = "7.2.10"
 

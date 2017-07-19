@@ -141,6 +141,7 @@ private[tortoise] object Freebies {
     "Agentsets::Agentsets3",
     "Agentsets::Agentsets4_2D",
     "Agentsets::LinkAgentsetDeadLinks",
+    "Agentsets::OtherWithOptsShowCorrectErrorName",
     "AgentsetBuilding::TurtleSet_2D",
     "AgentsetBuilding::PatchSet2_2D",
     "AgentsetBuilding::LinkSet_2D",
@@ -210,13 +211,11 @@ private[tortoise] object Freebies {
 
   private val taskStringReprStr = "task string representation is out of sync"
   private val taskStringReprNames = Seq(
-    "CommandLambda::*ToString1",
     "CommandLambda::*ToString2",
     "CommandLambda::*ToString3",
     "CommandLambda::*ToString4",
     "CommandLambda::*ToString5",
-    "CommandLambda::*ToString7",
-    "ReporterLambda::PrintReporterLambda"
+    "CommandLambda::*ToString7"
   )
 
   private val lameCommandStr = "This test is LAME!"
