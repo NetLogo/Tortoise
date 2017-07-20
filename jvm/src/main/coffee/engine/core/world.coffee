@@ -43,6 +43,10 @@ module.exports =
                 , onTickFunction) ->
       { selfManager: @selfManager, updater: @_updater, rng: @rng
       , breedManager: @breedManager, plotManager: @_plotManager } = miniWorkspace
+
+      @_patchesAllBlack   = true
+      @_patchesWithLabels = 0
+
       @_updater.collectUpdates()
       @_updater.registerWorldState({
         worldWidth: maxPxcor - minPxcor + 1,
@@ -75,9 +79,6 @@ module.exports =
       @turtleManager = new TurtleManager(this, @breedManager, @_updater, @rng.nextInt)
 
       @_patches = []
-
-      @_patchesAllBlack   = true
-      @_patchesWithLabels = 0
 
       @_resizeHelper(minPxcor, maxPxcor, minPycor, maxPycor, wrappingAllowedInX, wrappingAllowedInY)
 
