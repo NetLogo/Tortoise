@@ -451,10 +451,12 @@ class TestAgents extends DockingSuite {
     testCommand("ask turtles [ rt 10 fd 2 ]")
     testCommand("reset-perspective")
     testCommand("ask turtle 0 [ watch-me ]")
+    testCommand("ask turtle 0 [ die ]")
     testCommand("ask turtles [ watch-me ]")
     testCommand("reset-perspective")
     testCommand("watch patch 0 0")
     testCommand("reset-perspective")
     testCommand("ask patch 0 1 [ watch-me ]")
   }
+
 }
