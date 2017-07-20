@@ -184,47 +184,15 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
   }
 
   private def updatedJsonModels(expectedJson: String, actualJson: String) : (String, String) = {
-    nashorn.eval(s"expectedUpdates = JSON.parse('${sortedJSON(expectedJson)}');")
-    nashorn.eval(s"actualUpdates   = JSON.parse('${sortedJSON(actualJson)}');")
+    import org.json4s.native.JsonMethods.{ compact, parse, render }
+    val processJSON = ((x: String) => parse(x)) andThen render andThen compact
+    nashorn.eval(s"expectedUpdates = JSON.parse('${processJSON(expectedJson)}');")
+    nashorn.eval(s"actualUpdates   = JSON.parse('${processJSON(actualJson)}');")
     nashorn.eval("expectedModel.updates(expectedUpdates);")
     nashorn.eval("actualModel.updates(actualUpdates);")
     val expectedModel = nashorn.eval("JSON.stringify(expectedModel);").asInstanceOf[String]
     val actualModel = nashorn.eval("JSON.stringify(actualModel);").asInstanceOf[String]
     (expectedModel, actualModel)
-  }
-
-  // This is a workaround for a bug in Nashorn found in java 1.8.0u40
-  // http://bugs.java.com/bugdatabase/view_bug.do?bug_id=8068872 --RGG (4/21/15)
-  private def sortedJSON(rawJSON: String): String = {
-
-    import scala.math.Ordering
-    import org.json4s.{ JArray, JObject, JValue, native }, native.JsonMethods.{ compact, parse, render }
-
-    def denumerify(s: String): String =
-      if (s.forall(_.isDigit)) s"_$s" else s
-
-    val nashornOrdering = new Ordering[String] {
-      override def compare(x: String, y: String): Int =
-        try x.toInt.compare(y.toInt)
-        catch {
-          case e: java.lang.NumberFormatException => x.compareTo(y)
-        }
-    }
-
-    def sort(j: JValue): JValue =
-      j match {
-        case JArray(elems) =>
-          JArray(elems.map(sort))
-        case JObject(fields) =>
-          JObject(fields.sortBy(_._1)(nashornOrdering).map {
-            case (k, v) => (denumerify(k), sort(v))
-          })
-        case other =>
-          other
-      }
-
-    compact(render(sort(parse(rawJSON))))
-
   }
 
   // use single-patch world by default to keep generated JSON to a minimum
