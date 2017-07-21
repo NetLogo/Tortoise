@@ -423,7 +423,7 @@ var procedures = (function() {
             throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
           }
           return procedures["COMPATIBILITY"](SelfManager.self(),potentialMate);
-        }, "[ potential-mate -> compatibility self potential-mate]"), potentialMates);
+        }, "[ potential-mate -> compatibility self potential-mate ]"), potentialMates);
         let mate = procedures["PICK-WEIGHTED"](potentialMates,compatibilities);
         SelfManager.self().hatch(Prims.randomPoisson(world.observer.getGlobal("average-number-offspring")), "").ask(function() {
           SelfManager.self().setVariable("seedling?", true);
@@ -654,7 +654,7 @@ var procedures = (function() {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
         }
         wsum = (wsum + weight);
-      }, "[ weight ->\n    set wsum (wsum + weight)\n  ]"), weights);
+      }, "[ weight -> set wsum wsum + weight ]"), weights);
       let wret = (wsum * Prims.randomFloat(1));
       let ret = 0;
       wsum = 0;
@@ -667,7 +667,7 @@ var procedures = (function() {
           throw new Exception.ReportInterrupt(ListPrims.item(ret, options));
         }
         ret = (ret + 1);
-      }, "[ weight ->\n    set wsum (wsum + weight)\n    if wsum > wret [ report (item ret options) ]\n    set ret (ret + 1)\n  ]"), weights);
+      }, "[ weight -> set wsum wsum + weight if wsum > wret [ report item ret options ] set ret ret + 1 ]"), weights);
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {

@@ -353,12 +353,12 @@ var procedures = (function() {
             procedures["POSITION-RANDOMLY"]();
           }
         }, true);
-      }, "[ the-particle ->\n    ask the-particle [\n      position-randomly\n      while [ overlapping? ] [ position-randomly ]\n    ]\n  ]"), ListPrims.sortBy(Tasks.reporterTask(function(a, b) {
+      }, "[ the-particle -> ask the-particle [ position-randomly while overlapping?  [ position-randomly ] ] ]"), ListPrims.sortBy(Tasks.reporterTask(function(a, b) {
         if (arguments.length < 2) {
           throw new Error("anonymous procedure expected 2 inputs, but only got " + arguments.length);
         }
         return Prims.gt(a.projectionBy(function() { return SelfManager.self().getVariable("size"); }), b.projectionBy(function() { return SelfManager.self().getVariable("size"); }));
-      }, "[ [a b] -> [ size ] of a > [ size ] of b ]"), world.turtleManager.turtlesOfBreed("PARTICLES")));
+      }, "[ [a b] -> size  of a > size  of b ]"), world.turtleManager.turtlesOfBreed("PARTICLES")));
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         throw new Error("REPORT can only be used inside TO-REPORT.");
@@ -459,7 +459,7 @@ var procedures = (function() {
             throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
           }
           return (((!Prims.equality(ListPrims.item(1, theCollision), world.observer.getGlobal("particle1")) && !Prims.equality(ListPrims.item(2, theCollision), world.observer.getGlobal("particle1"))) && !Prims.equality(ListPrims.item(1, theCollision), world.observer.getGlobal("particle2"))) && !Prims.equality(ListPrims.item(2, theCollision), world.observer.getGlobal("particle2")));
-        }, "[ the-collision ->\n        item 1 the-collision != particle1 and\n        item 2 the-collision != particle1 and\n        item 1 the-collision != particle2 and\n        item 2 the-collision != particle2\n      ]")));
+        }, "[ the-collision -> item 1 the-collision != particle1 and item 2 the-collision != particle1 and item 1 the-collision != particle2 and item 2 the-collision != particle2 ]")));
         world.observer.getGlobal("particle2").ask(function() { procedures["CHECK-FOR-WALL-COLLISION"](); }, true);
         world.observer.getGlobal("particle2").ask(function() { procedures["CHECK-FOR-PARTICLE-COLLISION"](); }, true);
       }
@@ -469,7 +469,7 @@ var procedures = (function() {
             throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
           }
           return (!Prims.equality(ListPrims.item(1, theCollision), world.observer.getGlobal("particle1")) && !Prims.equality(ListPrims.item(2, theCollision), world.observer.getGlobal("particle1")));
-        }, "[ the-collision ->\n        item 1 the-collision != particle1 and\n        item 2 the-collision != particle1\n      ]")));
+        }, "[ the-collision -> item 1 the-collision != particle1 and item 2 the-collision != particle1 ]")));
       }
       if (!Prims.equality(world.observer.getGlobal("particle1"), Nobody)) {
         world.observer.getGlobal("particle1").ask(function() { procedures["CHECK-FOR-WALL-COLLISION"](); }, true);
@@ -482,7 +482,7 @@ var procedures = (function() {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
         }
         return (!Prims.equality(ListPrims.item(1, theCollision), world.observer.getGlobal("particle1")) || !Prims.equality(ListPrims.item(2, theCollision), world.observer.getGlobal("particle2")));
-      }, "[ the-collision ->\n    item 1 the-collision != particle1 or\n    item 2 the-collision != particle2\n  ]")));
+      }, "[ the-collision -> item 1 the-collision != particle1 or item 2 the-collision != particle2 ]")));
       world.observer.setGlobal("particle1", Nobody);
       world.observer.setGlobal("particle2", Nobody);
     } catch (e) {
@@ -601,7 +601,7 @@ var procedures = (function() {
         if (Prims.lt(ListPrims.first(theCollision), ListPrims.first(winner))) {
           winner = theCollision;
         }
-      }, "[ the-collision ->\n    if first the-collision < first winner [ set winner the-collision ]\n  ]"), world.observer.getGlobal("collisions"));
+      }, "[ the-collision -> if first the-collision < first winner [ set winner the-collision ] ]"), world.observer.getGlobal("collisions"));
       let dt = ListPrims.item(0, winner);
       world.observer.setGlobal("tick-delta", (dt - world.ticker.tickCount()));
       if (Prims.gt(world.observer.getGlobal("tick-delta"), 1)) {

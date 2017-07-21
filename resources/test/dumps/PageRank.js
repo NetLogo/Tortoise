@@ -217,13 +217,13 @@ var procedures = (function() {
           else {
             LinkPrims.createLinkFrom(neighbor, "LINKS").ask(function() {}, false);
           }
-        }, "[ neighbor ->\n      ifelse random 2 = 0\n        [ create-link-to neighbor ]\n        [ create-link-from neighbor ]\n    ]"), neighborChoiceList);
+        }, "[ neighbor -> ifelse random 2 = 0 [ create-link-to neighbor ] [ create-link-from neighbor ] ]"), neighborChoiceList);
         neighborChoiceList = ListPrims.sentence(Tasks.nValues(k, Tasks.reporterTask(function() {
           if (arguments.length < 0) {
             throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
           }
           return SelfManager.self();
-        }, "[self]")), neighborChoiceList);
+        }, "[ self ]")), neighborChoiceList);
       }, true);
       Tasks.forEach(Tasks.commandTask(function(node) {
         if (arguments.length < 1) {
@@ -247,9 +247,9 @@ var procedures = (function() {
               throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
             }
             return SelfManager.self();
-          }, "[self]")), neighborChoiceList);
+          }, "[ self ]")), neighborChoiceList);
         }, true);
-      }, "[ node ->\n    ask node [\n      ;; ...to make k links\n      let temp-neighbor-list neighbor-choice-list\n      repeat k\n      [\n        ;; link to one of the nodes in the neighbor list\n        ;; we remove that node from the list once it's been linked to\n        ;; however, there may be more than one copy of some nodes\n        ;; since those nodes have a higher probability of being linked to\n        let neighbor one-of temp-neighbor-list\n        set temp-neighbor-list remove neighbor temp-neighbor-list\n        ;; when we've linked to a node put another copy of it on the\n        ;; master neighbor choice list as it's now more likely to be\n        ;; linked to again\n        set neighbor-choice-list fput neighbor neighbor-choice-list\n        ifelse random 2 = 0\n          [ create-link-to neighbor ]\n          [ create-link-from neighbor ]\n      ]\n      set neighbor-choice-list sentence (n-values k [self]) neighbor-choice-list\n    ]\n  ]"), ListPrims.sublist(nodeList, (k + 1), ListPrims.length(nodeList)));
+      }, "[ node -> ask node [ let neighbor-choice-list repeat k [ let one-of temp-neighbor-list set temp-neighbor-list remove neighbor temp-neighbor-list set neighbor-choice-list fput neighbor neighbor-choice-list ifelse random 2 = 0 [ create-link-to neighbor ] [ create-link-from neighbor ] ] set neighbor-choice-list sentence n-values k [ self ] neighbor-choice-list ] ]"), ListPrims.sublist(nodeList, (k + 1), ListPrims.length(nodeList)));
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         throw new Error("REPORT can only be used inside TO-REPORT.");

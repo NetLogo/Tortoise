@@ -308,7 +308,7 @@ var procedures = (function() {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
         }
         return ListPrims.list(ListPrims.item(0, i), (1 + ListPrims.item(1, i)));
-      }, "[ i -> list (item 0 i) (1 + item 1 i) ]"), SelfManager.self().getVariable("memory")));
+      }, "[ i -> list item 0 i 1 + item 1 i ]"), SelfManager.self().getVariable("memory")));
       SelfManager.self().setVariable("memory", SelfManager.self().getVariable("memory").filter(Tasks.reporterTask(function(i) {
         if (arguments.length < 1) {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);

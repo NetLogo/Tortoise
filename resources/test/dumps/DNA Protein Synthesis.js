@@ -814,7 +814,7 @@ var procedures = (function() {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
         }
         thisProteinValue = (Dump('') + Dump(thisProteinValue) + Dump("-") + Dump(theAminoAcid.projectionBy(function() { return SelfManager.self().getVariable("value"); })));
-      }, "[ the-amino-acid ->\n    set this-protein-value (word   this-protein-value \"-\" ([value] of the-amino-acid))\n  ]"), orderedAminoAcids);
+      }, "[ the-amino-acid -> set this-protein-value word this-protein-value \"-\" value  of the-amino-acid ]"), orderedAminoAcids);
       if (!!world.turtleManager.turtlesOfBreed("PROTEINS").agentFilter(function() {
         return (Prims.equality(SelfManager.self().getVariable("strand"), strandType) && Prims.equality(SelfManager.self().getVariable("value"), thisProteinValue));
       }).isEmpty()) {
@@ -1086,7 +1086,7 @@ var procedures = (function() {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
         }
         return Prims.equality(ListPrims.first(pair), thisCodon);
-      }, "[ pair -> first pair = this-codon]")))));
+      }, "[ pair -> first pair = this-codon ]")))));
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {

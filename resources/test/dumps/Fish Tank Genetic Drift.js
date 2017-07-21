@@ -659,7 +659,7 @@ var procedures = (function() {
           }
           procedures["POSITION-AND-LINK-ALLELES"](SelfManager.self(),n,"left");
           procedures["POSITION-AND-LINK-ALLELES"](SelfManager.self(),n,"right");
-        }, "[ n ->\n      ;; assign one of the alleles to appear on the left side of the chromosome pair\n      position-and-link-alleles self n \"left\"\n      ;; assign the other allele to appear on the right side\n      position-and-link-alleles self n \"right\"\n    ]"), [1, 2, 3, 4]);
+        }, "[ n -> position-and-link-alleles self n \"left\" position-and-link-alleles self n \"right\" ]"), [1, 2, 3, 4]);
         world.turtleManager.turtlesOfBreed("ALLELES")._optimalOneOfWith(function() {
           return ((!SelfManager.self().getVariable("owned-by-fish?") && Prims.equality(SelfManager.self().getVariable("gene"), 5)) && Prims.equality(SelfManager.self().getVariable("value"), "X"));
         }).ask(function() {
@@ -919,7 +919,7 @@ var procedures = (function() {
             SelfManager.self().setVariable("side", "left");
           }, true);
         }
-      }, "[ this-gene ->\n    if count all-alleles with [gene = this-gene and side = \"left\"]  > 1 [\n      ask one-of all-alleles with [gene = this-gene] [\n        set heading 90\n        forward intra-chromosome-pair-spacing\n        set side \"right\"\n      ]\n    ]\n    if count all-alleles with [gene = this-gene and side = \"right\"] > 1 [\n      ask one-of all-alleles with [gene = this-gene] [\n        set heading 90\n        back\n        intra-chromosome-pair-spacing\n        set side \"left\"\n      ]\n    ]\n  ]"), [1, 2, 3, 4, 5]);
+      }, "[ this-gene -> if count all-alleles with gene = this-gene and side =   > 1 [ ask one-of all-alleles with gene = this-gene  [ set heading 90 forward intra-chromosome-pair-spacing set side \"right\" ] ] if count all-alleles with gene = this-gene and side =   > 1 [ ask one-of all-alleles with gene = this-gene  [ set heading 90 back intra-chromosome-pair-spacing set side \"left\" ] ] ]"), [1, 2, 3, 4, 5]);
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         throw new Error("REPORT can only be used inside TO-REPORT.");
@@ -1030,7 +1030,7 @@ var procedures = (function() {
             }, true);
           }, true);
         }, true);
-      }, "[ this-gene ->\n    ask n-of 1 alleles with [in-link-neighbor? myself and  gene = this-gene]\n    [hatch 1 [set owned-by-fish? false\n       create-link-from this-new-gamete-cell  [set hidden? true  set tie-mode \"fixed\" tie]\n      ]\n    ]\n  ]"), [1, 2, 3, 4, 5]);
+      }, "[ this-gene -> ask n-of 1 alleles with in-link-neighbor? myself and gene = this-gene  [ hatch 1 [ set owned-by-fish? false create-link-from this-new-gamete-cell [ set hidden? true set tie-mode \"fixed\" tie ] ] ] ]"), [1, 2, 3, 4, 5]);
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         throw new Error("REPORT can only be used inside TO-REPORT.");

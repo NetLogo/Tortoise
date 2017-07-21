@@ -63,7 +63,7 @@ modelConfig.plots = [(function() {
             }
             plotManager.setCurrentPen((Dump('') + Dump(thisVariation) + Dump(" ")));
             plotManager.plotPoint(thisVariation, world.turtleManager.turtlesOfBreed("BACTERIA").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("variation"), thisVariation); }).size());
-          }, "[ this-variation ->\n  set-current-plot-pen word this-variation  \" \"\n  plotxy this-variation count bacteria with [variation = this-variation]\n]"), [1, 2, 3, 4, 5, 6]);
+          }, "[ this-variation -> set-current-plot-pen word this-variation \" \" plotxy this-variation count bacteria with variation = this-variation  ]"), [1, 2, 3, 4, 5, 6]);
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
             throw new Error("REPORT can only be used inside TO-REPORT.");
@@ -165,7 +165,7 @@ var procedures = (function() {
           procedures["MAKE-FLAGELLA"]();
           SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
         }, true);
-      }, "[ this-variation ->\n    create-bacteria initial-bacteria-per-variation [\n      set label-color black\n      set size 1\n      set variation this-variation\n      make-flagella\n      setxy random-xcor random-ycor\n    ]\n  ]"), [1, 2, 3, 4, 5, 6]);
+      }, "[ this-variation -> create-bacteria initial-bacteria-per-variation [ set label-color black set size 1 set variation this-variation make-flagella setxy random-xcor random-ycor ] ]"), [1, 2, 3, 4, 5, 6]);
       procedures["VISUALIZE-BACTERIA"]();
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {

@@ -259,7 +259,7 @@ var procedures = (function() {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
         }
         return Prims.equality(p, 0);
-      }, "[ [p] -> p = 0]"))));
+      }, "[ [p] -> p = 0 ]"))));
       world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() { SelfManager.self().setVariable("momentum-difference", 0); }, true);
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
