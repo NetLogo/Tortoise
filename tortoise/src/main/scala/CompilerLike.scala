@@ -3,7 +3,7 @@
 package org.nlogo.tortoise
 
 import
-  org.nlogo.core.{ CompilerException, FrontEndInterface, Model, ProcedureDefinition, Program },
+  org.nlogo.core.{ CompilerException, FrontEndInterface, Model, Program },
     FrontEndInterface.ProceduresMap
 
 import

@@ -13,7 +13,7 @@ import
   scala.language.implicitConversions
 
 import
-  scalaz.{ syntax, Scalaz, Validation, NonEmptyList, ValidationNel },
+  scalaz.{ Scalaz, ValidationNel },
     Scalaz.ToValidationOps
 
 import

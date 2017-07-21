@@ -3,7 +3,7 @@
 package org.nlogo.tortoise
 
 import
-  JsOps.{ indented, jsFunction }
+  JsOps.{ jsFunction }
 
 import
   org.nlogo.core.ProcedureDefinition

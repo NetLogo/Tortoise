@@ -8,20 +8,17 @@ import
 import
   json.{ JsonWriter, TortoiseJson },
     JsonWriter._,
-    TortoiseJson.{ fields, JsArray, JsBool, JsObject, JsString }
+    TortoiseJson.JsObject
 
 import
-  JsOps.{ jsArrayString, jsFunction, jsString, sanitizeNil, thunkifyFunction, thunkifyProcedure }
+  JsOps.{ jsArrayString, sanitizeNil, thunkifyProcedure }
 
 import
   org.nlogo.core.{ Button, CompilerException, Monitor, Pen, Plot, Slider, Token, Widget }
 
 import
-  scalaz.{ Apply, NonEmptyList, Scalaz, Success, ValidationNel },
+  scalaz.{ Apply, Scalaz, Success, ValidationNel },
     Scalaz.ToValidationOps
-
-import
-  TortoiseSymbol.JsDeclare
 
 import
   WidgetCompilation._

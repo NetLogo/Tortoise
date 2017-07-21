@@ -8,10 +8,7 @@ import
 import
   org.nlogo.core.Shape.{ LinkLine => CoreLinkLine, RgbColor, VectorShape }
 
-import
-  org.scalacheck.{ Arbitrary, Gen, Prop },
-    Arbitrary._,
-    Prop._
+import org.scalacheck.Gen
 
 import
   org.scalatest.{ FunSuite, prop },

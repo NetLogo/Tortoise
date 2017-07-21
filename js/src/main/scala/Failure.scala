@@ -3,7 +3,7 @@
 package org.nlogo.tortoise
 
 import
-  json.{ JsonReader, JsonWritable, JsonWriter, TortoiseJson },
+  json.{ JsonWritable, JsonWriter, TortoiseJson },
     TortoiseJson.{ fields, JsInt, JsObject, JsString }
 
 import

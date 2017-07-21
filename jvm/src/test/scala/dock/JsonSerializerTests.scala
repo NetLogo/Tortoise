@@ -4,18 +4,16 @@ package org.nlogo.tortoise.dock
 
 import
   org.json4s.{ native, string2JsonInput },
-    native.JsonMethods.{ compact, pretty, parse, render => jsRender }
+    native.JsonMethods.{ pretty, parse, render => jsRender }
 
 import
-  org.nlogo.{ core, mirror, nvm, tortoise },
-    core.{ AgentKind, Model, ShapeList, ShapeParser, View },
+  org.nlogo.{ core, tortoise },
+    core.{ AgentKind, Model, ShapeList },
       ShapeList.shapesToMap,
-    mirror.{ Mirrorable, Mirrorables, Mirroring },
-    nvm.CompilerFlags,
     tortoise.json.JsonSerializer
 
 import
-  org.nlogo.headless.lang.{ Fixture, FixtureSuite }
+  org.nlogo.headless.lang.FixtureSuite
 
 import
   org.scalatest.Matchers

@@ -5,10 +5,7 @@ package org.nlogo.tortoise
 import
   java.util.Collections
 
-import
-  org.scalacheck.{ Arbitrary, Gen, Shrink, Prop },
-    Arbitrary._,
-    Prop._
+import org.scalacheck.Gen
 
 import
   org.scalatest.{ FunSuite, prop },
@@ -165,7 +162,7 @@ class TortoiseLoaderPropertyTests extends FunSuite with GeneratorDrivenPropertyC
     acyclicCompilation
       .suchThat(t => t.exists(_.dependencies.nonEmpty))
       .flatMap { tree =>
-        val (n1, i1: Int) = tree.find(_.dependencies.nonEmpty).map(n => (n, tree.indexOf(n))).get
+        val (n1, _: Int) = tree.find(_.dependencies.nonEmpty).map(n => (n, tree.indexOf(n))).get
         val (n2, i2: Int) = tree.find(_.provides == n1.dependencies.head)
                                 .map(n => (n.asInstanceOf[JsDeclare], tree.indexOf(n))).get
         val newNode = JsDeclare("foo", "", Seq(n1.provides))

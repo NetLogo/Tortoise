@@ -4,14 +4,11 @@ package org.nlogo.tortoise
 
 import scala.collection.immutable.Map
 
-import org.nlogo.api.Argument
-import org.nlogo.api.Context
 import org.nlogo.core.ErrorSource
 import org.nlogo.core.ExtensionManager
 import org.nlogo.core.Primitive
 import org.nlogo.core.PrimitiveCommand
 import org.nlogo.core.PrimitiveReporter
-import org.nlogo.core.Pure
 import org.nlogo.core.Syntax, Syntax.{ BooleanType, CommandType, ListType, StringType, WildcardType }
 
 case class ExtensionPrim(primitive: Primitive, name: String)

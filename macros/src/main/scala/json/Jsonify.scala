@@ -46,7 +46,7 @@ object Jsonify {
 
   }
 
-  def writableInternal[T: c.WeakTypeTag, S: c.WeakTypeTag](c: BlackBoxContext)(implicit toBeWritten: c.WeakTypeTag[T], res: c.WeakTypeTag[S]): c.Tree = {
+  def writableInternal[T: c.WeakTypeTag, S: c.WeakTypeTag](c: BlackBoxContext)(implicit toBeWritten: c.WeakTypeTag[T]): c.Tree = {
 
     import c.universe._
 

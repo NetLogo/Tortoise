@@ -3,21 +3,16 @@
 package org.nlogo.tortoise
 
 import
-  JavascriptObject.{ ElementValue, JsFunction, JsonValueElement }
+  JavascriptObject.{ JsFunction, JsonValueElement }
 
 import
-  json.{ JsonLibrary, JsonReader, TortoiseJson, WidgetSamples, WidgetToJson },
-    JsonLibrary.{ toNative, nativeToString },
-    JsonReader._,
-    TortoiseJson.{ fields, JsArray, JsBool, JsInt, JsObject, JsString },
+  json.{ TortoiseJson, WidgetSamples, WidgetToJson },
+    TortoiseJson.{ fields, JsArray, JsBool, JsObject, JsString },
     WidgetSamples.{ buttonNoName   => turtleButtonWidget,
                     buttonWithName => buttonWidget,
                     monitor        => monitorWidget,
                     plot           => plotWidget,
-                    reporterSlider,
-                    slider         => sliderWidget,
-                    textBox        => textBoxWidget,
-                    widgetJsons },
+                    reporterSlider },
     WidgetToJson.widget2Json
 
 import
@@ -32,7 +27,7 @@ import
     std.option.optionSyntax._
 
 import
-  WidgetCompilation.{ CompiledStringV, NotCompiled, SliderCompilation, SourceCompilation }
+  WidgetCompilation.{ CompiledStringV, SliderCompilation, SourceCompilation }
 
 import
   WidgetCompiler.formatWidget

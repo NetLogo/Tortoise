@@ -98,7 +98,6 @@ object JsonSerializer {
 
   private val logoPrimsToJson: PartialFunction[AnyRef, TortoiseJson] = {
     import ShapeToJsonConverters.shape2Json
-    import ShapeListToJsonConverter.shapeList2Json
     {
       case s: ShapeList => JsObject(fields(s.shapes.map(shape => shape.name -> shape.toJsonObj): _*))
       case s: Shape     => s.toJsonObj

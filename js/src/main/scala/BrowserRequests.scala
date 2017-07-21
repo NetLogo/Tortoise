@@ -7,7 +7,7 @@ import
     JsonReader.{ OptionalJsonReader, tortoiseJsAsStringSeq, tortoiseJs2String },
     ShapeToJsonConverters.{ readLinkShapes, readVectorShapes },
     TortoiseJson.JsObject,
-    WidgetToJson.{ widget2Json, readWidgetJson, readWidgetsJson }
+    WidgetToJson.{ readWidgetsJson }
 
 import
   org.nlogo.core.{ Model, Shape, Widget },

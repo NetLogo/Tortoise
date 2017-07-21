@@ -13,7 +13,7 @@ import
   TortoiseJson.{ fields, JsArray, JsBool, JsField, JsInt, JsObject, JsString }
 
 import
-  scalaz.{ syntax, Scalaz, ValidationNel },
+  scalaz.{ Scalaz, ValidationNel },
     Scalaz.ToValidationOps
 
 sealed trait ElemConverter[T <: Element] extends JsonConverter[T] {

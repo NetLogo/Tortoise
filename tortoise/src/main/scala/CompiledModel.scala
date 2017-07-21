@@ -7,8 +7,7 @@ import
 
 import
   org.nlogo.{ core, parse },
-    core.{ model, CompilerException, FrontEndInterface, Model, Program, View },
-      FrontEndInterface.{ ProceduresMap, NoProcedures },
+    core.{ model, CompilerException, Model, View },
     model.ModelReader,
     parse.CompilerUtilities
 

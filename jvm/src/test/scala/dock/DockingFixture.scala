@@ -20,10 +20,10 @@ import
     api.{ Dump, FileIO },
     headless.{ lang, test => headlessTest },
       lang.Fixture,
-      headlessTest.{ RuntimeError, TestMode, Command, Reporter, CompileError, Success },
+      headlessTest.{ RuntimeError, TestMode, Command, Reporter, Success },
     core.{ model, Model },
       model.ModelReader,
-    nvm.Optimizations.{ Command => OCommand, OptimizationList, Reporter => OReporter }
+    nvm.Optimizations.{ Command => OCommand, Reporter => OReporter }
 
 import
   org.scalatest.{ Assertions, exceptions, fixture },

@@ -7,9 +7,7 @@ import javax.script.ScriptContext
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory
 
 import
-  org.nlogo.{ api, core },
-    api.MersenneTwisterFast,
-    core.{ LogoList, Nobody, Resource }
+  org.nlogo.core.{ LogoList, Nobody, Resource }
 
 // There are two main entry points here: run() and eval().  The former runs compiled commands and
 // collects all the lines of output and JSON updates generated.  The latter runs a compiled reporter

@@ -5,9 +5,8 @@ package org.nlogo.tortoise
 import BrowserCompiler.literalParser
 
 import
-  org.nlogo.core.{ model, Model, Shape, Slider, View },
-    model.ModelReader,
-    Shape.LinkLine
+  org.nlogo.core.{ model, Model, Slider, View },
+    model.ModelReader
 
 import
   json.{ JsonLibrary, JsonLinkLine, JsonLinkShape, JsonReader, JsonVectorShape, ShapeToJsonConverters, TortoiseJson, WidgetToJson },
@@ -20,8 +19,7 @@ import
 import
   scala.{ collection, scalajs },
     collection.immutable.ListMap,
-    scalajs.js,
-      js.JSON
+    scalajs.js
 
 import utest._
 

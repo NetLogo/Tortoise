@@ -6,7 +6,7 @@ import
   JsOps.{ jsArrayString, jsFunction, indented }
 
 import
-  org.nlogo.core.{ AstNode, CommandBlock, Dump, LogoList, Nobody, Pure, ReporterApp,
+  org.nlogo.core.{ AstNode, CommandBlock, Dump, LogoList, Nobody, ReporterApp,
                    ReporterBlock, Statements, Token }
 
 trait Handlers extends EveryIDProvider {

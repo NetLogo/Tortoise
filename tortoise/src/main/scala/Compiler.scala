@@ -94,8 +94,8 @@ object Compiler extends CompilerLike {
   def compileMoreProcedures(model:         Model,
                             program:       Program,
                             oldProcedures: ProceduresMap)
-                  (implicit compilerFlags: CompilerFlags):
-                  (Seq[ProcedureDefinition], Program, ProceduresMap) = {
+                  //(implicit compilerFlags: CompilerFlags)
+                  : (Seq[ProcedureDefinition], Program, ProceduresMap) = {
     val (defs, results): (Seq[ProcedureDefinition], StructureResults) =
       frontEnd.frontEnd(model.code,
                         program = program,
@@ -152,10 +152,10 @@ object Compiler extends CompilerLike {
 
   private def compile(logo:          String,
                       commands:      Boolean,
-                      oldProcedures: ProceduresMap = NoProcedures,
-                      program:       Program       = Program.empty(),
+                      oldProcedures: ProceduresMap,// = NoProcedures,
+                      program:       Program,//       = Program.empty(),
                       raw:           Boolean       = false)
-            (implicit compilerFlags: CompilerFlags = CompilerFlags.Default): String = {
+            (implicit compilerFlags: CompilerFlags): String = {
     val header           = SourceWrapping.getHeader(AgentKind.Observer, commands)
     val footer           = SourceWrapping.getFooter(commands)
     val wrapped          = s"$header$logo$footer"
@@ -185,8 +185,8 @@ object Compiler extends CompilerLike {
   private def worldConfig: JsStatement =
     genConfig("world", Map("resizeWorld" -> jsFunction(Seq("agent"))))
 
-  private def exportingConfig: JsStatement =
-    genConfig("exporting", Map("output" -> jsFunction(Seq("filename"))))
+  //private def exportingConfig: JsStatement =
+    //genConfig("exporting", Map("output" -> jsFunction(Seq("filename"))))
 
   private def genConfig(configName: String, functionDefs: Map[String, String]): JsStatement = {
 

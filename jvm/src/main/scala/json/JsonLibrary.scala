@@ -3,7 +3,7 @@
 package org.nlogo.tortoise.json
 
 import
-  org.json4s.{ JArray, JBool, JDecimal, JDouble, JField, JInt, JLong, JNothing, JNull, JObject, JSet, JString, JValue, native },
+  org.json4s.{ JArray, JBool, JDecimal, JDouble, JField, JInt, JLong, JNothing, JNull, JObject, JString, JValue, native },
     native.JsonMethods.{ compact, render }
 
 import

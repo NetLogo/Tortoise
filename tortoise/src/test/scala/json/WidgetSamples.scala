@@ -11,10 +11,7 @@ import
     StringInput.StringLabel
 
 import
-  scalaz.Scalaz.ToValidationOps
-
-import
-  TortoiseJson.{ fields, JsArray, JsBool, JsDouble, JsInt, JsNull, JsObject, JsString }
+  TortoiseJson.{ fields, JsArray, JsBool, JsDouble, JsInt, JsObject, JsString }
 
 object WidgetSamples {
 

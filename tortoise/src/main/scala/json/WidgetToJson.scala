@@ -6,16 +6,15 @@ import
   JsonReader.JsonSequenceReader
 
 import
-  org.nlogo.core.{ Button, Chooser, InputBox, Monitor, NumericInput, Output
-                 , Pen, Plot, Slider, StringInput, Switch, TextBox, View, Widget },
-    NumericInput.{ ColorLabel }
+  org.nlogo.core.{ Button, Chooser, InputBox, Monitor, Output
+                 , Pen, Plot, Slider, Switch, TextBox, View, Widget }
 
 import
   scalaz.{ Scalaz, ValidationNel },
     Scalaz.ToValidationOps
 
 import
-  TortoiseJson.{ fields, JsBool, JsDouble, JsField, JsInt, JsObject, JsString }
+  TortoiseJson.{ JsField, JsObject, JsString }
 
 object WidgetToJson {
   implicit object readWidgetJson extends JsonReader[TortoiseJson, Widget] {

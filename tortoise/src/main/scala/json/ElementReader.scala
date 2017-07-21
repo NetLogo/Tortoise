@@ -31,7 +31,6 @@ object ElementReader {
       s"Expected an array of ints, found $json"
   }
   implicit object tortoiseJs2RgbColor extends JsonReader[TortoiseJson, RgbColor] {
-    import scala.util.matching.Regex
     def apply(json: TortoiseJson): ValidationNel[String, RgbColor] = {
       val colorRegex = """rgba\((\d+), (\d+), (\d+), ([.0-9]+)\)""".r
       json match {

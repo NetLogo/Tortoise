@@ -14,10 +14,9 @@ import
     StringInput.{ CommandLabel, StringLabel, ReporterLabel }
 
 import
-  scalaz.{ syntax, Scalaz, Validation, NonEmptyList, ValidationNel },
+  scalaz.{ Scalaz, Validation, NonEmptyList, ValidationNel },
     Validation.FlatMap.ValidationFlatMapRequested,
-    Scalaz.ToValidationOps,
-    syntax.std.option._
+    Scalaz.ToValidationOps
 
 import
   TortoiseJson.{ JsArray, JsBool, JsDouble, JsInt, JsNull, JsObject, JsString }
