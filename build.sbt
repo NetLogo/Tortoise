@@ -1,7 +1,7 @@
 import AddSettings.sbtFiles
 import org.scalajs.sbtplugin.cross.{ CrossProject, CrossType }
 import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport.{ fullOptJS, packageJSDependencies }
-import org.scalastyle.sbt.ScalastylePlugin.scalastyle
+import org.scalastyle.sbt.ScalastylePlugin.projectSettings
 
 val nlDependencyVersion       = "6.0.2-RC1-1debab9"
 
@@ -16,7 +16,7 @@ val commonSettings =
     version       := "1.0",
     // Compilation settings
     crossPaths    := false, // we're not cross-building for different Scala versions
-    scalaVersion  := "2.12.1",
+    scalaVersion  := "2.12.2",
     scalacOptions ++=
       "-deprecation -unchecked -feature -Xcheckinit -encoding us-ascii -Xlint -Xfatal-warnings -Ywarn-value-discard -language:_ -Xmax-classfile-name 240".split(" ").toSeq,
     // Dependencies
