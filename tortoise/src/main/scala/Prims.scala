@@ -9,7 +9,7 @@ import
   JsOps.{ indented, jsString, jsStringEscaped }
 
 import
-  org.nlogo.core.{ CommandBlock, CompilerException, prim, Reporter, ReporterApp, Statement, Token }
+  org.nlogo.core.{ AstNode, CommandBlock, CompilerException, prim, Reporter, ReporterApp, Statement, Token }
 
 // The Prim traits are split apart as follows
 //                  JsOps
@@ -171,12 +171,12 @@ trait ReporterPrims extends PrimUtils {
       case p: prim.etc._outlinkto        => s"LinkPrims.outLinkTo(${jsString(fixBN(p.breedName))}, ${arg(0)})"
 
       case l: prim._reporterlambda => {
-        val localSource = getSourceInRange(compilerContext.source, r.sourceLocation.start, r.sourceLocation.end)
-        s"Tasks.reporterTask(${handlers.task(r.args(0), isReporter = true, args = l.argumentNames.map(handlers.ident))}, ${jsStringEscaped(localSource)})"
+        val task = generateTask(r.args(0), true, l.argumentNames.map(handlers.ident), l.source)
+        s"Tasks.reporterTask($task)"
       }
       case l: prim._commandlambda  => {
-        val localSource = getSourceInRange(compilerContext.source, r.sourceLocation.start, r.sourceLocation.end)
-        s"Tasks.commandTask(${handlers.task(r.args(0), isReporter = false, args = l.argumentNames.map(handlers.ident))}, ${jsStringEscaped(localSource)})"
+        val task = generateTask(r.args(0), false, l.argumentNames.map(handlers.ident), l.source)
+        s"Tasks.commandTask($task)"
       }
 
       case rr: prim.etc._runresult =>
@@ -200,12 +200,9 @@ trait ReporterPrims extends PrimUtils {
   // scalastyle:on method.length
   // scalastyle:on cyclomatic.complexity
 
-  private def getSourceInRange(source: String, start: Int, end: Int): String = {
-    if (end < source.length)
-      source.substring(start, end)
-    else
-      source
-  }
+  private def generateTask(node: AstNode, isReporter: Boolean, args: Seq[String], source: Option[String])
+    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String =
+    s"${handlers.task(node, isReporter, args)}, ${jsStringEscaped(source.getOrElse(""))}"
 
   def generateOf(r: ReporterApp)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
     val agents = handlers.reporter(r.args(1))
@@ -213,11 +210,11 @@ trait ReporterPrims extends PrimUtils {
     s"$agents.projectionBy($func)"
   }
 
-  def generateOptimalNSum(r: ReporterApp, varName: String)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
+  def generateOptimalNSum(r: ReporterApp, varName: String): String = {
     s"SelfManager.self()._optimalNSum(${jsString(varName)})"
   }
 
-  def generateOptimalNSum4(r: ReporterApp, varName: String)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
+  def generateOptimalNSum4(r: ReporterApp, varName: String): String = {
     s"SelfManager.self()._optimalNSum4(${jsString(varName)})"
   }
 
@@ -307,7 +304,7 @@ trait CommandPrims extends PrimUtils {
   // scalastyle:on method.length
   // scalastyle:on cyclomatic.complexity
 
-  def getReferenceName(s: Statement)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String =
+  def getReferenceName(s: Statement): String =
     s.args(0).asInstanceOf[ReporterApp].reporter match {
       case p: prim._patchvariable => p.displayName.toLowerCase
       case x                      => failCompilation(s"unknown reference: ${x.getClass.getName}", s.instruction.token)
@@ -449,7 +446,6 @@ trait CommandPrims extends PrimUtils {
 
   def optimalGenerateSprout(s: Statement)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
     val n = handlers.reporter(s.args(0))
-    val body = handlers.fun(s.args(1))
     val breedName =
       s.command match {
         case x: Optimizer._sproutfast => x.breedName
@@ -467,7 +463,6 @@ trait CommandPrims extends PrimUtils {
 
   def optimalGenerateHatch(s: Statement, breedName: String)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
     val n = handlers.reporter(s.args(0))
-    val body = handlers.fun(s.args(1))
     s"SelfManager.self().hatch($n, ${jsString(breedName)});"
   }
 
@@ -481,7 +476,7 @@ trait CommandPrims extends PrimUtils {
         |}""".stripMargin
   }
 
-  def genAsk(agents: String, shouldShuffle: Boolean, body: String)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String =
+  def genAsk(agents: String, shouldShuffle: Boolean, body: String): String =
     s"""$agents.ask($body, $shouldShuffle);"""
 }
 

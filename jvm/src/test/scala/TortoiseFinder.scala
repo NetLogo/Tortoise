@@ -10,7 +10,7 @@ import
   org.nlogo.headless.test.{ AbstractFixture, Command, Finder, LanguageTest, NormalMode, CommandTests, TestMode, ReporterTests }
 
 import
-  org.nlogo.tortoise.tags.{ SlowTest => TortoiseSlowTag, LanguageTest => TortoiseLanguageTag}
+  org.nlogo.tortoise.tags.{ LanguageTest => TortoiseLanguageTag}
 
 private[tortoise] trait TortoiseFinder extends Finder with BeforeAndAfterAll with BrowserReporter with TestLogger {
 
@@ -71,7 +71,7 @@ class TestReporters extends ReporterTests with TortoiseFinder {
   import Freebies._
   override val freebies = Map(
     "Version::Version_2D" -> "Assumes JVM NetLogo version numbers"
-  ) ++ evalNotSupportedReporters ++ incErrorDetectReporters ++ taskStringReprReporters
+  ) ++ evalNotSupportedReporters ++ incErrorDetectReporters
 }
 
 class TestCommands extends CommandTests with TortoiseFinder {
@@ -90,7 +90,6 @@ private[tortoise] object Freebies {
 
   def incErrorDetectReporters    = asFreebieMap(incErrorDetectReporterNames,    incErrorDetectStr)
   def evalNotSupportedReporters  = asFreebieMap(evalNotSupportedReporterNames,  evalNotSupportedStr)
-  def taskStringReprReporters    = asFreebieMap(taskStringReprNames,            taskStringReprStr)
 
   private def asFreebieMap(names: Seq[String], msg: String) = names.map(_ -> msg).toMap
 
@@ -207,15 +206,6 @@ private[tortoise] object Freebies {
     "Run::LuisIzquierdoRunResult1",
     "Run::LuisIzquierdoRunResult2",
     "Run::run-evaluate-string-input-only-once"
-  )
-
-  private val taskStringReprStr = "task string representation is out of sync"
-  private val taskStringReprNames = Seq(
-    "CommandLambda::*ToString2",
-    "CommandLambda::*ToString3",
-    "CommandLambda::*ToString4",
-    "CommandLambda::*ToString5",
-    "CommandLambda::*ToString7"
   )
 
   private val lameCommandStr = "This test is LAME!"
