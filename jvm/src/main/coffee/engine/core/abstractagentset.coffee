@@ -26,7 +26,7 @@ module.exports =
 
     # (() => Boolean) => AbstractAgentSet[T]
     agentFilter: (f) ->
-      @filter(@_lazyGetSelfManager().askAgent(f))
+      @filter(Iterator.withBoolCheck(@_lazyGetSelfManager().askAgent(f)))
 
     # (() => Boolean) => Boolean
     agentAll: (f) ->
@@ -274,16 +274,13 @@ module.exports =
       else
         undefined
 
+    # (() => Boolean) => AgentSet
     _optimalOtherWith: (f) ->
       self = @_lazyGetSelfManager().self()
       filterer =
         (x) ->
           if x != self
-            y = x.projectionBy(f)
-            if y is true or y is false
-              y
-            else
-              throw new Error("withExpectedBooleanValue #{x} #{y}")
+            y = Iterator.boolOrError(x, x.projectionBy(f))
           else
             false
       @copyWithNewAgents(@iterator().filter(filterer))
@@ -292,9 +289,5 @@ module.exports =
     _optimalOneOfWith: (f) ->
       finder =
         (x) ->
-          y = x.projectionBy(f)
-          if y is true or y is false
-            y
-          else
-            throw new Error("withExpectedBooleanValue #{x} #{y}")
+          y = Iterator.boolOrError(x, x.projectionBy(f))
       @shufflerator().find(finder, Nobody)
