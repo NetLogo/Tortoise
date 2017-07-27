@@ -184,8 +184,9 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
   }
 
   private def updatedJsonModels(expectedJson: String, actualJson: String) : (String, String) = {
-    import org.json4s.native.JsonMethods.{ compact, parse, render }
-    val processJSON = ((x: String) => parse(x)) andThen render andThen compact
+    import play.api.libs.json.Json
+
+    val processJSON = ((x: String) => Json.parse(x))// andThen render andThen compact
     nashorn.eval(s"expectedUpdates = JSON.parse('${processJSON(expectedJson)}');")
     nashorn.eval(s"actualUpdates   = JSON.parse('${processJSON(actualJson)}');")
     nashorn.eval("expectedModel.updates(expectedUpdates);")

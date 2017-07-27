@@ -2,9 +2,7 @@
 
 package org.nlogo.tortoise.dock
 
-import
-  org.json4s.{ native, string2JsonInput },
-    native.JsonMethods.{ pretty, parse, render => jsRender }
+import play.api.libs.json.{ Json }
 
 import
   org.nlogo.{ core, tortoise },
@@ -85,13 +83,13 @@ class JsonSerializerTests extends FixtureSuite with Matchers {
              |  }]
              |}""".stripMargin
       ) map {
-        case (shapeName, json) => (shapeList.shape(shapeName), jsRender(parse(json)))
+        case (shapeName, json) => (shapeList.shape(shapeName), Json.stringify(Json.parse(json)))
       }
 
     shapes foreach {
       case (shape, expectedJSON) =>
-        val json = jsRender(parse(JsonSerializer.serialize(shape)))
-        pretty(json) should equal(pretty(expectedJSON))
+        val json = Json.stringify(Json.parse(JsonSerializer.serialize(shape)))
+        json should equal(expectedJSON)
     }
 
   }

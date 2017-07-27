@@ -23,11 +23,11 @@ import
     util.matching.Regex
 
 class ModelDumpTests extends FunSuite {
+  val rhinoEngine    = (new Rhino).engine
+  val engineSource   = resourceText("/tortoise-compiler.js")
+  rhinoEngine.eval(engineSource)
 
   val compilationFunction: Array[AnyRef] => (JMap[String, AnyRef], JList[AnyRef]) = {
-    val engineSource   = resourceText("/tortoise-compiler.js")
-    val rhinoEngine    = (new Rhino).engine
-    rhinoEngine.eval(engineSource)
     rhinoEngine.function("function(s) { return (new BrowserCompiler()).fromNlogo(s); }") andThen {
       compilationObject =>
         import scala.collection.JavaConverters.mapAsScalaMap

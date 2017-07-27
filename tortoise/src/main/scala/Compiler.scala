@@ -100,7 +100,8 @@ object Compiler extends CompilerLike {
       frontEnd.frontEnd(model.code,
                         program = program,
                         oldProcedures = oldProcedures,
-                        extensionManager = NLWExtensionManager)
+                        extensionManager = NLWExtensionManager,
+                        subprogram = false)
     (defs, results.program, results.procedures)
   }
 

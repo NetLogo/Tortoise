@@ -35,8 +35,9 @@ MapExtension
   nlmap:get (nlmap:remove (nlmap:add basic "grapes" 9001) "grapes") "oranges" => 6
   nlmap:get (nlmap:remove (nlmap:add basic "grapes" 9001) "apples") "grapes" => 9001
   nlmap:get (nlmap:remove (nlmap:add basic "grapes" 9001) "apples") "oranges" => 6
+  codap:init ([[] ->]) => COMPILER ERROR No such primitive: CODAP:INIT
 
 CodapExtension
-  extensions [codap]
+  extensions [codap nlmap]
   O> codap:init ([[] ->])
   O> codap:call (nlmap:from-list [])

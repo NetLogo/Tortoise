@@ -23,14 +23,14 @@ val commonSettings =
     resolvers           += sbt.Resolver.bintrayRepo("netlogo", "NetLogoHeadless"),
     libraryDependencies ++= Seq(
       "org.nlogo" % "netlogoheadless" % nlDependencyVersion,
-      "org.mozilla" % "rhino" % "1.7.7", // see jsengine/Rhino.scala for more information
-      "org.json4s" %% "json4s-native" % "3.5.1",
+      "org.mozilla" % "rhino" % "1.7.7.1", // see jsengine/Rhino.scala for more information
       "org.scalaz" %% "scalaz-core" % scalazVersion,
       "com.lihaoyi" %% "scalatags" % "0.6.3" % "test",
       "org.scalatest" %% "scalatest" % "3.0.1" % "test",
       "org.skyscreamer" % "jsonassert" % "1.5.0" % "test",
       "org.reflections" % "reflections" % "0.9.11" % "test",
       "org.scalacheck" %% "scalacheck" % "1.13.4" % "test",
+      "com.typesafe.play" %% "play-json" % "2.6.1",
       // Bring in headless test code/framework for our tests
       "org.nlogo" % "netlogoheadless" % nlDependencyVersion % "test" classifier "tests"),
     ivyScala      := ivyScala.value map { _.copy(overrideScalaVersion = true) }, // needed to keep scala.js happy
@@ -107,6 +107,7 @@ lazy val tortoise = CrossProject("tortoise", file("."), new CrossType {
       Seq(
         "com.lihaoyi" %%%! "utest" % "0.4.5",
         "org.nlogo"   %%%! "parser-js" % parserJsDependencyVersion,
+        "com.typesafe.play" %%% "play-json" % "2.6.1",
         "org.scalaz" %%% "scalaz-core" % scalazVersion)
     })
 
