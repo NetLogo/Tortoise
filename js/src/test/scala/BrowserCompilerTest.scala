@@ -16,10 +16,9 @@ import
     TortoiseJson.{ fields, JsArray, JsObject, JsString },
     WidgetToJson.widget2Json
 
-import
-  scala.{ collection, scalajs },
-    collection.immutable.ListMap,
-    scalajs.js
+import scala.collection.immutable.ListMap
+
+import scala.scalajs.js
 
 import utest._
 
@@ -78,6 +77,18 @@ object BrowserCompilerTest extends TestSuite {
       withWidget(compiledModel, "slider", {slider =>
           assert(slider[JsObject]("compilation").apply[Boolean]("success") == false)
           assert(slider[JsObject]("compilation").apply[JsArray]("messages").elems.nonEmpty) })
+    }
+
+    "TestModelWithExtension"-{
+      val compiledModel = compileModel(validModel.copy(code = "extensions [codap] to go codap:init [->] end " + validModel.code))
+      assert(isSuccess(compiledModel))
+      assert(compiledModel.apply[JsObject]("model").apply[String]("result").contains("""Extensions["CODAP"].prims["INIT"]("""))
+    }
+
+    "TestModelWithBadExtension"-{
+      val compiledModel = compileModel(validModel.copy(code = "to go nodap:init [->] end " + validModel.code))
+      assert(isSuccess(compiledModel) == false)
+      assert(compiledModel.apply[JsObject]("model").apply[JsArray]("result").apply[JsObject](0).apply[String]("message") == "No such primitive: NODAP:INIT")
     }
 
     "testCompilesCommands"-{
@@ -191,6 +202,7 @@ object BrowserCompilerTest extends TestSuite {
     // into TortoiseJson objects
     val widgetsString = compiledModel[String]("widgets")
     val widgetsJson = JsonLibrary.toTortoise(js.eval(widgetsString))
+
     widgetsJson match {
       case JsArray(elems) =>
         val compiledWidgets = elems.collect { case jo : JsObject => jo }
