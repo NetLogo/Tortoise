@@ -45,7 +45,7 @@ if (typeof javax !== "undefined") {
 modelConfig.plots = [(function() {
   var name    = 'populations';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
-  var pens    = [new PenBundle.Pen('sheep', plotOps.makePenOps, false, new PenBundle.State(105.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
+  var pens    = [new PenBundle.Pen('sheep', plotOps.makePenOps, false, new PenBundle.State(27.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('populations', 'sheep')(function() {
         try {
@@ -62,7 +62,7 @@ modelConfig.plots = [(function() {
       });
     });
   }),
-  new PenBundle.Pen('wolves', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
+  new PenBundle.Pen('wolves', plotOps.makePenOps, false, new PenBundle.State(10.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('populations', 'wolves')(function() {
         try {
@@ -83,8 +83,8 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('populations', 'grass / 4')(function() {
         try {
-          if (world.observer.getGlobal("grass?")) {
-            plotManager.plotValue(Prims.div(world.observer.getGlobal("grass"), 4));
+          if (Prims.equality(world.observer.getGlobal("model-version"), "sheep-wolves-grass")) {
+            plotManager.plotValue(Prims.div(procedures["GRASS"]().size(), 4));
           }
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -102,7 +102,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "time", "pop.", true, true, 0.0, 100.0, 0.0, 100.0, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "SHEEP", singular: "a-sheep", varNames: [] }, { name: "WOLVES", singular: "wolf", varNames: [] }])(["energy"], [])(["initial-number-sheep", "sheep-gain-from-food", "sheep-reproduce", "initial-number-wolves", "wolf-gain-from-food", "wolf-reproduce", "grass?", "grass-regrowth-time", "show-energy?", "grass", "max-sheep"], ["initial-number-sheep", "sheep-gain-from-food", "sheep-reproduce", "initial-number-wolves", "wolf-gain-from-food", "wolf-reproduce", "grass?", "grass-regrowth-time", "show-energy?"], ["countdown"], -25, 25, -25, 25, 9.0, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "SHEEP", singular: "a-sheep", varNames: [] }, { name: "WOLVES", singular: "wolf", varNames: [] }])(["energy"], [])(["initial-number-sheep", "sheep-gain-from-food", "sheep-reproduce", "initial-number-wolves", "wolf-gain-from-food", "wolf-reproduce", "grass-regrowth-time", "show-energy?", "model-version", "max-sheep"], ["initial-number-sheep", "sheep-gain-from-food", "sheep-reproduce", "initial-number-wolves", "wolf-gain-from-food", "wolf-reproduce", "grass-regrowth-time", "show-energy?", "model-version"], ["countdown"], -25, 25, -25, 25, 10.0, true, true, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;
 var ExportPrims = workspace.exportPrims;
 var LayoutManager = workspace.layoutManager;
@@ -124,9 +124,13 @@ var procedures = (function() {
   temp = (function() {
     try {
       world.clearAll();
-      world.observer.setGlobal("max-sheep", 100000);
-      world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", 55); }, true);
-      if (world.observer.getGlobal("grass?")) {
+      if (Meta.isWeb) {
+        world.observer.setGlobal("max-sheep", 10000);
+      }
+      else {
+        world.observer.setGlobal("max-sheep", 30000);
+      }
+      if (Prims.equality(world.observer.getGlobal("model-version"), "sheep-wolves-grass")) {
         world.patches().ask(function() {
           SelfManager.self().setPatchVariable("pcolor", ListPrims.oneOf([55, 35]));
           if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55)) {
@@ -137,23 +141,25 @@ var procedures = (function() {
           }
         }, true);
       }
-      BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("SHEEP").getSpecialName(), "sheep")
+      else {
+        world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", 55); }, true);
+      }
       world.turtleManager.createTurtles(world.observer.getGlobal("initial-number-sheep"), "SHEEP").ask(function() {
+        SelfManager.self().setVariable("shape", "sheep");
         SelfManager.self().setVariable("color", 9.9);
         SelfManager.self().setVariable("size", 1.5);
         SelfManager.self().setVariable("label-color", (105 - 2));
         SelfManager.self().setVariable("energy", Prims.random((2 * world.observer.getGlobal("sheep-gain-from-food"))));
         SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
       }, true);
-      BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("WOLVES").getSpecialName(), "wolf")
       world.turtleManager.createTurtles(world.observer.getGlobal("initial-number-wolves"), "WOLVES").ask(function() {
+        SelfManager.self().setVariable("shape", "wolf");
         SelfManager.self().setVariable("color", 0);
         SelfManager.self().setVariable("size", 2);
         SelfManager.self().setVariable("energy", Prims.random((2 * world.observer.getGlobal("wolf-gain-from-food"))));
         SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
       }, true);
       procedures["DISPLAY-LABELS"]();
-      world.observer.setGlobal("grass", world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55); }).size());
       world.ticker.reset();
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -178,24 +184,23 @@ var procedures = (function() {
       }
       world.turtleManager.turtlesOfBreed("SHEEP").ask(function() {
         procedures["MOVE"]();
-        if (world.observer.getGlobal("grass?")) {
+        if (Prims.equality(world.observer.getGlobal("model-version"), "sheep-wolves-grass")) {
           SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") - 1));
           procedures["EAT-GRASS"]();
+          procedures["DEATH"]();
         }
-        procedures["DEATH"]();
         procedures["REPRODUCE-SHEEP"]();
       }, true);
       world.turtleManager.turtlesOfBreed("WOLVES").ask(function() {
         procedures["MOVE"]();
         SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") - 1));
-        procedures["CATCH-SHEEP"]();
+        procedures["EAT-SHEEP"]();
         procedures["DEATH"]();
         procedures["REPRODUCE-WOLVES"]();
       }, true);
-      if (world.observer.getGlobal("grass?")) {
+      if (Prims.equality(world.observer.getGlobal("model-version"), "sheep-wolves-grass")) {
         world.patches().ask(function() { procedures["GROW-GRASS"](); }, true);
       }
-      world.observer.setGlobal("grass", world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55); }).size());
       world.ticker.tick();
       procedures["DISPLAY-LABELS"]();
     } catch (e) {
@@ -304,8 +309,8 @@ var procedures = (function() {
       }
     }
   });
-  procs["catchSheep"] = temp;
-  procs["CATCH-SHEEP"] = temp;
+  procs["eatSheep"] = temp;
+  procs["EAT-SHEEP"] = temp;
   temp = (function() {
     try {
       if (Prims.lt(SelfManager.self().getVariable("energy"), 0)) {
@@ -348,10 +353,31 @@ var procedures = (function() {
   procs["GROW-GRASS"] = temp;
   temp = (function() {
     try {
+      if (Prims.equality(world.observer.getGlobal("model-version"), "sheep-wolves-grass")) {
+        throw new Exception.ReportInterrupt(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55); }));
+      }
+      else {
+        throw new Exception.ReportInterrupt(0);
+      }
+      throw new Error("Reached end of reporter procedure without REPORT being called.");
+    } catch (e) {
+      if (e instanceof Exception.ReportInterrupt) {
+        return e.message;
+      } else if (e instanceof Exception.StopInterrupt) {
+        throw new Error("STOP is not allowed inside TO-REPORT.");
+      } else {
+        throw e;
+      }
+    }
+  });
+  procs["grass"] = temp;
+  procs["GRASS"] = temp;
+  temp = (function() {
+    try {
       world.turtles().ask(function() { SelfManager.self().setVariable("label", ""); }, true);
       if (world.observer.getGlobal("show-energy?")) {
         world.turtleManager.turtlesOfBreed("WOLVES").ask(function() { SelfManager.self().setVariable("label", NLMath.round(SelfManager.self().getVariable("energy"))); }, true);
-        if (world.observer.getGlobal("grass?")) {
+        if (Prims.equality(world.observer.getGlobal("model-version"), "sheep-wolves-grass")) {
           world.turtleManager.turtlesOfBreed("SHEEP").ask(function() { SelfManager.self().setVariable("label", NLMath.round(SelfManager.self().getVariable("energy"))); }, true);
         }
       }
@@ -375,6 +401,6 @@ world.observer.setGlobal("sheep-reproduce", 4);
 world.observer.setGlobal("initial-number-wolves", 50);
 world.observer.setGlobal("wolf-gain-from-food", 20);
 world.observer.setGlobal("wolf-reproduce", 5);
-world.observer.setGlobal("grass?", false);
 world.observer.setGlobal("grass-regrowth-time", 30);
 world.observer.setGlobal("show-energy?", false);
+world.observer.setGlobal("model-version", "sheep-wolves");

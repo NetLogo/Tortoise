@@ -43,7 +43,7 @@ if (typeof javax !== "undefined") {
   }
 }
 modelConfig.plots = [];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "ROCKETS", singular: "rocket", varNames: ["terminal-y-vel"] }, { name: "FRAGS", singular: "frag", varNames: ["dim"] }])(["col", "x-vel", "y-vel"], [])(["trails?", "fireworks", "fragments", "initial-x-vel", "initial-y-vel", "gravity", "fade-amount", "countdown"], ["trails?", "fireworks", "fragments", "initial-x-vel", "initial-y-vel", "gravity", "fade-amount"], [], -90, 90, -90, 90, 3.0, true, false, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "ROCKETS", singular: "rocket", varNames: ["terminal-y-vel"] }, { name: "FRAGS", singular: "frag", varNames: ["dim"] }])(["col", "x-vel", "y-vel"], [])(["trails?", "max-fireworks", "fragments", "initial-x-vel", "initial-y-vel", "gravity", "fade-amount", "countdown"], ["trails?", "max-fireworks", "fragments", "initial-x-vel", "initial-y-vel", "gravity", "fade-amount"], [], -90, 90, -90, 90, 3.0, true, false, turtleShapes, linkShapes, function(){});
 var BreedManager = workspace.breedManager;
 var ExportPrims = workspace.exportPrims;
 var LayoutManager = workspace.layoutManager;
@@ -107,7 +107,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       world.clearDrawing();
-      world.turtleManager.createTurtles(Prims.random(world.observer.getGlobal("fireworks")), "ROCKETS").ask(function() {
+      world.turtleManager.createTurtles((Prims.random(world.observer.getGlobal("max-fireworks")) + 1), "ROCKETS").ask(function() {
         SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), world.topology.minPycor);
         SelfManager.self().setVariable("x-vel", (Prims.randomFloat((2 * world.observer.getGlobal("initial-x-vel"))) - world.observer.getGlobal("initial-x-vel")));
         SelfManager.self().setVariable("y-vel", (Prims.randomFloat(world.observer.getGlobal("initial-y-vel")) + (world.observer.getGlobal("initial-y-vel") * 2)));
@@ -207,7 +207,7 @@ var procedures = (function() {
   return procs;
 })();
 world.observer.setGlobal("trails?", true);
-world.observer.setGlobal("fireworks", 20);
+world.observer.setGlobal("max-fireworks", 20);
 world.observer.setGlobal("fragments", 30);
 world.observer.setGlobal("initial-x-vel", 2);
 world.observer.setGlobal("initial-y-vel", 2);
