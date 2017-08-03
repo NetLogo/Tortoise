@@ -32,13 +32,14 @@ module.exports =
     _patches:     undefined # Array[Patch]
     _plotManager: undefined # PlotManager
     _updater:     undefined # Updater
+    _outputClear: undefined # () => Unit
 
     # Optimization-related variables
     _patchesAllBlack:          undefined # Boolean
     _patchesWithLabels:        undefined # Number
 
-    # (MiniWorkspace, WorldConfig, Array[String], Array[String], Array[String], Number, Number, Number, Number, Number, Boolean, Boolean, ShapeMap, ShapeMap, () => Unit) => World
-    constructor: (miniWorkspace, @_config, globalNames, interfaceGlobalNames, @patchesOwnNames, minPxcor, maxPxcor, minPycor
+    # (MiniWorkspace, WorldConfig, () => Unit, Array[String], Array[String], Array[String], Number, Number, Number, Number, Number, Boolean, Boolean, ShapeMap, ShapeMap, () => Unit) => World
+    constructor: (miniWorkspace, @_config, @_outputClear, globalNames, interfaceGlobalNames, @patchesOwnNames, minPxcor, maxPxcor, minPycor
                 , maxPycor, @patchSize, wrappingAllowedInX, wrappingAllowedInY, @turtleShapeMap, @linkShapeMap
                 , onTickFunction) ->
       { selfManager: @selfManager, updater: @_updater, rng: @rng
@@ -173,6 +174,7 @@ module.exports =
       @_resetPatchLabelCount()
       @ticker.clear()
       @_plotManager.clearAllPlots()
+      @_outputClear()
       @clearDrawing()
       return
 

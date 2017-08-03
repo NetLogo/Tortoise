@@ -52,7 +52,7 @@ module.exports =
     timer        = new Timer
     updater      = new Updater
 
-    world           = new World(new MiniWorkspace(selfManager, updater, breedManager, rng, plotManager), worldConfig, worldArgs...)
+    world           = new World(new MiniWorkspace(selfManager, updater, breedManager, rng, plotManager), worldConfig, outputConfig.clear, worldArgs...)
     layoutManager   = new LayoutManager(world, rng.nextDouble)
 
     linkPrims       = new LinkPrims(world)
