@@ -18,7 +18,8 @@ case class ExportRequest(
   info:         Option[String],
   widgets:      Seq[Widget],
   turtleShapes: Option[Seq[VectorShape]],
-  linkShapes:   Option[Seq[LinkShape]]
+  linkShapes:   Option[Seq[LinkShape]],
+  version:      Option[String]
 ) {
   def toModel: Model =
     Model(
@@ -26,7 +27,8 @@ case class ExportRequest(
       widgets      = widgets.toList,
       info         = info                       getOrElse "",
       turtleShapes = turtleShapes.map(_.toList) getOrElse Model.defaultShapes,
-      linkShapes   = linkShapes.map(_.toList)   getOrElse Model.defaultLinkShapes)
+      linkShapes   = linkShapes.map(_.toList)   getOrElse Model.defaultLinkShapes,
+      version      = version                    getOrElse ExportRequest.NlogoFileVersion)
 }
 
 private[tortoise] trait RequestSharedImplicits {
@@ -45,11 +47,13 @@ private[tortoise] trait RequestSharedImplicits {
 
 object ExportRequest extends RequestSharedImplicits {
   val read = Jsonify.reader[JsObject, ExportRequest]
+  final val NlogoFileVersion = "NetLogo 6.0.2"
 }
 
 case class CompilationRequest(
   code:         String,
   info:         Option[String],
+  version:      Option[String],
   widgets:      Seq[Widget],
   commands:     Option[Seq[String]],
   reporters:    Option[Seq[String]],

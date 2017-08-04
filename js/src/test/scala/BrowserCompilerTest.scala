@@ -4,6 +4,8 @@ package org.nlogo.tortoise
 
 import BrowserCompiler.literalParser
 
+import ExportRequest.NlogoFileVersion
+
 import
   org.nlogo.core.{ model, Model, Slider, View },
     model.ModelReader
@@ -127,6 +129,7 @@ object BrowserCompilerTest extends TestSuite {
       val parsedModel = ModelReader.parseModel(exportedNlogo, literalParser, Map())
       assert(parsedModel.code                   == validModel.code)
       assert(parsedModel.info                   == validModel.info)
+      assert(parsedModel.version                == validModel.version)
       assert(parsedModel.widgets                == validModel.widgets)
       assert(parsedModel.turtleShapes.last.name == "custom")
       assert(parsedModel.linkShapes.last.name   == "custom2")
@@ -171,6 +174,7 @@ object BrowserCompilerTest extends TestSuite {
       fields(
         "code"         -> JsString(model.code),
         "info"         -> JsString(model.info),
+        "version"      -> JsString(model.version),
         "linkShapes"   -> JsArray(model.linkShapes.map(_.toJsonObj)),
         "turtleShapes" -> JsArray(model.turtleShapes.map(_.toJsonObj)),
         "widgets"      -> JsArray(model.widgets.map(widget2Json(_).toJsonObj))) ++
@@ -186,6 +190,7 @@ object BrowserCompilerTest extends TestSuite {
       code         = "to foo fd 1 end",
       widgets      = List(View()),
       info         = "some model info here",
+      version      = NlogoFileVersion,
       linkShapes   = Model.defaultLinkShapes :+ linkShape,
       turtleShapes = Model.defaultShapes :+ vectorShape)
   }
