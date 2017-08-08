@@ -23,10 +23,14 @@ trait Handlers extends EveryIDProvider {
           (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
     val body = if (isReporter) s"return ${reporter(node)};" else commands(node)
     val pluralStr = if (args.length != 1) "s" else ""
-    val fullBody = s"""if (arguments.length < ${args.length}) {
-                      |  throw new Error("anonymous procedure expected ${args.length} input$pluralStr, but only got " + arguments.length);
-                      |}
-                      |$body""".stripMargin
+    val fullBody =
+      if (args.length > 0)
+        s"""if (arguments.length < ${args.length}) {
+          |  throw new Error("anonymous procedure expected ${args.length} input$pluralStr, but only got " + arguments.length);
+          |}
+          |$body""".stripMargin
+      else
+        s"""$body""".stripMargin
     jsFunction(args = args, body = fullBody)
   }
 
@@ -82,6 +86,7 @@ trait Handlers extends EveryIDProvider {
 
   def reporterProcContext(reporterJS: String): String =
     s"""|try {
+        |  var reporterContext = true;
         |${indented(reporterJS)}
         |  throw new Error("Reached end of reporter procedure without REPORT being called.");
         |} catch (e) {
@@ -96,6 +101,7 @@ trait Handlers extends EveryIDProvider {
 
   def commandBlockContext(commandJS: String): String =
     s"""|try {
+        |  var reporterContext = false;
         |${indented(commandJS)}
         |} catch (e) {
         |  if (e instanceof Exception.ReportInterrupt) {

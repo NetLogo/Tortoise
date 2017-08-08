@@ -36,21 +36,28 @@ module.exports = {
   nValues: (n, fn) ->
     map(fn)(rangeUntil(0)(n))
 
-  # [Result] @ (Product => Result, Array[Any]*) => Unit
+  # [Result] @ (Product => Result, Array[Any]*) => Any
   forEach: (fn, lists...) ->
-    @_processLists(fn, lists, "foreach")
-    return
+    return @_processLists(fn, lists, "foreach")
 
   # [Result] @ (Product => Result, Array[Array[Any]], String) => Array[Result]
   _processLists: (fn, lists, primName) ->
     numLists = lists.length
     head     = lists[0]
     if numLists is 1
-      map(fn)(head)
+      if fn.isReporter
+        map(fn)(head)
+      else
+        newArr = for x in head
+          res = fn(x)
+          if (res?)
+            break
+        if res?
+          return res
+        return
     else if all((l) -> l.length is head.length)(lists)
       for i in [0...head.length]
         fn(map((list) -> list[i])(lists)...)
     else
       throw new Error("All the list arguments to #{primName.toUpperCase()} must be the same length.")
-
 }

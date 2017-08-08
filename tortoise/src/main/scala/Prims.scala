@@ -280,17 +280,20 @@ trait CommandPrims extends PrimUtils {
       case _: prim.etc._hidelink         => "SelfManager.self().setVariable('hidden?', true)"
       case _: prim.etc._showlink         => "SelfManager.self().setVariable('hidden?', false)"
       case call: prim._call              => generateCall(call, args)
-      case _: prim._report               => s"throw new Exception.ReportInterrupt(${arg(0)});"
+      case _: prim._report               =>
+        s"""if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return ${arg(0)} }"""
       case _: prim.etc._ignore           => s"${arg(0)};"
       case l: prim._let                  =>
         l.let.map(inner => s"let ${handlers.ident(inner.name)} = ${arg(0)};").getOrElse("")
       case _: prim.etc._withlocalrandomness =>
         s"workspace.rng.withClone(function() { ${handlers.commands(s.args(0))} })"
-      case _: prim._run =>
-        s"Prims.run(${args.mkString(", ")});"
-      case _: prim.etc._foreach          =>
+      case r: prim._run =>
+        val tmp = handlers.unusedVarname(r.token, "run")
+        s"var ${tmp} = Prims.run(${args.mkString(", ")}); if(reporterContext && ${tmp} !== undefined) { return ${tmp}; }"
+      case fe: prim.etc._foreach          =>
         val lists = args.init.mkString(", ")
-        s"Tasks.forEach(${arg(s.args.size - 1)}, $lists);"
+        val tmp = handlers.unusedVarname(fe.token, "foreach")
+        s"var ${tmp} = Tasks.forEach(${arg(s.args.size - 1)}, $lists); if(reporterContext && ${tmp} !== undefined) { return ${tmp}; }"
       case x: prim._extern =>
         val ExtensionPrimRegex = """_extern\(([^:]+):([^)]+)\)""".r
         val ExtensionPrimRegex(extName, primName) = x.toString

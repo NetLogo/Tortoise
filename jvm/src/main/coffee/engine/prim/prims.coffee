@@ -271,7 +271,7 @@ module.exports =
       else
         throw new Error("The step-size for range must be non-zero.")
 
-    # ((Task, Any*) | String) => Unit
+    # ((Task, Any*) | String) => Any
     run: (f, args...) ->
       if NLType(f).isString()
         if args.length is 0
@@ -280,7 +280,6 @@ module.exports =
           throw new Error("run doesn't accept further inputs if the first is a string")
       else
         f(args...)
-      return
 
     # ((Task, Any*) | String) => Any
     runResult: (f, args...) ->
