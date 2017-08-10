@@ -49,6 +49,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Turtle Populations', 'color5')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 5); }).size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -66,6 +67,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Turtle Populations', 'color15')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); }).size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -83,6 +85,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Turtle Populations', 'color25')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 25); }).size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -100,6 +103,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Turtle Populations', 'color35')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 35); }).size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -117,6 +121,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Turtle Populations', 'color45')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 45); }).size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -134,6 +139,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Turtle Populations', 'color55')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); }).size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -151,6 +157,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Turtle Populations', 'color65')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 65); }).size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -168,6 +175,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Turtle Populations', 'color125')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 75); }).size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -185,6 +193,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Turtle Populations', 'color85')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 85); }).size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -202,6 +211,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Turtle Populations', 'color95')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 95); }).size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -219,6 +229,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Turtle Populations', undefined)(function() {
         try {
+          var reporterContext = false;
           plotManager.setYRange(0, world.turtles().size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -256,6 +267,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.clearTurtles();
       plotManager.clearAllPlots();
       world.turtleManager.createTurtles(world.observer.getGlobal("number"), "").ask(function() {
@@ -278,6 +290,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(ListPrims.variance(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("color"); })), 0)) {
         throw new Exception.StopInterrupt;
       }
@@ -307,6 +320,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let candidate = ListPrims.oneOf(SelfManager.self().turtlesAt(1, 0));
       if (!Prims.equality(candidate, Nobody)) {
         SelfManager.self().setVariable("color", candidate.projectionBy(function() { return SelfManager.self().getVariable("color"); }));
@@ -325,8 +339,9 @@ var procedures = (function() {
   procs["MEET"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let winningAmount = 0;
-      Tasks.forEach(Tasks.commandTask(function(c) {
+      var _foreach_1075_1082 = Tasks.forEach(Tasks.commandTask(function(c) {
         if (arguments.length < 1) {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
         }
@@ -334,7 +349,7 @@ var procedures = (function() {
         if (Prims.gt(howMany, winningAmount)) {
           winningAmount = howMany;
         }
-      }, "[ c -> let count turtles with color = c  if how-many > winning-amount [ set winning-amount how-many ] ]"), ColorModel.BASE_COLORS);
+      }, "[ c -> let count turtles with color = c  if how-many > winning-amount [ set winning-amount how-many ] ]"), ColorModel.BASE_COLORS); if(reporterContext && _foreach_1075_1082 !== undefined) { return _foreach_1075_1082; }
       world.observer.setGlobal("max-percent", Prims.div((100 * winningAmount), world.turtles().size()));
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -350,6 +365,7 @@ var procedures = (function() {
   procs["FIND-TOP-SPECIES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (MousePrims.isDown()) {
         world.patches().agentFilter(function() {
           return (Prims.equality(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), world.topology.maxPycor) || Prims.equality(SelfManager.self().getPatchVariable("pycor"), NLMath.round(MousePrims.getY())));
@@ -373,6 +389,7 @@ var procedures = (function() {
   procs["PLACE-WALL"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (MousePrims.isDown()) {
         world.patches().agentFilter(function() {
           return Prims.equality(SelfManager.self().getPatchVariable("pycor"), NLMath.round(MousePrims.getY()));
@@ -393,6 +410,7 @@ var procedures = (function() {
   procs["REMOVE-WALL"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearPatches();
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -408,6 +426,7 @@ var procedures = (function() {
   procs["REMOVE-ALL-WALLS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       while (!Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 0)) {
         SelfManager.self().moveTo(ListPrims.oneOf(SelfManager.self().getNeighbors()));
       }

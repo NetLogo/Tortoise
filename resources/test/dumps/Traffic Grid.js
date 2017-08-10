@@ -49,6 +49,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Average Wait Time of Cars', 'default')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(ListPrims.mean(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("wait-time"); })));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -72,6 +73,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Average Speed of Cars', 'default')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(ListPrims.mean(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("speed"); })));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -89,6 +91,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Average Speed of Cars', undefined)(function() {
         try {
+          var reporterContext = false;
           plotManager.setYRange(0, world.observer.getGlobal("speed-limit"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -111,6 +114,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Stopped Cars', 'default')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.observer.getGlobal("num-cars-stopped"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -128,6 +132,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Stopped Cars', undefined)(function() {
         try {
+          var reporterContext = false;
           plotManager.setYRange(0, world.observer.getGlobal("num-cars"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -165,6 +170,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       procedures["SETUP-GLOBALS"]();
       procedures["SETUP-PATCHES"]();
@@ -196,6 +202,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("current-light", Nobody);
       world.observer.setGlobal("phase", 0);
       world.observer.setGlobal("num-cars-stopped", 0);
@@ -216,6 +223,7 @@ var procedures = (function() {
   procs["SETUP-GLOBALS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.patches().ask(function() {
         SelfManager.self().setPatchVariable("intersection?", false);
         SelfManager.self().setPatchVariable("auto?", false);
@@ -247,6 +255,7 @@ var procedures = (function() {
   procs["SETUP-PATCHES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.getGlobal("intersections").ask(function() {
         SelfManager.self().setPatchVariable("intersection?", true);
         SelfManager.self().setPatchVariable("green-light-up?", true);
@@ -270,6 +279,7 @@ var procedures = (function() {
   procs["SETUP-INTERSECTIONS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setVariable("speed", 0);
       SelfManager.self().setVariable("wait-time", 0);
       procedures["PUT-ON-EMPTY-ROAD"]();
@@ -309,6 +319,7 @@ var procedures = (function() {
   procs["SETUP-CARS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().moveTo(world.observer.getGlobal("roads")._optimalOneOfWith(function() { return !!Prims.turtlesOn(SelfManager.self()).isEmpty(); }));
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -324,6 +335,7 @@ var procedures = (function() {
   procs["PUT-ON-EMPTY-ROAD"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       procedures["UPDATE-CURRENT"]();
       procedures["SET-SIGNALS"]();
       world.observer.setGlobal("num-cars-stopped", 0);
@@ -349,6 +361,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (MousePrims.isDown()) {
         let xMouse = MousePrims.getX();
         let yMouse = MousePrims.getY();
@@ -374,6 +387,7 @@ var procedures = (function() {
   procs["CHOOSE-CURRENT"] = temp;
   temp = (function(light) {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("current-light", light);
       world.observer.setGlobal("current-phase", world.observer.getGlobal("current-light").projectionBy(function() { return SelfManager.self().getPatchVariable("my-phase"); }));
       world.observer.setGlobal("current-auto?", world.observer.getGlobal("current-light").projectionBy(function() { return SelfManager.self().getPatchVariable("auto?"); }));
@@ -391,6 +405,7 @@ var procedures = (function() {
   procs["MAKE-CURRENT"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.getGlobal("current-light").ask(function() {
         SelfManager.self().setPatchVariable("my-phase", world.observer.getGlobal("current-phase"));
         SelfManager.self().setPatchVariable("auto?", world.observer.getGlobal("current-auto?"));
@@ -409,6 +424,7 @@ var procedures = (function() {
   procs["UPDATE-CURRENT"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.getGlobal("current-light").ask(function() {
         SelfManager.self().patchAt(-1, 1).ask(function() {
           SelfManager.self().setPatchVariable("plabel-color", 0);
@@ -429,6 +445,7 @@ var procedures = (function() {
   procs["LABEL-CURRENT"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.getGlobal("current-light").ask(function() {
         SelfManager.self().patchAt(-1, 1).ask(function() { SelfManager.self().setPatchVariable("plabel", ""); }, true);
       }, true);
@@ -446,6 +463,7 @@ var procedures = (function() {
   procs["UNLABEL-CURRENT"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.getGlobal("intersections").agentFilter(function() {
         return (SelfManager.self().getPatchVariable("auto?") && Prims.equality(world.observer.getGlobal("phase"), NLMath.floor(Prims.div((SelfManager.self().getPatchVariable("my-phase") * world.observer.getGlobal("ticks-per-cycle")), 100))));
       }).ask(function() {
@@ -466,6 +484,7 @@ var procedures = (function() {
   procs["SET-SIGNALS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (world.observer.getGlobal("power?")) {
         if (SelfManager.self().getPatchVariable("green-light-up?")) {
           SelfManager.self().patchAt(-1, 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 15); }, true);
@@ -494,6 +513,7 @@ var procedures = (function() {
   procs["SET-SIGNAL-COLORS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15)) {
         SelfManager.self().setVariable("speed", 0);
       }
@@ -519,6 +539,7 @@ var procedures = (function() {
   procs["SET-CAR-SPEED"] = temp;
   temp = (function(deltaX, deltaY) {
     try {
+      var reporterContext = false;
       let turtlesAhead = SelfManager.self().turtlesAt(deltaX, deltaY);
       if (!turtlesAhead.isEmpty()) {
         if (!turtlesAhead.agentFilter(function() {
@@ -548,6 +569,7 @@ var procedures = (function() {
   procs["SET-SPEED"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.lte(SelfManager.self().getVariable("speed"), 0)) {
         SelfManager.self().setVariable("speed", 0);
       }
@@ -568,6 +590,7 @@ var procedures = (function() {
   procs["SLOW-DOWN"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.gt(SelfManager.self().getVariable("speed"), world.observer.getGlobal("speed-limit"))) {
         SelfManager.self().setVariable("speed", world.observer.getGlobal("speed-limit"));
       }
@@ -588,6 +611,7 @@ var procedures = (function() {
   procs["SPEED-UP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.lt(SelfManager.self().getVariable("speed"), Prims.div(world.observer.getGlobal("speed-limit"), 2))) {
         SelfManager.self().setVariable("color", 105);
       }
@@ -608,6 +632,7 @@ var procedures = (function() {
   procs["SET-CAR-COLOR"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(SelfManager.self().getVariable("speed"), 0)) {
         world.observer.setGlobal("num-cars-stopped", (world.observer.getGlobal("num-cars-stopped") + 1));
         SelfManager.self().setVariable("wait-time", (SelfManager.self().getVariable("wait-time") + 1));
@@ -629,6 +654,7 @@ var procedures = (function() {
   procs["RECORD-DATA"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.getGlobal("current-light").ask(function() {
         SelfManager.self().setPatchVariable("green-light-up?", !SelfManager.self().getPatchVariable("green-light-up?"));
         procedures["SET-SIGNAL-COLORS"]();
@@ -647,6 +673,7 @@ var procedures = (function() {
   procs["CHANGE-CURRENT"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("phase", (world.observer.getGlobal("phase") + 1));
       if (Prims.equality(NLMath.mod(world.observer.getGlobal("phase"), world.observer.getGlobal("ticks-per-cycle")), 0)) {
         world.observer.setGlobal("phase", 0);

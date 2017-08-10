@@ -49,6 +49,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Leaves', 'leaves')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.turtleManager.turtlesOfBreed("LEAVES").size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -66,6 +67,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Leaves', 'dead leaves')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.turtleManager.turtlesOfBreed("DEAD-LEAVES").size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -89,6 +91,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Weather conditions', 'temperature')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.observer.getGlobal("temperature"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -106,6 +109,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Weather conditions', 'rain')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.observer.getGlobal("rain-intensity"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -123,6 +127,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Weather conditions', 'wind')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.observer.getGlobal("wind-factor"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -140,6 +145,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Weather conditions', 'sunlight')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.observer.getGlobal("sun-intensity"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -163,6 +169,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Leaf averages', 'chlorophyll')(function() {
         try {
+          var reporterContext = false;
           if (!world.turtleManager.turtlesOfBreed("LEAVES").isEmpty()) {
             plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed("LEAVES").projectionBy(function() { return SelfManager.self().getVariable("chlorophyll"); })));
           }
@@ -182,6 +189,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Leaf averages', 'water')(function() {
         try {
+          var reporterContext = false;
           if (!world.turtleManager.turtlesOfBreed("LEAVES").isEmpty()) {
             plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed("LEAVES").projectionBy(function() { return SelfManager.self().getVariable("water-level"); })));
           }
@@ -201,6 +209,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Leaf averages', 'sugar')(function() {
         try {
+          var reporterContext = false;
           if (!world.turtleManager.turtlesOfBreed("LEAVES").isEmpty()) {
             plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed("LEAVES").projectionBy(function() { return SelfManager.self().getVariable("sugar-level"); })));
           }
@@ -220,6 +229,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Leaf averages', 'carotene')(function() {
         try {
+          var reporterContext = false;
           if (!world.turtleManager.turtlesOfBreed("LEAVES").isEmpty()) {
             plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed("LEAVES").projectionBy(function() { return SelfManager.self().getVariable("carotene"); })));
           }
@@ -239,6 +249,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Leaf averages', 'anthocyanin')(function() {
         try {
+          var reporterContext = false;
           if (!world.turtleManager.turtlesOfBreed("LEAVES").isEmpty()) {
             plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed("LEAVES").projectionBy(function() { return SelfManager.self().getVariable("anthocyanin"); })));
           }
@@ -258,6 +269,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Leaf averages', 'attachedness')(function() {
         try {
+          var reporterContext = false;
           if (!world.turtleManager.turtlesOfBreed("LEAVES").isEmpty()) {
             plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed("LEAVES").projectionBy(function() { return SelfManager.self().getVariable("attachedness"); })));
           }
@@ -298,6 +310,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.observer.setGlobal("bottom-line", (world.topology.minPycor + 1));
       world.observer.setGlobal("evaporation-temp", 30);
@@ -336,6 +349,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (!!world.turtleManager.turtlesOfBreed("LEAVES").isEmpty()) {
         throw new Exception.StopInterrupt;
       }
@@ -376,13 +390,14 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function(value) {
     try {
+      var reporterContext = true;
       if (Prims.lt(value, 0)) {
-        throw new Exception.ReportInterrupt(0);
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return 0 }
       }
       if (Prims.gt(value, 100)) {
-        throw new Exception.ReportInterrupt(100);
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return 100 }
       }
-      throw new Exception.ReportInterrupt(value);
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return value }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -398,6 +413,7 @@ var procedures = (function() {
   procs["CLIP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.turtlesOfBreed("LEAVES").ask(function() {
         if (Prims.equality(Prims.random(2), 1)) {
           SelfManager.self().right((10 * world.observer.getGlobal("wind-factor")));
@@ -421,6 +437,7 @@ var procedures = (function() {
   procs["MAKE-WIND-BLOW"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.createTurtles(world.observer.getGlobal("rain-intensity"), "RAINDROPS").ask(function() {
         SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), world.topology.maxPycor);
         SelfManager.self().setVariable("heading", 180);
@@ -445,6 +462,7 @@ var procedures = (function() {
   procs["MAKE-RAIN-FALL"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.turtlesOfBreed("RAINDROPS").agentFilter(function() {
         return (Prims.equality(SelfManager.self().getVariable("location"), "falling") && Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55));
       }).ask(function() {
@@ -483,6 +501,7 @@ var procedures = (function() {
   procs["MOVE-WATER"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setVariable("color", ColorModel.scaleColor(45, world.observer.getGlobal("sun-intensity"), 0, 150));
       SelfManager.self().setVariable("size", Prims.div(world.observer.getGlobal("sun-intensity"), 10));
       SelfManager.self().setVariable("label", (Dump('') + Dump(world.observer.getGlobal("sun-intensity")) + Dump("%")));
@@ -506,6 +525,7 @@ var procedures = (function() {
   procs["SHOW-INTENSITY"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.lt(world.observer.getGlobal("temperature"), 10)) {
         throw new Exception.StopInterrupt;
       }
@@ -539,6 +559,7 @@ var procedures = (function() {
   procs["ADJUST-WATER"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.lt(world.observer.getGlobal("temperature"), 15)) {
         SelfManager.self().setVariable("chlorophyll", (SelfManager.self().getVariable("chlorophyll") - (0.5 * (15 - world.observer.getGlobal("temperature")))));
       }
@@ -562,6 +583,7 @@ var procedures = (function() {
   procs["ADJUST-CHLOROPHYLL"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (((Prims.gt(SelfManager.self().getVariable("water-level"), 1) && Prims.gt(world.observer.getGlobal("sun-intensity"), 20)) && Prims.gt(SelfManager.self().getVariable("chlorophyll"), 1))) {
         SelfManager.self().setVariable("water-level", (SelfManager.self().getVariable("water-level") - 0.5));
         SelfManager.self().setVariable("chlorophyll", (SelfManager.self().getVariable("chlorophyll") - 0.5));
@@ -583,6 +605,7 @@ var procedures = (function() {
   procs["ADJUST-SUGAR"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.gt(SelfManager.self().getVariable("attachedness"), 0)) {
         throw new Exception.StopInterrupt;
       }
@@ -605,6 +628,7 @@ var procedures = (function() {
   procs["FALL-IF-NECESSARY"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (((Prims.lt(world.observer.getGlobal("temperature"), 20) && Prims.gt(SelfManager.self().getVariable("sugar-level"), 0)) && Prims.gt(SelfManager.self().getVariable("water-level"), 0))) {
         SelfManager.self().setVariable("sugar-level", (SelfManager.self().getVariable("sugar-level") - 1));
         SelfManager.self().setVariable("water-level", (SelfManager.self().getVariable("water-level") - 1));
@@ -638,6 +662,7 @@ var procedures = (function() {
   procs["CHANGE-COLOR"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(world.observer.getGlobal("leaf-display-mode"), "solid")) {
         SelfManager.self().setVariable("shape", "default");
       }
@@ -675,7 +700,8 @@ var procedures = (function() {
   procs["CHANGE-SHAPE"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(world.turtleManager.turtlesOfBreed("LEAVES").agentFilter(function() { return Prims.gt(SelfManager.self().getVariable("attachedness"), 0); }));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return world.turtleManager.turtlesOfBreed("LEAVES").agentFilter(function() { return Prims.gt(SelfManager.self().getVariable("attachedness"), 0); }) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -691,6 +717,7 @@ var procedures = (function() {
   procs["ATTACHED-LEAVES"] = temp;
   temp = (function(value) {
     try {
+      var reporterContext = false;
       if (Prims.gt(value, 75)) {
         SelfManager.self().setVariable("shape", "default");
       }

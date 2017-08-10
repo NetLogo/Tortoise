@@ -49,6 +49,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Flashing Fireflies', 'flashing')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 45); }).size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -66,6 +67,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Flashing Fireflies', undefined)(function() {
         try {
+          var reporterContext = false;
           plotManager.setYRange(0, world.observer.getGlobal("number"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -103,6 +105,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.turtleManager.createTurtles(world.observer.getGlobal("number"), "").ask(function() {
         SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
@@ -135,6 +138,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtles().ask(function() {
         procedures["MOVE"]();
         procedures["INCREMENT-CLOCK"]();
@@ -158,6 +162,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.lt(SelfManager.self().getVariable("clock"), SelfManager.self().getVariable("threshold"))) {
         SelfManager.self().hideTurtle(false);;
         SelfManager.self().setVariable("color", 45);
@@ -185,6 +190,7 @@ var procedures = (function() {
   procs["RECOLOR"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().right((Prims.randomFloat(90) - Prims.randomFloat(90)));
       SelfManager.self()._optimalFdOne();
     } catch (e) {
@@ -201,6 +207,7 @@ var procedures = (function() {
   procs["MOVE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setVariable("clock", (SelfManager.self().getVariable("clock") + 1));
       if (Prims.equality(SelfManager.self().getVariable("clock"), world.observer.getGlobal("cycle-length"))) {
         SelfManager.self().setVariable("clock", 0);
@@ -219,6 +226,7 @@ var procedures = (function() {
   procs["INCREMENT-CLOCK"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.gte(SelfManager.self().inRadius(world.turtles(), 1).agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 45); }).size(), world.observer.getGlobal("flashes-to-reset"))) {
         SelfManager.self().setVariable("clock", SelfManager.self().getVariable("reset-level"));
       }

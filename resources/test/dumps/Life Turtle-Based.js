@@ -64,6 +64,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("CELLS").getSpecialName(), "circle")
       BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("BABIES").getSpecialName(), "dot")
@@ -83,6 +84,7 @@ var procedures = (function() {
   procs["SETUP-BLANK"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       procedures["SETUP-BLANK"]();
       world.patches().ask(function() {
         if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("initial-density"))) {
@@ -105,6 +107,7 @@ var procedures = (function() {
   procs["SETUP-RANDOM"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().sprout(1, "BABIES").ask(function() { SelfManager.self().setVariable("color", (65 + 1)); }, true);
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -120,6 +123,7 @@ var procedures = (function() {
   procs["BIRTH"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.turtlesOfBreed("CELLS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 5); }).ask(function() { SelfManager.self().die(); }, true);
       world.turtleManager.turtlesOfBreed("BABIES").ask(function() {
         SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("CELLS"));
@@ -159,6 +163,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let erasing_p = !Prims.breedOn("CELLS", world.getPatchAt(MousePrims.getX(), MousePrims.getY())).isEmpty();
       while (MousePrims.isDown()) {
         world.getPatchAt(MousePrims.getX(), MousePrims.getY()).ask(function() {
@@ -185,6 +190,7 @@ var procedures = (function() {
   procs["DRAW-CELLS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (!!SelfManager.self().breedHere("CELLS").isEmpty()) {
         SelfManager.self().turtlesHere().ask(function() { SelfManager.self().die(); }, true);
         SelfManager.self().sprout(1, "CELLS").ask(function() { SelfManager.self().setVariable("color", 9.9); }, true);
@@ -205,6 +211,7 @@ var procedures = (function() {
   procs["DRAW"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().turtlesHere().ask(function() { SelfManager.self().die(); }, true);
       procedures["UPDATE"]();
       SelfManager.self().getNeighbors().ask(function() { procedures["UPDATE"](); }, true);
@@ -222,6 +229,7 @@ var procedures = (function() {
   procs["ERASE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().breedHere("BABIES").ask(function() { SelfManager.self().die(); }, true);
       let n = Prims.breedOn("CELLS", SelfManager.self().getNeighbors()).size();
       if (!SelfManager.self().breedHere("CELLS").isEmpty()) {

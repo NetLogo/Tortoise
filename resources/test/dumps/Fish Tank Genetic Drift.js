@@ -49,6 +49,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Tail Shape Alleles', 'F')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("#-big-f-alleles"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -66,6 +67,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Tail Shape Alleles', 'f')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("#-small-f-alleles"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -89,6 +91,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Tail Color Alleles', 'T')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("#-big-t-alleles"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -106,6 +109,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Tail Color Alleles', 't')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("#-small-t-alleles"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -129,6 +133,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Dorsal Fin Color Alleles', 'G')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("#-big-g-alleles"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -146,6 +151,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Dorsal Fin Color Alleles', 'g')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("#-small-g-alleles"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -169,6 +175,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Sex Chromosomes', 'X')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("#-x-chromosomes"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -186,6 +193,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Sex Chromosomes', 'Y')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("#-y-chromosomes"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -209,6 +217,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('dorsal fin & spotting variations', 'spots')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("#-of-spots"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -226,6 +235,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('dorsal fin & spotting variations', 'no spots')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("#-of-no-spots"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -243,6 +253,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('dorsal fin & spotting variations', 'green dorsal')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("#-of-green-dorsal-fins"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -260,6 +271,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('dorsal fin & spotting variations', 'no green')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("#-of-no-green-dorsal-fins"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -283,6 +295,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Body Spot Alleles', 'B')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("#-big-b-alleles"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -300,6 +313,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Body Spot Alleles', 'b')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("#-small-b-alleles"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -323,6 +337,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('tail fin variations', 'forked tail')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("#-of-forked-tails"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -340,6 +355,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('tail fin variations', 'no fork')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("#-of-no-forked-tails"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -357,6 +373,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('tail fin variations', 'yellow tail')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("#-of-yellow-tail-fins"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -374,6 +391,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('tail fin variations', 'no yellow')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("#-of-no-yellow-tail-fins"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -397,6 +415,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('# of males & females', 'females')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("#-of-females"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -414,6 +433,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('# of males & females', 'males')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("#-of-males"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -452,6 +472,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.observer.setGlobal("mouse-continuous-down?", false);
       world.observer.setGlobal("intra-chromosome-pair-spacing", 0.2);
@@ -503,6 +524,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let minPycorEdge = world.topology.minPycor;
       let maxPycorEdge = world.topology.maxPycor;
       let waterPatches = Nobody;
@@ -537,6 +559,7 @@ var procedures = (function() {
   procs["SET-TANK-REGIONS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let numBigAlleles = 0;
       let initialNumberFish = world.observer.getGlobal("carrying-capacity");
       numBigAlleles = NLMath.round(Prims.div(((world.observer.getGlobal("initial-alleles-big-b") * 2) * initialNumberFish), 100));
@@ -562,6 +585,7 @@ var procedures = (function() {
   procs["CREATE-INITIAL-GENE-POOL"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.createTurtles(world.observer.getGlobal("initial-#-males"), "SOMATIC-CELLS").ask(function() { SelfManager.self().setVariable("sex", "male"); }, true);
       world.turtleManager.createTurtles(world.observer.getGlobal("initial-#-females"), "SOMATIC-CELLS").ask(function() { SelfManager.self().setVariable("sex", "female"); }, true);
       world.turtleManager.turtlesOfBreed("SOMATIC-CELLS").ask(function() { procedures["SETUP-NEW-SOMATIC-CELL-ATTRIBUTES"](); }, true);
@@ -582,6 +606,7 @@ var procedures = (function() {
   procs["CREATE-INITIAL-FISH"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setVariable("heading", 0);
       SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("SOMATIC-CELLS"));
       SelfManager.self().setVariable("color", [100, 100, 100, 100]);
@@ -601,6 +626,7 @@ var procedures = (function() {
   procs["SETUP-NEW-SOMATIC-CELL-ATTRIBUTES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let waterPatches = world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("type-of-patch"), "water"); });
       let waterPatch = Nobody;
       world.turtleManager.turtlesOfBreed("FISH").ask(function() { SelfManager.self().moveTo(ListPrims.oneOf(waterPatches)); }, true);
@@ -618,6 +644,7 @@ var procedures = (function() {
   procs["DISTRIBUTE-FISH-IN-TANK"] = temp;
   temp = (function(geneNumber, allele1, allele2, numBigAlleles) {
     try {
+      var reporterContext = false;
       let initialNumberFish = (world.observer.getGlobal("initial-#-males") + world.observer.getGlobal("initial-#-females"));
       world.turtleManager.createTurtles((2 * initialNumberFish), "ALLELES").ask(function() {
         SelfManager.self().setVariable("gene", geneNumber);
@@ -649,17 +676,18 @@ var procedures = (function() {
   procs["MAKE-INITIAL-ALLELES-FOR-GENE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let thisSomaticCell = Nobody;
       let lastSexAllele = "";
       world.turtleManager.turtlesOfBreed("SOMATIC-CELLS").ask(function() {
         thisSomaticCell = SelfManager.self();
-        Tasks.forEach(Tasks.commandTask(function(n) {
+        var _foreach_8238_8245 = Tasks.forEach(Tasks.commandTask(function(n) {
           if (arguments.length < 1) {
             throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
           }
           procedures["POSITION-AND-LINK-ALLELES"](SelfManager.self(),n,"left");
           procedures["POSITION-AND-LINK-ALLELES"](SelfManager.self(),n,"right");
-        }, "[ n -> position-and-link-alleles self n \"left\" position-and-link-alleles self n \"right\" ]"), [1, 2, 3, 4]);
+        }, "[ n -> position-and-link-alleles self n \"left\" position-and-link-alleles self n \"right\" ]"), [1, 2, 3, 4]); if(reporterContext && _foreach_8238_8245 !== undefined) { return _foreach_8238_8245; }
         world.turtleManager.turtlesOfBreed("ALLELES")._optimalOneOfWith(function() {
           return ((!SelfManager.self().getVariable("owned-by-fish?") && Prims.equality(SelfManager.self().getVariable("gene"), 5)) && Prims.equality(SelfManager.self().getVariable("value"), "X"));
         }).ask(function() {
@@ -709,6 +737,7 @@ var procedures = (function() {
   procs["DISTRIBUTE-GENE-POOL-TO-SOMATIC-CELLS"] = temp;
   temp = (function(thisSomaticCell, geneNumber, whichSide) {
     try {
+      var reporterContext = false;
       let pairShiftRight = 0;
       let sideShift = 0;
       if (Prims.equality(whichSide, "right")) {
@@ -746,6 +775,7 @@ var procedures = (function() {
   procs["POSITION-AND-LINK-ALLELES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       procedures["WANDER"]();
       procedures["UPDATE-STATISTICS"]();
       procedures["DETECT-FISH-OUTSIDE-THE-WATER"]();
@@ -775,6 +805,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (world.observer.getGlobal("auto-replace?")) {
         if (Prims.isThrottleTimeElapsed("autoSelection_0", workspace.selfManager.self(), 0.25)) {
           Prims.resetThrottleTimerFor("autoSelection_0", workspace.selfManager.self());
@@ -801,6 +832,7 @@ var procedures = (function() {
   procs["AUTO-SELECTION"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let myZygote = Nobody;
       let distanceToZygote = 0;
       if (world.observer.getGlobal("see-sex-cells?")) {
@@ -837,6 +869,7 @@ var procedures = (function() {
   procs["MOVE-GAMETES-TOGETHER"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let femaleSexCellAlleles = Nobody;
       let maleSexCellAlleles = Nobody;
       let maleGamete = Nobody;
@@ -896,8 +929,9 @@ var procedures = (function() {
   procs["CONVERT-ZYGOTE-INTO-SOMATIC-CELL"] = temp;
   temp = (function(thisZygote) {
     try {
+      var reporterContext = false;
       let allAlleles = world.turtleManager.turtlesOfBreed("ALLELES").agentFilter(function() { return LinkPrims.isInLinkNeighbor("LINKS", thisZygote); });
-      Tasks.forEach(Tasks.commandTask(function(thisGene) {
+      var _foreach_14051_14058 = Tasks.forEach(Tasks.commandTask(function(thisGene) {
         if (arguments.length < 1) {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
         }
@@ -919,7 +953,7 @@ var procedures = (function() {
             SelfManager.self().setVariable("side", "left");
           }, true);
         }
-      }, "[ this-gene -> if count all-alleles with gene = this-gene and side =   > 1 [ ask one-of all-alleles with gene = this-gene  [ set heading 90 forward intra-chromosome-pair-spacing set side \"right\" ] ] if count all-alleles with gene = this-gene and side =   > 1 [ ask one-of all-alleles with gene = this-gene  [ set heading 90 back intra-chromosome-pair-spacing set side \"left\" ] ] ]"), [1, 2, 3, 4, 5]);
+      }, "[ this-gene -> if count all-alleles with gene = this-gene and side =   > 1 [ ask one-of all-alleles with gene = this-gene  [ set heading 90 forward intra-chromosome-pair-spacing set side \"right\" ] ] if count all-alleles with gene = this-gene and side =   > 1 [ ask one-of all-alleles with gene = this-gene  [ set heading 90 back intra-chromosome-pair-spacing set side \"left\" ] ] ]"), [1, 2, 3, 4, 5]); if(reporterContext && _foreach_14051_14058 !== undefined) { return _foreach_14051_14058; }
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         throw new Error("REPORT can only be used inside TO-REPORT.");
@@ -934,6 +968,7 @@ var procedures = (function() {
   procs["ALIGN-ALLELES-FOR-THIS-SOMATIC-CELL"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let mom = Nobody;
       let dad = Nobody;
       let xcorDad = 0;
@@ -974,6 +1009,7 @@ var procedures = (function() {
   procs["FIND-POTENTIAL-MATES"] = temp;
   temp = (function(mom, dad) {
     try {
+      var reporterContext = false;
       let child = Nobody;
       mom.ask(function() {
         SelfManager.self().hatch(1, "").ask(function() {
@@ -1001,6 +1037,7 @@ var procedures = (function() {
   procs["REPRODUCE-OFFSPRING-FROM-THESE-TWO-PARENTS"] = temp;
   temp = (function(child) {
     try {
+      var reporterContext = false;
       let thisNewGameteCell = Nobody;
       SelfManager.self().hatch(1, "").ask(function() {
         SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("GAMETE-CELLS"));
@@ -1014,7 +1051,7 @@ var procedures = (function() {
         }
         thisNewGameteCell = SelfManager.self();
       }, true);
-      Tasks.forEach(Tasks.commandTask(function(thisGene) {
+      var _foreach_16499_16506 = Tasks.forEach(Tasks.commandTask(function(thisGene) {
         if (arguments.length < 1) {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
         }
@@ -1030,7 +1067,7 @@ var procedures = (function() {
             }, true);
           }, true);
         }, true);
-      }, "[ this-gene -> ask n-of 1 alleles with in-link-neighbor? myself and gene = this-gene  [ hatch 1 [ set owned-by-fish? false create-link-from this-new-gamete-cell [ set hidden? true set tie-mode \"fixed\" tie ] ] ] ]"), [1, 2, 3, 4, 5]);
+      }, "[ this-gene -> ask n-of 1 alleles with in-link-neighbor? myself and gene = this-gene  [ hatch 1 [ set owned-by-fish? false create-link-from this-new-gamete-cell [ set hidden? true set tie-mode \"fixed\" tie ] ] ] ]"), [1, 2, 3, 4, 5]); if(reporterContext && _foreach_16499_16506 !== undefined) { return _foreach_16499_16506; }
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         throw new Error("REPORT can only be used inside TO-REPORT.");
@@ -1045,6 +1082,7 @@ var procedures = (function() {
   procs["LINK-ALLELES-TO-GAMETES-AND-GAMETES-TO-ZYGOTE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.turtlesOfBreed("FISH").ask(function() {
         SelfManager.self().setVariable("heading", SelfManager.self().getVariable("bearing"));
         SelfManager.self().right(Prims.randomFloat(70));
@@ -1068,6 +1106,7 @@ var procedures = (function() {
   procs["WANDER"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.turtlesOfBreed("FISH").agentFilter(function() {
         return (!Prims.equality(SelfManager.self().getPatchVariable("type-of-patch"), "water") && !Prims.equality(SelfManager.self().getPatchVariable("type-of-patch"), "water-edge"));
       }).ask(function() { procedures["REMOVE-THIS-FISH"](); }, true);
@@ -1085,6 +1124,7 @@ var procedures = (function() {
   procs["DETECT-FISH-OUTSIDE-THE-WATER"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let nearestWaterPatch = Nobody;
       let waterPatches = world.patches().agentFilter(function() {
         return (Prims.equality(SelfManager.self().getPatchVariable("type-of-patch"), "water") && !SelfManager.self().getPatchVariable("divider-here?"));
@@ -1115,6 +1155,7 @@ var procedures = (function() {
   procs["DETECT-AND-MOVE-FISH-AT-INSIDE-TANK-BOUNDARY"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let boneTransparency = 0;
       let colorList = [];
       world.turtleManager.turtlesOfBreed("FISH-BONES").ask(function() {
@@ -1140,6 +1181,7 @@ var procedures = (function() {
   procs["CLEAN-UP-FISH-BONES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("num-fish-removed", (world.observer.getGlobal("num-fish-removed") + 1));
       SelfManager.self().hatch(1, "").ask(function() {
         SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("FISH-BONES"));
@@ -1165,6 +1207,7 @@ var procedures = (function() {
   procs["REMOVE-THIS-FISH"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let pMouseXcor = MousePrims.getX();
       let pMouseYcor = MousePrims.getY();
       let pTypeOfPatch = world.getPatchAt(pMouseXcor, pMouseYcor).projectionBy(function() { return SelfManager.self().getPatchVariable("type-of-patch"); });
@@ -1233,6 +1276,7 @@ var procedures = (function() {
   procs["DETECT-MOUSE-SELECTION-EVENT"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("num-fish-in-tank", world.turtleManager.turtlesOfBreed("FISH").size());
       world.observer.setGlobal("#-big-b-alleles", world.turtleManager.turtlesOfBreed("ALLELES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("value"), "B"); }).size());
       world.observer.setGlobal("#-small-b-alleles", world.turtleManager.turtlesOfBreed("ALLELES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("value"), "b"); }).size());
@@ -1284,6 +1328,7 @@ var procedures = (function() {
   procs["UPDATE-STATISTICS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.patches().agentFilter(function() {
         return (Prims.equality(SelfManager.self().getPatchVariable("type-of-patch"), "water") || Prims.equality(SelfManager.self().getPatchVariable("type-of-patch"), "water-edge"));
       }).ask(function() {
@@ -1317,6 +1362,7 @@ var procedures = (function() {
   procs["VISUALIZE-TANK"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (world.observer.getGlobal("see-body-cells?")) {
         world.turtleManager.turtlesOfBreed("SOMATIC-CELLS").ask(function() {
           SelfManager.self().setVariable("hidden?", false);
@@ -1365,6 +1411,7 @@ var procedures = (function() {
   procs["VISUALIZE-FISH-AND-ALLELES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let thisFishBody = Nobody;
       SelfManager.self().hatch(1, "").ask(function() {
         SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("FISH"));
@@ -1434,15 +1481,16 @@ var procedures = (function() {
   procs["GROW-FISH-PARTS-FROM-SOMATIC-CELL"] = temp;
   temp = (function(dominantAllele) {
     try {
+      var reporterContext = true;
       let thisSomaticCell = SelfManager.self();
       let _pound_OfDominantAlleles = world.turtleManager.turtlesOfBreed("ALLELES").agentFilter(function() {
         return (LinkPrims.isInLinkNeighbor("LINKS", thisSomaticCell) && Prims.equality(SelfManager.self().getVariable("value"), dominantAllele));
       }).size();
       if (Prims.gt(_pound_OfDominantAlleles, 0)) {
-        throw new Exception.ReportInterrupt(true);
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return true }
       }
       else {
-        throw new Exception.ReportInterrupt(false);
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return false }
       }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
@@ -1459,6 +1507,7 @@ var procedures = (function() {
   procs["HAS-AT-LEAST-ONE-DOMINANT-SET-OF-INSTRUCTIONS-FOR"] = temp;
   temp = (function() {
     try {
+      var reporterContext = true;
       let thisShape = "";
       let thisFish = SelfManager.myself();
       SelfManager.myself().ask(function() {
@@ -1469,7 +1518,7 @@ var procedures = (function() {
           thisShape = world.observer.getGlobal("no-forked-tail-shape");
         }
       }, true);
-      throw new Exception.ReportInterrupt(thisShape);
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return thisShape }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -1485,6 +1534,7 @@ var procedures = (function() {
   procs["TAIL-SHAPE-PHENOTYPE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = true;
       let thisSpotsShape = "";
       SelfManager.myself().ask(function() {
         if (procedures["HAS-AT-LEAST-ONE-DOMINANT-SET-OF-INSTRUCTIONS-FOR"]("B")) {
@@ -1494,7 +1544,7 @@ var procedures = (function() {
           thisSpotsShape = world.observer.getGlobal("no-spots-shape");
         }
       }, true);
-      throw new Exception.ReportInterrupt(thisSpotsShape);
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return thisSpotsShape }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -1510,6 +1560,7 @@ var procedures = (function() {
   procs["REAR-SPOTS-PHENOTYPE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = true;
       let thisColor = [];
       SelfManager.myself().ask(function() {
         if (procedures["HAS-AT-LEAST-ONE-DOMINANT-SET-OF-INSTRUCTIONS-FOR"]("G")) {
@@ -1519,7 +1570,7 @@ var procedures = (function() {
           thisColor = world.observer.getGlobal("no-green-dorsal-fin-color");
         }
       }, true);
-      throw new Exception.ReportInterrupt(thisColor);
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return thisColor }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -1535,6 +1586,7 @@ var procedures = (function() {
   procs["DORSAL-FIN-COLOR-PHENOTYPE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = true;
       let thisColor = [];
       let thisFish = SelfManager.myself();
       SelfManager.myself().ask(function() {
@@ -1545,7 +1597,7 @@ var procedures = (function() {
           thisColor = world.observer.getGlobal("no-yellow-tail-fin-color");
         }
       }, true);
-      throw new Exception.ReportInterrupt(thisColor);
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return thisColor }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -1561,6 +1613,7 @@ var procedures = (function() {
   procs["TAIL-COLOR-PHENOTYPE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = true;
       let thisSex = "";
       let thisCell = SelfManager.self();
       if (procedures["HAS-AT-LEAST-ONE-DOMINANT-SET-OF-INSTRUCTIONS-FOR"]("Y")) {
@@ -1569,7 +1622,7 @@ var procedures = (function() {
       else {
         thisSex = "female";
       }
-      throw new Exception.ReportInterrupt(thisSex);
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return thisSex }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -1585,7 +1638,8 @@ var procedures = (function() {
   procs["SEX-PHENOTYPE"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(world.turtleManager.turtlesOfBreed("ALLELES").agentFilter(function() { return LinkPrims.isInLinkNeighbor("LINKS", SelfManager.myself()); }));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return world.turtleManager.turtlesOfBreed("ALLELES").agentFilter(function() { return LinkPrims.isInLinkNeighbor("LINKS", SelfManager.myself()); }) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -1601,7 +1655,8 @@ var procedures = (function() {
   procs["ALLELES-THAT-BELONG-TO-THIS-GAMETE"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt((world.topology.minPxcor + 2));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return (world.topology.minPxcor + 2) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -1617,7 +1672,8 @@ var procedures = (function() {
   procs["LEFT-SIDE-OF-WATER-IN-TANK"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt((world.topology.maxPxcor - 2));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return (world.topology.maxPxcor - 2) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -1633,6 +1689,7 @@ var procedures = (function() {
   procs["RIGHT-SIDE-OF-WATER-IN-TANK"] = temp;
   temp = (function() {
     try {
+      var reporterContext = true;
       let turtlesInThisRegion = Nobody;
       let xcorOfThisTurtle = SelfManager.self().getVariable("xcor");
       let thisRegionLeftSide = procedures["LEFT-SIDE-OF-WATER-IN-TANK"]();
@@ -1652,7 +1709,7 @@ var procedures = (function() {
       turtlesInThisRegion = world.turtles().agentFilter(function() {
         return (Prims.gte(SelfManager.self().getVariable("xcor"), thisRegionLeftSide) && Prims.lte(SelfManager.self().getVariable("xcor"), thisRegionRightSide));
       });
-      throw new Exception.ReportInterrupt(turtlesInThisRegion);
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return turtlesInThisRegion }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -1668,16 +1725,17 @@ var procedures = (function() {
   procs["OTHER-TURTLES-IN-THIS-TURTLES-TANK-REGION"] = temp;
   temp = (function() {
     try {
+      var reporterContext = true;
       let fishInThisRegion = procedures["OTHER-TURTLES-IN-THIS-TURTLES-TANK-REGION"]().agentFilter(function() {
         return Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("FISH"));
       });
       let maleFishInThisRegion = fishInThisRegion.agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("sex"), "male"); });
       let femaleFishInThisRegion = fishInThisRegion.agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("sex"), "female"); });
       if ((!maleFishInThisRegion.isEmpty() && !femaleFishInThisRegion.isEmpty())) {
-        throw new Exception.ReportInterrupt(true);
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return true }
       }
       else {
-        throw new Exception.ReportInterrupt(false);
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return false }
       }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
@@ -1694,6 +1752,7 @@ var procedures = (function() {
   procs["BOTH-SEXES-IN-THIS-FISHS-TANK-REGION?"] = temp;
   temp = (function(thisXcor) {
     try {
+      var reporterContext = true;
       let thisRegionLeftSide = procedures["LEFT-SIDE-OF-WATER-IN-TANK"]();
       let thisRegionRightSide = procedures["RIGHT-SIDE-OF-WATER-IN-TANK"]();
       let dividersToTheRight = world.patches().agentFilter(function() {
@@ -1709,7 +1768,7 @@ var procedures = (function() {
         thisRegionLeftSide = ListPrims.max(dividersToTheLeft.projectionBy(function() { return SelfManager.self().getPatchVariable("pxcor"); }));
       }
       let tankCapacityOfThisRegion = Prims.div(((thisRegionRightSide - thisRegionLeftSide) * world.observer.getGlobal("carrying-capacity")), 25);
-      throw new Exception.ReportInterrupt(tankCapacityOfThisRegion);
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return tankCapacityOfThisRegion }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {

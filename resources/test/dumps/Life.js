@@ -64,6 +64,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.patches().ask(function() { procedures["CELL-DEATH"](); }, true);
       world.ticker.reset();
@@ -81,6 +82,7 @@ var procedures = (function() {
   procs["SETUP-BLANK"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.patches().ask(function() {
         if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("initial-density"))) {
@@ -105,6 +107,7 @@ var procedures = (function() {
   procs["SETUP-RANDOM"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setPatchVariable("living?", true);
       SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("fgcolor"));
     } catch (e) {
@@ -121,6 +124,7 @@ var procedures = (function() {
   procs["CELL-BIRTH"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setPatchVariable("living?", false);
       SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("bgcolor"));
     } catch (e) {
@@ -137,6 +141,7 @@ var procedures = (function() {
   procs["CELL-DEATH"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.patches().ask(function() {
         SelfManager.self().setPatchVariable("live-neighbors", SelfManager.self().getNeighbors().agentFilter(function() { return SelfManager.self().getPatchVariable("living?"); }).size());
       }, true);
@@ -165,6 +170,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let erasing_p = world.getPatchAt(MousePrims.getX(), MousePrims.getY()).projectionBy(function() { return SelfManager.self().getPatchVariable("living?"); });
       while (MousePrims.isDown()) {
         world.getPatchAt(MousePrims.getX(), MousePrims.getY()).ask(function() {

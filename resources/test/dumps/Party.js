@@ -49,6 +49,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Number Happy', 'Happy')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("happy?"); }).size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -66,6 +67,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Number Happy', undefined)(function() {
         try {
+          var reporterContext = false;
           plotManager.setYRange(0, world.observer.getGlobal("number"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -88,6 +90,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Single Sex Groups', 'Single Sex')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.observer.getGlobal("boring-groups"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -126,6 +129,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.observer.setGlobal("group-sites", world.patches().agentFilter(function() { return procedures["GROUP-SITE?"](); }));
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "person")
@@ -154,6 +158,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (world.turtles().agentAll(function() { return SelfManager.self().getVariable("happy?"); })) {
         throw new Exception.StopInterrupt;
       }
@@ -182,6 +187,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let total = SelfManager.self().turtlesHere().size();
       let same = SelfManager.self().turtlesHere().agentFilter(function() {
         return Prims.equality(SelfManager.self().getVariable("color"), SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("color"); }));
@@ -202,6 +208,7 @@ var procedures = (function() {
   procs["UPDATE-HAPPINESS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (!SelfManager.self().getVariable("happy?")) {
         SelfManager.self().setVariable("heading", ListPrims.oneOf([90, 270]));
         SelfManager.self()._optimalFdOne();
@@ -220,6 +227,7 @@ var procedures = (function() {
   procs["LEAVE-IF-UNHAPPY"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       notImplemented('display', undefined)();
       let malcontents = world.turtles().agentFilter(function() {
         return !ListPrims.member(SelfManager.self().getPatchHere(), world.observer.getGlobal("group-sites"));
@@ -243,8 +251,9 @@ var procedures = (function() {
   procs["FIND-NEW-GROUPS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = true;
       let groupInterval = NLMath.floor(Prims.div(world.topology.width, world.observer.getGlobal("num-groups")));
-      throw new Exception.ReportInterrupt((((Prims.equality(SelfManager.self().getPatchVariable("pycor"), 0) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), 0)) && Prims.equality(NLMath.mod(SelfManager.self().getPatchVariable("pxcor"), groupInterval), 0)) && Prims.lt(NLMath.floor(Prims.div( -SelfManager.self().getPatchVariable("pxcor"), groupInterval)), world.observer.getGlobal("num-groups"))));
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return (((Prims.equality(SelfManager.self().getPatchVariable("pycor"), 0) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), 0)) && Prims.equality(NLMath.mod(SelfManager.self().getPatchVariable("pxcor"), groupInterval), 0)) && Prims.lt(NLMath.floor(Prims.div( -SelfManager.self().getPatchVariable("pxcor"), groupInterval)), world.observer.getGlobal("num-groups"))) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -260,6 +269,7 @@ var procedures = (function() {
   procs["GROUP-SITE?"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (procedures["WOMAN?"]()) {
         SelfManager.self().setVariable("heading", 180);
       }
@@ -291,6 +301,7 @@ var procedures = (function() {
   procs["SPREAD-OUT-VERTICALLY"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.getGlobal("group-sites").ask(function() {
         if (procedures["BORING?"]()) {
           SelfManager.self().setPatchVariable("plabel-color", 5);
@@ -314,7 +325,8 @@ var procedures = (function() {
   procs["COUNT-BORING-GROUPS"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(Prims.equality(ListPrims.length(ListPrims.removeDuplicates(SelfManager.self().turtlesHere().projectionBy(function() { return SelfManager.self().getVariable("color"); }))), 1));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.equality(ListPrims.length(ListPrims.removeDuplicates(SelfManager.self().turtlesHere().projectionBy(function() { return SelfManager.self().getVariable("color"); }))), 1) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -330,6 +342,7 @@ var procedures = (function() {
   procs["BORING?"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.getGlobal("group-sites").ask(function() { SelfManager.self().setPatchVariable("plabel", SelfManager.self().turtlesHere().size()); }, true);
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -345,6 +358,7 @@ var procedures = (function() {
   procs["UPDATE-LABELS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setVariable("color", ListPrims.oneOf([135, 105]));
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -360,7 +374,8 @@ var procedures = (function() {
   procs["CHOOSE-SEX"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(Prims.equality(SelfManager.self().getVariable("color"), 135));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.equality(SelfManager.self().getVariable("color"), 135) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {

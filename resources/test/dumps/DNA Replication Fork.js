@@ -64,6 +64,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.observer.setGlobal("polymerase-color-0", [150, 150, 150, 150]);
       world.observer.setGlobal("polymerase-color-1", [75, 200, 75, 200]);
@@ -137,6 +138,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("using-time-limit", !Prims.equality(world.observer.getGlobal("time-limit"), "none"));
       if (Prims.equality(world.observer.getGlobal("time-limit"), "2 minutes")) {
         world.observer.setGlobal("length-of-simulation", 120);
@@ -160,6 +162,7 @@ var procedures = (function() {
   procs["INITIALIZE-LENGTH-OF-TIME"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.createTurtles(1, "NUCLEOSIDES").ask(function() {
         SelfManager.self().setVariable("value", procedures["RANDOM-BASE-LETTER"]());
         SelfManager.self().setVariable("shape", (Dump('') + Dump("nucleoside-tri-") + Dump(SelfManager.self().getVariable("value"))));
@@ -181,6 +184,7 @@ var procedures = (function() {
   procs["MAKE-A-NUCLEOSIDE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.createTurtles(1, "POLYMERASES").ask(function() {
         SelfManager.self().setVariable("heading", Prims.random(((180 - Prims.random(20)) + Prims.random(20))));
         SelfManager.self().setXY((Prims.div((world.topology.maxPxcor - world.topology.minPxcor), 2) + 3), (world.topology.maxPycor - 1));
@@ -209,6 +213,7 @@ var procedures = (function() {
   procs["MAKE-POLYMERASES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.createTurtles(1, "HELICASES").ask(function() {
         SelfManager.self().setVariable("shape", "helicase");
         SelfManager.self().setVariable("color", world.observer.getGlobal("helicase-color-0"));
@@ -231,6 +236,7 @@ var procedures = (function() {
   procs["MAKE-A-HELICASE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.createTurtles(1, "TOPOISOMERASES").ask(function() {
         SelfManager.self().setVariable("shape", "topoisomerase");
         SelfManager.self().setVariable("locked?", false);
@@ -263,6 +269,7 @@ var procedures = (function() {
   procs["MAKE-A-TOPOISOMERASE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().hatch(1, "").ask(function() {
         SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("PRIMASES"));
         SelfManager.self().setVariable("shape", "primase");
@@ -291,6 +298,7 @@ var procedures = (function() {
   procs["MAKE-AND-ATTACH-A-PRIMASE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let lastNucleotideTopStrand = Nobody;
       let lastNucleotideBottomStrand = Nobody;
       let placeCounter = 0;
@@ -361,6 +369,7 @@ var procedures = (function() {
   procs["MAKE-INITIAL-DNA-STRIP"] = temp;
   temp = (function(direction, displacement) {
     try {
+      var reporterContext = false;
       SelfManager.self().hatch(1, "").ask(function() {
         SelfManager.self().setVariable("heading", direction);
         SelfManager.self().fd(displacement);
@@ -388,6 +397,7 @@ var procedures = (function() {
   procs["ATTACH-NUCLEO-TAG"] = temp;
   temp = (function(direction, displacement, labelValue) {
     try {
+      var reporterContext = false;
       SelfManager.self().hatch(1, "").ask(function() {
         SelfManager.self().setVariable("heading", direction);
         SelfManager.self().fd(displacement);
@@ -416,6 +426,7 @@ var procedures = (function() {
   procs["ATTACH-ENZYME-TAG"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (((world.observer.getGlobal("using-time-limit") && Prims.gt(world.observer.getGlobal("time-remaining"), 0)) || (!world.observer.getGlobal("using-time-limit") && !world.observer.getGlobal("cell-divided?")))) {
         procedures["CHECK-TIMER"]();
         procedures["MOVE-FREE-MOLECULES"]();
@@ -463,6 +474,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (!world.observer.getGlobal("simulation-started?")) {
         world.observer.setGlobal("simulation-started?", true);
         workspace.timer.reset();
@@ -484,6 +496,7 @@ var procedures = (function() {
   procs["CHECK-TIMER"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.turtlesOfBreed("ENZYME-TAGS").ask(function() { SelfManager.self().setVariable("hidden?", !world.observer.getGlobal("enzyme-labels?")); }, true);
       world.turtleManager.turtlesOfBreed("NUCLEOTIDE-TAGS").ask(function() { SelfManager.self().setVariable("hidden?", !world.observer.getGlobal("nucleo-labels?")); }, true);
       world.turtleManager.turtlesOfBreed("TOPOISOMERASES").ask(function() {
@@ -532,6 +545,7 @@ var procedures = (function() {
   procs["VISUALIZE-AGENTS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       for (let _index_17643_17649 = 0, _repeatcount_17643_17649 = StrictMath.floor(world.observer.getGlobal("initial-length-dna")); _index_17643_17649 < _repeatcount_17643_17649; _index_17643_17649++){
         procedures["WIND-DNA"]();
       }
@@ -549,6 +563,7 @@ var procedures = (function() {
   procs["WIND-INITIAL-DNA-INTO-BUNDLE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let woundNucleotides = world.turtleManager.turtlesOfBreed("NUCLEOTIDES").agentFilter(function() { return !SelfManager.self().getVariable("unwound?"); });
       if (!woundNucleotides.isEmpty()) {
         let maxWoundPlace = ListPrims.max(woundNucleotides.projectionBy(function() { return SelfManager.self().getVariable("place"); }));
@@ -573,6 +588,7 @@ var procedures = (function() {
   procs["UNWIND-DNA"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let unwoundNucleotides = world.turtleManager.turtlesOfBreed("NUCLEOTIDES").agentFilter(function() {
         return ((SelfManager.self().getVariable("unwound?") && !Prims.equality(SelfManager.self().getVariable("class"), "copy-of-dna-bottom")) && !Prims.equality(SelfManager.self().getVariable("class"), "copy-of-dna-top"));
       });
@@ -598,6 +614,7 @@ var procedures = (function() {
   procs["WIND-DNA"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let wereAnyNucleotidesUnzippedFurther_p = false;
       world.turtleManager.turtlesOfBreed("NUCLEOTIDES").agentFilter(function() {
         return (procedures["NEXT-NUCLEOTIDE-UNZIPPED-THE-SAME?"]() && Prims.gt(SelfManager.self().getVariable("unzipped-stage"), 0));
@@ -643,6 +660,7 @@ var procedures = (function() {
   procs["UNZIP-NUCLEOTIDES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let lowestPlace = 0;
       world.turtleManager.turtlesOfBreed("HELICASES").ask(function() {
         let thisHelicase = SelfManager.self();
@@ -680,6 +698,7 @@ var procedures = (function() {
   procs["SEPARATE-BASE-PAIRS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let allMolecules = Prims.turtleSet(world.turtleManager.turtlesOfBreed("NUCLEOSIDES"), world.turtleManager.turtlesOfBreed("PHOSPHATES"), world.turtleManager.turtlesOfBreed("POLYMERASES"), world.turtleManager.turtlesOfBreed("HELICASES"), world.turtleManager.turtlesOfBreed("TOPOISOMERASES"));
       allMolecules.ask(function() {
         if (!procedures["BEING-DRAGGED-BY-CURSOR?"]()) {
@@ -700,6 +719,7 @@ var procedures = (function() {
   procs["MOVE-FREE-MOLECULES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.turtlesOfBreed("PHOSPHATES").ask(function() {
         if ((((Prims.equality(SelfManager.self().getPatchVariable("pxcor"), world.topology.minPxcor) || Prims.equality(SelfManager.self().getPatchVariable("pxcor"), world.topology.maxPxcor)) || Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor)) || Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.maxPycor))) {
           SelfManager.self().die();
@@ -719,6 +739,7 @@ var procedures = (function() {
   procs["CLEAN-UP-FREE-PHOSPHATES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.lt(world.turtleManager.turtlesOfBreed("NUCLEOSIDES").size(), world.observer.getGlobal("free-nucleosides"))) {
         procedures["MAKE-A-NUCLEOSIDE"]();
       }
@@ -742,6 +763,7 @@ var procedures = (function() {
   procs["REFILL-OR-REMOVE-NUCLEOSIDES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let targetXcor = 0;
       let targetYcor = 0;
       let targetClass = "";
@@ -820,6 +842,7 @@ var procedures = (function() {
   procs["LOCK-POLYMERASE-TO-ONE-NUCLEOTIDE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().hatch(1, "").ask(function() {
         SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("PHOSPHATES"));
         SelfManager.self().setVariable("shape", "phosphate-pair");
@@ -839,6 +862,7 @@ var procedures = (function() {
   procs["BREAK-OFF-PHOSPHATES-FROM-NUCLEOSIDE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let targetXcor = 0;
       let targetYcor = 0;
       let targetClass = "";
@@ -881,6 +905,7 @@ var procedures = (function() {
   procs["LOCK-TOPOISOMERASE-TO-WOUND-PRIMASE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("total-deletion-mutations-top-strand", 0);
       world.observer.setGlobal("total-substitution-mutations-top-strand", 0);
       world.observer.setGlobal("total-correct-duplications-top-strand", 0);
@@ -929,6 +954,7 @@ var procedures = (function() {
   procs["CALCULATE-MUTATIONS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let pMouseXcor = MousePrims.getX();
       let pMouseYcor = MousePrims.getY();
       let currentMouseDown_p = MousePrims.isDown();
@@ -982,6 +1008,7 @@ var procedures = (function() {
   procs["DETECT-MOUSE-SELECTION-EVENT"] = temp;
   temp = (function() {
     try {
+      var reporterContext = true;
       let r = Prims.random(4);
       let letterToReport = "";
       if (Prims.equality(r, 0)) {
@@ -996,7 +1023,7 @@ var procedures = (function() {
       if (Prims.equality(r, 3)) {
         letterToReport = "C";
       }
-      throw new Exception.ReportInterrupt(letterToReport);
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return letterToReport }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -1012,6 +1039,7 @@ var procedures = (function() {
   procs["RANDOM-BASE-LETTER"] = temp;
   temp = (function(base) {
     try {
+      var reporterContext = true;
       let baseToReport = "";
       if (Prims.equality(base, "A")) {
         baseToReport = "T";
@@ -1025,7 +1053,7 @@ var procedures = (function() {
       if (Prims.equality(base, "C")) {
         baseToReport = "G";
       }
-      throw new Exception.ReportInterrupt(baseToReport);
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return baseToReport }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -1041,11 +1069,12 @@ var procedures = (function() {
   procs["COMPLEMENTARY-BASE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = true;
       if (world.observer.getGlobal("using-time-limit")) {
-        throw new Exception.ReportInterrupt(world.observer.getGlobal("time-remaining"));
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return world.observer.getGlobal("time-remaining") }
       }
       else {
-        throw new Exception.ReportInterrupt("");
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return "" }
       }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
@@ -1062,11 +1091,12 @@ var procedures = (function() {
   procs["TIME-REMAINING-TO-DISPLAY"] = temp;
   temp = (function() {
     try {
+      var reporterContext = true;
       if (!LinkPrims.outLinkNeighbors("CURSOR-DRAGS").isEmpty()) {
-        throw new Exception.ReportInterrupt(true);
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return true }
       }
       else {
-        throw new Exception.ReportInterrupt(false);
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return false }
       }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
@@ -1083,11 +1113,12 @@ var procedures = (function() {
   procs["IS-THIS-CURSOR-DRAGGING-ANYTHING?"] = temp;
   temp = (function() {
     try {
+      var reporterContext = true;
       if (!LinkPrims.myInLinks("CURSOR-DRAGS").isEmpty()) {
-        throw new Exception.ReportInterrupt(true);
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return true }
       }
       else {
-        throw new Exception.ReportInterrupt(false);
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return false }
       }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
@@ -1104,11 +1135,12 @@ var procedures = (function() {
   procs["BEING-DRAGGED-BY-CURSOR?"] = temp;
   temp = (function() {
     try {
+      var reporterContext = true;
       if (!world.turtleManager.turtlesOfBreed("NUCLEOTIDES").agentFilter(function() { return !SelfManager.self().getVariable("unwound?"); }).isEmpty()) {
-        throw new Exception.ReportInterrupt(false);
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return false }
       }
       else {
-        throw new Exception.ReportInterrupt(true);
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return true }
       }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
@@ -1125,11 +1157,12 @@ var procedures = (function() {
   procs["ALL-BASE-PAIRS-UNWOUND?"] = temp;
   temp = (function(nucleotide1, nucleotide2) {
     try {
+      var reporterContext = true;
       if (Prims.equality(procedures["COMPLEMENTARY-BASE"](nucleotide1.projectionBy(function() { return SelfManager.self().getVariable("value"); })), ListPrims.item(0, nucleotide2.projectionBy(function() { return SelfManager.self().getVariable("value"); })))) {
-        throw new Exception.ReportInterrupt(true);
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return true }
       }
       else {
-        throw new Exception.ReportInterrupt(false);
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return false }
       }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
@@ -1146,6 +1179,7 @@ var procedures = (function() {
   procs["WOULD-THESE-NUCLEOTIDES-PAIR-CORRECTLY?"] = temp;
   temp = (function() {
     try {
+      var reporterContext = true;
       let originalNucleotide = SelfManager.self();
       let thisStair = ListPrims.oneOf(LinkPrims.myLinks("NEW-STAIRS"));
       let thisPairedNucleotide = Nobody;
@@ -1159,10 +1193,10 @@ var procedures = (function() {
         }
       }, true);
       if ((Prims.equality(SelfManager.self().getVariable("value"), procedures["COMPLEMENTARY-BASE"](thisPairedNucleotide.projectionBy(function() { return SelfManager.self().getVariable("value"); }))) && !overwrite_p)) {
-        throw new Exception.ReportInterrupt(true);
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return true }
       }
       else {
-        throw new Exception.ReportInterrupt(false);
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return false }
       }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
@@ -1179,6 +1213,7 @@ var procedures = (function() {
   procs["IS-THIS-NUCLEOTIDE-PAIRED-CORRECTLY?"] = temp;
   temp = (function() {
     try {
+      var reporterContext = true;
       let myUnzippedStage = SelfManager.self().getVariable("unzipped-stage");
       let myPlace = SelfManager.self().getVariable("place");
       let myClass = SelfManager.self().getVariable("class");
@@ -1197,7 +1232,7 @@ var procedures = (function() {
       else {
         canContinueToUnzip_p = true;
       }
-      throw new Exception.ReportInterrupt(canContinueToUnzip_p);
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return canContinueToUnzip_p }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -1213,6 +1248,7 @@ var procedures = (function() {
   procs["NEXT-NUCLEOTIDE-UNZIPPED-THE-SAME?"] = temp;
   temp = (function() {
     try {
+      var reporterContext = true;
       let myPlace = SelfManager.self().getVariable("place");
       let previousNucleotides = world.turtleManager.turtlesOfBreed("NUCLEOTIDES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("place"), (myPlace - 1)); });
       let valueToReturn = false;
@@ -1228,7 +1264,7 @@ var procedures = (function() {
           valueToReturn = false;
         }
       }
-      throw new Exception.ReportInterrupt(valueToReturn);
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return valueToReturn }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -1244,8 +1280,9 @@ var procedures = (function() {
   procs["ARE-PREVIOUS-NUCLEOTIDES-UNZIPPED?"] = temp;
   temp = (function() {
     try {
+      var reporterContext = true;
       let duplicationRate = NLMath.precision(Prims.div((world.observer.getGlobal("total-correct-duplications-top-strand") + world.observer.getGlobal("total-correct-duplications-bottom-strand")), world.observer.getGlobal("final-time")), 4);
-      throw new Exception.ReportInterrupt((Dump('') + Dump("You had ") + Dump((world.observer.getGlobal("total-correct-duplications-top-strand") + world.observer.getGlobal("total-correct-duplications-bottom-strand"))) + Dump(" correct replications and ") + Dump((world.observer.getGlobal("total-substitution-mutations-top-strand") + world.observer.getGlobal("total-substitution-mutations-bottom-strand"))) + Dump(" substitutions and ") + Dump((world.observer.getGlobal("total-deletion-mutations-top-strand") + world.observer.getGlobal("total-deletion-mutations-bottom-strand"))) + Dump("  deletions.") + Dump(" That replication process took you ") + Dump(world.observer.getGlobal("final-time")) + Dump(" seconds.  This was a rate of ") + Dump(duplicationRate) + Dump(" correct nucleotides duplicated per second.")));
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return (Dump('') + Dump("You had ") + Dump((world.observer.getGlobal("total-correct-duplications-top-strand") + world.observer.getGlobal("total-correct-duplications-bottom-strand"))) + Dump(" correct replications and ") + Dump((world.observer.getGlobal("total-substitution-mutations-top-strand") + world.observer.getGlobal("total-substitution-mutations-bottom-strand"))) + Dump(" substitutions and ") + Dump((world.observer.getGlobal("total-deletion-mutations-top-strand") + world.observer.getGlobal("total-deletion-mutations-bottom-strand"))) + Dump("  deletions.") + Dump(" That replication process took you ") + Dump(world.observer.getGlobal("final-time")) + Dump(" seconds.  This was a rate of ") + Dump(duplicationRate) + Dump(" correct nucleotides duplicated per second.")) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -1261,7 +1298,8 @@ var procedures = (function() {
   procs["USER-MESSAGE-STRING-FOR-MUTATIONS"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt((Prims.equality(world.observer.getGlobal("current-instruction"), 0) ? "press setup" : (Dump('') + Dump(world.observer.getGlobal("current-instruction")) + Dump(" / ") + Dump(ListPrims.length(procedures["INSTRUCTIONS"]())))));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return (Prims.equality(world.observer.getGlobal("current-instruction"), 0) ? "press setup" : (Dump('') + Dump(world.observer.getGlobal("current-instruction")) + Dump(" / ") + Dump(ListPrims.length(procedures["INSTRUCTIONS"]())))) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -1277,6 +1315,7 @@ var procedures = (function() {
   procs["CURRENT-INSTRUCTION-LABEL"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       procedures["SHOW-INSTRUCTION"]((world.observer.getGlobal("current-instruction") + 1));
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -1292,6 +1331,7 @@ var procedures = (function() {
   procs["NEXT-INSTRUCTION"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       procedures["SHOW-INSTRUCTION"]((world.observer.getGlobal("current-instruction") - 1));
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -1307,15 +1347,16 @@ var procedures = (function() {
   procs["PREVIOUS-INSTRUCTION"] = temp;
   temp = (function(i) {
     try {
+      var reporterContext = false;
       if ((Prims.gte(i, 1) && Prims.lte(i, ListPrims.length(procedures["INSTRUCTIONS"]())))) {
         world.observer.setGlobal("current-instruction", i);
         OutputPrims.clear();
-        Tasks.forEach(Tasks.commandTask(function(_0) {
+        var _foreach_35146_35153 = Tasks.forEach(Tasks.commandTask(function(_0) {
           if (arguments.length < 1) {
             throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
           }
           OutputPrims.print(_0);
-        }, "output-print"), ListPrims.item((world.observer.getGlobal("current-instruction") - 1), procedures["INSTRUCTIONS"]()));
+        }, "output-print"), ListPrims.item((world.observer.getGlobal("current-instruction") - 1), procedures["INSTRUCTIONS"]())); if(reporterContext && _foreach_35146_35153 !== undefined) { return _foreach_35146_35153; }
       }
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -1331,7 +1372,8 @@ var procedures = (function() {
   procs["SHOW-INSTRUCTION"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt([["You will be simulating the process", "of DNA replication that occurs in", "every cell in every living creature", "as part of mitosis or meiosis."], ["To do this you will need to complete", "4 tasks in the shortest time you", "can. Each of these tasks requires", "you to drag a molecule using your", "mouse, from one location to another."], ["The 1st task will be to unwind a ", "twisted bundle of DNA by using your", "mouse to place a topoisomerase ", "enzyme on top of the primase enzyme."], ["The 2nd task will be to unzip the", "DNA ladder structure by dragging", "a helicase enzyme from the 1st ", "base pair to the last base pair."], ["The 3rd task will be to first drag", "a polymerase enzyme to an open", "nucleotide and then drag a floating", "nucleoside to the same location."], ["The last task is to simply repeat", "the previous task of connecting", "nucleosides to open nucleotides", "until as much of the DNA as", "possible has been replicated."], ["The simulation ends either when", "the timer runs out (if the timer?", "chooser is set to YES) or when you", "press the DIVIDE THE CELL button"]]);
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return [["You will be simulating the process", "of DNA replication that occurs in", "every cell in every living creature", "as part of mitosis or meiosis."], ["To do this you will need to complete", "4 tasks in the shortest time you", "can. Each of these tasks requires", "you to drag a molecule using your", "mouse, from one location to another."], ["The 1st task will be to unwind a ", "twisted bundle of DNA by using your", "mouse to place a topoisomerase ", "enzyme on top of the primase enzyme."], ["The 2nd task will be to unzip the", "DNA ladder structure by dragging", "a helicase enzyme from the 1st ", "base pair to the last base pair."], ["The 3rd task will be to first drag", "a polymerase enzyme to an open", "nucleotide and then drag a floating", "nucleoside to the same location."], ["The last task is to simply repeat", "the previous task of connecting", "nucleosides to open nucleotides", "until as much of the DNA as", "possible has been replicated."], ["The simulation ends either when", "the timer runs out (if the timer?", "chooser is set to YES) or when you", "press the DIVIDE THE CELL button"]] }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {

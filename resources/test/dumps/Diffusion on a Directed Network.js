@@ -49,6 +49,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Histogram', 'default')(function() {
         try {
+          var reporterContext = false;
           plotManager.setXRange(0, NLMath.ceil((world.observer.getGlobal("max-val") + 0.5)));
           plotManager.setHistogramBarCount(NLMath.ceil(NLMath.sqrt(world.turtles().size())));
           plotManager.drawHistogramFrom(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("val"); }));
@@ -89,6 +90,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
       BreedManager.setDefaultShape(world.links().getSpecialName(), "small-arrow-link")
@@ -128,6 +130,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtles().ask(function() { SelfManager.self().setVariable("new-val", 0); }, true);
       world.turtles().ask(function() {
         let recipients = LinkPrims.outLinkNeighbors("ACTIVE-LINKS");
@@ -162,6 +165,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (!world.linkManager.linksOfBreed("ACTIVE-LINKS").isEmpty()) {
         ListPrims.oneOf(world.linkManager.linksOfBreed("ACTIVE-LINKS")).ask(function() {
           SelfManager.self().setVariable("breed", world.linkManager.linksOfBreed("INACTIVE-LINKS"));
@@ -186,6 +190,7 @@ var procedures = (function() {
   procs["REWIRE-A-LINK"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("total-val", ListPrims.sum(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("val"); })));
       world.observer.setGlobal("max-val", ListPrims.max(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("val"); })));
       if (!world.linkManager.linksOfBreed("ACTIVE-LINKS").isEmpty()) {
@@ -206,6 +211,7 @@ var procedures = (function() {
   procs["UPDATE-GLOBALS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtles().ask(function() { procedures["UPDATE-NODE-APPEARANCE"](); }, true);
       world.linkManager.linksOfBreed("ACTIVE-LINKS").ask(function() { procedures["UPDATE-LINK-APPEARANCE"](); }, true);
     } catch (e) {
@@ -222,6 +228,7 @@ var procedures = (function() {
   procs["UPDATE-VISUALS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setVariable("size", (0.1 + (5 * NLMath.sqrt(Prims.div(SelfManager.self().getVariable("val"), world.observer.getGlobal("total-val"))))));
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -237,6 +244,7 @@ var procedures = (function() {
   procs["UPDATE-NODE-APPEARANCE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setVariable("color", ColorModel.scaleColor(5, Prims.div(SelfManager.self().getVariable("current-flow"), ((2 * world.observer.getGlobal("mean-flow")) + 1.0E-5)), -0.4, 1));
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {

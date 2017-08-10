@@ -64,6 +64,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.observer.setGlobal("replicate-dna-event?", false);
       world.observer.setGlobal("show-genes-event?", false);
@@ -126,6 +127,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       procedures["SETUP-DNA-STRING"]();
       procedures["BUILD-GENES-FROM-DNA"]("original",world.observer.getGlobal("original-dna-string"));
       procedures["MAKE-A-NUCLEOTIDE-CHAIN-FOR-DNA-STRING"]("original",world.observer.getGlobal("original-dna-string"));
@@ -150,6 +152,7 @@ var procedures = (function() {
   procs["SETUP-STARTING-DNA"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(world.observer.getGlobal("initial-dna-string"), "from user-created-code")) {
         world.observer.setGlobal("original-dna-string", procedures["DNA-STRING-WITH-NON-NUCLEOTIDE-CHARACTERS-REPLACED"](world.observer.getGlobal("user-created-code")));
       }
@@ -200,6 +203,7 @@ var procedures = (function() {
   procs["SETUP-DNA-STRING"] = temp;
   temp = (function(strandType) {
     try {
+      var reporterContext = false;
       let dna = Prims.turtleSet(world.turtleManager.turtlesOfBreed("GENES"), world.turtleManager.turtlesOfBreed("NUCLEOTIDES"), world.turtleManager.turtlesOfBreed("PROMOTERS"), world.turtleManager.turtlesOfBreed("TERMINATORS"));
       dna.agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("strand"), strandType); }).ask(function() {
         if (Prims.equality(strandType, "original")) {
@@ -223,6 +227,7 @@ var procedures = (function() {
   procs["PLACE-DNA"] = temp;
   temp = (function(strandType) {
     try {
+      var reporterContext = false;
       world.turtleManager.turtlesOfBreed("TRNAS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("strand"), strandType); }).ask(function() {
         if (Prims.equality(strandType, "original")) {
           SelfManager.self().setVariable("ycor", (world.observer.getGlobal("original-ribosome-ycor") + 1));
@@ -245,6 +250,7 @@ var procedures = (function() {
   procs["PLACE-TRNAS"] = temp;
   temp = (function(strandType, dnaString) {
     try {
+      var reporterContext = false;
       let previousNucleotide = Nobody;
       let placeCounter = 0;
       world.turtleManager.createTurtles(1, "").ask(function() {
@@ -279,6 +285,7 @@ var procedures = (function() {
   procs["MAKE-A-NUCLEOTIDE-CHAIN-FOR-DNA-STRING"] = temp;
   temp = (function(strandType, dnaString) {
     try {
+      var reporterContext = false;
       let remainingDna = dnaString;
       let thisItem = "";
       let lastItem = "";
@@ -343,6 +350,7 @@ var procedures = (function() {
   procs["BUILD-GENES-FROM-DNA"] = temp;
   temp = (function(strandType) {
     try {
+      var reporterContext = false;
       world.turtleManager.turtlesOfBreed("GENES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("strand"), strandType); }).ask(function() {
         let thisCode = SelfManager.self().getVariable("code");
         let thisGene = SelfManager.self();
@@ -433,6 +441,7 @@ var procedures = (function() {
   procs["BUILD-MRNA-FOR-EACH-GENE"] = temp;
   temp = (function(strandType) {
     try {
+      var reporterContext = false;
       world.turtleManager.turtlesOfBreed("MRNAS").agentFilter(function() {
         return (Prims.equality(SelfManager.self().getVariable("cap-type"), "start") && Prims.equality(SelfManager.self().getVariable("strand"), strandType));
       }).ask(function() {
@@ -459,6 +468,7 @@ var procedures = (function() {
   procs["BUILD-PROTEIN-FROM-MRNA"] = temp;
   temp = (function(thisTriplet, tripletCounter) {
     try {
+      var reporterContext = false;
       let thisTrna = Nobody;
       SelfManager.self().hatch(1, "").ask(function() {
         SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("TRNAS"));
@@ -535,6 +545,7 @@ var procedures = (function() {
   procs["BUILD-TRNA-FOR-THIS-TRIPLET"] = temp;
   temp = (function(direction, displacement, labelValue, colorValue) {
     try {
+      var reporterContext = false;
       SelfManager.self().hatch(1, "").ask(function() {
         SelfManager.self().setVariable("heading", direction);
         SelfManager.self().fd(displacement);
@@ -562,6 +573,7 @@ var procedures = (function() {
   procs["ATTACH-TAG"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       Prims.turtleSet(world.turtleManager.turtlesOfBreed("PROMOTERS"), world.turtleManager.turtlesOfBreed("TERMINATORS")).ask(function() {
         LinkPrims.linkNeighbors("TAGLINES").ask(function() { SelfManager.self().setVariable("hidden?", !world.observer.getGlobal("show-genes?")); }, true);
         SelfManager.self().setVariable("hidden?", !world.observer.getGlobal("show-genes?"));
@@ -580,6 +592,7 @@ var procedures = (function() {
   procs["VISUALIZE-ALL-GENES"] = temp;
   temp = (function(strandType) {
     try {
+      var reporterContext = false;
       Prims.turtleSet(world.turtleManager.turtlesOfBreed("PROMOTERS"), world.turtleManager.turtlesOfBreed("TERMINATORS")).agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("strand"), strandType); }).ask(function() {
         LinkPrims.linkNeighbors("TAGLINES").ask(function() { SelfManager.self().setVariable("hidden?", true); }, true);
         SelfManager.self().setVariable("hidden?", true);
@@ -598,6 +611,7 @@ var procedures = (function() {
   procs["HIDE-GENES"] = temp;
   temp = (function(strandType) {
     try {
+      var reporterContext = false;
       Prims.turtleSet(world.turtleManager.turtlesOfBreed("MRNAS"), world.turtleManager.turtlesOfBreed("MRNA-NUCLEOTIDES")).agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("strand"), strandType); }).ask(function() {
         LinkPrims.linkNeighbors("TAGLINES").ask(function() { SelfManager.self().setVariable("hidden?", true); }, true);
         SelfManager.self().setVariable("hidden?", true);
@@ -616,6 +630,7 @@ var procedures = (function() {
   procs["HIDE-MRNA"] = temp;
   temp = (function(strandType) {
     try {
+      var reporterContext = false;
       Prims.turtleSet(world.turtleManager.turtlesOfBreed("TRNAS"), world.turtleManager.turtlesOfBreed("TRNA-NUCLEOTIDES"), world.turtleManager.turtlesOfBreed("AMINO-ACIDS")).agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("strand"), strandType); }).ask(function() {
         LinkPrims.linkNeighbors("TAGLINES").ask(function() { SelfManager.self().setVariable("hidden?", true); }, true);
         SelfManager.self().setVariable("hidden?", true);
@@ -634,6 +649,7 @@ var procedures = (function() {
   procs["HIDE-TRNA"] = temp;
   temp = (function(strandType) {
     try {
+      var reporterContext = false;
       let theseGenes = world.turtleManager.turtlesOfBreed("GENES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("strand"), strandType); });
       if (Prims.equality(theseGenes.size(), 0)) {
         procedures["DISPLAY-USER-MESSAGE-NO-GENES"]();
@@ -706,6 +722,7 @@ var procedures = (function() {
   procs["SHOW-NEXT-MRNA"] = temp;
   temp = (function(strandType) {
     try {
+      var reporterContext = false;
       let thisGeneNumber = procedures["GENE-NUMBER-FOR-THIS-STRAND"](strandType);
       world.turtleManager.turtlesOfBreed("MRNAS").agentFilter(function() {
         return (((Prims.equality(SelfManager.self().getVariable("strand"), strandType) && Prims.equality(SelfManager.self().getVariable("cap-type"), "start")) && SelfManager.self().getVariable("released?")) && Prims.equality(SelfManager.self().getVariable("gene-number"), thisGeneNumber));
@@ -741,6 +758,7 @@ var procedures = (function() {
   procs["SHOW-NEXT-TRNA"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       UserDialogPrims.confirm("There are no genes in this strand of DNA. A specific sequence of 3 nucleotides is required for a gene");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -756,6 +774,7 @@ var procedures = (function() {
   procs["DISPLAY-USER-MESSAGE-NO-GENES"] = temp;
   temp = (function(strandType) {
     try {
+      var reporterContext = false;
       let makeProtein_p = false;
       let thisGeneNumber = procedures["GENE-NUMBER-FOR-THIS-STRAND"](strandType);
       world.turtleManager.turtlesOfBreed("MRNAS").agentFilter(function() {
@@ -803,18 +822,19 @@ var procedures = (function() {
   procs["RELEASE-NEXT-PROTEIN"] = temp;
   temp = (function(strandType) {
     try {
+      var reporterContext = false;
       let thisGeneNumber = procedures["GENE-NUMBER-FOR-THIS-STRAND"](strandType);
       let thisProteinValue = "";
       let theseAminoAcids = world.turtleManager.turtlesOfBreed("AMINO-ACIDS").agentFilter(function() {
         return ((Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("AMINO-ACIDS")) && Prims.equality(strandType, SelfManager.self().getVariable("strand"))) && Prims.equality(SelfManager.self().getVariable("gene-number"), thisGeneNumber));
       });
       let orderedAminoAcids = theseAminoAcids.sortOn(function() { return SelfManager.self().getVariable("who"); });
-      Tasks.forEach(Tasks.commandTask(function(theAminoAcid) {
+      var _foreach_19530_19537 = Tasks.forEach(Tasks.commandTask(function(theAminoAcid) {
         if (arguments.length < 1) {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
         }
         thisProteinValue = (Dump('') + Dump(thisProteinValue) + Dump("-") + Dump(theAminoAcid.projectionBy(function() { return SelfManager.self().getVariable("value"); })));
-      }, "[ the-amino-acid -> set this-protein-value word this-protein-value \"-\" value  of the-amino-acid ]"), orderedAminoAcids);
+      }, "[ the-amino-acid -> set this-protein-value word this-protein-value \"-\" value  of the-amino-acid ]"), orderedAminoAcids); if(reporterContext && _foreach_19530_19537 !== undefined) { return _foreach_19530_19537; }
       if (!!world.turtleManager.turtlesOfBreed("PROTEINS").agentFilter(function() {
         return (Prims.equality(SelfManager.self().getVariable("strand"), strandType) && Prims.equality(SelfManager.self().getVariable("value"), thisProteinValue));
       }).isEmpty()) {
@@ -839,6 +859,7 @@ var procedures = (function() {
   procs["MAKE-PROTEIN"] = temp;
   temp = (function(strandType) {
     try {
+      var reporterContext = false;
       world.turtleManager.turtlesOfBreed("MRNAS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("strand"), strandType); }).ask(function() {
         SelfManager.self().setVariable("traveling?", true);
         SelfManager.self().setVariable("released?", false);
@@ -857,6 +878,7 @@ var procedures = (function() {
   procs["RELEASE-NEXT-MRNA-FROM-NUCLEUS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       procedures["VISUALIZE-ALL-GENES"]();
       if (world.observer.getGlobal("event-1-triggered?")) {
         procedures["SHOW-NEXT-MRNA"]("original");
@@ -924,6 +946,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.turtlesOfBreed("MRNAS").agentFilter(function() {
         return (SelfManager.self().getVariable("traveling?") && Prims.equality(SelfManager.self().getVariable("cap-type"), "start"));
       }).ask(function() {
@@ -962,6 +985,7 @@ var procedures = (function() {
   procs["MOVE-MRNA-MOLECULES-OUT-OF-NUCLEUS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       OutputPrims.clear();
       let originalProteins = world.turtleManager.turtlesOfBreed("PROTEINS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("strand"), "original"); });
       OutputPrims.print("Proteins Produced");
@@ -996,6 +1020,7 @@ var procedures = (function() {
   procs["SHOW-PROTEIN-PRODUCTION"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let positionCounter = 0;
       world.observer.setGlobal("duplicate-strand-gene-counter", 0);
       let cleanDuplicateDnaString = world.observer.getGlobal("original-dna-string");
@@ -1037,6 +1062,7 @@ var procedures = (function() {
   procs["MAKE-DUPLICATE-DNA-STRING"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let turtlesToRemove = Prims.turtleSet(world.turtleManager.turtlesOfBreed("NUCLEOTIDES"), world.turtleManager.turtlesOfBreed("MRNAS"), world.turtleManager.turtlesOfBreed("TRNAS"), world.turtleManager.turtlesOfBreed("GENES"), world.turtleManager.turtlesOfBreed("PROMOTERS"), world.turtleManager.turtlesOfBreed("TERMINATORS"), world.turtleManager.turtlesOfBreed("AMINO-ACIDS"), world.turtleManager.turtlesOfBreed("MRNA-NUCLEOTIDES"));
       turtlesToRemove.agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("strand"), "duplicate"); }).ask(function() {
         LinkPrims.linkNeighbors("TAGLINES").ask(function() { SelfManager.self().die(); }, true);
@@ -1066,6 +1092,7 @@ var procedures = (function() {
   procs["REPLICATE-DNA"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("codon-to-amino-acid-key", [["UUU", "Phe"], ["UUC", "Phe"], ["UUA", "Leu"], ["UUG", "Leu"], ["CUU", "Leu"], ["CUC", "Leu"], ["CUA", "Leu"], ["CUG", "Leu"], ["AUU", "Ile"], ["AUC", "Ile"], ["AUA", "Ile"], ["AUG", "Met"], ["GUU", "Val"], ["GUC", "Val"], ["GUA", "Val"], ["GUG", "Val"], ["UCU", "Ser"], ["UCC", "Ser"], ["UCA", "Ser"], ["UCG", "Ser"], ["CCU", "Pro"], ["CCC", "Pro"], ["CCA", "Pro"], ["CCG", "Pro"], ["ACU", "Thr"], ["ACC", "Thr"], ["ACA", "Thr"], ["ACG", "Thr"], ["GCU", "Ala"], ["GCC", "Ala"], ["GCA", "Ala"], ["GCG", "Ala"], ["UAU", "Tyr"], ["UAC", "Tyr"], ["UAA", "Stop"], ["UAG", "Stop"], ["CAU", "His"], ["CAC", "His"], ["CAA", "Gln"], ["CAG", "Gln"], ["AAU", "Asn"], ["AAC", "Asn"], ["AAA", "Lys"], ["AAG", "Lys"], ["GAU", "Asp"], ["GAC", "Asp"], ["GAA", "Glu"], ["GAG", "Glu"], ["UGU", "Cys"], ["UGC", "Cys"], ["UGA", "Stop"], ["UGG", "Trp"], ["CGU", "Arg"], ["CGC", "Arg"], ["CGA", "Arg"], ["CGG", "Arg"], ["AGU", "Ser"], ["AGC", "Ser"], ["AGA", "Arg"], ["AGG", "Arg"], ["GGU", "Gly"], ["GGC", "Gly"], ["GGA", "Gly"], ["GGG", "Gly"]]);
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -1081,12 +1108,13 @@ var procedures = (function() {
   procs["INITIALIZE-CODON-TO-AMINO-ACID-KEY"] = temp;
   temp = (function(thisCodon) {
     try {
-      throw new Exception.ReportInterrupt(ListPrims.item(1, ListPrims.item(0, world.observer.getGlobal("codon-to-amino-acid-key").filter(Tasks.reporterTask(function(pair) {
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return ListPrims.item(1, ListPrims.item(0, world.observer.getGlobal("codon-to-amino-acid-key").filter(Tasks.reporterTask(function(pair) {
         if (arguments.length < 1) {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
         }
         return Prims.equality(ListPrims.first(pair), thisCodon);
-      }, "[ pair -> first pair = this-codon ]")))));
+      }, "[ pair -> first pair = this-codon ]")))) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -1102,6 +1130,7 @@ var procedures = (function() {
   procs["WHICH-PROTEIN-FOR-THIS-CODON"] = temp;
   temp = (function() {
     try {
+      var reporterContext = true;
       let r = Prims.random(4);
       let letterToReport = "";
       if (Prims.equality(r, 0)) {
@@ -1116,7 +1145,7 @@ var procedures = (function() {
       if (Prims.equality(r, 3)) {
         letterToReport = "C";
       }
-      throw new Exception.ReportInterrupt(letterToReport);
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return letterToReport }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -1132,6 +1161,7 @@ var procedures = (function() {
   procs["RANDOM-BASE-LETTER-DNA"] = temp;
   temp = (function(base) {
     try {
+      var reporterContext = true;
       let baseToReport = "";
       if (Prims.equality(base, "A")) {
         baseToReport = "U";
@@ -1148,7 +1178,7 @@ var procedures = (function() {
       if (Prims.equality(base, "C")) {
         baseToReport = "G";
       }
-      throw new Exception.ReportInterrupt(baseToReport);
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return baseToReport }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -1164,13 +1194,14 @@ var procedures = (function() {
   procs["COMPLEMENTARY-MRNA-BASE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = true;
       if (Prims.gte(world.observer.getGlobal("gene-color-counter"), (ListPrims.length(ColorModel.BASE_COLORS) - 1))) {
         world.observer.setGlobal("gene-color-counter", 0);
       }
       else {
         world.observer.setGlobal("gene-color-counter", (world.observer.getGlobal("gene-color-counter") + 1));
       }
-      throw new Exception.ReportInterrupt(ListPrims.item(world.observer.getGlobal("gene-color-counter"), ColorModel.BASE_COLORS));
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return ListPrims.item(world.observer.getGlobal("gene-color-counter"), ColorModel.BASE_COLORS) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -1186,6 +1217,7 @@ var procedures = (function() {
   procs["NEXT-GENE-COLOR"] = temp;
   temp = (function(strandType) {
     try {
+      var reporterContext = true;
       let thisGeneNumber = 0;
       if (Prims.equality(strandType, "original")) {
         thisGeneNumber = world.observer.getGlobal("original-display-mrna-counter");
@@ -1193,7 +1225,7 @@ var procedures = (function() {
       if (Prims.equality(strandType, "duplicate")) {
         thisGeneNumber = world.observer.getGlobal("duplicate-display-mrna-counter");
       }
-      throw new Exception.ReportInterrupt(thisGeneNumber);
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return thisGeneNumber }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -1209,13 +1241,14 @@ var procedures = (function() {
   procs["GENE-NUMBER-FOR-THIS-STRAND"] = temp;
   temp = (function(dnaString) {
     try {
+      var reporterContext = true;
       let newString = dnaString;
       let nextItem = 0;
       for (let _index_28754_28760 = 0, _repeatcount_28754_28760 = StrictMath.floor(ListPrims.length(dnaString)); _index_28754_28760 < _repeatcount_28754_28760; _index_28754_28760++){
         newString = ListPrims.replaceItem(nextItem, newString, procedures["COMPLEMENTARY-MRNA-BASE"](ListPrims.item(nextItem, newString)));
         nextItem = (nextItem + 1);
       }
-      throw new Exception.ReportInterrupt(newString);
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return newString }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -1231,6 +1264,7 @@ var procedures = (function() {
   procs["MRNA-STRING-FROM-DNA-STRING"] = temp;
   temp = (function(dnaString) {
     try {
+      var reporterContext = true;
       let newString = dnaString;
       let nextItem = 0;
       for (let _index_29220_29226 = 0, _repeatcount_29220_29226 = StrictMath.floor(ListPrims.length(dnaString)); _index_29220_29226 < _repeatcount_29220_29226; _index_29220_29226++){
@@ -1240,7 +1274,7 @@ var procedures = (function() {
       if (Prims.gt(ListPrims.length(dnaString), 64)) {
         newString = ListPrims.substring(newString, 0, 64);
       }
-      throw new Exception.ReportInterrupt(newString);
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return newString }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -1256,11 +1290,12 @@ var procedures = (function() {
   procs["DNA-STRING-WITH-NON-NUCLEOTIDE-CHARACTERS-REPLACED"] = temp;
   temp = (function(nucleotideCharacter) {
     try {
+      var reporterContext = true;
       let characterToReturn = nucleotideCharacter;
       if ((((!Prims.equality(nucleotideCharacter, "A") && !Prims.equality(nucleotideCharacter, "T")) && !Prims.equality(nucleotideCharacter, "C")) && !Prims.equality(nucleotideCharacter, "G"))) {
         characterToReturn = procedures["RANDOM-BASE-LETTER-DNA"]();
       }
-      throw new Exception.ReportInterrupt(characterToReturn);
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return characterToReturn }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -1276,7 +1311,8 @@ var procedures = (function() {
   procs["REPLACE-NON-NUCLEOTIDE-CHARACTER"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt((Prims.equality(world.observer.getGlobal("current-instruction"), 0) ? "press setup" : (Dump('') + Dump(world.observer.getGlobal("current-instruction")) + Dump(" of ") + Dump(ListPrims.length(procedures["INSTRUCTIONS"]())))));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return (Prims.equality(world.observer.getGlobal("current-instruction"), 0) ? "press setup" : (Dump('') + Dump(world.observer.getGlobal("current-instruction")) + Dump(" of ") + Dump(ListPrims.length(procedures["INSTRUCTIONS"]())))) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -1292,6 +1328,7 @@ var procedures = (function() {
   procs["CURRENT-INSTRUCTION-LABEL"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       procedures["SHOW-INSTRUCTION"]((world.observer.getGlobal("current-instruction") + 1));
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -1307,6 +1344,7 @@ var procedures = (function() {
   procs["NEXT-INSTRUCTION"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       procedures["SHOW-INSTRUCTION"]((world.observer.getGlobal("current-instruction") - 1));
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -1322,15 +1360,16 @@ var procedures = (function() {
   procs["PREVIOUS-INSTRUCTION"] = temp;
   temp = (function(i) {
     try {
+      var reporterContext = false;
       if ((Prims.gte(i, 1) && Prims.lte(i, ListPrims.length(procedures["INSTRUCTIONS"]())))) {
         world.observer.setGlobal("current-instruction", i);
         OutputPrims.clear();
-        Tasks.forEach(Tasks.commandTask(function(_0) {
+        var _foreach_30598_30605 = Tasks.forEach(Tasks.commandTask(function(_0) {
           if (arguments.length < 1) {
             throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
           }
           OutputPrims.print(_0);
-        }, "output-print"), ListPrims.item((world.observer.getGlobal("current-instruction") - 1), procedures["INSTRUCTIONS"]()));
+        }, "output-print"), ListPrims.item((world.observer.getGlobal("current-instruction") - 1), procedures["INSTRUCTIONS"]())); if(reporterContext && _foreach_30598_30605 !== undefined) { return _foreach_30598_30605; }
       }
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -1346,7 +1385,8 @@ var procedures = (function() {
   procs["SHOW-INSTRUCTION"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt([["You will be simulating the process", "of protein synthesis from DNA that", "occurs in every cell.  And you will", "explore the effects of mutations", "on the proteins that are produced."], ["When you press SETUP, a single", "strand of an unwound DNA molecule", "appears. This represents the state", "of DNA in the cell nucleus during", "transcription."], ["To produce proteins, each gene in", "the original DNA strand must be", "transcribed  into an mRNA molecule.", "Do this by pressing GO/STOP and", "then the 1-TRANSCRIBE button."], ["For each mRNA molecule that was", "transcribed, press the 2-RELEASE", "button.  This releases the mRNA", "from the nucleus  into the ribosome", "of the cell."], ["For each mRNA molecule in the", "ribosome, press the 3-TRANSLATE", "button.  This pairs up molecules", "of tRNA with each set of three", "nucleotides in the mRNA molecule."], ["For each tRNA chain built, press", "the 4-RELEASE button.  This", "releases the amino acid chain", "from the rest of the tRNA chain,", "leaving behind the protein", "molecule that is produced."], ["Each time the 1-TRANSCRIBE", "button is pressed, the next gene", "in the original strand of DNA ", "will be transcribed.  Press the 1-,", "2-, 3-, 4- buttons and repeat to", "translate each subsequent gene."], ["When you press the 5-REPLICATE", "THE ORIGINAL DNA button a copy", "of the original DNA will be ", "generated for a new cell", "(as in mitosis or meiosis) and", "it will appear in the green."], ["The replicated DNA will have a", "# of random mutations, set by", "#-NUCLEOTIDES-AFFECTED, each", "mutation of the type set by", "MUTATION-TYPE. Press button 5)", "again to explore possible outcomes."], ["Now repeat the same transcription,", "release, translation, and release", "process for the DNA in this new", "cell by pressing 6-, 7-, 8-, 9-.", "Repeat that sequence again to", "cycle through to the next gene."], ["If you want to test the outcomes", "for your own DNA code, type any", "sequence of A, G, T, C in the", "USER-CREATED-CODE box and set", "the INITIAL-DNA-STRING to", "“from-user-code”.  Then press", "SETUP and start over again."]]);
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return [["You will be simulating the process", "of protein synthesis from DNA that", "occurs in every cell.  And you will", "explore the effects of mutations", "on the proteins that are produced."], ["When you press SETUP, a single", "strand of an unwound DNA molecule", "appears. This represents the state", "of DNA in the cell nucleus during", "transcription."], ["To produce proteins, each gene in", "the original DNA strand must be", "transcribed  into an mRNA molecule.", "Do this by pressing GO/STOP and", "then the 1-TRANSCRIBE button."], ["For each mRNA molecule that was", "transcribed, press the 2-RELEASE", "button.  This releases the mRNA", "from the nucleus  into the ribosome", "of the cell."], ["For each mRNA molecule in the", "ribosome, press the 3-TRANSLATE", "button.  This pairs up molecules", "of tRNA with each set of three", "nucleotides in the mRNA molecule."], ["For each tRNA chain built, press", "the 4-RELEASE button.  This", "releases the amino acid chain", "from the rest of the tRNA chain,", "leaving behind the protein", "molecule that is produced."], ["Each time the 1-TRANSCRIBE", "button is pressed, the next gene", "in the original strand of DNA ", "will be transcribed.  Press the 1-,", "2-, 3-, 4- buttons and repeat to", "translate each subsequent gene."], ["When you press the 5-REPLICATE", "THE ORIGINAL DNA button a copy", "of the original DNA will be ", "generated for a new cell", "(as in mitosis or meiosis) and", "it will appear in the green."], ["The replicated DNA will have a", "# of random mutations, set by", "#-NUCLEOTIDES-AFFECTED, each", "mutation of the type set by", "MUTATION-TYPE. Press button 5)", "again to explore possible outcomes."], ["Now repeat the same transcription,", "release, translation, and release", "process for the DNA in this new", "cell by pressing 6-, 7-, 8-, 9-.", "Repeat that sequence again to", "cycle through to the next gene."], ["If you want to test the outcomes", "for your own DNA code, type any", "sequence of A, G, T, C in the", "USER-CREATED-CODE box and set", "the INITIAL-DNA-STRING to", "“from-user-code”.  Then press", "SETUP and start over again."]] }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -1362,6 +1402,7 @@ var procedures = (function() {
   procs["INSTRUCTIONS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if ((((world.observer.getGlobal("event-1-triggered?") || world.observer.getGlobal("event-2-triggered?")) || world.observer.getGlobal("event-3-triggered?")) || world.observer.getGlobal("event-4-triggered?"))) {
         world.observer.setGlobal("event-4-completed?", false);
         if (((world.observer.getGlobal("event-1-triggered?") || world.observer.getGlobal("event-2-triggered?")) || world.observer.getGlobal("event-3-triggered?"))) {

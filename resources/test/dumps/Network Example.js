@@ -64,6 +64,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
       world.turtleManager.createTurtles(world.observer.getGlobal("number-of-nodes"), "").ask(function() {
@@ -86,6 +87,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (!!world.turtles().isEmpty()) {
         throw new Exception.StopInterrupt;
       }

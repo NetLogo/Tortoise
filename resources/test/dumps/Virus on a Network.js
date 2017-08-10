@@ -49,6 +49,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Network Status', 'susceptible')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue((Prims.div(world.turtles().agentFilter(function() {
             return (!SelfManager.self().getVariable("infected?") && !SelfManager.self().getVariable("resistant?"));
           }).size(), world.turtles().size()) * 100));
@@ -68,6 +69,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Network Status', 'infected')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue((Prims.div(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("infected?"); }).size(), world.turtles().size()) * 100));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -85,6 +87,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Network Status', 'resistant')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue((Prims.div(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("resistant?"); }).size(), world.turtles().size()) * 100));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -123,6 +126,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       procedures["SETUP-NODES"]();
       procedures["SETUP-SPATIALLY-CLUSTERED-NETWORK"]();
@@ -143,6 +147,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
       world.turtleManager.createTurtles(world.observer.getGlobal("number-of-nodes"), "").ask(function() {
         SelfManager.self().setXY((Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor) * 0.95), (Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor) * 0.95));
@@ -163,6 +168,7 @@ var procedures = (function() {
   procs["SETUP-NODES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let numLinks = Prims.div((world.observer.getGlobal("average-node-degree") * world.observer.getGlobal("number-of-nodes")), 2);
       while (Prims.lt(world.links().size(), numLinks)) {
         ListPrims.oneOf(world.turtles()).ask(function() {
@@ -189,6 +195,7 @@ var procedures = (function() {
   procs["SETUP-SPATIALLY-CLUSTERED-NETWORK"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (world.turtles().agentAll(function() { return !SelfManager.self().getVariable("infected?"); })) {
         throw new Exception.StopInterrupt;
       }
@@ -215,6 +222,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setVariable("infected?", true);
       SelfManager.self().setVariable("resistant?", false);
       SelfManager.self().setVariable("color", 15);
@@ -232,6 +240,7 @@ var procedures = (function() {
   procs["BECOME-INFECTED"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setVariable("infected?", false);
       SelfManager.self().setVariable("resistant?", false);
       SelfManager.self().setVariable("color", 105);
@@ -249,6 +258,7 @@ var procedures = (function() {
   procs["BECOME-SUSCEPTIBLE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setVariable("infected?", false);
       SelfManager.self().setVariable("resistant?", true);
       SelfManager.self().setVariable("color", 5);
@@ -267,6 +277,7 @@ var procedures = (function() {
   procs["BECOME-RESISTANT"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtles().agentFilter(function() { return SelfManager.self().getVariable("infected?"); }).ask(function() {
         LinkPrims.linkNeighbors("LINKS").agentFilter(function() { return !SelfManager.self().getVariable("resistant?"); }).ask(function() {
           if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("virus-spread-chance"))) {
@@ -288,6 +299,7 @@ var procedures = (function() {
   procs["SPREAD-VIRUS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtles().agentFilter(function() {
         return (SelfManager.self().getVariable("infected?") && Prims.equality(SelfManager.self().getVariable("virus-check-timer"), 0));
       }).ask(function() {

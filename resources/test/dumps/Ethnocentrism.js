@@ -49,6 +49,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Strategy Counts', 'CC')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotPoint(world.ticker.tickCount(), world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("shape"), "circle"); }).size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -66,6 +67,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Strategy Counts', 'CD')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotPoint(world.ticker.tickCount(), world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("shape"), "circle 2"); }).size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -83,6 +85,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Strategy Counts', 'DC')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotPoint(world.ticker.tickCount(), world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("shape"), "square"); }).size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -100,6 +103,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Strategy Counts', 'DD')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotPoint(world.ticker.tickCount(), world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("shape"), "square 2"); }).size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -138,6 +142,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       procedures["INITIALIZE-VARIABLES"]();
       world.ticker.reset();
@@ -155,6 +160,7 @@ var procedures = (function() {
   procs["SETUP-EMPTY"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       procedures["INITIALIZE-VARIABLES"]();
       world.patches().ask(function() { procedures["CREATE-TURTLE"](); }, true);
@@ -173,6 +179,7 @@ var procedures = (function() {
   procs["SETUP-FULL"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("meetown", 0);
       world.observer.setGlobal("meetown-agg", 0);
       world.observer.setGlobal("meet", 0);
@@ -210,6 +217,7 @@ var procedures = (function() {
   procs["INITIALIZE-VARIABLES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().sprout(1, "TURTLES").ask(function() {
         SelfManager.self().setVariable("color", procedures["RANDOM-COLOR"]());
         SelfManager.self().setVariable("cooperate-with-same?", Prims.lt(Prims.randomFloat(1), world.observer.getGlobal("immigrant-chance-cooperate-with-same")));
@@ -230,7 +238,8 @@ var procedures = (function() {
   procs["CREATE-TURTLE"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(ListPrims.oneOf([15, 105, 45, 55]));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return ListPrims.oneOf([15, 105, 45, 55]) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -246,6 +255,7 @@ var procedures = (function() {
   procs["RANDOM-COLOR"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("meetown", 0);
       world.observer.setGlobal("meet", 0);
       world.observer.setGlobal("coopown", 0);
@@ -266,6 +276,7 @@ var procedures = (function() {
   procs["CLEAR-STATS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       procedures["CLEAR-STATS"]();
       procedures["IMMIGRATE"]();
       world.turtles().ask(function() { SelfManager.self().setVariable("ptr", world.observer.getGlobal("initial-ptr")); }, true);
@@ -288,6 +299,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let emptyPatches = world.patches().agentFilter(function() { return !!SelfManager.self().turtlesHere().isEmpty(); });
       let howMany = ListPrims.min(ListPrims.list(world.observer.getGlobal("immigrants-per-day"), emptyPatches.size()));
       ListPrims.nOf(howMany, emptyPatches).ask(function() { procedures["CREATE-TURTLE"](); }, true);
@@ -305,6 +317,7 @@ var procedures = (function() {
   procs["IMMIGRATE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       Prims.turtlesOn(SelfManager.self().getNeighbors4()).ask(function() {
         world.observer.setGlobal("meet", (world.observer.getGlobal("meet") + 1));
         world.observer.setGlobal("meet-agg", (world.observer.getGlobal("meet-agg") + 1));
@@ -351,6 +364,7 @@ var procedures = (function() {
   procs["INTERACT"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.lt(Prims.randomFloat(1), SelfManager.self().getVariable("ptr"))) {
         let destination = SelfManager.self().getNeighbors4()._optimalOneOfWith(function() { return !!SelfManager.self().turtlesHere().isEmpty(); });
         if (!Prims.equality(destination, Nobody)) {
@@ -374,6 +388,7 @@ var procedures = (function() {
   procs["REPRODUCE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.lt(Prims.randomFloat(1), world.observer.getGlobal("mutation-rate"))) {
         let oldColor = SelfManager.self().getVariable("color");
         while (Prims.equality(SelfManager.self().getVariable("color"), oldColor)) {
@@ -401,6 +416,7 @@ var procedures = (function() {
   procs["MUTATE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtles().ask(function() {
         if (Prims.lt(Prims.randomFloat(1), world.observer.getGlobal("death-rate"))) {
           SelfManager.self().die();
@@ -420,6 +436,7 @@ var procedures = (function() {
   procs["DEATH"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (SelfManager.self().getVariable("cooperate-with-same?")) {
         if (SelfManager.self().getVariable("cooperate-with-different?")) {
           SelfManager.self().setVariable("shape", "circle");
@@ -450,6 +467,7 @@ var procedures = (function() {
   procs["UPDATE-SHAPE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("last100dd", procedures["SHORTEN"](ListPrims.lput(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("shape"), "square 2"); }).size(), world.observer.getGlobal("last100dd"))));
       world.observer.setGlobal("last100cc", procedures["SHORTEN"](ListPrims.lput(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("shape"), "circle"); }).size(), world.observer.getGlobal("last100cc"))));
       world.observer.setGlobal("last100cd", procedures["SHORTEN"](ListPrims.lput(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("shape"), "circle 2"); }).size(), world.observer.getGlobal("last100cd"))));
@@ -474,11 +492,12 @@ var procedures = (function() {
   procs["UPDATE-STATS"] = temp;
   temp = (function(theList) {
     try {
+      var reporterContext = true;
       if (Prims.gt(ListPrims.length(theList), 100)) {
-        throw new Exception.ReportInterrupt(ListPrims.butFirst(theList));
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return ListPrims.butFirst(theList) }
       }
       else {
-        throw new Exception.ReportInterrupt(theList);
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return theList }
       }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
@@ -495,7 +514,8 @@ var procedures = (function() {
   procs["SHORTEN"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(Prims.div(world.observer.getGlobal("meetown"), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet")))));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(world.observer.getGlobal("meetown"), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet")))) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -511,7 +531,8 @@ var procedures = (function() {
   procs["MEETOWN-PERCENT"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(Prims.div(world.observer.getGlobal("meetown-agg"), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet-agg")))));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(world.observer.getGlobal("meetown-agg"), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet-agg")))) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -527,7 +548,8 @@ var procedures = (function() {
   procs["MEETOWN-AGG-PERCENT"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(Prims.div(world.observer.getGlobal("coopown"), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meetown")))));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(world.observer.getGlobal("coopown"), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meetown")))) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -543,7 +565,8 @@ var procedures = (function() {
   procs["COOPOWN-PERCENT"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(Prims.div(world.observer.getGlobal("coopown-agg"), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meetown-agg")))));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(world.observer.getGlobal("coopown-agg"), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meetown-agg")))) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -559,7 +582,8 @@ var procedures = (function() {
   procs["COOPOWN-AGG-PERCENT"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(Prims.div(world.observer.getGlobal("defother"), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meetother")))));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(world.observer.getGlobal("defother"), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meetother")))) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -575,7 +599,8 @@ var procedures = (function() {
   procs["DEFOTHER-PERCENT"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(Prims.div(world.observer.getGlobal("defother-agg"), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meetother-agg")))));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(world.observer.getGlobal("defother-agg"), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meetother-agg")))) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -591,7 +616,8 @@ var procedures = (function() {
   procs["DEFOTHER-AGG-PERCENT"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(Prims.div((world.observer.getGlobal("defother") + world.observer.getGlobal("coopown")), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet")))));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div((world.observer.getGlobal("defother") + world.observer.getGlobal("coopown")), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet")))) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -607,7 +633,8 @@ var procedures = (function() {
   procs["CONSIST-ETHNO-PERCENT"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(Prims.div((world.observer.getGlobal("defother-agg") + world.observer.getGlobal("coopown-agg")), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet-agg")))));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div((world.observer.getGlobal("defother-agg") + world.observer.getGlobal("coopown-agg")), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet-agg")))) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -623,7 +650,8 @@ var procedures = (function() {
   procs["CONSIST-ETHNO-AGG-PERCENT"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(Prims.div((world.observer.getGlobal("coopown") + world.observer.getGlobal("coopother")), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet")))));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div((world.observer.getGlobal("coopown") + world.observer.getGlobal("coopother")), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet")))) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -639,7 +667,8 @@ var procedures = (function() {
   procs["COOP-PERCENT"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(Prims.div((world.observer.getGlobal("coopown-agg") + world.observer.getGlobal("coopother-agg")), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet-agg")))));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div((world.observer.getGlobal("coopown-agg") + world.observer.getGlobal("coopother-agg")), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet-agg")))) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -655,7 +684,8 @@ var procedures = (function() {
   procs["COOP-AGG-PERCENT"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(Prims.div(ListPrims.sum(world.observer.getGlobal("last100cc")), ListPrims.max(ListPrims.list(1, ListPrims.length(world.observer.getGlobal("last100cc"))))));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(ListPrims.sum(world.observer.getGlobal("last100cc")), ListPrims.max(ListPrims.list(1, ListPrims.length(world.observer.getGlobal("last100cc"))))) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -671,7 +701,8 @@ var procedures = (function() {
   procs["CC-COUNT"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(Prims.div(ListPrims.sum(world.observer.getGlobal("last100cd")), ListPrims.max(ListPrims.list(1, ListPrims.length(world.observer.getGlobal("last100cd"))))));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(ListPrims.sum(world.observer.getGlobal("last100cd")), ListPrims.max(ListPrims.list(1, ListPrims.length(world.observer.getGlobal("last100cd"))))) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -687,7 +718,8 @@ var procedures = (function() {
   procs["CD-COUNT"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(Prims.div(ListPrims.sum(world.observer.getGlobal("last100dc")), ListPrims.max(ListPrims.list(1, ListPrims.length(world.observer.getGlobal("last100dc"))))));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(ListPrims.sum(world.observer.getGlobal("last100dc")), ListPrims.max(ListPrims.list(1, ListPrims.length(world.observer.getGlobal("last100dc"))))) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -703,7 +735,8 @@ var procedures = (function() {
   procs["DC-COUNT"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(Prims.div(ListPrims.sum(world.observer.getGlobal("last100dd")), ListPrims.max(ListPrims.list(1, ListPrims.length(world.observer.getGlobal("last100dd"))))));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(ListPrims.sum(world.observer.getGlobal("last100dd")), ListPrims.max(ListPrims.list(1, ListPrims.length(world.observer.getGlobal("last100dd"))))) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -719,7 +752,8 @@ var procedures = (function() {
   procs["DD-COUNT"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(Prims.div(procedures["CC-COUNT"](), ListPrims.max(ListPrims.list(1, (((procedures["CC-COUNT"]() + procedures["CD-COUNT"]()) + procedures["DC-COUNT"]()) + procedures["DD-COUNT"]())))));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(procedures["CC-COUNT"](), ListPrims.max(ListPrims.list(1, (((procedures["CC-COUNT"]() + procedures["CD-COUNT"]()) + procedures["DC-COUNT"]()) + procedures["DD-COUNT"]())))) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -735,7 +769,8 @@ var procedures = (function() {
   procs["CC-PERCENT"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(Prims.div(procedures["CD-COUNT"](), ListPrims.max(ListPrims.list(1, (((procedures["CC-COUNT"]() + procedures["CD-COUNT"]()) + procedures["DC-COUNT"]()) + procedures["DD-COUNT"]())))));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(procedures["CD-COUNT"](), ListPrims.max(ListPrims.list(1, (((procedures["CC-COUNT"]() + procedures["CD-COUNT"]()) + procedures["DC-COUNT"]()) + procedures["DD-COUNT"]())))) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -751,7 +786,8 @@ var procedures = (function() {
   procs["CD-PERCENT"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(Prims.div(procedures["DC-COUNT"](), ListPrims.max(ListPrims.list(1, (((procedures["CC-COUNT"]() + procedures["CD-COUNT"]()) + procedures["DC-COUNT"]()) + procedures["DD-COUNT"]())))));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(procedures["DC-COUNT"](), ListPrims.max(ListPrims.list(1, (((procedures["CC-COUNT"]() + procedures["CD-COUNT"]()) + procedures["DC-COUNT"]()) + procedures["DD-COUNT"]())))) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -767,7 +803,8 @@ var procedures = (function() {
   procs["DC-PERCENT"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(Prims.div(procedures["DD-COUNT"](), ListPrims.max(ListPrims.list(1, (((procedures["CC-COUNT"]() + procedures["CD-COUNT"]()) + procedures["DC-COUNT"]()) + procedures["DD-COUNT"]())))));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(procedures["DD-COUNT"](), ListPrims.max(ListPrims.list(1, (((procedures["CC-COUNT"]() + procedures["CD-COUNT"]()) + procedures["DC-COUNT"]()) + procedures["DD-COUNT"]())))) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -783,7 +820,8 @@ var procedures = (function() {
   procs["DD-PERCENT"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(Prims.div(ListPrims.sum(world.observer.getGlobal("last100coopown")), ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meetown"))))));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(ListPrims.sum(world.observer.getGlobal("last100coopown")), ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meetown"))))) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -799,7 +837,8 @@ var procedures = (function() {
   procs["LAST100COOPOWN-PERCENT"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(Prims.div(ListPrims.sum(world.observer.getGlobal("last100defother")), ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meetother"))))));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(ListPrims.sum(world.observer.getGlobal("last100defother")), ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meetother"))))) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -815,7 +854,8 @@ var procedures = (function() {
   procs["LAST100DEFOTHER-PERCENT"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(Prims.div((ListPrims.sum(world.observer.getGlobal("last100defother")) + ListPrims.sum(world.observer.getGlobal("last100coopown"))), ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meet"))))));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div((ListPrims.sum(world.observer.getGlobal("last100defother")) + ListPrims.sum(world.observer.getGlobal("last100coopown"))), ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meet"))))) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -831,7 +871,8 @@ var procedures = (function() {
   procs["LAST100CONSIST-ETHNO-PERCENT"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(Prims.div(ListPrims.sum(world.observer.getGlobal("last100meetown")), ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meet"))))));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(ListPrims.sum(world.observer.getGlobal("last100meetown")), ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meet"))))) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -847,7 +888,8 @@ var procedures = (function() {
   procs["LAST100MEETOWN-PERCENT"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(Prims.div(ListPrims.sum(world.observer.getGlobal("last100coop")), ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meet"))))));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(ListPrims.sum(world.observer.getGlobal("last100coop")), ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meet"))))) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {

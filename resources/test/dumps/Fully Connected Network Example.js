@@ -64,6 +64,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.turtleManager.createTurtles(world.observer.getGlobal("num-nodes"), "");
       LayoutManager.layoutCircle(world.turtles(), (Prims.div(world.topology.width, 2) - 1));

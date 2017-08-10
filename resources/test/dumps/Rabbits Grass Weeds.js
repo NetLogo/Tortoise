@@ -49,6 +49,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Populations', 'grass')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(Prims.div(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55); }).size(), 4));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -66,6 +67,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Populations', 'rabbits')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.turtleManager.turtlesOfBreed("RABBITS").size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -83,6 +85,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Populations', 'weeds')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(Prims.div(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 115); }).size(), 4));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -100,6 +103,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Populations', undefined)(function() {
         try {
+          var reporterContext = false;
           plotManager.setYRange(0, world.observer.getGlobal("number"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -137,6 +141,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       procedures["GROW-GRASS-AND-WEEDS"]();
       BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("RABBITS").getSpecialName(), "rabbit")
@@ -160,6 +165,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (!!world.turtleManager.turtlesOfBreed("RABBITS").isEmpty()) {
         throw new Exception.StopInterrupt;
       }
@@ -186,6 +192,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.patches().ask(function() {
         if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 0)) {
           if (Prims.lt(Prims.randomFloat(1000), world.observer.getGlobal("weeds-grow-rate"))) {
@@ -210,6 +217,7 @@ var procedures = (function() {
   procs["GROW-GRASS-AND-WEEDS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().right(Prims.random(50));
       SelfManager.self().right(-Prims.random(50));
       SelfManager.self()._optimalFdOne();
@@ -228,6 +236,7 @@ var procedures = (function() {
   procs["MOVE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55)) {
         SelfManager.self().setPatchVariable("pcolor", 0);
         SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") + world.observer.getGlobal("grass-energy")));
@@ -246,6 +255,7 @@ var procedures = (function() {
   procs["EAT-GRASS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 115)) {
         SelfManager.self().setPatchVariable("pcolor", 0);
         SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") + world.observer.getGlobal("weed-energy")));
@@ -264,6 +274,7 @@ var procedures = (function() {
   procs["EAT-WEEDS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.gt(SelfManager.self().getVariable("energy"), world.observer.getGlobal("birth-threshold"))) {
         SelfManager.self().setVariable("energy", Prims.div(SelfManager.self().getVariable("energy"), 2));
         SelfManager.self().hatch(1, "").ask(function() { SelfManager.self()._optimalFdOne(); }, true);
@@ -282,6 +293,7 @@ var procedures = (function() {
   procs["REPRODUCE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.lt(SelfManager.self().getVariable("energy"), 0)) {
         SelfManager.self().die();
       }

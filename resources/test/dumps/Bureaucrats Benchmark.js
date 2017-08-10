@@ -49,6 +49,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Average', 'average')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotPoint(world.ticker.tickCount(), Prims.div(world.observer.getGlobal("total"), world.patches().size()));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -67,6 +68,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Average', undefined)(function() {
         try {
+          var reporterContext = false;
           if (!world.observer.getGlobal("plot?")) {
             throw new Exception.StopInterrupt;
           }
@@ -105,6 +107,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       workspace.rng.setSeed(0);
       workspace.timer.reset();
       procedures["SETUP"]();
@@ -126,6 +129,7 @@ var procedures = (function() {
   procs["BENCHMARK"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.patches().ask(function() {
         SelfManager.self().setPatchVariable("n", 2);
@@ -147,6 +151,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let activePatches = Prims.patchSet(ListPrims.oneOf(world.patches()));
       activePatches.ask(function() {
         SelfManager.self().setPatchVariable("n", (SelfManager.self().getPatchVariable("n") + 1));
@@ -182,6 +187,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.lte(SelfManager.self().getPatchVariable("n"), 3)) {
         SelfManager.self().setPatchVariable("pcolor", ListPrims.item(SelfManager.self().getPatchVariable("n"), [83, 54, 45, 25]));
       }

@@ -49,6 +49,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Average grain count', 'average')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(Prims.div(world.observer.getGlobal("total"), world.patches().size()));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -72,22 +73,18 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Avalanche sizes', 'default')(function() {
         try {
+          var reporterContext = false;
           if ((Prims.equality(NLMath.mod(world.ticker.tickCount(), 100), 0) && !ListPrims.empty(world.observer.getGlobal("sizes")))) {
             plotManager.resetPen();
-            let counts = Tasks.nValues((1 + ListPrims.max(world.observer.getGlobal("sizes"))), Tasks.reporterTask(function() {
-              if (arguments.length < 0) {
-                throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
-              }
-              return 0;
-            }, "[ 0 ]"));
-            Tasks.forEach(Tasks.commandTask(function(theSize) {
+            let counts = Tasks.nValues((1 + ListPrims.max(world.observer.getGlobal("sizes"))), Tasks.reporterTask(function() { return 0; }, "[ 0 ]"));
+            var _foreach_138_145 = Tasks.forEach(Tasks.commandTask(function(theSize) {
               if (arguments.length < 1) {
                 throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
               }
               counts = ListPrims.replaceItem(theSize, counts, (1 + ListPrims.item(theSize, counts)));
-            }, "[ the-size -> set counts replace-item the-size counts 1 + item the-size counts ]"), world.observer.getGlobal("sizes"));
+            }, "[ the-size -> set counts replace-item the-size counts 1 + item the-size counts ]"), world.observer.getGlobal("sizes")); if(reporterContext && _foreach_138_145 !== undefined) { return _foreach_138_145; }
             let s = 0;
-            Tasks.forEach(Tasks.commandTask(function(c) {
+            var _foreach_253_260 = Tasks.forEach(Tasks.commandTask(function(c) {
               if (arguments.length < 1) {
                 throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
               }
@@ -95,7 +92,7 @@ modelConfig.plots = [(function() {
                 plotManager.plotPoint(NLMath.log(s, 10), NLMath.log(c, 10));
               }
               s = (s + 1);
-            }, "[ c -> if s > 0 and c > 0 [ plotxy log s 10 log c 10 ] set s s + 1 ]"), counts);
+            }, "[ c -> if s > 0 and c > 0 [ plotxy log s 10 log c 10 ] set s s + 1 ]"), counts); if(reporterContext && _foreach_253_260 !== undefined) { return _foreach_253_260; }
           }
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -119,22 +116,18 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Avalanche lifetimes', 'default')(function() {
         try {
+          var reporterContext = false;
           if ((Prims.equality(NLMath.mod(world.ticker.tickCount(), 100), 0) && !ListPrims.empty(world.observer.getGlobal("lifetimes")))) {
             plotManager.resetPen();
-            let counts = Tasks.nValues((1 + ListPrims.max(world.observer.getGlobal("lifetimes"))), Tasks.reporterTask(function() {
-              if (arguments.length < 0) {
-                throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
-              }
-              return 0;
-            }, "[ 0 ]"));
-            Tasks.forEach(Tasks.commandTask(function(lifetime) {
+            let counts = Tasks.nValues((1 + ListPrims.max(world.observer.getGlobal("lifetimes"))), Tasks.reporterTask(function() { return 0; }, "[ 0 ]"));
+            var _foreach_146_153 = Tasks.forEach(Tasks.commandTask(function(lifetime) {
               if (arguments.length < 1) {
                 throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
               }
               counts = ListPrims.replaceItem(lifetime, counts, (1 + ListPrims.item(lifetime, counts)));
-            }, "[ lifetime -> set counts replace-item lifetime counts 1 + item lifetime counts ]"), world.observer.getGlobal("lifetimes"));
+            }, "[ lifetime -> set counts replace-item lifetime counts 1 + item lifetime counts ]"), world.observer.getGlobal("lifetimes")); if(reporterContext && _foreach_146_153 !== undefined) { return _foreach_146_153; }
             let l = 0;
-            Tasks.forEach(Tasks.commandTask(function(c) {
+            var _foreach_265_272 = Tasks.forEach(Tasks.commandTask(function(c) {
               if (arguments.length < 1) {
                 throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
               }
@@ -142,7 +135,7 @@ modelConfig.plots = [(function() {
                 plotManager.plotPoint(NLMath.log(l, 10), NLMath.log(c, 10));
               }
               l = (l + 1);
-            }, "[ c -> if l > 0 and c > 0 [ plotxy log l 10 log c 10 ] set l l + 1 ]"), counts);
+            }, "[ c -> if l > 0 and c > 0 [ plotxy log l 10 log c 10 ] set l l + 1 ]"), counts); if(reporterContext && _foreach_265_272 !== undefined) { return _foreach_265_272; }
           }
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -181,6 +174,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function(setupTask) {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.observer.setGlobal("default-color", 105);
       world.observer.setGlobal("fired-color", 15);
@@ -211,12 +205,8 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function(initial) {
     try {
-      procedures["SETUP"](Tasks.reporterTask(function() {
-        if (arguments.length < 0) {
-          throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
-        }
-        return initial;
-      }, "[ -> initial ]"));
+      var reporterContext = false;
+      procedures["SETUP"](Tasks.reporterTask(function() { return initial; }, "[ -> initial ]"));
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         throw new Error("REPORT can only be used inside TO-REPORT.");
@@ -231,12 +221,8 @@ var procedures = (function() {
   procs["SETUP-UNIFORM"] = temp;
   temp = (function() {
     try {
-      procedures["SETUP"](Tasks.reporterTask(function() {
-        if (arguments.length < 0) {
-          throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
-        }
-        return Prims.random(4);
-      }, "[ -> random 4 ]"));
+      var reporterContext = false;
+      procedures["SETUP"](Tasks.reporterTask(function() { return Prims.random(4); }, "[ -> random 4 ]"));
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         throw new Error("REPORT can only be used inside TO-REPORT.");
@@ -251,6 +237,7 @@ var procedures = (function() {
   procs["SETUP-RANDOM"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(SelfManager.self().getPatchVariable("base-color"), SelfManager.self().getPatchVariable("n"), 0, 4));
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -266,6 +253,7 @@ var procedures = (function() {
   procs["RECOLOR"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let drop = procedures["DROP-PATCH"]();
       if (!Prims.equality(drop, Nobody)) {
         drop.ask(function() {
@@ -305,6 +293,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (MousePrims.isInside()) {
         let p = world.getPatchAt(MousePrims.getX(), MousePrims.getY());
         world.observer.setGlobal("selected-patch", p);
@@ -346,6 +335,7 @@ var procedures = (function() {
   procs["EXPLORE"] = temp;
   temp = (function(animate_p) {
     try {
+      var reporterContext = true;
       let activePatches = world.patches().agentFilter(function() { return Prims.gt(SelfManager.self().getPatchVariable("n"), 3); });
       let iters = 0;
       let avalanchePatches = new PatchSet([]);
@@ -373,7 +363,7 @@ var procedures = (function() {
         avalanchePatches = Prims.patchSet(avalanchePatches, overloadedPatches);
         activePatches = Prims.patchSet(overloadedPatches.projectionBy(function() { return SelfManager.self().getNeighbors4(); }));
       }
-      throw new Exception.ReportInterrupt(ListPrims.list(avalanchePatches, iters));
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return ListPrims.list(avalanchePatches, iters) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -389,6 +379,7 @@ var procedures = (function() {
   procs["STABILIZE"] = temp;
   temp = (function(howMuch) {
     try {
+      var reporterContext = false;
       SelfManager.self().setPatchVariable("n", (SelfManager.self().getPatchVariable("n") + howMuch));
       world.observer.setGlobal("total", (world.observer.getGlobal("total") + howMuch));
     } catch (e) {
@@ -405,19 +396,20 @@ var procedures = (function() {
   procs["UPDATE-N"] = temp;
   temp = (function() {
     try {
+      var reporterContext = true;
       if (Prims.equality(world.observer.getGlobal("drop-location"), "center")) {
-        throw new Exception.ReportInterrupt(world.getPatchAt(0, 0));
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return world.getPatchAt(0, 0) }
       }
       if (Prims.equality(world.observer.getGlobal("drop-location"), "random")) {
-        throw new Exception.ReportInterrupt(ListPrims.oneOf(world.patches()));
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return ListPrims.oneOf(world.patches()) }
       }
       if ((Prims.equality(world.observer.getGlobal("drop-location"), "mouse-click") && MousePrims.isDown())) {
         if (Prims.isThrottleTimeElapsed("dropPatch_0", workspace.selfManager.self(), 0.3)) {
           Prims.resetThrottleTimerFor("dropPatch_0", workspace.selfManager.self());
-          throw new Exception.ReportInterrupt(world.getPatchAt(MousePrims.getX(), MousePrims.getY()));
+          if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return world.getPatchAt(MousePrims.getX(), MousePrims.getY()) }
         }
       }
-      throw new Exception.ReportInterrupt(Nobody);
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Nobody }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -433,6 +425,7 @@ var procedures = (function() {
   procs["DROP-PATCH"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setPatchVariable("n-stack", ListPrims.fput(SelfManager.self().getPatchVariable("n"), SelfManager.self().getPatchVariable("n-stack")));
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -448,6 +441,7 @@ var procedures = (function() {
   procs["PUSH-N"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       procedures["UPDATE-N"]((ListPrims.first(SelfManager.self().getPatchVariable("n-stack")) - SelfManager.self().getPatchVariable("n")));
       SelfManager.self().setPatchVariable("n-stack", ListPrims.butLast(SelfManager.self().getPatchVariable("n-stack")));
     } catch (e) {

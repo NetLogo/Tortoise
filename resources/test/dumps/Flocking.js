@@ -64,6 +64,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.turtleManager.createTurtles(world.observer.getGlobal("population"), "").ask(function() {
         SelfManager.self().setVariable("color", ((45 - 2) + Prims.random(7)));
@@ -86,6 +87,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtles().ask(function() { procedures["FLOCK"](); }, true);
       for (let _index_475_481 = 0, _repeatcount_475_481 = StrictMath.floor(5); _index_475_481 < _repeatcount_475_481; _index_475_481++){
         world.turtles().ask(function() { SelfManager.self()._optimalFdLessThan1(0.2); }, true);
@@ -106,6 +108,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       procedures["FIND-FLOCKMATES"]();
       if (!SelfManager.self().getVariable("flockmates").isEmpty()) {
         procedures["FIND-NEAREST-NEIGHBOR"]();
@@ -131,6 +134,7 @@ var procedures = (function() {
   procs["FLOCK"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setVariable("flockmates", SelfPrims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("vision"))));
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -146,6 +150,7 @@ var procedures = (function() {
   procs["FIND-FLOCKMATES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setVariable("nearest-neighbor", SelfManager.self().getVariable("flockmates").minOneOf(function() { return SelfManager.self().distance(SelfManager.myself()); }));
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -161,6 +166,7 @@ var procedures = (function() {
   procs["FIND-NEAREST-NEIGHBOR"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       procedures["TURN-AWAY"](SelfManager.self().getVariable("nearest-neighbor").projectionBy(function() { return SelfManager.self().getVariable("heading"); }),world.observer.getGlobal("max-separate-turn"));
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -176,6 +182,7 @@ var procedures = (function() {
   procs["SEPARATE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       procedures["TURN-TOWARDS"](procedures["AVERAGE-FLOCKMATE-HEADING"](),world.observer.getGlobal("max-align-turn"));
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -191,13 +198,14 @@ var procedures = (function() {
   procs["ALIGN"] = temp;
   temp = (function() {
     try {
+      var reporterContext = true;
       let xComponent = ListPrims.sum(SelfManager.self().getVariable("flockmates").projectionBy(function() { return SelfManager.self().dx(); }));
       let yComponent = ListPrims.sum(SelfManager.self().getVariable("flockmates").projectionBy(function() { return SelfManager.self().dy(); }));
       if ((Prims.equality(xComponent, 0) && Prims.equality(yComponent, 0))) {
-        throw new Exception.ReportInterrupt(SelfManager.self().getVariable("heading"));
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return SelfManager.self().getVariable("heading") }
       }
       else {
-        throw new Exception.ReportInterrupt(NLMath.atan(xComponent, yComponent));
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return NLMath.atan(xComponent, yComponent) }
       }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
@@ -214,6 +222,7 @@ var procedures = (function() {
   procs["AVERAGE-FLOCKMATE-HEADING"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       procedures["TURN-TOWARDS"](procedures["AVERAGE-HEADING-TOWARDS-FLOCKMATES"](),world.observer.getGlobal("max-cohere-turn"));
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -229,13 +238,14 @@ var procedures = (function() {
   procs["COHERE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = true;
       let xComponent = ListPrims.mean(SelfManager.self().getVariable("flockmates").projectionBy(function() { return NLMath.sin((SelfManager.self().towards(SelfManager.myself()) + 180)); }));
       let yComponent = ListPrims.mean(SelfManager.self().getVariable("flockmates").projectionBy(function() { return NLMath.cos((SelfManager.self().towards(SelfManager.myself()) + 180)); }));
       if ((Prims.equality(xComponent, 0) && Prims.equality(yComponent, 0))) {
-        throw new Exception.ReportInterrupt(SelfManager.self().getVariable("heading"));
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return SelfManager.self().getVariable("heading") }
       }
       else {
-        throw new Exception.ReportInterrupt(NLMath.atan(xComponent, yComponent));
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return NLMath.atan(xComponent, yComponent) }
       }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
@@ -252,6 +262,7 @@ var procedures = (function() {
   procs["AVERAGE-HEADING-TOWARDS-FLOCKMATES"] = temp;
   temp = (function(newHeading, maxTurn) {
     try {
+      var reporterContext = false;
       procedures["TURN-AT-MOST"](NLMath.subtractHeadings(newHeading, SelfManager.self().getVariable("heading")),maxTurn);
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -267,6 +278,7 @@ var procedures = (function() {
   procs["TURN-TOWARDS"] = temp;
   temp = (function(newHeading, maxTurn) {
     try {
+      var reporterContext = false;
       procedures["TURN-AT-MOST"](NLMath.subtractHeadings(SelfManager.self().getVariable("heading"), newHeading),maxTurn);
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -282,6 +294,7 @@ var procedures = (function() {
   procs["TURN-AWAY"] = temp;
   temp = (function(turn, maxTurn) {
     try {
+      var reporterContext = false;
       if (Prims.gt(NLMath.abs(turn), maxTurn)) {
         if (Prims.gt(turn, 0)) {
           SelfManager.self().right(maxTurn);

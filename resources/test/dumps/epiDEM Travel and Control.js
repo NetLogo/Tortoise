@@ -49,6 +49,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Populations', 'Infected')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("infected?"); }).size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -66,6 +67,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Populations', 'Not Infected')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.turtles().agentFilter(function() { return !SelfManager.self().getVariable("infected?"); }).size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -89,6 +91,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Infection and Recovery Rates', 'Infection Rate')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue((world.observer.getGlobal("beta-n") * world.observer.getGlobal("nb-infected-previous")));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -106,6 +109,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Infection and Recovery Rates', 'Recovery Rate')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue((world.observer.getGlobal("gamma") * world.observer.getGlobal("nb-infected-previous")));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -129,6 +133,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Cumulative Infected and Recovered', '% infected')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue((Prims.div((world.turtles().agentFilter(function() { return SelfManager.self().getVariable("cured?"); }).size() + world.turtles().agentFilter(function() { return SelfManager.self().getVariable("infected?"); }).size()), world.observer.getGlobal("initial-people")) * 100));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -146,6 +151,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Cumulative Infected and Recovered', '% recovered')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue((Prims.div(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("cured?"); }).size(), world.observer.getGlobal("initial-people")) * 100));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -184,6 +190,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       procedures["SETUP-GLOBALS"]();
       procedures["SETUP-PEOPLE"]();
@@ -203,6 +210,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.getPatchAt(Prims.div( -world.topology.maxPxcor, 2), 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
       world.getPatchAt(Prims.div(world.topology.maxPxcor, 2), 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
       world.observer.setGlobal("border", world.patches().agentFilter(function() {
@@ -223,6 +231,7 @@ var procedures = (function() {
   procs["SETUP-GLOBALS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.createTurtles(world.observer.getGlobal("initial-people"), "").ask(function() {
         SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
         if (Prims.lte(SelfManager.self().getVariable("xcor"), 0)) {
@@ -276,6 +285,7 @@ var procedures = (function() {
   procs["SETUP-PEOPLE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.createTurtles(world.observer.getGlobal("initial-ambulance"), "").ask(function() {
         if (Prims.lt(Prims.random(2), 1)) {
           SelfManager.self().setVariable("continent", 1);
@@ -309,6 +319,7 @@ var procedures = (function() {
   procs["SETUP-AMBULANCE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setVariable("isolation-tendency", Prims.div(Prims.randomNormal(world.observer.getGlobal("average-isolation-tendency"), world.observer.getGlobal("average-isolation-tendency")), 4));
       SelfManager.self().setVariable("hospital-going-tendency", Prims.div(Prims.randomNormal(world.observer.getGlobal("average-hospital-going-tendency"), world.observer.getGlobal("average-hospital-going-tendency")), 4));
       SelfManager.self().setVariable("recovery-time", Prims.div(Prims.randomNormal(world.observer.getGlobal("average-recovery-time"), world.observer.getGlobal("average-recovery-time")), 4));
@@ -344,6 +355,7 @@ var procedures = (function() {
   procs["ASSIGN-TENDENCY"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (SelfManager.self().getVariable("cured?")) {
         SelfManager.self().setVariable("color", 55);
       }
@@ -377,6 +389,7 @@ var procedures = (function() {
   procs["ASSIGN-COLOR"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtles().ask(function() {
         LinkPrims.createLinksWith(Prims.turtlesOn(SelfManager.self().getNeighbors()), "LINKS").ask(function() {}, false);
       }, true);
@@ -394,6 +407,7 @@ var procedures = (function() {
   procs["MAKE-NETWORK"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (world.turtles().agentAll(function() { return !SelfManager.self().getVariable("infected?"); })) {
         throw new Exception.StopInterrupt;
       }
@@ -457,6 +471,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (world.observer.getGlobal("travel?")) {
         if ((Prims.lt(Prims.random(100), world.observer.getGlobal("travel-tendency")) && !SelfManager.self().getVariable("ambulance?"))) {
           SelfManager.self().setVariable("xcor",  -SelfManager.self().getVariable("xcor"));
@@ -524,6 +539,7 @@ var procedures = (function() {
   procs["MOVE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setVariable("nb-infected", 0);
       SelfManager.self().setVariable("nb-recovered", 0);
     } catch (e) {
@@ -540,6 +556,7 @@ var procedures = (function() {
   procs["CLEAR-COUNT"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setVariable("infection-length", (SelfManager.self().getVariable("infection-length") + 1));
       if (!SelfManager.self().getVariable("hospitalized?")) {
         if (Prims.gt(SelfManager.self().getVariable("infection-length"), SelfManager.self().getVariable("recovery-time"))) {
@@ -571,6 +588,7 @@ var procedures = (function() {
   procs["MAYBE-RECOVER"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setVariable("isolated?", true);
       SelfManager.self().moveTo(SelfManager.self().getPatchHere());
       SelfManager.self().patchAt(0, 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", (5 - 3)); }, true);
@@ -588,6 +606,7 @@ var procedures = (function() {
   procs["ISOLATE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setVariable("isolated?", false);
       SelfManager.self().setVariable("hospitalized?", false);
       SelfManager.self().patchAt(0, 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 0); }, true);
@@ -608,6 +627,7 @@ var procedures = (function() {
   procs["UNISOLATE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setVariable("hospitalized?", true);
       SelfManager.self().setPatchVariable("pcolor", 0);
       if (Prims.equality(SelfManager.self().getVariable("continent"), 1)) {
@@ -631,6 +651,7 @@ var procedures = (function() {
   procs["HOSPITALIZE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let caller = SelfManager.self();
       let nearbyUninfected = Prims.turtlesOn(SelfManager.self().getNeighbors()).agentFilter(function() {
         return ((!SelfManager.self().getVariable("infected?") && !SelfManager.self().getVariable("cured?")) && !SelfManager.self().getVariable("inoculated?"));
@@ -665,6 +686,7 @@ var procedures = (function() {
   procs["INFECT"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let newInfected = ListPrims.sum(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("nb-infected"); }));
       let newRecovered = ListPrims.sum(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("nb-recovered"); }));
       world.observer.setGlobal("nb-infected-previous", ((world.turtles().agentFilter(function() { return SelfManager.self().getVariable("infected?"); }).size() + newRecovered) - newInfected));

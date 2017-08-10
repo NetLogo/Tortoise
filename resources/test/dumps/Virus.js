@@ -49,6 +49,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Populations', 'sick')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("sick?"); }).size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -66,6 +67,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Populations', 'immune')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.turtles().agentFilter(function() { return procedures["IMMUNE?"](); }).size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -83,6 +85,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Populations', 'healthy')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.turtles().agentFilter(function() { return (!SelfManager.self().getVariable("sick?") && !procedures["IMMUNE?"]()); }).size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -100,6 +103,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Populations', 'total')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.turtles().size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -138,6 +142,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       procedures["SETUP-CONSTANTS"]();
       procedures["SETUP-TURTLES"]();
@@ -158,6 +163,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.createTurtles(world.observer.getGlobal("number-people"), "").ask(function() {
         SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
         SelfManager.self().setVariable("age", Prims.random(world.observer.getGlobal("lifespan")));
@@ -181,6 +187,7 @@ var procedures = (function() {
   procs["SETUP-TURTLES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setVariable("sick?", true);
       SelfManager.self().setVariable("remaining-immunity", 0);
     } catch (e) {
@@ -197,6 +204,7 @@ var procedures = (function() {
   procs["GET-SICK"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setVariable("sick?", false);
       SelfManager.self().setVariable("remaining-immunity", 0);
       SelfManager.self().setVariable("sick-time", 0);
@@ -214,6 +222,7 @@ var procedures = (function() {
   procs["GET-HEALTHY"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setVariable("sick?", false);
       SelfManager.self().setVariable("sick-time", 0);
       SelfManager.self().setVariable("remaining-immunity", world.observer.getGlobal("immunity-duration"));
@@ -231,6 +240,7 @@ var procedures = (function() {
   procs["BECOME-IMMUNE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("lifespan", (50 * 52));
       world.observer.setGlobal("carrying-capacity", 300);
       world.observer.setGlobal("chance-reproduce", 1);
@@ -249,6 +259,7 @@ var procedures = (function() {
   procs["SETUP-CONSTANTS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtles().ask(function() {
         procedures["GET-OLDER"]();
         procedures["MOVE"]();
@@ -279,6 +290,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.gt(world.turtles().size(), 0)) {
         world.observer.setGlobal("%infected", (Prims.div(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("sick?"); }).size(), world.turtles().size()) * 100));
         world.observer.setGlobal("%immune", (Prims.div(world.turtles().agentFilter(function() { return procedures["IMMUNE?"](); }).size(), world.turtles().size()) * 100));
@@ -297,6 +309,7 @@ var procedures = (function() {
   procs["UPDATE-GLOBAL-VARIABLES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtles().ask(function() {
         if (!Prims.equality(SelfManager.self().getVariable("shape"), world.observer.getGlobal("turtle-shape"))) {
           SelfManager.self().setVariable("shape", world.observer.getGlobal("turtle-shape"));
@@ -317,6 +330,7 @@ var procedures = (function() {
   procs["UPDATE-DISPLAY"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setVariable("age", (SelfManager.self().getVariable("age") + 1));
       if (Prims.gt(SelfManager.self().getVariable("age"), world.observer.getGlobal("lifespan"))) {
         SelfManager.self().die();
@@ -341,6 +355,7 @@ var procedures = (function() {
   procs["GET-OLDER"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().right(Prims.random(100));
       SelfManager.self().right(-Prims.random(100));
       SelfManager.self()._optimalFdOne();
@@ -358,6 +373,7 @@ var procedures = (function() {
   procs["MOVE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().turtlesHere()._optimalOtherWith(function() { return (!SelfManager.self().getVariable("sick?") && !procedures["IMMUNE?"]()); }).ask(function() {
         if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("infectiousness"))) {
           procedures["GET-SICK"]();
@@ -377,6 +393,7 @@ var procedures = (function() {
   procs["INFECT"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.gt(SelfManager.self().getVariable("sick-time"), world.observer.getGlobal("duration"))) {
         if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("chance-recover"))) {
           procedures["BECOME-IMMUNE"]();
@@ -399,6 +416,7 @@ var procedures = (function() {
   procs["RECOVER-OR-DIE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if ((Prims.lt(world.turtles().size(), world.observer.getGlobal("carrying-capacity")) && Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("chance-reproduce")))) {
         SelfManager.self().hatch(1, "").ask(function() {
           SelfManager.self().setVariable("age", 1);
@@ -421,7 +439,8 @@ var procedures = (function() {
   procs["REPRODUCE"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(Prims.gt(SelfManager.self().getVariable("remaining-immunity"), 0));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.gt(SelfManager.self().getVariable("remaining-immunity"), 0) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -437,6 +456,7 @@ var procedures = (function() {
   procs["IMMUNE?"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       procedures["SETUP-CONSTANTS"]();
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {

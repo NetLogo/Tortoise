@@ -49,6 +49,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('piping-scouts', 'default')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.turtleManager.turtlesOfBreed("SCOUTS").agentFilter(function() { return SelfManager.self().getVariable("piping?"); }).size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -79,6 +80,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('watching v.s. working', 'watching bees')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.turtleManager.turtlesOfBreed("SCOUTS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("task-string"), "watching-dance"); }).size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -96,6 +98,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('watching v.s. working', 'working bees')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue((world.turtleManager.turtlesOfBreed("SCOUTS").size() - world.turtleManager.turtlesOfBreed("SCOUTS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("task-string"), "watching-dance"); }).size()));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -141,6 +144,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       procedures["SETUP-HIVES"]();
       procedures["SETUP-TASKS"]();
@@ -162,6 +166,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("color-list", [97.9, 94.5, 57.5, 63.8, 17.6, 14.9, 27.5, 25.1, 117.9, 114.4]);
       world.observer.setGlobal("quality-list", [100, 75, 50, 1, 54, 48, 40, 32, 24, 16]);
       ListPrims.nOf(world.observer.getGlobal("hive-number"), world.patches().agentFilter(function() {
@@ -202,6 +207,7 @@ var procedures = (function() {
   procs["SETUP-HIVES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.createTurtles(100, "SCOUTS").ask(function() {
         SelfManager.self().fd(Prims.randomFloat(4));
         SelfManager.self().setVariable("my-home", SelfManager.self().getPatchHere());
@@ -234,6 +240,7 @@ var procedures = (function() {
   procs["SETUP-BEES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       procedures["WATCH-DANCE"]();
       procedures["DISCOVER"]();
       procedures["INSPECT-HIVE"]();
@@ -256,10 +263,8 @@ var procedures = (function() {
   procs["SETUP-TASKS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("watch-dance-task", Tasks.commandTask(function() {
-        if (arguments.length < 0) {
-          throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
-        }
         if (Prims.gt(SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("SCOUTS").agentFilter(function() { return SelfManager.self().getVariable("piping?"); }), 3).size(), 0)) {
           SelfManager.self().setVariable("target", world.turtleManager.turtlesOfBreed("SCOUTS")._optimalOneOfWith(function() { return SelfManager.self().getVariable("piping?"); }).projectionBy(function() { return SelfManager.self().getVariable("target"); }));
           SelfManager.self().setVariable("color", SelfManager.self().getVariable("target").projectionBy(function() { return SelfManager.self().getVariable("color"); }));
@@ -306,10 +311,8 @@ var procedures = (function() {
   procs["WATCH-DANCE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("discover-task", Tasks.commandTask(function() {
-        if (arguments.length < 0) {
-          throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
-        }
         if (Prims.lt(SelfManager.self().getVariable("bee-timer"), 0)) {
           SelfManager.self().setVariable("next-task", world.observer.getGlobal("go-home-task"));
           SelfManager.self().setVariable("task-string", "going-home");
@@ -357,10 +360,8 @@ var procedures = (function() {
   procs["DISCOVER"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("inspect-hive-task", Tasks.commandTask(function() {
-        if (arguments.length < 0) {
-          throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
-        }
         if (Prims.lt(SelfManager.self().getVariable("bee-timer"), 0)) {
           SelfManager.self().setVariable("next-task", world.observer.getGlobal("go-home-task"));
           SelfManager.self().setVariable("task-string", "going-home");
@@ -406,10 +407,8 @@ var procedures = (function() {
   procs["INSPECT-HIVE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("go-home-task", Tasks.commandTask(function() {
-        if (arguments.length < 0) {
-          throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
-        }
         if (Prims.lt(SelfManager.self().distance(SelfManager.self().getVariable("my-home")), 1)) {
           if (SelfManager.self().getVariable("no-discovery?")) {
             SelfManager.self().setVariable("next-task", world.observer.getGlobal("watch-dance-task"));
@@ -449,10 +448,8 @@ var procedures = (function() {
   procs["GO-HOME"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("dance-task", Tasks.commandTask(function() {
-        if (arguments.length < 0) {
-          throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
-        }
         if (Prims.gt(SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("SCOUTS").agentFilter(function() { return SelfManager.self().getVariable("piping?"); }), 3).size(), 0)) {
           SelfManager.self().penManager.raisePen();
           SelfManager.self().setVariable("next-task", world.observer.getGlobal("pipe-task"));
@@ -516,10 +513,8 @@ var procedures = (function() {
   procs["DANCE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("re-visit-task", Tasks.commandTask(function() {
-        if (arguments.length < 0) {
-          throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
-        }
         if (Prims.gt(SelfManager.self().getVariable("bee-timer"), 0)) {
           SelfManager.self().setVariable("bee-timer", (SelfManager.self().getVariable("bee-timer") - 1));
         }
@@ -554,10 +549,8 @@ var procedures = (function() {
   procs["RE-VISIT"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("pipe-task", Tasks.commandTask(function() {
-        if (arguments.length < 0) {
-          throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
-        }
         procedures["MOVE-AROUND"]();
         if (Prims.equality(SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("SCOUTS").agentFilter(function() { return SelfManager.self().getVariable("piping?"); }), 5).size(), SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("SCOUTS"), 5).size())) {
           SelfManager.self().setVariable("bee-timer", (SelfManager.self().getVariable("bee-timer") - 1));
@@ -581,10 +574,8 @@ var procedures = (function() {
   procs["PIPE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("take-off-task", Tasks.commandTask(function() {
-        if (arguments.length < 0) {
-          throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
-        }
         if (Prims.gt(SelfManager.self().distance(SelfManager.self().getVariable("target")), 1)) {
           SelfManager.self().face(SelfManager.self().getVariable("target"));
           SelfManager.self()._optimalFdOne();
@@ -607,12 +598,14 @@ var procedures = (function() {
   procs["TAKE-OFF"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if ((world.turtleManager.turtlesOfBreed("SCOUTS").agentAll(function() { return SelfManager.self().getVariable("on-site?"); }) && Prims.equality(ListPrims.length(ListPrims.removeDuplicates(world.turtleManager.turtlesOfBreed("SCOUTS").projectionBy(function() { return SelfManager.self().getVariable("target"); }))), 1))) {
         throw new Exception.StopInterrupt;
       }
       world.turtleManager.turtlesOfBreed("SCOUTS").ask(function() {
         try {
-          Prims.run(SelfManager.self().getVariable("next-task"));
+          var reporterContext = false;
+          var _run_16577_16580 = Prims.run(SelfManager.self().getVariable("next-task")); if(reporterContext && _run_16577_16580 !== undefined) { return _run_16577_16580; }
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
             throw new Error("REPORT can only be used inside TO-REPORT.");
@@ -639,6 +632,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let numOfTurns = (Prims.div(1, SelfManager.self().getVariable("interest")) * 2600);
       let anglePerTurn = Prims.div(180, numOfTurns);
       let semicircle = Prims.div(((0.5 * SelfManager.self().getVariable("dist-to-hive")) * 3.141592653589793), 5);
@@ -674,6 +668,7 @@ var procedures = (function() {
   procs["MAKE-SEMICIRCLE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().face(SelfManager.self().getVariable("target"));
       SelfManager.self().setVariable("temp-x-dance", SelfManager.self().getVariable("xcor"));
       SelfManager.self().setVariable("temp-y-dance", SelfManager.self().getVariable("ycor"));
@@ -713,6 +708,7 @@ var procedures = (function() {
   procs["WAGGLE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().right((Prims.random(20) - Prims.random(20)));
       if (!SelfManager.self().canMove(1)) {
         SelfManager.self().right(180);
@@ -732,6 +728,7 @@ var procedures = (function() {
   procs["PROCEED"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().right((Prims.random(60) - Prims.random(60)));
       SelfManager.self().fd(Prims.randomFloat(0.1));
       if (Prims.gt(SelfManager.self().distanceXY(0, 0), 4)) {
@@ -752,6 +749,7 @@ var procedures = (function() {
   procs["MOVE-AROUND"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let i = 0;
       for (let _index_18472_18478 = 0, _repeatcount_18472_18478 = StrictMath.floor(world.turtleManager.turtlesOfBreed("SITES").size()); _index_18472_18478 < _repeatcount_18472_18478; _index_18472_18478++){
         plotManager.setCurrentPlot("on-site");
@@ -780,6 +778,7 @@ var procedures = (function() {
   procs["PLOT-ON-SITE-SCOUTS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (world.observer.getGlobal("show-dance-path?")) {
         world.clearDrawing();
       }
@@ -798,6 +797,7 @@ var procedures = (function() {
   procs["SHOW-HIDE-DANCE-PATH"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (world.observer.getGlobal("scouts-visible?")) {
         world.turtleManager.turtlesOfBreed("SCOUTS").ask(function() { SelfManager.self().hideTurtle(true);; }, true);
       }

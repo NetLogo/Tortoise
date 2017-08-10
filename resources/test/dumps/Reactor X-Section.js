@@ -49,6 +49,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Power', 'power-rated')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.observer.getGlobal("power-rated"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -66,6 +67,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Power', 'avg-power')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.observer.getGlobal("average-power"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -83,6 +85,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Power', undefined)(function() {
         try {
+          var reporterContext = false;
           plotManager.setYRange(0, (3 * world.observer.getGlobal("power-rated")));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -120,6 +123,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
       procedures["SETUP-GLOBALS"]();
@@ -146,6 +150,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("power", 0);
       world.observer.setGlobal("old-power", 0);
       world.observer.setGlobal("old-power-2", 0);
@@ -168,6 +173,7 @@ var procedures = (function() {
   procs["SETUP-GLOBALS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (((Prims.equality(SelfManager.self().getPatchVariable("x"), world.observer.getGlobal("r")) && Prims.lte(SelfManager.self().getPatchVariable("y"), world.observer.getGlobal("r"))) || (Prims.equality(SelfManager.self().getPatchVariable("y"), world.observer.getGlobal("r")) && Prims.lte(SelfManager.self().getPatchVariable("x"), world.observer.getGlobal("r"))))) {
         SelfManager.self().setPatchVariable("pcolor", 5);
         SelfManager.self().setPatchVariable("rod?", false);
@@ -186,6 +192,7 @@ var procedures = (function() {
   procs["BUILD-REACTOR"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (((Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 0) && Prims.lt(SelfManager.self().getPatchVariable("x"), world.observer.getGlobal("r"))) && Prims.lt(SelfManager.self().getPatchVariable("y"), world.observer.getGlobal("r")))) {
         SelfManager.self().setPatchVariable("pcolor", 15);
       }
@@ -203,6 +210,7 @@ var procedures = (function() {
   procs["SETUP-NUCLEAR-FUEL"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.gt(world.observer.getGlobal("rod-depth"), world.observer.getGlobal("reactor-size"))) {
         world.observer.setGlobal("rod-depth", world.observer.getGlobal("reactor-size"));
       }
@@ -256,6 +264,7 @@ var procedures = (function() {
   procs["SETUP-CONTROL-RODS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (!!world.turtles().isEmpty()) {
         throw new Exception.StopInterrupt;
       }
@@ -290,6 +299,7 @@ var procedures = (function() {
   procs["AUTO-REACT"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (!!world.turtles().isEmpty()) {
         throw new Exception.StopInterrupt;
       }
@@ -312,6 +322,7 @@ var procedures = (function() {
   procs["MANU-REACT"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       procedures["PLACE-CONTROL-RODS"]();
       world.observer.setGlobal("power", 0);
       world.turtles().ask(function() {
@@ -344,6 +355,7 @@ var procedures = (function() {
   procs["REACT"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let whom = Nobody;
       world.turtleManager.createTurtles(1, "").ask(function() {
         SelfManager.self().setVariable("color", 45);
@@ -371,6 +383,7 @@ var procedures = (function() {
   procs["RELEASE-NEUTRON"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.patches().agentFilter(function() { return SelfManager.self().getPatchVariable("rod?"); }).ask(function() {
         if (Prims.gte(SelfManager.self().getPatchVariable("pycor"), (world.observer.getGlobal("r") - world.observer.getGlobal("rod-length")))) {
           SelfManager.self().setPatchVariable("pcolor", 5);
@@ -393,6 +406,7 @@ var procedures = (function() {
   procs["PLACE-CONTROL-RODS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().right(Prims.random(360));
       if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15)) {
         if (world.observer.getGlobal("spend-fuel?")) {

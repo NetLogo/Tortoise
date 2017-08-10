@@ -64,6 +64,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       workspace.rng.setSeed(5454);
       workspace.timer.reset();
       procedures["SETUP"]();
@@ -85,6 +86,7 @@ var procedures = (function() {
   procs["BENCHMARK"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.ticker.reset();
       world.patches().ask(function() {
@@ -105,6 +107,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.patches().ask(function() { procedures["FIND-NEW-STATE"](); }, true);
       world.patches().ask(function() {
         SelfManager.self().setPatchVariable("state", SelfManager.self().getPatchVariable("new-state"));
@@ -125,6 +128,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(SelfManager.self().getPatchVariable("state"), world.observer.getGlobal("n"))) {
         SelfManager.self().setPatchVariable("new-state", 0);
       }

@@ -49,6 +49,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Moth Colors Over Time', 'Light')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.observer.getGlobal("light-moths"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -66,6 +67,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Moth Colors Over Time', 'Medium')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.observer.getGlobal("medium-moths"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -83,6 +85,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Moth Colors Over Time', 'Dark')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.observer.getGlobal("dark-moths"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -100,6 +103,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Moth Colors Over Time', 'Pollution')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(Prims.div((Prims.div(procedures["UPPER-BOUND"](), 3) * world.observer.getGlobal("darkness")), 8));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -117,6 +121,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Moth Colors Over Time', undefined)(function() {
         try {
+          var reporterContext = false;
           plotManager.setYRange(0, procedures["UPPER-BOUND"]());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -154,7 +159,8 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt((9 - world.observer.getGlobal("darkness")));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return (9 - world.observer.getGlobal("darkness")) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -170,7 +176,8 @@ var procedures = (function() {
   procs["ENV-COLOR"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(Prims.div(world.observer.getGlobal("speed"), 100));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(world.observer.getGlobal("speed"), 100) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -186,7 +193,8 @@ var procedures = (function() {
   procs["DELTA-ENV"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt((Prims.random(9) + 1));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return (Prims.random(9) + 1) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -202,7 +210,8 @@ var procedures = (function() {
   procs["RANDOM-COLOR"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt((4 * world.observer.getGlobal("num-moths")));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return (4 * world.observer.getGlobal("num-moths")) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -218,6 +227,7 @@ var procedures = (function() {
   procs["UPPER-BOUND"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       procedures["SETUP-WORLD"]();
       procedures["SETUP-MOTHS"]();
@@ -237,6 +247,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("darkness", 0);
       world.observer.setGlobal("darkening?", true);
       world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", procedures["ENV-COLOR"]()); }, true);
@@ -254,6 +265,7 @@ var procedures = (function() {
   procs["SETUP-WORLD"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.createTurtles(world.observer.getGlobal("num-moths"), "MOTHS").ask(function() {
         SelfManager.self().setVariable("color", procedures["RANDOM-COLOR"]());
         procedures["MOTHS-PICK-SHAPE"]();
@@ -274,6 +286,7 @@ var procedures = (function() {
   procs["SETUP-MOTHS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.turtlesOfBreed("MOTHS").ask(function() {
         procedures["MOTHS-MATE"]();
         procedures["MOTHS-GRIM-REAPER"]();
@@ -299,6 +312,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if ((Prims.equality(SelfManager.self().getVariable("age"), 2) || Prims.equality(SelfManager.self().getVariable("age"), 3))) {
         SelfManager.self().hatch(2, "").ask(function() {
           if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("mutation"))) {
@@ -335,6 +349,7 @@ var procedures = (function() {
   procs["MOTHS-MATE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.lt(Prims.randomFloat(1000), ((world.observer.getGlobal("selection") * NLMath.abs((procedures["ENV-COLOR"]() - SelfManager.self().getVariable("color")))) + 200))) {
         SelfManager.self().die();
       }
@@ -352,6 +367,7 @@ var procedures = (function() {
   procs["MOTHS-GET-EATEN"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(Prims.random(13), 0)) {
         SelfManager.self().die();
       }
@@ -374,6 +390,7 @@ var procedures = (function() {
   procs["MOTHS-GRIM-REAPER"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setVariable("age", (SelfManager.self().getVariable("age") + 1));
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -389,6 +406,7 @@ var procedures = (function() {
   procs["MOTHS-AGE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.lt(SelfManager.self().getVariable("color"), 5)) {
         SelfManager.self().setVariable("shape", "moth dark");
       }
@@ -409,6 +427,7 @@ var procedures = (function() {
   procs["MOTHS-PICK-SHAPE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("light-moths", world.turtleManager.turtlesOfBreed("MOTHS").agentFilter(function() { return Prims.gte(SelfManager.self().getVariable("color"), 7); }).size());
       world.observer.setGlobal("dark-moths", world.turtleManager.turtlesOfBreed("MOTHS").agentFilter(function() { return Prims.lte(SelfManager.self().getVariable("color"), 3); }).size());
       world.observer.setGlobal("medium-moths", (world.turtleManager.turtlesOfBreed("MOTHS").size() - (world.observer.getGlobal("light-moths") + world.observer.getGlobal("dark-moths"))));
@@ -426,6 +445,7 @@ var procedures = (function() {
   procs["UPDATE-MONITORS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.lte(world.observer.getGlobal("darkness"), (8 - procedures["DELTA-ENV"]()))) {
         world.observer.setGlobal("darkness", (world.observer.getGlobal("darkness") + procedures["DELTA-ENV"]()));
         world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", procedures["ENV-COLOR"]()); }, true);
@@ -447,6 +467,7 @@ var procedures = (function() {
   procs["POLLUTE-WORLD"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.gte(world.observer.getGlobal("darkness"), (0 + procedures["DELTA-ENV"]()))) {
         world.observer.setGlobal("darkness", (world.observer.getGlobal("darkness") - procedures["DELTA-ENV"]()));
         world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", procedures["ENV-COLOR"]()); }, true);
@@ -468,6 +489,7 @@ var procedures = (function() {
   procs["CLEAN-UP-WORLD"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(world.observer.getGlobal("darkening?"), true)) {
         procedures["POLLUTE-WORLD"]();
       }

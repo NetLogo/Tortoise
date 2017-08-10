@@ -64,6 +64,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.observer.setGlobal("max-y-histogram", (world.topology.minPycor + world.observer.getGlobal("height")));
       procedures["CREATE-HISTOGRAM-WIDTH"]();
@@ -84,6 +85,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.patches().ask(function() {
         if (((Prims.gte(SelfManager.self().getPatchVariable("pxcor"), Prims.div( -world.observer.getGlobal("sample-space"), 2)) && Prims.lt(SelfManager.self().getPatchVariable("pxcor"), Prims.div(world.observer.getGlobal("sample-space"), 2))) && Prims.lt(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("max-y-histogram")))) {
           SelfManager.self().setPatchVariable("pcolor", 45);
@@ -106,6 +108,7 @@ var procedures = (function() {
   procs["CREATE-HISTOGRAM-WIDTH"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.patches().agentFilter(function() {
         return (Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor) && Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 45));
       }).ask(function() {
@@ -132,6 +135,7 @@ var procedures = (function() {
   procs["SETUP-COLUMN-COUNTERS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (world.observer.getGlobal("time-to-stop?")) {
         throw new Exception.StopInterrupt;
       }
@@ -158,6 +162,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.getPatchAt(0, (world.observer.getGlobal("max-y-histogram") + 4)).ask(function() {
         SelfManager.self().sprout(1, "MESSENGERS").ask(function() {
           SelfManager.self().setVariable("shape", "default");
@@ -182,6 +187,7 @@ var procedures = (function() {
   procs["SELECT-RANDOM-VALUE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let it = world.turtleManager.turtlesOfBreed("COLUMN-COUNTERS")._optimalOneOfWith(function() {
         return Prims.equality(SelfManager.self().getVariable("my-column"), world.observer.getGlobal("the-messenger").projectionBy(function() { return SelfManager.self().getVariable("label"); }));
       });
@@ -214,6 +220,7 @@ var procedures = (function() {
   procs["SEND-MESSENGER-TO-ITS-COLUMN"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().getPatchHere().ask(function() {
         SelfManager.self().sprout(1, "FRAMES").ask(function() {
           SelfManager.self().setVariable("shape", "frame");
@@ -234,6 +241,7 @@ var procedures = (function() {
   procs["CREATE-FRAME"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.turtlesOfBreed("COLUMN-COUNTERS").ask(function() {
         if (Prims.lte(SelfManager.self().getVariable("my-column"), Prims.div((world.observer.getGlobal("red-green") * world.observer.getGlobal("sample-space")), 100))) {
           SelfManager.self().getVariable("my-column-patches").agentFilter(function() {
@@ -260,7 +268,8 @@ var procedures = (function() {
   procs["PAINT"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(NLMath.precision(Prims.div((100 * world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15); }).size()), world.turtleManager.turtlesOfBreed("FRAMES").size()), 2));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return NLMath.precision(Prims.div((100 * world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15); }).size()), world.turtleManager.turtlesOfBreed("FRAMES").size()), 2) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -276,7 +285,8 @@ var procedures = (function() {
   procs["%-RED"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(NLMath.precision(Prims.div((100 * world.turtleManager.turtlesOfBreed("FRAMES").size()), (world.observer.getGlobal("height") * world.observer.getGlobal("sample-space"))), 2));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return NLMath.precision(Prims.div((100 * world.turtleManager.turtlesOfBreed("FRAMES").size()), (world.observer.getGlobal("height") * world.observer.getGlobal("sample-space"))), 2) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -292,6 +302,7 @@ var procedures = (function() {
   procs["%-FULL"] = temp;
   temp = (function() {
     try {
+      var reporterContext = true;
       let maxColumn = ListPrims.max(world.turtleManager.turtlesOfBreed("COLUMN-COUNTERS").projectionBy(function() {
         return SelfManager.self().getVariable("my-column-patches").agentFilter(function() {
           return Prims.lt(SelfManager.self().getPatchVariable("pycor"), SelfManager.myself().projectionBy(function() { return SelfManager.self().getPatchVariable("pycor"); }));
@@ -302,7 +313,7 @@ var procedures = (function() {
           return Prims.lt(SelfManager.self().getPatchVariable("pycor"), SelfManager.myself().projectionBy(function() { return SelfManager.self().getPatchVariable("pycor"); }));
         }).size();
       }));
-      throw new Exception.ReportInterrupt((maxColumn - minColumn));
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return (maxColumn - minColumn) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {

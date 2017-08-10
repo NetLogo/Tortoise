@@ -64,6 +64,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.turtleManager.createOrderedTurtles(10, "").ask(function() {
         SelfManager.self().fd(5);

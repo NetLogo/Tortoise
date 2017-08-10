@@ -49,6 +49,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Cows over time', 'greedy')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.turtleManager.turtlesOfBreed("GREEDY-COWS").size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -66,6 +67,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Cows over time', 'cooperative')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.turtleManager.turtlesOfBreed("COOPERATIVE-COWS").size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -104,6 +106,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       procedures["SETUP-COWS"]();
       world.patches().ask(function() {
@@ -125,6 +128,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "cow")
       world.turtleManager.createTurtles(world.observer.getGlobal("initial-cows"), "").ask(function() {
         SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
@@ -152,6 +156,7 @@ var procedures = (function() {
   procs["SETUP-COWS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtles().ask(function() {
         procedures["MOVE"]();
         procedures["EAT"]();
@@ -176,6 +181,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.gt(SelfManager.self().getVariable("energy"), world.observer.getGlobal("reproduction-threshold"))) {
         SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") - world.observer.getGlobal("reproduction-cost")));
         SelfManager.self().hatch(1, "");
@@ -194,6 +200,7 @@ var procedures = (function() {
   procs["REPRODUCE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.gte(SelfManager.self().getPatchVariable("grass"), world.observer.getGlobal("low-high-threshold"))) {
         if (Prims.gte(world.observer.getGlobal("high-growth-chance"), Prims.randomFloat(100))) {
           SelfManager.self().setPatchVariable("grass", (SelfManager.self().getPatchVariable("grass") + 1));
@@ -221,6 +228,7 @@ var procedures = (function() {
   procs["GROW-GRASS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor((55 - 1), SelfManager.self().getPatchVariable("grass"), 0, (2 * world.observer.getGlobal("max-grass-height"))));
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -236,6 +244,7 @@ var procedures = (function() {
   procs["COLOR-GRASS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().right(Prims.random(360));
       SelfManager.self().fd(world.observer.getGlobal("stride-length"));
       SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") - world.observer.getGlobal("metabolism")));
@@ -256,6 +265,7 @@ var procedures = (function() {
   procs["MOVE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("COOPERATIVE-COWS"))) {
         procedures["EAT-COOPERATIVE"]();
       }
@@ -278,6 +288,7 @@ var procedures = (function() {
   procs["EAT"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.gt(SelfManager.self().getPatchVariable("grass"), world.observer.getGlobal("low-high-threshold"))) {
         SelfManager.self().setPatchVariable("grass", (SelfManager.self().getPatchVariable("grass") - 1));
         SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") + world.observer.getGlobal("grass-energy")));
@@ -296,6 +307,7 @@ var procedures = (function() {
   procs["EAT-COOPERATIVE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.gt(SelfManager.self().getPatchVariable("grass"), 0)) {
         SelfManager.self().setPatchVariable("grass", (SelfManager.self().getPatchVariable("grass") - 1));
         SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") + world.observer.getGlobal("grass-energy")));

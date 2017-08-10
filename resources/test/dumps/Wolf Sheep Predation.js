@@ -49,6 +49,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('populations', 'sheep')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.turtleManager.turtlesOfBreed("SHEEP").size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -66,6 +67,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('populations', 'wolves')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.turtleManager.turtlesOfBreed("WOLVES").size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -83,6 +85,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('populations', 'grass / 4')(function() {
         try {
+          var reporterContext = false;
           if (Prims.equality(world.observer.getGlobal("model-version"), "sheep-wolves-grass")) {
             plotManager.plotValue(Prims.div(procedures["GRASS"]().size(), 4));
           }
@@ -123,6 +126,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       if (Meta.isWeb) {
         world.observer.setGlobal("max-sheep", 10000);
@@ -175,6 +179,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (!!world.turtles().isEmpty()) {
         throw new Exception.StopInterrupt;
       }
@@ -217,6 +222,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().right(Prims.random(50));
       SelfManager.self().right(-Prims.random(50));
       SelfManager.self()._optimalFdOne();
@@ -234,6 +240,7 @@ var procedures = (function() {
   procs["MOVE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55)) {
         SelfManager.self().setPatchVariable("pcolor", 35);
         SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") + world.observer.getGlobal("sheep-gain-from-food")));
@@ -252,6 +259,7 @@ var procedures = (function() {
   procs["EAT-GRASS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("sheep-reproduce"))) {
         SelfManager.self().setVariable("energy", Prims.div(SelfManager.self().getVariable("energy"), 2));
         SelfManager.self().hatch(1, "").ask(function() {
@@ -273,6 +281,7 @@ var procedures = (function() {
   procs["REPRODUCE-SHEEP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("wolf-reproduce"))) {
         SelfManager.self().setVariable("energy", Prims.div(SelfManager.self().getVariable("energy"), 2));
         SelfManager.self().hatch(1, "").ask(function() {
@@ -294,6 +303,7 @@ var procedures = (function() {
   procs["REPRODUCE-WOLVES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let prey = ListPrims.oneOf(SelfManager.self().breedHere("SHEEP"));
       if (!Prims.equality(prey, Nobody)) {
         prey.ask(function() { SelfManager.self().die(); }, true);
@@ -313,6 +323,7 @@ var procedures = (function() {
   procs["EAT-SHEEP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.lt(SelfManager.self().getVariable("energy"), 0)) {
         SelfManager.self().die();
       }
@@ -330,6 +341,7 @@ var procedures = (function() {
   procs["DEATH"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 35)) {
         if (Prims.lte(SelfManager.self().getPatchVariable("countdown"), 0)) {
           SelfManager.self().setPatchVariable("pcolor", 55);
@@ -353,11 +365,12 @@ var procedures = (function() {
   procs["GROW-GRASS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = true;
       if (Prims.equality(world.observer.getGlobal("model-version"), "sheep-wolves-grass")) {
-        throw new Exception.ReportInterrupt(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55); }));
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55); }) }
       }
       else {
-        throw new Exception.ReportInterrupt(0);
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return 0 }
       }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
@@ -374,6 +387,7 @@ var procedures = (function() {
   procs["GRASS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtles().ask(function() { SelfManager.self().setVariable("label", ""); }, true);
       if (world.observer.getGlobal("show-energy?")) {
         world.turtleManager.turtlesOfBreed("WOLVES").ask(function() { SelfManager.self().setVariable("label", NLMath.round(SelfManager.self().getVariable("energy"))); }, true);

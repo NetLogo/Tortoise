@@ -49,6 +49,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Turtle Count', 'unattached')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 125); }).size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -66,6 +67,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Turtle Count', 'heads')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 45); }).size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -83,6 +85,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Turtle Count', 'bodies')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 95); }).size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -100,6 +103,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Turtle Count', 'tails')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 65); }).size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -117,6 +121,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Turtle Count', undefined)(function() {
         try {
+          var reporterContext = false;
           plotManager.setYRange(0, world.observer.getGlobal("population"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -154,6 +159,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.turtleManager.createTurtles(world.observer.getGlobal("population"), "").ask(function() {
         SelfManager.self().setVariable("color", 125);
@@ -176,6 +182,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtles().ask(function() {
         if (Prims.equality(SelfManager.self().getVariable("leader"), Nobody)) {
           procedures["ATTACH-TURTLE"]();
@@ -198,6 +205,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let xd = (world.observer.getGlobal("near-radius") + Prims.random((world.observer.getGlobal("far-radius") - world.observer.getGlobal("near-radius"))));
       let yd = (world.observer.getGlobal("near-radius") + Prims.random((world.observer.getGlobal("far-radius") - world.observer.getGlobal("near-radius"))));
       if (Prims.equality(Prims.random(2), 0)) {
@@ -242,6 +250,7 @@ var procedures = (function() {
   procs["ATTACH-TURTLE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(SelfManager.self().getVariable("leader"), Nobody)) {
         SelfManager.self().right((Prims.randomFloat(world.observer.getGlobal("waver")) - Prims.randomFloat(world.observer.getGlobal("waver"))));
       }

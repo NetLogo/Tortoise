@@ -49,6 +49,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Average Colors Over Time', 'Monarchs')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed("MONARCHS").projectionBy(function() { return SelfManager.self().getVariable("color"); })));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -66,6 +67,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Average Colors Over Time', 'Viceroys')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed("VICEROYS").projectionBy(function() { return SelfManager.self().getVariable("color"); })));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -104,6 +106,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       procedures["SETUP-VARIABLES"]();
       procedures["SETUP-TURTLES"]();
@@ -122,6 +125,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("carrying-capacity-monarchs", 225);
       world.observer.setGlobal("carrying-capacity-viceroys", 225);
       world.observer.setGlobal("carrying-capacity-birds", 75);
@@ -142,6 +146,7 @@ var procedures = (function() {
   procs["SETUP-VARIABLES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
       BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("MONARCHS").getSpecialName(), "butterfly monarch")
       BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("VICEROYS").getSpecialName(), "butterfly viceroy")
@@ -169,6 +174,7 @@ var procedures = (function() {
   procs["SETUP-TURTLES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.turtlesOfBreed("BIRDS").ask(function() { procedures["BIRDS-MOVE"](); }, true);
       world.turtles().agentFilter(function() {
         return !Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("BIRDS"));
@@ -195,6 +201,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(SelfManager.self().getVariable("shape"), "bird 1")) {
         SelfManager.self().setVariable("shape", "bird 2");
       }
@@ -217,6 +224,7 @@ var procedures = (function() {
   procs["BIRDS-MOVE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().right(Prims.random(100));
       SelfManager.self().right(-Prims.random(100));
       SelfManager.self()._optimalFdOne();
@@ -234,6 +242,7 @@ var procedures = (function() {
   procs["BUTTERFLIES-MOVE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let birdHere = ListPrims.oneOf(SelfManager.self().breedHere("BIRDS"));
       if (!Prims.equality(birdHere, Nobody)) {
         if (!birdHere.projectionBy(function() {
@@ -261,15 +270,16 @@ var procedures = (function() {
   procs["BUTTERFLIES-GET-EATEN"] = temp;
   temp = (function(c) {
     try {
-      Tasks.forEach(Tasks.commandTask(function(i) {
+      var reporterContext = true;
+      var _foreach_3161_3168 = Tasks.forEach(Tasks.commandTask(function(i) {
         if (arguments.length < 1) {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
         }
         if (Prims.equality(ListPrims.item(0, i), c)) {
-          throw new Exception.ReportInterrupt(true);
+          if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return true }
         }
-      }, "[ i -> if item 0 i = c [ report true ] ]"), SelfManager.self().getVariable("memory"));
-      throw new Exception.ReportInterrupt(false);
+      }, "[ i -> if item 0 i = c [ report true ] ]"), SelfManager.self().getVariable("memory")); if(reporterContext && _foreach_3161_3168 !== undefined) { return _foreach_3161_3168; }
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return false }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -285,6 +295,7 @@ var procedures = (function() {
   procs["COLOR-IN-MEMORY?"] = temp;
   temp = (function(c) {
     try {
+      var reporterContext = false;
       if (Prims.gte(ListPrims.length(SelfManager.self().getVariable("memory")), world.observer.getGlobal("memory-size"))) {
         SelfManager.self().setVariable("memory", ListPrims.butFirst(SelfManager.self().getVariable("memory")));
       }
@@ -303,6 +314,7 @@ var procedures = (function() {
   procs["REMEMBER-COLOR"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setVariable("memory", Tasks.map(Tasks.reporterTask(function(i) {
         if (arguments.length < 1) {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
@@ -329,6 +341,7 @@ var procedures = (function() {
   procs["BIRDS-FORGET"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(SelfManager.self().getVariable("breed"), world.turtleManager.turtlesOfBreed("MONARCHS"))) {
         if (Prims.lt(Prims.random(world.turtleManager.turtlesOfBreed("MONARCHS").size()), (world.observer.getGlobal("carrying-capacity-monarchs") - world.turtleManager.turtlesOfBreed("MONARCHS").size()))) {
           procedures["HATCH-BUTTERFLY"]();
@@ -353,6 +366,7 @@ var procedures = (function() {
   procs["BUTTERFLIES-REPRODUCE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("reproduction-chance"))) {
         SelfManager.self().hatch(1, "").ask(function() {
           SelfManager.self()._optimalFdOne();

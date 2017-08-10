@@ -64,6 +64,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "planet")
       world.turtleManager.createTurtles(1, "SUNS").ask(function() {

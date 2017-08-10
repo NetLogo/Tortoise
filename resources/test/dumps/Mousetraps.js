@@ -49,6 +49,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Traps triggered', 'default')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.observer.getGlobal("traps-triggered"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -72,6 +73,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Balls in the air', 'default')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.turtles().size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -110,6 +112,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.observer.setGlobal("traps-triggered", 0);
       world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", (105 + 3)); }, true);
@@ -133,6 +136,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (!!world.turtles().isEmpty()) {
         throw new Exception.StopInterrupt;
       }
@@ -162,6 +166,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().right(Prims.randomFloat(360));
       SelfManager.self().fd(Prims.randomFloat(world.observer.getGlobal("max-distance")));
     } catch (e) {

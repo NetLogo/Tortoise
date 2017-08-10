@@ -64,6 +64,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.patches().ask(function() {
         SelfManager.self().setPatchVariable("vote", Prims.random(2));
@@ -84,6 +85,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let anyVotesChanged_p = false;
       world.patches().ask(function() { SelfManager.self().setPatchVariable("total", SelfManager.self()._optimalNSum("vote")); }, true);
       world.patches().ask(function() {
@@ -138,6 +140,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(SelfManager.self().getPatchVariable("vote"), 0)) {
         SelfManager.self().setPatchVariable("pcolor", 55);
       }

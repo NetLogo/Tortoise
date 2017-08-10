@@ -49,6 +49,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Global Temperature', 'default')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.observer.getGlobal("temperature"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -87,6 +88,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("RAYS").getSpecialName(), "ray")
       BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("IRS").getSpecialName(), "ray")
@@ -110,6 +112,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("sky-top", (world.topology.maxPycor - 5));
       world.observer.setGlobal("earth-top", 0);
       world.patches().ask(function() {
@@ -140,6 +143,7 @@ var procedures = (function() {
   procs["SETUP-WORLD"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.turtlesOfBreed("CLOUDS").ask(function() { SelfManager.self().fd(SelfManager.self().getVariable("cloud-speed")); }, true);
       procedures["RUN-SUNSHINE"]();
       world._optimalPatchRow(world.observer.getGlobal("earth-top")).ask(function() { procedures["UPDATE-ALBEDO"](); }, true);
@@ -161,6 +165,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(55, world.observer.getGlobal("albedo"), 0, 1));
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -176,6 +181,7 @@ var procedures = (function() {
   procs["UPDATE-ALBEDO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let skyHeight = (world.observer.getGlobal("sky-top") - world.observer.getGlobal("earth-top"));
       let y = ((world.observer.getGlobal("earth-top") + Prims.randomFloat((skyHeight - 4))) + 2);
       let speed = (Prims.randomFloat(0.1) + 0.01);
@@ -206,6 +212,7 @@ var procedures = (function() {
   procs["ADD-CLOUD"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (!world.turtleManager.turtlesOfBreed("CLOUDS").isEmpty()) {
         let doomedId = ListPrims.oneOf(ListPrims.removeDuplicates(world.turtleManager.turtlesOfBreed("CLOUDS").projectionBy(function() { return SelfManager.self().getVariable("cloud-id"); })));
         world.turtleManager.turtlesOfBreed("CLOUDS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("cloud-id"), doomedId); }).ask(function() { SelfManager.self().die(); }, true);
@@ -224,6 +231,7 @@ var procedures = (function() {
   procs["REMOVE-CLOUD"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.turtlesOfBreed("RAYS").ask(function() {
         if (!SelfManager.self().canMove(0.3)) {
           SelfManager.self().die();
@@ -247,6 +255,7 @@ var procedures = (function() {
   procs["RUN-SUNSHINE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.gt((10 * world.observer.getGlobal("sun-brightness")), Prims.random(50))) {
         world.turtleManager.createTurtles(1, "RAYS").ask(function() {
           SelfManager.self().setVariable("heading", 160);
@@ -268,6 +277,7 @@ var procedures = (function() {
   procs["CREATE-SUNSHINE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.turtlesOfBreed("RAYS").agentFilter(function() { return !SelfManager.self().breedHere("CLOUDS").isEmpty(); }).ask(function() { SelfManager.self().setVariable("heading", (180 - SelfManager.self().getVariable("heading"))); }, true);
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -283,6 +293,7 @@ var procedures = (function() {
   procs["REFLECT-RAYS-FROM-CLOUDS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.turtlesOfBreed("RAYS").agentFilter(function() { return Prims.lte(SelfManager.self().getVariable("ycor"), world.observer.getGlobal("earth-top")); }).ask(function() {
         if (Prims.gt((100 * world.observer.getGlobal("albedo")), Prims.random(100))) {
           SelfManager.self().setVariable("heading", (180 - SelfManager.self().getVariable("heading")));
@@ -307,6 +318,7 @@ var procedures = (function() {
   procs["ENCOUNTER-EARTH"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("temperature", ((0.99 * world.observer.getGlobal("temperature")) + (0.01 * (12 + (0.1 * world.turtleManager.turtlesOfBreed("HEATS").size())))));
       world.turtleManager.turtlesOfBreed("HEATS").ask(function() {
         let dist = (0.5 * Prims.randomFloat(1));
@@ -341,6 +353,7 @@ var procedures = (function() {
   procs["RUN-HEAT"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.turtlesOfBreed("IRS").ask(function() {
         if (!SelfManager.self().canMove(0.3)) {
           SelfManager.self().die();
@@ -370,6 +383,7 @@ var procedures = (function() {
   procs["RUN-IR"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let skyHeight = (world.observer.getGlobal("sky-top") - world.observer.getGlobal("earth-top"));
       world.turtleManager.createTurtles(25, "CO2S").ask(function() {
         SelfManager.self().setVariable("color", 55);
@@ -389,6 +403,7 @@ var procedures = (function() {
   procs["ADD-CO2"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       for (let _index_5794_5800 = 0, _repeatcount_5794_5800 = StrictMath.floor(25); _index_5794_5800 < _repeatcount_5794_5800; _index_5794_5800++){
         if (!world.turtleManager.turtlesOfBreed("CO2S").isEmpty()) {
           ListPrims.oneOf(world.turtleManager.turtlesOfBreed("CO2S")).ask(function() { SelfManager.self().die(); }, true);
@@ -408,6 +423,7 @@ var procedures = (function() {
   procs["REMOVE-CO2"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.turtlesOfBreed("CO2S").ask(function() {
         SelfManager.self().right((Prims.random(51) - 25));
         let dist = (0.05 + Prims.randomFloat(0.1));

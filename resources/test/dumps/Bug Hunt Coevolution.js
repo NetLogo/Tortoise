@@ -120,6 +120,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.observer.setGlobal("total-caught", 0);
       world.observer.setGlobal("histogram-interval-size", 1);
@@ -170,6 +171,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let parentVision = SelfManager.self().getVariable("vision");
       SelfManager.self().hatch(1, "").ask(function() {
         SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("VISION-CONES"));
@@ -193,6 +195,7 @@ var procedures = (function() {
   procs["ATTACH-VISION-CONE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       procedures["CHECK-VISUALIZE-VISION-CONE-CHANGE"]();
       procedures["CHECK-PLAYER-CAUGHT"]();
       procedures["CHECK-BIRD-CATCH"]();
@@ -217,6 +220,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (!world.turtleManager.turtlesOfBreed("BUGS").isEmpty()) {
         world.observer.setGlobal("avg-bug-speed", ListPrims.mean(world.turtleManager.turtlesOfBreed("BUGS").projectionBy(function() { return SelfManager.self().getVariable("speed"); })));
         world.observer.setGlobal("avg-bug-vision", ListPrims.mean(world.turtleManager.turtlesOfBreed("BUGS").projectionBy(function() { return SelfManager.self().getVariable("vision"); })));
@@ -245,6 +249,7 @@ var procedures = (function() {
   procs["UPDATE-VARIABLES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let worstBird = Nobody;
       if (((Prims.equality(NLMath.mod(world.observer.getGlobal("total-caught"), world.observer.getGlobal("reproduce-birds-after-eating")), 0) && Prims.gt(world.observer.getGlobal("total-caught"), 0)) && !world.turtleManager.turtlesOfBreed("BIRDS").isEmpty())) {
         worstBird = world.turtleManager.turtlesOfBreed("BIRDS").minOneOf(function() { return SelfManager.self().getVariable("eaten"); });
@@ -271,6 +276,7 @@ var procedures = (function() {
   procs["REPRODUCE-BIRDS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let targetHeading = 0;
       let candidatePredators = Nobody;
       let predator = Nobody;
@@ -309,6 +315,7 @@ var procedures = (function() {
   procs["MOVE-BUGS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let preyAgent = Nobody;
       let candidateBugs = Nobody;
       let closestBug = Nobody;
@@ -360,6 +367,7 @@ var procedures = (function() {
   procs["MOVE-BIRDS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (world.observer.getGlobal("wiggle?")) {
         SelfManager.self().right(Prims.div((Prims.randomFloat(30) * 0.05), world.observer.getGlobal("speed-factor")));
         SelfManager.self().right(-Prims.div((Prims.randomFloat(30) * 0.05), world.observer.getGlobal("speed-factor")));
@@ -378,6 +386,7 @@ var procedures = (function() {
   procs["WIGGLE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (MousePrims.isInside()) {
         world.turtleManager.turtlesOfBreed("PLAYERS").ask(function() {
           SelfManager.self().setXY(MousePrims.getX(), MousePrims.getY());
@@ -401,6 +410,7 @@ var procedures = (function() {
   procs["MOVE-PLAYER"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let speedOfCaught = 0;
       let localBugs = 0;
       let snapMouseXcor = MousePrims.getX();
@@ -452,6 +462,7 @@ var procedures = (function() {
   procs["CHECK-PLAYER-CAUGHT"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let speedOfCaught = 0;
       world.turtleManager.turtlesOfBreed("BIRDS").ask(function() {
         if (!SelfManager.self().breedHere("BUGS").isEmpty()) {
@@ -501,6 +512,7 @@ var procedures = (function() {
   procs["CHECK-BIRD-CATCH"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       ListPrims.oneOf(world.turtleManager.turtlesOfBreed("BUGS")).ask(function() {
         SelfManager.self().hatch(1, "").ask(function() {
           procedures["MUTATE-OFFSPRING-BUG"]();
@@ -522,6 +534,7 @@ var procedures = (function() {
   procs["REPRODUCE-ONE-BUG"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let birdEnergySplit = 0;
       if (Prims.gt(world.turtleManager.turtlesOfBreed("BIRDS").size(), 0)) {
         ListPrims.oneOf(world.turtleManager.turtlesOfBreed("BIRDS")).ask(function() {
@@ -548,6 +561,7 @@ var procedures = (function() {
   procs["REPRODUCE-ONE-BIRD"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(Prims.random(2), 0)) {
         SelfManager.self().setVariable("vision", (SelfManager.self().getVariable("vision") + Prims.randomFloat(world.observer.getGlobal("bug-vision-mutation"))));
       }
@@ -586,6 +600,7 @@ var procedures = (function() {
   procs["MUTATE-OFFSPRING-BUG"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(Prims.random(2), 0)) {
         SelfManager.self().setVariable("vision", (SelfManager.self().getVariable("vision") + Prims.randomFloat(world.observer.getGlobal("bird-vision-mutation"))));
       }
@@ -624,6 +639,7 @@ var procedures = (function() {
   procs["MUTATE-OFFSPRING-BIRD"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (!Prims.equality(world.observer.getGlobal("old-show-initial-bug-vision-cone?"), world.observer.getGlobal("show-vision-cone?"))) {
         world.observer.setGlobal("old-show-initial-bug-vision-cone?", world.observer.getGlobal("show-vision-cone?"));
         world.turtleManager.turtlesOfBreed("VISION-CONES").ask(function() { procedures["SET-VISUALIZE-VISION-CONE"](); }, true);
@@ -646,6 +662,7 @@ var procedures = (function() {
   procs["CHECK-VISUALIZE-VISION-CONE-CHANGE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let parentVision = ListPrims.oneOf(LinkPrims.inLinkNeighbors("LINKS")).projectionBy(function() { return SelfManager.self().getVariable("vision"); });
       if (world.observer.getGlobal("show-vision-cone?")) {
         SelfManager.self().setVariable("hidden?", false);
@@ -669,6 +686,7 @@ var procedures = (function() {
   procs["SET-VISUALIZE-VISION-CONE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setVariable("color", (111 + SelfManager.self().getVariable("speed")));
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -684,6 +702,7 @@ var procedures = (function() {
   procs["RECOLOR-SHADE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(NLMath.floor(SelfManager.self().getVariable("speed")), 6)) {
         SelfManager.self().setVariable("color", 15);
       }
@@ -722,6 +741,7 @@ var procedures = (function() {
   procs["RECOLOR-RAINBOW"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(NLMath.mod(world.ticker.tickCount(), 100), 1)) {
         plotManager.setCurrentPlot("Avg. Vision vs. Time");
         plotManager.setCurrentPen("bugs");
@@ -764,6 +784,7 @@ var procedures = (function() {
   procs["DO-PLOTS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       plotManager.setCurrentPen("speed=1");
       plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("total-speed-1-caught"));
       plotManager.setCurrentPen("speed=2");
@@ -790,6 +811,7 @@ var procedures = (function() {
   procs["PLOT-CAUGHT"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       plotManager.setCurrentPen("speed=1");
       plotManager.plotValue(world.turtleManager.turtlesOfBreed("BUGS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("speed"), 1); }).size());
       plotManager.setCurrentPen("speed=2");
@@ -816,6 +838,7 @@ var procedures = (function() {
   procs["PLOT-POPULATIONS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       plotManager.setHistogramBarCount(10);
       plotManager.setCurrentPen("#");
       plotManager.setPenInterval(world.observer.getGlobal("histogram-interval-size"));
@@ -834,6 +857,7 @@ var procedures = (function() {
   procs["PLOT-HISTOGRAMS-BUGS-SPEED"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       plotManager.setHistogramBarCount(10);
       plotManager.setCurrentPen("#");
       plotManager.setPenInterval(world.observer.getGlobal("histogram-interval-size"));
@@ -852,6 +876,7 @@ var procedures = (function() {
   procs["PLOT-HISTOGRAMS-INITIAL-BUG-VISION"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       plotManager.setHistogramBarCount(10);
       plotManager.setCurrentPen("#");
       plotManager.setPenInterval(world.observer.getGlobal("histogram-interval-size"));
@@ -870,6 +895,7 @@ var procedures = (function() {
   procs["PLOT-HISTOGRAMS-INITIAL-BIRD-SPEED"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       plotManager.setHistogramBarCount(10);
       plotManager.setCurrentPen("#");
       plotManager.setPenInterval(world.observer.getGlobal("histogram-interval-size"));

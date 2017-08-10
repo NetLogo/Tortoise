@@ -64,6 +64,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.patches().ask(function() { SelfManager.self().sprout(1, "TURTLES"); }, true);
       world.turtles().ask(function() {
@@ -84,6 +85,7 @@ var procedures = (function() {
   procs["SETUP-SQUARE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.patches().ask(function() { SelfManager.self().sprout(1, "TURTLES"); }, true);
       world.turtles().ask(function() {

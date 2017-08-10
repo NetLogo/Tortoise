@@ -73,6 +73,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.ticker.reset();
       procedures["SETUP-TURTLES"]();
@@ -92,6 +93,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       workspace.rng.setSeed(337);
       workspace.timer.reset();
       procedures["SETUP"]();
@@ -113,6 +115,7 @@ var procedures = (function() {
   procs["BENCHMARK"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "bug")
       world.turtleManager.createOrderedTurtles(world.observer.getGlobal("ants"), "").ask(function() {
         SelfManager.self().setVariable("size", 2);
@@ -134,6 +137,7 @@ var procedures = (function() {
   procs["SETUP-TURTLES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.patches().ask(function() {
         SelfManager.self().setPatchVariable("chemical", 0);
         SelfManager.self().setPatchVariable("food", 0);
@@ -156,6 +160,7 @@ var procedures = (function() {
   procs["SETUP-PATCHES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setPatchVariable("nest?", Prims.lt(SelfManager.self().distanceXY(0, 0), 5));
       SelfManager.self().setPatchVariable("nest-scent", (200 - SelfManager.self().distanceXY(0, 0)));
     } catch (e) {
@@ -172,6 +177,7 @@ var procedures = (function() {
   procs["SETUP-NEST"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.lt(SelfManager.self().distanceXY((0.6 * world.topology.maxPxcor), 0), 5)) {
         SelfManager.self().setPatchVariable("food-source-number", 1);
       }
@@ -198,6 +204,7 @@ var procedures = (function() {
   procs["SETUP-FOOD"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (SelfManager.self().getPatchVariable("nest?")) {
         SelfManager.self().setPatchVariable("pcolor", 115);
       }
@@ -231,6 +238,7 @@ var procedures = (function() {
   procs["UPDATE-DISPLAY"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtles().ask(function() { procedures["GO-TURTLES"](); }, true);
       world.topology.diffuse("chemical", Prims.div(world.observer.getGlobal("diffusion-rate"), 100))
       world.patches().ask(function() { procedures["GO-PATCHES"](); }, true);
@@ -250,6 +258,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.lt(SelfManager.self().getVariable("who"), world.ticker.tickCount())) {
         if (SelfManager.self().getVariable("carrying-food?")) {
           SelfManager.self().setVariable("color", (25 + 1));
@@ -274,6 +283,7 @@ var procedures = (function() {
   procs["GO-TURTLES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setPatchVariable("chemical", Prims.div((SelfManager.self().getPatchVariable("chemical") * (100 - world.observer.getGlobal("evaporation-rate"))), 100));
       procedures["UPDATE-DISPLAY"]();
     } catch (e) {
@@ -290,6 +300,7 @@ var procedures = (function() {
   procs["GO-PATCHES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (SelfManager.self().getPatchVariable("nest?")) {
         SelfManager.self().setVariable("carrying-food?", false);
         SelfManager.self().right(180);
@@ -319,6 +330,7 @@ var procedures = (function() {
   procs["RETURN-TO-NEST"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.gt(SelfManager.self().getPatchVariable("food"), 0)) {
         SelfManager.self().setVariable("carrying-food?", true);
         SelfManager.self().setPatchVariable("food", (SelfManager.self().getPatchVariable("food") - 1));
@@ -353,6 +365,7 @@ var procedures = (function() {
   procs["LOOK-FOR-FOOD"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       procedures["WIGGLE"]();
       let scentAhead = SelfManager.self().patchAhead(1).projectionBy(function() { return SelfManager.self().getPatchVariable("chemical"); });
       let scentRight = procedures["CHEMICAL-SCENT"](45);
@@ -379,6 +392,7 @@ var procedures = (function() {
   procs["UPHILL-CHEMICAL"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       procedures["WIGGLE"]();
       let scentAhead = SelfManager.self().patchAhead(1).projectionBy(function() { return SelfManager.self().getPatchVariable("nest-scent"); });
       let scentRight = procedures["GET-NEST-SCENT"](45);
@@ -405,6 +419,7 @@ var procedures = (function() {
   procs["UPHILL-NEST-SCENT"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().right((Prims.random(40) - Prims.random(40)));
       if (!SelfManager.self().canMove(1)) {
         SelfManager.self().right(180);
@@ -423,11 +438,12 @@ var procedures = (function() {
   procs["WIGGLE"] = temp;
   temp = (function(angle) {
     try {
+      var reporterContext = true;
       let p = SelfManager.self().patchRightAndAhead(angle, 1);
       if (!Prims.equality(p, Nobody)) {
-        throw new Exception.ReportInterrupt(p.projectionBy(function() { return SelfManager.self().getPatchVariable("nest-scent"); }));
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return p.projectionBy(function() { return SelfManager.self().getPatchVariable("nest-scent"); }) }
       }
-      throw new Exception.ReportInterrupt(0);
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return 0 }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -443,11 +459,12 @@ var procedures = (function() {
   procs["GET-NEST-SCENT"] = temp;
   temp = (function(angle) {
     try {
+      var reporterContext = true;
       let p = SelfManager.self().patchRightAndAhead(angle, 1);
       if (!Prims.equality(p, Nobody)) {
-        throw new Exception.ReportInterrupt(p.projectionBy(function() { return SelfManager.self().getPatchVariable("chemical"); }));
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return p.projectionBy(function() { return SelfManager.self().getPatchVariable("chemical"); }) }
       }
-      throw new Exception.ReportInterrupt(0);
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return 0 }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -463,6 +480,7 @@ var procedures = (function() {
   procs["CHEMICAL-SCENT"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (!world.observer.getGlobal("plot?")) {
         throw new Exception.StopInterrupt;
       }

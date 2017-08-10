@@ -64,6 +64,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("PAGES").getSpecialName(), "circle")
       if (Prims.equality(world.observer.getGlobal("network-choice"), "Example 1")) {
@@ -111,6 +112,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.createTurtles(11, "PAGES");
       world.turtleManager.getTurtleOfBreed("PAGES", 0).ask(function() {
         SelfManager.self().setVariable("color", 105);
@@ -151,6 +153,7 @@ var procedures = (function() {
   procs["CREATE-NETWORK-EXAMPLE-1"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.createTurtles(8, "PAGES");
       world.turtleManager.getTurtleOfBreed("PAGES", 0).ask(function() { SelfManager.self().die(); }, true);
       world.turtleManager.getTurtleOfBreed("PAGES", 1).ask(function() {
@@ -188,6 +191,7 @@ var procedures = (function() {
   procs["CREATE-NETWORK-EXAMPLE-2"] = temp;
   temp = (function(n, k) {
     try {
+      var reporterContext = false;
       world.turtleManager.createTurtles(n, "PAGES").ask(function() { SelfManager.self().setVariable("color", 95); }, true);
       procedures["LINK-PREFERENTIALLY"](world.turtleManager.turtlesOfBreed("PAGES"),k);
     } catch (e) {
@@ -204,10 +208,11 @@ var procedures = (function() {
   procs["CREATE-NETWORK-PREFERENTIAL"] = temp;
   temp = (function(nodeset, k) {
     try {
+      var reporterContext = false;
       let nodeList = ListPrims.sort(nodeset);
       let neighborChoiceList = ListPrims.sublist(nodeList, 0, k);
       ListPrims.item(k, nodeList).ask(function() {
-        Tasks.forEach(Tasks.commandTask(function(neighbor) {
+        var _foreach_2544_2551 = Tasks.forEach(Tasks.commandTask(function(neighbor) {
           if (arguments.length < 1) {
             throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
           }
@@ -217,15 +222,10 @@ var procedures = (function() {
           else {
             LinkPrims.createLinkFrom(neighbor, "LINKS").ask(function() {}, false);
           }
-        }, "[ neighbor -> ifelse random 2 = 0 [ create-link-to neighbor ] [ create-link-from neighbor ] ]"), neighborChoiceList);
-        neighborChoiceList = ListPrims.sentence(Tasks.nValues(k, Tasks.reporterTask(function() {
-          if (arguments.length < 0) {
-            throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
-          }
-          return SelfManager.self();
-        }, "[ self ]")), neighborChoiceList);
+        }, "[ neighbor -> ifelse random 2 = 0 [ create-link-to neighbor ] [ create-link-from neighbor ] ]"), neighborChoiceList); if(reporterContext && _foreach_2544_2551 !== undefined) { return _foreach_2544_2551; }
+        neighborChoiceList = ListPrims.sentence(Tasks.nValues(k, Tasks.reporterTask(function() { return SelfManager.self(); }, "[ self ]")), neighborChoiceList);
       }, true);
-      Tasks.forEach(Tasks.commandTask(function(node) {
+      var _foreach_2894_2901 = Tasks.forEach(Tasks.commandTask(function(node) {
         if (arguments.length < 1) {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
         }
@@ -242,14 +242,9 @@ var procedures = (function() {
               LinkPrims.createLinkFrom(neighbor, "LINKS").ask(function() {}, false);
             }
           }
-          neighborChoiceList = ListPrims.sentence(Tasks.nValues(k, Tasks.reporterTask(function() {
-            if (arguments.length < 0) {
-              throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
-            }
-            return SelfManager.self();
-          }, "[ self ]")), neighborChoiceList);
+          neighborChoiceList = ListPrims.sentence(Tasks.nValues(k, Tasks.reporterTask(function() { return SelfManager.self(); }, "[ self ]")), neighborChoiceList);
         }, true);
-      }, "[ node -> ask node [ let neighbor-choice-list repeat k [ let one-of temp-neighbor-list set temp-neighbor-list remove neighbor temp-neighbor-list set neighbor-choice-list fput neighbor neighbor-choice-list ifelse random 2 = 0 [ create-link-to neighbor ] [ create-link-from neighbor ] ] set neighbor-choice-list sentence n-values k [ self ] neighbor-choice-list ] ]"), ListPrims.sublist(nodeList, (k + 1), ListPrims.length(nodeList)));
+      }, "[ node -> ask node [ let neighbor-choice-list repeat k [ let one-of temp-neighbor-list set temp-neighbor-list remove neighbor temp-neighbor-list set neighbor-choice-list fput neighbor neighbor-choice-list ifelse random 2 = 0 [ create-link-to neighbor ] [ create-link-from neighbor ] ] set neighbor-choice-list sentence n-values k [ self ] neighbor-choice-list ] ]"), ListPrims.sublist(nodeList, (k + 1), ListPrims.length(nodeList))); if(reporterContext && _foreach_2894_2901 !== undefined) { return _foreach_2894_2901; }
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         throw new Error("REPORT can only be used inside TO-REPORT.");
@@ -264,6 +259,7 @@ var procedures = (function() {
   procs["LINK-PREFERENTIALLY"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       LayoutManager.layoutSpring(world.turtleManager.turtlesOfBreed("PAGES"), world.links(), 0.2, Prims.div(20, NLMath.sqrt(world.turtleManager.turtlesOfBreed("PAGES").size())), 0.5);
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -279,6 +275,7 @@ var procedures = (function() {
   procs["DO-LAYOUT"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(world.observer.getGlobal("calculation-method"), "diffusion")) {
         if (!world.turtleManager.turtlesOfBreed("SURFERS").isEmpty()) {
           world.turtleManager.turtlesOfBreed("SURFERS").ask(function() { SelfManager.self().die(); }, true);
@@ -374,6 +371,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().face(SelfManager.self().getVariable("current-page"));
       SelfManager.self().moveTo(SelfManager.self().getVariable("current-page"));
     } catch (e) {
@@ -390,6 +388,7 @@ var procedures = (function() {
   procs["MOVE-SURFER"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("total-rank", ListPrims.sum(world.turtleManager.turtlesOfBreed("PAGES").projectionBy(function() { return SelfManager.self().getVariable("rank"); })));
       world.observer.setGlobal("max-rank", ListPrims.max(world.turtleManager.turtlesOfBreed("PAGES").projectionBy(function() { return SelfManager.self().getVariable("rank"); })));
     } catch (e) {
@@ -406,6 +405,7 @@ var procedures = (function() {
   procs["UPDATE-GLOBALS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setVariable("size", (0.2 + (4 * NLMath.sqrt(Prims.div(SelfManager.self().getVariable("rank"), world.observer.getGlobal("total-rank"))))));
       if (world.observer.getGlobal("show-page-ranks?")) {
         SelfManager.self().setVariable("label", (Dump('') + Dump(NLMath.precision(SelfManager.self().getVariable("rank"), 3)) + Dump("     ")));

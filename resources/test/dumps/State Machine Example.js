@@ -64,6 +64,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "bug")
       world.patches().ask(function() {
@@ -74,12 +75,7 @@ var procedures = (function() {
       world.turtleManager.createTurtles(world.observer.getGlobal("number"), "").ask(function() {
         SelfManager.self().setVariable("color", 9.9);
         SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
-        SelfManager.self().setVariable("next-task", Tasks.commandTask(function() {
-          if (arguments.length < 0) {
-            throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
-          }
-          procedures["SEARCH-FOR-CHIP"]();
-        }, "[ -> search-for-chip ]"));
+        SelfManager.self().setVariable("next-task", Tasks.commandTask(function() { procedures["SEARCH-FOR-CHIP"](); }, "[ -> search-for-chip ]"));
         SelfManager.self().setVariable("size", 5);
       }, true);
       world.ticker.reset();
@@ -97,13 +93,15 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtles().ask(function() {
         try {
+          var reporterContext = false;
           if (Prims.gt(SelfManager.self().getVariable("steps"), 0)) {
             SelfManager.self().setVariable("steps", (SelfManager.self().getVariable("steps") - 1));
           }
           else {
-            Prims.run(SelfManager.self().getVariable("next-task"));
+            var _run_677_680 = Prims.run(SelfManager.self().getVariable("next-task")); if(reporterContext && _run_677_680 !== undefined) { return _run_677_680; }
             procedures["WIGGLE"]();
           }
           SelfManager.self()._optimalFdOne();
@@ -132,6 +130,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().right(Prims.random(50));
       SelfManager.self().right(-Prims.random(50));
     } catch (e) {
@@ -148,16 +147,12 @@ var procedures = (function() {
   procs["WIGGLE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 45)) {
         SelfManager.self().setPatchVariable("pcolor", 0);
         SelfManager.self().setVariable("color", 25);
         SelfManager.self().setVariable("steps", 20);
-        SelfManager.self().setVariable("next-task", Tasks.commandTask(function() {
-          if (arguments.length < 0) {
-            throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
-          }
-          procedures["FIND-NEW-PILE"]();
-        }, "[ -> find-new-pile ]"));
+        SelfManager.self().setVariable("next-task", Tasks.commandTask(function() { procedures["FIND-NEW-PILE"](); }, "[ -> find-new-pile ]"));
       }
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -173,13 +168,9 @@ var procedures = (function() {
   procs["SEARCH-FOR-CHIP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 45)) {
-        SelfManager.self().setVariable("next-task", Tasks.commandTask(function() {
-          if (arguments.length < 0) {
-            throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
-          }
-          procedures["PUT-DOWN-CHIP"]();
-        }, "[ -> put-down-chip ]"));
+        SelfManager.self().setVariable("next-task", Tasks.commandTask(function() { procedures["PUT-DOWN-CHIP"](); }, "[ -> put-down-chip ]"));
       }
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -195,16 +186,12 @@ var procedures = (function() {
   procs["FIND-NEW-PILE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 0)) {
         SelfManager.self().setPatchVariable("pcolor", 45);
         SelfManager.self().setVariable("color", 9.9);
         SelfManager.self().setVariable("steps", 20);
-        SelfManager.self().setVariable("next-task", Tasks.commandTask(function() {
-          if (arguments.length < 0) {
-            throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
-          }
-          procedures["GET-AWAY"]();
-        }, "[ -> get-away ]"));
+        SelfManager.self().setVariable("next-task", Tasks.commandTask(function() { procedures["GET-AWAY"](); }, "[ -> get-away ]"));
       }
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -220,13 +207,9 @@ var procedures = (function() {
   procs["PUT-DOWN-CHIP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 0)) {
-        SelfManager.self().setVariable("next-task", Tasks.commandTask(function() {
-          if (arguments.length < 0) {
-            throw new Error("anonymous procedure expected 0 inputs, but only got " + arguments.length);
-          }
-          procedures["SEARCH-FOR-CHIP"]();
-        }, "[ -> search-for-chip ]"));
+        SelfManager.self().setVariable("next-task", Tasks.commandTask(function() { procedures["SEARCH-FOR-CHIP"](); }, "[ -> search-for-chip ]"));
       }
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {

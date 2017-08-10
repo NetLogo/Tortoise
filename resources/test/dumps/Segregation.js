@@ -49,6 +49,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Percent Similar', 'percent')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.observer.getGlobal("percent-similar"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -72,6 +73,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Number-unhappy', 'default')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.turtles().agentFilter(function() { return !SelfManager.self().getVariable("happy?"); }).size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -110,6 +112,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.patches().ask(function() {
         if (Prims.lt(Prims.random(100), world.observer.getGlobal("density"))) {
@@ -133,6 +136,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (world.turtles().agentAll(function() { return SelfManager.self().getVariable("happy?"); })) {
         throw new Exception.StopInterrupt;
       }
@@ -154,6 +158,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtles().agentFilter(function() { return !SelfManager.self().getVariable("happy?"); }).ask(function() { procedures["FIND-NEW-SPOT"](); }, true);
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -169,6 +174,7 @@ var procedures = (function() {
   procs["MOVE-UNHAPPY-TURTLES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().right(Prims.randomFloat(360));
       SelfManager.self().fd(Prims.randomFloat(10));
       if (SelfPrims._optimalAnyOther(SelfManager.self().turtlesHere())) {
@@ -189,6 +195,7 @@ var procedures = (function() {
   procs["FIND-NEW-SPOT"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtles().ask(function() {
         SelfManager.self().setVariable("similar-nearby", Prims.turtlesOn(SelfManager.self().getNeighbors()).agentFilter(function() {
           return Prims.equality(SelfManager.self().getVariable("color"), SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("color"); }));
@@ -224,6 +231,7 @@ var procedures = (function() {
   procs["UPDATE-TURTLES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let similarNeighbors = ListPrims.sum(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("similar-nearby"); }));
       let totalNeighbors = ListPrims.sum(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("total-nearby"); }));
       world.observer.setGlobal("percent-similar", (Prims.div(similarNeighbors, totalNeighbors) * 100));

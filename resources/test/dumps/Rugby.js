@@ -64,6 +64,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       procedures["SETUP-FIELD"]();
       procedures["SETUP-BALLS"]();
@@ -90,6 +91,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.patches().ask(function() {
         if (!Prims.equality(SelfManager.self().getNeighbors().size(), 8)) {
           SelfManager.self().setPatchVariable("pcolor", 15);
@@ -119,6 +121,7 @@ var procedures = (function() {
   procs["SETUP-FIELD"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
       world.observer.getGlobal("try-line").ask(function() {
         SelfManager.self().sprout(1, "TURTLES").ask(function() {
@@ -142,6 +145,7 @@ var procedures = (function() {
   procs["SETUP-BALLS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       while (!world.turtles().isEmpty()) {
         world.turtles().ask(function() { procedures["MOVE"](); }, true);
         notImplemented('display', undefined)();
@@ -164,6 +168,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if ((Prims.gte(SelfManager.self().getPatchVariable("pxcor"), (world.topology.maxPxcor - 1)) || Prims.gte(SelfManager.self().getPatchVariable("pycor"), (world.topology.minPycor + 1)))) {
         procedures["CHECK-PATCH"](procedures["NEXT-PATCH"]());
         procedures["CHECK-PATCH"](SelfManager.self().patchAhead(1));
@@ -183,6 +188,7 @@ var procedures = (function() {
   procs["MOVE"] = temp;
   temp = (function(thePatch) {
     try {
+      var reporterContext = false;
       if (Prims.equality(thePatch.projectionBy(function() { return SelfManager.self().getPatchVariable("pcolor"); }), 15)) {
         SelfManager.self().die();
       }
@@ -204,19 +210,20 @@ var procedures = (function() {
   procs["CHECK-PATCH"] = temp;
   temp = (function() {
     try {
+      var reporterContext = true;
       if (Prims.lt(SelfManager.self().getVariable("heading"), SelfManager.self().towardsXY((SelfManager.self().getPatchVariable("pxcor") + 0.5), (SelfManager.self().getPatchVariable("pycor") + 0.5)))) {
-        throw new Exception.ReportInterrupt(SelfManager.self().patchAt(0, 1));
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return SelfManager.self().patchAt(0, 1) }
       }
       if (Prims.lt(SelfManager.self().getVariable("heading"), SelfManager.self().towardsXY((SelfManager.self().getPatchVariable("pxcor") + 0.5), (SelfManager.self().getPatchVariable("pycor") - 0.5)))) {
-        throw new Exception.ReportInterrupt(SelfManager.self().patchAt(1, 0));
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return SelfManager.self().patchAt(1, 0) }
       }
       if (Prims.lt(SelfManager.self().getVariable("heading"), SelfManager.self().towardsXY((SelfManager.self().getPatchVariable("pxcor") - 0.5), (SelfManager.self().getPatchVariable("pycor") - 0.5)))) {
-        throw new Exception.ReportInterrupt(SelfManager.self().patchAt(0, -1));
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return SelfManager.self().patchAt(0, -1) }
       }
       if (Prims.lt(SelfManager.self().getVariable("heading"), SelfManager.self().towardsXY((SelfManager.self().getPatchVariable("pxcor") - 0.5), (SelfManager.self().getPatchVariable("pycor") + 0.5)))) {
-        throw new Exception.ReportInterrupt(SelfManager.self().patchAt(-1, 0));
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return SelfManager.self().patchAt(-1, 0) }
       }
-      throw new Exception.ReportInterrupt(SelfManager.self().patchAt(0, 1));
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return SelfManager.self().patchAt(0, 1) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -232,6 +239,7 @@ var procedures = (function() {
   procs["NEXT-PATCH"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("current-max", ListPrims.max(world.observer.getGlobal("try-line").projectionBy(function() { return SelfManager.self().getPatchVariable("score"); })));
       if (Prims.equality(world.observer.getGlobal("current-max"), 0)) {
         world.observer.getGlobal("histogram-area").ask(function() { SelfManager.self().setPatchVariable("pcolor", 0); }, true);
@@ -275,6 +283,7 @@ var procedures = (function() {
   procs["PLOT-SCORES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.patches().agentFilter(function() { return Prims.gt(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor); }).ask(function() { procedures["CALC-GOAL-ANGLE"](); }, true);
       let winningPatch = world.observer.getGlobal("try-line").minOneOf(function() { return SelfManager.self().getPatchVariable("goal-angle"); });
       winningPatch.ask(function() {
@@ -296,6 +305,7 @@ var procedures = (function() {
   procs["FIND-ANALYTIC-SOLUTION"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.patches().agentFilter(function() {
         return (Prims.gt(SelfManager.self().getPatchVariable("pxcor"), world.observer.getGlobal("kick-line")) && Prims.lt(SelfManager.self().getPatchVariable("pcolor"), 10));
       }).ask(function() {
@@ -317,6 +327,7 @@ var procedures = (function() {
   procs["DRAW-LEVEL-CURVES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setPatchVariable("left-angle", SelfManager.self().towardsXY((world.observer.getGlobal("goal-pos") - 0.5), (world.topology.minPycor + 0.5)));
       SelfManager.self().setPatchVariable("right-angle", SelfManager.self().towardsXY(((world.observer.getGlobal("goal-pos") + world.observer.getGlobal("goal-size")) - 0.5), (world.topology.minPycor + 0.5)));
       SelfManager.self().setPatchVariable("goal-angle", NLMath.mod((SelfManager.self().getPatchVariable("right-angle") - SelfManager.self().getPatchVariable("left-angle")), 360));

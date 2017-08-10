@@ -64,6 +64,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.turtleManager.createTurtles((world.observer.getGlobal("rows") * world.observer.getGlobal("columns")), "SPAWNERS").ask(function() {
         SelfManager.self().setVariable("num-colors", (Prims.random(14) + 1));
@@ -89,6 +90,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let i = 0;
       while (Prims.lt(i, (world.observer.getGlobal("rows") * world.observer.getGlobal("columns")))) {
         world.turtleManager.getTurtle(i).ask(function() {
@@ -112,6 +114,7 @@ var procedures = (function() {
   procs["ARRANGE-SPAWNERS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.turtlesOfBreed("SPAWNERS").ask(function() {
         SelfManager.self().hatch(1, "PETALS").ask(function() {
           SelfManager.self().setVariable("parent", SelfManager.myself());
@@ -149,6 +152,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function(parent1, parent2) {
     try {
+      var reporterContext = false;
       world.turtleManager.turtlesOfBreed("PETALS").ask(function() { SelfManager.self().die(); }, true);
       world.turtleManager.turtlesOfBreed("SPAWNERS").ask(function() {
         if (world.observer.getGlobal("controlled-mutation?")) {
@@ -176,6 +180,7 @@ var procedures = (function() {
   procs["REPOPULATE-FROM-TWO"] = temp;
   temp = (function(parent1) {
     try {
+      var reporterContext = false;
       world.turtleManager.turtlesOfBreed("PETALS").ask(function() { SelfManager.self().die(); }, true);
       world.turtleManager.turtlesOfBreed("SPAWNERS").ask(function() {
         if (world.observer.getGlobal("controlled-mutation?")) {
@@ -203,6 +208,7 @@ var procedures = (function() {
   procs["REPOPULATE-FROM-ONE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let newParent = world.turtleManager.turtlesOfBreed("SPAWNERS").minOneOf(function() { return SelfManager.self().distanceXY(MousePrims.getX(), MousePrims.getY()); });
       if (world.observer.getGlobal("asexual?")) {
         procedures["REPOPULATE-FROM-ONE"](newParent);

@@ -64,6 +64,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.turtleManager.createTurtles(1, "").ask(function() {
         SelfManager.self().setVariable("shape", "line");
@@ -87,6 +88,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtles().ask(function() {
         SelfManager.self().setVariable("new?", false);
         SelfManager.self().penManager.lowerPen();

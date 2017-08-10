@@ -64,6 +64,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", 5); }, true);
       world.getPatchAt(world.observer.getGlobal("start-x"), world.observer.getGlobal("start-y")).ask(function() { SelfManager.self().setPatchVariable("pcolor", 55); }, true);
@@ -95,6 +96,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", 5); }, true);
       world.turtleManager.turtlesOfBreed("CENTERS").ask(function() { SelfManager.self().setXY(world.observer.getGlobal("start-x"), world.observer.getGlobal("start-y")); }, true);
       world.turtleManager.turtlesOfBreed("SEARCHERS").ask(function() {

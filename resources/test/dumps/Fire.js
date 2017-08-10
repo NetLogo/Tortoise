@@ -64,6 +64,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "square")
       world.patches().agentFilter(function() { return Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("density")); }).ask(function() { SelfManager.self().setPatchVariable("pcolor", 55); }, true);
@@ -85,6 +86,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (!!world.turtles().isEmpty()) {
         throw new Exception.StopInterrupt;
       }
@@ -108,6 +110,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().sprout(1, "FIRES").ask(function() { SelfManager.self().setVariable("color", 15); }, true);
       SelfManager.self().setPatchVariable("pcolor", 0);
       world.observer.setGlobal("burned-trees", (world.observer.getGlobal("burned-trees") + 1));
@@ -125,6 +128,7 @@ var procedures = (function() {
   procs["IGNITE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.turtlesOfBreed("EMBERS").ask(function() {
         SelfManager.self().setVariable("color", (SelfManager.self().getVariable("color") - 0.3));
         if (Prims.lt(SelfManager.self().getVariable("color"), (15 - 3.5))) {

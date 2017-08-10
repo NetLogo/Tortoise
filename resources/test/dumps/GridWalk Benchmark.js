@@ -64,6 +64,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       workspace.rng.setSeed(362);
       procedures["SETUP"]();
       workspace.timer.reset();
@@ -85,6 +86,7 @@ var procedures = (function() {
   procs["BENCHMARK"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.ticker.reset();
       world.turtleManager.createOrderedTurtles(1000, "").ask(function() {
@@ -105,6 +107,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtles().ask(function() {
         SelfManager.self().face(ListPrims.oneOf(SelfManager.self().getNeighbors4()));
         SelfManager.self()._optimalFdOne();

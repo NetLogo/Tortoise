@@ -64,6 +64,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       ListPrims.nOf(100, world.patches()).ask(function() { SelfManager.self().setPatchVariable("pcolor", 120); }, true);
       for (let _index_296_302 = 0, _repeatcount_296_302 = StrictMath.floor(20); _index_296_302 < _repeatcount_296_302; _index_296_302++){
@@ -91,6 +92,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (world.turtles().agentAll(function() { return SelfManager.self().getVariable("peak?"); })) {
         throw new Exception.StopInterrupt;
       }

@@ -49,6 +49,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Number of Molecules', 'Oxygen')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("number-oxygen-molecules"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -66,6 +67,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Number of Molecules', 'Hydrogen')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("number-hydrogen-molecules"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -83,6 +85,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Number of Molecules', 'Water')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("number-water-molecules"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -106,6 +109,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Gas Temp. vs. time', 'gas temp.')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("temperature"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -129,6 +133,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Pressure vs. time', 'pressure')(function() {
         try {
+          var reporterContext = false;
           if (world.observer.getGlobal("box-intact?")) {
             plotManager.plotPoint(world.ticker.tickCount(), ListPrims.mean(world.observer.getGlobal("pressure-history")));
           }
@@ -169,6 +174,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.observer.setGlobal("max-tick-advance-amount", 0.01);
       world.observer.setGlobal("margin-outside-box", 4);
@@ -197,6 +203,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.patches().agentFilter(function() {
         return ((Prims.equality(NLMath.abs(SelfManager.self().getPatchVariable("pxcor")), (world.topology.maxPxcor - world.observer.getGlobal("margin-outside-box"))) && Prims.lte(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), (world.topology.maxPycor - world.observer.getGlobal("margin-outside-box")))) || (Prims.equality(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), (world.topology.maxPxcor - world.observer.getGlobal("margin-outside-box"))) && Prims.lte(NLMath.abs(SelfManager.self().getPatchVariable("pxcor")), (world.topology.maxPycor - world.observer.getGlobal("margin-outside-box")))));
       }).ask(function() { SelfManager.self().setPatchVariable("pcolor", 5); }, true);
@@ -214,6 +221,7 @@ var procedures = (function() {
   procs["MAKE-BOX"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.createTurtles(world.observer.getGlobal("initial-oxygen-molecules"), "GAS-MOLECULES").ask(function() {
         procedures["SETUP-INITIAL-OXYGEN-MOLECULES"]();
         procedures["RANDOM-POSITION"]();
@@ -236,6 +244,7 @@ var procedures = (function() {
   procs["MAKE-GAS-MOLECULES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setVariable("size", world.observer.getGlobal("molecule-size"));
       SelfManager.self().setVariable("last-collision", Nobody);
       SelfManager.self().setVariable("shape", "hydrogen");
@@ -257,6 +266,7 @@ var procedures = (function() {
   procs["SETUP-INITIAL-HYDROGEN-MOLECULES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setVariable("size", world.observer.getGlobal("molecule-size"));
       SelfManager.self().setVariable("last-collision", Nobody);
       SelfManager.self().setVariable("shape", "oxygen");
@@ -278,6 +288,7 @@ var procedures = (function() {
   procs["SETUP-INITIAL-OXYGEN-MOLECULES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let openPatches = Nobody;
       let openPatch = Nobody;
       openPatches = world.patches().agentFilter(function() {
@@ -302,6 +313,7 @@ var procedures = (function() {
   procs["RANDOM-POSITION"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(world.turtleManager.turtlesOfBreed("GAS-MOLECULES").size(), 0)) {
         throw new Exception.StopInterrupt;
       }
@@ -340,6 +352,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (!world.turtleManager.turtlesOfBreed("GAS-MOLECULES").isEmpty()) {
         world.observer.setGlobal("avg-speed", ListPrims.mean(world.turtleManager.turtlesOfBreed("GAS-MOLECULES").projectionBy(function() { return SelfManager.self().getVariable("speed"); })));
         world.observer.setGlobal("avg-energy", ListPrims.mean(world.turtleManager.turtlesOfBreed("GAS-MOLECULES").projectionBy(function() { return SelfManager.self().getVariable("energy"); })));
@@ -367,6 +380,7 @@ var procedures = (function() {
   procs["UPDATE-VARIABLES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.turtlesOfBreed("FLASHES").ask(function() {
         if (Prims.gt((world.ticker.tickCount() - SelfManager.self().getVariable("birthday")), 0.4)) {
           SelfManager.self().die();
@@ -387,6 +401,7 @@ var procedures = (function() {
   procs["UPDATE-FLASH-VISUALIZATION"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let newPatch = SelfManager.self().patchAhead(1);
       let newPx = newPatch.projectionBy(function() { return SelfManager.self().getPatchVariable("pxcor"); });
       let newPy = newPatch.projectionBy(function() { return SelfManager.self().getPatchVariable("pycor"); });
@@ -420,6 +435,7 @@ var procedures = (function() {
   procs["BOUNCE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().sprout(1, "TURTLES").ask(function() {
         SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("FLASHES"));
         SelfManager.self().setVariable("color", [20, 20, 20, 255]);
@@ -439,6 +455,7 @@ var procedures = (function() {
   procs["MAKE-A-FLASH"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let centerPatch = world.patches()._optimalOneOfWith(function() {
         return (Prims.equality(SelfManager.self().getPatchVariable("pxcor"), 0) && Prims.equality(SelfManager.self().getPatchVariable("pycor"), 0));
       });
@@ -473,6 +490,7 @@ var procedures = (function() {
   procs["SHATTER-BOX"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (!Prims.equality(SelfManager.self().patchAhead((SelfManager.self().getVariable("speed") * world.observer.getGlobal("tick-advance-amount"))), SelfManager.self().getPatchHere())) {
         SelfManager.self().setVariable("last-collision", Nobody);
       }
@@ -494,6 +512,7 @@ var procedures = (function() {
   procs["MOVE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("pressure", (100 * ListPrims.sum(world.turtleManager.turtlesOfBreed("GAS-MOLECULES").projectionBy(function() { return SelfManager.self().getVariable("momentum-difference"); }))));
       world.observer.setGlobal("pressure-history", ListPrims.lput(world.observer.getGlobal("pressure"), ListPrims.butFirst(world.observer.getGlobal("pressure-history"))));
       world.turtleManager.turtlesOfBreed("GAS-MOLECULES").ask(function() { SelfManager.self().setVariable("momentum-difference", 0); }, true);
@@ -511,6 +530,7 @@ var procedures = (function() {
   procs["CALCULATE-PRESSURE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (!world.turtleManager.turtlesOfBreed("GAS-MOLECULES").agentFilter(function() { return Prims.gt(SelfManager.self().getVariable("speed"), 0); }).isEmpty()) {
         world.observer.setGlobal("tick-advance-amount", ListPrims.min(ListPrims.list(Prims.div(1, NLMath.ceil(ListPrims.max(world.turtleManager.turtlesOfBreed("GAS-MOLECULES").projectionBy(function() { return SelfManager.self().getVariable("speed"); })))), world.observer.getGlobal("max-tick-advance-amount"))));
       }
@@ -531,6 +551,7 @@ var procedures = (function() {
   procs["CALCULATE-TICK-ADVANCE-AMOUNT"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearDrawing();
       world.turtleManager.turtlesOfBreed("GAS-MOLECULES").ask(function() { SelfManager.self().penManager.raisePen(); }, true);
       ListPrims.oneOf(world.turtleManager.turtlesOfBreed("GAS-MOLECULES")).ask(function() {
@@ -553,6 +574,7 @@ var procedures = (function() {
   procs["SPEED-UP-ONE-MOLECULE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let hitHydrogen = SelfManager.self().breedHere("GAS-MOLECULES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("molecule-type"), "hydrogen"); });
       let thisInitialOxygenMoleculesEnergy = SelfManager.self().getVariable("energy");
       let totalEnergy = 0;
@@ -593,6 +615,7 @@ var procedures = (function() {
   procs["CHECK-FOR-REACTION"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(SelfPrims._optimalCountOther(SelfManager.self().inRadius(SelfManager.self().breedHere("GAS-MOLECULES"), 1)), 1)) {
         let candidate = ListPrims.oneOf(SelfManager.self().breedHere("GAS-MOLECULES")._optimalOtherWith(function() {
           return (Prims.lt(SelfManager.self(), SelfManager.myself()) && !Prims.equality(SelfManager.myself(), SelfManager.self().getVariable("last-collision")));
@@ -619,6 +642,7 @@ var procedures = (function() {
   procs["CHECK-FOR-COLLISION"] = temp;
   temp = (function(otherGasMolecules) {
     try {
+      var reporterContext = false;
       let mass2 = otherGasMolecules.projectionBy(function() { return SelfManager.self().getVariable("mass"); });
       let speed2 = otherGasMolecules.projectionBy(function() { return SelfManager.self().getVariable("speed"); });
       let heading2 = otherGasMolecules.projectionBy(function() { return SelfManager.self().getVariable("heading"); });
@@ -656,7 +680,8 @@ var procedures = (function() {
   procs["COLLIDE-WITH"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(NLMath.sqrt(Prims.div((2 * SelfManager.self().getVariable("energy")), SelfManager.self().getVariable("mass"))));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return NLMath.sqrt(Prims.div((2 * SelfManager.self().getVariable("energy")), SelfManager.self().getVariable("mass"))) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -672,7 +697,8 @@ var procedures = (function() {
   procs["SPEED-FROM-ENERGY"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt((((0.5 * SelfManager.self().getVariable("mass")) * SelfManager.self().getVariable("speed")) * SelfManager.self().getVariable("speed")));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return (((0.5 * SelfManager.self().getVariable("mass")) * SelfManager.self().getVariable("speed")) * SelfManager.self().getVariable("speed")) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {

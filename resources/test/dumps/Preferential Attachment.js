@@ -49,6 +49,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Degree Distribution (log-log)', 'default')(function() {
         try {
+          var reporterContext = false;
           if (!world.observer.getGlobal("plot?")) {
             throw new Exception.StopInterrupt;
           }
@@ -84,6 +85,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Degree Distribution', 'default')(function() {
         try {
+          var reporterContext = false;
           if (!world.observer.getGlobal("plot?")) {
             throw new Exception.StopInterrupt;
           }
@@ -128,6 +130,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
       procedures["MAKE-NODE"](Nobody);
@@ -147,6 +150,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.links().ask(function() { SelfManager.self().setVariable("color", 5); }, true);
       procedures["MAKE-NODE"](procedures["FIND-PARTNER"]());
       world.ticker.tick();
@@ -167,6 +171,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function(oldNode) {
     try {
+      var reporterContext = false;
       world.turtleManager.createTurtles(1, "").ask(function() {
         SelfManager.self().setVariable("color", 15);
         if (!Prims.equality(oldNode, Nobody)) {
@@ -189,7 +194,8 @@ var procedures = (function() {
   procs["MAKE-NODE"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(ListPrims.oneOf(world.links()).projectionBy(function() { return ListPrims.oneOf(SelfManager.self().bothEnds()); }));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return ListPrims.oneOf(world.links()).projectionBy(function() { return ListPrims.oneOf(SelfManager.self().bothEnds()); }) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -205,6 +211,7 @@ var procedures = (function() {
   procs["FIND-PARTNER"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (world.turtles().agentAll(function() { return Prims.lte(SelfManager.self().getVariable("size"), 1); })) {
         world.turtles().ask(function() { SelfManager.self().setVariable("size", NLMath.sqrt(LinkPrims.linkNeighbors("LINKS").size())); }, true);
       }
@@ -225,6 +232,7 @@ var procedures = (function() {
   procs["RESIZE-NODES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       for (let _index_2025_2031 = 0, _repeatcount_2025_2031 = StrictMath.floor(3); _index_2025_2031 < _repeatcount_2025_2031; _index_2025_2031++){
         let factor = NLMath.sqrt(world.turtles().size());
         LayoutManager.layoutSpring(world.turtles(), world.links(), Prims.div(1, factor), Prims.div(7, factor), Prims.div(1, factor));
@@ -251,13 +259,14 @@ var procedures = (function() {
   procs["LAYOUT"] = temp;
   temp = (function(number, limit) {
     try {
+      var reporterContext = true;
       if (Prims.gt(number, limit)) {
-        throw new Exception.ReportInterrupt(limit);
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return limit }
       }
       if (Prims.lt(number,  -limit)) {
-        throw new Exception.ReportInterrupt( -limit);
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return  -limit }
       }
-      throw new Exception.ReportInterrupt(number);
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return number }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {

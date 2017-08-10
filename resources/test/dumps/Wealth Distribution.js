@@ -49,6 +49,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Class Plot', 'low')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); }).size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -66,6 +67,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Class Plot', 'mid')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); }).size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -83,6 +85,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Class Plot', 'up')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 105); }).size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -100,6 +103,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Class Plot', undefined)(function() {
         try {
+          var reporterContext = false;
           plotManager.setYRange(0, world.observer.getGlobal("num-people"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -122,6 +126,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Class Histogram', 'default')(function() {
         try {
+          var reporterContext = false;
           plotManager.resetPen();
           plotManager.setPenColor(15);
           plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); }).size());
@@ -145,6 +150,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Class Histogram', undefined)(function() {
         try {
+          var reporterContext = false;
           plotManager.setYRange(0, world.observer.getGlobal("num-people"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -167,15 +173,16 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Lorenz Curve', 'lorenz')(function() {
         try {
+          var reporterContext = false;
           plotManager.resetPen();
           plotManager.setPenInterval(Prims.div(100, world.observer.getGlobal("num-people")));
           plotManager.plotValue(0);
-          Tasks.forEach(Tasks.commandTask(function(_0) {
+          var _foreach_94_101 = Tasks.forEach(Tasks.commandTask(function(_0) {
             if (arguments.length < 1) {
               throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
             }
             plotManager.plotValue(_0);
-          }, "plot"), world.observer.getGlobal("lorenz-points"));
+          }, "plot"), world.observer.getGlobal("lorenz-points")); if(reporterContext && _foreach_94_101 !== undefined) { return _foreach_94_101; }
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
             throw new Error("REPORT can only be used inside TO-REPORT.");
@@ -192,6 +199,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Lorenz Curve', 'equal')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(0);
           plotManager.plotValue(100);
         } catch (e) {
@@ -216,6 +224,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Gini-Index v. Time', 'default')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(Prims.div(Prims.div(world.observer.getGlobal("gini-index-reserve"), world.observer.getGlobal("num-people")), 0.5));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -254,6 +263,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.observer.setGlobal("max-grain", 50);
       procedures["SETUP-PATCHES"]();
@@ -274,6 +284,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.patches().ask(function() {
         SelfManager.self().setPatchVariable("max-grain-here", 0);
         if (Prims.lte(Prims.randomFloat(100), world.observer.getGlobal("percent-best-land"))) {
@@ -309,6 +320,7 @@ var procedures = (function() {
   procs["SETUP-PATCHES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(45, SelfManager.self().getPatchVariable("grain-here"), 0, world.observer.getGlobal("max-grain")));
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -324,6 +336,7 @@ var procedures = (function() {
   procs["RECOLOR-PATCH"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "person")
       world.turtleManager.createTurtles(world.observer.getGlobal("num-people"), "").ask(function() {
         SelfManager.self().moveTo(ListPrims.oneOf(world.patches()));
@@ -346,6 +359,7 @@ var procedures = (function() {
   procs["SETUP-TURTLES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setVariable("age", 0);
       SelfManager.self().face(ListPrims.oneOf(SelfManager.self().getNeighbors4()));
       SelfManager.self().setVariable("life-expectancy", (world.observer.getGlobal("life-expectancy-min") + Prims.random(((world.observer.getGlobal("life-expectancy-max") - world.observer.getGlobal("life-expectancy-min")) + 1))));
@@ -366,6 +380,7 @@ var procedures = (function() {
   procs["SET-INITIAL-TURTLE-VARS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let maxWealth = ListPrims.max(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("wealth"); }));
       world.turtles().ask(function() {
         if (Prims.lte(SelfManager.self().getVariable("wealth"), Prims.div(maxWealth, 3))) {
@@ -394,6 +409,7 @@ var procedures = (function() {
   procs["RECOLOR-TURTLES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtles().ask(function() { procedures["TURN-TOWARDS-GRAIN"](); }, true);
       procedures["HARVEST"]();
       world.turtles().ask(function() { procedures["MOVE-EAT-AGE-DIE"](); }, true);
@@ -417,6 +433,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setVariable("heading", 0);
       let bestDirection = 0;
       let bestAmount = procedures["GRAIN-AHEAD"]();
@@ -450,13 +467,14 @@ var procedures = (function() {
   procs["TURN-TOWARDS-GRAIN"] = temp;
   temp = (function() {
     try {
+      var reporterContext = true;
       let total = 0;
       let howFar = 1;
       for (let _index_4005_4011 = 0, _repeatcount_4005_4011 = StrictMath.floor(SelfManager.self().getVariable("vision")); _index_4005_4011 < _repeatcount_4005_4011; _index_4005_4011++){
         total = (total + SelfManager.self().patchAhead(howFar).projectionBy(function() { return SelfManager.self().getPatchVariable("grain-here"); }));
         howFar = (howFar + 1);
       }
-      throw new Exception.ReportInterrupt(total);
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return total }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -472,6 +490,7 @@ var procedures = (function() {
   procs["GRAIN-AHEAD"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.lt(SelfManager.self().getPatchVariable("grain-here"), SelfManager.self().getPatchVariable("max-grain-here"))) {
         SelfManager.self().setPatchVariable("grain-here", (SelfManager.self().getPatchVariable("grain-here") + world.observer.getGlobal("num-grain-grown")));
         if (Prims.gt(SelfManager.self().getPatchVariable("grain-here"), SelfManager.self().getPatchVariable("max-grain-here"))) {
@@ -493,6 +512,7 @@ var procedures = (function() {
   procs["GROW-GRAIN"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtles().ask(function() {
         SelfManager.self().setVariable("wealth", NLMath.floor((SelfManager.self().getVariable("wealth") + Prims.div(SelfManager.self().getPatchVariable("grain-here"), SelfManager.self().turtlesHere().size()))));
       }, true);
@@ -514,6 +534,7 @@ var procedures = (function() {
   procs["HARVEST"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self()._optimalFdOne();
       SelfManager.self().setVariable("wealth", (SelfManager.self().getVariable("wealth") - SelfManager.self().getVariable("metabolism")));
       SelfManager.self().setVariable("age", (SelfManager.self().getVariable("age") + 1));
@@ -534,6 +555,7 @@ var procedures = (function() {
   procs["MOVE-EAT-AGE-DIE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let sortedWealths = ListPrims.sort(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("wealth"); }));
       let totalWealth = ListPrims.sum(sortedWealths);
       let wealthSumSoFar = 0;

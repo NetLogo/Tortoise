@@ -64,6 +64,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.patches().ask(function() {
         SelfManager.self().setPatchVariable("inner-neighbors", procedures["ELLIPSE-IN"](world.observer.getGlobal("inner-radius-x"),world.observer.getGlobal("inner-radius-y")));
@@ -91,6 +92,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.patches().ask(function() {
         if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("initial-density"))) {
           SelfManager.self().setPatchVariable("pcolor", 9.9);
@@ -114,6 +116,7 @@ var procedures = (function() {
   procs["RESTART"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.patches().ask(function() { procedures["PICK-NEW-COLOR"](); }, true);
       world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", SelfManager.self().getPatchVariable("new-color")); }, true);
       world.ticker.tick();
@@ -131,6 +134,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let activator = SelfManager.self().getPatchVariable("inner-neighbors").agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 9.9); }).size();
       let inhibitor = SelfManager.self().getPatchVariable("outer-neighbors").agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 9.9); }).size();
       let difference = (activator - (world.observer.getGlobal("ratio") * inhibitor));
@@ -156,9 +160,10 @@ var procedures = (function() {
   procs["PICK-NEW-COLOR"] = temp;
   temp = (function(xRadius, yRadius) {
     try {
-      throw new Exception.ReportInterrupt(SelfManager.self().inRadius(world.patches(), ListPrims.max(ListPrims.list(xRadius, yRadius))).agentFilter(function() {
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return SelfManager.self().inRadius(world.patches(), ListPrims.max(ListPrims.list(xRadius, yRadius))).agentFilter(function() {
         return Prims.gte(1, (Prims.div(NLMath.pow(procedures["XDISTANCE"](SelfManager.myself()), 2), NLMath.pow(xRadius, 2)) + Prims.div(NLMath.pow(procedures["YDISTANCE"](SelfManager.myself()), 2), NLMath.pow(yRadius, 2))));
-      }));
+      }) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -174,9 +179,10 @@ var procedures = (function() {
   procs["ELLIPSE-IN"] = temp;
   temp = (function(outxRadius, outyRadius, inxRadius, inyRadius) {
     try {
-      throw new Exception.ReportInterrupt(SelfManager.self().inRadius(world.patches(), ListPrims.max(ListPrims.list(outxRadius, outyRadius))).agentFilter(function() {
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return SelfManager.self().inRadius(world.patches(), ListPrims.max(ListPrims.list(outxRadius, outyRadius))).agentFilter(function() {
         return (Prims.gte(1, (Prims.div(NLMath.pow(procedures["XDISTANCE"](SelfManager.myself()), 2), NLMath.pow(outxRadius, 2)) + Prims.div(NLMath.pow(procedures["YDISTANCE"](SelfManager.myself()), 2), NLMath.pow(outyRadius, 2)))) && Prims.lt(1, (Prims.div(NLMath.pow(procedures["XDISTANCE"](SelfManager.myself()), 2), NLMath.pow(inxRadius, 2)) + Prims.div(NLMath.pow(procedures["YDISTANCE"](SelfManager.myself()), 2), NLMath.pow(inyRadius, 2)))));
-      }));
+      }) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -192,7 +198,8 @@ var procedures = (function() {
   procs["ELLIPSE-RING"] = temp;
   temp = (function(otherPatch) {
     try {
-      throw new Exception.ReportInterrupt(SelfManager.self().distanceXY(otherPatch.projectionBy(function() { return SelfManager.self().getPatchVariable("pxcor"); }), SelfManager.self().getPatchVariable("pycor")));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return SelfManager.self().distanceXY(otherPatch.projectionBy(function() { return SelfManager.self().getPatchVariable("pxcor"); }), SelfManager.self().getPatchVariable("pycor")) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -208,7 +215,8 @@ var procedures = (function() {
   procs["XDISTANCE"] = temp;
   temp = (function(otherPatch) {
     try {
-      throw new Exception.ReportInterrupt(SelfManager.self().distanceXY(SelfManager.self().getPatchVariable("pxcor"), otherPatch.projectionBy(function() { return SelfManager.self().getPatchVariable("pycor"); })));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return SelfManager.self().distanceXY(SelfManager.self().getPatchVariable("pxcor"), otherPatch.projectionBy(function() { return SelfManager.self().getPatchVariable("pycor"); })) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {

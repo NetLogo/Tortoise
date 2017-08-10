@@ -49,6 +49,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Single Dice', 'default')(function() {
         try {
+          var reporterContext = false;
           plotManager.drawHistogramFrom(world.observer.getGlobal("single-outcomes"));
           let maxbar = ListPrims.modes(world.observer.getGlobal("single-outcomes"));
           let maxrange = ListPrims.length(world.observer.getGlobal("single-outcomes").filter(Tasks.reporterTask(function(outcome) {
@@ -80,6 +81,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Pair Sums', 'default')(function() {
         try {
+          var reporterContext = false;
           plotManager.drawHistogramFrom(world.observer.getGlobal("pair-outcomes"));
           let maxbar = ListPrims.modes(world.observer.getGlobal("pair-outcomes"));
           let maxrange = ListPrims.length(world.observer.getGlobal("pair-outcomes").filter(Tasks.reporterTask(function(outcome) {
@@ -126,6 +128,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.observer.setGlobal("single-outcomes", []);
       world.observer.setGlobal("pair-outcomes", []);
@@ -163,6 +166,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if ((world.observer.getGlobal("stop-at-top?") && !Prims.turtlesOn(world.observer.getGlobal("top-row")).isEmpty())) {
         UserDialogPrims.confirm("The top has been reached. Turn STOP-AT-TOP? off to keep going.");
         throw new Exception.StopInterrupt;
@@ -192,6 +196,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.getGlobal("generators").ask(function() {
         SelfManager.self().sprout(1, "PAIRED-DICE").ask(function() {
           SelfManager.self().setVariable("color", 9.9);
@@ -226,6 +231,7 @@ var procedures = (function() {
   procs["ROLL-DICE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (!world.turtleManager.turtlesOfBreed("PAIRED-DICE").agentFilter(function() {
         return !Prims.equality(SelfManager.self().getVariable("pair-sum"), SelfManager.self().getPatchVariable("column"));
       }).isEmpty()) {
@@ -253,6 +259,7 @@ var procedures = (function() {
   procs["MOVE-PAIRED-DICE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let howMany = world.turtleManager.turtlesOfBreed("SINGLE-DICE").size();
       if (Prims.gt(howMany, 0)) {
         world.turtleManager.turtlesOfBreed("SINGLE-DICE").minOneOf(function() { return SelfManager.self().getPatchVariable("pycor"); }).ask(function() { procedures["MOVE-SINGLE-DIE"](); }, true);
@@ -274,6 +281,7 @@ var procedures = (function() {
   procs["MOVE-SINGLE-DICE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (!Prims.equality(SelfManager.self().getVariable("die-value"), SelfManager.self().getPatchVariable("column"))) {
         SelfManager.self()._optimalFdOne();
       }
@@ -297,6 +305,7 @@ var procedures = (function() {
   procs["MOVE-SINGLE-DIE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setVariable("heading", 180);
       if ((Prims.gt(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor) && !!Prims.breedOn("STACKED-DICE", SelfManager.self().patchAhead(1)).isEmpty())) {
         SelfManager.self()._optimalFdOne();
@@ -320,6 +329,7 @@ var procedures = (function() {
   procs["FALL"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(world.observer.getGlobal("single-outcomes"), [])) {
         throw new Exception.StopInterrupt;
       }
@@ -353,6 +363,7 @@ var procedures = (function() {
   procs["SINGLE-DIE-CHECK-VISIBLE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(world.observer.getGlobal("pair-outcomes"), [])) {
         throw new Exception.StopInterrupt;
       }
@@ -386,6 +397,7 @@ var procedures = (function() {
   procs["PAIRED-DIE-CHECK-VISIBLE"] = temp;
   temp = (function(candidates) {
     try {
+      var reporterContext = false;
       while (!candidates.agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pycor"), (world.topology.maxPycor - 2)); }).isEmpty()) {
         candidates.ask(function() {
           if (Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor)) {

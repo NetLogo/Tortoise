@@ -49,6 +49,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Distance from the origin', 'distance')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.turtleManager.getTurtle(0).projectionBy(function() { return SelfManager.self().distanceXY(0, 0); }));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -66,6 +67,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Distance from the origin', undefined)(function() {
         try {
+          var reporterContext = false;
           plotManager.setYRange(0, world.topology.maxPxcor);
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -103,6 +105,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       procedures["SETUP-CIRCLE"](world.observer.getGlobal("radius"),world.observer.getGlobal("number"));
       world.ticker.reset();
     } catch (e) {
@@ -119,6 +122,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function(r, n) {
     try {
+      var reporterContext = false;
       world.clearAll();
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
       world.turtleManager.createOrderedTurtles(n, "").ask(function() {
@@ -140,6 +144,7 @@ var procedures = (function() {
   procs["SETUP-CIRCLE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       procedures["CIRCLE"](world.observer.getGlobal("radius"));
       notImplemented('display', undefined)();
     } catch (e) {
@@ -156,6 +161,7 @@ var procedures = (function() {
   procs["ALL-CIRCLE"] = temp;
   temp = (function(r) {
     try {
+      var reporterContext = false;
       world.turtles().ask(function() { procedures["MOVE-ALONG-CIRCLE"](r); }, true);
       if (world.observer.getGlobal("plot?")) {
         plotManager.updatePlots();
@@ -174,6 +180,7 @@ var procedures = (function() {
   procs["CIRCLE"] = temp;
   temp = (function(r) {
     try {
+      var reporterContext = false;
       SelfManager.self().fd((Prims.div((3.141592653589793 * r), 180) * Prims.div(world.observer.getGlobal("speed"), 50)));
       SelfManager.self().right(Prims.div(world.observer.getGlobal("speed"), 50));
     } catch (e) {
@@ -190,6 +197,7 @@ var procedures = (function() {
   procs["MOVE-ALONG-CIRCLE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.getTurtle(0).ask(function() {
         SelfManager.self().penManager.lowerPen();
         procedures["MOVE-ALONG-CIRCLE"](world.observer.getGlobal("radius"));
@@ -209,6 +217,7 @@ var procedures = (function() {
   procs["ZERO-CIRCLE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearDrawing();
       world.turtleManager.createTurtles(1, "").ask(function() {
         SelfManager.self().setVariable("color", (5 - 3));

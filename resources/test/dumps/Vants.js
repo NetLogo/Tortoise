@@ -64,6 +64,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.patches().ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
       world.turtleManager.createTurtles(world.observer.getGlobal("num-vants"), "").ask(function() {
@@ -86,7 +87,8 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
-      Tasks.forEach(Tasks.commandTask(function(t) {
+      var reporterContext = false;
+      var _foreach_405_412 = Tasks.forEach(Tasks.commandTask(function(t) {
         if (arguments.length < 1) {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
         }
@@ -94,7 +96,7 @@ var procedures = (function() {
           SelfManager.self()._optimalFdOne();
           procedures["TURN"]();
         }, true);
-      }, "[ t -> ask t [ fd 1 turn ] ]"), ListPrims.sort(world.turtles()));
+      }, "[ t -> ask t [ fd 1 turn ] ]"), ListPrims.sort(world.turtles())); if(reporterContext && _foreach_405_412 !== undefined) { return _foreach_405_412; }
       world.ticker.tick();
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -110,7 +112,8 @@ var procedures = (function() {
   procs["GO-FORWARD"] = temp;
   temp = (function() {
     try {
-      Tasks.forEach(Tasks.commandTask(function(t) {
+      var reporterContext = false;
+      var _foreach_505_512 = Tasks.forEach(Tasks.commandTask(function(t) {
         if (arguments.length < 1) {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
         }
@@ -118,7 +121,7 @@ var procedures = (function() {
           procedures["TURN"]();
           SelfManager.self().fd(-1);
         }, true);
-      }, "[ t -> ask t [ turn bk 1 ] ]"), ListPrims.reverse(ListPrims.sort(world.turtles())));
+      }, "[ t -> ask t [ turn bk 1 ] ]"), ListPrims.reverse(ListPrims.sort(world.turtles()))); if(reporterContext && _foreach_505_512 !== undefined) { return _foreach_505_512; }
       world.ticker.tick();
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -134,6 +137,7 @@ var procedures = (function() {
   procs["GO-REVERSE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 9.9)) {
         SelfManager.self().setPatchVariable("pcolor", 0);
         SelfManager.self().right(90);

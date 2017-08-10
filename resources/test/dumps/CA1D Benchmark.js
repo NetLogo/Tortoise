@@ -64,6 +64,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("rules-shown?", false);
       world.observer.setGlobal("gone?", false);
       world.observer.setGlobal("old-rule", world.observer.getGlobal("rule"));
@@ -81,6 +82,7 @@ var procedures = (function() {
   procs["STARTUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       workspace.rng.setSeed(4378);
       procedures["SETUP-RANDOM"]();
       workspace.timer.reset();
@@ -102,6 +104,7 @@ var procedures = (function() {
   procs["BENCHMARK"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearPatches();
       world.turtleManager.clearTurtles();
       world.observer.setGlobal("row", world.topology.maxPycor);
@@ -122,6 +125,7 @@ var procedures = (function() {
   procs["SETUP-GENERAL"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       procedures["SETUP-GENERAL"]();
       world._optimalPatchRow(world.observer.getGlobal("row")).ask(function() {
         SelfManager.self().setPatchVariable("on?", false);
@@ -146,6 +150,7 @@ var procedures = (function() {
   procs["SINGLE-CELL"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       procedures["SETUP-GENERAL"]();
       world._optimalPatchRow(world.observer.getGlobal("row")).ask(function() {
         SelfManager.self().setPatchVariable("on?", Prims.lt(Prims.random(100), world.observer.getGlobal("density")));
@@ -166,6 +171,7 @@ var procedures = (function() {
   procs["SETUP-RANDOM"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let on_pList = [];
       if (!world.observer.getGlobal("gone?")) {
         throw new Exception.StopInterrupt;
@@ -196,6 +202,7 @@ var procedures = (function() {
   procs["SETUP-CONTINUE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (world.observer.getGlobal("rules-shown?")) {
         throw new Exception.StopInterrupt;
       }
@@ -227,6 +234,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let leftOn_p = SelfManager.self().patchAt(-1, 0).projectionBy(function() { return SelfManager.self().getPatchVariable("on?"); });
       let rightOn_p = SelfManager.self().patchAt(1, 0).projectionBy(function() { return SelfManager.self().getPatchVariable("on?"); });
       let newValue = ((((((((((world.observer.getGlobal("iii") && leftOn_p) && SelfManager.self().getPatchVariable("on?")) && rightOn_p) || (((world.observer.getGlobal("iio") && leftOn_p) && SelfManager.self().getPatchVariable("on?")) && !rightOn_p)) || (((world.observer.getGlobal("ioi") && leftOn_p) && !SelfManager.self().getPatchVariable("on?")) && rightOn_p)) || (((world.observer.getGlobal("ioo") && leftOn_p) && !SelfManager.self().getPatchVariable("on?")) && !rightOn_p)) || (((world.observer.getGlobal("oii") && !leftOn_p) && SelfManager.self().getPatchVariable("on?")) && rightOn_p)) || (((world.observer.getGlobal("oio") && !leftOn_p) && SelfManager.self().getPatchVariable("on?")) && !rightOn_p)) || (((world.observer.getGlobal("ooi") && !leftOn_p) && !SelfManager.self().getPatchVariable("on?")) && rightOn_p)) || (((world.observer.getGlobal("ooo") && !leftOn_p) && !SelfManager.self().getPatchVariable("on?")) && !rightOn_p));
@@ -245,6 +253,7 @@ var procedures = (function() {
   procs["DO-RULE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (SelfManager.self().getPatchVariable("on?")) {
         SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("foreground"));
       }
@@ -265,11 +274,12 @@ var procedures = (function() {
   procs["COLOR-PATCH"] = temp;
   temp = (function(number, powerOfTwo) {
     try {
+      var reporterContext = true;
       if (Prims.equality(powerOfTwo, 0)) {
-        throw new Exception.ReportInterrupt(NLMath.mod(NLMath.floor(number), 2));
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return NLMath.mod(NLMath.floor(number), 2) }
       }
       else {
-        throw new Exception.ReportInterrupt(procedures["BINDIGIT"](Prims.div(NLMath.floor(number), 2),(powerOfTwo - 1)));
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return procedures["BINDIGIT"](Prims.div(NLMath.floor(number), 2),(powerOfTwo - 1)) }
       }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
@@ -286,6 +296,7 @@ var procedures = (function() {
   procs["BINDIGIT"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(world.observer.getGlobal("rule"), world.observer.getGlobal("old-rule"))) {
         if (!Prims.equality(world.observer.getGlobal("rule"), procedures["CALCULATE-RULE"]())) {
           world.observer.setGlobal("rule", procedures["CALCULATE-RULE"]());
@@ -309,6 +320,7 @@ var procedures = (function() {
   procs["REFRESH-RULES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("ooo", Prims.equality(procedures["BINDIGIT"](world.observer.getGlobal("rule"),0), 1));
       world.observer.setGlobal("ooi", Prims.equality(procedures["BINDIGIT"](world.observer.getGlobal("rule"),1), 1));
       world.observer.setGlobal("oio", Prims.equality(procedures["BINDIGIT"](world.observer.getGlobal("rule"),2), 1));
@@ -331,6 +343,7 @@ var procedures = (function() {
   procs["EXTRAPOLATE-SWITCHES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = true;
       let rresult = 0;
       if (world.observer.getGlobal("ooo")) {
         rresult = (rresult + 1);
@@ -356,7 +369,7 @@ var procedures = (function() {
       if (world.observer.getGlobal("iii")) {
         rresult = (rresult + 128);
       }
-      throw new Exception.ReportInterrupt(rresult);
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return rresult }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -372,6 +385,7 @@ var procedures = (function() {
   procs["CALCULATE-RULE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       procedures["SETUP-GENERAL"]();
       let rules = procedures["LIST-RULES"]();
       world.patches().agentFilter(function() { return Prims.gt(SelfManager.self().getPatchVariable("pycor"), (world.topology.maxPycor - 5)); }).ask(function() { SelfManager.self().setPatchVariable("pcolor", 5); }, true);
@@ -409,6 +423,7 @@ var procedures = (function() {
   procs["SHOW-RULES"] = temp;
   temp = (function(state) {
     try {
+      var reporterContext = false;
       if (state) {
         SelfManager.self().setVariable("color", world.observer.getGlobal("foreground"));
       }
@@ -435,6 +450,7 @@ var procedures = (function() {
   procs["PRINT-BLOCK"] = temp;
   temp = (function() {
     try {
+      var reporterContext = true;
       let rules = [];
       rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("ooo"), [false, false, false]), rules);
       rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("ooi"), [false, false, true]), rules);
@@ -444,7 +460,7 @@ var procedures = (function() {
       rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("ioi"), [true, false, true]), rules);
       rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("iio"), [true, true, false]), rules);
       rules = ListPrims.lput(ListPrims.lput(world.observer.getGlobal("iii"), [true, true, true]), rules);
-      throw new Exception.ReportInterrupt(rules);
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return rules }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {

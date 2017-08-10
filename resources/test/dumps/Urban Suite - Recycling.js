@@ -49,6 +49,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Population', 'recyclers')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.turtleManager.turtlesOfBreed("RECYCLERS").size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -66,6 +67,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Population', 'wastefuls')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.turtleManager.turtlesOfBreed("WASTEFULS").size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -89,6 +91,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Land Use', 'new')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue((Prims.div(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "new"); }).size(), world.patches().size()) * 100));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -106,6 +109,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Land Use', 'recycled')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue((Prims.div(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "recycled"); }).size(), world.patches().size()) * 100));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -123,6 +127,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Land Use', 'waste')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue((Prims.div(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "waste"); }).size(), world.patches().size()) * 100));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -161,6 +166,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "person")
       world.turtleManager.createTurtles(world.observer.getGlobal("num-recyclers"), "RECYCLERS").ask(function() { SelfManager.self().setVariable("color", 105); }, true);
@@ -189,6 +195,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.turtlesOfBreed("RECYCLERS").ask(function() { procedures["RECYCLER-PROCESS-PATCH"](); }, true);
       world.turtleManager.turtlesOfBreed("WASTEFULS").ask(function() { procedures["WASTEFUL-PROCESS-PATCH"](); }, true);
       world.turtles().ask(function() {
@@ -223,6 +230,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let targetPatch = ListPrims.oneOf(SelfManager.self().getNeighbors());
       if (world.observer.getGlobal("agents-seek-resources?")) {
         let candidateMoves = SelfManager.self().getNeighbors().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "new"); });
@@ -253,6 +261,7 @@ var procedures = (function() {
   procs["MOVE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "new")) {
         if (Prims.lte(SelfManager.self().getVariable("energy"), (world.observer.getGlobal("max-stored-energy") - 2))) {
           SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") + 2));
@@ -283,6 +292,7 @@ var procedures = (function() {
   procs["RECYCLER-PROCESS-PATCH"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "new")) {
         if (Prims.lte(SelfManager.self().getVariable("energy"), (world.observer.getGlobal("max-stored-energy") - 4))) {
           SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") + 4));
@@ -311,6 +321,7 @@ var procedures = (function() {
   procs["WASTEFUL-PROCESS-PATCH"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "new")) {
         SelfManager.self().setPatchVariable("pcolor", 55);
       }
@@ -336,6 +347,7 @@ var procedures = (function() {
   procs["UPDATE-PATCH"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("resource-type"), "recycled"); }).ask(function() {
         if (Prims.lt(Prims.random(100), Prims.div(world.observer.getGlobal("resource-regeneration"), 10))) {
           SelfManager.self().setPatchVariable("resource-type", "new");

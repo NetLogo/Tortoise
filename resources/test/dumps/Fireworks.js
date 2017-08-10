@@ -64,6 +64,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
       world.ticker.reset();
@@ -81,6 +82,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (!!world.turtles().isEmpty()) {
         if (Prims.equality(world.observer.getGlobal("countdown"), 0)) {
           procedures["INIT-ROCKETS"]();
@@ -106,6 +108,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearDrawing();
       world.turtleManager.createTurtles((Prims.random(world.observer.getGlobal("max-fireworks")) + 1), "ROCKETS").ask(function() {
         SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), world.topology.minPycor);
@@ -130,6 +133,7 @@ var procedures = (function() {
   procs["INIT-ROCKETS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setVariable("y-vel", (SelfManager.self().getVariable("y-vel") - Prims.div(world.observer.getGlobal("gravity"), 5)));
       SelfManager.self().setVariable("heading", NLMath.atan(SelfManager.self().getVariable("x-vel"), SelfManager.self().getVariable("y-vel")));
       let moveAmount = NLMath.sqrt((NLMath.pow(SelfManager.self().getVariable("x-vel"), 2) + NLMath.pow(SelfManager.self().getVariable("y-vel"), 2)));
@@ -160,6 +164,7 @@ var procedures = (function() {
   procs["PROJECTILE-MOTION"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().hatch(world.observer.getGlobal("fragments"), "FRAGS").ask(function() {
         SelfManager.self().setVariable("dim", 0);
         SelfManager.self().right(Prims.random(360));
@@ -187,6 +192,7 @@ var procedures = (function() {
   procs["EXPLODE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setVariable("dim", (SelfManager.self().getVariable("dim") - Prims.div(world.observer.getGlobal("fade-amount"), 10)));
       SelfManager.self().setVariable("color", ColorModel.scaleColor(SelfManager.self().getVariable("col"), SelfManager.self().getVariable("dim"), -5, 0.5));
       if (Prims.lt(SelfManager.self().getVariable("color"), (SelfManager.self().getVariable("col") - 3.5))) {

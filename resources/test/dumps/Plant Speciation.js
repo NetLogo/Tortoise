@@ -49,6 +49,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('tolerances', 'left')(function() {
         try {
+          var reporterContext = false;
           plotManager.drawHistogramFrom(world.turtles().agentFilter(function() {
             return Prims.lt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
           }).projectionBy(function() { return SelfManager.self().getVariable("tolerance"); }));
@@ -68,6 +69,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('tolerances', 'right')(function() {
         try {
+          var reporterContext = false;
           plotManager.drawHistogramFrom(world.turtles().agentFilter(function() {
             return Prims.gt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
           }).projectionBy(function() { return SelfManager.self().getVariable("tolerance"); }));
@@ -93,6 +95,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('flower-times', 'left')(function() {
         try {
+          var reporterContext = false;
           plotManager.drawHistogramFrom(world.turtles().agentFilter(function() {
             return Prims.lt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
           }).projectionBy(function() { return SelfManager.self().getVariable("flower-time"); }));
@@ -112,6 +115,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('flower-times', 'right')(function() {
         try {
+          var reporterContext = false;
           plotManager.drawHistogramFrom(world.turtles().agentFilter(function() {
             return Prims.gt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
           }).projectionBy(function() { return SelfManager.self().getVariable("flower-time"); }));
@@ -137,6 +141,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('avg. tolerance', 'left')(function() {
         try {
+          var reporterContext = false;
           if (!world.turtles().agentFilter(function() {
             return Prims.lt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
           }).isEmpty()) {
@@ -160,6 +165,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('avg. tolerance', 'right')(function() {
         try {
+          var reporterContext = false;
           if (!world.turtles().agentFilter(function() {
             return Prims.gt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
           }).isEmpty()) {
@@ -189,6 +195,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('simultaneous flowering', 'default')(function() {
         try {
+          var reporterContext = false;
           if ((!world.turtles().agentFilter(function() {
             return Prims.gt(SelfManager.self().getVariable("xcor"), Prims.div((world.topology.minPxcor + world.topology.maxPxcor), 2));
           }).isEmpty() && !world.turtles().agentFilter(function() {
@@ -249,6 +256,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.observer.setGlobal("day", 0);
       world.observer.setGlobal("old-year", 0);
@@ -301,6 +309,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setPatchVariable("metal", NLMath.precision(Prims.div(100, (1 + NLMath.exp((world.observer.getGlobal("frontier-sharpness") * (Prims.div((world.topology.maxPxcor + world.topology.minPxcor), 2) - SelfManager.self().getPatchVariable("pxcor")))))), 0));
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -316,6 +325,7 @@ var procedures = (function() {
   procs["SETUP-TWO-REGIONS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       procedures["CHECK-LABELS"]();
       if (!Prims.equality(world.observer.getGlobal("old-visualize-time-steps-state"), world.observer.getGlobal("visualize-time-steps"))) {
         world.turtles().ask(function() { procedures["REDRAW-PLANTS-AS-FULL-SIZED-PLANTS"](); }, true);
@@ -345,6 +355,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.gt(world.observer.getGlobal("year"), world.observer.getGlobal("old-year"))) {
         procedures["DO-REPRODUCTION"]();
         procedures["MARK-TURTLES-TO-KILL"]();
@@ -365,6 +376,7 @@ var procedures = (function() {
   procs["DO-START-OF-NEW-YEAR-EVENTS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(world.observer.getGlobal("day"), 365)) {
         if (Prims.equality(world.observer.getGlobal("transition-time?"), false)) {
           procedures["DO-REPRODUCTION"]();
@@ -404,6 +416,7 @@ var procedures = (function() {
   procs["DO-END-OF-DAYS-EVENTS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtles().ask(function() {
         let potentialMates = [];
         let nearbyTurtles = world.turtles();
@@ -477,6 +490,7 @@ var procedures = (function() {
   procs["DO-REPRODUCTION"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtles().ask(function() {
         let t = Prims.div(SelfManager.self().getVariable("tolerance"), 100);
         let m = Prims.div(SelfManager.self().getPatchVariable("metal"), 100);
@@ -508,6 +522,7 @@ var procedures = (function() {
   procs["MARK-TURTLES-TO-KILL"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("chance-seed-dispersal"))) {
         SelfManager.self().moveTo(ListPrims.oneOf(SelfManager.self().getNeighbors()));
         SelfManager.self().right(Prims.random(360));
@@ -527,6 +542,7 @@ var procedures = (function() {
   procs["MIGRATE-THIS-PLANT"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtles().agentFilter(function() { return SelfManager.self().getVariable("will-die?"); }).ask(function() { SelfManager.self().die(); }, true);
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -542,6 +558,7 @@ var procedures = (function() {
   procs["KILL-MARKED-TURTLES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (SelfManager.self().getVariable("seedling?")) {
         SelfManager.self().setVariable("seedling?", false);
       }
@@ -560,6 +577,7 @@ var procedures = (function() {
   procs["TURN-SEEDLINGS-INTO-FULL-PLANTS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.patches().ask(function() {
         if (Prims.equality(world.observer.getGlobal("show-labels-as"), "metal in soil")) {
           SelfManager.self().setPatchVariable("plabel", SelfManager.self().getPatchVariable("metal"));
@@ -593,6 +611,7 @@ var procedures = (function() {
   procs["CHECK-LABELS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setVariable("shape", "plant");
       SelfManager.self().setVariable("size", 1);
     } catch (e) {
@@ -609,6 +628,7 @@ var procedures = (function() {
   procs["REDRAW-PLANTS-AS-FULL-SIZED-PLANTS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (SelfManager.self().getVariable("seedling?")) {
         SelfManager.self().setVariable("size", Prims.div(world.observer.getGlobal("end-of-days-counter"), 10));
       }
@@ -626,6 +646,7 @@ var procedures = (function() {
   procs["VISUALIZE-SEEDLING-GROWTH"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtles().ask(function() {
         if ((Prims.gte(world.observer.getGlobal("day"), SelfManager.self().getVariable("flower-time")) && Prims.lte(world.observer.getGlobal("day"), (SelfManager.self().getVariable("flower-time") + world.observer.getGlobal("flower-duration"))))) {
           SelfManager.self().setVariable("shape", "flower");
@@ -648,26 +669,27 @@ var procedures = (function() {
   procs["VISUALIZE-BLOOM"] = temp;
   temp = (function(options, weights) {
     try {
+      var reporterContext = true;
       let wsum = 0;
-      Tasks.forEach(Tasks.commandTask(function(weight) {
+      var _foreach_11551_11558 = Tasks.forEach(Tasks.commandTask(function(weight) {
         if (arguments.length < 1) {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
         }
         wsum = (wsum + weight);
-      }, "[ weight -> set wsum wsum + weight ]"), weights);
+      }, "[ weight -> set wsum wsum + weight ]"), weights); if(reporterContext && _foreach_11551_11558 !== undefined) { return _foreach_11551_11558; }
       let wret = (wsum * Prims.randomFloat(1));
       let ret = 0;
       wsum = 0;
-      Tasks.forEach(Tasks.commandTask(function(weight) {
+      var _foreach_11674_11681 = Tasks.forEach(Tasks.commandTask(function(weight) {
         if (arguments.length < 1) {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
         }
         wsum = (wsum + weight);
         if (Prims.gt(wsum, wret)) {
-          throw new Exception.ReportInterrupt(ListPrims.item(ret, options));
+          if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return ListPrims.item(ret, options) }
         }
         ret = (ret + 1);
-      }, "[ weight -> set wsum wsum + weight if wsum > wret [ report item ret options ] set ret ret + 1 ]"), weights);
+      }, "[ weight -> set wsum wsum + weight if wsum > wret [ report item ret options ] set ret ret + 1 ]"), weights); if(reporterContext && _foreach_11674_11681 !== undefined) { return _foreach_11674_11681; }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -683,12 +705,13 @@ var procedures = (function() {
   procs["PICK-WEIGHTED"] = temp;
   temp = (function(t1, t2) {
     try {
+      var reporterContext = true;
       let diff = NLMath.abs((t1.projectionBy(function() { return SelfManager.self().getVariable("flower-time"); }) - t2.projectionBy(function() { return SelfManager.self().getVariable("flower-time"); })));
       if (Prims.lt(diff, world.observer.getGlobal("flower-duration"))) {
-        throw new Exception.ReportInterrupt((world.observer.getGlobal("flower-duration") - diff));
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return (world.observer.getGlobal("flower-duration") - diff) }
       }
       else {
-        throw new Exception.ReportInterrupt(0);
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return 0 }
       }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
@@ -705,7 +728,8 @@ var procedures = (function() {
   procs["COMPATIBILITY"] = temp;
   temp = (function(m) {
     try {
-      throw new Exception.ReportInterrupt(ColorModel.genRGBFromComponents(0, Prims.div((255 * (1 - Prims.div(m, 100))), 2), Prims.div((255 * Prims.div(m, 100)), 2)));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return ColorModel.genRGBFromComponents(0, Prims.div((255 * (1 - Prims.div(m, 100))), 2), Prims.div((255 * Prims.div(m, 100)), 2)) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -721,12 +745,13 @@ var procedures = (function() {
   procs["CALC-PATCH-COLOR"] = temp;
   temp = (function(t) {
     try {
+      var reporterContext = true;
       let blackPcolor = ColorModel.genRGBFromComponents(0, 0, 0);
       if (SelfManager.self().getPatchVariable("barrier?")) {
-        throw new Exception.ReportInterrupt(blackPcolor);
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return blackPcolor }
       }
       else {
-        throw new Exception.ReportInterrupt(ColorModel.genRGBFromComponents(0, (255 * (1 - Prims.div(t, 100))), (255 * Prims.div(t, 100))));
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return ColorModel.genRGBFromComponents(0, (255 * (1 - Prims.div(t, 100))), (255 * Prims.div(t, 100))) }
       }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {

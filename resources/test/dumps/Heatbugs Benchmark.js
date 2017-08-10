@@ -64,6 +64,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       workspace.rng.setSeed(362);
       procedures["SETUP"]();
       workspace.timer.reset();
@@ -85,6 +86,7 @@ var procedures = (function() {
   procs["BENCHMARK"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.ticker.reset();
       ListPrims.nOf(world.observer.getGlobal("bug-count"), world.patches()).ask(function() {
@@ -110,6 +112,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (!!world.turtles().isEmpty()) {
         throw new Exception.StopInterrupt;
       }
@@ -131,6 +134,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.patches().ask(function() {
         SelfManager.self().setPatchVariable("temp", (SelfManager.self().getPatchVariable("temp") * (1 - world.observer.getGlobal("evaporation-rate"))));
         SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(15, SelfManager.self().getPatchVariable("temp"), 0, 500));
@@ -149,6 +153,7 @@ var procedures = (function() {
   procs["RECOLOR-PATCHES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setVariable("unhappiness", NLMath.abs((SelfManager.self().getVariable("ideal-temp") - SelfManager.self().getPatchVariable("temp"))));
       if (Prims.equality(SelfManager.self().getVariable("unhappiness"), 0)) {
         SelfManager.self().setPatchVariable("temp", (SelfManager.self().getPatchVariable("temp") + SelfManager.self().getVariable("output-heat")));
@@ -174,11 +179,12 @@ var procedures = (function() {
   procs["STEP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = true;
       if (Prims.lt(SelfManager.self().getPatchVariable("temp"), SelfManager.self().getVariable("ideal-temp"))) {
-        throw new Exception.ReportInterrupt(SelfManager.self().getNeighbors().maxOneOf(function() { return SelfManager.self().getPatchVariable("temp"); }));
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return SelfManager.self().getNeighbors().maxOneOf(function() { return SelfManager.self().getPatchVariable("temp"); }) }
       }
       else {
-        throw new Exception.ReportInterrupt(SelfManager.self().getNeighbors().minOneOf(function() { return SelfManager.self().getPatchVariable("temp"); }));
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return SelfManager.self().getNeighbors().minOneOf(function() { return SelfManager.self().getPatchVariable("temp"); }) }
       }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
@@ -195,6 +201,7 @@ var procedures = (function() {
   procs["FIND-TARGET"] = temp;
   temp = (function(target) {
     try {
+      var reporterContext = false;
       let tries = 0;
       if (!!Prims.turtlesOn(target).isEmpty()) {
         SelfManager.self().moveTo(target);

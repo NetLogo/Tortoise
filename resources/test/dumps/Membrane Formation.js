@@ -49,6 +49,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Hydrophobic Isolation', 'ratio')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed("OILS").projectionBy(function() {
             return Prims.div(SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("OILS"), world.observer.getGlobal("interaction-distance")).size(), SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("interaction-distance")).agentFilter(function() { return !LinkPrims.isLinkNeighbor("LINKS", SelfManager.myself()); }).size());
           })));
@@ -89,6 +90,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.observer.setGlobal("lipid-length", 2);
       world.observer.setGlobal("interaction-distance", 4);
@@ -121,6 +123,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtles().ask(function() {
         procedures["INTERACT-WITH-NEIGHBOR"]();
         procedures["REPEL-TOO-CLOSE-NEIGHBOR"]();
@@ -141,6 +144,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let near = ListPrims.oneOf(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("interaction-distance"))._optimalOtherWith(function() { return !LinkPrims.isLinkNeighbor("LINKS", SelfManager.myself()); }));
       if (!Prims.equality(near, Nobody)) {
         SelfManager.self().face(near);
@@ -165,6 +169,7 @@ var procedures = (function() {
   procs["INTERACT-WITH-NEIGHBOR"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let tooNear = ListPrims.oneOf(SelfPrims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("too-close-distance"))));
       if (!Prims.equality(tooNear, Nobody)) {
         SelfManager.self().face(tooNear);
@@ -184,6 +189,7 @@ var procedures = (function() {
   procs["REPEL-TOO-CLOSE-NEIGHBOR"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let partner = ListPrims.oneOf(LinkPrims.linkNeighbors("LINKS"));
       if (!Prims.equality(partner, Nobody)) {
         SelfManager.self().face(partner);

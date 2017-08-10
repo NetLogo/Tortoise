@@ -49,6 +49,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Car speeds', 'red car')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.observer.getGlobal("sample-car").projectionBy(function() { return SelfManager.self().getVariable("speed"); }));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -66,6 +67,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Car speeds', 'min speed')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(ListPrims.min(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("speed"); })));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -83,6 +85,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Car speeds', 'max speed')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(ListPrims.max(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("speed"); })));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -121,6 +124,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.patches().ask(function() { procedures["SETUP-ROAD"](); }, true);
       procedures["SETUP-CARS"]();
@@ -140,6 +144,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if ((Prims.lt(SelfManager.self().getPatchVariable("pycor"), 2) && Prims.gt(SelfManager.self().getPatchVariable("pycor"), -2))) {
         SelfManager.self().setPatchVariable("pcolor", 9.9);
       }
@@ -157,6 +162,7 @@ var procedures = (function() {
   procs["SETUP-ROAD"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.gt(world.observer.getGlobal("number-of-cars"), world.topology.width)) {
         UserDialogPrims.confirm((Dump('') + Dump("There are too many cars for the amount of road. ") + Dump("Please decrease the NUMBER-OF-CARS slider to below ") + Dump((world.topology.width + 1)) + Dump(" and press the SETUP button again. ") + Dump("The setup has stopped.")));
         throw new Exception.StopInterrupt;
@@ -187,6 +193,7 @@ var procedures = (function() {
   procs["SETUP-CARS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (SelfPrims._optimalAnyOther(SelfManager.self().turtlesHere())) {
         SelfManager.self()._optimalFdOne();
         procedures["SEPARATE-CARS"]();
@@ -205,6 +212,7 @@ var procedures = (function() {
   procs["SEPARATE-CARS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtles().ask(function() {
         let carAhead = ListPrims.oneOf(Prims.turtlesOn(SelfManager.self().patchAhead(1)));
         if (!Prims.equality(carAhead, Nobody)) {
@@ -236,6 +244,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function(carAhead) {
     try {
+      var reporterContext = false;
       SelfManager.self().setVariable("speed", (carAhead.projectionBy(function() { return SelfManager.self().getVariable("speed"); }) - world.observer.getGlobal("deceleration")));
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -251,6 +260,7 @@ var procedures = (function() {
   procs["SLOW-DOWN-CAR"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setVariable("speed", (SelfManager.self().getVariable("speed") + world.observer.getGlobal("acceleration")));
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {

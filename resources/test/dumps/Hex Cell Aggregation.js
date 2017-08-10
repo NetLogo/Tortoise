@@ -64,6 +64,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       procedures["SETUP-GRID"]();
       procedures["READ-SWITCHES"]();
@@ -83,6 +84,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (ListPrims.empty(world.observer.getGlobal("eligibles"))) {
         throw new Exception.StopInterrupt;
       }
@@ -102,6 +104,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().hideTurtle(false);;
       SelfManager.self().setVariable("eligible?", false);
       world.observer.setGlobal("eligibles", ListPrims.remove(SelfManager.self(), world.observer.getGlobal("eligibles")));
@@ -126,6 +129,7 @@ var procedures = (function() {
   procs["BECOME-ALIVE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (SelfManager.self().getVariable("eligible?")) {
         if (!ListPrims.member(SelfManager.self().getVariable("live-neighbor-count"), world.observer.getGlobal("switches"))) {
           SelfManager.self().setVariable("eligible?", false);
@@ -152,6 +156,7 @@ var procedures = (function() {
   procs["UPDATE-ELIGIBILITY"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("switches", []);
       if (world.observer.getGlobal("one-neighbor?")) {
         world.observer.setGlobal("switches", ListPrims.lput(1, world.observer.getGlobal("switches")));
@@ -189,6 +194,7 @@ var procedures = (function() {
   procs["READ-SWITCHES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "hex")
       world.patches().ask(function() {
         SelfManager.self().sprout(1, "CELLS").ask(function() {

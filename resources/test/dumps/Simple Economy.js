@@ -49,6 +49,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('wealth distribution', 'current')(function() {
         try {
+          var reporterContext = false;
           plotManager.setYRange(0, 40);
           plotManager.drawHistogramFrom(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("wealth"); }));
         } catch (e) {
@@ -73,6 +74,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('wealth by percent', 'top 10%')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(procedures["TOP-10-PCT-WEALTH"]());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -90,6 +92,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('wealth by percent', 'bottom 50%')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(procedures["BOTTOM-50-PCT-WEALTH"]());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -128,6 +131,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.turtleManager.createTurtles(500, "").ask(function() {
         SelfManager.self().setVariable("wealth", 100);
@@ -151,6 +155,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtles().agentFilter(function() { return Prims.gt(SelfManager.self().getVariable("wealth"), 0); }).ask(function() { procedures["TRANSACT"](); }, true);
       world.turtles().ask(function() {
         if (Prims.lte(SelfManager.self().getVariable("wealth"), world.topology.maxPxcor)) {
@@ -172,6 +177,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setVariable("wealth", (SelfManager.self().getVariable("wealth") - 1));
       ListPrims.oneOf(SelfPrims.other(world.turtles())).ask(function() { SelfManager.self().setVariable("wealth", (SelfManager.self().getVariable("wealth") + 1)); }, true);
     } catch (e) {
@@ -188,7 +194,8 @@ var procedures = (function() {
   procs["TRANSACT"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(ListPrims.sum(world.turtles().maxNOf((world.turtles().size() * 0.1), function() { return SelfManager.self().getVariable("wealth"); }).projectionBy(function() { return SelfManager.self().getVariable("wealth"); })));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return ListPrims.sum(world.turtles().maxNOf((world.turtles().size() * 0.1), function() { return SelfManager.self().getVariable("wealth"); }).projectionBy(function() { return SelfManager.self().getVariable("wealth"); })) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -204,7 +211,8 @@ var procedures = (function() {
   procs["TOP-10-PCT-WEALTH"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(ListPrims.sum(world.turtles().minNOf((world.turtles().size() * 0.5), function() { return SelfManager.self().getVariable("wealth"); }).projectionBy(function() { return SelfManager.self().getVariable("wealth"); })));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return ListPrims.sum(world.turtles().minNOf((world.turtles().size() * 0.5), function() { return SelfManager.self().getVariable("wealth"); }).projectionBy(function() { return SelfManager.self().getVariable("wealth"); })) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {

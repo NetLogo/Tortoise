@@ -49,6 +49,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Patch Colors', 'color5')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 5); }).size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -66,6 +67,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Patch Colors', 'color15')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15); }).size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -83,6 +85,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Patch Colors', 'color25')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 25); }).size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -100,6 +103,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Patch Colors', 'color35')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 35); }).size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -117,6 +121,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Patch Colors', 'color45')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 45); }).size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -134,6 +139,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Patch Colors', 'color55')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55); }).size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -151,6 +157,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Patch Colors', 'color65')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 65); }).size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -168,6 +175,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Patch Colors', 'color125')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 125); }).size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -185,6 +193,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Patch Colors', 'color85')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 85); }).size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -202,6 +211,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Patch Colors', 'color95')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 95); }).size());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -240,6 +250,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.patches().ask(function() {
         SelfManager.self().setPatchVariable("pcolor", ((Prims.random(world.observer.getGlobal("colors")) * 10) + 5));
@@ -262,6 +273,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(ListPrims.variance(world.patches().projectionBy(function() { return SelfManager.self().getPatchVariable("pcolor"); })), 0)) {
         throw new Exception.StopInterrupt;
       }

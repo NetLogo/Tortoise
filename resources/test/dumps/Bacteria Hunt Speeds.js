@@ -56,14 +56,15 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('# of bacteria for each variation', undefined)(function() {
         try {
+          var reporterContext = false;
           plotManager.clearPlot();
-          Tasks.forEach(Tasks.commandTask(function(thisVariation) {
+          var _foreach_153_160 = Tasks.forEach(Tasks.commandTask(function(thisVariation) {
             if (arguments.length < 1) {
               throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
             }
             plotManager.setCurrentPen((Dump('') + Dump(thisVariation) + Dump(" ")));
             plotManager.plotPoint(thisVariation, world.turtleManager.turtlesOfBreed("BACTERIA").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("variation"), thisVariation); }).size());
-          }, "[ this-variation -> set-current-plot-pen word this-variation \" \" plotxy this-variation count bacteria with variation = this-variation  ]"), [1, 2, 3, 4, 5, 6]);
+          }, "[ this-variation -> set-current-plot-pen word this-variation \" \" plotxy this-variation count bacteria with variation = this-variation  ]"), [1, 2, 3, 4, 5, 6]); if(reporterContext && _foreach_153_160 !== undefined) { return _foreach_153_160; }
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
             throw new Error("REPORT can only be used inside TO-REPORT.");
@@ -84,6 +85,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Avg. # of flagella per bacteria', 'pen 1')(function() {
         try {
+          var reporterContext = false;
           if (!world.turtleManager.turtlesOfBreed("BACTERIA").isEmpty()) {
             plotManager.plotPoint(world.ticker.tickCount(), ListPrims.mean(world.turtleManager.turtlesOfBreed("BACTERIA").projectionBy(function() { return SelfManager.self().getVariable("variation"); })));
           }
@@ -124,6 +126,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.observer.setGlobal("predator-color-visible", [255, 0, 0, 100]);
       world.observer.setGlobal("predator-color-invisible", [200, 200, 200, 100]);
@@ -154,7 +157,8 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
-      Tasks.forEach(Tasks.commandTask(function(thisVariation) {
+      var reporterContext = false;
+      var _foreach_1880_1887 = Tasks.forEach(Tasks.commandTask(function(thisVariation) {
         if (arguments.length < 1) {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
         }
@@ -165,7 +169,7 @@ var procedures = (function() {
           procedures["MAKE-FLAGELLA"]();
           SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
         }, true);
-      }, "[ this-variation -> create-bacteria initial-bacteria-per-variation [ set label-color black set size 1 set variation this-variation make-flagella setxy random-xcor random-ycor ] ]"), [1, 2, 3, 4, 5, 6]);
+      }, "[ this-variation -> create-bacteria initial-bacteria-per-variation [ set label-color black set size 1 set variation this-variation make-flagella setxy random-xcor random-ycor ] ]"), [1, 2, 3, 4, 5, 6]); if(reporterContext && _foreach_1880_1887 !== undefined) { return _foreach_1880_1887; }
       procedures["VISUALIZE-BACTERIA"]();
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -181,6 +185,7 @@ var procedures = (function() {
   procs["SETUP-BACTERIA"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.createTurtles(1, "PREDATORS").ask(function() {
         SelfManager.self().setVariable("shape", "circle");
         SelfManager.self().setVariable("color", world.observer.getGlobal("predator-color-visible"));
@@ -203,6 +208,7 @@ var procedures = (function() {
   procs["SETUP-PREDATOR"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let flagellaShape = (Dump('') + Dump("flagella-") + Dump(SelfManager.self().getVariable("variation")));
       SelfManager.self().hatch(1, "").ask(function() {
         SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("FLAGELLA"));
@@ -230,6 +236,7 @@ var procedures = (function() {
   procs["MAKE-FLAGELLA"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       procedures["CHECK-CAUGHT"]();
       procedures["MOVE-PREDATOR"]();
       procedures["MOVE-BACTERIA"]();
@@ -251,6 +258,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("bacteria-caught", (world.observer.getGlobal("bacteria-caught") + 1));
       procedures["MAKE-A-REMOVAL-SPOT"]();
       LinkPrims.outLinkNeighbors("LINKS").ask(function() { SelfManager.self().die(); }, true);
@@ -269,6 +277,7 @@ var procedures = (function() {
   procs["DEATH"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().hatch(1, "").ask(function() {
         SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("REMOVAL-SPOTS"));
         SelfManager.self().setVariable("size", 1.5);
@@ -288,6 +297,7 @@ var procedures = (function() {
   procs["MAKE-A-REMOVAL-SPOT"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.turtlesOfBreed("BACTERIA").ask(function() {
         if (world.observer.getGlobal("wiggle?")) {
           SelfManager.self().right((Prims.randomFloat(25) - Prims.randomFloat(25)));
@@ -313,6 +323,7 @@ var procedures = (function() {
   procs["MOVE-BACTERIA"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(world.getPatchAt(MousePrims.getX(), MousePrims.getY()), world.observer.getGlobal("predator-location"))) {
         world.observer.setGlobal("tick-counter", (world.observer.getGlobal("tick-counter") + 1));
       }
@@ -347,6 +358,7 @@ var procedures = (function() {
   procs["MOVE-PREDATOR"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let flagellaSwing = 15;
       let flagellaSpeed = 60;
       let newSwing = (flagellaSwing * NLMath.sin((flagellaSpeed * world.ticker.tickCount())));
@@ -366,6 +378,7 @@ var procedures = (function() {
   procs["MOVE-FLAGELLA"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if ((!MousePrims.isDown() || !MousePrims.isInside())) {
         throw new Exception.StopInterrupt;
       }
@@ -396,6 +409,7 @@ var procedures = (function() {
   procs["CHECK-CAUGHT"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.turtlesOfBreed("BACTERIA").ask(function() {
         if (Prims.equality(world.observer.getGlobal("visualize-variation"), "# flagella as label")) {
           SelfManager.self().setVariable("label", (Dump('') + Dump(SelfManager.self().getVariable("variation")) + Dump("     ")));
@@ -427,6 +441,7 @@ var procedures = (function() {
   procs["VISUALIZE-BACTERIA"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.turtlesOfBreed("REMOVAL-SPOTS").ask(function() {
         SelfManager.self().setVariable("countdown", (SelfManager.self().getVariable("countdown") - 1));
         SelfManager.self().setVariable("color", ListPrims.lput((SelfManager.self().getVariable("countdown") * 4), [0, 100, 0]));

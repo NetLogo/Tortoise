@@ -49,6 +49,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Average Heat', 'ave-heat')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(procedures["AVERAGE-HEAT"]());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -87,6 +88,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.patches().ask(function() {
         SelfManager.self().setPatchVariable("heat", Prims.random(212));
@@ -107,6 +109,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.topology.diffuse("heat", 1)
       world.patches().ask(function() {
         SelfManager.self().setPatchVariable("heat", NLMath.mod((SelfManager.self().getPatchVariable("heat") + 5), 212));
@@ -127,7 +130,8 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(ListPrims.mean(world.patches().projectionBy(function() { return SelfManager.self().getPatchVariable("heat"); })));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return ListPrims.mean(world.patches().projectionBy(function() { return SelfManager.self().getPatchVariable("heat"); })) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {

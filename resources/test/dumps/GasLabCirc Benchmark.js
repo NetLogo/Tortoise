@@ -64,6 +64,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       workspace.rng.setSeed(12345);
       workspace.timer.reset();
       procedures["SETUP"]();
@@ -86,6 +87,7 @@ var procedures = (function() {
   procs["BENCHMARK"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.ticker.reset();
       BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("PARTICLES").getSpecialName(), "circle")
@@ -113,6 +115,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("colliding-particles", []);
       world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() { procedures["CHECK-FOR-WALL-COLLISION"](); }, true);
       world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() { procedures["CHECK-FOR-PARTICLE-COLLISION"](); }, true);
@@ -130,6 +133,7 @@ var procedures = (function() {
   procs["REBUILD-COLLISION-LIST"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (NLType(world.observer.getGlobal("colliding-particle-2")).isValidTurtle()) {
         world.observer.setGlobal("colliding-particles", world.observer.getGlobal("colliding-particles").filter(Tasks.reporterTask(function(collision) {
           if (arguments.length < 1) {
@@ -180,7 +184,8 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function(headingAngle) {
     try {
-      throw new Exception.ReportInterrupt(NLMath.sin(headingAngle));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return NLMath.sin(headingAngle) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -196,7 +201,8 @@ var procedures = (function() {
   procs["CONVERT-HEADING-X"] = temp;
   temp = (function(headingAngle) {
     try {
-      throw new Exception.ReportInterrupt(NLMath.cos(headingAngle));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return NLMath.cos(headingAngle) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -212,6 +218,7 @@ var procedures = (function() {
   procs["CONVERT-HEADING-Y"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let myX = SelfManager.self().getVariable("xcor");
       let myY = SelfManager.self().getVariable("ycor");
       let myParticleSize = SelfManager.self().getVariable("size");
@@ -252,6 +259,7 @@ var procedures = (function() {
   procs["CHECK-FOR-PARTICLE-COLLISION"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let xSpeed = (SelfManager.self().getVariable("speed") * procedures["CONVERT-HEADING-X"](SelfManager.self().getVariable("heading")));
       let ySpeed = (SelfManager.self().getVariable("speed") * procedures["CONVERT-HEADING-Y"](SelfManager.self().getVariable("heading")));
       let xposPlane = (world.observer.getGlobal("box-edge") - 0.5);
@@ -320,6 +328,7 @@ var procedures = (function() {
   procs["CHECK-FOR-WALL-COLLISION"] = temp;
   temp = (function(timeToCollision, wall) {
     try {
+      var reporterContext = false;
       let collidingPair = ListPrims.list((timeToCollision + world.ticker.tickCount()), SelfManager.self(), wall);
       world.observer.setGlobal("colliding-particles", ListPrims.fput(collidingPair, world.observer.getGlobal("colliding-particles")));
     } catch (e) {
@@ -336,6 +345,7 @@ var procedures = (function() {
   procs["ASSIGN-COLLIDING-WALL"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("colliding-particles", world.observer.getGlobal("colliding-particles").filter(Tasks.reporterTask(function(collision) {
         if (arguments.length < 1) {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
@@ -349,14 +359,14 @@ var procedures = (function() {
         throw new Exception.StopInterrupt;
       }
       let winner = ListPrims.first(world.observer.getGlobal("colliding-particles"));
-      Tasks.forEach(Tasks.commandTask(function(collision) {
+      var _foreach_14531_14538 = Tasks.forEach(Tasks.commandTask(function(collision) {
         if (arguments.length < 1) {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
         }
         if (Prims.lt(ListPrims.first(collision), ListPrims.first(winner))) {
           winner = collision;
         }
-      }, "[ [collision] -> if first collision < first winner [ set winner collision ] ]"), world.observer.getGlobal("colliding-particles"));
+      }, "[ [collision] -> if first collision < first winner [ set winner collision ] ]"), world.observer.getGlobal("colliding-particles")); if(reporterContext && _foreach_14531_14538 !== undefined) { return _foreach_14531_14538; }
       let dt = ListPrims.item(0, winner);
       if (Prims.gt(dt, 0)) {
         if (Prims.lte((dt - world.ticker.tickCount()), 1)) {
@@ -382,6 +392,7 @@ var procedures = (function() {
   procs["SORT-COLLISIONS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(world.observer.getGlobal("colliding-particle-1"), Nobody)) {
         throw new Exception.StopInterrupt;
       }
@@ -408,6 +419,7 @@ var procedures = (function() {
   procs["COLLIDE-WINNERS"] = temp;
   temp = (function(otherParticle) {
     try {
+      var reporterContext = false;
       let mass2 = otherParticle.projectionBy(function() { return SelfManager.self().getVariable("mass"); });
       let speed2 = otherParticle.projectionBy(function() { return SelfManager.self().getVariable("speed"); });
       let heading2 = otherParticle.projectionBy(function() { return SelfManager.self().getVariable("heading"); });
@@ -443,6 +455,7 @@ var procedures = (function() {
   procs["COLLIDE-WITH"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(world.observer.getGlobal("color-scheme"), "red-green-blue")) {
         procedures["RECOLOR-BANDED"]();
       }
@@ -466,6 +479,7 @@ var procedures = (function() {
   procs["RECOLOR"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let avgSpeed = 1;
       if (Prims.lt(SelfManager.self().getVariable("speed"), (0.5 * avgSpeed))) {
         SelfManager.self().setVariable("color", 105);
@@ -492,6 +506,7 @@ var procedures = (function() {
   procs["RECOLOR-BANDED"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let avgSpeed = 1;
       if (Prims.lt(SelfManager.self().getVariable("speed"), (3 * avgSpeed))) {
         SelfManager.self().setVariable("color", ((95 - 3.001) + Prims.div((8 * SelfManager.self().getVariable("speed")), (3 * avgSpeed))));
@@ -513,6 +528,7 @@ var procedures = (function() {
   procs["RECOLOR-SHADED"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setVariable("color", (55 - 1));
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -528,6 +544,7 @@ var procedures = (function() {
   procs["RECOLOR-NONE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.patches().agentFilter(function() {
         return ((Prims.equality(NLMath.abs(SelfManager.self().getPatchVariable("pxcor")), world.observer.getGlobal("box-edge")) && Prims.lte(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), world.observer.getGlobal("box-edge"))) || (Prims.equality(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), world.observer.getGlobal("box-edge")) && Prims.lte(NLMath.abs(SelfManager.self().getPatchVariable("pxcor")), world.observer.getGlobal("box-edge"))));
       }).ask(function() { SelfManager.self().setPatchVariable("pcolor", 45); }, true);
@@ -545,6 +562,7 @@ var procedures = (function() {
   procs["MAKE-BOX"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.createOrderedTurtles(world.observer.getGlobal("number"), "PARTICLES").ask(function() {
         SelfManager.self().setVariable("speed", 1);
         SelfManager.self().setVariable("size", (world.observer.getGlobal("smallest-particle-size") + Prims.randomFloat((world.observer.getGlobal("largest-particle-size") - world.observer.getGlobal("smallest-particle-size")))));
@@ -567,6 +585,7 @@ var procedures = (function() {
   procs["MAKE-PARTICLES"] = temp;
   temp = (function(particleSet) {
     try {
+      var reporterContext = false;
       if (!!particleSet.isEmpty()) {
         throw new Exception.StopInterrupt;
       }
@@ -586,9 +605,10 @@ var procedures = (function() {
   procs["ARRANGE"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(SelfPrims._optimalAnyOther(SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("PARTICLES"), Prims.div((SelfManager.self().getVariable("size") + world.observer.getGlobal("largest-particle-size")), 2)).agentFilter(function() {
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return SelfPrims._optimalAnyOther(SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("PARTICLES"), Prims.div((SelfManager.self().getVariable("size") + world.observer.getGlobal("largest-particle-size")), 2)).agentFilter(function() {
         return Prims.lt(SelfManager.self().distance(SelfManager.myself()), Prims.div((SelfManager.self().getVariable("size") + SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("size"); })), 2));
-      })));
+      })) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -604,6 +624,7 @@ var procedures = (function() {
   procs["OVERLAPPING?"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setXY((ListPrims.oneOf([1, -1]) * Prims.randomFloat(((world.observer.getGlobal("box-edge") - 0.5) - Prims.div(SelfManager.self().getVariable("size"), 2)))), (ListPrims.oneOf([1, -1]) * Prims.randomFloat(((world.observer.getGlobal("box-edge") - 0.5) - Prims.div(SelfManager.self().getVariable("size"), 2)))));
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -619,6 +640,7 @@ var procedures = (function() {
   procs["RANDOM-POSITION"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() { SelfManager.self().right(180); }, true);
       procedures["REBUILD-COLLISION-LIST"]();
       procedures["COLLIDE-WINNERS"]();
@@ -636,6 +658,7 @@ var procedures = (function() {
   procs["REVERSE-TIME"] = temp;
   temp = (function(n) {
     try {
+      var reporterContext = false;
       procedures["SETUP"]();
       world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() { SelfManager.self().stamp(); }, true);
       while (Prims.lt(world.ticker.tickCount(), n)) {

@@ -64,6 +64,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.getPatchAt(0, 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 55); }, true);
       world.turtleManager.createTurtles(world.observer.getGlobal("num-particles"), "").ask(function() {
@@ -86,6 +87,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtles().ask(function() {
         SelfManager.self().right(Prims.random(world.observer.getGlobal("wiggle-angle")));
         SelfManager.self().right(-Prims.random(world.observer.getGlobal("wiggle-angle")));

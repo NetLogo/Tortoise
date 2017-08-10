@@ -64,6 +64,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.observer.setGlobal("show-water?", true);
       world.patches().ask(function() {
@@ -108,6 +109,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if ((Prims.equality(SelfManager.self().getPatchVariable("water"), 0) || !world.observer.getGlobal("show-water?"))) {
         SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(9.9, SelfManager.self().getPatchVariable("elevation"), -250, 100));
       }
@@ -128,6 +130,7 @@ var procedures = (function() {
   procs["RECOLOR"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("show-water?", true);
       world.observer.getGlobal("land").ask(function() { procedures["RECOLOR"](); }, true);
     } catch (e) {
@@ -144,6 +147,7 @@ var procedures = (function() {
   procs["SHOW-WATER"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("show-water?", false);
       world.observer.getGlobal("land").ask(function() { procedures["RECOLOR"](); }, true);
     } catch (e) {
@@ -160,6 +164,7 @@ var procedures = (function() {
   procs["HIDE-WATER"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.getGlobal("land").ask(function() {
         if (Prims.lt(Prims.randomFloat(1), world.observer.getGlobal("rainfall"))) {
           SelfManager.self().setPatchVariable("water", (SelfManager.self().getPatchVariable("water") + 1));
@@ -190,6 +195,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let target = SelfManager.self().getNeighbors().minOneOf(function() {
         return (SelfManager.self().getPatchVariable("elevation") + SelfManager.self().getPatchVariable("water"));
       });

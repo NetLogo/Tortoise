@@ -64,6 +64,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       procedures["SETUP-REGIONS"](world.observer.getGlobal("number-of-regions"));
       procedures["COLOR-REGIONS"]();
@@ -83,6 +84,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.patches().agentFilter(function() { return !Prims.equality(SelfManager.self().getPatchVariable("region"), 0); }).ask(function() {
         SelfManager.self().setPatchVariable("pcolor", (2 + (SelfManager.self().getPatchVariable("region") * 10)));
         SelfManager.self().setPatchVariable("plabel-color", (SelfManager.self().getPatchVariable("pcolor") + 1));
@@ -102,7 +104,8 @@ var procedures = (function() {
   procs["COLOR-REGIONS"] = temp;
   temp = (function() {
     try {
-      Tasks.forEach(Tasks.commandTask(function(regionNumber) {
+      var reporterContext = false;
+      var _foreach_1146_1153 = Tasks.forEach(Tasks.commandTask(function(regionNumber) {
         if (arguments.length < 1) {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
         }
@@ -111,7 +114,7 @@ var procedures = (function() {
           SelfManager.self().moveTo(ListPrims.oneOf(regionPatches));
           SelfManager.self().setVariable("color", (SelfManager.self().getPatchVariable("pcolor") + 3));
         }, true);
-      }, "[ region-number -> let patches with region = region-number  create-turtles number-of-turtles-per-region [ move-to one-of region-patches set color pcolor + 3 ] ]"), Prims.rangeBinary(1, (ListPrims.length(world.observer.getGlobal("region-boundaries")) + 1)));
+      }, "[ region-number -> let patches with region = region-number  create-turtles number-of-turtles-per-region [ move-to one-of region-patches set color pcolor + 3 ] ]"), Prims.rangeBinary(1, (ListPrims.length(world.observer.getGlobal("region-boundaries")) + 1))); if(reporterContext && _foreach_1146_1153 !== undefined) { return _foreach_1146_1153; }
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         throw new Error("REPORT can only be used inside TO-REPORT.");
@@ -126,6 +129,7 @@ var procedures = (function() {
   procs["SETUP-TURTLES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtles().ask(function() { procedures["MOVE"](); }, true);
       world.ticker.tick();
     } catch (e) {
@@ -142,6 +146,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let currentRegion = SelfManager.self().getPatchVariable("region");
       SelfManager.self().right(Prims.random(30));
       SelfManager.self().right(-Prims.random(30));
@@ -161,22 +166,23 @@ var procedures = (function() {
   procs["MOVE"] = temp;
   temp = (function(numRegions) {
     try {
-      Tasks.forEach(Tasks.commandTask(function(_0) {
+      var reporterContext = false;
+      var _foreach_2099_2106 = Tasks.forEach(Tasks.commandTask(function(_0) {
         if (arguments.length < 1) {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
         }
         procedures["DRAW-REGION-DIVISION"](_0);
-      }, "draw-region-division"), procedures["REGION-DIVISIONS"](numRegions));
+      }, "draw-region-division"), procedures["REGION-DIVISIONS"](numRegions)); if(reporterContext && _foreach_2099_2106 !== undefined) { return _foreach_2099_2106; }
       world.observer.setGlobal("region-boundaries", procedures["CALCULATE-REGION-BOUNDARIES"](numRegions));
       let regionNumbers = Prims.rangeBinary(1, (numRegions + 1));
-      Tasks.forEach(Tasks.commandTask(function(boundaries, regionNumber) {
+      var _foreach_2401_2408 = Tasks.forEach(Tasks.commandTask(function(boundaries, regionNumber) {
         if (arguments.length < 2) {
           throw new Error("anonymous procedure expected 2 inputs, but only got " + arguments.length);
         }
         world.patches().agentFilter(function() {
           return (Prims.gte(SelfManager.self().getPatchVariable("pxcor"), ListPrims.first(boundaries)) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), ListPrims.last(boundaries)));
         }).ask(function() { SelfManager.self().setPatchVariable("region", regionNumber); }, true);
-      }, "[ [boundaries region-number] -> ask patches with pxcor >= first boundaries and pxcor <= last boundaries  [ set region region-number ] ]"), world.observer.getGlobal("region-boundaries"), regionNumbers);
+      }, "[ [boundaries region-number] -> ask patches with pxcor >= first boundaries and pxcor <= last boundaries  [ set region region-number ] ]"), world.observer.getGlobal("region-boundaries"), regionNumbers); if(reporterContext && _foreach_2401_2408 !== undefined) { return _foreach_2401_2408; }
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
         throw new Error("REPORT can only be used inside TO-REPORT.");
@@ -191,13 +197,14 @@ var procedures = (function() {
   procs["SETUP-REGIONS"] = temp;
   temp = (function(numRegions) {
     try {
+      var reporterContext = true;
       let divisions = procedures["REGION-DIVISIONS"](numRegions);
-      throw new Exception.ReportInterrupt(Tasks.map(Tasks.reporterTask(function(d1, d2) {
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Tasks.map(Tasks.reporterTask(function(d1, d2) {
         if (arguments.length < 2) {
           throw new Error("anonymous procedure expected 2 inputs, but only got " + arguments.length);
         }
         return ListPrims.list((d1 + 1), (d2 - 1));
-      }, "[ [d1 d2] -> list d1 + 1 d2 - 1 ]"), ListPrims.butLast(divisions), ListPrims.butFirst(divisions)));
+      }, "[ [d1 d2] -> list d1 + 1 d2 - 1 ]"), ListPrims.butLast(divisions), ListPrims.butFirst(divisions)) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -213,12 +220,13 @@ var procedures = (function() {
   procs["CALCULATE-REGION-BOUNDARIES"] = temp;
   temp = (function(numRegions) {
     try {
-      throw new Exception.ReportInterrupt(Tasks.nValues((numRegions + 1), Tasks.reporterTask(function(n) {
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Tasks.nValues((numRegions + 1), Tasks.reporterTask(function(n) {
         if (arguments.length < 1) {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
         }
         return world.getPatchAt((world.topology.minPxcor + (n * Prims.div((world.topology.maxPxcor - world.topology.minPxcor), numRegions))), 0).projectionBy(function() { return SelfManager.self().getPatchVariable("pxcor"); });
-      }, "[ n -> pxcor  of patch min-pxcor + n * max-pxcor - min-pxcor / num-regions 0 ]")));
+      }, "[ n -> pxcor  of patch min-pxcor + n * max-pxcor - min-pxcor / num-regions 0 ]")) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -234,6 +242,7 @@ var procedures = (function() {
   procs["REGION-DIVISIONS"] = temp;
   temp = (function(x) {
     try {
+      var reporterContext = false;
       world._optimalPatchCol(x).ask(function() { SelfManager.self().setPatchVariable("pcolor", (5 + 1.5)); }, true);
       world.turtleManager.createTurtles(1, "").ask(function() {
         SelfManager.self().setXY(x, (world.topology.maxPycor + 0.5));
@@ -261,6 +270,7 @@ var procedures = (function() {
   procs["DRAW-REGION-DIVISION"] = temp;
   temp = (function(whichRegion) {
     try {
+      var reporterContext = false;
       if (!Prims.equality(SelfManager.self().getPatchVariable("region"), whichRegion)) {
         let regionMinPxcor = ListPrims.first(ListPrims.item((whichRegion - 1), world.observer.getGlobal("region-boundaries")));
         let regionMaxPxcor = ListPrims.last(ListPrims.item((whichRegion - 1), world.observer.getGlobal("region-boundaries")));

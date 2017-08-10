@@ -49,6 +49,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Energy Histogram', 'fast')(function() {
         try {
+          var reporterContext = false;
           plotManager.setHistogramBarCount(40);
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -65,6 +66,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Energy Histogram', 'fast')(function() {
         try {
+          var reporterContext = false;
           plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); }).projectionBy(function() { return SelfManager.self().getVariable("energy"); }));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -82,6 +84,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Energy Histogram', 'medium')(function() {
         try {
+          var reporterContext = false;
           plotManager.setHistogramBarCount(40);
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -98,6 +101,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Energy Histogram', 'medium')(function() {
         try {
+          var reporterContext = false;
           plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); }).projectionBy(function() { return SelfManager.self().getVariable("energy"); }));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -115,6 +119,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Energy Histogram', 'slow')(function() {
         try {
+          var reporterContext = false;
           plotManager.setHistogramBarCount(40);
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -131,6 +136,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Energy Histogram', 'slow')(function() {
         try {
+          var reporterContext = false;
           plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 105); }).projectionBy(function() { return SelfManager.self().getVariable("energy"); }));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -148,6 +154,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Energy Histogram', 'avg-energy')(function() {
         try {
+          var reporterContext = false;
           plotManager.resetPen();
           let _maybestop_49_63 = procedures["DRAW-VERT-LINE"](world.observer.getGlobal("avg-energy"));
           if (_maybestop_49_63 instanceof Exception.StopInterrupt) { return _maybestop_49_63; }
@@ -167,6 +174,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Energy Histogram', 'init-avg-energy')(function() {
         try {
+          var reporterContext = false;
           let _maybestop_33_47 = procedures["DRAW-VERT-LINE"](world.observer.getGlobal("init-avg-energy"));
           if (_maybestop_33_47 instanceof Exception.StopInterrupt) { return _maybestop_33_47; }
         } catch (e) {
@@ -186,6 +194,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Energy Histogram', undefined)(function() {
         try {
+          var reporterContext = false;
           plotManager.setXRange(0, (((0.5 * (world.observer.getGlobal("init-particle-speed") * 2)) * (world.observer.getGlobal("init-particle-speed") * 2)) * world.observer.getGlobal("particle-mass")));
           plotManager.setYRange(0, NLMath.ceil(Prims.div(world.observer.getGlobal("number-of-particles"), 6)));
         } catch (e) {
@@ -208,6 +217,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Speed Counts', 'fast')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("percent-fast"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -225,6 +235,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Speed Counts', 'medium')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("percent-medium"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -242,6 +253,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Speed Counts', 'slow')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("percent-slow"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -260,6 +272,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Speed Counts', undefined)(function() {
         try {
+          var reporterContext = false;
           plotManager.setYRange(0, 100);
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -281,6 +294,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Speed Histogram', 'fast')(function() {
         try {
+          var reporterContext = false;
           plotManager.setHistogramBarCount(40);
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -297,6 +311,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Speed Histogram', 'fast')(function() {
         try {
+          var reporterContext = false;
           plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); }).projectionBy(function() { return SelfManager.self().getVariable("speed"); }));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -314,6 +329,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Speed Histogram', 'medium')(function() {
         try {
+          var reporterContext = false;
           plotManager.setHistogramBarCount(40);
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -330,6 +346,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Speed Histogram', 'medium')(function() {
         try {
+          var reporterContext = false;
           plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); }).projectionBy(function() { return SelfManager.self().getVariable("speed"); }));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -347,6 +364,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Speed Histogram', 'slow')(function() {
         try {
+          var reporterContext = false;
           plotManager.setHistogramBarCount(40);
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -363,6 +381,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Speed Histogram', 'slow')(function() {
         try {
+          var reporterContext = false;
           plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 105); }).projectionBy(function() { return SelfManager.self().getVariable("speed"); }));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -380,6 +399,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Speed Histogram', 'avg-speed')(function() {
         try {
+          var reporterContext = false;
           plotManager.resetPen();
           let _maybestop_50_64 = procedures["DRAW-VERT-LINE"](world.observer.getGlobal("avg-speed"));
           if (_maybestop_50_64 instanceof Exception.StopInterrupt) { return _maybestop_50_64; }
@@ -399,6 +419,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Speed Histogram', 'init-avg-speed')(function() {
         try {
+          var reporterContext = false;
           let _maybestop_33_47 = procedures["DRAW-VERT-LINE"](world.observer.getGlobal("init-avg-speed"));
           if (_maybestop_33_47 instanceof Exception.StopInterrupt) { return _maybestop_33_47; }
         } catch (e) {
@@ -418,6 +439,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Speed Histogram', undefined)(function() {
         try {
+          var reporterContext = false;
           plotManager.setXRange(0, (world.observer.getGlobal("init-particle-speed") * 2));
           plotManager.setYRange(0, NLMath.ceil(Prims.div(world.observer.getGlobal("number-of-particles"), 6)));
         } catch (e) {
@@ -455,6 +477,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("PARTICLES").getSpecialName(), "circle")
       world.observer.setGlobal("max-tick-delta", 0.1073);
@@ -477,6 +500,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() { procedures["MOVE"](); }, true);
       world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() {
         if (world.observer.getGlobal("collide?")) {
@@ -510,6 +534,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("medium", world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); }).size());
       world.observer.setGlobal("slow", world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 105); }).size());
       world.observer.setGlobal("fast", world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); }).size());
@@ -532,6 +557,7 @@ var procedures = (function() {
   procs["UPDATE-VARIABLES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (!world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.gt(SelfManager.self().getVariable("speed"), 0); }).isEmpty()) {
         world.observer.setGlobal("tick-delta", ListPrims.min(ListPrims.list(Prims.div(1, NLMath.ceil(ListPrims.max(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("speed"); })))), world.observer.getGlobal("max-tick-delta"))));
       }
@@ -552,6 +578,7 @@ var procedures = (function() {
   procs["CALCULATE-TICK-DELTA"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (!Prims.equality(SelfManager.self().patchAhead((SelfManager.self().getVariable("speed") * world.observer.getGlobal("tick-delta"))), SelfManager.self().getPatchHere())) {
         SelfManager.self().setVariable("last-collision", Nobody);
       }
@@ -570,6 +597,7 @@ var procedures = (function() {
   procs["MOVE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(SelfPrims._optimalCountOther(SelfManager.self().breedHere("PARTICLES")), 1)) {
         let candidate = ListPrims.oneOf(SelfManager.self().breedHere("PARTICLES")._optimalOtherWith(function() {
           return (Prims.lt(SelfManager.self().getVariable("who"), SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("who"); })) && !Prims.equality(SelfManager.myself(), SelfManager.self().getVariable("last-collision")));
@@ -594,6 +622,7 @@ var procedures = (function() {
   procs["CHECK-FOR-COLLISION"] = temp;
   temp = (function(otherParticle) {
     try {
+      var reporterContext = false;
       let mass2 = otherParticle.projectionBy(function() { return SelfManager.self().getVariable("mass"); });
       let speed2 = otherParticle.projectionBy(function() { return SelfManager.self().getVariable("speed"); });
       let heading2 = otherParticle.projectionBy(function() { return SelfManager.self().getVariable("heading"); });
@@ -633,6 +662,7 @@ var procedures = (function() {
   procs["COLLIDE-WITH"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.lt(SelfManager.self().getVariable("speed"), (0.5 * 10))) {
         SelfManager.self().setVariable("color", 105);
       }
@@ -658,6 +688,7 @@ var procedures = (function() {
   procs["RECOLOR"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.createTurtles(world.observer.getGlobal("number-of-particles"), "PARTICLES").ask(function() {
         procedures["SETUP-PARTICLE"]();
         procedures["RANDOM-POSITION"]();
@@ -678,6 +709,7 @@ var procedures = (function() {
   procs["MAKE-PARTICLES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setVariable("speed", world.observer.getGlobal("init-particle-speed"));
       SelfManager.self().setVariable("mass", world.observer.getGlobal("particle-mass"));
       SelfManager.self().setVariable("energy", ((0.5 * SelfManager.self().getVariable("mass")) * NLMath.pow(SelfManager.self().getVariable("speed"), 2)));
@@ -696,6 +728,7 @@ var procedures = (function() {
   procs["SETUP-PARTICLE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setXY(((1 + world.topology.minPxcor) + Prims.randomFloat(((2 * world.topology.maxPxcor) - 2))), ((1 + world.topology.minPycor) + Prims.randomFloat(((2 * world.topology.maxPycor) - 2))));
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -711,11 +744,12 @@ var procedures = (function() {
   procs["RANDOM-POSITION"] = temp;
   temp = (function(n, theList) {
     try {
+      var reporterContext = true;
       if (Prims.gte(n, ListPrims.length(theList))) {
-        throw new Exception.ReportInterrupt(theList);
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return theList }
       }
       else {
-        throw new Exception.ReportInterrupt(procedures["LAST-N"](n,ListPrims.butFirst(theList)));
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return procedures["LAST-N"](n,ListPrims.butFirst(theList)) }
       }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
@@ -732,6 +766,7 @@ var procedures = (function() {
   procs["LAST-N"] = temp;
   temp = (function(xval) {
     try {
+      var reporterContext = false;
       plotManager.plotPoint(xval, plotManager.getPlotYMin());
       plotManager.lowerPen();
       plotManager.plotPoint(xval, plotManager.getPlotYMax());

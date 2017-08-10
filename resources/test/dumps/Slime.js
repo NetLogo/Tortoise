@@ -64,6 +64,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.turtleManager.createTurtles(world.observer.getGlobal("population"), "").ask(function() {
         SelfManager.self().setVariable("color", 15);
@@ -86,6 +87,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtles().ask(function() {
         if (Prims.gt(SelfManager.self().getPatchVariable("chemical"), world.observer.getGlobal("sniff-threshold"))) {
           procedures["TURN-TOWARD-CHEMICAL"]();
@@ -114,6 +116,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let ahead = SelfManager.self().patchAhead(1).projectionBy(function() { return SelfManager.self().getPatchVariable("chemical"); });
       let myright = SelfManager.self().patchRightAndAhead(world.observer.getGlobal("sniff-angle"), 1).projectionBy(function() { return SelfManager.self().getPatchVariable("chemical"); });
       let myleft = SelfManager.self().patchLeftAndAhead(world.observer.getGlobal("sniff-angle"), 1).projectionBy(function() { return SelfManager.self().getPatchVariable("chemical"); });

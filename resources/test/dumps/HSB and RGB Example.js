@@ -64,6 +64,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("hsb-as-rgb", ColorModel.hsbToRGB(world.observer.getGlobal("hue"), world.observer.getGlobal("saturation"), world.observer.getGlobal("brightness")));
       world.observer.setGlobal("hsb-color", ColorModel.nearestColorNumberOfHSB(world.observer.getGlobal("hue"), world.observer.getGlobal("saturation"), world.observer.getGlobal("brightness")));
       procedures["QUADRANT"](-1,1).ask(function() { SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("hsb-as-rgb")); }, true);
@@ -88,7 +89,8 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function(x, y) {
     try {
-      throw new Exception.ReportInterrupt(world.patches().agentFilter(function() { return Prims.equality(procedures["PATCH-QUADRANT"](), ListPrims.list(x, y)); }));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return world.patches().agentFilter(function() { return Prims.equality(procedures["PATCH-QUADRANT"](), ListPrims.list(x, y)); }) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -104,7 +106,8 @@ var procedures = (function() {
   procs["QUADRANT"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(ListPrims.list((Prims.lt(SelfManager.self().getPatchVariable("pxcor"), Prims.div(world.topology.width, 2)) ? -1 : 1), (Prims.lt(SelfManager.self().getPatchVariable("pycor"), Prims.div(world.topology.width, 2)) ? -1 : 1)));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return ListPrims.list((Prims.lt(SelfManager.self().getPatchVariable("pxcor"), Prims.div(world.topology.width, 2)) ? -1 : 1), (Prims.lt(SelfManager.self().getPatchVariable("pycor"), Prims.div(world.topology.width, 2)) ? -1 : 1)) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {

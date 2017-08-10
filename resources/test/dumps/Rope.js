@@ -64,6 +64,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
       world.turtleManager.createTurtles(world.topology.width, "").ask(function() {
@@ -92,6 +93,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); }).ask(function() {
         if (Prims.gt(world.ticker.tickCount(), 100)) {
           SelfManager.self().setVariable("ypos", (world.observer.getGlobal("amplitude") * NLMath.sin((world.observer.getGlobal("frequency") * world.ticker.tickCount()))));

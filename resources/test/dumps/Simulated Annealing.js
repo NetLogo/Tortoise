@@ -49,6 +49,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('global energy', 'default')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotValue(world.observer.getGlobal("global-energy"));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -87,6 +88,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       ListPrims.nOf(Prims.div(world.patches().size(), 2), world.patches()).ask(function() { SelfManager.self().setPatchVariable("brightness", 1); }, true);
       world.patches().ask(function() { procedures["UPDATE-VISUAL"](); }, true);
@@ -107,6 +109,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       for (let _index_289_295 = 0, _repeatcount_289_295 = StrictMath.floor(1000); _index_289_295 < _repeatcount_289_295; _index_289_295++){
         ListPrims.oneOf(world.patches()).ask(function() { procedures["TRY-SWAP"](); }, true);
       }
@@ -127,6 +130,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       SelfManager.self().setPatchVariable("pcolor", (SelfManager.self().getPatchVariable("brightness") * 9.9));
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -142,7 +146,8 @@ var procedures = (function() {
   procs["UPDATE-VISUAL"] = temp;
   temp = (function(oldEnergy, newEnergy) {
     try {
-      throw new Exception.ReportInterrupt(((Prims.lt(newEnergy, oldEnergy) || (world.observer.getGlobal("accept-equal-changes?") && Prims.equality(newEnergy, oldEnergy))) || Prims.lt(Prims.randomFloat(1), world.observer.getGlobal("temperature"))));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return ((Prims.lt(newEnergy, oldEnergy) || (world.observer.getGlobal("accept-equal-changes?") && Prims.equality(newEnergy, oldEnergy))) || Prims.lt(Prims.randomFloat(1), world.observer.getGlobal("temperature"))) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -158,6 +163,7 @@ var procedures = (function() {
   procs["ACCEPT-CHANGE?"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let p2 = ListPrims.oneOf(SelfManager.self().inRadius(world.patches(), world.observer.getGlobal("swap-radius")));
       if (Prims.equality(SelfManager.self().getPatchVariable("brightness"), p2.projectionBy(function() { return SelfManager.self().getPatchVariable("brightness"); }))) {
         throw new Exception.StopInterrupt;
@@ -187,6 +193,7 @@ var procedures = (function() {
   procs["TRY-SWAP"] = temp;
   temp = (function(p1, p2) {
     try {
+      var reporterContext = false;
       let temp = p1.projectionBy(function() { return SelfManager.self().getPatchVariable("brightness"); });
       p1.ask(function() {
         SelfManager.self().setPatchVariable("brightness", p2.projectionBy(function() { return SelfManager.self().getPatchVariable("brightness"); }));
@@ -206,6 +213,7 @@ var procedures = (function() {
   procs["SWAP-VALUES"] = temp;
   temp = (function() {
     try {
+      var reporterContext = true;
       let unhappiness = 0;
       SelfManager.self().patchAt(0, 1).ask(function() {
         unhappiness = (unhappiness + NLMath.pow((SelfManager.self().getPatchVariable("brightness") - SelfManager.myself().projectionBy(function() { return SelfManager.self().getPatchVariable("brightness"); })), 2));
@@ -219,7 +227,7 @@ var procedures = (function() {
       SelfManager.self().patchAt(-1, 0).ask(function() {
         unhappiness = ((unhappiness + 1) - NLMath.pow((SelfManager.self().getPatchVariable("brightness") - SelfManager.myself().projectionBy(function() { return SelfManager.self().getPatchVariable("brightness"); })), 2));
       }, true);
-      throw new Exception.ReportInterrupt(unhappiness);
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return unhappiness }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {

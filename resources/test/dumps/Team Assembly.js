@@ -54,6 +54,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Link counts', undefined)(function() {
         try {
+          var reporterContext = false;
           let total = 0;
           plotManager.setCurrentPen("previous collaborators");
           plotManager.raisePen();
@@ -99,6 +100,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('% of agents in the giant component', 'default')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotPoint(world.ticker.tickCount(), Prims.div(world.observer.getGlobal("giant-component-size"), world.turtles().size()));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -122,6 +124,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Average component size', 'default')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotPoint(world.ticker.tickCount(), ListPrims.mean(world.observer.getGlobal("components")));
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -160,6 +163,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtleManager.createTurtles(1, "").ask(function() {
         SelfManager.self().setVariable("color", (105 + 1));
         SelfManager.self().setVariable("size", 1.8);
@@ -183,6 +187,7 @@ var procedures = (function() {
   procs["MAKE-NEWCOMER"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
       for (let _index_1053_1059 = 0, _repeatcount_1053_1059 = StrictMath.floor(world.observer.getGlobal("team-size")); _index_1053_1059 < _repeatcount_1053_1059; _index_1053_1059++){
@@ -215,6 +220,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtles().ask(function() {
         SelfManager.self().setVariable("incumbent?", true);
         SelfManager.self().setVariable("color", (5 - 1.5));
@@ -250,6 +256,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let newTeamMember = Nobody;
       for (let _index_2105_2111 = 0, _repeatcount_2105_2111 = StrictMath.floor(world.observer.getGlobal("team-size")); _index_2105_2111 < _repeatcount_2105_2111; _index_2105_2111++){
         if (Prims.gte(Prims.randomFloat(100), world.observer.getGlobal("p"))) {
@@ -289,6 +296,7 @@ var procedures = (function() {
   procs["PICK-TEAM-MEMBERS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.turtles().agentFilter(function() { return SelfManager.self().getVariable("in-team?"); }).ask(function() {
         LinkPrims.createLinksWith(world.turtles()._optimalOtherWith(function() { return SelfManager.self().getVariable("in-team?"); }), "LINKS").ask(function() {
           SelfManager.self().setVariable("new-collaboration?", true);
@@ -309,6 +317,7 @@ var procedures = (function() {
   procs["TIE-COLLABORATORS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.links().agentFilter(function() {
         return (SelfManager.self().getVariable("end1").projectionBy(function() { return SelfManager.self().getVariable("in-team?"); }) && SelfManager.self().getVariable("end2").projectionBy(function() { return SelfManager.self().getVariable("in-team?"); }));
       }).ask(function() {
@@ -343,6 +352,7 @@ var procedures = (function() {
   procs["COLOR-COLLABORATIONS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       for (let _index_4159_4165 = 0, _repeatcount_4159_4165 = StrictMath.floor(12); _index_4159_4165 < _repeatcount_4159_4165; _index_4159_4165++){
         LayoutManager.layoutSpring(world.turtles(), world.links(), 0.18, 0.01, 1.2);
         notImplemented('display', undefined)();
@@ -361,6 +371,7 @@ var procedures = (function() {
   procs["LAYOUT"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("components", []);
       world.observer.setGlobal("giant-component-size", 0);
       world.turtles().ask(function() { SelfManager.self().setVariable("explored?", false); }, true);
@@ -390,6 +401,7 @@ var procedures = (function() {
   procs["FIND-ALL-COMPONENTS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (SelfManager.self().getVariable("explored?")) {
         throw new Exception.StopInterrupt;
       }

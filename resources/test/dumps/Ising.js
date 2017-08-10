@@ -49,6 +49,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Magnetization', 'average spin')(function() {
         try {
+          var reporterContext = false;
           plotManager.plotPoint(world.ticker.tickCount(), procedures["MAGNETIZATION"]());
         } catch (e) {
           if (e instanceof Exception.ReportInterrupt) {
@@ -66,6 +67,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('Magnetization', 'axis')(function() {
         try {
+          var reporterContext = false;
           plotManager.disableAutoplotting();
           plotManager.plotPoint(0, 0);
           plotManager.plotPoint(1000000000000000, 0);
@@ -107,6 +109,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.patches().ask(function() {
         if (Prims.lt(Prims.random(100), world.observer.getGlobal("probability-of-spin-up"))) {
@@ -133,6 +136,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       for (let _index_510_516 = 0, _repeatcount_510_516 = StrictMath.floor(1000); _index_510_516 < _repeatcount_510_516; _index_510_516++){
         ListPrims.oneOf(world.patches()).ask(function() { procedures["UPDATE"](); }, true);
       }
@@ -152,6 +156,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let ediff = ((2 * SelfManager.self().getPatchVariable("spin")) * SelfManager.self()._optimalNSum4("spin"));
       if ((Prims.lte(ediff, 0) || (Prims.gt(world.observer.getGlobal("temperature"), 0) && Prims.lt(Prims.randomFloat(1), NLMath.exp(Prims.div( -ediff, world.observer.getGlobal("temperature"))))))) {
         SelfManager.self().setPatchVariable("spin",  -SelfManager.self().getPatchVariable("spin"));
@@ -172,6 +177,7 @@ var procedures = (function() {
   procs["UPDATE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(SelfManager.self().getPatchVariable("spin"), 1)) {
         SelfManager.self().setPatchVariable("pcolor", (105 + 2));
       }
@@ -192,7 +198,8 @@ var procedures = (function() {
   procs["RECOLOR"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(Prims.div(world.observer.getGlobal("sum-of-spins"), world.patches().size()));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(world.observer.getGlobal("sum-of-spins"), world.patches().size()) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {

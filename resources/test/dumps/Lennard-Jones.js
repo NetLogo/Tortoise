@@ -49,6 +49,7 @@ modelConfig.plots = [(function() {
     workspace.rng.withAux(function() {
       plotManager.withTemporaryContext('energy per particle', 'default')(function() {
         try {
+          var reporterContext = false;
           if (Prims.gt(world.ticker.tickCount(), 3)) {
             plotManager.plotValue(Prims.div(world.observer.getGlobal("v-total"), world.observer.getGlobal("num-atoms")));
           }
@@ -89,6 +90,7 @@ var procedures = (function() {
   var temp = undefined;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.clearAll();
       world.ticker.reset();
       world.observer.setGlobal("eps", 1);
@@ -117,6 +119,7 @@ var procedures = (function() {
   procs["SETUP"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       for (let _index_827_833 = 0, _repeatcount_827_833 = StrictMath.floor(world.observer.getGlobal("num-atoms")); _index_827_833 < _repeatcount_827_833; _index_827_833++){
         ListPrims.oneOf(world.turtles()).ask(function() { procedures["ATTEMPT-MOVE"](); }, true);
       }
@@ -138,6 +141,7 @@ var procedures = (function() {
   procs["GO"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       world.observer.setGlobal("total-move-attempts", (world.observer.getGlobal("total-move-attempts") + 1));
       world.observer.setGlobal("current-move-attempts", (world.observer.getGlobal("current-move-attempts") + 1));
       let vOld = procedures["CALC-V"]();
@@ -168,7 +172,8 @@ var procedures = (function() {
   procs["ATTEMPT-MOVE"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(Prims.div(ListPrims.sum(world.turtles().projectionBy(function() { return procedures["CALC-V"](); })), 2));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(ListPrims.sum(world.turtles().projectionBy(function() { return procedures["CALC-V"](); })), 2) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -184,6 +189,7 @@ var procedures = (function() {
   procs["CALC-V-TOTAL"] = temp;
   temp = (function() {
     try {
+      var reporterContext = true;
       let v = 0;
       SelfPrims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("cutoff-dist"))).ask(function() {
         let rsquare = NLMath.pow(SelfManager.self().distance(SelfManager.myself()), 2);
@@ -193,7 +199,7 @@ var procedures = (function() {
         let vi = (((4 * world.observer.getGlobal("eps")) * (repelTerm - attractTerm)) + world.observer.getGlobal("pot-offset"));
         v = (v + vi);
       }, true);
-      throw new Exception.ReportInterrupt(v);
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return v }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -209,7 +215,8 @@ var procedures = (function() {
   procs["CALC-V"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(Prims.div(world.observer.getGlobal("current-successful-moves"), world.observer.getGlobal("current-move-attempts")));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(world.observer.getGlobal("current-successful-moves"), world.observer.getGlobal("current-move-attempts")) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -225,6 +232,7 @@ var procedures = (function() {
   procs["ACCEPT-RATE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.lt(procedures["ACCEPT-RATE"](), 0.5)) {
         world.observer.setGlobal("max-move-dist", (world.observer.getGlobal("max-move-dist") * 0.95));
       }
@@ -250,7 +258,8 @@ var procedures = (function() {
   procs["TUNE-ACCEPTANCE-RATE"] = temp;
   temp = (function() {
     try {
-      throw new Exception.ReportInterrupt(Prims.div(world.observer.getGlobal("v-total"), world.observer.getGlobal("num-atoms")));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(world.observer.getGlobal("v-total"), world.observer.getGlobal("num-atoms")) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
@@ -266,6 +275,7 @@ var procedures = (function() {
   procs["ENERGY-PER-PARTICLE"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       if (Prims.equality(world.observer.getGlobal("initial-config"), "HCP")) {
         let l = NLMath.sqrt(world.observer.getGlobal("num-atoms"));
         let rowDist = (NLMath.pow(2, Prims.div(1, 6)) * world.observer.getGlobal("diameter"));
@@ -302,6 +312,7 @@ var procedures = (function() {
   procs["SETUP-ATOMS"] = temp;
   temp = (function() {
     try {
+      var reporterContext = false;
       let rMin = (0.7 * world.observer.getGlobal("diameter"));
       world.turtles().ask(function() {
         while (procedures["OVERLAPPING"](rMin)) {
@@ -322,7 +333,8 @@ var procedures = (function() {
   procs["REMOVE-OVERLAP"] = temp;
   temp = (function(rMin) {
     try {
-      throw new Exception.ReportInterrupt(SelfPrims._optimalAnyOther(SelfManager.self().inRadius(world.turtles(), rMin)));
+      var reporterContext = true;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return SelfPrims._optimalAnyOther(SelfManager.self().inRadius(world.turtles(), rMin)) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
       if (e instanceof Exception.ReportInterrupt) {
