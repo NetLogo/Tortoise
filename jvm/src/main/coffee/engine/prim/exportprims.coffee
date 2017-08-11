@@ -2,10 +2,10 @@
 
 module.exports.Config =
   class ExportConfig
-    # (String -> Unit) -> ExportConfig
-    constructor: (@exportOutput = (->)) ->
+    # (String -> Unit, Unit -> Unit) -> ExportConfig
+    constructor: (@exportOutput = (->), @exportView = (->)) ->
 
 module.exports.Prims =
   class ExportPrims
     # ExportConfig -> ExportPrims
-    constructor: ({ @exportOutput }) ->
+    constructor: ({ @exportOutput, @exportView }) ->

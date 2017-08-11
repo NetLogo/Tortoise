@@ -342,6 +342,7 @@ object SimplePrims {
         case _: prim.etc._stdout           => "Prims.stdout"
         case _: prim.etc._usermessage      => "UserDialogPrims.confirm"
         case _: prim.etc._exportoutput     => "ExportPrims.exportOutput"
+        case _: prim.etc._exportview       => "ExportPrims.exportView"
         case _: prim.etc._wait             => "Prims.wait"
 
         // Unimplemented
