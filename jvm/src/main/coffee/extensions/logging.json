@@ -1,0 +1,26 @@
+{
+  "name": "logging",
+  "prims": [
+    {
+      "name":       "all-logs",
+      "actionName": "all-logs",
+      "argTypes":   [],
+      "returnType": "list"
+    }, {
+      "name":       "clear-logs",
+      "actionName": "clear-logs",
+      "argTypes":   [],
+      "returnType": "unit"
+    }, {
+      "name":       "log-globals",
+      "actionName": "log-globals",
+      "argTypes":   [{ "type": "string", "isRepeatable": true }],
+      "returnType": "unit"
+    }, {
+      "name":       "log-message",
+      "actionName": "log-message",
+      "argTypes":   ["string"],
+      "returnType": "unit"
+    }
+  ]
+}

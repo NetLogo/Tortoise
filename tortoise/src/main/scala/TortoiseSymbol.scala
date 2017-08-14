@@ -39,6 +39,7 @@ object TortoiseSymbol {
       s"var workspace = tortoise_require('engine/workspace')(modelConfig)${args.map(_.mkString("(", ", ", ")")).mkString("")};"
   }
 
+  // scalastyle:off cyclomatic.complexity
   implicit def componentOrdering: Ordering[TortoiseSymbol] =
     new Ordering[TortoiseSymbol] {
       // this ordering is designed to put requires first and statements last
@@ -59,4 +60,6 @@ object TortoiseSymbol {
         }
       }
     }
+  // scalastyle:on cyclomatic.complexity
+
 }
