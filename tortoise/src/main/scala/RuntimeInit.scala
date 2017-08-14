@@ -11,7 +11,7 @@ import
     tortoise.json.JsonSerializer
 
 import
-  TortoiseSymbol.{ JsDeclare, JsRequire, WorkspaceInit }
+  TortoiseSymbol.{ JsDeclare, JsDepend, JsRequire, WorkspaceInit }
 
 // RuntimeInit generates JavaScript code that does any initialization that needs to happen
 // before any user code runs, for example creating patches
@@ -58,7 +58,7 @@ class RuntimeInit(program: Program, model: Model, onTickFunction: String = jsFun
     JsRequire("Random",         "shim/random"),
     JsRequire("StrictMath",     "shim/strictmath"),
 
-    JsRequire("Extensions",     "extensions/all")
+    JsDepend("Extensions", "extensions/all", Seq("workspace"))
 
   )
 

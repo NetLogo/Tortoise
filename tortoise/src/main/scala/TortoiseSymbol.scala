@@ -25,6 +25,11 @@ object TortoiseSymbol {
     def toJS:         String      = s"var $provides = tortoise_require('$filePath');"
   }
 
+  case class JsDepend(provides: String, filePath: String, dependencies: Seq[String])
+    extends TortoiseSymbol {
+    def toJS: String = s"var $provides = tortoise_require('$filePath')(${dependencies.mkString(", ")});"
+  }
+
   case class WorkspaceInit(args: Seq[Seq[String]], argumentDependencies: Seq[String] = Seq())
     extends TortoiseSymbol {
     val dependencies: Seq[String] =
@@ -44,6 +49,9 @@ object TortoiseSymbol {
           case (r1: JsRequire, r2: JsRequire)     => defaultComparison
           case (r: JsRequire, o)                  => -1
           case (o, r: JsRequire)                  => 1
+          case (d1: JsDepend, d2: JsDepend)       => defaultComparison
+          case (d:  JsDepend, o)                  => 1
+          case (o, d: JsDepend)                   => -1
           case (s1: JsStatement, s2: JsStatement) => defaultComparison
           case (s: JsStatement, o)                => 1
           case (o, s: JsStatement)                => -1

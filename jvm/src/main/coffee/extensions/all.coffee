@@ -1,8 +1,9 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-extensionPaths = ['codap', 'nlmap']
-extObj         = {}
+extensionPaths = ['codap', 'logging', 'nlmap']
 
-extensionPaths.forEach((path) -> e = require("extensions/#{path}"); extObj[e.name.toUpperCase()] = e)
-
-module.exports = extObj
+module.exports =
+  (workspace) ->
+    extObj = {}
+    extensionPaths.forEach((path) -> e = require("extensions/#{path}")(workspace); extObj[e.name.toUpperCase()] = e)
+    extObj
