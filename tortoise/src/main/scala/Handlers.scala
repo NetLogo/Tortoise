@@ -90,9 +90,7 @@ trait Handlers extends EveryIDProvider {
         |${indented(reporterJS)}
         |  throw new Error("Reached end of reporter procedure without REPORT being called.");
         |} catch (e) {
-        |  if (e instanceof Exception.ReportInterrupt) {
-        |    return e.message;
-        |  } else if (e instanceof Exception.StopInterrupt) {
+        | if (e instanceof Exception.StopInterrupt) {
         |    throw new Error("STOP is not allowed inside TO-REPORT.");
         |  } else {
         |    throw e;
@@ -104,9 +102,7 @@ trait Handlers extends EveryIDProvider {
         |  var reporterContext = false;
         |${indented(commandJS)}
         |} catch (e) {
-        |  if (e instanceof Exception.ReportInterrupt) {
-        |    throw new Error("REPORT can only be used inside TO-REPORT.");
-        |  } else if (e instanceof Exception.StopInterrupt) {
+        |  if (e instanceof Exception.StopInterrupt) {
         |    return e;
         |  } else {
         |    throw e;
