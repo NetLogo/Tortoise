@@ -79,9 +79,7 @@ var procedures = (function() {
       }
       world.observer.setGlobal("result", workspace.timer.elapsed());
     } catch (e) {
-      if (e instanceof Exception.ReportInterrupt) {
-        throw new Error("REPORT can only be used inside TO-REPORT.");
-      } else if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -100,9 +98,7 @@ var procedures = (function() {
         SelfManager.self().face(ListPrims.oneOf(SelfManager.self().getNeighbors4()));
       }, true);
     } catch (e) {
-      if (e instanceof Exception.ReportInterrupt) {
-        throw new Error("REPORT can only be used inside TO-REPORT.");
-      } else if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -120,9 +116,7 @@ var procedures = (function() {
       }, true);
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.ReportInterrupt) {
-        throw new Error("REPORT can only be used inside TO-REPORT.");
-      } else if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;

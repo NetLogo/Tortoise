@@ -83,9 +83,7 @@ var procedures = (function() {
       world.observer.setGlobal("first-parent", Nobody);
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.ReportInterrupt) {
-        throw new Error("REPORT can only be used inside TO-REPORT.");
-      } else if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -107,9 +105,7 @@ var procedures = (function() {
         i = (i + 1);
       }
     } catch (e) {
-      if (e instanceof Exception.ReportInterrupt) {
-        throw new Error("REPORT can only be used inside TO-REPORT.");
-      } else if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -145,9 +141,7 @@ var procedures = (function() {
         procedures["HANDLE-MOUSE-DOWN"]();
       }
     } catch (e) {
-      if (e instanceof Exception.ReportInterrupt) {
-        throw new Error("REPORT can only be used inside TO-REPORT.");
-      } else if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -173,9 +167,7 @@ var procedures = (function() {
         }
       }, true);
     } catch (e) {
-      if (e instanceof Exception.ReportInterrupt) {
-        throw new Error("REPORT can only be used inside TO-REPORT.");
-      } else if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -201,9 +193,7 @@ var procedures = (function() {
         }
       }, true);
     } catch (e) {
-      if (e instanceof Exception.ReportInterrupt) {
-        throw new Error("REPORT can only be used inside TO-REPORT.");
-      } else if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -238,9 +228,7 @@ var procedures = (function() {
       
       }
     } catch (e) {
-      if (e instanceof Exception.ReportInterrupt) {
-        throw new Error("REPORT can only be used inside TO-REPORT.");
-      } else if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;

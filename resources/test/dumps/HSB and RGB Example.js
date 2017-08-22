@@ -82,9 +82,7 @@ var procedures = (function() {
       procedures["QUADRANT"](1,-1).ask(function() { SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("rgb-color")); }, true);
       notImplemented('display', undefined)();
     } catch (e) {
-      if (e instanceof Exception.ReportInterrupt) {
-        throw new Error("REPORT can only be used inside TO-REPORT.");
-      } else if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -99,9 +97,7 @@ var procedures = (function() {
       if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return world.patches().agentFilter(function() { return Prims.equality(procedures["PATCH-QUADRANT"](), ListPrims.list(x, y)); }) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
-      if (e instanceof Exception.ReportInterrupt) {
-        return e.message;
-      } else if (e instanceof Exception.StopInterrupt) {
+     if (e instanceof Exception.StopInterrupt) {
         throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
@@ -116,9 +112,7 @@ var procedures = (function() {
       if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return ListPrims.list((Prims.lt(SelfManager.self().getPatchVariable("pxcor"), Prims.div(world.topology.width, 2)) ? -1 : 1), (Prims.lt(SelfManager.self().getPatchVariable("pycor"), Prims.div(world.topology.width, 2)) ? -1 : 1)) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
-      if (e instanceof Exception.ReportInterrupt) {
-        return e.message;
-      } else if (e instanceof Exception.StopInterrupt) {
+     if (e instanceof Exception.StopInterrupt) {
         throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;

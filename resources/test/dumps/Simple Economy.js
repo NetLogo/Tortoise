@@ -58,9 +58,7 @@ modelConfig.plots = [(function() {
           plotManager.setYRange(0, 40);
           plotManager.drawHistogramFrom(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("wealth"); }));
         } catch (e) {
-          if (e instanceof Exception.ReportInterrupt) {
-            throw new Error("REPORT can only be used inside TO-REPORT.");
-          } else if (e instanceof Exception.StopInterrupt) {
+          if (e instanceof Exception.StopInterrupt) {
             return e;
           } else {
             throw e;
@@ -82,9 +80,7 @@ modelConfig.plots = [(function() {
           var reporterContext = false;
           plotManager.plotValue(procedures["TOP-10-PCT-WEALTH"]());
         } catch (e) {
-          if (e instanceof Exception.ReportInterrupt) {
-            throw new Error("REPORT can only be used inside TO-REPORT.");
-          } else if (e instanceof Exception.StopInterrupt) {
+          if (e instanceof Exception.StopInterrupt) {
             return e;
           } else {
             throw e;
@@ -100,9 +96,7 @@ modelConfig.plots = [(function() {
           var reporterContext = false;
           plotManager.plotValue(procedures["BOTTOM-50-PCT-WEALTH"]());
         } catch (e) {
-          if (e instanceof Exception.ReportInterrupt) {
-            throw new Error("REPORT can only be used inside TO-REPORT.");
-          } else if (e instanceof Exception.StopInterrupt) {
+          if (e instanceof Exception.StopInterrupt) {
             return e;
           } else {
             throw e;
@@ -148,9 +142,7 @@ var procedures = (function() {
       }, true);
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.ReportInterrupt) {
-        throw new Error("REPORT can only be used inside TO-REPORT.");
-      } else if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -170,9 +162,7 @@ var procedures = (function() {
       }, true);
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.ReportInterrupt) {
-        throw new Error("REPORT can only be used inside TO-REPORT.");
-      } else if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -187,9 +177,7 @@ var procedures = (function() {
       SelfManager.self().setVariable("wealth", (SelfManager.self().getVariable("wealth") - 1));
       ListPrims.oneOf(SelfPrims.other(world.turtles())).ask(function() { SelfManager.self().setVariable("wealth", (SelfManager.self().getVariable("wealth") + 1)); }, true);
     } catch (e) {
-      if (e instanceof Exception.ReportInterrupt) {
-        throw new Error("REPORT can only be used inside TO-REPORT.");
-      } else if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -204,9 +192,7 @@ var procedures = (function() {
       if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return ListPrims.sum(world.turtles().maxNOf((world.turtles().size() * 0.1), function() { return SelfManager.self().getVariable("wealth"); }).projectionBy(function() { return SelfManager.self().getVariable("wealth"); })) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
-      if (e instanceof Exception.ReportInterrupt) {
-        return e.message;
-      } else if (e instanceof Exception.StopInterrupt) {
+     if (e instanceof Exception.StopInterrupt) {
         throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
@@ -221,9 +207,7 @@ var procedures = (function() {
       if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return ListPrims.sum(world.turtles().minNOf((world.turtles().size() * 0.5), function() { return SelfManager.self().getVariable("wealth"); }).projectionBy(function() { return SelfManager.self().getVariable("wealth"); })) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
-      if (e instanceof Exception.ReportInterrupt) {
-        return e.message;
-      } else if (e instanceof Exception.StopInterrupt) {
+     if (e instanceof Exception.StopInterrupt) {
         throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;

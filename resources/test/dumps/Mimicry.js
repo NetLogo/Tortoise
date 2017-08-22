@@ -57,9 +57,7 @@ modelConfig.plots = [(function() {
           var reporterContext = false;
           plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed("MONARCHS").projectionBy(function() { return SelfManager.self().getVariable("color"); })));
         } catch (e) {
-          if (e instanceof Exception.ReportInterrupt) {
-            throw new Error("REPORT can only be used inside TO-REPORT.");
-          } else if (e instanceof Exception.StopInterrupt) {
+          if (e instanceof Exception.StopInterrupt) {
             return e;
           } else {
             throw e;
@@ -75,9 +73,7 @@ modelConfig.plots = [(function() {
           var reporterContext = false;
           plotManager.plotValue(ListPrims.mean(world.turtleManager.turtlesOfBreed("VICEROYS").projectionBy(function() { return SelfManager.self().getVariable("color"); })));
         } catch (e) {
-          if (e instanceof Exception.ReportInterrupt) {
-            throw new Error("REPORT can only be used inside TO-REPORT.");
-          } else if (e instanceof Exception.StopInterrupt) {
+          if (e instanceof Exception.StopInterrupt) {
             return e;
           } else {
             throw e;
@@ -118,9 +114,7 @@ var procedures = (function() {
       procedures["SETUP-TURTLES"]();
       world.ticker.reset();
     } catch (e) {
-      if (e instanceof Exception.ReportInterrupt) {
-        throw new Error("REPORT can only be used inside TO-REPORT.");
-      } else if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -139,9 +133,7 @@ var procedures = (function() {
       world.observer.setGlobal("color-range-begin", 15);
       world.observer.setGlobal("color-range-end", 109);
     } catch (e) {
-      if (e instanceof Exception.ReportInterrupt) {
-        throw new Error("REPORT can only be used inside TO-REPORT.");
-      } else if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -167,9 +159,7 @@ var procedures = (function() {
         SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
       }, true);
     } catch (e) {
-      if (e instanceof Exception.ReportInterrupt) {
-        throw new Error("REPORT can only be used inside TO-REPORT.");
-      } else if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -194,9 +184,7 @@ var procedures = (function() {
       }).ask(function() { procedures["BUTTERFLIES-REPRODUCE"](); }, true);
       world.ticker.tick();
     } catch (e) {
-      if (e instanceof Exception.ReportInterrupt) {
-        throw new Error("REPORT can only be used inside TO-REPORT.");
-      } else if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -217,9 +205,7 @@ var procedures = (function() {
       SelfManager.self().setVariable("heading", (180 + Prims.random(180)));
       SelfManager.self()._optimalFdOne();
     } catch (e) {
-      if (e instanceof Exception.ReportInterrupt) {
-        throw new Error("REPORT can only be used inside TO-REPORT.");
-      } else if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -235,9 +221,7 @@ var procedures = (function() {
       SelfManager.self().right(-Prims.random(100));
       SelfManager.self()._optimalFdOne();
     } catch (e) {
-      if (e instanceof Exception.ReportInterrupt) {
-        throw new Error("REPORT can only be used inside TO-REPORT.");
-      } else if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -263,9 +247,7 @@ var procedures = (function() {
         }
       }
     } catch (e) {
-      if (e instanceof Exception.ReportInterrupt) {
-        throw new Error("REPORT can only be used inside TO-REPORT.");
-      } else if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -288,9 +270,7 @@ var procedures = (function() {
       if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return false }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
-      if (e instanceof Exception.ReportInterrupt) {
-        return e.message;
-      } else if (e instanceof Exception.StopInterrupt) {
+     if (e instanceof Exception.StopInterrupt) {
         throw new Error("STOP is not allowed inside TO-REPORT.");
       } else {
         throw e;
@@ -307,9 +287,7 @@ var procedures = (function() {
       }
       SelfManager.self().setVariable("memory", ListPrims.lput(ListPrims.list(c, 0), SelfManager.self().getVariable("memory")));
     } catch (e) {
-      if (e instanceof Exception.ReportInterrupt) {
-        throw new Error("REPORT can only be used inside TO-REPORT.");
-      } else if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -334,9 +312,7 @@ var procedures = (function() {
         return Prims.lte(ListPrims.item(1, i), world.observer.getGlobal("memory-duration"));
       }, "[ i -> item 1 i <= memory-duration ]")));
     } catch (e) {
-      if (e instanceof Exception.ReportInterrupt) {
-        throw new Error("REPORT can only be used inside TO-REPORT.");
-      } else if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -359,9 +335,7 @@ var procedures = (function() {
         }
       }
     } catch (e) {
-      if (e instanceof Exception.ReportInterrupt) {
-        throw new Error("REPORT can only be used inside TO-REPORT.");
-      } else if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
@@ -382,9 +356,7 @@ var procedures = (function() {
         }, true);
       }
     } catch (e) {
-      if (e instanceof Exception.ReportInterrupt) {
-        throw new Error("REPORT can only be used inside TO-REPORT.");
-      } else if (e instanceof Exception.StopInterrupt) {
+      if (e instanceof Exception.StopInterrupt) {
         return e;
       } else {
         throw e;
