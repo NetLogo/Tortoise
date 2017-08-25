@@ -1,6 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-extensionPaths = ['codap', 'logging', 'nlmap']
+extensionPaths = ['codap', 'logging', 'nlmap', 'http-req']
 
 module.exports =
   (workspace) ->

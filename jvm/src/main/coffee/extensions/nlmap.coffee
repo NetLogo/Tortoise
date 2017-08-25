@@ -6,8 +6,11 @@ module.exports =
     # type ExtMap = Object[Any]
     newMap = ->
       out = {}
-      Object.defineProperty(out, "_type", { enumerable: false, value: "ext_map", writable: false })
-      out
+      toMap(out)
+
+    toMap = (obj) ->
+      Object.defineProperty(obj, "_type", { enumerable: false, value: "ext_map", writable: false })
+      obj
 
     # List[(String, Any)] => ExtMap
     fromList = (list) ->
@@ -44,6 +47,34 @@ module.exports =
         out[k] = extMap[k]
       out
 
+    # NLMAP => String
+    mapToJson = (nlmap) ->
+      if nlmap._type isnt "ext_map"
+        throw new Error("Only nlmap type values can be converted to JSON format.")
+      JSON.stringify(nlmap)
+
+    # NLMAP => String
+    mapToUrlEncoded = (nlmap) ->
+      if nlmap._type isnt "ext_map"
+        throw new Error("Only nlmap type values can be converted to URL format.")
+      else
+        kvps = []
+
+        for own key,value of nlmap
+          if (typeof value isnt 'object')
+            kvps.push("#{encodeURIComponent(key)}=#{encodeURIComponent(value)}")
+
+        kvps.join('&')
+
+    # String => NLMAP
+    jsonToMap = (json) ->
+      JSON.parse(json, (key, value) ->
+        if (typeof value is 'object')
+          toMap(value)
+        else
+          value
+      )
+
     {
       name: "nlmap"
     , prims: {
@@ -53,5 +84,8 @@ module.exports =
       ,       "ADD": add
       ,       "GET": get
       ,    "REMOVE": remove
+      ,   "TO-JSON": mapToJson
+      , "TO-URLENC": mapToUrlEncoded
+      , "FROM-JSON": jsonToMap
       }
     }
