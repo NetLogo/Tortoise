@@ -2,8 +2,11 @@
 
 IFramePhone = require('iframe-phone')
 
-module.exports =
-  (workspace) ->
+module.exports = {
+
+  dumper: undefined
+
+  init: (workspace) ->
 
     phone = undefined
 
@@ -35,3 +38,5 @@ module.exports =
           return
       }
     }
+
+}

@@ -1,7 +1,14 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-module.exports =
-  (workspace) ->
+# (Any) => Boolean
+isMap = (x) ->
+  x._type is "ext_map"
+
+module.exports = {
+
+  dumper: { canDump: isMap, dump: (x) -> "{{nlmap:  #{JSON.stringify(x)}}}" }
+
+  init: (workspace) ->
 
     # type ExtMap = Object[Any]
     newMap = ->
@@ -23,10 +30,6 @@ module.exports =
     toList = (extMap) ->
       for k of extMap
         [k, extMap[k]]
-
-    # (Any) => Boolean
-    isMap = (x) ->
-      x._type is "ext_map"
 
     # (ExtMap, String, Any) -> ExtMap
     add = (extMap, key, value) ->
@@ -89,3 +92,5 @@ module.exports =
       , "FROM-JSON": jsonToMap
       }
     }
+
+}

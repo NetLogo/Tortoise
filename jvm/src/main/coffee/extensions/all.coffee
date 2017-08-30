@@ -2,8 +2,15 @@
 
 extensionPaths = ['codap', 'logging', 'nlmap', 'http-req']
 
-module.exports =
-  (workspace) ->
+dumpers = extensionPaths.map((path) -> require("extensions/#{path}").dumper).filter((x) -> x?)
+
+module.exports = {
+
+  initialize: (workspace) ->
     extObj = {}
-    extensionPaths.forEach((path) -> e = require("extensions/#{path}")(workspace); extObj[e.name.toUpperCase()] = e)
+    extensionPaths.forEach((path) -> e = require("extensions/#{path}").init(workspace); extObj[e.name.toUpperCase()] = e)
     extObj
+
+  dumpers: -> dumpers
+
+}
