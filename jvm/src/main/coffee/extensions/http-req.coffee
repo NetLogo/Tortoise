@@ -1,7 +1,10 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-module.exports =
-  (workspace) ->
+module.exports = {
+
+  dumper: undefined
+
+  init: (workspace) ->
 
     # (String) => [String, String, String]
     get = (url) ->
@@ -43,3 +46,5 @@ module.exports =
       , "POST": post
       }
     }
+
+}

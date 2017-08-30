@@ -3,8 +3,11 @@
 { contains, filter, foldl, isEmpty, map, tail } = require('brazierjs/array')
 { flip, id, pipeline, tee                     } = require('brazierjs/function')
 
-module.exports =
-  (workspace) ->
+module.exports = {
+
+  dumper: undefined
+
+  init: (workspace) ->
 
     logBuffer = [] # Array[String]
 
@@ -48,3 +51,5 @@ module.exports =
       , "LOG-MESSAGE": logMessage
       }
     }
+
+}

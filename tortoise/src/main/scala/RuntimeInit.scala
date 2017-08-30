@@ -22,7 +22,15 @@ class RuntimeInit(program: Program, model: Model, onTickFunction: String = jsFun
     JsDeclare("turtleShapes", shapeList(new ShapeList(AgentKind.Turtle, ShapeList.shapesToMap(model.turtleShapes)))),
     JsDeclare("linkShapes",   shapeList(new ShapeList(AgentKind.Link,   ShapeList.shapesToMap(model.linkShapes)))),
 
-    WorkspaceInit(Seq(Seq(genBreedObjects), genBreedsOwnArgs, genWorkspaceArgs), Seq("turtleShapes", "linkShapes")),
+    WorkspaceInit(
+        Seq(
+          Seq(genBreedObjects)
+        , genBreedsOwnArgs
+        , Seq("tortoise_require(\"extensions/all\").dumpers()")
+        , genWorkspaceArgs
+        )
+      , Seq("turtleShapes", "linkShapes")
+    ),
 
     workspaceDeclare("BreedManager"),
     workspaceDeclare("ExportPrims"),
@@ -57,7 +65,7 @@ class RuntimeInit(program: Program, model: Model, onTickFunction: String = jsFun
     JsRequire("Random",         "shim/random"),
     JsRequire("StrictMath",     "shim/strictmath"),
 
-    JsDepend("Extensions", "extensions/all", Seq("workspace"))
+    JsDepend("Extensions", "extensions/all", ".initialize", Seq("workspace"))
 
   )
 
