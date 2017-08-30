@@ -72,7 +72,7 @@ module.exports =
 
     # () => TurtleSet
     turtlesHere: ->
-      new TurtleSet(@_turtles[..])
+      new TurtleSet(@_turtles[..], @world)
 
     # (() => Any) => Unit
     ask: (f) ->
@@ -99,7 +99,7 @@ module.exports =
 
     # (String) => TurtleSet
     breedHere: (breedName) ->
-      new TurtleSet(@breedHereArray(breedName))
+      new TurtleSet(@breedHereArray(breedName), @world)
 
     # (String) => Array[Turtle]
     breedHereArray: (breedName) ->

@@ -51,7 +51,7 @@ module.exports =
       @_updateVarsByName = @_genUpdate(this)
 
       @penManager  = genPenManager(this)
-      @linkManager = new TurtleLinkManager(@id, @world.breedManager, @world.rng.nextInt)
+      @linkManager = new TurtleLinkManager(@id, @world)
 
       varNames     = @_varNamesForBreed(breed)
       @_varManager = @_genVarManager(varNames)
@@ -321,7 +321,7 @@ module.exports =
       isNameValid = breedName? and breedName isnt ""
       breed       = if isNameValid then @world.breedManager.get(breedName) else @_breed
       newTurtles  = map(=> @_makeTurtleCopy(breed))(rangeUntil(0)(num))
-      new TurtleSet(newTurtles)
+      new TurtleSet(newTurtles, @world)
 
     # (Breed) => Turtle
     _makeTurtleCopy: (breed) ->

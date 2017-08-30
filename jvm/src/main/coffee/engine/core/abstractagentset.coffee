@@ -17,20 +17,16 @@ stableSort     = require('util/stablesort')
 module.exports =
   class AbstractAgentSet
 
-    @_nextInt:     undefined # (Number) => Number
-    @_selfManager: undefined # SelfManager
-    @_world:       undefined # World
-
-    # (Array[T], String, String) => AbstractAgentSet
-    constructor: (@_agentArr, @_agentTypeName, @_specialName) ->
+    # (Array[T], World, String, String) => AbstractAgentSet
+    constructor: (@_agentArr, @_world, @_agentTypeName, @_specialName) ->
 
     # (() => Boolean) => AbstractAgentSet[T]
     agentFilter: (f) ->
-      @filter(Iterator.withBoolCheck(@_lazyGetSelfManager().askAgent(f)))
+      @filter(Iterator.withBoolCheck(@_world.selfManager.askAgent(f)))
 
     # (() => Boolean) => Boolean
     agentAll: (f) ->
-      @iterator().all(@_lazyGetSelfManager().askAgent(f))
+      @iterator().all(@_world.selfManager.askAgent(f))
 
     # (() => Any, Boolean) => Unit
     ask: (f, shouldShuffle) ->
@@ -41,19 +37,17 @@ module.exports =
         else
           @iterator()
 
-      selfManager = @_lazyGetSelfManager()
+      iter.forEach(@_world.selfManager.askAgent(f))
 
-      iter.forEach(selfManager.askAgent(f))
-
-      if selfManager.self().isDead?()
+      if @_world.selfManager.self().isDead?()
         throw new Death
 
       return
 
     # (Array[(Number, Number)]) => AbstractAgentSet[T]
     atPoints: (points) ->
-      getSelf    =        => @_lazyGetSelfManager().self()
-      getPatchAt = (x, y) => @_lazyGetWorld().getPatchAt(x, y)
+      getSelf    =        => @_world.selfManager.self()
+      getPatchAt = (x, y) => @_world.getPatchAt(x, y)
       require('./agentset/atpoints')(getSelf, getPatchAt).call(this, points)
 
     # (T) => Boolean
@@ -129,7 +123,7 @@ module.exports =
 
     # [Result] @ (() => Result) => Array[Result]
     projectionBy: (f) ->
-      @shufflerator().map(@_lazyGetSelfManager().askAgent(f))
+      @shufflerator().map(@_world.selfManager.askAgent(f))
 
     # () => AbstractAgentSet[T]
     shuffled: ->
@@ -137,7 +131,7 @@ module.exports =
 
     # () => Shufflerator[T]
     shufflerator: ->
-      new Shufflerator(@toArray(), ((agent) -> agent?.id >= 0), @_lazyGetNextIntFunc())
+      new Shufflerator(@toArray(), ((agent) -> agent?.id >= 0), @_world.rng.nextInt)
 
     # () => Number
     size: ->
@@ -166,7 +160,7 @@ module.exports =
     # (Number, () => Number, (Number, Number) => Number) => AbstractAgentSet[T]
     _findBestNOf: (n, f, cStyleComparator) ->
 
-      ask = @_lazyGetSelfManager().askAgent(f)
+      ask = @_world.selfManager.askAgent(f)
 
       groupByValue =
         (acc, agent) ->
@@ -210,14 +204,14 @@ module.exports =
       if agents.length is 0
         Nobody
       else
-        agents[@_lazyGetNextIntFunc()(agents.length)]
+        agents[@_world.rng.nextInt(agents.length)]
 
     # (Number, (Number, Number) => Boolean, () => Number) => Array[T]
     _findBestOf: (worstPossible, findIsBetter, f) ->
       foldFunc =
         ([currentBest, currentWinners], agent) =>
 
-          result = @_lazyGetSelfManager().askAgent(f)(agent)
+          result = @_world.selfManager.askAgent(f)(agent)
 
           if result is currentBest
             currentWinners.push(agent)
@@ -240,43 +234,11 @@ module.exports =
 
     # (Array[T]) => This[T]
     _generateFrom: (newAgentArr) ->
-      new @constructor(newAgentArr)
-
-    # () => (Number) => Number
-    _lazyGetNextIntFunc: ->
-      if @_nextInt?
-        @_nextInt
-      else if @_lazyGetWorld()?
-        @_nextInt = @_lazyGetWorld().rng.nextInt
-        @_nextInt
-      else
-        (-> throw new Error("How are you calling the RNG in an empty agentset?"))
-
-    # () => SelfManager
-    _lazyGetSelfManager: ->
-      if @_selfManager?
-        @_selfManager
-      else if @_lazyGetWorld()?
-        @_selfManager = @_lazyGetWorld().selfManager
-        @_selfManager
-      else
-        {
-          askAgent: () -> () -> undefined,
-          self:     -> { id: undefined }
-        }
-
-    _lazyGetWorld: ->
-      if @_world?
-        @_world
-      else if @_agentArr[0]?
-        @_world = @_agentArr[0].world
-        @_world
-      else
-        undefined
+      new @constructor(newAgentArr, @_world)
 
     # (() => Boolean) => AgentSet
     _optimalOtherWith: (f) ->
-      self = @_lazyGetSelfManager().self()
+      self = @_world.selfManager.self()
       filterer =
         (x) ->
           if x != self

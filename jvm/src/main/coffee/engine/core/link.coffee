@@ -89,7 +89,7 @@ module.exports =
 
     # () => TurtleSet
     bothEnds: ->
-      new TurtleSet([@end1, @end2])
+      new TurtleSet([@end1, @end2], @world)
 
     # () => Turtle
     otherEnd: ->

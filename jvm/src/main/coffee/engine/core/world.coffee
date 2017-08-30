@@ -94,7 +94,7 @@ module.exports =
 
     # () => PatchSet
     patches: =>
-      new PatchSet(@_patches, "patches")
+      new PatchSet(@_patches, this, "patches")
 
     # (Number, Number, Number, Number, Boolean, Boolean) => Unit
     resize: (minPxcor, maxPxcor, minPycor, maxPycor, wrapsInX = @topology._wrapInX, wrapsInY = @topology._wrapInY) ->
@@ -198,11 +198,11 @@ module.exports =
 
     # (Number, Number) => PatchSet
     getNeighbors: (pxcor, pycor) ->
-      new PatchSet(@topology.getNeighbors(pxcor, pycor))
+      new PatchSet(@topology.getNeighbors(pxcor, pycor), this)
 
     # (Number, Number) => PatchSet
     getNeighbors4: (pxcor, pycor) ->
-      new PatchSet(@topology.getNeighbors4(pxcor, pycor))
+      new PatchSet(@topology.getNeighbors4(pxcor, pycor), this)
 
     # The wrapping and rounding below is setup to avoid creating extra anonymous functions.
     # We could just use @ and fat arrows => but CoffeeScript uses anon funcs to bind `this`.
@@ -294,7 +294,7 @@ module.exports =
           [].concat(getPatch(n) for n in [seqStart..seqEnd]...)
         else
           []
-      new PatchSet(ret)
+      new PatchSet(ret, this)
 
     # () => Unit
     _incrementPatchLabelCount: =>

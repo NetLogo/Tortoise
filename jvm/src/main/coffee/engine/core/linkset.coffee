@@ -7,9 +7,9 @@ JSType               = require('util/typechecker')
 module.exports =
   class LinkSet extends AbstractAgentSet
 
-    # [T <: Turtle] @ ((() => Array[T])|Array[T], String) => LinkSet
-    constructor: (@_agents, specialName) ->
-      super(@_unwrap(@_agents), "links", specialName)
+    # [T <: Turtle] @ ((() => Array[T])|Array[T], World, String) => LinkSet
+    constructor: (@_agents, world, specialName) ->
+      super(@_unwrap(@_agents), world, "links", specialName)
 
     # () => Iterator[T]
     iterator: ->
