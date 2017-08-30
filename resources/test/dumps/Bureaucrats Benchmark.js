@@ -1,6 +1,5 @@
 var AgentModel = tortoise_require('agentmodel');
 var ColorModel = tortoise_require('engine/core/colormodel');
-var Dump = tortoise_require('engine/dump');
 var Exception = tortoise_require('util/exception');
 var Link = tortoise_require('engine/core/link');
 var LinkSet = tortoise_require('engine/core/linkset');
@@ -21,7 +20,6 @@ var notImplemented = tortoise_require('util/notimplemented');
 var linkShapes = {"default":{"name":"default","direction-indicator":{"name":"link direction","editableColorIndex":0,"rotate":true,"elements":[{"x1":150,"y1":150,"x2":90,"y2":180,"type":"line","color":"rgba(141, 141, 141, 1.0)","filled":false,"marked":true},{"x1":150,"y1":150,"x2":210,"y2":180,"type":"line","color":"rgba(141, 141, 141, 1.0)","filled":false,"marked":true}]},"curviness":0,"lines":[{"x-offset":-0.2,"is-visible":false,"dash-pattern":[0,1]},{"x-offset":0,"is-visible":true,"dash-pattern":[1,0]},{"x-offset":0.2,"is-visible":false,"dash-pattern":[0,1]}]}};
 var modelConfig = (typeof window.modelConfig !== "undefined" && window.modelConfig !== null) ? window.modelConfig : {};
 var turtleShapes = {"default":{"name":"default","editableColorIndex":0,"rotate":true,"elements":[{"xcors":[150,40,150,260],"ycors":[5,250,205,250],"type":"polygon","color":"rgba(141, 141, 141, 1.0)","filled":true,"marked":true}]}};
-var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.plotOps !== null) ? modelConfig.plotOps : {};
 if (typeof javax !== "undefined") {
   modelConfig.dialog = {
     confirm: function(str) { return true; },
@@ -47,6 +45,7 @@ if (typeof javax !== "undefined") {
     resizeWorld: function(agent) {}
   }
 }
+var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.plotOps !== null) ? modelConfig.plotOps : {};
 modelConfig.plots = [(function() {
   var name    = 'Average';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
@@ -87,7 +86,8 @@ modelConfig.plots = [(function() {
   };
   return new Plot(name, pens, plotOps, "", "", true, true, 0.0, 1.0, 2.0, 2.1, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])(["plot?", "total", "result"], ["plot?"], ["n"], 0, 99, 0, 99, 3.0, false, false, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])(tortoise_require("extensions/all").dumpers())(["plot?", "total", "result"], ["plot?"], ["n"], 0, 99, 0, 99, 3.0, false, false, turtleShapes, linkShapes, function(){});
+var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ExportPrims = workspace.exportPrims;
 var LayoutManager = workspace.layoutManager;
@@ -103,7 +103,6 @@ var Updater = workspace.updater;
 var UserDialogPrims = workspace.userDialogPrims;
 var plotManager = workspace.plotManager;
 var world = workspace.world;
-var Extensions = tortoise_require('extensions/all')(workspace);
 var procedures = (function() {
   var procs = {};
   var temp = undefined;
