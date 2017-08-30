@@ -39,27 +39,16 @@ object TortoiseSymbol {
       s"var workspace = tortoise_require('engine/workspace')(modelConfig)${args.map(_.mkString("(", ", ", ")")).mkString("")};"
   }
 
-  // scalastyle:off cyclomatic.complexity
   implicit def componentOrdering: Ordering[TortoiseSymbol] =
     new Ordering[TortoiseSymbol] {
-      // this ordering is designed to put requires first and statements last
-      // (regardless of alphabetic order), and to alphabetically order otherwise
       def compare(a: TortoiseSymbol, b: TortoiseSymbol): Int = {
-        lazy val defaultComparison = Ordering.String.compare(a.provides, b.provides)
-        (a, b) match {
-          case (r1: JsRequire, r2: JsRequire)     => defaultComparison
-          case (r: JsRequire, o)                  => -1
-          case (o, r: JsRequire)                  => 1
-          case (d1: JsDepend, d2: JsDepend)       => defaultComparison
-          case (d:  JsDepend, o)                  => 1
-          case (o, d: JsDepend)                   => -1
-          case (s1: JsStatement, s2: JsStatement) => defaultComparison
-          case (s: JsStatement, o)                => 1
-          case (o, s: JsStatement)                => -1
-          case _                                  => defaultComparison
-        }
+        val order = Seq(classOf[JsRequire], classOf[JsDepend], classOf[JsStatement], classOf[JsDeclare], classOf[WorkspaceInit])
+        val (classA, classB) = (a.getClass(), b.getClass())
+        if (classA == classB)
+          Ordering.String.compare(a.provides, b.provides)
+        else
+          order.indexOf(classA) - order.indexOf(classB)
       }
     }
-  // scalastyle:on cyclomatic.complexity
 
 }
