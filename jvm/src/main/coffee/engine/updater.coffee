@@ -1,6 +1,5 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-Dump      = require('./dump')
 Link      = require('./core/link')
 Observer  = require('./core/observer')
 Patch     = require('./core/patch')
@@ -31,8 +30,8 @@ module.exports =
     _hasUpdates: undefined # Boolean
     _updates:    undefined # Array[Update]
 
-    # () => Updater
-    constructor: ->
+    # ((Any) => String) => Updater
+    constructor: (@_dump) ->
       @_flushUpdates()
 
     # () => Unit
@@ -88,15 +87,15 @@ module.exports =
 
       [entry, objMap] =
         if obj instanceof Turtle
-          [update.turtles, @_turtleMap]
+          [update.turtles, @_turtleMap()]
         else if obj instanceof Patch
-          [update.patches, @_patchMap]
+          [update.patches, @_patchMap()]
         else if obj instanceof Link
-          [update.links, @_linkMap]
+          [update.links, @_linkMap()]
         else if obj instanceof World
-          [update.world, @_worldMap]
+          [update.world, @_worldMap()]
         else if obj instanceof Observer
-          [update.observer, @_observerMap]
+          [update.observer, @_observerMap()]
         else
           throw new Error("Unrecognized update type")
 
@@ -121,14 +120,14 @@ module.exports =
 
 
     # (Turtle) => Object[EngineKey, (Key, Getter)]
-    _turtleMap: {
+    _turtleMap: -> {
       breed:         ["BREED",       (turtle) -> turtle.getBreedName()]
       color:         ["COLOR",       (turtle) -> turtle._color]
       heading:       ["HEADING",     (turtle) -> turtle._heading]
       id:            ["WHO",         (turtle) -> turtle.id]
       'label-color': ["LABEL-COLOR", (turtle) -> turtle._labelcolor]
       'hidden?':     ["HIDDEN?",     (turtle) -> turtle._hidden]
-      label:         ["LABEL",       (turtle) -> Dump(turtle._label)]
+      label:         ["LABEL",       (turtle) => @_dump(turtle._label)]
       'pen-size':    ["PEN-SIZE",    (turtle) -> turtle.penManager.getSize()]
       'pen-mode':    ["PEN-MODE",    (turtle) -> turtle.penManager.getMode().toString()]
       shape:         ["SHAPE",       (turtle) -> turtle._getShape()]
@@ -138,17 +137,17 @@ module.exports =
     }
 
     # (Patch) => Object[EngineKey, (Key, Getter)]
-    _patchMap: {
+    _patchMap: -> {
       id:             ["WHO",          (patch) -> patch.id]
       pcolor:         ["PCOLOR",       (patch) -> patch._pcolor]
-      plabel:         ["PLABEL",       (patch) -> Dump(patch._plabel)]
+      plabel:         ["PLABEL",       (patch) => @_dump(patch._plabel)]
       'plabel-color': ["PLABEL-COLOR", (patch) -> patch._plabelcolor]
       pxcor:          ["PXCOR",        (patch) -> patch.pxcor]
       pycor:          ["PYCOR",        (patch) -> patch.pycor]
     }
 
     # (Link) => Object[EngineKey, (Key, Getter)]
-    _linkMap: {
+    _linkMap: -> {
       breed:         ["BREED",       (link) -> link.getBreedName()]
       color:         ["COLOR",       (link) -> link._color]
       end1:          ["END1",        (link) -> link.end1.id]
@@ -157,7 +156,7 @@ module.exports =
       'hidden?':     ["HIDDEN?",     (link) -> link._isHidden]
       id:            ["ID",          (link) -> link.id]
       'directed?':   ["DIRECTED?",   (link) -> link.isDirected]
-      label:         ["LABEL",       (link) -> Dump(link._label)]
+      label:         ["LABEL",       (link) => @_dump(link._label)]
       'label-color': ["LABEL-COLOR", (link) -> link._labelcolor]
       midpointx:     ["MIDPOINTX",   (link) -> link.getMidpointX()]
       midpointy:     ["MIDPOINTY",   (link) -> link.getMidpointY()]
@@ -174,7 +173,7 @@ module.exports =
     }
 
     # (World) => Object[EngineKey, (Key, Getter)]
-    _worldMap: {
+    _worldMap: -> {
       height:                     ["worldHeight",               (world) -> world.topology.height]
       id:                         ["WHO",                       (world) -> world.id]
       patchesAllBlack:            ["patchesAllBlack",           (world) -> world._patchesAllBlack]
@@ -192,7 +191,7 @@ module.exports =
     }
 
     # (Observer) => Object[EngineKey, (Key, Getter)]
-    _observerMap: {
+    _observerMap: -> {
       id:          ["WHO",         (observer) -> observer.id]
       perspective: ["perspective", (observer) -> observer._perspective.toInt]
       targetAgent: ["targetAgent", (observer) -> observer._getTargetAgentUpdate()]

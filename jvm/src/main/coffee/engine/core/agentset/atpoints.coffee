@@ -1,8 +1,5 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-# Eventually, all of the error-checking crap should move to the "middle layer" of the engine,
-# and then this awful dependency on `Dumper` can go away.  --JAB (1/7/16)
-Dumper = require('../../dump')
 Nobody = require('../nobody')
 NLType = require('../typechecker')
 
@@ -20,26 +17,26 @@ genPatchGrabber = (self, worldPatchAt) ->
   else
     (-> Nobody)
 
-# ((Number, Number) => Patch, Array[(Number, Number)]) => Array[Patch]
-getPatchesAtPoints = (patchAt, points) ->
+# ((Any) => String, (Number, Number) => Patch, Array[(Number, Number)]) => Array[Patch]
+getPatchesAtPoints = (dump, patchAt, points) ->
   f =
     (point) ->
       if NLType(point).isList() and point.length is 2 and NLType(point[0]).isNumber() and NLType(point[1]).isNumber()
         patchAt(point...)
       else
-        throw new Error("Invalid list of points: #{Dumper(points)}")
+        throw new Error("Invalid list of points: #{dump(points)}")
   pipeline(map(f), filter((x) -> x isnt Nobody))(points)
 
-# (() => Agent, (Number, Number) => Patch) => (Array[Any]) => AbstractAgentSet[T]
+# ((Any) => String, () => Agent, (Number, Number) => Patch) => (Array[Any]) => AbstractAgentSet[T]
 module.exports =
-  (getSelf, getPatchAt) -> (points) ->
+  (dump, getSelf, getPatchAt) -> (points) ->
 
     filterContaining = filter((x) => @contains(x))
 
     breedName = @getSpecialName()
 
     patchAt = genPatchGrabber(getSelf(), getPatchAt)
-    patches = getPatchesAtPoints(patchAt, points)
+    patches = getPatchesAtPoints(dump, patchAt, points)
 
     newAgents =
       if NLType(this).isPatchSet()

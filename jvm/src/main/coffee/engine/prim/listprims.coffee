@@ -1,6 +1,5 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-Dump             = require('../dump')
 AbstractAgentSet = require('../core/abstractagentset')
 Link             = require('../core/link')
 Nobody           = require('../core/nobody')
@@ -22,8 +21,8 @@ module.exports =
 
     # type ListOrSet[T] = AbstractAgentSet|Array[T]
 
-    # (Hasher, (Any, Any) => Boolean, (Number) => Number) => ListPrims
-    constructor: (@_hasher, @_equality, @_nextInt) ->
+    # (() => String, Hasher, (Any, Any) => Boolean, (Number) => Number) => ListPrims
+    constructor: (@_dump, @_hasher, @_equality, @_nextInt) ->
 
     # [T] @ (Array[T]|String) => Array[T]|String
     butFirst: (xs) ->
@@ -51,7 +50,7 @@ module.exports =
         throw new Error("#{n} isn't greater than or equal to zero.")
       else if n > xs.length
         typeName = if NLType(xs).isList() then "list" else if NLType(xs).isString() then "string" else "unknown"
-        throw new Error("Can't find element #{n} of the #{typeName} #{Dump(xs)}, which is only of length #{xs.length}.")
+        throw new Error("Can't find element #{n} of the #{typeName} #{@_dump(xs)}, which is only of length #{xs.length}.")
       else
         if NLType(xs).isString()
           if NLType(x).isString()
@@ -59,13 +58,13 @@ module.exports =
             chars.splice(n, 0, x)
             chars.join('')
           else
-            throw new Error("INSERT-ITEM expected input to be a string but got the #{typeof(x)} #{Dump(x)} instead.")
+            throw new Error("INSERT-ITEM expected input to be a string but got the #{typeof(x)} #{@_dump(x)} instead.")
         else if NLType(xs).isList()
           clone = xs[..]
           clone.splice(n, 0, x)
           clone
         else
-          throw new Error("Unrecognized type of collection for `insert-item`: #{Dump(xs)}")
+          throw new Error("Unrecognized type of collection for `insert-item`: #{@_dump(xs)}")
 
     # [Item] @ (Number, Array[Item]) => Item
     item: (n, xs) ->
@@ -111,7 +110,7 @@ module.exports =
           subMiddleNum = nums[middleIndex - 1]
           NLMath.validateNumber((middleNum + subMiddleNum) / 2)
       else
-        throw new Error("Can't find the median of a list with no numbers: #{Dump(xs)}.")
+        throw new Error("Can't find the median of a list with no numbers: #{@_dump(xs)}.")
 
     # [Item, Container <: (Array[Item]|String|AbstractAgentSet[Item])] @ (Item, Container) => Boolean
     member: (x, xs) ->
@@ -165,7 +164,7 @@ module.exports =
         newItems = @_nOfArray(n, items)
         agentsOrList.copyWithNewAgents(newItems)
       else
-        throw new Error("N-OF expected input to be a list or agentset but got #{Dump(agentsOrList)} instead.")
+        throw new Error("N-OF expected input to be a list or agentset but got #{@_dump(agentsOrList)} instead.")
 
     # [Item] @ (ListOrSet[Item]) => Item
     oneOf: (agentsOrList) ->
@@ -386,7 +385,7 @@ module.exports =
         stdDev     = StrictMath.sqrt(squareDiff / (nums.length - 1))
         NLMath.validateNumber(stdDev)
       else
-        throw new Error("Can't find the standard deviation of a list without at least two numbers: #{Dump(xs)}")
+        throw new Error("Can't find the standard deviation of a list without at least two numbers: #{@_dump(xs)}")
 
     # [T] @ (Array[T], Number, Number) => Array[T]
     sublist: (xs, n1, n2) ->

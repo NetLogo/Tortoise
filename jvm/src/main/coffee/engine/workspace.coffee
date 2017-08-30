@@ -43,32 +43,35 @@ module.exports =
     printConfig   = modelConfig?.print     ? new PrintConfig
     worldConfig   = modelConfig?.world     ? new WorldConfig
 
+    dump        = Dump
     rng         = new RNG
     typechecker = NLType
 
     selfManager  = new SelfManager
     breedManager = new BreedManager(breedObjs, turtlesOwns, linksOwns)
     plotManager  = new PlotManager(plots)
-    prims        = new Prims(Dump, Hasher, rng)
-    selfPrims    = new SelfPrims(selfManager.self)
     timer        = new Timer
-    updater      = new Updater
+    updater      = new Updater(dump)
 
-    world           = new World(new MiniWorkspace(selfManager, updater, breedManager, rng, plotManager), worldConfig, outputConfig.clear, worldArgs...)
+    # The world is only given `dump` for stupid `atpoints` in `AbstractAgentSet`... --JAB (8/24/17)
+    world           = new World(new MiniWorkspace(selfManager, updater, breedManager, rng, plotManager), worldConfig, outputConfig.clear, dump, worldArgs...)
     layoutManager   = new LayoutManager(world, rng.nextDouble)
 
-    linkPrims       = new LinkPrims(world)
-    listPrims       = new ListPrims(Hasher, prims.equality.bind(prims), rng.nextInt)
+    prims     = new Prims(dump, Hasher, rng, world)
+    selfPrims = new SelfPrims(selfManager.self)
+    linkPrims = new LinkPrims(world)
+    listPrims = new ListPrims(dump, Hasher, prims.equality.bind(prims), rng.nextInt)
 
     exportPrims     = new ExportPrims(exportConfig)
     mousePrims      = new MousePrims(mouseConfig)
-    outputPrims     = new OutputPrims(outputConfig, Dump)
-    printPrims      = new PrintPrims(printConfig, Dump)
+    outputPrims     = new OutputPrims(outputConfig, dump)
+    printPrims      = new PrintPrims(printConfig, dump)
     userDialogPrims = new UserDialogPrims(dialogConfig)
 
     {
       selfManager
       breedManager
+      dump
       exportPrims
       layoutManager
       linkPrims

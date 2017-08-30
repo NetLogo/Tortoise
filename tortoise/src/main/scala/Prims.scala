@@ -95,7 +95,7 @@ trait ReporterPrims extends PrimUtils {
       case _: prim._not                => s"!${arg(0)}"
       case _: prim._count              => s"${arg(0)}.size()"
       case _: prim._any                => s"!${arg(0)}.isEmpty()"
-      case _: prim._word               => ("''" +: args).map(arg => s"Dump($arg)").mkString("(", " + ", ")")
+      case _: prim._word               => ("''" +: args).map(arg => s"workspace.dump($arg)").mkString("(", " + ", ")")
       case _: prim._of                 => generateOf(r)
       case _: prim.etc._ifelsevalue    => s"(${arg(0)} ? ${arg(1)} : ${arg(2)})"
       case _: prim.etc._reduce         => s"${arg(1)}.reduce(${arg(0)})"
