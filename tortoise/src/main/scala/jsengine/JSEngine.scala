@@ -24,7 +24,7 @@ object JSEngine {
 
   implicit class NashornEngine(override val engine: Nashorn) extends JSEngine {
     override type T = Nashorn
-    override def eval(js: String): String = engine.eval(js).toString
+    override def eval(js: String): String = engine.evalAndDump(js)
   }
 
   implicit class V8Engine(override val engine: V8) extends JSEngine {

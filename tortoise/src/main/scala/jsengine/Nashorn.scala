@@ -42,6 +42,20 @@ class Nashorn {
   def eval(script: String): AnyRef =
     fromNashorn(engine.eval(script))
 
+  def evalAndDump(script: String): String = {
+
+    val result = engine.eval(script)
+
+    import scala.collection.JavaConverters.mapAsJavaMapConverter
+    val tempVar  = "__netlogoTempVar"
+    val bindings = engine.createBindings
+    bindings.putAll(engineScope.asInstanceOf[java.util.Map[String, Any]])
+    bindings.putAll(Map[String, Any](tempVar -> result).asJava)
+
+    engine.eval(s"workspace.dump($tempVar)", bindings).toString
+
+  }
+
   // translate from Nashorn values to NetLogo values
   def fromNashorn(jsValue: AnyRef): AnyRef =
     jsValue match {

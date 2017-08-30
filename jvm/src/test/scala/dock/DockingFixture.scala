@@ -96,8 +96,7 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
       case Success(expected) =>
         withClue(reporter.reporter) {
           assertResult(expected) {
-            Dump.logoObject(
-              evalJS(compiledJS))
+            nashorn.evalAndDump(compiledJS)
           }
           ()
         }

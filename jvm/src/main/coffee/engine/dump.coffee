@@ -19,6 +19,8 @@ Dump =
       "(anonymous command: #{x.nlogoBody})"
     else if type.isString()
       if isReadable then '"' + x + '"' else x
+    else if type.isNumber()
+      String(x).toUpperCase() # For scientific notation, handles correct casing of the 'E' --JAB (8/28/17)
     else
       String(x)
 
