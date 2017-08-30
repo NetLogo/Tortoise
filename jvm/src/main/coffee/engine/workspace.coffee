@@ -8,6 +8,7 @@ Dump          = require('./dump')
 Hasher        = require('./hasher')
 Updater       = require('./updater')
 BreedManager  = require('./core/breedmanager')
+NLType        = require('./core/typechecker')
 World         = require('./core/world')
 SelfManager   = require('./core/structure/selfmanager')
 PlotManager   = require('./plot/plotmanager')
@@ -43,6 +44,7 @@ module.exports =
     worldConfig   = modelConfig?.world     ? new WorldConfig
 
     rng         = new RNG
+    typechecker = NLType
 
     selfManager  = new SelfManager
     breedManager = new BreedManager(breedObjs, turtlesOwns, linksOwns)
@@ -79,6 +81,7 @@ module.exports =
       rng
       selfPrims
       timer
+      typechecker
       updater
       userDialogPrims
       world
