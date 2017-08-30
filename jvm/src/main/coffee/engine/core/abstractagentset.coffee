@@ -48,7 +48,7 @@ module.exports =
     atPoints: (points) ->
       getSelf    =        => @_world.selfManager.self()
       getPatchAt = (x, y) => @_world.getPatchAt(x, y)
-      require('./agentset/atpoints')(getSelf, getPatchAt).call(this, points)
+      require('./agentset/atpoints')(@_world.dump, getSelf, getPatchAt).call(this, points)
 
     # (T) => Boolean
     contains: (item) ->

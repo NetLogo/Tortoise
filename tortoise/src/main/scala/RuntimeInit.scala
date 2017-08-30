@@ -43,7 +43,6 @@ class RuntimeInit(program: Program, model: Model, onTickFunction: String = jsFun
     JsRequire("Exception",      "util/exception"),
     JsRequire("NLMath",         "util/nlmath"),
     JsRequire("notImplemented", "util/notimplemented"),
-    JsRequire("Dump",           "engine/dump"),
     JsRequire("ColorModel",     "engine/core/colormodel"),
     JsRequire("Link",           "engine/core/link"),
     JsRequire("LinkSet",        "engine/core/linkset"),

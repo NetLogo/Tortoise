@@ -1,7 +1,5 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-Dump = require('engine/dump')
-
 { contains, filter, foldl, isEmpty, map, tail } = require('brazierjs/array')
 { flip, id, pipeline, tee                     } = require('brazierjs/function')
 
@@ -25,7 +23,7 @@ module.exports =
       trueNames = if isEmpty(names) then globalNames else filter(flip(contains(globalNames)))(names)
 
       toLogMessage = ([name, value]) -> "#{name}: #{value}"
-      nameToLog    = pipeline(tee(id)(pipeline(getGlobal, (x) -> Dump(x, true))), toLogMessage)
+      nameToLog    = pipeline(tee(id)(pipeline(getGlobal, (x) -> workspace.dump(x, true))), toLogMessage)
       join         = pipeline(foldl((acc, s) -> acc + "\n" + s)(""), tail) # Use `tail` to drop initial newline
 
       pipeline(map(nameToLog), join, logMessage)(trueNames)
