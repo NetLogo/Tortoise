@@ -76,12 +76,12 @@ module.exports =
     # () => LinkSet
     links: ->
       thunk = (=> @_linkArray())
-      new LinkSet(thunk, "links")
+      new LinkSet(thunk, @_world, "links")
 
     # (String) => LinkSet
     linksOfBreed: (breedName) =>
       thunk = (=> stableSort(@_breedManager.get(breedName).members)((x, y) -> x.compare(y).toInt))
-      new LinkSet(thunk, breedName)
+      new LinkSet(thunk, @_world, breedName)
 
     # () => Array[Link]
     _linkArray: ->
@@ -134,10 +134,10 @@ module.exports =
         Nobody
 
     # ((Turtle) => Link) => (TurtleSet) => LinkSet
-    _createLinksBy: (mkLink) -> (turtles) ->
+    _createLinksBy: (mkLink) => (turtles) =>
       isLink = (other) -> other isnt Nobody
       links  = pipeline(map(mkLink), filter(isLink))(turtles.toArray())
-      new LinkSet(links)
+      new LinkSet(links, @_world)
 
     # String -> Unit
     _errorIfBreedIsIncompatible: (breedName) ->

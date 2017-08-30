@@ -35,8 +35,8 @@ module.exports =
 
     _everyMap: undefined # Object[String, Timer]
 
-    # (Dump, Hasher, RNG) => Prims
-    constructor: (@_dumper, @_hasher, @_rng) ->
+    # (Dump, Hasher, RNG, World) => Prims
+    constructor: (@_dumper, @_hasher, @_rng, @_world) ->
       @_everyMap = {}
 
     # () => Nothing
@@ -59,7 +59,7 @@ module.exports =
           throw new Error("`breed-on` unsupported for class '#{typeof(x)}'")
 
       turtles = flatMap((p) -> p.breedHereArray(breedName))(patches)
-      new TurtleSet(turtles)
+      new TurtleSet(turtles, @_world)
 
     # (Number, Number) => Number
     div: (a, b) ->
@@ -312,7 +312,7 @@ module.exports =
       type = NLType(agentsOrAgent)
       if type.isAgentSet()
         turtles = flatMap((agent) -> agent.turtlesHere().toArray())(agentsOrAgent.iterator().toArray())
-        new TurtleSet(turtles)
+        new TurtleSet(turtles, @_world)
       else
         agentsOrAgent.turtlesHere()
 
@@ -381,16 +381,17 @@ module.exports =
     # [T <: Agent, U <: AbstractAgentSet[T], V <: (Array[T]|T|AbstractAgentSet[T])] @ (Array[V], T.Class, U.Class) => U
     _createAgentSet: (inputs, tClass, outClass) ->
       flattened = flattenDeep(inputs)
+      makeOutie = (agents) => new outClass(agents, @_world)
       if isEmpty(flattened)
-        new outClass([])
+        makeOutie([])
       else if flattened.length is 1
         head = flattened[0]
         if head instanceof outClass
           head
         else if head instanceof tClass
-          new outClass([head])
+          makeOutie([head])
         else
-          new outClass([])
+          makeOutie([])
       else
         result  = []
         hashSet = {}
@@ -418,4 +419,4 @@ module.exports =
                 buildFromAgentSet(input)
 
         buildItems(flattened)
-        new outClass(result)
+        makeOutie(result)

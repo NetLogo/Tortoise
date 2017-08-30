@@ -33,8 +33,8 @@ module.exports =
 
     @_links: undefined # Array[(Link, Directedness)]
 
-    # (Number, BreedManager, (Number) => Number) => LinkManager
-    constructor: (@_ownerID, @_breedManager, @_randomInt) ->
+    # (Number, World) => LinkManager
+    constructor: (@_ownerID, @_world) ->
       @clear()
 
     # (Link) => Unit
@@ -83,15 +83,15 @@ module.exports =
 
     # (String) => LinkSet
     myInLinks: (breedName) ->
-      new LinkSet(@_links.filter(linkBreedMatches(breedName)(In)(@_ownerID)))
+      new LinkSet(@_links.filter(linkBreedMatches(breedName)(In)(@_ownerID)), @_world)
 
     # (String) => LinkSet
     myLinks: (breedName) ->
-      new LinkSet(@_links.filter(linkBreedMatches(breedName)(All)(@_ownerID)))
+      new LinkSet(@_links.filter(linkBreedMatches(breedName)(All)(@_ownerID)), @_world)
 
     # (String) => LinkSet
     myOutLinks: (breedName) ->
-      new LinkSet(@_links.filter(linkBreedMatches(breedName)(Out)(@_ownerID)))
+      new LinkSet(@_links.filter(linkBreedMatches(breedName)(Out)(@_ownerID)), @_world)
 
     # (String) => TurtleSet
     outLinkNeighbors: (breedName) ->
@@ -120,7 +120,7 @@ module.exports =
       else if links.length is 1
         links[0]
       else
-        links[@_randomInt(links.length)]
+        links[@_world.rng.nextInt(links.length)]
 
     # (LinkSet) => Array[Turtle]
     neighborsIn: (linkSet) ->
@@ -147,7 +147,7 @@ module.exports =
         filter(linkBreedMatches(breedName)(directedness)(@_ownerID))
       , map(otherEnd(@_ownerID))
       , unique
-      , ((turtles) -> new TurtleSet(turtles))
+      , ((turtles) => new TurtleSet(turtles, @_world))
       )(@_links)
 
     # () => Unit
