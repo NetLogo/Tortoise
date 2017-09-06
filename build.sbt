@@ -48,6 +48,17 @@ val commonSettings =
     // T gives truncated stack traces; change to G if you need full.
     testOptions in Test += Tests.Argument("-oT"))
 
+lazy val stylecheck = taskKey[Unit]("Run all sub-project scalastyle checks.")
+
+stylecheck := {
+  (scalastyle in Compile in compilerCore).toTask("").value
+  (scalastyle in Compile in macrosCore  ).toTask("").value
+  (scalastyle in Compile in compilerJVM ).toTask("").value
+  (scalastyle in Compile in compilerJS  ).toTask("").value
+  (scalastyle in Compile in netLogoWeb  ).toTask("").value
+  (scalastyle in Compile in engine      ).toTask("").value
+}
+
 lazy val root = (project in file("."))
 
 // These projects are just for scalastyle on shared sources

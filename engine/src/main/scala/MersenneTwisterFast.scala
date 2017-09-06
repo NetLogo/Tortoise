@@ -10,6 +10,7 @@ import
 import
   scala.scalajs.js.annotation.{ JSExport, JSExportTopLevel }
 
+// scalastyle:off
 // MT home page has moved to
 //   http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html
 /**
@@ -909,3 +910,4 @@ final class MersenneTwisterFast(seed: Long = System.nanoTime) extends Random wit
   }
 
 }
+// scalastyle:on
