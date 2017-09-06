@@ -66,7 +66,6 @@ lazy val tortoise = CrossProject("tortoise", file("."), new CrossType {
   dependsOn(macros % "compile-internal->compile;test-internal->test").
   settings(Depend.settings: _*).
   settings(commonSettings: _*).
-  jvmConfigure(_.addSbtFiles(file("travis.sbt"))).
   jvmSettings(FastMediumSlow.settings: _*).
   jvmSettings(Depend.settings: _*).
   jvmSettings(
