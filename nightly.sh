@@ -35,17 +35,19 @@ sbt_test(){
 if [[ "$@" == "" ||  "$@" == "--clean" ]] ; then
   rm -rf tmp/nightly
   mkdir -p tmp/nightly
-  sbt_task tortoiseJS/test:compile
-  sbt_test tortoiseJVM fast
-  sbt_test tortoiseJVM language
-  sbt_test tortoiseJS test
-  sbt_test tortoiseJVM crawl
-  sbt_test netLogoWeb test
-  sbt_task tortoiseCore/scalastyle
-  sbt_task tortoiseJVM/scalastyle
-  sbt_task tortoiseJS/scalastyle
+  sbt_task compilerJS/test:compile
+  sbt_task compilerJVM/test:compile
+  sbt_test compilerJVM test
+  sbt_test compilerJS test
+  sbt_test netLogoWeb/test:compile
+  sbt_test netLogoWeb fast
+  sbt_test netLogoWeb language
+  sbt_test netLogoWeb crawl
+  sbt_task compilerCore/scalastyle
+  sbt_task compilerJVM/scalastyle
+  sbt_task compilerJS/scalastyle
   sbt_task macrosCore/scalastyle
-  sbt_task tortoiseJVM/depend
+  sbt_task compilerJVM/depend
   echo "****** all done!"
 else
   $@

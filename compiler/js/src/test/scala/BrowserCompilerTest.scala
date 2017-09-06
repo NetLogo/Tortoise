@@ -7,7 +7,7 @@ import BrowserCompiler.literalParser
 import ExportRequest.NlogoFileVersion
 
 import
-  org.nlogo.core.{ model, Model, Slider, View },
+  org.nlogo.core.{ model, Model => CModel, Slider, View },
     model.ModelReader
 
 import
@@ -166,10 +166,10 @@ object BrowserCompilerTest extends TestSuite {
   private def compiledJs(compiledModel: JsObject): String =
     compiledModel[JsObject]("model").apply[String]("result")
 
-  private def modelToCompilationRequest(model: Model): NativeJson =
+  private def modelToCompilationRequest(model: CModel): NativeJson =
     modelToCompilationRequest(model, fields())
 
-  private def modelToCompilationRequest(model: Model, additionalFields: ListMap[String, TortoiseJson]): NativeJson = {
+  private def modelToCompilationRequest(model: CModel, additionalFields: ListMap[String, TortoiseJson]): NativeJson = {
     val reqObj = JsObject(
       fields(
         "code"         -> JsString(model.code),
@@ -182,17 +182,17 @@ object BrowserCompilerTest extends TestSuite {
     toNative(reqObj)
   }
 
-  private val validModel: Model = {
+  private val validModel: CModel = {
     val vectorShape = JsonVectorShape("custom", false, 0, Seq())
     val linkLine  = JsonLinkLine(0.0, true, Seq(0.0f, 1.0f))
     val linkShape = JsonLinkShape("custom2", 1.0, Seq(linkLine, linkLine, linkLine), vectorShape)
-    Model(
+    CModel(
       code         = "to foo fd 1 end",
       widgets      = List(View()),
       info         = "some model info here",
       version      = NlogoFileVersion,
-      linkShapes   = Model.defaultLinkShapes :+ linkShape,
-      turtleShapes = Model.defaultShapes :+ vectorShape)
+      linkShapes   = CModel.defaultLinkShapes :+ linkShape,
+      turtleShapes = CModel.defaultShapes :+ vectorShape)
   }
 
   private def assertErrorMessage(compiledModel: JsObject, message: String): Unit =
@@ -221,7 +221,7 @@ object BrowserCompilerTest extends TestSuite {
   private def compileModel(s: String): JsObject =
     withBrowserCompiler(_.fromNlogo(s))
 
-  private def compileModel(m: Model, commands: Seq[String] = Seq()): JsObject =
+  private def compileModel(m: CModel, commands: Seq[String] = Seq()): JsObject =
     withBrowserCompiler { b =>
       val formattedModel    = ModelReader.formatModel(m)
       val formattedCommands = toNative(JsArray(commands.map(s => JsString(s))))

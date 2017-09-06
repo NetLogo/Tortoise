@@ -2,6 +2,7 @@
 classes/
 target/
 tmp/
+node_modules/
 
 # common filenames
 .DS_Store
@@ -29,7 +30,6 @@ npm-debug.log
 # other
 /.ensime
 /.ensime_lucene/
-/jvm/node_modules/
 /build/
 /engine-benchmarks.txt
 /.projections.json

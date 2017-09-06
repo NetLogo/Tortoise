@@ -3,5 +3,5 @@
 package org.nlogo.tortoise
 
 package object jsengine {
-  val jsLibs = Seq("/js/tortoise-engine.js")
+  val jsLibs = Seq("/tortoise-engine.js")
 }

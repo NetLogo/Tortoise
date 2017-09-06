@@ -15,35 +15,36 @@ pipeline {
     stage('TestJVM') {
       steps {
         sh 'git submodule update --init --recursive'
-        sh "./sbt tortoiseJVM/test:compile"
-        sh "./sbt tortoiseJVM/test:fast"
-        sh "./sbt tortoiseJVM/test:language"
-        sh "./sbt tortoiseJVM/test:crawl"
-        sh "./sbt tortoiseJVM/depend"
-        junit 'jvm/target/test-reports/*.xml'
+        sh "./sbt compilerJVM/test:compile"
+        sh "./sbt compilerJVM/test:test"
+        sh "./sbt compilerJVM/depend"
+        junit 'compiler/jvm/target/test-reports/*.xml'
       }
     }
 
     stage('TestJS') {
       steps {
-        sh "./sbt tortoiseJS/test:compile"
-        sh "./sbt tortoiseJS/test:test"
-        junit 'js/target/test-reports/*.xml'
+        sh "./sbt compilerJS/test:compile"
+        sh "./sbt compilerJS/test:test"
+        junit 'compiler/js/target/test-reports/*.xml'
       }
     }
 
     stage('NetLogoWeb') {
       steps {
-        sh "./sbt netLogoWeb/test"
+        sh "./sbt netLogoWeb/test:compile"
+        sh "./sbt netLogoWeb/test:fast"
+        sh "./sbt netLogoWeb/test:language"
+        sh "./sbt netLogoWeb/test:crawl"
         junit 'netlogo-web/target/test-reports/*.xml'
       }
     }
 
     stage('ScalaStyle') {
       steps {
-        sh "./sbt tortoiseCore/scalastyle"
-        sh "./sbt tortoiseJVM/scalastyle"
-        sh "./sbt tortoiseJS/scalastyle"
+        sh "./sbt compilerCore/scalastyle"
+        sh "./sbt compilerJVM/scalastyle"
+        sh "./sbt compilerJS/scalastyle"
         sh "./sbt macrosCore/scalastyle"
       }
     }

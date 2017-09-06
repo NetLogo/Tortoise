@@ -1,4 +1,7 @@
 import scala.util.Try
+import sbt._
+import Process._
+import Keys._
 
 // If you get an error like this: 'java.io.IOException: Cannot run program "yarn": error=2, No such file or directory',
 // install Yarn (see https://yarnpkg.com/en/docs/install), and then install the Grunt command line tools
@@ -12,8 +15,6 @@ yarn := {
   Process("yarn" +: args, baseDirectory.value).!(streams.value.log)
 }
 
-
-
 lazy val yarnInstall = taskKey[Seq[File]]("Runs `yarn install` from within SBT")
 
 yarnInstall := {
@@ -24,25 +25,18 @@ yarnInstall := {
 
 watchSources += packageJson.value
 
-
-
-lazy val grunt = taskKey[Seq[File]]("Runs `grunt` from within SBT")
+lazy val grunt = taskKey[Unit]("Runs `grunt` from within SBT")
 
 grunt := {
   val targetJS = (classDirectory in Compile).value / "js" / "tortoise-engine.js"
   installGrunt.value
   if (allJSSources.value exists (_.newerThan(targetJS)))
     Process("grunt", baseDirectory.value).!(streams.value.log)
-  Seq()
 }
 
 grunt := (grunt.dependsOn(yarnInstall)).value
 
-resourceGenerators in Compile += grunt.taskValue
-
 watchSources ++= allJSSources.value
-
-
 
 lazy val installGrunt = Def.task[Unit] {
   val versionStr = Try(Process(Seq("grunt", "--version")).!!).toOption getOrElse "Grunt's not there"
@@ -71,7 +65,7 @@ lazy val coffeeSources = Def.task[Seq[File]] {
 }
 
 lazy val scalaJSSources = Def.task[Seq[File]] {
-  (baseDirectory.value / "src" / "main" / "scalajs").listFiles.filter(_.isFile)
+  (baseDirectory.value / "src" / "main" / "scala").listFiles.filter(_.isFile)
 }
 
 lazy val gruntSources = Def.task[Seq[File]] {

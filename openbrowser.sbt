@@ -1,9 +1,9 @@
 import sbt._
 
-lazy val browsableFailureReport = settingKey[File]("location for browser failure report")
+lazy val browsableFailureReport = settingKey[java.io.File]("location for browser failure report")
 
 browsableFailureReport := {
-  baseDirectory.value / "jvm" / "target" / "last-test-run-reports" / "index.html"
+  baseDirectory.value / "netlogo-web" / "target" / "last-test-run-reports" / "index.html"
 }
 
 TaskKey[Unit]("browseFailures") := {

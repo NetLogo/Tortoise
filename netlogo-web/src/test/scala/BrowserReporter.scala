@@ -32,14 +32,15 @@ trait BrowserReporter {
   protected def writeFixtureDocument(filename: String, fixture: ArrayBuffer[String]): Unit =
     writeToFile(filename) (
       html(head(
-        script(`type` :=  "text/javascript", src := "../classes/js/tortoise-engine.js"),
+        script(`type` :=  "text/javascript", src := "../classes/tortoise-compiler.js"),
+        script(`type` :=  "text/javascript", src := "../classes/tortoise-engine.js"),
         script(`type` :=  "text/javascript", raw(fixture.mkString("\n")))
       ))
     )
 
   private def writeToFile(name: String)(html: HTML): Unit = {
 
-    val parent = new File("./jvm/target/last-test-run-reports")
+    val parent = new File("./netlogo-web/target/last-test-run-reports")
     val file   = new File(parent, genFileName(name))
     parent.mkdirs()
 

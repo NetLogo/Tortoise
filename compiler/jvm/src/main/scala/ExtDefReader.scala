@@ -9,7 +9,7 @@ import scala.io.Source
 object ExtDefReader {
   def getAll(): Seq[String] =
     try {
-      Files.newDirectoryStream(FileSystems.getDefault.getPath("jvm/src/main/coffee/extensions"), "*.json").iterator.asScala.map {
+      Files.newDirectoryStream(FileSystems.getDefault.getPath("engine/src/main/coffee/extensions"), "*.json").iterator.asScala.map {
         file =>
           val src = Source.fromFile(file.toFile)
           val str = src.mkString
