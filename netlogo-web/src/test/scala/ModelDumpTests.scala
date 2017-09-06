@@ -17,6 +17,8 @@ import
   org.scalatest.{ exceptions, FunSuite },
     exceptions.TestFailedException
 
+import org.nlogo.tortoise.tags.SlowTest
+
 import
   scala.{ io, util },
     io.Source,
@@ -39,7 +41,8 @@ class ModelDumpTests extends FunSuite {
   }
 
   for (path <- Model.models.map(_.path).distinct) {
-    test(s"outputs correct model javascript for ${path}") {
+    test(s"outputs correct model javascript for ${path}", SlowTest) {
+      println(path)
       try {
         import scala.collection.JavaConverters.{ collectionAsScalaIterable, mapAsScalaMap }
         val modelContents                  = Source.fromFile(path).mkString
