@@ -1,6 +1,5 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-Nobody         = require('./nobody')
 projectionSort = require('./projectionsort')
 NLType         = require('./typechecker')
 Iterator       = require('util/iterator')

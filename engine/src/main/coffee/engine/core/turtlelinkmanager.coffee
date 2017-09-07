@@ -1,7 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 LinkSet   = require('./linkset')
-Nobody    = require('./nobody')
 TurtleSet = require('./turtleset')
 
 { filter, flatMap, map, unique } = require('brazierjs/array')

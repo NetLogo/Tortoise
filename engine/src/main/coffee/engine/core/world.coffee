@@ -1,6 +1,5 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-Nobody          = require('./nobody')
 Observer        = require('./observer')
 Patch           = require('./patch')
 PatchSet        = require('./patchset')

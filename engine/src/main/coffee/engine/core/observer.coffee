@@ -7,7 +7,6 @@ Follow  = { toInt: 2 }
 Watch   = { toInt: 3 }
 
 agentToInt      = require('./agenttoint')
-Nobody          = require('./nobody')
 NLType          = require('./typechecker')
 VariableManager = require('./structure/variablemanager')
 

@@ -3,7 +3,6 @@
 AbstractAgentSet = require('../core/abstractagentset')
 Link             = require('../core/link')
 LinkSet          = require('../core/linkset')
-Nobody           = require('../core/nobody')
 Patch            = require('../core/patch')
 PatchSet         = require('../core/patchset')
 Turtle           = require('../core/turtle')

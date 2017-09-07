@@ -1,6 +1,5 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-Nobody = require('../nobody')
 NLType = require('../typechecker')
 
 { filter, flatMap, map, unique } = require('brazierjs/array')

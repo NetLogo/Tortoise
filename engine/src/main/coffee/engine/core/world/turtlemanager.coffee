@@ -1,7 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 ColorModel = require('engine/core/colormodel')
-Nobody     = require('../nobody')
 Turtle     = require('../turtle')
 TurtleSet  = require('../turtleset')
 Builtins   = require('../structure/builtins')

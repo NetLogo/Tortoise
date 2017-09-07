@@ -2,7 +2,6 @@
 
 AbstractAgentSet = require('./core/abstractagentset')
 Link             = require('./core/link')
-Nobody           = require('./core/nobody')
 Turtle           = require('./core/turtle')
 NLType           = require('./core/typechecker')
 
