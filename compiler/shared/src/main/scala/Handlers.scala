@@ -6,7 +6,7 @@ import
   JsOps.{ jsArrayString, jsFunction, indented }
 
 import
-  org.nlogo.core.{ AstNode, CommandBlock, Dump, LogoList, Nobody, ReporterApp,
+  org.nlogo.core.{ AstNode, CommandBlock, Dump, LogoList, Nobody => NlogoNobody, ReporterApp,
                    ReporterBlock, Statements, Token }
 
 trait Handlers extends EveryIDProvider {
@@ -73,7 +73,7 @@ trait Handlers extends EveryIDProvider {
   def literal(obj: AnyRef): String = obj match {
     case ll: LogoList =>
       jsArrayString(ll.map(literal))
-    case Nobody =>
+    case NlogoNobody =>
       "Nobody"
     case x =>
       Dump.logoObject(x, readable = true, exporting = false)

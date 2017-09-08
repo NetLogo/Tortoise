@@ -6,7 +6,6 @@ var LinkSet = tortoise_require('engine/core/linkset');
 var Meta = tortoise_require('meta');
 var NLMath = tortoise_require('util/nlmath');
 var NLType = tortoise_require('engine/core/typechecker');
-var Nobody = tortoise_require('engine/core/nobody');
 var PatchSet = tortoise_require('engine/core/patchset');
 var PenBundle = tortoise_require('engine/plot/pen');
 var Plot = tortoise_require('engine/plot/plot');
