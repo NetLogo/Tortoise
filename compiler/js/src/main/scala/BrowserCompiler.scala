@@ -1,15 +1,18 @@
 // (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-package org.nlogo.tortoise
+package org.nlogo.tortoise.compiler
 
 import
   CompiledModel.CompileResult
 
 import
-  json.{ Jsonify, JsonLibrary, JsonReader, JsonWritable, JsonWriter, TortoiseJson },
+  json.{ JsonLibrary, JsonReader, JsonWritable, JsonWriter, TortoiseJson },
     JsonLibrary.{ Native => NativeJson, toTortoise },
     JsonWriter.string2TortoiseJs,
     TortoiseJson._
+
+import
+  org.nlogo.tortoise.macros.json.Jsonify
 
 import
   org.nlogo.core.{ CompilerException, LiteralParser, model },

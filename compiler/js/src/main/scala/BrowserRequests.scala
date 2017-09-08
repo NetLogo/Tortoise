@@ -1,13 +1,16 @@
 // (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-package org.nlogo.tortoise
+package org.nlogo.tortoise.compiler
 
 import
-  json.{ Jsonify, JsonReader, ShapeToJsonConverters, TortoiseJson, WidgetToJson },
+  json.{ JsonReader, ShapeToJsonConverters, TortoiseJson, WidgetToJson },
     JsonReader.{ OptionalJsonReader, tortoiseJsAsStringSeq, tortoiseJs2String },
     ShapeToJsonConverters.{ readLinkShapes, readVectorShapes },
     TortoiseJson.JsObject,
     WidgetToJson.{ readWidgetsJson }
+
+import
+  org.nlogo.tortoise.macros.json.Jsonify
 
 import
   org.nlogo.core.{ Model, Shape, Widget },

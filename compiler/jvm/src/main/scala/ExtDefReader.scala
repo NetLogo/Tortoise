@@ -1,6 +1,6 @@
 // (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-package org.nlogo.tortoise
+package org.nlogo.tortoise.compiler
 
 import java.nio.file.{ Files, FileSystems }
 import scala.collection.JavaConverters.asScalaIteratorConverter

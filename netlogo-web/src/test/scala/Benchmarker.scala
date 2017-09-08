@@ -1,6 +1,6 @@
 // (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-package org.nlogo.tortoise
+package org.nlogo.tortoise.nlw
 
 import
   java.{ io => jio, text, util },
@@ -18,7 +18,10 @@ import
     Validation.FlatMap.ValidationFlatMapRequested
 
 import
-  org.nlogo.tortoise.jsengine.JSEngineCompanion
+  org.nlogo.tortoise.compiler.CompiledModel
+
+import
+  org.nlogo.tortoise.nlw.jsengine.JSEngineCompanion
 
 object Benchmarker extends App {
 

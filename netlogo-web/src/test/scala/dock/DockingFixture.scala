@@ -1,6 +1,6 @@
 // (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-package org.nlogo.tortoise
+package org.nlogo.tortoise.nlw
 package dock
 
 import
@@ -13,7 +13,8 @@ import
   jsengine.Nashorn
 
 import
-  json.JsonSerializer
+  org.nlogo.tortoise.compiler.{ Compiler, CompilerFlags, WidgetCompiler, json },
+    json.JsonSerializer
 
 import
   org.nlogo.{ core, api, headless, mirror, nvm },

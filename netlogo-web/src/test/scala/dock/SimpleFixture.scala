@@ -1,6 +1,6 @@
 // (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-package org.nlogo.tortoise
+package org.nlogo.tortoise.nlw
 package dock
 
 import
@@ -14,7 +14,8 @@ import
   jsengine.Nashorn
 
 import
-  CompilerLike.Compilation
+  org.nlogo.tortoise.compiler.{ Compiler, CompilerLike },
+    CompilerLike.Compilation
 
 trait SimpleSuite extends FunSuite with TestLogger {
 

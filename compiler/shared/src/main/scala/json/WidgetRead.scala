@@ -1,6 +1,6 @@
 // (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-package org.nlogo.tortoise.json
+package org.nlogo.tortoise.compiler.json
 
 import
   java.lang.{ Boolean => JBoolean, Double => JDouble, Integer => JInteger }
@@ -12,6 +12,9 @@ import
                    TextBox, UpdateMode, Vertical, View, Widget, WorldDimensions },
     NumericInput.{ ColorLabel, NumberLabel },
     StringInput.{ CommandLabel, StringLabel, ReporterLabel }
+
+import
+  org.nlogo.tortoise.macros.json.Jsonify
 
 import
   scalaz.{ Scalaz, Validation, NonEmptyList, ValidationNel },

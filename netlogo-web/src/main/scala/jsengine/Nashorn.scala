@@ -1,6 +1,6 @@
 // (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-package org.nlogo.tortoise.jsengine
+package org.nlogo.tortoise.nlw.jsengine
 
 import java.io.{ PrintWriter, StringWriter }
 import javax.script.ScriptContext

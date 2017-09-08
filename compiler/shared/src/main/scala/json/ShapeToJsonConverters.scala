@@ -1,6 +1,6 @@
 // (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-package org.nlogo.tortoise.json
+package org.nlogo.tortoise.compiler.json
 
 import
   JsonReader.JsonSequenceReader
@@ -8,6 +8,9 @@ import
 import
   org.nlogo.core.Shape,
     Shape.{ Element, LinkLine, LinkShape, VectorShape }
+
+import
+  org.nlogo.tortoise.macros.json.Jsonify
 
 import
   scala.language.implicitConversions
@@ -123,7 +126,7 @@ object ShapeToJsonConverters {
     }
 
   class VectorShapeConverter(override protected val target: VectorShape) extends ShapeConverter[VectorShape] {
-    import org.nlogo.tortoise.json.ElemToJsonConverters.elem2Json
+    import org.nlogo.tortoise.compiler.json.ElemToJsonConverters.elem2Json
     override protected val extraProps = JsObject(fields(
       "name"               -> JsString(target.name),
       "editableColorIndex" -> JsInt(target.editableColorIndex),

@@ -1,6 +1,6 @@
 // (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-package org.nlogo.tortoise.jsengine
+package org.nlogo.tortoise.nlw.jsengine
 
 import
   org.mozilla.javascript.{ Context, ContextAction, ContextFactory,

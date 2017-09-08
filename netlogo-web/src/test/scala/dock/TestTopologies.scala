@@ -1,9 +1,9 @@
 // (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-package org.nlogo.tortoise
+package org.nlogo.tortoise.nlw
 package dock
 
-import tags.SlowTest
+import org.nlogo.tortoise.tags.SlowTest
 import org.nlogo.core.{ Model, View, WorldDimensions }
 
 class TestTopologies extends DockingSuite {

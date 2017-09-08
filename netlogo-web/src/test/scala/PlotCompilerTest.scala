@@ -1,15 +1,14 @@
 // (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-package org.nlogo.tortoise
+package org.nlogo.tortoise.nlw
 
 import
-  WidgetCompilation.PlotWidgetCompilation
+  org.nlogo.tortoise.compiler.{ CompiledPen, CompiledPlot, PlotCompiler, WidgetCompilation, json },
+    WidgetCompilation.PlotWidgetCompilation,
+    json.WidgetSamples.{ plot => plotWidget }
 
 import
   jsengine.Nashorn
-
-import
-  json.WidgetSamples.{ plot => plotWidget }
 
 import
   org.scalatest.{ FunSuite, OneInstancePerTest }

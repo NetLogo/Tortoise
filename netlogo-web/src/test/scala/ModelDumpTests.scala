@@ -1,11 +1,14 @@
 // (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-package org.nlogo.tortoise
+package org.nlogo.tortoise.nlw
 
 import
   java.{ io => jio, util => jutil},
     jio.FileWriter,
     jutil.{ List => JList, Map => JMap }
+
+import
+  org.nlogo.tortoise.compiler.Model
 
 import
   jsengine.Rhino

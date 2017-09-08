@@ -1,8 +1,11 @@
 // (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-package org.nlogo.tortoise
+package org.nlogo.tortoise.nlw
 
 import jsengine.Nashorn
+
+import
+  org.nlogo.tortoise.compiler.CompiledModel
 
 import
   scala.{ io, util },

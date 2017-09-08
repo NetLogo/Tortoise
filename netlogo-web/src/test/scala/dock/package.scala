@@ -1,6 +1,6 @@
 // (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-package org.nlogo.tortoise
+package org.nlogo.tortoise.nlw
 
 /**
   * This package is for tests where we use both Tortoise and HeadlessWorkspace at the same time, to

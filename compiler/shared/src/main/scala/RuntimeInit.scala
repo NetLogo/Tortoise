@@ -1,6 +1,6 @@
 // (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-package org.nlogo.tortoise
+package org.nlogo.tortoise.compiler
 
 import
   JsOps.{ jsArrayString, jsFunction, jsString }
@@ -8,7 +8,7 @@ import
 import
   org.nlogo.{ core, tortoise },
     core.{ AgentKind, AgentVariables, Model, Program, ShapeList },
-    tortoise.json.JsonSerializer
+    tortoise.compiler.json.JsonSerializer
 
 import
   TortoiseSymbol.{ JsDeclare, JsDepend, JsRequire, WorkspaceInit }

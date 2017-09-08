@@ -1,6 +1,6 @@
 // (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-package org.nlogo.tortoise.jsengine
+package org.nlogo.tortoise.nlw.jsengine
 
 import java.io.{ByteArrayInputStream, InputStream}
 import java.nio.charset.StandardCharsets.UTF_8
@@ -62,4 +62,3 @@ class SpiderMonkey {
 object SpiderMonkey {
   private lazy val depsStr = jsLibs map Resource.asString mkString ";"
 }
-

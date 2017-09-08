@@ -1,6 +1,6 @@
 // (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-package org.nlogo.tortoise.json
+package org.nlogo.tortoise.compiler.json
 
 import
   java.lang.{ Double => JDouble, Integer => JInteger, Long => JLong, Boolean => JBoolean, String => JString }

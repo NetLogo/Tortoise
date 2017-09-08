@@ -1,6 +1,6 @@
 // (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-package org.nlogo.tortoise.jsengine
+package org.nlogo.tortoise.nlw.jsengine
 
 trait JSEngine {
   type T
@@ -61,4 +61,3 @@ object JSEngine {
   }
 
 }
-

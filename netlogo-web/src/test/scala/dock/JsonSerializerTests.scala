@@ -1,6 +1,6 @@
 // (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-package org.nlogo.tortoise.dock
+package org.nlogo.tortoise.nlw.dock
 
 import play.api.libs.json.{ Json }
 
@@ -8,7 +8,7 @@ import
   org.nlogo.{ core, tortoise },
     core.{ AgentKind, Model, ShapeList },
       ShapeList.shapesToMap,
-    tortoise.json.JsonSerializer
+    tortoise.compiler.json.JsonSerializer
 
 import
   org.nlogo.headless.lang.FixtureSuite

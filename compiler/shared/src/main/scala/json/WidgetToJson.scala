@@ -1,9 +1,12 @@
 // (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-package org.nlogo.tortoise.json
+package org.nlogo.tortoise.compiler.json
 
 import
   JsonReader.JsonSequenceReader
+
+import
+  org.nlogo.tortoise.macros.json.Jsonify
 
 import
   org.nlogo.core.{ Button, Chooser, InputBox, Monitor, Output

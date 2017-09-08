@@ -1,6 +1,6 @@
 // (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-package org.nlogo.tortoise
+package org.nlogo.tortoise.nlw
 
 import
   org.scalatest.{ exceptions, Assertions },
@@ -13,6 +13,8 @@ import
       FrontEndInterface.{ ProceduresMap, NoProcedures },
     headless.test.{ AbstractFixture, Command, Compile, CompileError, RuntimeError, Reporter, Success, TestMode }
 
+import
+  org.nlogo.tortoise.compiler.Compiler
 
 import jsengine.Nashorn
 

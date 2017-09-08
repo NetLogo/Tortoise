@@ -1,20 +1,19 @@
 // (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-package org.nlogo.tortoise
+package org.nlogo.tortoise.compiler
 
-import org.nlogo.core.ErrorSource
-import org.nlogo.core.ExtensionManager
-import org.nlogo.core.Primitive
-import org.nlogo.core.PrimitiveCommand
-import org.nlogo.core.PrimitiveReporter
-import org.nlogo.core.Syntax, Syntax.{
-  NormalPrecedence, AgentsetType, AgentType, BooleanBlockType, BooleanType,
-  BracketedType, CodeBlockType, CommandBlockType, CommandType, LinksetType,
-  LinkType, ListType, NobodyType, NumberBlockType, NumberType, OptionalType,
-  OtherBlockType, PatchsetType, PatchType, ReadableType, ReferenceType,
-  RepeatableType, ReporterBlockType, ReporterType, StringType, SymbolType,
-  TurtlesetType, TurtleType, WildcardType, VoidType
-}
+import
+  org.nlogo.core.{
+    ErrorSource, ExtensionManager, Primitive, PrimitiveCommand, PrimitiveReporter,
+    Syntax
+  }, Syntax.{
+    NormalPrecedence, AgentsetType, AgentType, BooleanBlockType, BooleanType,
+    BracketedType, CodeBlockType, CommandBlockType, CommandType, LinksetType,
+    LinkType, ListType, NobodyType, NumberBlockType, NumberType, OptionalType,
+    OtherBlockType, PatchsetType, PatchType, ReadableType, ReferenceType,
+    RepeatableType, ReporterBlockType, ReporterType, StringType, SymbolType,
+    TurtlesetType, TurtleType, WildcardType, VoidType
+  }
 
 case class ExtensionPrim(primitive: Primitive, name: String, actionName: String)
 
@@ -114,7 +113,7 @@ private object CreateExtension {
 object NLWExtensionManager extends ExtensionManager {
 
   import org.nlogo.core.{ CompilerException, Token }
-  import org.nlogo.tortoise.ExtDefReader
+  import org.nlogo.tortoise.compiler.ExtDefReader
   import scala.collection.mutable.{ Map => MMap }
 
   private val extNameToExtMap                            = ExtDefReader.getAll().map(CreateExtension.apply).map(x => (x.getName, x)).toMap

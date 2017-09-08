@@ -1,12 +1,15 @@
 // (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-package org.nlogo.tortoise.json
+package org.nlogo.tortoise.compiler.json
 
 import
   JsonReader.JsonSequenceReader
 
 import
   org.nlogo.core.Shape.{ Element, RgbColor }
+
+import
+  org.nlogo.tortoise.macros.json.Jsonify
 
 import
   TortoiseJson.{ JsInt, JsObject, JsString }

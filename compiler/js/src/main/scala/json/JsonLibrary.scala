@@ -1,6 +1,6 @@
 // (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-package org.nlogo.tortoise.json
+package org.nlogo.tortoise.compiler.json
 
 import
   scala.scalajs.js.{ Any => JAny, Array => JArray, Dictionary, JSON, typeOf }

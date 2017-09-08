@@ -1,15 +1,17 @@
 // (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-package org.nlogo.tortoise
+package org.nlogo.tortoise.compiler
 
 import
-  json.{ Jsonify, JsonWritable, JsonWriter, TortoiseJson, WidgetToJson },
+  json.{ JsonWritable, JsonWriter, TortoiseJson, WidgetToJson },
     JsonWriter._,
     TortoiseJson.{ fields, JsArray, JsBool, JsInt, JsObject, JsString },
     WidgetToJson.widget2Json
-
 import
   org.nlogo.core.{ CompilerException, Pen, Plot, Widget }
+
+import
+  org.nlogo.tortoise.macros.json.Jsonify
 
 import
   scalaz.{ NonEmptyList, ValidationNel }

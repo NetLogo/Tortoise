@@ -1,6 +1,6 @@
 // (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-package org.nlogo.tortoise.json
+package org.nlogo.tortoise.compiler.json
 
 import
   JsonWriter.ListConversion
@@ -10,6 +10,9 @@ import
                    ChooseableList, ChooseableString, Direction, NumericInput, Pen, StringInput,
                    UpdateMode, WorldDimensions },
     NumericInput.{ ColorLabel, NumberLabel }
+
+import
+  org.nlogo.tortoise.macros.json.Jsonify
 
 import
   TortoiseJson.{ fields, JsArray, JsBool, JsDouble, JsInt, JsNull, JsObject, JsString }

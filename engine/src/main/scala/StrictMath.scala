@@ -1,6 +1,6 @@
 // (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-package org.nlogo.web
+package org.nlogo.tortoise.engine
 
 import
   scala.scalajs.js.{ Dynamic, isUndefined }
