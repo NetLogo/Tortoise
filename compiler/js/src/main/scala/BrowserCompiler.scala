@@ -15,7 +15,7 @@ import
   org.nlogo.tortoise.macros.json.Jsonify
 
 import
-  org.nlogo.core.{ CompilerException, LiteralParser, model },
+  org.nlogo.core.{ CompilerException, model },
     model.ModelReader
 
 import
@@ -198,10 +198,5 @@ object BrowserCompiler {
         compiledModel.model.code,
         compiledModel.model.info,
         compiledModel.widgets)
-  }
-
-  object literalParser extends LiteralParser {
-    def readFromString(s: String): AnyRef            = throw new Exception("Invalid NetLogo Web Model")
-    def readNumberFromString(source: String): AnyRef = throw new Exception("Invalid NetLogo Web Model")
   }
 }

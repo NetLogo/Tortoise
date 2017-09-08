@@ -35,7 +35,7 @@ module.exports =
     _everyMap: undefined # Object[String, Timer]
 
     # (Dump, Hasher, RNG, World) => Prims
-    constructor: (@_dumper, @_hasher, @_rng, @_world) ->
+    constructor: (@_dumper, @_hasher, @_rng, @_world, @_evalConfig) ->
       @_everyMap = {}
 
     # () => Nothing
@@ -270,11 +270,15 @@ module.exports =
       else
         throw new Error("The step-size for range must be non-zero.")
 
+    # (String) => Any
+    readFromString: (str) ->
+      @_evalConfig.readFromString(str)
+
     # ((Task, Any*) | String) => Any
     run: (f, args...) ->
       if NLType(f).isString()
         if args.length is 0
-          throw new Error("`run` is not yet implemented for strings")
+          @_evalConfig.runCommand(f)
         else
           throw new Error("run doesn't accept further inputs if the first is a string")
       else
@@ -284,7 +288,7 @@ module.exports =
     runResult: (f, args...) ->
       if NLType(f).isString()
         if args.length is 0
-          throw new Error("`run-result` is not yet implemented for strings")
+          @_evalConfig.runReporter(f)
         else
           throw new Error("runresult doesn't accept further inputs if the first is a string")
       else

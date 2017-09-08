@@ -2,8 +2,6 @@
 
 package org.nlogo.tortoise.compiler
 
-import BrowserCompiler.literalParser
-
 import ExportRequest.NlogoFileVersion
 
 import
@@ -126,7 +124,7 @@ object BrowserCompilerTest extends TestSuite {
       val exportResult = withBrowserCompiler(_.exportNlogo(modelToCompilationRequest(validModel)))
       assert(exportResult[Boolean]("success"))
       val exportedNlogo = exportResult[String]("result")
-      val parsedModel = ModelReader.parseModel(exportedNlogo, literalParser, Map())
+      val parsedModel = ModelReader.parseModel(exportedNlogo, StandardLiteralParser, Map())
       assert(parsedModel.code                   == validModel.code)
       assert(parsedModel.info                   == validModel.info)
       assert(parsedModel.version                == validModel.version)
