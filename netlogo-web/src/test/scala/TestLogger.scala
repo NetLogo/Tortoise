@@ -25,7 +25,6 @@ private[tortoise] trait TestLogger extends BrowserReporter {
     }
 
     override def eval(script: String): AnyRef = {
-      // This removes noise on DockingFixture tests
       jsBlobs.append(s"$script;".
         replaceAll("""expectedUpdates = .+$""", "expectedUpdates = [];").
         replaceAll("""actualUpdates\s+= .+$""", "actualUpdates = [];"))

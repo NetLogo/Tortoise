@@ -67,3 +67,7 @@ object CompilerFlags {
 case class CompilerContext(blockLevel: Int = 0, source: String = "") {
   def this(source: String) = this(0, source)
 }
+
+case class ProcedureContext(isProcedure: Boolean, parameters: Seq[String]) {
+
+}

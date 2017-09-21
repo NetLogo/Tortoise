@@ -99,11 +99,13 @@ class ModelDumpTests extends FunSuite {
   // scala.js `toString` for numeric values gives different results than jvm scala.
   // We need do a little cleanup to match the outputs - 2/17/15 RG
   private def cleanJsNumbers(rawJs: String): String = {
+    // the raw JS contains the NetLogo code, which contains escaped characters, which we have to remove to process
+    val unRawJs = rawJs.replace("\\n", " ").replace("\\\"", "\"")
     val trailingZeroNumbers  =
       new Regex("""(\d)\.0(\D)""", "digitBefore", "nonDigitAfter")
     val scientificNotation   =
       new Regex("""(\d)+E(-?)(\d+)""", "coefficient", "sign", "exponent")
-    val trailingZerosRemoved = trailingZeroNumbers.replaceAllIn(rawJs, {
+    val trailingZerosRemoved = trailingZeroNumbers.replaceAllIn(unRawJs, {
       m =>
         s"${m.group("digitBefore")}${m.group("nonDigitAfter")}"
     })

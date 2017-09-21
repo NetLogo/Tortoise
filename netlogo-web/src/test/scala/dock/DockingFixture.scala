@@ -91,7 +91,7 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
   override def runReporter(reporter: Reporter, mode: TestMode) {
     if (!opened) declare(Model())
     netLogoCode ++= s"${reporter.reporter}\n"
-    val compiledJS = Compiler.compileReporter(
+    val compiledJS = "var letVars = { }; " + Compiler.compileReporter(
       reporter.reporter, workspace.procedures, workspace.world.program)
     reporter.result match {
       case Success(expected) =>
@@ -137,7 +137,7 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
     state = newState
     val expectedJson = "[" + JsonSerializer.serializeWithViewUpdates(update, drawingActionBuffer.grab()) + "]"
     val expectedOutput = workspace.outputAreaBuffer.toString
-    val compiledJS = Compiler.compileRawCommands(logo, workspace.procedures, workspace.world.program)
+    val compiledJS = "var letVars = { }; " + Compiler.compileRawCommands(logo, workspace.procedures, workspace.world.program)
     val (exceptionOccurredInJS, (actualOutput, actualJson)) =
       try {
         (false, runJS(compiledJS))

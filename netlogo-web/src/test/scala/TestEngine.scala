@@ -19,7 +19,7 @@ class TestEngine extends FunSuite {
 
   test("empty world") {
     val nashorn = new Nashorn
-    nashorn.eval("""var workspace   = tortoise_require('engine/workspace')({})([])([], [])([])([], [], [], -1, 1, -1, 1, 1, true, true);
+    nashorn.eval("""var workspace   = tortoise_require('engine/workspace')({})([])([], [])('')({})([])([], [], [], -1, 1, -1, 1, 1, true, true);
                    |var SelfManager = workspace.selfManager;
                    |var world       = workspace.world;""".stripMargin)
     nashorn.eval("world.clearAll()")

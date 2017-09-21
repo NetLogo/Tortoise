@@ -71,7 +71,7 @@ class TestReporters extends ReporterTests with TortoiseFinder {
   import Freebies._
   override val freebies = Map(
     "Version::Version_2D" -> "Assumes JVM NetLogo version numbers"
-  ) ++ evalNotSupportedReporters ++ incErrorDetectReporters
+  ) ++ incErrorDetectReporters
 }
 
 class TestCommands extends CommandTests with TortoiseFinder {
@@ -89,7 +89,6 @@ private[tortoise] object Freebies {
   def lameCommands               = asFreebieMap(lameCommandNames,               lameCommandStr)
 
   def incErrorDetectReporters    = asFreebieMap(incErrorDetectReporterNames,    incErrorDetectStr)
-  def evalNotSupportedReporters  = asFreebieMap(evalNotSupportedReporterNames,  evalNotSupportedStr)
 
   private def asFreebieMap(names: Seq[String], msg: String) = names.map(_ -> msg).toMap
 
@@ -192,26 +191,15 @@ private[tortoise] object Freebies {
     "TypeChecking::AgentClassChecking3b"
     )
 
-  // perhaps never to be supported
-  private val evalNotSupportedStr = "run/runresult on strings not supported"
-  private val evalNotSupportedReporterNames = Seq(
-    "RunResult::RunResult1",
-    "RunResult::RunResult2",
-    "RunResult::RunResult3"
-  )
+  private val evalNotSupportedStr = "An eval exception about undefined properties indicates a Nashorn bug when running Scala.js generated code (labelled breaks with throw statements). http://bugs.java.com/bugdatabase/view_bug.do?bug_id=JDK-8187744. These tests should pass outside Nashorn."
   private val evalNotSupportedCommandNames = Seq(
     "ControlStructures::Run1",
     "ControlStructures::Run2",
     "ControlStructures::Run3",
-    "ControlStructures::Run4",
     "ControlStructures::Run5",
     "ControlStructures::Run6",
     "ControlStructures::Run7",
-    "ControlStructures::Run8",
     "Errors::CarefullyWithLambda2",
-    "Run::LuisIzquierdoRun1",
-    "Run::LuisIzquierdoRun2",
-    "Run::LuisIzquierdoRunResult1",
     "Run::LuisIzquierdoRunResult2",
     "Run::run-evaluate-string-input-only-once"
   )

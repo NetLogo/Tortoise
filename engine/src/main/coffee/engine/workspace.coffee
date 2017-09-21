@@ -15,12 +15,12 @@ PlotManager   = require('./plot/plotmanager')
 LayoutManager = require('./prim/layoutmanager')
 LinkPrims     = require('./prim/linkprims')
 ListPrims     = require('./prim/listprims')
+EvalPrims     = require('./prim/evalprims')
 Prims         = require('./prim/prims')
 SelfPrims     = require('./prim/selfprims')
 RNG           = require('util/rng')
 Timer         = require('util/timer')
 
-{ Config: EvalConfig }                               = require('./prim/evalprims')
 { Config: ExportConfig,     Prims: ExportPrims }     = require('./prim/exportprims')
 { Config: MouseConfig,      Prims: MousePrims }      = require('./prim/mouseprims')
 { Config: OutputConfig,     Prims: OutputPrims }     = require('./prim/outputprims')
@@ -32,12 +32,11 @@ class MiniWorkspace
   constructor: (@selfManager, @updater, @breedManager, @rng, @plotManager) ->
 
 module.exports =
-  (modelConfig) -> (breedObjs) -> (turtlesOwns, linksOwns) -> (extensionDumpers) -> () -> # World args; see constructor for `World` --JAB (4/17/14)
+  (modelConfig) -> (breedObjs) -> (turtlesOwns, linksOwns) -> (code) -> (widgets) -> (extensionDumpers) -> () -> # World args; see constructor for `World` --JAB (4/17/14)
 
     worldArgs = arguments # If you want `Workspace` to take more parameters--parameters not related to `World`--just keep returning new functions
 
     dialogConfig  = modelConfig?.dialog    ? new UserDialogConfig
-    evalConfig    = modelConfig?.eval      ? new EvalConfig
     exportConfig  = modelConfig?.exporting ? new ExportConfig
     mouseConfig   = modelConfig?.mouse     ? new MouseConfig
     outputConfig  = modelConfig?.output    ? new OutputConfig
@@ -59,7 +58,8 @@ module.exports =
     world           = new World(new MiniWorkspace(selfManager, updater, breedManager, rng, plotManager), worldConfig, outputConfig.clear, dump, worldArgs...)
     layoutManager   = new LayoutManager(world, rng.nextDouble)
 
-    prims     = new Prims(dump, Hasher, rng, world, evalConfig)
+    evalPrims = new EvalPrims(code, widgets)
+    prims     = new Prims(dump, Hasher, rng, world, evalPrims)
     selfPrims = new SelfPrims(selfManager.self)
     linkPrims = new LinkPrims(world)
     listPrims = new ListPrims(dump, Hasher, prims.equality.bind(prims), rng.nextInt)
@@ -81,6 +81,7 @@ module.exports =
       mousePrims
       outputPrims
       plotManager
+      evalPrims
       prims
       printPrims
       rng

@@ -35,7 +35,7 @@ module.exports =
     _everyMap: undefined # Object[String, Timer]
 
     # (Dump, Hasher, RNG, World) => Prims
-    constructor: (@_dumper, @_hasher, @_rng, @_world, @_evalConfig) ->
+    constructor: (@_dumper, @_hasher, @_rng, @_world, @_evalPrims) ->
       @_everyMap = {}
 
     # () => Nothing
@@ -272,27 +272,18 @@ module.exports =
 
     # (String) => Any
     readFromString: (str) ->
-      @_evalConfig.readFromString(str)
+      @_evalPrims.readFromString(str)
 
-    # ((Task, Any*) | String) => Any
-    run: (f, args...) ->
+    # (Boolean, JsObject, Array[Any]) => Unit|Any
+    runCode: (isRunResult, procVars, args...) ->
+      f = args[0]
       if NLType(f).isString()
-        if args.length is 0
-          @_evalConfig.runCommand(f)
+        if args.length is 1
+          @_evalPrims.runCode(f, isRunResult, procVars)
         else
-          throw new Error("run doesn't accept further inputs if the first is a string")
+          throw new Error("#{if isRunResult then "runresult" else "run"} doesn't accept further inputs if the first is a string")
       else
-        f(args...)
-
-    # ((Task, Any*) | String) => Any
-    runResult: (f, args...) ->
-      if NLType(f).isString()
-        if args.length is 0
-          @_evalConfig.runReporter(f)
-        else
-          throw new Error("runresult doesn't accept further inputs if the first is a string")
-      else
-        f(args...)
+        f(args.slice(1)...)
 
     # (Any) => Unit
     stdout: (x) ->

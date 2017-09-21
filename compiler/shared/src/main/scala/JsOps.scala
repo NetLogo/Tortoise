@@ -9,9 +9,11 @@ object JsOps {
   def jsString(ident: String): String =
     '"' + ident + '"'
 
+  def jsReplace(ident: String): String =
+    ident.replaceAllLiterally("\\", "\\\\").replaceAllLiterally("\n", "\\n").replaceAllLiterally("\"", "\\\"").replaceAllLiterally("'", "\\'")
+
   def jsStringEscaped(ident: String): String = {
-    val escaped = ident.replaceAllLiterally("\\", "\\\\").replaceAllLiterally("\n", "\\n").replaceAllLiterally("\"", "\\\"")
-    jsString(escaped)
+    jsString(jsReplace(ident))
   }
 
   def sanitizeNil(s: String): String =

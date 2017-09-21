@@ -14,13 +14,13 @@ trait Handlers extends EveryIDProvider {
   def prims: Prims
 
   def fun(node: AstNode, isReporter: Boolean = false)
-         (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
+         (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
     val body = if (isReporter) s"return ${reporter(node)};" else commands(node)
     jsFunction(body = body)
   }
 
   def task(node: AstNode, isReporter: Boolean = false, args: Seq[String] = Seq())
-          (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
+          (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
     val body = if (isReporter) s"return ${reporter(node)};" else commands(node)
     val pluralStr = if (args.length != 1) "s" else ""
     val fullBody =
@@ -39,31 +39,31 @@ trait Handlers extends EveryIDProvider {
   // objects, representing the concrete syntax of square brackets, but at this stage of compilation
   // the brackets are irrelevant.  So when we see a block we just immediately recurse into it.
 
-  def commands(node: AstNode, catchStop: Boolean = true, isProc: Boolean = false)
-              (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String =
+  def commands(node: AstNode, catchStop: Boolean = true, isProcRoot: Boolean = false)
+              (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String =
     incrementingContext { context =>
       node match {
         case block: CommandBlock =>
-          commands(block.statements)(compilerFlags, context)
+          commands(block.statements)(compilerFlags, context, procContext)
         case statements: Statements =>
           val generatedJS =
-            statements.stmts.map(prims.generateCommand(_)(compilerFlags, context))
+            statements.stmts.map(prims.generateCommand(_)(compilerFlags, context, procContext))
               .filter(_.nonEmpty)
               .mkString("\n")
-          if (isProc || (catchStop && statements.nonLocalExit))
+          if (isProcRoot || (catchStop && statements.nonLocalExit))
             commandBlockContext(generatedJS)
           else
             generatedJS
       }
     }
 
-  def reporter(node: AstNode)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String =
+  def reporter(node: AstNode)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String =
     incrementingContext { context =>
       node match {
         case block: ReporterBlock =>
-          reporter(block.app)(compilerFlags, context)
+          reporter(block.app)(compilerFlags, context, procContext)
         case app: ReporterApp =>
-          prims.reporter(app)(compilerFlags, context)
+          prims.reporter(app)(compilerFlags, context, procContext)
       }
     }
 
@@ -87,6 +87,7 @@ trait Handlers extends EveryIDProvider {
   def reporterProcContext(reporterJS: String): String =
     s"""|try {
         |  var reporterContext = true;
+        |  var letVars = { };
         |${indented(reporterJS)}
         |  throw new Error("Reached end of reporter procedure without REPORT being called.");
         |} catch (e) {
@@ -100,6 +101,7 @@ trait Handlers extends EveryIDProvider {
   def commandBlockContext(commandJS: String): String =
     s"""|try {
         |  var reporterContext = false;
+        |  var letVars = { };
         |${indented(commandJS)}
         |} catch (e) {
         |  if (e instanceof Exception.StopInterrupt) {

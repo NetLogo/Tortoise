@@ -3,7 +3,7 @@
 package org.nlogo.tortoise.compiler
 
 import
-  JsOps.{ jsArrayString, jsFunction, jsString }
+  JsOps.{ jsArrayString, jsFunction, jsString, jsReplace }
 
 import
   org.nlogo.{ core, tortoise },
@@ -16,7 +16,7 @@ import
 // RuntimeInit generates JavaScript code that does any initialization that needs to happen
 // before any user code runs, for example creating patches
 
-class RuntimeInit(program: Program, model: Model, onTickFunction: String = jsFunction()) {
+class RuntimeInit(program: Program, widgets: Seq[CompiledWidget], model: Model, onTickFunction: String = jsFunction()) {
 
   def init: Seq[TortoiseSymbol] = Seq(
     JsDeclare("turtleShapes", shapeList(new ShapeList(AgentKind.Turtle, ShapeList.shapesToMap(model.turtleShapes)))),
@@ -26,6 +26,8 @@ class RuntimeInit(program: Program, model: Model, onTickFunction: String = jsFun
         Seq(
           Seq(genBreedObjects)
         , genBreedsOwnArgs
+        , Seq(s"'${jsReplace(model.code)}'")
+        , Seq(jsArrayString(widgets.map(_.toJsonObj.toString)))
         , Seq("tortoise_require(\"extensions/all\").dumpers()")
         , genWorkspaceArgs
         )

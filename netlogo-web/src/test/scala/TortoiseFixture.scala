@@ -53,7 +53,7 @@ class TortoiseFixture(name: String, nashorn: Nashorn, notImplemented: (String) =
   }
 
   override def runReporter(reporter: Reporter, mode: TestMode): Unit = {
-    lazy val js = Compiler.compileReporter(reporter.reporter, procs, program)
+    lazy val js = "var letVars = { }; " + Compiler.compileReporter(reporter.reporter, procs, program)
     reporter.result match {
       case Success(expectedResult) =>
         val actualResult = cautiously(nashorn.eval(js))

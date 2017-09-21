@@ -59,7 +59,7 @@ object Compiler extends CompilerLike {
   def toJS(result:           Compilation)
     (implicit compilerFlags: CompilerFlags = CompilerFlags.Default) : String = {
     import result.model
-    val init              = new RuntimeInit(result.program, model, compilerFlags.onTickCallback).init
+    val init              = new RuntimeInit(result.program, result.widgets, model, compilerFlags.onTickCallback).init
     val plotConfig        = PlotCompiler.formatPlots(result.widgets)
     val procedures        = ProcedureCompiler.formatProcedures(result.compiledProcedures)
     val interfaceGlobalJs = result.interfaceGlobalCommands.map(
@@ -77,7 +77,7 @@ object Compiler extends CompilerLike {
                       oldProcedures: ProceduresMap = NoProcedures,
                       program:       Program       = Program.empty())
             (implicit compilerFlags: CompilerFlags = CompilerFlags.Default): String =
-    compile(logo, commands = false, oldProcedures, program)
+      compile(logo, commands = false, oldProcedures, program)
 
   def compileCommands(logo:          String,
                       oldProcedures: ProceduresMap = NoProcedures,
@@ -156,11 +156,12 @@ object Compiler extends CompilerLike {
                       program:       Program,
                       raw:           Boolean       = false)
             (implicit compilerFlags: CompilerFlags): String = {
-    val header           = SourceWrapping.getHeader(AgentKind.Observer, commands)
-    val footer           = SourceWrapping.getFooter(commands)
-    val wrapped          = s"$header$logo$footer"
-    implicit val context = new CompilerContext(wrapped)
-    val (defs, _)        = frontEnd.frontEnd(wrapped, oldProcedures = oldProcedures, program = program, extensionManager = NLWExtensionManager)
+    val header               = SourceWrapping.getHeader(AgentKind.Observer, commands)
+    val footer               = SourceWrapping.getFooter(commands)
+    val wrapped              = s"$header$logo$footer"
+    implicit val context     = new CompilerContext(wrapped)
+    implicit val procContext = ProcedureContext(!raw, Seq())
+    val (defs, _)            = frontEnd.frontEnd(wrapped, oldProcedures = oldProcedures, program = program, extensionManager = NLWExtensionManager)
     val pd = if (compilerFlags.optimizationsEnabled)
       Optimizer(defs.head)
     else

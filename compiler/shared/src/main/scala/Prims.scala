@@ -37,6 +37,31 @@ trait PrimUtils {
   protected def generateNotImplementedStub(primName: String): String =
     s"notImplemented(${jsString(primName)}, undefined)"
 
+  protected def generateRunCode(isRunResult: Boolean, token: Token, args: Seq[String], procContext: ProcedureContext): String = {
+    val tmp = handlers.unusedVarname(token, "run")
+    val procVarsJS = procContext.parameters.map((pv) => s"""${tmp}Vars["$pv"] = $pv;""").mkString("\n")
+
+    // if a run returns a value, and we're not in a raw-reporter situation, we have to then return the value. Weird, huh?
+    val (pre, post) = if (!isRunResult && procContext.isProcedure)
+      // if the runCode() didn't give us a value, we want to fall through to the "did not report" error that follows
+      // otherwise returning an undefined might blow something else up with an unrelated error message. -JMB September 2017
+      (s"var $tmp = ", s"if(reporterContext && $tmp !== undefined) { return $tmp; }")
+    else
+      ("", "")
+
+    s"""|${pre}Prims.runCode(
+        |  $isRunResult,
+        |  (function() {
+        |    let ${tmp}Vars = { }; for(var v in letVars) { ${tmp}Vars[v] = letVars[v]; }
+        |    $procVarsJS
+        |    return ${tmp}Vars;
+        |  })(),
+        |  ${args.mkString(", ")}
+        |)
+        |$post
+        |""".stripMargin
+  }
+
   object VariableReporter extends VariablePrims {
     def unapply(r: Reporter): Option[String] =
       procedureAndVarName(r, "get").map {
@@ -68,7 +93,8 @@ trait PrimUtils {
 trait ReporterPrims extends PrimUtils {
   // scalastyle:off method.length
   // scalastyle:off cyclomatic.complexity
-  def reporter(r: ReporterApp)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
+  def reporter(r: ReporterApp)
+    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
     def arg(i: Int) = handlers.reporter(r.args(i))
     def commaArgs = argsSep(", ")
     def args =
@@ -170,6 +196,8 @@ trait ReporterPrims extends PrimUtils {
       case p: prim.etc._outlinkneighbors => s"LinkPrims.outLinkNeighbors(${jsString(fixBN(p.breedName))})"
       case p: prim.etc._outlinkto        => s"LinkPrims.outLinkTo(${jsString(fixBN(p.breedName))}, ${arg(0)})"
 
+      case r: prim.etc._runresult        => generateRunCode(true, r.token, args, procContext)
+
       case l: prim._reporterlambda => {
         val task = generateTask(r.args(0), true, l.argumentNames.map(handlers.ident), l.source)
         s"Tasks.reporterTask($task)"
@@ -179,8 +207,6 @@ trait ReporterPrims extends PrimUtils {
         s"Tasks.commandTask($task)"
       }
 
-      case rr: prim.etc._runresult =>
-        s"Prims.runResult(${args.mkString(", ")})"
 
       case x: prim._externreport =>
         val ExtensionPrimRegex = """_externreport\(([^:]+):([^)]+)\)""".r
@@ -201,10 +227,11 @@ trait ReporterPrims extends PrimUtils {
   // scalastyle:on cyclomatic.complexity
 
   private def generateTask(node: AstNode, isReporter: Boolean, args: Seq[String], source: Option[String])
-    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String =
+    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String =
     s"${handlers.task(node, isReporter, args)}, ${jsStringEscaped(source.getOrElse(""))}"
 
-  def generateOf(r: ReporterApp)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
+  def generateOf(r: ReporterApp)
+    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
     val agents = handlers.reporter(r.args(1))
     val func   = handlers.fun(r.args(0), isReporter = true)
     s"$agents.projectionBy($func)"
@@ -235,13 +262,15 @@ trait ReporterPrims extends PrimUtils {
 trait CommandPrims extends PrimUtils {
   // scalastyle:off cyclomatic.complexity
   // scalastyle:off method.length
-  def generateCommand(s: Statement)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
+  def generateCommand(s: Statement)
+    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
     def arg(i: Int) = handlers.reporter(s.args(i))
     def commaArgs = argsSep(", ")
     def args =
       s.args.collect{ case x: ReporterApp => handlers.reporter(x) }
     def argsSep(sep: String) =
       args.mkString(sep)
+
     s.command match {
       case SimplePrims.SimpleCommand(op) => if (op.isEmpty) "" else s"$op;"
       case SimplePrims.NormalCommand(op) => s"$op($commaArgs);"
@@ -281,15 +310,20 @@ trait CommandPrims extends PrimUtils {
       case _: prim.etc._showlink         => "SelfManager.self().setVariable('hidden?', false)"
       case call: prim._call              => generateCall(call, args)
       case _: prim._report               =>
-        s"""if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return ${arg(0)} }"""
+        s"""|if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+            |  return ${arg(0)}
+            |}""".stripMargin
       case _: prim.etc._ignore           => s"${arg(0)};"
       case l: prim._let                  =>
-        l.let.map(inner => s"let ${handlers.ident(inner.name)} = ${arg(0)};").getOrElse("")
+        l.let.map(inner => {
+          val name = handlers.ident(inner.name)
+          s"let $name = ${arg(0)}; letVars['$name'] = $name;"
+        }).getOrElse("")
       case _: prim.etc._withlocalrandomness =>
         s"workspace.rng.withClone(function() { ${handlers.commands(s.args(0))} })"
-      case r: prim._run =>
-        val tmp = handlers.unusedVarname(r.token, "run")
-        s"var ${tmp} = Prims.run(${args.mkString(", ")}); if(reporterContext && ${tmp} !== undefined) { return ${tmp}; }"
+
+      case r: prim._run => generateRunCode(false, r.token, args, procContext)
+
       case fe: prim.etc._foreach          =>
         val lists = args.init.mkString(", ")
         val tmp = handlers.unusedVarname(fe.token, "foreach")
@@ -314,7 +348,8 @@ trait CommandPrims extends PrimUtils {
     }
 
   /// custom generators for particular Commands
-  def generateCall(call: prim._call, args: Seq[String])(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
+  def generateCall(call: prim._call, args: Seq[String])
+    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
     val callDecl =
       s"""procedures["${call.name}"](${args.mkString(",")});"""
     if (compilerFlags.propagationStyle == WidgetPropagation && compilerContext.blockLevel == 1) {
@@ -325,11 +360,13 @@ trait CommandPrims extends PrimUtils {
       callDecl
   }
 
-  def generateSet(s: Statement)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
+  def generateSet(s: Statement)
+    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
     def arg(i: Int) = handlers.reporter(s.args(i))
     s.args(0).asInstanceOf[ReporterApp].reporter match {
       case p: prim._letvariable =>
-        s"${handlers.ident(p.let.name)} = ${arg(1)};"
+        val name = handlers.ident(p.let.name)
+        s"$name = ${arg(1)}; letVars['$name'] = $name;"
       case p: prim._procedurevariable =>
         s"${handlers.ident(p.name)} = ${arg(1)};"
       case p: prim._lambdavariable =>
@@ -341,14 +378,16 @@ trait CommandPrims extends PrimUtils {
     }
   }
 
-  def generateLoop(w: Statement)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
+  def generateLoop(w: Statement)
+    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
     val body = handlers.commands(w.args(0))
     s"""|while (true) {
         |${indented(body)}
         |};""".stripMargin
   }
 
-  def generateRepeat(w: Statement)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
+  def generateRepeat(w: Statement)
+    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
     val count = handlers.reporter(w.args(0))
     val body = handlers.commands(w.args(1))
     val i = handlers.unusedVarname(w.command.token, "index")
@@ -358,7 +397,8 @@ trait CommandPrims extends PrimUtils {
         |}""".stripMargin
   }
 
-  def generateWhile(w: Statement)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
+  def generateWhile(w: Statement)
+    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
     val pred = handlers.reporter(w.args(0))
     val body = handlers.commands(w.args(1))
     s"""|while ($pred) {
@@ -366,7 +406,8 @@ trait CommandPrims extends PrimUtils {
         |}""".stripMargin
   }
 
-  def generateIf(s: Statement)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
+  def generateIf(s: Statement)
+    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
     val pred = handlers.reporter(s.args(0))
     val body = handlers.commands(s.args(1))
     s"""|if ($pred) {
@@ -374,7 +415,8 @@ trait CommandPrims extends PrimUtils {
         |}""".stripMargin
   }
 
-  def generateIfElse(s: Statement)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
+  def generateIfElse(s: Statement)
+    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
     val pred      = handlers.reporter(s.args(0))
     val thenBlock = handlers.commands(s.args(1))
     val elseBlock = handlers.commands(s.args(2))
@@ -386,13 +428,15 @@ trait CommandPrims extends PrimUtils {
         |}""".stripMargin
   }
 
-  def generateAsk(s: Statement, shuffle: Boolean)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
+  def generateAsk(s: Statement, shuffle: Boolean)
+    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
     val agents = handlers.reporter(s.args(0))
     val body = handlers.fun(s.args(1))
     genAsk(agents, shuffle, body)
   }
 
-  def generateCarefully(s: Statement, c: prim._carefully)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
+  def generateCarefully(s: Statement, c: prim._carefully)
+    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
     val errorName   = handlers.unusedVarname(s.command.token, "error")
     val doCarefully = handlers.commands(s.args(0))
     val handleError = handlers.commands(s.args(1)).replaceAll(s"_error_${c.let.hashCode()}", errorName)
@@ -405,7 +449,8 @@ trait CommandPrims extends PrimUtils {
      """.stripMargin
   }
 
-  def generateCreateLink(s: Statement, name: String, breedName: String)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
+  def generateCreateLink(s: Statement, name: String, breedName: String)
+    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
     val other = handlers.reporter(s.args(0))
     // This is so that we don't shuffle unnecessarily.  FD 10/31/2013
     val nonEmptyCommandBlock = s.args(1).asInstanceOf[CommandBlock].statements.stmts.nonEmpty
@@ -413,7 +458,8 @@ trait CommandPrims extends PrimUtils {
     genAsk(s"LinkPrims.$name($other, ${jsString(fixBN(breedName))})", nonEmptyCommandBlock, body)
   }
 
-  def generateCreateTurtles(s: Statement, ordered: Boolean)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
+  def generateCreateTurtles(s: Statement, ordered: Boolean)
+    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
     val n = handlers.reporter(s.args(0))
     val name = if (ordered) "createOrderedTurtles" else "createTurtles"
     val breed =
@@ -426,7 +472,8 @@ trait CommandPrims extends PrimUtils {
     genAsk(s"world.turtleManager.$name($n, ${jsString(breed)})", true, body)
   }
 
-  def optimalGenerateCreateTurtles(s: Statement, ordered: Boolean)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
+  def optimalGenerateCreateTurtles(s: Statement, ordered: Boolean)
+    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
     val n = handlers.reporter(s.args(0))
     val name = if (ordered) "createOrderedTurtles" else "createTurtles"
     val breed =
@@ -438,7 +485,8 @@ trait CommandPrims extends PrimUtils {
     s"world.turtleManager.$name($n, ${jsString(breed)});"
   }
 
-  def generateSprout(s: Statement)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
+  def generateSprout(s: Statement)
+    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
     val n = handlers.reporter(s.args(0))
     val body = handlers.fun(s.args(1))
     val breedName = s.command.asInstanceOf[prim._sprout].breedName
@@ -447,7 +495,8 @@ trait CommandPrims extends PrimUtils {
     genAsk(sprouted, true, body)
   }
 
-  def optimalGenerateSprout(s: Statement)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
+  def optimalGenerateSprout(s: Statement)
+    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
     val n = handlers.reporter(s.args(0))
     val breedName =
       s.command match {
@@ -458,18 +507,21 @@ trait CommandPrims extends PrimUtils {
     s"SelfManager.self().sprout($n, ${jsString(trueBreedName)});"
   }
 
-  def generateHatch(s: Statement, breedName: String)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
+  def generateHatch(s: Statement, breedName: String)
+    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
     val n = handlers.reporter(s.args(0))
     val body = handlers.fun(s.args(1))
     genAsk(s"SelfManager.self().hatch($n, ${jsString(breedName)})", true, body)
   }
 
-  def optimalGenerateHatch(s: Statement, breedName: String)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
+  def optimalGenerateHatch(s: Statement, breedName: String)
+    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
     val n = handlers.reporter(s.args(0))
     s"SelfManager.self().hatch($n, ${jsString(breedName)});"
   }
 
-  def generateEvery(w: Statement)(implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext): String = {
+  def generateEvery(w: Statement)
+    (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
     val time = handlers.reporter(w.args(0))
     val body = handlers.commands(w.args(1))
     val everyId = handlers.nextEveryID()
