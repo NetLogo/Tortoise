@@ -15,9 +15,10 @@ The following lists the libraries used by Tortoise and the licenses that they ar
 ## Compiling
 
 There are several sbt builds within the Tortoise project.
-* `tortoiseJVM` builds the JVM tortoise project.
-* `tortoiseJS` build the scala.js tortoise project.
-* `netLogoWeb` contains a JVM project which runs an end-to-end test against the artifact of `tortoiseJS`, using Rhino. It also contains the task to publish the finished javascript as a package.
+* `compilerJVM` builds the JVM compiler project, used for running some tests.
+* `compilerJS` builds the Scala.js compiler project, which creates `tortoise-compiler.js` that can turn NetLogo models and code into javascript.
+* `engine` builds the combination CoffeeScript and Scala.js engine project, creating `tortoise-engine.js`, which is required to actually run the result of compiling a NetLogo model to javascript.  
+* `netLogoWeb` contains a JVM project which runs an end-to-end tests against the artifacts of `compilerJS` and `engine`, using the Nashorn javascript runtime.  It also contains the task to publish the finished javascript as a package.
 * `macrosJS/JVM` contain macros used by Tortoise in widget serialization/deserialization.
 
 For more information see the [Tortoise architecture wiki page](https://github.com/NetLogo/Tortoise/wiki/Architecture)
