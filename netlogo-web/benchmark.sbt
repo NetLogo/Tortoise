@@ -1,7 +1,9 @@
+import Keys._
+
 lazy val benchmark = inputKey[Unit]("Run the benchmarks")
 
 benchmark := {
-  (runMain in Test).partialInput(s" org.nlogo.tortoise.Benchmarker .").evaluated
+  (runMain in Test).partialInput(" org.nlogo.tortoise.nlw.Benchmarker .").evaluated
 }
 
 // Screw you, SBT!  This task can't reference values of other settings (like `baseDirectory`),
