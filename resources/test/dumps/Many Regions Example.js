@@ -114,7 +114,7 @@ var procedures = (function() {
           SelfManager.self().moveTo(ListPrims.oneOf(regionPatches));
           SelfManager.self().setVariable("color", (SelfManager.self().getPatchVariable("pcolor") + 3));
         }, true);
-      }, "[ region-number -> let patches with region = region-number  create-turtles number-of-turtles-per-region [ move-to one-of region-patches set color pcolor + 3 ] ]"), Prims.rangeBinary(1, (ListPrims.length(world.observer.getGlobal("region-boundaries")) + 1))); if(reporterContext && _foreach_1146_1153 !== undefined) { return _foreach_1146_1153; }
+      }, "[ region-number -> let patches with [ region = region-number ] create-turtles number-of-turtles-per-region [ move-to one-of region-patches set color pcolor + 3 ] ]"), Prims.rangeBinary(1, (ListPrims.length(world.observer.getGlobal("region-boundaries")) + 1))); if(reporterContext && _foreach_1146_1153 !== undefined) { return _foreach_1146_1153; }
     } catch (e) {
       if (e instanceof Exception.StopInterrupt) {
         return e;
@@ -176,7 +176,7 @@ var procedures = (function() {
         world.patches().agentFilter(function() {
           return (Prims.gte(SelfManager.self().getPatchVariable("pxcor"), ListPrims.first(boundaries)) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), ListPrims.last(boundaries)));
         }).ask(function() { SelfManager.self().setPatchVariable("region", regionNumber); }, true);
-      }, "[ [boundaries region-number] -> ask patches with pxcor >= first boundaries and pxcor <= last boundaries  [ set region region-number ] ]"), world.observer.getGlobal("region-boundaries"), regionNumbers); if(reporterContext && _foreach_2401_2408 !== undefined) { return _foreach_2401_2408; }
+      }, "[ [boundaries region-number] -> ask patches with [ pxcor >= first boundaries and pxcor <= last boundaries ] [ set region region-number ] ]"), world.observer.getGlobal("region-boundaries"), regionNumbers); if(reporterContext && _foreach_2401_2408 !== undefined) { return _foreach_2401_2408; }
     } catch (e) {
       if (e instanceof Exception.StopInterrupt) {
         return e;
@@ -216,7 +216,7 @@ var procedures = (function() {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
         }
         return world.getPatchAt((world.topology.minPxcor + (n * Prims.div((world.topology.maxPxcor - world.topology.minPxcor), numRegions))), 0).projectionBy(function() { return SelfManager.self().getPatchVariable("pxcor"); });
-      }, "[ n -> pxcor  of patch min-pxcor + n * max-pxcor - min-pxcor / num-regions 0 ]")) }
+      }, "[ n -> [ pxcor ] of patch min-pxcor + n * max-pxcor - min-pxcor / num-regions 0 ]")) }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
      if (e instanceof Exception.StopInterrupt) {

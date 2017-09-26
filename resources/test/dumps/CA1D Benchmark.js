@@ -175,7 +175,7 @@ var procedures = (function() {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
         }
         return p.projectionBy(function() { return SelfManager.self().getPatchVariable("on?"); });
-      }, "[ [p] -> on?  of p ]"), ListPrims.sort(world._optimalPatchRow(world.observer.getGlobal("row"))));
+      }, "[ [p] -> [ on? ] of p ]"), ListPrims.sort(world._optimalPatchRow(world.observer.getGlobal("row"))));
       procedures["SETUP-GENERAL"]();
       world._optimalPatchRow(world.observer.getGlobal("row")).ask(function() {
         SelfManager.self().setPatchVariable("on?", ListPrims.item((SelfManager.self().getPatchVariable("pxcor") + world.topology.maxPxcor), on_pList));

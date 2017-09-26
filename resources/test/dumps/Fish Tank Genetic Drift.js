@@ -891,7 +891,7 @@ var procedures = (function() {
             SelfManager.self().setVariable("side", "left");
           }, true);
         }
-      }, "[ this-gene -> if count all-alleles with gene = this-gene and side =   > 1 [ ask one-of all-alleles with gene = this-gene  [ set heading 90 forward intra-chromosome-pair-spacing set side \"right\" ] ] if count all-alleles with gene = this-gene and side =   > 1 [ ask one-of all-alleles with gene = this-gene  [ set heading 90 back intra-chromosome-pair-spacing set side \"left\" ] ] ]"), [1, 2, 3, 4, 5]); if(reporterContext && _foreach_14051_14058 !== undefined) { return _foreach_14051_14058; }
+      }, "[ this-gene -> if count all-alleles with [ gene = this-gene and side = \"left\" ] > 1 [ ask one-of all-alleles with [ gene = this-gene ] [ set heading 90 forward intra-chromosome-pair-spacing set side \"right\" ] ] if count all-alleles with [ gene = this-gene and side = \"right\" ] > 1 [ ask one-of all-alleles with [ gene = this-gene ] [ set heading 90 back intra-chromosome-pair-spacing set side \"left\" ] ] ]"), [1, 2, 3, 4, 5]); if(reporterContext && _foreach_14051_14058 !== undefined) { return _foreach_14051_14058; }
     } catch (e) {
       if (e instanceof Exception.StopInterrupt) {
         return e;
@@ -999,7 +999,7 @@ var procedures = (function() {
             }, true);
           }, true);
         }, true);
-      }, "[ this-gene -> ask n-of 1 alleles with in-link-neighbor? myself and gene = this-gene  [ hatch 1 [ set owned-by-fish? false create-link-from this-new-gamete-cell [ set hidden? true set tie-mode \"fixed\" tie ] ] ] ]"), [1, 2, 3, 4, 5]); if(reporterContext && _foreach_16499_16506 !== undefined) { return _foreach_16499_16506; }
+      }, "[ this-gene -> ask n-of 1 alleles with [ in-link-neighbor? myself and gene = this-gene ] [ hatch 1 [ set owned-by-fish? false create-link-from this-new-gamete-cell [ set hidden? true set tie-mode \"fixed\" tie ] ] ] ]"), [1, 2, 3, 4, 5]); if(reporterContext && _foreach_16499_16506 !== undefined) { return _foreach_16499_16506; }
     } catch (e) {
       if (e instanceof Exception.StopInterrupt) {
         return e;

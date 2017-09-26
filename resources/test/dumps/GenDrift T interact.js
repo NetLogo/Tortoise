@@ -325,7 +325,7 @@ var procedures = (function() {
         if (Prims.gt(howMany, winningAmount)) {
           winningAmount = howMany;
         }
-      }, "[ c -> let count turtles with color = c  if how-many > winning-amount [ set winning-amount how-many ] ]"), ColorModel.BASE_COLORS); if(reporterContext && _foreach_1075_1082 !== undefined) { return _foreach_1075_1082; }
+      }, "[ c -> let count turtles with [ color = c ] if how-many > winning-amount [ set winning-amount how-many ] ]"), ColorModel.BASE_COLORS); if(reporterContext && _foreach_1075_1082 !== undefined) { return _foreach_1075_1082; }
       world.observer.setGlobal("max-percent", Prims.div((100 * winningAmount), world.turtles().size()));
     } catch (e) {
       if (e instanceof Exception.StopInterrupt) {

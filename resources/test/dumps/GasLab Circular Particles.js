@@ -345,12 +345,12 @@ var procedures = (function() {
             procedures["POSITION-RANDOMLY"]();
           }
         }, true);
-      }, "[ the-particle -> ask the-particle [ position-randomly while overlapping?  [ position-randomly ] ] ]"), ListPrims.sortBy(Tasks.reporterTask(function(a, b) {
+      }, "[ the-particle -> ask the-particle [ position-randomly while [ overlapping? ] [ position-randomly ] ] ]"), ListPrims.sortBy(Tasks.reporterTask(function(a, b) {
         if (arguments.length < 2) {
           throw new Error("anonymous procedure expected 2 inputs, but only got " + arguments.length);
         }
         return Prims.gt(a.projectionBy(function() { return SelfManager.self().getVariable("size"); }), b.projectionBy(function() { return SelfManager.self().getVariable("size"); }));
-      }, "[ [a b] -> size  of a > size  of b ]"), world.turtleManager.turtlesOfBreed("PARTICLES"))); if(reporterContext && _foreach_1856_1863 !== undefined) { return _foreach_1856_1863; }
+      }, "[ [a b] -> [ size ] of a > [ size ] of b ]"), world.turtleManager.turtlesOfBreed("PARTICLES"))); if(reporterContext && _foreach_1856_1863 !== undefined) { return _foreach_1856_1863; }
     } catch (e) {
       if (e instanceof Exception.StopInterrupt) {
         return e;

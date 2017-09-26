@@ -800,7 +800,7 @@ var procedures = (function() {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
         }
         thisProteinValue = (workspace.dump('') + workspace.dump(thisProteinValue) + workspace.dump("-") + workspace.dump(theAminoAcid.projectionBy(function() { return SelfManager.self().getVariable("value"); })));
-      }, "[ the-amino-acid -> set this-protein-value word this-protein-value \"-\" value  of the-amino-acid ]"), orderedAminoAcids); if(reporterContext && _foreach_19530_19537 !== undefined) { return _foreach_19530_19537; }
+      }, "[ the-amino-acid -> set this-protein-value word this-protein-value \"-\" [ value ] of the-amino-acid ]"), orderedAminoAcids); if(reporterContext && _foreach_19530_19537 !== undefined) { return _foreach_19530_19537; }
       if (!!world.turtleManager.turtlesOfBreed("PROTEINS").agentFilter(function() {
         return (Prims.equality(SelfManager.self().getVariable("strand"), strandType) && Prims.equality(SelfManager.self().getVariable("value"), thisProteinValue));
       }).isEmpty()) {

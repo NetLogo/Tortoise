@@ -67,7 +67,7 @@ modelConfig.plots = [(function() {
             }
             plotManager.setCurrentPen((workspace.dump('') + workspace.dump(thisVariation) + workspace.dump(" ")));
             plotManager.plotPoint(thisVariation, world.turtleManager.turtlesOfBreed("BACTERIA").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("variation"), thisVariation); }).size());
-          }, "[ this-variation -> set-current-plot-pen word this-variation \" \" plotxy this-variation count bacteria with variation = this-variation  ]"), [1, 2, 3, 4, 5, 6]); if(reporterContext && _foreach_153_160 !== undefined) { return _foreach_153_160; }
+          }, "[ this-variation -> set-current-plot-pen word this-variation \" \" plotxy this-variation count bacteria with [ variation = this-variation ] ]"), [1, 2, 3, 4, 5, 6]); if(reporterContext && _foreach_153_160 !== undefined) { return _foreach_153_160; }
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
             return e;
