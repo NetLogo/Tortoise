@@ -46,7 +46,7 @@ if (typeof javax !== "undefined") {
 }
 var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.plotOps !== null) ? modelConfig.plotOps : {};
 modelConfig.plots = [];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "ROCKETS", singular: "rocket", varNames: ["terminal-y-vel"] }, { name: "FRAGS", singular: "frag", varNames: ["dim"] }])(["col", "x-vel", "y-vel"], [])(tortoise_require("extensions/all").dumpers())(["trails?", "max-fireworks", "fragments", "initial-x-vel", "initial-y-vel", "gravity", "fade-amount", "countdown"], ["trails?", "max-fireworks", "fragments", "initial-x-vel", "initial-y-vel", "gravity", "fade-amount"], [], -90, 90, -90, 90, 3.0, true, false, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "ROCKETS", singular: "rocket", varNames: ["terminal-y-vel"] }, { name: "FRAGS", singular: "frag", varNames: ["dim"] }])(["col", "x-vel", "y-vel"], [])('breed [ rockets rocket ]\nbreed [ frags frag ]\n\nglobals [\n  countdown       ; how many ticks to wait before a new salvo of fireworks\n]\n\nturtles-own [\n  col             ; sets color of an explosion particle\n  x-vel           ; x-velocity\n  y-vel           ; y-velocity\n]\n\nrockets-own [\n  terminal-y-vel  ; velocity at which rocket will explode\n]\n\nfrags-own [\n  dim             ; used for fading particles\n]\n\nto setup\n  clear-all\n  set-default-shape turtles \"circle\"\n  reset-ticks\nend\n\n; This procedure executes the model. If there are no turtles,\n; it will either initiate a new salvo of fireworks by calling\n; INIT-ROCKETS or continue to count down if it hasn\'t reached 0.\n; It then calls PROJECTILE-MOTION, which launches and explodes\n; any currently existing fireworks.\nto go\n  if not any? turtles [\n    ifelse countdown = 0 [\n      init-rockets\n      ; use a higher countdown to get a longer pause when trails are drawn\n      set countdown ifelse-value trails? [ 30 ] [ 10 ]\n    ] [\n      ; count down before launching a new salvo\n      set countdown countdown - 1\n    ]\n  ]\n  ask turtles [ projectile-motion ]\n  tick\nend\n\n; This procedure creates a random number of rockets according to the\n; slider FIREWORKS and sets all the initial values for each firework.\nto init-rockets\n  clear-drawing\n  create-rockets (random max-fireworks) + 1 [\n    setxy random-xcor min-pycor\n    set x-vel ((random-float (2 * initial-x-vel)) - (initial-x-vel))\n    set y-vel ((random-float initial-y-vel) + initial-y-vel * 2)\n    set col one-of base-colors\n    set color (col + 2)\n    set size 2\n    set terminal-y-vel (random-float 4.0) ; at what speed does the rocket explode?\n  ]\nend\n\n; This function simulates the actual free-fall motion of the turtles.\n; If a turtle is a rocket it checks if it has slowed down enough to explode.\nto projectile-motion ; turtle procedure\n  set y-vel (y-vel - (gravity / 5))\n  set heading (atan x-vel y-vel)\n  let move-amount (sqrt ((x-vel ^ 2) + (y-vel ^ 2)))\n  if not can-move? move-amount [ die ]\n  fd (sqrt ((x-vel ^ 2) + (y-vel ^ 2)))\n\n  ifelse (breed = rockets) [\n    if (y-vel < terminal-y-vel) [\n      explode\n      die\n    ]\n  ] [\n    fade\n  ]\nend\n\n; This is where the explosion is created.\n; EXPLODE calls hatch a number of times indicated by the slider FRAGMENTS.\nto explode ; turtle procedure\n  hatch-frags fragments [\n    set dim 0\n    rt random 360\n    set size 1\n    set x-vel (x-vel * .5 + dx + (random-float 2.0) - 1)\n    set y-vel (y-vel * .3 + dy + (random-float 2.0) - 1)\n    ifelse trails?\n      [ pen-down ]\n      [ pen-up ]\n  ]\nend\n\n; This function changes the color of a frag.\n; Each frag fades its color by an amount proportional to FADE-AMOUNT.\nto fade ; frag procedure\n  set dim dim - (fade-amount / 10)\n  set color scale-color col dim -5 .5\n  if (color < (col - 3.5)) [ die ]\nend\n\n\n; Copyright 1998 Uri Wilensky.\n; See Info tab for full copyright and license.')([{"left":244,"top":10,"right":795,"bottom":562,"dimensions":{"minPxcor":-90,"maxPxcor":90,"minPycor":-90,"maxPycor":90,"patchSize":3,"wrappingAllowedInX":true,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_38 = procedures[\"SETUP\"]();\n  if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"setup","left":9,"top":38,"right":89,"bottom":71,"display":"setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_35 = procedures[\"GO\"]();\n  if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"go","left":9,"top":88,"right":89,"bottom":121,"display":"go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"variable":"trails?","left":4,"top":138,"right":94,"bottom":171,"display":"trails?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"40","compiledStep":"1","variable":"max-fireworks","left":112,"top":38,"right":232,"bottom":71,"display":"max-fireworks","min":"1","max":"40","default":20,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"5","compiledMax":"50","compiledStep":"1","variable":"fragments","left":112,"top":88,"right":232,"bottom":121,"display":"fragments","min":"5","max":"50","default":30,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"5","compiledStep":"0.1","variable":"initial-x-vel","left":112,"top":138,"right":232,"bottom":171,"display":"initial-x-vel","min":"0.0","max":"5.0","default":2,"step":"0.1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"5","compiledStep":"0.1","variable":"initial-y-vel","left":112,"top":188,"right":232,"bottom":221,"display":"initial-y-vel","min":"0.0","max":"5.0","default":2,"step":"0.1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"3","compiledStep":"0.1","variable":"gravity","left":112,"top":238,"right":232,"bottom":271,"display":"gravity","min":"0.0","max":"3.0","default":0.5,"step":"0.1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"10","compiledStep":"0.1","variable":"fade-amount","left":112,"top":288,"right":232,"bottom":321,"display":"fade-amount","min":"0.0","max":"10.0","default":1.5,"step":"0.1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["trails?", "max-fireworks", "fragments", "initial-x-vel", "initial-y-vel", "gravity", "fade-amount", "countdown"], ["trails?", "max-fireworks", "fragments", "initial-x-vel", "initial-y-vel", "gravity", "fade-amount"], [], -90, 90, -90, 90, 3.0, true, false, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ExportPrims = workspace.exportPrims;
@@ -69,6 +69,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.clearAll();
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
       world.ticker.reset();
@@ -85,6 +86,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (!!world.turtles().isEmpty()) {
         if (Prims.equality(world.observer.getGlobal("countdown"), 0)) {
           procedures["INIT-ROCKETS"]();
@@ -109,6 +111,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.clearDrawing();
       world.turtleManager.createTurtles((Prims.random(world.observer.getGlobal("max-fireworks")) + 1), "ROCKETS").ask(function() {
         SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), world.topology.minPycor);
@@ -132,9 +135,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       SelfManager.self().setVariable("y-vel", (SelfManager.self().getVariable("y-vel") - Prims.div(world.observer.getGlobal("gravity"), 5)));
       SelfManager.self().setVariable("heading", NLMath.atan(SelfManager.self().getVariable("x-vel"), SelfManager.self().getVariable("y-vel")));
-      let moveAmount = NLMath.sqrt((NLMath.pow(SelfManager.self().getVariable("x-vel"), 2) + NLMath.pow(SelfManager.self().getVariable("y-vel"), 2)));
+      let moveAmount = NLMath.sqrt((NLMath.pow(SelfManager.self().getVariable("x-vel"), 2) + NLMath.pow(SelfManager.self().getVariable("y-vel"), 2))); letVars['moveAmount'] = moveAmount;
       if (!SelfManager.self().canMove(moveAmount)) {
         SelfManager.self().die();
       }
@@ -161,6 +165,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       SelfManager.self().hatch(world.observer.getGlobal("fragments"), "FRAGS").ask(function() {
         SelfManager.self().setVariable("dim", 0);
         SelfManager.self().right(Prims.random(360));
@@ -187,6 +192,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       SelfManager.self().setVariable("dim", (SelfManager.self().getVariable("dim") - Prims.div(world.observer.getGlobal("fade-amount"), 10)));
       SelfManager.self().setVariable("color", ColorModel.scaleColor(SelfManager.self().getVariable("col"), SelfManager.self().getVariable("dim"), -5, 0.5));
       if (Prims.lt(SelfManager.self().getVariable("color"), (SelfManager.self().getVariable("col") - 3.5))) {

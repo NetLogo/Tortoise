@@ -55,7 +55,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "Time", "Food", false, true, 0.0, 100.0, 0.0, 100.0, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["carrying-food?", "drop-size"], [])(tortoise_require("extensions/all").dumpers())(["diffusion-rate", "evaporation-rate", "plot?", "ants", "result"], ["diffusion-rate", "evaporation-rate", "plot?", "ants"], ["chemical", "food", "nest?", "nest-scent", "food-source-number"], -50, 50, -50, 50, 5.0, false, false, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["carrying-food?", "drop-size"], [])('globals [result]\nturtles-own [ carrying-food? drop-size ]\npatches-own [ chemical food nest? nest-scent food-source-number ]\n\n;;;;;;;;;;;;;;;;;;;;;;;;\n;;; Setup Procedures ;;;\n;;;;;;;;;;;;;;;;;;;;;;;;\nto setup\n  ca reset-ticks\n  setup-turtles\n  setup-patches\n  do-plotting\nend\n\nto benchmark\n  random-seed 337\n  reset-timer\n  setup\n  repeat 800 [ go ]\n  set result timer\nend\n\nto setup-turtles\n  set-default-shape turtles \"bug\"\n  cro ants [\n    set size 2  ;; easier to see this way\n    rt random-float 360\n    set color red\n    set carrying-food? false\n  ]\nend\n\nto setup-patches\n  ask patches [\n    set chemical 0\n    set food 0\n    set food-source-number -1\n    setup-nest\n    setup-food\n    update-display\n  ]\nend\n\nto setup-nest  ;; patch procedure\n  ;; set nest? variable to true inside the nest\n  set nest? ((distancexy 0 0) < 5)\n  ;; spread a nest-scent over the whole screen -- stronger near the nest\n  set nest-scent (200 - (distancexy 0 0))\nend\n\nto setup-food  ;; patch procedure\n  ;; setup food source one on the right of screen\n  if ((distancexy (0.6 * max-pxcor) 0) < 5)\n  [ set food-source-number 1 ]\n\n  ;; setup food source two on the lower-left of screen\n  if ((distancexy (-0.6 * max-pxcor) (-0.6 * max-pycor)) < 5)\n  [ set food-source-number 2 ]\n\n  ;; setup food source three on the upper-left of screen\n  if ((distancexy (-0.8 * max-pxcor) (0.8 * max-pycor)) < 5)\n  [ set food-source-number 3 ]\n\n  ;; set \"food\" at sources to either 1 or 2\n  if (food-source-number > 0)\n  [ set food (1 + random 2) ]\nend\n\nto update-display  ;; patch procedure\n  ;; give color to nest and food sources\n  ifelse nest?\n  [ set pcolor violet ]\n  [ ifelse (food > 0)\n    [ if (food-source-number = 1) [ set pcolor cyan ]\n      if (food-source-number = 2) [ set pcolor sky  ]\n      if (food-source-number = 3) [ set pcolor blue ]\n    ]\n    [ set pcolor scale-color green chemical 0.1 5 ] ;; scale color to show chemical concentration\n  ]\nend\n\n;;;;;;;;;;;;;;;;;;;;;;;;;;\n;;; Runtime Procedures ;;;\n;;;;;;;;;;;;;;;;;;;;;;;;;;\n\nto go  ;; forever button\n  ask turtles [ go-turtles ]\n  diffuse chemical (diffusion-rate / 100)\n  ask patches [ go-patches ]\n  tick\n  do-plotting\nend\n\nto go-turtles  ;; turtle procedure\n  if (who < ticks) ;; delay the initial departure of ants\n  [ ifelse carrying-food?\n    [set color orange + 1 return-to-nest ]  ;; if ant finds food, it returns to the nest\n    [set color red    look-for-food  ]  ;; otherwise it keeps looking\n  ]\nend\n\nto go-patches  ;; patch procedure\n  set chemical (chemical * (100 - evaporation-rate) / 100)  ;;slowly evaporate chemical\n  update-display  ;; Refresh the Display\nend\n\nto return-to-nest  ;; turtle procedure\n  ifelse nest?  ;; if ant is in the nest, it drops food and heads out again\n  [ set carrying-food? false\n    rt 180 fd 1\n  ]\n  [ set chemical (chemical + drop-size) ;; drop some chemical, but the amount decreases each time\n    set drop-size (drop-size - 1.5)\n    if (drop-size < 1) [set drop-size 1]\n    uphill-nest-scent   ;; head toward the greatest value of nest-scent\n    wiggle              ;; which is toward the nest\n    fd 1]\nend\n\nto look-for-food  ;; turtle procedure\n  if (food > 0)\n  [ set carrying-food? true  ;; pick up food\n    set food (food - 1)      ;; and reduce the food source\n    set drop-size 60\n    rt 180 stop         ;; and turn around\n  ]\n  ifelse (chemical > 2)\n  [ fd 1 ]\n  [ ifelse (chemical < 0.05) ;; go in the direction where the chemical smell is strongest\n    [ wiggle\n      fd 1]\n    [ uphill-chemical\n      fd 1]\n  ]\nend\n\nto uphill-chemical  ;; turtle procedure\n  wiggle\n  ;; sniff left and right, and go where the strongest smell is\n  let scent-ahead [chemical] of patch-ahead 1\n  let scent-right chemical-scent 45\n  let scent-left chemical-scent -45\n\n  if ((scent-right > scent-ahead) or (scent-left > scent-ahead))\n    [ ifelse (scent-right > scent-left)\n      [ rt 45 ]\n      [ lt 45 ]\n  ]\nend\n\nto uphill-nest-scent  ;; turtle procedure\n  wiggle\n\n  ;; sniff left and right, and go where the strongest smell is\n  let scent-ahead [nest-scent] of patch-ahead 1\n  let scent-right get-nest-scent 45\n  let scent-left get-nest-scent -45\n\n  if ((scent-right > scent-ahead) or (scent-left > scent-ahead))\n  [ ifelse (scent-right > scent-left)\n    [ rt 45 ]\n    [ lt 45 ]\n  ]\nend\n\nto wiggle  ;; turtle procedure\n  rt random 40 - random 40\n  if not can-move? 1\n  [ rt 180 ]\nend\n\nto-report get-nest-scent [ angle ]\n  let p patch-right-and-ahead angle 1\n  if p != nobody\n  [ report [nest-scent] of p ]\n  report 0\nend\n\nto-report chemical-scent [ angle ]\n  let p patch-right-and-ahead angle 1\n  if p != nobody\n  [ report [chemical] of p ]\n  report 0\nend\n\nto do-plotting\n  if not plot? [ stop ]\n  set-current-plot \"Food in each pile\"\n  set-current-plot-pen \"food-in-pile1\"\n  plot count patches with [pcolor = cyan]\n  set-current-plot-pen \"food-in-pile2\"\n  plot count patches with [pcolor = sky]\n  set-current-plot-pen \"food-in-pile3\"\n  plot count patches with [pcolor = blue]\nend')([{"left":254,"top":10,"right":769,"bottom":546,"dimensions":{"minPxcor":-50,"maxPxcor":50,"minPycor":-50,"maxPycor":50,"patchSize":5,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_38 = procedures[\"SETUP\"]();\n  if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"setup","left":9,"top":38,"right":64,"bottom":71,"display":"Setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"99","compiledStep":"1","variable":"diffusion-rate","left":9,"top":128,"right":188,"bottom":161,"display":"diffusion-rate","min":"0","max":"99","default":53,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"99","compiledStep":"1","variable":"evaporation-rate","left":9,"top":169,"right":188,"bottom":202,"display":"evaporation-rate","min":"0","max":"99","default":10,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_35 = procedures[\"GO\"]();\n  if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"go","left":88,"top":38,"right":143,"bottom":71,"display":"Go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"variable":"plot?","left":160,"top":38,"right":250,"bottom":71,"display":"plot?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"300","compiledStep":"1","variable":"ants","left":9,"top":87,"right":188,"bottom":120,"display":"ants","min":"0","max":"300","default":300,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"food-in-pile1","interval":1,"mode":0,"color":-11221820,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"food-in-pile2","interval":1,"mode":0,"color":-13791810,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"food-in-pile3","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Food in each pile","left":10,"top":360,"right":239,"bottom":524,"xAxis":"Time","yAxis":"Food","xmin":0,"xmax":100,"ymin":0,"ymax":100,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"food-in-pile1","interval":1,"mode":0,"color":-11221820,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"food-in-pile2","interval":1,"mode":0,"color":-13791810,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"food-in-pile3","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_42 = procedures[\"BENCHMARK\"]();\n  if (_maybestop_33_42 instanceof Exception.StopInterrupt) { return _maybestop_33_42; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"benchmark","left":6,"top":211,"right":184,"bottom":339,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"result\")","source":"result","left":20,"top":290,"right":171,"bottom":335,"precision":17,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["diffusion-rate", "evaporation-rate", "plot?", "ants", "result"], ["diffusion-rate", "evaporation-rate", "plot?", "ants"], ["chemical", "food", "nest?", "nest-scent", "food-source-number"], -50, 50, -50, 50, 5.0, false, false, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ExportPrims = workspace.exportPrims;
@@ -78,6 +78,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.clearAll();
       world.ticker.reset();
       procedures["SETUP-TURTLES"]();
@@ -96,6 +97,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       workspace.rng.setSeed(337);
       workspace.timer.reset();
       procedures["SETUP"]();
@@ -116,6 +118,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "bug")
       world.turtleManager.createOrderedTurtles(world.observer.getGlobal("ants"), "").ask(function() {
         SelfManager.self().setVariable("size", 2);
@@ -136,6 +139,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.patches().ask(function() {
         SelfManager.self().setPatchVariable("chemical", 0);
         SelfManager.self().setPatchVariable("food", 0);
@@ -157,6 +161,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       SelfManager.self().setPatchVariable("nest?", Prims.lt(SelfManager.self().distanceXY(0, 0), 5));
       SelfManager.self().setPatchVariable("nest-scent", (200 - SelfManager.self().distanceXY(0, 0)));
     } catch (e) {
@@ -172,6 +177,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (Prims.lt(SelfManager.self().distanceXY((0.6 * world.topology.maxPxcor), 0), 5)) {
         SelfManager.self().setPatchVariable("food-source-number", 1);
       }
@@ -197,6 +203,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (SelfManager.self().getPatchVariable("nest?")) {
         SelfManager.self().setPatchVariable("pcolor", 115);
       }
@@ -229,6 +236,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.turtles().ask(function() { procedures["GO-TURTLES"](); }, true);
       world.topology.diffuse("chemical", Prims.div(world.observer.getGlobal("diffusion-rate"), 100))
       world.patches().ask(function() { procedures["GO-PATCHES"](); }, true);
@@ -247,6 +255,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (Prims.lt(SelfManager.self().getVariable("who"), world.ticker.tickCount())) {
         if (SelfManager.self().getVariable("carrying-food?")) {
           SelfManager.self().setVariable("color", (25 + 1));
@@ -270,6 +279,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       SelfManager.self().setPatchVariable("chemical", Prims.div((SelfManager.self().getPatchVariable("chemical") * (100 - world.observer.getGlobal("evaporation-rate"))), 100));
       procedures["UPDATE-DISPLAY"]();
     } catch (e) {
@@ -285,6 +295,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (SelfManager.self().getPatchVariable("nest?")) {
         SelfManager.self().setVariable("carrying-food?", false);
         SelfManager.self().right(180);
@@ -313,6 +324,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (Prims.gt(SelfManager.self().getPatchVariable("food"), 0)) {
         SelfManager.self().setVariable("carrying-food?", true);
         SelfManager.self().setPatchVariable("food", (SelfManager.self().getPatchVariable("food") - 1));
@@ -346,10 +358,11 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       procedures["WIGGLE"]();
-      let scentAhead = SelfManager.self().patchAhead(1).projectionBy(function() { return SelfManager.self().getPatchVariable("chemical"); });
-      let scentRight = procedures["CHEMICAL-SCENT"](45);
-      let scentLeft = procedures["CHEMICAL-SCENT"](-45);
+      let scentAhead = SelfManager.self().patchAhead(1).projectionBy(function() { return SelfManager.self().getPatchVariable("chemical"); }); letVars['scentAhead'] = scentAhead;
+      let scentRight = procedures["CHEMICAL-SCENT"](45); letVars['scentRight'] = scentRight;
+      let scentLeft = procedures["CHEMICAL-SCENT"](-45); letVars['scentLeft'] = scentLeft;
       if ((Prims.gt(scentRight, scentAhead) || Prims.gt(scentLeft, scentAhead))) {
         if (Prims.gt(scentRight, scentLeft)) {
           SelfManager.self().right(45);
@@ -371,10 +384,11 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       procedures["WIGGLE"]();
-      let scentAhead = SelfManager.self().patchAhead(1).projectionBy(function() { return SelfManager.self().getPatchVariable("nest-scent"); });
-      let scentRight = procedures["GET-NEST-SCENT"](45);
-      let scentLeft = procedures["GET-NEST-SCENT"](-45);
+      let scentAhead = SelfManager.self().patchAhead(1).projectionBy(function() { return SelfManager.self().getPatchVariable("nest-scent"); }); letVars['scentAhead'] = scentAhead;
+      let scentRight = procedures["GET-NEST-SCENT"](45); letVars['scentRight'] = scentRight;
+      let scentLeft = procedures["GET-NEST-SCENT"](-45); letVars['scentLeft'] = scentLeft;
       if ((Prims.gt(scentRight, scentAhead) || Prims.gt(scentLeft, scentAhead))) {
         if (Prims.gt(scentRight, scentLeft)) {
           SelfManager.self().right(45);
@@ -396,6 +410,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       SelfManager.self().right((Prims.random(40) - Prims.random(40)));
       if (!SelfManager.self().canMove(1)) {
         SelfManager.self().right(180);
@@ -413,11 +428,16 @@ var procedures = (function() {
   temp = (function(angle) {
     try {
       var reporterContext = true;
-      let p = SelfManager.self().patchRightAndAhead(angle, 1);
+      var letVars = { };
+      let p = SelfManager.self().patchRightAndAhead(angle, 1); letVars['p'] = p;
       if (!Prims.equality(p, Nobody)) {
-        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return p.projectionBy(function() { return SelfManager.self().getPatchVariable("nest-scent"); }) }
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+          return p.projectionBy(function() { return SelfManager.self().getPatchVariable("nest-scent"); })
+        }
       }
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return 0 }
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+        return 0
+      }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
      if (e instanceof Exception.StopInterrupt) {
@@ -432,11 +452,16 @@ var procedures = (function() {
   temp = (function(angle) {
     try {
       var reporterContext = true;
-      let p = SelfManager.self().patchRightAndAhead(angle, 1);
+      var letVars = { };
+      let p = SelfManager.self().patchRightAndAhead(angle, 1); letVars['p'] = p;
       if (!Prims.equality(p, Nobody)) {
-        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return p.projectionBy(function() { return SelfManager.self().getPatchVariable("chemical"); }) }
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+          return p.projectionBy(function() { return SelfManager.self().getPatchVariable("chemical"); })
+        }
       }
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return 0 }
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+        return 0
+      }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
      if (e instanceof Exception.StopInterrupt) {
@@ -451,6 +476,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (!world.observer.getGlobal("plot?")) {
         throw new Exception.StopInterrupt;
       }

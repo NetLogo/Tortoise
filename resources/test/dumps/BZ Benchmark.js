@@ -46,7 +46,7 @@ if (typeof javax !== "undefined") {
 }
 var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.plotOps !== null) ? modelConfig.plotOps : {};
 modelConfig.plots = [];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])(tortoise_require("extensions/all").dumpers())(["n", "k1", "k2", "g", "result"], ["n", "k1", "k2", "g"], ["state", "new-state"], -150, 150, -150, 150, 1.0, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('globals [result]\n\npatches-own [state new-state]\n\nto benchmark\n  random-seed 5454\n  reset-timer\n  setup\n  repeat 20 [ go ]\n  set result timer\nend\n\nto setup\n  ca reset-ticks\n  ask patches\n    [ set state random (n + 1)   ;; pick a state from 0 to n\n      set pcolor scale-color red state 0 n ]\nend\n\nto go\n  ;; first all the patches compute their new state\n  ask patches [ find-new-state ]\n  ;; only once all the patches have computed their new state\n  ;; do they actually change state\n  ask patches\n  [ set state new-state\n    set pcolor scale-color red state 0 n ]\n  tick\nend\n\nto find-new-state  ;; patch procedure\n  ifelse state = n  ;; ill?\n    [ set new-state 0 ] ;; get well\n    [ let a count neighbors with [state > 0 and state < n]  ;; count infected\n      let b count neighbors with [state = n] ;; count ill\n      ifelse state = 0  ;; healthy?\n        [ set new-state int (a / k1) + int (b / k2) ]\n        [ let s state + sum [state] of neighbors\n          set new-state int (s / (a + b + 1)) + g ]\n      if new-state > n   ;; don\'t exceed the maximum state\n        [ set new-state n ] ]\nend')([{"left":183,"top":10,"right":494,"bottom":342,"dimensions":{"minPxcor":-150,"maxPxcor":150,"minPycor":-150,"maxPycor":150,"patchSize":1,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"200","compiledStep":"1","variable":"n","left":6,"top":51,"right":178,"bottom":84,"display":"n","min":"1","max":"200","default":200,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_38 = procedures[\"SETUP\"]();\n  if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"setup","left":25,"top":16,"right":88,"bottom":49,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_35 = procedures[\"GO\"]();\n  if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"go","left":95,"top":16,"right":158,"bottom":49,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"8","compiledStep":"1","variable":"k1","left":6,"top":86,"right":178,"bottom":119,"display":"k1","min":"1","max":"8","default":3,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"8","compiledStep":"1","variable":"k2","left":6,"top":120,"right":178,"bottom":153,"display":"k2","min":"1","max":"8","default":3,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"g","left":6,"top":154,"right":178,"bottom":187,"display":"g","min":"0","max":"100","default":28,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_42 = procedures[\"BENCHMARK\"]();\n  if (_maybestop_33_42 instanceof Exception.StopInterrupt) { return _maybestop_33_42; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"benchmark","left":29,"top":195,"right":163,"bottom":338,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"result\")","source":"result","left":52,"top":288,"right":142,"bottom":333,"precision":17,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["n", "k1", "k2", "g", "result"], ["n", "k1", "k2", "g"], ["state", "new-state"], -150, 150, -150, 150, 1.0, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ExportPrims = workspace.exportPrims;
@@ -69,6 +69,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       workspace.rng.setSeed(5454);
       workspace.timer.reset();
       procedures["SETUP"]();
@@ -89,6 +90,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.clearAll();
       world.ticker.reset();
       world.patches().ask(function() {
@@ -108,6 +110,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.patches().ask(function() { procedures["FIND-NEW-STATE"](); }, true);
       world.patches().ask(function() {
         SelfManager.self().setPatchVariable("state", SelfManager.self().getPatchVariable("new-state"));
@@ -127,19 +130,20 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (Prims.equality(SelfManager.self().getPatchVariable("state"), world.observer.getGlobal("n"))) {
         SelfManager.self().setPatchVariable("new-state", 0);
       }
       else {
         let a = SelfManager.self().getNeighbors().agentFilter(function() {
           return (Prims.gt(SelfManager.self().getPatchVariable("state"), 0) && Prims.lt(SelfManager.self().getPatchVariable("state"), world.observer.getGlobal("n")));
-        }).size();
-        let b = SelfManager.self().getNeighbors().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("state"), world.observer.getGlobal("n")); }).size();
+        }).size(); letVars['a'] = a;
+        let b = SelfManager.self().getNeighbors().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("state"), world.observer.getGlobal("n")); }).size(); letVars['b'] = b;
         if (Prims.equality(SelfManager.self().getPatchVariable("state"), 0)) {
           SelfManager.self().setPatchVariable("new-state", (NLMath.toInt(Prims.div(a, world.observer.getGlobal("k1"))) + NLMath.toInt(Prims.div(b, world.observer.getGlobal("k2")))));
         }
         else {
-          let s = (SelfManager.self().getPatchVariable("state") + SelfManager.self()._optimalNSum("state"));
+          let s = (SelfManager.self().getPatchVariable("state") + SelfManager.self()._optimalNSum("state")); letVars['s'] = s;
           SelfManager.self().setPatchVariable("new-state", (NLMath.toInt(Prims.div(s, ((a + b) + 1))) + world.observer.getGlobal("g")));
         }
         if (Prims.gt(SelfManager.self().getPatchVariable("new-state"), world.observer.getGlobal("n"))) {

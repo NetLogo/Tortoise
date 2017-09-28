@@ -53,6 +53,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Power', 'power-rated')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotValue(world.observer.getGlobal("power-rated"));
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -69,6 +70,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Power', 'avg-power')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotValue(world.observer.getGlobal("average-power"));
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -85,6 +87,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Power', undefined)(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.setYRange(0, (3 * world.observer.getGlobal("power-rated")));
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -99,7 +102,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "time", "power", false, true, 0.0, 250.0, 0.0, 105.0, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])(tortoise_require("extensions/all").dumpers())(["power-rated", "reactor-size", "rod-depth", "rod-spacing", "spend-fuel?", "power", "old-power", "old-power-2", "old-power-3", "old-power-4", "average-power", "power-change", "rod-length", "n-rods", "r"], ["power-rated", "reactor-size", "rod-depth", "rod-spacing", "spend-fuel?"], ["x", "y", "rod?"], -70, 70, -70, 70, 3.0, false, false, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('patches-own [ x y rod? ]\n\nglobals\n[ power\n  old-power\n  old-power-2  ; Used to compute average-power\n  old-power-3  ; Used to compute average-power\n  old-power-4  ; Used to compute average-power\n  average-power\n  power-change\n  rod-length\n  n-rods   ; Number of rods\n  r ; Constant for half the reactor size\n]\n\n\nto setup\n  clear-all\n  set-default-shape turtles \"circle\"\n  setup-globals\n  ask patches\n  [ set x (abs pxcor)\n    set y (abs pycor)\n    set rod? false\n    build-reactor\n    setup-nuclear-fuel\n  ]\n  setup-control-rods\n  reset-ticks\nend\n\nto setup-globals\n  set power   0\n  set old-power  0\n  set old-power-2  0\n  set old-power-3  0\n  set old-power-4  0\n  set r (reactor-size / 2)\n  set rod-length rod-depth\n  set n-rods (reactor-size / (rod-spacing + 1)) - 1\nend\n\nto build-reactor ;; Patch Procedure\n  if ((x = r) and (y <= r)) or ((y = r) and (x <= r))\n  [ set pcolor gray\n    set rod? false\n  ]\nend\n\nto setup-nuclear-fuel ;; Patch Procedure\n  if (pcolor = black) and (x < r) and (y < r)\n  [ set pcolor red ]\nend\n\nto setup-control-rods\n  if rod-depth > reactor-size [set rod-depth reactor-size]\n  if (rod-spacing = 5 or rod-spacing = 6 and reactor-size = 10)\n  [ user-message \"Spacing too large for reactor size.  Spacing set to 4.\"\n    set rod-spacing 4\n    set n-rods 1\n  ]\n  let rod-x 1 - r + rod-spacing\n\n  ;; Make the rods more evenly spaced at particular settings\n  if (rod-spacing = 2 and reactor-size != 30 and reactor-size != 60)\n  [ set rod-x rod-x + 1 ]\n  if (rod-spacing = 3 and (reactor-size mod 20) != 0)\n  [ set n-rods n-rods + 1\n    set rod-x rod-x - 1\n  ]\n  if (rod-spacing = 5 and (reactor-size = 20 or reactor-size = 40 or reactor-size = 70))\n  [ ifelse (reactor-size = 20)\n    [ set rod-x rod-x + 1 ]\n    [ set rod-x rod-x + 2 ]\n  ]\n  if (rod-spacing = 6 and (reactor-size mod 20) = 0)\n  [ set n-rods n-rods + 1\n    ifelse (reactor-size = 80)\n    [ set rod-x rod-x - 2 ]\n    [ set rod-x rod-x - 1 ]\n  ]\n\n  repeat n-rods\n  [ ask patches with [ pxcor = rod-x ]\n    [ set rod? true ]\n    set rod-x rod-x + rod-spacing + 1\n  ]\n  ask patches [ build-reactor ]\n  place-control-rods\nend\n\n;;;;;;;;;;;;;;;;;;;;;;;;;;;\n;;; Run Time Procedures ;;;\n;;;;;;;;;;;;;;;;;;;;;;;;;;;\n\n;;Forever Button\nto auto-react\n  if not any? turtles\n    [stop]\n  ifelse power-change >= 0\n  [ if (power - power-rated) >= 0\n    [ set rod-length ( rod-length + 50 ) ]\n  ]\n  [ if (power - power-rated) < 0\n    [ set rod-length ( rod-length - 10 ) ]\n  ]\n  if rod-length < 0\n  [ set rod-length 0 ]\n  if rod-length > reactor-size\n  [ set rod-length reactor-size ]\n  react\nend\n\n;;Forever Button\nto manu-react\n  if not any? turtles\n    [stop]\n  if rod-depth > reactor-size [set rod-depth reactor-size]\n  set rod-length rod-depth\n  react\nend\n\nto react\n  place-control-rods\n  set power 0\n  ask turtles\n  [ fd  1\n    if (pcolor = gray)\n    [ die ]\n    if (pcolor = red)\n    [ fission ]\n  ]\n  set average-power ((power + old-power + old-power-2 + old-power-3 + old-power-4) / 5)\n  set power-change (power - old-power)\n  set old-power-4 old-power-3\n  set old-power-3 old-power-2\n  set old-power-2 old-power\n  set old-power power\n  tick\nend\n\nto release-neutron ;; Button\n  let whom nobody\n  create-turtles 1\n  [ set color yellow\n    set xcor ((random (reactor-size - 2)) - r)\n    set ycor ((random (reactor-size - 2)) - r)\n    set whom self\n    if (pcolor = gray)\n    [ die ]\n  ]\n  if whom = nobody\n  [ release-neutron ]\nend\n\nto place-control-rods\n  ask patches with [ rod? ]\n  [ ifelse (pycor >= (r - rod-length))\n    [ set pcolor  gray ]\n    [ set pcolor black ]\n  ]\nend\n\nto fission ;; Turtle Procedure\n  rt random 360\n  if (pcolor = red)\n  [ if (spend-fuel?)\n    [ set pcolor brown ]\n    let gain (1 / count turtles-here)\n    set power power + gain\n    hatch ((2 + random 2) * gain)\n      [ rt random 360 ]\n  ]\nend\n\n\n; Copyright 1998 Uri Wilensky.\n; See Info tab for full copyright and license.')([{"left":273,"top":10,"right":704,"bottom":442,"dimensions":{"minPxcor":-70,"maxPxcor":70,"minPycor":-70,"maxPycor":70,"patchSize":3,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":15,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"power-rated","left":7,"top":138,"right":157,"bottom":171,"display":"power-rated","min":"0.0","max":"100.0","default":35,"step":"1.0","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"10","compiledMax":"136","compiledStep":"2","variable":"reactor-size","left":7,"top":39,"right":157,"bottom":72,"display":"reactor-size","min":"10","max":"136","default":122,"step":"2","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_38 = procedures[\"SETUP\"]();\n  if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"setup","left":7,"top":261,"right":89,"bottom":294,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_43 = procedures[\"MANU-REACT\"]();\n  if (_maybestop_33_43 instanceof Exception.StopInterrupt) { return _maybestop_33_43; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"manu-react","left":181,"top":261,"right":267,"bottom":294,"display":"manual","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_43 = procedures[\"AUTO-REACT\"]();\n  if (_maybestop_33_43 instanceof Exception.StopInterrupt) { return _maybestop_33_43; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"auto-react","left":89,"top":261,"right":182,"bottom":294,"display":"automatic","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"power\")","source":"power","left":165,"top":39,"right":266,"bottom":84,"display":"Power","precision":3,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"power-change\")","source":"power-change","left":165,"top":89,"right":266,"bottom":134,"display":"Power change","precision":3,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Power', undefined)(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.setYRange(0, (3 * world.observer.getGlobal(\"power-rated\")));\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Power', 'power-rated')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotValue(world.observer.getGlobal(\"power-rated\"));\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"power-rated","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plot power-rated","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Power', 'avg-power')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotValue(world.observer.getGlobal(\"average-power\"));\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"avg-power","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot average-power","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Power","left":7,"top":299,"right":267,"bottom":464,"xAxis":"time","yAxis":"power","xmin":0,"xmax":250,"ymin":0,"ymax":105,"autoPlotOn":true,"legendOn":false,"setupCode":"set-plot-y-range 0 (3 * power-rated)","updateCode":"","pens":[{"display":"power-rated","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plot power-rated","type":"pen"},{"display":"avg-power","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot average-power","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"80","compiledStep":"1","variable":"rod-depth","left":7,"top":179,"right":157,"bottom":212,"display":"rod-depth","min":"0","max":"80","default":0,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_48 = procedures[\"RELEASE-NEUTRON\"]();\n  if (_maybestop_33_48 instanceof Exception.StopInterrupt) { return _maybestop_33_48; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"release-neutron","left":104,"top":221,"right":267,"bottom":254,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"6","compiledStep":"1","variable":"rod-spacing","left":7,"top":72,"right":157,"bottom":105,"display":"rod-spacing","min":"1","max":"6","default":4,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"variable":"spend-fuel?","left":7,"top":105,"right":157,"bottom":138,"display":"spend-fuel?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["power-rated", "reactor-size", "rod-depth", "rod-spacing", "spend-fuel?", "power", "old-power", "old-power-2", "old-power-3", "old-power-4", "average-power", "power-change", "rod-length", "n-rods", "r"], ["power-rated", "reactor-size", "rod-depth", "rod-spacing", "spend-fuel?"], ["x", "y", "rod?"], -70, 70, -70, 70, 3.0, false, false, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ExportPrims = workspace.exportPrims;
@@ -122,6 +125,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.clearAll();
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
       procedures["SETUP-GLOBALS"]();
@@ -147,6 +151,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.observer.setGlobal("power", 0);
       world.observer.setGlobal("old-power", 0);
       world.observer.setGlobal("old-power-2", 0);
@@ -168,6 +173,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (((Prims.equality(SelfManager.self().getPatchVariable("x"), world.observer.getGlobal("r")) && Prims.lte(SelfManager.self().getPatchVariable("y"), world.observer.getGlobal("r"))) || (Prims.equality(SelfManager.self().getPatchVariable("y"), world.observer.getGlobal("r")) && Prims.lte(SelfManager.self().getPatchVariable("x"), world.observer.getGlobal("r"))))) {
         SelfManager.self().setPatchVariable("pcolor", 5);
         SelfManager.self().setPatchVariable("rod?", false);
@@ -185,6 +191,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (((Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 0) && Prims.lt(SelfManager.self().getPatchVariable("x"), world.observer.getGlobal("r"))) && Prims.lt(SelfManager.self().getPatchVariable("y"), world.observer.getGlobal("r")))) {
         SelfManager.self().setPatchVariable("pcolor", 15);
       }
@@ -201,6 +208,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (Prims.gt(world.observer.getGlobal("rod-depth"), world.observer.getGlobal("reactor-size"))) {
         world.observer.setGlobal("rod-depth", world.observer.getGlobal("reactor-size"));
       }
@@ -209,34 +217,34 @@ var procedures = (function() {
         world.observer.setGlobal("rod-spacing", 4);
         world.observer.setGlobal("n-rods", 1);
       }
-      let rodX = ((1 - world.observer.getGlobal("r")) + world.observer.getGlobal("rod-spacing"));
+      let rodX = ((1 - world.observer.getGlobal("r")) + world.observer.getGlobal("rod-spacing")); letVars['rodX'] = rodX;
       if (((Prims.equality(world.observer.getGlobal("rod-spacing"), 2) && !Prims.equality(world.observer.getGlobal("reactor-size"), 30)) && !Prims.equality(world.observer.getGlobal("reactor-size"), 60))) {
-        rodX = (rodX + 1);
+        rodX = (rodX + 1); letVars['rodX'] = rodX;
       }
       if ((Prims.equality(world.observer.getGlobal("rod-spacing"), 3) && !Prims.equality(NLMath.mod(world.observer.getGlobal("reactor-size"), 20), 0))) {
         world.observer.setGlobal("n-rods", (world.observer.getGlobal("n-rods") + 1));
-        rodX = (rodX - 1);
+        rodX = (rodX - 1); letVars['rodX'] = rodX;
       }
       if ((Prims.equality(world.observer.getGlobal("rod-spacing"), 5) && ((Prims.equality(world.observer.getGlobal("reactor-size"), 20) || Prims.equality(world.observer.getGlobal("reactor-size"), 40)) || Prims.equality(world.observer.getGlobal("reactor-size"), 70)))) {
         if (Prims.equality(world.observer.getGlobal("reactor-size"), 20)) {
-          rodX = (rodX + 1);
+          rodX = (rodX + 1); letVars['rodX'] = rodX;
         }
         else {
-          rodX = (rodX + 2);
+          rodX = (rodX + 2); letVars['rodX'] = rodX;
         }
       }
       if ((Prims.equality(world.observer.getGlobal("rod-spacing"), 6) && Prims.equality(NLMath.mod(world.observer.getGlobal("reactor-size"), 20), 0))) {
         world.observer.setGlobal("n-rods", (world.observer.getGlobal("n-rods") + 1));
         if (Prims.equality(world.observer.getGlobal("reactor-size"), 80)) {
-          rodX = (rodX - 2);
+          rodX = (rodX - 2); letVars['rodX'] = rodX;
         }
         else {
-          rodX = (rodX - 1);
+          rodX = (rodX - 1); letVars['rodX'] = rodX;
         }
       }
       for (let _index_1937_1943 = 0, _repeatcount_1937_1943 = StrictMath.floor(world.observer.getGlobal("n-rods")); _index_1937_1943 < _repeatcount_1937_1943; _index_1937_1943++){
         world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pxcor"), rodX); }).ask(function() { SelfManager.self().setPatchVariable("rod?", true); }, true);
-        rodX = ((rodX + world.observer.getGlobal("rod-spacing")) + 1);
+        rodX = ((rodX + world.observer.getGlobal("rod-spacing")) + 1); letVars['rodX'] = rodX;
       }
       world.patches().ask(function() { procedures["BUILD-REACTOR"](); }, true);
       procedures["PLACE-CONTROL-RODS"]();
@@ -253,6 +261,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (!!world.turtles().isEmpty()) {
         throw new Exception.StopInterrupt;
       }
@@ -286,6 +295,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (!!world.turtles().isEmpty()) {
         throw new Exception.StopInterrupt;
       }
@@ -307,6 +317,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       procedures["PLACE-CONTROL-RODS"]();
       world.observer.setGlobal("power", 0);
       world.turtles().ask(function() {
@@ -338,12 +349,13 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
-      let whom = Nobody;
+      var letVars = { };
+      let whom = Nobody; letVars['whom'] = whom;
       world.turtleManager.createTurtles(1, "").ask(function() {
         SelfManager.self().setVariable("color", 45);
         SelfManager.self().setVariable("xcor", (Prims.random((world.observer.getGlobal("reactor-size") - 2)) - world.observer.getGlobal("r")));
         SelfManager.self().setVariable("ycor", (Prims.random((world.observer.getGlobal("reactor-size") - 2)) - world.observer.getGlobal("r")));
-        whom = SelfManager.self();
+        whom = SelfManager.self(); letVars['whom'] = whom;
         if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 5)) {
           SelfManager.self().die();
         }
@@ -364,6 +376,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.patches().agentFilter(function() { return SelfManager.self().getPatchVariable("rod?"); }).ask(function() {
         if (Prims.gte(SelfManager.self().getPatchVariable("pycor"), (world.observer.getGlobal("r") - world.observer.getGlobal("rod-length")))) {
           SelfManager.self().setPatchVariable("pcolor", 5);
@@ -385,12 +398,13 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       SelfManager.self().right(Prims.random(360));
       if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15)) {
         if (world.observer.getGlobal("spend-fuel?")) {
           SelfManager.self().setPatchVariable("pcolor", 35);
         }
-        let gain = Prims.div(1, SelfManager.self().turtlesHere().size());
+        let gain = Prims.div(1, SelfManager.self().turtlesHere().size()); letVars['gain'] = gain;
         world.observer.setGlobal("power", (world.observer.getGlobal("power") + gain));
         SelfManager.self().hatch(((2 + Prims.random(2)) * gain), "").ask(function() { SelfManager.self().right(Prims.random(360)); }, true);
       }

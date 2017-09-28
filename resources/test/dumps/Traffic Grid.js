@@ -53,6 +53,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Average Wait Time of Cars', 'default')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotValue(ListPrims.mean(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("wait-time"); })));
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -75,6 +76,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Average Speed of Cars', 'default')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotValue(ListPrims.mean(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("speed"); })));
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -91,6 +93,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Average Speed of Cars', undefined)(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.setYRange(0, world.observer.getGlobal("speed-limit"));
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -112,6 +115,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Stopped Cars', 'default')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotValue(world.observer.getGlobal("num-cars-stopped"));
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -128,6 +132,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Stopped Cars', undefined)(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.setYRange(0, world.observer.getGlobal("num-cars"));
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -142,7 +147,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "Time", "Stopped Cars", false, true, 0.0, 100.0, 0.0, 100.0, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["speed", "up-car?", "wait-time"], [])(tortoise_require("extensions/all").dumpers())(["grid-size-y", "grid-size-x", "power?", "num-cars", "speed-limit", "ticks-per-cycle", "current-phase", "current-auto?", "grid-x-inc", "grid-y-inc", "acceleration", "phase", "num-cars-stopped", "current-light", "intersections", "roads"], ["grid-size-y", "grid-size-x", "power?", "num-cars", "speed-limit", "ticks-per-cycle", "current-phase", "current-auto?"], ["intersection?", "green-light-up?", "my-row", "my-column", "my-phase", "auto?"], -18, 18, -18, 18, 9.0, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["speed", "up-car?", "wait-time"], [])('globals\n[\n  grid-x-inc               ;; the amount of patches in between two roads in the x direction\n  grid-y-inc               ;; the amount of patches in between two roads in the y direction\n  acceleration             ;; the constant that controls how much a car speeds up or slows down by if\n                           ;; it is to accelerate or decelerate\n  phase                    ;; keeps track of the phase\n  num-cars-stopped         ;; the number of cars that are stopped during a single pass thru the go procedure\n  current-light            ;; the currently selected light\n\n  ;; patch agentsets\n  intersections ;; agentset containing the patches that are intersections\n  roads         ;; agentset containing the patches that are roads\n]\n\nturtles-own\n[\n  speed     ;; the speed of the turtle\n  up-car?   ;; true if the turtle moves downwards and false if it moves to the right\n  wait-time ;; the amount of time since the last time a turtle has moved\n]\n\npatches-own\n[\n  intersection?   ;; true if the patch is at the intersection of two roads\n  green-light-up? ;; true if the green light is above the intersection.  otherwise, false.\n                  ;; false for a non-intersection patches.\n  my-row          ;; the row of the intersection counting from the upper left corner of the\n                  ;; world.  -1 for non-intersection patches.\n  my-column       ;; the column of the intersection counting from the upper left corner of the\n                  ;; world.  -1 for non-intersection patches.\n  my-phase        ;; the phase for the intersection.  -1 for non-intersection patches.\n  auto?           ;; whether or not this intersection will switch automatically.\n                  ;; false for non-intersection patches.\n]\n\n\n;;;;;;;;;;;;;;;;;;;;;;\n;; Setup Procedures ;;\n;;;;;;;;;;;;;;;;;;;;;;\n\n;; Initialize the display by giving the global and patch variables initial values.\n;; Create num-cars of turtles if there are enough road patches for one turtle to\n;; be created per road patch. Set up the plots.\nto setup\n  clear-all\n  setup-globals\n\n  ;; First we ask the patches to draw themselves and set up a few variables\n  setup-patches\n  make-current one-of intersections\n  label-current\n\n  set-default-shape turtles \"car\"\n\n  if (num-cars > count roads)\n  [\n    user-message (word \"There are too many cars for the amount of \"\n                       \"road.  Either increase the amount of roads \"\n                       \"by increasing the GRID-SIZE-X or \"\n                       \"GRID-SIZE-Y sliders, or decrease the \"\n                       \"number of cars by lowering the NUMBER slider.\\n\"\n                       \"The setup has stopped.\")\n    stop\n  ]\n\n  ;; Now create the turtles and have each created turtle call the functions setup-cars and set-car-color\n  create-turtles num-cars\n  [\n    setup-cars\n    set-car-color\n    record-data\n  ]\n\n  ;; give the turtles an initial speed\n  ask turtles [ set-car-speed ]\n\n  reset-ticks\nend\n\n;; Initialize the global variables to appropriate values\nto setup-globals\n  set current-light nobody ;; just for now, since there are no lights yet\n  set phase 0\n  set num-cars-stopped 0\n  set grid-x-inc world-width / grid-size-x\n  set grid-y-inc world-height / grid-size-y\n\n  ;; don\'t make acceleration 0.1 since we could get a rounding error and end up on a patch boundary\n  set acceleration 0.099\nend\n\n;; Make the patches have appropriate colors, set up the roads and intersections agentsets,\n;; and initialize the traffic lights to one setting\nto setup-patches\n  ;; initialize the patch-owned variables and color the patches to a base-color\n  ask patches\n  [\n    set intersection? false\n    set auto? false\n    set green-light-up? true\n    set my-row -1\n    set my-column -1\n    set my-phase -1\n    set pcolor brown + 3\n  ]\n\n  ;; initialize the global variables that hold patch agentsets\n  set roads patches with\n    [(floor((pxcor + max-pxcor - floor(grid-x-inc - 1)) mod grid-x-inc) = 0) or\n    (floor((pycor + max-pycor) mod grid-y-inc) = 0)]\n  set intersections roads with\n    [(floor((pxcor + max-pxcor - floor(grid-x-inc - 1)) mod grid-x-inc) = 0) and\n    (floor((pycor + max-pycor) mod grid-y-inc) = 0)]\n\n  ask roads [ set pcolor white ]\n  setup-intersections\nend\n\n;; Give the intersections appropriate values for the intersection?, my-row, and my-column\n;; patch variables.  Make all the traffic lights start off so that the lights are red\n;; horizontally and green vertically.\nto setup-intersections\n  ask intersections\n  [\n    set intersection? true\n    set green-light-up? true\n    set my-phase 0\n    set auto? true\n    set my-row floor((pycor + max-pycor) / grid-y-inc)\n    set my-column floor((pxcor + max-pxcor) / grid-x-inc)\n    set-signal-colors\n  ]\nend\n\n;; Initialize the turtle variables to appropriate values and place the turtle on an empty road patch.\nto setup-cars  ;; turtle procedure\n  set speed 0\n  set wait-time 0\n  put-on-empty-road\n  ifelse intersection?\n  [\n    ifelse random 2 = 0\n    [ set up-car? true ]\n    [ set up-car? false ]\n  ]\n  [\n    ; if the turtle is on a vertical road (rather than a horizontal one)\n    ifelse (floor((pxcor + max-pxcor - floor(grid-x-inc - 1)) mod grid-x-inc) = 0)\n    [ set up-car? true ]\n    [ set up-car? false ]\n  ]\n  ifelse up-car?\n  [ set heading 180 ]\n  [ set heading 90 ]\nend\n\n;; Find a road patch without any turtles on it and place the turtle there.\nto put-on-empty-road  ;; turtle procedure\n  move-to one-of roads with [not any? turtles-on self]\nend\n\n\n;;;;;;;;;;;;;;;;;;;;;;;;\n;; Runtime Procedures ;;\n;;;;;;;;;;;;;;;;;;;;;;;;\n\n;; Run the simulation\nto go\n\n  update-current\n\n  ;; have the intersections change their color\n  set-signals\n  set num-cars-stopped 0\n\n  ;; set the turtles speed for this time thru the procedure, move them forward their speed,\n  ;; record data for plotting, and set the color of the turtles to an appropriate color\n  ;; based on their speed\n  ask turtles [\n    set-car-speed\n    fd speed\n    record-data\n    set-car-color\n  ]\n\n  ;; update the phase and the global clock\n  next-phase\n  tick\nend\n\nto choose-current\n  if mouse-down?\n  [\n    let x-mouse mouse-xcor\n    let y-mouse mouse-ycor\n    if [intersection?] of patch x-mouse y-mouse\n    [\n      update-current\n      unlabel-current\n      make-current patch x-mouse y-mouse\n      label-current\n      stop\n    ]\n  ]\nend\n\n;; Set up the current light and the interface to change it.\nto make-current [light]\n  set current-light light\n  set current-phase [my-phase] of current-light\n  set current-auto? [auto?] of current-light\nend\n\n;; update the variables for the current light\nto update-current\n  ask current-light [\n    set my-phase current-phase\n    set auto? current-auto?\n  ]\nend\n\n;; label the current light\nto label-current\n  ask current-light\n  [\n    ask patch-at -1 1\n    [\n      set plabel-color black\n      set plabel \"current\"\n    ]\n  ]\nend\n\n;; unlabel the current light (because we\'ve chosen a new one)\nto unlabel-current\n  ask current-light\n  [\n    ask patch-at -1 1\n    [\n      set plabel \"\"\n    ]\n  ]\nend\n\n;; have the traffic lights change color if phase equals each intersections\' my-phase\nto set-signals\n  ask intersections with [auto? and phase = floor ((my-phase * ticks-per-cycle) / 100)]\n  [\n    set green-light-up? (not green-light-up?)\n    set-signal-colors\n  ]\nend\n\n;; This procedure checks the variable green-light-up? at each intersection and sets the\n;; traffic lights to have the green light up or the green light to the left.\nto set-signal-colors  ;; intersection (patch) procedure\n  ifelse power?\n  [\n    ifelse green-light-up?\n    [\n      ask patch-at -1 0 [ set pcolor red ]\n      ask patch-at 0 1 [ set pcolor green ]\n    ]\n    [\n      ask patch-at -1 0 [ set pcolor green ]\n      ask patch-at 0 1 [ set pcolor red ]\n    ]\n  ]\n  [\n    ask patch-at -1 0 [ set pcolor white ]\n    ask patch-at 0 1 [ set pcolor white ]\n  ]\nend\n\n;; set the turtles\' speed based on whether they are at a red traffic light or the speed of the\n;; turtle (if any) on the patch in front of them\nto set-car-speed  ;; turtle procedure\n  ifelse pcolor = red\n  [ set speed 0 ]\n  [\n    ifelse up-car?\n    [ set-speed 0 -1 ]\n    [ set-speed 1 0 ]\n  ]\nend\n\n;; set the speed variable of the car to an appropriate value (not exceeding the\n;; speed limit) based on whether there are cars on the patch in front of the car\nto set-speed [ delta-x delta-y ]  ;; turtle procedure\n  ;; get the turtles on the patch in front of the turtle\n  let turtles-ahead turtles-at delta-x delta-y\n\n  ;; if there are turtles in front of the turtle, slow down\n  ;; otherwise, speed up\n  ifelse any? turtles-ahead\n  [\n    ifelse any? (turtles-ahead with [ up-car? != [up-car?] of myself ])\n    [\n      set speed 0\n    ]\n    [\n      set speed [speed] of one-of turtles-ahead\n      slow-down\n    ]\n  ]\n  [ speed-up ]\nend\n\n;; decrease the speed of the turtle\nto slow-down  ;; turtle procedure\n  ifelse speed <= 0  ;;if speed < 0\n  [ set speed 0 ]\n  [ set speed speed - acceleration ]\nend\n\n;; increase the speed of the turtle\nto speed-up  ;; turtle procedure\n  ifelse speed > speed-limit\n  [ set speed speed-limit ]\n  [ set speed speed + acceleration ]\nend\n\n;; set the color of the turtle to a different color based on how fast the turtle is moving\nto set-car-color  ;; turtle procedure\n  ifelse speed < (speed-limit / 2)\n  [ set color blue ]\n  [ set color cyan - 2 ]\nend\n\n;; keep track of the number of stopped turtles and the amount of time a turtle has been stopped\n;; if its speed is 0\nto record-data  ;; turtle procedure\n  ifelse speed = 0\n  [\n    set num-cars-stopped num-cars-stopped + 1\n    set wait-time wait-time + 1\n  ]\n  [ set wait-time 0 ]\nend\n\nto change-current\n  ask current-light\n  [\n    set green-light-up? (not green-light-up?)\n    set-signal-colors\n  ]\nend\n\n;; cycles phase to the next appropriate value\nto next-phase\n  ;; The phase cycles from 0 to ticks-per-cycle, then starts over.\n  set phase phase + 1\n  if phase mod ticks-per-cycle = 0\n    [ set phase 0 ]\nend\n\n\n; Copyright 2003 Uri Wilensky.\n; See Info tab for full copyright and license.')([{"left":327,"top":10,"right":668,"bottom":352,"dimensions":{"minPxcor":-18,"maxPxcor":18,"minPycor":-18,"maxPycor":18,"patchSize":9,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":12,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Average Wait Time of Cars', 'default')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotValue(ListPrims.mean(world.turtles().projectionBy(function() { return SelfManager.self().getVariable(\"wait-time\"); })));\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"default","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"plot mean [wait-time] of turtles","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Average Wait Time of Cars","left":453,"top":377,"right":671,"bottom":541,"xAxis":"Time","yAxis":"Average Wait","xmin":0,"xmax":100,"ymin":0,"ymax":5,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"default","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"plot mean [wait-time] of turtles","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Average Speed of Cars', undefined)(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.setYRange(0, world.observer.getGlobal(\"speed-limit\"));\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Average Speed of Cars', 'default')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotValue(ListPrims.mean(world.turtles().projectionBy(function() { return SelfManager.self().getVariable(\"speed\"); })));\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"default","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"plot mean [speed] of turtles","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Average Speed of Cars","left":228,"top":377,"right":444,"bottom":542,"xAxis":"Time","yAxis":"Average Speed","xmin":0,"xmax":100,"ymin":0,"ymax":1,"autoPlotOn":true,"legendOn":false,"setupCode":"set-plot-y-range 0 speed-limit","updateCode":"","pens":[{"display":"default","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"plot mean [speed] of turtles","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"9","compiledStep":"1","variable":"grid-size-y","left":108,"top":35,"right":205,"bottom":68,"display":"grid-size-y","min":"1","max":"9","default":5,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"9","compiledStep":"1","variable":"grid-size-x","left":12,"top":35,"right":106,"bottom":68,"display":"grid-size-x","min":"1","max":"9","default":5,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"variable":"power?","left":12,"top":107,"right":107,"bottom":140,"display":"power?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"400","compiledStep":"1","variable":"num-cars","left":12,"top":71,"right":293,"bottom":104,"display":"num-cars","min":"1","max":"400","default":200,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Stopped Cars', undefined)(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.setYRange(0, world.observer.getGlobal(\"num-cars\"));\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Stopped Cars', 'default')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotValue(world.observer.getGlobal(\"num-cars-stopped\"));\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"default","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"plot num-cars-stopped","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Stopped Cars","left":5,"top":376,"right":219,"bottom":540,"xAxis":"Time","yAxis":"Stopped Cars","xmin":0,"xmax":100,"ymin":0,"ymax":100,"autoPlotOn":true,"legendOn":false,"setupCode":"set-plot-y-range 0 num-cars","updateCode":"","pens":[{"display":"default","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"plot num-cars-stopped","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_35 = procedures[\"GO\"]();\n  if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"go","left":221,"top":184,"right":285,"bottom":217,"display":"Go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_38 = procedures[\"SETUP\"]();\n  if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"setup","left":208,"top":35,"right":292,"bottom":68,"display":"Setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0.1","compiledMax":"1","compiledStep":"0.1","variable":"speed-limit","left":11,"top":177,"right":165,"bottom":210,"display":"speed-limit","min":"0.1","max":"1","default":1,"step":"0.1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"phase\")","source":"phase","left":205,"top":132,"right":310,"bottom":177,"display":"Current Phase","precision":3,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"100","compiledStep":"1","variable":"ticks-per-cycle","left":11,"top":143,"right":165,"bottom":176,"display":"ticks-per-cycle","min":"1","max":"100","default":20,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"99","compiledStep":"1","variable":"current-phase","left":146,"top":256,"right":302,"bottom":289,"display":"current-phase","min":"0","max":"99","default":0,"step":"1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_47 = procedures[\"CHANGE-CURRENT\"]();\n  if (_maybestop_33_47 instanceof Exception.StopInterrupt) { return _maybestop_33_47; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"change-current","left":9,"top":292,"right":143,"bottom":325,"display":"Change light","forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"variable":"current-auto?","left":9,"top":256,"right":144,"bottom":289,"display":"current-auto?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_47 = procedures[\"CHOOSE-CURRENT\"]();\n  if (_maybestop_33_47 instanceof Exception.StopInterrupt) { return _maybestop_33_47; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"choose-current","left":145,"top":292,"right":300,"bottom":325,"display":"Select intersection","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["grid-size-y", "grid-size-x", "power?", "num-cars", "speed-limit", "ticks-per-cycle", "current-phase", "current-auto?", "grid-x-inc", "grid-y-inc", "acceleration", "phase", "num-cars-stopped", "current-light", "intersections", "roads"], ["grid-size-y", "grid-size-x", "power?", "num-cars", "speed-limit", "ticks-per-cycle", "current-phase", "current-auto?"], ["intersection?", "green-light-up?", "my-row", "my-column", "my-phase", "auto?"], -18, 18, -18, 18, 9.0, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ExportPrims = workspace.exportPrims;
@@ -165,6 +170,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.clearAll();
       procedures["SETUP-GLOBALS"]();
       procedures["SETUP-PATCHES"]();
@@ -195,6 +201,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.observer.setGlobal("current-light", Nobody);
       world.observer.setGlobal("phase", 0);
       world.observer.setGlobal("num-cars-stopped", 0);
@@ -214,6 +221,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.patches().ask(function() {
         SelfManager.self().setPatchVariable("intersection?", false);
         SelfManager.self().setPatchVariable("auto?", false);
@@ -244,6 +252,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.observer.getGlobal("intersections").ask(function() {
         SelfManager.self().setPatchVariable("intersection?", true);
         SelfManager.self().setPatchVariable("green-light-up?", true);
@@ -266,6 +275,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       SelfManager.self().setVariable("speed", 0);
       SelfManager.self().setVariable("wait-time", 0);
       procedures["PUT-ON-EMPTY-ROAD"]();
@@ -304,6 +314,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       SelfManager.self().moveTo(world.observer.getGlobal("roads")._optimalOneOfWith(function() { return !!Prims.turtlesOn(SelfManager.self()).isEmpty(); }));
     } catch (e) {
       if (e instanceof Exception.StopInterrupt) {
@@ -318,6 +329,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       procedures["UPDATE-CURRENT"]();
       procedures["SET-SIGNALS"]();
       world.observer.setGlobal("num-cars-stopped", 0);
@@ -342,9 +354,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (MousePrims.isDown()) {
-        let xMouse = MousePrims.getX();
-        let yMouse = MousePrims.getY();
+        let xMouse = MousePrims.getX(); letVars['xMouse'] = xMouse;
+        let yMouse = MousePrims.getY(); letVars['yMouse'] = yMouse;
         if (world.getPatchAt(xMouse, yMouse).projectionBy(function() { return SelfManager.self().getPatchVariable("intersection?"); })) {
           procedures["UPDATE-CURRENT"]();
           procedures["UNLABEL-CURRENT"]();
@@ -366,6 +379,7 @@ var procedures = (function() {
   temp = (function(light) {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.observer.setGlobal("current-light", light);
       world.observer.setGlobal("current-phase", world.observer.getGlobal("current-light").projectionBy(function() { return SelfManager.self().getPatchVariable("my-phase"); }));
       world.observer.setGlobal("current-auto?", world.observer.getGlobal("current-light").projectionBy(function() { return SelfManager.self().getPatchVariable("auto?"); }));
@@ -382,6 +396,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.observer.getGlobal("current-light").ask(function() {
         SelfManager.self().setPatchVariable("my-phase", world.observer.getGlobal("current-phase"));
         SelfManager.self().setPatchVariable("auto?", world.observer.getGlobal("current-auto?"));
@@ -399,6 +414,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.observer.getGlobal("current-light").ask(function() {
         SelfManager.self().patchAt(-1, 1).ask(function() {
           SelfManager.self().setPatchVariable("plabel-color", 0);
@@ -418,6 +434,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.observer.getGlobal("current-light").ask(function() {
         SelfManager.self().patchAt(-1, 1).ask(function() { SelfManager.self().setPatchVariable("plabel", ""); }, true);
       }, true);
@@ -434,6 +451,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.observer.getGlobal("intersections").agentFilter(function() {
         return (SelfManager.self().getPatchVariable("auto?") && Prims.equality(world.observer.getGlobal("phase"), NLMath.floor(Prims.div((SelfManager.self().getPatchVariable("my-phase") * world.observer.getGlobal("ticks-per-cycle")), 100))));
       }).ask(function() {
@@ -453,6 +471,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (world.observer.getGlobal("power?")) {
         if (SelfManager.self().getPatchVariable("green-light-up?")) {
           SelfManager.self().patchAt(-1, 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 15); }, true);
@@ -480,6 +499,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15)) {
         SelfManager.self().setVariable("speed", 0);
       }
@@ -504,7 +524,8 @@ var procedures = (function() {
   temp = (function(deltaX, deltaY) {
     try {
       var reporterContext = false;
-      let turtlesAhead = SelfManager.self().turtlesAt(deltaX, deltaY);
+      var letVars = { };
+      let turtlesAhead = SelfManager.self().turtlesAt(deltaX, deltaY); letVars['turtlesAhead'] = turtlesAhead;
       if (!turtlesAhead.isEmpty()) {
         if (!turtlesAhead.agentFilter(function() {
           return !Prims.equality(SelfManager.self().getVariable("up-car?"), SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("up-car?"); }));
@@ -532,6 +553,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (Prims.lte(SelfManager.self().getVariable("speed"), 0)) {
         SelfManager.self().setVariable("speed", 0);
       }
@@ -551,6 +573,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (Prims.gt(SelfManager.self().getVariable("speed"), world.observer.getGlobal("speed-limit"))) {
         SelfManager.self().setVariable("speed", world.observer.getGlobal("speed-limit"));
       }
@@ -570,6 +593,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (Prims.lt(SelfManager.self().getVariable("speed"), Prims.div(world.observer.getGlobal("speed-limit"), 2))) {
         SelfManager.self().setVariable("color", 105);
       }
@@ -589,6 +613,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (Prims.equality(SelfManager.self().getVariable("speed"), 0)) {
         world.observer.setGlobal("num-cars-stopped", (world.observer.getGlobal("num-cars-stopped") + 1));
         SelfManager.self().setVariable("wait-time", (SelfManager.self().getVariable("wait-time") + 1));
@@ -609,6 +634,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.observer.getGlobal("current-light").ask(function() {
         SelfManager.self().setPatchVariable("green-light-up?", !SelfManager.self().getPatchVariable("green-light-up?"));
         procedures["SET-SIGNAL-COLORS"]();
@@ -626,6 +652,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.observer.setGlobal("phase", (world.observer.getGlobal("phase") + 1));
       if (Prims.equality(NLMath.mod(world.observer.getGlobal("phase"), world.observer.getGlobal("ticks-per-cycle")), 0)) {
         world.observer.setGlobal("phase", 0);

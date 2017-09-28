@@ -46,7 +46,7 @@ if (typeof javax !== "undefined") {
 }
 var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.plotOps !== null) ? modelConfig.plotOps : {};
 modelConfig.plots = [];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "COLUMN-COUNTERS", singular: "column-counter", varNames: ["my-column", "my-column-patches"] }, { name: "FRAMES", singular: "frame", varNames: [] }, { name: "MESSENGERS", singular: "messenger", varNames: [] }])([], [])(tortoise_require("extensions/all").dumpers())(["red-green", "colors?", "sample-space", "height", "time-to-stop?", "the-messenger", "max-y-histogram"], ["red-green", "colors?", "sample-space", "height"], [], -50, 50, -30, 30, 7.0, false, false, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "COLUMN-COUNTERS", singular: "column-counter", varNames: ["my-column", "my-column-patches"] }, { name: "FRAMES", singular: "frame", varNames: [] }, { name: "MESSENGERS", singular: "messenger", varNames: [] }])([], [])('globals\n[\n  time-to-stop?   ;; boolean that discontinues run when columns reach to top\n  the-messenger       ;; holds identity of the single turtle of breed \'messengers\'\n                  ;; (see EXTENDING THE MODEL)\n  max-y-histogram ;; how high the columns can rise (or how far up the yellow goes)\n]\n\nbreed [ column-counters column-counter ] ;; they keep track of their respective histogram columns\nbreed [ frames frame ]    ;; square frames that indicate events in histogram columns\nbreed [ messengers messenger  ]  ;; carry the random value to its column\n                  ;; (currently just one single messenger implemented)\n\n\ncolumn-counters-own\n[\n  ;; if you choose a sample-space 7 then you get 7 column-counters\n  ;; and their respective my-columns will be 1 thru 7\n  my-column\n  ;; each column-counter holds all patches that are in its column as an agentset\n  my-column-patches\n]\n\nto setup\n  clear-all\n  ;; computes the height the user has requested so as to get the value that makes sense\n  ;; in this model because the histogram grows from the negative-y values and not from 0\n  set max-y-histogram (min-pycor + height)\n  create-histogram-width\n  setup-column-counters\n  set time-to-stop? false\n  reset-ticks\nend\n\nto create-histogram-width\n  ask patches\n  [\n    ;; deals with both even and odd sample-spaces\n    ;; this is one way of centering the histogram.\n    ;; that means that the \'50\' of the red-green slider\n    ;; will always be aligned with the middle of the histogram\n    ifelse (pxcor >= (- sample-space) / 2) and (pxcor < sample-space / 2)\n            and (pycor < max-y-histogram) ;; this shapes the top of the yellow zone\n    [ set pcolor yellow ]\n    [ set pcolor brown ]\n  ]\nend\n\n    ;; column-counters are turtles who form \"place-holders\" so that\n    ;; the messenger will \"know\" where to take its value.\n    ;; they are like the values on the x-axis of your sample space.\nto setup-column-counters\n  ask patches with [(pycor = min-pycor) ;; bottom of the view\n                       and pcolor = yellow]      ;; and in the histogram band width\n  [\n    sprout-column-counters 1\n    [\n      hide-turtle  ;; it is nice to see them but probably visually redundant\n      set heading 0\n      ;; this assigns a column name to column-counters that\n      ;; corresponds with the parameter setting of sample-space\n      set my-column floor (pxcor + sample-space / 2 + 1)\n      set my-column-patches patches with [ pxcor = [pxcor] of myself ]\n    ]\n  ]\n\nend\n\nto go ;; forever button\n  if time-to-stop? [ stop ]\n  select-random-value\n  send-messenger-to-its-column\n  ifelse colors?\n    [ paint ]\n    [ ask patches with [pcolor != brown] [ set pcolor yellow ]]\n  tick\nend\n\n    ;; \'messenger\' is a turtle who carries the random value\n    ;; on its back as a label\nto select-random-value\n  ask patch 0 (max-y-histogram + 4)\n  [\n    sprout-messengers 1\n    [\n      set shape \"default\"\n      set color black\n      set heading 180\n      set size 12\n      set label 1 + random sample-space\n      ;; currently there is just one messenger, so we assign it to a \'messenger\'\n      ;; variable. this will save time when the model run. if the user chooses\n      ;; to add more messengers then this shortcut may have to be done away with\n      set the-messenger self\n    ]\n  ]\nend\n\n    ;; messenger is the dart-shaped large turtle that carries the random value\n    ;; on its back. it takes this value directly to the appropriate column\nto send-messenger-to-its-column\n                ;; \'it\' holds the column-counter who is master of the\n                ;; column towards which the messenger orients and advances\n                ;; to dispatch its event\n  let it one-of column-counters with [ my-column = [label] of the-messenger ]\n\n  ask the-messenger\n  [\n    face it\n    ;; keep advancing until you\'re all but covering your destination\n    while [ distance it > 3 ]\n    [\n      fd 1 ;; to the patch above you to prepare for next event\n      display\n    ]\n    die\n  ]\n  ask it\n  [ create-frame\n    fd 1\n    ;; if the histogram has become too high, we just stop.\n    ;; this could be extended so as to have the whole population\n    ;; of events collapse down one patch, as in Galton Box\n    if ycor = max-y-histogram [ set time-to-stop? true ]\n  ]\n\nend\n\n;; make the square frames that look like accumulating cubes\nto create-frame ;; turtle procedure\n  ask patch-here\n  [\n    sprout-frames 1\n    [\n      set shape \"frame\"\n      set color black\n    ]\n  ]\nend\n\n    ;; patches are red if they are as far to the right within the sample-space\n    ;; as indexed by the red-green slider; otherwise, the are green\n    ;; Note that currently there is no rounding -- just a cut-off contour.\nto paint\n  ask column-counters\n  [\n    ifelse my-column <= (red-green * sample-space / 100)\n    [ ask my-column-patches with [ pycor < [pycor] of myself ] [ set pcolor red ] ]\n    [ ask my-column-patches with [ pycor < [pycor] of myself ] [ set pcolor green ] ]\n  ]\nend\n\n;; reports the percentage of red patches out of all patches that have frames\n;; so we know what percent of events are to the left of the cut off line\nto-report %-red\n  report precision (100 * count patches with [pcolor = red] / count frames) 2\nend\n\nto-report %-full\n  report precision ( 100 * (count frames ) / ( height * sample-space ) ) 2\n\nend\n\n;; biggest-gap is the greatest difference in height between all columns\nto-report biggest-gap\n  let max-column max [count my-column-patches with [pycor < [pycor] of myself] ] of column-counters\n\n  let min-column min [count my-column-patches with [pycor < [pycor] of myself] ] of column-counters\n\n  report max-column - min-column\nend\n\n\n; Copyright 2004 Uri Wilensky.\n; See Info tab for full copyright and license.')([{"left":178,"top":10,"right":893,"bottom":446,"dimensions":{"minPxcor":-50,"maxPxcor":50,"minPycor":-30,"maxPycor":30,"patchSize":7,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"red-green","left":173,"top":469,"right":890,"bottom":502,"display":"red-green","min":"0","max":"100","default":50,"step":"1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_38 = procedures[\"SETUP\"]();\n  if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"setup","left":12,"top":109,"right":75,"bottom":142,"display":"Setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_35 = procedures[\"GO\"]();\n  if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"go","left":78,"top":109,"right":141,"bottom":142,"display":"Go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"variable":"colors?","left":33,"top":266,"right":123,"bottom":299,"display":"colors?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledSource":"procedures[\"%-RED\"]()","source":"%-red","left":32,"top":212,"right":124,"bottom":257,"display":"%-red","precision":3,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"100","compiledStep":"1","variable":"sample-space","left":1,"top":36,"right":173,"bottom":69,"display":"sample-space","min":"1","max":"100","default":100,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"procedures[\"BIGGEST-GAP\"]()","source":"biggest-gap","left":32,"top":150,"right":124,"bottom":195,"display":"biggest gap","precision":3,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"50","compiledStep":"1","variable":"height","left":1,"top":70,"right":173,"bottom":103,"display":"height","min":"1","max":"50","default":30,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"procedures[\"%-FULL\"]()","source":"%-full","left":47,"top":320,"right":104,"bottom":365,"precision":3,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["red-green", "colors?", "sample-space", "height", "time-to-stop?", "the-messenger", "max-y-histogram"], ["red-green", "colors?", "sample-space", "height"], [], -50, 50, -30, 30, 7.0, false, false, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ExportPrims = workspace.exportPrims;
@@ -69,6 +69,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.clearAll();
       world.observer.setGlobal("max-y-histogram", (world.topology.minPycor + world.observer.getGlobal("height")));
       procedures["CREATE-HISTOGRAM-WIDTH"]();
@@ -88,6 +89,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.patches().ask(function() {
         if (((Prims.gte(SelfManager.self().getPatchVariable("pxcor"), Prims.div( -world.observer.getGlobal("sample-space"), 2)) && Prims.lt(SelfManager.self().getPatchVariable("pxcor"), Prims.div(world.observer.getGlobal("sample-space"), 2))) && Prims.lt(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("max-y-histogram")))) {
           SelfManager.self().setPatchVariable("pcolor", 45);
@@ -109,6 +111,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.patches().agentFilter(function() {
         return (Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor) && Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 45));
       }).ask(function() {
@@ -134,6 +137,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (world.observer.getGlobal("time-to-stop?")) {
         throw new Exception.StopInterrupt;
       }
@@ -159,6 +163,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.getPatchAt(0, (world.observer.getGlobal("max-y-histogram") + 4)).ask(function() {
         SelfManager.self().sprout(1, "MESSENGERS").ask(function() {
           SelfManager.self().setVariable("shape", "default");
@@ -182,9 +187,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       let it = world.turtleManager.turtlesOfBreed("COLUMN-COUNTERS")._optimalOneOfWith(function() {
         return Prims.equality(SelfManager.self().getVariable("my-column"), world.observer.getGlobal("the-messenger").projectionBy(function() { return SelfManager.self().getVariable("label"); }));
-      });
+      }); letVars['it'] = it;
       world.observer.getGlobal("the-messenger").ask(function() {
         SelfManager.self().face(it);
         while (Prims.gt(SelfManager.self().distance(it), 3)) {
@@ -213,6 +219,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       SelfManager.self().getPatchHere().ask(function() {
         SelfManager.self().sprout(1, "FRAMES").ask(function() {
           SelfManager.self().setVariable("shape", "frame");
@@ -232,6 +239,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.turtleManager.turtlesOfBreed("COLUMN-COUNTERS").ask(function() {
         if (Prims.lte(SelfManager.self().getVariable("my-column"), Prims.div((world.observer.getGlobal("red-green") * world.observer.getGlobal("sample-space")), 100))) {
           SelfManager.self().getVariable("my-column-patches").agentFilter(function() {
@@ -257,7 +265,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = true;
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return NLMath.precision(Prims.div((100 * world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15); }).size()), world.turtleManager.turtlesOfBreed("FRAMES").size()), 2) }
+      var letVars = { };
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+        return NLMath.precision(Prims.div((100 * world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15); }).size()), world.turtleManager.turtlesOfBreed("FRAMES").size()), 2)
+      }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
      if (e instanceof Exception.StopInterrupt) {
@@ -272,7 +283,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = true;
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return NLMath.precision(Prims.div((100 * world.turtleManager.turtlesOfBreed("FRAMES").size()), (world.observer.getGlobal("height") * world.observer.getGlobal("sample-space"))), 2) }
+      var letVars = { };
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+        return NLMath.precision(Prims.div((100 * world.turtleManager.turtlesOfBreed("FRAMES").size()), (world.observer.getGlobal("height") * world.observer.getGlobal("sample-space"))), 2)
+      }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
      if (e instanceof Exception.StopInterrupt) {
@@ -287,17 +301,20 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = true;
+      var letVars = { };
       let maxColumn = ListPrims.max(world.turtleManager.turtlesOfBreed("COLUMN-COUNTERS").projectionBy(function() {
         return SelfManager.self().getVariable("my-column-patches").agentFilter(function() {
           return Prims.lt(SelfManager.self().getPatchVariable("pycor"), SelfManager.myself().projectionBy(function() { return SelfManager.self().getPatchVariable("pycor"); }));
         }).size();
-      }));
+      })); letVars['maxColumn'] = maxColumn;
       let minColumn = ListPrims.min(world.turtleManager.turtlesOfBreed("COLUMN-COUNTERS").projectionBy(function() {
         return SelfManager.self().getVariable("my-column-patches").agentFilter(function() {
           return Prims.lt(SelfManager.self().getPatchVariable("pycor"), SelfManager.myself().projectionBy(function() { return SelfManager.self().getPatchVariable("pycor"); }));
         }).size();
-      }));
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return (maxColumn - minColumn) }
+      })); letVars['minColumn'] = minColumn;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+        return (maxColumn - minColumn)
+      }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
      if (e instanceof Exception.StopInterrupt) {

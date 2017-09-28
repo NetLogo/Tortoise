@@ -53,6 +53,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Populations', 'sick')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotValue(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("sick?"); }).size());
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -69,6 +70,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Populations', 'immune')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotValue(world.turtles().agentFilter(function() { return procedures["IMMUNE?"](); }).size());
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -85,6 +87,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Populations', 'healthy')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotValue(world.turtles().agentFilter(function() { return (!SelfManager.self().getVariable("sick?") && !procedures["IMMUNE?"]()); }).size());
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -101,6 +104,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Populations', 'total')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotValue(world.turtles().size());
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -116,7 +120,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "weeks", "people", true, true, 0.0, 52.0, 0.0, 200.0, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["sick?", "remaining-immunity", "sick-time", "age"], [])(tortoise_require("extensions/all").dumpers())(["duration", "chance-recover", "infectiousness", "number-people", "turtle-shape", "%infected", "%immune", "lifespan", "chance-reproduce", "carrying-capacity", "immunity-duration"], ["duration", "chance-recover", "infectiousness", "number-people", "turtle-shape"], [], -17, 17, -17, 17, 14.0, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["sick?", "remaining-immunity", "sick-time", "age"], [])('turtles-own\n  [ sick?                ;; if true, the turtle is infectious\n    remaining-immunity   ;; how many weeks of immunity the turtle has left\n    sick-time            ;; how long, in weeks, the turtle has been infectious\n    age ]                ;; how many weeks old the turtle is\n\nglobals\n  [ %infected            ;; what % of the population is infectious\n    %immune              ;; what % of the population is immune\n    lifespan             ;; the lifespan of a turtle\n    chance-reproduce     ;; the probability of a turtle generating an offspring each tick\n    carrying-capacity    ;; the number of turtles that can be in the world at one time\n    immunity-duration ]  ;; how many weeks immunity lasts\n\n;; The setup is divided into four procedures\nto setup\n  clear-all\n  setup-constants\n  setup-turtles\n  update-global-variables\n  update-display\n  reset-ticks\nend\n\n;; We create a variable number of turtles of which 10 are infectious,\n;; and distribute them randomly\nto setup-turtles\n  create-turtles number-people\n    [ setxy random-xcor random-ycor\n      set age random lifespan\n      set sick-time 0\n      set remaining-immunity 0\n      set size 1.5  ;; easier to see\n      get-healthy ]\n  ask n-of 10 turtles\n    [ get-sick ]\nend\n\nto get-sick ;; turtle procedure\n  set sick? true\n  set remaining-immunity 0\nend\n\nto get-healthy ;; turtle procedure\n  set sick? false\n  set remaining-immunity 0\n  set sick-time 0\nend\n\nto become-immune ;; turtle procedure\n  set sick? false\n  set sick-time 0\n  set remaining-immunity immunity-duration\nend\n\n;; This sets up basic constants of the model.\nto setup-constants\n  set lifespan 50 * 52      ;; 50 times 52 weeks = 50 years = 2600 weeks old\n  set carrying-capacity 300\n  set chance-reproduce 1\n  set immunity-duration 52\nend\n\nto go\n  ask turtles [\n    get-older\n    move\n    if sick? [ recover-or-die ]\n    ifelse sick? [ infect ] [ reproduce ]\n  ]\n  update-global-variables\n  update-display\n  tick\nend\n\nto update-global-variables\n  if count turtles > 0\n    [ set %infected (count turtles with [ sick? ] / count turtles) * 100\n      set %immune (count turtles with [ immune? ] / count turtles) * 100 ]\nend\n\nto update-display\n  ask turtles\n    [ if shape != turtle-shape [ set shape turtle-shape ]\n      set color ifelse-value sick? [ red ] [ ifelse-value immune? [ grey ] [ green ] ] ]\nend\n\n;;Turtle counting variables are advanced.\nto get-older ;; turtle procedure\n  ;; Turtles die of old age once their age exceeds the\n  ;; lifespan (set at 50 years in this model).\n  set age age + 1\n  if age > lifespan [ die ]\n  if immune? [ set remaining-immunity remaining-immunity - 1 ]\n  if sick? [ set sick-time sick-time + 1 ]\nend\n\n;; Turtles move about at random.\nto move ;; turtle procedure\n  rt random 100\n  lt random 100\n  fd 1\nend\n\n;; If a turtle is sick, it infects other turtles on the same patch.\n;; Immune turtles don\'t get sick.\nto infect ;; turtle procedure\n  ask other turtles-here with [ not sick? and not immune? ]\n    [ if random-float 100 < infectiousness\n      [ get-sick ] ]\nend\n\n;; Once the turtle has been sick long enough, it\n;; either recovers (and becomes immune) or it dies.\nto recover-or-die ;; turtle procedure\n  if sick-time > duration                        ;; If the turtle has survived past the virus\' duration, then\n    [ ifelse random-float 100 < chance-recover   ;; either recover or die\n      [ become-immune ]\n      [ die ] ]\nend\n\n;; If there are less turtles than the carrying-capacity\n;; then turtles can reproduce.\nto reproduce\n  if count turtles < carrying-capacity and random-float 100 < chance-reproduce\n    [ hatch 1\n      [ set age 1\n        lt 45 fd 1\n        get-healthy ] ]\nend\n\nto-report immune?\n  report remaining-immunity > 0\nend\n\nto startup\n  setup-constants ;; so that carrying-capacity can be used as upper bound of number-people slider\nend\n\n\n; Copyright 1998 Uri Wilensky.\n; See Info tab for full copyright and license.')([{"left":280,"top":10,"right":778,"bottom":509,"dimensions":{"minPxcor":-17,"maxPxcor":17,"minPycor":-17,"maxPycor":17,"patchSize":14,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"99","compiledStep":"1","variable":"duration","left":40,"top":155,"right":234,"bottom":188,"display":"duration","min":"0.0","max":"99.0","default":20,"step":"1.0","units":"weeks","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"99","compiledStep":"1","variable":"chance-recover","left":40,"top":121,"right":234,"bottom":154,"display":"chance-recover","min":"0.0","max":"99.0","default":75,"step":"1.0","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"99","compiledStep":"1","variable":"infectiousness","left":40,"top":87,"right":234,"bottom":120,"display":"infectiousness","min":"0.0","max":"99.0","default":65,"step":"1.0","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_38 = procedures[\"SETUP\"]();\n  if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"setup","left":62,"top":48,"right":132,"bottom":83,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_35 = procedures[\"GO\"]();\n  if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"go","left":138,"top":48,"right":209,"bottom":84,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Populations', 'sick')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotValue(world.turtles().agentFilter(function() { return SelfManager.self().getVariable(\"sick?\"); }).size());\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"sick","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [ sick? ]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Populations', 'immune')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotValue(world.turtles().agentFilter(function() { return procedures[\"IMMUNE?\"](); }).size());\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"immune","interval":1,"mode":0,"color":-7500403,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [ immune? ]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Populations', 'healthy')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotValue(world.turtles().agentFilter(function() { return (!SelfManager.self().getVariable(\"sick?\") && !procedures[\"IMMUNE?\"]()); }).size());\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"healthy","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [ not sick? and not immune? ]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Populations', 'total')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotValue(world.turtles().size());\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"total","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plot count turtles","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Populations","left":15,"top":375,"right":267,"bottom":539,"xAxis":"weeks","yAxis":"people","xmin":0,"xmax":52,"ymin":0,"ymax":200,"autoPlotOn":true,"legendOn":true,"setupCode":"","updateCode":"","pens":[{"display":"sick","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [ sick? ]","type":"pen"},{"display":"immune","interval":1,"mode":0,"color":-7500403,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [ immune? ]","type":"pen"},{"display":"healthy","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [ not sick? and not immune? ]","type":"pen"},{"display":"total","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plot count turtles","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledMin":"10","compiledMax":"world.observer.getGlobal(\"carrying-capacity\")","compiledStep":"1","variable":"number-people","left":40,"top":10,"right":234,"bottom":43,"display":"number-people","min":"10","max":"carrying-capacity","default":150,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"%infected\")","source":"%infected","left":28,"top":328,"right":103,"bottom":373,"precision":1,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"%immune\")","source":"%immune","left":105,"top":328,"right":179,"bottom":373,"precision":1,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"Prims.div(world.ticker.tickCount(), 52)","source":"ticks / 52","left":181,"top":329,"right":255,"bottom":374,"display":"years","precision":1,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"variable":"turtle-shape","left":65,"top":195,"right":210,"bottom":240,"display":"turtle-shape","choices":["person","circle"],"currentChoice":0,"type":"chooser","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["duration", "chance-recover", "infectiousness", "number-people", "turtle-shape", "%infected", "%immune", "lifespan", "chance-reproduce", "carrying-capacity", "immunity-duration"], ["duration", "chance-recover", "infectiousness", "number-people", "turtle-shape"], [], -17, 17, -17, 17, 14.0, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ExportPrims = workspace.exportPrims;
@@ -139,6 +143,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.clearAll();
       procedures["SETUP-CONSTANTS"]();
       procedures["SETUP-TURTLES"]();
@@ -158,6 +163,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.turtleManager.createTurtles(world.observer.getGlobal("number-people"), "").ask(function() {
         SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
         SelfManager.self().setVariable("age", Prims.random(world.observer.getGlobal("lifespan")));
@@ -180,6 +186,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       SelfManager.self().setVariable("sick?", true);
       SelfManager.self().setVariable("remaining-immunity", 0);
     } catch (e) {
@@ -195,6 +202,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       SelfManager.self().setVariable("sick?", false);
       SelfManager.self().setVariable("remaining-immunity", 0);
       SelfManager.self().setVariable("sick-time", 0);
@@ -211,6 +219,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       SelfManager.self().setVariable("sick?", false);
       SelfManager.self().setVariable("sick-time", 0);
       SelfManager.self().setVariable("remaining-immunity", world.observer.getGlobal("immunity-duration"));
@@ -227,6 +236,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.observer.setGlobal("lifespan", (50 * 52));
       world.observer.setGlobal("carrying-capacity", 300);
       world.observer.setGlobal("chance-reproduce", 1);
@@ -244,6 +254,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.turtles().ask(function() {
         procedures["GET-OLDER"]();
         procedures["MOVE"]();
@@ -273,6 +284,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (Prims.gt(world.turtles().size(), 0)) {
         world.observer.setGlobal("%infected", (Prims.div(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("sick?"); }).size(), world.turtles().size()) * 100));
         world.observer.setGlobal("%immune", (Prims.div(world.turtles().agentFilter(function() { return procedures["IMMUNE?"](); }).size(), world.turtles().size()) * 100));
@@ -290,6 +302,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.turtles().ask(function() {
         if (!Prims.equality(SelfManager.self().getVariable("shape"), world.observer.getGlobal("turtle-shape"))) {
           SelfManager.self().setVariable("shape", world.observer.getGlobal("turtle-shape"));
@@ -309,6 +322,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       SelfManager.self().setVariable("age", (SelfManager.self().getVariable("age") + 1));
       if (Prims.gt(SelfManager.self().getVariable("age"), world.observer.getGlobal("lifespan"))) {
         SelfManager.self().die();
@@ -332,6 +346,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       SelfManager.self().right(Prims.random(100));
       SelfManager.self().right(-Prims.random(100));
       SelfManager.self()._optimalFdOne();
@@ -348,6 +363,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       SelfManager.self().turtlesHere()._optimalOtherWith(function() { return (!SelfManager.self().getVariable("sick?") && !procedures["IMMUNE?"]()); }).ask(function() {
         if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("infectiousness"))) {
           procedures["GET-SICK"]();
@@ -366,6 +382,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (Prims.gt(SelfManager.self().getVariable("sick-time"), world.observer.getGlobal("duration"))) {
         if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("chance-recover"))) {
           procedures["BECOME-IMMUNE"]();
@@ -387,6 +404,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if ((Prims.lt(world.turtles().size(), world.observer.getGlobal("carrying-capacity")) && Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("chance-reproduce")))) {
         SelfManager.self().hatch(1, "").ask(function() {
           SelfManager.self().setVariable("age", 1);
@@ -408,7 +426,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = true;
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.gt(SelfManager.self().getVariable("remaining-immunity"), 0) }
+      var letVars = { };
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+        return Prims.gt(SelfManager.self().getVariable("remaining-immunity"), 0)
+      }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
      if (e instanceof Exception.StopInterrupt) {
@@ -423,6 +444,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       procedures["SETUP-CONSTANTS"]();
     } catch (e) {
       if (e instanceof Exception.StopInterrupt) {

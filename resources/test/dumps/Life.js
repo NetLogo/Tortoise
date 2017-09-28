@@ -46,7 +46,7 @@ if (typeof javax !== "undefined") {
 }
 var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.plotOps !== null) ? modelConfig.plotOps : {};
 modelConfig.plots = [];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])(tortoise_require("extensions/all").dumpers())(["initial-density", "fgcolor", "bgcolor"], ["initial-density", "fgcolor", "bgcolor"], ["living?", "live-neighbors"], -50, 50, -50, 50, 4.0, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('patches-own [\n  living?         ;; indicates if the cell is living\n  live-neighbors  ;; counts how many neighboring cells are alive\n]\n\nto setup-blank\n  clear-all\n  ask patches [ cell-death ]\n  reset-ticks\nend\n\nto setup-random\n  clear-all\n  ask patches\n    [ ifelse random-float 100.0 < initial-density\n      [ cell-birth ]\n      [ cell-death ] ]\n  reset-ticks\nend\n\nto cell-birth\n  set living? true\n  set pcolor fgcolor\nend\n\nto cell-death\n  set living? false\n  set pcolor bgcolor\nend\n\nto go\n  ask patches\n    [ set live-neighbors count neighbors with [living?] ]\n  ;; Starting a new \"ask patches\" here ensures that all the patches\n  ;; finish executing the first ask before any of them start executing\n  ;; the second ask.  This keeps all the patches in synch with each other,\n  ;; so the births and deaths at each generation all happen in lockstep.\n  ask patches\n    [ ifelse live-neighbors = 3\n      [ cell-birth ]\n      [ if live-neighbors != 2\n        [ cell-death ] ] ]\n  tick\nend\n\nto draw-cells\n  let erasing? [living?] of patch mouse-xcor mouse-ycor\n  while [mouse-down?]\n    [ ask patch mouse-xcor mouse-ycor\n      [ ifelse erasing?\n        [ cell-death ]\n        [ cell-birth ] ]\n      display ]\nend\n\n\n; Copyright 1998 Uri Wilensky.\n; See Info tab for full copyright and license.')([{"left":285,"top":10,"right":697,"bottom":423,"dimensions":{"minPxcor":-50,"maxPxcor":50,"minPycor":-50,"maxPycor":50,"patchSize":4,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":15,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"0.1","variable":"initial-density","left":120,"top":67,"right":276,"bottom":100,"display":"initial-density","min":"0.0","max":"100.0","default":35,"step":"0.1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_45 = procedures[\"SETUP-RANDOM\"]();\n  if (_maybestop_33_45 instanceof Exception.StopInterrupt) { return _maybestop_33_45; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"setup-random","left":11,"top":68,"right":113,"bottom":101,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_35 = procedures[\"GO\"]();\n  if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"go","left":11,"top":204,"right":114,"bottom":242,"display":"go-once","forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_35 = procedures[\"GO\"]();\n  if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"go","left":122,"top":204,"right":225,"bottom":242,"display":"go-forever","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  world.patches().ask(function() {\n    if (SelfManager.self().getPatchVariable(\"living?\")) {\n      SelfManager.self().setPatchVariable(\"pcolor\", world.observer.getGlobal(\"fgcolor\"));\n    }\n    else {\n      SelfManager.self().setPatchVariable(\"pcolor\", world.observer.getGlobal(\"bgcolor\"));\n    }\n  }, true);\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"ifelse living?\n  [ set pcolor fgcolor ]\n  [ set pcolor bgcolor ]","left":178,"top":276,"right":274,"bottom":309,"display":"recolor","forever":false,"buttonKind":"Patch","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"Prims.div(world.patches().agentFilter(function() { return SelfManager.self().getPatchVariable(\"living?\"); }).size(), world.patches().size())","source":"count patches with\n  [living?]\n/ count patches","left":12,"top":248,"right":115,"bottom":293,"display":"current density","precision":2,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_44 = procedures[\"SETUP-BLANK\"]();\n  if (_maybestop_33_44 instanceof Exception.StopInterrupt) { return _maybestop_33_44; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"setup-blank","left":11,"top":32,"right":113,"bottom":65,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"display":"When this button is down,\nyou can add or remove\ncells by holding down\nthe mouse button\nand \"drawing\".","left":124,"top":125,"right":283,"bottom":193,"fontSize":11,"color":0,"transparent":false,"type":"textBox","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_43 = procedures[\"DRAW-CELLS\"]();\n  if (_maybestop_33_43 instanceof Exception.StopInterrupt) { return _maybestop_33_43; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"draw-cells","left":9,"top":134,"right":112,"bottom":169,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"variable":"fgcolor","left":119,"top":309,"right":274,"bottom":369,"boxedValue":{"value":123,"type":"Color"},"type":"inputBox","compilation":{"success":true,"messages":[]}}, {"variable":"bgcolor","left":119,"top":371,"right":274,"bottom":431,"boxedValue":{"value":79,"type":"Color"},"type":"inputBox","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["initial-density", "fgcolor", "bgcolor"], ["initial-density", "fgcolor", "bgcolor"], ["living?", "live-neighbors"], -50, 50, -50, 50, 4.0, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ExportPrims = workspace.exportPrims;
@@ -69,6 +69,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.clearAll();
       world.patches().ask(function() { procedures["CELL-DEATH"](); }, true);
       world.ticker.reset();
@@ -85,6 +86,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.clearAll();
       world.patches().ask(function() {
         if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("initial-density"))) {
@@ -108,6 +110,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       SelfManager.self().setPatchVariable("living?", true);
       SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("fgcolor"));
     } catch (e) {
@@ -123,6 +126,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       SelfManager.self().setPatchVariable("living?", false);
       SelfManager.self().setPatchVariable("pcolor", world.observer.getGlobal("bgcolor"));
     } catch (e) {
@@ -138,6 +142,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.patches().ask(function() {
         SelfManager.self().setPatchVariable("live-neighbors", SelfManager.self().getNeighbors().agentFilter(function() { return SelfManager.self().getPatchVariable("living?"); }).size());
       }, true);
@@ -165,7 +170,8 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
-      let erasing_p = world.getPatchAt(MousePrims.getX(), MousePrims.getY()).projectionBy(function() { return SelfManager.self().getPatchVariable("living?"); });
+      var letVars = { };
+      let erasing_p = world.getPatchAt(MousePrims.getX(), MousePrims.getY()).projectionBy(function() { return SelfManager.self().getPatchVariable("living?"); }); letVars['erasing_p'] = erasing_p;
       while (MousePrims.isDown()) {
         world.getPatchAt(MousePrims.getX(), MousePrims.getY()).ask(function() {
           if (erasing_p) {

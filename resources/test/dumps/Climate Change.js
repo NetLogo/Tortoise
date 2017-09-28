@@ -53,6 +53,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Global Temperature', 'default')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotValue(world.observer.getGlobal("temperature"));
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -68,7 +69,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "", "", false, true, 0.0, 10.0, 10.0, 20.0, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "RAYS", singular: "ray", varNames: [] }, { name: "IRS", singular: "ir", varNames: [] }, { name: "HEATS", singular: "heat", varNames: [] }, { name: "CO2S", singular: "co2", varNames: [] }, { name: "CLOUDS", singular: "cloud", varNames: ["cloud-speed", "cloud-id"] }])([], [])(tortoise_require("extensions/all").dumpers())(["sun-brightness", "albedo", "sky-top", "earth-top", "temperature"], ["sun-brightness", "albedo"], [], -24, 24, -8, 22, 11.0, true, false, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "RAYS", singular: "ray", varNames: [] }, { name: "IRS", singular: "ir", varNames: [] }, { name: "HEATS", singular: "heat", varNames: [] }, { name: "CO2S", singular: "co2", varNames: [] }, { name: "CLOUDS", singular: "cloud", varNames: ["cloud-speed", "cloud-id"] }])([], [])('globals [\n  sky-top      ;; y coordinate of top row of sky\n  earth-top    ;; y coordinate of top row of earth\n  temperature  ;; overall temperature\n]\n\nbreed [rays ray]     ;; packets of sunlight\nbreed [IRs IR]       ;; packets of infrared radiation\nbreed [heats heat]   ;; packets of heat energy\nbreed [CO2s CO2]     ;; packets of carbon dioxide\n\nbreed [clouds cloud]\nclouds-own [cloud-speed cloud-id]\n\n;;\n;; Setup Procedures\n;;\n\nto setup\n  clear-all\n  set-default-shape rays \"ray\"\n  set-default-shape IRs \"ray\"\n  set-default-shape clouds \"cloud\"\n  set-default-shape heats \"dot\"\n  set-default-shape CO2s \"CO2-molecule\"\n  setup-world\n  set temperature 12\n  reset-ticks\nend\n\nto setup-world\n  set sky-top max-pycor - 5\n  set earth-top 0\n  ask patches [  ;; set colors for the different sections of the world\n    if pycor > sky-top [  ;; space\n      set pcolor scale-color white pycor 22 15\n    ]\n    if pycor <= sky-top and pycor > earth-top [ ;; sky\n      set pcolor scale-color blue pycor -20 20\n    ]\n    if pycor < earth-top\n      [ set pcolor red + 3 ] ;; earth\n    if pycor = earth-top ;; earth surface\n      [ update-albedo ]\n  ]\nend\n\n;;\n;; Runtime Procedures\n;;\n\nto go\n  ask clouds [ fd cloud-speed ]  ; move clouds along\n  run-sunshine   ;; step sunshine\n  ;; if the albedo slider has moved update the color of the \"earth surface\" patches\n  ask patches with [pycor = earth-top]\n    [ update-albedo ]\n  run-heat  ;; step heat\n  run-IR    ;; step IR\n  run-CO2   ;; moves CO2 molecules\n  tick\nend\n\nto update-albedo ;; patch procedure\n  set pcolor scale-color green albedo 0 1\nend\n\nto add-cloud            ;; erase clouds and then create new ones, plus one\n  let sky-height sky-top - earth-top\n  ;; find a random altitude for the clouds but\n  ;; make sure to keep it in the sky area\n  let y earth-top + (random-float (sky-height - 4)) + 2\n  ;; no clouds should have speed 0\n  let speed (random-float 0.1) + 0.01\n  let x random-xcor\n  let id 0\n  ;; we don\'t care what the cloud-id is as long as\n  ;; all the turtles in this cluster have the same\n  ;; id and it is unique among cloud clusters\n  if any? clouds\n  [ set id max [cloud-id] of clouds + 1 ]\n\n  create-clouds 3 + random 20\n  [\n    set cloud-speed speed\n    set cloud-id id\n    ;; all the cloud turtles in each larger cloud should\n    ;; be nearby but not directly on top of the others so\n    ;; add a little wiggle room in the x and ycors\n    setxy x + random 9 - 4\n          ;; the clouds should generally be clustered around the\n          ;; center with occasional larger variations\n          y + 2.5 + random-float 2 - random-float 2\n    set color white\n    ;; varying size is also purely for visualization\n    ;; since we\'re only doing patch-based collisions\n    set size 2 + random 2\n    set heading 90\n  ]\nend\n\nto remove-cloud       ;; erase clouds and then create new ones, minus one\n  if any? clouds [\n    let doomed-id one-of remove-duplicates [cloud-id] of clouds\n    ask clouds with [cloud-id = doomed-id]\n      [ die ]\n  ]\nend\n\nto run-sunshine\n  ask rays [\n    if not can-move? 0.3 [ die ]  ;; kill them off at the edge\n    fd 0.3                        ;; otherwise keep moving\n  ]\n  create-sunshine  ;; start new sun rays from top\n  reflect-rays-from-clouds  ;; check for reflection off clouds\n  encounter-earth   ;; check for reflection off earth and absorption\nend\n\nto create-sunshine\n  ;; don\'t necessarily create a ray each tick\n  ;; as brightness gets higher make more\n  if 10 * sun-brightness > random 50 [\n    create-rays 1 [\n      set heading 160\n      set color yellow\n      ;; rays only come from a small area\n      ;; near the top of the world\n      setxy (random 10) + min-pxcor max-pycor\n    ]\n  ]\nend\n\nto reflect-rays-from-clouds\n ask rays with [any? clouds-here] [   ;; if ray shares patch with a cloud\n   set heading 180 - heading   ;; turn the ray around\n ]\nend\n\nto encounter-earth\n  ask rays with [ycor <= earth-top] [\n    ;; depending on the albedo either\n    ;; the earth absorbs the heat or reflects it\n    ifelse 100 * albedo > random 100\n      [ set heading 180 - heading  ] ;; reflect\n      [ rt random 45 - random 45 ;; absorb into the earth\n        set color red - 2 + random 4\n        set breed heats ]\n  ]\nend\n\nto run-heat    ;; advances the heat energy turtles\n  ;; the temperature is related to the number of heat turtles\n  set temperature 0.99 * temperature + 0.01 * (12 + 0.1 * count heats)\n  ask heats\n  [\n    let dist 0.5 * random-float 1\n    ifelse can-move? dist\n      [ fd dist ]\n      [ set heading 180 - heading ] ;; if we\'re hitting the edge of the world, turn around\n    if ycor >= earth-top [  ;; if heading back into sky\n      ifelse temperature > 20 + random 40\n              ;; heats only seep out of the earth from a small area\n              ;; this makes the model look nice but it also contributes\n              ;; to the rate at which heat can be lost\n              and xcor > 0 and xcor < max-pxcor - 8\n        [ set breed IRs                    ;; let some escape as IR\n          set heading 20\n          set color magenta ]\n        [ set heading 100 + random 160 ] ;; return them to earth\n    ]\n  ]\nend\n\nto run-IR\n  ask IRs [\n    if not can-move? 0.3 [ die ]\n    fd 0.3\n    if ycor <= earth-top [   ;; convert to heat if we hit the earth\'s surface again\n      set breed heats\n      rt random 45\n      lt random 45\n      set color red - 2 + random 4\n    ]\n    if any? CO2s-here    ;; check for collision with CO2\n      [ set heading 180 - heading ]\n  ]\nend\n\nto add-CO2  ;; randomly adds 25 CO2 molecules to atmosphere\n  let sky-height sky-top - earth-top\n  create-CO2s 25 [\n    set color green\n    ;; pick a random position in the sky area\n    setxy random-xcor\n          earth-top + random-float sky-height\n  ]\nend\n\nto remove-CO2 ;; randomly remove 25 CO2 molecules\n  repeat 25 [\n    if any? CO2s [\n      ask one-of CO2s [ die ]\n    ]\n  ]\nend\n\nto run-CO2\n  ask CO2s [\n    rt random 51 - 25 ;; turn a bit\n    let dist 0.05 + random-float 0.1\n    ;; keep the CO2 in the sky area\n    if [not shade-of? blue pcolor] of patch-ahead dist\n      [ set heading 180 - heading ]\n    fd dist ;; move forward a bit\n  ]\nend\n\n\n; Copyright 2007 Uri Wilensky.\n; See Info tab for full copyright and license.')([{"left":317,"top":12,"right":864,"bottom":362,"dimensions":{"minPxcor":-24,"maxPxcor":24,"minPycor":-8,"maxPycor":22,"patchSize":11,"wrappingAllowedInX":true,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_38 = procedures[\"SETUP\"]();\n  if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"setup","left":6,"top":12,"right":101,"bottom":45,"display":"setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_35 = procedures[\"GO\"]();\n  if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"go","left":103,"top":12,"right":198,"bottom":45,"display":"go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"5","compiledStep":"0.2","variable":"sun-brightness","left":18,"top":47,"right":191,"bottom":80,"display":"sun-brightness","min":"0","max":"5","default":1,"step":"0.2","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"1","compiledStep":"0.05","variable":"albedo","left":18,"top":82,"right":191,"bottom":115,"display":"albedo","min":"0","max":"1","default":0.6,"step":"0.05","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Global Temperature', 'default')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotValue(world.observer.getGlobal(\"temperature\"));\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"default","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot temperature","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Global Temperature","left":9,"top":212,"right":278,"bottom":423,"xmin":0,"xmax":10,"ymin":10,"ymax":20,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"default","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot temperature","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_40 = procedures[\"ADD-CO2\"]();\n  if (_maybestop_33_40 instanceof Exception.StopInterrupt) { return _maybestop_33_40; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"add-CO2","left":7,"top":152,"right":102,"bottom":185,"display":"add CO2","forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_43 = procedures[\"REMOVE-CO2\"]();\n  if (_maybestop_33_43 instanceof Exception.StopInterrupt) { return _maybestop_33_43; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"remove-CO2","left":104,"top":152,"right":199,"bottom":185,"display":"remove CO2","forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"temperature\")","source":"temperature","left":210,"top":87,"right":303,"bottom":132,"precision":1,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_42 = procedures[\"ADD-CLOUD\"]();\n  if (_maybestop_33_42 instanceof Exception.StopInterrupt) { return _maybestop_33_42; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"add-cloud","left":7,"top":118,"right":102,"bottom":151,"display":"add cloud","forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_45 = procedures[\"REMOVE-CLOUD\"]();\n  if (_maybestop_33_45 instanceof Exception.StopInterrupt) { return _maybestop_33_45; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"remove-cloud","left":104,"top":118,"right":199,"bottom":151,"display":"remove cloud","forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.turtleManager.turtlesOfBreed(\"CO2S\").size()","source":"count CO2s","left":210,"top":133,"right":303,"bottom":178,"display":"CO2 amount","precision":2,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  world.observer.watch(ListPrims.oneOf(world.turtleManager.turtlesOfBreed(\"RAYS\")));\n  world.observer.subject().ask(function() { SelfManager.self().penManager.lowerPen(); }, true);\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"watch one-of rays\nask subject [ pen-down ]","left":208,"top":41,"right":309,"bottom":75,"display":"watch a ray","forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["sun-brightness", "albedo", "sky-top", "earth-top", "temperature"], ["sun-brightness", "albedo"], [], -24, 24, -8, 22, 11.0, true, false, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ExportPrims = workspace.exportPrims;
@@ -91,6 +92,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.clearAll();
       BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("RAYS").getSpecialName(), "ray")
       BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("IRS").getSpecialName(), "ray")
@@ -113,6 +115,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.observer.setGlobal("sky-top", (world.topology.maxPycor - 5));
       world.observer.setGlobal("earth-top", 0);
       world.patches().ask(function() {
@@ -142,6 +145,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.turtleManager.turtlesOfBreed("CLOUDS").ask(function() { SelfManager.self().fd(SelfManager.self().getVariable("cloud-speed")); }, true);
       procedures["RUN-SUNSHINE"]();
       world._optimalPatchRow(world.observer.getGlobal("earth-top")).ask(function() { procedures["UPDATE-ALBEDO"](); }, true);
@@ -162,6 +166,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(55, world.observer.getGlobal("albedo"), 0, 1));
     } catch (e) {
       if (e instanceof Exception.StopInterrupt) {
@@ -176,13 +181,14 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
-      let skyHeight = (world.observer.getGlobal("sky-top") - world.observer.getGlobal("earth-top"));
-      let y = ((world.observer.getGlobal("earth-top") + Prims.randomFloat((skyHeight - 4))) + 2);
-      let speed = (Prims.randomFloat(0.1) + 0.01);
-      let x = Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor);
-      let id = 0;
+      var letVars = { };
+      let skyHeight = (world.observer.getGlobal("sky-top") - world.observer.getGlobal("earth-top")); letVars['skyHeight'] = skyHeight;
+      let y = ((world.observer.getGlobal("earth-top") + Prims.randomFloat((skyHeight - 4))) + 2); letVars['y'] = y;
+      let speed = (Prims.randomFloat(0.1) + 0.01); letVars['speed'] = speed;
+      let x = Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor); letVars['x'] = x;
+      let id = 0; letVars['id'] = id;
       if (!world.turtleManager.turtlesOfBreed("CLOUDS").isEmpty()) {
-        id = (ListPrims.max(world.turtleManager.turtlesOfBreed("CLOUDS").projectionBy(function() { return SelfManager.self().getVariable("cloud-id"); })) + 1);
+        id = (ListPrims.max(world.turtleManager.turtlesOfBreed("CLOUDS").projectionBy(function() { return SelfManager.self().getVariable("cloud-id"); })) + 1); letVars['id'] = id;
       }
       world.turtleManager.createTurtles((3 + Prims.random(20)), "CLOUDS").ask(function() {
         SelfManager.self().setVariable("cloud-speed", speed);
@@ -205,8 +211,9 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (!world.turtleManager.turtlesOfBreed("CLOUDS").isEmpty()) {
-        let doomedId = ListPrims.oneOf(ListPrims.removeDuplicates(world.turtleManager.turtlesOfBreed("CLOUDS").projectionBy(function() { return SelfManager.self().getVariable("cloud-id"); })));
+        let doomedId = ListPrims.oneOf(ListPrims.removeDuplicates(world.turtleManager.turtlesOfBreed("CLOUDS").projectionBy(function() { return SelfManager.self().getVariable("cloud-id"); }))); letVars['doomedId'] = doomedId;
         world.turtleManager.turtlesOfBreed("CLOUDS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("cloud-id"), doomedId); }).ask(function() { SelfManager.self().die(); }, true);
       }
     } catch (e) {
@@ -222,6 +229,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.turtleManager.turtlesOfBreed("RAYS").ask(function() {
         if (!SelfManager.self().canMove(0.3)) {
           SelfManager.self().die();
@@ -244,6 +252,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (Prims.gt((10 * world.observer.getGlobal("sun-brightness")), Prims.random(50))) {
         world.turtleManager.createTurtles(1, "RAYS").ask(function() {
           SelfManager.self().setVariable("heading", 160);
@@ -264,6 +273,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.turtleManager.turtlesOfBreed("RAYS").agentFilter(function() { return !SelfManager.self().breedHere("CLOUDS").isEmpty(); }).ask(function() { SelfManager.self().setVariable("heading", (180 - SelfManager.self().getVariable("heading"))); }, true);
     } catch (e) {
       if (e instanceof Exception.StopInterrupt) {
@@ -278,6 +288,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.turtleManager.turtlesOfBreed("RAYS").agentFilter(function() { return Prims.lte(SelfManager.self().getVariable("ycor"), world.observer.getGlobal("earth-top")); }).ask(function() {
         if (Prims.gt((100 * world.observer.getGlobal("albedo")), Prims.random(100))) {
           SelfManager.self().setVariable("heading", (180 - SelfManager.self().getVariable("heading")));
@@ -301,9 +312,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.observer.setGlobal("temperature", ((0.99 * world.observer.getGlobal("temperature")) + (0.01 * (12 + (0.1 * world.turtleManager.turtlesOfBreed("HEATS").size())))));
       world.turtleManager.turtlesOfBreed("HEATS").ask(function() {
-        let dist = (0.5 * Prims.randomFloat(1));
+        let dist = (0.5 * Prims.randomFloat(1)); letVars['dist'] = dist;
         if (SelfManager.self().canMove(dist)) {
           SelfManager.self().fd(dist);
         }
@@ -334,6 +346,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.turtleManager.turtlesOfBreed("IRS").ask(function() {
         if (!SelfManager.self().canMove(0.3)) {
           SelfManager.self().die();
@@ -362,7 +375,8 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
-      let skyHeight = (world.observer.getGlobal("sky-top") - world.observer.getGlobal("earth-top"));
+      var letVars = { };
+      let skyHeight = (world.observer.getGlobal("sky-top") - world.observer.getGlobal("earth-top")); letVars['skyHeight'] = skyHeight;
       world.turtleManager.createTurtles(25, "CO2S").ask(function() {
         SelfManager.self().setVariable("color", 55);
         SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), (world.observer.getGlobal("earth-top") + Prims.randomFloat(skyHeight)));
@@ -380,6 +394,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       for (let _index_5794_5800 = 0, _repeatcount_5794_5800 = StrictMath.floor(25); _index_5794_5800 < _repeatcount_5794_5800; _index_5794_5800++){
         if (!world.turtleManager.turtlesOfBreed("CO2S").isEmpty()) {
           ListPrims.oneOf(world.turtleManager.turtlesOfBreed("CO2S")).ask(function() { SelfManager.self().die(); }, true);
@@ -398,9 +413,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.turtleManager.turtlesOfBreed("CO2S").ask(function() {
         SelfManager.self().right((Prims.random(51) - 25));
-        let dist = (0.05 + Prims.randomFloat(0.1));
+        let dist = (0.05 + Prims.randomFloat(0.1)); letVars['dist'] = dist;
         if (SelfManager.self().patchAhead(dist).projectionBy(function() { return !ColorModel.areRelatedByShade(105, SelfManager.self().getPatchVariable("pcolor")); })) {
           SelfManager.self().setVariable("heading", (180 - SelfManager.self().getVariable("heading")));
         }

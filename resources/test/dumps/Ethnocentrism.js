@@ -53,6 +53,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Strategy Counts', 'CC')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotPoint(world.ticker.tickCount(), world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("shape"), "circle"); }).size());
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -69,6 +70,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Strategy Counts', 'CD')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotPoint(world.ticker.tickCount(), world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("shape"), "circle 2"); }).size());
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -85,6 +87,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Strategy Counts', 'DC')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotPoint(world.ticker.tickCount(), world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("shape"), "square"); }).size());
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -101,6 +104,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Strategy Counts', 'DD')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotPoint(world.ticker.tickCount(), world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("shape"), "square 2"); }).size());
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -116,7 +120,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "time", "count", true, true, 0.0, 10.0, 0.0, 1.0, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["ptr", "cooperate-with-same?", "cooperate-with-different?"], [])(tortoise_require("extensions/all").dumpers())(["mutation-rate", "death-rate", "immigrants-per-day", "initial-ptr", "cost-of-giving", "gain-of-receiving", "immigrant-chance-cooperate-with-same", "immigrant-chance-cooperate-with-different", "meet", "meet-agg", "last100meet", "meetown", "meetown-agg", "last100meetown", "meetother", "meetother-agg", "last100meetother", "coopown", "coopown-agg", "last100coopown", "coopother", "coopother-agg", "defother", "defother-agg", "last100defother", "last100cc", "last100cd", "last100dc", "last100dd", "last100consist-ethno", "last100coop"], ["mutation-rate", "death-rate", "immigrants-per-day", "initial-ptr", "cost-of-giving", "gain-of-receiving", "immigrant-chance-cooperate-with-same", "immigrant-chance-cooperate-with-different"], [], 0, 50, 0, 50, 9.0, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["ptr", "cooperate-with-same?", "cooperate-with-different?"], [])(';; agents have a probablity to reproduce and a strategy\nturtles-own [ ptr cooperate-with-same? cooperate-with-different? ]\n\nglobals [\n  ;; the remaining variables support the replication of published experiments\n  meet                  ;; how many interactions occurred this turn\n  meet-agg              ;; how many interactions occurred through the run\n  last100meet           ;; meet for the last 100 ticks\n  meetown               ;; what number of individuals met someone of their own color this turn\n  meetown-agg           ;; what number of individuals met someone of their own color throughout the run\n  last100meetown        ;; meetown for the last 100 ticks\n  meetother             ;; what number of individuals met someone of a different color this turn\n  meetother-agg         ;; what number of individuals met someone of a different color throughout the run\n  last100meetother      ;; meetother for the last 100 ticks\n  coopown               ;; how many interactions this turn were cooperating with the same color\n  coopown-agg           ;; how many interactions throughout the run were cooperating with the same color\n  last100coopown        ;; coopown for the last 100 ticks\n  coopother             ;; how many interactions this turn were cooperating with a different color\n  coopother-agg         ;; how many interactions throughout the run were cooperating with a different color\n  defother              ;; how many interactions this turn were defecting with a different color\n  defother-agg          ;; how many interactions throughout the run were defecting with a different color\n  last100defother       ;; defother for the last 100 ticks\n  last100cc             ;; how many cooperate-cooperate genotypes have there been in the last 100 ticks\n  last100cd             ;; how many cooperate-defect genotypes have there been in the last 100 ticks\n  last100dc             ;; how many defect-cooperate genotypes have there been in the last 100 ticks\n  last100dd             ;; how many defect-defect genotypes have there been in the last 100 ticks\n  last100consist-ethno  ;; how many interactions consistent with ethnocentrism in the last 100 ticks\n  last100coop           ;; how many interactions have been cooperation in the last 100 ticks\n]\n\nto setup-empty\n  clear-all\n  initialize-variables\n  reset-ticks\nend\n\n;; creates a world with an agent on each patch\nto setup-full\n  clear-all\n  initialize-variables\n  ask patches [ create-turtle ]\n  reset-ticks\nend\n\nto initialize-variables\n  ;; initialize all the variables\n  set meetown 0\n  set meetown-agg 0\n  set meet 0\n  set meet-agg 0\n  set coopown 0\n  set coopown-agg 0\n  set defother 0\n  set defother-agg 0\n  set meetother 0\n  set meetother-agg 0\n  set coopother 0\n  set coopother-agg 0\n  set last100dd []\n  set last100cd []\n  set last100cc []\n  set last100dc []\n  set last100coopown []\n  set last100defother []\n  set last100consist-ethno []\n  set last100meetown []\n  set last100meetother []\n  set last100meet []\n  set last100coop []\nend\n\n;; creates a new agent in the world\nto create-turtle  ;; patch procedure\n  sprout 1 [\n    set color random-color\n    ;; determine the strategy for interacting with someone of the same color\n    set cooperate-with-same? (random-float 1.0 < immigrant-chance-cooperate-with-same)\n    ;; determine the strategy for interacting with someone of a different color\n    set cooperate-with-different? (random-float 1.0 < immigrant-chance-cooperate-with-different)\n    ;; change the shape of the agent on the basis of the strategy\n    update-shape\n  ]\nend\n\nto-report random-color\n  report one-of [red blue yellow green]\nend\n\n;; this is used to clear stats that change between each tick\nto clear-stats\n  set meetown 0\n  set meet 0\n  set coopown 0\n  set defother 0\n  set meetother 0\n  set coopother 0\nend\n\n;; the main routine\nto go\n  clear-stats     ;; clear the turn based stats\n  immigrate       ;; new agents immigrate into the world\n\n  ;; reset the probability to reproduce\n  ask turtles [ set ptr initial-ptr ]\n\n  ;; have all of the agents interact with other agents if they can\n  ask turtles [ interact ]\n  ;; now they reproduce\n  ask turtles [ reproduce ]\n  death           ;; kill some of the agents\n  update-stats    ;; update the states for the aggregate and last 100 ticks\n  tick\nend\n\n;; random individuals enter the world on empty cells\nto immigrate\n  let empty-patches patches with [not any? turtles-here]\n  ;; we can\'t have more immigrants than there are empty patches\n  let how-many min list immigrants-per-day (count empty-patches)\n  ask n-of how-many empty-patches [ create-turtle ]\nend\n\nto interact  ;; turtle procedure\n\n  ;; interact with Von Neumann neighborhood\n  ask turtles-on neighbors4 [\n    ;; the commands inside the ASK are written from the point of view\n    ;; of the agent being interacted with.  To refer back to the agent\n    ;; that initiated the interaction, we use the MYSELF primitive.\n    set meet meet + 1\n    set meet-agg meet-agg + 1\n    ;; do one thing if the individual interacting is the same color as me\n    if color = [color] of myself [\n      ;; record the fact the agent met someone of the own color\n      set meetown meetown + 1\n      set meetown-agg meetown-agg + 1\n      ;; if I cooperate then I reduce my PTR and increase my neighbors\n      if [cooperate-with-same?] of myself [\n        set coopown coopown + 1\n        set coopown-agg coopown-agg + 1\n        ask myself [ set ptr ptr - cost-of-giving ]\n        set ptr ptr + gain-of-receiving\n      ]\n    ]\n    ;; if we are different colors we take a different strategy\n    if color != [color] of myself [\n      ;; record stats on encounters\n      set meetother meetother + 1\n      set meetother-agg meetother-agg + 1\n      ;; if we cooperate with different colors then reduce our PTR and increase our neighbors\n      ifelse [cooperate-with-different?] of myself [\n        set coopother coopother + 1\n        set coopother-agg coopother-agg + 1\n        ask myself [ set ptr ptr - cost-of-giving ]\n        set ptr ptr + gain-of-receiving\n      ]\n      [\n        set defother defother + 1\n        set defother-agg defother-agg + 1\n      ]\n    ]\n  ]\nend\n\n;; use PTR to determine if the agent gets to reproduce\nto reproduce  ;; turtle procedure\n  ;; if a random variable is less than the PTR the agent can reproduce\n  if random-float 1.0 < ptr [\n    ;; find an empty location to reproduce into\n    let destination one-of neighbors4 with [not any? turtles-here]\n    if destination != nobody [\n      ;; if the location exists hatch a copy of the current turtle in the new location\n      ;;  but mutate the child\n      hatch 1 [\n        move-to destination\n        mutate\n      ]\n    ]\n  ]\nend\n\n;; modify the children of agents according to the mutation rate\nto mutate  ;; turtle procedure\n  ;; mutate the color\n  if random-float 1.0 < mutation-rate [\n    let old-color color\n    while [color = old-color]\n      [ set color random-color ]\n  ]\n  ;; mutate the strategy flags;\n  ;; use NOT to toggle the flag\n  if random-float 1.0 < mutation-rate [\n    set cooperate-with-same? not cooperate-with-same?\n  ]\n  if random-float 1.0 < mutation-rate [\n    set cooperate-with-different? not cooperate-with-different?\n  ]\n  ;; make sure the shape of the agent reflects its strategy\n  update-shape\nend\n\nto death\n  ;; check to see if a random variable is less than the death rate for each agent\n  ask turtles [\n    if random-float 1.0 < death-rate [ die ]\n  ]\nend\n\n;; make sure the shape matches the strategy\nto update-shape\n  ;; if the agent cooperates with same they are a circle\n  ifelse cooperate-with-same? [\n    ifelse cooperate-with-different?\n      [ set shape \"circle\" ]    ;; filled in circle (altruist)\n      [ set shape \"circle 2\" ]  ;; empty circle (ethnocentric)\n  ]\n  ;; if the agent doesn\'t cooperate with same they are a square\n  [\n    ifelse cooperate-with-different?\n      [ set shape \"square\" ]    ;; filled in square (cosmopolitan)\n      [ set shape \"square 2\" ]  ;; empty square (egoist)\n  ]\nend\n\n;; this routine calculates a moving average of some stats over the last 100 ticks\nto update-stats\n  set last100dd        shorten lput (count turtles with [shape = \"square 2\"]) last100dd\n  set last100cc        shorten lput (count turtles with [shape = \"circle\"]) last100cc\n  set last100cd        shorten lput (count turtles with [shape = \"circle 2\"]) last100cd\n  set last100dc        shorten lput (count turtles with [shape = \"square\"]) last100dc\n  set last100coopown   shorten lput coopown last100coopown\n  set last100defother  shorten lput defother last100defother\n  set last100meetown   shorten lput meetown last100meetown\n  set last100coop      shorten lput (coopown + coopother) last100coop\n  set last100meet      shorten lput meet last100meet\n  set last100meetother shorten lput meetother last100meetother\nend\n\n;; this is used to keep all of the last100 lists the right length\nto-report shorten [the-list]\n  ifelse length the-list > 100\n    [ report butfirst the-list ]\n    [ report the-list ]\nend\n\n;; these are used in the BehaviorSpace experiments\n\nto-report meetown-percent\n  report meetown / max list 1 meet\nend\nto-report meetown-agg-percent\n  report meetown-agg / max list 1 meet-agg\nend\nto-report coopown-percent\n  report coopown / max list 1 meetown\nend\nto-report coopown-agg-percent\n  report coopown-agg / max list 1 meetown-agg\nend\nto-report defother-percent\n  report defother / max list 1 meetother\nend\nto-report defother-agg-percent\n  report defother-agg / max list 1 meetother-agg\nend\nto-report consist-ethno-percent\n  report (defother + coopown) / (max list 1 meet )\nend\nto-report consist-ethno-agg-percent\n  report (defother-agg + coopown-agg) / (max list 1 meet-agg )\nend\nto-report coop-percent\n  report (coopown + coopother) / (max list 1 meet )\nend\nto-report coop-agg-percent\n  report (coopown-agg + coopother-agg) / (max list 1 meet-agg)\nend\nto-report cc-count\n  report sum last100cc / max list 1 length last100cc\nend\nto-report cd-count\n  report sum last100cd / max list 1 length last100cd\nend\nto-report dc-count\n  report sum last100dc / max list 1 length last100dc\nend\nto-report dd-count\n  report sum last100dd / max list 1 length last100dd\nend\nto-report cc-percent\n  report cc-count / (max list 1 (cc-count + cd-count + dc-count + dd-count))\nend\nto-report cd-percent\n  report cd-count / (max list 1 (cc-count + cd-count + dc-count + dd-count))\nend\nto-report dc-percent\n  report dc-count / (max list 1 (cc-count + cd-count + dc-count + dd-count))\nend\nto-report dd-percent\n  report dd-count / (max list 1 (cc-count + cd-count + dc-count + dd-count))\nend\nto-report last100coopown-percent\n  report sum last100coopown / max list 1 sum last100meetown\nend\nto-report last100defother-percent\n  report sum last100defother / max list 1 sum last100meetother\nend\nto-report last100consist-ethno-percent\n  report (sum last100defother + sum last100coopown) / max list 1 sum last100meet\nend\nto-report last100meetown-percent\n  report sum last100meetown / max list 1 sum last100meet\nend\nto-report last100coop-percent\n  report sum last100coop / max list 1 sum last100meet\nend\n\n\n; Copyright 2003 Uri Wilensky.\n; See Info tab for full copyright and license.')([{"left":323,"top":10,"right":790,"bottom":478,"dimensions":{"minPxcor":0,"maxPxcor":50,"minPycor":0,"maxPycor":50,"patchSize":9,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"1","compiledStep":"0.001","variable":"mutation-rate","left":5,"top":150,"right":171,"bottom":183,"display":"mutation-rate","min":"0.0","max":"1.0","default":0.005,"step":"0.0010","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"1","compiledStep":"0.05","variable":"death-rate","left":5,"top":184,"right":171,"bottom":217,"display":"death-rate","min":"0.0","max":"1.0","default":0.1,"step":"0.05","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"immigrants-per-day","left":5,"top":218,"right":171,"bottom":251,"display":"immigrants-per-day","min":"0.0","max":"100.0","default":1,"step":"1.0","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"1","compiledStep":"0.01","variable":"initial-PTR","left":172,"top":150,"right":318,"bottom":183,"display":"initial-PTR","min":"0.0","max":"1.0","default":0.12,"step":"0.01","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"1","compiledStep":"0.01","variable":"cost-of-giving","left":172,"top":184,"right":318,"bottom":217,"display":"cost-of-giving","min":"0.0","max":"1.0","default":0.01,"step":"0.01","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"1","compiledStep":"0.01","variable":"gain-of-receiving","left":172,"top":218,"right":318,"bottom":251,"display":"gain-of-receiving","min":"0.0","max":"1.0","default":0.03,"step":"0.01","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_44 = procedures[\"SETUP-EMPTY\"]();\n  if (_maybestop_33_44 instanceof Exception.StopInterrupt) { return _maybestop_33_44; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"setup-empty","left":20,"top":29,"right":128,"bottom":62,"display":"setup empty","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_35 = procedures[\"GO\"]();\n  if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"go","left":222,"top":29,"right":295,"bottom":62,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Strategy Counts', 'CC')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotPoint(world.ticker.tickCount(), world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"shape\"), \"circle\"); }).size());\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"CC","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks count turtles with [shape = \"circle\"]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Strategy Counts', 'CD')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotPoint(world.ticker.tickCount(), world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"shape\"), \"circle 2\"); }).size());\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"CD","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks count turtles with [shape = \"circle 2\"]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Strategy Counts', 'DC')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotPoint(world.ticker.tickCount(), world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"shape\"), \"square\"); }).size());\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"DC","interval":1,"mode":0,"color":-4079321,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks count turtles with [shape = \"square\"]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Strategy Counts', 'DD')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotPoint(world.ticker.tickCount(), world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"shape\"), \"square 2\"); }).size());\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"DD","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks count turtles with [shape = \"square 2\"]","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Strategy Counts","left":6,"top":323,"right":318,"bottom":525,"xAxis":"time","yAxis":"count","xmin":0,"xmax":10,"ymin":0,"ymax":1,"autoPlotOn":true,"legendOn":true,"setupCode":"","updateCode":"","pens":[{"display":"CC","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks count turtles with [shape = \"circle\"]","type":"pen"},{"display":"CD","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks count turtles with [shape = \"circle 2\"]","type":"pen"},{"display":"DC","interval":1,"mode":0,"color":-4079321,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks count turtles with [shape = \"square\"]","type":"pen"},{"display":"DD","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks count turtles with [shape = \"square 2\"]","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_43 = procedures[\"SETUP-FULL\"]();\n  if (_maybestop_33_43 instanceof Exception.StopInterrupt) { return _maybestop_33_43; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"setup-full","left":130,"top":29,"right":219,"bottom":62,"display":"setup full","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"1","compiledStep":"0.01","variable":"immigrant-chance-cooperate-with-same","left":5,"top":252,"right":318,"bottom":285,"display":"immigrant-chance-cooperate-with-same","min":"0.0","max":"1.0","default":0.5,"step":"0.01","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"1","compiledStep":"0.01","variable":"immigrant-chance-cooperate-with-different","left":5,"top":286,"right":318,"bottom":319,"display":"immigrant-chance-cooperate-with-different","min":"0.0","max":"1.0","default":0.5,"step":"0.01","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"display":"Circles cooperate with same color\nSquares defect with same color\nFilled-in shapes cooperate with different color\nEmpty shapes defect with different color\n","left":9,"top":77,"right":304,"bottom":142,"fontSize":11,"color":0,"transparent":false,"type":"textBox","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["mutation-rate", "death-rate", "immigrants-per-day", "initial-ptr", "cost-of-giving", "gain-of-receiving", "immigrant-chance-cooperate-with-same", "immigrant-chance-cooperate-with-different", "meet", "meet-agg", "last100meet", "meetown", "meetown-agg", "last100meetown", "meetother", "meetother-agg", "last100meetother", "coopown", "coopown-agg", "last100coopown", "coopother", "coopother-agg", "defother", "defother-agg", "last100defother", "last100cc", "last100cd", "last100dc", "last100dd", "last100consist-ethno", "last100coop"], ["mutation-rate", "death-rate", "immigrants-per-day", "initial-ptr", "cost-of-giving", "gain-of-receiving", "immigrant-chance-cooperate-with-same", "immigrant-chance-cooperate-with-different"], [], 0, 50, 0, 50, 9.0, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ExportPrims = workspace.exportPrims;
@@ -139,6 +143,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.clearAll();
       procedures["INITIALIZE-VARIABLES"]();
       world.ticker.reset();
@@ -155,6 +160,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.clearAll();
       procedures["INITIALIZE-VARIABLES"]();
       world.patches().ask(function() { procedures["CREATE-TURTLE"](); }, true);
@@ -172,6 +178,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.observer.setGlobal("meetown", 0);
       world.observer.setGlobal("meetown-agg", 0);
       world.observer.setGlobal("meet", 0);
@@ -208,6 +215,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       SelfManager.self().sprout(1, "TURTLES").ask(function() {
         SelfManager.self().setVariable("color", procedures["RANDOM-COLOR"]());
         SelfManager.self().setVariable("cooperate-with-same?", Prims.lt(Prims.randomFloat(1), world.observer.getGlobal("immigrant-chance-cooperate-with-same")));
@@ -227,7 +235,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = true;
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return ListPrims.oneOf([15, 105, 45, 55]) }
+      var letVars = { };
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+        return ListPrims.oneOf([15, 105, 45, 55])
+      }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
      if (e instanceof Exception.StopInterrupt) {
@@ -242,6 +253,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.observer.setGlobal("meetown", 0);
       world.observer.setGlobal("meet", 0);
       world.observer.setGlobal("coopown", 0);
@@ -261,6 +273,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       procedures["CLEAR-STATS"]();
       procedures["IMMIGRATE"]();
       world.turtles().ask(function() { SelfManager.self().setVariable("ptr", world.observer.getGlobal("initial-ptr")); }, true);
@@ -282,8 +295,9 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
-      let emptyPatches = world.patches().agentFilter(function() { return !!SelfManager.self().turtlesHere().isEmpty(); });
-      let howMany = ListPrims.min(ListPrims.list(world.observer.getGlobal("immigrants-per-day"), emptyPatches.size()));
+      var letVars = { };
+      let emptyPatches = world.patches().agentFilter(function() { return !!SelfManager.self().turtlesHere().isEmpty(); }); letVars['emptyPatches'] = emptyPatches;
+      let howMany = ListPrims.min(ListPrims.list(world.observer.getGlobal("immigrants-per-day"), emptyPatches.size())); letVars['howMany'] = howMany;
       ListPrims.nOf(howMany, emptyPatches).ask(function() { procedures["CREATE-TURTLE"](); }, true);
     } catch (e) {
       if (e instanceof Exception.StopInterrupt) {
@@ -298,6 +312,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       Prims.turtlesOn(SelfManager.self().getNeighbors4()).ask(function() {
         world.observer.setGlobal("meet", (world.observer.getGlobal("meet") + 1));
         world.observer.setGlobal("meet-agg", (world.observer.getGlobal("meet-agg") + 1));
@@ -343,8 +358,9 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (Prims.lt(Prims.randomFloat(1), SelfManager.self().getVariable("ptr"))) {
-        let destination = SelfManager.self().getNeighbors4()._optimalOneOfWith(function() { return !!SelfManager.self().turtlesHere().isEmpty(); });
+        let destination = SelfManager.self().getNeighbors4()._optimalOneOfWith(function() { return !!SelfManager.self().turtlesHere().isEmpty(); }); letVars['destination'] = destination;
         if (!Prims.equality(destination, Nobody)) {
           SelfManager.self().hatch(1, "").ask(function() {
             SelfManager.self().moveTo(destination);
@@ -365,8 +381,9 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (Prims.lt(Prims.randomFloat(1), world.observer.getGlobal("mutation-rate"))) {
-        let oldColor = SelfManager.self().getVariable("color");
+        let oldColor = SelfManager.self().getVariable("color"); letVars['oldColor'] = oldColor;
         while (Prims.equality(SelfManager.self().getVariable("color"), oldColor)) {
           SelfManager.self().setVariable("color", procedures["RANDOM-COLOR"]());
         }
@@ -391,6 +408,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.turtles().ask(function() {
         if (Prims.lt(Prims.randomFloat(1), world.observer.getGlobal("death-rate"))) {
           SelfManager.self().die();
@@ -409,6 +427,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (SelfManager.self().getVariable("cooperate-with-same?")) {
         if (SelfManager.self().getVariable("cooperate-with-different?")) {
           SelfManager.self().setVariable("shape", "circle");
@@ -438,6 +457,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.observer.setGlobal("last100dd", procedures["SHORTEN"](ListPrims.lput(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("shape"), "square 2"); }).size(), world.observer.getGlobal("last100dd"))));
       world.observer.setGlobal("last100cc", procedures["SHORTEN"](ListPrims.lput(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("shape"), "circle"); }).size(), world.observer.getGlobal("last100cc"))));
       world.observer.setGlobal("last100cd", procedures["SHORTEN"](ListPrims.lput(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("shape"), "circle 2"); }).size(), world.observer.getGlobal("last100cd"))));
@@ -461,11 +481,16 @@ var procedures = (function() {
   temp = (function(theList) {
     try {
       var reporterContext = true;
+      var letVars = { };
       if (Prims.gt(ListPrims.length(theList), 100)) {
-        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return ListPrims.butFirst(theList) }
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+          return ListPrims.butFirst(theList)
+        }
       }
       else {
-        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return theList }
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+          return theList
+        }
       }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
@@ -481,7 +506,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = true;
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(world.observer.getGlobal("meetown"), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet")))) }
+      var letVars = { };
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+        return Prims.div(world.observer.getGlobal("meetown"), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet"))))
+      }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
      if (e instanceof Exception.StopInterrupt) {
@@ -496,7 +524,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = true;
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(world.observer.getGlobal("meetown-agg"), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet-agg")))) }
+      var letVars = { };
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+        return Prims.div(world.observer.getGlobal("meetown-agg"), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet-agg"))))
+      }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
      if (e instanceof Exception.StopInterrupt) {
@@ -511,7 +542,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = true;
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(world.observer.getGlobal("coopown"), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meetown")))) }
+      var letVars = { };
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+        return Prims.div(world.observer.getGlobal("coopown"), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meetown"))))
+      }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
      if (e instanceof Exception.StopInterrupt) {
@@ -526,7 +560,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = true;
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(world.observer.getGlobal("coopown-agg"), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meetown-agg")))) }
+      var letVars = { };
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+        return Prims.div(world.observer.getGlobal("coopown-agg"), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meetown-agg"))))
+      }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
      if (e instanceof Exception.StopInterrupt) {
@@ -541,7 +578,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = true;
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(world.observer.getGlobal("defother"), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meetother")))) }
+      var letVars = { };
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+        return Prims.div(world.observer.getGlobal("defother"), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meetother"))))
+      }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
      if (e instanceof Exception.StopInterrupt) {
@@ -556,7 +596,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = true;
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(world.observer.getGlobal("defother-agg"), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meetother-agg")))) }
+      var letVars = { };
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+        return Prims.div(world.observer.getGlobal("defother-agg"), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meetother-agg"))))
+      }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
      if (e instanceof Exception.StopInterrupt) {
@@ -571,7 +614,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = true;
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div((world.observer.getGlobal("defother") + world.observer.getGlobal("coopown")), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet")))) }
+      var letVars = { };
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+        return Prims.div((world.observer.getGlobal("defother") + world.observer.getGlobal("coopown")), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet"))))
+      }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
      if (e instanceof Exception.StopInterrupt) {
@@ -586,7 +632,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = true;
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div((world.observer.getGlobal("defother-agg") + world.observer.getGlobal("coopown-agg")), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet-agg")))) }
+      var letVars = { };
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+        return Prims.div((world.observer.getGlobal("defother-agg") + world.observer.getGlobal("coopown-agg")), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet-agg"))))
+      }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
      if (e instanceof Exception.StopInterrupt) {
@@ -601,7 +650,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = true;
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div((world.observer.getGlobal("coopown") + world.observer.getGlobal("coopother")), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet")))) }
+      var letVars = { };
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+        return Prims.div((world.observer.getGlobal("coopown") + world.observer.getGlobal("coopother")), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet"))))
+      }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
      if (e instanceof Exception.StopInterrupt) {
@@ -616,7 +668,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = true;
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div((world.observer.getGlobal("coopown-agg") + world.observer.getGlobal("coopother-agg")), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet-agg")))) }
+      var letVars = { };
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+        return Prims.div((world.observer.getGlobal("coopown-agg") + world.observer.getGlobal("coopother-agg")), ListPrims.max(ListPrims.list(1, world.observer.getGlobal("meet-agg"))))
+      }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
      if (e instanceof Exception.StopInterrupt) {
@@ -631,7 +686,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = true;
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(ListPrims.sum(world.observer.getGlobal("last100cc")), ListPrims.max(ListPrims.list(1, ListPrims.length(world.observer.getGlobal("last100cc"))))) }
+      var letVars = { };
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+        return Prims.div(ListPrims.sum(world.observer.getGlobal("last100cc")), ListPrims.max(ListPrims.list(1, ListPrims.length(world.observer.getGlobal("last100cc")))))
+      }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
      if (e instanceof Exception.StopInterrupt) {
@@ -646,7 +704,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = true;
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(ListPrims.sum(world.observer.getGlobal("last100cd")), ListPrims.max(ListPrims.list(1, ListPrims.length(world.observer.getGlobal("last100cd"))))) }
+      var letVars = { };
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+        return Prims.div(ListPrims.sum(world.observer.getGlobal("last100cd")), ListPrims.max(ListPrims.list(1, ListPrims.length(world.observer.getGlobal("last100cd")))))
+      }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
      if (e instanceof Exception.StopInterrupt) {
@@ -661,7 +722,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = true;
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(ListPrims.sum(world.observer.getGlobal("last100dc")), ListPrims.max(ListPrims.list(1, ListPrims.length(world.observer.getGlobal("last100dc"))))) }
+      var letVars = { };
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+        return Prims.div(ListPrims.sum(world.observer.getGlobal("last100dc")), ListPrims.max(ListPrims.list(1, ListPrims.length(world.observer.getGlobal("last100dc")))))
+      }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
      if (e instanceof Exception.StopInterrupt) {
@@ -676,7 +740,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = true;
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(ListPrims.sum(world.observer.getGlobal("last100dd")), ListPrims.max(ListPrims.list(1, ListPrims.length(world.observer.getGlobal("last100dd"))))) }
+      var letVars = { };
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+        return Prims.div(ListPrims.sum(world.observer.getGlobal("last100dd")), ListPrims.max(ListPrims.list(1, ListPrims.length(world.observer.getGlobal("last100dd")))))
+      }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
      if (e instanceof Exception.StopInterrupt) {
@@ -691,7 +758,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = true;
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(procedures["CC-COUNT"](), ListPrims.max(ListPrims.list(1, (((procedures["CC-COUNT"]() + procedures["CD-COUNT"]()) + procedures["DC-COUNT"]()) + procedures["DD-COUNT"]())))) }
+      var letVars = { };
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+        return Prims.div(procedures["CC-COUNT"](), ListPrims.max(ListPrims.list(1, (((procedures["CC-COUNT"]() + procedures["CD-COUNT"]()) + procedures["DC-COUNT"]()) + procedures["DD-COUNT"]()))))
+      }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
      if (e instanceof Exception.StopInterrupt) {
@@ -706,7 +776,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = true;
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(procedures["CD-COUNT"](), ListPrims.max(ListPrims.list(1, (((procedures["CC-COUNT"]() + procedures["CD-COUNT"]()) + procedures["DC-COUNT"]()) + procedures["DD-COUNT"]())))) }
+      var letVars = { };
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+        return Prims.div(procedures["CD-COUNT"](), ListPrims.max(ListPrims.list(1, (((procedures["CC-COUNT"]() + procedures["CD-COUNT"]()) + procedures["DC-COUNT"]()) + procedures["DD-COUNT"]()))))
+      }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
      if (e instanceof Exception.StopInterrupt) {
@@ -721,7 +794,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = true;
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(procedures["DC-COUNT"](), ListPrims.max(ListPrims.list(1, (((procedures["CC-COUNT"]() + procedures["CD-COUNT"]()) + procedures["DC-COUNT"]()) + procedures["DD-COUNT"]())))) }
+      var letVars = { };
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+        return Prims.div(procedures["DC-COUNT"](), ListPrims.max(ListPrims.list(1, (((procedures["CC-COUNT"]() + procedures["CD-COUNT"]()) + procedures["DC-COUNT"]()) + procedures["DD-COUNT"]()))))
+      }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
      if (e instanceof Exception.StopInterrupt) {
@@ -736,7 +812,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = true;
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(procedures["DD-COUNT"](), ListPrims.max(ListPrims.list(1, (((procedures["CC-COUNT"]() + procedures["CD-COUNT"]()) + procedures["DC-COUNT"]()) + procedures["DD-COUNT"]())))) }
+      var letVars = { };
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+        return Prims.div(procedures["DD-COUNT"](), ListPrims.max(ListPrims.list(1, (((procedures["CC-COUNT"]() + procedures["CD-COUNT"]()) + procedures["DC-COUNT"]()) + procedures["DD-COUNT"]()))))
+      }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
      if (e instanceof Exception.StopInterrupt) {
@@ -751,7 +830,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = true;
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(ListPrims.sum(world.observer.getGlobal("last100coopown")), ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meetown"))))) }
+      var letVars = { };
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+        return Prims.div(ListPrims.sum(world.observer.getGlobal("last100coopown")), ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meetown")))))
+      }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
      if (e instanceof Exception.StopInterrupt) {
@@ -766,7 +848,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = true;
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(ListPrims.sum(world.observer.getGlobal("last100defother")), ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meetother"))))) }
+      var letVars = { };
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+        return Prims.div(ListPrims.sum(world.observer.getGlobal("last100defother")), ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meetother")))))
+      }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
      if (e instanceof Exception.StopInterrupt) {
@@ -781,7 +866,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = true;
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div((ListPrims.sum(world.observer.getGlobal("last100defother")) + ListPrims.sum(world.observer.getGlobal("last100coopown"))), ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meet"))))) }
+      var letVars = { };
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+        return Prims.div((ListPrims.sum(world.observer.getGlobal("last100defother")) + ListPrims.sum(world.observer.getGlobal("last100coopown"))), ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meet")))))
+      }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
      if (e instanceof Exception.StopInterrupt) {
@@ -796,7 +884,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = true;
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(ListPrims.sum(world.observer.getGlobal("last100meetown")), ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meet"))))) }
+      var letVars = { };
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+        return Prims.div(ListPrims.sum(world.observer.getGlobal("last100meetown")), ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meet")))))
+      }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
      if (e instanceof Exception.StopInterrupt) {
@@ -811,7 +902,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = true;
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(ListPrims.sum(world.observer.getGlobal("last100coop")), ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meet"))))) }
+      var letVars = { };
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+        return Prims.div(ListPrims.sum(world.observer.getGlobal("last100coop")), ListPrims.max(ListPrims.list(1, ListPrims.sum(world.observer.getGlobal("last100meet")))))
+      }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
      if (e instanceof Exception.StopInterrupt) {

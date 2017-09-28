@@ -53,6 +53,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Populations', 'grass')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotValue(Prims.div(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55); }).size(), 4));
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -69,6 +70,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Populations', 'rabbits')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotValue(world.turtleManager.turtlesOfBreed("RABBITS").size());
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -85,6 +87,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Populations', 'weeds')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotValue(Prims.div(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 115); }).size(), 4));
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -101,6 +104,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Populations', undefined)(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.setYRange(0, world.observer.getGlobal("number"));
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -115,7 +119,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "Time", "Pop", true, true, 0.0, 100.0, 0.0, 111.0, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "RABBITS", singular: "rabbit", varNames: ["energy"] }])([], [])(tortoise_require("extensions/all").dumpers())(["grass-grow-rate", "weeds-grow-rate", "grass-energy", "weed-energy", "number", "birth-threshold"], ["grass-grow-rate", "weeds-grow-rate", "grass-energy", "weed-energy", "number", "birth-threshold"], [], -20, 20, -20, 20, 12.0, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "RABBITS", singular: "rabbit", varNames: ["energy"] }])([], [])('breed [rabbits rabbit]\nrabbits-own [ energy ]\n\nto setup\n  clear-all\n  grow-grass-and-weeds\n  set-default-shape rabbits \"rabbit\"\n  create-rabbits number [\n    set color white\n    setxy random-xcor random-ycor\n    set energy random 10  ;start with a random amt. of energy\n  ]\n  reset-ticks\nend\n\nto go\n  if not any? rabbits [ stop ]\n  grow-grass-and-weeds\n  ask rabbits\n  [ move\n    eat-grass\n    eat-weeds\n    reproduce\n    death ]\n  tick\nend\n\nto grow-grass-and-weeds\n  ask patches [\n    if pcolor = black [\n      if random-float 1000 < weeds-grow-rate\n        [ set pcolor violet ]\n      if random-float 1000 < grass-grow-rate\n        [ set pcolor green ]\n  ] ]\nend\n\nto move  ;; rabbit procedure\n  rt random 50\n  lt random 50\n  fd 1\n  ;; moving takes some energy\n  set energy energy - 0.5\nend\n\nto eat-grass  ;; rabbit procedure\n  ;; gain \"grass-energy\" by eating grass\n  if pcolor = green\n  [ set pcolor black\n    set energy energy + grass-energy ]\nend\n\nto eat-weeds  ;; rabbit procedure\n  ;; gain \"weed-energy\" by eating weeds\n  if pcolor = violet\n  [ set pcolor black\n    set energy energy + weed-energy ]\nend\n\nto reproduce     ;; rabbit procedure\n  ;; give birth to a new rabbit, but it takes lots of energy\n  if energy > birth-threshold\n    [ set energy energy / 2\n      hatch 1 [ fd 1 ] ]\nend\n\nto death     ;; rabbit procedure\n  ;; die if you run out of energy\n  if energy < 0 [ die ]\nend\n\n\n; Copyright 2001 Uri Wilensky.\n; See Info tab for full copyright and license.')([{"left":296,"top":13,"right":796,"bottom":514,"dimensions":{"minPxcor":-20,"maxPxcor":20,"minPycor":-20,"maxPycor":20,"patchSize":12,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_38 = procedures[\"SETUP\"]();\n  if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"setup","left":86,"top":83,"right":141,"bottom":116,"display":"setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_35 = procedures[\"GO\"]();\n  if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"go","left":151,"top":83,"right":206,"bottom":116,"display":"go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"20","compiledStep":"1","variable":"grass-grow-rate","left":4,"top":160,"right":142,"bottom":193,"display":"grass-grow-rate","min":"0.0","max":"20.0","default":15,"step":"1.0","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"20","compiledStep":"1","variable":"weeds-grow-rate","left":4,"top":193,"right":151,"bottom":226,"display":"weeds-grow-rate","min":"0.0","max":"20.0","default":0,"step":"1.0","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"10","compiledStep":"0.5","variable":"grass-energy","left":144,"top":160,"right":275,"bottom":193,"display":"grass-energy","min":"0.0","max":"10.0","default":5,"step":"0.5","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"10","compiledStep":"0.5","variable":"weed-energy","left":153,"top":193,"right":275,"bottom":226,"display":"weed-energy","min":"0.0","max":"10.0","default":0,"step":"0.5","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"500","compiledStep":"1","variable":"number","left":35,"top":42,"right":261,"bottom":75,"display":"number","min":"0.0","max":"500.0","default":150,"step":"1.0","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"20","compiledStep":"1","variable":"birth-threshold","left":65,"top":127,"right":225,"bottom":160,"display":"birth-threshold","min":"0.0","max":"20.0","default":15,"step":"1.0","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Populations', undefined)(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.setYRange(0, world.observer.getGlobal(\"number\"));\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Populations', 'grass')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotValue(Prims.div(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable(\"pcolor\"), 55); }).size(), 4));\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"grass","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [pcolor = green] / 4","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Populations', 'rabbits')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotValue(world.turtleManager.turtlesOfBreed(\"RABBITS\").size());\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"rabbits","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot count rabbits","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Populations', 'weeds')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotValue(Prims.div(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable(\"pcolor\"), 115); }).size(), 4));\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"weeds","interval":1,"mode":0,"color":-8630108,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [pcolor = violet] / 4","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Populations","left":4,"top":228,"right":275,"bottom":424,"xAxis":"Time","yAxis":"Pop","xmin":0,"xmax":100,"ymin":0,"ymax":111,"autoPlotOn":true,"legendOn":true,"setupCode":"set-plot-y-range 0 number","updateCode":"","pens":[{"display":"grass","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [pcolor = green] / 4","type":"pen"},{"display":"rabbits","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot count rabbits","type":"pen"},{"display":"weeds","interval":1,"mode":0,"color":-8630108,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [pcolor = violet] / 4","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.turtleManager.turtlesOfBreed(\"RABBITS\").size()","source":"count rabbits","left":186,"top":424,"right":275,"bottom":469,"display":"count rabbits","precision":1,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["grass-grow-rate", "weeds-grow-rate", "grass-energy", "weed-energy", "number", "birth-threshold"], ["grass-grow-rate", "weeds-grow-rate", "grass-energy", "weed-energy", "number", "birth-threshold"], [], -20, 20, -20, 20, 12.0, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ExportPrims = workspace.exportPrims;
@@ -138,6 +142,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.clearAll();
       procedures["GROW-GRASS-AND-WEEDS"]();
       BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("RABBITS").getSpecialName(), "rabbit")
@@ -160,6 +165,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (!!world.turtleManager.turtlesOfBreed("RABBITS").isEmpty()) {
         throw new Exception.StopInterrupt;
       }
@@ -185,6 +191,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.patches().ask(function() {
         if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 0)) {
           if (Prims.lt(Prims.randomFloat(1000), world.observer.getGlobal("weeds-grow-rate"))) {
@@ -208,6 +215,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       SelfManager.self().right(Prims.random(50));
       SelfManager.self().right(-Prims.random(50));
       SelfManager.self()._optimalFdOne();
@@ -225,6 +233,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55)) {
         SelfManager.self().setPatchVariable("pcolor", 0);
         SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") + world.observer.getGlobal("grass-energy")));
@@ -242,6 +251,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 115)) {
         SelfManager.self().setPatchVariable("pcolor", 0);
         SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") + world.observer.getGlobal("weed-energy")));
@@ -259,6 +269,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (Prims.gt(SelfManager.self().getVariable("energy"), world.observer.getGlobal("birth-threshold"))) {
         SelfManager.self().setVariable("energy", Prims.div(SelfManager.self().getVariable("energy"), 2));
         SelfManager.self().hatch(1, "").ask(function() { SelfManager.self()._optimalFdOne(); }, true);
@@ -276,6 +287,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (Prims.lt(SelfManager.self().getVariable("energy"), 0)) {
         SelfManager.self().die();
       }

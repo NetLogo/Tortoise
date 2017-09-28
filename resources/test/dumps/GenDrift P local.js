@@ -53,6 +53,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Patch Colors', 'color5')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 5); }).size());
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -69,6 +70,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Patch Colors', 'color15')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 15); }).size());
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -85,6 +87,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Patch Colors', 'color25')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 25); }).size());
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -101,6 +104,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Patch Colors', 'color35')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 35); }).size());
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -117,6 +121,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Patch Colors', 'color45')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 45); }).size());
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -133,6 +138,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Patch Colors', 'color55')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55); }).size());
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -149,6 +155,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Patch Colors', 'color65')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 65); }).size());
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -165,6 +172,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Patch Colors', 'color125')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 125); }).size());
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -181,6 +189,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Patch Colors', 'color85')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 85); }).size());
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -197,6 +206,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Patch Colors', 'color95')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 95); }).size());
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -212,7 +222,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "Time", "Number", false, true, 0.0, 100.0, 0.0, 200.0, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])(tortoise_require("extensions/all").dumpers())(["colors"], ["colors"], [], -30, 30, -30, 30, 6.0, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('to setup\n  clear-all\n  ask patches  ;; randomly set the patches\' colors\n    [ set pcolor (random colors) * 10 + 5\n        if pcolor = 75  ;; 75 is too close to another color so change it to 125\n          [ set pcolor 125 ] ]\n  reset-ticks\nend\n\nto go\n  if (variance [pcolor] of patches) = 0\n    [ stop ]\n  ask patches [\n    ;; each patch randomly picks a neighboring patch\n    ;; to copy a color from\n    set pcolor [pcolor] of one-of neighbors\n  ]\n  tick\nend\n\n\n; Copyright 1997 Uri Wilensky.\n; See Info tab for full copyright and license.')([{"left":335,"top":10,"right":709,"bottom":385,"dimensions":{"minPxcor":-30,"maxPxcor":30,"minPycor":-30,"maxPycor":30,"patchSize":6,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_35 = procedures[\"GO\"]();\n  if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"go","left":159,"top":97,"right":227,"bottom":130,"display":"go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_38 = procedures[\"SETUP\"]();\n  if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"setup","left":71,"top":97,"right":143,"bottom":130,"display":"setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"2","compiledMax":"10","compiledStep":"1","variable":"colors","left":66,"top":55,"right":227,"bottom":88,"display":"colors","min":"2","max":"10","default":5,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Patch Colors', 'color5')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable(\"pcolor\"), 5); }).size());\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"color5","interval":1,"mode":0,"color":-7500403,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [pcolor = 5]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Patch Colors', 'color15')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable(\"pcolor\"), 15); }).size());\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"color15","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [pcolor = 15]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Patch Colors', 'color25')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable(\"pcolor\"), 25); }).size());\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"color25","interval":1,"mode":0,"color":-955883,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [pcolor = 25]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Patch Colors', 'color35')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable(\"pcolor\"), 35); }).size());\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"color35","interval":1,"mode":0,"color":-6459832,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [pcolor = 35]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Patch Colors', 'color45')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable(\"pcolor\"), 45); }).size());\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"color45","interval":1,"mode":0,"color":-1184463,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [pcolor = 45]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Patch Colors', 'color55')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable(\"pcolor\"), 55); }).size());\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"color55","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [pcolor = 55]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Patch Colors', 'color65')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable(\"pcolor\"), 65); }).size());\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"color65","interval":1,"mode":0,"color":-13840069,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [pcolor = 65]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Patch Colors', 'color125')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable(\"pcolor\"), 125); }).size());\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"color125","interval":1,"mode":0,"color":-5825686,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [pcolor = 125]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Patch Colors', 'color85')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable(\"pcolor\"), 85); }).size());\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"color85","interval":1,"mode":0,"color":-11221820,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [pcolor = 85]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Patch Colors', 'color95')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotValue(world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable(\"pcolor\"), 95); }).size());\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"color95","interval":1,"mode":0,"color":-13791810,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [pcolor = 95]","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Patch Colors","left":5,"top":170,"right":332,"bottom":382,"xAxis":"Time","yAxis":"Number","xmin":0,"xmax":100,"ymin":0,"ymax":200,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"color5","interval":1,"mode":0,"color":-7500403,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [pcolor = 5]","type":"pen"},{"display":"color15","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [pcolor = 15]","type":"pen"},{"display":"color25","interval":1,"mode":0,"color":-955883,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [pcolor = 25]","type":"pen"},{"display":"color35","interval":1,"mode":0,"color":-6459832,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [pcolor = 35]","type":"pen"},{"display":"color45","interval":1,"mode":0,"color":-1184463,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [pcolor = 45]","type":"pen"},{"display":"color55","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [pcolor = 55]","type":"pen"},{"display":"color65","interval":1,"mode":0,"color":-13840069,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [pcolor = 65]","type":"pen"},{"display":"color125","interval":1,"mode":0,"color":-5825686,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [pcolor = 125]","type":"pen"},{"display":"color85","interval":1,"mode":0,"color":-11221820,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [pcolor = 85]","type":"pen"},{"display":"color95","interval":1,"mode":0,"color":-13791810,"inLegend":true,"setupCode":"","updateCode":"plot count patches with [pcolor = 95]","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["colors"], ["colors"], [], -30, 30, -30, 30, 6.0, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ExportPrims = workspace.exportPrims;
@@ -235,6 +245,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.clearAll();
       world.patches().ask(function() {
         SelfManager.self().setPatchVariable("pcolor", ((Prims.random(world.observer.getGlobal("colors")) * 10) + 5));
@@ -256,6 +267,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (Prims.equality(ListPrims.variance(world.patches().projectionBy(function() { return SelfManager.self().getPatchVariable("pcolor"); })), 0)) {
         throw new Exception.StopInterrupt;
       }

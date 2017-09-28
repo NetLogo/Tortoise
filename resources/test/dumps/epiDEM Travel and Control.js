@@ -53,6 +53,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Populations', 'Infected')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotValue(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("infected?"); }).size());
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -69,6 +70,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Populations', 'Not Infected')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotValue(world.turtles().agentFilter(function() { return !SelfManager.self().getVariable("infected?"); }).size());
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -91,6 +93,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Infection and Recovery Rates', 'Infection Rate')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotValue((world.observer.getGlobal("beta-n") * world.observer.getGlobal("nb-infected-previous")));
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -107,6 +110,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Infection and Recovery Rates', 'Recovery Rate')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotValue((world.observer.getGlobal("gamma") * world.observer.getGlobal("nb-infected-previous")));
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -129,6 +133,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Cumulative Infected and Recovered', '% infected')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotValue((Prims.div((world.turtles().agentFilter(function() { return SelfManager.self().getVariable("cured?"); }).size() + world.turtles().agentFilter(function() { return SelfManager.self().getVariable("infected?"); }).size()), world.observer.getGlobal("initial-people")) * 100));
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -145,6 +150,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Cumulative Infected and Recovered', '% recovered')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotValue((Prims.div(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("cured?"); }).size(), world.observer.getGlobal("initial-people")) * 100));
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -160,7 +166,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "hours", "% total pop.", true, true, 0.0, 10.0, 0.0, 10.0, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["infected?", "cured?", "inoculated?", "isolated?", "hospitalized?", "infection-length", "recovery-time", "isolation-tendency", "hospital-going-tendency", "continent", "ambulance?", "susceptible?", "nb-infected", "nb-recovered"], [])(tortoise_require("extensions/all").dumpers())(["initial-people", "average-isolation-tendency", "inoculation-chance", "initial-ambulance", "average-hospital-going-tendency", "infection-chance", "recovery-chance", "links?", "intra-mobility", "travel?", "travel-tendency", "average-recovery-time", "nb-infected-previous", "border", "angle", "beta-n", "gamma", "r0"], ["initial-people", "average-isolation-tendency", "inoculation-chance", "initial-ambulance", "average-hospital-going-tendency", "infection-chance", "recovery-chance", "links?", "intra-mobility", "travel?", "travel-tendency", "average-recovery-time"], [], -12, 12, -12, 12, 19.0, false, false, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["infected?", "cured?", "inoculated?", "isolated?", "hospitalized?", "infection-length", "recovery-time", "isolation-tendency", "hospital-going-tendency", "continent", "ambulance?", "susceptible?", "nb-infected", "nb-recovered"], [])('globals\n[\n  nb-infected-previous ;; Number of infected people at the previous tick\n  border               ;; The patches representing the yellow border\n  angle                ;; Heading for individuals\n  beta-n               ;; The average number of new secondary infections per infected this tick\n  gamma                ;; The average number of new recoveries per infected this tick\n  r0                   ;; The number of secondary infections that arise due to a single infective introduced in a wholly susceptible population\n]\n\nturtles-own\n[\n  infected?            ;; If true, the person is infected.\n  cured?               ;; If true, the person has lived through an infection. They cannot be re-infected.\n  inoculated?          ;; If true, the person has been inoculated.\n  isolated?            ;; If true, the person is isolated, unable to infect anyone.\n  hospitalized?        ;; If true, the person is hospitalized and will recovery in half the average-recovery-time.\n\n  infection-length     ;; How long the person has been infected.\n  recovery-time        ;; Time (in hours) it takes before the person has a chance to recover from the infection\n  isolation-tendency   ;; Chance the person will self-quarantine during any hour being infected.\n  hospital-going-tendency ;; Chance that an infected person will go to the hospital when infected\n\n  continent            ;; Which continent a person lives one, people on continent 1 are squares, people on continent 2 are circles.\n\n  ambulance?           ;; If true, the person is an ambulance and will transport infected people to the hospital.\n\n  susceptible?         ;; Tracks whether the person was initially susceptible\n  nb-infected          ;; Number of secondary infections caused by an infected person at the end of the tick\n  nb-recovered         ;; Number of recovered people at the end of the tick\n]\n\n;;;\n;;; SETUP PROCEDURES\n;;;\n\nto setup\n  clear-all\n  setup-globals\n  setup-people\n  setup-ambulance\n  reset-ticks\nend\n\nto setup-globals\n  ask patch (- max-pxcor / 2 ) 0 [ set pcolor white ]\n  ask patch (max-pxcor / 2 ) 0 [ set pcolor white ]\n\n  set border patches with [(pxcor =  0 and abs (pycor) >= 0)]\n  ask border [ set pcolor yellow ]\nend\n\n;; Create initial-people number of people.\n;; Those that live on the left are squares; those on the right, circles.\nto setup-people\n  create-turtles initial-people\n    [ setxy random-xcor random-ycor\n      ifelse xcor <= 0\n      [ set continent 1 ]\n      [ set continent 2 ]\n\n      set cured? false\n      set isolated? false\n      set hospitalized? false\n      set ambulance? false\n      set infected? false\n      set susceptible? true\n\n      assign-tendency\n\n      ifelse continent = 1\n        [ set shape \"square\" ]\n        [ set shape \"circle\" ]\n\n      set size 0.5\n\n      ;; Each individual has a 5% chance of starting out infected\n      if (random-float 100 < 5)\n      [ set infected? true\n        set susceptible? false\n        set infection-length random recovery-time\n      ]\n\n      ifelse (not infected?) and (random-float 100 < inoculation-chance)\n        [ set inoculated? true\n          set susceptible? false ]\n        [ set inoculated? false ]\n\n      assign-color\n      ]\n\n    if links? [ make-network ]\nend\n\nto setup-ambulance\n  create-turtles initial-ambulance\n  [\n    ifelse random 2 < 1\n    [\n      set continent 1\n      setxy (- max-pxcor / 2) 0\n    ]\n    [\n      set continent 2\n      setxy (max-pxcor / 2) 0\n    ]\n\n    set cured? false\n    set isolated? false\n    set hospitalized? false\n    set infected? false\n    set inoculated? false\n    set susceptible? false\n\n    set ambulance? true\n\n    set shape \"person\"\n    set color yellow\n  ]\nend\n\nto assign-tendency ;; Turtle procedure\n\n  set isolation-tendency random-normal average-isolation-tendency average-isolation-tendency / 4\n  set hospital-going-tendency random-normal average-hospital-going-tendency average-hospital-going-tendency / 4\n  set recovery-time random-normal average-recovery-time average-recovery-time / 4\n\n  ;; Make sure recovery-time lies between 0 and 2x average-recovery-time\n  if recovery-time > average-recovery-time * 2 [ set recovery-time average-recovery-time * 2 ]\n  if recovery-time < 0 [ set recovery-time 0 ]\n\n  ;; Similarly for isolation and hospital going tendencies\n  if isolation-tendency > average-isolation-tendency * 2 [ set isolation-tendency average-isolation-tendency * 2 ]\n  if isolation-tendency < 0 [ set isolation-tendency 0 ]\n\n  if hospital-going-tendency > average-hospital-going-tendency * 2 [ set hospital-going-tendency average-hospital-going-tendency * 2 ]\n  if hospital-going-tendency < 0 [ set hospital-going-tendency 0 ]\nend\n\n\n;; Different people are displayed in 5 different colors depending on health\n;; green is a survivor of the infection\n;; blue is a successful innoculation\n;; red is an infected person\n;; white is neither infected, innoculated, nor cured\n;; yellow is an ambulance\nto assign-color ;; turtle procedure\n\n  ifelse cured?\n    [ set color green ]\n    [ ifelse inoculated?\n      [ set color blue ]\n      [ ifelse infected?\n        [set color red ]\n        [set color white]]]\n  if ambulance?\n    [ set color yellow ]\nend\n\n\nto make-network\n  ask turtles\n  [\n    create-links-with turtles-on neighbors\n  ]\nend\n\n\n;;;\n;;; GO PROCEDURES\n;;;\n\n\nto go\n  if all? turtles [ not infected? ]\n    [ stop ]\n  ask turtles\n    [ clear-count ]\n\n  ask turtles\n    [ if not isolated? and not hospitalized? and not ambulance?\n        [ move ] ]\n\n  ask turtles\n    [ if infected? and not isolated? and not hospitalized?\n         [ infect ] ]\n\n  ask turtles\n    [ if not isolated? and not hospitalized? and infected? and (random 100 < isolation-tendency)\n        [ isolate ] ]\n\n  ask turtles\n    [ if not isolated? and not hospitalized? and infected? and (random 100 < hospital-going-tendency)\n        [ hospitalize ] ]\n\n  ask turtles\n  [\n    if ambulance?\n    [\n      move\n      ask turtles-on neighbors\n      [\n        if (ambulance? = false) and (infected? = true)\n        [ hospitalize ]\n      ]\n    ]\n  ]\n\n  ask turtles\n    [ if infected?\n       [ maybe-recover ]\n    ]\n\n  ask turtles\n    [ if (isolated? or hospitalized?) and cured?\n        [ unisolate ] ]\n\n  ask turtles\n    [ assign-color\n      calculate-r0 ]\n\n  tick\nend\n\n\nto move  ;; turtle procedure\n  if travel?\n  [\n    if random 100 < (travel-tendency) and not ambulance?  ;; up to 1% chance of travel\n    [ set xcor (- xcor) ]\n  ]\n\n  ifelse continent = 1\n  [\n    ifelse xcor > (- 0.5)  ;; and on border patch\n    [\n      set angle random-float 180\n      let new-patch patch-at-heading-and-distance angle (-1)\n      if new-patch != nobody\n      [\n        move-to new-patch\n      ]\n    ]\n    [ ;; if in continent 1 and not on border\n      ifelse xcor < (min-pxcor + 0.5)  ;; at the edge of world\n      [\n        set angle random-float 180\n      ]\n      [\n        set angle random-float 360  ;; inside world\n      ]\n      rt angle\n\n      ifelse ambulance?\n      [\n        fd intra-mobility * 5  ;; ambulances move 5 times as fast than the ppl\n      ]\n      [\n        fd intra-mobility\n      ]\n    ]\n\n  ]\n  [ ;; in continent 2\n    ifelse xcor < 1  ;; and on border patch\n    [\n      set angle random-float 180\n      let new-patch patch-at-heading-and-distance angle (1)\n      if new-patch != nobody\n      [\n        move-to new-patch\n      ]\n    ]\n    [ ;; if in continent 2 and not on border\n      ifelse xcor > (max-pxcor - 1) ;; at the edge of world\n      [\n        set angle random-float 180\n      ]\n      [\n        set angle random-float 360\n      ]\n      lt angle\n\n      ifelse ambulance?\n      [\n        fd intra-mobility * 5\n      ]\n      [\n        fd intra-mobility\n      ]\n    ]\n\n  ]\nend\n\nto clear-count\n  set nb-infected 0\n  set nb-recovered 0\nend\n\nto maybe-recover\n  set infection-length infection-length + 1\n\n      ;; If people have been infected for more than the recovery-time\n      ;; then there is a chance for recovery\n      ifelse not hospitalized?\n      [\n        if infection-length > recovery-time\n        [\n          if random-float 100 < recovery-chance\n          [\n            set infected? false\n            set cured? true\n            set nb-recovered (nb-recovered + 1)\n          ]\n        ]\n      ]\n      [ ;; If hospitalized, recover in a fifth of the recovery time\n        if infection-length > (recovery-time / 5)\n        [\n          set infected? false\n          set cured? true\n          set nb-recovered (nb-recovered + 1 )\n        ]\n      ]\nend\n\n;; To better show that isolation has occurred, the patch below the person turns gray\nto isolate ;; turtle procedure\n  set isolated? true\n  move-to patch-here ;; move to center of patch\n  ask (patch-at 0 0) [ set pcolor gray - 3 ]\nend\n\n;; After unisolating, patch turns back to normal color\nto unisolate  ;; turtle procedure\n  set isolated? false\n  set hospitalized? false\n\n  ask (patch-at 0 0) [ set pcolor black ]\n\n  ask border [ set pcolor yellow ]                      ;; patches on the border stay yellow\n  ask (patch (- max-pxcor / 2) 0) [ set pcolor white ]  ;; hospital patch on the left stays white\n  ask (patch (max-pxcor / 2) 0) [ set pcolor white ]    ;; hospital patch on the right stays white\nend\n\n;; To hospitalize, move to hospital patch in the continent of current residence\nto hospitalize ;; turtle procedure\n  set hospitalized? true\n  set pcolor black\n  ifelse continent = 1\n  [\n    move-to patch (- max-pxcor / 2) 0\n  ]\n  [\n    move-to patch (max-pxcor / 2) 0\n  ]\n  set pcolor white\nend\n\n;; Infected individuals who are not isolated or hospitalized have a chance of transmitting their disease to their susceptible neighbors.\n;; If the neighbor is linked, then the chance of disease transmission doubles.\n\nto infect  ;; turtle procedure\n\n    let caller self\n\n    let nearby-uninfected (turtles-on neighbors)\n    with [ not infected? and not cured? and not inoculated? ]\n    if nearby-uninfected != nobody\n    [\n       ask nearby-uninfected\n       [\n           ifelse link-neighbor? caller\n           [\n             if random 100 < infection-chance * 2 ;; twice as likely to infect a linked person\n             [\n               set infected? true\n               set nb-infected (nb-infected + 1)\n             ]\n           ]\n           [\n             if random 100 < infection-chance\n             [\n               set infected? true\n               set nb-infected (nb-infected + 1)\n             ]\n           ]\n       ]\n\n    ]\n\nend\n\n\nto calculate-r0\n\n  let new-infected sum [ nb-infected ] of turtles\n  let new-recovered sum [ nb-recovered ] of turtles\n  set nb-infected-previous (count turtles with [ infected? ] + new-recovered - new-infected)  ;; Number of infected people at the previous tick\n  let susceptible-t (initial-people - (count turtles with [ infected? ]) - (count turtles with [ cured? ]))  ;; Number of susceptibles now\n  let s0 count turtles with [ susceptible? ] ;; Initial number of susceptibles\n\n  ifelse nb-infected-previous < 10\n  [ set beta-n 0 ]\n  [\n    set beta-n (new-infected / nb-infected-previous)       ;; This is the average number of new secondary infections per infected this tick\n  ]\n\n  ifelse nb-infected-previous < 5\n  [ set gamma 0 ]\n  [\n    set gamma (new-recovered / nb-infected-previous)     ;; This is the average number of new recoveries per infected this tick\n  ]\n\n  if ((initial-people - susceptible-t) != 0 and (susceptible-t != 0))   ;; Prevent from dividing by 0\n  [\n    ;; This is derived from integrating dI / dS = (beta*SI - gamma*I) / (-beta*SI)\n    ;; Assuming one infected individual introduced in the beginning, and hence counting I(0) as negligible,\n    ;; we get the relation\n    ;; N - gamma*ln(S(0)) / beta = S(t) - gamma*ln(S(t)) / beta, where N is the initial \'susceptible\' population.\n    ;; Since N >> 1\n    ;; Using this, we have R_0 = beta*N / gamma = N*ln(S(0)/S(t)) / (K-S(t))\n    set r0 (ln (s0 / susceptible-t) / (initial-people - susceptible-t))\n    set r0 r0 * s0 ]\nend\n\n\n; Copyright 2011 Uri Wilensky.\n; See Info tab for full copyright and license.')([{"left":646,"top":27,"right":1129,"bottom":511,"dimensions":{"minPxcor":-12,"maxPxcor":12,"minPycor":-12,"maxPycor":12,"patchSize":19,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"hours","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_38 = procedures[\"SETUP\"]();\n  if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"setup","left":339,"top":219,"right":422,"bottom":252,"display":"setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_35 = procedures[\"GO\"]();\n  if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"go","left":443,"top":219,"right":526,"bottom":252,"display":"go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"50","compiledMax":"400","compiledStep":"10","variable":"initial-people","left":18,"top":22,"right":287,"bottom":55,"display":"initial-people","min":"50","max":"400","default":250,"step":"10","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"50","compiledStep":"5","variable":"average-isolation-tendency","left":315,"top":22,"right":584,"bottom":55,"display":"average-isolation-tendency","min":"0","max":"50","default":5,"step":"5","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Populations', 'Infected')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotValue(world.turtles().agentFilter(function() { return SelfManager.self().getVariable(\"infected?\"); }).size());\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"Infected","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [ infected? ]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Populations', 'Not Infected')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotValue(world.turtles().agentFilter(function() { return !SelfManager.self().getVariable(\"infected?\"); }).size());\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"Not Infected","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [ not infected? ]","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Populations","left":356,"top":299,"right":619,"bottom":442,"xAxis":"hours","yAxis":"# people","xmin":0,"xmax":10,"ymin":0,"ymax":350,"autoPlotOn":true,"legendOn":true,"setupCode":"","updateCode":"","pens":[{"display":"Infected","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [ infected? ]","type":"pen"},{"display":"Not Infected","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [ not infected? ]","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"50","compiledStep":"5","variable":"inoculation-chance","left":315,"top":95,"right":584,"bottom":128,"display":"inoculation-chance","min":"0","max":"50","default":10,"step":"5","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"4","compiledStep":"1","variable":"initial-ambulance","left":315,"top":134,"right":487,"bottom":167,"display":"initial-ambulance","min":"0","max":"4","default":2,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"50","compiledStep":"5","variable":"average-hospital-going-tendency","left":315,"top":58,"right":584,"bottom":91,"display":"average-hospital-going-tendency","min":"0","max":"50","default":5,"step":"5","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Infection and Recovery Rates', 'Infection Rate')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotValue((world.observer.getGlobal(\"beta-n\") * world.observer.getGlobal(\"nb-infected-previous\")));\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"Infection Rate","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot (beta-n * nb-infected-previous)","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Infection and Recovery Rates', 'Recovery Rate')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotValue((world.observer.getGlobal(\"gamma\") * world.observer.getGlobal(\"nb-infected-previous\")));\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"Recovery Rate","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot (gamma * nb-infected-previous)","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Infection and Recovery Rates","left":11,"top":452,"right":344,"bottom":597,"xAxis":"hours","yAxis":"rate","xmin":0,"xmax":10,"ymin":0,"ymax":0.1,"autoPlotOn":true,"legendOn":true,"setupCode":"","updateCode":"","pens":[{"display":"Infection Rate","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot (beta-n * nb-infected-previous)","type":"pen"},{"display":"Recovery Rate","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot (gamma * nb-infected-previous)","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledMin":"10","compiledMax":"100","compiledStep":"5","variable":"infection-chance","left":18,"top":59,"right":286,"bottom":92,"display":"infection-chance","min":"10","max":"100","default":55,"step":"5","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"10","compiledMax":"100","compiledStep":"5","variable":"recovery-chance","left":18,"top":97,"right":285,"bottom":130,"display":"recovery-chance","min":"10","max":"100","default":45,"step":"5","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"r0\")","source":"r0\n","left":356,"top":451,"right":437,"bottom":496,"display":"R0","precision":2,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"variable":"links?","left":195,"top":199,"right":298,"bottom":232,"display":"links?","on":false,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"1","compiledStep":"0.1","variable":"intra-mobility","left":15,"top":199,"right":187,"bottom":232,"display":"intra-mobility","min":"0","max":"1","default":0.4,"step":"0.1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"variable":"travel?","left":196,"top":241,"right":299,"bottom":274,"display":"travel?","on":false,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"1","compiledStep":"0.1","variable":"travel-tendency","left":14,"top":240,"right":186,"bottom":273,"display":"travel-tendency","min":"0","max":"1","default":1,"step":".1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"50","compiledMax":"300","compiledStep":"10","variable":"average-recovery-time","left":18,"top":136,"right":286,"bottom":169,"display":"average-recovery-time","min":"50","max":"300","default":110,"step":"10","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Cumulative Infected and Recovered', '% infected')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotValue((Prims.div((world.turtles().agentFilter(function() { return SelfManager.self().getVariable(\"cured?\"); }).size() + world.turtles().agentFilter(function() { return SelfManager.self().getVariable(\"infected?\"); }).size()), world.observer.getGlobal(\"initial-people\")) * 100));\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"% infected","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot (((count turtles with [ cured? ] + count turtles with [ infected? ]) / initial-people) * 100)","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Cumulative Infected and Recovered', '% recovered')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotValue((Prims.div(world.turtles().agentFilter(function() { return SelfManager.self().getVariable(\"cured?\"); }).size(), world.observer.getGlobal(\"initial-people\")) * 100));\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"% recovered","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot ((count turtles with [ cured? ] / initial-people) * 100)","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Cumulative Infected and Recovered","left":11,"top":297,"right":343,"bottom":441,"xAxis":"hours","yAxis":"% total pop.","xmin":0,"xmax":10,"ymin":0,"ymax":10,"autoPlotOn":true,"legendOn":true,"setupCode":"","updateCode":"","pens":[{"display":"% infected","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot (((count turtles with [ cured? ] + count turtles with [ infected? ]) / initial-people) * 100)","type":"pen"},{"display":"% recovered","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot ((count turtles with [ cured? ] / initial-people) * 100)","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["initial-people", "average-isolation-tendency", "inoculation-chance", "initial-ambulance", "average-hospital-going-tendency", "infection-chance", "recovery-chance", "links?", "intra-mobility", "travel?", "travel-tendency", "average-recovery-time", "nb-infected-previous", "border", "angle", "beta-n", "gamma", "r0"], ["initial-people", "average-isolation-tendency", "inoculation-chance", "initial-ambulance", "average-hospital-going-tendency", "infection-chance", "recovery-chance", "links?", "intra-mobility", "travel?", "travel-tendency", "average-recovery-time"], [], -12, 12, -12, 12, 19.0, false, false, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ExportPrims = workspace.exportPrims;
@@ -183,6 +189,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.clearAll();
       procedures["SETUP-GLOBALS"]();
       procedures["SETUP-PEOPLE"]();
@@ -201,6 +208,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.getPatchAt(Prims.div( -world.topology.maxPxcor, 2), 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
       world.getPatchAt(Prims.div(world.topology.maxPxcor, 2), 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
       world.observer.setGlobal("border", world.patches().agentFilter(function() {
@@ -220,6 +228,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.turtleManager.createTurtles(world.observer.getGlobal("initial-people"), "").ask(function() {
         SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
         if (Prims.lte(SelfManager.self().getVariable("xcor"), 0)) {
@@ -272,6 +281,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.turtleManager.createTurtles(world.observer.getGlobal("initial-ambulance"), "").ask(function() {
         if (Prims.lt(Prims.random(2), 1)) {
           SelfManager.self().setVariable("continent", 1);
@@ -304,6 +314,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       SelfManager.self().setVariable("isolation-tendency", Prims.div(Prims.randomNormal(world.observer.getGlobal("average-isolation-tendency"), world.observer.getGlobal("average-isolation-tendency")), 4));
       SelfManager.self().setVariable("hospital-going-tendency", Prims.div(Prims.randomNormal(world.observer.getGlobal("average-hospital-going-tendency"), world.observer.getGlobal("average-hospital-going-tendency")), 4));
       SelfManager.self().setVariable("recovery-time", Prims.div(Prims.randomNormal(world.observer.getGlobal("average-recovery-time"), world.observer.getGlobal("average-recovery-time")), 4));
@@ -338,6 +349,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (SelfManager.self().getVariable("cured?")) {
         SelfManager.self().setVariable("color", 55);
       }
@@ -370,6 +382,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.turtles().ask(function() {
         LinkPrims.createLinksWith(Prims.turtlesOn(SelfManager.self().getNeighbors()), "LINKS").ask(function() {}, false);
       }, true);
@@ -386,6 +399,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (world.turtles().agentAll(function() { return !SelfManager.self().getVariable("infected?"); })) {
         throw new Exception.StopInterrupt;
       }
@@ -448,6 +462,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (world.observer.getGlobal("travel?")) {
         if ((Prims.lt(Prims.random(100), world.observer.getGlobal("travel-tendency")) && !SelfManager.self().getVariable("ambulance?"))) {
           SelfManager.self().setVariable("xcor",  -SelfManager.self().getVariable("xcor"));
@@ -456,7 +471,7 @@ var procedures = (function() {
       if (Prims.equality(SelfManager.self().getVariable("continent"), 1)) {
         if (Prims.gt(SelfManager.self().getVariable("xcor"),  -0.5)) {
           world.observer.setGlobal("angle", Prims.randomFloat(180));
-          let newPatch = SelfManager.self().patchAtHeadingAndDistance(world.observer.getGlobal("angle"), -1);
+          let newPatch = SelfManager.self().patchAtHeadingAndDistance(world.observer.getGlobal("angle"), -1); letVars['newPatch'] = newPatch;
           if (!Prims.equality(newPatch, Nobody)) {
             SelfManager.self().moveTo(newPatch);
           }
@@ -480,7 +495,7 @@ var procedures = (function() {
       else {
         if (Prims.lt(SelfManager.self().getVariable("xcor"), 1)) {
           world.observer.setGlobal("angle", Prims.randomFloat(180));
-          let newPatch = SelfManager.self().patchAtHeadingAndDistance(world.observer.getGlobal("angle"), 1);
+          let newPatch = SelfManager.self().patchAtHeadingAndDistance(world.observer.getGlobal("angle"), 1); letVars['newPatch'] = newPatch;
           if (!Prims.equality(newPatch, Nobody)) {
             SelfManager.self().moveTo(newPatch);
           }
@@ -514,6 +529,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       SelfManager.self().setVariable("nb-infected", 0);
       SelfManager.self().setVariable("nb-recovered", 0);
     } catch (e) {
@@ -529,6 +545,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       SelfManager.self().setVariable("infection-length", (SelfManager.self().getVariable("infection-length") + 1));
       if (!SelfManager.self().getVariable("hospitalized?")) {
         if (Prims.gt(SelfManager.self().getVariable("infection-length"), SelfManager.self().getVariable("recovery-time"))) {
@@ -559,6 +576,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       SelfManager.self().setVariable("isolated?", true);
       SelfManager.self().moveTo(SelfManager.self().getPatchHere());
       SelfManager.self().patchAt(0, 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", (5 - 3)); }, true);
@@ -575,6 +593,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       SelfManager.self().setVariable("isolated?", false);
       SelfManager.self().setVariable("hospitalized?", false);
       SelfManager.self().patchAt(0, 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 0); }, true);
@@ -594,6 +613,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       SelfManager.self().setVariable("hospitalized?", true);
       SelfManager.self().setPatchVariable("pcolor", 0);
       if (Prims.equality(SelfManager.self().getVariable("continent"), 1)) {
@@ -616,10 +636,11 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
-      let caller = SelfManager.self();
+      var letVars = { };
+      let caller = SelfManager.self(); letVars['caller'] = caller;
       let nearbyUninfected = Prims.turtlesOn(SelfManager.self().getNeighbors()).agentFilter(function() {
         return ((!SelfManager.self().getVariable("infected?") && !SelfManager.self().getVariable("cured?")) && !SelfManager.self().getVariable("inoculated?"));
-      });
+      }); letVars['nearbyUninfected'] = nearbyUninfected;
       if (!Prims.equality(nearbyUninfected, Nobody)) {
         nearbyUninfected.ask(function() {
           if (LinkPrims.isLinkNeighbor("LINKS", caller)) {
@@ -649,11 +670,12 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
-      let newInfected = ListPrims.sum(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("nb-infected"); }));
-      let newRecovered = ListPrims.sum(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("nb-recovered"); }));
+      var letVars = { };
+      let newInfected = ListPrims.sum(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("nb-infected"); })); letVars['newInfected'] = newInfected;
+      let newRecovered = ListPrims.sum(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("nb-recovered"); })); letVars['newRecovered'] = newRecovered;
       world.observer.setGlobal("nb-infected-previous", ((world.turtles().agentFilter(function() { return SelfManager.self().getVariable("infected?"); }).size() + newRecovered) - newInfected));
-      let susceptibleT = ((world.observer.getGlobal("initial-people") - world.turtles().agentFilter(function() { return SelfManager.self().getVariable("infected?"); }).size()) - world.turtles().agentFilter(function() { return SelfManager.self().getVariable("cured?"); }).size());
-      let s0 = world.turtles().agentFilter(function() { return SelfManager.self().getVariable("susceptible?"); }).size();
+      let susceptibleT = ((world.observer.getGlobal("initial-people") - world.turtles().agentFilter(function() { return SelfManager.self().getVariable("infected?"); }).size()) - world.turtles().agentFilter(function() { return SelfManager.self().getVariable("cured?"); }).size()); letVars['susceptibleT'] = susceptibleT;
+      let s0 = world.turtles().agentFilter(function() { return SelfManager.self().getVariable("susceptible?"); }).size(); letVars['s0'] = s0;
       if (Prims.lt(world.observer.getGlobal("nb-infected-previous"), 10)) {
         world.observer.setGlobal("beta-n", 0);
       }

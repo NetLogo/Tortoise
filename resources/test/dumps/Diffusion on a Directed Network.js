@@ -53,6 +53,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Histogram', 'default')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.setXRange(0, NLMath.ceil((world.observer.getGlobal("max-val") + 0.5)));
           plotManager.setHistogramBarCount(NLMath.ceil(NLMath.sqrt(world.turtles().size())));
           plotManager.drawHistogramFrom(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("val"); }));
@@ -70,7 +71,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "val", "# of nodes", false, true, 0.0, 10.0, 0.0, 10.0, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "ACTIVE-LINKS", singular: "active-link", varNames: [], isDirected: true }, { name: "INACTIVE-LINKS", singular: "inactive-link", varNames: [], isDirected: true }])(["val", "new-val"], ["current-flow"])(tortoise_require("extensions/all").dumpers())(["link-chance", "grid-size", "diffusion-rate", "total-val", "max-val", "max-flow", "mean-flow"], ["link-chance", "grid-size", "diffusion-rate"], [], -10, 10, -10, 10, 20.0, false, false, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "ACTIVE-LINKS", singular: "active-link", varNames: [], isDirected: true }, { name: "INACTIVE-LINKS", singular: "inactive-link", varNames: [], isDirected: true }])(["val", "new-val"], ["current-flow"])('directed-link-breed [active-links active-link]\ndirected-link-breed [inactive-links inactive-link]\n\nturtles-own [ val new-val ] ; a node\'s past and current quantity, represented as size\nlinks-own [ current-flow ]  ; the amount of quantity that has passed through a link\n                            ; in a given step\n\nglobals [\n  total-val                 ; total quantity in the system\n  max-val                   ; maximum quantity held by a single node in the system\n  max-flow                  ; maximum quantity that has passed through a link in the system\n  mean-flow                 ; average quantity that is passing through an arbitrary\n                            ; link in the system\n]\n\n;;;;;;;;;;;;;;;;;;;;;;;;\n;;; Setup Procedures ;;;\n;;;;;;;;;;;;;;;;;;;;;;;;\n\nto setup\n  clear-all\n  set-default-shape turtles \"circle\"\n  set-default-shape links \"small-arrow-link\"\n  ; create the grid of nodes\n  ask patches with [abs pxcor < (grid-size / 2) and abs pycor < (grid-size / 2)]\n    [ sprout 1 [ set color blue ] ]\n\n  ; create a directed network such that each node has a LINK-CHANCE percent chance of\n  ; having a link established from a given node to one of its neighbors\n  ask turtles [\n    set val 1\n    let neighbor-nodes turtle-set [turtles-here] of neighbors4\n    create-active-links-to neighbor-nodes\n    [\n      set current-flow 0\n      if random-float 100 > link-chance\n      [\n        set breed inactive-links\n        hide-link\n      ]\n    ]\n  ]\n  ; spread the nodes out\n  ask turtles [\n    setxy (xcor * (max-pxcor - 1) / (grid-size / 2 - 0.5))\n          (ycor * (max-pycor - 1) / (grid-size / 2 - 0.5))\n  ]\n  update-globals\n  update-visuals\n  reset-ticks\nend\n\n;;;;;;;;;;;;;;;;;;;;;;;\n;;; Main Procedure  ;;;\n;;;;;;;;;;;;;;;;;;;;;;;\n\nto go\n  ask turtles [ set new-val 0 ]\n  ask turtles [\n    let recipients out-active-link-neighbors\n    ifelse any? recipients [\n      let val-to-keep val * (1 - diffusion-rate / 100)\n      ; we keep some amount of our value from one turn to the next\n      set new-val new-val + val-to-keep\n      ; What we don\'t keep for ourselves, we divide evenly among our out-link-neighbors.\n      let val-increment ((val - val-to-keep) / count recipients)\n      ask recipients [\n        set new-val new-val + val-increment\n        ask in-active-link-from myself [ set current-flow val-increment ]\n      ]\n    ] [\n      set new-val new-val + val\n    ]\n  ]\n  ask turtles [ set val new-val ]\n  update-globals\n  update-visuals\n  tick\nend\n\nto rewire-a-link\n  if any? active-links [\n    ask one-of active-links [\n      set breed inactive-links\n      hide-link\n    ]\n    ask one-of inactive-links [\n      set breed active-links\n      show-link\n    ]\n  ]\nend\n\n;;;;;;;;;;;;;;;;;;;;;;;\n;;;     Updates     ;;;\n;;;;;;;;;;;;;;;;;;;;;;;\n\nto update-globals\n  set total-val sum [ val ] of turtles\n  set max-val max [ val ] of turtles\n  if any? active-links [\n    set max-flow max [current-flow] of active-links\n    set mean-flow mean [current-flow] of active-links\n  ]\nend\n\nto update-visuals\n  ask turtles [ update-node-appearance ]\n  ask active-links [ update-link-appearance ]\nend\n\nto update-node-appearance ; node procedure\n  ; scale the size to be between 0.1 and 5.0\n  set size 0.1 + 5 * sqrt (val / total-val)\nend\n\nto update-link-appearance ; link procedure\n  ; scale color to be brighter when more value is flowing through it\n  set color scale-color gray (current-flow / (2 * mean-flow + 0.00001)) -0.4 1\nend\n\n\n; Copyright 2008 Uri Wilensky.\n; See Info tab for full copyright and license.')([{"left":215,"top":10,"right":643,"bottom":439,"dimensions":{"minPxcor":-10,"maxPxcor":10,"minPycor":-10,"maxPycor":10,"patchSize":20,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_38 = procedures[\"SETUP\"]();\n  if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"setup","left":10,"top":90,"right":105,"bottom":123,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_35 = procedures[\"GO\"]();\n  if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"go","left":109,"top":90,"right":209,"bottom":123,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"link-chance","left":10,"top":50,"right":210,"bottom":83,"display":"link-chance","min":"0","max":"100","default":50,"step":"1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"3","compiledMax":"19","compiledStep":"2","variable":"grid-size","left":10,"top":10,"right":210,"bottom":43,"display":"grid-size","min":"3","max":"19","default":9,"step":"2","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Histogram', 'default')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.setXRange(0, NLMath.ceil((world.observer.getGlobal(\"max-val\") + 0.5)));\n        plotManager.setHistogramBarCount(NLMath.ceil(NLMath.sqrt(world.turtles().size())));\n        plotManager.drawHistogramFrom(world.turtles().projectionBy(function() { return SelfManager.self().getVariable(\"val\"); }));\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"default","interval":1,"mode":1,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"set-plot-x-range 0 ceiling (max-val  + 0.5)\nset-histogram-num-bars ceiling (sqrt (count turtles))\nhistogram [val] of turtles","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Histogram","left":10,"top":210,"right":210,"bottom":426,"xAxis":"val","yAxis":"# of nodes","xmin":0,"xmax":10,"ymin":0,"ymax":10,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"default","interval":1,"mode":1,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"set-plot-x-range 0 ceiling (max-val  + 0.5)\nset-histogram-num-bars ceiling (sqrt (count turtles))\nhistogram [val] of turtles","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"diffusion-rate","left":10,"top":170,"right":210,"bottom":203,"display":"diffusion-rate","min":"0","max":"100","default":10,"step":"1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_46 = procedures[\"REWIRE-A-LINK\"]();\n  if (_maybestop_33_46 instanceof Exception.StopInterrupt) { return _maybestop_33_46; }\n  notImplemented('display', undefined)();\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"rewire-a-link\ndisplay","left":10,"top":130,"right":106,"bottom":163,"display":"rewire-a-link","forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_46 = procedures[\"REWIRE-A-LINK\"]();\n  if (_maybestop_33_46 instanceof Exception.StopInterrupt) { return _maybestop_33_46; }\n  notImplemented('display', undefined)();\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"rewire-a-link\ndisplay","left":110,"top":130,"right":210,"bottom":163,"display":"keep-rewiring","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["link-chance", "grid-size", "diffusion-rate", "total-val", "max-val", "max-flow", "mean-flow"], ["link-chance", "grid-size", "diffusion-rate"], [], -10, 10, -10, 10, 20.0, false, false, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ExportPrims = workspace.exportPrims;
@@ -93,6 +94,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.clearAll();
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
       BreedManager.setDefaultShape(world.links().getSpecialName(), "small-arrow-link")
@@ -103,7 +105,7 @@ var procedures = (function() {
       }, true);
       world.turtles().ask(function() {
         SelfManager.self().setVariable("val", 1);
-        let neighborNodes = Prims.turtleSet(SelfManager.self().getNeighbors4().projectionBy(function() { return SelfManager.self().turtlesHere(); }));
+        let neighborNodes = Prims.turtleSet(SelfManager.self().getNeighbors4().projectionBy(function() { return SelfManager.self().turtlesHere(); })); letVars['neighborNodes'] = neighborNodes;
         LinkPrims.createLinksTo(neighborNodes, "ACTIVE-LINKS").ask(function() {
           SelfManager.self().setVariable("current-flow", 0);
           if (Prims.gt(Prims.randomFloat(100), world.observer.getGlobal("link-chance"))) {
@@ -131,13 +133,14 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.turtles().ask(function() { SelfManager.self().setVariable("new-val", 0); }, true);
       world.turtles().ask(function() {
-        let recipients = LinkPrims.outLinkNeighbors("ACTIVE-LINKS");
+        let recipients = LinkPrims.outLinkNeighbors("ACTIVE-LINKS"); letVars['recipients'] = recipients;
         if (!recipients.isEmpty()) {
-          let valToKeep = (SelfManager.self().getVariable("val") * (1 - Prims.div(world.observer.getGlobal("diffusion-rate"), 100)));
+          let valToKeep = (SelfManager.self().getVariable("val") * (1 - Prims.div(world.observer.getGlobal("diffusion-rate"), 100))); letVars['valToKeep'] = valToKeep;
           SelfManager.self().setVariable("new-val", (SelfManager.self().getVariable("new-val") + valToKeep));
-          let valIncrement = Prims.div((SelfManager.self().getVariable("val") - valToKeep), recipients.size());
+          let valIncrement = Prims.div((SelfManager.self().getVariable("val") - valToKeep), recipients.size()); letVars['valIncrement'] = valIncrement;
           recipients.ask(function() {
             SelfManager.self().setVariable("new-val", (SelfManager.self().getVariable("new-val") + valIncrement));
             LinkPrims.inLinkFrom("ACTIVE-LINKS", SelfManager.myself()).ask(function() { SelfManager.self().setVariable("current-flow", valIncrement); }, true);
@@ -164,6 +167,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (!world.linkManager.linksOfBreed("ACTIVE-LINKS").isEmpty()) {
         ListPrims.oneOf(world.linkManager.linksOfBreed("ACTIVE-LINKS")).ask(function() {
           SelfManager.self().setVariable("breed", world.linkManager.linksOfBreed("INACTIVE-LINKS"));
@@ -187,6 +191,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.observer.setGlobal("total-val", ListPrims.sum(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("val"); })));
       world.observer.setGlobal("max-val", ListPrims.max(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("val"); })));
       if (!world.linkManager.linksOfBreed("ACTIVE-LINKS").isEmpty()) {
@@ -206,6 +211,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.turtles().ask(function() { procedures["UPDATE-NODE-APPEARANCE"](); }, true);
       world.linkManager.linksOfBreed("ACTIVE-LINKS").ask(function() { procedures["UPDATE-LINK-APPEARANCE"](); }, true);
     } catch (e) {
@@ -221,6 +227,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       SelfManager.self().setVariable("size", (0.1 + (5 * NLMath.sqrt(Prims.div(SelfManager.self().getVariable("val"), world.observer.getGlobal("total-val"))))));
     } catch (e) {
       if (e instanceof Exception.StopInterrupt) {
@@ -235,6 +242,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       SelfManager.self().setVariable("color", ColorModel.scaleColor(5, Prims.div(SelfManager.self().getVariable("current-flow"), ((2 * world.observer.getGlobal("mean-flow")) + 1.0E-5)), -0.4, 1));
     } catch (e) {
       if (e instanceof Exception.StopInterrupt) {

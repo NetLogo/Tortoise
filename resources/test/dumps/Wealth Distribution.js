@@ -53,6 +53,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Class Plot', 'low')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); }).size());
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -69,6 +70,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Class Plot', 'mid')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); }).size());
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -85,6 +87,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Class Plot', 'up')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 105); }).size());
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -101,6 +104,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Class Plot', undefined)(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.setYRange(0, world.observer.getGlobal("num-people"));
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -122,6 +126,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Class Histogram', 'default')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.resetPen();
           plotManager.setPenColor(15);
           plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); }).size());
@@ -144,6 +149,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Class Histogram', undefined)(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.setYRange(0, world.observer.getGlobal("num-people"));
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -165,6 +171,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Lorenz Curve', 'lorenz')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.resetPen();
           plotManager.setPenInterval(Prims.div(100, world.observer.getGlobal("num-people")));
           plotManager.plotValue(0);
@@ -189,6 +196,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Lorenz Curve', 'equal')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotValue(0);
           plotManager.plotValue(100);
         } catch (e) {
@@ -212,6 +220,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Gini-Index v. Time', 'default')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotValue(Prims.div(Prims.div(world.observer.getGlobal("gini-index-reserve"), world.observer.getGlobal("num-people")), 0.5));
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -227,7 +236,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "Time", "Gini", false, true, 0.0, 50.0, 0.0, 1.0, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["age", "wealth", "life-expectancy", "metabolism", "vision"], [])(tortoise_require("extensions/all").dumpers())(["max-vision", "grain-growth-interval", "metabolism-max", "num-people", "percent-best-land", "life-expectancy-max", "num-grain-grown", "life-expectancy-min", "max-grain", "gini-index-reserve", "lorenz-points"], ["max-vision", "grain-growth-interval", "metabolism-max", "num-people", "percent-best-land", "life-expectancy-max", "num-grain-grown", "life-expectancy-min"], ["grain-here", "max-grain-here"], -25, 25, -25, 25, 8.0, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["age", "wealth", "life-expectancy", "metabolism", "vision"], [])('globals\n[\n  max-grain    ; maximum amount any patch can hold\n  gini-index-reserve\n  lorenz-points\n]\n\npatches-own\n[\n  grain-here      ; the current amount of grain on this patch\n  max-grain-here  ; the maximum amount of grain this patch can hold\n]\n\nturtles-own\n[\n  age              ; how old a turtle is\n  wealth           ; the amount of grain a turtle has\n  life-expectancy  ; maximum age that a turtle can reach\n  metabolism       ; how much grain a turtle eats each time\n  vision           ; how many patches ahead a turtle can see\n]\n\n;;;\n;;; SETUP AND HELPERS\n;;;\n\nto setup\n  clear-all\n  ;; set global variables to appropriate values\n  set max-grain 50\n  ;; call other procedures to set up various parts of the world\n  setup-patches\n  setup-turtles\n  update-lorenz-and-gini\n  reset-ticks\nend\n\n;; set up the initial amounts of grain each patch has\nto setup-patches\n  ;; give some patches the highest amount of grain possible --\n  ;; these patches are the \"best land\"\n  ask patches\n    [ set max-grain-here 0\n      if (random-float 100.0) <= percent-best-land\n        [ set max-grain-here max-grain\n          set grain-here max-grain-here ] ]\n  ;; spread that grain around the window a little and put a little back\n  ;; into the patches that are the \"best land\" found above\n  repeat 5\n    [ ask patches with [max-grain-here != 0]\n        [ set grain-here max-grain-here ]\n      diffuse grain-here 0.25 ]\n  repeat 10\n    [ diffuse grain-here 0.25 ]          ;; spread the grain around some more\n  ask patches\n    [ set grain-here floor grain-here    ;; round grain levels to whole numbers\n      set max-grain-here grain-here      ;; initial grain level is also maximum\n      recolor-patch ]\nend\n\nto recolor-patch  ;; patch procedure -- use color to indicate grain level\n  set pcolor scale-color yellow grain-here 0 max-grain\nend\n\n;; set up the initial values for the turtle variables\nto setup-turtles\n  set-default-shape turtles \"person\"\n  create-turtles num-people\n    [ move-to one-of patches  ;; put turtles on patch centers\n      set size 1.5  ;; easier to see\n      set-initial-turtle-vars\n      set age random life-expectancy ]\n  recolor-turtles\nend\n\nto set-initial-turtle-vars\n  set age 0\n  face one-of neighbors4\n  set life-expectancy life-expectancy-min +\n                        random (life-expectancy-max - life-expectancy-min + 1)\n  set metabolism 1 + random metabolism-max\n  set wealth metabolism + random 50\n  set vision 1 + random max-vision\nend\n\n;; Set the class of the turtles -- if a turtle has less than a third\n;; the wealth of the richest turtle, color it red.  If between one\n;; and two thirds, color it green.  If over two thirds, color it blue.\nto recolor-turtles\n  let max-wealth max [wealth] of turtles\n  ask turtles\n    [ ifelse (wealth <= max-wealth / 3)\n        [ set color red ]\n        [ ifelse (wealth <= (max-wealth * 2 / 3))\n            [ set color green ]\n            [ set color blue ] ] ]\nend\n\n;;;\n;;; GO AND HELPERS\n;;;\n\nto go\n  ask turtles\n    [ turn-towards-grain ]  ;; choose direction holding most grain within the turtle\'s vision\n  harvest\n  ask turtles\n    [ move-eat-age-die ]\n  recolor-turtles\n\n  ;; grow grain every grain-growth-interval clock ticks\n  if ticks mod grain-growth-interval = 0\n    [ ask patches [ grow-grain ] ]\n\n  update-lorenz-and-gini\n  tick\nend\n\n;; determine the direction which is most profitable for each turtle in\n;; the surrounding patches within the turtles\' vision\nto turn-towards-grain  ;; turtle procedure\n  set heading 0\n  let best-direction 0\n  let best-amount grain-ahead\n  set heading 90\n  if (grain-ahead > best-amount)\n    [ set best-direction 90\n      set best-amount grain-ahead ]\n  set heading 180\n  if (grain-ahead > best-amount)\n    [ set best-direction 180\n      set best-amount grain-ahead ]\n  set heading 270\n  if (grain-ahead > best-amount)\n    [ set best-direction 270\n      set best-amount grain-ahead ]\n  set heading best-direction\nend\n\nto-report grain-ahead  ;; turtle procedure\n  let total 0\n  let how-far 1\n  repeat vision\n    [ set total total + [grain-here] of patch-ahead how-far\n      set how-far how-far + 1 ]\n  report total\nend\n\nto grow-grain  ;; patch procedure\n  ;; if a patch does not have it\'s maximum amount of grain, add\n  ;; num-grain-grown to its grain amount\n  if (grain-here < max-grain-here)\n    [ set grain-here grain-here + num-grain-grown\n      ;; if the new amount of grain on a patch is over its maximum\n      ;; capacity, set it to its maximum\n      if (grain-here > max-grain-here)\n        [ set grain-here max-grain-here ]\n      recolor-patch ]\nend\n\n;; each turtle harvests the grain on its patch.  if there are multiple\n;; turtles on a patch, divide the grain evenly among the turtles\nto harvest\n  ; have turtles harvest before any turtle sets the patch to 0\n  ask turtles\n    [ set wealth floor (wealth + (grain-here / (count turtles-here))) ]\n  ;; now that the grain has been harvested, have the turtles make the\n  ;; patches which they are on have no grain\n  ask turtles\n    [ set grain-here 0\n      recolor-patch ]\nend\n\nto move-eat-age-die  ;; turtle procedure\n  fd 1\n  ;; consume some grain according to metabolism\n  set wealth (wealth - metabolism)\n  ;; grow older\n  set age (age + 1)\n  ;; check for death conditions: if you have no grain or\n  ;; you\'re older than the life expectancy or if some random factor\n  ;; holds, then you \"die\" and are \"reborn\" (in fact, your variables\n  ;; are just reset to new random values)\n  if (wealth < 0) or (age >= life-expectancy)\n    [ set-initial-turtle-vars ]\nend\n\n;; this procedure recomputes the value of gini-index-reserve\n;; and the points in lorenz-points for the Lorenz and Gini-Index plots\nto update-lorenz-and-gini\n  let sorted-wealths sort [wealth] of turtles\n  let total-wealth sum sorted-wealths\n  let wealth-sum-so-far 0\n  let index 0\n  set gini-index-reserve 0\n  set lorenz-points []\n\n  ;; now actually plot the Lorenz curve -- along the way, we also\n  ;; calculate the Gini index.\n  ;; (see the Info tab for a description of the curve and measure)\n  repeat num-people [\n    set wealth-sum-so-far (wealth-sum-so-far + item index sorted-wealths)\n    set lorenz-points lput ((wealth-sum-so-far / total-wealth) * 100) lorenz-points\n    set index (index + 1)\n    set gini-index-reserve\n      gini-index-reserve +\n      (index / num-people) -\n      (wealth-sum-so-far / total-wealth)\n  ]\nend\n\n\n; Copyright 1998 Uri Wilensky.\n; See Info tab for full copyright and license.')([{"left":184,"top":10,"right":600,"bottom":427,"dimensions":{"minPxcor":-25,"maxPxcor":25,"minPycor":-25,"maxPycor":25,"patchSize":8,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_38 = procedures[\"SETUP\"]();\n  if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"setup","left":8,"top":256,"right":84,"bottom":289,"display":"setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_35 = procedures[\"GO\"]();\n  if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"go","left":105,"top":256,"right":175,"bottom":289,"display":"go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"15","compiledStep":"1","variable":"max-vision","left":8,"top":72,"right":176,"bottom":105,"display":"max-vision","min":"1","max":"15","default":5,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"10","compiledStep":"1","variable":"grain-growth-interval","left":8,"top":301,"right":176,"bottom":334,"display":"grain-growth-interval","min":"1","max":"10","default":1,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"25","compiledStep":"1","variable":"metabolism-max","left":8,"top":106,"right":176,"bottom":139,"display":"metabolism-max","min":"1","max":"25","default":15,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"2","compiledMax":"1000","compiledStep":"1","variable":"num-people","left":8,"top":38,"right":176,"bottom":71,"display":"num-people","min":"2","max":"1000","default":250,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"5","compiledMax":"25","compiledStep":"1","variable":"percent-best-land","left":8,"top":208,"right":176,"bottom":241,"display":"percent-best-land","min":"5","max":"25","default":10,"step":"1","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"100","compiledStep":"1","variable":"life-expectancy-max","left":8,"top":174,"right":176,"bottom":207,"display":"life-expectancy-max","min":"1","max":"100","default":83,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Class Plot', undefined)(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.setYRange(0, world.observer.getGlobal(\"num-people\"));\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Class Plot', 'low')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"color\"), 15); }).size());\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"low","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = red]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Class Plot', 'mid')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"color\"), 55); }).size());\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"mid","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = green]","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Class Plot', 'up')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"color\"), 105); }).size());\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"up","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = blue]","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Class Plot","left":3,"top":454,"right":255,"bottom":634,"xAxis":"Time","yAxis":"Turtles","xmin":0,"xmax":50,"ymin":0,"ymax":250,"autoPlotOn":true,"legendOn":true,"setupCode":"set-plot-y-range 0 num-people","updateCode":"","pens":[{"display":"low","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = red]","type":"pen"},{"display":"mid","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = green]","type":"pen"},{"display":"up","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [color = blue]","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"10","compiledStep":"1","variable":"num-grain-grown","left":8,"top":335,"right":176,"bottom":368,"display":"num-grain-grown","min":"1","max":"10","default":4,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"100","compiledStep":"1","variable":"life-expectancy-min","left":8,"top":140,"right":176,"bottom":173,"display":"life-expectancy-min","min":"1","max":"100","default":1,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Class Histogram', undefined)(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.setYRange(0, world.observer.getGlobal(\"num-people\"));\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Class Histogram', 'default')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.resetPen();\n        plotManager.setPenColor(15);\n        plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"color\"), 15); }).size());\n        plotManager.setPenColor(55);\n        plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"color\"), 55); }).size());\n        plotManager.setPenColor(105);\n        plotManager.plotValue(world.turtles().agentFilter(function() { return Prims.equality(SelfManager.self().getVariable(\"color\"), 105); }).size());\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"default","interval":1,"mode":1,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot-pen-reset\nset-plot-pen-color red\nplot count turtles with [color = red]\nset-plot-pen-color green\nplot count turtles with [color = green]\nset-plot-pen-color blue\nplot count turtles with [color = blue]","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Class Histogram","left":257,"top":454,"right":469,"bottom":634,"xAxis":"Classes","yAxis":"Turtles","xmin":0,"xmax":3,"ymin":0,"ymax":250,"autoPlotOn":false,"legendOn":false,"setupCode":"set-plot-y-range 0 num-people","updateCode":"","pens":[{"display":"default","interval":1,"mode":1,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot-pen-reset\nset-plot-pen-color red\nplot count turtles with [color = red]\nset-plot-pen-color green\nplot count turtles with [color = green]\nset-plot-pen-color blue\nplot count turtles with [color = blue]","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Lorenz Curve', 'lorenz')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.resetPen();\n        plotManager.setPenInterval(Prims.div(100, world.observer.getGlobal(\"num-people\")));\n        plotManager.plotValue(0);\n        var _foreach_94_101 = Tasks.forEach(Tasks.commandTask(function(_0) {\n          if (arguments.length < 1) {\n            throw new Error(\"anonymous procedure expected 1 input, but only got \" + arguments.length);\n          }\n          plotManager.plotValue(_0);\n        }, \"plot\"), world.observer.getGlobal(\"lorenz-points\")); if(reporterContext && _foreach_94_101 !== undefined) { return _foreach_94_101; }\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"lorenz","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot-pen-reset\nset-plot-pen-interval 100 / num-people\nplot 0\nforeach lorenz-points plot","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Lorenz Curve', 'equal')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotValue(0);\n        plotManager.plotValue(100);\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","compiledUpdateCode":"function() {}","display":"equal","interval":100,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"plot 0\nplot 100","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Lorenz Curve","left":471,"top":454,"right":672,"bottom":634,"xAxis":"Pop %","yAxis":"Wealth %","xmin":0,"xmax":100,"ymin":0,"ymax":100,"autoPlotOn":false,"legendOn":true,"setupCode":"","updateCode":"","pens":[{"display":"lorenz","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot-pen-reset\nset-plot-pen-interval 100 / num-people\nplot 0\nforeach lorenz-points plot","type":"pen"},{"display":"equal","interval":100,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"plot 0\nplot 100","updateCode":"","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Gini-Index v. Time', 'default')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotValue(Prims.div(Prims.div(world.observer.getGlobal(\"gini-index-reserve\"), world.observer.getGlobal(\"num-people\")), 0.5));\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"default","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plot (gini-index-reserve / num-people) / 0.5","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Gini-Index v. Time","left":674,"top":454,"right":908,"bottom":634,"xAxis":"Time","yAxis":"Gini","xmin":0,"xmax":50,"ymin":0,"ymax":1,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"default","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plot (gini-index-reserve / num-people) / 0.5","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["max-vision", "grain-growth-interval", "metabolism-max", "num-people", "percent-best-land", "life-expectancy-max", "num-grain-grown", "life-expectancy-min", "max-grain", "gini-index-reserve", "lorenz-points"], ["max-vision", "grain-growth-interval", "metabolism-max", "num-people", "percent-best-land", "life-expectancy-max", "num-grain-grown", "life-expectancy-min"], ["grain-here", "max-grain-here"], -25, 25, -25, 25, 8.0, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ExportPrims = workspace.exportPrims;
@@ -250,6 +259,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.clearAll();
       world.observer.setGlobal("max-grain", 50);
       procedures["SETUP-PATCHES"]();
@@ -269,6 +279,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.patches().ask(function() {
         SelfManager.self().setPatchVariable("max-grain-here", 0);
         if (Prims.lte(Prims.randomFloat(100), world.observer.getGlobal("percent-best-land"))) {
@@ -303,6 +314,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(45, SelfManager.self().getPatchVariable("grain-here"), 0, world.observer.getGlobal("max-grain")));
     } catch (e) {
       if (e instanceof Exception.StopInterrupt) {
@@ -317,6 +329,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "person")
       world.turtleManager.createTurtles(world.observer.getGlobal("num-people"), "").ask(function() {
         SelfManager.self().moveTo(ListPrims.oneOf(world.patches()));
@@ -338,6 +351,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       SelfManager.self().setVariable("age", 0);
       SelfManager.self().face(ListPrims.oneOf(SelfManager.self().getNeighbors4()));
       SelfManager.self().setVariable("life-expectancy", (world.observer.getGlobal("life-expectancy-min") + Prims.random(((world.observer.getGlobal("life-expectancy-max") - world.observer.getGlobal("life-expectancy-min")) + 1))));
@@ -357,7 +371,8 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
-      let maxWealth = ListPrims.max(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("wealth"); }));
+      var letVars = { };
+      let maxWealth = ListPrims.max(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("wealth"); })); letVars['maxWealth'] = maxWealth;
       world.turtles().ask(function() {
         if (Prims.lte(SelfManager.self().getVariable("wealth"), Prims.div(maxWealth, 3))) {
           SelfManager.self().setVariable("color", 15);
@@ -384,6 +399,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.turtles().ask(function() { procedures["TURN-TOWARDS-GRAIN"](); }, true);
       procedures["HARVEST"]();
       world.turtles().ask(function() { procedures["MOVE-EAT-AGE-DIE"](); }, true);
@@ -406,23 +422,24 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       SelfManager.self().setVariable("heading", 0);
-      let bestDirection = 0;
-      let bestAmount = procedures["GRAIN-AHEAD"]();
+      let bestDirection = 0; letVars['bestDirection'] = bestDirection;
+      let bestAmount = procedures["GRAIN-AHEAD"](); letVars['bestAmount'] = bestAmount;
       SelfManager.self().setVariable("heading", 90);
       if (Prims.gt(procedures["GRAIN-AHEAD"](), bestAmount)) {
-        bestDirection = 90;
-        bestAmount = procedures["GRAIN-AHEAD"]();
+        bestDirection = 90; letVars['bestDirection'] = bestDirection;
+        bestAmount = procedures["GRAIN-AHEAD"](); letVars['bestAmount'] = bestAmount;
       }
       SelfManager.self().setVariable("heading", 180);
       if (Prims.gt(procedures["GRAIN-AHEAD"](), bestAmount)) {
-        bestDirection = 180;
-        bestAmount = procedures["GRAIN-AHEAD"]();
+        bestDirection = 180; letVars['bestDirection'] = bestDirection;
+        bestAmount = procedures["GRAIN-AHEAD"](); letVars['bestAmount'] = bestAmount;
       }
       SelfManager.self().setVariable("heading", 270);
       if (Prims.gt(procedures["GRAIN-AHEAD"](), bestAmount)) {
-        bestDirection = 270;
-        bestAmount = procedures["GRAIN-AHEAD"]();
+        bestDirection = 270; letVars['bestDirection'] = bestDirection;
+        bestAmount = procedures["GRAIN-AHEAD"](); letVars['bestAmount'] = bestAmount;
       }
       SelfManager.self().setVariable("heading", bestDirection);
     } catch (e) {
@@ -438,13 +455,16 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = true;
-      let total = 0;
-      let howFar = 1;
+      var letVars = { };
+      let total = 0; letVars['total'] = total;
+      let howFar = 1; letVars['howFar'] = howFar;
       for (let _index_4005_4011 = 0, _repeatcount_4005_4011 = StrictMath.floor(SelfManager.self().getVariable("vision")); _index_4005_4011 < _repeatcount_4005_4011; _index_4005_4011++){
-        total = (total + SelfManager.self().patchAhead(howFar).projectionBy(function() { return SelfManager.self().getPatchVariable("grain-here"); }));
-        howFar = (howFar + 1);
+        total = (total + SelfManager.self().patchAhead(howFar).projectionBy(function() { return SelfManager.self().getPatchVariable("grain-here"); })); letVars['total'] = total;
+        howFar = (howFar + 1); letVars['howFar'] = howFar;
       }
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return total }
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+        return total
+      }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
      if (e instanceof Exception.StopInterrupt) {
@@ -459,6 +479,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (Prims.lt(SelfManager.self().getPatchVariable("grain-here"), SelfManager.self().getPatchVariable("max-grain-here"))) {
         SelfManager.self().setPatchVariable("grain-here", (SelfManager.self().getPatchVariable("grain-here") + world.observer.getGlobal("num-grain-grown")));
         if (Prims.gt(SelfManager.self().getPatchVariable("grain-here"), SelfManager.self().getPatchVariable("max-grain-here"))) {
@@ -479,6 +500,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.turtles().ask(function() {
         SelfManager.self().setVariable("wealth", NLMath.floor((SelfManager.self().getVariable("wealth") + Prims.div(SelfManager.self().getPatchVariable("grain-here"), SelfManager.self().turtlesHere().size()))));
       }, true);
@@ -499,6 +521,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       SelfManager.self()._optimalFdOne();
       SelfManager.self().setVariable("wealth", (SelfManager.self().getVariable("wealth") - SelfManager.self().getVariable("metabolism")));
       SelfManager.self().setVariable("age", (SelfManager.self().getVariable("age") + 1));
@@ -518,16 +541,17 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
-      let sortedWealths = ListPrims.sort(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("wealth"); }));
-      let totalWealth = ListPrims.sum(sortedWealths);
-      let wealthSumSoFar = 0;
-      let index = 0;
+      var letVars = { };
+      let sortedWealths = ListPrims.sort(world.turtles().projectionBy(function() { return SelfManager.self().getVariable("wealth"); })); letVars['sortedWealths'] = sortedWealths;
+      let totalWealth = ListPrims.sum(sortedWealths); letVars['totalWealth'] = totalWealth;
+      let wealthSumSoFar = 0; letVars['wealthSumSoFar'] = wealthSumSoFar;
+      let index = 0; letVars['index'] = index;
       world.observer.setGlobal("gini-index-reserve", 0);
       world.observer.setGlobal("lorenz-points", []);
       for (let _index_6031_6037 = 0, _repeatcount_6031_6037 = StrictMath.floor(world.observer.getGlobal("num-people")); _index_6031_6037 < _repeatcount_6031_6037; _index_6031_6037++){
-        wealthSumSoFar = (wealthSumSoFar + ListPrims.item(index, sortedWealths));
+        wealthSumSoFar = (wealthSumSoFar + ListPrims.item(index, sortedWealths)); letVars['wealthSumSoFar'] = wealthSumSoFar;
         world.observer.setGlobal("lorenz-points", ListPrims.lput((Prims.div(wealthSumSoFar, totalWealth) * 100), world.observer.getGlobal("lorenz-points")));
-        index = (index + 1);
+        index = (index + 1); letVars['index'] = index;
         world.observer.setGlobal("gini-index-reserve", ((world.observer.getGlobal("gini-index-reserve") + Prims.div(index, world.observer.getGlobal("num-people"))) - Prims.div(wealthSumSoFar, totalWealth)));
       }
     } catch (e) {

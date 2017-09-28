@@ -53,6 +53,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Number of Molecules', 'Oxygen')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("number-oxygen-molecules"));
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -69,6 +70,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Number of Molecules', 'Hydrogen')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("number-hydrogen-molecules"));
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -85,6 +87,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Number of Molecules', 'Water')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("number-water-molecules"));
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -107,6 +110,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Gas Temp. vs. time', 'gas temp.')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("temperature"));
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -129,6 +133,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Pressure vs. time', 'pressure')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           if (world.observer.getGlobal("box-intact?")) {
             plotManager.plotPoint(world.ticker.tickCount(), ListPrims.mean(world.observer.getGlobal("pressure-history")));
           }
@@ -146,7 +151,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "", "", false, true, 0.0, 10.0, 0.0, 10.0, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "GAS-MOLECULES", singular: "gas-molecule", varNames: ["speed", "mass", "energy", "last-collision", "molecule-type", "momentum-instant", "momentum-difference"] }, { name: "FLASHES", singular: "flash", varNames: ["birthday"] }, { name: "BROKEN-WALLS", singular: "broken-wall", varNames: [] }])([], [])(tortoise_require("extensions/all").dumpers())(["initial-oxygen-molecules", "initial-gas-temperature", "bond-energy-released", "activation-energy", "initial-hydrogen-molecules", "pressure-limit-container", "show-wall-hits?", "highlight-product?", "tick-advance-amount", "max-tick-advance-amount", "box-edge", "avg-speed", "avg-energy", "length-horizontal-surface", "length-vertical-surface", "pressure-history", "pressure", "temperature", "box-intact?", "molecule-size", "margin-outside-box", "number-oxygen-molecules", "number-hydrogen-molecules", "number-water-molecules"], ["initial-oxygen-molecules", "initial-gas-temperature", "bond-energy-released", "activation-energy", "initial-hydrogen-molecules", "pressure-limit-container", "show-wall-hits?", "highlight-product?"], [], -20, 20, -20, 20, 10.0, false, false, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "GAS-MOLECULES", singular: "gas-molecule", varNames: ["speed", "mass", "energy", "last-collision", "molecule-type", "momentum-instant", "momentum-difference"] }, { name: "FLASHES", singular: "flash", varNames: ["birthday"] }, { name: "BROKEN-WALLS", singular: "broken-wall", varNames: [] }])([], [])('globals\n[\n  tick-advance-amount                ;; clock variables\n  max-tick-advance-amount            ;; the largest a tick length is allowed to be\n  box-edge                   ;; distance of box edge from axes\n  avg-speed                  ;; current average speed of gas molecules\n  avg-energy                 ;; current average energy of gas molecules\n  length-horizontal-surface  ;; the size of the wall surfaces that run horizontally - the top and bottom of the box\n  length-vertical-surface    ;; the size of the wall surfaces that run vertically - the left and right of the box\n  pressure-history           ;; average pressure over last six time steps\n  pressure                   ;; pressure at this time step\n  temperature                ;; the average kinetic energy of all the molecules\n  box-intact?                ;; keeps track of whether the box will burst from too much pressure\n  molecule-size              ;; size of the molecules\n  margin-outside-box         ;; number of patches width between the edge of the box and the edge of the world\n  number-oxygen-molecules\n  number-hydrogen-molecules\n  number-water-molecules\n]\n\nbreed [ gas-molecules gas-molecule ]\nbreed [ flashes flash ]              ;; squares that are created temporarily to show a location of a wall hit\nbreed [ broken-walls broken-wall ]   ;; pieces of broken walls that fly apart when pressure limit of container is reached\n\n\nflashes-own [birthday]\n\ngas-molecules-own\n[\n  speed mass energy          ;; gas-molecules info\n  last-collision             ;; what was the molecule that this molecule collided with?\n  molecule-type              ;; what type of molecule is this (hydrogen H2, water H20, oxygen O2)\n  momentum-instant           ;; used to calculate the momentum imparted to the wall at this time step\n  momentum-difference        ;; used to calculate pressure from wall hits over time\n]\n\n;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\n;;;;; SETUP PROCEDURES ;;;;;;;\n;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\n\nto setup\n  clear-all\n  set max-tick-advance-amount 0.01\n  set margin-outside-box 4\n  set box-edge (max-pxcor - margin-outside-box)\n  set-default-shape flashes \"square\"\n  set molecule-size 1.4\n  set pressure-history [0 0 0 0 0 0]   ;; plotted pressure will be averaged over the past 6 entries\n  set box-intact? true\n  set length-horizontal-surface  ( 2 * (box-edge - 1) + 1)\n  set length-vertical-surface  ( 2 * (box-edge - 1) + 1)\n\n  make-box\n  make-gas-molecules\n  update-variables\n  reset-ticks\nend\n\n\nto make-box\n  ask patches with\n  [ ((abs pxcor = (max-pxcor - margin-outside-box)) and (abs pycor <= (max-pycor - margin-outside-box))) or\n    ((abs pycor = (max-pxcor - margin-outside-box)) and (abs pxcor <= (max-pycor - margin-outside-box))) ]\n    [ set pcolor gray ]\nend\n\n\nto make-gas-molecules\n  create-gas-molecules initial-oxygen-molecules\n  [\n    setup-initial-oxygen-molecules\n    random-position\n  ]\n\n  create-gas-molecules initial-hydrogen-molecules\n  [\n    setup-initial-hydrogen-molecules\n    random-position\n  ]\nend\n\n\nto setup-initial-hydrogen-molecules  ;; gas-molecules procedure\n  set size molecule-size\n  set last-collision nobody\n  set shape \"hydrogen\"\n  set molecule-type \"hydrogen\"\n  set mass 2    ;; approximate atomic weight of H2\n  set momentum-difference 0\n  set momentum-instant 0\nend\n\n\nto setup-initial-oxygen-molecules  ;; gas-molecules procedure\n  set size molecule-size\n  set last-collision nobody\n  set shape \"oxygen\"\n  set molecule-type \"oxygen\"\n  set mass 16   ;;  approximate atomic weight of 02\n  set momentum-difference 0\n  set momentum-instant 0\nend\n\n\n;; Place gas-molecules at random, but molecules must not be placed on top of other molecules at first.\nto random-position ;; gas-molecules procedure\n  let open-patches nobody\n  let open-patch nobody\n  set open-patches patches with [abs pxcor < (max-pxcor - margin-outside-box) and abs pycor < (max-pycor - margin-outside-box)]\n  set open-patch one-of open-patches\n  move-to open-patch\n  set heading random-float 360\n  set energy initial-gas-temperature\n  set speed speed-from-energy\nend\n\n\n\n;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\n;;;;;;;;;;;;;;;;;;;;;;;;;;; RUNTIME PROCEDURES ;;;;;;;;;;;;;;;;;;;;;;;\n;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\n\nto go\n  if count gas-molecules = 0 [stop]\n  ifelse box-intact? [ask gas-molecules [bounce]] [shatter-box]\n  ask gas-molecules [\n    move\n    check-for-collision\n  ]\n  ask gas-molecules with [molecule-type = \"oxygen\"] [check-for-reaction]\n  update-variables\n  calculate-pressure\n  if pressure > (pressure-limit-container) [set box-intact? false]\n  calculate-tick-advance-amount\n  tick-advance tick-advance-amount\n  update-flash-visualization\n  update-plots\n  display\nend\n\n\nto update-variables ;; update gas molecules variables, as well as their counts\n  ifelse any? gas-molecules [\n    set avg-speed  mean [speed] of gas-molecules\n    set avg-energy mean [energy] of gas-molecules\n    set temperature avg-energy\n  ]\n  [ set avg-speed 0 set avg-energy 0 set temperature 0]\n  set number-oxygen-molecules   count gas-molecules with [molecule-type = \"oxygen\"]\n  set number-hydrogen-molecules count gas-molecules with [molecule-type = \"hydrogen\"]\n  set number-water-molecules    count gas-molecules with [molecule-type = \"water\"]\nend\n\n\nto update-flash-visualization\n  ask flashes [\n    if (ticks - birthday > 0.4)  [ die ]\n    set color lput (255 - (255 * (ticks - birthday ) / 0.4)) [20 20 20]   ;; become progressively more transparent\n  ]\nend\n\n\nto bounce  ;; particle procedure\n  ;; get the coordinates of the patch located forward 1\n  let new-patch patch-ahead 1\n  let new-px [pxcor] of new-patch\n  let new-py [pycor] of new-patch\n  ;; if we\'re not about to hit a wall, no need for any further checks\n  if (abs new-px != box-edge and abs new-py != box-edge)\n    [stop]\n  ;; if hitting left or right wall, reflect heading around x axis\n  if (abs new-px = box-edge)\n    [ set heading (- heading)\n  ;;  if the particle is hitting a vertical wall, only the horizontal component of the velocity\n  ;;  vector can change.  The change in momentum for this component is 2 * the speed of the particle,\n  ;;  due to the reversing of direction of travel from the collision with the wall\n      set momentum-instant  (abs (sin heading * 2 * mass * speed) / length-vertical-surface)\n      set momentum-difference momentum-difference + momentum-instant\n      ]\n   ;; if hitting top or bottom wall, reflect heading around y axis\n  if (abs new-py = box-edge)\n    [ set heading (180 - heading)\n  ;;  if the particle is hitting a horizontal wall, only the vertical component of the velocity\n  ;;  vector can change.  The change in momentum for this component is 2 * the speed of the particle,\n  ;;  due to the reversing of direction of travel from the collision with the wall\n      set momentum-instant  (abs (cos heading * 2 * mass * speed) / length-horizontal-surface)\n      set momentum-difference momentum-difference + momentum-instant\n    ]\n\n  if show-wall-hits? [\n    ask patch new-px new-py [make-a-flash]\n  ]\nend\n\n\nto make-a-flash\n  sprout 1 [\n    set breed flashes\n    set color [20 20 20 255]\n    set birthday ticks\n  ]\nend\n\n\nto shatter-box\n  let center-patch one-of patches with [pxcor = 0 and pycor = 0]\n  ask broken-walls  [\n    set heading towards center-patch\n    set heading (heading + 180)\n    if pxcor = max-pxcor or pycor = max-pycor or pycor = min-pycor or pxcor = min-pxcor [die]\n    fd avg-speed * tick-advance-amount\n  ]\n  ask patches with [pcolor = gray]\n  [ sprout 1 [set breed broken-walls set color gray set shape \"square\"] set pcolor black]\n  ask flashes [die]\nend\n\n\nto move  ;; gas-molecules procedure\n  if patch-ahead (speed * tick-advance-amount) != patch-here\n    [ set last-collision nobody ]\n  jump (speed * tick-advance-amount)\n  ;; When particles reach the edge of the screen, it is because the box they were in has burst (failed) due\n  ;; to exceeding pressure limitations.  These particles should be removed from the simulation when they escape\n  ;; to the edge of the world.\n  if pxcor = max-pxcor or pxcor = min-pxcor or pycor = min-pycor or pycor = max-pycor [die]\nend\n\n\nto calculate-pressure\n  ;; by summing the momentum change for each particle,\n  ;; the wall\'s total momentum change is calculated\n  ;; the 100 is an arbitrary scalar (constant)\n\n  set pressure 100 * sum [momentum-difference] of gas-molecules\n  set pressure-history lput pressure but-first pressure-history\n  ask gas-molecules\n    [ set momentum-difference 0 ]  ;; once the contribution to momentum has been calculated\n                                   ;; this value is reset to zero till the next wall hit\nend\n\nto calculate-tick-advance-amount\n  ;; tick-advance-amount is calculated in such way that even the fastest\n  ;; gas-molecules will jump at most 1 patch length in a clock tick. As\n  ;; gas-molecules jump (speed * tick-advance-amount) at every clock tick, making\n  ;; tick length the inverse of the speed of the fastest gas-molecules\n  ;; (1/max speed) assures that. Having each gas-molecules advance at most\n  ;; one patch-length is necessary for it not to \"jump over\" a wall\n  ;; or another gas-molecules.\n  ifelse any? gas-molecules with [speed > 0]\n    [ set tick-advance-amount min list (1 / (ceiling max [speed] of gas-molecules)) max-tick-advance-amount ]\n    [ set tick-advance-amount max-tick-advance-amount ]\nend\n\n\nto speed-up-one-molecule\n  clear-drawing\n  ask gas-molecules [penup]\n  ask one-of gas-molecules  [\n    set speed speed * 10\n    set energy energy-from-speed\n    pendown\n  ]\n  calculate-tick-advance-amount\nend\n\n;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\n;;;;;;;;;;;;;;;;;;; CHEMICAL REACTIONS PROCEDURES ;;;;;;;;;;;;;;;;;;;;;;;;\n;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\n\n\nto check-for-reaction\n  let hit-hydrogen gas-molecules-here with [molecule-type = \"hydrogen\"]\n  let this-initial-oxygen-molecules-energy energy\n  let total-energy 0\n\n  if count hit-hydrogen >= 2 [\n    if speed < 0 [set speed 0]\n      let hydrogen-reactants n-of 2 hit-hydrogen\n      let total-energy-all-reactants (this-initial-oxygen-molecules-energy + sum [energy] of hydrogen-reactants )\n      if total-energy-all-reactants > activation-energy [\n\n        ask hydrogen-reactants [   ;;two H2 turn into two water molecules\n          ifelse highlight-product?\n            [set shape  \"water-boosted\"]\n            [set shape  \"water\"]\n          set molecule-type \"water\"\n          set mass 10  ;; approximate atomic weight of H20\n          let total-energy-products (total-energy-all-reactants + bond-energy-released )\n          set energy total-energy-products / 2\n             ;; distribute half the kinetic energy of the reactants and the bond energy amongst the products (two water molecules)\n          set speed speed-from-energy\n        ]\n      die   ;; remove the oxygen molecule, as its atoms are now part of the water molecules\n      ]\n  ]\nend\n\n\n;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\n;;;;;;;;;;;;;;;;;;;;;;;;;;;; COLLISION PROCEDURES ;;;;;;;;;;;;;;;;;;;;;;;;\n;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\n;;from GasLab\nto check-for-collision  ;; gas-molecules procedure\n  if count other gas-molecules-here in-radius 1 = 1\n  [\n    ;; the following conditions are imposed on collision candidates:\n    ;;   1. they must have a lower who number than my own, because collision\n    ;;      code is asymmetrical: it must always happen from the point of view\n    ;;      of just one gas-molecules.\n    ;;   2. they must not be the same gas-molecules that we last collided with on\n    ;;      this patch, so that we have a chance to leave the patch after we\'ve\n    ;;      collided with someone.\n    let candidate one-of other gas-molecules-here with\n      [self < myself and myself != last-collision]\n    ;; we also only collide if one of us has non-zero speed. It\'s useless\n    ;; (and incorrect, actually) for two gas-molecules with zero speed to collide.\n    if (candidate != nobody) and (speed > 0 or [speed] of candidate > 0)\n    [\n      collide-with candidate\n      ask candidate [penup]\n      set last-collision candidate\n      let this-candidate self\n      ask candidate [set last-collision this-candidate]\n    ]\n  ]\nend\n\n;; This procedure implements a collision with another gas-molecules.\n;;\n;; The two gas-molecules colliding are self and other-gas-molecules, and while the\n;; collision is performed from the point of view of self, both gas-molecules are\n;; modified to reflect its effects. This is somewhat complicated, so here is a\n;; general outline:\n;;   1. Do initial setup, and determine the heading between gas-molecules centers\n;;      (call it theta).\n;;   2. Convert the representation of the velocity of each gas-molecules from\n;;      speed/heading to a theta-based vector whose first component is the\n;;      gas-molecules\' speed along theta, and whose second component is the speed\n;;      perpendicular to theta.\n;;   3. Modify the velocity vectors to reflect the effects of the collision.\n;;      This involves:\n;;        a. computing the velocity of the center of mass of the whole system\n;;           along direction theta\n;;        b. updating the along-theta components of the two velocity vectors.\n;;   4. Convert from the theta-based vector representation of velocity back to\n;;      the usual speed/heading representation for each gas-molecules.\n;;   5. Perform final cleanup and update derived quantities.\n\nto collide-with [ other-gas-molecules ] ;; gas-molecules procedure\n  ;;; PHASE 1: initial setup\n\n  ;; for convenience, grab some quantities from other-gas-molecules\n  let mass2 [mass] of other-gas-molecules\n  let speed2 [speed] of other-gas-molecules\n  let heading2 [heading] of other-gas-molecules\n\n  ;; since gas-molecules are modeled as zero-size points, theta isn\'t meaningfully\n  ;; defined. we can assign it randomly without affecting the model\'s outcome.\n  let theta (random-float 360)\n\n\n  ;;; PHASE 2: convert velocities to theta-based vector representation\n\n  ;; convert velocity from speed/heading representation to components\n  ;; along theta and perpendicular to theta\n  let v1t (speed * cos (theta - heading))\n  let v1l (speed * sin (theta - heading))\n\n  ;; do the same for other-gas-molecules\n  let v2t (speed2 * cos (theta - heading2))\n  let v2l (speed2 * sin (theta - heading2))\n\n\n  ;;; PHASE 3: manipulate vectors to implement collision\n\n  ;; compute the velocity of the system\'s center of mass along theta\n  let vcm (((mass * v1t) + (mass2 * v2t)) / (mass + mass2) )\n\n  ;; now compute the new velocity for each gas-molecules along direction theta.\n  ;; Velocity perpendicular to theta is unaffected by a collision along theta,\n  ;; so the next two lines actually implement the collision itself, in the\n  ;; sense that the effects of the collision are exactly the following changes\n  ;; in gas-molecules velocity.\n  set v1t (2 * vcm - v1t)\n  set v2t (2 * vcm - v2t)\n\n  ;;; PHASE 4: convert back to normal speed/heading\n\n  ;; now convert velocity vector into new speed and heading\n  set speed sqrt ((v1t ^ 2) + (v1l ^ 2))\n  set energy (0.5 * mass * speed ^ 2)\n  ;; if the magnitude of the velocity vector is 0, atan is undefined. but\n  ;; speed will be 0, so heading is irrelevant anyway. therefore, in that\n  ;; case we\'ll just leave it unmodified.\n  if v1l != 0 or v1t != 0\n    [ set heading (theta - (atan v1l v1t)) ]\n\n  ;; and do the same for other-gas-molecules\n  ask other-gas-molecules [\n    set speed sqrt ((v2t ^ 2) + (v2l ^ 2))\n    set energy (0.5 * mass * (speed ^ 2))\n    if v2l != 0 or v2t != 0\n      [ set heading (theta - (atan v2l v2t)) ]\n  ]\nend\n\n;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\n;;;;;;;;;;REPORTERS;;;;;;;;;;;;;\n;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\n\nto-report speed-from-energy\n  report sqrt (2 * energy / mass)\nend\n\nto-report energy-from-speed\n  report 0.5 * mass * speed * speed\nend\n\n\n; Copyright 2007 Uri Wilensky.\n; See Info tab for full copyright and license.')([{"left":470,"top":10,"right":888,"bottom":429,"dimensions":{"minPxcor":-20,"maxPxcor":20,"minPycor":-20,"maxPycor":20,"patchSize":10,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_35 = procedures[\"GO\"]();\n  if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"go","left":105,"top":10,"right":205,"bottom":43,"display":"go/stop","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_38 = procedures[\"SETUP\"]();\n  if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"setup","left":5,"top":10,"right":100,"bottom":43,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"200","compiledStep":"1","variable":"initial-oxygen-molecules","left":5,"top":50,"right":205,"bottom":83,"display":"initial-oxygen-molecules","min":"0","max":"200","default":64,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Number of Molecules', 'Oxygen')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal(\"number-oxygen-molecules\"));\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"Oxygen","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks number-oxygen-molecules","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Number of Molecules', 'Hydrogen')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal(\"number-hydrogen-molecules\"));\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"Hydrogen","interval":1,"mode":0,"color":-7500403,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks number-hydrogen-molecules","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Number of Molecules', 'Water')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal(\"number-water-molecules\"));\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"Water","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks number-water-molecules","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Number of Molecules","left":215,"top":10,"right":469,"bottom":144,"xAxis":"time","yAxis":"count","xmin":0,"xmax":10,"ymin":0,"ymax":50,"autoPlotOn":true,"legendOn":true,"setupCode":"","updateCode":"","pens":[{"display":"Oxygen","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks number-oxygen-molecules","type":"pen"},{"display":"Hydrogen","interval":1,"mode":0,"color":-7500403,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks number-hydrogen-molecules","type":"pen"},{"display":"Water","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks number-water-molecules","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"500","compiledStep":"1","variable":"initial-gas-temperature","left":5,"top":120,"right":205,"bottom":153,"display":"initial-gas-temperature","min":"0","max":"500","default":200,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"10000","compiledStep":"10","variable":"bond-energy-released","left":5,"top":195,"right":205,"bottom":228,"display":"bond-energy-released","min":"0","max":"10000","default":3240,"step":"10","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"5000","compiledStep":"50","variable":"activation-energy","left":5,"top":160,"right":205,"bottom":193,"display":"activation-energy","min":"0","max":"5000","default":2000,"step":"50","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Gas Temp. vs. time', 'gas temp.')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal(\"temperature\"));\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"gas temp.","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks temperature","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Gas Temp. vs. time","left":215,"top":142,"right":469,"bottom":268,"xAxis":"time","yAxis":"temp.","xmin":0,"xmax":10,"ymin":0,"ymax":10,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"gas temp.","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"plotxy ticks temperature","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"200","compiledStep":"2","variable":"initial-hydrogen-molecules","left":5,"top":85,"right":205,"bottom":118,"display":"initial-hydrogen-molecules","min":"0","max":"200","default":104,"step":"2","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"100","compiledMax":"10000","compiledStep":"100","variable":"pressure-limit-container","left":5,"top":230,"right":205,"bottom":263,"display":"pressure-limit-container","min":"100","max":"10000","default":4000,"step":"100","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_34_55 = procedures[\"SPEED-UP-ONE-MOLECULE\"]();\n  if (_maybestop_34_55 instanceof Exception.StopInterrupt) { return _maybestop_34_55; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"\nspeed-up-one-molecule","left":5,"top":305,"right":205,"bottom":339,"display":"speed up & trace one molecule","forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"variable":"show-wall-hits?","left":15,"top":375,"right":190,"bottom":408,"display":"show-wall-hits?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"variable":"highlight-product?","left":15,"top":340,"right":190,"bottom":373,"display":"highlight-product?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Pressure vs. time', 'pressure')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        if (world.observer.getGlobal(\"box-intact?\")) {\n          plotManager.plotPoint(world.ticker.tickCount(), ListPrims.mean(world.observer.getGlobal(\"pressure-history\")));\n        }\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"pressure","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"if box-intact? [plotxy ticks mean pressure-history]","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Pressure vs. time","left":215,"top":268,"right":469,"bottom":408,"xmin":0,"xmax":10,"ymin":0,"ymax":10,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"pressure","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"if box-intact? [plotxy ticks mean pressure-history]","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["initial-oxygen-molecules", "initial-gas-temperature", "bond-energy-released", "activation-energy", "initial-hydrogen-molecules", "pressure-limit-container", "show-wall-hits?", "highlight-product?", "tick-advance-amount", "max-tick-advance-amount", "box-edge", "avg-speed", "avg-energy", "length-horizontal-surface", "length-vertical-surface", "pressure-history", "pressure", "temperature", "box-intact?", "molecule-size", "margin-outside-box", "number-oxygen-molecules", "number-hydrogen-molecules", "number-water-molecules"], ["initial-oxygen-molecules", "initial-gas-temperature", "bond-energy-released", "activation-energy", "initial-hydrogen-molecules", "pressure-limit-container", "show-wall-hits?", "highlight-product?"], [], -20, 20, -20, 20, 10.0, false, false, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ExportPrims = workspace.exportPrims;
@@ -169,6 +174,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.clearAll();
       world.observer.setGlobal("max-tick-advance-amount", 0.01);
       world.observer.setGlobal("margin-outside-box", 4);
@@ -196,6 +202,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.patches().agentFilter(function() {
         return ((Prims.equality(NLMath.abs(SelfManager.self().getPatchVariable("pxcor")), (world.topology.maxPxcor - world.observer.getGlobal("margin-outside-box"))) && Prims.lte(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), (world.topology.maxPycor - world.observer.getGlobal("margin-outside-box")))) || (Prims.equality(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), (world.topology.maxPxcor - world.observer.getGlobal("margin-outside-box"))) && Prims.lte(NLMath.abs(SelfManager.self().getPatchVariable("pxcor")), (world.topology.maxPycor - world.observer.getGlobal("margin-outside-box")))));
       }).ask(function() { SelfManager.self().setPatchVariable("pcolor", 5); }, true);
@@ -212,6 +219,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.turtleManager.createTurtles(world.observer.getGlobal("initial-oxygen-molecules"), "GAS-MOLECULES").ask(function() {
         procedures["SETUP-INITIAL-OXYGEN-MOLECULES"]();
         procedures["RANDOM-POSITION"]();
@@ -233,6 +241,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       SelfManager.self().setVariable("size", world.observer.getGlobal("molecule-size"));
       SelfManager.self().setVariable("last-collision", Nobody);
       SelfManager.self().setVariable("shape", "hydrogen");
@@ -253,6 +262,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       SelfManager.self().setVariable("size", world.observer.getGlobal("molecule-size"));
       SelfManager.self().setVariable("last-collision", Nobody);
       SelfManager.self().setVariable("shape", "oxygen");
@@ -273,12 +283,13 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
-      let openPatches = Nobody;
-      let openPatch = Nobody;
+      var letVars = { };
+      let openPatches = Nobody; letVars['openPatches'] = openPatches;
+      let openPatch = Nobody; letVars['openPatch'] = openPatch;
       openPatches = world.patches().agentFilter(function() {
         return (Prims.lt(NLMath.abs(SelfManager.self().getPatchVariable("pxcor")), (world.topology.maxPxcor - world.observer.getGlobal("margin-outside-box"))) && Prims.lt(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), (world.topology.maxPycor - world.observer.getGlobal("margin-outside-box"))));
-      });
-      openPatch = ListPrims.oneOf(openPatches);
+      }); letVars['openPatches'] = openPatches;
+      openPatch = ListPrims.oneOf(openPatches); letVars['openPatch'] = openPatch;
       SelfManager.self().moveTo(openPatch);
       SelfManager.self().setVariable("heading", Prims.randomFloat(360));
       SelfManager.self().setVariable("energy", world.observer.getGlobal("initial-gas-temperature"));
@@ -296,6 +307,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (Prims.equality(world.turtleManager.turtlesOfBreed("GAS-MOLECULES").size(), 0)) {
         throw new Exception.StopInterrupt;
       }
@@ -333,6 +345,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (!world.turtleManager.turtlesOfBreed("GAS-MOLECULES").isEmpty()) {
         world.observer.setGlobal("avg-speed", ListPrims.mean(world.turtleManager.turtlesOfBreed("GAS-MOLECULES").projectionBy(function() { return SelfManager.self().getVariable("speed"); })));
         world.observer.setGlobal("avg-energy", ListPrims.mean(world.turtleManager.turtlesOfBreed("GAS-MOLECULES").projectionBy(function() { return SelfManager.self().getVariable("energy"); })));
@@ -359,6 +372,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.turtleManager.turtlesOfBreed("FLASHES").ask(function() {
         if (Prims.gt((world.ticker.tickCount() - SelfManager.self().getVariable("birthday")), 0.4)) {
           SelfManager.self().die();
@@ -378,9 +392,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
-      let newPatch = SelfManager.self().patchAhead(1);
-      let newPx = newPatch.projectionBy(function() { return SelfManager.self().getPatchVariable("pxcor"); });
-      let newPy = newPatch.projectionBy(function() { return SelfManager.self().getPatchVariable("pycor"); });
+      var letVars = { };
+      let newPatch = SelfManager.self().patchAhead(1); letVars['newPatch'] = newPatch;
+      let newPx = newPatch.projectionBy(function() { return SelfManager.self().getPatchVariable("pxcor"); }); letVars['newPx'] = newPx;
+      let newPy = newPatch.projectionBy(function() { return SelfManager.self().getPatchVariable("pycor"); }); letVars['newPy'] = newPy;
       if ((!Prims.equality(NLMath.abs(newPx), world.observer.getGlobal("box-edge")) && !Prims.equality(NLMath.abs(newPy), world.observer.getGlobal("box-edge")))) {
         throw new Exception.StopInterrupt;
       }
@@ -410,6 +425,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       SelfManager.self().sprout(1, "TURTLES").ask(function() {
         SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("FLASHES"));
         SelfManager.self().setVariable("color", [20, 20, 20, 255]);
@@ -428,9 +444,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       let centerPatch = world.patches()._optimalOneOfWith(function() {
         return (Prims.equality(SelfManager.self().getPatchVariable("pxcor"), 0) && Prims.equality(SelfManager.self().getPatchVariable("pycor"), 0));
-      });
+      }); letVars['centerPatch'] = centerPatch;
       world.turtleManager.turtlesOfBreed("BROKEN-WALLS").ask(function() {
         SelfManager.self().setVariable("heading", SelfManager.self().towards(centerPatch));
         SelfManager.self().setVariable("heading", (SelfManager.self().getVariable("heading") + 180));
@@ -461,6 +478,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (!Prims.equality(SelfManager.self().patchAhead((SelfManager.self().getVariable("speed") * world.observer.getGlobal("tick-advance-amount"))), SelfManager.self().getPatchHere())) {
         SelfManager.self().setVariable("last-collision", Nobody);
       }
@@ -481,6 +499,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.observer.setGlobal("pressure", (100 * ListPrims.sum(world.turtleManager.turtlesOfBreed("GAS-MOLECULES").projectionBy(function() { return SelfManager.self().getVariable("momentum-difference"); }))));
       world.observer.setGlobal("pressure-history", ListPrims.lput(world.observer.getGlobal("pressure"), ListPrims.butFirst(world.observer.getGlobal("pressure-history"))));
       world.turtleManager.turtlesOfBreed("GAS-MOLECULES").ask(function() { SelfManager.self().setVariable("momentum-difference", 0); }, true);
@@ -497,6 +516,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (!world.turtleManager.turtlesOfBreed("GAS-MOLECULES").agentFilter(function() { return Prims.gt(SelfManager.self().getVariable("speed"), 0); }).isEmpty()) {
         world.observer.setGlobal("tick-advance-amount", ListPrims.min(ListPrims.list(Prims.div(1, NLMath.ceil(ListPrims.max(world.turtleManager.turtlesOfBreed("GAS-MOLECULES").projectionBy(function() { return SelfManager.self().getVariable("speed"); })))), world.observer.getGlobal("max-tick-advance-amount"))));
       }
@@ -516,6 +536,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.clearDrawing();
       world.turtleManager.turtlesOfBreed("GAS-MOLECULES").ask(function() { SelfManager.self().penManager.raisePen(); }, true);
       ListPrims.oneOf(world.turtleManager.turtlesOfBreed("GAS-MOLECULES")).ask(function() {
@@ -537,15 +558,16 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
-      let hitHydrogen = SelfManager.self().breedHere("GAS-MOLECULES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("molecule-type"), "hydrogen"); });
-      let thisInitialOxygenMoleculesEnergy = SelfManager.self().getVariable("energy");
-      let totalEnergy = 0;
+      var letVars = { };
+      let hitHydrogen = SelfManager.self().breedHere("GAS-MOLECULES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("molecule-type"), "hydrogen"); }); letVars['hitHydrogen'] = hitHydrogen;
+      let thisInitialOxygenMoleculesEnergy = SelfManager.self().getVariable("energy"); letVars['thisInitialOxygenMoleculesEnergy'] = thisInitialOxygenMoleculesEnergy;
+      let totalEnergy = 0; letVars['totalEnergy'] = totalEnergy;
       if (Prims.gte(hitHydrogen.size(), 2)) {
         if (Prims.lt(SelfManager.self().getVariable("speed"), 0)) {
           SelfManager.self().setVariable("speed", 0);
         }
-        let hydrogenReactants = ListPrims.nOf(2, hitHydrogen);
-        let totalEnergyAllReactants = (thisInitialOxygenMoleculesEnergy + ListPrims.sum(hydrogenReactants.projectionBy(function() { return SelfManager.self().getVariable("energy"); })));
+        let hydrogenReactants = ListPrims.nOf(2, hitHydrogen); letVars['hydrogenReactants'] = hydrogenReactants;
+        let totalEnergyAllReactants = (thisInitialOxygenMoleculesEnergy + ListPrims.sum(hydrogenReactants.projectionBy(function() { return SelfManager.self().getVariable("energy"); }))); letVars['totalEnergyAllReactants'] = totalEnergyAllReactants;
         if (Prims.gt(totalEnergyAllReactants, world.observer.getGlobal("activation-energy"))) {
           hydrogenReactants.ask(function() {
             if (world.observer.getGlobal("highlight-product?")) {
@@ -556,7 +578,7 @@ var procedures = (function() {
             }
             SelfManager.self().setVariable("molecule-type", "water");
             SelfManager.self().setVariable("mass", 10);
-            let totalEnergyProducts = (totalEnergyAllReactants + world.observer.getGlobal("bond-energy-released"));
+            let totalEnergyProducts = (totalEnergyAllReactants + world.observer.getGlobal("bond-energy-released")); letVars['totalEnergyProducts'] = totalEnergyProducts;
             SelfManager.self().setVariable("energy", Prims.div(totalEnergyProducts, 2));
             SelfManager.self().setVariable("speed", procedures["SPEED-FROM-ENERGY"]());
           }, true);
@@ -576,15 +598,16 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (Prims.equality(SelfPrims._optimalCountOther(SelfManager.self().inRadius(SelfManager.self().breedHere("GAS-MOLECULES"), 1)), 1)) {
         let candidate = ListPrims.oneOf(SelfManager.self().breedHere("GAS-MOLECULES")._optimalOtherWith(function() {
           return (Prims.lt(SelfManager.self(), SelfManager.myself()) && !Prims.equality(SelfManager.myself(), SelfManager.self().getVariable("last-collision")));
-        }));
+        })); letVars['candidate'] = candidate;
         if ((!Prims.equality(candidate, Nobody) && (Prims.gt(SelfManager.self().getVariable("speed"), 0) || Prims.gt(candidate.projectionBy(function() { return SelfManager.self().getVariable("speed"); }), 0)))) {
           procedures["COLLIDE-WITH"](candidate);
           candidate.ask(function() { SelfManager.self().penManager.raisePen(); }, true);
           SelfManager.self().setVariable("last-collision", candidate);
-          let thisCandidate = SelfManager.self();
+          let thisCandidate = SelfManager.self(); letVars['thisCandidate'] = thisCandidate;
           candidate.ask(function() { SelfManager.self().setVariable("last-collision", thisCandidate); }, true);
         }
       }
@@ -601,17 +624,18 @@ var procedures = (function() {
   temp = (function(otherGasMolecules) {
     try {
       var reporterContext = false;
-      let mass2 = otherGasMolecules.projectionBy(function() { return SelfManager.self().getVariable("mass"); });
-      let speed2 = otherGasMolecules.projectionBy(function() { return SelfManager.self().getVariable("speed"); });
-      let heading2 = otherGasMolecules.projectionBy(function() { return SelfManager.self().getVariable("heading"); });
-      let theta = Prims.randomFloat(360);
-      let v1t = (SelfManager.self().getVariable("speed") * NLMath.cos((theta - SelfManager.self().getVariable("heading"))));
-      let v1l = (SelfManager.self().getVariable("speed") * NLMath.sin((theta - SelfManager.self().getVariable("heading"))));
-      let v2t = (speed2 * NLMath.cos((theta - heading2)));
-      let v2l = (speed2 * NLMath.sin((theta - heading2)));
-      let vcm = Prims.div(((SelfManager.self().getVariable("mass") * v1t) + (mass2 * v2t)), (SelfManager.self().getVariable("mass") + mass2));
-      v1t = ((2 * vcm) - v1t);
-      v2t = ((2 * vcm) - v2t);
+      var letVars = { };
+      let mass2 = otherGasMolecules.projectionBy(function() { return SelfManager.self().getVariable("mass"); }); letVars['mass2'] = mass2;
+      let speed2 = otherGasMolecules.projectionBy(function() { return SelfManager.self().getVariable("speed"); }); letVars['speed2'] = speed2;
+      let heading2 = otherGasMolecules.projectionBy(function() { return SelfManager.self().getVariable("heading"); }); letVars['heading2'] = heading2;
+      let theta = Prims.randomFloat(360); letVars['theta'] = theta;
+      let v1t = (SelfManager.self().getVariable("speed") * NLMath.cos((theta - SelfManager.self().getVariable("heading")))); letVars['v1t'] = v1t;
+      let v1l = (SelfManager.self().getVariable("speed") * NLMath.sin((theta - SelfManager.self().getVariable("heading")))); letVars['v1l'] = v1l;
+      let v2t = (speed2 * NLMath.cos((theta - heading2))); letVars['v2t'] = v2t;
+      let v2l = (speed2 * NLMath.sin((theta - heading2))); letVars['v2l'] = v2l;
+      let vcm = Prims.div(((SelfManager.self().getVariable("mass") * v1t) + (mass2 * v2t)), (SelfManager.self().getVariable("mass") + mass2)); letVars['vcm'] = vcm;
+      v1t = ((2 * vcm) - v1t); letVars['v1t'] = v1t;
+      v2t = ((2 * vcm) - v2t); letVars['v2t'] = v2t;
       SelfManager.self().setVariable("speed", NLMath.sqrt((NLMath.pow(v1t, 2) + NLMath.pow(v1l, 2))));
       SelfManager.self().setVariable("energy", ((0.5 * SelfManager.self().getVariable("mass")) * NLMath.pow(SelfManager.self().getVariable("speed"), 2)));
       if ((!Prims.equality(v1l, 0) || !Prims.equality(v1t, 0))) {
@@ -637,7 +661,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = true;
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return NLMath.sqrt(Prims.div((2 * SelfManager.self().getVariable("energy")), SelfManager.self().getVariable("mass"))) }
+      var letVars = { };
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+        return NLMath.sqrt(Prims.div((2 * SelfManager.self().getVariable("energy")), SelfManager.self().getVariable("mass")))
+      }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
      if (e instanceof Exception.StopInterrupt) {
@@ -652,7 +679,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = true;
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return (((0.5 * SelfManager.self().getVariable("mass")) * SelfManager.self().getVariable("speed")) * SelfManager.self().getVariable("speed")) }
+      var letVars = { };
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+        return (((0.5 * SelfManager.self().getVariable("mass")) * SelfManager.self().getVariable("speed")) * SelfManager.self().getVariable("speed"))
+      }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
      if (e instanceof Exception.StopInterrupt) {

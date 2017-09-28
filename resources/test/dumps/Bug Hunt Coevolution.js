@@ -102,7 +102,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "vision", "birds", false, true, 0.0, 10.0, 0.0, 10.0, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "BUGS", singular: "bug", varNames: ["speed", "vision"] }, { name: "PLAYERS", singular: "player", varNames: [] }, { name: "BIRDS", singular: "bird", varNames: ["speed", "target", "eaten", "vision"] }, { name: "VISION-CONES", singular: "vision-cone", varNames: [] }])([], [])(tortoise_require("extensions/all").dumpers())(["number-bugs", "number-birds", "initial-bird-speed", "initial-bird-vision", "initial-bug-vision", "show-vision-cone?", "wiggle?", "bird-vision-mutation", "bird-speed-mutation", "bug-vision-mutation", "bug-speed-mutation", "bug-pursuit-strategy", "bug-flee-strategy", "initial-bug-speed", "total-caught", "total-speed-6-caught", "total-speed-5-caught", "total-speed-4-caught", "total-speed-3-caught", "total-speed-2-caught", "total-speed-1-caught", "old-color-map", "histogram-interval-size", "max-vision", "max-speed", "old-show-initial-bug-vision-cone?", "old-vision-cone-distance", "avg-bug-speed", "avg-bird-speed", "avg-bug-vision", "avg-bird-vision", "reproduce-birds-after-eating", "speed-factor"], ["number-bugs", "number-birds", "initial-bird-speed", "initial-bird-vision", "initial-bug-vision", "show-vision-cone?", "wiggle?", "bird-vision-mutation", "bird-speed-mutation", "bug-vision-mutation", "bug-speed-mutation", "bug-pursuit-strategy", "bug-flee-strategy", "initial-bug-speed"], [], -13, 13, -13, 13, 16.0, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "BUGS", singular: "bug", varNames: ["speed", "vision"] }, { name: "PLAYERS", singular: "player", varNames: [] }, { name: "BIRDS", singular: "bird", varNames: ["speed", "target", "eaten", "vision"] }, { name: "VISION-CONES", singular: "vision-cone", varNames: [] }])([], [])('breed [bugs bug]\nbreed [players player]\nbreed [birds bird]\nbreed [vision-cones vision-cone]\n\n\nbugs-own [speed vision]\nbirds-own [speed target eaten vision]\n\n\nglobals [\n    total-caught                 ;; keeps track of total number of bugs caught\n    total-speed-6-caught         ;; keeps track of the number of bugs caught with speed of 6\n    total-speed-5-caught         ;; keeps track of the number of bugs caught with speed of 5\n    total-speed-4-caught         ;; keeps track of the number of bugs caught with speed of 4\n    total-speed-3-caught         ;; keeps track of the number of bugs caught with speed of 3\n    total-speed-2-caught         ;; keeps track of the number of bugs caught with speed of 2\n    total-speed-1-caught         ;; keeps track of the number of bugs caught with speed of 1\n    old-color-map                ;; keeps track of the previous value of the SPEED-COLOR-MAP chooser\n    histogram-interval-size      ;; the value of the interval size for each bar of the histogram\n    max-vision                   ;; upper limit for the maximum vision allowable for birds or bugs\n    max-speed                    ;; upper limit for the maximum speed allowable for birds or bugs\n    old-show-initial-bug-vision-cone?\n    old-vision-cone-distance\n    avg-bug-speed\n    avg-bird-speed\n    avg-bug-vision\n    avg-bird-vision\n    reproduce-birds-after-eating\n    speed-factor                 ;; scalar used to adjust the speed of the all the bugs to make the catching of bugs appropriately difficult for different speed computers\n  ]\n\n\n;;;;;;;;;;;;;;;;;;;;;\n;; Setup Procedures\n;;;;;;;;;;;;;;;;;;;;;\n\n\nto setup\n  clear-all\n  set total-caught 0\n  set histogram-interval-size 1\n  set old-show-initial-bug-vision-cone? 0\n  set old-vision-cone-distance initial-bug-vision\n  set reproduce-birds-after-eating 25\n  set speed-factor 0.05\n  set max-speed 10\n  set max-vision 10\n\n  ask patches [ set pcolor white ]   ;; white background\n  create-bugs number-bugs [ set speed initial-bug-speed attach-vision-cone]\n\n  ask bugs [\n    set vision initial-bug-vision\n    set shape \"bug\"\n    setxy random-xcor random-ycor\n  ]\n\n  ;; the player breed contains one turtle that is used to represent\n  ;;  a player of the bugs (a bird)\n  create-players 1 [\n    set shape \"bird\"\n    set color brown\n    set hidden? true\n  ]\n\n  create-birds number-birds [\n    set vision initial-bird-vision\n    set shape \"bird-stationary\"\n    set color brown\n    set hidden? false\n    setxy random 100 random 100\n    set speed initial-bird-speed\n    attach-vision-cone\n  ]\n\n  ask vision-cones [set-visualize-vision-cone]\n  reset-ticks\n  do-plots\nend\n\n\nto attach-vision-cone\n  let parent-vision vision\n  hatch 1 [\n\n    set breed vision-cones\n    create-link-from myself [tie]\n    set shape \"vision cone\"\n    set color gray\n\n    set size parent-vision\n\n    set-visualize-vision-cone\n\n  ]\nend\n\n\n;;;;;;;;;;;;;;;;;;;;;\n;; Runtime Procedures\n;;;;;;;;;;;;;;;;;;;;;\n\n\nto go\n  check-visualize-vision-cone-change\n  check-player-caught\n  check-bird-catch\n  move-player\n  move-bugs\n  move-birds\n  reproduce-birds\n\n  tick\n  update-variables\n  do-plots\n\nend\n\n\nto update-variables\n  ifelse any? bugs\n    [set avg-bug-speed mean [speed] of bugs   set avg-bug-vision mean [vision] of bugs ]\n    [set avg-bug-speed 0]\n  ifelse any? birds\n    [set avg-bird-speed mean [speed] of birds    set avg-bird-vision mean [vision] of birds]\n    [set avg-bird-speed 0]\nend\n\nto reproduce-birds\n  let worst-bird nobody\n  if (total-caught mod  reproduce-birds-after-eating = 0 and total-caught > 0 and any? birds) [\n    set worst-bird min-one-of birds [eaten]\n    ask worst-bird [\n       ask out-link-neighbors [set color red die]\n       die]\n    reproduce-one-bird\n  ]\nend\n\nto move-bugs\n  let target-heading 0\n  let candidate-predators nobody\n  let predator nobody\n  let all-predators (turtle-set birds players)\n  ;; the speed factor is a scaling number used to adjust the amount all the bugs move\n  ;; for example a speed-factor of 2, scales the speed of all the bugs so they are moving twice as fast\n  ;; it is a useful slider to change for slower and faster computers, that might have the bugs\n  ;; as a whole population moving too fast or too slow across the screen\n  ask bugs [\n    fd (speed * speed-factor)\n\n    ifelse any? all-predators in-cone vision 120 [\n       set candidate-predators all-predators in-cone vision  120\n\n       if bug-flee-strategy = \"any\" and any? candidate-predators\n         [set predator one-of candidate-predators]\n       if bug-flee-strategy = \"nearest\" and any? candidate-predators\n         [set predator min-one-of candidate-predators [distance myself]]\n\n       set target-heading 180 + towards predator\n\n       set heading target-heading\n       set label-color black\n       set label \"!\"\n    ]\n    [wiggle set label \"\"]\n\n  ]\nend\n\nto move-birds\n  let prey-agent nobody\n  let candidate-bugs nobody\n  let closest-bug nobody\n  let assigned-target? false\n  ;; the speed factor is a scaling number used to adjust the amount all the bugs move\n  ;; for example a speed-factor of 2, scales the speed of all the bugs so they are moving twice as fast\n  ;; it is a useful slider to change for slower and faster computers, that might have the bugs\n  ;; as a whole population moving too fast or too slow across the screen\n  ask birds [\n    set candidate-bugs bugs in-cone initial-bird-vision  120\n\n    ifelse any? candidate-bugs [\n      set closest-bug min-one-of  candidate-bugs [distance myself]\n      if (target = nobody and bug-pursuit-strategy = \"lock on one\") [\n        set prey-agent closest-bug\n        set target prey-agent\n        set heading towards prey-agent\n        set label-color red - 2\n        set label \"!\"\n        set assigned-target? true\n      ]\n\n      if (bug-pursuit-strategy = \"closest\" and target != closest-bug) [\n        set prey-agent closest-bug\n        set target prey-agent\n                set heading towards prey-agent\n        set label-color red - 2\n        set label \"!\"\n        set assigned-target? true\n      ]\n\n      if (assigned-target? != false) [\n        set target nobody\n        set label \"\"\n        wiggle\n      ]\n    ]\n    [\n      set target nobody\n      set label \"\"\n      wiggle\n    ]\n    fd (speed * speed-factor)\n  ]\n\nend\n\nto wiggle\n  if wiggle? [\n    right (random-float 30 * .05 / speed-factor)\n    left (random-float 30 * .05 / speed-factor)\n  ]\nend\n\nto move-player\n  ifelse (mouse-inside?)\n    [ ask players [ setxy mouse-xcor mouse-ycor set hidden? false] ]\n    [ ask players [ set hidden? true]]\nend\n\nto check-player-caught\n  let speed-of-caught 0\n  let local-bugs 0\n  ;; the mouse may move while we are doing calculations\n  ;; so keep track of the current mouse position so\n  ;; we do all the calculations with the same numbers\n  let snap-mouse-xcor mouse-xcor\n  let snap-mouse-ycor mouse-ycor\n  if mouse-down? and mouse-inside? [\n    set local-bugs bugs-on patch snap-mouse-xcor snap-mouse-ycor\n    if (any? local-bugs) [\n      set total-caught (total-caught + 1)\n      ;; eat only one of the bugs at the mouse location\n      ask one-of local-bugs  [\n        set speed-of-caught speed\n        if (speed-of-caught = 1) [ set total-speed-6-caught (total-speed-6-caught + 1) ]\n        if (speed-of-caught = 2) [ set total-speed-5-caught (total-speed-5-caught + 1) ]\n        if (speed-of-caught = 3) [ set total-speed-4-caught (total-speed-4-caught + 1) ]\n        if (speed-of-caught = 4) [ set total-speed-3-caught (total-speed-3-caught + 1) ]\n        if (speed-of-caught = 5) [ set total-speed-2-caught (total-speed-2-caught + 1) ]\n        if (speed-of-caught = 6) [ set total-speed-1-caught (total-speed-1-caught + 1) ]\n        ask out-link-neighbors [set color red die]\n        die\n      ]\n      reproduce-one-bug  ;; replace the eaten bug with a random offspring from the remaining population\n    ]\n  ]\nend\n\n\nto check-bird-catch\n  let speed-of-caught 0\n  ask birds [\n   if (any? bugs-here) [\n      set total-caught (total-caught + 1)\n      set eaten (eaten + 1)\n      ;; eat only one of the bugs at the mouse location\n      ask one-of bugs-here [\n        set speed-of-caught speed\n        if (speed-of-caught = 1) [ set total-speed-6-caught (total-speed-6-caught + 1) ]\n        if (speed-of-caught = 2) [ set total-speed-5-caught (total-speed-5-caught + 1) ]\n        if (speed-of-caught = 3) [ set total-speed-4-caught (total-speed-4-caught + 1) ]\n        if (speed-of-caught = 4) [ set total-speed-3-caught (total-speed-3-caught + 1) ]\n        if (speed-of-caught = 5) [ set total-speed-2-caught (total-speed-2-caught + 1) ]\n        if (speed-of-caught = 6) [ set total-speed-1-caught (total-speed-1-caught + 1) ]\n         ask out-link-neighbors [set color red die]\n        die\n\n      ]\n      set target nobody\n      reproduce-one-bug  ;; replace the eaten bug with a random offspring from the remaining population\n    ]\n  ]\nend\n\n;; reproduce one identical offspring from one\n;; of the bugs remaining in the population\nto reproduce-one-bug\n  ask one-of bugs [\n    hatch 1 [\n    mutate-offspring-bug\n    set heading (random-float 360)\n\n    attach-vision-cone\n    ]\n  ]\nend\n\nto reproduce-one-bird\n  let bird-energy-split 0\n  if count birds > 0 [ask one-of birds [\n    set bird-energy-split (eaten / 2)\n    set eaten bird-energy-split\n    hatch 1 [\n    mutate-offspring-bird\n    set heading (random-float 360)\n\n    attach-vision-cone\n    ]\n  ]\n  ]\nend\n\nto mutate-offspring-bug\n  ifelse random 2 = 0\n    [set vision (vision + random-float bug-vision-mutation)]\n    [set vision (vision - random-float bug-vision-mutation)]\n\n  if vision > max-vision [set vision max-vision]\n  if vision < 0 [set vision 0]\n\n  ifelse random 2 = 0\n    [set speed (speed + random-float bug-speed-mutation )]\n    [set speed (speed - random-float bug-speed-mutation )]\n\n  if speed > max-speed [set speed max-speed]\n  if speed < 0 [set speed 0]\nend\n\n\nto mutate-offspring-bird\n  ifelse random 2 = 0\n    [set vision (vision + random-float bird-vision-mutation )]\n    [set vision (vision - random-float bird-vision-mutation )]\n\n  if vision > max-vision [set vision max-vision]\n  if vision < 0 [set vision 0]\n\n  ifelse random 2 = 0\n       [set speed (speed + random-float bird-speed-mutation)]\n       [set speed (speed - random-float bird-speed-mutation)]\n\n  if speed > max-speed [set speed max-speed]\n  if speed < 0 [set speed 0]\n\nend\n\n;;;;;;;;;;;;;;;;;;;;;\n;; Visualization Procedures\n;;;;;;;;;;;;;;;;;;;;;\n\n\n\n\nto check-visualize-vision-cone-change\n  if (old-show-initial-bug-vision-cone? != show-vision-cone?) [\n    set old-show-initial-bug-vision-cone? show-vision-cone?\n    ask vision-cones [set-visualize-vision-cone]\n  ]\n  if (old-vision-cone-distance != initial-bug-vision) [\n    set old-vision-cone-distance initial-bug-vision\n    ask vision-cones [set-visualize-vision-cone]\n  ]\nend\n\n\nto set-visualize-vision-cone\n  let parent-vision [vision] of one-of in-link-neighbors\n    ifelse show-vision-cone?\n      [set hidden? false set size 2 * parent-vision]\n      [set hidden? true set size 2 * parent-vision]\n\nend\n\n\n\nto recolor-shade\n  ;; turtle procedure to set color of the bugs to various shapes of purple\n  set color (111 + speed )\nend\n\nto recolor-rainbow ;; turtle procedure\n  if (floor speed = 6) [ set color red ]\n  if (floor speed = 5) [ set color orange ]\n  if (floor speed = 4) [ set color (yellow - 1) ]  ;;  darken the yellow a bit for better visibility on white background\n  if (floor speed = 3) [ set color green ]\n  if (floor speed = 2) [ set color blue ]\n  if (floor speed = 1) [ set color violet ]\n  if (floor speed >= 7) [ set color gray - 2 ]\n  if (floor speed < 1) [ set color gray + 2 ]\nend\n\n;;;;;;;;;;;;;;;;;;;;;;\n;; Plotting Procedures\n;;;;;;;;;;;;;;;;;;;;;;\n\nto do-plots\n  if ticks mod 100 = 1\n  [\n    set-current-plot \"Avg. Vision vs. Time\"\n    set-current-plot-pen \"bugs\"\n\n    if any? bugs [plotxy ticks avg-bug-vision]\n    set-current-plot-pen \"birds\"\n    if any? birds [plotxy ticks avg-bird-vision]\n\n    set-current-plot \"Avg. Speed vs. Time\"\n    set-current-plot-pen \"bugs\"\n    if any? bugs [plotxy ticks avg-bug-speed]\n    set-current-plot-pen \"birds\"\n    if any? birds [plotxy ticks avg-bird-speed]\n\n    set-current-plot \"Speed of Bugs\"\n    plot-histograms-bugs-speed\n\n    set-current-plot \"Vision of Bugs\"\n    plot-histograms-initial-bug-vision\n\n    set-current-plot \"Speed of Birds\"\n    plot-histograms-initial-bird-speed\n\n    set-current-plot \"Vision of Birds\"\n    plot-histograms-initial-bird-vision\n  ]\nend\n\nto plot-caught\n  set-current-plot-pen \"speed=1\"\n  plotxy ticks total-speed-1-caught\n  set-current-plot-pen \"speed=2\"\n  plotxy ticks total-speed-2-caught\n  set-current-plot-pen \"speed=3\"\n  plotxy ticks total-speed-3-caught\n  set-current-plot-pen \"speed=4\"\n  plotxy ticks total-speed-4-caught\n  set-current-plot-pen \"speed=5\"\n  plotxy ticks total-speed-5-caught\n  set-current-plot-pen \"speed=6\"\n  plotxy ticks total-speed-6-caught\nend\n\nto plot-populations\n\n  set-current-plot-pen \"speed=1\"\n  plot (count bugs with [ speed = 1 ])\n  set-current-plot-pen \"speed=2\"\n  plot (count bugs with [ speed = 2 ])\n  set-current-plot-pen \"speed=3\"\n  plot (count bugs with [ speed = 3 ])\n  set-current-plot-pen \"speed=4\"\n  plot (count bugs with [ speed = 4 ])\n  set-current-plot-pen \"speed=5\"\n  plot (count bugs with [ speed = 5 ])\n  set-current-plot-pen \"speed=6\"\n  plot (count bugs with [ speed = 6 ])\nend\n\nto plot-histograms-bugs-speed\n  ;; creates 6 different histograms of different colors in the same graph\n  ;; each histogram is color coded to the color mapping for when the\n  ;; SPEED-COLOR-MAP chooser is set to \"rainbow\" value.\n\n\n  set-histogram-num-bars 10\n  set-current-plot-pen \"#\"\n  set-plot-pen-interval histogram-interval-size\n  histogram [ speed ] of bugs ;;with [speed >= 0 and speed < 1]\n\nend\n\nto plot-histograms-initial-bug-vision\n  ;; creates 6 different histograms of different colors in the same graph\n  ;; each histogram is color coded to the color mapping for when the\n  ;; SPEED-COLOR-MAP chooser is set to \"rainbow\" value.\n\n  set-histogram-num-bars 10\n  set-current-plot-pen \"#\"\n  set-plot-pen-interval (histogram-interval-size )\n  histogram [ vision ] of bugs\n\nend\n\n\nto plot-histograms-initial-bird-speed\n  ;; creates 6 different histograms of different colors in the same graph\n  ;; each histogram is color coded to the color mapping for when the\n  ;; SPEED-COLOR-MAP chooser is set to \"rainbow\" value.\n\n  set-histogram-num-bars 10\n  set-current-plot-pen \"#\"\n  set-plot-pen-interval (histogram-interval-size )\n  histogram [ speed ] of birds\n\nend\n\nto plot-histograms-initial-bird-vision\n  ;; creates 6 different histograms of different colors in the same graph\n  ;; each histogram is color coded to the color mapping for when the\n  ;; SPEED-COLOR-MAP chooser is set to \"rainbow\" value.\n\n  set-histogram-num-bars 10\n  set-current-plot-pen \"#\"\n  set-plot-pen-interval (histogram-interval-size )\n  histogram [ vision ] of birds\n\nend\n\n\n; Copyright 2007 Uri Wilensky.\n; See Info tab for full copyright and license.')([{"left":500,"top":10,"right":940,"bottom":451,"dimensions":{"minPxcor":-13,"maxPxcor":13,"minPycor":-13,"maxPycor":13,"patchSize":16,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"total-caught\")","source":"total-caught","left":90,"top":52,"right":168,"bottom":97,"display":"total caught","precision":0,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_38 = procedures[\"SETUP\"]();\n  if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"setup","left":11,"top":16,"right":87,"bottom":49,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_35 = procedures[\"GO\"]();\n  if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"go","left":90,"top":16,"right":167,"bottom":49,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"bugs","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"birds","interval":1,"mode":0,"color":-6459832,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Avg. Vision vs. Time","left":10,"top":370,"right":170,"bottom":490,"xAxis":"time","yAxis":"vision","xmin":0,"xmax":1000,"ymin":0,"ymax":10,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"bugs","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"birds","interval":1,"mode":0,"color":-6459832,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"#","interval":0.1,"mode":1,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"pen1","interval":0.1,"mode":1,"color":-8630108,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"pen2","interval":0.1,"mode":1,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"pen3","interval":0.1,"mode":1,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"pen4","interval":0.1,"mode":1,"color":-3355648,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"pen5","interval":0.1,"mode":1,"color":-955883,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"pen6","interval":0.1,"mode":1,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Speed of Bugs","left":170,"top":250,"right":330,"bottom":370,"xAxis":"speed","yAxis":"frequency","xmin":0,"xmax":10,"ymin":0,"ymax":50,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"#","interval":0.1,"mode":1,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"pen1","interval":0.1,"mode":1,"color":-8630108,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"pen2","interval":0.1,"mode":1,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"pen3","interval":0.1,"mode":1,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"pen4","interval":0.1,"mode":1,"color":-3355648,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"pen5","interval":0.1,"mode":1,"color":-955883,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"pen6","interval":0.1,"mode":1,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"birds","interval":1,"mode":0,"color":-6459832,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"bugs","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Avg. Speed vs. Time","left":10,"top":250,"right":170,"bottom":370,"xAxis":"time","yAxis":"rate","xmin":0,"xmax":1000,"ymin":0,"ymax":10,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"birds","interval":1,"mode":0,"color":-6459832,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"bugs","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"#","interval":1,"mode":1,"color":-6459832,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"speed=1","interval":1,"mode":0,"color":-8630108,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"speed=2","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"speed=3","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"speed=4","interval":1,"mode":0,"color":-3355648,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"speed=5","interval":1,"mode":0,"color":-955883,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"speed=6","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Speed of Birds","left":330,"top":250,"right":490,"bottom":370,"xAxis":"speed","yAxis":"frequency","xmin":0,"xmax":10,"ymin":0,"ymax":10,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"#","interval":1,"mode":1,"color":-6459832,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"speed=1","interval":1,"mode":0,"color":-8630108,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"speed=2","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"speed=3","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"speed=4","interval":1,"mode":0,"color":-3355648,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"speed=5","interval":1,"mode":0,"color":-955883,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"speed=6","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.turtleManager.turtlesOfBreed(\"BUGS\").size()","source":"(count bugs)","left":11,"top":52,"right":87,"bottom":97,"display":"alive bugs","precision":0,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"100","compiledStep":"1","variable":"number-bugs","left":30,"top":120,"right":160,"bottom":153,"display":"number-bugs","min":"1","max":"100","default":30,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"10","compiledStep":"1","variable":"number-birds","left":30,"top":185,"right":160,"bottom":218,"display":"number-birds","min":"0","max":"10","default":10,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"10","compiledStep":"1","variable":"initial-bird-speed","left":165,"top":175,"right":325,"bottom":208,"display":"initial-bird-speed","min":"0","max":"10","default":2,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"5","compiledStep":"0.5","variable":"initial-bird-vision","left":165,"top":210,"right":325,"bottom":243,"display":"initial-bird-vision","min":"0","max":"5","default":0,"step":".5","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"6","compiledStep":"0.5","variable":"initial-bug-vision","left":165,"top":135,"right":325,"bottom":168,"display":"initial-bug-vision","min":"0","max":"6","default":0,"step":".5","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"variable":"show-vision-cone?","left":300,"top":15,"right":470,"bottom":48,"display":"show-vision-cone?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"variable":"wiggle?","left":184,"top":15,"right":299,"bottom":48,"display":"wiggle?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"1","compiledStep":"0.1","variable":"bird-vision-mutation","left":330,"top":210,"right":485,"bottom":243,"display":"bird-vision-mutation","min":"0","max":"1","default":0,"step":".1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"1","compiledStep":"0.1","variable":"bird-speed-mutation","left":330,"top":175,"right":485,"bottom":208,"display":"bird-speed-mutation","min":"0","max":"1","default":1,"step":".1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"1","compiledStep":"0.5","variable":"bug-vision-mutation","left":330,"top":135,"right":486,"bottom":168,"display":"bug-vision-mutation","min":"0","max":"1","default":0,"step":".5","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"#","interval":1,"mode":1,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Vision of Bugs","left":170,"top":370,"right":330,"bottom":490,"xAxis":"vision","yAxis":"frequency","xmin":0,"xmax":10,"ymin":0,"ymax":50,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"#","interval":1,"mode":1,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"#","interval":1,"mode":1,"color":-6459832,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Vision of Birds","left":330,"top":370,"right":490,"bottom":490,"xAxis":"vision","yAxis":"birds","xmin":0,"xmax":10,"ymin":0,"ymax":10,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"#","interval":1,"mode":1,"color":-6459832,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"1","compiledStep":"0.1","variable":"bug-speed-mutation","left":330,"top":100,"right":486,"bottom":133,"display":"bug-speed-mutation","min":"0","max":"1","default":1,"step":".1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"variable":"bug-pursuit-strategy","left":325,"top":50,"right":470,"bottom":95,"display":"bug-pursuit-strategy","choices":["lock on one","nearest","none"],"currentChoice":1,"type":"chooser","compilation":{"success":true,"messages":[]}}, {"variable":"bug-flee-strategy","left":181,"top":50,"right":319,"bottom":95,"display":"bug-flee-strategy","choices":["any","nearest","none"],"currentChoice":1,"type":"chooser","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"10","compiledStep":"1","variable":"initial-bug-speed","left":165,"top":100,"right":325,"bottom":133,"display":"initial-bug-speed","min":"0","max":"10","default":2,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["number-bugs", "number-birds", "initial-bird-speed", "initial-bird-vision", "initial-bug-vision", "show-vision-cone?", "wiggle?", "bird-vision-mutation", "bird-speed-mutation", "bug-vision-mutation", "bug-speed-mutation", "bug-pursuit-strategy", "bug-flee-strategy", "initial-bug-speed", "total-caught", "total-speed-6-caught", "total-speed-5-caught", "total-speed-4-caught", "total-speed-3-caught", "total-speed-2-caught", "total-speed-1-caught", "old-color-map", "histogram-interval-size", "max-vision", "max-speed", "old-show-initial-bug-vision-cone?", "old-vision-cone-distance", "avg-bug-speed", "avg-bird-speed", "avg-bug-vision", "avg-bird-vision", "reproduce-birds-after-eating", "speed-factor"], ["number-bugs", "number-birds", "initial-bird-speed", "initial-bird-vision", "initial-bug-vision", "show-vision-cone?", "wiggle?", "bird-vision-mutation", "bird-speed-mutation", "bug-vision-mutation", "bug-speed-mutation", "bug-pursuit-strategy", "bug-flee-strategy", "initial-bug-speed"], [], -13, 13, -13, 13, 16.0, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ExportPrims = workspace.exportPrims;
@@ -125,6 +125,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.clearAll();
       world.observer.setGlobal("total-caught", 0);
       world.observer.setGlobal("histogram-interval-size", 1);
@@ -174,7 +175,8 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
-      let parentVision = SelfManager.self().getVariable("vision");
+      var letVars = { };
+      let parentVision = SelfManager.self().getVariable("vision"); letVars['parentVision'] = parentVision;
       SelfManager.self().hatch(1, "").ask(function() {
         SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("VISION-CONES"));
         LinkPrims.createLinkFrom(SelfManager.myself(), "LINKS").ask(function() { SelfManager.self().tie(); }, true);
@@ -196,6 +198,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       procedures["CHECK-VISUALIZE-VISION-CONE-CHANGE"]();
       procedures["CHECK-PLAYER-CAUGHT"]();
       procedures["CHECK-BIRD-CATCH"]();
@@ -219,6 +222,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (!world.turtleManager.turtlesOfBreed("BUGS").isEmpty()) {
         world.observer.setGlobal("avg-bug-speed", ListPrims.mean(world.turtleManager.turtlesOfBreed("BUGS").projectionBy(function() { return SelfManager.self().getVariable("speed"); })));
         world.observer.setGlobal("avg-bug-vision", ListPrims.mean(world.turtleManager.turtlesOfBreed("BUGS").projectionBy(function() { return SelfManager.self().getVariable("vision"); })));
@@ -246,9 +250,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
-      let worstBird = Nobody;
+      var letVars = { };
+      let worstBird = Nobody; letVars['worstBird'] = worstBird;
       if (((Prims.equality(NLMath.mod(world.observer.getGlobal("total-caught"), world.observer.getGlobal("reproduce-birds-after-eating")), 0) && Prims.gt(world.observer.getGlobal("total-caught"), 0)) && !world.turtleManager.turtlesOfBreed("BIRDS").isEmpty())) {
-        worstBird = world.turtleManager.turtlesOfBreed("BIRDS").minOneOf(function() { return SelfManager.self().getVariable("eaten"); });
+        worstBird = world.turtleManager.turtlesOfBreed("BIRDS").minOneOf(function() { return SelfManager.self().getVariable("eaten"); }); letVars['worstBird'] = worstBird;
         worstBird.ask(function() {
           LinkPrims.outLinkNeighbors("LINKS").ask(function() {
             SelfManager.self().setVariable("color", 15);
@@ -271,21 +276,22 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
-      let targetHeading = 0;
-      let candidatePredators = Nobody;
-      let predator = Nobody;
-      let allPredators = Prims.turtleSet(world.turtleManager.turtlesOfBreed("BIRDS"), world.turtleManager.turtlesOfBreed("PLAYERS"));
+      var letVars = { };
+      let targetHeading = 0; letVars['targetHeading'] = targetHeading;
+      let candidatePredators = Nobody; letVars['candidatePredators'] = candidatePredators;
+      let predator = Nobody; letVars['predator'] = predator;
+      let allPredators = Prims.turtleSet(world.turtleManager.turtlesOfBreed("BIRDS"), world.turtleManager.turtlesOfBreed("PLAYERS")); letVars['allPredators'] = allPredators;
       world.turtleManager.turtlesOfBreed("BUGS").ask(function() {
         SelfManager.self().fd((SelfManager.self().getVariable("speed") * world.observer.getGlobal("speed-factor")));
         if (!SelfManager.self().inCone(allPredators, SelfManager.self().getVariable("vision"), 120).isEmpty()) {
-          candidatePredators = SelfManager.self().inCone(allPredators, SelfManager.self().getVariable("vision"), 120);
+          candidatePredators = SelfManager.self().inCone(allPredators, SelfManager.self().getVariable("vision"), 120); letVars['candidatePredators'] = candidatePredators;
           if ((Prims.equality(world.observer.getGlobal("bug-flee-strategy"), "any") && !candidatePredators.isEmpty())) {
-            predator = ListPrims.oneOf(candidatePredators);
+            predator = ListPrims.oneOf(candidatePredators); letVars['predator'] = predator;
           }
           if ((Prims.equality(world.observer.getGlobal("bug-flee-strategy"), "nearest") && !candidatePredators.isEmpty())) {
-            predator = candidatePredators.minOneOf(function() { return SelfManager.self().distance(SelfManager.myself()); });
+            predator = candidatePredators.minOneOf(function() { return SelfManager.self().distance(SelfManager.myself()); }); letVars['predator'] = predator;
           }
-          targetHeading = (180 + SelfManager.self().towards(predator));
+          targetHeading = (180 + SelfManager.self().towards(predator)); letVars['targetHeading'] = targetHeading;
           SelfManager.self().setVariable("heading", targetHeading);
           SelfManager.self().setVariable("label-color", 0);
           SelfManager.self().setVariable("label", "!");
@@ -308,29 +314,30 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
-      let preyAgent = Nobody;
-      let candidateBugs = Nobody;
-      let closestBug = Nobody;
-      let assignedTarget_p = false;
+      var letVars = { };
+      let preyAgent = Nobody; letVars['preyAgent'] = preyAgent;
+      let candidateBugs = Nobody; letVars['candidateBugs'] = candidateBugs;
+      let closestBug = Nobody; letVars['closestBug'] = closestBug;
+      let assignedTarget_p = false; letVars['assignedTarget_p'] = assignedTarget_p;
       world.turtleManager.turtlesOfBreed("BIRDS").ask(function() {
-        candidateBugs = SelfManager.self().inCone(world.turtleManager.turtlesOfBreed("BUGS"), world.observer.getGlobal("initial-bird-vision"), 120);
+        candidateBugs = SelfManager.self().inCone(world.turtleManager.turtlesOfBreed("BUGS"), world.observer.getGlobal("initial-bird-vision"), 120); letVars['candidateBugs'] = candidateBugs;
         if (!candidateBugs.isEmpty()) {
-          closestBug = candidateBugs.minOneOf(function() { return SelfManager.self().distance(SelfManager.myself()); });
+          closestBug = candidateBugs.minOneOf(function() { return SelfManager.self().distance(SelfManager.myself()); }); letVars['closestBug'] = closestBug;
           if ((Prims.equality(SelfManager.self().getVariable("target"), Nobody) && Prims.equality(world.observer.getGlobal("bug-pursuit-strategy"), "lock on one"))) {
-            preyAgent = closestBug;
+            preyAgent = closestBug; letVars['preyAgent'] = preyAgent;
             SelfManager.self().setVariable("target", preyAgent);
             SelfManager.self().setVariable("heading", SelfManager.self().towards(preyAgent));
             SelfManager.self().setVariable("label-color", (15 - 2));
             SelfManager.self().setVariable("label", "!");
-            assignedTarget_p = true;
+            assignedTarget_p = true; letVars['assignedTarget_p'] = assignedTarget_p;
           }
           if ((Prims.equality(world.observer.getGlobal("bug-pursuit-strategy"), "closest") && !Prims.equality(SelfManager.self().getVariable("target"), closestBug))) {
-            preyAgent = closestBug;
+            preyAgent = closestBug; letVars['preyAgent'] = preyAgent;
             SelfManager.self().setVariable("target", preyAgent);
             SelfManager.self().setVariable("heading", SelfManager.self().towards(preyAgent));
             SelfManager.self().setVariable("label-color", (15 - 2));
             SelfManager.self().setVariable("label", "!");
-            assignedTarget_p = true;
+            assignedTarget_p = true; letVars['assignedTarget_p'] = assignedTarget_p;
           }
           if (!Prims.equality(assignedTarget_p, false)) {
             SelfManager.self().setVariable("target", Nobody);
@@ -358,6 +365,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (world.observer.getGlobal("wiggle?")) {
         SelfManager.self().right(Prims.div((Prims.randomFloat(30) * 0.05), world.observer.getGlobal("speed-factor")));
         SelfManager.self().right(-Prims.div((Prims.randomFloat(30) * 0.05), world.observer.getGlobal("speed-factor")));
@@ -375,6 +383,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (MousePrims.isInside()) {
         world.turtleManager.turtlesOfBreed("PLAYERS").ask(function() {
           SelfManager.self().setXY(MousePrims.getX(), MousePrims.getY());
@@ -397,16 +406,17 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
-      let speedOfCaught = 0;
-      let localBugs = 0;
-      let snapMouseXcor = MousePrims.getX();
-      let snapMouseYcor = MousePrims.getY();
+      var letVars = { };
+      let speedOfCaught = 0; letVars['speedOfCaught'] = speedOfCaught;
+      let localBugs = 0; letVars['localBugs'] = localBugs;
+      let snapMouseXcor = MousePrims.getX(); letVars['snapMouseXcor'] = snapMouseXcor;
+      let snapMouseYcor = MousePrims.getY(); letVars['snapMouseYcor'] = snapMouseYcor;
       if ((MousePrims.isDown() && MousePrims.isInside())) {
-        localBugs = Prims.breedOn("BUGS", world.getPatchAt(snapMouseXcor, snapMouseYcor));
+        localBugs = Prims.breedOn("BUGS", world.getPatchAt(snapMouseXcor, snapMouseYcor)); letVars['localBugs'] = localBugs;
         if (!localBugs.isEmpty()) {
           world.observer.setGlobal("total-caught", (world.observer.getGlobal("total-caught") + 1));
           ListPrims.oneOf(localBugs).ask(function() {
-            speedOfCaught = SelfManager.self().getVariable("speed");
+            speedOfCaught = SelfManager.self().getVariable("speed"); letVars['speedOfCaught'] = speedOfCaught;
             if (Prims.equality(speedOfCaught, 1)) {
               world.observer.setGlobal("total-speed-6-caught", (world.observer.getGlobal("total-speed-6-caught") + 1));
             }
@@ -447,13 +457,14 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
-      let speedOfCaught = 0;
+      var letVars = { };
+      let speedOfCaught = 0; letVars['speedOfCaught'] = speedOfCaught;
       world.turtleManager.turtlesOfBreed("BIRDS").ask(function() {
         if (!SelfManager.self().breedHere("BUGS").isEmpty()) {
           world.observer.setGlobal("total-caught", (world.observer.getGlobal("total-caught") + 1));
           SelfManager.self().setVariable("eaten", (SelfManager.self().getVariable("eaten") + 1));
           ListPrims.oneOf(SelfManager.self().breedHere("BUGS")).ask(function() {
-            speedOfCaught = SelfManager.self().getVariable("speed");
+            speedOfCaught = SelfManager.self().getVariable("speed"); letVars['speedOfCaught'] = speedOfCaught;
             if (Prims.equality(speedOfCaught, 1)) {
               world.observer.setGlobal("total-speed-6-caught", (world.observer.getGlobal("total-speed-6-caught") + 1));
             }
@@ -495,6 +506,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       ListPrims.oneOf(world.turtleManager.turtlesOfBreed("BUGS")).ask(function() {
         SelfManager.self().hatch(1, "").ask(function() {
           procedures["MUTATE-OFFSPRING-BUG"]();
@@ -515,10 +527,11 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
-      let birdEnergySplit = 0;
+      var letVars = { };
+      let birdEnergySplit = 0; letVars['birdEnergySplit'] = birdEnergySplit;
       if (Prims.gt(world.turtleManager.turtlesOfBreed("BIRDS").size(), 0)) {
         ListPrims.oneOf(world.turtleManager.turtlesOfBreed("BIRDS")).ask(function() {
-          birdEnergySplit = Prims.div(SelfManager.self().getVariable("eaten"), 2);
+          birdEnergySplit = Prims.div(SelfManager.self().getVariable("eaten"), 2); letVars['birdEnergySplit'] = birdEnergySplit;
           SelfManager.self().setVariable("eaten", birdEnergySplit);
           SelfManager.self().hatch(1, "").ask(function() {
             procedures["MUTATE-OFFSPRING-BIRD"]();
@@ -540,6 +553,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (Prims.equality(Prims.random(2), 0)) {
         SelfManager.self().setVariable("vision", (SelfManager.self().getVariable("vision") + Prims.randomFloat(world.observer.getGlobal("bug-vision-mutation"))));
       }
@@ -577,6 +591,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (Prims.equality(Prims.random(2), 0)) {
         SelfManager.self().setVariable("vision", (SelfManager.self().getVariable("vision") + Prims.randomFloat(world.observer.getGlobal("bird-vision-mutation"))));
       }
@@ -614,6 +629,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (!Prims.equality(world.observer.getGlobal("old-show-initial-bug-vision-cone?"), world.observer.getGlobal("show-vision-cone?"))) {
         world.observer.setGlobal("old-show-initial-bug-vision-cone?", world.observer.getGlobal("show-vision-cone?"));
         world.turtleManager.turtlesOfBreed("VISION-CONES").ask(function() { procedures["SET-VISUALIZE-VISION-CONE"](); }, true);
@@ -635,7 +651,8 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
-      let parentVision = ListPrims.oneOf(LinkPrims.inLinkNeighbors("LINKS")).projectionBy(function() { return SelfManager.self().getVariable("vision"); });
+      var letVars = { };
+      let parentVision = ListPrims.oneOf(LinkPrims.inLinkNeighbors("LINKS")).projectionBy(function() { return SelfManager.self().getVariable("vision"); }); letVars['parentVision'] = parentVision;
       if (world.observer.getGlobal("show-vision-cone?")) {
         SelfManager.self().setVariable("hidden?", false);
         SelfManager.self().setVariable("size", (2 * parentVision));
@@ -657,6 +674,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       SelfManager.self().setVariable("color", (111 + SelfManager.self().getVariable("speed")));
     } catch (e) {
       if (e instanceof Exception.StopInterrupt) {
@@ -671,6 +689,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (Prims.equality(NLMath.floor(SelfManager.self().getVariable("speed")), 6)) {
         SelfManager.self().setVariable("color", 15);
       }
@@ -708,6 +727,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (Prims.equality(NLMath.mod(world.ticker.tickCount(), 100), 1)) {
         plotManager.setCurrentPlot("Avg. Vision vs. Time");
         plotManager.setCurrentPen("bugs");
@@ -749,6 +769,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       plotManager.setCurrentPen("speed=1");
       plotManager.plotPoint(world.ticker.tickCount(), world.observer.getGlobal("total-speed-1-caught"));
       plotManager.setCurrentPen("speed=2");
@@ -774,6 +795,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       plotManager.setCurrentPen("speed=1");
       plotManager.plotValue(world.turtleManager.turtlesOfBreed("BUGS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("speed"), 1); }).size());
       plotManager.setCurrentPen("speed=2");
@@ -799,6 +821,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       plotManager.setHistogramBarCount(10);
       plotManager.setCurrentPen("#");
       plotManager.setPenInterval(world.observer.getGlobal("histogram-interval-size"));
@@ -816,6 +839,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       plotManager.setHistogramBarCount(10);
       plotManager.setCurrentPen("#");
       plotManager.setPenInterval(world.observer.getGlobal("histogram-interval-size"));
@@ -833,6 +857,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       plotManager.setHistogramBarCount(10);
       plotManager.setCurrentPen("#");
       plotManager.setPenInterval(world.observer.getGlobal("histogram-interval-size"));
@@ -850,6 +875,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       plotManager.setHistogramBarCount(10);
       plotManager.setCurrentPen("#");
       plotManager.setPenInterval(world.observer.getGlobal("histogram-interval-size"));

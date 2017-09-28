@@ -53,6 +53,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('energy per particle', 'default')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           if (Prims.gt(world.ticker.tickCount(), 3)) {
             plotManager.plotValue(Prims.div(world.observer.getGlobal("v-total"), world.observer.getGlobal("num-atoms")));
           }
@@ -70,7 +71,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "", "", false, true, 0.0, 10.0, -2.0, 2.0, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])(tortoise_require("extensions/all").dumpers())(["num-atoms", "temperature", "density", "initial-config", "max-move-dist", "cutoff-dist", "v-total", "eps", "total-move-attempts", "total-successful-moves", "diameter", "pot-offset", "current-move-attempts", "current-successful-moves"], ["num-atoms", "temperature", "density", "initial-config"], [], -16, 16, -16, 16, 15.0, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('globals [\n  max-move-dist\n  cutoff-dist\n  v-total\n  eps\n  total-move-attempts\n  total-successful-moves\n  diameter\n  pot-offset ; This offsets the LJ potential so that it is 0 at the cutoff distance\n  current-move-attempts\n  current-successful-moves\n]\n\nto setup\n  clear-all\n  reset-ticks\n  set eps 1\n  ;Set the diameter of particles based on density\n  set diameter sqrt(density * world-width * world-height / num-atoms)\n  set max-move-dist diameter\n  set cutoff-dist 2.5 * diameter\n  set pot-offset (- (4 * ((diameter / cutoff-dist) ^ 12 - (diameter / cutoff-dist) ^ 6)))\n  set v-total calc-v-total  ;calculate the initial energy\n  create-turtles num-atoms [\n    set shape \"circle\"\n    set size diameter\n    set color blue\n  ]\n  setup-atoms\nend\n\nto go\n  ;Each tick, attempt N moves. On average, every particle moves each tick\n  repeat num-atoms [\n    ask one-of turtles [\n      attempt-move\n    ]\n  ]\n\n  ;tune the move distance to adjust the acceptance rate every NUM-ATOMS ticks\n  if ticks mod num-atoms = 1 [\n    tune-acceptance-rate\n  ]\n\n  tick\nend\n\nto attempt-move\n  set total-move-attempts total-move-attempts + 1  ;the is the total running average\n  set current-move-attempts current-move-attempts + 1 ;this is just since the last max-move-distance adjustment\n  let v-old calc-v; calculate current energy\n  let delta-x (random-float 2 * max-move-dist) - max-move-dist  ; pick random x distance\n  let delta-y (random-float 2 * max-move-dist) - max-move-dist ; pick random y distance\n  setxy (xcor + delta-x) (ycor + delta-y) ;move the random x and y distances\n  let v-new calc-v ;Calculate the new energy\n\n  let delta-v v-new - v-old\n  ifelse (v-new < v-old) or (random-float 1 < exp( - delta-v / temperature) ) [\n    set total-successful-moves total-successful-moves + 1   ;the is the total running average\n    set current-successful-moves current-successful-moves + 1   ;this is just since the last max-move-distance adjustment\n    set v-total v-total + delta-v\n  ] [\n    setxy (xcor - delta-x) (ycor - delta-y) ;reset position\n  ]\nend\n\nto-report calc-v-total\n  report sum [ calc-v ] of turtles / 2 ;divide by two because each particle has been counted twice\nend\n\nto-report calc-v\n  let v 0\n\n  ask other turtles in-radius cutoff-dist [\n    let rsquare (distance myself) ^ 2\n    let dsquare diameter * diameter\n    let attract-term dsquare ^ 3 / rsquare ^ 3\n    let repel-term attract-term * attract-term\n    ;NOTE could do this a little faster by attract-term * (attract-term -1)\n    let vi 4 * eps * (repel-term - attract-term) + pot-offset\n    set v v + vi\n  ]\n  report v\nend\n\nto-report accept-rate\n  report current-successful-moves / current-move-attempts\nend\n\nto tune-acceptance-rate\n  ifelse accept-rate < 0.5 [\n    set max-move-dist max-move-dist * .95\n  ] [\n    set max-move-dist max-move-dist * 1.05\n    if max-move-dist > diameter [\n      set max-move-dist diameter\n    ]\n  ]\n  set current-successful-moves 0\n  set current-move-attempts 0\nend\n\nto-report energy-per-particle\n  report v-total / num-atoms\nend\n\n;*********setup procedures*************\n\nto setup-atoms\n  if initial-config = \"HCP\" [\n    let l sqrt(num-atoms) ;the # of atoms in a row\n    let row-dist (2 ^ (1 / 6)) * diameter ;this is the distance with minimum energy\n    let ypos (- l * row-dist / 2) ;the y position of the first atom\n    let xpos (- l * row-dist / 2) ;the x position of the first atom\n    let r-num 0  ;the row number\n    ask turtles [  ;set the atoms; positions\n      if xpos > (l * row-dist / 2)  [  ;condition to start a new row\n        set r-num r-num + 1\n        set xpos (- l * row-dist / 2) + (r-num mod 2) * row-dist / 2\n        set ypos ypos + row-dist\n      ]\n      setxy xpos ypos  ;if we are still in the same row\n      set xpos xpos + row-dist\n    ]\n  ]\n\n  if initial-config = \"random\" [\n    ask turtles [\n      setxy random-xcor random-ycor\n    ]\n    remove-overlap ;make sure atoms aren\'t overlapping\n  ]\nend\n\nto remove-overlap\n  let r-min 0.7 * diameter\n  ask turtles [\n    while [overlapping r-min] [\n      setxy random-xcor random-ycor\n    ]\n  ]\nend\n\nto-report overlapping [r-min]\n  report any? other turtles in-radius r-min\nend\n\n\n; Copyright 2015 Uri Wilensky.\n; See Info tab for full copyright and license.')([{"left":239,"top":10,"right":742,"bottom":514,"dimensions":{"minPxcor":-16,"maxPxcor":16,"minPycor":-16,"maxPycor":16,"patchSize":15,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_38 = procedures[\"SETUP\"]();\n  if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"setup","left":30,"top":217,"right":204,"bottom":250,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_35 = procedures[\"GO\"]();\n  if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"go","left":120,"top":353,"right":204,"bottom":386,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"1000","compiledStep":"1","variable":"num-atoms","left":30,"top":94,"right":202,"bottom":127,"display":"num-atoms","min":"1","max":"1000","default":250,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0.01","compiledMax":"2","compiledStep":"0.01","variable":"temperature","left":31,"top":316,"right":205,"bottom":349,"display":"temperature","min":".01","max":"2","default":0.45,"step":".01","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0.01","compiledMax":"0.6","compiledStep":"0.01","variable":"density","left":30,"top":131,"right":202,"bottom":164,"display":"density","min":"0.01","max":".6","default":0.25,"step":".01","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"variable":"initial-config","left":30,"top":168,"right":203,"bottom":213,"display":"initial-config","choices":["HCP","random"],"currentChoice":0,"type":"chooser","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('energy per particle', 'default')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        if (Prims.gt(world.ticker.tickCount(), 3)) {\n          plotManager.plotValue(Prims.div(world.observer.getGlobal(\"v-total\"), world.observer.getGlobal(\"num-atoms\")));\n        }\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"default","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"if ticks > 3 [\n  plot v-total / num-atoms\n]","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"energy per particle","left":33,"top":390,"right":215,"bottom":535,"xmin":0,"xmax":10,"ymin":-2,"ymax":2,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"default","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"if ticks > 3 [\n  plot v-total / num-atoms\n]","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"display":"1","left":4,"top":10,"right":24,"bottom":46,"fontSize":30,"color":15,"transparent":true,"type":"textBox","compilation":{"success":true,"messages":[]}}, {"display":"Model starting point. You can\nchoose the number of atoms,\nthe density and the initial\nconfiguration (random or\nhexagonally-close-packed)","left":31,"top":10,"right":238,"bottom":81,"fontSize":11,"color":0,"transparent":true,"type":"textBox","compilation":{"success":true,"messages":[]}}, {"display":"_____________________________","left":31,"top":251,"right":223,"bottom":279,"fontSize":11,"color":0,"transparent":true,"type":"textBox","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_35 = procedures[\"GO\"]();\n  if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"go","left":32,"top":353,"right":117,"bottom":386,"display":"go-once","forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"display":"2","left":3,"top":263,"right":27,"bottom":299,"fontSize":30,"color":15,"transparent":true,"type":"textBox","compilation":{"success":true,"messages":[]}}, {"display":"Adjust the temperature and run\nthe model. The temperature can\nbe adjusted while the model runs\n","left":30,"top":270,"right":231,"bottom":312,"fontSize":11,"color":0,"transparent":true,"type":"textBox","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["num-atoms", "temperature", "density", "initial-config", "max-move-dist", "cutoff-dist", "v-total", "eps", "total-move-attempts", "total-successful-moves", "diameter", "pot-offset", "current-move-attempts", "current-successful-moves"], ["num-atoms", "temperature", "density", "initial-config"], [], -16, 16, -16, 16, 15.0, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ExportPrims = workspace.exportPrims;
@@ -93,6 +94,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.clearAll();
       world.ticker.reset();
       world.observer.setGlobal("eps", 1);
@@ -120,6 +122,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       for (let _index_827_833 = 0, _repeatcount_827_833 = StrictMath.floor(world.observer.getGlobal("num-atoms")); _index_827_833 < _repeatcount_827_833; _index_827_833++){
         ListPrims.oneOf(world.turtles()).ask(function() { procedures["ATTEMPT-MOVE"](); }, true);
       }
@@ -140,14 +143,15 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.observer.setGlobal("total-move-attempts", (world.observer.getGlobal("total-move-attempts") + 1));
       world.observer.setGlobal("current-move-attempts", (world.observer.getGlobal("current-move-attempts") + 1));
-      let vOld = procedures["CALC-V"]();
-      let deltaX = ((Prims.randomFloat(2) * world.observer.getGlobal("max-move-dist")) - world.observer.getGlobal("max-move-dist"));
-      let deltaY = ((Prims.randomFloat(2) * world.observer.getGlobal("max-move-dist")) - world.observer.getGlobal("max-move-dist"));
+      let vOld = procedures["CALC-V"](); letVars['vOld'] = vOld;
+      let deltaX = ((Prims.randomFloat(2) * world.observer.getGlobal("max-move-dist")) - world.observer.getGlobal("max-move-dist")); letVars['deltaX'] = deltaX;
+      let deltaY = ((Prims.randomFloat(2) * world.observer.getGlobal("max-move-dist")) - world.observer.getGlobal("max-move-dist")); letVars['deltaY'] = deltaY;
       SelfManager.self().setXY((SelfManager.self().getVariable("xcor") + deltaX), (SelfManager.self().getVariable("ycor") + deltaY));
-      let vNew = procedures["CALC-V"]();
-      let deltaV = (vNew - vOld);
+      let vNew = procedures["CALC-V"](); letVars['vNew'] = vNew;
+      let deltaV = (vNew - vOld); letVars['deltaV'] = deltaV;
       if ((Prims.lt(vNew, vOld) || Prims.lt(Prims.randomFloat(1), NLMath.exp(Prims.div( -deltaV, world.observer.getGlobal("temperature")))))) {
         world.observer.setGlobal("total-successful-moves", (world.observer.getGlobal("total-successful-moves") + 1));
         world.observer.setGlobal("current-successful-moves", (world.observer.getGlobal("current-successful-moves") + 1));
@@ -169,7 +173,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = true;
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(ListPrims.sum(world.turtles().projectionBy(function() { return procedures["CALC-V"](); })), 2) }
+      var letVars = { };
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+        return Prims.div(ListPrims.sum(world.turtles().projectionBy(function() { return procedures["CALC-V"](); })), 2)
+      }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
      if (e instanceof Exception.StopInterrupt) {
@@ -184,16 +191,19 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = true;
-      let v = 0;
+      var letVars = { };
+      let v = 0; letVars['v'] = v;
       SelfPrims.other(SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("cutoff-dist"))).ask(function() {
-        let rsquare = NLMath.pow(SelfManager.self().distance(SelfManager.myself()), 2);
-        let dsquare = (world.observer.getGlobal("diameter") * world.observer.getGlobal("diameter"));
-        let attractTerm = Prims.div(NLMath.pow(dsquare, 3), NLMath.pow(rsquare, 3));
-        let repelTerm = (attractTerm * attractTerm);
-        let vi = (((4 * world.observer.getGlobal("eps")) * (repelTerm - attractTerm)) + world.observer.getGlobal("pot-offset"));
-        v = (v + vi);
+        let rsquare = NLMath.pow(SelfManager.self().distance(SelfManager.myself()), 2); letVars['rsquare'] = rsquare;
+        let dsquare = (world.observer.getGlobal("diameter") * world.observer.getGlobal("diameter")); letVars['dsquare'] = dsquare;
+        let attractTerm = Prims.div(NLMath.pow(dsquare, 3), NLMath.pow(rsquare, 3)); letVars['attractTerm'] = attractTerm;
+        let repelTerm = (attractTerm * attractTerm); letVars['repelTerm'] = repelTerm;
+        let vi = (((4 * world.observer.getGlobal("eps")) * (repelTerm - attractTerm)) + world.observer.getGlobal("pot-offset")); letVars['vi'] = vi;
+        v = (v + vi); letVars['v'] = v;
       }, true);
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return v }
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+        return v
+      }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
      if (e instanceof Exception.StopInterrupt) {
@@ -208,7 +218,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = true;
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(world.observer.getGlobal("current-successful-moves"), world.observer.getGlobal("current-move-attempts")) }
+      var letVars = { };
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+        return Prims.div(world.observer.getGlobal("current-successful-moves"), world.observer.getGlobal("current-move-attempts"))
+      }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
      if (e instanceof Exception.StopInterrupt) {
@@ -223,6 +236,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (Prims.lt(procedures["ACCEPT-RATE"](), 0.5)) {
         world.observer.setGlobal("max-move-dist", (world.observer.getGlobal("max-move-dist") * 0.95));
       }
@@ -247,7 +261,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = true;
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.div(world.observer.getGlobal("v-total"), world.observer.getGlobal("num-atoms")) }
+      var letVars = { };
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+        return Prims.div(world.observer.getGlobal("v-total"), world.observer.getGlobal("num-atoms"))
+      }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
      if (e instanceof Exception.StopInterrupt) {
@@ -262,20 +279,21 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (Prims.equality(world.observer.getGlobal("initial-config"), "HCP")) {
-        let l = NLMath.sqrt(world.observer.getGlobal("num-atoms"));
-        let rowDist = (NLMath.pow(2, Prims.div(1, 6)) * world.observer.getGlobal("diameter"));
-        let ypos = Prims.div(( -l * rowDist), 2);
-        let xpos = Prims.div(( -l * rowDist), 2);
-        let rNum = 0;
+        let l = NLMath.sqrt(world.observer.getGlobal("num-atoms")); letVars['l'] = l;
+        let rowDist = (NLMath.pow(2, Prims.div(1, 6)) * world.observer.getGlobal("diameter")); letVars['rowDist'] = rowDist;
+        let ypos = Prims.div(( -l * rowDist), 2); letVars['ypos'] = ypos;
+        let xpos = Prims.div(( -l * rowDist), 2); letVars['xpos'] = xpos;
+        let rNum = 0; letVars['rNum'] = rNum;
         world.turtles().ask(function() {
           if (Prims.gt(xpos, Prims.div((l * rowDist), 2))) {
-            rNum = (rNum + 1);
-            xpos = (Prims.div(( -l * rowDist), 2) + Prims.div((NLMath.mod(rNum, 2) * rowDist), 2));
-            ypos = (ypos + rowDist);
+            rNum = (rNum + 1); letVars['rNum'] = rNum;
+            xpos = (Prims.div(( -l * rowDist), 2) + Prims.div((NLMath.mod(rNum, 2) * rowDist), 2)); letVars['xpos'] = xpos;
+            ypos = (ypos + rowDist); letVars['ypos'] = ypos;
           }
           SelfManager.self().setXY(xpos, ypos);
-          xpos = (xpos + rowDist);
+          xpos = (xpos + rowDist); letVars['xpos'] = xpos;
         }, true);
       }
       if (Prims.equality(world.observer.getGlobal("initial-config"), "random")) {
@@ -297,7 +315,8 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
-      let rMin = (0.7 * world.observer.getGlobal("diameter"));
+      var letVars = { };
+      let rMin = (0.7 * world.observer.getGlobal("diameter")); letVars['rMin'] = rMin;
       world.turtles().ask(function() {
         while (procedures["OVERLAPPING"](rMin)) {
           SelfManager.self().setXY(Prims.randomCoord(world.topology.minPxcor, world.topology.maxPxcor), Prims.randomCoord(world.topology.minPycor, world.topology.maxPycor));
@@ -316,7 +335,10 @@ var procedures = (function() {
   temp = (function(rMin) {
     try {
       var reporterContext = true;
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return SelfPrims._optimalAnyOther(SelfManager.self().inRadius(world.turtles(), rMin)) }
+      var letVars = { };
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+        return SelfPrims._optimalAnyOther(SelfManager.self().inRadius(world.turtles(), rMin))
+      }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
      if (e instanceof Exception.StopInterrupt) {

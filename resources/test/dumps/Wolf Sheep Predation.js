@@ -53,6 +53,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('populations', 'sheep')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotValue(world.turtleManager.turtlesOfBreed("SHEEP").size());
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -69,6 +70,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('populations', 'wolves')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotValue(world.turtleManager.turtlesOfBreed("WOLVES").size());
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -85,6 +87,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('populations', 'grass / 4')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           if (Prims.equality(world.observer.getGlobal("model-version"), "sheep-wolves-grass")) {
             plotManager.plotValue(Prims.div(procedures["GRASS"]().size(), 4));
           }
@@ -102,7 +105,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "time", "pop.", true, true, 0.0, 100.0, 0.0, 100.0, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "SHEEP", singular: "a-sheep", varNames: [] }, { name: "WOLVES", singular: "wolf", varNames: [] }])(["energy"], [])(tortoise_require("extensions/all").dumpers())(["initial-number-sheep", "sheep-gain-from-food", "sheep-reproduce", "initial-number-wolves", "wolf-gain-from-food", "wolf-reproduce", "grass-regrowth-time", "show-energy?", "model-version", "max-sheep"], ["initial-number-sheep", "sheep-gain-from-food", "sheep-reproduce", "initial-number-wolves", "wolf-gain-from-food", "wolf-reproduce", "grass-regrowth-time", "show-energy?", "model-version"], ["countdown"], -25, 25, -25, 25, 10.0, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "SHEEP", singular: "a-sheep", varNames: [] }, { name: "WOLVES", singular: "wolf", varNames: [] }])(["energy"], [])('globals [ max-sheep ]  ; don\'t let sheep population grow too large\n; Sheep and wolves are both breeds of turtle.\nbreed [ sheep a-sheep ]  ; sheep is its own plural, so we use \"a-sheep\" as the singular.\nbreed [ wolves wolf ]\nturtles-own [ energy ]       ; both wolves and sheep have energy\npatches-own [ countdown ]\n\nto setup\n  clear-all\n  ifelse netlogo-web? [set max-sheep 10000] [set max-sheep 30000]\n\n  ; Check model-version switch\n  ; if we\'re not modeling grass, then the sheep don\'t need to eat to survive\n  ; otherwise the grass\'s state of growth and growing logic need to be set up\n  ifelse model-version = \"sheep-wolves-grass\" [\n    ask patches [\n      set pcolor one-of [ green brown ]\n      ifelse pcolor = green\n        [ set countdown grass-regrowth-time ]\n      [ set countdown random grass-regrowth-time ] ; initialize grass regrowth clocks randomly for brown patches\n    ]\n  ]\n  [\n    ask patches [ set pcolor green ]\n  ]\n\n  create-sheep initial-number-sheep  ; create the sheep, then initialize their variables\n  [\n    set shape  \"sheep\"\n    set color white\n    set size 1.5  ; easier to see\n    set label-color blue - 2\n    set energy random (2 * sheep-gain-from-food)\n    setxy random-xcor random-ycor\n  ]\n\n  create-wolves initial-number-wolves  ; create the wolves, then initialize their variables\n  [\n    set shape \"wolf\"\n    set color black\n    set size 2  ; easier to see\n    set energy random (2 * wolf-gain-from-food)\n    setxy random-xcor random-ycor\n  ]\n  display-labels\n  reset-ticks\nend\n\nto go\n  ; stop the simulation of no wolves or sheep\n  if not any? turtles [ stop ]\n  ; stop the model if there are no wolves and the number of sheep gets very large\n  if not any? wolves and count sheep > max-sheep [ user-message \"The sheep have inherited the earth\" stop ]\n  ask sheep [\n    move\n    if model-version = \"sheep-wolves-grass\" [ ; in this version, sheep eat grass, grass grows and it costs sheep energy to move\n      set energy energy - 1  ; deduct energy for sheep only if running sheep-wolf-grass model version\n      eat-grass  ; sheep eat grass only if running sheep-wolf-grass model version\n      death ; sheep die from starvation only if running sheep-wolf-grass model version\n    ]\n    reproduce-sheep  ; sheep reproduce at random rate governed by slider\n  ]\n  ask wolves [\n    move\n    set energy energy - 1  ; wolves lose energy as they move\n    eat-sheep ; wolves eat a sheep on their patch\n    death ; wolves die if our of energy\n    reproduce-wolves ; wolves reproduce at random rate governed by slider\n  ]\n  if model-version = \"sheep-wolves-grass\" [ ask patches [ grow-grass ] ]\n  ; set grass count patches with [pcolor = green]\n  tick\n  display-labels\nend\n\nto move  ; turtle procedure\n  rt random 50\n  lt random 50\n  fd 1\nend\n\nto eat-grass  ; sheep procedure\n  ; sheep eat grass, turn the patch brown\n  if pcolor = green [\n    set pcolor brown\n    set energy energy + sheep-gain-from-food  ; sheep gain energy by eating\n  ]\nend\n\nto reproduce-sheep  ; sheep procedure\n  if random-float 100 < sheep-reproduce [  ; throw \"dice\" to see if you will reproduce\n    set energy (energy / 2)                ; divide energy between parent and offspring\n    hatch 1 [ rt random-float 360 fd 1 ]   ; hatch an offspring and move it forward 1 step\n  ]\nend\n\nto reproduce-wolves  ; wolf procedure\n  if random-float 100 < wolf-reproduce [  ; throw \"dice\" to see if you will reproduce\n    set energy (energy / 2)               ; divide energy between parent and offspring\n    hatch 1 [ rt random-float 360 fd 1 ]  ; hatch an offspring and move it forward 1 step\n  ]\nend\n\nto eat-sheep  ; wolf procedure\n  let prey one-of sheep-here                    ; grab a random sheep\n  if prey != nobody  [                          ; did we get one?  if so,\n    ask prey [ die ]                            ; kill it, and...\n    set energy energy + wolf-gain-from-food     ; get energy from eating\n  ]\nend\n\nto death  ; turtle procedure (i.e. both wolf nd sheep procedure)\n  ; when energy dips below zero, die\n  if energy < 0 [ die ]\nend\n\nto grow-grass  ; patch procedure\n  ; countdown on brown patches: if reach 0, grow some grass\n  if pcolor = brown [\n    ifelse countdown <= 0\n      [ set pcolor green\n        set countdown grass-regrowth-time ]\n      [ set countdown countdown - 1 ]\n  ]\nend\n\nto-report grass\n  ifelse model-version = \"sheep-wolves-grass\" [\n    report patches with [pcolor = green]\n  ]\n  [ report 0 ]\nend\n\n\nto display-labels\n  ask turtles [ set label \"\" ]\n  if show-energy? [\n    ask wolves [ set label round energy ]\n    if model-version = \"sheep-wolves-grass\" [ ask sheep [ set label round energy ] ]\n  ]\nend\n\n\n; Copyright 1997 Uri Wilensky.\n; See Info tab for full copyright and license.')([{"left":355,"top":10,"right":873,"bottom":529,"dimensions":{"minPxcor":-25,"maxPxcor":25,"minPycor":-25,"maxPycor":25,"patchSize":10,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":14,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"250","compiledStep":"1","variable":"initial-number-sheep","left":5,"top":60,"right":179,"bottom":93,"display":"initial-number-sheep","min":"0","max":"250","default":100,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"50","compiledStep":"1","variable":"sheep-gain-from-food","left":5,"top":196,"right":179,"bottom":229,"display":"sheep-gain-from-food","min":"0.0","max":"50.0","default":4,"step":"1.0","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"20","compiledStep":"1","variable":"sheep-reproduce","left":5,"top":231,"right":179,"bottom":264,"display":"sheep-reproduce","min":"1.0","max":"20.0","default":4,"step":"1.0","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"250","compiledStep":"1","variable":"initial-number-wolves","left":185,"top":60,"right":350,"bottom":93,"display":"initial-number-wolves","min":"0","max":"250","default":50,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"wolf-gain-from-food","left":183,"top":195,"right":348,"bottom":228,"display":"wolf-gain-from-food","min":"0.0","max":"100.0","default":20,"step":"1.0","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"20","compiledStep":"1","variable":"wolf-reproduce","left":183,"top":231,"right":348,"bottom":264,"display":"wolf-reproduce","min":"0.0","max":"20.0","default":5,"step":"1.0","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"grass-regrowth-time","left":40,"top":100,"right":252,"bottom":133,"display":"grass-regrowth-time","min":"0","max":"100","default":30,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_38 = procedures[\"SETUP\"]();\n  if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"setup","left":40,"top":140,"right":109,"bottom":173,"display":"setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_35 = procedures[\"GO\"]();\n  if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"go","left":115,"top":140,"right":190,"bottom":173,"display":"go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('populations', 'sheep')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotValue(world.turtleManager.turtlesOfBreed(\"SHEEP\").size());\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"sheep","interval":1,"mode":0,"color":-612749,"inLegend":true,"setupCode":"","updateCode":"plot count sheep","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('populations', 'wolves')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotValue(world.turtleManager.turtlesOfBreed(\"WOLVES\").size());\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"wolves","interval":1,"mode":0,"color":-16449023,"inLegend":true,"setupCode":"","updateCode":"plot count wolves","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('populations', 'grass / 4')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        if (Prims.equality(world.observer.getGlobal(\"model-version\"), \"sheep-wolves-grass\")) {\n          plotManager.plotValue(Prims.div(procedures[\"GRASS\"]().size(), 4));\n        }\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"grass / 4","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"if model-version = \"sheep-wolves-grass\" [ plot count grass / 4 ]","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"populations","left":10,"top":360,"right":350,"bottom":530,"xAxis":"time","yAxis":"pop.","xmin":0,"xmax":100,"ymin":0,"ymax":100,"autoPlotOn":true,"legendOn":true,"setupCode":"","updateCode":"","pens":[{"display":"sheep","interval":1,"mode":0,"color":-612749,"inLegend":true,"setupCode":"","updateCode":"plot count sheep","type":"pen"},{"display":"wolves","interval":1,"mode":0,"color":-16449023,"inLegend":true,"setupCode":"","updateCode":"plot count wolves","type":"pen"},{"display":"grass / 4","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"if model-version = \"sheep-wolves-grass\" [ plot count grass / 4 ]","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.turtleManager.turtlesOfBreed(\"SHEEP\").size()","source":"count sheep","left":41,"top":308,"right":111,"bottom":353,"display":"sheep","precision":3,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.turtleManager.turtlesOfBreed(\"WOLVES\").size()","source":"count wolves","left":115,"top":308,"right":185,"bottom":353,"display":"wolves","precision":3,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"Prims.div(procedures[\"GRASS\"]().size(), 4)","source":"count grass / 4","left":191,"top":308,"right":256,"bottom":353,"display":"grass","precision":0,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"display":"Sheep settings","left":20,"top":178,"right":160,"bottom":196,"fontSize":11,"color":0,"transparent":false,"type":"textBox","compilation":{"success":true,"messages":[]}}, {"display":"Wolf settings","left":198,"top":176,"right":311,"bottom":194,"fontSize":11,"color":0,"transparent":false,"type":"textBox","compilation":{"success":true,"messages":[]}}, {"variable":"show-energy?","left":105,"top":270,"right":241,"bottom":303,"display":"show-energy?","on":false,"type":"switch","compilation":{"success":true,"messages":[]}}, {"variable":"model-version","left":5,"top":10,"right":350,"bottom":55,"display":"model-version","choices":["sheep-wolves","sheep-wolves-grass"],"currentChoice":0,"type":"chooser","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["initial-number-sheep", "sheep-gain-from-food", "sheep-reproduce", "initial-number-wolves", "wolf-gain-from-food", "wolf-reproduce", "grass-regrowth-time", "show-energy?", "model-version", "max-sheep"], ["initial-number-sheep", "sheep-gain-from-food", "sheep-reproduce", "initial-number-wolves", "wolf-gain-from-food", "wolf-reproduce", "grass-regrowth-time", "show-energy?", "model-version"], ["countdown"], -25, 25, -25, 25, 10.0, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ExportPrims = workspace.exportPrims;
@@ -125,6 +128,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.clearAll();
       if (Meta.isWeb) {
         world.observer.setGlobal("max-sheep", 10000);
@@ -176,6 +180,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (!!world.turtles().isEmpty()) {
         throw new Exception.StopInterrupt;
       }
@@ -217,6 +222,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       SelfManager.self().right(Prims.random(50));
       SelfManager.self().right(-Prims.random(50));
       SelfManager.self()._optimalFdOne();
@@ -233,6 +239,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55)) {
         SelfManager.self().setPatchVariable("pcolor", 35);
         SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") + world.observer.getGlobal("sheep-gain-from-food")));
@@ -250,6 +257,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("sheep-reproduce"))) {
         SelfManager.self().setVariable("energy", Prims.div(SelfManager.self().getVariable("energy"), 2));
         SelfManager.self().hatch(1, "").ask(function() {
@@ -270,6 +278,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("wolf-reproduce"))) {
         SelfManager.self().setVariable("energy", Prims.div(SelfManager.self().getVariable("energy"), 2));
         SelfManager.self().hatch(1, "").ask(function() {
@@ -290,7 +299,8 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
-      let prey = ListPrims.oneOf(SelfManager.self().breedHere("SHEEP"));
+      var letVars = { };
+      let prey = ListPrims.oneOf(SelfManager.self().breedHere("SHEEP")); letVars['prey'] = prey;
       if (!Prims.equality(prey, Nobody)) {
         prey.ask(function() { SelfManager.self().die(); }, true);
         SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") + world.observer.getGlobal("wolf-gain-from-food")));
@@ -308,6 +318,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (Prims.lt(SelfManager.self().getVariable("energy"), 0)) {
         SelfManager.self().die();
       }
@@ -324,6 +335,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 35)) {
         if (Prims.lte(SelfManager.self().getPatchVariable("countdown"), 0)) {
           SelfManager.self().setPatchVariable("pcolor", 55);
@@ -346,11 +358,16 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = true;
+      var letVars = { };
       if (Prims.equality(world.observer.getGlobal("model-version"), "sheep-wolves-grass")) {
-        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55); }) }
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+          return world.patches().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55); })
+        }
       }
       else {
-        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return 0 }
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+          return 0
+        }
       }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
@@ -366,6 +383,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.turtles().ask(function() { SelfManager.self().setVariable("label", ""); }, true);
       if (world.observer.getGlobal("show-energy?")) {
         world.turtleManager.turtlesOfBreed("WOLVES").ask(function() { SelfManager.self().setVariable("label", NLMath.round(SelfManager.self().getVariable("energy"))); }, true);

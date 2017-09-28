@@ -91,7 +91,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "Speed", "Number", true, false, 0.0, 50.0, 0.0, 100.0, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "PARTICLES", singular: "particle", varNames: ["speed", "mass", "energy", "wall-hits", "momentum-difference", "last-collision"] }, { name: "FLASHES", singular: "flash", varNames: ["birthday"] }, { name: "CLOCKERS", singular: "clocker", varNames: [] }])([], [])(tortoise_require("extensions/all").dumpers())(["number-of-particles", "collide?", "trace?", "init-particle-speed", "particle-mass", "result", "tick-length", "box-edge", "pressure", "pressure-history", "zero-pressure-count", "wall-hits-per-particle", "length-horizontal-surface", "length-vertical-surface", "init-avg-speed", "init-avg-energy", "avg-speed", "avg-energy", "fast", "medium", "slow", "fade-needed?"], ["number-of-particles", "collide?", "trace?", "init-particle-speed", "particle-mass"], [], -50, 50, -50, 50, 4.0, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([{ name: "PARTICLES", singular: "particle", varNames: ["speed", "mass", "energy", "wall-hits", "momentum-difference", "last-collision"] }, { name: "FLASHES", singular: "flash", varNames: ["birthday"] }, { name: "CLOCKERS", singular: "clocker", varNames: [] }])([], [])('globals\n[\n  result\n  tick-length          ;; clock variable\n  box-edge                   ;; distance of box edge from axes\n  pressure\n  pressure-history\n  zero-pressure-count        ;; how many zero entries are in pressure-history\n  wall-hits-per-particle     ;; average number of wall hits per particle\n  length-horizontal-surface  ;; the size of the wall surfaces that run horizontally - the top and bottom of the box\n  length-vertical-surface    ;; the size of the wall surfaces that run vertically - the left and right of the box\n\n  init-avg-speed init-avg-energy  ;; initial averages\n  avg-speed avg-energy            ;; current averages\n  fast medium slow                ;; current counts\n\n  fade-needed?\n]\n\nbreed [ particles particle ]\nbreed [ flashes flash ]\nbreed [clockers clocker ]\n\nflashes-own [birthday]\n\nparticles-own\n[\n  speed mass energy          ;; particle info\n  wall-hits                  ;; # of wall hits during this clock cycle (\"big tick\")\n  momentum-difference        ;; used to calculate pressure from wall hits\n  last-collision\n]\n\nto benchmark\n  random-seed 361\n  reset-timer\n  setup\n  repeat 17000 [ go ]\n  set result timer\nend\n\nto setup\n  ca reset-ticks\n  set-default-shape particles \"circle\"\n  set fade-needed? false\n  ;; box has constant size...\n  set box-edge (max-pxcor - 1)\n  ;;; the length of the horizontal or vertical surface of\n  ;;; the inside of the box must exclude the two patches\n  ;; that are the where the perpendicular walls join it,\n  ;;; but must also add in the axes as an additional patch\n  ;;; example:  a box with an box-edge of 10, is drawn with\n  ;;; 19 patches of wall space on the inside of the box\n  set length-horizontal-surface  ( 2 * (box-edge - 1) + 1)\n  set length-vertical-surface  ( 2 * (box-edge - 1) + 1)\n  make-box\n  make-particles\n  make-clocker\n  set pressure-history []\n  set zero-pressure-count 0\n  update-variables\n  set init-avg-speed avg-speed\n  set init-avg-energy avg-energy\n  setup-plotz\n  setup-histograms\n  do-plotting\nend\n\nto update-variables\n  set medium count particles with [color = green]\n  set slow   count particles with [color = blue]\n  set fast   count particles with [color = red]\n  set avg-speed  mean [speed] of particles\n  set avg-energy mean [energy] of particles\nend\n\nto go\n  ask particles [ bounce ]\n  ask particles [ move ]\n  ask particles [ if collide? [check-for-collision] ]\n  if trace?\n  [ ask particle 0\n     [ set pcolor gray set fade-needed? true ]\n  ]\n  let old-clock ticks\n  tick-advance tick-length\n  if floor ticks > floor (ticks - tick-length)\n  [\n    ifelse any? particles\n      [ set wall-hits-per-particle mean [wall-hits] of particles ]\n      [ set wall-hits-per-particle 0 ]\n    ask particles\n      [ set wall-hits 0 ]\n    if fade-needed? [fade-patches]\n    calculate-pressure\n    update-variables\n    do-plotting\n  ]\n  calculate-tick-length\n  ask clockers [ set heading ticks * 360 ]\n  ask flashes with [ticks - birthday > 0.4]\n  [\n    set pcolor yellow\n    die\n  ]\n  display\nend\n\nto calculate-tick-length\n  ifelse any? particles with [speed > 0]\n    [ set tick-length 1 / (ceiling max [speed] of particles) ]\n    [ set tick-length 1 ]\nend\n\n;;; Pressure is defined as the force per unit area.  In this context,\n;;; that means the total momentum per unit time transferred to the walls\n;;; by particle hits, divided by the surface area of the walls.  (Here\n;;; we\'re in a two dimensional world, so the \"surface area\" of the walls\n;;; is just their length.)  Each wall contributes a different amount\n;;; to the total pressure in the box, based on the number of collisions, the\n;;; direction of each collision, and the length of the wall.  Conservation of momentum\n;;; in hits ensures that the difference in momentum for the particles is equal to and\n;;; opposite to that for the wall.  The force on each wall is the rate of change in\n;;; momentum imparted to the wall, or the sum of change in momentum for each particle:\n;;; F = SUM  [d(mv)/dt] = SUM [m(dv/dt)] = SUM [ ma ], in a direction perpendicular to\n;;; the wall surface.  The pressure (P) on a given wall is the force (F) applied to that\n;;; wall over its surface area.  The total pressure in the box is sum of each wall\'s\n;;; pressure contribution.\n\nto calculate-pressure\n  ;; by summing the momentum change for each particle,\n  ;; the wall\'s total momentum change is calculated\n  set pressure 15 * sum [momentum-difference] of particles\n  set pressure-history lput pressure pressure-history\n  set zero-pressure-count length filter [ [p] -> p = 0] pressure-history\n  ask particles\n    [ set momentum-difference 0 ]  ;; once the contribution to momentum has been calculated\n                                   ;; this value is reset to zero till the next wall hit\nend\n\nto bounce  ;; particle procedure\n  ;; if we\'re not about to hit a wall (yellow patch), or if we\'re already on a\n  ;; wall, we don\'t need to do any further checks\n  if shade-of? yellow pcolor\n    [ stop ]\n  let new-patch patch-ahead 1\n  let new-px [pxcor] of new-patch\n  let new-py [pycor] of new-patch\n  if not shade-of? yellow [pcolor] of new-patch\n    [ stop ]\n  ;; get the coordinates of the patch we\'ll be on if we go forward 1\n  if (abs new-px != box-edge and abs new-py != box-edge)\n    [stop]\n  ;; if hitting left or right wall, reflect heading around x axis\n  if (abs new-px = box-edge)\n    [ set heading (- heading)\n      set wall-hits wall-hits + 1\n  ;;  if the particle is hitting a vertical wall, only the horizontal component of the speed\n  ;;  vector can change.  The change in velocity for this component is 2 * the speed of the particle,\n  ;; due to the reversing of direction of travel from the collision with the wall\n      set momentum-difference momentum-difference + (abs (sin heading * 2 * mass * speed) / length-vertical-surface) ]\n  ;; if hitting top or bottom wall, reflect heading around y axis\n  if (abs new-py = box-edge)\n    [ set heading (180 - heading)\n      set wall-hits wall-hits + 1\n  ;;  if the particle is hitting a horizontal wall, only the vertical component of the speed\n  ;;  vector can change.  The change in velocity for this component is 2 * the speed of the particle,\n  ;; due to the reversing of direction of travel from the collision with the wall\n      set momentum-difference momentum-difference + (abs (cos heading * 2 * mass * speed) / length-horizontal-surface)  ]\n\n\n  ask patch new-px new-py\n    [ sprout-flashes 1 [ ht\n                 set birthday ticks\n                 set pcolor yellow - 3 ] ]\nend\n\nto move  ;; particle procedure\n  let old-patch patch-here\n  jump (speed * tick-length)\n  if patch-here != old-patch\n    [ set last-collision nobody ]\nend\n\nto check-for-collision  ;; particle procedure\n  ;; Here we impose a rule that collisions only take place when there\n  ;; are exactly two particles per patch.  We do this because when the\n  ;; student introduces new particles from the side, we want them to\n  ;; form a uniform wavefront.\n  ;;\n  ;; Why do we want a uniform wavefront?  Because it is actually more\n  ;; realistic.  (And also because the curriculum uses the uniform\n  ;; wavefront to help teach the relationship between particle collisions,\n  ;; wall hits, and pressure.)\n  ;;\n  ;; Why is it realistic to assume a uniform wavefront?  Because in reality,\n  ;; whether a collision takes place would depend on the actual headings\n  ;; of the particles, not merely on their proximity.  Since the particles\n  ;; in the wavefront have identical speeds and near-identical headings,\n  ;; in reality they would not collide.  So even though the two-particles\n  ;; rule is not itself realistic, it produces a realistic result.  Also,\n  ;; unless the number of particles is extremely large, it is very rare\n  ;; for three or more particles to land on the same patch (for example,\n  ;; with 400 particles it happens less than 1% of the time).  So imposing\n  ;; this additional rule should have only a negligible effect on the\n  ;; aggregate behavior of the system.\n  ;;\n  ;; Why does this rule produce a uniform wavefront?  The particles all\n  ;; start out on the same patch, which means that without the only-two\n  ;; rule, they would all start colliding with each other immediately,\n  ;; resulting in much random variation of speeds and headings.  With\n  ;; the only-two rule, they are prevented from colliding with each other\n  ;; until they have spread out a lot.  (And in fact, if you observe\n  ;; the wavefront closely, you will see that it is not completely smooth,\n  ;; because some collisions eventually do start occurring when it thins out while fanning.)\n\n  if count other particles-here = 1\n  [\n    ;; the following conditions are imposed on collision candidates:\n    ;;   1. they must have a lower who number than my own, because collision\n    ;;      code is asymmetrical: it must always happen from the point of view\n    ;;      of just one particle.\n    ;;   2. they must not be the same particle that we last collided with on\n    ;;      this patch, so that we have a chance to leave the patch after we\'ve\n    ;;      collided with someone.\n    let candidate one-of other particles-here with\n      [who < [who] of myself and myself != last-collision]\n    ;; we also only collide if one of us has non-zero speed. It\'s useless\n    ;; (and incorrect, actually) for two particles with zero speed to collide.\n    if (candidate != nobody) and (speed > 0 or [speed] of candidate > 0)\n    [\n      collide-with candidate\n      set last-collision candidate\n      ask candidate [ set last-collision myself ]\n    ]\n  ]\nend\n\n;; implements a collision with another particle.\n;;\n;; THIS IS THE HEART OF THE PARTICLE SIMULATION, AND YOU ARE STRONGLY ADVISED\n;; NOT TO CHANGE IT UNLESS YOU REALLY UNDERSTAND WHAT YOU\'RE DOING!\n;;\n;; The two particles colliding are self and other-particle, and while the\n;; collision is performed from the point of view of self, both particles are\n;; modified to reflect its effects. This is somewhat complicated, so I\'ll\n;; give a general outline here:\n;;   1. Do initial setup, and determine the heading between particle centers\n;;      (call it theta).\n;;   2. Convert the representation of the velocity of each particle from\n;;      speed/heading to a theta-based vector whose first component is the\n;;      particle\'s speed along theta, and whose second component is the speed\n;;      perpendicular to theta.\n;;   3. Modify the velocity vectors to reflect the effects of the collision.\n;;      This involves:\n;;        a. computing the velocity of the center of mass of the whole system\n;;           along direction theta\n;;        b. updating the along-theta components of the two velocity vectors.\n;;   4. Convert from the theta-based vector representation of velocity back to\n;;      the usual speed/heading representation for each particle.\n;;   5. Perform final cleanup and update derived quantities.\nto collide-with [ other-particle ] ;; particle procedure\n\n  ;;; PHASE 1: initial setup\n\n  ;; for convenience, grab some quantities from other-particle\n  let mass2 [mass] of other-particle\n  let speed2 [speed] of other-particle\n  let heading2 [heading] of other-particle\n\n  ;; since particles are modeled as zero-size points, theta isn\'t meaningfully\n  ;; defined. we can assign it randomly without affecting the model\'s outcome.\n  let theta (random-float 360)\n\n\n\n  ;;; PHASE 2: convert velocities to theta-based vector representation\n\n  ;; now convert my velocity from speed/heading representation to components\n  ;; along theta and perpendicular to theta\n  let v1t (speed * cos (theta - heading))\n  let v1l (speed * sin (theta - heading))\n\n  ;; do the same for other-particle\n  let v2t (speed2 * cos (theta - heading2))\n  let v2l (speed2 * sin (theta - heading2))\n\n\n\n  ;;; PHASE 3: manipulate vectors to implement collision\n\n  ;; compute the velocity of the system\'s center of mass along theta\n  let vcm (((mass * v1t) + (mass2 * v2t)) / (mass + mass2) )\n\n  ;; now compute the new velocity for each particle along direction theta.\n  ;; velocity perpendicular to theta is unaffected by a collision along theta,\n  ;; so the next two lines actually implement the collision itself, in the\n  ;; sense that the effects of the collision are exactly the following changes\n  ;; in particle velocity.\n  set v1t (2 * vcm - v1t)\n  set v2t (2 * vcm - v2t)\n\n\n\n  ;;; PHASE 4: convert back to normal speed/heading\n\n  ;; now convert my velocity vector into my new speed and heading\n  set speed sqrt ((v1t * v1t) + (v1l * v1l))\n  set energy (0.5 * mass * speed * speed)\n  ;; if the magnitude of the velocity vector is 0, atan is undefined. but\n  ;; speed will be 0, so heading is irrelevant anyway. therefore, in that\n  ;; case we\'ll just leave it unmodified.\n  if v1l != 0 or v1t != 0\n    [ set heading (theta - (atan v1l v1t)) ]\n\n  ;; and do the same for other-particle\n  ask other-particle [ set speed sqrt ((v2t * v2t) + (v2l * v2l)) ]\n  ask other-particle [ set energy 0.5 * mass * speed * speed ]\n  if v2l != 0 or v2t != 0\n    [ ask other-particle [ set heading (theta - (atan v2l v2t)) ] ]\n\n\n\n  ;; PHASE 5: final updates\n\n  ;; now recolor, since color is based on quantities that may have changed\n  recolor\n  ask other-particle\n    [ recolor ]\nend\n\nto recolor  ;; particle procedure\n  ifelse speed < (0.5 * 10)\n  [\n    set color blue\n  ]\n  [\n    ifelse speed > (1.5 * 10)\n      [ set color red ]\n      [ set color green ]\n  ]\nend\n\nto fade-patches\n  let trace-patches patches with [(pcolor != yellow) and (pcolor != black)]\n  ifelse any? trace-patches\n    [ ask trace-patches\n      [ set pcolor ( pcolor - 0.4 )\n        if (not trace?) or (round pcolor = black)\n          [ set pcolor black ] ] ]\n    [ set fade-needed? false ]\nend\n\n;;;\n;;; drawing procedures\n;;;\n\n;; draws the box\nto make-box\n  ask patches with [ ((abs pxcor = box-edge) and (abs pycor <= box-edge)) or\n                     ((abs pycor = box-edge) and (abs pxcor <= box-edge)) ]\n    [ set pcolor yellow ]\nend\n\n;; creates initial particles\nto make-particles\n  create-ordered-particles number-of-particles\n  [\n    setup-particle\n    random-position\n    recolor\n  ]\n  calculate-tick-length\nend\n\n\nto setup-particle  ;; particle procedure\n  set speed init-particle-speed\n  set mass particle-mass\n  set energy (0.5 * mass * speed * speed)\n  set last-collision nobody\n  set wall-hits 0\n  set momentum-difference 0\nend\n\n;; place particle at random location inside the box.\nto random-position ;; particle procedure\n  setxy ((1 - box-edge) + random-float ((2 * box-edge) - 2))\n        ((1 - box-edge) + random-float ((2 * box-edge) - 2))\n  set heading random-float 360\nend\n\n;;; plotting procedures\n\nto setup-plotz\n  set-current-plot \"Speed Counts\"\n  set-plot-y-range 0 ceiling (number-of-particles / 6)\nend\n\nto setup-histograms\n  set-current-plot \"Speed Histogram\"\n  set-plot-x-range 0 (init-particle-speed * 2)\n  set-plot-y-range 0 ceiling (number-of-particles / 6)\n  set-current-plot-pen \"medium\"\n  set-histogram-num-bars 40\n  set-current-plot-pen \"slow\"\n  set-histogram-num-bars 40\n  set-current-plot-pen \"fast\"\n  set-histogram-num-bars 40\n  set-current-plot-pen \"init-avg-speed\"\n  draw-vert-line init-avg-speed\n\n  set-current-plot \"Energy Histogram\"\n  set-plot-x-range 0 (0.5 * (init-particle-speed * 2) * (init-particle-speed * 2) * particle-mass)\n  set-plot-y-range 0 ceiling (number-of-particles / 6)\n  set-current-plot-pen \"medium\"\n  set-histogram-num-bars 40\n  set-current-plot-pen \"slow\"\n  set-histogram-num-bars 40\n  set-current-plot-pen \"fast\"\n  set-histogram-num-bars 40\n  set-current-plot-pen \"init-avg-energy\"\n  draw-vert-line init-avg-energy\nend\n\n\nto do-plotting\n  set-current-plot \"Pressure vs. Time\"\n  if length pressure-history > 0\n    [ plotxy ticks (mean last-n 3 pressure-history) ]\n\n  set-current-plot \"Speed Counts\"\n  set-current-plot-pen \"fast\"\n  plot fast\n  set-current-plot-pen \"medium\"\n  plot medium\n  set-current-plot-pen \"slow\"\n  plot slow\n\n  if ticks > 1\n  [\n     set-current-plot \"Wall Hits per Particle\"\n     plotxy ticks wall-hits-per-particle\n  ]\n\n  plot-histograms\nend\n\n\nto plot-histograms\n  set-current-plot \"Energy histogram\"\n  set-current-plot-pen \"fast\"\n  histogram [ energy ] of particles with [color = red]\n  set-current-plot-pen \"medium\"\n  histogram [ energy ] of particles with [color = green]\n  set-current-plot-pen \"slow\"\n  histogram [ energy ] of particles with [color = blue]\n  set-current-plot-pen \"avg-energy\"\n  plot-pen-reset\n  draw-vert-line avg-energy\n\n  set-current-plot \"Speed histogram\"\n  set-current-plot-pen \"fast\"\n  histogram [ speed ] of particles with [color = red]\n  set-current-plot-pen \"medium\"\n  histogram [ speed ] of particles with [color = green]\n  set-current-plot-pen \"slow\"\n  histogram [ speed ] of particles with [color = blue]\n  set-current-plot-pen \"avg-speed\"\n  plot-pen-reset\n  draw-vert-line avg-speed\nend\n\n;; histogram procedure\nto draw-vert-line [ xval ]\n  plotxy xval plot-y-min\n  plot-pen-down\n  plotxy xval plot-y-max\n  plot-pen-up\nend\n\nto-report last-n [n the-list]\n  ifelse n >= length the-list\n    [ report the-list ]\n    [ report last-n n butfirst the-list ]\nend\n\nto make-clocker\n  set-default-shape clockers \"clocker\"\n  create-ordered-clockers 1\n  [\n    setxy (box-edge - 5) (box-edge - 5)\n    set color violet + 2\n    set size 10\n    set heading 0\n  ]\nend')([{"left":325,"top":11,"right":737,"bottom":424,"dimensions":{"minPxcor":-50,"maxPxcor":50,"minPycor":-50,"maxPycor":50,"patchSize":4,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_35 = procedures[\"GO\"]();\n  if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"go","left":7,"top":43,"right":93,"bottom":76,"display":"go/stop","forever":true,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_38 = procedures[\"SETUP\"]();\n  if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"setup","left":7,"top":10,"right":93,"bottom":43,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"1000","compiledStep":"1","variable":"number-of-particles","left":95,"top":10,"right":302,"bottom":43,"display":"number-of-particles","min":"0","max":"1000","default":150,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"default","interval":1,"mode":0,"color":-955883,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Pressure vs. Time","left":742,"top":11,"right":980,"bottom":190,"xAxis":"time","yAxis":"pressure","xmin":0,"xmax":20,"ymin":0,"ymax":100,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"default","interval":1,"mode":0,"color":-955883,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"pressure\")","source":"pressure","left":155,"top":207,"right":239,"bottom":252,"display":"pressure","precision":0,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"wall-hits-per-particle\")","source":"wall-hits-per-particle","left":9,"top":207,"right":149,"bottom":252,"display":"wall hits per particle","precision":2,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"default","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Wall Hits per Particle","left":742,"top":192,"right":980,"bottom":361,"xmin":0,"xmax":20,"ymin":0,"ymax":1,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"default","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"avg-speed\")","source":"avg-speed","left":70,"top":154,"right":149,"bottom":199,"precision":2,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"fast","interval":10,"mode":1,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"medium","interval":10,"mode":1,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"slow","interval":10,"mode":1,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"avg-energy","interval":1,"mode":0,"color":-7500403,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"init-avg-energy","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Energy Histogram","left":312,"top":455,"right":602,"bottom":651,"xAxis":"Energy","yAxis":"Number","xmin":0,"xmax":400,"ymin":0,"ymax":10,"autoPlotOn":false,"legendOn":true,"setupCode":"","updateCode":"","pens":[{"display":"fast","interval":10,"mode":1,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"medium","interval":10,"mode":1,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"slow","interval":10,"mode":1,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"avg-energy","interval":1,"mode":0,"color":-7500403,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"init-avg-energy","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"avg-energy\")","source":"avg-energy","left":154,"top":154,"right":239,"bottom":199,"precision":2,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"fast","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"medium","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"slow","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Speed Counts","left":9,"top":264,"right":298,"bottom":449,"xAxis":"time","yAxis":"count","xmin":0,"xmax":20,"ymin":0,"ymax":100,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"fast","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"medium","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"slow","interval":1,"mode":0,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"variable":"collide?","left":96,"top":44,"right":199,"bottom":77,"display":"collide?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"fast","interval":5,"mode":1,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"medium","interval":5,"mode":1,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"slow","interval":5,"mode":1,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"avg-speed","interval":1,"mode":0,"color":-7500403,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}},{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","display":"init-avg-speed","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Speed Histogram","left":10,"top":454,"right":304,"bottom":651,"xAxis":"Speed","yAxis":"Number","xmin":0,"xmax":50,"ymin":0,"ymax":100,"autoPlotOn":false,"legendOn":true,"setupCode":"","updateCode":"","pens":[{"display":"fast","interval":5,"mode":1,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"medium","interval":5,"mode":1,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"slow","interval":5,"mode":1,"color":-13345367,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"avg-speed","interval":1,"mode":0,"color":-7500403,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"},{"display":"init-avg-speed","interval":1,"mode":0,"color":-16777216,"inLegend":true,"setupCode":"","updateCode":"","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"variable":"trace?","left":199,"top":44,"right":302,"bottom":77,"display":"trace?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"20","compiledStep":"1","variable":"init-particle-speed","left":7,"top":80,"right":180,"bottom":113,"display":"init-particle-speed","min":"1","max":"20","default":10,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"20","compiledStep":"1","variable":"particle-mass","left":7,"top":114,"right":180,"bottom":147,"display":"particle-mass","min":"1","max":"20","default":5,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_42 = procedures[\"BENCHMARK\"]();\n  if (_maybestop_33_42 instanceof Exception.StopInterrupt) { return _maybestop_33_42; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"benchmark","left":609,"top":458,"right":780,"bottom":633,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"result\")","source":"result","left":628,"top":579,"right":767,"bottom":624,"precision":17,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["number-of-particles", "collide?", "trace?", "init-particle-speed", "particle-mass", "result", "tick-length", "box-edge", "pressure", "pressure-history", "zero-pressure-count", "wall-hits-per-particle", "length-horizontal-surface", "length-vertical-surface", "init-avg-speed", "init-avg-energy", "avg-speed", "avg-energy", "fast", "medium", "slow", "fade-needed?"], ["number-of-particles", "collide?", "trace?", "init-particle-speed", "particle-mass"], [], -50, 50, -50, 50, 4.0, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ExportPrims = workspace.exportPrims;
@@ -114,6 +114,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       workspace.rng.setSeed(361);
       workspace.timer.reset();
       procedures["SETUP"]();
@@ -134,6 +135,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.clearAll();
       world.ticker.reset();
       BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("PARTICLES").getSpecialName(), "circle")
@@ -165,6 +167,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.observer.setGlobal("medium", world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 55); }).size());
       world.observer.setGlobal("slow", world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 105); }).size());
       world.observer.setGlobal("fast", world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); }).size());
@@ -183,6 +186,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() { procedures["BOUNCE"](); }, true);
       world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() { procedures["MOVE"](); }, true);
       world.turtleManager.turtlesOfBreed("PARTICLES").ask(function() {
@@ -196,7 +200,7 @@ var procedures = (function() {
           world.observer.setGlobal("fade-needed?", true);
         }, true);
       }
-      let oldClock = world.ticker.tickCount();
+      let oldClock = world.ticker.tickCount(); letVars['oldClock'] = oldClock;
       world.ticker.tickAdvance(world.observer.getGlobal("tick-length"));
       if (Prims.gt(NLMath.floor(world.ticker.tickCount()), NLMath.floor((world.ticker.tickCount() - world.observer.getGlobal("tick-length"))))) {
         if (!world.turtleManager.turtlesOfBreed("PARTICLES").isEmpty()) {
@@ -233,6 +237,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (!world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.gt(SelfManager.self().getVariable("speed"), 0); }).isEmpty()) {
         world.observer.setGlobal("tick-length", Prims.div(1, NLMath.ceil(ListPrims.max(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("speed"); })))));
       }
@@ -252,6 +257,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.observer.setGlobal("pressure", (15 * ListPrims.sum(world.turtleManager.turtlesOfBreed("PARTICLES").projectionBy(function() { return SelfManager.self().getVariable("momentum-difference"); }))));
       world.observer.setGlobal("pressure-history", ListPrims.lput(world.observer.getGlobal("pressure"), world.observer.getGlobal("pressure-history")));
       world.observer.setGlobal("zero-pressure-count", ListPrims.length(world.observer.getGlobal("pressure-history").filter(Tasks.reporterTask(function(p) {
@@ -274,12 +280,13 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (ColorModel.areRelatedByShade(45, SelfManager.self().getPatchVariable("pcolor"))) {
         throw new Exception.StopInterrupt;
       }
-      let newPatch = SelfManager.self().patchAhead(1);
-      let newPx = newPatch.projectionBy(function() { return SelfManager.self().getPatchVariable("pxcor"); });
-      let newPy = newPatch.projectionBy(function() { return SelfManager.self().getPatchVariable("pycor"); });
+      let newPatch = SelfManager.self().patchAhead(1); letVars['newPatch'] = newPatch;
+      let newPx = newPatch.projectionBy(function() { return SelfManager.self().getPatchVariable("pxcor"); }); letVars['newPx'] = newPx;
+      let newPy = newPatch.projectionBy(function() { return SelfManager.self().getPatchVariable("pycor"); }); letVars['newPy'] = newPy;
       if (!ColorModel.areRelatedByShade(45, newPatch.projectionBy(function() { return SelfManager.self().getPatchVariable("pcolor"); }))) {
         throw new Exception.StopInterrupt;
       }
@@ -316,7 +323,8 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
-      let oldPatch = SelfManager.self().getPatchHere();
+      var letVars = { };
+      let oldPatch = SelfManager.self().getPatchHere(); letVars['oldPatch'] = oldPatch;
       SelfManager.self().jumpIfAble((SelfManager.self().getVariable("speed") * world.observer.getGlobal("tick-length")));
       if (!Prims.equality(SelfManager.self().getPatchHere(), oldPatch)) {
         SelfManager.self().setVariable("last-collision", Nobody);
@@ -334,10 +342,11 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (Prims.equality(SelfPrims._optimalCountOther(SelfManager.self().breedHere("PARTICLES")), 1)) {
         let candidate = ListPrims.oneOf(SelfManager.self().breedHere("PARTICLES")._optimalOtherWith(function() {
           return (Prims.lt(SelfManager.self().getVariable("who"), SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("who"); })) && !Prims.equality(SelfManager.myself(), SelfManager.self().getVariable("last-collision")));
-        }));
+        })); letVars['candidate'] = candidate;
         if ((!Prims.equality(candidate, Nobody) && (Prims.gt(SelfManager.self().getVariable("speed"), 0) || Prims.gt(candidate.projectionBy(function() { return SelfManager.self().getVariable("speed"); }), 0)))) {
           procedures["COLLIDE-WITH"](candidate);
           SelfManager.self().setVariable("last-collision", candidate);
@@ -357,17 +366,18 @@ var procedures = (function() {
   temp = (function(otherParticle) {
     try {
       var reporterContext = false;
-      let mass2 = otherParticle.projectionBy(function() { return SelfManager.self().getVariable("mass"); });
-      let speed2 = otherParticle.projectionBy(function() { return SelfManager.self().getVariable("speed"); });
-      let heading2 = otherParticle.projectionBy(function() { return SelfManager.self().getVariable("heading"); });
-      let theta = Prims.randomFloat(360);
-      let v1t = (SelfManager.self().getVariable("speed") * NLMath.cos((theta - SelfManager.self().getVariable("heading"))));
-      let v1l = (SelfManager.self().getVariable("speed") * NLMath.sin((theta - SelfManager.self().getVariable("heading"))));
-      let v2t = (speed2 * NLMath.cos((theta - heading2)));
-      let v2l = (speed2 * NLMath.sin((theta - heading2)));
-      let vcm = Prims.div(((SelfManager.self().getVariable("mass") * v1t) + (mass2 * v2t)), (SelfManager.self().getVariable("mass") + mass2));
-      v1t = ((2 * vcm) - v1t);
-      v2t = ((2 * vcm) - v2t);
+      var letVars = { };
+      let mass2 = otherParticle.projectionBy(function() { return SelfManager.self().getVariable("mass"); }); letVars['mass2'] = mass2;
+      let speed2 = otherParticle.projectionBy(function() { return SelfManager.self().getVariable("speed"); }); letVars['speed2'] = speed2;
+      let heading2 = otherParticle.projectionBy(function() { return SelfManager.self().getVariable("heading"); }); letVars['heading2'] = heading2;
+      let theta = Prims.randomFloat(360); letVars['theta'] = theta;
+      let v1t = (SelfManager.self().getVariable("speed") * NLMath.cos((theta - SelfManager.self().getVariable("heading")))); letVars['v1t'] = v1t;
+      let v1l = (SelfManager.self().getVariable("speed") * NLMath.sin((theta - SelfManager.self().getVariable("heading")))); letVars['v1l'] = v1l;
+      let v2t = (speed2 * NLMath.cos((theta - heading2))); letVars['v2t'] = v2t;
+      let v2l = (speed2 * NLMath.sin((theta - heading2))); letVars['v2l'] = v2l;
+      let vcm = Prims.div(((SelfManager.self().getVariable("mass") * v1t) + (mass2 * v2t)), (SelfManager.self().getVariable("mass") + mass2)); letVars['vcm'] = vcm;
+      v1t = ((2 * vcm) - v1t); letVars['v1t'] = v1t;
+      v2t = ((2 * vcm) - v2t); letVars['v2t'] = v2t;
       SelfManager.self().setVariable("speed", NLMath.sqrt(((v1t * v1t) + (v1l * v1l))));
       SelfManager.self().setVariable("energy", (((0.5 * SelfManager.self().getVariable("mass")) * SelfManager.self().getVariable("speed")) * SelfManager.self().getVariable("speed")));
       if ((!Prims.equality(v1l, 0) || !Prims.equality(v1t, 0))) {
@@ -395,6 +405,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (Prims.lt(SelfManager.self().getVariable("speed"), (0.5 * 10))) {
         SelfManager.self().setVariable("color", 105);
       }
@@ -419,9 +430,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       let tracePatches = world.patches().agentFilter(function() {
         return (!Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 45) && !Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 0));
-      });
+      }); letVars['tracePatches'] = tracePatches;
       if (!tracePatches.isEmpty()) {
         tracePatches.ask(function() {
           SelfManager.self().setPatchVariable("pcolor", (SelfManager.self().getPatchVariable("pcolor") - 0.4));
@@ -446,6 +458,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.patches().agentFilter(function() {
         return ((Prims.equality(NLMath.abs(SelfManager.self().getPatchVariable("pxcor")), world.observer.getGlobal("box-edge")) && Prims.lte(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), world.observer.getGlobal("box-edge"))) || (Prims.equality(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), world.observer.getGlobal("box-edge")) && Prims.lte(NLMath.abs(SelfManager.self().getPatchVariable("pxcor")), world.observer.getGlobal("box-edge"))));
       }).ask(function() { SelfManager.self().setPatchVariable("pcolor", 45); }, true);
@@ -462,6 +475,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.turtleManager.createOrderedTurtles(world.observer.getGlobal("number-of-particles"), "PARTICLES").ask(function() {
         procedures["SETUP-PARTICLE"]();
         procedures["RANDOM-POSITION"]();
@@ -481,6 +495,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       SelfManager.self().setVariable("speed", world.observer.getGlobal("init-particle-speed"));
       SelfManager.self().setVariable("mass", world.observer.getGlobal("particle-mass"));
       SelfManager.self().setVariable("energy", (((0.5 * SelfManager.self().getVariable("mass")) * SelfManager.self().getVariable("speed")) * SelfManager.self().getVariable("speed")));
@@ -500,6 +515,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       SelfManager.self().setXY(((1 - world.observer.getGlobal("box-edge")) + Prims.randomFloat(((2 * world.observer.getGlobal("box-edge")) - 2))), ((1 - world.observer.getGlobal("box-edge")) + Prims.randomFloat(((2 * world.observer.getGlobal("box-edge")) - 2))));
       SelfManager.self().setVariable("heading", Prims.randomFloat(360));
     } catch (e) {
@@ -515,6 +531,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       plotManager.setCurrentPlot("Speed Counts");
       plotManager.setYRange(0, NLMath.ceil(Prims.div(world.observer.getGlobal("number-of-particles"), 6)));
     } catch (e) {
@@ -530,6 +547,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       plotManager.setCurrentPlot("Speed Histogram");
       plotManager.setXRange(0, (world.observer.getGlobal("init-particle-speed") * 2));
       plotManager.setYRange(0, NLMath.ceil(Prims.div(world.observer.getGlobal("number-of-particles"), 6)));
@@ -565,6 +583,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       plotManager.setCurrentPlot("Pressure vs. Time");
       if (Prims.gt(ListPrims.length(world.observer.getGlobal("pressure-history")), 0)) {
         plotManager.plotPoint(world.ticker.tickCount(), ListPrims.mean(procedures["LAST-N"](3,world.observer.getGlobal("pressure-history"))));
@@ -594,6 +613,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       plotManager.setCurrentPlot("Energy histogram");
       plotManager.setCurrentPen("fast");
       plotManager.drawHistogramFrom(world.turtleManager.turtlesOfBreed("PARTICLES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("color"), 15); }).projectionBy(function() { return SelfManager.self().getVariable("energy"); }));
@@ -627,6 +647,7 @@ var procedures = (function() {
   temp = (function(xval) {
     try {
       var reporterContext = false;
+      var letVars = { };
       plotManager.plotPoint(xval, plotManager.getPlotYMin());
       plotManager.lowerPen();
       plotManager.plotPoint(xval, plotManager.getPlotYMax());
@@ -644,11 +665,16 @@ var procedures = (function() {
   temp = (function(n, theList) {
     try {
       var reporterContext = true;
+      var letVars = { };
       if (Prims.gte(n, ListPrims.length(theList))) {
-        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return theList }
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+          return theList
+        }
       }
       else {
-        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return procedures["LAST-N"](n,ListPrims.butFirst(theList)) }
+        if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+          return procedures["LAST-N"](n,ListPrims.butFirst(theList))
+        }
       }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
@@ -664,6 +690,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       BreedManager.setDefaultShape(world.turtleManager.turtlesOfBreed("CLOCKERS").getSpecialName(), "clocker")
       world.turtleManager.createOrderedTurtles(1, "CLOCKERS").ask(function() {
         SelfManager.self().setXY((world.observer.getGlobal("box-edge") - 5), (world.observer.getGlobal("box-edge") - 5));

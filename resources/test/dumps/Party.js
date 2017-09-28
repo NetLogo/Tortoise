@@ -53,6 +53,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Number Happy', 'Happy')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotValue(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("happy?"); }).size());
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -69,6 +70,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Number Happy', undefined)(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.setYRange(0, world.observer.getGlobal("number"));
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -90,6 +92,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Single Sex Groups', 'Single Sex')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotValue(world.observer.getGlobal("boring-groups"));
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -105,7 +108,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "clock", "", false, true, 0.0, 10.0, 0.0, 12.0, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["happy?", "my-group-site"], [])(tortoise_require("extensions/all").dumpers())(["tolerance", "number", "num-groups", "group-sites", "boring-groups"], ["tolerance", "number", "num-groups"], [], -80, 1, -55, 55, 5.0, true, false, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["happy?", "my-group-site"], [])('globals [\n  group-sites    ;; agentset of patches where groups are located\n  boring-groups  ;; how many groups are currently single-sex\n]\n\nturtles-own [\n  happy?         ;; true or false\n  my-group-site\n]\n\nto setup\n  clear-all\n  set group-sites patches with [group-site?]\n  set-default-shape turtles \"person\"\n  create-turtles number [\n    choose-sex                   ;; become a man or a woman\n    set size 3                   ;; be easier to see\n    set my-group-site one-of group-sites\n    move-to my-group-site\n  ]\n  ask turtles [ update-happiness ]\n  count-boring-groups\n  update-labels\n  ask turtles [ spread-out-vertically ]\n  reset-ticks\nend\n\nto go\n  if all? turtles [happy?]\n    [ stop ]  ;; stop the simulation if everyone is happy\n  ask turtles [ move-to my-group-site ]  ;; put all people back to their group sites\n  ask turtles [ update-happiness ]\n  ask turtles [ leave-if-unhappy ]\n  find-new-groups\n  update-labels\n  count-boring-groups\n  ask turtles [\n    set my-group-site patch-here\n    spread-out-vertically\n  ]\n  tick\nend\n\nto update-happiness  ;; turtle procedure\n  let total count turtles-here\n  let same count turtles-here with [color = [color] of myself]\n  let opposite (total - same)\n  ;; you are happy if the proportion of people of the opposite sex\n  ;; does not exceed your tolerance\n  set happy? (opposite / total) <= (tolerance / 100)\nend\n\nto leave-if-unhappy  ;; turtle procedure\n  if not happy? [\n    set heading one-of [90 270]  ;; randomly face right or left\n    fd 1                         ;; leave old group\n  ]\nend\n\nto find-new-groups\n  display   ;; force display update so we see animation\n  let malcontents turtles with [not member? patch-here group-sites]\n  if not any? malcontents [ stop ]\n  ask malcontents [ fd 1 ]\n  find-new-groups\nend\n\nto-report group-site?  ;; patch procedure\n  ;; if your pycor is 0 and your pxcor is where a group should be located,\n  ;; then you\'re a group site.\n  ;; In this model (0,0) is near the right edge, so pxcor is usually\n  ;; negative.\n  ;; first figure out how many patches apart the groups will be\n  let group-interval floor (world-width / num-groups)\n  report\n    ;; all group sites are in the middle row\n    (pycor = 0) and\n    ;; leave a right margin of one patch, for legibility\n    (pxcor <= 0) and\n    ;; the distance between groups must divide evenly into\n    ;; our pxcor\n    (pxcor mod group-interval = 0) and\n    ;; finally, make sure we don\'t wind up with too many groups\n    (floor ((- pxcor) / group-interval) < num-groups)\nend\n\nto spread-out-vertically  ;; turtle procedure\n  ifelse woman?\n    [ set heading 180 ]  ;; face north\n    [ set heading   0 ]  ;; face south\n  fd 4                   ;; leave a gap\n  while [any? other turtles-here] [\n    if-else can-move? 2 [\n      fd 1\n    ]\n    [ ;; else, if we reached the edge of the screen\n      set xcor xcor - 1  ;; take a step to the left\n      set ycor 0         ;; and move to the base a new stack\n      fd 4\n    ]\n  ]\nend\n\nto count-boring-groups\n  ask group-sites [\n    ifelse boring?\n      [ set plabel-color gray  ]\n      [ set plabel-color white ]\n  ]\n  set boring-groups count group-sites with [plabel-color = gray]\nend\n\nto-report boring?  ;; patch procedure\n  ;; To see whether this group is single sex, we collect the colors\n  ;; of the turtles into a list, then remove all the duplicates\n  ;; from the list.  If the result is a list with exactly one color\n  ;; in it, then the group is single sex.\n  report length remove-duplicates ([color] of turtles-here) = 1\nend\n\nto update-labels\n  ask group-sites [ set plabel count turtles-here ]\nend\n\n;;;\n;;; color procedures\n;;;\n\n;; Blue represents male, pink represents female. No stereotypes are meant\n;; to be promoted. Simply change the colors right here if you\'d like.\n\nto choose-sex  ;; turtle procedure\n  set color one-of [pink blue]\nend\n\nto-report woman?  ;; turtle procedure\n  report color = pink\nend\n\n\n; Copyright 1997 Uri Wilensky.\n; See Info tab for full copyright and license.')([{"left":275,"top":15,"right":693,"bottom":579,"dimensions":{"minPxcor":-80,"maxPxcor":1,"minPycor":-55,"maxPycor":55,"patchSize":5,"wrappingAllowedInX":true,"wrappingAllowedInY":false},"fontSize":14,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_38 = procedures[\"SETUP\"]();\n  if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"setup","left":25,"top":75,"right":93,"bottom":108,"display":"setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_35 = procedures[\"GO\"]();\n  if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"go","left":176,"top":75,"right":244,"bottom":108,"display":"go","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_35 = procedures[\"GO\"]();\n  if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"go","left":94,"top":75,"right":175,"bottom":108,"display":"go once","forever":false,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"99","compiledStep":"1","variable":"tolerance","left":25,"top":115,"right":244,"bottom":148,"display":"tolerance","min":"0.0","max":"99.0","default":25,"step":"1.0","units":"%","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"300","compiledStep":"1","variable":"number","left":60,"top":3,"right":211,"bottom":36,"display":"number","min":"0","max":"300","default":70,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Number Happy', undefined)(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.setYRange(0, world.observer.getGlobal(\"number\"));\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Number Happy', 'Happy')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotValue(world.turtles().agentFilter(function() { return SelfManager.self().getVariable(\"happy?\"); }).size());\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"Happy","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [happy?]","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Number Happy","left":10,"top":203,"right":260,"bottom":368,"xAxis":"clock","xmin":0,"xmax":10,"ymin":0,"ymax":150,"autoPlotOn":true,"legendOn":false,"setupCode":"set-plot-y-range 0 number","updateCode":"","pens":[{"display":"Happy","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot count turtles with [happy?]","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Single Sex Groups', 'Single Sex')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotValue(world.observer.getGlobal(\"boring-groups\"));\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"Single Sex","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot boring-groups","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Single Sex Groups","left":10,"top":428,"right":260,"bottom":598,"xAxis":"clock","xmin":0,"xmax":10,"ymin":0,"ymax":12,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"Single Sex","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot boring-groups","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledMin":"5","compiledMax":"20","compiledStep":"1","variable":"num-groups","left":60,"top":37,"right":211,"bottom":70,"display":"num-groups","min":"5","max":"20","default":10,"step":"1","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.turtles().agentFilter(function() { return SelfManager.self().getVariable(\"happy?\"); }).size()","source":"count turtles with [happy?]","left":75,"top":153,"right":200,"bottom":198,"display":"number happy","precision":3,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}, {"compiledSource":"world.observer.getGlobal(\"boring-groups\")","source":"boring-groups","left":70,"top":378,"right":195,"bottom":423,"display":"single sex groups","precision":3,"fontSize":11,"type":"monitor","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["tolerance", "number", "num-groups", "group-sites", "boring-groups"], ["tolerance", "number", "num-groups"], [], -80, 1, -55, 55, 5.0, true, false, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ExportPrims = workspace.exportPrims;
@@ -128,6 +131,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.clearAll();
       world.observer.setGlobal("group-sites", world.patches().agentFilter(function() { return procedures["GROUP-SITE?"](); }));
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "person")
@@ -155,6 +159,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (world.turtles().agentAll(function() { return SelfManager.self().getVariable("happy?"); })) {
         throw new Exception.StopInterrupt;
       }
@@ -182,11 +187,12 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
-      let total = SelfManager.self().turtlesHere().size();
+      var letVars = { };
+      let total = SelfManager.self().turtlesHere().size(); letVars['total'] = total;
       let same = SelfManager.self().turtlesHere().agentFilter(function() {
         return Prims.equality(SelfManager.self().getVariable("color"), SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("color"); }));
-      }).size();
-      let opposite = (total - same);
+      }).size(); letVars['same'] = same;
+      let opposite = (total - same); letVars['opposite'] = opposite;
       SelfManager.self().setVariable("happy?", Prims.lte(Prims.div(opposite, total), Prims.div(world.observer.getGlobal("tolerance"), 100)));
     } catch (e) {
       if (e instanceof Exception.StopInterrupt) {
@@ -201,6 +207,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (!SelfManager.self().getVariable("happy?")) {
         SelfManager.self().setVariable("heading", ListPrims.oneOf([90, 270]));
         SelfManager.self()._optimalFdOne();
@@ -218,10 +225,11 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       notImplemented('display', undefined)();
       let malcontents = world.turtles().agentFilter(function() {
         return !ListPrims.member(SelfManager.self().getPatchHere(), world.observer.getGlobal("group-sites"));
-      });
+      }); letVars['malcontents'] = malcontents;
       if (!!malcontents.isEmpty()) {
         throw new Exception.StopInterrupt;
       }
@@ -240,8 +248,11 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = true;
-      let groupInterval = NLMath.floor(Prims.div(world.topology.width, world.observer.getGlobal("num-groups")));
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return (((Prims.equality(SelfManager.self().getPatchVariable("pycor"), 0) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), 0)) && Prims.equality(NLMath.mod(SelfManager.self().getPatchVariable("pxcor"), groupInterval), 0)) && Prims.lt(NLMath.floor(Prims.div( -SelfManager.self().getPatchVariable("pxcor"), groupInterval)), world.observer.getGlobal("num-groups"))) }
+      var letVars = { };
+      let groupInterval = NLMath.floor(Prims.div(world.topology.width, world.observer.getGlobal("num-groups"))); letVars['groupInterval'] = groupInterval;
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+        return (((Prims.equality(SelfManager.self().getPatchVariable("pycor"), 0) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), 0)) && Prims.equality(NLMath.mod(SelfManager.self().getPatchVariable("pxcor"), groupInterval), 0)) && Prims.lt(NLMath.floor(Prims.div( -SelfManager.self().getPatchVariable("pxcor"), groupInterval)), world.observer.getGlobal("num-groups")))
+      }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
      if (e instanceof Exception.StopInterrupt) {
@@ -256,6 +267,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (procedures["WOMAN?"]()) {
         SelfManager.self().setVariable("heading", 180);
       }
@@ -286,6 +298,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.observer.getGlobal("group-sites").ask(function() {
         if (procedures["BORING?"]()) {
           SelfManager.self().setPatchVariable("plabel-color", 5);
@@ -308,7 +321,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = true;
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.equality(ListPrims.length(ListPrims.removeDuplicates(SelfManager.self().turtlesHere().projectionBy(function() { return SelfManager.self().getVariable("color"); }))), 1) }
+      var letVars = { };
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+        return Prims.equality(ListPrims.length(ListPrims.removeDuplicates(SelfManager.self().turtlesHere().projectionBy(function() { return SelfManager.self().getVariable("color"); }))), 1)
+      }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
      if (e instanceof Exception.StopInterrupt) {
@@ -323,6 +339,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.observer.getGlobal("group-sites").ask(function() { SelfManager.self().setPatchVariable("plabel", SelfManager.self().turtlesHere().size()); }, true);
     } catch (e) {
       if (e instanceof Exception.StopInterrupt) {
@@ -337,6 +354,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       SelfManager.self().setVariable("color", ListPrims.oneOf([135, 105]));
     } catch (e) {
       if (e instanceof Exception.StopInterrupt) {
@@ -351,7 +369,10 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = true;
-      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else { return Prims.equality(SelfManager.self().getVariable("color"), 135) }
+      var letVars = { };
+      if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
+        return Prims.equality(SelfManager.self().getVariable("color"), 135)
+      }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {
      if (e instanceof Exception.StopInterrupt) {

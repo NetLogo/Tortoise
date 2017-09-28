@@ -46,7 +46,7 @@ if (typeof javax !== "undefined") {
 }
 var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.plotOps !== null) ? modelConfig.plotOps : {};
 modelConfig.plots = [];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["peak?"], [])(tortoise_require("extensions/all").dumpers())([], [], [], -40, 40, -40, 40, 6.0, false, false, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["peak?"], [])('turtles-own\n[\n  peak? ;; indicates whether a turtle has reached a \"peak\",\n        ;; that is, it can no longer go \"uphill\" from where it stands\n]\n\nto setup\n  clear-all\n  ;; make a landscape with hills and valleys\n  ask n-of 100 patches [ set pcolor 120 ]\n  ;; slightly smooth out the landscape\n  repeat 20 [ diffuse pcolor 1 ]\n  ;; put some turtles on patch centers in the landscape\n  ask n-of 800 patches [\n    sprout 1 [\n      set peak? false\n      set color red\n      pen-down\n    ]\n  ]\n  reset-ticks\nend\n\nto go\n  ;; stop when all turtles are on peak\n  if all? turtles [peak?]\n    [ stop ]\n  ask turtles [\n    ;; remember where we started\n    let old-patch patch-here\n    ;; to use UPHILL, the turtles specify a patch variable\n    uphill pcolor\n    ;; are we still where we started? if so, we didn\'t\n    ;; move, so we must be on a peak\n    if old-patch = patch-here [ set peak? true ]\n  ]\n  tick\nend\n\n\n; Public Domain:\n; To the extent possible under law, Uri Wilensky has waived all\n; copyright and related or neighboring rights to this model.')([{"left":138,"top":11,"right":632,"bottom":506,"dimensions":{"minPxcor":-40,"maxPxcor":40,"minPycor":-40,"maxPycor":40,"patchSize":6,"wrappingAllowedInX":false,"wrappingAllowedInY":false},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_38 = procedures[\"SETUP\"]();\n  if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"setup","left":24,"top":51,"right":115,"bottom":84,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_35 = procedures[\"GO\"]();\n  if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"go","left":24,"top":90,"right":115,"bottom":123,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())([], [], [], -40, 40, -40, 40, 6.0, false, false, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ExportPrims = workspace.exportPrims;
@@ -69,6 +69,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.clearAll();
       ListPrims.nOf(100, world.patches()).ask(function() { SelfManager.self().setPatchVariable("pcolor", 120); }, true);
       for (let _index_296_302 = 0, _repeatcount_296_302 = StrictMath.floor(20); _index_296_302 < _repeatcount_296_302; _index_296_302++){
@@ -95,11 +96,12 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       if (world.turtles().agentAll(function() { return SelfManager.self().getVariable("peak?"); })) {
         throw new Exception.StopInterrupt;
       }
       world.turtles().ask(function() {
-        let oldPatch = SelfManager.self().getPatchHere();
+        let oldPatch = SelfManager.self().getPatchHere(); letVars['oldPatch'] = oldPatch;
         Prims.uphill("pcolor")
         if (Prims.equality(oldPatch, SelfManager.self().getPatchHere())) {
           SelfManager.self().setVariable("peak?", true);

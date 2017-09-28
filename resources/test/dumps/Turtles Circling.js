@@ -53,6 +53,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Distance from the origin', 'distance')(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.plotValue(world.turtleManager.getTurtle(0).projectionBy(function() { return SelfManager.self().distanceXY(0, 0); }));
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -69,6 +70,7 @@ modelConfig.plots = [(function() {
       plotManager.withTemporaryContext('Distance from the origin', undefined)(function() {
         try {
           var reporterContext = false;
+          var letVars = { };
           plotManager.setYRange(0, world.topology.maxPxcor);
         } catch (e) {
           if (e instanceof Exception.StopInterrupt) {
@@ -83,7 +85,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "time", "dist", false, true, 0.0, 1440.0, 0.0, 30.0, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])(tortoise_require("extensions/all").dumpers())(["radius", "speed", "number", "draw-radius", "plot?"], ["radius", "speed", "number", "draw-radius", "plot?"], [], -30, 30, -30, 30, 9.0, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('to setup\n  setup-circle radius number\n  reset-ticks\nend\n\nto setup-circle [r n]\n  clear-all\n  set-default-shape turtles \"circle\"\n  ;; turtles should be evenly spaced around the circle\n  create-ordered-turtles n [\n    set size 2  ;; easier to see\n    fd r\n    rt 90\n  ]\nend\n\nto all-circle\n  circle radius\n  display\nend\n\nto circle [r]\n  ask turtles [ move-along-circle r ]\n  if plot? [ update-plots ]\nend\n\nto move-along-circle [r]\n  fd (pi * r / 180) * (speed / 50)\n  rt speed / 50\nend\n\nto zero-circle\n  ask turtle 0\n    [ pen-down\n      move-along-circle radius ]\n  display\nend\n\nto draw-circle\n  clear-drawing\n  create-turtles 1\n    [ set color gray - 3\n      set size 2 * draw-radius\n      set shape \"circle\"\n      stamp\n      die ]\nend\n\n\n; Copyright 1997 Uri Wilensky.\n; See Info tab for full copyright and license.')([{"left":266,"top":10,"right":823,"bottom":568,"dimensions":{"minPxcor":-30,"maxPxcor":30,"minPycor":-30,"maxPycor":30,"patchSize":9,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":false,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_43 = procedures[\"ALL-CIRCLE\"]();\n  if (_maybestop_33_43 instanceof Exception.StopInterrupt) { return _maybestop_33_43; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"all-circle","left":3,"top":79,"right":95,"bottom":112,"display":"all-circle","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"30","compiledStep":"1","variable":"radius","left":97,"top":117,"right":260,"bottom":150,"display":"radius","min":"0.0","max":"30.0","default":20,"step":"1.0","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"100","compiledStep":"1","variable":"speed","left":97,"top":79,"right":260,"bottom":112,"display":"speed","min":"0.0","max":"100.0","default":25,"step":"1.0","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledMin":"1","compiledMax":"300","compiledStep":"1","variable":"number","left":97,"top":42,"right":260,"bottom":75,"display":"number","min":"1.0","max":"300.0","default":40,"step":"1.0","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_38 = procedures[\"SETUP\"]();\n  if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"setup","left":2,"top":42,"right":95,"bottom":75,"display":"setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_44 = procedures[\"DRAW-CIRCLE\"]();\n  if (_maybestop_33_44 instanceof Exception.StopInterrupt) { return _maybestop_33_44; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"draw-circle","left":4,"top":154,"right":95,"bottom":187,"display":"draw-circle","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledMin":"0","compiledMax":"30","compiledStep":"1","variable":"draw-radius","left":97,"top":154,"right":261,"bottom":187,"display":"draw-radius","min":"0.0","max":"30.0","default":15,"step":"1.0","direction":"horizontal","type":"slider","compilation":{"success":true,"messages":[]}}, {"variable":"plot?","left":83,"top":542,"right":183,"bottom":575,"display":"plot?","on":true,"type":"switch","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_44 = procedures[\"ZERO-CIRCLE\"]();\n  if (_maybestop_33_44 instanceof Exception.StopInterrupt) { return _maybestop_33_44; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"zero-circle","left":4,"top":117,"right":95,"bottom":150,"display":"zero-circle","forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Distance from the origin', undefined)(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.setYRange(0, world.topology.maxPxcor);\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Distance from the origin', 'distance')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotValue(world.turtleManager.getTurtle(0).projectionBy(function() { return SelfManager.self().distanceXY(0, 0); }));\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"distance","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot [distancexy 0 0] of turtle 0","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Distance from the origin","left":8,"top":348,"right":259,"bottom":540,"xAxis":"time","yAxis":"dist","xmin":0,"xmax":1440,"ymin":0,"ymax":30,"autoPlotOn":true,"legendOn":false,"setupCode":"set-plot-y-range 0 max-pxcor","updateCode":"","pens":[{"display":"distance","interval":1,"mode":0,"color":-10899396,"inLegend":true,"setupCode":"","updateCode":"plot [distancexy 0 0] of turtle 0","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  world.turtles().ask(function() { SelfManager.self().penManager.lowerPen(); }, true);\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"pen-down","left":147,"top":218,"right":242,"bottom":251,"forever":false,"buttonKind":"Turtle","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  world.turtles().ask(function() { SelfManager.self().penManager.raisePen(); }, true);\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"pen-up","left":147,"top":253,"right":242,"bottom":286,"forever":false,"buttonKind":"Turtle","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  world.turtles().ask(function() { SelfManager.self().setVariable(\"shape\", \"circle\"); }, true);\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"set shape \"circle\"","left":7,"top":253,"right":143,"bottom":286,"forever":false,"buttonKind":"Turtle","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  world.turtles().ask(function() { SelfManager.self().setVariable(\"shape\", \"turtle\"); }, true);\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"set shape \"turtle\"","left":7,"top":218,"right":143,"bottom":251,"forever":false,"buttonKind":"Turtle","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  world.clearDrawing();\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"clear-drawing","left":134,"top":291,"right":252,"bottom":324,"forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())(["radius", "speed", "number", "draw-radius", "plot?"], ["radius", "speed", "number", "draw-radius", "plot?"], [], -30, 30, -30, 30, 9.0, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ExportPrims = workspace.exportPrims;
@@ -106,6 +108,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       procedures["SETUP-CIRCLE"](world.observer.getGlobal("radius"),world.observer.getGlobal("number"));
       world.ticker.reset();
     } catch (e) {
@@ -121,6 +124,7 @@ var procedures = (function() {
   temp = (function(r, n) {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.clearAll();
       BreedManager.setDefaultShape(world.turtles().getSpecialName(), "circle")
       world.turtleManager.createOrderedTurtles(n, "").ask(function() {
@@ -141,6 +145,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       procedures["CIRCLE"](world.observer.getGlobal("radius"));
       notImplemented('display', undefined)();
     } catch (e) {
@@ -156,6 +161,7 @@ var procedures = (function() {
   temp = (function(r) {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.turtles().ask(function() { procedures["MOVE-ALONG-CIRCLE"](r); }, true);
       if (world.observer.getGlobal("plot?")) {
         plotManager.updatePlots();
@@ -173,6 +179,7 @@ var procedures = (function() {
   temp = (function(r) {
     try {
       var reporterContext = false;
+      var letVars = { };
       SelfManager.self().fd((Prims.div((3.141592653589793 * r), 180) * Prims.div(world.observer.getGlobal("speed"), 50)));
       SelfManager.self().right(Prims.div(world.observer.getGlobal("speed"), 50));
     } catch (e) {
@@ -188,6 +195,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.turtleManager.getTurtle(0).ask(function() {
         SelfManager.self().penManager.lowerPen();
         procedures["MOVE-ALONG-CIRCLE"](world.observer.getGlobal("radius"));
@@ -206,6 +214,7 @@ var procedures = (function() {
   temp = (function() {
     try {
       var reporterContext = false;
+      var letVars = { };
       world.clearDrawing();
       world.turtleManager.createTurtles(1, "").ask(function() {
         SelfManager.self().setVariable("color", (5 - 3));
