@@ -39,7 +39,7 @@ if [[ "$@" == "" ||  "$@" == "--clean" ]] ; then
   sbt_task compilerJVM/test:compile
   sbt_test compilerJVM test
   sbt_test compilerJS test
-  sbt_test netLogoWeb/test:compile
+  sbt_task netLogoWeb/test:compile
   sbt_test netLogoWeb fast
   sbt_test netLogoWeb language
   sbt_test netLogoWeb crawl
