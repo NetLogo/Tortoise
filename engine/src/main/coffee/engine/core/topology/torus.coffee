@@ -55,6 +55,35 @@ module.exports =
 
       return
 
+    # Overrides the default `Topology.diffuse4` --AH (10/9/17)
+    # (String, Number) => Unit
+    diffuse4: (varName, coefficient) ->
+
+      scratch = map(-> [])(rangeUntil(0)(@width))
+
+      getScratch = (nb) => scratch[nb.pxcor - @minPxcor][nb.pycor - @minPycor]
+
+      @_getPatches().forEach((patch) =>
+        scratch[patch.pxcor - @minPxcor][patch.pycor - @minPycor] = patch.getVariable(varName)
+        return
+      )
+
+      @_getPatches().forEach((patch) =>
+        pxcor = patch.pxcor
+        pycor = patch.pycor
+        # We have to order the neighbors exactly how Torus.java:diffuse does them so we don't get floating discrepancies.  FD 10/19/2013
+        orderedNeighbors =
+          [@_getPatchWest(pxcor, pycor),
+           @_getPatchNorth(pxcor, pycor),
+           @_getPatchEast(pxcor, pycor),
+           @_getPatchSouth(pxcor, pycor)]
+        diffusalSum = pipeline(map(getScratch), foldl(add)(0))(orderedNeighbors)
+        patch.setVariable(varName, patch.getVariable(varName) * (1.0 - coefficient) + (diffusalSum / 4) * coefficient)
+        return
+      )
+
+      return
+
     # (Number, Number) => Patch|Boolean
     _getPatchNorth: (pxcor, pycor) ->
       if pycor is @maxPycor

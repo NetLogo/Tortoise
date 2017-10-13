@@ -96,6 +96,58 @@ module.exports =
             scratch2[x - 1][y - 1] += diffuseVal
       return
 
+      # (Number, Number, Array[Array[Number]], Array[Array[Number]], Number) => Unit
+    _refineScratchPads4: (yy, xx, scratch, scratch2, coefficient) ->
+      for y in [0...yy]
+        for x in [0...xx]
+          diffuseVal = (scratch[x][y] / 4) * coefficient
+          if 0 < y < yy - 1 and 0 < x < xx - 1
+            scratch2[x    ][y    ] += scratch[x][y] - (4 * diffuseVal)
+            scratch2[x - 1][y    ] += diffuseVal
+            scratch2[x    ][y + 1] += diffuseVal
+            scratch2[x    ][y - 1] += diffuseVal
+            scratch2[x + 1][y    ] += diffuseVal
+          else if 0 < y < yy - 1
+            if x is 0
+              scratch2[x    ][y    ] += scratch[x][y] - (3 * diffuseVal)
+              scratch2[x    ][y + 1] += diffuseVal
+              scratch2[x    ][y - 1] += diffuseVal
+              scratch2[x + 1][y    ] += diffuseVal
+            else
+              scratch2[x    ][y    ] += scratch[x][y] - (3 * diffuseVal)
+              scratch2[x    ][y + 1] += diffuseVal
+              scratch2[x    ][y - 1] += diffuseVal
+              scratch2[x - 1][y    ] += diffuseVal
+          else if 0 < x < xx - 1
+            if y is 0
+              scratch2[x    ][y    ] += scratch[x][y] - (3 * diffuseVal)
+              scratch2[x - 1][y    ] += diffuseVal
+              scratch2[x    ][y + 1] += diffuseVal
+              scratch2[x + 1][y    ] += diffuseVal
+            else
+              scratch2[x    ][y    ] += scratch[x][y] - (3 * diffuseVal)
+              scratch2[x - 1][y    ] += diffuseVal
+              scratch2[x    ][y - 1] += diffuseVal
+              scratch2[x + 1][y    ] += diffuseVal
+          else if x is 0
+            if y is 0
+              scratch2[x    ][y    ] += scratch[x][y] - (2 * diffuseVal)
+              scratch2[x    ][y + 1] += diffuseVal
+              scratch2[x + 1][y    ] += diffuseVal
+            else
+              scratch2[x    ][y    ] += scratch[x][y] - (2 * diffuseVal)
+              scratch2[x    ][y - 1] += diffuseVal
+              scratch2[x + 1][y    ] += diffuseVal
+          else if y is 0
+            scratch2[x    ][y    ] += scratch[x][y] - (2 * diffuseVal)
+            scratch2[x    ][y + 1] += diffuseVal
+            scratch2[x - 1][y    ] += diffuseVal
+          else
+            scratch2[x    ][y    ] += scratch[x][y] - (2 * diffuseVal)
+            scratch2[x    ][y - 1] += diffuseVal
+            scratch2[x - 1][y    ] += diffuseVal
+      return
+
     # (Number, Number) => Number
     _shortestX: (x1, x2) =>
       @_shortestNotWrapped(x1, x2)

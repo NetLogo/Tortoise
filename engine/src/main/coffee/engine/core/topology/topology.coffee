@@ -34,6 +34,11 @@ module.exports =
       @_sloppyDiffuse(varName, coefficient)
       return
 
+    # (String, Number) => Unit
+    diffuse4: (varName, coefficient) ->
+      @_sloppyDiffuse4(varName, coefficient)
+      return
+
     # (Number, Number) => Array[Patch]
     getNeighbors: (pxcor, pycor) ->
       key = "(#{pxcor}, #{pycor})"
@@ -174,6 +179,10 @@ module.exports =
     _refineScratchPads: (yy, xx, scratch, scratch2, coefficient) ->
       return # If you want to use `_sloppyDiffuse` in your topology, override this --JAB (8/6/14)
 
+    # (Number, Number, Array[Array[Number]], Array[Array[Number]], Number) => Unit
+    _refineScratchPads4: (yy, xx, scratch, scratch2, coefficient) ->
+      return # If you want to use `_sloppyDiffuse4` in your topology, override this --AH (10/9/17)
+
     # (Number, Number) => Number
     _shortestNotWrapped: (cor1, cor2) ->
       StrictMath.abs(cor1 - cor2) * (if cor1 > cor2 then -1 else 1)
@@ -210,6 +219,26 @@ module.exports =
       scratch2 = mapAll(-> 0)
 
       @_refineScratchPads(yy, xx, scratch, scratch2, coefficient)
+
+      mapAll((x, y) => @_getPatchAt(x + @minPxcor, y + @minPycor).setVariable(varName, scratch2[x][y]))
+
+      return
+
+    # (String, Number) => Unit
+    _sloppyDiffuse4: (varName, coefficient) ->
+      yy = @height
+      xx = @width
+
+      mapAll =
+        (f) ->
+          for x in [0...xx]
+            for y in [0...yy]
+              f(x, y)
+
+      scratch  = mapAll((x, y) => @_getPatchAt(x + @minPxcor, y + @minPycor).getVariable(varName))
+      scratch2 = mapAll(-> 0)
+
+      @_refineScratchPads4(yy, xx, scratch, scratch2, coefficient)
 
       mapAll((x, y) => @_getPatchAt(x + @minPxcor, y + @minPycor).setVariable(varName, scratch2[x][y]))
 
