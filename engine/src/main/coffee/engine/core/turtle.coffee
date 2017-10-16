@@ -484,8 +484,14 @@ module.exports =
       originPatch = @getPatchHere()
       oldX        = @xcor
       oldY        = @ycor
-      @xcor       = @world.topology.wrapX(newX)
-      @ycor       = @world.topology.wrapY(newY)
+      xcor        = @world.topology.wrapX(newX)
+      ycor        = @world.topology.wrapY(newY)
+
+      # DO NOT SET `xcor` AND `ycor` DIRECTLY FROM `wrap*`.  `wrap*` can throw a `TopologyException`.
+      # If we set only one of the coordinates and then bail with an exception (and without generating the View update),
+      # it causes all sorts of bonkers stuff to happen. --JAB (10/17/17)
+      @xcor = xcor
+      @ycor = ycor
       @_updateVarsByName("xcor", "ycor")
 
       if originPatch isnt @getPatchHere()
