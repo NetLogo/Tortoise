@@ -45,7 +45,7 @@ class CompiledModelTest extends FunSuite {
   test("model with unimplemented primitives can be compiled") {
     val unimplemented =
       s"""|to go
-          |  beep
+          |  no-display
           |end""".stripMargin
     testModelCode(unimplemented, isInvalid, CompilerFlags(generateUnimplemented = false))
     testModelCode(unimplemented, isValid,   CompilerFlags(generateUnimplemented = true))

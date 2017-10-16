@@ -316,6 +316,7 @@ object SimplePrims {
         case _: prim.etc._updateplots            => "plotManager.updatePlots"
 
         // Misc.
+        case _: prim.etc._beep             => "AudioPrims.beep"
         case _: prim.etc._clearall         => "world.clearAll"
         case _: prim.etc._cleardrawing     => "world.clearDrawing"
         case _: prim.etc._clearglobals     => "world.observer.clearCodeGlobals"

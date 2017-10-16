@@ -34,6 +34,7 @@ class RuntimeInit(program: Program, widgets: Seq[CompiledWidget], model: Model, 
       , Seq("turtleShapes", "linkShapes")
     ),
 
+    workspaceDeclare("AudioPrims"),
     workspaceDeclare("BreedManager"),
     workspaceDeclare("ExportPrims"),
     workspaceDeclare("LayoutManager"),

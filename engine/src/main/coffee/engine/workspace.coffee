@@ -21,6 +21,7 @@ SelfPrims     = require('./prim/selfprims')
 RNG           = require('util/rng')
 Timer         = require('util/timer')
 
+{ Config: AudioConfig,      Prims: AudioPrims }      = require('./prim/audioprims')
 { Config: ExportConfig,     Prims: ExportPrims }     = require('./prim/exportprims')
 { Config: MouseConfig,      Prims: MousePrims }      = require('./prim/mouseprims')
 { Config: OutputConfig,     Prims: OutputPrims }     = require('./prim/outputprims')
@@ -36,6 +37,7 @@ module.exports =
 
     worldArgs = arguments # If you want `Workspace` to take more parameters--parameters not related to `World`--just keep returning new functions
 
+    audioConfig   = modelConfig?.audio     ? new AudioConfig
     dialogConfig  = modelConfig?.dialog    ? new UserDialogConfig
     exportConfig  = modelConfig?.exporting ? new ExportConfig
     mouseConfig   = modelConfig?.mouse     ? new MouseConfig
@@ -64,6 +66,7 @@ module.exports =
     linkPrims = new LinkPrims(world)
     listPrims = new ListPrims(dump, Hasher, prims.equality.bind(prims), rng.nextInt)
 
+    audioPrims      = new AudioPrims(audioConfig)
     exportPrims     = new ExportPrims(exportConfig)
     mousePrims      = new MousePrims(mouseConfig)
     outputPrims     = new OutputPrims(outputConfig, dump)
@@ -72,6 +75,7 @@ module.exports =
 
     {
       selfManager
+      audioPrims
       breedManager
       dump
       exportPrims
