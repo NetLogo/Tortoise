@@ -89,9 +89,9 @@ lazy val compiler = CrossProject("compiler", file("compiler"), CrossType.Full).
     libraryDependencies                  ++= {
       import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport.toScalaJSGroupID
       Seq(
-        "com.lihaoyi"       %%%! "utest"       % "0.4.5",
+        "com.lihaoyi"       %%%! "utest"       % "0.4.7",
         "org.nlogo"         %%%! "parser-js"   % parserJsDependencyVersion,
-        "com.typesafe.play" %%%  "play-json"   % "2.6.1",
+        "com.typesafe.play" %%%  "play-json"   % "2.6.6",
         "org.scalaz"        %%%  "scalaz-core" % scalazVersion)
     })
 
