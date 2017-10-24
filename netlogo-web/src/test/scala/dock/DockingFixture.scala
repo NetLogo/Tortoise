@@ -170,7 +170,7 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
       if(headlessException != actualOutput)
         throw new TestFailedException(s"""Exception in JS was "$actualOutput" but exception in headless was "$headlessException" """, 7)
     } else {
-      assertResult(expectedOutput)(actualOutput)
+      assertResult(expectedOutput)(actualOutput.replaceAllLiterally("\\n", "\n"))
       val (expectedModel, actualModel) = updatedJsonModels(expectedJson, actualJson)
 
       val headlessRNGState = workspace.world.mainRNG.save
