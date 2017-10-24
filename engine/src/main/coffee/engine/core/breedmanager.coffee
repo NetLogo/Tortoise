@@ -1,6 +1,8 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-{ foldl, isEmpty, last, sortedIndexBy } = require('brazierjs/array')
+{ foldl, isEmpty, last, map, sortedIndexBy, toObject } = require('brazierjs/array')
+{ pipeline                                           } = require('brazierjs/function')
+{ values                                             } = require('brazierjs/object')
 
 count = 0
 getNextOrdinal = -> count++
@@ -62,15 +64,17 @@ module.exports =
 
     # type BreedObj = { name: String, singular: String, varNames: Array[String], isDirected: Boolean }
 
-    # Object[String, Breed]
-    _breeds: undefined
+    _breeds:         undefined # Object[Breed]
+    _singularBreeds: undefined # Object[Breed]
 
     # (Array[BreedObj], Array[String], Array[String]) => BreedManager
     constructor: (breedObjs, turtlesOwns = [], linksOwns = []) ->
+
       defaultBreeds = {
         TURTLES: new Breed("TURTLES", "turtle", this, turtlesOwns, undefined, "default"),
         LINKS:   new Breed("LINKS",   "link",   this, linksOwns,   false,     "default")
       }
+
       @_breeds = foldl(
         (acc, breedObj) =>
           trueName      = breedObj.name.toUpperCase()
@@ -80,9 +84,19 @@ module.exports =
           acc
       )(defaultBreeds)(breedObjs)
 
+      @_singularBreeds = pipeline(values, map((b) -> [b.singular, b]), toObject)(@_breeds)
+
+    # () => Object[Breed]
+    breeds: ->
+      @_breeds
+
     # (String) => Breed
     get: (name) ->
       @_breeds[name.toUpperCase()]
+
+    # (String) => Breed
+    getSingular: (name) ->
+      @_singularBreeds[name.toLowerCase()]
 
     # (String, String) => Unit
     setDefaultShape: (breedName, shape) ->

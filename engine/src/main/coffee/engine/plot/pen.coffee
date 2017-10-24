@@ -64,6 +64,10 @@ module.exports.State = class State
     return
 
   # () => Number
+  getPenX: ->
+    @_counter._count
+
+  # () => Number
   nextX: ->
     @_counter.next(@interval)
 
@@ -123,9 +127,21 @@ module.exports.Pen = class Pen
 
     return
 
+  # (Number) => DisplayMode
+  displayModeFromNumber: (num) ->
+    switch num
+      when 0 then Line
+      when 1 then Bar
+      when 2 then Point
+      else        throw new Error("Pen display mode expected `0` (line), `1` (bar), or `2` (point), but got `#{num}`")
+
   # () => Number
   getColor: ->
     @_state.color
+
+  # () => PenMode
+  getPenMode: ->
+    @_state.mode
 
   # () => DisplayMode
   getDisplayMode: ->
@@ -138,6 +154,18 @@ module.exports.Pen = class Pen
   # () => Array[PlotPoint]
   getPoints: ->
     @_points
+
+  penDownToBool: (penDown) ->
+    if penDown is Up
+      false
+    else
+      true
+
+  penModeToNum: (mode) ->
+    switch mode
+      when Line then 0
+      when Bar  then 1
+      else           2
 
   # () => Unit
   lower: ->
@@ -181,6 +209,12 @@ module.exports.Pen = class Pen
     @_updateThis()
     return
 
+  # (DisplayMode) => Unit
+  updateDisplayMode: (newMode) ->
+    @_state.displayMode = newMode
+    @_ops.updateMode(newMode)
+    return
+
   # (Number, Number) => Unit
   _addPoint: (x, y) ->
     @_points.push(new PlotPoint(x, y, @_state.mode, @_state.color))
@@ -196,8 +230,4 @@ module.exports.Pen = class Pen
         [Math.min(minX, x), Math.max(maxX, x), Math.min(minY, y), Math.max(maxY, y)]
       else
         [x, x, y, y]
-
-  _updateDisplayMode: (newMode) ->
-    @_state.displayMode = newMode
-    @_ops.updateMode(newMode)
     return

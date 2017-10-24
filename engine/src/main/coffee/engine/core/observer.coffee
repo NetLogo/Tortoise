@@ -54,6 +54,10 @@ module.exports =
     getGlobal: (varName) ->
       @_varManager[varName]
 
+    # () => Number
+    getPerspectiveNum: ->
+      @_perspective.toInt
+
     # () => Unit
     resetPerspective: ->
       @_perspective = Observe

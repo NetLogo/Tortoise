@@ -136,14 +136,7 @@ module.exports = class PlotManager
 
   # (Number) => Unit
   setPenMode: (num) ->
-    @_withPlot(
-      (plot) ->
-        switch num
-          when 0 then plot.useLinePenMode()
-          when 1 then plot.useBarPenMode()
-          when 2 then plot.usePointPenMode()
-          else throw new Error("#{num} is not a valid plot pen mode (valid modes are 0, 1, and 2)")
-    )
+    @_withPlot((plot) -> plot.updateDisplayMode(plot.displayModeFromNumber(num)))
     return
 
   # () => Unit

@@ -51,21 +51,17 @@ module.exports = class Plot
 
   # (String) => Unit
   createTemporaryPen: (name) ->
-    existingPen = @_getPenByName(name)
-    @_currentPen =
-      if existingPen?
-        existingPen
-      else
-        pen = new Pen(name, @_ops.makePenOps, true)
-        @_penMap[pen.name.toUpperCase()] = pen
-        @_ops.registerPen(pen)
-        pen
+    @_currentPen = @_createAndReturnTemporaryPen(name)
     return
 
   # () => Unit
   disableAutoplotting: ->
     @isAutoplotting = false
     return
+
+  # (Number) => DisplayMode
+  displayModeFromNumber: (num) ->
+    @_withPen((pen) -> pen.displayModeFromNumber(num))
 
   # (Array[Number]) => Unit
   drawHistogramFrom: (list) ->
@@ -110,7 +106,7 @@ module.exports = class Plot
 
   # () => Unit
   resetPen: ->
-    @_withPen((pen) => pen.reset())
+    @_withPen((pen) -> pen.reset())
     return
 
   # (String) => Unit
@@ -176,6 +172,11 @@ module.exports = class Plot
       pipeline(values, forEach((pen) -> pen.update(); return))(@_penMap)
     return
 
+  # (DisplayMode) => Unit
+  updateDisplayMode: (newMode) ->
+    @_withPen((pen) -> pen.updateDisplayMode(newMode))
+    return
+
   # (String) => (() => Unit) => Unit
   withTemporaryContext: (penName) -> (f) =>
     oldPen       = @_currentPen
@@ -183,6 +184,17 @@ module.exports = class Plot
     f()
     @_currentPen = oldPen
     return
+
+  # (String) => Pen
+  _createAndReturnTemporaryPen: (name) ->
+    existingPen = @_getPenByName(name)
+    if existingPen?
+      existingPen
+    else
+      pen = new Pen(name, @_ops.makePenOps, true)
+      @_penMap[pen.name.toUpperCase()] = pen
+      @_ops.registerPen(pen)
+      pen
 
   # (String) => Pen
   _getPenByName: (name) ->

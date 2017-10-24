@@ -10,6 +10,10 @@ module.exports =
     constructor: ->
       @reset()
 
+    # () => Number
+    getCount: ->
+      @_count
+
     # () => Unit
     reset: ->
       @_count = 0
