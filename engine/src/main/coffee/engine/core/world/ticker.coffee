@@ -26,6 +26,11 @@ module.exports =
       @_updateTicks(-> EvilSentinel)
       return
 
+    # (Number) => Unit
+    importTicks: (numTicks) ->
+      @_updateTicks(-> numTicks)
+      return
+
     # () => Unit
     tick: ->
       if @ticksAreStarted()

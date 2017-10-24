@@ -23,6 +23,11 @@ module.exports =
     next: ->
       @_count++
 
+    # (Number) => Unit
+    importState: (nextID) ->
+      @_count = nextID
+      return
+
     # (() => Any) => Unit
     suspendDuring: (f) ->
       oldCount = @_count
