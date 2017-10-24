@@ -181,21 +181,6 @@ module.exports.Pen = class Pen
     @_updateThis()
     return
 
-  # () => Unit
-  useBarMode: ->
-    @_updateDisplayMode(Bar)
-    return
-
-  # () => Unit
-  useLineMode: ->
-    @_updateDisplayMode(Line)
-    return
-
-  # () => Unit
-  usePointMode: ->
-    @_updateDisplayMode(Point)
-    return
-
   # (Number, Number) => Unit
   _addPoint: (x, y) ->
     @_points.push(new PlotPoint(x, y, @_state.mode, @_state.color))
@@ -203,7 +188,7 @@ module.exports.Pen = class Pen
     @_ops.addPoint(x, y)
     return
 
-    # (x, y) => Unit
+  # (Number, Number) => Unit
   _updateBounds: (x, y) ->
     @_bounds =
       if @_bounds?

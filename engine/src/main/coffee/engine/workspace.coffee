@@ -1,7 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 class WorldConfig
-  # Unit -> Unit
+  # (() => Unit) => WorldConfig
   constructor: (@resizeWorld = (->)) ->
 
 Dump          = require('./dump')

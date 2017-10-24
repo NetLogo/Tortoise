@@ -176,21 +176,6 @@ module.exports = class Plot
       pipeline(values, forEach((pen) -> pen.update(); return))(@_penMap)
     return
 
-  # () => Unit
-  useBarPenMode: ->
-    @_withPen((pen) => pen.useBarMode())
-    return
-
-  # () => Unit
-  useLinePenMode: ->
-    @_withPen((pen) => pen.useLineMode())
-    return
-
-  # () => Unit
-  usePointPenMode: ->
-    @_withPen((pen) => pen.usePointMode())
-    return
-
   # (String) => (() => Unit) => Unit
   withTemporaryContext: (penName) -> (f) =>
     oldPen       = @_currentPen

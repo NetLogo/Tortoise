@@ -98,9 +98,6 @@ class TestMersenneTwister extends BrowserSuite {
 
     }
 
-
-
-
   }
 
 }

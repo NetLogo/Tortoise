@@ -27,6 +27,9 @@ import
     nvm.Optimizations.{ Command => OCommand, Reporter => OReporter }
 
 import
+  org.skyscreamer.jsonassert.JSONAssert
+
+import
   org.scalatest.{ Assertions, exceptions, fixture },
     Assertions._,
     exceptions.TestFailedException,
@@ -175,8 +178,7 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
 
       assert(headlessRNGState == nashornRNGState, "divergent RNG state")
 
-      org.skyscreamer.jsonassert.JSONAssert.assertEquals(
-        expectedModel, actualModel, true)  // strict = true
+      JSONAssert.assertEquals(expectedModel, actualModel, /* strict = */ true)
 
       ()
 

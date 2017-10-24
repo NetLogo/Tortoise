@@ -15,7 +15,7 @@ NLMath          = require('util/nlmath')
 module.exports =
   class World
 
-    # type ShapeMap = Object[String, Shape]
+    # type ShapeMap = Object[Shape]
 
     id: 0 # Number
 
@@ -81,7 +81,6 @@ module.exports =
       @_patches = []
 
       @_resizeHelper(minPxcor, maxPxcor, minPycor, maxPycor, wrappingAllowedInX, wrappingAllowedInY)
-
 
     # () => LinkSet
     links: ->
