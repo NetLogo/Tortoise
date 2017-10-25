@@ -70,7 +70,8 @@ object Compiler extends CompilerLike {
     val interfaceInit = JsStatement("interfaceInit", interfaceGlobalJs, Seq("world", "procedures", "modelConfig"))
     TortoiseLoader.integrateSymbols(init ++ plotConfig ++ procedures
                                          :+ outputConfig :+ dialogConfig
-                                         :+ worldConfig :+ interfaceInit :+ exportingConfig)
+                                         :+ worldConfig :+ importExportConfig
+                                         :+ interfaceInit)
   }
 
   def compileReporter(logo:          String,
@@ -186,8 +187,12 @@ object Compiler extends CompilerLike {
   private def worldConfig: JsStatement =
     genConfig("world", Map("resizeWorld" -> jsFunction(Seq("agent"))))
 
-  private def exportingConfig: JsStatement =
-    genConfig("exporting", Map("exportOutput" -> jsFunction(Seq("filename")), "exportView" -> jsFunction(Seq("filename"))))
+  private def importExportConfig: JsStatement =
+    genConfig( "importExport"
+             , Map( "exportOutput" -> jsFunction(Seq("filename"))
+                  , "exportView"   -> jsFunction(Seq("filename"))
+                  )
+             )
 
   private def genConfig(configName: String, functionDefs: Map[String, String]): JsStatement = {
 

@@ -1,11 +1,11 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 module.exports.Config =
-  class ExportConfig
-    # (String -> Unit, Unit -> Unit) -> ExportConfig
+  class ImportExportConfig
+    # (String -> Unit, Unit -> Unit) -> ImportExportConfig
     constructor: (@exportOutput = (->), @exportView = (->)) ->
 
 module.exports.Prims =
-  class ExportPrims
-    # ExportConfig -> ExportPrims
+  class ImportExportPrims
+    # ImportExportConfig -> ImportExportPrims
     constructor: ({ @exportOutput, @exportView }) ->

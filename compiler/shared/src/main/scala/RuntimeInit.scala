@@ -35,7 +35,7 @@ class RuntimeInit(program: Program, widgets: Seq[CompiledWidget], model: Model, 
     ),
 
     workspaceDeclare("BreedManager"),
-    workspaceDeclare("ExportPrims"),
+    workspaceDeclare("ImportExportPrims"),
     workspaceDeclare("LayoutManager"),
     workspaceDeclare("LinkPrims"),
     workspaceDeclare("ListPrims"),

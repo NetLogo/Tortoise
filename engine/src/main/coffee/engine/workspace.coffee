@@ -21,11 +21,11 @@ SelfPrims     = require('./prim/selfprims')
 RNG           = require('util/rng')
 Timer         = require('util/timer')
 
-{ Config: ExportConfig,     Prims: ExportPrims }     = require('./prim/exportprims')
-{ Config: MouseConfig,      Prims: MousePrims }      = require('./prim/mouseprims')
-{ Config: OutputConfig,     Prims: OutputPrims }     = require('./prim/outputprims')
-{ Config: PrintConfig,      Prims: PrintPrims }      = require('./prim/printprims')
-{ Config: UserDialogConfig, Prims: UserDialogPrims } = require('./prim/userdialogprims')
+{ Config: ImportExportConfig, Prims: ImportExportPrims } = require('./prim/importexportprims')
+{ Config: MouseConfig,        Prims: MousePrims }        = require('./prim/mouseprims')
+{ Config: OutputConfig,       Prims: OutputPrims }       = require('./prim/outputprims')
+{ Config: PrintConfig,        Prims: PrintPrims }        = require('./prim/printprims')
+{ Config: UserDialogConfig,   Prims: UserDialogPrims }   = require('./prim/userdialogprims')
 
 class MiniWorkspace
   # (SelfManager, Updater, BreedManager, RNG, PlotManager) => MiniWorkspace
@@ -36,13 +36,13 @@ module.exports =
 
     worldArgs = arguments # If you want `Workspace` to take more parameters--parameters not related to `World`--just keep returning new functions
 
-    dialogConfig  = modelConfig?.dialog    ? new UserDialogConfig
-    exportConfig  = modelConfig?.exporting ? new ExportConfig
-    mouseConfig   = modelConfig?.mouse     ? new MouseConfig
-    outputConfig  = modelConfig?.output    ? new OutputConfig
-    plots         = modelConfig?.plots     ? []
-    printConfig   = modelConfig?.print     ? new PrintConfig
-    worldConfig   = modelConfig?.world     ? new WorldConfig
+    dialogConfig       = modelConfig?.dialog       ? new UserDialogConfig
+    importExportConfig = modelConfig?.importExport ? new ImportExportConfig
+    mouseConfig        = modelConfig?.mouse        ? new MouseConfig
+    outputConfig       = modelConfig?.output       ? new OutputConfig
+    plots              = modelConfig?.plots        ? []
+    printConfig        = modelConfig?.print        ? new PrintConfig
+    worldConfig        = modelConfig?.world        ? new WorldConfig
 
     dump        = Dump(extensionDumpers)
     rng         = new RNG
@@ -64,17 +64,17 @@ module.exports =
     linkPrims = new LinkPrims(world)
     listPrims = new ListPrims(dump, Hasher, prims.equality.bind(prims), rng.nextInt)
 
-    exportPrims     = new ExportPrims(exportConfig)
-    mousePrims      = new MousePrims(mouseConfig)
-    outputPrims     = new OutputPrims(outputConfig, dump)
-    printPrims      = new PrintPrims(printConfig, dump)
-    userDialogPrims = new UserDialogPrims(dialogConfig)
+    importExportPrims = new ImportExportPrims(importExportConfig)
+    mousePrims        = new MousePrims(mouseConfig)
+    outputPrims       = new OutputPrims(outputConfig, dump)
+    printPrims        = new PrintPrims(printConfig, dump)
+    userDialogPrims   = new UserDialogPrims(dialogConfig)
 
     {
       selfManager
       breedManager
       dump
-      exportPrims
+      importExportPrims
       layoutManager
       linkPrims
       listPrims
