@@ -28,7 +28,7 @@ if (typeof javax !== "undefined") {
   }
 }
 if (typeof javax !== "undefined") {
-  modelConfig.exporting = {
+  modelConfig.importExport = {
     exportOutput: function(filename) {},
     exportView: function(filename) {}
   }
