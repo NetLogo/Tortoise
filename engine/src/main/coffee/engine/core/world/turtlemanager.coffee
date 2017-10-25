@@ -66,7 +66,7 @@ module.exports =
         Nobody
 
     # () => Number
-    nextIndex: ->
+    peekNextID: ->
       @_idManager.getCount()
 
     # () => TurtleSet

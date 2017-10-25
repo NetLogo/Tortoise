@@ -19,14 +19,14 @@ module.exports =
       @_mainRNG    = Random
       @_currentRNG = @_mainRNG
 
+    # () => String
+    exportState: ->
+      @_mainRNG.save()
+
     # (String) => Unit
     importState: (state) ->
       @_mainRNG.load(state)
       return
-
-    # () => String
-    exportState: ->
-      @_mainRNG.save()
 
     # () => Number
     nextGaussian: =>

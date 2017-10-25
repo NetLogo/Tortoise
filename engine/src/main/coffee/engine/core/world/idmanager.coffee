@@ -24,8 +24,7 @@ module.exports =
       @_count++
 
     # (Number) => Unit
-    importState: (nextID) ->
-      @_count = nextID
+    setCount: (@_count) ->
       return
 
     # (() => Any) => Unit
