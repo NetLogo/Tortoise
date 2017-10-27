@@ -2,7 +2,6 @@
 
 NLMath = require('util/nlmath')
 
-
 class Trail
   constructor: (@x1, @y1, @x2, @y2, @dist) ->
 
@@ -30,7 +29,7 @@ makeTrails = (heading, minX, maxX, minY, maxY) -> (x, y, jumpDist) ->
   rawX = x + xcomp * jumpDist
   rawY = y + ycomp * jumpDist
 
-  baseTrails = [new Trail(x, y, rawX, rawY, jumpDist)]
+  baseTrails = [new Trail(x, y, rawX, rawY, if jumpDist < 0 then jumpDist * -1 else jumpDist)]
 
   makeTrailComponent = (endX, endY, dx, dy) ->
     [new Trail(x, y, endX, endY, distanceFromLegs(dx, dy))]
@@ -65,17 +64,12 @@ makeTrails = (heading, minX, maxX, minY, maxY) -> (x, y, jumpDist) ->
 
   baseTrails.concat(xInterceptTrails, yInterceptTrails)
 
-
-
 # (Number, Number, Number, Number, Number, Number, Number, Number) => Array[Trail]
 makePenLines = (x, y, heading, jumpDist, minX, maxX, minY, maxY) ->
-  if jumpDist <= 0
-    []
-  else
-    makeTrailsBy = makeTrails(heading, minX, maxX, minY, maxY)
-    lazyWrapX    = lazyWrapValue(minX, maxX)
-    lazyWrapY    = lazyWrapValue(minY, maxY)
-    makePenLinesHelper(makeTrailsBy, lazyWrapX, lazyWrapY)(x, y, jumpDist, [])
+  makeTrailsBy = makeTrails(heading, minX, maxX, minY, maxY)
+  lazyWrapX    = lazyWrapValue(minX, maxX)
+  lazyWrapY    = lazyWrapValue(minY, maxY)
+  makePenLinesHelper(makeTrailsBy, lazyWrapX, lazyWrapY)(x, y, jumpDist, [])
 
 # ((Number, Number, Number) => Array[Trail], (Number) => Number, (Number) => Number) => (Number, Number, Number, Array[Trail]) => Array[Trail]
 makePenLinesHelper = (makeTrailsBy, lazyWrapX, lazyWrapY) ->
@@ -84,9 +78,9 @@ makePenLinesHelper = (makeTrailsBy, lazyWrapX, lazyWrapY) ->
     trails       = makeTrailsBy(x, y, jumpDist)
     trail        = trails.sort(({ dist: distA }, { dist: distB }) -> if distA < distB then -1 else if distA is distB then 0 else 1)[0]
     newAcc       = acc.concat([trail])
-    nextJumpDist = jumpDist - trail.dist
+    nextJumpDist = if jumpDist >= 0 then (jumpDist - trail.dist) else (jumpDist + trail.dist)
 
-    if nextJumpDist <= 0
+    if nextJumpDist == 0
       newAcc
     else
       newX = lazyWrapX(trail.x2)

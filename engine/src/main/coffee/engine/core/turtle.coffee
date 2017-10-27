@@ -183,7 +183,8 @@ module.exports =
       else if distance < 0
         while remaining <= increment and @jumpIfAble(increment)
           remaining -= increment
-      @jumpIfAble(remaining)
+      if remaining != 0
+        @jumpIfAble(remaining)
       return
 
     # (Number) => Unit
