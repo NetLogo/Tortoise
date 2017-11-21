@@ -50,10 +50,11 @@ object LiteralConverter {
   }
 
   private def reqToModelWithRun(req: CompilationRequest, isRunResult: Boolean, procVars: String, runString: String): Model = {
+    // The strings to run can end in comments like `; blah blah`, so the `\n` before the `end`s are necessary.
     val newCode = if (isRunResult)
-      s"${req.code}\nto-report __run [$procVars] report ($runString) end"
+      s"${req.code}\nto-report __run [$procVars] report ($runString\n)end"
     else
-      s"${req.code}\nto __run [$procVars] $runString end"
+      s"${req.code}\nto __run [$procVars] $runString\nend"
     req.copy(code = newCode).toModel
   }
 
