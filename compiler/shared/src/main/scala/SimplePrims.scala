@@ -245,8 +245,6 @@ object SimplePrims {
         case _: prim.etc._observercode             => ""
         case _: prim.etc._hideturtle               => "SelfManager.self().hideTurtle(true);"
         case _: prim.etc._showturtle               => "SelfManager.self().hideTurtle(false);"
-        case _: prim.etc._stopinspecting           => ""
-        case _: prim.etc._stopinspectingdeadagents => ""
       }
   }
 
@@ -261,7 +259,9 @@ object SimplePrims {
         case _: prim.etc._write => "PrintPrims.write"
 
         //Inspection
-        case _: prim.etc._inspect => "InspectPrims.inspect"
+        case _: prim.etc._inspect        => "InspectPrims.inspect"
+        case _: prim.etc._stopinspecting => "InspectPrims._stopInspecting"
+        case _: prim.etc._stopinspectingdeadagents => "InspectPrims._stopInspectingDeadAgents"
 
         // Output
         case _: prim.etc._clearoutput => "OutputPrims.clear"

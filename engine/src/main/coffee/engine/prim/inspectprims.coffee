@@ -5,12 +5,12 @@ NLType = require('../core/typechecker')
 module.exports.Config =
   class InspectConfig
     # ((Agent) => Unit) => InspectConfig
-    constructor: (@inspect = (->)) ->
+    constructor: (@inspect = (->), @stopInspecting = (->), @stopInspectingDeadAgents = (->)) ->
 
 module.exports.Prims =
   class InspectPrims
     # (InspectConfig, Dumper) => InspectPrims
-    constructor: ({ inspect: @_inspect }, @_dump) ->
+    constructor: ({ inspect: @_inspect, stopInspecting: @_stopInspecting, stopInspectingDeadAgents: @_stopInspectingDeadAgents }, @_dump) ->
 
     # (Agent) => Unit
     inspect: (agent) ->
