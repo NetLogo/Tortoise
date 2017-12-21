@@ -107,6 +107,7 @@ object JsonSerializer {
 
   private val scalaPrimsToJson: PartialFunction[AnyRef, TortoiseJson] = {
     case (x: AnyRef, y: AnyRef) => JsArray(List(toJValue(x), toJValue(y)))
+    case s: Seq[_]              => JsArray((s.toVector map { case v: AnyRef => toJValue(v) }).toList)
     case Some(x: AnyRef)        => toJValue(x)
     case None                   => JsNull
   }

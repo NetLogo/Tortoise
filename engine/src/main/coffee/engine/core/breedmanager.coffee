@@ -90,6 +90,21 @@ module.exports =
     breeds: ->
       @_breeds
 
+    orderedBreeds: ->
+      if (!@_orderedBreeds?)
+        @_orderedBreeds = Object.getOwnPropertyNames(@_breeds).sort((a, b) => @_breeds[a].ordinal - @_breeds[b].ordinal)
+      @_orderedBreeds
+
+    orderedLinkBreeds: ->
+      if (!@_orderedLinkBreeds?)
+        @_orderedLinkBreeds = @orderedBreeds().filter((b) => @_breeds[b].isLinky())
+      @_orderedLinkBreeds
+
+    orderedTurtleBreeds: ->
+      if (!@_orderedTurtleBreeds?)
+        @_orderedTurtleBreeds = @orderedBreeds().filter((b) => !@_breeds[b].isLinky())
+      @_orderedTurtleBreeds
+
     # (String) => Breed
     get: (name) ->
       @_breeds[name.toUpperCase()]
