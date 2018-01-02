@@ -7,7 +7,7 @@ val nlDependencyVersion       = "6.0.2-9b78be0"
 
 val parserJsDependencyVersion = "0.2.0-9b78be0"
 
-val scalazVersion             = "7.2.10"
+val scalazVersion             = "7.2.18"
 
 val commonSettings =
   Seq(
@@ -23,14 +23,14 @@ val commonSettings =
     resolvers           += sbt.Resolver.bintrayRepo("netlogo", "NetLogoHeadless"),
     libraryDependencies ++= Seq(
       "org.nlogo"         %  "netlogoheadless" % nlDependencyVersion,
-      "org.mozilla"       %  "rhino"           % "1.7.7.1", // see jsengine/Rhino.scala for more information
+      "org.mozilla"       %  "rhino"           % "1.7.7.2", // see jsengine/Rhino.scala for more information
       "org.scalaz"        %% "scalaz-core"     % scalazVersion,
       "com.lihaoyi"       %% "scalatags"       % "0.6.7"  % "test",
       "org.scalatest"     %% "scalatest"       % "3.0.4"  % "test",
       "org.skyscreamer"   %  "jsonassert"      % "1.5.0"  % "test",
       "org.reflections"   %  "reflections"     % "0.9.11" % "test",
       "org.scalacheck"    %% "scalacheck"      % "1.13.5" % "test",
-      "com.typesafe.play" %% "play-json"       % "2.6.6",
+      "com.typesafe.play" %% "play-json"       % "2.6.8",
       // Bring in headless test code/framework for our tests
       "org.nlogo"         %  "netlogoheadless" % nlDependencyVersion % "test" classifier "tests"),
     ivyScala                     := ivyScala.value map { _.copy(overrideScalaVersion = true) }, // needed to keep scala.js happy
@@ -89,9 +89,9 @@ lazy val compiler = CrossProject("compiler", file("compiler"), CrossType.Full).
     libraryDependencies                  ++= {
       import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport.toScalaJSGroupID
       Seq(
-        "com.lihaoyi"       %%%! "utest"       % "0.4.7",
+        "com.lihaoyi"       %%%! "utest"       % "0.4.8",
         "org.nlogo"         %%%! "parser-js"   % parserJsDependencyVersion,
-        "com.typesafe.play" %%%  "play-json"   % "2.6.6",
+        "com.typesafe.play" %%%  "play-json"   % "2.6.8",
         "org.scalaz"        %%%  "scalaz-core" % scalazVersion)
     })
 
