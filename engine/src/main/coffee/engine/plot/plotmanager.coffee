@@ -159,17 +159,18 @@ module.exports = class PlotManager
     @_forAllPlots((plot) -> plot.update())
     return
 
-  # (String, String) => (() => Unit) => Unit
+  # [T] @ (String, String) => (() => T) => T
   withTemporaryContext: (plotName, penName) -> (f) =>
     oldPlot       = @_currentPlot
     tempPlot      = @_plotMap[plotName.toUpperCase()]
     @_currentPlot = tempPlot
-    if penName?
-      tempPlot.withTemporaryContext(penName)(f)
-    else
-      f()
+    result =
+      if penName?
+        tempPlot.withTemporaryContext(penName)(f)
+      else
+        f()
     @_currentPlot = oldPlot
-    return
+    result
 
   # ((Plot) => Unit) => Unit
   _forAllPlots: (f) ->
