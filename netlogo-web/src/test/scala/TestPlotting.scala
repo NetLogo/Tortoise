@@ -228,7 +228,7 @@ class TestPlotting extends FunSuite with PlottingHelpers {
     clearPlot()
     setInterval(5)
     histogram(5, 19, 2, 107, -123, 2, 2, 2, 0, 1, 93)
-    assertXYs(0 -> 6, 5 -> 1, 20 -> 1)
+    assertXYs(0 -> 6, 5 -> 1, 15 -> 1)
 
     // Test `histogram` with negative xMin
     // Buckets should be: { -25: [-123], 0: [0, 1, 2, 2, 2, 2], 1: [5], 3: [19] }
@@ -236,7 +236,7 @@ class TestPlotting extends FunSuite with PlottingHelpers {
     setAxisRange(-125, 20)(n, X)
     setInterval(5)
     histogram(5, 19, 2, 107, -123, 2, 2, 2, 0, 1, 93)
-    assertXYs(-125 -> 1, 0 -> 6, 5 -> 1, 20 -> 1)
+    assertXYs(-125 -> 1, 0 -> 6, 5 -> 1, 15 -> 1)
 
     ()
 

@@ -114,7 +114,7 @@ module.exports.Pen = class Pen
 
     interval        = @getInterval()
     isValid         = (x) => (xMin / interval) <= x <= (xMax / interval)
-    determineBucket = (x) -> StrictMath.round((x / interval) * (1 + 3.2e-15)) # See 'Histogram.scala' in Headless for explanation --JAB (10/21/15)
+    determineBucket = (x) -> StrictMath.floor((x / interval) * (1 + 3.2e-15)) # See 'Histogram.scala' in Headless for explanation --JAB (10/21/15)
     plotBucket      = (([bucketNum, count]) => @addXY(Number(bucketNum) * interval, count); return)
 
     pipeline(filter(isNumber)
