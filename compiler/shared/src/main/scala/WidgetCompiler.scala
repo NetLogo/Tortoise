@@ -11,7 +11,7 @@ import
     TortoiseJson.JsObject
 
 import
-  JsOps.{ jsArrayString, sanitizeNil, thunkifyProcedure }
+  JsOps.{ jsArrayString, sanitizeNil, thunkifyFunction, thunkifyProcedure }
 
 import
   org.nlogo.core.{ Button, CompilerException, Monitor, Pen, Plot, Slider, Token, Widget }
@@ -129,9 +129,9 @@ class WidgetCompiler(compileCommand:  String => CompiledStringV,
     if (code.trim.isEmpty)
       thunkifyProcedure("").successNel
     else
-      compileCommand(code) map thunkifyProcedure  map
-        (inTempContext andThen thunkifyProcedure) map
-        (withAuxRNG    andThen thunkifyProcedure)
+      compileCommand(code) map thunkifyProcedure map
+        (inTempContext andThen thunkifyFunction) map
+        (withAuxRNG    andThen thunkifyFunction)
   }
 }
 
