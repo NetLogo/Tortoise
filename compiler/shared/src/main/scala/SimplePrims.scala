@@ -318,6 +318,7 @@ object SimplePrims {
         // Misc.
         case _: prim.etc._clearall         => "world.clearAll"
         case _: prim.etc._cleardrawing     => "world.clearDrawing"
+        case _: prim.etc._importdrawing    => "world.importDrawing"
         case _: prim.etc._clearglobals     => "world.observer.clearCodeGlobals"
         case _: prim.etc._clearpatches     => "world.clearPatches"
         case _: prim.etc._clearturtles     => "world.turtleManager.clearTurtles"

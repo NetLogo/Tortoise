@@ -182,6 +182,11 @@ module.exports =
       return
 
     # () => Unit
+    importDrawing: (sourcePath) ->
+      @_updater.importDrawing(sourcePath)
+      return
+
+    # () => Unit
     clearLinks: ->
       @linkManager.clear()
       @turtles().ask((-> SelfManager.self().linkManager.clear()), false)

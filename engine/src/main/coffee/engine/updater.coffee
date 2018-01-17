@@ -39,6 +39,11 @@ module.exports =
       @_reportDrawingEvent({ type: "clear-drawing" })
       return
 
+    # (String) => Unit
+    importDrawing: (sourcePath) ->
+      @_reportDrawingEvent({ type: "import-drawing", sourcePath })
+      return
+
     # () => Array[Update]
     collectUpdates: ->
       temp = @_updates
