@@ -107,14 +107,14 @@ object Model {
     Model(
       path = "models/Sample Models/Biology/Wolf Sheep Predation.nlogo",
       variation = "no grass, no labels",
-      setup = """set model-version "sheep-wolves"  setup""",
+      setup = """set model-version "sheep-wolves"  setup  set max-sheep 10000""",
       repetitions = 10,
       metrics = Seq("count wolves", "count sheep", "count patches with [pcolor = green]")
     ),
     Model(
       path = "models/Sample Models/Biology/Wolf Sheep Predation.nlogo",
       variation = "grass, labels",
-      setup = """set model-version "sheep-wolves-grass"  set show-energy? true  setup""",
+      setup = """set model-version "sheep-wolves-grass"  set show-energy? true  setup  set max-sheep 10000""",
       repetitions = 10,
       metrics = Seq("count wolves", "count sheep", "count patches with [pcolor = green]")
     ),
