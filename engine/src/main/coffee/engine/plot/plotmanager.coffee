@@ -2,19 +2,20 @@
 
 { filter, forEach, map, toObject, zip } = require('brazierjs/array')
 { flip, pipeline }                      = require('brazierjs/function')
+{ fold, map: mapMaybe, maybe }          = require('brazierjs/maybe')
 { values }                              = require('brazierjs/object')
 { isNumber }                            = require('brazierjs/type')
 
 module.exports = class PlotManager
 
-  _currentPlot: undefined # Plot
-  _plotMap:     undefined # Object[String, Plot]
+  _currentPlotMaybe: undefined # Maybe[Plot]
+  _plotMap:          undefined # Object[String, Plot]
 
   # (Array[Plot]) => PlotManager
   constructor: (plots) ->
-    toName        = (p) -> p.name.toUpperCase()
-    @_currentPlot = plots[plots.length - 1]
-    @_plotMap     = pipeline(map(toName), flip(zip)(plots), toObject)(plots)
+    toName             = (p) -> p.name.toUpperCase()
+    @_currentPlotMaybe = maybe(plots[plots.length - 1])
+    @_plotMap          = pipeline(map(toName), flip(zip)(plots), toObject)(plots)
 
   # () => Unit
   clearAllPlots: ->
@@ -111,7 +112,7 @@ module.exports = class PlotManager
   setCurrentPlot: (name) ->
     plot = @_plotMap[name.toUpperCase()]
     if plot?
-      @_currentPlot = plot
+      @_currentPlotMaybe = maybe(plot)
     else
       throw new Error("no such plot: \"#{name}\"")
     return
@@ -161,15 +162,15 @@ module.exports = class PlotManager
 
   # [T] @ (String, String) => (() => T) => T
   withTemporaryContext: (plotName, penName) -> (f) =>
-    oldPlot       = @_currentPlot
-    tempPlot      = @_plotMap[plotName.toUpperCase()]
-    @_currentPlot = tempPlot
+    oldPlotMaybe       = @_currentPlotMaybe
+    tempPlotMaybe      = maybe(@_plotMap[plotName.toUpperCase()])
+    @_currentPlotMaybe = tempPlotMaybe
     result =
       if penName?
-        tempPlot.withTemporaryContext(penName)(f)
+        mapMaybe((tempPlot) -> tempPlot.withTemporaryContext(penName)(f))(tempPlotMaybe)
       else
         f()
-    @_currentPlot = oldPlot
+    @_currentPlotMaybe = oldPlotMaybe
     result
 
   # ((Plot) => Unit) => Unit
@@ -179,7 +180,5 @@ module.exports = class PlotManager
 
   # [T] @ ((Plot) => T) => T
   _withPlot: (f) ->
-    if @_currentPlot?
-      f(@_currentPlot)
-    else
-      throw new Error("There is no current plot. Please select a current plot using the set-current-plot command.")
+    error = new Error("There is no current plot. Please select a current plot using the set-current-plot command.")
+    fold(-> throw error)(f)(@_currentPlotMaybe)
