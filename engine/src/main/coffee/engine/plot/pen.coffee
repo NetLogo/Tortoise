@@ -29,12 +29,13 @@ module.exports.DisplayMode = {
 }
 
 class PlotPoint
-  # (Number, Number, PenMode, Int) => PlotPoint
+  # (Number, Number, PenMode, Number) => PlotPoint
   constructor: (@x, @y, @penMode, @color) ->
 
 class Counter
 
   # Who's at first?  Me, ya punk!  --JAB (10/15/14)
+  # I don't even know what that means....  --JAB (12/10/17)
   # (Number, Boolean) => Counter
   constructor: (@_count = 0, @_atFirst = true) ->
 
