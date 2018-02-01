@@ -1,10 +1,10 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 # data Perspective =
-Observe = { toInt: 0 }
-Ride    = { toInt: 1 }
-Follow  = { toInt: 2 }
-Watch   = { toInt: 3 }
+Observe = {}
+Ride    = {}
+Follow  = {}
+Watch   = {}
 
 agentToInt      = require('./agenttoint')
 NLType          = require('./typechecker')
@@ -14,8 +14,50 @@ VariableManager = require('./structure/variablemanager')
 
 { ExtraVariableSpec } = require('./structure/variablespec')
 
-module.exports =
-  class Observer
+perspectiveFromNum = (num) ->
+  switch num
+    when 0 then Observe
+    when 1 then Ride
+    when 2 then Follow
+    when 3 then Watch
+    else        throw new Error("Invalid perspective number: #{num}")
+
+perspectiveToNum = (p) ->
+  switch p
+    when Observe then 0
+    when Ride    then 1
+    when Follow  then 2
+    when Watch   then 3
+    else              throw new Error("Invalid perspective: #{p}")
+
+perspectiveFromString = (str) ->
+  switch str
+    when 'observe' then Observe
+    when 'ride'    then Ride
+    when 'follow'  then Follow
+    when 'watch'   then Watch
+    else                throw new Error("Invalid perspective string: #{str}")
+
+perspectiveToString = (p) ->
+  switch p
+    when Observe then 'observe'
+    when Ride    then 'ride'
+    when Follow  then 'follow'
+    when Watch   then 'watch'
+    else              throw new Error("Invalid perspective: #{p}")
+
+module.exports.Perspective = {
+  Observe
+, Ride
+, Follow
+, Watch
+, perspectiveFromNum
+, perspectiveToNum
+, perspectiveFromString
+, perspectiveToString
+}
+
+module.exports.Observer = class Observer
 
     id: 0 # Number
 

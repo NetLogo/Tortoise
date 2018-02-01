@@ -1,6 +1,5 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-Observer        = require('./observer')
 Patch           = require('./patch')
 PatchSet        = require('./patchset')
 topologyFactory = require('./topology/factory')
@@ -9,6 +8,7 @@ Ticker          = require('./world/ticker')
 TurtleManager   = require('./world/turtlemanager')
 NLMath          = require('util/nlmath')
 
+{ Observer          } = require('./observer')
 { TopologyInterrupt } = require('util/exception')
 
 module.exports =
