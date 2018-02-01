@@ -5,7 +5,7 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "brazierjs":               "2.1.1",
+    "brazierjs":               "2.2.0",
     "coffeelint":              "1.16.0",
     "grunt":                   "1.0.1",
     "grunt-browserify":        "5.0.0",
