@@ -8,13 +8,13 @@ Exception = require('util/exception')
 
 module.exports = {
 
-  # (Function) => Function
+  # (Function, String) => Function
   commandTask: (fn, body) ->
     fn.isReporter = false
     fn.nlogoBody = body
     fn
 
-  # (Function) => Function
+  # (Function, String) => Function
   reporterTask: (fn, body) ->
     fn.isReporter = true
     fn.nlogoBody = body
