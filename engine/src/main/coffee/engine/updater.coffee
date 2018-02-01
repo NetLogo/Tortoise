@@ -1,10 +1,11 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
 Link      = require('./core/link')
-Observer  = require('./core/observer')
 Patch     = require('./core/patch')
 Turtle    = require('./core/turtle')
 World     = require('./core/world')
+
+{ Perspective: { perspectiveToNum }, Observer } = require('./core/observer')
 
 ignored = ["", -> ""]
 
@@ -197,7 +198,7 @@ module.exports =
     # (Observer) => Object[EngineKey, (Key, Getter)]
     _observerMap: -> {
       id:          ["WHO",         (observer) -> observer.id]
-      perspective: ["perspective", (observer) -> observer._perspective.toInt]
+      perspective: ["perspective", (observer) -> perspectiveToNum(observer.getPerspective())]
       targetAgent: ["targetAgent", (observer) -> observer._getTargetAgentUpdate()]
     }
 
