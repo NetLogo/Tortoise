@@ -128,7 +128,7 @@ module.exports =
       breed:         ["BREED",       (turtle) -> turtle.getBreedName()]
       color:         ["COLOR",       (turtle) -> turtle._color]
       heading:       ["HEADING",     (turtle) -> turtle._heading]
-      id:            ["WHO",         (turtle) -> turtle.id]
+      who:           ["WHO",         (turtle) -> turtle.id]
       'label-color': ["LABEL-COLOR", (turtle) -> turtle._labelcolor]
       'hidden?':     ["HIDDEN?",     (turtle) -> turtle._hidden]
       label:         ["LABEL",       (turtle) => @_dump(turtle._label)]
