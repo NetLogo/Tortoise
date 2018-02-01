@@ -22,15 +22,15 @@ module.exports =
     refineBy: (oldNames, newNames) ->
       invalidatedSetter = (name) -> (value) -> throw new Error("#{name} is no longer a valid variable.")
 
-      obsoletedNames = difference(newNames)(oldNames)
-      freshNames     = difference(oldNames)(newNames)
+      obsoletedNames = difference(oldNames)(newNames)
+      freshNames     = difference(newNames)(oldNames)
       specs          = freshNames.map((name) -> new ExtraVariableSpec(name))
 
       for name in obsoletedNames
         @_defineProperty(name, { get: undefined, set: invalidatedSetter(name), configurable: true })
 
       @_addVarsBySpec(specs)
-      @_names = difference(obsoletedNames)(@_names).concat(freshNames)
+      @_names = difference(@_names)(obsoletedNames).concat(freshNames)
 
       return
 

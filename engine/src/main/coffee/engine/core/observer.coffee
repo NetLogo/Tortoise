@@ -36,7 +36,7 @@ module.exports =
 
       globalSpecs       = @_globalNames.map((name) -> new ExtraVariableSpec(name))
       @_varManager      = new VariableManager(this, globalSpecs)
-      @_codeGlobalNames = difference(@_interfaceGlobalNames)(@_globalNames)
+      @_codeGlobalNames = difference(@_globalNames)(@_interfaceGlobalNames)
 
     # () => Unit
     clearCodeGlobals: ->
