@@ -5,25 +5,25 @@ StrictMath = require('shim/strictmath')
 
 { filter, forEach, isEmpty, map, maxBy, toObject, zip } = require('brazierjs/array')
 { flip, id, pipeline }                                  = require('brazierjs/function')
-{ fold }                                                = require('brazierjs/maybe')
-{ values }                                              = require('brazierjs/object')
+{ fold, isSomething, maybe }                            = require('brazierjs/maybe')
+{ lookup, values }                                      = require('brazierjs/object')
 
 { StopInterrupt: Stop } = require('util/exception')
 
 module.exports = class Plot
 
-  _currentPen:     undefined # Pen
-  _originalBounds: undefined # (Number, Number, Number, Number)
-  _penMap:         undefined # Object[String, Pen]
+  _currentPenMaybe: undefined # Maybe[Pen]
+  _originalBounds:  undefined # (Number, Number, Number, Number)
+  _penMap:          undefined # Object[String, Pen]
 
   name: undefined # String
 
   # (String, Array[Pen], PlotOps, String, String, Boolean, Number, Number, Number, Number, () => (Unit | Stop), () => (Unit | Stop)) => Plot
   constructor: (@name, pens = [], @_ops, @xLabel, @yLabel, @isLegendEnabled = true, @isAutoplotting = true, @xMin = 0, @xMax = 10, @yMin = 0, @yMax = 10, @_setupThis = (->), @_updateThis = (->)) ->
-    toName           = (p) -> p.name.toUpperCase()
-    @_currentPen     = pens[0]
-    @_originalBounds = [@xMin, @xMax, @yMin, @yMax]
-    @_penMap         = pipeline(map(toName), flip(zip)(pens), toObject)(pens)
+    toName            = (p) -> p.name.toUpperCase()
+    @_currentPenMaybe = maybe(pens[0])
+    @_originalBounds  = [@xMin, @xMax, @yMin, @yMax]
+    @_penMap          = pipeline(map(toName), flip(zip)(pens), toObject)(pens)
     @clear()
 
   # () => Unit
@@ -39,19 +39,21 @@ module.exports = class Plot
     pipeline(filter((x) ->  x.isTemp), forEach(deletePen))(pens)
     pipeline(filter((x) -> !x.isTemp), forEach( resetPen))(pens)
 
-    if @_currentPen?.isTemp
-      @_currentPen =
-        if isEmpty(pens)
-          @_penMap.DEFAULT = new Pen("DEFAULT", @_ops.makePenOps)
-          @_penMap.DEFAULT
-        else
-          pens[0]
+    if fold(-> false)((cp) -> cp.isTemp)(@_currentPenMaybe)
+      @_currentPenMaybe =
+        maybe(
+          if isEmpty(pens)
+            @_penMap.DEFAULT = new Pen("DEFAULT", @_ops.makePenOps)
+            @_penMap.DEFAULT
+          else
+            pens[0]
+        )
 
     return
 
   # (String) => Unit
   createTemporaryPen: (name) ->
-    @_currentPen = @_createAndReturnTemporaryPen(name)
+    @_currentPenMaybe = maybe(@_createAndReturnTemporaryPen(name))
     return
 
   # () => Unit
@@ -82,7 +84,7 @@ module.exports = class Plot
 
   # (String) => Boolean
   hasPenWithName: (name) ->
-    @_getPenByName(name)?
+    pipeline(@_getPenMaybeByName.bind(this), isSomething)(name)
 
   # () => Unit
   lowerPen: ->
@@ -111,9 +113,9 @@ module.exports = class Plot
 
   # (String) => Unit
   setCurrentPen: (name) ->
-    pen = @_getPenByName(name)
-    if pen?
-      @_currentPen = pen
+    penMaybe = @_getPenMaybeByName(name)
+    if isSomething(penMaybe)
+      @_currentPenMaybe = penMaybe
     else
       throw new Error("There is no pen named \"#{name}\" in the current plot")
     return
@@ -179,26 +181,24 @@ module.exports = class Plot
 
   # (String) => (() => Unit) => Unit
   withTemporaryContext: (penName) -> (f) =>
-    oldPen       = @_currentPen
-    @_currentPen = @_getPenByName(penName)
+    oldPenMaybe       = @_currentPenMaybe
+    @_currentPenMaybe = @_getPenMaybeByName(penName)
     f()
-    @_currentPen = oldPen
+    @_currentPenMaybe = oldPenMaybe
     return
 
   # (String) => Pen
   _createAndReturnTemporaryPen: (name) ->
-    existingPen = @_getPenByName(name)
-    if existingPen?
-      existingPen
-    else
+    makeNew = =>
       pen = new Pen(name, @_ops.makePenOps, true)
       @_penMap[pen.name.toUpperCase()] = pen
       @_ops.registerPen(pen)
       pen
+    pipeline(@_getPenMaybeByName.bind(this), fold(makeNew)(id))(name)
 
   # (String) => Pen
-  _getPenByName: (name) ->
-    @_penMap[name.toUpperCase()]
+  _getPenMaybeByName: (name) ->
+    lookup(name.toUpperCase())(@_penMap)
 
   # (Number, Number, Number, Number) => Unit
   _resize: ->
@@ -259,7 +259,4 @@ module.exports = class Plot
 
   # [T] @ ((Pen) => T) => T
   _withPen: (f) ->
-    if @_currentPen?
-      f(@_currentPen)
-    else
-      throw new Error("Plot '#{@name}' has no pens!")
+    fold(-> throw new Error("Plot '#{@name}' has no pens!"))(f)(@_currentPenMaybe)

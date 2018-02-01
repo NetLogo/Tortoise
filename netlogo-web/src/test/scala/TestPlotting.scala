@@ -652,8 +652,8 @@ trait PlottingHelpers {
     }
   }
 
-  protected val pathToPlot  = "plotManager._currentPlot"
-  protected val pathToPen   = s"$pathToPlot._currentPen"
+  protected val pathToPlot  = "plotManager._currentPlotMaybe._value"
+  protected val pathToPen   = s"$pathToPlot._currentPenMaybe._value"
   protected val pathToState = s"$pathToPen._state"
 
 }
