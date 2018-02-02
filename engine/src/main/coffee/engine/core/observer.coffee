@@ -96,9 +96,20 @@ module.exports.Observer = class Observer
     getGlobal: (varName) ->
       @_varManager[varName]
 
-    # () => Number
-    getPerspectiveNum: ->
-      @_perspective.toInt
+    # (String) => Any
+    getVariable: (varName) ->
+      @getGlobal(varName)
+
+    # () => Perspective
+    getPerspective: ->
+      @_perspective
+
+    # (Perspective, Agent) => Unit
+    setPerspective: (perspective, subject) ->
+      @_perspective = perspective
+      @_targetAgent = subject
+      @_updatePerspective()
+      return
 
     # () => Unit
     resetPerspective: ->
@@ -117,6 +128,11 @@ module.exports.Observer = class Observer
     # (String, Any) => Unit
     setGlobal: (varName, value) ->
       @_varManager[varName] = value
+      return
+
+    # (String, Any) => Unit
+    setVariable: (varName, value) ->
+      @setGlobal(varName, value)
       return
 
     # () => Agent

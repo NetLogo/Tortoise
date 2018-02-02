@@ -53,9 +53,17 @@ module.exports = class PlotManager
     @_withPlot((plot) -> plot.enableAutoplotting())
     return
 
+  # () => Maybe[Plot]
+  getCurrentPlotMaybe: ->
+    @_currentPlotMaybe
+
   # () => String
   getPlotName: ->
     @_withPlot((plot) -> plot.name)
+
+  # () => Array[Plot]
+  getPlots: ->
+    values(@_plotMap)
 
   # () => Number
   getPlotXMax: ->

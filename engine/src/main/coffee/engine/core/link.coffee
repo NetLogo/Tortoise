@@ -48,6 +48,10 @@ module.exports =
     getBreedName: ->
       @_breed.name
 
+    # () => String
+    getBreedNameSingular: ->
+      @_breed.singular
+
     # Tragically needed by `LinkCompare` for compliance with NetLogo's insane means of sorting links --JAB (9/6/14)
     # () => Number
     getBreedOrdinal: ->
