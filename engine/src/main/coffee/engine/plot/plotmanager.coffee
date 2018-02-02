@@ -1,5 +1,7 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
+{ DisplayMode: { displayModeFromNum } } = require('./pen')
+
 { filter, forEach, map, toObject, zip } = require('brazierjs/array')
 { flip, pipeline }                      = require('brazierjs/function')
 { fold, map: mapMaybe, maybe }          = require('brazierjs/maybe')
@@ -137,7 +139,7 @@ module.exports = class PlotManager
 
   # (Number) => Unit
   setPenMode: (num) ->
-    @_withPlot((plot) -> plot.updateDisplayMode(plot.displayModeFromNumber(num)))
+    @_withPlot((plot) -> plot.updateDisplayMode(displayModeFromNum(num)))
     return
 
   # () => Unit
