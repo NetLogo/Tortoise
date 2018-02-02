@@ -259,6 +259,8 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
     runCommand(Command("clear-all random-seed 0"))
   }
 
+  def getNashorn: Nashorn = nashorn
+
   // these two are super helpful when running failing tests
   // to show the javascript before it gets executed.
   def evalJS(javascript: String) = {

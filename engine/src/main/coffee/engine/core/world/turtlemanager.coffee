@@ -65,6 +65,17 @@ module.exports =
       else
         Nobody
 
+    # (Object[Any], Number) => Unit
+    importState: (turtleState, nextIndex) ->
+      turtleState.forEach(
+        ({ who, color, heading, xcor, ycor, shape, labelColor, breed, isHidden, size, penSize, penMode }) =>
+          newTurtle = @_createTurtle(who, color, heading, xcor, ycor, breed, "", labelColor, isHidden, size, shape)
+          newTurtle.penManager.setPenMode(penMode)
+          newTurtle.penManager.setSize(penSize)
+      )
+      @_idManager.setCount(nextIndex)
+      return
+
     # () => Number
     peekNextID: ->
       @_idManager.getCount()

@@ -8,8 +8,17 @@ Ticker          = require('./world/ticker')
 TurtleManager   = require('./world/turtlemanager')
 NLMath          = require('util/nlmath')
 
-{ Observer          } = require('./observer')
-{ TopologyInterrupt } = require('util/exception')
+{ filter, flatMap } = require('brazier/array')
+{ pipeline }        = require('brazier/function')
+{ values }          = require('brazier/object')
+
+{ Observer                                    } = require('./observer')
+{ linkBuiltins, patchBuiltins, turtleBuiltins } = require('./structure/builtins')
+{ worldDataToCSV                              } = require('serialize/exportcsv')
+{ TopologyInterrupt                           } = require('util/exception')
+
+{ exportWorld, exportPlot, exportAllPlots } = require('./world/export')
+{ importWorld                             } = require('./world/import')
 
 module.exports =
   class World
@@ -198,6 +207,32 @@ module.exports =
       @_resetPatchLabelCount()
       return
 
+    # () => Object[Any]
+    exportState: ->
+      exportWorld.call(this)
+
+    # () => Object[Any]
+    exportAllPlotsCSV: ->
+      allPlotsDataToCSV(exportAllPlots.call(this))
+
+    # () => Object[Any]
+    exportPlotCSV: (name) ->
+      plotDataToCSV(exportPlot.call(this, name))
+
+    # () => Object[Any]
+    exportCSV: ->
+
+      varNamesForBreedsMatching =
+        (pred) =>
+          pipeline(values, filter(pred), flatMap((x) -> x.varNames))(@breedManager.breeds())
+
+      allTurtlesOwnsNames = varNamesForBreedsMatching((breed) -> not breed.isLinky())
+      allLinksOwnsNames   = varNamesForBreedsMatching((breed) -> breed.isLinky())
+
+      state = exportWorld.call(this)
+
+      worldDataToCSV(allTurtlesOwnsNames, allLinksOwnsNames, patchBuiltins, turtleBuiltins, linkBuiltins)(state)
+
     # (Number, Number) => PatchSet
     getNeighbors: (pxcor, pycor) ->
       new PatchSet(@topology.getNeighbors(pxcor, pycor), this)
@@ -205,6 +240,10 @@ module.exports =
     # (Number, Number) => PatchSet
     getNeighbors4: (pxcor, pycor) ->
       new PatchSet(@topology.getNeighbors4(pxcor, pycor), this)
+
+    # (WorldState) => Unit
+    importState: ->
+      importWorld.apply(this, arguments)
 
     # The wrapping and rounding below is setup to avoid creating extra anonymous functions.
     # We could just use @ and fat arrows => but CoffeeScript uses anon funcs to bind `this`.

@@ -189,6 +189,32 @@ module.exports.Pen = class Pen
   getPoints: ->
     @_points
 
+  # (ExportedPen) => Unit
+  importState: ({ color: penColor, interval, mode, isPenDown, points, x: penX }) ->
+
+    points.forEach(
+      ({ color, isPenDown: isPointVisible, x, y }) =>
+        @_points.push(new PlotPoint(x, y, (if isPointVisible then Down else Up), color))
+        @_ops.addPoint(x, y)
+        return
+    )
+
+    xs = @_points.map((p) -> p.x)
+    ys = @_points.map((p) -> p.y)
+    @_bounds = [Math.min(xs...), Math.max(xs...), Math.min(ys...), Math.max(ys...)]
+
+    if isPenDown
+      @lower()
+    else
+      @raise()
+
+    @setColor(penColor)
+    @setInterval(interval)
+    @_state.leapCounterTo(penX)
+    @updateDisplayMode(displayModeFromString(mode))
+
+    return
+
   # () => Unit
   lower: ->
     @_state.mode = Down
