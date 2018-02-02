@@ -181,6 +181,10 @@ module.exports.Pen = class Pen
   getInterval: ->
     @_state.interval
 
+  # () => Number
+  getPenX: ->
+    @_state.getPenX()
+
   # () => Array[PlotPoint]
   getPoints: ->
     @_points

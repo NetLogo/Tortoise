@@ -32,7 +32,7 @@ module.exports = class Plot
     @_ops.reset(this)
     @_resize()
 
-    pens      = values(@_penMap)
+    pens      = @getPens()
     deletePen = ((x) => delete @_penMap[x.name.toUpperCase()]; return)
     resetPen  = ((pen) => pen.reset(); @_ops.registerPen(pen); return)
 
@@ -77,6 +77,14 @@ module.exports = class Plot
   enableAutoplotting: ->
     @isAutoplotting = true
     return
+
+  # () => Maybe[Pen]
+  getCurrentPenMaybe: ->
+    @_currentPenMaybe
+
+  # () => Array[Pen]
+  getPens: ->
+    values(@_penMap)
 
   # (String) => Boolean
   hasPenWithName: (name) ->
@@ -142,7 +150,7 @@ module.exports = class Plot
   setup: ->
     setupResult = @_setupThis()
     if not (setupResult instanceof Stop)
-      pipeline(values, forEach((pen) -> pen.setup(); return))(@_penMap)
+      @getPens().forEach((pen) -> pen.setup())
     return
 
   # (Number, Number) => Unit
@@ -167,7 +175,7 @@ module.exports = class Plot
   update: ->
     updateResult = @_updateThis()
     if not (updateResult instanceof Stop)
-      pipeline(values, forEach((pen) -> pen.update(); return))(@_penMap)
+      @getPens().forEach((pen) -> pen.update())
     return
 
   # (DisplayMode) => Unit

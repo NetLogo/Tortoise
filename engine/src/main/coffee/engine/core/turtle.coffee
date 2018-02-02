@@ -66,6 +66,10 @@ module.exports =
     getBreedName: ->
       @_breed.name
 
+    # () => String
+    getBreedNameSingular: ->
+      @_breed.singular
+
     # Unit -> String
     getName: ->
       @_name
