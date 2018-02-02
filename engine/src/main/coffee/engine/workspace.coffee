@@ -47,6 +47,7 @@ module.exports =
     dump        = Dump(extensionDumpers)
     rng         = new RNG
     typechecker = NLType
+    outputStore = ""
 
     selfManager  = new SelfManager
     breedManager = new BreedManager(breedObjs, turtlesOwns, linksOwns)
@@ -55,7 +56,7 @@ module.exports =
     updater      = new Updater(dump)
 
     # The world is only given `dump` for stupid `atpoints` in `AbstractAgentSet`... --JAB (8/24/17)
-    world           = new World(new MiniWorkspace(selfManager, updater, breedManager, rng, plotManager), worldConfig, outputConfig.clear, dump, worldArgs...)
+    world           = new World(new MiniWorkspace(selfManager, updater, breedManager, rng, plotManager), worldConfig, (-> outputConfig.clear(); outputStore = ""), (-> outputStore), ((text) -> outputStore = text), dump, worldArgs...)
     layoutManager   = new LayoutManager(world, rng.nextDouble)
 
     evalPrims = new EvalPrims(code, widgets)
@@ -66,7 +67,7 @@ module.exports =
 
     importExportPrims = new ImportExportPrims(importExportConfig)
     mousePrims        = new MousePrims(mouseConfig)
-    outputPrims       = new OutputPrims(outputConfig, dump)
+    outputPrims       = new OutputPrims(outputConfig, ((x) -> outputStore += x), (-> outputStore = ""), dump)
     printPrims        = new PrintPrims(printConfig, dump)
     userDialogPrims   = new UserDialogPrims(dialogConfig)
 

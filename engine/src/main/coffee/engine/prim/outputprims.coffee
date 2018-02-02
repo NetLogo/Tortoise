@@ -18,6 +18,8 @@ module.exports.Prims =
     type:  undefined # PrintFunc
     write: undefined # PrintFunc
 
-    # (OutputConfig, (Any, Boolean) => String) => OutputPrims
-    constructor: ({ @clear, write }, dump) ->
-      { @print, @show, @type, @write } = genPrintBundle(write, dump)
+    # (OutputConfig, (String) => Unit, () => Unit, (Any, Boolean) => String) => OutputPrims
+    constructor: ({ clear, write }, writeToStore, clearStored, dump) ->
+      @clear    = (-> clearStored(); clear())
+      writePlus = ((x) -> writeToStore(x); write(x))
+      { @print, @show, @type, @write } = genPrintBundle(writePlus, dump)
