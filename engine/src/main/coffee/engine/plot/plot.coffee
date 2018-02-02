@@ -61,10 +61,6 @@ module.exports = class Plot
     @isAutoplotting = false
     return
 
-  # (Number) => DisplayMode
-  displayModeFromNumber: (num) ->
-    @_withPen((pen) -> pen.displayModeFromNumber(num))
-
   # (Array[Number]) => Unit
   drawHistogramFrom: (list) ->
     @_withPen(

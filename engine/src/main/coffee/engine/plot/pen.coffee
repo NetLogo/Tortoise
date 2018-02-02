@@ -14,7 +14,8 @@ Down = {}
 
 module.exports.PenMode = {
   Up,
-  Down
+  Down,
+  penModeToBool: (penDown) -> if penDown is Up then false else true
 }
 
 # data DisplayMode =
@@ -22,10 +23,46 @@ Line  = {}
 Bar   = {}
 Point = {}
 
+# (Number) => DisplayMode
+displayModeFromNum = (num) ->
+  switch num
+    when 0 then Line
+    when 1 then Bar
+    when 2 then Point
+    else        throw new Error("Pen display mode expected `0` (line), `1` (bar), or `2` (point), but got `#{num}`")
+
+# (DisplayMode) => Number
+displayModeToNum = (mode) ->
+  switch mode
+    when Line  then 0
+    when Bar   then 1
+    when Point then 2
+    else           throw new Error("Invalid display mode: #{mode}")
+
+# (String) => DisplayMode
+displayModeFromString = (num) ->
+  switch num
+    when 'line'  then Line
+    when 'bar'   then Bar
+    when 'point' then Point
+    else         throw new Error("Pen display mode expected 'line', 'bar', or 'point', but got `#{num}`")
+
+# (DisplayMode) => String
+displayModeToString = (mode) ->
+  switch mode
+    when Line  then 'line'
+    when Bar   then 'bar'
+    when Point then 'point'
+    else           throw new Error("Invalid display mode: #{mode}")
+
 module.exports.DisplayMode = {
-  Line,
-  Bar,
-  Point
+  Line
+, Bar
+, Point
+, displayModeFromNum
+, displayModeFromString
+, displayModeToNum
+, displayModeToString
 }
 
 class PlotPoint
@@ -128,14 +165,6 @@ module.exports.Pen = class Pen
 
     return
 
-  # (Number) => DisplayMode
-  displayModeFromNumber: (num) ->
-    switch num
-      when 0 then Line
-      when 1 then Bar
-      when 2 then Point
-      else        throw new Error("Pen display mode expected `0` (line), `1` (bar), or `2` (point), but got `#{num}`")
-
   # () => Number
   getColor: ->
     @_state.color
@@ -155,18 +184,6 @@ module.exports.Pen = class Pen
   # () => Array[PlotPoint]
   getPoints: ->
     @_points
-
-  penDownToBool: (penDown) ->
-    if penDown is Up
-      false
-    else
-      true
-
-  penModeToNum: (mode) ->
-    switch mode
-      when Line then 0
-      when Bar  then 1
-      else           2
 
   # () => Unit
   lower: ->
