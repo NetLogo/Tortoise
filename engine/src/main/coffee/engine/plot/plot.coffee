@@ -90,6 +90,14 @@ module.exports = class Plot
   hasPenWithName: (name) ->
     pipeline(@_getPenMaybeByName.bind(this), isSomething)(name)
 
+  # (ExportedPlot) => Unit
+  importState: ({ currentPenNameOrNull, @isAutoplotting, isLegendOpen: @isLegendEnabled, pens
+                , @xMax, @xMin, @yMax, @yMin }) ->
+    pens.forEach((pen) => @_createAndReturnTemporaryPen(pen.name).importState(pen))
+    @_currentPenMaybe = @_getPenMaybeByName(currentPenNameOrNull)
+    @_resize()
+    return
+
   # () => Unit
   lowerPen: ->
     @_withPen((pen) -> pen.lower())

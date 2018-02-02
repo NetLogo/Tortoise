@@ -344,8 +344,12 @@ object SimplePrims {
         case _: prim.etc._stdout           => "Prims.stdout"
         case _: prim.etc._usermessage      => "UserDialogPrims.confirm"
         case _: prim.etc._exportoutput     => "ImportExportPrims.exportOutput"
+        case _: prim.etc._exportplot       => "ImportExportPrims.exportPlot"
+        case _: prim.etc._exportplots      => "ImportExportPrims.exportAllPlots"
         case _: prim.etc._exportview       => "ImportExportPrims.exportView"
+        case _: prim.etc._exportworld      => "ImportExportPrims.exportWorld"
         case _: prim.etc._wait             => "Prims.wait"
+        case _: prim.etc._importworld      => "ImportExportPrims.importWorld"
 
         // Unimplemented
         case _: prim.etc._display     => "notImplemented('display', undefined)"

@@ -85,6 +85,12 @@ module.exports = class PlotManager
   hasPenWithName: (name) ->
     @_withPlot((plot) -> plot.hasPenWithName(name))
 
+  # (ExportedPlotManager) => Unit
+  importState: ({ currentPlotNameOrNull, plots }) ->
+    plots.forEach((plot) => @_plotMap[plot.name.toUpperCase()].importState(plot))
+    @_currentPlotMaybe = mapMaybe((name) => @_plotMap[name.toUpperCase()])(maybe(currentPlotNameOrNull))
+    return
+
   # () => Boolean
   isAutoplotting: ->
     @_withPlot((plot) -> plot.isAutoplotting)
