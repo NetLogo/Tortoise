@@ -5,7 +5,6 @@ Observer  = require('./core/observer')
 Patch     = require('./core/patch')
 Turtle    = require('./core/turtle')
 World     = require('./core/world')
-Exception = require('util/exception')
 
 ignored = ["", -> ""]
 

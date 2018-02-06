@@ -7,7 +7,6 @@ topologyFactory = require('./topology/factory')
 LinkManager     = require('./world/linkmanager')
 Ticker          = require('./world/ticker')
 TurtleManager   = require('./world/turtlemanager')
-StrictMath      = require('shim/strictmath')
 NLMath          = require('util/nlmath')
 
 { TopologyInterrupt } = require('util/exception')
