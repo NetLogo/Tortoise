@@ -30,7 +30,28 @@ if (typeof javax !== "undefined") {
 if (typeof javax !== "undefined") {
   modelConfig.importExport = {
     exportOutput: function(filename) {},
-    exportView: function(filename) {}
+    exportView: function(filename) {},
+    exportFile: function(str) {
+      return function(filepath) {
+        var Paths = Java.type('java.nio.file.Paths');
+        var Files = Java.type('java.nio.file.Files');
+        var UTF8  = Java.type('java.nio.charset.StandardCharsets').UTF_8;
+        Files.createDirectories(Paths.get(filepath).getParent());
+        var path  = Files.write(Paths.get(filepath), str.getBytes());
+      }
+},
+    importWorld: function(trueImportWorld) {
+      return function(filename) {
+        var Paths = Java.type('java.nio.file.Paths');
+        var Files = Java.type('java.nio.file.Files');
+        var UTF8  = Java.type('java.nio.charset.StandardCharsets').UTF_8;
+        var lines = Files.readAllLines(Paths.get(filename), UTF8);
+        var out   = [];
+        lines.forEach(function(line) { out.push(line); });
+        var fileText = out.join("\n");
+        trueImportWorld(fileText);
+      }
+}
   }
 }
 if (typeof javax !== "undefined") {
@@ -49,8 +70,8 @@ modelConfig.plots = [(function() {
   var name    = 'Average Heat';
   var plotOps = (typeof modelPlotOps[name] !== "undefined" && modelPlotOps[name] !== null) ? modelPlotOps[name] : new PlotOps(function() {}, function() {}, function() {}, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; }, function() { return function() {}; });
   var pens    = [new PenBundle.Pen('ave-heat', plotOps.makePenOps, false, new PenBundle.State(15.0, 1.0, PenBundle.DisplayMode.Line), function() {}, function() {
-    workspace.rng.withAux(function() {
-      plotManager.withTemporaryContext('Average Heat', 'ave-heat')(function() {
+    return workspace.rng.withClone(function() {
+      return plotManager.withTemporaryContext('Average Heat', 'ave-heat')(function() {
         try {
           var reporterContext = false;
           var letVars = { };
@@ -69,7 +90,7 @@ modelConfig.plots = [(function() {
   var update  = function() {};
   return new Plot(name, pens, plotOps, "Time", "Avg Heat", false, true, 0.0, 50.0, 0.0, 212.0, setup, update);
 })()];
-var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('patches-own [heat]\n\nto setup\n  clear-all\n  ask patches [\n    set heat random 212\n    set pcolor scale-color red heat 0 212\n  ]\n  reset-ticks\nend\n\nto go\n  diffuse heat 1\n  ask patches [\n    ;; warm up patches till they reach 212\n    set heat (heat + 5) mod 212\n    set pcolor scale-color red heat 0 212\n  ]\n  tick\nend\n\nto-report average-heat\n  report mean [heat] of patches\nend\n\n\n; Copyright 1998 Uri Wilensky.\n; See Info tab for full copyright and license.')([{"left":262,"top":10,"right":675,"bottom":424,"dimensions":{"minPxcor":-40,"maxPxcor":40,"minPycor":-40,"maxPycor":40,"patchSize":5,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_38 = procedures[\"SETUP\"]();\n  if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"setup","left":57,"top":50,"right":124,"bottom":83,"display":"setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_35 = procedures[\"GO\"]();\n  if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"go","left":135,"top":50,"right":202,"bottom":83,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  workspace.rng.withAux(function() {\n    plotManager.withTemporaryContext('Average Heat', 'ave-heat')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotValue(procedures[\"AVERAGE-HEAT\"]());\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"ave-heat","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot average-heat","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Average Heat","left":9,"top":98,"right":252,"bottom":294,"xAxis":"Time","yAxis":"Avg Heat","xmin":0,"xmax":50,"ymin":0,"ymax":212,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"ave-heat","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot average-heat","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())([], [], ["heat"], -40, 40, -40, 40, 5.0, true, true, turtleShapes, linkShapes, function(){});
+var workspace = tortoise_require('engine/workspace')(modelConfig)([])([], [])('patches-own [heat]\n\nto setup\n  clear-all\n  ask patches [\n    set heat random 212\n    set pcolor scale-color red heat 0 212\n  ]\n  reset-ticks\nend\n\nto go\n  diffuse heat 1\n  ask patches [\n    ;; warm up patches till they reach 212\n    set heat (heat + 5) mod 212\n    set pcolor scale-color red heat 0 212\n  ]\n  tick\nend\n\nto-report average-heat\n  report mean [heat] of patches\nend\n\n\n; Copyright 1998 Uri Wilensky.\n; See Info tab for full copyright and license.')([{"left":262,"top":10,"right":675,"bottom":424,"dimensions":{"minPxcor":-40,"maxPxcor":40,"minPycor":-40,"maxPycor":40,"patchSize":5,"wrappingAllowedInX":true,"wrappingAllowedInY":true},"fontSize":10,"updateMode":"TickBased","showTickCounter":true,"tickCounterLabel":"ticks","frameRate":30,"type":"view","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_38 = procedures[\"SETUP\"]();\n  if (_maybestop_33_38 instanceof Exception.StopInterrupt) { return _maybestop_33_38; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"setup","left":57,"top":50,"right":124,"bottom":83,"display":"setup","forever":false,"buttonKind":"Observer","disableUntilTicksStart":false,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSource":"try {\n  var reporterContext = false;\n  var letVars = { };\n  let _maybestop_33_35 = procedures[\"GO\"]();\n  if (_maybestop_33_35 instanceof Exception.StopInterrupt) { return _maybestop_33_35; }\n} catch (e) {\n  if (e instanceof Exception.StopInterrupt) {\n    return e;\n  } else {\n    throw e;\n  }\n}","source":"go","left":135,"top":50,"right":202,"bottom":83,"forever":true,"buttonKind":"Observer","disableUntilTicksStart":true,"type":"button","compilation":{"success":true,"messages":[]}}, {"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {}","compiledPens":[{"compiledSetupCode":"function() {}","compiledUpdateCode":"function() {\n  return workspace.rng.withClone(function() {\n    return plotManager.withTemporaryContext('Average Heat', 'ave-heat')(function() {\n      try {\n        var reporterContext = false;\n        var letVars = { };\n        plotManager.plotValue(procedures[\"AVERAGE-HEAT\"]());\n      } catch (e) {\n        if (e instanceof Exception.StopInterrupt) {\n          return e;\n        } else {\n          throw e;\n        }\n      };\n    });\n  });\n}","display":"ave-heat","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot average-heat","type":"pen","compilation":{"success":true,"messages":[]}}],"display":"Average Heat","left":9,"top":98,"right":252,"bottom":294,"xAxis":"Time","yAxis":"Avg Heat","xmin":0,"xmax":50,"ymin":0,"ymax":212,"autoPlotOn":true,"legendOn":false,"setupCode":"","updateCode":"","pens":[{"display":"ave-heat","interval":1,"mode":0,"color":-2674135,"inLegend":true,"setupCode":"","updateCode":"plot average-heat","type":"pen"}],"type":"plot","compilation":{"success":true,"messages":[]}}])(tortoise_require("extensions/all").dumpers())([], [], ["heat"], -40, 40, -40, 40, 5.0, true, true, turtleShapes, linkShapes, function(){});
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;

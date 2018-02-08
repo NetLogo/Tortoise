@@ -30,7 +30,28 @@ if (typeof javax !== "undefined") {
 if (typeof javax !== "undefined") {
   modelConfig.importExport = {
     exportOutput: function(filename) {},
-    exportView: function(filename) {}
+    exportView: function(filename) {},
+    exportFile: function(str) {
+      return function(filepath) {
+        var Paths = Java.type('java.nio.file.Paths');
+        var Files = Java.type('java.nio.file.Files');
+        var UTF8  = Java.type('java.nio.charset.StandardCharsets').UTF_8;
+        Files.createDirectories(Paths.get(filepath).getParent());
+        var path  = Files.write(Paths.get(filepath), str.getBytes());
+      }
+},
+    importWorld: function(trueImportWorld) {
+      return function(filename) {
+        var Paths = Java.type('java.nio.file.Paths');
+        var Files = Java.type('java.nio.file.Files');
+        var UTF8  = Java.type('java.nio.charset.StandardCharsets').UTF_8;
+        var lines = Files.readAllLines(Paths.get(filename), UTF8);
+        var out   = [];
+        lines.forEach(function(line) { out.push(line); });
+        var fileText = out.join("\n");
+        trueImportWorld(fileText);
+      }
+}
   }
 }
 if (typeof javax !== "undefined") {
