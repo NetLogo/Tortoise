@@ -130,7 +130,7 @@ module.exports.importWorld = (
           patch.setVariable('plabel-color', extractColor(plabelColor))
           (->
             patch.setVariable('plabel', reify(plabel))
-            for varName, value of patchesOwns
+            for varName, value of patchesOwns when varName in patch.varNames()
               patch.setVariable(varName, reify(value))
           )
       )
@@ -138,15 +138,19 @@ module.exports.importWorld = (
     turtleFinishFs =
       turtles.map(
         ({ who, color, heading, xcor, ycor, shape, label, labelColor, breed: { breedName }, isHidden, size, penSize, penMode, breedsOwns }) =>
-          args      = [who, extractColor(color), heading, xcor, ycor, @breedManager.get(breedName), "", extractColor(labelColor), isHidden, size, shape]
+
+          realBreed = @breedManager.get(breedName) ? @breedManager.turtles()
+          args      = [who, extractColor(color), heading, xcor, ycor, realBreed, "", extractColor(labelColor), isHidden, size, shape]
           newTurtle = @turtleManager._createTurtle(args...)
           newTurtle.penManager.setPenMode(penMode)
           newTurtle.penManager.setSize(penSize)
+
           (->
             newTurtle.setVariable('label', reify(label))
-            for varName, value of breedsOwns
+            for varName, value of breedsOwns when varName in newTurtle.varNames()
               newTurtle.setVariable(varName, reify(value))
           )
+
       )
 
     @turtleManager._idManager.setCount(nextWhoNumber)
@@ -154,20 +158,25 @@ module.exports.importWorld = (
     linkFinishFs =
       links.map(
         ({ breed: { breedName }, end1, end2, color, isHidden, label, labelColor, shape, thickness, tieMode, breedsOwns }) =>
-          realEnd1 = @turtleManager.getTurtleOfBreed(end1.breed.plural, end1.id)
-          realEnd2 = @turtleManager.getTurtleOfBreed(end2.breed.plural, end2.id)
-          newLink = @linkManager._createLink(@breedManager.get(breedName).isDirected(), realEnd1, realEnd2, breedName)
+
+          realEnd1  = @turtleManager.getTurtleOfBreed(end1.breed.plural, end1.id)
+          realEnd2  = @turtleManager.getTurtleOfBreed(end2.breed.plural, end2.id)
+          realBreed = @breedManager.get(breedName) ? @breedManager.links()
+
+          newLink = @linkManager._createLink(realBreed.isDirected(), realEnd1, realEnd2, realBreed.name)
           newLink.setVariable(      'color', extractColor(color))
           newLink.setVariable(    'hidden?', isHidden)
           newLink.setVariable('label-color', extractColor(labelColor))
           newLink.setVariable(      'shape', shape)
           newLink.setVariable(  'thickness', thickness)
           newLink.setVariable(   'tie-mode', tieMode)
+
           (->
             newLink.setVariable('label', reify(label))
-            for varName, value of breedsOwns
+            for varName, value of breedsOwns when varName in newLink.varNames()
               newLink.setVariable(varName, reify(value))
           )
+
       )
 
     # Reification time!  This might seem a bit unintuitive, but, e.g. labels can be agents, link ends
@@ -177,7 +186,7 @@ module.exports.importWorld = (
 
     [].concat(patchFinishFs, turtleFinishFs, linkFinishFs).forEach((f) -> f())
 
-    for varName, value of codeGlobals
+    for varName, value of codeGlobals when varName in @observer.varNames()
       @observer.setGlobal(varName, reify(value))
 
     trueSubject = reify(subject)
