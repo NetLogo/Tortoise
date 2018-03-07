@@ -18,6 +18,8 @@ import
   org.nlogo.core.{ CompilerException, model },
     model.ModelReader
 
+import org.nlogo.parse.CompilerUtilities
+
 import
   scala.reflect.ClassTag
 
@@ -37,16 +39,8 @@ class BrowserCompiler {
 
   @JSExport
   def fromModel(compilationRequest: NativeJson): NativeJson = {
-    val compilationResult =
-      for {
-        tortoiseReq   <- readNative[JsObject](compilationRequest)
-        parsedRequest <- CompilationRequest.read(tortoiseReq).leftMap(_.map(FailureString))
-        compilation   <- compilingModel(
-          _.fromModel(parsedRequest.toModel).leftMap(_.map(ex => ex: Exception)),
-          compileExtras(parsedRequest.allCommands, parsedRequest.allReporters))
-      } yield compilation
-
-    JsonLibrary.toNative(compilationResult.leftMap(_.map(fail => fail: TortoiseFailure)).toJsonObj)
+    val compiledRequest = compileRequest(compilationRequest)
+    JsonLibrary.toNative(compiledRequest.toJsonObj)
   }
 
   @JSExport
@@ -72,6 +66,29 @@ class BrowserCompiler {
       } yield ModelReader.formatModel(parsedRequest.toModel)
 
     JsonLibrary.toNative(model.leftMap(_.map(fail => fail: TortoiseFailure)).toJsonObj)
+  }
+
+  @JSExport
+  def isReporter(code: String, compilationRequest: NativeJson): Boolean =
+    compileRequest(compilationRequest)
+      .toOption.flatMap(_.model.toOption)
+      .map(_.compilation)
+      .map(comp => CompilerUtilities.isReporter(code, comp.program, comp.procedures, NLWExtensionManager))
+      .getOrElse(false)
+
+  private def compileRequest(compilationRequest: NativeJson): ValidationNel[TortoiseFailure, ModelCompilation] = {
+
+    val compilationResult =
+      for {
+        tortoiseReq   <- readNative[JsObject](compilationRequest)
+        parsedRequest <- CompilationRequest.read(tortoiseReq).leftMap(_.map(FailureString))
+        compilation   <- compilingModel(
+          _.fromModel(parsedRequest.toModel).leftMap(_.map(ex => ex: Exception)),
+          compileExtras(parsedRequest.allCommands, parsedRequest.allReporters))
+      } yield compilation
+
+    compilationResult.leftMap(_.map(fail => fail: TortoiseFailure))
+
   }
 
   private def compilingModel(

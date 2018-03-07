@@ -5,7 +5,7 @@ package org.nlogo.tortoise.compiler
 import ExportRequest.NlogoFileVersion
 
 import
-  org.nlogo.core.{ model, Model => CModel, Slider, View },
+  org.nlogo.core.{ model, Model => CModel, Slider, Switch, View },
     model.ModelReader
 
 import
@@ -156,6 +156,29 @@ object BrowserCompilerTest extends TestSuite {
         )))))
       assert(isSuccess(compiledModel))
     }
+
+    "isReporterSucceeds"-{
+      val compReq  =
+        toNative(JsObject(fields(
+          "code"    -> JsString("to foo fd 1 end\nto-report bananas [x y] report x * y end")
+        , "widgets" -> JsArray(widgetyModel.widgets.map(widget2Json(_).toJsonObj))
+        )))
+      val compiler = new BrowserCompiler
+      val strs     = Seq("3", "3 + 1", "apples", "oranges", "3 + apples", "3 + (bananas 8 10)", "(3 / apples + (bananas 9001 3) > 0) or oranges", "sum [xcor] of turtles")
+      assert(strs.map(code => compiler.isReporter(code, compReq)).forall(_ == true))
+    }
+
+    "isReporterFails"-{
+      val compReq  =
+        toNative(JsObject(fields(
+          "code"    -> JsString("to foo fd 1 end\nto-report bananas [x y] report x * y end")
+        , "widgets" -> JsArray(widgetyModel.widgets.map(widget2Json(_).toJsonObj))
+        )))
+      val compiler = new BrowserCompiler
+      val strs     = Seq("create-turtle 1", "show true", "ask turtles [ set color red ]", "foo")
+      assert(strs.map(code => compiler.isReporter(code, compReq)).forall(_ == false))
+    }
+
   }
 
   private def isSuccess(compiledModel: JsObject): Boolean =
@@ -192,6 +215,9 @@ object BrowserCompilerTest extends TestSuite {
       linkShapes   = CModel.defaultLinkShapes :+ linkShape,
       turtleShapes = CModel.defaultShapes :+ vectorShape)
   }
+
+  private val widgetyModel: CModel =
+    validModel.copy(widgets = validModel.widgets :+ Slider(variable = Option("apples")) :+ Switch(variable = Option("oranges")))
 
   private def assertErrorMessage(compiledModel: JsObject, message: String): Unit =
     assert(

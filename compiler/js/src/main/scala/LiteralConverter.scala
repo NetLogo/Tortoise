@@ -81,9 +81,6 @@ object LiteralConverter {
     })
   }
 
-  @JSExport
-  def isReporter(logo: String): Boolean =
-    CompilerUtilities.isReporter(logo)
 }
 
 object StandardLiteralParser extends LiteralParser {
