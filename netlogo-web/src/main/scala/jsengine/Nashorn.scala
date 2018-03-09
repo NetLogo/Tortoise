@@ -94,6 +94,7 @@ class Nashorn {
 }
 
 object Nashorn {
+  // scalastyle:off method.length
   private def polyfills =
     Seq(
       // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/repeat#Polyfill
@@ -174,6 +175,7 @@ object Nashorn {
     ).map(_.stripMargin)
 
 }
+// scalastyle:on method.length
 
 // ADDING SOMETHING TO THIS OBJECT?
 // WELL, ARE YA, PUNK?
