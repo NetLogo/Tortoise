@@ -34,6 +34,8 @@ csvToWorldState = require('serialize/importcsv')
 { Config: PrintConfig,        Prims: PrintPrims }        = require('./prim/printprims')
 { Config: UserDialogConfig,   Prims: UserDialogPrims }   = require('./prim/userdialogprims')
 
+Meta = require('meta')
+
 class MiniWorkspace
   # (SelfManager, Updater, BreedManager, RNG, PlotManager) => MiniWorkspace
   constructor: (@selfManager, @updater, @breedManager, @rng, @plotManager) ->
@@ -50,6 +52,8 @@ module.exports =
     plots              = modelConfig?.plots        ? []
     printConfig        = modelConfig?.print        ? new PrintConfig
     worldConfig        = modelConfig?.world        ? new WorldConfig
+
+    Meta.version = modelConfig?.version ? Meta.version
 
     dump        = Dump(extensionDumpers)
     rng         = new RNG
@@ -72,10 +76,10 @@ module.exports =
     linkPrims = new LinkPrims(world)
     listPrims = new ListPrims(dump, Hasher, prims.equality.bind(prims), rng.nextInt)
 
-    mousePrims        = new MousePrims(mouseConfig)
-    outputPrims       = new OutputPrims(outputConfig, ((x) -> outputStore += x), (-> outputStore = ""), dump)
-    printPrims        = new PrintPrims(printConfig, dump)
-    userDialogPrims   = new UserDialogPrims(dialogConfig)
+    mousePrims      = new MousePrims(mouseConfig)
+    outputPrims     = new OutputPrims(outputConfig, ((x) -> outputStore += x), (-> outputStore = ""), dump)
+    printPrims      = new PrintPrims(printConfig, dump)
+    userDialogPrims = new UserDialogPrims(dialogConfig)
 
     importWorldFromCSV = (csvText) ->
 
