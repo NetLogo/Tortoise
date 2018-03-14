@@ -259,7 +259,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.turtles().ask(function() { procedures["GO-TURTLES"](); }, true);
-      world.topology.diffuse("chemical", Prims.div(world.observer.getGlobal("diffusion-rate"), 100))
+      world.topology.diffuse("chemical", Prims.div(world.observer.getGlobal("diffusion-rate"), 100), false)
       world.patches().ask(function() { procedures["GO-PATCHES"](); }, true);
       world.ticker.tick();
       procedures["DO-PLOTTING"]();

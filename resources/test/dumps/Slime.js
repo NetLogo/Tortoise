@@ -121,7 +121,7 @@ var procedures = (function() {
         SelfManager.self()._optimalFdOne();
         SelfManager.self().setPatchVariable("chemical", (SelfManager.self().getPatchVariable("chemical") + 2));
       }, true);
-      world.topology.diffuse("chemical", 1)
+      world.topology.diffuse("chemical", 1, false)
       world.patches().ask(function() {
         SelfManager.self().setPatchVariable("chemical", (SelfManager.self().getPatchVariable("chemical") * 0.9));
         SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(55, SelfManager.self().getPatchVariable("chemical"), 0.1, 3));

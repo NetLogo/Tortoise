@@ -134,7 +134,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.topology.diffuse("heat", 1)
+      world.topology.diffuse("heat", 1, false)
       world.patches().ask(function() {
         SelfManager.self().setPatchVariable("heat", NLMath.mod((SelfManager.self().getPatchVariable("heat") + 5), 212));
         SelfManager.self().setPatchVariable("pcolor", ColorModel.scaleColor(15, SelfManager.self().getPatchVariable("heat"), 0, 212));

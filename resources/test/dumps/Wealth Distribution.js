@@ -312,10 +312,10 @@ var procedures = (function() {
         world.patches().agentFilter(function() { return !Prims.equality(SelfManager.self().getPatchVariable("max-grain-here"), 0); }).ask(function() {
           SelfManager.self().setPatchVariable("grain-here", SelfManager.self().getPatchVariable("max-grain-here"));
         }, true);
-        world.topology.diffuse("grain-here", 0.25)
+        world.topology.diffuse("grain-here", 0.25, false)
       }
       for (let _index_1408_1414 = 0, _repeatcount_1408_1414 = StrictMath.floor(10); _index_1408_1414 < _repeatcount_1408_1414; _index_1408_1414++){
-        world.topology.diffuse("grain-here", 0.25)
+        world.topology.diffuse("grain-here", 0.25, false)
       }
       world.patches().ask(function() {
         SelfManager.self().setPatchVariable("grain-here", NLMath.floor(SelfManager.self().getPatchVariable("grain-here")));

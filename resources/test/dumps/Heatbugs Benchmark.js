@@ -140,7 +140,7 @@ var procedures = (function() {
       if (!!world.turtles().isEmpty()) {
         throw new Exception.StopInterrupt;
       }
-      world.topology.diffuse("temp", world.observer.getGlobal("diffusion-rate"))
+      world.topology.diffuse("temp", world.observer.getGlobal("diffusion-rate"), false)
       world.turtles().ask(function() { procedures["STEP"](); }, true);
       procedures["RECOLOR-PATCHES"]();
       world.ticker.tick();

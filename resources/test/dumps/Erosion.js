@@ -110,7 +110,7 @@ var procedures = (function() {
       }, true);
       if (world.observer.getGlobal("bumpy?")) {
         for (let _index_729_735 = 0, _repeatcount_729_735 = StrictMath.floor(world.observer.getGlobal("terrain-smoothness")); _index_729_735 < _repeatcount_729_735; _index_729_735++){
-          world.topology.diffuse("elevation", 0.5)
+          world.topology.diffuse("elevation", 0.5, false)
         }
       }
       world.patches().agentFilter(function() { return !Prims.equality(SelfManager.self().getNeighbors().size(), 8); }).ask(function() {
