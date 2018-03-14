@@ -36,7 +36,10 @@ object Benchmarker extends App {
       "BZ Benchmark",
       "FireBig Benchmark",
       "GridWalk Benchmark",
-      "Wolf Benchmark"
+      "Wolf Benchmark",
+      "Wealth Benchmark",
+      "Erosion Benchmark",
+      "Heatbugs Benchmark"
     )
 
   private val engineToEvalMap = Seq(Nashorn, SpiderMonkey, V8).map(engine => engine -> engine.freshEval _).toMap
