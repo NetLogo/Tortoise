@@ -74,60 +74,6 @@ module.exports =
       else
         @_getPatchAt(pxcor + 1, pycor + 1)
 
-    # (Number, Number, Array[Array[Number]], Array[Array[Number]], Number) => Unit
-    _refineScratchPads: (yy, xx, scratch, scratch2, coefficient) ->
-      for y in [yy...(yy * 2)]
-        for x in [xx...(xx * 2)]
-          diffuseVal = (scratch[x - xx][y - yy] / 8) * coefficient
-          if yy < y < (yy * 2) - 1
-            scratch2[(x    ) - xx][(y    ) - yy] += scratch[x - xx][y - yy] - (8 * diffuseVal)
-            scratch2[(x - 1) % xx][(y - 1) % yy] += diffuseVal
-            scratch2[(x - 1) % xx][(y    ) % yy] += diffuseVal
-            scratch2[(x - 1) % xx][(y + 1) % yy] += diffuseVal
-            scratch2[(x    ) % xx][(y + 1) % yy] += diffuseVal
-            scratch2[(x    ) % xx][(y - 1) % yy] += diffuseVal
-            scratch2[(x + 1) % xx][(y - 1) % yy] += diffuseVal
-            scratch2[(x + 1) % xx][(y    ) % yy] += diffuseVal
-            scratch2[(x + 1) % xx][(y + 1) % yy] += diffuseVal
-          else if y is yy
-            scratch2[(x    ) - xx][(y    ) - yy] += scratch[x - xx][y - yy] - (5 * diffuseVal)
-            scratch2[(x - 1) % xx][(y    ) % yy] += diffuseVal
-            scratch2[(x - 1) % xx][(y + 1) % yy] += diffuseVal
-            scratch2[(x    ) % xx][(y + 1) % yy] += diffuseVal
-            scratch2[(x + 1) % xx][(y    ) % yy] += diffuseVal
-            scratch2[(x + 1) % xx][(y + 1) % yy] += diffuseVal
-          else
-            scratch2[(x    ) - xx][(y    ) - yy] += scratch[x - xx][y - yy] - (5 * diffuseVal)
-            scratch2[(x - 1) % xx][(y    ) % yy] += diffuseVal
-            scratch2[(x - 1) % xx][(y - 1) % yy] += diffuseVal
-            scratch2[(x    ) % xx][(y - 1) % yy] += diffuseVal
-            scratch2[(x + 1) % xx][(y    ) % yy] += diffuseVal
-            scratch2[(x + 1) % xx][(y - 1) % yy] += diffuseVal
-      return
-
-    # (Number, Number, Array[Array[Number]], Array[Array[Number]], Number) => Unit
-    _refineScratchPads4: (yy, xx, scratch, scratch2, coefficient) ->
-      for y in [yy...(yy * 2)]
-        for x in [xx...(xx * 2)]
-          diffuseVal = (scratch[x - xx][y - yy] / 4) * coefficient
-          if yy < y < (yy * 2) - 1
-            scratch2[(x    ) - xx][(y    ) - yy] += scratch[x - xx][y - yy] - (4 * diffuseVal)
-            scratch2[(x - 1) % xx][(y    ) % yy] += diffuseVal
-            scratch2[(x    ) % xx][(y + 1) % yy] += diffuseVal
-            scratch2[(x    ) % xx][(y - 1) % yy] += diffuseVal
-            scratch2[(x + 1) % xx][(y    ) % yy] += diffuseVal
-          else if y is yy
-            scratch2[(x    ) - xx][(y    ) - yy] += scratch[x - xx][y - yy] - (3 * diffuseVal)
-            scratch2[(x - 1) % xx][(y    ) % yy] += diffuseVal
-            scratch2[(x    ) % xx][(y + 1) % yy] += diffuseVal
-            scratch2[(x + 1) % xx][(y    ) % yy] += diffuseVal
-          else
-            scratch2[(x    ) - xx][(y    ) - yy] += scratch[x - xx][y - yy] - (3 * diffuseVal)
-            scratch2[(x - 1) % xx][(y    ) % yy] += diffuseVal
-            scratch2[(x    ) % xx][(y - 1) % yy] += diffuseVal
-            scratch2[(x + 1) % xx][(y    ) % yy] += diffuseVal
-      return
-
     # (Number, Number) => Number
     _shortestX: (x1, x2) =>
       @_shortestXWrapped(x1, x2)

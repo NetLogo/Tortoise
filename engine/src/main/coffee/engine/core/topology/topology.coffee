@@ -2,6 +2,7 @@
 
 inCone         = require('./incone')
 Topology       = require('./topology')
+Diffuser       = require('./diffuser')
 StrictMath     = require('shim/strictmath')
 abstractMethod = require('util/abstractmethoderror')
 
@@ -26,18 +27,32 @@ module.exports =
     constructor: (@minPxcor, @maxPxcor, @minPycor, @maxPycor, @_getPatches, @_getPatchAt) ->
       @height          = 1 + @maxPycor - @minPycor
       @width           = 1 + @maxPxcor - @minPxcor
+      @diffuser        = new Diffuser(@_setPatchVariable, @width, @height, @_wrapInX, @_wrapInY)
       @_neighborCache  = {}
       @_neighbor4Cache = {}
 
-    # (String, Number) => Unit
-    diffuse: (varName, coefficient) ->
-      @_sloppyDiffuse(varName, coefficient)
+    # (String, Number, Boolean) => Unit (side effect: diffuse varName by coeffecient among patches)
+    diffuse: (varName, coefficient, fourWay) ->
+      yy = @height
+      xx = @width
+
+      mapAll = (f) ->
+        for x in [0...xx]
+          for y in [0...yy]
+            f(x, y)
+      scratch = mapAll((x, y) => @_getPatchAt(x + @minPxcor, y + @minPycor).getVariable(varName))
+
+      if fourWay
+        @diffuser.diffuse4(varName, coefficient, scratch)
+      else
+        @diffuser.diffuse8(varName, coefficient, scratch)
+
       return
 
-    # (String, Number) => Unit
-    diffuse4: (varName, coefficient) ->
-      @_sloppyDiffuse4(varName, coefficient)
-      return
+    # (Number, Number, String, Number, Number) => Unit
+    _setPatchVariable: (x, y, varName, newVal, oldVal) =>
+      if newVal isnt oldVal
+        @_getPatchAt(x + @minPxcor, y + @minPycor).setVariable(varName, newVal)
 
     # (Number, Number) => Array[Patch]
     getNeighbors: (pxcor, pycor) ->
@@ -175,14 +190,6 @@ module.exports =
         [@_getPatchNorth(pxcor, pycor), @_getPatchEast(pxcor, pycor),
          @_getPatchSouth(pxcor, pycor), @_getPatchWest(pxcor, pycor)]
 
-    # (Number, Number, Array[Array[Number]], Array[Array[Number]], Number) => Unit
-    _refineScratchPads: (yy, xx, scratch, scratch2, coefficient) ->
-      return # If you want to use `_sloppyDiffuse` in your topology, override this --JAB (8/6/14)
-
-    # (Number, Number, Array[Array[Number]], Array[Array[Number]], Number) => Unit
-    _refineScratchPads4: (yy, xx, scratch, scratch2, coefficient) ->
-      return # If you want to use `_sloppyDiffuse4` in your topology, override this --AH (10/9/17)
-
     # (Number, Number) => Number
     _shortestNotWrapped: (cor1, cor2) ->
       StrictMath.abs(cor1 - cor2) * (if cor1 > cor2 then -1 else 1)
@@ -202,47 +209,6 @@ module.exports =
     # (Number, Number) => Number
     _shortestYWrapped: (cor1, cor2) ->
       @_shortestWrapped(cor1, cor2, @height)
-
-    # Used by most implementations of `diffuse`
-    # (String, Number) => Unit
-    _sloppyDiffuse: (varName, coefficient) ->
-      yy = @height
-      xx = @width
-
-      mapAll =
-        (f) ->
-          for x in [0...xx]
-            for y in [0...yy]
-              f(x, y)
-
-      scratch  = mapAll((x, y) => @_getPatchAt(x + @minPxcor, y + @minPycor).getVariable(varName))
-      scratch2 = mapAll(-> 0)
-
-      @_refineScratchPads(yy, xx, scratch, scratch2, coefficient)
-
-      mapAll((x, y) => @_getPatchAt(x + @minPxcor, y + @minPycor).setVariable(varName, scratch2[x][y]))
-
-      return
-
-    # (String, Number) => Unit
-    _sloppyDiffuse4: (varName, coefficient) ->
-      yy = @height
-      xx = @width
-
-      mapAll =
-        (f) ->
-          for x in [0...xx]
-            for y in [0...yy]
-              f(x, y)
-
-      scratch  = mapAll((x, y) => @_getPatchAt(x + @minPxcor, y + @minPycor).getVariable(varName))
-      scratch2 = mapAll(-> 0)
-
-      @_refineScratchPads4(yy, xx, scratch, scratch2, coefficient)
-
-      mapAll((x, y) => @_getPatchAt(x + @minPxcor, y + @minPycor).setVariable(varName, scratch2[x][y]))
-
-      return
 
     # (Number, Number, Number, Number, (Number, Number) => Number, (Number, Number) => Number) => Number
     _towards: (x1, y1, x2, y2, findXDist, findYDist) ->

@@ -300,8 +300,8 @@ trait CommandPrims extends PrimUtils {
       case h: Optimizer._hatchfast       => optimalGenerateHatch(s, h.breedName)
       case _: prim._bk                   => s"SelfManager.self().fd(-${arg(0)});"
       case _: prim.etc._left             => s"SelfManager.self().right(-${arg(0)});"
-      case _: prim.etc._diffuse          => s"world.topology.diffuse(${jsString(getReferenceName(s))}, ${arg(1)})"
-      case _: prim.etc._diffuse4         => s"world.topology.diffuse4(${jsString(getReferenceName(s))}, ${arg(1)})"
+      case _: prim.etc._diffuse          => s"world.topology.diffuse(${jsString(getReferenceName(s))}, ${arg(1)}, false)"
+      case _: prim.etc._diffuse4         => s"world.topology.diffuse(${jsString(getReferenceName(s))}, ${arg(1)}, true)"
       case _: prim.etc._uphill           => s"Prims.uphill(${jsString(getReferenceName(s))})"
       case _: prim.etc._uphill4          => s"Prims.uphill4(${jsString(getReferenceName(s))})"
       case _: prim.etc._downhill         => s"Prims.downhill(${jsString(getReferenceName(s))})"
