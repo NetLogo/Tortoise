@@ -233,7 +233,7 @@ object Model {
       repetitions = 25
     ),
     Model(
-      path = "models/Sample Models/Biology/AIDS.nlogo",
+      path = "models/Sample Models/Biology/HIV.nlogo",
       repetitions = 100
     ),
     Model(
