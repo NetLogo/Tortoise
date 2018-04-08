@@ -130,8 +130,7 @@ exportAgent = (clazz, builtInsMappings) -> (agent) ->
   builtInsValues  = builtInsMappings.map(([name, f]) -> f(agent.getVariable(name)))
   builtInsNames   = builtInsMappings.map(([name]) -> name)
   extrasNames     = difference(agent.varNames())(builtInsNames)
-  namesNotDeleted = extrasNames.filter((name) -> agent.getVariable(name)?)
-  extras          = toObject(namesNotDeleted.map(tee(id)(exportWildcardVar(agent))))
+  extras          = toObject(extrasNames.map(tee(id)(exportWildcardVar(agent))))
 
   new clazz(builtInsValues..., extras)
 
@@ -175,7 +174,8 @@ exportPlotManager = ->
 
 # () => Object[Any]
 exportMiniGlobals = ->
-  toObject(@observer.varNames().sort().map(tee(id)(exportWildcardVar(@observer))))
+  namesNotDeleted = @observer.varNames().filter((name) => @observer.getVariable(name)?).sort()
+  toObject(namesNotDeleted.map(tee(id)(exportWildcardVar(@observer))))
 
 # () => ExportedGlobals
 exportGlobals = ->
