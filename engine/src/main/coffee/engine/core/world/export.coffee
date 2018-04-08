@@ -127,10 +127,11 @@ exportMetadata = ->
 # [T, U <: ExportedAgent[T]] @ (Class[U], Array[(String, (Any) => Any)]) => (T) => U
 exportAgent = (clazz, builtInsMappings) -> (agent) ->
 
-  builtInsValues = builtInsMappings.map(([name, f]) -> f(agent.getVariable(name)))
-  builtInsNames  = builtInsMappings.map(([name]) -> name)
-  extrasNames    = difference(agent.varNames())(builtInsNames)
-  extras         = toObject(extrasNames.map(tee(id)(exportWildcardVar(agent))))
+  builtInsValues  = builtInsMappings.map(([name, f]) -> f(agent.getVariable(name)))
+  builtInsNames   = builtInsMappings.map(([name]) -> name)
+  extrasNames     = difference(agent.varNames())(builtInsNames)
+  namesNotDeleted = extrasNames.filter((name) -> agent.getVariable(name)?)
+  extras          = toObject(namesNotDeleted.map(tee(id)(exportWildcardVar(agent))))
 
   new clazz(builtInsValues..., extras)
 
