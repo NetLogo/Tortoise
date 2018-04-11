@@ -28,8 +28,8 @@ object WidgetSamples {
       Chooseable(Boolean.box(false)))
     Chooser(Option("foobar"), 1, 2, 3, 4, Option("abc"), choices, 0)
   }
-  val inputBoxDouble = InputBox(Option("foobar"), 1, 2, 3, 4, NumericInput(25.0, NumberLabel))
-  val inputBoxInt    = InputBox(Option("foobar"), 1, 2, 3, 4, NumericInput(15, ColorLabel))
+  val inputBoxNumber = InputBox(Option("foobar"), 1, 2, 3, 4, NumericInput(25.0, NumberLabel))
+  val inputBoxColor  = InputBox(Option("foobar"), 1, 2, 3, 4, NumericInput(15, ColorLabel))
   val inputBoxString = InputBox(Option("foobar"), 1, 2, 3, 4, StringInput("baz", StringLabel, false))
   val monitor        = Monitor(Some("reporter"), 1, 2, 3, 4, Option("abc"), 3, 10)
   val monitorNil     = Monitor(Some("reporter"), 1, 2, 3, 4, None, 3, 10)
@@ -108,7 +108,7 @@ object WidgetSamples {
         JsBool(false)
       ))),
 
-    "inputBox[Double]" -> locatableJsObject(
+    "inputBox[number]" -> locatableJsObject(
         "type"       -> JsString("inputBox"),
         "variable"   -> JsString("foobar"),
         "boxedValue" -> JsObject(fields(
@@ -117,16 +117,16 @@ object WidgetSamples {
         ))
     ),
 
-    "inputBox[Int]" -> locatableJsObject(
+    "inputBox[color]" -> locatableJsObject(
       "type"      -> JsString("inputBox"),
       "variable"  -> JsString("foobar"),
       "boxedValue" -> JsObject(fields(
-        "value" -> JsInt(15),
+        "value" -> JsDouble(15),
         "type"  -> JsString(ColorLabel.display)
       ))
     ),
 
-    "inputBox[String]" -> locatableJsObject(
+    "inputBox[string]" -> locatableJsObject(
       "type"      -> JsString("inputBox"),
       "variable"  -> JsString("foobar"),
       "boxedValue" -> JsObject(fields(
@@ -200,9 +200,9 @@ object WidgetSamples {
     "buttonNoName"     -> buttonNoName,
     "buttonWithName"   -> buttonWithName,
     "chooser"          -> chooser,
-    "inputBox[Double]" -> inputBoxDouble,
-    "inputBox[Int]"    -> inputBoxInt,
-    "inputBox[String]" -> inputBoxString,
+    "inputBox[number]" -> inputBoxNumber,
+    "inputBox[color]"  -> inputBoxColor,
+    "inputBox[string]" -> inputBoxString,
     "monitor"          -> monitor,
     "monitorNil"       -> monitorNil,
     "plot"             -> plot,

@@ -15,7 +15,7 @@ import
   org.nlogo.tortoise.macros.json.Jsonify
 
 import
-  TortoiseJson.{ fields, JsArray, JsBool, JsDouble, JsInt, JsNull, JsObject, JsString }
+  TortoiseJson.{ fields, JsArray, JsBool, JsDouble, JsNull, JsObject, JsString }
 
 object WidgetWrite {
 
@@ -39,11 +39,11 @@ object WidgetWrite {
     def apply(bv: BoxedValue): TortoiseJson =
       bv match {
         case NumericInput(value, label: ColorLabel.type) =>
-          JsObject(fields("value" -> JsInt(value.toInt), "type" -> JsString(label.display)))
+          JsObject(fields("value" -> JsDouble(value), "type" -> JsString(label.display)))
         case NumericInput(value, label: NumberLabel.type) =>
-          JsObject(fields("value" -> JsDouble(value),    "type" -> JsString(label.display)))
+          JsObject(fields("value" -> JsDouble(value), "type" -> JsString(label.display)))
         case StringInput (value, label, isMultiline) =>
-          JsObject(fields("value" -> JsString(value),    "type" -> JsString(label.display)
+          JsObject(fields("value" -> JsString(value), "type" -> JsString(label.display)
                         , "multiline" -> JsBool(isMultiline)))
       }
   }

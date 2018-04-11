@@ -109,9 +109,12 @@ object WidgetRead {
 
     private val stringDisplayToLabelMap = Set(CommandLabel, ReporterLabel, StringLabel).map(x => x.display -> x).toMap
 
+    // scalastyle:off cyclomatic.complexity
     def apply(t: TortoiseJson): ValidationNel[String, BoxedValue] = {
       t.asInstanceOf[JsObject].props.toSeq.sortBy(_._1) match {
         case Seq(("type", JsString(label)), ("value", JsInt(value))) if label == ColorLabel.display =>
+          NumericInput(value, ColorLabel).successNel
+        case Seq(("type", JsString(label)), ("value", JsDouble(value))) if label == ColorLabel.display =>
           NumericInput(value, ColorLabel).successNel
         case Seq(("type", JsString(label)), ("value", JsInt(value))) if label == NumberLabel.display =>
           NumericInput(value, NumberLabel).successNel
@@ -123,6 +126,7 @@ object WidgetRead {
           (s"Invalid input box: $other").failureNel
       }
     }
+    // scalastyle:on cyclomatic.complexity
 
   }
 
