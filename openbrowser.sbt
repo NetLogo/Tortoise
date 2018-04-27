@@ -1,4 +1,4 @@
-import sbt._
+import scala.sys.process._
 
 lazy val browsableFailureReport = settingKey[java.io.File]("location for browser failure report")
 

@@ -1,5 +1,5 @@
 import scala.util.Try
-import sbt._
+import scala.sys.process._
 import Process._
 import Keys._
 
@@ -18,8 +18,9 @@ yarn := {
 lazy val yarnInstall = taskKey[Seq[File]]("Runs `yarn install` from within SBT")
 
 yarnInstall := {
+  val log = streams.value.log
   if (nodeDeps.value.isEmpty || (nodeDeps.value exists (_.olderThan(packageJson.value))))
-    Process(Seq("yarn", "install"), baseDirectory.value).!(streams.value.log)
+    Process(Seq("yarn", "install"), baseDirectory.value).!(log)
   nodeDeps.value
 }
 
@@ -29,9 +30,10 @@ lazy val grunt = taskKey[Unit]("Runs `grunt` from within SBT")
 
 grunt := {
   val targetJS = (classDirectory in Compile).value / "js" / "tortoise-engine.js"
+  val log = streams.value.log
   installGrunt.value
   if (allJSSources.value exists (_.newerThan(targetJS)))
-    Process("grunt", baseDirectory.value).!(streams.value.log)
+    Process("grunt", baseDirectory.value).!(log)
 }
 
 grunt := (grunt.dependsOn(yarnInstall)).value
@@ -40,8 +42,9 @@ watchSources ++= allJSSources.value
 
 lazy val installGrunt = Def.task[Unit] {
   val versionStr = Try(Process(Seq("grunt", "--version")).!!).toOption getOrElse "Grunt's not there"
+  val log = streams.value.log
   if (!versionStr.contains("grunt-cli"))
-    Process(Seq("yarn", "global", "add", "grunt-cli"), baseDirectory.value).!(streams.value.log)
+    Process(Seq("yarn", "global", "add", "grunt-cli"), baseDirectory.value).!(log)
 }
 
 lazy val packageJson = Def.task[File] {
