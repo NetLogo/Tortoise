@@ -117,7 +117,7 @@ var procedures = (function() {
         SelfManager.self().right(Prims.random(world.observer.getGlobal("wiggle-angle")));
         SelfManager.self().right(-Prims.random(world.observer.getGlobal("wiggle-angle")));
         SelfManager.self()._optimalFdOne();
-        if (!SelfManager.self().getNeighbors().agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55); }).isEmpty()) {
+        if (SelfManager.self().getNeighbors()._optimalAnyWith(function() { return Prims.equality(SelfManager.self().getPatchVariable("pcolor"), 55); })) {
           SelfManager.self().setPatchVariable("pcolor", 55);
           SelfManager.self().die();
         }

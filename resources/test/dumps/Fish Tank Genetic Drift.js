@@ -967,7 +967,7 @@ var procedures = (function() {
       let turtlesInThisRegion = Nobody; letVars['turtlesInThisRegion'] = turtlesInThisRegion;
       let potentialMates = Nobody; letVars['potentialMates'] = potentialMates;
       let allFishAndFishZygotes = Nobody; letVars['allFishAndFishZygotes'] = allFishAndFishZygotes;
-      if (!world.turtleManager.turtlesOfBreed("SOMATIC-CELLS").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("sex"), "male"); }).isEmpty()) {
+      if (world.turtleManager.turtlesOfBreed("SOMATIC-CELLS")._optimalAnyWith(function() { return Prims.equality(SelfManager.self().getVariable("sex"), "male"); })) {
         world.turtleManager.turtlesOfBreed("SOMATIC-CELLS")._optimalOneOfWith(function() { return Prims.equality(SelfManager.self().getVariable("sex"), "male"); }).ask(function() {
           dad = SelfManager.self(); letVars['dad'] = dad;
           xcorDad = SelfManager.self().getVariable("xcor"); letVars['xcorDad'] = xcorDad;

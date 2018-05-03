@@ -842,9 +842,9 @@ var procedures = (function() {
         }
         thisProteinValue = (workspace.dump('') + workspace.dump(thisProteinValue) + workspace.dump("-") + workspace.dump(theAminoAcid.projectionBy(function() { return SelfManager.self().getVariable("value"); }))); letVars['thisProteinValue'] = thisProteinValue;
       }, "[ the-amino-acid -> set this-protein-value word this-protein-value \"-\" [ value ] of the-amino-acid ]"), orderedAminoAcids); if(reporterContext && _foreach_19530_19537 !== undefined) { return _foreach_19530_19537; }
-      if (!!world.turtleManager.turtlesOfBreed("PROTEINS").agentFilter(function() {
+      if (!world.turtleManager.turtlesOfBreed("PROTEINS")._optimalAnyWith(function() {
         return (Prims.equality(SelfManager.self().getVariable("strand"), strandType) && Prims.equality(SelfManager.self().getVariable("value"), thisProteinValue));
-      }).isEmpty()) {
+      })) {
         SelfManager.self().hatch(1, "").ask(function() {
           SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("PROTEINS"));
           SelfManager.self().setVariable("value", thisProteinValue);
