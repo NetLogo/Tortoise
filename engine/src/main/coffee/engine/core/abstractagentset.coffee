@@ -252,3 +252,6 @@ module.exports =
         (x) ->
           y = Iterator.boolOrError(x, x.projectionBy(f))
       @shufflerator().find(finder, Nobody)
+
+    _optimalAnyWith: (f) ->
+      @exists(@_world.selfManager.askAgent(f))
