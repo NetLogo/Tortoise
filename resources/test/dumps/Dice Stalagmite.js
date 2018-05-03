@@ -253,9 +253,9 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (!world.turtleManager.turtlesOfBreed("PAIRED-DICE").agentFilter(function() {
+      if (world.turtleManager.turtlesOfBreed("PAIRED-DICE")._optimalAnyWith(function() {
         return !Prims.equality(SelfManager.self().getVariable("pair-sum"), SelfManager.self().getPatchVariable("column"));
-      }).isEmpty()) {
+      })) {
         world.turtleManager.turtlesOfBreed("PAIRED-DICE").ask(function() { SelfManager.self()._optimalFdOne(); }, true);
       }
       else {
@@ -413,7 +413,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      while (!candidates.agentFilter(function() { return Prims.equality(SelfManager.self().getPatchVariable("pycor"), (world.topology.maxPycor - 2)); }).isEmpty()) {
+      while (candidates._optimalAnyWith(function() { return Prims.equality(SelfManager.self().getPatchVariable("pycor"), (world.topology.maxPycor - 2)); })) {
         candidates.ask(function() {
           if (Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor)) {
             SelfManager.self().die();

@@ -1147,7 +1147,7 @@ var procedures = (function() {
     try {
       var reporterContext = true;
       var letVars = { };
-      if (!world.turtleManager.turtlesOfBreed("NUCLEOTIDES").agentFilter(function() { return !SelfManager.self().getVariable("unwound?"); }).isEmpty()) {
+      if (world.turtleManager.turtlesOfBreed("NUCLEOTIDES")._optimalAnyWith(function() { return !SelfManager.self().getVariable("unwound?"); })) {
         if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
           return false
         }

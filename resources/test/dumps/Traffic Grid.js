@@ -548,9 +548,9 @@ var procedures = (function() {
       var letVars = { };
       let turtlesAhead = SelfManager.self().turtlesAt(deltaX, deltaY); letVars['turtlesAhead'] = turtlesAhead;
       if (!turtlesAhead.isEmpty()) {
-        if (!turtlesAhead.agentFilter(function() {
+        if (turtlesAhead._optimalAnyWith(function() {
           return !Prims.equality(SelfManager.self().getVariable("up-car?"), SelfManager.myself().projectionBy(function() { return SelfManager.self().getVariable("up-car?"); }));
-        }).isEmpty()) {
+        })) {
           SelfManager.self().setVariable("speed", 0);
         }
         else {

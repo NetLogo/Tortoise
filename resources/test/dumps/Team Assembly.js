@@ -284,11 +284,11 @@ var procedures = (function() {
           newTeamMember = world.observer.getGlobal("newcomer"); letVars['newTeamMember'] = newTeamMember;
         }
         else {
-          if ((Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("q")) && !world.turtles().agentFilter(function() {
+          if ((Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("q")) && world.turtles()._optimalAnyWith(function() {
             return (SelfManager.self().getVariable("in-team?") && !LinkPrims.linkNeighbors("LINKS").agentFilter(function() { return !SelfManager.self().getVariable("in-team?"); }).isEmpty());
-          }).isEmpty())) {
+          }))) {
             newTeamMember = world.turtles()._optimalOneOfWith(function() {
-              return (!SelfManager.self().getVariable("in-team?") && !LinkPrims.linkNeighbors("LINKS").agentFilter(function() { return SelfManager.self().getVariable("in-team?"); }).isEmpty());
+              return (!SelfManager.self().getVariable("in-team?") && LinkPrims.linkNeighbors("LINKS")._optimalAnyWith(function() { return SelfManager.self().getVariable("in-team?"); }));
             }); letVars['newTeamMember'] = newTeamMember;
           }
           else {
