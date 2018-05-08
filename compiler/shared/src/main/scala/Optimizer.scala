@@ -12,6 +12,7 @@ import
       _neighbors, _neighbors4, _not, _notequal, _observervariable, _of, _oneof, _other, _patches, _patchvariable,
       _procedurevariable, _sprout, _sum, _with }
 
+// scalastyle:off number.of.methods
 object Optimizer {
 
   // scalastyle:off class.name
@@ -357,3 +358,4 @@ object Optimizer {
     )(pd)
 
 }
+// scalastyle:on number.of.methods
