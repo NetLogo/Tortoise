@@ -9,9 +9,10 @@ import
     util.Date
 
 import
-  scala.{ io => sio, sys },
+  scala.{ io => sio, sys, collection => sc },
     sio.Source,
-    sys.process.Process
+    sys.process.Process,
+    sc.mutable.Queue
 
 import
   scalaz.{ NonEmptyList, Validation },
@@ -41,6 +42,22 @@ object Benchmarker extends App {
       "Erosion Benchmark",
       "Heatbugs Benchmark"
     )
+
+    // Seq(
+    //   "Connected Chemistry Gas Combustion",
+    //   "Connected Chemistry Reversible Reaction",
+    //   "DLA Simple",
+    //   "DNA Protein Synthesis",
+    //   "DNA Replication Fork",
+    //   "Dice Stalagmite",
+    //   "Fish Tank Genetic Drift",
+    //   "Fur",
+    //   "GasLab Free Gas",
+    //   "GasLabNew Benchmark",
+    //   "Plant Speciation",
+    //   "Team Assembly",
+    //   "Traffic Grid"
+    // )
 
   private val engineToEvalMap = Seq(Nashorn, SpiderMonkey, V8).map(engine => engine -> engine.freshEval _).toMap
 
@@ -95,6 +112,7 @@ object Benchmarker extends App {
                        |--Max:     ${times.max} seconds
                        |
                        |""".stripMargin
+          println(str)
           append(str)
       }
   }
@@ -115,7 +133,7 @@ object Benchmarker extends App {
 
         val modelV = CompiledModel.fromNlogoContents(nlogo)
 
-        val jsV =
+        val jsVB =
           for {
             model       <- modelV
             caJS        <- model.compileRawCommand("ca")
@@ -123,7 +141,19 @@ object Benchmarker extends App {
             resultJS    <- model.compileReporter("result")
           } yield s"${model.compiledCode};$caJS;$benchmarkJS;$resultJS;"
 
-        val js = jsV valueOr { case NonEmptyList(head, _) => throw head }
+        // val jsVG =
+        //   for {
+        //     model       <- modelV
+        //     caJS        <- model.compileRawCommand("ca")
+        //     seedJS      <- model.compileRawCommand("random seed 0")
+        //     timerJS     <- model.compileRawCommand("let result timer")
+        //     setupJS     <- model.compileRawCommand("setup")
+        //     // TODO is it possible to pass in repetitions as an arg?
+        //     repeatJS    <- model.compileRawCommand("repeat 100 [ go ]")
+        //     resultJS    <- model.compileReporter("result")
+        //   } yield s"${model.compiledCode};$caJS;$seedJS;$timerJS;$setupJS;$repeatJS;$resultJS;"
+
+        val js = jsVB valueOr { case NonEmptyList(head, _) => throw head }
 
         val results =
           enginesAndEvals.toSeq map {
@@ -136,7 +166,23 @@ object Benchmarker extends App {
 
   }
 
-  private def pathOfModel(dir: File, filename: String): File = new File(s"${dir.getAbsolutePath}/test/benchmarks/$filename.nlogo")
+  private def pathOfModel(dir: File, filename: String): File = {
+    val queue = new Queue[File]
+    queue.enqueue(dir)
+
+    while (queue.length > 0) {
+      val folder = queue.dequeue
+      for (entry <- folder.listFiles()) {
+        if (entry.isDirectory()) {
+          queue.enqueue(entry)
+        } else if (entry.getName() == s"$filename.nlogo") {
+          return new File(s"${folder.getAbsolutePath}/$filename.nlogo")
+        }
+      }
+    }
+
+    throw new Exception(s"$filename.nlogo not found in models folder.")
+  }
 
   private def round(num: Double, places: Int): Double =
     if (places >= 0)
