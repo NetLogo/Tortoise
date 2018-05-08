@@ -2,11 +2,11 @@
 
 { DisplayMode: { displayModeFromNum } } = require('./pen')
 
-{ filter, forEach, map, toObject, zip } = require('brazierjs/array')
-{ flip, pipeline }                      = require('brazierjs/function')
-{ fold, map: mapMaybe, maybe }          = require('brazierjs/maybe')
-{ values }                              = require('brazierjs/object')
-{ isNumber }                            = require('brazierjs/type')
+{ filter, forEach, map, toObject, zip }               = require('brazierjs/array')
+{ flip, pipeline }                                    = require('brazierjs/function')
+{ flatMap: flatMapMaybe, fold, map: mapMaybe, maybe } = require('brazierjs/maybe')
+{ values }                                            = require('brazierjs/object')
+{ isNumber }                                          = require('brazierjs/type')
 
 module.exports = class PlotManager
 
@@ -87,8 +87,8 @@ module.exports = class PlotManager
 
   # (ExportedPlotManager) => Unit
   importState: ({ currentPlotNameOrNull, plots }) ->
-    plots.forEach((plot) => @_plotMap[plot.name.toUpperCase()].importState(plot))
-    @_currentPlotMaybe = mapMaybe((name) => @_plotMap[name.toUpperCase()])(maybe(currentPlotNameOrNull))
+    plots.forEach((plot) => @_plotMap[plot.name.toUpperCase()]?.importState(plot))
+    @_currentPlotMaybe = flatMapMaybe((name) => maybe(@_plotMap[name.toUpperCase()]))(maybe(currentPlotNameOrNull))
     return
 
   # () => Boolean
