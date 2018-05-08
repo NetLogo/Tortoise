@@ -33,31 +33,31 @@ object Benchmarker extends App {
   // In response to that, you might say, "But they run fine in `TestBenchmarks`!", but I suspect that
   // that is due to those tests not running the standard benchmarking commands (`ca benchmark result`) --JAB (2/4/14)
   private val benchmarkModels =
-    Seq(
-      "BZ Benchmark",
-      "FireBig Benchmark",
-      "GridWalk Benchmark",
-      "Wolf Benchmark",
-      "Wealth Benchmark",
-      "Erosion Benchmark",
-      "Heatbugs Benchmark"
-    )
-
     // Seq(
-    //   "Connected Chemistry Gas Combustion",
-    //   "Connected Chemistry Reversible Reaction",
-    //   "DLA Simple",
-    //   "DNA Protein Synthesis",
-    //   "DNA Replication Fork",
-    //   "Dice Stalagmite",
-    //   "Fish Tank Genetic Drift",
-    //   "Fur",
-    //   "GasLab Free Gas",
-    //   "GasLabNew Benchmark",
-    //   "Plant Speciation",
-    //   "Team Assembly",
-    //   "Traffic Grid"
+    //   "BZ Benchmark",
+    //   "FireBig Benchmark",
+    //   "GridWalk Benchmark",
+    //   "Wolf Benchmark",
+    //   "Wealth Benchmark",
+    //   "Erosion Benchmark",
+    //   "Heatbugs Benchmark"
     // )
+
+    Seq(
+      "Connected Chemistry Gas Combustion",
+      "Connected Chemistry Reversible Reaction",
+      "DLA Simple",
+      "DNA Protein Synthesis",
+      "DNA Replication Fork",
+      "Dice Stalagmite",
+      "Fish Tank Genetic Drift",
+      "Fur",
+      "GasLab Free Gas",
+      "GasLabNew Benchmark",
+      "Plant Speciation",
+      "Team Assembly",
+      "Traffic Grid"
+    )
 
   private val engineToEvalMap = Seq(Nashorn, SpiderMonkey, V8).map(engine => engine -> engine.freshEval _).toMap
 
@@ -133,27 +133,27 @@ object Benchmarker extends App {
 
         val modelV = CompiledModel.fromNlogoContents(nlogo)
 
-        val jsVB =
-          for {
-            model       <- modelV
-            caJS        <- model.compileRawCommand("ca")
-            benchmarkJS <- model.compileRawCommand("benchmark")
-            resultJS    <- model.compileReporter("result")
-          } yield s"${model.compiledCode};$caJS;$benchmarkJS;$resultJS;"
-
-        // val jsVG =
+        // val jsVB =
         //   for {
         //     model       <- modelV
         //     caJS        <- model.compileRawCommand("ca")
-        //     seedJS      <- model.compileRawCommand("random seed 0")
-        //     timerJS     <- model.compileRawCommand("let result timer")
-        //     setupJS     <- model.compileRawCommand("setup")
-        //     // TODO is it possible to pass in repetitions as an arg?
-        //     repeatJS    <- model.compileRawCommand("repeat 100 [ go ]")
+        //     benchmarkJS <- model.compileRawCommand("benchmark")
         //     resultJS    <- model.compileReporter("result")
-        //   } yield s"${model.compiledCode};$caJS;$seedJS;$timerJS;$setupJS;$repeatJS;$resultJS;"
+        //   } yield s"${model.compiledCode};$caJS;$benchmarkJS;$resultJS;"
 
-        val js = jsVB valueOr { case NonEmptyList(head, _) => throw head }
+        val jsVG =
+          for {
+            model       <- modelV
+            caJS        <- model.compileRawCommand("ca")
+            seedJS      <- model.compileRawCommand("random-seed 0")
+            timerJS     <- model.compileRawCommand("reset-timer")
+            setupJS     <- model.compileRawCommand("setup")
+            // TODO is it possible to pass in repetitions as an arg?
+            repeatJS    <- model.compileRawCommand("repeat 100 [ go ]")
+            resultJS    <- model.compileReporter("timer")
+          } yield s"${model.compiledCode};$caJS;$seedJS;$timerJS;$setupJS;$repeatJS;$resultJS;"
+
+        val js = jsVG valueOr { case NonEmptyList(head, _) => throw head }
 
         val results =
           enginesAndEvals.toSeq map {
