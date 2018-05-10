@@ -44,19 +44,20 @@ object Benchmarker extends App {
     // )
 
     Seq(
-      "Connected Chemistry Gas Combustion",
-      "Connected Chemistry Reversible Reaction",
-      "DLA Simple",
-      "DNA Protein Synthesis",
-      "DNA Replication Fork",
-      "Dice Stalagmite",
-      "Fish Tank Genetic Drift",
-      "Fur",
-      "GasLab Free Gas",
-      "GasLabNew Benchmark",
-      "Plant Speciation",
-      "Team Assembly",
-      "Traffic Grid"
+      "Erosion Benchmark"
+      // "Connected Chemistry Gas Combustion",
+      // "Connected Chemistry Reversible Reaction",
+      // "DLA Simple",
+      // "DNA Protein Synthesis",
+      // "DNA Replication Fork",
+      // "Dice Stalagmite",
+      // "Fish Tank Genetic Drift",
+      // "Fur",
+      // "GasLab Free Gas",
+      // "GasLabNew Benchmark",
+      // "Plant Speciation",
+      // "Team Assembly",
+      // "Traffic Grid"
     )
 
   private val engineToEvalMap = Seq(Nashorn, SpiderMonkey, V8).map(engine => engine -> engine.freshEval _).toMap
@@ -133,15 +134,17 @@ object Benchmarker extends App {
 
         val modelV = CompiledModel.fromNlogoContents(nlogo)
 
-        // val jsVB =
-        //   for {
-        //     model       <- modelV
-        //     caJS        <- model.compileRawCommand("ca")
-        //     benchmarkJS <- model.compileRawCommand("benchmark")
-        //     resultJS    <- model.compileReporter("result")
-        //   } yield s"${model.compiledCode};$caJS;$benchmarkJS;$resultJS;"
+        val benchmarkPattern = """(?s).*\n\s*to\s+benchmark.*\n(?s).*\n\s*end(?s).*"""
 
-        val jsVG =
+        val jsV = if (nlogo.matches(benchmarkPattern)) {
+          for {
+            model       <- modelV
+            caJS        <- model.compileRawCommand("ca")
+            benchmarkJS <- model.compileRawCommand("benchmark")
+            resultJS    <- model.compileReporter("result")
+          } yield s"${model.compiledCode};$caJS;$benchmarkJS;$resultJS;"
+        } else {
+          println(s"No Benchmark procedure found. Running 100 ticks.")
           for {
             model       <- modelV
             caJS        <- model.compileRawCommand("ca")
@@ -152,8 +155,9 @@ object Benchmarker extends App {
             repeatJS    <- model.compileRawCommand("repeat 100 [ go ]")
             resultJS    <- model.compileReporter("timer")
           } yield s"${model.compiledCode};$caJS;$seedJS;$timerJS;$setupJS;$repeatJS;$resultJS;"
+        }
 
-        val js = jsVG valueOr { case NonEmptyList(head, _) => throw head }
+        val js = jsV valueOr { case NonEmptyList(head, _) => throw head }
 
         val results =
           enginesAndEvals.toSeq map {
