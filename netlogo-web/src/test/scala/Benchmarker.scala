@@ -44,8 +44,7 @@ object Benchmarker extends App {
     // )
 
     Seq(
-      "Erosion Benchmark"
-      // "Connected Chemistry Gas Combustion",
+      "Connected Chemistry Gas Combustion",
       // "Connected Chemistry Reversible Reaction",
       // "DLA Simple",
       // "DNA Protein Synthesis",
@@ -62,7 +61,7 @@ object Benchmarker extends App {
 
   private val engineToEvalMap = Seq(Nashorn, SpiderMonkey, V8).map(engine => engine -> engine.freshEval _).toMap
 
-  val (dirStr, models, numIterations, enginesAndEvals, comment) = processArgs(args)
+  val (dirStr, models, numIterations, numTicks, enginesAndEvals, comment) = processArgs(args)
 
   val dir       = new File(dirStr)
   val benchFile = new File(dir, "engine-benchmarks.txt")
@@ -113,13 +112,9 @@ object Benchmarker extends App {
                        |--Max:     ${times.max} seconds
                        |
                        |""".stripMargin
-          println(str)
           append(str)
       }
   }
-
-
-
 
   private def gatherBenchmarks(modelsDir: File): Seq[Benchmark] = {
 
@@ -144,15 +139,14 @@ object Benchmarker extends App {
             resultJS    <- model.compileReporter("result")
           } yield s"${model.compiledCode};$caJS;$benchmarkJS;$resultJS;"
         } else {
-          println(s"No Benchmark procedure found. Running 100 ticks.")
+          println(s"No Benchmark procedure found. Running $numTicks ticks.")
           for {
             model       <- modelV
             caJS        <- model.compileRawCommand("ca")
             seedJS      <- model.compileRawCommand("random-seed 0")
             timerJS     <- model.compileRawCommand("reset-timer")
             setupJS     <- model.compileRawCommand("setup")
-            // TODO is it possible to pass in repetitions as an arg?
-            repeatJS    <- model.compileRawCommand("repeat 100 [ go ]")
+            repeatJS    <- model.compileRawCommand(s"repeat $numTicks [ go ]")
             resultJS    <- model.compileReporter("timer")
           } yield s"${model.compiledCode};$caJS;$seedJS;$timerJS;$setupJS;$repeatJS;$resultJS;"
         }
@@ -194,7 +188,7 @@ object Benchmarker extends App {
     else
       throw new IllegalArgumentException("Invalid number of places")
 
-  private def processArgs(args: Seq[String]): (String, Seq[String], Int, Map[JSEngineCompanion, (String) => String], String) = {
+  private def processArgs(args: Seq[String]): (String, Seq[String], Int, Int, Map[JSEngineCompanion, (String) => String], String) = {
 
     def buildArgPairings(as: Seq[String], pairs: Map[String, Seq[String]] = Map()): Map[String, Seq[String]] = {
       val delimFunc = (s: String) => !s.startsWith("--")
@@ -213,6 +207,7 @@ object Benchmarker extends App {
 
     val pairings = buildArgPairings(others)
 
+    val ticks = pairings.get("--ticks") map (_.head.toInt) getOrElse 100
     val comments = pairings.get("--comment") orElse pairings.get("--comments") map (_.head) getOrElse ""
 
     val (models, iters, engines) =
@@ -230,7 +225,7 @@ object Benchmarker extends App {
         (chosenModels, iters, engines)
       }
 
-    (dirStr, models, iters, engines, comments)
+    (dirStr, models, iters, ticks, engines, comments)
 
   }
 
