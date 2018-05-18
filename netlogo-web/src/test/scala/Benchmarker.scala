@@ -43,22 +43,6 @@ object Benchmarker extends App {
       "Heatbugs Benchmark"
     )
 
-    // Seq(
-      // "Connected Chemistry Gas Combustion",
-      // "Connected Chemistry Reversible Reaction",
-      // "DLA Simple",
-      // "DNA Protein Synthesis",
-      // "DNA Replication Fork",
-      // "Dice Stalagmite",
-      // "Fish Tank Genetic Drift",
-      // "Fur",
-      // "GasLab Free Gas",
-      // "GasLabNew Benchmark",
-      // "Plant Speciation",
-      // "Team Assembly",
-      // "Traffic Grid"
-    // )
-
   private val engineToEvalMap = Seq(Nashorn, SpiderMonkey, V8).map(engine => engine -> engine.freshEval _).toMap
 
   val (dirStr, models, numIterations, numTicks, enginesAndEvals, comment) = processArgs(args)
@@ -118,7 +102,7 @@ object Benchmarker extends App {
 
         val modelV = CompiledModel.fromNlogoContents(nlogo)
 
-        val benchmarkPattern = """(?s).*\n\s*to\s+benchmark.*\n(?s).*\n\s*end(?s).*"""
+        val benchmarkPattern = """(?s).*\n\s*to\s+benchmark\s+(?s).*\n\s*end(?s).*"""
         val benchmarkable = nlogo.matches(benchmarkPattern)
         if (!benchmarkable) {
           println(s"No `benchmark` procedure found. Running $numTicks ticks.")
