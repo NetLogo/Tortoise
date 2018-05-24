@@ -137,7 +137,7 @@ object Benchmarker extends App {
               time
             })
             val summary =
-              s"""$name ($engine.name $engine.version):
+              s"""$name (${engine.name} ${engine.version}):
                          |--Average: ${round(times.sum / times.size, 3)} seconds
                          |--Min:     ${times.min} seconds
                          |--Max:     ${times.max} seconds
