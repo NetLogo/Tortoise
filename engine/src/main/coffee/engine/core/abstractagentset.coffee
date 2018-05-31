@@ -256,6 +256,16 @@ module.exports =
     _optimalAnyWith: (f) ->
       @exists(@_world.selfManager.askAgent(f))
 
+    _optimalAnyOtherWith: (f) ->
+      self = @_world.selfManager.self()
+      checker =
+        (x) ->
+          if x != self
+            y = Iterator.boolOrError(x, x.projectionBy(f))
+          else
+            false
+      @exists(checker)
+
     _optimalCountOtherWith: (f) ->
       self = @_world.selfManager.self()
       filterer =

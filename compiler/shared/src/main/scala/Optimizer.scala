@@ -191,6 +191,21 @@ object Optimizer {
     }
   }
 
+  class _anyotherwith extends Reporter {
+    override def syntax: Syntax =
+      Syntax.reporterSyntax(right = List(Syntax.AgentsetType, Syntax.ReporterBlockType), ret = Syntax.BooleanType)
+  }
+
+  object AnyOtherWithTransformer extends AstTransformer {
+    override def visitReporterApp(ra: ReporterApp): ReporterApp = {
+      ra match {
+        case ReporterApp(_: _any, Seq(ReporterApp(_: _otherwith, otherWithArgs, _)), _) =>
+          ra.copy(reporter = new _anyotherwith, args = otherWithArgs)
+        case _ => super.visitReporterApp(ra)
+      }
+    }
+  }
+
   class _anywith extends Reporter {
     override def syntax: Syntax =
       Syntax.reporterSyntax(right = List(Syntax.AgentsetType, Syntax.ReporterBlockType), ret = Syntax.BooleanType)
@@ -353,7 +368,6 @@ object Optimizer {
   def apply(pd: ProcedureDefinition): ProcedureDefinition =
     (Fd1Transformer        .visitProcedureDefinition _ andThen
      FdLessThan1Transformer.visitProcedureDefinition   andThen
-
      WithTransformer          .visitProcedureDefinition   andThen
      CrtFastTransformer       .visitProcedureDefinition   andThen
      CroFastTransformer       .visitProcedureDefinition   andThen
@@ -362,9 +376,10 @@ object Optimizer {
      NSumTransformer          .visitProcedureDefinition   andThen
      NSum4Transformer         .visitProcedureDefinition   andThen
      OneOfWithTransformer     .visitProcedureDefinition   andThen
+     OtherWithTransformer     .visitProcedureDefinition   andThen
+     AnyOtherWithTransformer.visitProcedureDefinition  andThen
      AnyOtherTransformer      .visitProcedureDefinition   andThen
      WithOtherTransformer     .visitProcedureDefinition   andThen
-     OtherWithTransformer     .visitProcedureDefinition   andThen
      CountOtherWithTransformer.visitProcedureDefinition   andThen
      CountOtherTransformer    .visitProcedureDefinition   andThen
      AnyWith1Transformer      .visitProcedureDefinition   andThen
