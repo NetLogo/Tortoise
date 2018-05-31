@@ -164,6 +164,10 @@ trait ReporterPrims extends PrimUtils {
       case ns: Optimizer._nsum => generateOptimalNSum(r, ns.varName)
       case ns: Optimizer._nsum4 => generateOptimalNSum4(r, ns.varName)
 
+      case _: Optimizer._countotherwith =>
+        val agents = arg(0)
+        s"$agents._optimalCountOtherWith(${handlers.fun(r.args(1), true)})"
+
       case _: Optimizer._otherwith =>
         val agents = arg(0)
         s"$agents._optimalOtherWith(${handlers.fun(r.args(1), true)})"
