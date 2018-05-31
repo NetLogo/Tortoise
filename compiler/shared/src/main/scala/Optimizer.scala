@@ -136,6 +136,21 @@ object Optimizer {
     }
   }
 
+  class _countotherwith extends Reporter {
+    override def syntax: Syntax =
+      Syntax.reporterSyntax(right = List(Syntax.AgentsetType, Syntax.ReporterBlockType), ret = Syntax.NumberType)
+  }
+
+  object CountOtherWithTransformer extends AstTransformer {
+    override def visitReporterApp(ra: ReporterApp): ReporterApp = {
+      ra match {
+        case ReporterApp(_: _count, Seq(ReporterApp(_: _otherwith, otherWithArgs, _)), _) =>
+          ra.copy(reporter = new _countotherwith, args = otherWithArgs)
+        case _ => super.visitReporterApp(ra)
+      }
+    }
+  }
+
   class _oneofwith extends Reporter {
     override def syntax: Syntax =
       Syntax.reporterSyntax(right = List(Syntax.AgentsetType, Syntax.ReporterBlockType), ret = Syntax.AgentType)
@@ -338,23 +353,25 @@ object Optimizer {
   def apply(pd: ProcedureDefinition): ProcedureDefinition =
     (Fd1Transformer        .visitProcedureDefinition _ andThen
      FdLessThan1Transformer.visitProcedureDefinition   andThen
-     CountOtherTransformer .visitProcedureDefinition   andThen
-     WithTransformer       .visitProcedureDefinition   andThen
-     CrtFastTransformer    .visitProcedureDefinition   andThen
-     CroFastTransformer    .visitProcedureDefinition   andThen
-     HatchFastTransformer  .visitProcedureDefinition   andThen
-     SproutFastTransformer .visitProcedureDefinition   andThen
-     NSumTransformer       .visitProcedureDefinition   andThen
-     NSum4Transformer      .visitProcedureDefinition   andThen
-     OneOfWithTransformer  .visitProcedureDefinition   andThen
-     AnyOtherTransformer   .visitProcedureDefinition   andThen
-     WithOtherTransformer  .visitProcedureDefinition   andThen
-     OtherWithTransformer  .visitProcedureDefinition   andThen
-     AnyWith1Transformer   .visitProcedureDefinition   andThen
-     AnyWith2Transformer   .visitProcedureDefinition   andThen
-     AnyWith3Transformer   .visitProcedureDefinition   andThen
-     AnyWith4Transformer   .visitProcedureDefinition   andThen
-     AnyWith5Transformer   .visitProcedureDefinition
+
+     WithTransformer          .visitProcedureDefinition   andThen
+     CrtFastTransformer       .visitProcedureDefinition   andThen
+     CroFastTransformer       .visitProcedureDefinition   andThen
+     HatchFastTransformer     .visitProcedureDefinition   andThen
+     SproutFastTransformer    .visitProcedureDefinition   andThen
+     NSumTransformer          .visitProcedureDefinition   andThen
+     NSum4Transformer         .visitProcedureDefinition   andThen
+     OneOfWithTransformer     .visitProcedureDefinition   andThen
+     AnyOtherTransformer      .visitProcedureDefinition   andThen
+     WithOtherTransformer     .visitProcedureDefinition   andThen
+     OtherWithTransformer     .visitProcedureDefinition   andThen
+     CountOtherWithTransformer.visitProcedureDefinition   andThen
+     CountOtherTransformer    .visitProcedureDefinition   andThen
+     AnyWith1Transformer      .visitProcedureDefinition   andThen
+     AnyWith2Transformer      .visitProcedureDefinition   andThen
+     AnyWith3Transformer      .visitProcedureDefinition   andThen
+     AnyWith4Transformer      .visitProcedureDefinition   andThen
+     AnyWith5Transformer      .visitProcedureDefinition
     )(pd)
 
 }

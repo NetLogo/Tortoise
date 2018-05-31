@@ -66,9 +66,9 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
     val commands  = (OCommand,  Seq("CroFast", "CrtFast", "Fd1", "FdLessThan1", "HatchFast", "SproutFast"))
     val reporters = (OReporter,
       Seq(
-        "AnyOther", "CountOther", "Nsum", "Nsum4", "OneOfWith", "With", "PatchVariableDouble",
-        "TurtleVariableDouble", "OtherWith", "WithOther", "AnyWith1", "AnyWith2", "AnyWith3",
-        "AnyWith4", "AnyWith5"
+        "AnyOther", "AnyWith1", "AnyWith2", "AnyWith3", "AnyWith4", "AnyWith5",
+        "CountOther", "CountOtherWith", "Nsum", "Nsum4", "OneOfWith", "OtherWith",
+        "PatchVariableDouble", "TurtleVariableDouble", "With", "WithOther"
       )
     )
     Seq(commands, reporters).flatMap {
