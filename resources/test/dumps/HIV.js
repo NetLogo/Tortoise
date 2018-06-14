@@ -452,7 +452,7 @@ var procedures = (function() {
           SelfManager.self().moveTo(SelfManager.self().getPatchHere());
           potentialPartner.ask(function() { SelfManager.self().moveTo(SelfManager.self().getPatchHere()); }, true);
           SelfManager.self().setPatchVariable("pcolor", (5 - 3));
-          SelfManager.self().patchAt(-1, 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", (5 - 3)); }, true);
+          SelfManager.self()._optimalPatchWest().ask(function() { SelfManager.self().setPatchVariable("pcolor", (5 - 3)); }, true);
         }
       }
     } catch (e) {
@@ -475,7 +475,7 @@ var procedures = (function() {
           SelfManager.self().setVariable("couple-length", 0);
           SelfManager.self().getVariable("partner").ask(function() { SelfManager.self().setVariable("couple-length", 0); }, true);
           SelfManager.self().setPatchVariable("pcolor", 0);
-          SelfManager.self().patchAt(-1, 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 0); }, true);
+          SelfManager.self()._optimalPatchWest().ask(function() { SelfManager.self().setPatchVariable("pcolor", 0); }, true);
           SelfManager.self().getVariable("partner").ask(function() { SelfManager.self().setVariable("partner", Nobody); }, true);
           SelfManager.self().getVariable("partner").ask(function() { SelfManager.self().setVariable("coupled?", false); }, true);
           SelfManager.self().setVariable("partner", Nobody);

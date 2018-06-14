@@ -609,7 +609,7 @@ var procedures = (function() {
       var letVars = { };
       SelfManager.self().setVariable("isolated?", true);
       SelfManager.self().moveTo(SelfManager.self().getPatchHere());
-      SelfManager.self().patchAt(0, 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", (5 - 3)); }, true);
+      SelfManager.self()._optimalPatchHereInternal().ask(function() { SelfManager.self().setPatchVariable("pcolor", (5 - 3)); }, true);
     } catch (e) {
       if (e instanceof Exception.StopInterrupt) {
         return e;
@@ -626,7 +626,7 @@ var procedures = (function() {
       var letVars = { };
       SelfManager.self().setVariable("isolated?", false);
       SelfManager.self().setVariable("hospitalized?", false);
-      SelfManager.self().patchAt(0, 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 0); }, true);
+      SelfManager.self()._optimalPatchHereInternal().ask(function() { SelfManager.self().setPatchVariable("pcolor", 0); }, true);
       world.observer.getGlobal("border").ask(function() { SelfManager.self().setPatchVariable("pcolor", 45); }, true);
       world.getPatchAt(Prims.div( -world.topology.maxPxcor, 2), 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
       world.getPatchAt(Prims.div(world.topology.maxPxcor, 2), 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);

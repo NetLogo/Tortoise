@@ -446,7 +446,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.observer.getGlobal("current-light").ask(function() {
-        SelfManager.self().patchAt(-1, 1).ask(function() {
+        SelfManager.self()._optimalPatchNorthWest().ask(function() {
           SelfManager.self().setPatchVariable("plabel-color", 0);
           SelfManager.self().setPatchVariable("plabel", "current");
         }, true);
@@ -466,7 +466,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.observer.getGlobal("current-light").ask(function() {
-        SelfManager.self().patchAt(-1, 1).ask(function() { SelfManager.self().setPatchVariable("plabel", ""); }, true);
+        SelfManager.self()._optimalPatchNorthWest().ask(function() { SelfManager.self().setPatchVariable("plabel", ""); }, true);
       }, true);
     } catch (e) {
       if (e instanceof Exception.StopInterrupt) {
@@ -504,17 +504,17 @@ var procedures = (function() {
       var letVars = { };
       if (world.observer.getGlobal("power?")) {
         if (SelfManager.self().getPatchVariable("green-light-up?")) {
-          SelfManager.self().patchAt(-1, 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 15); }, true);
-          SelfManager.self().patchAt(0, 1).ask(function() { SelfManager.self().setPatchVariable("pcolor", 55); }, true);
+          SelfManager.self()._optimalPatchWest().ask(function() { SelfManager.self().setPatchVariable("pcolor", 15); }, true);
+          SelfManager.self()._optimalPatchNorth().ask(function() { SelfManager.self().setPatchVariable("pcolor", 55); }, true);
         }
         else {
-          SelfManager.self().patchAt(-1, 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 55); }, true);
-          SelfManager.self().patchAt(0, 1).ask(function() { SelfManager.self().setPatchVariable("pcolor", 15); }, true);
+          SelfManager.self()._optimalPatchWest().ask(function() { SelfManager.self().setPatchVariable("pcolor", 55); }, true);
+          SelfManager.self()._optimalPatchNorth().ask(function() { SelfManager.self().setPatchVariable("pcolor", 15); }, true);
         }
       }
       else {
-        SelfManager.self().patchAt(-1, 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
-        SelfManager.self().patchAt(0, 1).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
+        SelfManager.self()._optimalPatchWest().ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
+        SelfManager.self()._optimalPatchNorth().ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
       }
     } catch (e) {
       if (e instanceof Exception.StopInterrupt) {

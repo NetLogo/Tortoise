@@ -242,26 +242,26 @@ var procedures = (function() {
       var letVars = { };
       if (Prims.lt(SelfManager.self().getVariable("heading"), SelfManager.self().towardsXY((SelfManager.self().getPatchVariable("pxcor") + 0.5), (SelfManager.self().getPatchVariable("pycor") + 0.5)))) {
         if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-          return SelfManager.self().patchAt(0, 1)
+          return SelfManager.self()._optimalPatchNorth()
         }
       }
       if (Prims.lt(SelfManager.self().getVariable("heading"), SelfManager.self().towardsXY((SelfManager.self().getPatchVariable("pxcor") + 0.5), (SelfManager.self().getPatchVariable("pycor") - 0.5)))) {
         if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-          return SelfManager.self().patchAt(1, 0)
+          return SelfManager.self()._optimalPatchEast()
         }
       }
       if (Prims.lt(SelfManager.self().getVariable("heading"), SelfManager.self().towardsXY((SelfManager.self().getPatchVariable("pxcor") - 0.5), (SelfManager.self().getPatchVariable("pycor") - 0.5)))) {
         if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-          return SelfManager.self().patchAt(0, -1)
+          return SelfManager.self()._optimalPatchSouth()
         }
       }
       if (Prims.lt(SelfManager.self().getVariable("heading"), SelfManager.self().towardsXY((SelfManager.self().getPatchVariable("pxcor") - 0.5), (SelfManager.self().getPatchVariable("pycor") + 0.5)))) {
         if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-          return SelfManager.self().patchAt(-1, 0)
+          return SelfManager.self()._optimalPatchWest()
         }
       }
       if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-        return SelfManager.self().patchAt(0, 1)
+        return SelfManager.self()._optimalPatchNorth()
       }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {

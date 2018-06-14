@@ -245,16 +245,16 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       let unhappiness = 0; letVars['unhappiness'] = unhappiness;
-      SelfManager.self().patchAt(0, 1).ask(function() {
+      SelfManager.self()._optimalPatchNorth().ask(function() {
         unhappiness = (unhappiness + NLMath.pow((SelfManager.self().getPatchVariable("brightness") - SelfManager.myself().projectionBy(function() { return SelfManager.self().getPatchVariable("brightness"); })), 2)); letVars['unhappiness'] = unhappiness;
       }, true);
-      SelfManager.self().patchAt(0, -1).ask(function() {
+      SelfManager.self()._optimalPatchSouth().ask(function() {
         unhappiness = (unhappiness + NLMath.pow((SelfManager.self().getPatchVariable("brightness") - SelfManager.myself().projectionBy(function() { return SelfManager.self().getPatchVariable("brightness"); })), 2)); letVars['unhappiness'] = unhappiness;
       }, true);
-      SelfManager.self().patchAt(1, 0).ask(function() {
+      SelfManager.self()._optimalPatchEast().ask(function() {
         unhappiness = ((unhappiness + 1) - NLMath.pow((SelfManager.self().getPatchVariable("brightness") - SelfManager.myself().projectionBy(function() { return SelfManager.self().getPatchVariable("brightness"); })), 2)); letVars['unhappiness'] = unhappiness;
       }, true);
-      SelfManager.self().patchAt(-1, 0).ask(function() {
+      SelfManager.self()._optimalPatchWest().ask(function() {
         unhappiness = ((unhappiness + 1) - NLMath.pow((SelfManager.self().getPatchVariable("brightness") - SelfManager.myself().projectionBy(function() { return SelfManager.self().getPatchVariable("brightness"); })), 2)); letVars['unhappiness'] = unhappiness;
       }, true);
       if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {

@@ -263,10 +263,10 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      let leftOn_p = SelfManager.self().patchAt(-1, 0).projectionBy(function() { return SelfManager.self().getPatchVariable("on?"); }); letVars['leftOn_p'] = leftOn_p;
-      let rightOn_p = SelfManager.self().patchAt(1, 0).projectionBy(function() { return SelfManager.self().getPatchVariable("on?"); }); letVars['rightOn_p'] = rightOn_p;
+      let leftOn_p = SelfManager.self()._optimalPatchWest().projectionBy(function() { return SelfManager.self().getPatchVariable("on?"); }); letVars['leftOn_p'] = leftOn_p;
+      let rightOn_p = SelfManager.self()._optimalPatchEast().projectionBy(function() { return SelfManager.self().getPatchVariable("on?"); }); letVars['rightOn_p'] = rightOn_p;
       let newValue = ((((((((((world.observer.getGlobal("iii") && leftOn_p) && SelfManager.self().getPatchVariable("on?")) && rightOn_p) || (((world.observer.getGlobal("iio") && leftOn_p) && SelfManager.self().getPatchVariable("on?")) && !rightOn_p)) || (((world.observer.getGlobal("ioi") && leftOn_p) && !SelfManager.self().getPatchVariable("on?")) && rightOn_p)) || (((world.observer.getGlobal("ioo") && leftOn_p) && !SelfManager.self().getPatchVariable("on?")) && !rightOn_p)) || (((world.observer.getGlobal("oii") && !leftOn_p) && SelfManager.self().getPatchVariable("on?")) && rightOn_p)) || (((world.observer.getGlobal("oio") && !leftOn_p) && SelfManager.self().getPatchVariable("on?")) && !rightOn_p)) || (((world.observer.getGlobal("ooi") && !leftOn_p) && !SelfManager.self().getPatchVariable("on?")) && rightOn_p)) || (((world.observer.getGlobal("ooo") && !leftOn_p) && !SelfManager.self().getPatchVariable("on?")) && !rightOn_p)); letVars['newValue'] = newValue;
-      SelfManager.self().patchAt(0, -1).ask(function() { SelfManager.self().setPatchVariable("on?", newValue); }, true);
+      SelfManager.self()._optimalPatchSouth().ask(function() { SelfManager.self().setPatchVariable("on?", newValue); }, true);
     } catch (e) {
       if (e instanceof Exception.StopInterrupt) {
         return e;
