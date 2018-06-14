@@ -366,27 +366,27 @@ object Optimizer {
   }
 
   def apply(pd: ProcedureDefinition): ProcedureDefinition =
-    (Fd1Transformer        .visitProcedureDefinition _ andThen
-     FdLessThan1Transformer.visitProcedureDefinition   andThen
-     WithTransformer          .visitProcedureDefinition   andThen
-     CrtFastTransformer       .visitProcedureDefinition   andThen
-     CroFastTransformer       .visitProcedureDefinition   andThen
-     HatchFastTransformer     .visitProcedureDefinition   andThen
-     SproutFastTransformer    .visitProcedureDefinition   andThen
-     NSumTransformer          .visitProcedureDefinition   andThen
-     NSum4Transformer         .visitProcedureDefinition   andThen
-     OneOfWithTransformer     .visitProcedureDefinition   andThen
-     OtherWithTransformer     .visitProcedureDefinition   andThen
-     AnyOtherWithTransformer.visitProcedureDefinition  andThen
-     AnyOtherTransformer      .visitProcedureDefinition   andThen
-     WithOtherTransformer     .visitProcedureDefinition   andThen
-     CountOtherWithTransformer.visitProcedureDefinition   andThen
-     CountOtherTransformer    .visitProcedureDefinition   andThen
-     AnyWith1Transformer      .visitProcedureDefinition   andThen
-     AnyWith2Transformer      .visitProcedureDefinition   andThen
-     AnyWith3Transformer      .visitProcedureDefinition   andThen
-     AnyWith4Transformer      .visitProcedureDefinition   andThen
-     AnyWith5Transformer      .visitProcedureDefinition
+    (Fd1Transformer            .visitProcedureDefinition _ andThen
+     FdLessThan1Transformer    .visitProcedureDefinition   andThen
+     WithTransformer           .visitProcedureDefinition   andThen
+     CrtFastTransformer        .visitProcedureDefinition   andThen
+     CroFastTransformer        .visitProcedureDefinition   andThen
+     HatchFastTransformer      .visitProcedureDefinition   andThen
+     SproutFastTransformer     .visitProcedureDefinition   andThen
+     NSumTransformer           .visitProcedureDefinition   andThen
+     NSum4Transformer          .visitProcedureDefinition   andThen
+     OneOfWithTransformer      .visitProcedureDefinition   andThen
+     OtherWithTransformer      .visitProcedureDefinition   andThen
+     AnyOtherWithTransformer   .visitProcedureDefinition   andThen
+     AnyOtherTransformer       .visitProcedureDefinition   andThen
+     WithOtherTransformer      .visitProcedureDefinition   andThen
+     CountOtherWithTransformer .visitProcedureDefinition   andThen
+     CountOtherTransformer     .visitProcedureDefinition   andThen
+     AnyWith1Transformer       .visitProcedureDefinition   andThen
+     AnyWith2Transformer       .visitProcedureDefinition   andThen
+     AnyWith3Transformer       .visitProcedureDefinition   andThen
+     AnyWith4Transformer       .visitProcedureDefinition   andThen
+     AnyWith5Transformer       .visitProcedureDefinition
     )(pd)
 
 }

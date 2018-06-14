@@ -253,25 +253,18 @@ module.exports =
           y = Iterator.boolOrError(x, x.projectionBy(f))
       @shufflerator().find(finder, Nobody)
 
+    # (() => Boolean) => Boolean
     _optimalAnyWith: (f) ->
       @exists(@_world.selfManager.askAgent(f))
 
+    # (() => Boolean) => Boolean
     _optimalAnyOtherWith: (f) ->
       self = @_world.selfManager.self()
-      checker =
-        (x) ->
-          if x != self
-            y = Iterator.boolOrError(x, x.projectionBy(f))
-          else
-            false
+      checker = (x) -> x isnt self and Iterator.boolOrError(x, x.projectionBy(f))
       @exists(checker)
 
+    # (() => Boolean) => Number
     _optimalCountOtherWith: (f) ->
       self = @_world.selfManager.self()
-      filterer =
-        (x) ->
-          if x != self
-            y = Iterator.boolOrError(x, x.projectionBy(f))
-          else
-            false
+      filterer = (x) -> x isnt self and Iterator.boolOrError(x, x.projectionBy(f))
       @iterator().filter(filterer).length
