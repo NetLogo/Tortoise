@@ -68,7 +68,7 @@ class DockingFixture(name: String, nashorn: Nashorn) extends Fixture(name) {
       Seq(
         "AnyOther", "AnyOtherWith", "AnyWith1", "AnyWith2", "AnyWith3", "AnyWith4", "AnyWith5",
         "CountOther", "CountOtherWith", "Nsum", "Nsum4", "OneOfWith", "OtherWith",
-        "PatchVariableDouble", "TurtleVariableDouble", "With", "WithOther"
+        "PatchAt", "PatchVariableDouble", "TurtleVariableDouble", "With", "WithOther"
       )
     )
     Seq(commands, reporters).flatMap {

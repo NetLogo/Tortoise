@@ -524,3 +524,14 @@ module.exports =
       turtles.forEach(({ id }) -> seenTurtlesSet[id] = true)
       turtles.forEach(f(seenTurtlesSet))
       return
+
+    # () => Patch
+    _optimalPatchHereInternal: -> @getPatchHere()
+    _optimalPatchNorth:        -> @getPatchHere()._optimalPatchNorth()
+    _optimalPatchEast:         -> @getPatchHere()._optimalPatchEast()
+    _optimalPatchSouth:        -> @getPatchHere()._optimalPatchSouth()
+    _optimalPatchWest:         -> @getPatchHere()._optimalPatchWest()
+    _optimalPatchNorthEast:    -> @getPatchHere()._optimalPatchNorthEast()
+    _optimalPatchSouthEast:    -> @getPatchHere()._optimalPatchSouthEast()
+    _optimalPatchSouthWest:    -> @getPatchHere()._optimalPatchSouthWest()
+    _optimalPatchNorthWest:    -> @getPatchHere()._optimalPatchNorthWest()

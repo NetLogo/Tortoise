@@ -9,7 +9,7 @@ import
 import
   org.nlogo.core.{ prim, AstTransformer, ProcedureDefinition, ReporterApp, Statement, NetLogoCore, CommandBlock, ReporterBlock },
     prim.{ _any, _const, _count, _createorderedturtles, _createturtles, _equal, _fd, _greaterthan, _hatch, _lessthan,
-      _neighbors, _neighbors4, _not, _notequal, _observervariable, _of, _oneof, _other, _patches, _patchvariable,
+      _neighbors, _neighbors4, _not, _notequal, _observervariable, _of, _oneof, _other, _patchat, _patches, _patchvariable,
       _procedurevariable, _sprout, _sum, _with }
 
 // scalastyle:off number.of.methods
@@ -104,6 +104,46 @@ object Optimizer {
         case _ => super.visitStatement(statement)
       }
     }
+  }
+
+  abstract class _patchatreporter extends Reporter {
+    override def syntax: Syntax =
+      Syntax.reporterSyntax(right = List(Syntax.NumberType, Syntax.NumberType), ret = Syntax.AgentType)
+  }
+
+  class _patchhereinternal extends _patchatreporter {}
+  class _patchnorth        extends _patchatreporter {}
+  class _patcheast         extends _patchatreporter {}
+  class _patchsouth        extends _patchatreporter {}
+  class _patchwest         extends _patchatreporter {}
+  class _patchne           extends _patchatreporter {}
+  class _patchse           extends _patchatreporter {}
+  class _patchsw           extends _patchatreporter {}
+  class _patchnw           extends _patchatreporter {}
+
+  object PatchAtTransformer extends AstTransformer {
+    // scalastyle:off cyclomatic.complexity
+    override def visitReporterApp(ra: ReporterApp): ReporterApp = {
+      ra match {
+        case ReporterApp(reporter: _patchat,
+          Seq(ReporterApp(_const(x: java.lang.Double), _, _),
+            ReporterApp(_const(y: java.lang.Double), _, _)), _) =>
+          (x, y) match {
+            case _ if x ==  0 && y ==  0 => ra.copy(reporter = new _patchhereinternal )
+            case _ if x ==  0 && y == -1 => ra.copy(reporter = new _patchsouth )
+            case _ if x ==  0 && y ==  1 => ra.copy(reporter = new _patchnorth )
+            case _ if x == -1 && y ==  0 => ra.copy(reporter = new _patchwest )
+            case _ if x == -1 && y == -1 => ra.copy(reporter = new _patchsw )
+            case _ if x == -1 && y ==  1 => ra.copy(reporter = new _patchnw )
+            case _ if x ==  1 && y ==  0 => ra.copy(reporter = new _patcheast )
+            case _ if x ==  1 && y == -1 => ra.copy(reporter = new _patchse )
+            case _ if x ==  1 && y ==  1 => ra.copy(reporter = new _patchne )
+            case _ => super.visitReporterApp(ra)
+          }
+        case _ => super.visitReporterApp(ra)
+      }
+    }
+    // scalastyle:on cyclomatic.complexity
   }
 
   class _anyother extends Reporter {
@@ -371,6 +411,7 @@ object Optimizer {
      WithTransformer           .visitProcedureDefinition   andThen
      CrtFastTransformer        .visitProcedureDefinition   andThen
      CroFastTransformer        .visitProcedureDefinition   andThen
+     PatchAtTransformer        .visitProcedureDefinition   andThen
      HatchFastTransformer      .visitProcedureDefinition   andThen
      SproutFastTransformer     .visitProcedureDefinition   andThen
      NSumTransformer           .visitProcedureDefinition   andThen

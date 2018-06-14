@@ -184,6 +184,16 @@ trait ReporterPrims extends PrimUtils {
         val agents = arg(0)
         s"$agents._optimalAnyWith(${handlers.fun(r.args(1), true)})"
 
+      case _: Optimizer._patchhereinternal => "SelfManager.self()._optimalPatchHereInternal()"
+      case _: Optimizer._patchnorth        => "SelfManager.self()._optimalPatchNorth()"
+      case _: Optimizer._patcheast         => "SelfManager.self()._optimalPatchEast()"
+      case _: Optimizer._patchsouth        => "SelfManager.self()._optimalPatchSouth()"
+      case _: Optimizer._patchwest         => "SelfManager.self()._optimalPatchWest()"
+      case _: Optimizer._patchne           => "SelfManager.self()._optimalPatchNorthEast()"
+      case _: Optimizer._patchse           => "SelfManager.self()._optimalPatchSouthEast()"
+      case _: Optimizer._patchsw           => "SelfManager.self()._optimalPatchSouthWest()"
+      case _: Optimizer._patchnw           => "SelfManager.self()._optimalPatchNorthWest()"
+
       // Lookup by breed
       case b: prim._breed                 => s"world.turtleManager.turtlesOfBreed(${jsString(b.breedName)})"
       case b: prim.etc._breedsingular     => s"world.turtleManager.getTurtleOfBreed(${jsString(b.breedName)}, ${arg(0)})"

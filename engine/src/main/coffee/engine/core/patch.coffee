@@ -190,3 +190,16 @@ module.exports =
     # (String) => Number
     _optimalNSum4: (varName) ->
       @_neighborSum(@getNeighbors4(), varName)
+
+    _ifFalse: (value, replacement) -> if (value is false) then replacement else value
+
+    # () => Patch
+    _optimalPatchHereInternal: -> this
+    _optimalPatchNorth:        -> @world.topology._getPatchNorth(@pxcor, @pycor)     or Nobody
+    _optimalPatchEast:         -> @world.topology._getPatchEast(@pxcor, @pycor)      or Nobody
+    _optimalPatchSouth:        -> @world.topology._getPatchSouth(@pxcor, @pycor)     or Nobody
+    _optimalPatchWest:         -> @world.topology._getPatchWest(@pxcor, @pycor)      or Nobody
+    _optimalPatchNorthEast:    -> @world.topology._getPatchNorthEast(@pxcor, @pycor) or Nobody
+    _optimalPatchSouthEast:    -> @world.topology._getPatchSouthEast(@pxcor, @pycor) or Nobody
+    _optimalPatchSouthWest:    -> @world.topology._getPatchSouthWest(@pxcor, @pycor) or Nobody
+    _optimalPatchNorthWest:    -> @world.topology._getPatchNorthWest(@pxcor, @pycor) or Nobody
