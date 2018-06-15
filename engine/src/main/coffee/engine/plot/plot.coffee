@@ -37,7 +37,7 @@ module.exports = class Plot
     resetPen  = ((pen) => pen.reset(); @_ops.registerPen(pen); return)
 
     pipeline(filter((x) ->  x.isTemp), forEach(deletePen))(pens)
-    pipeline(filter((x) -> !x.isTemp), forEach( resetPen))(pens)
+    pipeline(filter((x) -> not x.isTemp), forEach( resetPen))(pens)
 
     if fold(-> false)((cp) -> cp.isTemp)(@_currentPenMaybe)
       @_currentPenMaybe =

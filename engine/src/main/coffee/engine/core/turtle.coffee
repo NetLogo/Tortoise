@@ -187,7 +187,7 @@ module.exports =
       else if distance < 0
         while remaining <= increment and @jumpIfAble(increment)
           remaining -= increment
-      if remaining != 0
+      if remaining isnt 0
         @jumpIfAble(remaining)
       return
 

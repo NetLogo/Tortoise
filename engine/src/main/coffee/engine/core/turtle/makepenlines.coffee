@@ -80,7 +80,7 @@ makePenLinesHelper = (makeTrailsBy, lazyWrapX, lazyWrapY) ->
     newAcc       = acc.concat([trail])
     nextJumpDist = if jumpDist >= 0 then (jumpDist - trail.dist) else (jumpDist + trail.dist)
 
-    if nextJumpDist == 0
+    if nextJumpDist is 0
       newAcc
     else
       newX = lazyWrapX(trail.x2)

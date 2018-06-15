@@ -240,8 +240,8 @@ module.exports =
       self = @_world.selfManager.self()
       filterer =
         (x) ->
-          if x != self
-            y = Iterator.boolOrError(x, x.projectionBy(f))
+          if x isnt self
+            Iterator.boolOrError(x, x.projectionBy(f))
           else
             false
       @copyWithNewAgents(@iterator().filter(filterer))

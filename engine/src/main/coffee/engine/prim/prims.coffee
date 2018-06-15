@@ -251,7 +251,7 @@ module.exports =
 
     # (Number, Number) => Number
     randomGamma: (alpha, lambda) ->
-      if alpha <= 0 || lambda <= 0
+      if alpha <= 0 or lambda <= 0
         throw new Error("Both Inputs to RANDOM-GAMMA must be positive.")
       Gamma(@_rng, alpha, lambda)
 
