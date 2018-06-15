@@ -39,6 +39,9 @@
   "no_stand_alone_at": {
     "level": "error"
   },
+  "prefer_english_operator": {
+    "level": "error"
+  },
   "space_operators": {
     "level": "error"
   }
