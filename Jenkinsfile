@@ -12,6 +12,12 @@ pipeline {
       }
     }
 
+    stage('LintEngine') {
+      steps {
+        sh "cd engine; yarn install; grunt coffeelint"
+      }
+    }
+
     stage('TestJVM') {
       steps {
         sh 'git submodule update --init --recursive'
