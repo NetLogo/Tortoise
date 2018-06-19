@@ -189,7 +189,7 @@ module.exports =
       @_updater.clearDrawing()
       return
 
-    # () => Unit
+    # (String) => Unit
     importDrawing: (sourcePath) ->
       @_updater.importDrawing(sourcePath)
       return

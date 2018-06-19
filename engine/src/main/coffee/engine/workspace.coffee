@@ -100,6 +100,7 @@ module.exports =
                                              , (-> world.exportCSV())
                                              , (-> world.exportAllPlotsCSV())
                                              , ((plot) -> world.exportPlotCSV(plot))
+                                             , ((path) -> world.importDrawing(path))
                                              , importWorldFromCSV
                                              )
 
