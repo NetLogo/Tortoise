@@ -198,7 +198,7 @@ object Compiler extends CompilerLike {
                                                    |      Files.createDirectories(Paths.get(filepath).getParent());
                                                    |      var path  = Files.write(Paths.get(filepath), str.getBytes());
                                                    |    }""".stripMargin)
-                  , "importDrawing" -> jsFunction(Seq("trueImportDrawing"), "    return function(filepath) {}")
+                  , "importDrawing" -> jsFunction(Seq("trueImportDrawing"), "return function(filepath) {}")
                   , "importWorld" -> jsFunction(Seq("trueImportWorld"),
                                                 """    return function(filename) {
                                                   |      var Paths = Java.type('java.nio.file.Paths');

@@ -29,17 +29,6 @@ if (typeof javax !== "undefined") {
 }
 if (typeof javax !== "undefined") {
   modelConfig.importExport = {
-    exportOutput: function(filename) {},
-    exportView: function(filename) {},
-    exportFile: function(str) {
-      return function(filepath) {
-        var Paths = Java.type('java.nio.file.Paths');
-        var Files = Java.type('java.nio.file.Files');
-        var UTF8  = Java.type('java.nio.charset.StandardCharsets').UTF_8;
-        Files.createDirectories(Paths.get(filepath).getParent());
-        var path  = Files.write(Paths.get(filepath), str.getBytes());
-      }
-},
     importWorld: function(trueImportWorld) {
       return function(filename) {
         var Paths = Java.type('java.nio.file.Paths');
@@ -51,7 +40,19 @@ if (typeof javax !== "undefined") {
         var fileText = out.join("\n");
         trueImportWorld(fileText);
       }
-}
+},
+    exportFile: function(str) {
+      return function(filepath) {
+        var Paths = Java.type('java.nio.file.Paths');
+        var Files = Java.type('java.nio.file.Files');
+        var UTF8  = Java.type('java.nio.charset.StandardCharsets').UTF_8;
+        Files.createDirectories(Paths.get(filepath).getParent());
+        var path  = Files.write(Paths.get(filepath), str.getBytes());
+      }
+},
+    importDrawing: function(trueImportDrawing) { return function(filepath) {} },
+    exportView: function(filename) {},
+    exportOutput: function(filename) {}
   }
 }
 if (typeof javax !== "undefined") {
