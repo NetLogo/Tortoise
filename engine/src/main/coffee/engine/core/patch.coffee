@@ -65,6 +65,11 @@ module.exports =
     distanceXY: (x, y) ->
       @world.topology.distanceXY(@pxcor, @pycor, x, y)
 
+    # (Turtle|Patch) => Number
+    towards: (agent) ->
+      [x, y] = agent.getCoords()
+      @towardsXY(x, y)
+
     # (Number, Number) => Number
     towardsXY: (x, y) ->
       @world.topology.towards(@pxcor, @pycor, x, y)
