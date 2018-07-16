@@ -8,4 +8,9 @@ module.exports.Config =
 module.exports.Prims =
   class InspectionPrims
     # (InspectionConfig) => InspectionPrims
-    constructor: ({ @inspect, @stopInspecting, @clearDead }) ->
+    constructor: ({ inspect, @stopInspecting, @clearDead }) ->
+      @inspect = (agent) ->
+        if not agent.isDead()
+          inspect(agent)
+        else
+          throw new Error("That #{agent.getBreedNameSingular()} is dead.")
