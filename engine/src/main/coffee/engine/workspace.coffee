@@ -28,6 +28,7 @@ csvToWorldState = require('serialize/importcsv')
 { id }             = require('brazier/function')
 { lookup, values } = require('brazier/object')
 
+{ Config: InspectionConfig,   Prims: InspectionPrims }   = require('./prim/inspectionprims')
 { Config: ImportExportConfig, Prims: ImportExportPrims } = require('./prim/importexportprims')
 { Config: MouseConfig,        Prims: MousePrims }        = require('./prim/mouseprims')
 { Config: OutputConfig,       Prims: OutputPrims }       = require('./prim/outputprims')
@@ -47,6 +48,7 @@ module.exports =
 
     dialogConfig       = modelConfig?.dialog       ? new UserDialogConfig
     importExportConfig = modelConfig?.importExport ? new ImportExportConfig
+    inspectionConfig   = modelConfig?.inspection   ? new InspectionConfig
     mouseConfig        = modelConfig?.mouse        ? new MouseConfig
     outputConfig       = modelConfig?.output       ? new OutputConfig
     plots              = modelConfig?.plots        ? []
@@ -76,6 +78,7 @@ module.exports =
     linkPrims = new LinkPrims(world)
     listPrims = new ListPrims(dump, Hasher, prims.equality.bind(prims), rng.nextInt)
 
+    inspectionPrims = new InspectionPrims(inspectionConfig)
     mousePrims      = new MousePrims(mouseConfig)
     outputPrims     = new OutputPrims(outputConfig, ((x) -> outputStore += x), (-> outputStore = ""), dump)
     printPrims      = new PrintPrims(printConfig, dump)
@@ -109,6 +112,7 @@ module.exports =
       breedManager
       dump
       importExportPrims
+      inspectionPrims
       layoutManager
       linkPrims
       listPrims
