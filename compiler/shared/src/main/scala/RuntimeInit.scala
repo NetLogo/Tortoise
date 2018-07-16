@@ -18,6 +18,7 @@ import
 
 class RuntimeInit(program: Program, widgets: Seq[CompiledWidget], model: Model, onTickFunction: String = jsFunction()) {
 
+  // scalastyle:off line.size.limit
   def init: Seq[TortoiseSymbol] = Seq(
     JsDeclare("turtleShapes", shapeList(new ShapeList(AgentKind.Turtle, ShapeList.shapesToMap(model.turtleShapes)))),
     JsDeclare("linkShapes",   shapeList(new ShapeList(AgentKind.Link,   ShapeList.shapesToMap(model.linkShapes)))),
@@ -70,6 +71,7 @@ class RuntimeInit(program: Program, widgets: Seq[CompiledWidget], model: Model, 
     JsDepend("Extensions", "extensions/all", ".initialize", Seq("workspace"))
 
   )
+  // scalastyle:on line.size.limit
 
   private def genBreedObjects: String = {
     val breedObjects = (program.breeds.values ++ program.linkBreeds.values).map {
