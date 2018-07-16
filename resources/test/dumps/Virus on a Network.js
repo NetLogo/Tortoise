@@ -56,6 +56,13 @@ if (typeof javax !== "undefined") {
   }
 }
 if (typeof javax !== "undefined") {
+  modelConfig.inspection = {
+    inspect: function(agent) {},
+    stopInspecting: function(agent) {},
+    clearDead: function() {}
+  }
+}
+if (typeof javax !== "undefined") {
   modelConfig.output = {
     clear: function() {},
     write: function(str) { context.getWriter().print(str); }
@@ -131,6 +138,7 @@ var workspace = tortoise_require('engine/workspace')(modelConfig)([])(["infected
 var Extensions = tortoise_require('extensions/all').initialize(workspace);
 var BreedManager = workspace.breedManager;
 var ImportExportPrims = workspace.importExportPrims;
+var InspectionPrims = workspace.inspectionPrims;
 var LayoutManager = workspace.layoutManager;
 var LinkPrims = workspace.linkPrims;
 var ListPrims = workspace.listPrims;
