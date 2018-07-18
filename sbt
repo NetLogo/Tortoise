@@ -3,13 +3,13 @@
 CURR_DIR=`dirname $0`
 if [ `uname -s` = Linux ] ; then
   if [ -z "$JENKINS_URL" ] ; then
-    export JAVA_HOME=/usr/lib/jvm/java-8-oracle
+    export JAVA_HOME=/usr/lib/jvm/java-10-oracle
   else
     export JAVA_HOME=/usr
   fi
 else
   if [ `uname -s` = Darwin ] ; then
-    export JAVA_HOME=`/usr/libexec/java_home -F -v1.8*`
+    export JAVA_HOME=`/usr/libexec/java_home -F -v1.10*`
   else
     export JAVA_HOME=/usr
   fi
@@ -27,8 +27,8 @@ ENCODING=-Dfile.encoding=UTF-8
 HEADLESS=-Djava.awt.headless=true
 BOOT=xsbt.boot.Boot
 
-SBT_LAUNCH=$HOME/.sbt/sbt-launch-0.13.8.jar
-URL='http://repo.typesafe.com/typesafe/ivy-releases/org.scala-sbt/sbt-launch/0.13.8/sbt-launch.jar'
+SBT_LAUNCH=$HOME/.sbt/sbt-launch-1.1.6.jar
+URL='http://repo1.maven.org/maven2/org/scala-sbt/sbt-launch/1.1.6/sbt-launch-1.1.6.jar'
 
 if [ ! -f $SBT_LAUNCH ] ; then
   echo "downloading" $URL
