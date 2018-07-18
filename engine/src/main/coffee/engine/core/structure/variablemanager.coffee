@@ -41,9 +41,9 @@ module.exports =
           if spec instanceof ExtraVariableSpec
             { configurable: true, value: 0, writable: true }
           else if spec instanceof MutableVariableSpec
-            get = do (spec) -> (-> spec.get.call(@agent))
-            set = do (spec) -> ((x) -> spec.set.call(@agent, x))
-            { configurable: true, get, set }
+            getter = do (spec) -> (-> spec.get.call(@agent))
+            setter = do (spec) -> ((x) -> spec.set.call(@agent, x))
+            { configurable: true, 'get': getter, 'set': setter }
           else if spec instanceof ImmutableVariableSpec
             { value: spec.get.call(@agent), writable: false }
           else

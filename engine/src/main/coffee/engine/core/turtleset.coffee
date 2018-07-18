@@ -7,8 +7,9 @@ module.exports =
   class TurtleSet extends AbstractAgentSet
 
     # [T <: Turtle] @ (Array[T], World, String) => TurtleSet
-    constructor: (@_agents, world, specialName) ->
-      super(@_agents, world, "turtles", specialName)
+    constructor: (agents, world, specialName) ->
+      super(agents, world, "turtles", specialName)
+      @_agents = agents
 
     # () => Iterator[T]
     iterator: ->

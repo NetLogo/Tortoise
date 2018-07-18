@@ -5,14 +5,18 @@ Iterator = require('./iterator')
 module.exports =
   class Shufflerator extends Iterator
 
-    _i:       undefined # Number
-    _nextOne: undefined # T
+    _i:           undefined # Number
+    _itemIsValid: undefined # (T) => Boolean
+    _nextInt:     undefined # (Number) => Number
+    _nextOne:     undefined # T
 
     # [T] @ (Array[T], (T) => Boolean, (Number) => Number) => Shufflerator
-    constructor: (items, @_itemIsValid, @_nextInt) ->
+    constructor: (items, itemIsValid, nextInt) ->
       super(items)
-      @_i       = 0
-      @_nextOne = null
+      @_i           = 0
+      @_itemIsValid = itemIsValid
+      @_nextInt     = nextInt
+      @_nextOne     = null
 
       @_fetch()
 

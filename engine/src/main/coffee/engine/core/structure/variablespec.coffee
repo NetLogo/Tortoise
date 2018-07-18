@@ -8,13 +8,16 @@ class ExtraVariableSpec extends VariableSpec
 
 class ImmutableVariableSpec extends VariableSpec
   # (String, () => T) => ImmutableVariableSpec[T]
-  constructor: (name, @get) ->
+  constructor: (name, get) ->
     super(name)
+    @get = get
 
 class MutableVariableSpec extends VariableSpec
   #(String, () => T, (T) => Unit) => MutableVariableSpec[T]
-  constructor: (name, @get, @set) ->
+  constructor: (name, get, set) ->
     super(name)
+    @get = get
+    @set = set
 
 module.exports = {
   ExtraVariableSpec

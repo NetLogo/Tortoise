@@ -17,17 +17,23 @@ module.exports.ExportedColor = ExportedColor
 module.exports.ExportedRGB =
   class extends ExportedColor
     # (Number, Number, Number)
-    constructor: (@r, @g, @b) ->
+    constructor: (r, g, b) ->
+      super()
+      @r = r; @g = g; @b = b
 
 module.exports.ExportedRGBA =
   class extends ExportedColor
     # (Number, Number, Number, Number)
-    constructor: (@r, @g, @b, @a = 255) ->
+    constructor: (r, g, b, a = 255) ->
+      super()
+      @r = r; @g = g; @b = b; @a = a
 
 module.exports.ExportedColorNum =
   class extends ExportedColor
     # (Number)
-    constructor: (@value) ->
+    constructor: (value) ->
+      super()
+      @value = value
 
 module.exports.ExportedGlobals =
   class
@@ -82,20 +88,23 @@ module.exports.AgentReference = AgentReference
 module.exports.LinkReference =
   class extends AgentReference
     # (BreedNamePair, Number, Number)
-    constructor: (@breed, @id1, @id2) ->
+    constructor: (breed, id1, id2) ->
       super("link")
+      @breed = breed; @id1 = id1; @id2 = id2
 
 module.exports.PatchReference =
   class extends AgentReference
     # (Number, Number)
-    constructor: (@pxcor, @pycor) ->
+    constructor: (pxcor, pycor) ->
       super("patch")
+      @pxcor = pxcor; @pycor = pycor
 
 module.exports.TurtleReference =
   class extends AgentReference
     # (BreedNamePair, Number)
-    constructor: (@breed, @id) ->
+    constructor: (breed, id) ->
       super("turtle")
+      @breed = breed; @id = id
 
 module.exports.NobodyReference = new AgentReference("nobody")
 
@@ -109,23 +118,31 @@ module.exports.ExportedLink =
   class extends ExportedAgent
     # ( TurtleReference, TurtleReference, ExportedColor, String, ExportedColor, Boolean
     # , BreedReference, Number, String, String, Object[Any])
-    constructor: ( @end1, @end2, @color, @label, @labelColor, @isHidden
-                 , @breed, @thickness, @shape, @tieMode, @breedsOwns) ->
+    constructor: ( end1, end2, color, label, labelColor, isHidden
+                 , breed, thickness, shape, tieMode, breedsOwns) ->
       super("link")
+      @end1 = end1; @end2 = end2; @color = color; @label = label; @labelColor = labelColor
+      @isHidden = isHidden; @breed = breed; @thickness = thickness; @shape = shape
+      @tieMode = tieMode; @breedsOwns = breedsOwns
 
 module.exports.ExportedPatch =
   class extends ExportedAgent
     # (Number, Number, ExportedColor, String, ExportedColor, Object[Any])
-    constructor: (@pxcor, @pycor, @pcolor, @plabel, @plabelColor, @patchesOwns) ->
+    constructor: (pxcor, pycor, pcolor, plabel, plabelColor, patchesOwns) ->
       super("patch")
+      @pxcor = pxcor; @pycor = pycor; @pcolor = pcolor; @plabel = plabel
+      @plabelColor = plabelColor; @patchesOwns = patchesOwns
 
 module.exports.ExportedTurtle =
   class extends ExportedAgent
     # ( Number, ExportedColor, Number, Number, Number, String, String, ExportedColor, BreedReference
     # , Boolean, Number, Number, String, Object[Any])
-    constructor: ( @who, @color, @heading, @xcor, @ycor, @shape, @label, @labelColor, @breed
-                 , @isHidden, @size, @penSize, @penMode, @breedsOwns) ->
+    constructor: ( who, color, heading, xcor, ycor, shape, label, labelColor, breed
+                 , isHidden, size, penSize, penMode, breedsOwns) ->
       super("turtle")
+      @who = who; @color = color; @heading = heading; @xcor = xcor; @ycor = ycor; @shape = shape
+      @label = label; @labelColor = labelColor; @breed = breed; @isHidden = isHidden; @size = size
+      @penSize = penSize; @penMode = penMode; @breedsOwns = breedsOwns
 
 class ExportedAgentSet
   # (String)
@@ -136,20 +153,23 @@ module.exports.ExportedAgentSet = ExportedAgentSet
 module.exports.ExportedLinkSet =
   class extends ExportedAgentSet
     # (Array[LinkReference])
-    constructor: (@references) ->
+    constructor: (references) ->
       super("linkset")
+      @references = references
 
 module.exports.ExportedPatchSet =
   class extends ExportedAgentSet
     # (Array[PatchReference])
-    constructor: (@references) ->
+    constructor: (references) ->
       super("patchset")
+      @references = references
 
 module.exports.ExportedTurtleSet =
   class extends ExportedAgentSet
     # (Array[TurtleReference])
-    constructor: (@references) ->
+    constructor: (references) ->
       super("turtleset")
+      @references = references
 
 module.exports.ExportedExtension =
   class
