@@ -2,14 +2,14 @@
 
 module.exports.Config =
   class ImportExportConfig
-    constructor: ( @exportAllPlots = (-> ->) # (String) => (() => String) => Unit
-                 , @exportFile     = (-> ->) # (String) => (String) => Unit
-                 , @exportOutput   = (->)    # (String) => Unit
-                 , @exportPlot     = (-> ->) # (String) => (String) => Unit
-                 , @exportView     = (->)    # (String) => Unit
-                 , @exportWorld    = (-> ->) # (String) => (() => String) => Unit
-                 , @importDrawing  = (-> ->) # (String) => (() => Unit) => Unit
-                 , @importWorld    = (-> ->) # (String) => ((String) => Unit) => Unit
+    constructor: ( @exportAllPlots = (-> ->) # (() => String)     => (String) => Unit
+                 , @exportFile     = (-> ->) # (String)           => (String) => Unit
+                 , @exportOutput   = (->)    #                       (String) => Unit
+                 , @exportPlot     = (-> ->) # (String)           => (String) => Unit
+                 , @exportView     = (->)    #                       (String) => Unit
+                 , @exportWorld    = (-> ->) # (() => String)     => (String) => Unit
+                 , @importDrawing  = (-> ->) # ((String) => Unit) => (String) => Unit
+                 , @importWorld    = (-> ->) # ((String) => Unit) => (String) => Unit
                  ) ->
 
 module.exports.Prims =
