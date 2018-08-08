@@ -80,7 +80,7 @@ module.exports =
 
     # () => Iterator
     iterator: ->
-      new Iterator(@_agentArr)
+      new Iterator(@_agentArr[..])
 
     # (() => Number) => AbstractAgentSet[T]
     maxesBy: (f) ->

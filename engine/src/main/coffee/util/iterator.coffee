@@ -6,8 +6,7 @@ module.exports =
     _items: undefined # [T] @ Array[T]
 
     # (Array[T]) => Iterator[T]
-    constructor: (items) ->
-      @_items = items[..]
+    constructor: (@_items) ->
 
     # ((T) => Boolean) => Boolean
     all: (f) ->

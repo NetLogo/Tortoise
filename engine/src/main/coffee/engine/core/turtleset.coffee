@@ -12,4 +12,4 @@ module.exports =
 
     # () => Iterator[T]
     iterator: ->
-      new DeadSkippingIterator(@_agents)
+      new DeadSkippingIterator(@_agents[..])
