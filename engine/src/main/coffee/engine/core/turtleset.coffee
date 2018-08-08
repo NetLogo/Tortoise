@@ -13,3 +13,7 @@ module.exports =
     # () => Iterator[T]
     iterator: ->
       new DeadSkippingIterator(@_agents[..])
+
+    # () => Iterator[T]
+    _unsafeIterator: ->
+      new DeadSkippingIterator(@_agents)
