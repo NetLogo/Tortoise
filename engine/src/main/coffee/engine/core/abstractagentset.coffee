@@ -78,9 +78,17 @@ module.exports =
     isEmpty: ->
       @size() is 0
 
-    # () => Iterator
+    # () => Iterator[T]
     iterator: ->
       new Iterator(@_agentArr[..])
+
+    # This is marked "private" and named "unsafe" for a reason.  Since it does not copy the underlying agent array
+    # it should only be used internally by the agent set when the resulting Iterator will immediately calculate or
+    # tranform to a new value for the consumer.  --JMB, August 2018
+
+    # () => Iterator[T]
+    _unsafeIterator: ->
+      new Iterator(@_agentArr)
 
     # (() => Number) => AbstractAgentSet[T]
     maxesBy: (f) ->
