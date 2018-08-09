@@ -46,6 +46,12 @@ module.exports =
         f(@_next())
       return
 
+    # () => Int
+    size: ->
+      @_items.reduce( (acc, item) ->
+        acc + if item.isDead() then 0 else 1
+      , 0)
+
     # () => Array[T]
     toArray: ->
       acc = []
