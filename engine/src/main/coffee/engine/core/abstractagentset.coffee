@@ -128,10 +128,19 @@ module.exports =
     minsBy: (f) ->
       @copyWithNewAgents(@_findMinsBy(f))
 
-
     # [Result] @ (() => Result) => Array[Result]
     projectionBy: (f) ->
       @shufflerator().map(@_world.selfManager.askAgent(f))
+
+    # () => T
+    randomAgent: () ->
+      iter  = @_unsafeIterator()
+      count = iter.size()
+      if count is 0
+        Nobody
+      else
+        choice = @_world.rng.nextInt(count)
+        iter.nthItem(choice)
 
     # () => AbstractAgentSet[T]
     shuffled: ->

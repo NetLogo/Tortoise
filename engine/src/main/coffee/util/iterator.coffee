@@ -51,6 +51,10 @@ module.exports =
       else
         throw new Error("WITH expected a true/false value from #{x}, but got #{y} instead.")
 
+    # (Int) => T
+    nthItem: (n) ->
+      @_items[n]
+
     # [U] @ ((T) => U) => Array[U]
     map: (f) ->
       @_items.map(f)
