@@ -128,6 +128,7 @@ module.exports =
     minsBy: (f) ->
       @copyWithNewAgents(@_findMinsBy(f))
 
+
     # [Result] @ (() => Result) => Array[Result]
     projectionBy: (f) ->
       @shufflerator().map(@_world.selfManager.askAgent(f))
@@ -142,7 +143,7 @@ module.exports =
 
     # () => Number
     size: ->
-      @toArray().length
+      @_unsafeIterator().size()
 
     # () => Array[T]
     sort: ->

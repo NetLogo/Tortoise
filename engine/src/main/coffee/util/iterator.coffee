@@ -60,6 +60,10 @@ module.exports =
       @_items.forEach(f)
       return
 
+    # () => Int
+    size: ->
+      @_items.length
+
     # () => Array[T]
     toArray: ->
       @_items
