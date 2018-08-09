@@ -46,6 +46,22 @@ module.exports =
         f(@_next())
       return
 
+    # They're asking for the `n`th not-dead item, so every time we see a dead item, increment the index and the `n`.
+
+    # start           iteration 1     iteration 2     iteration 3     iteration 4
+    # [0][X][X][1][2] [0][X][X][1][2] [0][X][X][1][2] [0][X][X][1][2] [0][X][X][1][2]
+    # i=0                i=1                i=2                i=3                i=4
+    #       n=2             n=2                n=3                n=4             n=4
+
+    # (Int) => T
+    nthItem: (n) ->
+      i = 0
+      while i <= n
+        if @_items[i].isDead()
+          n++
+        i++
+      @_items[n]
+
     # () => Int
     size: ->
       @_items.reduce( (acc, item) ->

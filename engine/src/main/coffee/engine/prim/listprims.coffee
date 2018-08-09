@@ -169,16 +169,13 @@ module.exports =
     oneOf: (agentsOrList) ->
       type = NLType(agentsOrList)
 
-      arr =
-        if type.isAgentSet()
-          agentsOrList.iterator().toArray()
-        else
-          agentsOrList
-
-      if arr.length is 0
-        Nobody
+      if type.isAgentSet()
+        agentsOrList.randomAgent()
       else
-        arr[@_nextInt(arr.length)]
+        if agentsOrList.length is 0
+          Nobody
+        else
+          agentsOrList[@_nextInt(agentsOrList.length)]
 
     # [Item, Container <: (Array[Item]|String)] @ (Item, Container) => Number|Boolean
     position: (x, xs) ->
