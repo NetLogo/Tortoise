@@ -489,6 +489,10 @@ object Model {
     Model(
       path = "models/Code Examples/Network Example.nlogo",
       repetitions = 30
+    ),
+    Model(
+      path = "models/Sample Models/Biology/Evolution/Rock Paper Scissors.nlogo",
+      repetitions = 20
     )
   )
 }
