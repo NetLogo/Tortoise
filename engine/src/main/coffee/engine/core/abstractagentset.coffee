@@ -25,7 +25,7 @@ module.exports =
 
     # (() => Boolean) => Boolean
     agentAll: (f) ->
-      @iterator().all(@_world.selfManager.askAgent(f))
+      @_unsafeIterator().all(@_world.selfManager.askAgent(f))
 
     # (() => Any, Boolean) => Unit
     ask: (f, shouldShuffle) ->
@@ -51,7 +51,7 @@ module.exports =
 
     # (T) => Boolean
     contains: (item) ->
-      @iterator().contains(item)
+      @_unsafeIterator().contains(item)
 
     # (Array[T]) => AbstractAgentSet[T]
     copyWithNewAgents: (agents) ->
@@ -59,11 +59,11 @@ module.exports =
 
     # ((T) => Boolean) => Boolean
     exists: (pred) ->
-      @iterator().exists(pred)
+      @_unsafeIterator().exists(pred)
 
     # ((T) => Boolean) => Seq[T]
     filter: (pred) ->
-      @_generateFrom(@iterator().filter(pred))
+      @_generateFrom(@_unsafeIterator().filter(pred))
 
     # ((T) => Unit) => Unit
     forEach: (f) ->
@@ -159,7 +159,7 @@ module.exports =
       if @isEmpty()
         @toArray()
       else
-        stableSort(@toArray())((x, y) -> x.compare(y).toInt)
+        stableSort(@_unsafeIterator().toArray())((x, y) -> x.compare(y).toInt)
 
     # [U] @ ((T) => U) => Array[T]
     sortOn: (f) ->
@@ -167,7 +167,7 @@ module.exports =
 
     # () => Array[T]
     toArray: ->
-      @_agentArr = @iterator().toArray() # Prune out dead agents --JAB (7/21/14)
+      @_agentArr = @_unsafeIterator().toArray() # Prune out dead agents --JAB (7/21/14)
       @_agentArr[..]
 
     # () => String
@@ -238,7 +238,7 @@ module.exports =
           else
             [currentBest, currentWinners]
 
-      [[], winners] = foldl(foldFunc)([worstPossible, []])(@toArray())
+      [[], winners] = foldl(foldFunc)([worstPossible, []])(@_unsafeIterator().toArray())
       winners
 
     # [U] @ (() => U) => Array[T]
@@ -262,7 +262,7 @@ module.exports =
             Iterator.boolOrError(x, x.projectionBy(f))
           else
             false
-      @copyWithNewAgents(@iterator().filter(filterer))
+      @copyWithNewAgents(@_unsafeIterator().filter(filterer))
 
     # (() => Boolean) => Agent
     _optimalOneOfWith: (f) ->
@@ -285,4 +285,4 @@ module.exports =
     _optimalCountOtherWith: (f) ->
       self = @_world.selfManager.self()
       filterer = (x) -> x isnt self and Iterator.boolOrError(x, x.projectionBy(f))
-      @iterator().filter(filterer).length
+      @_unsafeIterator().filter(filterer).length
