@@ -67,7 +67,7 @@ module.exports =
 
     # [Item] @ (Number, Array[Item]) => Item
     item: (n, xs) ->
-      xs[n]
+      xs[NLMath.floor(n)]
 
     # [Item] @ (Array[Item]) => Item
     last: (xs) ->
