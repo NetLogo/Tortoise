@@ -15,7 +15,7 @@ val commonSettings =
     version       := "1.0",
     // Compilation settings
     crossPaths    := false, // we're not cross-building for different Scala versions
-    scalaVersion  := "2.12.4",
+    scalaVersion  := "2.12.6",
     scalacOptions ++=
       "-deprecation -unchecked -feature -Xcheckinit -encoding us-ascii -Xlint -Xfatal-warnings -Ywarn-value-discard -language:_ -Xmax-classfile-name 240".split(" ").toSeq,
     // Dependencies
@@ -25,11 +25,11 @@ val commonSettings =
       "org.mozilla"       %  "rhino"           % "1.7.7.2", // see jsengine/Rhino.scala for more information
       "org.scalaz"        %% "scalaz-core"     % scalazVersion,
       "com.lihaoyi"       %% "scalatags"       % "0.6.7"  % "test",
-      "org.scalatest"     %% "scalatest"       % "3.0.4"  % "test",
+      "org.scalatest"     %% "scalatest"       % "3.0.5"  % "test",
       "org.skyscreamer"   %  "jsonassert"      % "1.5.0"  % "test",
       "org.reflections"   %  "reflections"     % "0.9.11" % "test",
-      "org.scalacheck"    %% "scalacheck"      % "1.13.5" % "test",
-      "com.typesafe.play" %% "play-json"       % "2.6.8",
+      "org.scalacheck"    %% "scalacheck"      % "1.14.0" % "test",
+      "com.typesafe.play" %% "play-json"       % "2.6.10",
       // Bring in headless test code/framework for our tests
       "org.nlogo"         %  "netlogoheadless" % nlDependencyVersion % "test" classifier "tests"),
     // Path Management
@@ -89,7 +89,7 @@ lazy val compiler = CrossProject("compiler", file("compiler"), CrossType.Full).
       Seq(
         "com.lihaoyi"       %%%! "utest"       % "0.4.8",
         "org.nlogo"         %%%! "parser-js"   % parserJsDependencyVersion,
-        "com.typesafe.play" %%%  "play-json"   % "2.6.8",
+        "com.typesafe.play" %%%  "play-json"   % "2.6.10",
         "org.scalaz"        %%%  "scalaz-core" % scalazVersion)
     })
 
