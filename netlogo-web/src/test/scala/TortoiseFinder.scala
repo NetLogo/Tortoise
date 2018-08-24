@@ -199,7 +199,6 @@ private[tortoise] object Freebies {
     "ControlStructures::Run5",
     "ControlStructures::Run6",
     "ControlStructures::Run7",
-    "Errors::CarefullyWithLambda2",
     "Run::LuisIzquierdoRunResult2",
     "Run::run-evaluate-string-input-only-once"
   )
