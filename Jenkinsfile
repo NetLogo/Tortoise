@@ -12,8 +12,15 @@ pipeline {
       }
     }
 
-    stage('LintEngine') {
+    stage('Clean') {
       steps {
+        sh "./sbt netLogoWeb/clean compilerCore/clean compilerJVM/clean compilerJS/clean macrosCore/clean engine/clean"
+      }
+    }
+
+    stage('LintAndStyle') {
+      steps {
+        sh "./sbt netLogoWeb/scalastyle compilerCore/scalastyle compilerJVM/scalastyle compilerJS/scalastyle macrosCore/scalastyle"
         sh "cd engine; yarn install; grunt coffeelint"
       }
     }
@@ -46,15 +53,6 @@ pipeline {
       }
     }
 
-    stage('ScalaStyle') {
-      steps {
-        sh "./sbt netLogoWeb/scalastyle"
-        sh "./sbt compilerCore/scalastyle"
-        sh "./sbt compilerJVM/scalastyle"
-        sh "./sbt compilerJS/scalastyle"
-        sh "./sbt macrosCore/scalastyle"
-      }
-    }
   }
 
   post {
