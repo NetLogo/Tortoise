@@ -17,8 +17,8 @@ module.exports.Prims =
     # (ImportExportConfig, () => String, () => String, (String) => String, (String) => Unit, (String) => Unit) => ImportExportPrims
     constructor: ({ exportAllPlots, exportFile, @exportOutput, exportPlot, @exportView, exportWorld, importDrawing, importWorld }
                   , exportWorldRaw, exportAllPlotsRaw, exportPlotRaw, @importDrawingRaw, @importWorldRaw) ->
-      @exportWorld    = (filename)       -> exportFile(exportWorldRaw()   )(filename)
-      @exportAllPlots = (filename)       -> exportFile(exportAllPlotsRaw())(filename)
-      @exportPlot     = (plot, filename) -> exportFile(exportPlotRaw(plot))(filename)
-      @importDrawing  = (filename)       -> importDrawing(importDrawingRaw)(filename)
-      @importWorld    = (filename)       -> importWorld(importWorldRaw    )(filename)
+      @exportWorld    = (filename)       -> exportFile(exportWorldRaw()    )(filename)
+      @exportAllPlots = (filename)       -> exportFile(exportAllPlotsRaw() )(filename)
+      @exportPlot     = (plot, filename) -> exportFile(exportPlotRaw(plot) )(filename)
+      @importDrawing  = (filename)       -> importDrawing(@importDrawingRaw)(filename)
+      @importWorld    = (filename)       -> importWorld(@importWorldRaw    )(filename)
