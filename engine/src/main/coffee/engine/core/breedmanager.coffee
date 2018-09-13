@@ -36,7 +36,8 @@ class Breed
 
   # Agent -> Boolean
   contains: (agent) ->
-    @members[@_getAgentIndex(agent)] is agent
+    # the version of Nashorn we're using doesn't support `Array.prototype.includes()` so... -JMB 9/2018.
+    @members.indexOf(agent) isnt -1
 
   # (Agent) => Unit
   remove: (agent) ->
