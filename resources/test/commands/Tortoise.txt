@@ -35,7 +35,6 @@ MapExtension
   nlmap:get (nlmap:remove (nlmap:add basic "grapes" 9001) "grapes") "oranges" => 6
   nlmap:get (nlmap:remove (nlmap:add basic "grapes" 9001) "apples") "grapes" => 9001
   nlmap:get (nlmap:remove (nlmap:add basic "grapes" 9001) "apples") "oranges" => 6
-  codap:init ([[] ->]) => COMPILER ERROR No such primitive: CODAP:INIT
   O> set basic nlmap:from-json "{ \"url\": \"url\", \"obj\": { \"val1\": 100, \"val2\": \"apples\", \"val3\": [ 4, 5, 6 ] } }"
   O> set ls nlmap:to-list basic
   item 0 ls => ["url" "url"]
