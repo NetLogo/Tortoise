@@ -16,6 +16,8 @@ object SimplePrims {
       PartialFunction.condOpt(r) {
         case _: prim._nobody             => "Nobody"
         case _: prim.etc._basecolors     => "ColorModel.BASE_COLORS"
+        case _: prim.etc._behaviorspaceexperimentname => "Meta.behaviorSpaceName"
+        case _: prim.etc._behaviorspacerunnumber      => "Meta.behaviorSpaceRun"
         case _: prim.etc._linkshapes     => "Object.keys(world.linkShapeMap)"
         case _: prim.etc._maxpxcor       => "world.topology.maxPxcor"
         case _: prim.etc._maxpycor       => "world.topology.maxPycor"
