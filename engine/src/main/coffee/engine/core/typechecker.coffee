@@ -40,3 +40,18 @@ NLType.prototype.isValidDirectedLink   = -> @isDirectedLink()   and not @_x.isDe
 NLType.prototype.isValidLink           = -> @isLink()           and not @_x.isDead()
 NLType.prototype.isValidTurtle         = -> @isTurtle()         and not @_x.isDead()
 NLType.prototype.isValidUndirectedLink = -> @isUndirectedLink() and not @_x.isDead()
+
+NLType.prototype.niceName =
+  () ->
+    if      @isAgentSet()       then "agentset"
+    else if @isBoolean()        then "TRUE/FALSE"
+    else if @isBreed()          then "breed"
+    else if @isCommandLambda()  then "anonymous command"
+    else if @isLink()           then "link"
+    else if @isList()           then "list"
+    else if @isNobody()         then "nobody"
+    else if @isNumber()         then "number"
+    else if @isPatch()          then "patch"
+    else if @isReporterLambda() then "anonymous reporter"
+    else if @isTurtle()         then "turtle"
+    else                             "unknown value"

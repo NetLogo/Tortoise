@@ -67,6 +67,19 @@ module.exports =
       else
         throw new Error("Division by zero.")
 
+    booleanCheck: (b, primName) ->
+      type = NLType(b)
+      if type.isBoolean()
+        b
+      else
+        throw new Error("#{primName} expected input to be a TRUE/FALSE but got the #{type.niceName()} #{@_dumper(b)} instead.")
+
+    ifElseValueBooleanCheck: (b) ->
+      @booleanCheck(b, "IFELSE-VALUE")
+
+    ifElseValueMissingElse: () ->
+      throw new Error("IFELSE-VALUE found no true conditions and no else branch. If you don't wish to error when no conditions are true, add a final else branch.")
+
     # (Any, Any) => Boolean
     equality: (a, b) ->
       if a? and b?
