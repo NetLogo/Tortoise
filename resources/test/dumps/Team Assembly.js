@@ -308,7 +308,7 @@ var procedures = (function() {
           SelfManager.self().setVariable("in-team?", true);
           SelfManager.self().setVariable("downtime", 0);
           SelfManager.self().setVariable("size", 1.8);
-          SelfManager.self().setVariable("color", (SelfManager.self().getVariable("incumbent?") ? (45 + 2) : (105 + 1)));
+          SelfManager.self().setVariable("color", (Prims.ifElseValueBooleanCheck(SelfManager.self().getVariable("incumbent?")) ? (45 + 2) : (105 + 1)));
         }, true);
       }
     } catch (e) {

@@ -1329,7 +1329,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-        return (Prims.equality(world.observer.getGlobal("current-instruction"), 0) ? "press setup" : (workspace.dump('') + workspace.dump(world.observer.getGlobal("current-instruction")) + workspace.dump(" of ") + workspace.dump(ListPrims.length(procedures["INSTRUCTIONS"]()))))
+        return (Prims.ifElseValueBooleanCheck(Prims.equality(world.observer.getGlobal("current-instruction"), 0)) ? "press setup" : (workspace.dump('') + workspace.dump(world.observer.getGlobal("current-instruction")) + workspace.dump(" of ") + workspace.dump(ListPrims.length(procedures["INSTRUCTIONS"]()))))
       }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {

@@ -143,7 +143,7 @@ var procedures = (function() {
       var reporterContext = true;
       var letVars = { };
       if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-        return ListPrims.list((Prims.lt(SelfManager.self().getPatchVariable("pxcor"), Prims.div(world.topology.width, 2)) ? -1 : 1), (Prims.lt(SelfManager.self().getPatchVariable("pycor"), Prims.div(world.topology.width, 2)) ? -1 : 1))
+        return ListPrims.list((Prims.ifElseValueBooleanCheck(Prims.lt(SelfManager.self().getPatchVariable("pxcor"), Prims.div(world.topology.width, 2))) ? -1 : 1), (Prims.ifElseValueBooleanCheck(Prims.lt(SelfManager.self().getPatchVariable("pycor"), Prims.div(world.topology.width, 2))) ? -1 : 1))
       }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {

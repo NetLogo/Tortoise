@@ -120,7 +120,7 @@ var procedures = (function() {
       if (!!world.turtles().isEmpty()) {
         if (Prims.equality(world.observer.getGlobal("countdown"), 0)) {
           procedures["INIT-ROCKETS"]();
-          world.observer.setGlobal("countdown", (world.observer.getGlobal("trails?") ? 30 : 10));
+          world.observer.setGlobal("countdown", (Prims.ifElseValueBooleanCheck(world.observer.getGlobal("trails?")) ? 30 : 10));
         }
         else {
           world.observer.setGlobal("countdown", (world.observer.getGlobal("countdown") - 1));

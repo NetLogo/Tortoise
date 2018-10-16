@@ -337,7 +337,7 @@ var procedures = (function() {
         if (!Prims.equality(SelfManager.self().getVariable("shape"), world.observer.getGlobal("turtle-shape"))) {
           SelfManager.self().setVariable("shape", world.observer.getGlobal("turtle-shape"));
         }
-        SelfManager.self().setVariable("color", (SelfManager.self().getVariable("sick?") ? 15 : (procedures["IMMUNE?"]() ? 5 : 55)));
+        SelfManager.self().setVariable("color", (Prims.ifElseValueBooleanCheck(SelfManager.self().getVariable("sick?")) ? 15 : (Prims.ifElseValueBooleanCheck(procedures["IMMUNE?"]()) ? 5 : 55)));
       }, true);
     } catch (e) {
       if (e instanceof Exception.StopInterrupt) {
