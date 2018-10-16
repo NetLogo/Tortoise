@@ -123,6 +123,7 @@ object SimplePrims {
         case _: prim.etc._standarddeviation => "ListPrims.standardDeviation"
         case _: prim.etc._sublist           => "ListPrims.sublist"
         case _: prim.etc._substring         => "ListPrims.substring"
+        case _: prim.etc._uptonof           => "ListPrims.upToNOf"
         case _: prim.etc._variance          => "ListPrims.variance"
         case _: prim._list                  => "ListPrims.list"
         case _: prim._oneof                 => "ListPrims.oneOf"

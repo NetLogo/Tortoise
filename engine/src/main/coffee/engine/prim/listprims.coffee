@@ -169,6 +169,24 @@ module.exports =
       else
         throw new Error("N-OF expected input to be a list or agentset but got #{@_dump(agentsOrList)} instead.")
 
+    # [Item] @ (Number, ListOrSet[Item]) => ListOrSet[Item]
+    upToNOf: (n, agentsOrList) ->
+      type = NLType(agentsOrList)
+      if type.isList()
+        if n >= agentsOrList.length
+          agentsOrList
+        else
+          @_nOfArray(n, agentsOrList)
+      else if type.isAgentSet()
+        if n >= agentsOrList.size()
+          agentsOrList
+        else
+          items    = agentsOrList.iterator().toArray()
+          newItems = @_nOfArray(n, items)
+          agentsOrList.copyWithNewAgents(newItems)
+      else
+        throw new Error("UP-TO-N-OF expected input to be a list or agentset but got #{@_dump(agentsOrList)} instead.")
+
     # [Item] @ (ListOrSet[Item]) => Item
     oneOf: (agentsOrList) ->
       type = NLType(agentsOrList)
