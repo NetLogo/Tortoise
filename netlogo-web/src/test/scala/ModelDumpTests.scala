@@ -43,21 +43,23 @@ class ModelDumpTests extends FunSuite {
     }
   }
 
-  for (path <- Model.models.map(_.path).distinct) {
-    test(s"outputs correct model javascript for ${path}", SlowTest) {
-      println(path)
+  for (model <- Model.models) {
+    test(s"compiled model javascript tests for ${model.name}", SlowTest) {
+      println(model.path)
       try {
         import scala.collection.JavaConverters.{ collectionAsScalaIterable, mapAsScalaMap }
-        val modelContents                  = Source.fromFile(path).mkString
+        val modelContents                  = Source.fromFile(model.path).mkString
         val (compilationResultJ, widgetsJ) = compilationFunction(Array[Object](modelContents))
         val compilationResult              = mapAsScalaMap(compilationResultJ)
         val widgets                        = collectionAsScalaIterable(widgetsJ)
         val modelResult                    = compilationResult("model").asInstanceOf[JMap[String,AnyRef]]
         assert(modelResult.get("success").asInstanceOf[Boolean])
 
-        val genaratedJs = cleanJsNumbers(modelResult.get("result").toString.trim)
-        loggingGeneratedJs(genaratedJs, path) {
-          assertResult(archivedCompilation(path))(genaratedJs)
+        val generatedJs = cleanJsNumbers(modelResult.get("result").toString.trim)
+        loggingGeneratedJs(generatedJs, model.filename) {
+          assertResult(
+            archivedCompilation(model.filename), "Compiled model Javascript changed from prior dump"
+          )(generatedJs)
           ()
         }
 
@@ -70,7 +72,7 @@ class ModelDumpTests extends FunSuite {
 
         assert(compilationResult("code").toString.contains("to"))
 
-        if (! path.contains("benchmark"))
+        if (! model.path.contains("benchmark"))
           assert(compilationResult("info").toString.contains("WHAT IS IT"))
       } catch {
         case e: JavaScriptException =>
@@ -80,19 +82,20 @@ class ModelDumpTests extends FunSuite {
     }
   }
 
-  private def archivedCompilation(path: String) = {
-    val modelName = path.split('/').last.split('.')(0)
+  private def archivedCompilation(modelName: String) = {
     cleanJsNumbers(resourceText(s"/dumps/$modelName.js").trim)
   }
 
-  private def loggingGeneratedJs(genaratedJs: String, path: String)(runTest: => Unit): Unit =
+  private def loggingGeneratedJs(generatedJs: String, filename: String)(runTest: => Unit): Unit =
     try {
       runTest
     } catch {
       case e: TestFailedException =>
-        val fw = new FileWriter(s"target/netlogoweb-${path.split('/').last}.js")
-        fw.write(genaratedJs, 0, genaratedJs.length)
+        val failPath = s"target/${filename}.js"
+        val fw = new FileWriter(failPath)
+        fw.write(generatedJs, 0, generatedJs.length)
         fw.close()
+        println(s"Failed test, actual JS written to $failPath")
         throw e
     }
 
