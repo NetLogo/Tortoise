@@ -353,7 +353,11 @@ object SimplePrims {
         case _: prim.etc._exportview       => "ImportExportPrims.exportView"
         case _: prim.etc._exportworld      => "ImportExportPrims.exportWorld"
         case _: prim.etc._wait             => "Prims.wait"
-        case _: prim.etc._importdrawing    => "ImportExportPrims.importDrawing"
+        // `world.importDrawing` uses an oversimple implementation on the Galapagos side
+        // once the work on a full, proper solution is done, we should switch back to `ImportExportPrims.importDrawing`
+        // -Jeremy B October 2018
+        case _: prim.etc._importdrawing    => "world.importDrawing"
+        //case _: prim.etc._importdrawing    => "ImportExportPrims.importDrawing"
         case _: prim.etc._importworld      => "ImportExportPrims.importWorld"
 
         // Unimplemented
