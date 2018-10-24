@@ -28,7 +28,7 @@ setXcor = (newX, seenTurtlesSet = {}) ->
   oldX        = @xcor
   @xcor       = @world.topology.wrapX(newX)
   @_updateVarsByName("xcor")
-  @_drawLine(oldX, @ycor, newX, @ycor)
+  @_drawSetLine(oldX, @ycor, newX, @ycor)
 
   if originPatch isnt @getPatchHere()
     originPatch.untrackTurtle(this)
@@ -49,7 +49,7 @@ setYcor = (newY, seenTurtlesSet = {}) ->
   oldY        = @ycor
   @ycor       = @world.topology.wrapY(newY)
   @_updateVarsByName("ycor")
-  @_drawLine(@xcor, oldY, @xcor, newY)
+  @_drawSetLine(@xcor, oldY, @xcor, newY)
 
   if originPatch isnt @getPatchHere()
     originPatch.untrackTurtle(this)

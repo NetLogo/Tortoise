@@ -3,6 +3,8 @@
 package org.nlogo.tortoise.nlw
 package dock
 
+import org.nlogo.core.{ Model, View, WorldDimensions }
+
 class TestDrawings extends DockingSuite {
 
   test("pen line") { implicit fixture => import fixture._
@@ -13,6 +15,30 @@ class TestDrawings extends DockingSuite {
     testCommand("ask turtles [ pd left 90 jump -1.5 ]")
     testCommand("ask turtles [ fd 5 right 2 fd 2 fd 3 left 10 fd 5 fd 2 ]")
     testCommand("ask turtles [ set heading 30 jump 50 ]")
+  }
+
+  test("setxy lines with wrapping") { implicit fixture => import fixture._
+    declare(Model(widgets = List(View(dimensions = WorldDimensions(minPxcor = -10, maxPxcor = 10, minPycor = -10, maxPycor = 10, 12.0, true, true)))))
+    testCommand("crt 1")
+    testCommand("ask turtles [ pu setxy 8 0 pd setxy -8 0 ]")
+    testCommand("ask turtles [ pu setxy 8 0 pd setxy 13 0 ]")
+    testCommand("ask turtles [ pu setxy 9 9.5 pd setxy -8.5 -8 ]")
+    testCommand("ask turtles [ pu setxy 8 0 pd set xcor -8 ]")
+    testCommand("ask turtles [ pu setxy 8 0 pd set xcor 13 ]")
+    testCommand("ask turtles [ pu setxy 0 8 pd set ycor -8 ]")
+    testCommand("ask turtles [ pu setxy 0 8 pd set ycor 13 ]")
+  }
+
+  test("setxy lines without wrapping") { implicit fixture => import fixture._
+    declare(Model(widgets = List(View(dimensions = WorldDimensions(minPxcor = -10, maxPxcor = 10, minPycor = -10, maxPycor = 10, 12.0, false, false)))))
+    testCommand("crt 1")
+    testCommand("ask turtles [ pu setxy 8 0 pd setxy -8 0 ]")
+    testCommand("ask turtles [ pu setxy 8 0 pd setxy 13 0 ]")
+    testCommand("ask turtles [ pu setxy 9 9.5 pd setxy -8.5 -8 ]")
+    testCommand("ask turtles [ pu setxy 8 0 pd set xcor -8 ]")
+    testCommand("ask turtles [ pu setxy 8 0 pd set xcor 13 ]")
+    testCommand("ask turtles [ pu setxy 0 8 pd set ycor -8 ]")
+    testCommand("ask turtles [ pu setxy 0 8 pd set ycor 13 ]")
   }
 
   test("turtle stamps") { implicit fixture => import fixture._
