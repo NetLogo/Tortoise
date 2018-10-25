@@ -381,7 +381,7 @@ module.exports =
       else if flattened.length is 1
         head = flattened[0]
         if head instanceof outClass
-          head
+          makeOutie(head.toArray())
         else if head instanceof tClass
           makeOutie([head])
         else
