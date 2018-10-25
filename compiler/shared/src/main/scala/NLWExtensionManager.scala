@@ -74,9 +74,16 @@ private object CreateExtension {
       case JsError(_) =>
         typeNameToTypeInt(jsArg.as[String])
       case JsSuccess(typeName, _) => {
+
         val isRepeatable = (jsArg \ "isRepeatable").asOpt[Boolean].getOrElse(false)
         val isOptional   = (jsArg \ "isOptional"  ).asOpt[Boolean].getOrElse(false)
-        typeNameToTypeInt(typeName) | (if (isRepeatable) RepeatableType else 0) | (if (isOptional) OptionalType else 0)
+
+        val primaryMask      = typeNameToTypeInt(typeName)
+        val isRepeatableMask = if (isRepeatable) RepeatableType else 0
+        val isOptionalMask   = if (isOptional)   OptionalType   else 0
+
+        primaryMask | isRepeatableMask | isOptionalMask
+
       }
     }
   }
