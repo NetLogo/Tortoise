@@ -6,7 +6,7 @@ ColorModel = require('engine/core/colormodel')
 
 # In this file: `this.type` is `Patch`
 
-# (Number) => Unit
+# (Number|(Number, Number, Number)) => Unit
 setPcolor = (color) ->
   wrappedColor = ColorModel.wrapColor(color)
   if @_pcolor isnt wrappedColor
