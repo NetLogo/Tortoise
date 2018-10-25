@@ -157,9 +157,13 @@ module.exports =
     nOf: (n, agentsOrList) ->
       type = NLType(agentsOrList)
       if type.isList()
+        if (agentsOrList.length < n)
+          throw new Error("Requested #{n} random items from a list of length #{agentsOrList.length}.")
         @_nOfArray(n, agentsOrList)
       else if type.isAgentSet()
         items    = agentsOrList.iterator().toArray()
+        if (items.length < n)
+          throw new Error("Requested #{n} random agents from a set of only #{items.length} agents.")
         newItems = @_nOfArray(n, items)
         agentsOrList.copyWithNewAgents(newItems)
       else

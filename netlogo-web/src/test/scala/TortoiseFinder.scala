@@ -138,7 +138,6 @@ private[tortoise] object Freebies {
     "Agentsets::Agentsets2",
     "Agentsets::Agentsets3",
     "Agentsets::Agentsets4_2D",
-    "Agentsets::LinkAgentsetDeadLinks",
     // The Iterator.withBoolCheck() adds a very rudimentary type check which
     // addresses some Agentsets::OtherWithOptsShowCorrectErrorName failures.
     // But in core/headless they use differing agent sets for arrays and trees.
