@@ -95,8 +95,16 @@ class ModelDumpTests extends FunSuite {
         val fw = new FileWriter(failPath)
         fw.write(generatedJs, 0, generatedJs.length)
         fw.close()
-        println(s"Failed test, actual JS written to $failPath")
+        println(s"Source dump changed, actual JS written to $failPath")
         throw e
+      case e: Exception =>
+        val failPath = s"target/${filename}.js"
+        val fw = new FileWriter(failPath)
+        fw.write(generatedJs, 0, generatedJs.length)
+        fw.close()
+        println(s"Runtime exception, reference JS written to $failPath")
+        throw e
+
     }
 
   // scala.js `toString` for numeric values gives different results than jvm scala.
