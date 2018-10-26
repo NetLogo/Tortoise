@@ -491,7 +491,7 @@ object Model {
       repetitions = 30
     ),
     Model(
-      path = "models/Sample Models/Biology/Evolution/Rock Paper Scissors.nlogo",
+      path = "models/Sample Models/Biology/Rock Paper Scissors.nlogo",
       repetitions = 20
     )
   )
