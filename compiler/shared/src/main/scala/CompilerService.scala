@@ -6,7 +6,7 @@ package org.nlogo.tortoise.compiler
 //
 // Example:
 //   cat models/Sample\ Models/Biology/Wolf\ Sheep\ Predation.nlogo | \
-//     ./sbt 'run-main org.nlogo.tortoise.CompilerService'
+//     ./sbt 'compilerJVM/runMain org.nlogo.tortoise.compiler.CompilerService'
 
 import
   scala.io.Source
