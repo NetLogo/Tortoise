@@ -32,8 +32,7 @@ object TortoiseSymbol {
 
   case class WorkspaceInit(args: Seq[Seq[String]], argumentDependencies: Seq[String] = Seq())
     extends TortoiseSymbol {
-    val dependencies: Seq[String] =
-      Seq("modelConfig", "modelConfig.plots", "modelConfig.output") ++ argumentDependencies
+    val dependencies: Seq[String] = Seq("modelConfig", "modelConfig.plots") ++ argumentDependencies
     val provides:     String      = "workspace"
     val toJS:         String      =
       s"var workspace = tortoise_require('engine/workspace')(modelConfig)${args.map(_.mkString("(", ", ", ")")).mkString("")};"

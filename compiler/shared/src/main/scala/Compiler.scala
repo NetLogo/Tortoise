@@ -3,12 +3,6 @@
 package org.nlogo.tortoise.compiler
 
 import
-  CompilerFlags.WidgetPropagation
-
-import
-  CompilerLike.Compilation
-
-import
   org.nlogo.{ core, parse },
     core.{ AgentKind, CompilerException, FrontEndInterface, Model, ProcedureDefinition, Program, SourceWrapping, StructureResults },
       FrontEndInterface.{ ProceduresMap, NoProcedures },
@@ -18,11 +12,9 @@ import
   scalaz.{ Scalaz, ValidationNel },
     Scalaz.ToValidationOps
 
-import
-  JsOps.jsFunction
-
-import
-  TortoiseSymbol.{ JsDeclare, JsStatement }
+import CompilerFlags.WidgetPropagation
+import CompilerLike.Compilation
+import TortoiseSymbol.JsStatement
 
 // there are four main entry points here:
 //   compile{Reporter, Commands}
@@ -68,11 +60,7 @@ object Compiler extends CompilerLike {
         identity)).mkString("\n")
 
     val interfaceInit = JsStatement("interfaceInit", interfaceGlobalJs, Seq("world", "procedures", "modelConfig"))
-    TortoiseLoader.integrateSymbols(init ++ plotConfig ++ procedures ++ utilityFunctions
-                                         :+ outputConfig :+ dialogConfig
-                                         :+ worldConfig :+ importExportConfig
-                                         :+ inspectionConfig :+ ioConfig
-                                         :+ interfaceInit)
+    TortoiseLoader.integrateSymbols(init ++ plotConfig ++ procedures :+ JsStatement("modelConfig", Polyfills.content) :+ interfaceInit)
   }
 
   def compileReporter(logo:          String,
@@ -180,179 +168,11 @@ object Compiler extends CompilerLike {
       handlers.commands(pd.statements, true, !raw)
     else
       handlers.reporter(pd.statements.stmts(1).args(0))
-  }
-
-  private def utilityFunctions: Seq[JsDeclare] = {
-
-    val slurpTextFromFile =
-      ("slurpTextFromFile", """
-                              |  function(filename) {
-                              |    var Files = Java.type('java.nio.file.Files');
-                              |    var Paths = Java.type('java.nio.file.Paths');
-                              |    var out   = [];
-                              |    var path  = Paths.get(filename);
-                              |    Files.readAllLines(path).forEach(function(line) { out.push(line); });
-                              |    return out.join("\n");
-                              |  }
-                              |""".stripMargin)
-
-    val slurpTextFromURL =
-      ("slurpTextFromURL", """
-                             |  function(url) {
-                             |    var Scanner = Java.type('java.util.Scanner');
-                             |    return new Scanner(url.openStream()).useDelimiter("\\A").next();
-                             |  }
-                             |""".stripMargin)
-
-    val slurpBufferedImage =
-      ("slurpBufferedImage", """
-                               |  function(bImage, mimeStr) {
-                               |
-                               |    var BAOS    = Java.type('java.io.ByteArrayOutputStream');
-                               |    var Base64  = Java.type('java.util.Base64');
-                               |    var ImageIO = Java.type('javax.imageio.ImageIO');
-                               |
-                               |    var baos = new BAOS();
-                               |    ImageIO.write(bImage, mimeStr.slice(mimeStr.indexOf('/') + 1), baos);
-                               |    baos.close();
-                               |
-                               |    return "data:" + mimeStr + ";base64," + Base64.getEncoder().encodeToString(baos.toByteArray());
-                               |
-                               |  }""".stripMargin)
-
-    val slurpImageFromFile =
-      ("slurpImageFromFile", """
-                               |  function(filename, mimeStr) {
-                               |    var ImageIO = Java.type('javax.imageio.ImageIO');
-                               |    var Paths   = Java.type('java.nio.file.Paths');
-                               |    var path    = Paths.get(filename);
-                               |    return slurpBufferedImage(ImageIO.read(path.toFile()), mimeStr);
-                               |  }
-                               |""".stripMargin)
-
-    val slurpImageFromURL =
-      ("slurpImageFromURL", """
-                              |  function(url, mimeStr) {
-                              |    var ImageIO = Java.type('javax.imageio.ImageIO');
-                              |    return slurpBufferedImage(ImageIO.read(url), mimeStr);
-                              |  }""".stripMargin)
-
-    val slurpByType =
-      ("slurpByType", """
-                        |  function(mimeStr, slurpText, slurpImage) {
-                        |    if (mimeStr == "content/unknown" || mimeStr.startsWith('text/') || mimeStr.startsWith('application/')) {
-                        |      return slurpText();
-                        |    } else if (mimeStr.startsWith('image/')) {
-                        |      return slurpImage();
-                        |    } else {
-                        |      throw new Error("Unslurpable content type: " + mimeStr);
-                        |    }
-                        |  }""".stripMargin)
-
-    val slurpURLSynchronously =
-      ("slurpURLSynchronously", """
-                                  |  function(url) {
-                                  |    var URL        = Java.type('java.net.URL');
-                                  |    var jurl       = new URL(url);
-                                  |    var mimeStr    = jurl.openConnection().getContentType();
-                                  |    var slurpImage = function() { return slurpImageFromURL(jurl, mimeStr); };
-                                  |    var slurpText  = function() { return slurpTextFromURL(jurl); };
-                                  |    var slurped    = slurpByType(mimeStr, slurpText, slurpImage);
-                                  |  }""".stripMargin)
-
-    Seq(slurpTextFromFile, slurpTextFromURL, slurpBufferedImage
-      , slurpImageFromFile, slurpImageFromURL, slurpByType, slurpURLSynchronously
-    ).map {
-      case (p, b) => JsDeclare(p, b)
-    }
 
   }
-
-  private def outputConfig: JsStatement =
-    genConfig("output", Map("clear" -> jsFunction(),
-                            "write" -> jsFunction(Seq("str"), "console.log(str);")))
-
-  private def dialogConfig: JsStatement =
-    genConfig("dialog", Map("confirm" -> jsFunction(Seq("str"), "return true;"),
-                            "input"   -> jsFunction(Seq("str"), "return 'dummy implementation';"),
-                            "notify"  -> jsFunction(Seq("str")),
-                            "yesOrNo" -> jsFunction(Seq("str"), "return true;")))
-
-  private def worldConfig: JsStatement =
-    genConfig("world", Map("resizeWorld" -> jsFunction(Seq("agent"))))
 
   // This is a workaround for GraalJS interop - we need string bytes in `exportFile`, but GraalJS converts
   // JVM strings to JS strings.  So convert them back!  -JMB Feb 2019
   def getBytes(value: String): Array[Byte] = value.getBytes(java.nio.charset.StandardCharsets.UTF_8)
-
-  private def ioConfig: JsStatement =
-    genConfig("io"
-             , Map( "slurpFilepathAsync" -> jsFunction(Seq("filename"),
-                                                       """    return function(callback) {
-                                                         |      var Paths      = Java.type('java.nio.file.Paths');
-                                                         |      var Files      = Java.type('java.nio.file.Files');
-                                                         |      var path       = Paths.get(filename);
-                                                         |      var mimeStr    = Files.probeContentType(path);
-                                                         |      var slurpImage = function() { return slurpImageFromFile(filename, mimeStr); };
-                                                         |      var slurpText  = function() { return slurpTextFromFile(filename); };
-                                                         |      var slurped    = slurpByType(mimeStr, slurpText, slurpImage);
-                                                         |      callback(slurped);
-                                                         |    };""".stripMargin)
-                  , "slurpURL"      -> jsFunction(Seq("url"), """    return slurpURLSynchronously(url);""")
-                  , "slurpURLAsync" -> jsFunction(Seq("url"),
-                                                  """    return function(callback) {
-                                                    |      var URL        = Java.type('java.net.URL');
-                                                    |      var jurl       = new URL(url);
-                                                    |      var mimeStr    = jurl.openConnection().getContentType();
-                                                    |      var slurpImage = function() { return slurpImageFromURL(jurl, mimeStr); };
-                                                    |      var slurpText  = function() { return slurpTextFromURL(jurl); };
-                                                    |      var slurped    = slurpByType(mimeStr, slurpText, slurpImage);
-                                                    |      callback(slurped);
-                                                    |    };""".stripMargin)
-                  )
-             )
-
-  private def importExportConfig: JsStatement =
-    genConfig( "importExport"
-             , Map( "exportOutput" -> jsFunction(Seq("filename"))
-                  , "exportView"   -> jsFunction(Seq("filename"))
-                  , "exportFile"   -> jsFunction(Seq("str"),
-                                                 """    return function(filename) {
-                                                   |      var Paths    = Java.type('java.nio.file.Paths');
-                                                   |      var Files    = Java.type('java.nio.file.Files');
-                                                   |      var Compiler = Java.type('org.nlogo.tortoise.compiler.Compiler');
-                                                   |      Files.createDirectories(Paths.get(filename).getParent());
-                                                   |      Files.write(Paths.get(filename), Compiler.getBytes(str));
-                                                   |    }""".stripMargin)
-                  , "importDrawing" -> jsFunction(Seq("filename"), "return function(callback) {}")
-                  , "importFile"    -> jsFunction(Seq("filename"),
-                                                """    return function(callback) {
-                                                  |      ioConfig.slurpFileAndThen(filename)(callback);
-                                                  |    }""".stripMargin)
-                  )
-             )
-
-  private def inspectionConfig: JsStatement =
-    genConfig( "inspection"
-             , Map( "inspect"        -> jsFunction(Seq("agent"))
-                  , "stopInspecting" -> jsFunction(Seq("agent"))
-                  , "clearDead"      -> jsFunction(Seq()       )
-                  )
-             )
-
-  private def genConfig(configName: String, functionDefs: Map[String, String]): JsStatement = {
-
-    val configPath = s"modelConfig.$configName"
-    val defsStr    = functionDefs.map { case (k, v) => s"$k: $v" }.mkString("{\n|    ", ",\n|    ", "\n|  }")
-
-    // If `javax` exists, we're in GraalJS, and, therefore, testing --JAB (3/2/15)
-    val configStr =
-      s"""|if (typeof javax !== "undefined") {
-          |  $configPath = $defsStr
-          |}""".stripMargin
-
-    JsStatement(configPath, configStr, Seq("modelConfig"))
-
-  }
 
 }
