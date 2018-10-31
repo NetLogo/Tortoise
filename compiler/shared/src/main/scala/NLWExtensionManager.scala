@@ -128,7 +128,7 @@ private object CreateExtension {
 object NLWExtensionManager extends ExtensionManager {
 
   import org.nlogo.core.{ CompilerException, Token }
-  import org.nlogo.tortoise.compiler.ExtDefReader
+  import org.nlogo.tortoise.macros.ExtDefReader
   import scala.collection.mutable.{ Map => MMap }
 
   private val extNameToExtMap                            = ExtDefReader.getAll().map(CreateExtension.apply).map(x => (x.getName, x)).toMap
