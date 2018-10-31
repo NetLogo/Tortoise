@@ -157,16 +157,24 @@ object Compiler extends CompilerLike {
                       program:       Program,
                       raw:           Boolean       = false)
             (implicit compilerFlags: CompilerFlags): String = {
-    val header               = SourceWrapping.getHeader(AgentKind.Observer, commands)
-    val footer               = SourceWrapping.getFooter(commands)
-    val wrapped              = s"$header$logo$footer"
+
+    val header  = SourceWrapping.getHeader(AgentKind.Observer, commands)
+    val footer  = SourceWrapping.getFooter(commands)
+    val wrapped = s"$header$logo$footer"
+
     implicit val context     = new CompilerContext(wrapped)
     implicit val procContext = ProcedureContext(!raw, Seq())
-    val (defs, _)            = frontEnd.frontEnd(wrapped, oldProcedures = oldProcedures, program = program, extensionManager = NLWExtensionManager)
-    val pd = if (compilerFlags.optimizationsEnabled)
-      Optimizer(defs.head)
-    else
-      defs.head
+
+    val (defs, _) =
+      frontEnd.frontEnd( wrapped, oldProcedures = oldProcedures
+                       , program = program, extensionManager = NLWExtensionManager)
+
+    val pd =
+      if (compilerFlags.optimizationsEnabled)
+        Optimizer(defs.head)
+      else
+        defs.head
+
     if (commands)
       handlers.commands(pd.statements, true, !raw)
     else
