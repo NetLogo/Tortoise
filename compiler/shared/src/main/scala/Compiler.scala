@@ -175,7 +175,7 @@ object Compiler extends CompilerLike {
 
   private def outputConfig: JsStatement =
     genConfig("output", Map("clear" -> jsFunction(),
-                            "write" -> jsFunction(Seq("str"), "context.getWriter().print(str);")))
+                            "write" -> jsFunction(Seq("str"), "console.log(str);")))
 
   private def dialogConfig: JsStatement =
     genConfig("dialog", Map("confirm" -> jsFunction(Seq("str"), "return true;"),
@@ -196,7 +196,8 @@ object Compiler extends CompilerLike {
                                                    |      var Files = Java.type('java.nio.file.Files');
                                                    |      var UTF8  = Java.type('java.nio.charset.StandardCharsets').UTF_8;
                                                    |      Files.createDirectories(Paths.get(filepath).getParent());
-                                                   |      var path  = Files.write(Paths.get(filepath), str.getBytes());
+                                                   |      var StringClass = Java.type('java.lang.String');
+                                                   |      var path  = Files.write(Paths.get(filepath), (new StringClass(str)).getBytes());
                                                    |    }""".stripMargin)
                   , "importDrawing" -> jsFunction(Seq("trueImportDrawing"), "return function(filepath) {}")
                   , "importWorld" -> jsFunction(Seq("trueImportWorld"),

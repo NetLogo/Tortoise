@@ -33,16 +33,16 @@ class ModelDumpTests extends FunSuite {
 
   val engine       = new GraalJS()
   val engineSource = resourceText("/tortoise-compiler.js")
-  engine.eval(engineSource)
+  engine.evalRaw(engineSource)
 
   val compilationFunction: String => (JMap[String, AnyRef], Seq[JMap[String, AnyRef]]) = modelCode => {
-    engine.eval("__bc = new BrowserCompiler()")
+    engine.evalRaw("__bc = new BrowserCompiler()")
     engine.put("__modelCode", modelCode)
-    val value = engine.eval("(function() { __compilation = __bc.fromNlogo(__modelCode); return __compilation; })()")
+    val value = engine.evalRaw("(function() { __compilation = __bc.fromNlogo(__modelCode); return __compilation; })()")
     val compilation = value.as(classOf[JMap[String, AnyRef]])
     import scala.collection.JavaConverters.mapAsScalaMap
     val widgetString = mapAsScalaMap(compilation)("widgets").toString
-    val widgets      = graalValueToSequence(engine.eval(widgetString)).map( (w) => w.as(classOf[JMap[String, AnyRef]]) )
+    val widgets      = graalValueToSequence(engine.evalRaw(widgetString)).map( (w) => w.as(classOf[JMap[String, AnyRef]]) )
     (compilation, widgets)
   }
 
@@ -109,7 +109,7 @@ class ModelDumpTests extends FunSuite {
   // We need do a little cleanup to match the outputs - 2/17/15 RG
   private def cleanJsNumbers(rawJs: String): String = {
     // the raw JS contains the NetLogo code, which contains escaped characters, which we have to remove to process
-    val unRawJs = rawJs.replace("\\n", " ").replace("\\\"", "\"")
+    val unRawJs = rawJs.replace("\\n", " ")
     val trailingZeroNumbers  =
       new Regex("""(\d)\.0(\D)""", "digitBefore", "nonDigitAfter")
     val scientificNotation   =

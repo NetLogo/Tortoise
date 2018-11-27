@@ -8,7 +8,7 @@ import
     json.WidgetSamples.{ plot => plotWidget }
 
 import
-  jsengine.Nashorn
+  jsengine.GraalJS
 
 import
   org.scalatest.{ FunSuite, OneInstancePerTest }
@@ -27,8 +27,9 @@ class PlotCompilerTest extends FunSuite with OneInstancePerTest {
 
   lazy val dialog = new FakeDialog()
 
-  lazy val nashornEngine = {
-    val e = new Nashorn().engine
+  lazy val jsRuntime = {
+    val e = (new GraalJS())
+    e.setupTortoise()
     e.put("fakeDialog", dialog)
     e.eval("modelConfig = { dialog: fakeDialog };")
     e.eval("modelPlotOps = {};")
@@ -49,7 +50,7 @@ class PlotCompilerTest extends FunSuite with OneInstancePerTest {
   test("returns valid javascript when plots have errors") {
     val generatedJs =
       compilePlotWidgetV(new Exception("plot abc has problems").failureNel)
-    nashornEngine.eval(generatedJs)
+    jsRuntime.eval(generatedJs)
     assert(dialog.alertsReceived.head == "Error: plot abc has problems")
   }
 
@@ -58,7 +59,7 @@ class PlotCompilerTest extends FunSuite with OneInstancePerTest {
     val widgetCompilation =
       PlotWidgetCompilation("function() {}", "function() {}", Seq(errantPen)).successNel[Exception]
     val generatedJs = compilePlotWidgetV(widgetCompilation)
-    nashornEngine.eval(generatedJs)
+    jsRuntime.eval(generatedJs)
     assert(dialog.alertsReceived.head == "Error: pen has problems")
   }
 
@@ -67,7 +68,7 @@ class PlotCompilerTest extends FunSuite with OneInstancePerTest {
     val widgetCompilation =
       PlotWidgetCompilation("function() {}", "function() {}", Seq(errantPens)).successNel[Exception]
     val generatedJs = compilePlotWidgetV(widgetCompilation)
-    nashornEngine.eval(generatedJs)
+    jsRuntime.eval(generatedJs)
     assert(dialog.alertsReceived.head == "Error: pen a has problems, pen b has problems")
   }
 
@@ -75,7 +76,7 @@ class PlotCompilerTest extends FunSuite with OneInstancePerTest {
     val widgetCompilation =
       PlotWidgetCompilation("function() {}", "function() {}", Seq()).successNel[Exception]
     val generatedJs = compilePlotWidgetV(widgetCompilation)
-    nashornEngine.eval(generatedJs)
+    jsRuntime.eval(generatedJs)
     assert(dialog.alertsReceived.isEmpty)
   }
 }

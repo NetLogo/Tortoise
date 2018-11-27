@@ -3,6 +3,8 @@
 package org.nlogo.tortoise.nlw
 package dock
 
+import java.time.{ Duration, Instant }
+
 import scala.io.Source
 import scala.util.Try
 
@@ -17,14 +19,26 @@ class TestModels extends DockingSuite {
   val (nonExportables, exportables) = Model.models.partition((m) => (importsLambdas | usesDrawingEvents)(m.name))
 
   for (model <- nonExportables) {
-    test(model.name, SlowTest) { implicit fixture =>
+    val testName = s"0: no export - ${model.name}"
+    test(testName, SlowTest) { implicit fixture =>
+      engine.reset
+
+      println(testName)
+
       fixture.open(model.path, model.dimensions)
       fixture.testCommand(model.setup)
-      for(_ <- 1 to model.repetitions)
+      println(s"  running ${model.repetitions} reps: ")
+      print("  ")
+      for(i <- 1 to model.repetitions) {
+        print(if (i % 10 == 0) "|" else ".")
         fixture.testCommand(model.go)
+      }
+      println()
       model.metrics.foreach(fixture.compare)
     }
   }
+
+  var count = 0
 
   for (model <- exportables) {
 
@@ -47,37 +61,61 @@ class TestModels extends DockingSuite {
       s"$tempDir/NL${if (platform == Desktop) "D" else "W"}_${base}_$name.csv"
 
     def testReimport(inPlatform: Platform, fixture: DockingFixture): Unit = {
+      val start = Instant.now()
 
       val outBase = if (inPlatform == Web) FromWeb else FromDesktop
 
       fixture.testCommand(s"""import-world "${csv(inPlatform, Original)}" """)
+      val importDuration = Duration.between(start, Instant.now())
+      println(s"    import time: ${importDuration.toMillis}")
+
       fixture.testCommand(s"""export-world (ifelse-value netlogo-web? [ "${csv(Web, outBase)}"] [ "${csv(Desktop, outBase)}" ])""")
+      val exportDuration = Duration.between(start, Instant.now())
+      println(s"    export time: ${exportDuration.toMillis}")
 
       compareExports(readFile(csv(Desktop, outBase)), readFile(csv(Web, outBase)), outBase.toString)
+      val compareDuration = Duration.between(start, Instant.now())
+      println(s"    compare time: ${compareDuration.toMillis}")
 
       if (model.repetitions > 0)
         fixture.testCommand(model.go) // Just to be sure that there were no errors or anything on import
 
       model.metrics.foreach(fixture.compare)
-
+      val cleanupDuration = Duration.between(start, Instant.now())
+      println(s"    metrics time: ${cleanupDuration.toMillis}")
     }
 
-    test(s"export-world - ${name}", SlowTest) { implicit fixture =>
+    val chunk = 1 + Integer.valueOf(4 * count / exportables.size)
+    count = count + 1
+    val testName = s"$chunk: export-world - ${name}"
+    test(testName, SlowTest) { implicit fixture =>
+      engine.reset
+
+      println(testName)
 
       fixture.open(model.path, model.dimensions)
       fixture.testCommand(model.setup)
-      for (_ <- 1 to model.repetitions)
+      println(s"  running ${model.repetitions} reps: ")
+      print("  ")
+      for (i <- 1 to model.repetitions) {
+        print(if (i % 10 == 0) "|" else ".")
         fixture.testCommand(model.go)
+      }
+      println()
 
+      println("  checking metrics")
       model.metrics.foreach(fixture.compare)
 
+      println("  running export")
       fixture.testCommand(s"""export-world (ifelse-value netlogo-web? [ "${csv(Web, Original)}" ] [ "${csv(Desktop, Original)}" ])""")
 
+      println("  comparing exports")
       compareExports(readFile(csv(Desktop, Original)), readFile(csv(Web, Original)), "First pass")
 
+      println("  running desktop imports")
       testReimport(Desktop, fixture)
+      println("  running web imports")
       testReimport(Web,     fixture)
-
     }
 
   }

@@ -12,4 +12,4 @@ genEnhancedMath = ->
   obj.truncate  = (x) -> if x >= 0 then Math.floor(x) else Math.ceil(x)
   obj
 
-module.exports = StrictMath ? genEnhancedMath()
+module.exports = genEnhancedMath()

@@ -2,15 +2,13 @@
 
 package org.nlogo.tortoise.nlw
 
-import jsengine.Nashorn
+import jsengine.GraalJS
 import org.scalatest.FunSuite
 
 class TestEngineType extends FunSuite {
 
   test("engine name") {
-    assertResult("Oracle Nashorn") {
-      (new Nashorn).engine.getFactory.getEngineName
-    }
+    assert((new GraalJS).jsRuntime.getEngine.getImplementationName.startsWith("Graal"))
   }
 
 }

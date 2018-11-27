@@ -11,7 +11,7 @@ import
       FrontEndInterface.NoProcedures
 
 import
-  jsengine.Nashorn
+  jsengine.GraalJS
 
 import
   org.nlogo.tortoise.compiler.{ Compiler, CompilerLike },
@@ -23,7 +23,7 @@ trait SimpleSuite extends FunSuite with TestLogger {
 
   override def withFixture(test: OneArgTest) = {
 
-    val fixture = new SimpleFixture(nashorn)
+    val fixture = new SimpleFixture(engine)
 
     loggingFailures(suiteName, test.name, {
       val outcome = withFixture(test.toNoArgTest(fixture))
@@ -37,14 +37,14 @@ trait SimpleSuite extends FunSuite with TestLogger {
 
 }
 
-class SimpleFixture(nashorn: Nashorn) {
+class SimpleFixture(engine: GraalJS) {
 
   private val procedures = NoProcedures
   private val program    = Program.empty()
 
   private val compileCommands = Compiler.compileRawCommands(_: String, procedures, program)
   private val compileReporter = Compiler.compileReporter(_: String, procedures, program)
-  private val eval            = nashorn.eval _
+  private val eval            = engine.eval _
 
   private val compilation = Compilation(Seq(), Seq(), Seq(), Model(), procedures, program)
   private val js          = Compiler.toJS(compilation)

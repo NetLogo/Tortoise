@@ -19,7 +19,7 @@ private[tortoise] trait TortoiseFinder extends Finder with BeforeAndAfterAll wit
   override def shouldRun(t: LanguageTest, mode: TestMode) =
     mode == NormalMode && super.shouldRun(t, mode)
 
-  def genFixture(name: String): AbstractFixture = new TortoiseFixture(name, nashorn, notImplemented) {
+  def genFixture(name: String): AbstractFixture = new TortoiseFixture(name, engine, notImplemented) {
     override def checkResult(mode: TestMode, reporter: String, expectedResult: String, actualResult: AnyRef): Unit = {
       annotatePrevious(s"""NetLogo reporter for: $reporter
                           |expected result: $expectedResult
@@ -162,7 +162,6 @@ private[tortoise] object Freebies {
     "DeadTurtles::DeadTurtles6",
     "Face::FaceAgentset",
     "Interaction::Interaction5",
-    "Interaction::Interaction13",
     "Interaction::PatchTriesTurtleReporter",
     "Links::LinksNotAllowed",
     "Links::LinkNotAllowed_2D",
@@ -192,14 +191,8 @@ private[tortoise] object Freebies {
 
   private val evalNotSupportedStr = "An eval exception about undefined properties indicates a Nashorn bug when running Scala.js generated code (labelled breaks with throw statements). http://bugs.java.com/bugdatabase/view_bug.do?bug_id=JDK-8187744. These tests should pass outside Nashorn."
   private val evalNotSupportedCommandNames = Seq(
-    "ControlStructures::Run1",
     "ControlStructures::Run2",
     "ControlStructures::Run3",
-    "ControlStructures::Run5",
-    "ControlStructures::Run6",
-    "ControlStructures::Run7",
-    "Run::LuisIzquierdoRunResult2",
-    "Run::run-evaluate-string-input-only-once"
   )
 
   private val lameCommandStr = "This test is LAME!"

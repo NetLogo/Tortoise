@@ -3,13 +3,10 @@
 package org.nlogo.tortoise.nlw
 
 import
-  javax.script.ScriptException
-
-import
   org.scalatest.exceptions.TestFailedException
 
 import
-  jsengine.Nashorn
+  jsengine.GraalJS
 
 import
   scala.collection.mutable.ArrayBuffer
@@ -17,19 +14,25 @@ import
 private[tortoise] trait TestLogger extends BrowserReporter {
   private val jsBlobs = ArrayBuffer[String]()
 
-  protected val nashorn = new Nashorn {
-    override def run(script: String): (String, String) = {
-      val wrapped = wrapInFunction(script)
-      jsBlobs.append(wrapped)
-      runWithoutWrapping(wrapped)
-    }
+  protected val engine = setupEngine()
 
-    override def eval(script: String): AnyRef = {
-      jsBlobs.append(s"$script;".
-        replaceAll("""expectedUpdates = .+$""", "expectedUpdates = [];").
-        replaceAll("""actualUpdates\s+= .+$""", "actualUpdates = [];"))
-      super.eval(script)
+  private def setupEngine(): GraalJS = {
+    val e = new GraalJS {
+      override def run(script: String): (String, String) = {
+        val wrapped = wrapInFunction(script)
+        jsBlobs.append(wrapped)
+        runWithoutWrapping(wrapped)
+      }
+
+      override def eval(script: String): AnyRef = {
+        jsBlobs.append(s"$script;".
+          replaceAll("""expectedUpdates = .+$""", "expectedUpdates = [];").
+          replaceAll("""actualUpdates\s+= .+$""", "actualUpdates = [];"))
+        super.eval(script)
+      }
     }
+    e.setupTortoise
+    e
   }
 
   protected def annotate(note: String): Unit = {
@@ -53,7 +56,7 @@ private[tortoise] trait TestLogger extends BrowserReporter {
       runTest
     }
     catch {
-      case e@(_: TestFailedException | _: ScriptException | _: AssertionError) =>
+      case e@(_: TestFailedException | _: AssertionError) =>
         testFailed(suite, name)
         throw e
     }

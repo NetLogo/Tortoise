@@ -8,13 +8,13 @@ class BrowserSuite extends FunSuite with TestLogger {
 
   class BrowserFixture(val eval: (String) => AnyRef)
 
-  nashorn.eval(   "Random = new tortoise_require('shim/engine-scala').MersenneTwisterFast()")
-  nashorn.eval("AuxRandom = new tortoise_require('shim/engine-scala').MersenneTwisterFast()")
+  engine.eval(   "Random = new tortoise_require('shim/engine-scala').MersenneTwisterFast()")
+  engine.eval("AuxRandom = new tortoise_require('shim/engine-scala').MersenneTwisterFast()")
 
   override type FixtureParam = BrowserFixture
 
   override def withFixture(test: OneArgTest) = {
-    val fixture = new BrowserFixture(nashorn.eval)
+    val fixture = new BrowserFixture(engine.eval)
     loggingFailures(suiteName, test.name, {
       val outcome = withFixture(test.toNoArgTest(fixture))
       if (outcome.isFailed || outcome.isExceptional) {

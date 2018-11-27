@@ -2,7 +2,7 @@
 
 package org.nlogo.tortoise.nlw
 
-import jsengine.Nashorn
+import jsengine.GraalJS
 
 import
   org.nlogo.tortoise.compiler.CompiledModel
@@ -17,13 +17,13 @@ import
 
 class TestPlotting extends FunSuite with PlottingHelpers {
 
-  testPlotting("`testPlotting` helper doesn't passively explode") { (nashorn) =>
-    assertResult(Double.box(0))(nashorn.eval("0"))
+  testPlotting("`testPlotting` helper doesn't passively explode") { (engine) =>
+    assertResult(Double.box(0))(engine.eval("0"))
     ()
   }
 
-  testPlotting("Default plot pen is the first one") { (nashorn) =>
-    implicit val n = nashorn
+  testPlotting("Default plot pen is the first one") { (engine) =>
+    implicit val e = engine
     setPlot(Plots.ClassPlot.name)
     assertPenNameIs(Plots.ClassPlot.Pens.Low.name)
     setupPlots()
@@ -33,11 +33,11 @@ class TestPlotting extends FunSuite with PlottingHelpers {
     ()
   }
 
-  testPlotting("auto-plot-on / auto-plot-off") { (nashorn) =>
+  testPlotting("auto-plot-on / auto-plot-off") { (engine) =>
 
     import Plots._
 
-    implicit val n = nashorn
+    implicit val e = engine
 
     setPlot(ClassHistogram.name)
     assertAutoplottingness(ClassHistogram.isAutoplotting)
@@ -64,11 +64,11 @@ class TestPlotting extends FunSuite with PlottingHelpers {
 
   }
 
-  testPlotting("clear-plot") { (nashorn) =>
+  testPlotting("clear-plot") { (engine) =>
 
     import Plots._
 
-    implicit val n = nashorn
+    implicit val e = engine
 
     val tempPenName = "temp1"
 
@@ -96,8 +96,8 @@ class TestPlotting extends FunSuite with PlottingHelpers {
     createTempPen(tempPenName)
 
     setPlot(Lorenz.name)
-    setAxisRange(-10, -9)(n, X)
-    setAxisRange(9,   10)(n, Y)
+    setAxisRange(-10, -9)(e, X)
+    setAxisRange(9,   10)(e, Y)
 
     clearPlot()
 
@@ -109,8 +109,8 @@ class TestPlotting extends FunSuite with PlottingHelpers {
       assertPenProperties(Equal.name, false, Equal.color, Equal.interval, Equal.mode, Down)
     }
 
-    assertAxisRangeIs(Lorenz.xmin, Lorenz.xmax)(n, X)
-    assertAxisRangeIs(Lorenz.ymin, Lorenz.ymax)(n, Y)
+    assertAxisRangeIs(Lorenz.xmin, Lorenz.xmax)(e, X)
+    assertAxisRangeIs(Lorenz.ymin, Lorenz.ymax)(e, Y)
 
     setPlot(ClassPlot.name)
     assertPenExists(tempPenName)
@@ -125,9 +125,9 @@ class TestPlotting extends FunSuite with PlottingHelpers {
 
   }
 
-  testPlotting("create-temporary-plot-pen") { (nashorn) =>
+  testPlotting("create-temporary-plot-pen") { (engine) =>
 
-    implicit val n = nashorn
+    implicit val e = engine
 
     assertIsntTemp()
 
@@ -141,9 +141,9 @@ class TestPlotting extends FunSuite with PlottingHelpers {
 
   }
 
-  testPlotting("plot / plotxy / set-plot-pen-interval ") { (nashorn) =>
+  testPlotting("plot / plotxy / set-plot-pen-interval ") { (engine) =>
 
-    implicit val n = nashorn
+    implicit val e = engine
 
     // Test `plot`
     plot(10)
@@ -208,9 +208,9 @@ class TestPlotting extends FunSuite with PlottingHelpers {
 
   }
 
-  testPlotting("histogram") { (nashorn) =>
+  testPlotting("histogram") { (engine) =>
 
-    implicit val n = nashorn
+    implicit val e = engine
 
     // Test `histogram` basics
     clearPlot()
@@ -233,7 +233,7 @@ class TestPlotting extends FunSuite with PlottingHelpers {
     // Test `histogram` with negative xMin
     // Buckets should be: { -25: [-123], 0: [0, 1, 2, 2, 2, 2], 1: [5], 3: [19] }
     clearPlot()
-    setAxisRange(-125, 20)(n, X)
+    setAxisRange(-125, 20)(e, X)
     setInterval(5)
     histogram(5, 19, 2, 107, -123, 2, 2, 2, 0, 1, 93)
     assertXYs(-125 -> 1, 0 -> 6, 5 -> 1, 15 -> 1)
@@ -242,11 +242,11 @@ class TestPlotting extends FunSuite with PlottingHelpers {
 
   }
 
-  testPlotting("plot-pen-exists?") { (nashorn) =>
+  testPlotting("plot-pen-exists?") { (engine) =>
 
     import Plots.Lorenz._
 
-    implicit val n = nashorn
+    implicit val e = engine
 
     assertPenDoesntExist(Pens.Lorenz.name)
     setPlot(name)
@@ -259,11 +259,11 @@ class TestPlotting extends FunSuite with PlottingHelpers {
 
   }
 
-  testPlotting("plot-pen-reset") { (nashorn) =>
+  testPlotting("plot-pen-reset") { (engine) =>
 
     import Plots.Default.Pens.Default._
 
-    implicit val n = nashorn
+    implicit val e = engine
 
     val newColor       = 111
     val newInterval    = -20
@@ -290,9 +290,9 @@ class TestPlotting extends FunSuite with PlottingHelpers {
 
   }
 
-  testPlotting("plot-pen-up / plot-pen-down") { (nashorn) =>
+  testPlotting("plot-pen-up / plot-pen-down") { (engine) =>
 
-    implicit val n = nashorn
+    implicit val e = engine
 
     assertPenModeIs(Down)
     lowerPen()
@@ -306,9 +306,9 @@ class TestPlotting extends FunSuite with PlottingHelpers {
 
   }
 
-  testPlotting("set-current-plot") { (nashorn) =>
+  testPlotting("set-current-plot") { (engine) =>
 
-    implicit val n = nashorn
+    implicit val e = engine
 
     assertPlotNameIs(Plots.Default.name)
     setPlot(Plots.ClassHistogram.name)
@@ -320,11 +320,11 @@ class TestPlotting extends FunSuite with PlottingHelpers {
 
   }
 
-  testPlotting("set-current-plot-pen") { (nashorn) =>
+  testPlotting("set-current-plot-pen") { (engine) =>
 
     import Plots.Lorenz._
 
-    implicit val n = nashorn
+    implicit val e = engine
 
     setPlot(name)
     assertPenNameIs(Pens.Lorenz.name)
@@ -335,9 +335,9 @@ class TestPlotting extends FunSuite with PlottingHelpers {
 
   }
 
-  testPlotting("set-plot-pen-color") { (nashorn) =>
+  testPlotting("set-plot-pen-color") { (engine) =>
 
-    implicit val n = nashorn
+    implicit val e = engine
 
     assertColorIs(Plots.Default.Pens.Default.color)
     setColor(113)
@@ -351,9 +351,9 @@ class TestPlotting extends FunSuite with PlottingHelpers {
 
   }
 
-  testPlotting("set-plot-pen-mode") { (nashorn) =>
+  testPlotting("set-plot-pen-mode") { (engine) =>
 
-    implicit val n = nashorn
+    implicit val e = engine
 
     assertDisplayModeIs(Plots.Default.Pens.Default.mode)
     setDisplayMode(Point)
@@ -367,11 +367,11 @@ class TestPlotting extends FunSuite with PlottingHelpers {
 
   }
 
-  testPlotting("set-plot-x-range / set-plot-y-range") { (nashorn) =>
+  testPlotting("set-plot-x-range / set-plot-y-range") { (engine) =>
 
     import Plots.Default._
 
-    implicit val n = nashorn
+    implicit val e = engine
 
     def runForAxis(initialMin: Double, initialMax: Double)(implicit axis: Axis) = {
 
@@ -394,9 +394,9 @@ class TestPlotting extends FunSuite with PlottingHelpers {
 
   }
 
-  testPlotting("setup-plots") { (nashorn) =>
+  testPlotting("setup-plots") { (engine) =>
 
-    implicit val n    = nashorn
+    implicit val e    = engine
     implicit val axis = Y
 
     setPlot(Plots.ClassPlot.name)
@@ -514,43 +514,53 @@ trait PlottingHelpers {
 
   }
 
-  protected def evalJS(js: String)(implicit nashorn: Nashorn): AnyRef =
-    nashorn.eval(js)
+  protected def evalJS(js: String)(implicit engine: GraalJS): AnyRef =
+    engine.eval(js)
 
-  protected def evalNLReporter(netlogo: String)(implicit nashorn: Nashorn): AnyRef =
+  protected def evalNLReporter(netlogo: String)(implicit engine: GraalJS): AnyRef =
     evalNL(netlogo, model.compileReporter)
 
-  protected def evalNLCommand(netlogo: String)(implicit nashorn: Nashorn): AnyRef =
+  protected def evalNLCommand(netlogo: String)(implicit engine: GraalJS): AnyRef =
     evalNL(netlogo, model.compileRawCommand)
 
-  private def evalNL(netlogo: String, evaluator: (String) => CompiledModel.CompileResult[String])(implicit nashorn: Nashorn): AnyRef = {
+  private def evalNL(netlogo: String, evaluator: (String) => CompiledModel.CompileResult[String])(implicit engine: GraalJS): AnyRef = {
     val result = evaluator(netlogo) valueOr ((nel) => throw new Exception(nel.list.toList.mkString))
-    nashorn.eval(result)
+    engine.eval(result)
   }
 
 
-  protected def assertAutoplottingness(ness: Boolean) (implicit n: Nashorn): Unit = { assertResult(Boolean.box(ness))(evalJS(s"$pathToPlot.isAutoplotting"))                                          ; () }
-  protected def assertColorIs(color: Double)          (implicit n: Nashorn): Unit = { assertResult(Double.box(color))(evalJS(s"$pathToPen.getColor()"))                                               ; () }
-  protected def assertDisplayModeIs(mode: DisplayMode)(implicit n: Nashorn): Unit = { assertResult(evalJS(s"PenBundle.DisplayMode.${mode.toDisplayModeStr}"))(evalJS(s"$pathToPen.getDisplayMode()")) ; () }
-  protected def assertIntervalIs(interval: Double)    (implicit n: Nashorn): Unit = { assertResult(Double.box(interval))(evalJS(s"$pathToState.interval"))                                            ; () }
-  protected def assertIsAutoplotting()                (implicit n: Nashorn): Unit = { assertAutoplottingness(true)                                                                                    ; () }
-  protected def assertIsntAutoplotting()              (implicit n: Nashorn): Unit = { assertAutoplottingness(false)                                                                                   ; () }
-  protected def assertIsntTemp()                      (implicit n: Nashorn): Unit = { assertResult(Boolean.box(false))(evalJS(s"$pathToPen.isTemp"))                                                  ; () }
-  protected def assertIsTemp()                        (implicit n: Nashorn): Unit = { assertResult(Boolean.box(true))(evalJS(s"$pathToPen.isTemp"))                                                   ; () }
-  protected def assertPenExists(penName: String)      (implicit n: Nashorn): Unit = { assertResult(Boolean.box(true))(evalNLReporter(s"""plot-pen-exists? "$penName""""))                             ; () }
-  protected def assertPenDoesntExist(penName: String) (implicit n: Nashorn): Unit = { assertResult(Boolean.box(false))(evalNLReporter(s"""plot-pen-exists? "$penName""""))                            ; () }
-  protected def assertPenModeIs(penMode: PenMode)     (implicit n: Nashorn): Unit = { assertResult(evalJS(s"PenBundle.PenMode.${penMode.toPenModeStr}"))(evalJS(s"$pathToState.mode"))                ; () }
-  protected def assertPenNameIs(name: String)         (implicit n: Nashorn): Unit = { assertResult(name)(evalJS(s"$pathToPen.name"))                                                                  ; () }
-  protected def assertPlotNameIs(name: String)        (implicit n: Nashorn): Unit = { assertResult(name)(evalNLReporter("plot-name"))                                                                 ; () }
-  protected def assertYs(ys: Int*)                    (implicit n: Nashorn): Unit = { assertXYs(ys.zipWithIndex map (_.swap): _*)                                                                     ; () }
+  protected def assertAutoplottingness(ness: Boolean) (implicit e: GraalJS): Unit = { assertResult(Boolean.box(ness))(evalJS(s"$pathToPlot.isAutoplotting"))                                          ; () }
+  protected def assertColorIs(color: Double)          (implicit e: GraalJS): Unit = { assertResult(Double.box(color))(evalJS(s"$pathToPen.getColor()"))                                               ; () }
+  protected def assertDisplayModeIs(mode: DisplayMode)(implicit e: GraalJS): Unit = {
+    assertResult(
+      evalJS(s"PenBundle.DisplayMode.displayModeToString(PenBundle.DisplayMode.${mode.toDisplayModeStr})"))(
+        evalJS(s"PenBundle.DisplayMode.displayModeToString($pathToPen.getDisplayMode())"))
+    ()
+  }
+  protected def assertIntervalIs(interval: Double)    (implicit e: GraalJS): Unit = { assertResult(Double.box(interval))(evalJS(s"$pathToState.interval"))                                            ; () }
+  protected def assertIsAutoplotting()                (implicit e: GraalJS): Unit = { assertAutoplottingness(true)                                                                                    ; () }
+  protected def assertIsntAutoplotting()              (implicit e: GraalJS): Unit = { assertAutoplottingness(false)                                                                                   ; () }
+  protected def assertIsntTemp()                      (implicit e: GraalJS): Unit = { assertResult(Boolean.box(false))(evalJS(s"$pathToPen.isTemp"))                                                  ; () }
+  protected def assertIsTemp()                        (implicit e: GraalJS): Unit = { assertResult(Boolean.box(true))(evalJS(s"$pathToPen.isTemp"))                                                   ; () }
+  protected def assertPenExists(penName: String)      (implicit e: GraalJS): Unit = { assertResult(Boolean.box(true))(evalNLReporter(s"""plot-pen-exists? "$penName""""))                             ; () }
+  protected def assertPenDoesntExist(penName: String) (implicit e: GraalJS): Unit = { assertResult(Boolean.box(false))(evalNLReporter(s"""plot-pen-exists? "$penName""""))                            ; () }
+  protected def assertPenModeIs(penMode: PenMode)     (implicit e: GraalJS): Unit = {
+    assertResult(
+      evalJS(s"PenBundle.PenMode.penModeToBool(PenBundle.PenMode.${penMode.toPenModeStr})"))(
+        evalJS(s"PenBundle.PenMode.penModeToBool($pathToState.mode)"))
+    ()
+  }
+  protected def assertPenNameIs(name: String)         (implicit e: GraalJS): Unit = { assertResult(name)(evalJS(s"$pathToPen.name"))                                                                  ; () }
+  protected def assertPlotNameIs(name: String)        (implicit e: GraalJS): Unit = { assertResult(name)(evalNLReporter("plot-name"))                                                                 ; () }
+  protected def assertYs(ys: Int*)                    (implicit e: GraalJS): Unit = { assertXYs(ys.zipWithIndex map (_.swap): _*)                                                                     ; () }
 
-  protected def assertAxisRangeIs(min: Double, max: Double)(implicit n: Nashorn, axis: Axis): Unit = {
+  protected def assertAxisRangeIs(min: Double, max: Double)(implicit e: GraalJS, axis: Axis): Unit = {
     assertResult(Double.box(min))(evalNLReporter(s"plot-${axis.toAxisStr}-min"))
     assertResult(Double.box(max))(evalNLReporter(s"plot-${axis.toAxisStr}-max"))
     ()
   }
 
-  protected def assertPenProperties(name: String, isTemp: Boolean, color: Double, interval: Double, displayMode: DisplayMode, penMode: PenMode)(implicit n: Nashorn): Unit = {
+  protected def assertPenProperties(name: String, isTemp: Boolean, color: Double, interval: Double, displayMode: DisplayMode, penMode: PenMode)(implicit e: GraalJS): Unit = {
     assertPenNameIs(name)
     if (isTemp) assertIsTemp() else assertIsntTemp()
     assertColorIs(color)
@@ -560,33 +570,33 @@ trait PlottingHelpers {
     ()
   }
 
-  protected def assertXYs(xys: (Int, Int)*)(implicit n: Nashorn): Unit = {
+  protected def assertXYs(xys: (Int, Int)*)(implicit e: GraalJS): Unit = {
     val expectedStr = xys.map(_.toString).sorted.mkString(",")
     val actualStr   = evalJS(s"$pathToPen._points.map(function(p){ return '(' + p.x + ',' + p.y + ')'; }).sort().toString()")
     assertResult(expectedStr)(actualStr)
     ()
   }
 
-  protected def clearPlot()                      (implicit n: Nashorn) = evalNLCommand("clear-plot")
-  protected def clearAllPlots()                  (implicit n: Nashorn) = evalNLCommand("clear-all-plots")
-  protected def createTempPen(name: String)      (implicit n: Nashorn) = evalNLCommand(s"""create-temporary-plot-pen \"$name\"""")
-  protected def disableAutoplotting()            (implicit n: Nashorn) = evalNLCommand("auto-plot-off")
-  protected def enableAutoplotting()             (implicit n: Nashorn) = evalNLCommand("auto-plot-on")
-  protected def histogram(ys: Double*)           (implicit n: Nashorn) = evalNLCommand(s"histogram ${ys.mkString("[", " ", "]")}")
-  protected def lowerPen()                       (implicit n: Nashorn) = evalNLCommand("plot-pen-down")
-  protected def plot(y: Double)                  (implicit n: Nashorn) = evalNLCommand(s"plot $y")
-  protected def plotxy(x: Double, y: Double)     (implicit n: Nashorn) = evalNLCommand(s"plotxy $x $y")
-  protected def raisePen()                       (implicit n: Nashorn) = evalNLCommand("plot-pen-up")
-  protected def resetPen()                       (implicit n: Nashorn) = evalNLCommand("plot-pen-reset")
-  protected def setColor(color: Double)          (implicit n: Nashorn) = evalNLCommand(s"set-plot-pen-color $color")
-  protected def setInterval(x: Double)           (implicit n: Nashorn) = evalNLCommand(s"set-plot-pen-interval $x")
-  protected def setDisplayMode(mode: DisplayMode)(implicit n: Nashorn) = evalNLCommand(s"set-plot-pen-mode ${mode.toInt}")
-  protected def setPlot(name: String)            (implicit n: Nashorn) = evalNLCommand(s"""set-current-plot "$name"""")
-  protected def setPen(name: String)             (implicit n: Nashorn) = evalNLCommand(s"""set-current-plot-pen "$name"""")
-  protected def setup()                          (implicit n: Nashorn) = evalNLCommand("setup")
-  protected def setupPlots()                     (implicit n: Nashorn) = evalNLCommand("setup-plots")
+  protected def clearPlot()                      (implicit e: GraalJS) = evalNLCommand("clear-plot")
+  protected def clearAllPlots()                  (implicit e: GraalJS) = evalNLCommand("clear-all-plots")
+  protected def createTempPen(name: String)      (implicit e: GraalJS) = evalNLCommand(s"""create-temporary-plot-pen \"$name\"""")
+  protected def disableAutoplotting()            (implicit e: GraalJS) = evalNLCommand("auto-plot-off")
+  protected def enableAutoplotting()             (implicit e: GraalJS) = evalNLCommand("auto-plot-on")
+  protected def histogram(ys: Double*)           (implicit e: GraalJS) = evalNLCommand(s"histogram ${ys.mkString("[", " ", "]")}")
+  protected def lowerPen()                       (implicit e: GraalJS) = evalNLCommand("plot-pen-down")
+  protected def plot(y: Double)                  (implicit e: GraalJS) = evalNLCommand(s"plot $y")
+  protected def plotxy(x: Double, y: Double)     (implicit e: GraalJS) = evalNLCommand(s"plotxy $x $y")
+  protected def raisePen()                       (implicit e: GraalJS) = evalNLCommand("plot-pen-up")
+  protected def resetPen()                       (implicit e: GraalJS) = evalNLCommand("plot-pen-reset")
+  protected def setColor(color: Double)          (implicit e: GraalJS) = evalNLCommand(s"set-plot-pen-color $color")
+  protected def setInterval(x: Double)           (implicit e: GraalJS) = evalNLCommand(s"set-plot-pen-interval $x")
+  protected def setDisplayMode(mode: DisplayMode)(implicit e: GraalJS) = evalNLCommand(s"set-plot-pen-mode ${mode.toInt}")
+  protected def setPlot(name: String)            (implicit e: GraalJS) = evalNLCommand(s"""set-current-plot "$name"""")
+  protected def setPen(name: String)             (implicit e: GraalJS) = evalNLCommand(s"""set-current-plot-pen "$name"""")
+  protected def setup()                          (implicit e: GraalJS) = evalNLCommand("setup")
+  protected def setupPlots()                     (implicit e: GraalJS) = evalNLCommand("setup-plots")
 
-  protected def setAxisRange(min: Double, max: Double)(implicit n: Nashorn, axis: Axis) =
+  protected def setAxisRange(min: Double, max: Double)(implicit e: GraalJS, axis: Axis) =
     evalNLCommand(s"set-plot-${axis.toAxisStr}-range $min $max")
 
   sealed protected trait Axis { def toAxisStr: String }
@@ -602,7 +612,7 @@ trait PlottingHelpers {
   protected case object Down extends PenMode { override def toPenModeStr = "Down" }
   protected case object Up   extends PenMode { override def toPenModeStr = "Up" }
 
-  protected lazy val nashorn = {
+  protected lazy val engine = {
 
     val preCode =
       """var PenBundle = tortoise_require('engine/plot/pen');
@@ -639,16 +649,17 @@ trait PlottingHelpers {
         |  }
         |};""".stripMargin
 
-    val n = new Nashorn
-    n.eval(preCode)
-    n
+    val engine = new GraalJS
+    engine.setupTortoise
+    engine.eval(preCode)
+    engine
 
   }
 
-  protected def testPlotting(name: String, tags: Tag*)(testFun: (Nashorn) => Unit): Unit = {
+  protected def testPlotting(name: String, tags: Tag*)(testFun: (GraalJS) => Unit): Unit = {
     test(name, tags: _*) {
-      nashorn.eval(model.compiledCode)
-      testFun(nashorn)
+      engine.eval(model.compiledCode)
+      testFun(engine)
     }
   }
 

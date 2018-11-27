@@ -8,6 +8,9 @@ import
     exceptions.{ TestPendingException, TestFailedException }
 
 import
+  org.graalvm.polyglot.PolyglotException
+
+import
   org.nlogo.{ core, headless },
     core.{ AgentKind, CompilerException, FrontEndInterface, Model => CModel, Program, View },
       FrontEndInterface.{ ProceduresMap, NoProcedures },
@@ -16,9 +19,9 @@ import
 import
   org.nlogo.tortoise.compiler.Compiler
 
-import jsengine.Nashorn
+import jsengine.GraalJS
 
-class TortoiseFixture(name: String, nashorn: Nashorn, notImplemented: (String) => Nothing) extends Fixture {
+class TortoiseFixture(name: String, engine: GraalJS, notImplemented: (String) => Nothing) extends Fixture {
 
   private var program: Program = Program.empty
   private var procs: ProceduresMap = NoProcedures
@@ -31,22 +34,22 @@ class TortoiseFixture(name: String, nashorn: Nashorn, notImplemented: (String) =
   }
 
   override def declare(model: CModel): Unit = {
-    nashorn.eval(modelJS(model))
+    engine.eval(modelJS(model))
     ()
   }
 
   override def readFromString(literal: String): AnyRef =
-    cautiously(nashorn.eval(Compiler.compileReporter(literal)))
+    cautiously(engine.eval(Compiler.compileReporter(literal)))
 
   override def runCommand(command: Command, mode: TestMode): Unit = {
     lazy val js = Compiler.compileCommands(wrapCommand(command), procs, program)
     command.result match {
       case Success(_) =>
-        cautiously{ nashorn.run(js); () }
+        cautiously{ engine.run(js); () }
       case CompileError(msg) =>
         expectCompileError(js, msg)
       case RuntimeError(msg) =>
-        expectRuntimeError(cautiously(nashorn.run(js)), msg)
+        expectRuntimeError(cautiously(engine.run(js)), msg)
       case r =>
         notImplemented(s"unknown result type: ${r.getClass.getSimpleName}")
     }
@@ -56,12 +59,12 @@ class TortoiseFixture(name: String, nashorn: Nashorn, notImplemented: (String) =
     lazy val js = "var letVars = { }; " + Compiler.compileReporter(reporter.reporter, procs, program)
     reporter.result match {
       case Success(expectedResult) =>
-        val actualResult = cautiously(nashorn.eval(js))
+        val actualResult = cautiously(engine.eval(js))
         checkResult(mode, reporter.reporter, expectedResult, actualResult)
       case CompileError(msg) =>
         expectCompileError(js, msg)
       case RuntimeError(msg) =>
-        expectRuntimeError(cautiously(nashorn.run(js)), msg)
+        expectRuntimeError(cautiously(engine.run(js)), msg)
       case r =>
         notImplemented(s"unknown result type: ${r.getClass.getSimpleName}")
     }
@@ -71,7 +74,7 @@ class TortoiseFixture(name: String, nashorn: Nashorn, notImplemented: (String) =
     lazy val js = modelJS(model)
     compile.result match {
       case Success(expectedResult) =>
-        nashorn.eval(js)
+        engine.eval(js)
       case CompileError(msg) =>
         expectCompileError(js, msg)
       case r =>
@@ -98,9 +101,9 @@ class TortoiseFixture(name: String, nashorn: Nashorn, notImplemented: (String) =
       fail("no RuntimeError occurred")
     }
     catch {
-      case ex: javax.script.ScriptException =>
+      case ex: PolyglotException =>
         val AfterFirstColonRegex        = "^.*?: (.*)".r // Nashorn doesn't make JS Exceptions easy
-        val AfterFirstColonRegex(exMsg) = ex.getCause.getMessage
+        val AfterFirstColonRegex(exMsg) = ex.getMessage
         assertResult(msg)(exMsg)
         ()
       case e: TestFailedException => throw e
