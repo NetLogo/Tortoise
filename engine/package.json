@@ -5,15 +5,15 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "brazierjs":               "2.2.0",
-    "coffeelint":              "1.16.0",
-    "csv-parse":               "1.2.0",
-    "grunt":                   "1.0.3",
-    "grunt-browserify":        "5.3.0",
-    "grunt-coffeelint":        "0.0.16",
-    "grunt-contrib-coffee":    "1.0.0",
-    "grunt-contrib-copy":      "1.0.0",
-    "iframe-phone":            "1.2.0",
-    "mori":                    "0.3.2"
+    "brazierjs": "2.2.0",
+    "coffeelint": "2.1.0",
+    "csv-parse": "1.2.0",
+    "grunt": "1.0.3",
+    "grunt-browserify": "5.3.0",
+    "grunt-coffeelint": "0.0.16",
+    "grunt-contrib-coffee": "2.0.0",
+    "grunt-contrib-copy": "1.0.0",
+    "iframe-phone": "1.2.0",
+    "mori": "0.3.2"
   }
 }

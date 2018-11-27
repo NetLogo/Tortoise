@@ -45,8 +45,9 @@ module.exports =
     # The type signatures here can be found to the right of the parameters. --JAB (4/13/15)
     constructor: (@world, @id, @_genUpdate, @_registerLineDraw, @_registerTurtleStamp, @_registerDeath, @_createTurtle   # World, Number, (Updatable) => (String*) => Unit, RegLinkDrawFunc, RegTurtleStampFunc, (Number) => Unit, GenTurtleType
                 , @_removeTurtle, @_color = 0, @_heading = 0, @xcor = 0, @ycor = 0                                       # (Number) => Unit, Number, Number, Number, Number
-                , breed = @world.breedManager.turtles(), @_label = "", @_labelcolor = 9.9, @_hidden = false              # Breed, String, Number, Boolean
+                , breed = null, @_label = "", @_labelcolor = 9.9, @_hidden = false                                       # Breed, String, Number, Boolean
                 , @_size = 1.0, @_givenShape, genPenManager = (self) => new PenManager(@_genUpdate(self))) ->            # Number, Boolean, Number, String, (Updatable) => PenManager
+      breed = breed ? @world.breedManager.turtles()
       @_updateVarsByName = @_genUpdate(this)
 
       @penManager  = genPenManager(this)

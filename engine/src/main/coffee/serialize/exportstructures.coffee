@@ -17,17 +17,28 @@ module.exports.ExportedColor = ExportedColor
 module.exports.ExportedRGB =
   class extends ExportedColor
     # (Number, Number, Number)
-    constructor: (@r, @g, @b) ->
+    constructor: (r, g, b) ->
+      super()
+      @r = r
+      @g = g
+      @b = b
 
 module.exports.ExportedRGBA =
   class extends ExportedColor
     # (Number, Number, Number, Number)
-    constructor: (@r, @g, @b, @a = 255) ->
+    constructor: (r, g, b, a = 255) ->
+      super()
+      @r = r
+      @g = g
+      @b = b
+      @a = a
 
 module.exports.ExportedColorNum =
   class extends ExportedColor
     # (Number)
-    constructor: (@value) ->
+    constructor: (value) ->
+      super()
+      @value = value
 
 module.exports.ExportedGlobals =
   class

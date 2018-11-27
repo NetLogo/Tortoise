@@ -618,34 +618,22 @@ trait PlottingHelpers {
       """var PenBundle = tortoise_require('engine/plot/pen');
         |var PlotOps   = tortoise_require('engine/plot/plotops');
         |
-        |var DummyOps = (function(_super) {
+        |var DummyOps = (function() {
+        |  var resize      = function() {};
+        |  var reset       = function() {};
+        |  var registerPen = function() {};
         |
-        |    __hasProp = {}.hasOwnProperty;
-        |    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-        |    __extends(DummyOps, _super);
+        |  var resetPen       = function() { return function() {}; };
+        |  var addPoint       = function() { return function() {}; };
+        |  var updatePenMode  = function() { return function() {}; };
+        |  var updatePenColor = function() { return function() {}; };
         |
-        |    function DummyOps() {
-        |
-        |      var resize      = function() {};
-        |      var reset       = function() {};
-        |      var registerPen = function() {};
-        |
-        |      var resetPen       = function() { return function() {}; };
-        |      var addPoint       = function() { return function() {}; };
-        |      var updatePenMode  = function() { return function() {}; };
-        |      var updatePenColor = function() { return function() {}; };
-        |
-        |      DummyOps.__super__.constructor.call(this, resize, reset, registerPen, resetPen, addPoint, updatePenMode, updatePenColor);
-        |
-        |    }
-        |
-        |    return DummyOps;
-        |
-        |})(PlotOps);
+        |  return new PlotOps(resize, reset, registerPen, resetPen, addPoint, updatePenMode, updatePenColor);
+        |})()
         |
         |window.modelConfig = {
         |  plotOps: {
-        |    'test-plot': new DummyOps()
+        |    'test-plot': DummyOps
         |  }
         |};""".stripMargin
 
