@@ -48,7 +48,11 @@ pipeline {
         sh "./sbt-graal-home.sh netLogoWeb/test:compile"
         sh "./sbt-graal-home.sh netLogoWeb/test:fast"
         sh "./sbt-graal-home.sh netLogoWeb/test:language"
-        sh "./sbt-graal-home.sh netLogoWeb/test:crawl"
+        sh "./sbt-graal-home.sh \"netLogoWeb/testOnly *ModelDumpTests\""
+        sh "./sbt-graal-home.sh \"netLogoWeb/testOnly *TestModels -- -z 0 -z 1\""
+        sh "./sbt-graal-home.sh \"netLogoWeb/testOnly *TestModels -- -z 2\""
+        sh "./sbt-graal-home.sh \"netLogoWeb/testOnly *TestModels -- -z 3\""
+        sh "./sbt-graal-home.sh \"netLogoWeb/testOnly *TestModels -- -z 4\""
         junit 'netlogo-web/target/test-reports/*.xml'
       }
     }
