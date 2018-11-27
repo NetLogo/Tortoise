@@ -143,7 +143,7 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
         (false, runJS(compiledJS))
       } catch {
         case ex: PolyglotException =>
-          val AfterFirstColonRegex   = "^.*?: (.*)".r // Nashorn doesn't make JS Exceptions easy
+          val AfterFirstColonRegex   = "^.*?: (.*)".r
           val AfterFirstColonRegex(exMsg) = ex.getMessage
           (true, (exMsg, ""))
 

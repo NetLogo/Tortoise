@@ -102,7 +102,7 @@ class TortoiseFixture(name: String, engine: GraalJS, notImplemented: (String) =>
     }
     catch {
       case ex: PolyglotException =>
-        val AfterFirstColonRegex        = "^.*?: (.*)".r // Nashorn doesn't make JS Exceptions easy
+        val AfterFirstColonRegex        = "^.*?: (.*)".r
         val AfterFirstColonRegex(exMsg) = ex.getMessage
         assertResult(msg)(exMsg)
         ()
