@@ -227,10 +227,7 @@ module.exports.parseAny = (singularToPlural, pluralToSingular) ->
           strMatch[1]
         else # If not a string
           parsedNum = parseFloat(x)
-          # I wanted to use `Number.isNaN` here, but Nashorn's ES6 implementation doesn't have it, and I don't think
-          # that it's worth a full polyfill.  The MDN page on the function says that `x !== x` is the polyfill for it
-          # "because NaN is the only value in javascript which is not equal to itself". --JAB (2/7/18)
-          if parsedNum is parsedNum
+          if not Number.isNaN(parsedNum)
             parsedNum
           else # If not a number
             commandLambdaMatch = x.match(/\(anonymous command: (\[.*\])\)$/)

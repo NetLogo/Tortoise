@@ -21,18 +21,12 @@ module.exports =
     # (Updater.Update) => Unit
     update: ({ links, observer, patches, turtles, world, drawingEvents }) ->
 
-      # the 'when varUpdates' checks below only seem to be
-      # necessary on Nashorn, which apparently has trouble iterating
-      # over objects where the keys are numbers. once Oracle ships
-      # the fix for http://bugs.java.com/bugdatabase/view_bug.do?bug_id=8038119
-      # we should re-test and see if this got fixed as well, or
-      # whether we need to file a second bug report at bugs.java.com - ST 3/16/14
       turtleBundle = { updates: turtles, coll: @turtles, typeCanDie: true }
       patchBundle  = { updates: patches, coll: @patches, typeCanDie: false }
       linkBundle   = { updates: links,   coll: @links,   typeCanDie: true }
 
       for { coll, typeCanDie, updates } in [turtleBundle, patchBundle, linkBundle]
-        for id, varUpdates of updates when varUpdates?
+        for id, varUpdates of updates
           if typeCanDie and varUpdates.WHO is -1
             delete coll[id]
           else

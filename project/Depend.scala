@@ -110,13 +110,11 @@ check absenceOfPackageCycles > 1 in org.nlogo.tortoise.*
 
 [scalajs-js] = scala.scalajs.js.*
 
-[nashorn] = javax.script.* jdk.nashorn.api.scripting.*
-
 [scalaz] = scalaz.*
 
 [testing] = org.scalatest.* org.scalautils.* org.scalactic.* org.scalacheck.* org.jmock.* org.hamcrest.* org.nlogo.headless.test.* scalatags.*
 
-[libs] = [stdlib-j] [stdlib-s] [headless-AWT] [play-json] [scalajs-js] [nashorn] [scalaz] [testing]
+[libs] = [stdlib-j] [stdlib-s] [headless-AWT] [play-json] [scalajs-js] [scalaz] [testing]
 """)
     }
 

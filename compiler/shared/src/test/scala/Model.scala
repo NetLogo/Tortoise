@@ -179,9 +179,6 @@ object Model {
         "remove-cloud add-cloud " +
         "repeat 10 [ add-CO2 go remove-CO2 ] " +
         "remove-cloud",
-      // unfortunately this takes quite a while on Nashorn, but it isn't a good test unless we run the
-      // model for long enough for the turtles to start interacting with each other and with the world
-      // boundaries - ST 10/10/13
       repetitions = 4,
       go = "repeat 50 [ go ]",
       metrics = Seq("temperature")
@@ -440,7 +437,7 @@ object Model {
     ),
     Model(
       path = "models/Curricular Models/Connected Chemistry/Connected Chemistry Reversible Reaction.nlogo",
-      repetitions = 0 // 30 // Can uncomment after Java 8u152, details: https://bugs.openjdk.java.net/browse/JDK-8169647 --JAB (6/7/17)
+      repetitions = 30
     ),
     Model(
       path = "models/Sample Models/Computer Science/Hex Cell Aggregation.nlogo",

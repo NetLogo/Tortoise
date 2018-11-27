@@ -227,7 +227,7 @@ object Compiler extends CompilerLike {
     val configPath = s"modelConfig.$configName"
     val defsStr    = functionDefs.map { case (k, v) => s"$k: $v" }.mkString("{\n|    ", ",\n|    ", "\n|  }")
 
-    // If `javax` exists, we're in Nashorn, and, therefore, testing --JAB (3/2/15)
+    // If `javax` exists, we're in GraalJS, and, therefore, testing --JAB (3/2/15)
     val configStr =
       s"""|if (typeof javax !== "undefined") {
           |  $configPath = $defsStr
