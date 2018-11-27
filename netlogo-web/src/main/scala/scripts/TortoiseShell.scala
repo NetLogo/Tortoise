@@ -3,30 +3,35 @@
 package org.nlogo
 
 import
-  tortoise.{ Compiler, jsengine },
-    jsengine.Nashorn
+  org.nlogo.tortoise.compiler.Compiler
 
+import
+  org.nlogo.tortoise.nlw.jsengine.GraalJS
+
+// scalastyle:off regex
 object TortoiseShell extends workspace.Shell {
+  val size = 16
 
-  val defaultModel = core.Model(code = "", widgets = List(core.View.square(16)))
+  val defaultModel = core.Model(code = "", widgets = List(core.View.square(size)))
 
-  val nashorn = new Nashorn
+  val jsRuntime = new GraalJS
 
   def main(argv: Array[String]) {
     workspace.AbstractWorkspace.setHeadlessProperty()
-    val (js, program, procedures) = Compiler.compileProcedures(defaultModel)
-    nashorn.eval(js)
+    val compilation = Compiler.compileProcedures(defaultModel)
+    jsRuntime.setupTortoise
+    jsRuntime.eval(Compiler.toJS(compilation))
     System.err.println("Tortoise Shell 1.0")
     for(line <- input.takeWhile(!isQuit(_)))
       printingExceptions {
-        run(Compiler.compileRawCommands(line, procedures, program))
+        run(Compiler.compileRawCommands(line, compilation.procedures, compilation.program))
       }
   }
 
   def run(js: String) {
     printingExceptions {
-      val (output, json) = nashorn.run(js)
-      Seq(output) // , json)
+      val (output, json) = jsRuntime.run(js)
+      Seq(output)
         .filter(_.nonEmpty)
         .foreach(x => println(x.trim))
     }
@@ -38,3 +43,4 @@ object TortoiseShell extends workspace.Shell {
   }
 
 }
+// scalastyle:on regex
