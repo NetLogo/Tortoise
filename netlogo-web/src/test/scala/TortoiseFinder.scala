@@ -79,16 +79,16 @@ class TestCommands extends CommandTests with TortoiseFinder {
   override val freebies = Map[String, String](
     // requires handling of non-local exit (see in JVM NetLogo: `NonLocalExit`, `_report`, `_foreach`, `_run`)
     "Every::EveryLosesScope"  -> "NetLogo Web does not support distinct jobs"
-  ) ++ incErrorDetectCommands ++ evalNotSupportedCommands ++ lameCommands
+  ) ++ incErrorDetectCommands ++ runIncompleteCommands ++ lameCommands
 }
 
 private[tortoise] object Freebies {
 
-  def incErrorDetectCommands     = asFreebieMap(incErrorDetectCommandNames,     incErrorDetectStr)
-  def evalNotSupportedCommands   = asFreebieMap(evalNotSupportedCommandNames,   evalNotSupportedStr)
-  def lameCommands               = asFreebieMap(lameCommandNames,               lameCommandStr)
+  def incErrorDetectCommands     = asFreebieMap(incErrorDetectCommandNames,  incErrorDetectStr)
+  def runIncompleteCommands      = asFreebieMap(runIncompleteCommandNames,   runIncompleteStr)
+  def lameCommands               = asFreebieMap(lameCommandNames,            lameCommandStr)
 
-  def incErrorDetectReporters    = asFreebieMap(incErrorDetectReporterNames,    incErrorDetectStr)
+  def incErrorDetectReporters    = asFreebieMap(incErrorDetectReporterNames, incErrorDetectStr)
 
   private def asFreebieMap(names: Seq[String], msg: String) = names.map(_ -> msg).toMap
 
@@ -189,8 +189,8 @@ private[tortoise] object Freebies {
     "TypeChecking::AgentClassChecking3b"
     )
 
-  private val evalNotSupportedStr = "An eval exception about undefined properties indicates a Nashorn bug when running Scala.js generated code (labelled breaks with throw statements). http://bugs.java.com/bugdatabase/view_bug.do?bug_id=JDK-8187744. These tests should pass outside Nashorn."
-  private val evalNotSupportedCommandNames = Seq(
+  private val runIncompleteStr = "Not all cases are supported for `run` on strings"
+  private val runIncompleteCommandNames = Seq(
     "ControlStructures::Run2",
     "ControlStructures::Run3",
   )
