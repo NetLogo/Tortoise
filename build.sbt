@@ -22,7 +22,6 @@ val commonSettings =
     resolvers           += sbt.Resolver.bintrayRepo("netlogo", "NetLogoHeadless"),
     libraryDependencies ++= Seq(
       "org.nlogo"         %  "netlogoheadless" % nlDependencyVersion,
-      "org.mozilla"       %  "rhino"           % "1.7.10", // see jsengine/Rhino.scala for more information
       "org.scalaz"        %% "scalaz-core"     % scalazVersion,
       "com.lihaoyi"       %% "scalatags"       % "0.6.7"  % "test",
       "org.scalatest"     %% "scalatest"       % "3.0.5"  % "test",

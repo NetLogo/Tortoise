@@ -37,11 +37,6 @@ object JSEngine {
     override def eval(js: String): String = engine.eval(js).toString
   }
 
-  implicit class RhinoEngine(override val engine: Rhino) extends JSEngine {
-    override type T = Rhino
-    override def eval(js: String): String = engine.eval(js).toString
-  }
-
   object Nashorn extends JSEngineCompanion {
     override protected type T        = NashornEngine
     override def cleanSlate: T       = new Nashorn
