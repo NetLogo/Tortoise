@@ -763,7 +763,7 @@ final class MersenneTwisterFast(seed: Long = System.nanoTime) extends Random wit
 
       } while (s >= 1 || s == 0)
 
-      val multiplier: Double = StrictMath.sqrt(-2 * StrictMath.log(s) / s)
+      val multiplier: Double = MersenneMath.sqrt(-2 * MersenneMath.log(s) / s)
       __nextNextGaussian = v2 * multiplier
       __haveNextNextGaussian = true
 
