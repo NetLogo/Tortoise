@@ -27,11 +27,6 @@ object JSEngine {
     override def eval(js: String): String = engine.evalAndDump(js)
   }
 
-  implicit class NashornEngine(override val engine: Nashorn) extends JSEngine {
-    override type T = Nashorn
-    override def eval(js: String): String = engine.evalAndDump(js)
-  }
-
   implicit class V8Engine(override val engine: V8) extends JSEngine {
     override type T = V8
     override def eval(js: String): String = engine.eval(js).toString
@@ -50,12 +45,6 @@ object JSEngine {
       graal
     }
     override def version: String = cleanSlate.engine.versionNumber
-  }
-
-  object Nashorn extends JSEngineCompanion {
-    override protected type T        = NashornEngine
-    override def cleanSlate: T       = new Nashorn
-    override def version:    String  = cleanSlate.engine.versionNumber
   }
 
   object SpiderMonkey extends JSEngineCompanion {
