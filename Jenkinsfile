@@ -49,6 +49,9 @@ pipeline {
         sh "./sbt-graal-home.sh netLogoWeb/test:fast"
         sh "./sbt-graal-home.sh netLogoWeb/test:language"
         sh "./sbt-graal-home.sh \"netLogoWeb/testOnly *ModelDumpTests\""
+        // Running all the `TestModels` tests at once causes Jenkins to bog down and take over 20 hours to run on GraalVM.
+        // When run in smaller chunks things go fine.  As it's only for testing, this isn't a big concern.
+        // -JMB 11/18.
         sh "./sbt-graal-home.sh \"netLogoWeb/testOnly *TestModels -- -z 0 -z 1\""
         sh "./sbt-graal-home.sh \"netLogoWeb/testOnly *TestModels -- -z 2\""
         sh "./sbt-graal-home.sh \"netLogoWeb/testOnly *TestModels -- -z 3\""
