@@ -43,7 +43,7 @@ object Benchmarker extends App {
       "Heatbugs Benchmark"
     )
 
-  private val engineToEvalMap = Seq(Nashorn, SpiderMonkey, V8).map(engine => engine -> engine.freshEval _).toMap
+  private val engineToEvalMap = Seq(GraalJS, SpiderMonkey, V8).map(engine => engine -> engine.freshEval _).toMap
 
   val (dirStr, models, numIterations, numTicks, enginesAndEvals, comment) = processArgs(args)
 
@@ -210,7 +210,7 @@ object Benchmarker extends App {
         val engines      = pairings.get("--engine") map (seq => seq map (_.toLowerCase) flatMap {
           case "node" | "v8" | "google" | "chrome"     => engineLookup(V8)
           case "mozilla" | "firefox" | "spidermonkey"  => engineLookup(SpiderMonkey)
-          case "java" | "oracle" | "rhino" | "nashorn" => engineLookup(Nashorn)
+          case "graal" | "java" | "oracle" | "rhino" | "nashorn" => engineLookup(GraalJS)
           case _                                       => Map[JSEngineCompanion, (String) => String]()
         }) map (_.distinct.toMap) getOrElse engineToEvalMap
         (chosenModels, iters, engines)

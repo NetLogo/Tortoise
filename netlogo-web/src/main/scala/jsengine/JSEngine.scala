@@ -22,6 +22,11 @@ trait JSEngineCompanion {
 
 object JSEngine {
 
+  implicit class GraalEngine(override val engine: GraalJS) extends JSEngine {
+    override type T = GraalJS
+    override def eval(js: String): String = engine.evalAndDump(js)
+  }
+
   implicit class NashornEngine(override val engine: Nashorn) extends JSEngine {
     override type T = Nashorn
     override def eval(js: String): String = engine.evalAndDump(js)
@@ -35,6 +40,16 @@ object JSEngine {
   implicit class SpiderMonkeyEngine(override val engine: SpiderMonkey) extends JSEngine {
     override type T = SpiderMonkey
     override def eval(js: String): String = engine.eval(js).toString
+  }
+
+  object GraalJS extends JSEngineCompanion {
+    override protected type T = GraalEngine
+    override def cleanSlate: T = {
+      val graal = (new GraalJS)
+      graal.setupTortoise
+      graal
+    }
+    override def version: String = cleanSlate.engine.versionNumber
   }
 
   object Nashorn extends JSEngineCompanion {
