@@ -18,6 +18,7 @@ class GraalJS {
 
   def reset(): Unit = {
     baos = new ByteArrayOutputStream
+    jsRuntime.close()
     jsRuntime = Context.newBuilder("js").out(baos).allowHostAccess(true).build
     setupTortoise()
     ()
@@ -25,8 +26,10 @@ class GraalJS {
 
   def setupTortoise(): Unit = {
     evalRaw("window = { }")
+
     for (lib <- jsLibs)
       evalRaw(Resource.asString(lib))
+
     put("StrictMath", Strict)
     evalRaw("var strictmath = tortoise_require('shim/strictmath')")
     evalRaw("Object.getOwnPropertyNames(StrictMath).forEach( (prop) => strictmath[ prop ] = StrictMath[ prop ] )")
