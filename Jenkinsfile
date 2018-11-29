@@ -14,13 +14,13 @@ pipeline {
 
     stage('Clean') {
       steps {
-        sh "./sbt-graal-home.sh netLogoWeb/clean compilerCore/clean compilerJVM/clean compilerJS/clean macrosCore/clean engine/clean"
+        sh "./sbt.sh netLogoWeb/clean compilerCore/clean compilerJVM/clean compilerJS/clean macrosCore/clean engine/clean"
       }
     }
 
     stage('LintAndStyle') {
       steps {
-        sh "./sbt-graal-home.sh netLogoWeb/scalastyle compilerCore/scalastyle compilerJVM/scalastyle compilerJS/scalastyle macrosCore/scalastyle"
+        sh "./sbt.sh netLogoWeb/scalastyle compilerCore/scalastyle compilerJVM/scalastyle compilerJS/scalastyle macrosCore/scalastyle"
         sh "cd engine; yarn install; grunt coffeelint"
       }
     }
@@ -28,34 +28,34 @@ pipeline {
     stage('TestJVM') {
       steps {
         sh 'git submodule update --init --recursive'
-        sh "./sbt-graal-home.sh compilerJVM/test:compile"
-        sh "./sbt-graal-home.sh compilerJVM/test:test"
-        sh "./sbt-graal-home.sh compilerJVM/depend"
+        sh "./sbt.sh compilerJVM/test:compile"
+        sh "./sbt.sh compilerJVM/test:test"
+        sh "./sbt.sh compilerJVM/depend"
         junit 'compiler/jvm/target/test-reports/*.xml'
       }
     }
 
     stage('TestJS') {
       steps {
-        sh "./sbt-graal-home.sh compilerJS/test:compile"
-        sh "./sbt-graal-home.sh compilerJS/test:test"
+        sh "./sbt.sh compilerJS/test:compile"
+        sh "./sbt.sh compilerJS/test:test"
         junit 'compiler/js/target/test-reports/*.xml'
       }
     }
 
     stage('NetLogoWeb') {
       steps {
-        sh "./sbt-graal-home.sh netLogoWeb/test:compile"
-        sh "./sbt-graal-home.sh netLogoWeb/test:fast"
-        sh "./sbt-graal-home.sh netLogoWeb/test:language"
-        sh "./sbt-graal-home.sh \"netLogoWeb/testOnly *ModelDumpTests\""
+        sh "./sbt.sh netLogoWeb/test:compile"
+        sh "./sbt.sh netLogoWeb/test:fast"
+        sh "./sbt.sh netLogoWeb/test:language"
+        sh "./sbt.sh \"netLogoWeb/testOnly *ModelDumpTests\""
         // Running all the `TestModels` tests at once causes Jenkins to bog down and take over 20 hours to run on GraalVM.
         // When run in smaller chunks things go fine.  As it's only for testing, this isn't a big concern.
         // -JMB 11/18.
-        sh "./sbt-graal-home.sh \"netLogoWeb/testOnly *TestModels -- -z 0 -z 1\""
-        sh "./sbt-graal-home.sh \"netLogoWeb/testOnly *TestModels -- -z 2\""
-        sh "./sbt-graal-home.sh \"netLogoWeb/testOnly *TestModels -- -z 3\""
-        sh "./sbt-graal-home.sh \"netLogoWeb/testOnly *TestModels -- -z 4\""
+        sh "./sbt.sh \"netLogoWeb/testOnly *TestModels -- -z 0 -z 1\""
+        sh "./sbt.sh \"netLogoWeb/testOnly *TestModels -- -z 2\""
+        sh "./sbt.sh \"netLogoWeb/testOnly *TestModels -- -z 3\""
+        sh "./sbt.sh \"netLogoWeb/testOnly *TestModels -- -z 4\""
         junit 'netlogo-web/target/test-reports/*.xml'
       }
     }
