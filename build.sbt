@@ -1,12 +1,14 @@
-import org.scalajs.sbtplugin.cross.{ CrossProject, CrossType }
+import sbtcrossproject.CrossPlugin.autoImport.CrossType
+import sbtcrossproject.CrossProject
 import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport.{ fullOptJS, packageJSDependencies }
+import org.scalajs.sbtplugin.ScalaJSCrossVersion
 import org.scalastyle.sbt.ScalastylePlugin.projectSettings
 
 val nlDependencyVersion       = "6.0.4-ba7745e"
 
 val parserJsDependencyVersion = "0.2.2-ba7745e"
 
-val scalazVersion             = "7.2.26"
+val scalazVersion             = "7.2.27"
 
 val commonSettings =
   Seq(
@@ -65,7 +67,7 @@ lazy val compilerCore = (project in file("compiler/shared")).
 lazy val macrosCore = (project in file("macros")).
   settings(skip in (Compile, compile) := true)
 
-lazy val compiler = CrossProject("compiler", file("compiler"), CrossType.Full).
+lazy val compiler = CrossProject("compiler", file("compiler"))(JSPlatform, JVMPlatform).crossType(CrossType.Full).
   dependsOn(macros % "compile-internal->compile;test-internal->test").
   settings(Depend.settings: _*).
   settings(commonSettings: _*).
@@ -86,17 +88,17 @@ lazy val compiler = CrossProject("compiler", file("compiler"), CrossType.Full).
     libraryDependencies                  ++= {
       import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport.toScalaJSGroupID
       Seq(
-        "com.lihaoyi"       %%%! "utest"       % "0.4.8",
-        "org.nlogo"         %%%! "parser-js"   % parserJsDependencyVersion,
-        "com.typesafe.play" %%%  "play-json"   % "2.6.10",
-        "org.scalaz"        %%%  "scalaz-core" % scalazVersion)
+        "com.lihaoyi"       %   "utest"       % "0.4.8" cross ScalaJSCrossVersion.binary,
+        "org.nlogo"         %   "parser-js"   % parserJsDependencyVersion cross ScalaJSCrossVersion.binary,
+        "com.typesafe.play" %%% "play-json"   % "2.6.11",
+        "org.scalaz"        %%% "scalaz-core" % scalazVersion)
     })
 
 lazy val compilerJS  = compiler.js
 
 lazy val compilerJVM = compiler.jvm
 
-lazy val macros = CrossProject("macros", file("macros"), CrossType.Pure).
+lazy val macros = CrossProject("macros", file("macros"))(JSPlatform, JVMPlatform).crossType(CrossType.Pure).
   settings(commonSettings: _*).
   settings(
     libraryDependencies ++= Seq(
@@ -159,7 +161,7 @@ lazy val engine: Project =
   settings(commonSettings: _*).
   settings(
     name := "EngineScalaJS",
-    libraryDependencies += "org.nlogo" %%%! "parser-js" % parserJsDependencyVersion,
+    libraryDependencies += "org.nlogo" % "parser-js" % parserJsDependencyVersion cross ScalaJSCrossVersion.binary,
     build := {
       val engineFile  = (artifactPath in fullOptJS in Compile).value
       val destFile    = (classDirectory in Compile).value / "js" / "tortoise" / "shim" / "engine-scala.js"
