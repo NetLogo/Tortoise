@@ -10,15 +10,11 @@ import
       ShapeList.shapesToMap,
     tortoise.compiler.json.JsonSerializer
 
-import
-  org.nlogo.headless.lang.FixtureSuite
+import org.scalatest.{ FunSuite, Matchers }
 
-import
-  org.scalatest.Matchers
+class JsonSerializerTests extends FunSuite with Matchers {
 
-class JsonSerializerTests extends FixtureSuite with Matchers {
-
-  test("JsonSerializer shapes") { implicit fixture =>
+  test("JsonSerializer shapes") {
 
     val shapeList = new ShapeList(AgentKind.Turtle, shapesToMap(Model.defaultShapes))
 
