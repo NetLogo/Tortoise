@@ -283,7 +283,7 @@ module.exports = {
   # Dealwithit --JAB (9/24/15)
   # (Number, Number, Number, Number, Number, Number) => Number
   _colorDistance: (r1, g1, b1, r2, g2, b2) ->
-    rMean = r1 + r2 / 2
+    rMean = r1 + StrictMath.floor(r2 / 2)
     rDiff = r1 - r2
     gDiff = g1 - g2
     bDiff = b1 - b2
