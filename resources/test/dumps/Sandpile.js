@@ -218,7 +218,7 @@ var procedures = (function() {
           true,
           (function() {
             let _run_1426_1435Vars = { }; for(var v in letVars) { _run_1426_1435Vars[v] = letVars[v]; }
-            _run_1426_1435Vars["setupTask"] = setupTask;
+            _run_1426_1435Vars["SETUP-TASK"] = setupTask;
             return _run_1426_1435Vars;
           })(),
           setupTask
