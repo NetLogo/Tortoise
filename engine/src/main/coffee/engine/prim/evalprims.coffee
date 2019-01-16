@@ -29,7 +29,7 @@ scalaJSEvalCode = (code, widgets, runString, isRunResult, procVars) ->
     evalCache[runKey] = fun
     fun
 
-  result = runFun(varNames.map((vn) => procVars[vn]))
+  result = runFun(varNames.map((vn) => procVars[vn])...)
 
   if isRunResult
     return result
