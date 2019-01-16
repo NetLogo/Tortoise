@@ -42,7 +42,7 @@ trait PrimUtils {
 
   protected def generateRunCode(isRunResult: Boolean, token: Token, args: Seq[String], procContext: ProcedureContext): String = {
     val tmp = handlers.unusedVarname(token, "run")
-    val procVarsJS = procContext.parameters.map((pv) => s"""${tmp}Vars["$pv"] = $pv;""").mkString("\n")
+    val procVarsJS = procContext.parameters.map((pv) => s"""${tmp}Vars["${pv._1}"] = ${pv._2};""").mkString("\n")
 
     // if a run returns a value, and we're not in a raw-reporter situation, we have to then return the value. Weird, huh?
     val (pre, post) = if (!isRunResult && procContext.isProcedure)

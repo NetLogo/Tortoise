@@ -79,13 +79,12 @@ class TestCommands extends CommandTests with TortoiseFinder {
   override val freebies = Map[String, String](
     // requires handling of non-local exit (see in JVM NetLogo: `NonLocalExit`, `_report`, `_foreach`, `_run`)
     "Every::EveryLosesScope"  -> "NetLogo Web does not support distinct jobs"
-  ) ++ incErrorDetectCommands ++ runIncompleteCommands ++ lameCommands
+  ) ++ incErrorDetectCommands ++ lameCommands
 }
 
 private[tortoise] object Freebies {
 
   def incErrorDetectCommands     = asFreebieMap(incErrorDetectCommandNames,  incErrorDetectStr)
-  def runIncompleteCommands      = asFreebieMap(runIncompleteCommandNames,   runIncompleteStr)
   def lameCommands               = asFreebieMap(lameCommandNames,            lameCommandStr)
 
   def incErrorDetectReporters    = asFreebieMap(incErrorDetectReporterNames, incErrorDetectStr)
@@ -188,12 +187,6 @@ private[tortoise] object Freebies {
     "TypeChecking::AgentClassChecking3a",
     "TypeChecking::AgentClassChecking3b"
     )
-
-  private val runIncompleteStr = "Not all cases are supported for `run` on strings"
-  private val runIncompleteCommandNames = Seq(
-    "ControlStructures::Run2",
-    "ControlStructures::Run3",
-  )
 
   private val lameCommandStr = "This test is LAME!"
   private val lameCommandNames = Seq(

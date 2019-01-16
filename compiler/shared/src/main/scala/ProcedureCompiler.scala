@@ -27,7 +27,7 @@ class ProcedureCompiler(handlers: Handlers)(implicit compilerFlags: CompilerFlag
     val originalName = pd.procedure.name
     val safeName = handlers.ident(originalName)
     handlers.resetEveryID(safeName)
-    val parameters = pd.procedure.args.map(handlers.ident)
+    val parameters = pd.procedure.args.map( (p) => (p, handlers.ident(p)) )
     implicit val procContext = ProcedureContext(true, parameters)
     val body =
       if (pd.procedure.isReporter) {
@@ -35,7 +35,7 @@ class ProcedureCompiler(handlers: Handlers)(implicit compilerFlags: CompilerFlag
         handlers.reporterProcContext(unwrappedBody)
       } else
         handlers.commands(pd.statements, true, true)
-    val functionJs = s"(${jsFunction(args = procContext.parameters, body = body)})"
+    val functionJs = s"(${jsFunction(args = procContext.parameters.map(_._2), body = body)})"
     (functionJs, Seq(safeName, originalName).distinct)
   }
 }
