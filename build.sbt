@@ -30,7 +30,7 @@ val commonSettings =
       "org.skyscreamer"   %  "jsonassert"      % "1.5.0"  % "test",
       "org.reflections"   %  "reflections"     % "0.9.11" % "test",
       "org.scalacheck"    %% "scalacheck"      % "1.14.0" % "test",
-      "com.typesafe.play" %% "play-json"       % "2.6.10",
+      "com.typesafe.play" %% "play-json"       % "2.7.0",
       // Bring in headless test code/framework for our tests
       "org.nlogo"         %  "netlogoheadless" % nlDependencyVersion % "test" classifier "tests"),
     // Path Management
