@@ -54,7 +54,13 @@ private object CreateExtension {
       val precedenceOffset = (jsPrim \ "precedenceOffset").asOpt[Int].getOrElse(0)
       val precedence       = NormalPrecedence + precedenceOffset
       new PrimitiveReporter {
-        override def getSyntax: Syntax = Syntax.reporterSyntax(left = left, right = right.toList, ret = returnInt, precedence = precedence, defaultOption = defaultOption)
+        override def getSyntax: Syntax = Syntax.reporterSyntax(
+          left          = left,
+          right         = right.toList,
+          ret           = returnInt,
+          precedence    = precedence,
+          defaultOption = defaultOption
+        )
       }
     } else
       new PrimitiveCommand {

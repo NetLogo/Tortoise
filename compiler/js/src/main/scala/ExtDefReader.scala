@@ -3,7 +3,7 @@
 package org.nlogo.tortoise.compiler
 
 object ExtDefReader {
-  // scalastyle:off line.size.limit
+  // scalastyle:off method.length
   def getAll(): Seq[String] = Seq(
     """{
       "name": "codap",
@@ -143,4 +143,5 @@ object ExtDefReader {
       ]
     }"""
   )
+  // scalastyle:on method.length
 }
