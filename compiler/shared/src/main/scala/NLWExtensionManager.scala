@@ -43,21 +43,22 @@ private object CreateExtension {
   }
 
   private def convertToExtensionPrim(jsPrim: JsValue): ExtensionPrim = {
-    val returnType = (jsPrim \ "returnType").asOpt[String].getOrElse("unit")
-    val isReporter = (returnType != "unit")
-    val args       = jsPrim("argTypes").as[JsArray].value.map(convertArgToTypeInt)
-    val returnInt  = typeNameToTypeInt(returnType)
-    val prim       = if (isReporter) {
+    val returnType    = (jsPrim \ "returnType").asOpt[String].getOrElse("unit")
+    val isReporter    = (returnType != "unit")
+    val args          = jsPrim("argTypes").as[JsArray].value.map(convertArgToTypeInt)
+    val returnInt     = typeNameToTypeInt(returnType)
+    val defaultOption = (jsPrim \ "defaultOption").asOpt[Int]
+    val prim          = if (isReporter) {
       val isInfix          = (jsPrim \ "isInfix").asOpt[Boolean].getOrElse(false)
       val (left, right)    = if (isInfix) (args.head, args.tail) else (VoidType, args)
       val precedenceOffset = (jsPrim \ "precedenceOffset").asOpt[Int].getOrElse(0)
       val precedence       = NormalPrecedence + precedenceOffset
       new PrimitiveReporter {
-        override def getSyntax: Syntax = Syntax.reporterSyntax(left = left, right = right.toList, ret = returnInt, precedence = precedence)
+        override def getSyntax: Syntax = Syntax.reporterSyntax(left = left, right = right.toList, ret = returnInt, precedence = precedence, defaultOption = defaultOption)
       }
     } else
       new PrimitiveCommand {
-        override def getSyntax: Syntax = Syntax.commandSyntax(right = args.toList)
+        override def getSyntax: Syntax = Syntax.commandSyntax(right = args.toList, defaultOption = defaultOption)
       }
     ExtensionPrim(prim, jsPrim("name").as[String], jsPrim("actionName").as[String])
   }
@@ -68,7 +69,8 @@ private object CreateExtension {
         typeNameToTypeInt(jsArg.as[String])
       case JsSuccess(typeName, _) => {
         val isRepeatable = (jsArg \ "isRepeatable").asOpt[Boolean].getOrElse(false)
-        typeNameToTypeInt(typeName) | (if (isRepeatable) RepeatableType else 0)
+        val isOptional   = (jsArg \ "isOptional"  ).asOpt[Boolean].getOrElse(false)
+        typeNameToTypeInt(typeName) | (if (isRepeatable) RepeatableType else 0) | (if (isOptional) OptionalType else 0)
       }
     }
   }

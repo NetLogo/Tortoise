@@ -1,6 +1,6 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-extensionPaths = ['codap', 'logging', 'nlmap', 'http-req']
+extensionPaths = ['codap', 'logging', 'nlmap', 'http-req', 'mini-csv']
 
 dumpers = extensionPaths.map((path) -> require("extensions/#{path}").dumper).filter((x) -> x?)
 
