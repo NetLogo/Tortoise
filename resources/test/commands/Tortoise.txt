@@ -72,7 +72,9 @@ MiniCsvExtensionStrings
   mini-csv:from-string "" => []
   mini-csv:to-string [] => ""
   mini-csv:from-string "apples,oranges,1,2" => [["apples" "oranges" 1 2]]
+  (mini-csv:from-string "apples|oranges|1|2" "|") => [["apples" "oranges" 1 2]]
   mini-csv:to-string [[ "apples" "oranges" 1 2 ]] => "apples,oranges,1,2"
+  (mini-csv:to-string [[ "apples" "oranges,too" 1 2 ]] "|") => "apples|oranges,too|1|2"
   mini-csv:to-string [[ "apples" "oranges" 1 2 ] [ "fresas, pepinos" "uvas\nuvas" 3 4 ]] => "apples,oranges,1,2\n\"fresas, pepinos\",\"uvas\nuvas\",3,4"
   O> create-turtles 3 [ fd 20 set label "hi, how are ya?" ]
   mini-csv:to-string (list (sort turtles) ) => "(turtle 0),(turtle 1),(turtle 2)"
@@ -91,7 +93,9 @@ MiniCsvExtensionRows
   mini-csv:from-row "" => []
   mini-csv:to-row [] => ""
   mini-csv:from-row "14,10,-2" => [14 10 -2]
+  (mini-csv:from-row "14|10|-2" "|") => [14 10 -2]
   mini-csv:to-row [14 10 "delim,here"] => "14,10,\"delim,here\""
+  (mini-csv:to-row [14 10 "delim,here"] "|") => "14|10|delim,here"
   O> create-turtles 3 [ fd 20 set label "hi, how are ya?" ]
   O> set temp [ pxcor ] of turtles
   mini-csv:to-row temp => "-3,-4,-5"
