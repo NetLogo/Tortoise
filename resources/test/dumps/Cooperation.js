@@ -45,10 +45,9 @@ if (typeof javax !== "undefined") {
       return function(filepath) {
         var Paths = Java.type('java.nio.file.Paths');
         var Files = Java.type('java.nio.file.Files');
-        var UTF8  = Java.type('java.nio.charset.StandardCharsets').UTF_8;
+        var Compiler = Java.type('org.nlogo.tortoise.compiler.Compiler');
         Files.createDirectories(Paths.get(filepath).getParent());
-        var StringClass = Java.type('java.lang.String');
-        var path  = Files.write(Paths.get(filepath), (new StringClass(str)).getBytes());
+        Files.write(Paths.get(filepath), Compiler.getBytes(str));
       }
 },
     importDrawing: function(trueImportDrawing) { return function(filepath) {} },
