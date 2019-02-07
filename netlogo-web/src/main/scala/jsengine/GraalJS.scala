@@ -60,7 +60,7 @@ class GraalJS {
       case _ if jsValue.isString         => jsValue.asString.asInstanceOf[AnyRef]
       case _ if jsValue.isBoolean        => jsValue.asBoolean.asInstanceOf[AnyRef]
       case _ if (jsValue.hasMember("id") && jsValue.getMember("id").asDouble == -1) => Nobody
-      case n if (jsRuntime.eval("js", "function(n) { return (n === Nobody); }").execute(n).asBoolean) => Nobody
+      case n if (jsRuntime.eval("js", "(function(n) { return (n === Nobody); })").execute(n).asBoolean) => Nobody
       case _                             => jsValue
     }
   }

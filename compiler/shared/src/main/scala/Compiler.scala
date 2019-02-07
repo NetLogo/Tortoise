@@ -186,6 +186,10 @@ object Compiler extends CompilerLike {
   private def worldConfig: JsStatement =
     genConfig("world", Map("resizeWorld" -> jsFunction(Seq("agent"))))
 
+  // This is a workaround for GraalJS interop - we need string bytes in `exportFile`, but GraalJS converts
+  // JVM strings to JS strings.  So convert them back!  -JMB Feb 2019
+  def getBytes(value: String): Array[Byte] = value.getBytes(java.nio.charset.StandardCharsets.UTF_8)
+
   private def importExportConfig: JsStatement =
     genConfig( "importExport"
              , Map( "exportOutput" -> jsFunction(Seq("filename"))
@@ -194,10 +198,9 @@ object Compiler extends CompilerLike {
                                                  """    return function(filepath) {
                                                    |      var Paths = Java.type('java.nio.file.Paths');
                                                    |      var Files = Java.type('java.nio.file.Files');
-                                                   |      var UTF8  = Java.type('java.nio.charset.StandardCharsets').UTF_8;
+                                                   |      var Compiler = Java.type('org.nlogo.tortoise.compiler.Compiler');
                                                    |      Files.createDirectories(Paths.get(filepath).getParent());
-                                                   |      var StringClass = Java.type('java.lang.String');
-                                                   |      var path  = Files.write(Paths.get(filepath), (new StringClass(str)).getBytes());
+                                                   |      Files.write(Paths.get(filepath), Compiler.getBytes(str));
                                                    |    }""".stripMargin)
                   , "importDrawing" -> jsFunction(Seq("trueImportDrawing"), "return function(filepath) {}")
                   , "importWorld" -> jsFunction(Seq("trueImportWorld"),
