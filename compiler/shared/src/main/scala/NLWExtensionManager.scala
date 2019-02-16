@@ -43,12 +43,14 @@ private object CreateExtension {
   }
 
   private def convertToExtensionPrim(jsPrim: JsValue): ExtensionPrim = {
-    val returnType    = (jsPrim \ "returnType").asOpt[String].getOrElse("unit")
-    val isReporter    = (returnType != "unit")
-    val args          = jsPrim("argTypes").as[JsArray].value.map(convertArgToTypeInt)
-    val returnInt     = typeNameToTypeInt(returnType)
-    val defaultOption = (jsPrim \ "defaultOption").asOpt[Int]
-    val prim          =
+
+    val returnType      = (jsPrim \ "returnType").asOpt[String].getOrElse("unit")
+    val isReporter      = (returnType != "unit")
+    val args            = jsPrim("argTypes").as[JsArray].value.map(convertArgToTypeInt)
+    val returnInt       = typeNameToTypeInt(returnType)
+    val defaultArgCount = (jsPrim \ "defaultArgCount").asOpt[Int]
+
+    val prim =
       if (isReporter) {
         val isInfix          = (jsPrim \ "isInfix").asOpt[Boolean].getOrElse(false)
         val (left, right)    = if (isInfix) (args.head, args.tail) else (VoidType, args)
@@ -60,15 +62,17 @@ private object CreateExtension {
             right         = right.toList,
             ret           = returnInt,
             precedence    = precedence,
-            defaultOption = defaultOption
+            defaultOption = defaultArgCount
           )
         }
       } else {
         new PrimitiveCommand {
-          override def getSyntax: Syntax = Syntax.commandSyntax(right = args.toList, defaultOption = defaultOption)
+          override def getSyntax: Syntax = Syntax.commandSyntax(right = args.toList, defaultOption = defaultArgCount)
         }
       }
+
     ExtensionPrim(prim, jsPrim("name").as[String], jsPrim("actionName").as[String])
+
   }
 
   private def convertArgToTypeInt(jsArg: JsValue): Int = {
