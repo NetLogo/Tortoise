@@ -3,7 +3,6 @@
 package org.nlogo.tortoise.nlw
 package dock
 
-import org.nlogo.tortoise.tags.SlowTest
 import org.nlogo.core.{ Model, View, WorldDimensions }
 
 class TestTopologies extends DockingSuite {
@@ -21,7 +20,7 @@ class TestTopologies extends DockingSuite {
       Topo("box", false, false)
     )
     for(topo <- topos)
-      test(s"$name in ${topo.name}", SlowTest) { fixture =>
+      test(s"$name in ${topo.name}") { fixture =>
         fixture.declare(Model(code = decls, widgets = List(topo.view)))
         fn(fixture)
       }
@@ -134,7 +133,7 @@ class TestTopologies extends DockingSuite {
 
   ///
 
-  test("box layout spring - no wrap", SlowTest) {
+  test("box layout spring - no wrap") {
     implicit fixture => import fixture._
     declare(Model(widgets = List(default.copy(dimensions = default.dimensions.copy(wrappingAllowedInX = false, wrappingAllowedInY = false)))))
     testCommand("crt 10 [ setxy random-xcor random-ycor ]")
@@ -145,7 +144,7 @@ class TestTopologies extends DockingSuite {
     testCommand("repeat 5 [ layout-spring turtles with [ ycor > 0 ] [ my-links ] of turtle 0 .1 .2 .3 ]")
   }
 
-  test("box layout spring - wrap", SlowTest) {
+  test("box layout spring - wrap") {
     implicit fixture => import fixture._
     declare(Model(widgets = List(default.copy(dimensions = default.dimensions.copy(wrappingAllowedInX = false, wrappingAllowedInY = false)))))
     testCommand("crt 10 [ setxy random-xcor random-ycor ]")
