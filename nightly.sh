@@ -18,7 +18,7 @@ dashize(){
 
 sbt_task(){
   mkdir -p tmp/nightly
-  ./sbt $1 "$2" 2>&1 | tee tmp/nightly/$(dashize $1).txt
+  ./sbt.sh $1 "$2" 2>&1 | tee tmp/nightly/$(dashize $1).txt
   if [ ${PIPESTATUS[0]} -ne 0 ] ; then echo "*** FAILED: $1"; exit 1; fi
   echo "*** done: $1"
 }
@@ -27,7 +27,7 @@ sbt_test(){
   # here we're using pipes so "-e" isn't enough to stop when something fails.
   # maybe there's an easier way, than I've done it below, I don't know.
   # I suck at shell scripting - ST 2/15/11
-  ./sbt $1/test:$2 2>&1 | tee tmp/nightly/test-$1-$2.txt
+  ./sbt.sh $1/test:$2 2>&1 | tee tmp/nightly/test-$1-$2.txt
   if [ ${PIPESTATUS[0]} -ne 0 ] ; then echo "*** FAILED: $1/test:$2"; exit 1; fi
   echo "*** done: $1/test:$2"
 }
