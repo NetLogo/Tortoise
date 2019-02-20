@@ -167,6 +167,7 @@ module.exports =
     # (Number) => Unit
     setPatchSize: (@patchSize) ->
       @_updater.updated(this)("patchSize")
+      @_updater.rescaleDrawing()
       return
 
     # () => Unit

@@ -84,6 +84,11 @@ module.exports =
       @_update("world", id, state)
       return
 
+    # () => Unit
+    rescaleDrawing: ->
+      @_reportDrawingEvent({ type: "rescale-drawing" })
+      return
+
     # (Updatable) => (EngineKey*) => Unit
     updated: (obj) => (vars...) =>
       @_hasUpdates = true
