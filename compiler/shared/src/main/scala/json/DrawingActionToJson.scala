@@ -88,7 +88,7 @@ class SendPixelsConverter(override protected val target: SendPixels) extends Dra
 
 class ImportDrawingConverter(override protected val target: ImportDrawing) extends DrawingActionConverter[ImportDrawing] {
   override protected val `type`     = "import-drawing"
-  override protected val extraProps = JsObject(fields("filePath" -> JsString(target.filePath)))
+  override protected val extraProps = JsObject(fields("imageBase64" -> JsString(target.imageBase64)))
 }
 
 class CreateDrawingConverter(override protected val target: CreateDrawing) extends DrawingActionConverter[CreateDrawing] {

@@ -40,8 +40,8 @@ module.exports =
       return
 
     # (String) => Unit
-    importDrawing: (sourcePath) ->
-      @_reportDrawingEvent({ type: "import-drawing", sourcePath })
+    importDrawing: (imageBase64) ->
+      @_reportDrawingEvent({ type: "import-drawing", imageBase64 })
       return
 
     # () => Array[Update]
