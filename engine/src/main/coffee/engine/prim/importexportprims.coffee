@@ -14,11 +14,13 @@ module.exports.Config =
 
 module.exports.Prims =
   class ImportExportPrims
-    # (ImportExportConfig, () => String, () => String, (String) => String, (String) => Unit, (String) => Unit) => ImportExportPrims
-    constructor: ({ exportAllPlots, exportFile, @exportOutput, exportPlot, @exportView, exportWorld, importDrawing, importWorld }
-                  , exportWorldRaw, exportAllPlotsRaw, exportPlotRaw, @importDrawingRaw, @importWorldRaw) ->
-      @exportWorld    = (filename)       -> exportFile(exportWorldRaw()   )(filename)
-      @exportAllPlots = (filename)       -> exportFile(exportAllPlotsRaw())(filename)
-      @exportPlot     = (plot, filename) -> exportFile(exportPlotRaw(plot))(filename)
-      @importDrawing  = (filename)       -> importDrawing(filename)(@importDrawingRaw)
-      @importWorld    = (filename)       -> importFile(filename)(@importWorldRaw)
+    # (ImportExportConfig, () => String, () => String, (String) => String, (String) => Unit, (Boolean) => (String) => Unit, (String) => Unit) => ImportExportPrims
+    constructor: ({ exportAllPlots, exportFile, @exportOutput, exportPlot, @exportView, exportWorld, importDrawing, importFile }
+                  , exportWorldRaw, exportAllPlotsRaw, exportPlotRaw, @importDrawingRaw, @importPColorsRaw, @importWorldRaw) ->
+      @exportWorld      = (filename)       -> exportFile(exportWorldRaw()        )(filename)
+      @exportAllPlots   = (filename)       -> exportFile(exportAllPlotsRaw()     )(filename)
+      @exportPlot       = (plot, filename) -> exportFile(exportPlotRaw(plot)     )(filename)
+      @importDrawing    = (filename)       -> importDrawing(filename)(@importDrawingRaw)
+      @importPColors    = (filename)       -> importFile(filename)(@importPColorsRaw(true) )
+      @importPColorsRGB = (filename)       -> importFile(filename)(@importPColorsRaw(false))
+      @importWorld      = (filename)       -> importFile(filename)(@importWorldRaw)

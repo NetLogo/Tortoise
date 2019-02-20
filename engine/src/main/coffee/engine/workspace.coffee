@@ -8,6 +8,7 @@ BreedManager  = require('./core/breedmanager')
 Dump          = require('./dump')
 EvalPrims     = require('./prim/evalprims')
 Hasher        = require('./hasher')
+importPColors = require('./prim/importpcolors')
 LayoutManager = require('./prim/layoutmanager')
 LinkPrims     = require('./prim/linkprims')
 ListPrims     = require('./prim/listprims')
@@ -46,15 +47,16 @@ module.exports =
 
     worldArgs = arguments # If you want `Workspace` to take more parameters--parameters not related to `World`--just keep returning new functions
 
-    dialogConfig       = modelConfig?.dialog       ? new UserDialogConfig
-    importExportConfig = modelConfig?.importExport ? new ImportExportConfig
-    inspectionConfig   = modelConfig?.inspection   ? new InspectionConfig
-    ioConfig           = modelConfig?.io           ? { slurpFilepathAsync: (-> ->), slurpURL: (->), slurpURLAsync: (-> ->) }
-    mouseConfig        = modelConfig?.mouse        ? new MouseConfig
-    outputConfig       = modelConfig?.output       ? new OutputConfig
-    plots              = modelConfig?.plots        ? []
-    printConfig        = modelConfig?.print        ? new PrintConfig
-    worldConfig        = modelConfig?.world        ? new WorldConfig
+    base64ToImageData  = modelConfig?.base64ToImageData ? (-> throw new Error("Sorry, no image data converter was provided."))
+    dialogConfig       = modelConfig?.dialog            ? new UserDialogConfig
+    importExportConfig = modelConfig?.importExport      ? new ImportExportConfig
+    inspectionConfig   = modelConfig?.inspection        ? new InspectionConfig
+    ioConfig           = modelConfig?.io                ? { slurpFilepathAsync: (-> ->), slurpURL: (->), slurpURLAsync: (-> ->) }
+    mouseConfig        = modelConfig?.mouse             ? new MouseConfig
+    outputConfig       = modelConfig?.output            ? new OutputConfig
+    plots              = modelConfig?.plots             ? []
+    printConfig        = modelConfig?.print             ? new PrintConfig
+    worldConfig        = modelConfig?.world             ? new WorldConfig
 
     Meta.version = modelConfig?.version ? Meta.version
 
@@ -100,11 +102,14 @@ module.exports =
       worldState = csvToWorldState(singularToPlural, pluralToSingular)(csvText)
       world.importState(worldState)
 
+    importPatchColors = importPColors((-> world.topology), ((x, y) -> world.getPatchAt(x, y)), base64ToImageData)
+
     importExportPrims = new ImportExportPrims( importExportConfig
                                              , (-> world.exportCSV())
                                              , (-> world.exportAllPlotsCSV())
                                              , ((plot) -> world.exportPlotCSV(plot))
                                              , ((path) -> world.importDrawing(path))
+                                             , importPatchColors
                                              , importWorldFromCSV
                                              )
 
