@@ -4,9 +4,9 @@ import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport.{ fullOptJS, packageJSDepe
 import org.scalajs.sbtplugin.ScalaJSCrossVersion
 import org.scalastyle.sbt.ScalastylePlugin.projectSettings
 
-val nlDependencyVersion       = "6.0.4-ba7745e"
+val nlDependencyVersion       = "6.0.4-aed23e4"
 
-val parserJsDependencyVersion = "0.2.2-ba7745e"
+val parserJsDependencyVersion = "0.2.2-aed23e4"
 
 val scalazVersion             = "7.2.27"
 

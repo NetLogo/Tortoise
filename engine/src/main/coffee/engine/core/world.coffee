@@ -191,8 +191,8 @@ module.exports =
       return
 
     # (String) => Unit
-    importDrawing: (sourcePath) ->
-      @_updater.importDrawing(sourcePath)
+    importDrawing: (imageBase64) ->
+      @_updater.importDrawing(imageBase64)
       return
 
     # () => Unit
