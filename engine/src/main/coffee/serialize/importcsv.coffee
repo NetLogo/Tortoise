@@ -352,6 +352,7 @@ module.exports =
 
     parsedCSV = parse(csvText, {
       comment: '#'
+      max_limit_on_data_read: 1e6
       skip_empty_lines: true
       relax_column_count: true
     })
