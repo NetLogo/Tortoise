@@ -83,6 +83,7 @@ if (typeof Polyglot !== "undefined") {
       const slurpImage = function() { return slurpImageFromURL(jurl, mimeStr); };
       const slurpText  = function() { return slurpTextFromURL(jurl); };
       const slurped    = slurpByType(mimeStr, slurpText, slurpImage);
+      return slurped;
     };
 
   const slurpURLAsync =
