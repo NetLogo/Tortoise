@@ -1,13 +1,40 @@
 if (typeof Polyglot !== "undefined") {
 
-  const BAOS           = Java.type('java.io.ByteArrayOutputStream');
-  const Base64         = Java.type('java.util.Base64');
-  const Compiler       = Java.type('org.nlogo.tortoise.compiler.Compiler');
-  const Files          = Java.type('java.nio.file.Files');
-  const ImageIO        = Java.type('javax.imageio.ImageIO');
-  const Paths          = Java.type('java.nio.file.Paths');
-  const Scanner        = Java.type('java.util.Scanner');
-  const URL            = Java.type('java.net.URL');
+  const BAIS     = Java.type('java.io.ByteArrayInputStream');
+  const BAOS     = Java.type('java.io.ByteArrayOutputStream');
+  const Base64   = Java.type('java.util.Base64');
+  const ByteArr  = Java.type("byte[]");
+  const Color    = Java.type('java.awt.Color');
+  const Compiler = Java.type('org.nlogo.tortoise.compiler.Compiler');
+  const Files    = Java.type('java.nio.file.Files');
+  const ImageIO  = Java.type('javax.imageio.ImageIO');
+  const Paths    = Java.type('java.nio.file.Paths');
+  const Scanner  = Java.type('java.util.Scanner');
+  const URL      = Java.type('java.net.URL');
+
+  const base64ToImageData =
+    function(base64) {
+
+      const trimmed = base64.split(',')[1];
+      const bytes   = Base64.getDecoder().decode(trimmed);
+      const bais    = new BAIS(bytes);
+      const image   = ImageIO.read(bais);
+      bais.close();
+
+      const output = [];
+      for (let y = 0; y < image.getHeight(); y++) {
+        for (let x = 0; x < image.getWidth(); x++) {
+          const pixel = new Color(image.getRGB(x, y));
+          output.push(pixel.getRed());
+          output.push(pixel.getGreen());
+          output.push(pixel.getBlue());
+          output.push(pixel.getAlpha());
+        }
+      }
+
+      return { data: output, height: image.getHeight(), width: image.getWidth() };
+
+    }
 
   const exportFile =
     function(str) {
@@ -15,18 +42,6 @@ if (typeof Polyglot !== "undefined") {
         Files.createDirectories(Paths.get(filename).getParent());
         Files.write(Paths.get(filename), Compiler.getBytes(str));
       };
-    };
-
-  const slurpBufferedImage =
-    function(bImage, mimeStr) {
-
-      const baos = new BAOS();
-      ImageIO.write(bImage, mimeStr.slice(mimeStr.indexOf('/') + 1), baos);
-      baos.close();
-
-      byteStr = Base64.getEncoder().encodeToString(baos.toByteArray());
-      return "data:" + mimeStr + ";base64," + byteStr;
-
     };
 
   const slurpByType =
@@ -55,12 +70,28 @@ if (typeof Polyglot !== "undefined") {
   const slurpImageFromFile =
     function(filename, mimeStr) {
       const path    = Paths.get(filename);
-      return slurpBufferedImage(ImageIO.read(path.toFile()), mimeStr);
+      const bytes   = Files.readAllBytes(path);
+      const byteStr = Base64.getEncoder().encodeToString(bytes);
+      return "data:" + mimeStr + ";base64," + byteStr;
     };
 
   const slurpImageFromURL =
     function(url, mimeStr) {
-      return slurpBufferedImage(ImageIO.read(url), mimeStr);
+
+      const baos    = new BAOS();
+      const stream  = url.openStream();
+      const buffer  = new ByteArr(1024);
+      var   n       = 0;
+
+      while ((n = stream.read(buffer)) > 0) {
+        baos.write(buffer, 0, n);
+      }
+
+      stream.close();
+
+      const byteStr = Base64.getEncoder().encodeToString(baos.toByteArray());
+      return "data:" + mimeStr + ";base64," + byteStr;
+
     };
 
   const slurpTextFromFile =
