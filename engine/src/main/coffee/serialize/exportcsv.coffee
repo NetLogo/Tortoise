@@ -36,7 +36,7 @@ formatPlain = (str) ->
 
 # (String) => String
 formatStringInner = (str) ->
-  '""' + str.replace(/\n/g, "\\n").replace(/"/g, '""') + '""'
+  '""' + str.replace(/\n/g, "\\n").replace(/"/g, '\\""') + '""'
 
 # (String) => String
 formatString = (str) ->

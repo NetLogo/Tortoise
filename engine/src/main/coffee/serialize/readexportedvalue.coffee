@@ -100,7 +100,7 @@ module.exports.parseBreed = (x) ->
 
 # (String) => String
 module.exports.parseString = (str) ->
-  match(/^"(.*)"$/, str)[1]
+  match(/^"(.*)"$/, str)[1].replace(new RegExp('\\\\"', 'g'), '"')
 
 # [T] @ (RegExp) => ((Array[String]) => Maybe[T]) => (String) => Maybe[T]
 parseGeneric = (regex) -> (f) -> (x) ->
@@ -224,7 +224,7 @@ module.exports.parseAny = (singularToPlural, pluralToSingular) ->
       else # If not a list
         strMatch =  x.match(/^"(.*)"$/)
         if strMatch?
-          strMatch[1]
+          strMatch[1].replace(new RegExp('\\\\"', 'g'), '"')
         else # If not a string
           parsedNum = parseFloat(x)
           if not Number.isNaN(parsedNum)
