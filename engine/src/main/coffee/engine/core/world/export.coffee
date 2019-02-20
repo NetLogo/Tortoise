@@ -40,7 +40,7 @@
 
 { difference, find, isEmpty, toObject } = require('brazierjs/array')
 { id, tee }                             = require('brazierjs/function')
-{ fold }                                = require('brazierjs/maybe')
+{ fold, maybe }                         = require('brazierjs/maybe')
 
 NLType = require('../typechecker')
 
@@ -254,8 +254,9 @@ module.exports.exportWorld = ->
   patches     =               @patches().toArray().map(exportAgent(ExportedPatch , makeMappings( patchBuiltins)( patchMapper)))
   turtles     = @turtleManager.turtles().toArray().map(exportAgent(ExportedTurtle, makeMappings(turtleBuiltins)(turtleMapper)))
   links       =     @linkManager.links().toArray().map(exportAgent(ExportedLink  , makeMappings(  linkBuiltins)(  linkMapper)))
+  drawingM    = maybe([@patchSize, @_getViewBase64()])
   output      = @_getOutput()
   plotManager = exportPlotManager.call(this)
   extensions  = []
 
-  new ExportWorldData(metadata, randomState, globals, patches, turtles, links, output, plotManager, extensions)
+  new ExportWorldData(metadata, randomState, globals, patches, turtles, links, drawingM, output, plotManager, extensions)

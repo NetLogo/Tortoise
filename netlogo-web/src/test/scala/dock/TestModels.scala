@@ -13,10 +13,9 @@ import org.nlogo.tortoise.tags.SlowTest
 
 class TestModels extends DockingSuite {
 
-  val usesDrawingEvents = Set("Fireworks", "GasLab Free Gas", "Hill Climbing Example", "Many Regions Example", "Tree Simple", "Turtles Circling")
-  val importsLambdas    = Set("BeeSmart Hive Finding", "State Machine Example")
+  val importsLambdas = Set("BeeSmart Hive Finding", "State Machine Example")
 
-  val (nonExportables, exportables) = Model.models.partition((m) => (importsLambdas | usesDrawingEvents)(m.name))
+  val (nonExportables, exportables) = Model.models.partition((m) => (importsLambdas)(m.name))
 
   for (model <- nonExportables) {
     val testName = s"0: no export - ${model.name}"
@@ -122,6 +121,10 @@ class TestModels extends DockingSuite {
 
   private def compareExports(exportResultNLD: String, exportResultNLW: String, msgPrefix: String): Unit = {
 
+    // Just check the patch size (not the image base64) --JAB (2/12/19)
+    val transformDrawing =
+      (str: String) => str.lines.toSeq.init.mkString("\n")
+
     // Trim off plot bounds --JAB (1/3/18)
     val transformPlots =
       (str: String) => str.replaceAll("""("x min","x max","y min","y max",[^\n]*\n)(?:"[^"]*",){4}""", "$1")
@@ -134,7 +137,7 @@ class TestModels extends DockingSuite {
          , "TURTLES"      -> identity _
          , "PATCHES"      -> identity _
          , "LINKS"        -> identity _
-         , "DRAWING"      -> ignore
+         , "DRAWING"      -> transformDrawing
          , "PLOTS"        -> transformPlots
          , "OUTPUT"       -> identity _
          , "EXTENSIONS"   -> ignore

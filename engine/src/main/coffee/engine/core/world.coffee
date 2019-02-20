@@ -45,8 +45,8 @@ module.exports =
     _patchesAllBlack:          undefined # Boolean
     _patchesWithLabels:        undefined # Number
 
-    # (MiniWorkspace, WorldConfig, () => Unit, () => String, (Any) => String, (String) => Unit, Array[String], Array[String], Array[String], Number, Number, Number, Number, Number, Boolean, Boolean, ShapeMap, ShapeMap, () => Unit) => World
-    constructor: (miniWorkspace, @_config, @_outputClear, @_getOutput, @_setOutput, @dump, globalNames, interfaceGlobalNames
+    # (MiniWorkspace, WorldConfig, () => String, () => Unit, () => String, (Any) => String, (String) => Unit, Array[String], Array[String], Array[String], Number, Number, Number, Number, Number, Boolean, Boolean, ShapeMap, ShapeMap, () => Unit) => World
+    constructor: (miniWorkspace, @_config, @_getViewBase64, @_outputClear, @_getOutput, @_setOutput, @dump, globalNames, interfaceGlobalNames
                 , @patchesOwnNames, minPxcor, maxPxcor, minPycor , maxPycor, @patchSize, wrappingAllowedInX, wrappingAllowedInY
                 , @turtleShapeMap, @linkShapeMap, onTickFunction) ->
       { selfManager: @selfManager, updater: @_updater, rng: @rng

@@ -142,6 +142,7 @@ if (typeof Polyglot !== "undefined") {
     , exportView:     function(filename) {}
     , importDrawing:  function(filename) { return function(callback) {}; }
     , importFile:     slurpFilepathAsync
+    , getViewBase64:  function() { return "data:image/jpeg;base64,/9j/fake64"; }
     };
 
   const inspection =

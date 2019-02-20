@@ -4,7 +4,7 @@ JSType = require('util/typechecker')
 
 { flatMap, isEmpty, map, maxBy, toObject, unique } = require('brazierjs/array')
 { id, pipeline, tee }                              = require('brazierjs/function')
-{ fold, maybe }                                    = require('brazierjs/maybe')
+{ fold, map: mapMaybe, maybe }                     = require('brazierjs/maybe')
 { rangeUntil }                                     = require('brazierjs/number')
 { keys, pairs, values }                            = require('brazierjs/object')
 
@@ -396,10 +396,15 @@ allPlotsDataToCSV = ({ metadata, miniGlobals, plots }) ->
 
 #{plots.map(formatPlotData).join("\n")}"""
 
+# ((Number, String)) => String
+formatDrawingData = ([patchSize, drawing]) ->
+  """#{formatPlain('DRAWING')}
+#{formatNumber(patchSize)}#{onNextLineIfNotEmpty(if drawing is "" then "" else formatString(drawing))}"""
+
 # (Array[String], Array[String], Array[String], Array[String], Array[String]) => (ExportWorldData) => String
 worldDataToCSV = (allTurtlesOwnsNames, allLinksOwnsNames, patchBuiltins, turtleBuiltins, linkBuiltins) -> (worldData) ->
 
-  { metadata, randomState, globals, patches, turtles, links, plotManager, output, extensions } = worldData
+  { metadata, randomState, globals, patches, turtles, links, plotManager, drawingDataMaybe, output, extensions } = worldData
 
   # Patches don't have a breed in the breed manager, and they all use the same exact set of vars,
   # so the best place to get the vars is from a patch, itself, and there must always be at least
@@ -414,6 +419,8 @@ worldDataToCSV = (allTurtlesOwnsNames, allLinksOwnsNames, patchBuiltins, turtleB
   currentPlotName  = currentPlotNameOrNull ? ''
   plotCSV          = plots.map(formatPlotData).join('\n\n')
   obnoxiousPlotCSV = if plotCSV.length > 0 then plotCSV + "\n" else plotCSV
+
+  drawingStr = pipeline(mapMaybe(formatDrawingData), fold(-> "")(id))(drawingDataMaybe)
 
   """#{formatMetadata(metadata)}
 
