@@ -49,6 +49,7 @@ module.exports =
     dialogConfig       = modelConfig?.dialog       ? new UserDialogConfig
     importExportConfig = modelConfig?.importExport ? new ImportExportConfig
     inspectionConfig   = modelConfig?.inspection   ? new InspectionConfig
+    ioConfig           = modelConfig?.io           ? { slurpFilepathAsync: (-> ->), slurpURL: (->), slurpURLAsync: (-> ->) }
     mouseConfig        = modelConfig?.mouse        ? new MouseConfig
     outputConfig       = modelConfig?.output       ? new OutputConfig
     plots              = modelConfig?.plots        ? []
@@ -113,6 +114,7 @@ module.exports =
       dump
       importExportPrims
       inspectionPrims
+      ioConfig
       layoutManager
       linkPrims
       listPrims
