@@ -16,63 +16,9 @@ var Tasks = tortoise_require('engine/prim/tasks');
 var Turtle = tortoise_require('engine/core/turtle');
 var TurtleSet = tortoise_require('engine/core/turtleset');
 var notImplemented = tortoise_require('util/notimplemented');
+
 var linkShapes = {"default":{"name":"default","direction-indicator":{"name":"link direction","editableColorIndex":0,"rotate":true,"elements":[{"x1":150,"y1":150,"x2":90,"y2":180,"type":"line","color":"rgba(141, 141, 141, 1)","filled":false,"marked":true},{"x1":150,"y1":150,"x2":210,"y2":180,"type":"line","color":"rgba(141, 141, 141, 1)","filled":false,"marked":true}]},"curviness":0,"lines":[{"x-offset":-0.2,"is-visible":false,"dash-pattern":[0,1]},{"x-offset":0,"is-visible":true,"dash-pattern":[1,0]},{"x-offset":0.2,"is-visible":false,"dash-pattern":[0,1]}]}};
-var modelConfig = (typeof window.modelConfig !== "undefined" && window.modelConfig !== null) ? window.modelConfig : {};
 var turtleShapes = {"default":{"name":"default","editableColorIndex":0,"rotate":true,"elements":[{"xcors":[150,40,150,260],"ycors":[5,250,205,250],"type":"polygon","color":"rgba(141, 141, 141, 1)","filled":true,"marked":true}]}};
-if (typeof javax !== "undefined") {
-  modelConfig.dialog = {
-    confirm: function(str) { return true; },
-    input: function(str) { return 'dummy implementation'; },
-    notify: function(str) {},
-    yesOrNo: function(str) { return true; }
-  }
-}
-if (typeof javax !== "undefined") {
-  modelConfig.importExport = {
-    importWorld: function(trueImportWorld) {
-      return function(filename) {
-        var Paths = Java.type('java.nio.file.Paths');
-        var Files = Java.type('java.nio.file.Files');
-        var UTF8  = Java.type('java.nio.charset.StandardCharsets').UTF_8;
-        var lines = Files.readAllLines(Paths.get(filename), UTF8);
-        var out   = [];
-        lines.forEach(function(line) { out.push(line); });
-        var fileText = out.join(" ");
-        trueImportWorld(fileText);
-      }
-},
-    exportFile: function(str) {
-      return function(filepath) {
-        var Paths = Java.type('java.nio.file.Paths');
-        var Files = Java.type('java.nio.file.Files');
-        var Compiler = Java.type('org.nlogo.tortoise.compiler.Compiler');
-        Files.createDirectories(Paths.get(filepath).getParent());
-        Files.write(Paths.get(filepath), Compiler.getBytes(str));
-      }
-},
-    importDrawing: function(trueImportDrawing) { return function(filepath) {} },
-    exportView: function(filename) {},
-    exportOutput: function(filename) {}
-  }
-}
-if (typeof javax !== "undefined") {
-  modelConfig.inspection = {
-    inspect: function(agent) {},
-    stopInspecting: function(agent) {},
-    clearDead: function() {}
-  }
-}
-if (typeof javax !== "undefined") {
-  modelConfig.output = {
-    clear: function() {},
-    write: function(str) { console.log(str); }
-  }
-}
-if (typeof javax !== "undefined") {
-  modelConfig.world = {
-    resizeWorld: function(agent) {}
-  }
-}
 var modelPlotOps = (typeof modelConfig.plotOps !== "undefined" && modelConfig.plotOps !== null) ? modelConfig.plotOps : {};
 modelConfig.plots = [(function() {
   var name    = 'Average';
