@@ -70,7 +70,7 @@ class ModelDumpTests extends FunSuite {
 
         assert(compilationResult("code").toString.contains("to"))
 
-        if (! model.path.contains("benchmark"))
+        if (!model.path.contains("benchmark") && !model.path.contains("test/models/"))
           assert(compilationResult("info").toString.contains("WHAT IS IT"))
       } catch {
         case e: Exception =>
