@@ -120,6 +120,7 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
   }
 
   override def runCommand(command: Command, mode: TestMode) = {
+
     if (!opened) declare(Model())
     val logo = command.command
     netLogoCode ++= s"$logo\n"
@@ -191,15 +192,15 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
   // use single-patch world by default to keep generated JSON to a minimum
   override val defaultView = core.View.square(0)
 
-  override def open(path: String) {
+  override def open(path: String, shouldAutoInstallLibs: Boolean = false) {
     require(!opened)
-    super.open(path)
+    super.open(path, shouldAutoInstallLibs)
   }
 
-  def open(path: String, dimensions: Option[(Int, Int, Int, Int)]) {
+  def open(path: String, dimensions: Option[(Int, Int, Int, Int)], shouldAutoInstallLibs: Boolean) {
     import scala.io.Codec.UTF8
     require(!opened)
-    super.open(path)
+    super.open(path, shouldAutoInstallLibs)
     val source = FileIO.fileToString(path)(UTF8)
     val model = ModelReader.parseModel(source.replaceAll("""\sdisplay\s""", ""), workspace.parser, Map())
 
@@ -214,9 +215,9 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
     declareHelper(finalModel)
   }
 
-  override def open(model: Model) {
+  override def openModel(model: Model, shouldAutoInstallLibs: Boolean = false) {
     require(!opened)
-    super.open(model)
+    super.openModel(model, shouldAutoInstallLibs)
     declareHelper(model)
   }
 

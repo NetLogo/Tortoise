@@ -127,9 +127,10 @@ private[tortoise] trait Fixture extends AbstractFixture {
 
   override def defaultView = View.square(5)
 
-  override def open(path: String): Unit = ???
+  override def open(path: String, shouldAutoInstallLibs: Boolean = false): Unit = ???
 
-  override def open(model: CModel): Unit = declare(model)
+  override def openModel(model: CModel, shouldAutoInstallLibs: Boolean = false): Unit =
+    declare(model)
 
   protected def wrapCommand(command: Command): String =
     command.kind match {
