@@ -21,6 +21,8 @@ TurtleSet = require('../turtleset')
 , TurtleReference
 } = require('serialize/exportstructures')
 
+{ fold } = require('brazier/maybe')
+
 # ( (Number) => Agent
 # , (Number, Number) => Agent
 # , (Number, Number, String) => Agent
@@ -89,6 +91,8 @@ module.exports.importWorld = (
     , plotManager
     , randomState
     , turtles
+    , patchSize
+    , drawingDataMaybe
     , output
     }
   ) ->
@@ -198,6 +202,12 @@ module.exports.importWorld = (
     @_plotManager.importState(plotManager)
     @ticker.importTicks(ticks)
     @rng.importState(randomState)
+
+    fold(->)(
+      ([patchSize, drawing]) =>
+        @setPatchSize(patchSize)
+        @importDrawing(drawing)
+    )(drawingDataMaybe)
 
     if output?
       @_setOutput(output)

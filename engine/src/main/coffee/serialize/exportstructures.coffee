@@ -174,8 +174,9 @@ module.exports.Metadata =
 module.exports.ExportWorldData =
   class
     # ( Metadata, String, ExportedGlobals, Array[ExportedPatch], Array[ExportedTurtle]
-    # , Array[ExportedLink], String, ExportedPlotManager, Array[ExportedExtension])
-    constructor: (@metadata, @randomState, @globals, @patches, @turtles, @links, @output, @plotManager, @extensions) ->
+    # , Array[ExportedLink], Maybe[(Number, String)], String, ExportedPlotManager, Array[ExportedExtension])
+    constructor: ( @metadata, @randomState, @globals, @patches, @turtles
+                 , @links, @drawingDataMaybe, @output, @plotManager, @extensions) ->
 
 module.exports.ExportPlotData =
   class

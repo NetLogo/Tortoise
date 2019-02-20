@@ -72,7 +72,7 @@ module.exports =
     updater      = new Updater(dump)
 
     # The world is only given `dump` for stupid `atpoints` in `AbstractAgentSet`... --JAB (8/24/17)
-    world           = new World(new MiniWorkspace(selfManager, updater, breedManager, rng, plotManager), worldConfig, (-> outputConfig.clear(); outputStore = ""), (-> outputStore), ((text) -> outputStore = text), dump, worldArgs...)
+    world           = new World(new MiniWorkspace(selfManager, updater, breedManager, rng, plotManager), worldConfig, (-> importExportConfig.getViewBase64()), (-> outputConfig.clear(); outputStore = ""), (-> outputStore), ((text) -> outputStore = text), dump, worldArgs...)
     layoutManager   = new LayoutManager(world, rng.nextDouble)
 
     evalPrims = new EvalPrims(code, widgets)
