@@ -164,12 +164,13 @@ if (typeof Polyglot !== "undefined") {
   const world = { resizeWorld: function(agent) {} };
 
   global.modelConfig =
-    { dialog:       dialog
-    , importExport: importExport
-    , inspection:   inspection
-    , io:           io
-    , output:       output
-    , world:        world
+    { base64ToImageData: base64ToImageData
+    , dialog:            dialog
+    , importExport:      importExport
+    , inspection:        inspection
+    , io:                io
+    , output:            output
+    , world:             world
     }
 
 }
