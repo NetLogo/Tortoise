@@ -490,6 +490,10 @@ object Model {
     Model(
       path = "models/Sample Models/Biology/Rock Paper Scissors.nlogo",
       repetitions = 20
+    ),
+    Model(
+      path = "test/models/ImportATest.nlogo",
+      repetitions = 13
     )
   )
 }
