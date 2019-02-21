@@ -120,3 +120,30 @@ Fetch-Integration
   count [turtles-here] of patch 0 0 => 14
 
   fetch:file "resources/test/commands/fetch-import-world.csv" => ERROR 'fetch:file' is not supported in NetLogo Web.  Use 'fetch:file-async' instead.
+
+# Extensionified version of 'ImportPatchesAndDrawing::' test with the same name
+ImportPcolors_2D
+  extensions [fetch import-a]
+  O> resize-world   -1   1 -100 100 fetch:file-async "test/import-pcolors/import-pcolors-test.png"          import-a:pcolors
+  O> resize-world -100 100   -1   1 fetch:file-async "test/import-pcolors/import-pcolors-test.png"          import-a:pcolors
+  O> resize-world   -1   1 -100 100 fetch:file-async "test/import-pcolors/import-pcolors-test-vertical.png" import-a:pcolors
+  O> resize-world -100 100   -1   1 fetch:file-async "test/import-pcolors/import-pcolors-test-vertical.png" import-a:pcolors
+
+# Extensionified version of 'ImportPatchesAndDrawing::' test with the same name
+ImportPcolorsTopologyTest_2D
+  extensions [fetch import-a]
+  O> resize-world   -1   1 -100 100 fetch:file-async "test/import-pcolors/import-pcolors-test.png" import-a:pcolors
+  O> resize-world    0 200    0   2 fetch:file-async "test/import-pcolors/import-pcolors-test.png" import-a:pcolors
+  O> resize-world -200   0   -2   0 fetch:file-async "test/import-pcolors/import-pcolors-test.png" import-a:pcolors
+  O> resize-world    0   2    0 200 fetch:file-async "test/import-pcolors/import-pcolors-test.png" import-a:pcolors
+  O> resize-world   -2   0 -200   0 fetch:file-async "test/import-pcolors/import-pcolors-test.png" import-a:pcolors
+
+# Extensionified version of 'ImportWorld::' test with the same name
+RoundTripWithUTF8Chars
+  extensions [fetch import-a]
+  globals [ glob1 ]
+  to export-round-trip let file (word "tmp/ImportWorld/test-file-" __nano-time ".csv" )  export-world file ca fetch:file-async file import-a:world end
+  O> set glob1 "AêñüC"
+  O> export-round-trip
+  O> print glob1
+  glob1 => "AêñüC"

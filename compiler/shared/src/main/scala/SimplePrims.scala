@@ -11,6 +11,7 @@ import
 object SimplePrims {
   // scalastyle:off method.length
   // scalastyle:off cyclomatic.complexity
+  // scalastyle:off line.size.limit
   object SimpleReporter {
     def unapply(r: Reporter): Option[String] =
       PartialFunction.condOpt(r) {
@@ -243,11 +244,17 @@ object SimplePrims {
   object SimpleCommand {
     def unapply(c: Command): Option[String] =
       PartialFunction.condOpt(c) {
+
         case _: prim._done                         => ""
         case _: prim._stop                         => "throw new Exception.StopInterrupt"
         case _: prim.etc._observercode             => ""
         case _: prim.etc._hideturtle               => "SelfManager.self().hideTurtle(true);"
         case _: prim.etc._showturtle               => "SelfManager.self().hideTurtle(false);"
+
+        case _: prim.etc._importpatchcolors => """throw new Error("Unfortunately, no perfect equivalent to `import-pcolors` can be implemented in NetLogo Web.  However, the \'import-a\' and \'fetch\' extensions offer primitives that can accomplish this in both NetLogo and NetLogo Web.")"""
+        case _: prim.etc._importpcolorsrgb  => """throw new Error("Unfortunately, no perfect equivalent to `import-pcolors-rgb` can be implemented in NetLogo Web.  However, the \'import-a\' and \'fetch\' extensions offer primitives that can accomplish this in both NetLogo and NetLogo Web.")"""
+        case _: prim.etc._importworld       => """throw new Error("Unfortunately, no perfect equivalent to `import-world` can be implemented in NetLogo Web.  However, the \'import-a\' and \'fetch\' extensions offer primitives that can accomplish this in both NetLogo and NetLogo Web.")"""
+
       }
   }
 
@@ -355,20 +362,14 @@ object SimplePrims {
         case _: prim.etc._exportworld      => "ImportExportPrims.exportWorld"
         case _: prim.etc._wait             => "Prims.wait"
 
-        // `world.importDrawing` uses an oversimple implementation on the Galapagos side
-        // once the work on a full, proper solution is done, we should switch back to `ImportExportPrims.importDrawing`
-        // -Jeremy B October 2018
-        case _: prim.etc._importdrawing     => "world.importDrawing"
-        //case _: prim.etc._importdrawing     => "ImportExportPrims.importDrawing"
-        case _: prim.etc._importpatchcolors => "ImportExportPrims.importPColors"
-        case _: prim.etc._importpcolorsrgb  => "ImportExportPrims.importPColorsRGB"
-        case _: prim.etc._importworld       => "ImportExportPrims.importWorld"
+        case _: prim.etc._importdrawing => "ImportExportPrims.importDrawing"
 
         // Unimplemented
-        case _: prim.etc._display     => "notImplemented('display', undefined)"
+        case _: prim.etc._display => "notImplemented('display', undefined)"
 
       }
   }
   // scalastyle:on method.length
   // scalastyle:on cyclomatic.complexity
+  // scalastyle:on line.size.limit
 }

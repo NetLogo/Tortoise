@@ -24,7 +24,7 @@ class TestModels extends DockingSuite {
 
       println(testName)
 
-      fixture.open(model.path, model.dimensions, true)
+      fixture.open(model.path, model.dimensions, true, Set())
       fixture.testCommand(model.setup)
       println(s"  running ${model.repetitions} reps: ")
       print("  ")
@@ -64,10 +64,9 @@ class TestModels extends DockingSuite {
 
       val outBase = if (inPlatform == Web) FromWeb else FromDesktop
 
-      fixture.testCommand(s"""import-world "${csv(inPlatform, Original)}" """)
+      fixture.testCommand(s"""fetch:file-async "${csv(inPlatform, Original)}" import-a:world""")
       val importDuration = Duration.between(start, Instant.now())
       println(s"    import time: ${importDuration.toMillis}")
-
       fixture.testCommand(s"""export-world (ifelse-value netlogo-web? [ "${csv(Web, outBase)}"] [ "${csv(Desktop, outBase)}" ])""")
       val exportDuration = Duration.between(start, Instant.now())
       println(s"    export time: ${exportDuration.toMillis}")
@@ -92,7 +91,7 @@ class TestModels extends DockingSuite {
 
       println(testName)
 
-      fixture.open(model.path, model.dimensions, true)
+      fixture.open(model.path, model.dimensions, true, Set("fetch", "import-a"))
       fixture.testCommand(model.setup)
       println(s"  running ${model.repetitions} reps: ")
       print("  ")
