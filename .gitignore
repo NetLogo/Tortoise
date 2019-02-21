@@ -3,6 +3,7 @@ classes/
 target/
 tmp/
 node_modules/
+node_links/
 
 # common filenames
 .DS_Store
