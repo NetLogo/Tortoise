@@ -197,12 +197,19 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
     super.open(path, shouldAutoInstallLibs)
   }
 
-  def open(path: String, dimensions: Option[(Int, Int, Int, Int)], shouldAutoInstallLibs: Boolean) {
+  def open(path: String, dimensions: Option[(Int, Int, Int, Int)], shouldAutoInstallLibs: Boolean): Unit = {
+    open(path, dimensions, shouldAutoInstallLibs, Set())
+  }
+
+  def open(path: String, dimensions: Option[(Int, Int, Int, Int)], shouldAutoInstallLibs: Boolean, requiredExts: Set[String]): Unit = {
+
     import scala.io.Codec.UTF8
+
     require(!opened)
-    super.open(path, shouldAutoInstallLibs)
-    val source = FileIO.fileToString(path)(UTF8)
-    val model = ModelReader.parseModel(source.replaceAll("""\sdisplay\s""", ""), workspace.parser, Map())
+
+    val source    = FileIO.fileToString(path)(UTF8)
+    val newSource = addRequiredExtensions(source.replaceAll("""\sdisplay\s""", ""), requiredExts)
+    val model     = ModelReader.parseModel(newSource, workspace.parser, Map())
 
     val finalModel = dimensions match {
       case None => model
@@ -212,7 +219,8 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
     }
     workspace.setDimensions(finalModel.view.dimensions)
 
-    declareHelper(finalModel)
+    openModel(finalModel, shouldAutoInstallLibs)
+
   }
 
   override def openModel(model: Model, shouldAutoInstallLibs: Boolean = false) {
@@ -262,6 +270,20 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
 
   def runJS(javascript: String): (String, String) = {
     engine.run(javascript)
+  }
+
+  private def addRequiredExtensions(source: String, requiredExts: Set[String]): String = {
+
+    val ExtRegex = """(?s)(?i)(.*)^(\s*extensions\s*\[)(.*?)(\].*?\Q@#$#@#$#@\E.*)""".r
+
+    source match {
+      case ExtRegex(prefix, extDirective, exts, suffix) =>
+        val extensions = exts.trim.split("\\s+").toSet
+        s"$prefix$extDirective${(extensions | requiredExts).mkString(" ")}$suffix"
+      case _ =>
+        s"extensions [${requiredExts.mkString(" ")}]\n$source"
+    }
+
   }
 
 }
