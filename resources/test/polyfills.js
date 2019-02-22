@@ -59,7 +59,7 @@ if (typeof Polyglot !== "undefined") {
     function(filename) {
       return function(callback) {
         const path       = Paths.get(filename);
-        const mimeStr    = Files.probeContentType(path);
+        const mimeStr    = path.toUri().toURL().openConnection().getContentType();
         const slurpImage = function() { return slurpImageFromFile(filename, mimeStr); };
         const slurpText  = function() { return slurpTextFromFile(filename); };
         const slurped    = slurpByType(mimeStr, slurpText, slurpImage);
