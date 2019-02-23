@@ -96,9 +96,12 @@ to test-world-url
   clear-patches
   clear-turtles
   let x ticks
-  fetch:url-async world-url import-a:world
-  reset-ticks
-  repeat x [ tick ]
+  fetch:url-async world-url [
+    world-text ->
+      import-a:world world-text
+      reset-ticks
+      repeat x [ tick ]
+  ]
 end
 
 to test-drawing-file
@@ -123,9 +126,12 @@ to test-world-file
   clear-patches
   clear-turtles
   let x ticks
-  fetch:file-async world-filename import-a:world
-  reset-ticks
-  repeat x [ tick ]
+  fetch:file-async world-filename [
+    world-text ->
+      import-a:world world-text
+      reset-ticks
+      repeat x [ tick ]
+  ]
 end
 
 to test-drawing-reporter
