@@ -137,12 +137,10 @@ if (typeof Polyglot !== "undefined") {
     }
 
   const importExport =
-    { exportFile:     exportFile
-    , exportOutput:   function(filename) {}
-    , exportView:     function(filename) {}
-    , importDrawing:  function(filename) { return function(callback) {}; }
-    , importFile:     slurpFilepathAsync
-    , getViewBase64:  function() { return "data:image/jpeg;base64,/9j/fake64"; }
+    { exportFile:    exportFile
+    , getOutput:     function() { return ""; }
+    , getViewBase64: function() { return "data:image/jpeg;base64,/9j/fake64"; }
+    , importFile:    slurpFilepathAsync
     };
 
   const inspection =
