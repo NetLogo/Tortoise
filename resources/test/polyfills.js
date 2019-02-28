@@ -24,7 +24,7 @@ if (typeof Polyglot !== "undefined") {
       const output = [];
       for (let y = 0; y < image.getHeight(); y++) {
         for (let x = 0; x < image.getWidth(); x++) {
-          const pixel = new Color(image.getRGB(x, y));
+          const pixel = new Color(image.getRGB(x, y), true);
           output.push(pixel.getRed());
           output.push(pixel.getGreen());
           output.push(pixel.getBlue());

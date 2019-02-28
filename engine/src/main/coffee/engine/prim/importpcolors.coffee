@@ -7,7 +7,7 @@ StrictMath = require('shim/strictmath')
 { map, toObject }     = require('brazier/array')
 { id, pipeline, tee } = require('brazier/function')
 
-# type RGB = (Number, Number, Number)
+# type RGBA = (Number, Number, Number, Number)
 
 lookupNLColor = (->
   cache = {}
@@ -39,7 +39,7 @@ genCoords = (patchSize, ratio, worldDim, imageDim) ->
 
   [startPatch, endPatch, startPixels]
 
-# (Topology, Number, Array[RGB], Number, Number) => Array[{ x, y, color }]
+# (Topology, Number, Array[RGBA], Number, Number) => Array[{ x, y, color }]
 genPColorUpdates = ({ height: worldHeight, minPxcor, minPycor, width: worldWidth }, patchSize, rgbs, imageWidth, imageHeight) ->
 
   ratio = NLMath.min(patchSize * worldWidth / imageWidth, patchSize * worldHeight / imageHeight)
@@ -70,7 +70,7 @@ genPColorUpdates = ({ height: worldHeight, minPxcor, minPycor, width: worldWidth
 
         { x: minPxcor + xcor, y: minPycor + ((worldHeight - 1) - ycor), color: pixel }
 
-  [].concat(updates...)
+  [].concat(updates...).filter(({ color: [r, g, b, a] }) -> a isnt 0)
 
 # (() => Topology, () => Number, (Number, Number) => Agent, (String) => ImageData) => (Boolean) => (String) => Unit
 module.exports =
@@ -78,8 +78,8 @@ module.exports =
 
     { data, height, width } = base64ToImageData(base64)
     toArray = if Array.from? then ((xs) -> Array.from(xs)) else ((xs) -> Array.prototype.slice.call(xs))
-    rgbs    = [0...(data.length / 4)].map((i) -> toArray(data.slice(i * 4, (i * 4) + 3)))
-    updates = genPColorUpdates(getTopology(), getPatchSize(), rgbs, width, height)
+    rgbas   = [0...(data.length / 4)].map((i) -> toArray(data.slice(i * 4, (i * 4) + 4)))
+    updates = genPColorUpdates(getTopology(), getPatchSize(), rgbas, width, height)
 
     colorGetter =
       if isNetLogoColorspace
