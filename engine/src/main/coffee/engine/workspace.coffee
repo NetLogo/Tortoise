@@ -102,7 +102,8 @@ module.exports =
       worldState = csvToWorldState(singularToPlural, pluralToSingular)(csvText)
       world.importState(worldState)
 
-    importPatchColors = importPColors((-> world.topology), ((x, y) -> world.getPatchAt(x, y)), base64ToImageData)
+    importPatchColors =
+      importPColors((-> world.topology), (-> world.patchSize), ((x, y) -> world.getPatchAt(x, y)), base64ToImageData)
 
     importExportPrims = new ImportExportPrims( importExportConfig
                                              , (-> world.exportCSV())

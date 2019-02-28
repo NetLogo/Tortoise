@@ -4,6 +4,9 @@ ColorModel = require('../core/colormodel')
 NLMath     = require('util/nlmath')
 StrictMath = require('shim/strictmath')
 
+{ map, toObject }     = require('brazier/array')
+{ id, pipeline, tee } = require('brazier/function')
+
 # type RGB = (Number, Number, Number)
 
 lookupNLColor = (->
@@ -18,20 +21,35 @@ lookupNLColor = (->
       nlc
 )()
 
-# (Topology, Array[RGB], Number, Number) => Array[{ x, y, color }]
-genPColorUpdates = ({ height: worldHeight, minPxcor, minPycor, width: worldWidth }, rgbs, imageWidth, imageHeight) ->
+# (Number, Number, Number, Number) => (Number, Number, Object[Number, Number])
+genCoords = (patchSize, ratio, worldDim, imageDim) ->
 
-  xStarts =
-    for x in [0...worldWidth]
-      StrictMath.floor(x * imageWidth / worldWidth)
+  worldPixelDim  = patchSize * worldDim
+  scaledImageDim = imageDim * ratio
+  patchOffset    = (worldPixelDim  - scaledImageDim) / patchSize / 2
+  startPatch     = StrictMath.floor(patchOffset)
+  endPatch       = worldDim - StrictMath.ceil(patchOffset)
+  dimRatio       = imageDim / (endPatch - startPatch)
 
-  yStarts =
-    for y in [0...worldHeight]
-      StrictMath.floor(y * imageHeight / worldHeight)
+  patchNumToPixel =
+    (patchNum) ->
+      StrictMath.floor((patchNum - startPatch) * dimRatio)
+
+  startPixels = pipeline(map(tee(id)(patchNumToPixel)), toObject)([startPatch...endPatch])
+
+  [startPatch, endPatch, startPixels]
+
+# (Topology, Number, Array[RGB], Number, Number) => Array[{ x, y, color }]
+genPColorUpdates = ({ height: worldHeight, minPxcor, minPycor, width: worldWidth }, patchSize, rgbs, imageWidth, imageHeight) ->
+
+  ratio = NLMath.min(patchSize * worldWidth / imageWidth, patchSize * worldHeight / imageHeight)
+
+  [xStart, xEnd, xStarts] = genCoords(patchSize, ratio, worldWidth , imageWidth )
+  [yStart, yEnd, yStarts] = genCoords(patchSize, ratio, worldHeight, imageHeight)
 
   updates =
-    for xcor in [0...worldWidth]
-      for ycor in [0...worldHeight]
+    for xcor in [xStart...xEnd]
+      for ycor in [yStart...yEnd]
 
         minX = xStarts[xcor]
         minY = yStarts[ycor]
@@ -54,14 +72,14 @@ genPColorUpdates = ({ height: worldHeight, minPxcor, minPycor, width: worldWidth
 
   [].concat(updates...)
 
-# (() => Topology, (Number, Number) => Agent, (String) => ImageData) => (Boolean) => (String) => Unit
+# (() => Topology, () => Number, (Number, Number) => Agent, (String) => ImageData) => (Boolean) => (String) => Unit
 module.exports =
-  (getTopology, getPatchAt, base64ToImageData) -> (isNetLogoColorspace) -> (base64) ->
+  (getTopology, getPatchSize, getPatchAt, base64ToImageData) -> (isNetLogoColorspace) -> (base64) ->
 
     { data, height, width } = base64ToImageData(base64)
     toArray = if Array.from? then ((xs) -> Array.from(xs)) else ((xs) -> Array.prototype.slice.call(xs))
     rgbs    = [0...(data.length / 4)].map((i) -> toArray(data.slice(i * 4, (i * 4) + 3)))
-    updates = genPColorUpdates(getTopology(), rgbs, width, height)
+    updates = genPColorUpdates(getTopology(), getPatchSize(), rgbs, width, height)
 
     colorGetter =
       if isNetLogoColorspace
