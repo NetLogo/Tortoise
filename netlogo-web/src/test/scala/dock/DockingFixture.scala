@@ -274,7 +274,7 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
 
   private def addRequiredExtensions(source: String, requiredExts: Set[String]): String = {
 
-    val ExtRegex = """(?s)(?i)(.*\n?)(\s*extensions\s*\[)(.*?)(\].*?\Q@#$#@#$#@\E.*)""".r
+    val ExtRegex = """(?s)(?i)(^|.*\n)(\s*extensions\s*\[)(.*?)(\].*?\Q@#$#@#$#@\E.*)""".r
 
     source match {
       case ExtRegex(prefix, extDirective, exts, suffix) =>
