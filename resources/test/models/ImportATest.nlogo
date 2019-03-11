@@ -163,32 +163,21 @@ end
 
 to go
 
-  ifelse ticks = 0 [ test-drawing-reporter ] [
-    ifelse ticks = 1 [ test-pcolors-reporter ] [
-      ifelse ticks = 2 [ test-pcolors-rgb-reporter ] [
-        ifelse ticks = 3 [ test-world-reporter ] [
-          ifelse ticks = 4 [ test-drawing-file ] [
-            ifelse ticks = 5 [ test-pcolors-file ] [
-              ifelse ticks = 6 [ test-pcolors-rgb-file ] [
-                ifelse ticks = 7 [ test-world-file ] [
-                  ifelse ticks = 8 [ test-drawing-url ] [
-                    ifelse ticks = 9 [ test-pcolors-url ] [
-                      ifelse ticks = 10 [ test-pcolors-rgb-url ] [
-                        ifelse ticks = 11 [ test-world-url ] [
-                          ifelse ticks = 12 [ test-drawing-url-sync ] [
-                          ]
-                        ]
-                      ]
-                    ]
-                  ]
-                ]
-              ]
-            ]
-          ]
-        ]
-      ]
-    ]
-  ]
+  (ifelse
+    ticks = 0  [ test-drawing-reporter ]
+    ticks = 1  [ test-pcolors-reporter ]
+    ticks = 2  [ test-pcolors-rgb-reporter ]
+    ticks = 3  [ test-world-reporter ]
+    ticks = 4  [ test-drawing-file ]
+    ticks = 5  [ test-pcolors-file ]
+    ticks = 6  [ test-pcolors-rgb-file ]
+    ticks = 7  [ test-world-file ]
+    ticks = 8  [ test-drawing-url ]
+    ticks = 9  [ test-pcolors-url ]
+    ticks = 10 [ test-pcolors-rgb-url ]
+    ticks = 11 [ test-world-url ]
+    ticks = 12 [ test-drawing-url-sync ]
+  )
 
   tick
 
