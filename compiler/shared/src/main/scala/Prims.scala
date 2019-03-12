@@ -476,7 +476,7 @@ trait CommandPrims extends PrimUtils {
             |${indented(elseBlock)}
             |}""".stripMargin
       }
-      s"""|${clauses.mkString("else\n")}
+      s"""|${clauses.mkString(" else ")}
           |${elseBlock}""".stripMargin
   }
 

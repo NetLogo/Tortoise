@@ -487,41 +487,29 @@ var procedures = (function() {
       var letVars = { };
       if (Prims.equality(world.ticker.tickCount(), 0)) {
         procedures["TEST-DRAWING-REPORTER"]();
-      }else
-      if (Prims.equality(world.ticker.tickCount(), 1)) {
+      } else if (Prims.equality(world.ticker.tickCount(), 1)) {
         procedures["TEST-PCOLORS-REPORTER"]();
-      }else
-      if (Prims.equality(world.ticker.tickCount(), 2)) {
+      } else if (Prims.equality(world.ticker.tickCount(), 2)) {
         procedures["TEST-PCOLORS-RGB-REPORTER"]();
-      }else
-      if (Prims.equality(world.ticker.tickCount(), 3)) {
+      } else if (Prims.equality(world.ticker.tickCount(), 3)) {
         procedures["TEST-WORLD-REPORTER"]();
-      }else
-      if (Prims.equality(world.ticker.tickCount(), 4)) {
+      } else if (Prims.equality(world.ticker.tickCount(), 4)) {
         procedures["TEST-DRAWING-FILE"]();
-      }else
-      if (Prims.equality(world.ticker.tickCount(), 5)) {
+      } else if (Prims.equality(world.ticker.tickCount(), 5)) {
         procedures["TEST-PCOLORS-FILE"]();
-      }else
-      if (Prims.equality(world.ticker.tickCount(), 6)) {
+      } else if (Prims.equality(world.ticker.tickCount(), 6)) {
         procedures["TEST-PCOLORS-RGB-FILE"]();
-      }else
-      if (Prims.equality(world.ticker.tickCount(), 7)) {
+      } else if (Prims.equality(world.ticker.tickCount(), 7)) {
         procedures["TEST-WORLD-FILE"]();
-      }else
-      if (Prims.equality(world.ticker.tickCount(), 8)) {
+      } else if (Prims.equality(world.ticker.tickCount(), 8)) {
         procedures["TEST-DRAWING-URL"]();
-      }else
-      if (Prims.equality(world.ticker.tickCount(), 9)) {
+      } else if (Prims.equality(world.ticker.tickCount(), 9)) {
         procedures["TEST-PCOLORS-URL"]();
-      }else
-      if (Prims.equality(world.ticker.tickCount(), 10)) {
+      } else if (Prims.equality(world.ticker.tickCount(), 10)) {
         procedures["TEST-PCOLORS-RGB-URL"]();
-      }else
-      if (Prims.equality(world.ticker.tickCount(), 11)) {
+      } else if (Prims.equality(world.ticker.tickCount(), 11)) {
         procedures["TEST-WORLD-URL"]();
-      }else
-      if (Prims.equality(world.ticker.tickCount(), 12)) {
+      } else if (Prims.equality(world.ticker.tickCount(), 12)) {
         procedures["TEST-DRAWING-URL-SYNC"]();
       }
       
