@@ -493,7 +493,7 @@ object Model {
     ),
     Model(
       path = "test/models/ImportATest.nlogo",
-      repetitions = 13
+      repetitions = 9
     )
   )
 }

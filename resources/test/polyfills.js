@@ -55,6 +55,11 @@ if (typeof Polyglot !== "undefined") {
       }
     };
 
+  const slurpFileDialogAsync =
+    function(callback) {
+      throw new Error("You can't get user input headlessly.");
+    };
+
   const slurpFilepathAsync =
     function(filename) {
       return function(callback) {
@@ -150,9 +155,10 @@ if (typeof Polyglot !== "undefined") {
     };
 
   const io =
-    { slurpFilepathAsync: slurpFilepathAsync
-    , slurpURL:           slurpURLSynchronously
-    , slurpURLAsync:      slurpURLAsync
+    { importFile:           slurpFilepathAsync
+    , slurpFileDialogAsync: slurpFileDialogAsync
+    , slurpURL:             slurpURLSynchronously
+    , slurpURLAsync:        slurpURLAsync
     };
 
   const output =

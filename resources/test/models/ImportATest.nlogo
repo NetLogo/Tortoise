@@ -168,15 +168,11 @@ to go
     ticks = 1  [ test-pcolors-reporter ]
     ticks = 2  [ test-pcolors-rgb-reporter ]
     ticks = 3  [ test-world-reporter ]
-    ticks = 4  [ test-drawing-file ]
-    ticks = 5  [ test-pcolors-file ]
-    ticks = 6  [ test-pcolors-rgb-file ]
-    ticks = 7  [ test-world-file ]
-    ticks = 8  [ test-drawing-url ]
-    ticks = 9  [ test-pcolors-url ]
-    ticks = 10 [ test-pcolors-rgb-url ]
-    ticks = 11 [ test-world-url ]
-    ticks = 12 [ test-drawing-url-sync ]
+    ticks = 4  [ test-drawing-url ]
+    ticks = 5  [ test-pcolors-url ]
+    ticks = 6  [ test-pcolors-rgb-url ]
+    ticks = 7  [ test-world-url ]
+    ticks = 8  [ test-drawing-url-sync ]
   )
 
   tick
