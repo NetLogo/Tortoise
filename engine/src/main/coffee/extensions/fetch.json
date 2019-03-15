@@ -21,6 +21,16 @@
       "actionName": "url-async",
       "argTypes":   ["string", "command"],
       "returnType": "unit"
+    }, {
+      "name":       "user-file",
+      "actionName": "user-file",
+      "argTypes":   [],
+      "returnType": "string"
+    }, {
+      "name":       "user-file-async",
+      "actionName": "user-file-async",
+      "argTypes":   ["command"],
+      "returnType": "unit"
     }
   ]
 }
