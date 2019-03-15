@@ -119,7 +119,7 @@ Fetch-Integration
   count turtles => 14
   count [turtles-here] of patch 0 0 => 14
 
-  fetch:file "resources/test/commands/fetch-import-world.csv" => ERROR 'fetch:file' is not supported in NetLogo Web.  Use 'fetch:file-async' instead.
+  fetch:file "resources/test/commands/fetch-import-world.csv" => ERROR 'fetch:file' is not supported in NetLogo Web.  Use 'fetch:user-file-async' instead.
 
 # Extensionified version of 'ImportPatchesAndDrawing::' test with the same name
 ImportPcolors_2D
