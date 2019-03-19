@@ -168,6 +168,15 @@ if (typeof Polyglot !== "undefined") {
 
   const world = { resizeWorld: function(agent) {} };
 
+  global.atob = function(base64) {
+    let bytes = Base64.getDecoder().decode(base64);
+    return String.fromCharCode(...bytes);
+  }
+
+  global.btoa = function(str) {
+    return Base64.getEncoder().encodeToString(Compiler.getBytes(str));
+  }
+
   global.modelConfig =
     { base64ToImageData: base64ToImageData
     , dialog:            dialog

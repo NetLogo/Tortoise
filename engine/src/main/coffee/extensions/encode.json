@@ -1,0 +1,26 @@
+{
+  "name": "encode",
+  "prims": [
+    {
+      "name":       "base64-to-bytes",
+      "actionName": "base64-to-bytes",
+      "argTypes":   ["string"],
+      "returnType": "list"
+    }, {
+      "name":       "bytes-to-base64",
+      "actionName": "bytes-to-base64",
+      "argTypes":   ["list"],
+      "returnType": "string"
+    }, {
+      "name":       "bytes-to-string",
+      "actionName": "bytes-to-string",
+      "argTypes":   ["list"],
+      "returnType": "string"
+    }, {
+      "name":       "string-to-bytes",
+      "actionName": "string-to-bytes",
+      "argTypes":   ["string"],
+      "returnType": "list"
+    }
+  ]
+}
