@@ -141,9 +141,11 @@ if (typeof Polyglot !== "undefined") {
     , yesOrNo: function(str) { return true; }
     }
 
+  let outputBuffer = ""
+
   const importExport =
     { exportFile:    exportFile
-    , getOutput:     function() { return ""; }
+    , getOutput:     function() { return outputBuffer; }
     , getViewBase64: function() { return "data:image/jpeg;base64,/9j/fake64"; }
     , importFile:    slurpFilepathAsync
     };
@@ -162,8 +164,8 @@ if (typeof Polyglot !== "undefined") {
     };
 
   const output =
-    { clear: function() {}
-    , write: function() { return function(str) { context.getWriter().print(str); }; }
+    { clear: function() { outputBuffer = ""; }
+    , write: function(str) { outputBuffer += str; }
     };
 
   const world = { resizeWorld: function(agent) {} };
