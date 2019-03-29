@@ -145,6 +145,7 @@ if (typeof Polyglot !== "undefined") {
 
   const importExport =
     { exportFile:    exportFile
+    , getNlogo:      function() { return ""; }
     , getOutput:     function() { return outputBuffer; }
     , getViewBase64: function() { return "data:image/jpeg;base64,/9j/fake64"; }
     , importFile:    slurpFilepathAsync
