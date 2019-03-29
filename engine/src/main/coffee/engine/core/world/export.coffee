@@ -220,7 +220,7 @@ module.exports.exportPlot = (plotName) ->
 
   metadata    = exportMetadata.call(this)
   miniGlobals = exportMiniGlobals.call(this)
-  plot        = fold(-> throw new Error("no such plot: \"#{plotName}\""))(desiredPlotMaybe)
+  plot        = fold(-> throw new Error("no such plot: \"#{plotName}\""))(exportPlot)(desiredPlotMaybe)
 
   new ExportPlotData(metadata, miniGlobals, plot)
 
