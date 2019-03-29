@@ -1,0 +1,31 @@
+{
+  "name": "export-the",
+  "prims": [
+    {
+      "name":            "model",
+      "actionName":      "model",
+      "argTypes":        [],
+      "returnType":      "string"
+    }, {
+      "name":            "output",
+      "actionName":      "output",
+      "argTypes":        [],
+      "returnType":      "string"
+    }, {
+      "name":            "plot",
+      "actionName":      "plot",
+      "argTypes":        ["string"],
+      "returnType":      "string"
+    }, {
+      "name":            "view",
+      "actionName":      "view",
+      "argTypes":        [],
+      "returnType":      "string"
+    }, {
+      "name":            "world",
+      "actionName":      "world",
+      "argTypes":        [],
+      "returnType":      "string"
+    }
+  ]
+}
