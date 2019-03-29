@@ -11,7 +11,7 @@ module.exports.Config =
 module.exports.Prims =
   class ImportExportPrims
     # (ImportExportConfig, () => String, () => String, (String) => String, (String) => Unit, (Boolean) => (String) => Unit, (String) => Unit) => ImportExportPrims
-    constructor: ({ exportFile, getOutput, getViewBase64, importFile }
+    constructor: ({ exportFile, getOutput: @exportOutputRaw, getViewBase64: @exportViewRaw, importFile }
                   , @exportWorldRaw, @exportAllPlotsRaw, @exportPlotRaw, @importDrawingRaw, @importPColorsRaw, @importWorldRaw) ->
       @exportAllPlots   = (filename)       => exportFile(@exportAllPlotsRaw())(filename)
       @exportOutput     = (filename)       => exportFile(getOutput()         )(filename)
