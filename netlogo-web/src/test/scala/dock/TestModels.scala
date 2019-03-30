@@ -3,10 +3,8 @@
 package org.nlogo.tortoise.nlw
 package dock
 
+import java.io.{ ByteArrayInputStream, CharArrayWriter, InputStreamReader, PrintWriter }
 import java.time.{ Duration, Instant }
-
-import scala.io.Source
-import scala.util.Try
 
 import org.nlogo.tortoise.compiler.Model
 import org.nlogo.tortoise.tags.SlowTest
@@ -41,37 +39,40 @@ class TestModels extends DockingSuite {
 
   for (model <- exportables) {
 
-    val name    = model.name
-    val tempDir = System.getProperty("java.io.tmpdir")
+    val name = model.name
 
-    sealed trait Platform
-    case object Desktop extends Platform
-    case object Web     extends Platform
+    def exportWorld(fixture: DockingFixture): (String, String) = {
 
-    sealed trait Base
-    case object Original    extends Base { override def toString = "original"     }
-    case object FromDesktop extends Base { override def toString = "from-desktop" }
-    case object FromWeb     extends Base { override def toString = "from-web"     }
+      val caw = new CharArrayWriter
+      fixture.workspace.exportWorld(new PrintWriter(caw))
+      val desktopCSV = caw.toString
 
-    def readFile(filename: String): String =
-      Try(Source.fromFile(filename).mkString).getOrElse(throw new Exception(s"Could not find $filename")).trim
+      val webCSV = fixture.evalJS("ImportExportPrims.exportWorldRaw()").asInstanceOf[String]
 
-    def csv(platform: Platform, base: Base): String =
-      s"$tempDir/NL${if (platform == Desktop) "D" else "W"}_${base}_$name.csv"
+      (desktopCSV, webCSV)
 
-    def testReimport(inPlatform: Platform, fixture: DockingFixture): Unit = {
+    }
+
+    def testReimport( platformName: String, fixture: DockingFixture
+                    , desktopOriginalCSV: String, webOriginalCSV: String): Unit = {
+
       val start = Instant.now()
 
-      val outBase = if (inPlatform == Web) FromWeb else FromDesktop
+      fixture.runDocked {
+        _.importWorld(new InputStreamReader(new ByteArrayInputStream(desktopOriginalCSV.getBytes)))
+      } {
+        (engine) =>
+          engine.put("__nonsenseWorldCSV", webOriginalCSV)
+          engine.run("ImportExportPrims.importWorldRaw(__nonsenseWorldCSV)")
+      }
 
-      fixture.testCommand(s"""fetch:file-async "${csv(inPlatform, Original)}" import-a:world""")
       val importDuration = Duration.between(start, Instant.now())
       println(s"    import time: ${importDuration.toMillis}")
-      fixture.testCommand(s"""export-world (ifelse-value netlogo-web? [ "${csv(Web, outBase)}"] [ "${csv(Desktop, outBase)}" ])""")
+      val (desktopCSV, webCSV) = exportWorld(fixture)
       val exportDuration = Duration.between(start, Instant.now())
       println(s"    export time: ${exportDuration.toMillis}")
 
-      compareExports(readFile(csv(Desktop, outBase)), readFile(csv(Web, outBase)), outBase.toString)
+      compareExports(desktopCSV, webCSV, platformName)
       val compareDuration = Duration.between(start, Instant.now())
       println(s"    compare time: ${compareDuration.toMillis}")
 
@@ -81,6 +82,7 @@ class TestModels extends DockingSuite {
       model.metrics.foreach(fixture.compare)
       val cleanupDuration = Duration.between(start, Instant.now())
       println(s"    metrics time: ${cleanupDuration.toMillis}")
+
     }
 
     val chunk = 1 + Integer.valueOf(4 * count / exportables.size)
@@ -91,7 +93,7 @@ class TestModels extends DockingSuite {
 
       println(testName)
 
-      fixture.open(model.path, model.dimensions, true, Set("fetch", "import-a"))
+      fixture.open(model.path, model.dimensions, true)
       fixture.testCommand(model.setup)
       println(s"  running ${model.repetitions} reps: ")
       print("  ")
@@ -105,15 +107,18 @@ class TestModels extends DockingSuite {
       model.metrics.foreach(fixture.compare)
 
       println("  running export")
-      fixture.testCommand(s"""export-world (ifelse-value netlogo-web? [ "${csv(Web, Original)}" ] [ "${csv(Desktop, Original)}" ])""")
+
+      val (desktopOriginalCSV, webOriginalCSV) = exportWorld(fixture)
 
       println("  comparing exports")
-      compareExports(readFile(csv(Desktop, Original)), readFile(csv(Web, Original)), "First pass")
+      compareExports(desktopOriginalCSV, webOriginalCSV, "First pass")
 
       println("  running desktop imports")
-      testReimport(Desktop, fixture)
+      testReimport("from-desktop", fixture, desktopOriginalCSV, webOriginalCSV)
+
       println("  running web imports")
-      testReimport(Web,     fixture)
+      testReimport("from-web", fixture, desktopOriginalCSV, webOriginalCSV)
+
     }
 
   }
