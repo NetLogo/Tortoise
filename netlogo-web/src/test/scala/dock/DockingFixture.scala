@@ -15,7 +15,7 @@ import
 
 import
   org.nlogo.{ core, api, headless, mirror, nvm },
-    api.{ Dump, FileIO },
+    api.{ Dump, FileIO, Workspace },
     headless.{ lang, test => headlessTest },
       lang.Fixture,
       headlessTest.{ RuntimeError, TestMode, Command, Reporter, Success },
@@ -119,16 +119,14 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
     println("[View Result] " + Dump.logoObject(workspace.report(reporter)))
   }
 
-  override def runCommand(command: Command, mode: TestMode) = {
+  def runDocked(nldOp: (Workspace) => Unit)(nlwOp: (GraalJS) => (String, String)): Unit = {
 
     if (!opened) declare(Model())
-    val logo = command.command
-    netLogoCode ++= s"$logo\n"
 
     drawingActionBuffer.clear()
     val (headlessException, exceptionOccurredInHeadless) =
       try {
-        workspace.command(logo)
+        nldOp(workspace)
         (Unit, false)
       } catch {
         case ex: Exception =>
@@ -138,10 +136,9 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
     state = newState
     val expectedJson = "[" + JsonSerializer.serializeWithViewUpdates(update, drawingActionBuffer.grab()) + "]"
     val expectedOutput = workspace.outputAreaBuffer.toString
-    val compiledJS = "var letVars = { }; " + Compiler.compileRawCommands(logo, workspace.procedures, workspace.world.program)
     val (exceptionOccurredInJS, (actualOutput, actualJson)) =
       try {
-        (false, runJS(compiledJS))
+        (false, nlwOp(engine))
       } catch {
         case ex: PolyglotException =>
           val AfterFirstColonRegex   = "^.*?: (.*)".r
@@ -174,6 +171,14 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
       ()
 
     }
+
+  }
+
+  override def runCommand(command: Command, mode: TestMode) = {
+    val logo = command.command
+    netLogoCode ++= s"$logo\n"
+    val compiledJS = "var letVars = { }; " + Compiler.compileRawCommands(logo, workspace.procedures, workspace.world.program)
+    runDocked(_.command(logo))(_.run(compiledJS))
   }
 
   private def updatedJsonModels(expectedJson: String, actualJson: String) : (String, String) = {
