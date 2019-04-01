@@ -398,8 +398,13 @@ allPlotsDataToCSV = ({ metadata, miniGlobals, plots }) ->
 
 # ((Number, String)) => String
 formatDrawingData = ([patchSize, drawing]) ->
-  """#{formatPlain('DRAWING')}
-#{formatNumber(patchSize)}#{onNextLineIfNotEmpty(if drawing is "" then "" else formatString(drawing))}"""
+
+  formatted    = formatNumberInner(patchSize)
+  patchSizeStr = if Number.isInteger(patchSize) then "#{formatted}.0" else formatted
+
+  """
+#{formatPlain('DRAWING')}
+#{formatPlain(patchSizeStr)}#{onNextLineIfNotEmpty(if drawing is "" then "" else formatString(drawing))}"""
 
 # (Array[String], Array[String], Array[String], Array[String], Array[String]) => (ExportWorldData) => String
 worldDataToCSV = (allTurtlesOwnsNames, allLinksOwnsNames, patchBuiltins, turtleBuiltins, linkBuiltins) -> (worldData) ->
@@ -437,6 +442,7 @@ worldDataToCSV = (allTurtlesOwnsNames, allLinksOwnsNames, patchBuiltins, turtleB
 
 #{formatPlain('LINKS')}
 #{linksStr}
+#{drawingStr}
 
 #{formatPlain('OUTPUT')}#{onNextLineIfNotEmpty(if output is "" then "" else formatString(output))}
 #{formatPlain('PLOTS')}
