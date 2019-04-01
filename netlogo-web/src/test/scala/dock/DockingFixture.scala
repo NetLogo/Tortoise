@@ -159,7 +159,8 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
         throw new TestFailedException(s"""Exception in JS was "$actualOutput" but exception in headless was "$headlessException" """, 7)
     } else {
       assertResult(expectedOutput)(evalJS("world._getOutput()").asInstanceOf[String].replaceAllLiterally("\\n", "\n"))
-      val (expectedModel, actualModel) = updatedJsonModels(expectedJson, actualJson)
+      val removeB64 = (str: String) => str.replaceAll("""("imageBase64":\s*").*?"""", """$1"""")
+      val (expectedModel, actualModel) = updatedJsonModels(removeB64(expectedJson), removeB64(actualJson))
 
       val headlessRNGState = workspace.world.mainRNG.save
       val engineRNGState  = engine.eval("Random.save();").asInstanceOf[String]
