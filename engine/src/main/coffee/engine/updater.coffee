@@ -27,6 +27,8 @@ module.exports =
     # type Updatable   = Turtle|Patch|Link|World|Observer
     # type EngineKey   = String
 
+    _drawingWasJustCleared: true # Boolean
+
     _hasUpdates: undefined # Boolean
     _updates:    undefined # Array[Update]
 
@@ -49,6 +51,10 @@ module.exports =
       temp = @_updates
       @_flushUpdates()
       temp
+
+    # () => Boolean
+    drawingWasJustCleared: ->
+      @_drawingWasJustCleared
 
     # () => Boolean
     hasUpdates: ->
@@ -215,7 +221,8 @@ module.exports =
 
     # (Object[String, Any]) => Unit
     _reportDrawingEvent: (event) ->
-      @_hasUpdates = true
+      @_hasUpdates            = true
+      @_drawingWasJustCleared = event.type is "clear-drawing"
       @_updates[0].drawingEvents.push(event)
       return
 
