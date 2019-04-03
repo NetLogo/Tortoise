@@ -60,7 +60,9 @@ object Compiler extends CompilerLike {
         identity)).mkString("\n")
 
     val interfaceInit = JsStatement("interfaceInit", interfaceGlobalJs, Seq("world", "procedures", "modelConfig"))
-    TortoiseLoader.integrateSymbols(init ++ plotConfig ++ procedures :+ JsStatement("global.modelConfig", Polyfills.content) :+ resolveModelConfig :+ interfaceInit)
+    TortoiseLoader.integrateSymbols(init ++ plotConfig ++ procedures :+
+                                    JsStatement("global.modelConfig", Polyfills.content) :+
+                                    resolveModelConfig :+ interfaceInit)
   }
 
   def compileReporter(logo:          String,
