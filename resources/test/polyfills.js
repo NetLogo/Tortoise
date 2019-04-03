@@ -1,5 +1,7 @@
 if (typeof Polyglot !== "undefined") {
 
+  const Maybe = tortoise_require('brazier/maybe');
+
   const BAIS     = Java.type('java.io.ByteArrayInputStream');
   const BAOS     = Java.type('java.io.ByteArrayOutputStream');
   const Base64   = Java.type('java.util.Base64');
@@ -134,6 +136,13 @@ if (typeof Polyglot !== "undefined") {
       };
     };
 
+  const asyncDialog =
+    { getChoice:   function(message, choices) { return function() { return Maybe.None; }; }
+    , getText:     function(message)          { return function() { return Maybe.None; }; }
+    , getYesOrNo:  function(message)          { return function() { return Maybe.None; }; }
+    , showMessage: function(message)          { return function() { return Maybe.None; }; }
+    }
+
   const dialog =
     { confirm: function(str) { return true; }
     , input:   function(str) { return 'dummy implementation'; }
@@ -181,7 +190,8 @@ if (typeof Polyglot !== "undefined") {
   }
 
   global.modelConfig =
-    { base64ToImageData: base64ToImageData
+    { asyncDialog:       asyncDialog
+    , base64ToImageData: base64ToImageData
     , dialog:            dialog
     , importExport:      importExport
     , inspection:        inspection

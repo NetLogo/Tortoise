@@ -25,7 +25,7 @@ World         = require('./core/world')
 csvToWorldState = require('serialize/importcsv')
 
 { toObject }       = require('brazier/array')
-{ fold }           = require('brazier/maybe')
+{ fold, None }     = require('brazier/maybe')
 { id }             = require('brazier/function')
 { lookup, values } = require('brazier/object')
 
@@ -47,6 +47,7 @@ module.exports =
 
     worldArgs = arguments # If you want `Workspace` to take more parameters--parameters not related to `World`--just keep returning new functions
 
+    asyncDialogConfig  = modelConfig?.asyncDialog       ? { getChoice: (-> -> None), getText: (-> -> None), getYesOrNo: (-> -> None), showMessage: (-> -> None) }
     base64ToImageData  = modelConfig?.base64ToImageData ? (-> throw new Error("Sorry, no image data converter was provided."))
     dialogConfig       = modelConfig?.dialog            ? new UserDialogConfig
     importExportConfig = modelConfig?.importExport      ? new ImportExportConfig
@@ -120,6 +121,7 @@ module.exports =
       dump
       importExportPrims
       inspectionPrims
+      asyncDialogConfig
       ioConfig
       layoutManager
       linkPrims
