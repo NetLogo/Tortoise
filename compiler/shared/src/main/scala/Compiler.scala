@@ -60,7 +60,7 @@ object Compiler extends CompilerLike {
         identity)).mkString("\n")
 
     val interfaceInit = JsStatement("interfaceInit", interfaceGlobalJs, Seq("world", "procedures", "modelConfig"))
-    TortoiseLoader.integrateSymbols(init ++ plotConfig ++ procedures :+ JsStatement("modelConfig", Polyfills.content) :+ interfaceInit)
+    TortoiseLoader.integrateSymbols(init ++ plotConfig ++ procedures :+ JsStatement("global.modelConfig", Polyfills.content) :+ resolveModelConfig :+ interfaceInit)
   }
 
   def compileReporter(logo:          String,
@@ -169,6 +169,16 @@ object Compiler extends CompilerLike {
     else
       handlers.reporter(pd.statements.stmts(1).args(0))
 
+  }
+
+  private def resolveModelConfig: JsStatement = {
+    val js = """var modelConfig =
+               |  (
+               |    (typeof global !== "undefined" && global !== null) ? global :
+               |    (typeof window !== "undefined" && window !== null) ? window :
+               |    {}
+               |  ).modelConfig || {};""".stripMargin
+    JsStatement("modelConfig", js, Seq("global.modelConfig"))
   }
 
   // This is a workaround for GraalJS interop - we need string bytes in `exportFile`, but GraalJS converts

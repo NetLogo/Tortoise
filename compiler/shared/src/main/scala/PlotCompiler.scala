@@ -35,7 +35,6 @@ object PlotCompiler {
       JsRequire("Plot",      "engine/plot/plot"),
       JsRequire("PlotOps",   "engine/plot/plotops"),
 
-      JsDeclare("modelConfig",  getOrElse("window.modelConfig")("{}")),
       JsDeclare("modelPlotOps", getOrElse("modelConfig.plotOps")("{}"), Seq("modelConfig")),
 
       JsStatement(
