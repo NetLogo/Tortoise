@@ -120,7 +120,7 @@ trait ReporterPrims extends PrimUtils {
         s"""procedures["${call.name}"](${args.mkString(",")})"""
 
       // Blarg
-      case _: prim._unaryminus         => s" -${arg(0)}" // The space is important, because these can be nested --JAB (6/12/14)
+      case _: prim._unaryminus         => s" -(${arg(0)})" // The space is important, because these can be nested --JAB (6/12/14)
       case _: prim._not                => s"!${arg(0)}"
       case _: prim._count              => s"${arg(0)}.size()"
       case _: prim._any                => s"!${arg(0)}.isEmpty()"
@@ -333,8 +333,8 @@ trait CommandPrims extends PrimUtils {
       case _: prim.etc._error            => s"throw new Error(${arg(0)});"
       case h: prim._hatch                => generateHatch(s, h.breedName)
       case h: Optimizer._hatchfast       => optimalGenerateHatch(s, h.breedName)
-      case _: prim._bk                   => s"SelfManager.self().fd(-${arg(0)});"
-      case _: prim.etc._left             => s"SelfManager.self().right(-${arg(0)});"
+      case _: prim._bk                   => s"SelfManager.self().fd(-(${arg(0)}));"
+      case _: prim.etc._left             => s"SelfManager.self().right(-(${arg(0)}));"
       case _: prim.etc._diffuse          => s"world.topology.diffuse(${jsString(getReferenceName(s))}, ${arg(1)}, false)"
       case _: prim.etc._diffuse4         => s"world.topology.diffuse(${jsString(getReferenceName(s))}, ${arg(1)}, true)"
       case _: prim.etc._uphill           => s"Prims.uphill(${jsString(getReferenceName(s))})"
