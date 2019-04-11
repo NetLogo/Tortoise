@@ -380,7 +380,7 @@ var procedures = (function() {
           procedures["PRINT-BLOCK"](ListPrims.item(1, ListPrims.item(SelfManager.self().getVariable("who"), rules)));
           SelfManager.self().fd(2);
           procedures["PRINT-BLOCK"](ListPrims.item(2, ListPrims.item(SelfManager.self().getVariable("who"), rules)));
-          SelfManager.self().fd(-2);
+          SelfManager.self().fd(-(2));
           SelfManager.self().setVariable("heading", 180);
           SelfManager.self().fd(2);
           SelfManager.self().setVariable("heading", 90);

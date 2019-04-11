@@ -110,7 +110,7 @@ var procedures = (function() {
       }
       else {
         if (Prims.gte(myleft, ahead)) {
-          SelfManager.self().right(-world.observer.getGlobal("sniff-angle"));
+          SelfManager.self().right(-(world.observer.getGlobal("sniff-angle")));
         }
       }
     } catch (e) {

@@ -83,7 +83,7 @@ var procedures = (function() {
       world.observer.setGlobal("diameter", NLMath.sqrt(Prims.div(((world.observer.getGlobal("density") * world.topology.width) * world.topology.height), world.observer.getGlobal("num-atoms"))));
       world.observer.setGlobal("max-move-dist", world.observer.getGlobal("diameter"));
       world.observer.setGlobal("cutoff-dist", (2.5 * world.observer.getGlobal("diameter")));
-      world.observer.setGlobal("pot-offset",  -(4 * (NLMath.pow(Prims.div(world.observer.getGlobal("diameter"), world.observer.getGlobal("cutoff-dist")), 12) - NLMath.pow(Prims.div(world.observer.getGlobal("diameter"), world.observer.getGlobal("cutoff-dist")), 6))));
+      world.observer.setGlobal("pot-offset",  -((4 * (NLMath.pow(Prims.div(world.observer.getGlobal("diameter"), world.observer.getGlobal("cutoff-dist")), 12) - NLMath.pow(Prims.div(world.observer.getGlobal("diameter"), world.observer.getGlobal("cutoff-dist")), 6)))));
       world.observer.setGlobal("v-total", procedures["CALC-V-TOTAL"]());
       world.turtleManager.createTurtles(world.observer.getGlobal("num-atoms"), "").ask(function() {
         SelfManager.self().setVariable("shape", "circle");
@@ -134,7 +134,7 @@ var procedures = (function() {
       SelfManager.self().setXY((SelfManager.self().getVariable("xcor") + deltaX), (SelfManager.self().getVariable("ycor") + deltaY));
       let vNew = procedures["CALC-V"](); letVars['vNew'] = vNew;
       let deltaV = (vNew - vOld); letVars['deltaV'] = deltaV;
-      if ((Prims.lt(vNew, vOld) || Prims.lt(Prims.randomFloat(1), NLMath.exp(Prims.div( -deltaV, world.observer.getGlobal("temperature")))))) {
+      if ((Prims.lt(vNew, vOld) || Prims.lt(Prims.randomFloat(1), NLMath.exp(Prims.div( -(deltaV), world.observer.getGlobal("temperature")))))) {
         world.observer.setGlobal("total-successful-moves", (world.observer.getGlobal("total-successful-moves") + 1));
         world.observer.setGlobal("current-successful-moves", (world.observer.getGlobal("current-successful-moves") + 1));
         world.observer.setGlobal("v-total", (world.observer.getGlobal("v-total") + deltaV));
@@ -265,13 +265,13 @@ var procedures = (function() {
       if (Prims.equality(world.observer.getGlobal("initial-config"), "HCP")) {
         let l = NLMath.sqrt(world.observer.getGlobal("num-atoms")); letVars['l'] = l;
         let rowDist = (NLMath.pow(2, Prims.div(1, 6)) * world.observer.getGlobal("diameter")); letVars['rowDist'] = rowDist;
-        let ypos = Prims.div(( -l * rowDist), 2); letVars['ypos'] = ypos;
-        let xpos = Prims.div(( -l * rowDist), 2); letVars['xpos'] = xpos;
+        let ypos = Prims.div(( -(l) * rowDist), 2); letVars['ypos'] = ypos;
+        let xpos = Prims.div(( -(l) * rowDist), 2); letVars['xpos'] = xpos;
         let rNum = 0; letVars['rNum'] = rNum;
         world.turtles().ask(function() {
           if (Prims.gt(xpos, Prims.div((l * rowDist), 2))) {
             rNum = (rNum + 1); letVars['rNum'] = rNum;
-            xpos = (Prims.div(( -l * rowDist), 2) + Prims.div((NLMath.mod(rNum, 2) * rowDist), 2)); letVars['xpos'] = xpos;
+            xpos = (Prims.div(( -(l) * rowDist), 2) + Prims.div((NLMath.mod(rNum, 2) * rowDist), 2)); letVars['xpos'] = xpos;
             ypos = (ypos + rowDist); letVars['ypos'] = ypos;
           }
           SelfManager.self().setXY(xpos, ypos);

@@ -233,7 +233,7 @@ var procedures = (function() {
       var letVars = { };
       let groupInterval = NLMath.floor(Prims.div(world.topology.width, world.observer.getGlobal("num-groups"))); letVars['groupInterval'] = groupInterval;
       if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-        return (((Prims.equality(SelfManager.self().getPatchVariable("pycor"), 0) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), 0)) && Prims.equality(NLMath.mod(SelfManager.self().getPatchVariable("pxcor"), groupInterval), 0)) && Prims.lt(NLMath.floor(Prims.div( -SelfManager.self().getPatchVariable("pxcor"), groupInterval)), world.observer.getGlobal("num-groups")))
+        return (((Prims.equality(SelfManager.self().getPatchVariable("pycor"), 0) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), 0)) && Prims.equality(NLMath.mod(SelfManager.self().getPatchVariable("pxcor"), groupInterval), 0)) && Prims.lt(NLMath.floor(Prims.div( -(SelfManager.self().getPatchVariable("pxcor")), groupInterval)), world.observer.getGlobal("num-groups")))
       }
       throw new Error("Reached end of reporter procedure without REPORT being called.");
     } catch (e) {

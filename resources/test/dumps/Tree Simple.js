@@ -88,9 +88,9 @@ var procedures = (function() {
         SelfManager.self().right(180);
         SelfManager.self().jumpIfAble(8);
         SelfManager.self().right(180);
-        SelfManager.self().right(-15);
+        SelfManager.self().right(-(15));
         SelfManager.self().fd(4);
-        SelfManager.self().right(-15);
+        SelfManager.self().right(-(15));
         SelfManager.self().hatch(1, "").ask(function() { SelfManager.self().setVariable("new?", true); }, true);
         SelfManager.self().setVariable("color", (SelfManager.self().getVariable("color") + world.observer.getGlobal("color-inc")));
         SelfManager.self().fd(8);

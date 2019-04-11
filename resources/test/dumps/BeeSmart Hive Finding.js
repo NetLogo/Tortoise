@@ -617,9 +617,9 @@ var procedures = (function() {
       let semicircle = Prims.div(((0.5 * SelfManager.self().getVariable("dist-to-hive")) * 3.141592653589793), 5); letVars['semicircle'] = semicircle;
       if (Prims.equality(SelfManager.self().getVariable("circle-switch"), 1)) {
         SelfManager.self().face(SelfManager.self().getVariable("target"));
-        SelfManager.self().right(-90);
+        SelfManager.self().right(-(90));
         for (let _index_17080_17086 = 0, _repeatcount_17080_17086 = StrictMath.floor(numOfTurns); _index_17080_17086 < _repeatcount_17080_17086; _index_17080_17086++){
-          SelfManager.self().right(-anglePerTurn);
+          SelfManager.self().right(-(anglePerTurn));
           SelfManager.self().fd((Prims.div(semicircle, 180) * anglePerTurn));
         }
       }
@@ -651,7 +651,7 @@ var procedures = (function() {
       SelfManager.self().setVariable("temp-x-dance", SelfManager.self().getVariable("xcor"));
       SelfManager.self().setVariable("temp-y-dance", SelfManager.self().getVariable("ycor"));
       let waggleSwitch = 1; letVars['waggleSwitch'] = waggleSwitch;
-      SelfManager.self().right(-60);
+      SelfManager.self().right(-(60));
       SelfManager.self()._optimalFdLessThan1(0.4);
       for (let _index_17897_17903 = 0, _repeatcount_17897_17903 = StrictMath.floor(Prims.div((SelfManager.self().getVariable("dist-to-hive") - 2), 2)); _index_17897_17903 < _repeatcount_17897_17903; _index_17897_17903++){
         if (Prims.equality(waggleSwitch, 1)) {
@@ -659,13 +659,13 @@ var procedures = (function() {
           SelfManager.self()._optimalFdLessThan1(0.8);
         }
         if (Prims.equality(waggleSwitch, -1)) {
-          SelfManager.self().right(-120);
+          SelfManager.self().right(-(120));
           SelfManager.self()._optimalFdLessThan1(0.8);
         }
         waggleSwitch = (waggleSwitch * -1); letVars['waggleSwitch'] = waggleSwitch;
       }
       if (Prims.equality(waggleSwitch, -1)) {
-        SelfManager.self().right(-120);
+        SelfManager.self().right(-(120));
         SelfManager.self()._optimalFdLessThan1(0.4);
       }
       else {

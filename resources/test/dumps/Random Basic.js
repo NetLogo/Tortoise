@@ -73,7 +73,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.patches().ask(function() {
-        if (((Prims.gte(SelfManager.self().getPatchVariable("pxcor"), Prims.div( -world.observer.getGlobal("sample-space"), 2)) && Prims.lt(SelfManager.self().getPatchVariable("pxcor"), Prims.div(world.observer.getGlobal("sample-space"), 2))) && Prims.lt(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("max-y-histogram")))) {
+        if (((Prims.gte(SelfManager.self().getPatchVariable("pxcor"), Prims.div( -(world.observer.getGlobal("sample-space")), 2)) && Prims.lt(SelfManager.self().getPatchVariable("pxcor"), Prims.div(world.observer.getGlobal("sample-space"), 2))) && Prims.lt(SelfManager.self().getPatchVariable("pycor"), world.observer.getGlobal("max-y-histogram")))) {
           SelfManager.self().setPatchVariable("pcolor", 45);
         }
         else {

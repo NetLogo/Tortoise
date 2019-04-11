@@ -337,7 +337,7 @@ var procedures = (function() {
         if (Prims.lte(SelfManager.self().getVariable("ycor"), world.observer.getGlobal("earth-top"))) {
           SelfManager.self().setVariable("breed", world.turtleManager.turtlesOfBreed("HEATS"));
           SelfManager.self().right(Prims.random(45));
-          SelfManager.self().right(-Prims.random(45));
+          SelfManager.self().right(-(Prims.random(45)));
           SelfManager.self().setVariable("color", ((15 - 2) + Prims.random(4)));
         }
         if (!SelfManager.self().breedHere("CO2S").isEmpty()) {

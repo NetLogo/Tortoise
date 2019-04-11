@@ -330,7 +330,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       SelfManager.self().right(Prims.random(100));
-      SelfManager.self().right(-Prims.random(100));
+      SelfManager.self().right(-(Prims.random(100)));
       SelfManager.self()._optimalFdOne();
     } catch (e) {
       if (e instanceof Exception.StopInterrupt) {
@@ -390,7 +390,7 @@ var procedures = (function() {
       if ((Prims.lt(world.turtles().size(), world.observer.getGlobal("carrying-capacity")) && Prims.lt(Prims.randomFloat(100), world.observer.getGlobal("chance-reproduce")))) {
         SelfManager.self().hatch(1, "").ask(function() {
           SelfManager.self().setVariable("age", 1);
-          SelfManager.self().right(-45);
+          SelfManager.self().right(-(45));
           SelfManager.self()._optimalFdOne();
           procedures["GET-HEALTHY"]();
         }, true);

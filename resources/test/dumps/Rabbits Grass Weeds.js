@@ -199,7 +199,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       SelfManager.self().right(Prims.random(50));
-      SelfManager.self().right(-Prims.random(50));
+      SelfManager.self().right(-(Prims.random(50)));
       SelfManager.self()._optimalFdOne();
       SelfManager.self().setVariable("energy", (SelfManager.self().getVariable("energy") - 0.5));
     } catch (e) {

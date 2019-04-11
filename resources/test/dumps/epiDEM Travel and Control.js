@@ -191,7 +191,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      world.getPatchAt(Prims.div( -world.topology.maxPxcor, 2), 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
+      world.getPatchAt(Prims.div( -(world.topology.maxPxcor), 2), 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
       world.getPatchAt(Prims.div(world.topology.maxPxcor, 2), 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
       world.observer.setGlobal("border", world.patches().agentFilter(function() {
         return (Prims.equality(SelfManager.self().getPatchVariable("pxcor"), 0) && Prims.gte(NLMath.abs(SelfManager.self().getPatchVariable("pycor")), 0));
@@ -267,7 +267,7 @@ var procedures = (function() {
       world.turtleManager.createTurtles(world.observer.getGlobal("initial-ambulance"), "").ask(function() {
         if (Prims.lt(Prims.random(2), 1)) {
           SelfManager.self().setVariable("continent", 1);
-          SelfManager.self().setXY(Prims.div( -world.topology.maxPxcor, 2), 0);
+          SelfManager.self().setXY(Prims.div( -(world.topology.maxPxcor), 2), 0);
         }
         else {
           SelfManager.self().setVariable("continent", 2);
@@ -447,11 +447,11 @@ var procedures = (function() {
       var letVars = { };
       if (world.observer.getGlobal("travel?")) {
         if ((Prims.lt(Prims.random(100), world.observer.getGlobal("travel-tendency")) && !SelfManager.self().getVariable("ambulance?"))) {
-          SelfManager.self().setVariable("xcor",  -SelfManager.self().getVariable("xcor"));
+          SelfManager.self().setVariable("xcor",  -(SelfManager.self().getVariable("xcor")));
         }
       }
       if (Prims.equality(SelfManager.self().getVariable("continent"), 1)) {
-        if (Prims.gt(SelfManager.self().getVariable("xcor"),  -0.5)) {
+        if (Prims.gt(SelfManager.self().getVariable("xcor"),  -(0.5))) {
           world.observer.setGlobal("angle", Prims.randomFloat(180));
           let newPatch = SelfManager.self().patchAtHeadingAndDistance(world.observer.getGlobal("angle"), -1); letVars['newPatch'] = newPatch;
           if (!Prims.equality(newPatch, Nobody)) {
@@ -489,7 +489,7 @@ var procedures = (function() {
           else {
             world.observer.setGlobal("angle", Prims.randomFloat(360));
           }
-          SelfManager.self().right(-world.observer.getGlobal("angle"));
+          SelfManager.self().right(-(world.observer.getGlobal("angle")));
           if (SelfManager.self().getVariable("ambulance?")) {
             SelfManager.self().fd((world.observer.getGlobal("intra-mobility") * 5));
           }
@@ -580,7 +580,7 @@ var procedures = (function() {
       SelfManager.self().setVariable("hospitalized?", false);
       SelfManager.self()._optimalPatchHereInternal().ask(function() { SelfManager.self().setPatchVariable("pcolor", 0); }, true);
       world.observer.getGlobal("border").ask(function() { SelfManager.self().setPatchVariable("pcolor", 45); }, true);
-      world.getPatchAt(Prims.div( -world.topology.maxPxcor, 2), 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
+      world.getPatchAt(Prims.div( -(world.topology.maxPxcor), 2), 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
       world.getPatchAt(Prims.div(world.topology.maxPxcor, 2), 0).ask(function() { SelfManager.self().setPatchVariable("pcolor", 9.9); }, true);
     } catch (e) {
       if (e instanceof Exception.StopInterrupt) {
@@ -599,7 +599,7 @@ var procedures = (function() {
       SelfManager.self().setVariable("hospitalized?", true);
       SelfManager.self().setPatchVariable("pcolor", 0);
       if (Prims.equality(SelfManager.self().getVariable("continent"), 1)) {
-        SelfManager.self().moveTo(world.getPatchAt(Prims.div( -world.topology.maxPxcor, 2), 0));
+        SelfManager.self().moveTo(world.getPatchAt(Prims.div( -(world.topology.maxPxcor), 2), 0));
       }
       else {
         SelfManager.self().moveTo(world.getPatchAt(Prims.div(world.topology.maxPxcor, 2), 0));

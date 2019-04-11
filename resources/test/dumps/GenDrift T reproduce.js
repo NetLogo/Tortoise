@@ -272,7 +272,7 @@ var procedures = (function() {
       }
       world.turtles().ask(function() {
         SelfManager.self().right(Prims.random(50));
-        SelfManager.self().right(-Prims.random(50));
+        SelfManager.self().right(-(Prims.random(50)));
         SelfManager.self()._optimalFdOne();
       }, true);
       procedures["BIRTH"]();

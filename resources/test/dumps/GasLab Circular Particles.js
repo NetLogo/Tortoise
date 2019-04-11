@@ -508,7 +508,7 @@ var procedures = (function() {
         let d1 = (NLMath.pow(pv, 2) - ((4 * vSquared) * pSquared)); letVars['d1'] = d1;
         let timeToCollision = -1; letVars['timeToCollision'] = timeToCollision;
         if (Prims.gt(d1, 0)) {
-          timeToCollision = Prims.div(( -pv - NLMath.sqrt(d1)), (2 * vSquared)); letVars['timeToCollision'] = timeToCollision;
+          timeToCollision = Prims.div(( -(pv) - NLMath.sqrt(d1)), (2 * vSquared)); letVars['timeToCollision'] = timeToCollision;
         }
         if (Prims.gt(timeToCollision, 0)) {
           world.observer.setGlobal("collisions", ListPrims.fput(ListPrims.list((timeToCollision + world.ticker.tickCount()), SelfManager.self(), SelfManager.myself()), world.observer.getGlobal("collisions")));
@@ -534,7 +534,7 @@ var procedures = (function() {
         if (Prims.gt(rightInterval, 0)) {
           procedures["ASSIGN-COLLIDING-WALL"](rightInterval,"right wall");
         }
-        let leftInterval = Prims.div(((( -world.observer.getGlobal("box-edge") + 0.5) - SelfManager.self().getVariable("xcor")) + Prims.div(SelfManager.self().getVariable("size"), 2)), xSpeed); letVars['leftInterval'] = leftInterval;
+        let leftInterval = Prims.div(((( -(world.observer.getGlobal("box-edge")) + 0.5) - SelfManager.self().getVariable("xcor")) + Prims.div(SelfManager.self().getVariable("size"), 2)), xSpeed); letVars['leftInterval'] = leftInterval;
         if (Prims.gt(leftInterval, 0)) {
           procedures["ASSIGN-COLLIDING-WALL"](leftInterval,"left wall");
         }
@@ -545,7 +545,7 @@ var procedures = (function() {
         if (Prims.gt(topInterval, 0)) {
           procedures["ASSIGN-COLLIDING-WALL"](topInterval,"top wall");
         }
-        let bottomInterval = Prims.div(((( -world.observer.getGlobal("box-edge") + 0.5) - SelfManager.self().getVariable("ycor")) + Prims.div(SelfManager.self().getVariable("size"), 2)), ySpeed); letVars['bottomInterval'] = bottomInterval;
+        let bottomInterval = Prims.div(((( -(world.observer.getGlobal("box-edge")) + 0.5) - SelfManager.self().getVariable("ycor")) + Prims.div(SelfManager.self().getVariable("size"), 2)), ySpeed); letVars['bottomInterval'] = bottomInterval;
         if (Prims.gt(bottomInterval, 0)) {
           procedures["ASSIGN-COLLIDING-WALL"](bottomInterval,"bottom wall");
         }
@@ -621,7 +621,7 @@ var procedures = (function() {
       }
       if (NLType(world.observer.getGlobal("particle2")).isString()) {
         if ((Prims.equality(world.observer.getGlobal("particle2"), "left wall") || Prims.equality(world.observer.getGlobal("particle2"), "right wall"))) {
-          world.observer.getGlobal("particle1").ask(function() { SelfManager.self().setVariable("heading",  -SelfManager.self().getVariable("heading")); }, true);
+          world.observer.getGlobal("particle1").ask(function() { SelfManager.self().setVariable("heading",  -(SelfManager.self().getVariable("heading"))); }, true);
           throw new Exception.StopInterrupt;
         }
         if ((Prims.equality(world.observer.getGlobal("particle2"), "top wall") || Prims.equality(world.observer.getGlobal("particle2"), "bottom wall"))) {

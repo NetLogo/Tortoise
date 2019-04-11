@@ -177,7 +177,7 @@ var procedures = (function() {
         SelfManager.self().face(partner);
         SelfManager.self().fd((SelfManager.self().distance(partner) - world.observer.getGlobal("lipid-length")));
       }
-      SelfManager.self().right(-Prims.random(360));
+      SelfManager.self().right(-(Prims.random(360)));
       SelfManager.self().fd(world.observer.getGlobal("random-force"));
     } catch (e) {
       if (e instanceof Exception.StopInterrupt) {

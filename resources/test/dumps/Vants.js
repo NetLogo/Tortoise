@@ -104,7 +104,7 @@ var procedures = (function() {
         }
         t.ask(function() {
           procedures["TURN"]();
-          SelfManager.self().fd(-1);
+          SelfManager.self().fd(-(1));
         }, true);
       }, "[ t -> ask t [ turn bk 1 ] ]"), ListPrims.reverse(ListPrims.sort(world.turtles()))); if(reporterContext && _foreach_505_512 !== undefined) { return _foreach_505_512; }
       world.ticker.tick();
@@ -128,7 +128,7 @@ var procedures = (function() {
       }
       else {
         SelfManager.self().setPatchVariable("pcolor", 9.9);
-        SelfManager.self().right(-90);
+        SelfManager.self().right(-(90));
       }
     } catch (e) {
       if (e instanceof Exception.StopInterrupt) {

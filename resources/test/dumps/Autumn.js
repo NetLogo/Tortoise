@@ -397,7 +397,7 @@ var procedures = (function() {
           SelfManager.self().right((10 * world.observer.getGlobal("wind-factor")));
         }
         else {
-          SelfManager.self().right(-(10 * world.observer.getGlobal("wind-factor")));
+          SelfManager.self().right(-((10 * world.observer.getGlobal("wind-factor"))));
         }
         SelfManager.self().setVariable("attachedness", (SelfManager.self().getVariable("attachedness") - world.observer.getGlobal("wind-factor")));
       }, true);

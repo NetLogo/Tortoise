@@ -283,7 +283,7 @@ var procedures = (function() {
           SelfManager.self().right(maxTurn);
         }
         else {
-          SelfManager.self().right(-maxTurn);
+          SelfManager.self().right(-(maxTurn));
         }
       }
       else {

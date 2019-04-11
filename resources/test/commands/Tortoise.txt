@@ -4,6 +4,11 @@
 # here should pass on JVM NetLogo too, then before committing
 # and pushing, please add the test to the NetLogo repo instead.
 
+BorkedBack
+  O> crt 1
+  O> ask turtles [ back -1 left -100 ]
+  O> let x (- -1)
+
 Smoke
   2 + 2 => 4
   netlogo-web? => true

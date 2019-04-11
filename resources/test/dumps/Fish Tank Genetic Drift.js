@@ -903,7 +903,7 @@ var procedures = (function() {
         }).size(), 1)) {
           allAlleles._optimalOneOfWith(function() { return Prims.equality(SelfManager.self().getVariable("gene"), thisGene); }).ask(function() {
             SelfManager.self().setVariable("heading", 90);
-            SelfManager.self().fd(-world.observer.getGlobal("intra-chromosome-pair-spacing"));
+            SelfManager.self().fd(-(world.observer.getGlobal("intra-chromosome-pair-spacing")));
             SelfManager.self().setVariable("side", "left");
           }, true);
         }
@@ -1038,7 +1038,7 @@ var procedures = (function() {
       world.turtleManager.turtlesOfBreed("FISH").ask(function() {
         SelfManager.self().setVariable("heading", SelfManager.self().getVariable("bearing"));
         SelfManager.self().right(Prims.randomFloat(70));
-        SelfManager.self().right(-Prims.randomFloat(70));
+        SelfManager.self().right(-(Prims.randomFloat(70)));
         SelfManager.self().setVariable("bearing", SelfManager.self().getVariable("heading"));
         SelfManager.self().fd(world.observer.getGlobal("fish-forward-step"));
         SelfManager.self().setVariable("heading", 0);

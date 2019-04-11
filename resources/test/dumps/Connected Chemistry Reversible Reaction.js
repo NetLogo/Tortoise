@@ -612,7 +612,7 @@ var procedures = (function() {
       newPx = NLMath.round((SelfManager.self().getVariable("xcor") + SelfManager.self().dx())); letVars['newPx'] = newPx;
       newPy = NLMath.round((SelfManager.self().getVariable("ycor") + SelfManager.self().dy())); letVars['newPy'] = newPy;
       if ((Prims.equality(NLMath.abs(newPx), world.observer.getGlobal("box-edge-x")) || Prims.equality(newPx, world.observer.getGlobal("piston-position")))) {
-        SelfManager.self().setVariable("heading",  -SelfManager.self().getVariable("heading"));
+        SelfManager.self().setVariable("heading",  -(SelfManager.self().getVariable("heading")));
         SelfManager.self().setVariable("momentum-difference", (SelfManager.self().getVariable("momentum-difference") + Prims.div(NLMath.abs((((NLMath.sin(SelfManager.self().getVariable("heading")) * 2) * SelfManager.self().getVariable("mass")) * SelfManager.self().getVariable("speed"))), world.observer.getGlobal("length-vertical-surface"))));
       }
       if (Prims.equality(NLMath.abs(newPy), world.observer.getGlobal("box-edge-y"))) {

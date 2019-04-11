@@ -174,7 +174,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("color", world.observer.getGlobal("predator-color-visible"));
         SelfManager.self().setVariable("size", 1);
         SelfManager.self().setVariable("heading", 315);
-        SelfManager.self().fd(-1);
+        SelfManager.self().fd(-(1));
         SelfManager.self().hideTurtle(true);;
       }, true);
     } catch (e) {
@@ -197,7 +197,7 @@ var procedures = (function() {
         SelfManager.self().setVariable("color", world.observer.getGlobal("bacteria-default-color"));
         SelfManager.self().setVariable("label", "");
         SelfManager.self().setVariable("shape", flagellaShape);
-        SelfManager.self().fd(-0.4);
+        SelfManager.self().fd(-(0.4));
         SelfManager.self().setVariable("size", world.observer.getGlobal("flagella-size"));
         LinkPrims.createLinkFrom(SelfManager.myself(), "CONNECTORS").ask(function() {
           SelfManager.self().setVariable("hidden?", true);

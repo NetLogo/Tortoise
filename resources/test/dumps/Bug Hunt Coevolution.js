@@ -350,7 +350,7 @@ var procedures = (function() {
       var letVars = { };
       if (world.observer.getGlobal("wiggle?")) {
         SelfManager.self().right(Prims.div((Prims.randomFloat(30) * 0.05), world.observer.getGlobal("speed-factor")));
-        SelfManager.self().right(-Prims.div((Prims.randomFloat(30) * 0.05), world.observer.getGlobal("speed-factor")));
+        SelfManager.self().right(-(Prims.div((Prims.randomFloat(30) * 0.05), world.observer.getGlobal("speed-factor"))));
       }
     } catch (e) {
       if (e instanceof Exception.StopInterrupt) {

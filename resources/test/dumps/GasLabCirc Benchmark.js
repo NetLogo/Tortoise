@@ -223,7 +223,7 @@ var procedures = (function() {
         let d1 = (NLMath.pow(pv, 2) - ((4 * vSquared) * pSquared)); letVars['d1'] = d1;
         let timeToCollision = -1; letVars['timeToCollision'] = timeToCollision;
         if (Prims.gte(d1, 0)) {
-          timeToCollision = Prims.div(( -pv - NLMath.sqrt(d1)), (2 * vSquared)); letVars['timeToCollision'] = timeToCollision;
+          timeToCollision = Prims.div(( -(pv) - NLMath.sqrt(d1)), (2 * vSquared)); letVars['timeToCollision'] = timeToCollision;
         }
         if (Prims.gt(timeToCollision, 0)) {
           let collidingPair = ListPrims.list((timeToCollision + world.ticker.tickCount()), SelfManager.self(), SelfManager.myself()); letVars['collidingPair'] = collidingPair;
@@ -247,9 +247,9 @@ var procedures = (function() {
       let xSpeed = (SelfManager.self().getVariable("speed") * procedures["CONVERT-HEADING-X"](SelfManager.self().getVariable("heading"))); letVars['xSpeed'] = xSpeed;
       let ySpeed = (SelfManager.self().getVariable("speed") * procedures["CONVERT-HEADING-Y"](SelfManager.self().getVariable("heading"))); letVars['ySpeed'] = ySpeed;
       let xposPlane = (world.observer.getGlobal("box-edge") - 0.5); letVars['xposPlane'] = xposPlane;
-      let xnegPlane = ( -world.observer.getGlobal("box-edge") + 0.5); letVars['xnegPlane'] = xnegPlane;
+      let xnegPlane = ( -(world.observer.getGlobal("box-edge")) + 0.5); letVars['xnegPlane'] = xnegPlane;
       let yposPlane = (world.observer.getGlobal("box-edge") - 0.5); letVars['yposPlane'] = yposPlane;
-      let ynegPlane = ( -world.observer.getGlobal("box-edge") + 0.5); letVars['ynegPlane'] = ynegPlane;
+      let ynegPlane = ( -(world.observer.getGlobal("box-edge")) + 0.5); letVars['ynegPlane'] = ynegPlane;
       let contactPointXpos = (SelfManager.self().getVariable("xcor") + Prims.div(SelfManager.self().getVariable("size"), 2)); letVars['contactPointXpos'] = contactPointXpos;
       let contactPointXneg = (SelfManager.self().getVariable("xcor") - Prims.div(SelfManager.self().getVariable("size"), 2)); letVars['contactPointXneg'] = contactPointXneg;
       let contactPointYpos = (SelfManager.self().getVariable("ycor") + Prims.div(SelfManager.self().getVariable("size"), 2)); letVars['contactPointYpos'] = contactPointYpos;
@@ -378,7 +378,7 @@ var procedures = (function() {
         throw new Exception.StopInterrupt;
       }
       if ((Prims.equality(world.observer.getGlobal("colliding-particle-2"), "plane-xpos") || Prims.equality(world.observer.getGlobal("colliding-particle-2"), "plane-xneg"))) {
-        world.observer.getGlobal("colliding-particle-1").ask(function() { SelfManager.self().setVariable("heading",  -SelfManager.self().getVariable("heading")); }, true);
+        world.observer.getGlobal("colliding-particle-1").ask(function() { SelfManager.self().setVariable("heading",  -(SelfManager.self().getVariable("heading"))); }, true);
         throw new Exception.StopInterrupt;
       }
       if ((Prims.equality(world.observer.getGlobal("colliding-particle-2"), "plane-ypos") || Prims.equality(world.observer.getGlobal("colliding-particle-2"), "plane-yneg"))) {

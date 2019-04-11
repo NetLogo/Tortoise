@@ -382,7 +382,7 @@ var procedures = (function() {
         throw new Exception.StopInterrupt;
       }
       if (Prims.equality(NLMath.abs(newPx), world.observer.getGlobal("box-edge"))) {
-        SelfManager.self().setVariable("heading",  -SelfManager.self().getVariable("heading"));
+        SelfManager.self().setVariable("heading",  -(SelfManager.self().getVariable("heading")));
         SelfManager.self().setVariable("momentum-instant", Prims.div(NLMath.abs((((NLMath.sin(SelfManager.self().getVariable("heading")) * 2) * SelfManager.self().getVariable("mass")) * SelfManager.self().getVariable("speed"))), world.observer.getGlobal("length-vertical-surface")));
         SelfManager.self().setVariable("momentum-difference", (SelfManager.self().getVariable("momentum-difference") + SelfManager.self().getVariable("momentum-instant")));
       }

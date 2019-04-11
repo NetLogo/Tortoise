@@ -85,16 +85,16 @@ var procedures = (function() {
       world.clearAll();
       let halfedge = NLMath.toInt(Prims.div(world.observer.getGlobal("edge"), 2)); letVars['halfedge'] = halfedge;
       world.patches().ask(function() {
-        if (((Prims.equality(SelfManager.self().getPatchVariable("pxcor"),  -halfedge) && Prims.gte(SelfManager.self().getPatchVariable("pycor"),  -halfedge)) && Prims.lte(SelfManager.self().getPatchVariable("pycor"), (0 + halfedge)))) {
+        if (((Prims.equality(SelfManager.self().getPatchVariable("pxcor"),  -(halfedge)) && Prims.gte(SelfManager.self().getPatchVariable("pycor"),  -(halfedge))) && Prims.lte(SelfManager.self().getPatchVariable("pycor"), (0 + halfedge)))) {
           SelfManager.self().setPatchVariable("pcolor", 105);
         }
-        if (((Prims.equality(SelfManager.self().getPatchVariable("pxcor"), (0 + halfedge)) && Prims.gte(SelfManager.self().getPatchVariable("pycor"),  -halfedge)) && Prims.lte(SelfManager.self().getPatchVariable("pycor"), (0 + halfedge)))) {
+        if (((Prims.equality(SelfManager.self().getPatchVariable("pxcor"), (0 + halfedge)) && Prims.gte(SelfManager.self().getPatchVariable("pycor"),  -(halfedge))) && Prims.lte(SelfManager.self().getPatchVariable("pycor"), (0 + halfedge)))) {
           SelfManager.self().setPatchVariable("pcolor", 105);
         }
-        if (((Prims.equality(SelfManager.self().getPatchVariable("pycor"),  -halfedge) && Prims.gte(SelfManager.self().getPatchVariable("pxcor"),  -halfedge)) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), (0 + halfedge)))) {
+        if (((Prims.equality(SelfManager.self().getPatchVariable("pycor"),  -(halfedge)) && Prims.gte(SelfManager.self().getPatchVariable("pxcor"),  -(halfedge))) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), (0 + halfedge)))) {
           SelfManager.self().setPatchVariable("pcolor", 105);
         }
-        if (((Prims.equality(SelfManager.self().getPatchVariable("pycor"), (0 + halfedge)) && Prims.gte(SelfManager.self().getPatchVariable("pxcor"),  -halfedge)) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), (0 + halfedge)))) {
+        if (((Prims.equality(SelfManager.self().getPatchVariable("pycor"), (0 + halfedge)) && Prims.gte(SelfManager.self().getPatchVariable("pxcor"),  -(halfedge))) && Prims.lte(SelfManager.self().getPatchVariable("pxcor"), (0 + halfedge)))) {
           SelfManager.self().setPatchVariable("pcolor", 105);
         }
       }, true);

@@ -477,13 +477,13 @@ var procedures = (function() {
       world.turtleManager.turtlesOfBreed("TOPOISOMERASES").ask(function() {
         if (SelfManager.self().getVariable("locked?")) {
           world.turtleManager.turtlesOfBreed("TOPOISOMERASES-GEARS").ask(function() {
-            SelfManager.self().right(-10);
+            SelfManager.self().right(-(10));
             SelfManager.self().setVariable("color", world.observer.getGlobal("topoisomerase-color-1"));
           }, true);
         }
         else {
           world.turtleManager.turtlesOfBreed("TOPOISOMERASES-GEARS").ask(function() {
-            SelfManager.self().right(-3);
+            SelfManager.self().right(-(3));
             SelfManager.self().setVariable("color", world.observer.getGlobal("topoisomerase-color-0"));
           }, true);
         }
@@ -541,7 +541,7 @@ var procedures = (function() {
       if (!woundNucleotides.isEmpty()) {
         let maxWoundPlace = ListPrims.max(woundNucleotides.projectionBy(function() { return SelfManager.self().getVariable("place"); })); letVars['maxWoundPlace'] = maxWoundPlace;
         woundNucleotides.agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("place"), maxWoundPlace); }).ask(function() {
-          SelfManager.self().right(-world.observer.getGlobal("wind-angle"));
+          SelfManager.self().right(-(world.observer.getGlobal("wind-angle")));
           SelfManager.self().setVariable("unwound?", true);
           SelfManager.self().setVariable("color", world.observer.getGlobal("unwound-dna-color"));
           notImplemented('display', undefined)();

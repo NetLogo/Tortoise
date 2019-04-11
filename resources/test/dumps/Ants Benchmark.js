@@ -350,7 +350,7 @@ var procedures = (function() {
           SelfManager.self().right(45);
         }
         else {
-          SelfManager.self().right(-45);
+          SelfManager.self().right(-(45));
         }
       }
     } catch (e) {
@@ -376,7 +376,7 @@ var procedures = (function() {
           SelfManager.self().right(45);
         }
         else {
-          SelfManager.self().right(-45);
+          SelfManager.self().right(-(45));
         }
       }
     } catch (e) {

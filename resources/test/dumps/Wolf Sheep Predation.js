@@ -206,7 +206,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       SelfManager.self().right(Prims.random(50));
-      SelfManager.self().right(-Prims.random(50));
+      SelfManager.self().right(-(Prims.random(50)));
       SelfManager.self()._optimalFdOne();
     } catch (e) {
       if (e instanceof Exception.StopInterrupt) {

@@ -132,7 +132,7 @@ var procedures = (function() {
       var letVars = { };
       let currentRegion = SelfManager.self().getPatchVariable("region"); letVars['currentRegion'] = currentRegion;
       SelfManager.self().right(Prims.random(30));
-      SelfManager.self().right(-Prims.random(30));
+      SelfManager.self().right(-(Prims.random(30)));
       SelfManager.self()._optimalFdLessThan1(0.25);
       procedures["KEEP-IN-REGION"](currentRegion);
     } catch (e) {

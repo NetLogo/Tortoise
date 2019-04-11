@@ -246,9 +246,9 @@ var procedures = (function() {
           return limit
         }
       }
-      if (Prims.lt(number,  -limit)) {
+      if (Prims.lt(number,  -(limit))) {
         if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-          return  -limit
+          return  -(limit)
         }
       }
       if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
