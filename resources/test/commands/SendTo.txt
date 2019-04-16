@@ -1,0 +1,6 @@
+SendToFile
+  extensions [ send-to fetch ]
+  globals [ result ]
+  O> send-to:file "target/test/hello.txt" "Hello world!"
+  O> fetch:file-async "target/test/hello.txt" [ d -> set result d ]
+  result => "Hello world!"
