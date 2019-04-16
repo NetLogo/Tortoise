@@ -41,8 +41,12 @@ if (typeof Polyglot !== "undefined") {
   const exportFile =
     function(str) {
       return function(filename) {
-        Files.createDirectories(Paths.get(filename).getParent());
-        Files.write(Paths.get(filename), Compiler.getBytes(str));
+        const path   = Paths.get(filename);
+        const parent = path.getParent();
+        if (parent !== null) {
+          Files.createDirectories(parent);
+        }
+        Files.write(path, Compiler.getBytes(str));
       };
     };
 
