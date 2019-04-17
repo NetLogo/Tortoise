@@ -1,0 +1,41 @@
+{
+  "name": "store",
+  "prims": [
+    {
+      "name":       "put",
+      "actionName": "put",
+      "argTypes":   ["string", "string"],
+      "returnType": "unit"
+    },
+    {
+      "name":       "get",
+      "actionName": "get",
+      "argTypes":   ["string"],
+      "returnType": "string"
+    },
+    {
+      "name":       "get-keys",
+      "actionName": "get-keys",
+      "argTypes":   [],
+      "returnType": "list"
+    },
+    {
+      "name":       "has-key",
+      "actionName": "has-key",
+      "argTypes":   ["string"],
+      "returnType": "boolean"
+    },
+    {
+      "name":       "remove",
+      "actionName": "remove",
+      "argTypes":   ["string"],
+      "returnType": "unit"
+    },
+    {
+      "name":       "clear",
+      "actionName": "clear",
+      "argTypes":   [],
+      "returnType": "unit"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+StoreBasics
+  extensions [ store ]
+  O> store:put "first-thing" "123456789"
+  store:get "first-thing" => "123456789"
+  store:has-key "first-thing" => true
+  store:has-key "second-thing" => false
+
+  O> store:put "second-thing" "apples"
+  store:has-key "first-thing" => true
+  store:has-key "second-thing" => true
+  store:get "first-thing" => "123456789"
+  store:get "second-thing" => "apples"
+  store:get-keys => ["first-thing" "second-thing"]
+
+  O> store:remove "first-thing"
+  store:has-key "first-thing" => false
+  store:has-key "second-thing" => true
+  store:get "second-thing" => "apples"
+  store:get-keys => ["second-thing"]
+
+  O> store:clear
+  store:has-key "first-thing" => false
+  store:has-key "second-thing" => false
+  store:get-keys => []
+
+  store:get "nope" => ERROR Extension exception: Could not find a value for key: 'nope'.
