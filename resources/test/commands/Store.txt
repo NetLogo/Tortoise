@@ -1,26 +1,32 @@
+# This unfortunately mostly tests syntax and that we got the idea of the extension correct.
+# Since we don't have access to the real store that will run in a web browser, we're not
+# actually testing everything end-to-end.  -Jeremy B April 2019
 StoreBasics
   extensions [ store ]
-  O> store:put "first-thing" "123456789"
-  store:get "first-thing" => "123456789"
-  store:has-key "first-thing" => true
-  store:has-key "second-thing" => false
+  globals [ asserts ]
+  to assert-equal [v1 v2] if (not (v1 = v2)) [ error (word "Assert #" asserts ": Values are not equal (expected: " v1 ", actual: " v2 ")") ] set asserts (asserts + 1) end
+  O> store:put "first-thing" "1234"
+  O> store:get "first-thing" [ v -> assert-equal "1234" v ]
+  O> store:put "first-thing" "123456789" [ store:get "first-thing" [ v -> assert-equal "123456789" v ] ]
+  O> store:has-key "first-thing" [ b -> assert-equal true b ]
+  O> store:has-key "second-thing" [ b -> assert-equal false b ]
 
   O> store:put "second-thing" "apples"
-  store:has-key "first-thing" => true
-  store:has-key "second-thing" => true
-  store:get "first-thing" => "123456789"
-  store:get "second-thing" => "apples"
-  store:get-keys => ["first-thing" "second-thing"]
+  O> store:has-key "first-thing" [ b -> assert-equal true b ]
+  O> store:has-key "second-thing" [ b -> assert-equal true b ]
+  O> store:get "first-thing" [ v -> assert-equal "123456789" v ]
+  O> store:get "second-thing" [ v -> assert-equal "apples" v ]
+  O> store:get-keys [ keys -> assert-equal ["first-thing" "second-thing"] keys ]
 
   O> store:remove "first-thing"
-  store:has-key "first-thing" => false
-  store:has-key "second-thing" => true
-  store:get "second-thing" => "apples"
-  store:get-keys => ["second-thing"]
+  O> store:has-key "first-thing" [ b -> assert-equal false b ]
+  O> store:has-key "second-thing" [ b -> assert-equal true b ]
+  O> store:get "second-thing" [ v -> assert-equal "apples" v ]
+  O> store:get-keys [ keys -> assert-equal ["second-thing"] keys ]
 
   O> store:clear
-  store:has-key "first-thing" => false
-  store:has-key "second-thing" => false
-  store:get-keys => []
+  O> store:has-key "first-thing" [ b -> assert-equal false b ]
+  O> store:has-key "second-thing" [ b -> assert-equal false b ]
+  O> store:get-keys [ keys -> assert-equal [] keys ]
 
-  store:get "nope" => ERROR Extension exception: Could not find a value for key: 'nope'.
+  O> store:get "nope" [ v -> show v ] => ERROR Extension exception: Could not find a value for key: 'nope'.

@@ -4,65 +4,95 @@ class ObjectStorage
   constructor: () ->
     @storage = {}
 
-  # (String) => String
-  getItem: (key) =>
-    if (not @hasKey(key))
-      throw new Error("Extension exception: Could not find a value for key: '#{key}'.")
-    return @storage[key]
+  # (String, (String) => Unit) => Unit
+  getItem: (key, callback) =>
+    @hasKey(key, (isValidKey) =>
+      if (not isValidKey)
+        throw new Error("Extension exception: Could not find a value for key: '#{key}'.")
+      callback(@storage[key])
+    )
+    return
 
-  # (String, String) => Unit
-  setItem: (key, value) =>
+  # (String, String, () => Unit) => Unit
+  setItem: (key, value, callback = (->)) =>
     @storage[key] = value
+    callback()
     return
 
-  # (String) => Unit
-  removeItem: (key) =>
-    if (@hasKey(key))
-      delete @storage[key]
+  # (String, () => Unit) => Unit
+  removeItem: (key, callback = (->)) =>
+    @hasKey(key, (isValidKey) =>
+      if (isValidKey)
+        delete @storage[key]
+    )
+    callback()
     return
 
-  # (String) => Boolean
-  hasKey: (key) =>
-    return @storage.hasOwnProperty(key)
+  # (String, (Boolean) => Unit) => Unit
+  hasKey: (key, callback) =>
+    callback(@storage.hasOwnProperty(key))
+    return
 
-  # () => String[]
-  getKeys: =>
-    return Object.getOwnPropertyNames(@storage)
+  # ((String[]) => Unit) => Unit
+  getKeys: (callback) =>
+    callback(Object.getOwnPropertyNames(@storage))
+    return
 
-  # () => Unit
-  clear: =>
+  # (() => Unit) => Unit
+  clear: (callback = (->)) =>
     @storage = {}
-
-class LocalStorage extends ObjectStorage
-  constructor: (localStorage) ->
-    super()
-    @localStorage = localStorage
-    storage = @localStorage.getItem('nlw-store-extension')
-    @storage = if (storage?) then JSON.parse(storage) else {}
+    callback()
     return
 
-  # (String, String) => Unit
-  setItem: (key, value) =>
-    super(key, value)
-    @localStorage.setItem('nlw-store-extension', JSON.stringify(@storage))
+class ForageStorage
+  constructor: (localforage) ->
+    @localforage = localforage
+    @localforage.config({
+      name:      "Store Extension for NLW",
+      storeName: "nlw_store_extension"
+    })
     return
 
-  # (String) => Unit
-  removeItem: (key) =>
-    super(key)
-    @localStorage.setItem('nlw-store-extension', JSON.stringify(@storage))
+  # (String, (String) => Unit) => Unit
+  getItem: (key, callback) =>
+    @hasKey(key, (isValidKey) =>
+      if (not isValidKey)
+        throw new Error("Extension exception: Could not find a value for key: '#{key}'.")
+      @localforage.getItem(key, (e, value) -> callback(value))
+    )
     return
 
-  # () => Unit
-  clear: =>
-    super()
-    @localStorage.setItem('nlw-store-extension', JSON.stringify(@storage))
+  # ((String[]) => Unit) => Unit
+  getKeys: (callback) =>
+    @localforage.keys((e, keys) => callback(keys))
+    return
+
+  # (String, (Boolean) => Unit) => Unit
+  hasKey: (key, callback) =>
+    @getKeys((keys) ->
+      callback(keys.includes(key))
+    )
+    return
+
+  # (String, String, () => Unit) => Unit
+  setItem: (key, value, callback = (->)) =>
+    @localforage.setItem(key, value, callback)
+    return
+
+  # (String, () => Unit) => Unit
+  removeItem: (key, callback = (->)) =>
+    @localforage.removeItem(key, callback)
+    return
+
+  # (() => Unit) => Unit
+  clear: (callback = (->)) =>
+    @localforage.clear(callback)
     return
 
 module.exports = {
 
   init: (workspace) ->
-    storage = if (window?.localStorage?) then new LocalStorage(window.localStorage) else new ObjectStorage()
+    storage = if (window?.localforage?) then new ForageStorage(window.localforage) else new ObjectStorage()
 
     {
       name: "store"
