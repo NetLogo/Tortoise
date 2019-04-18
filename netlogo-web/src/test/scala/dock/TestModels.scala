@@ -11,6 +11,8 @@ import org.nlogo.tortoise.tags.SlowTest
 
 class TestModels extends DockingSuite {
 
+  val chunksCount = 9
+
   val importsLambdas = Set("BeeSmart Hive Finding", "State Machine Example")
 
   val (nonExportables, exportables) = Model.models.partition((m) => (importsLambdas)(m.name))
@@ -85,7 +87,7 @@ class TestModels extends DockingSuite {
 
     }
 
-    val chunk = 1 + Integer.valueOf(4 * count / exportables.size)
+    val chunk = 1 + Integer.valueOf(chunksCount * count / exportables.size)
     count = count + 1
     val testName = s"$chunk: export-world - ${name}"
     test(testName, SlowTest) { implicit fixture =>

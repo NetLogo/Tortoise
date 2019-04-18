@@ -59,6 +59,11 @@ pipeline {
         sh "./sbt.sh \"netLogoWeb/testOnly *TestModels -- -z 2\""
         sh "./sbt.sh \"netLogoWeb/testOnly *TestModels -- -z 3\""
         sh "./sbt.sh \"netLogoWeb/testOnly *TestModels -- -z 4\""
+        sh "./sbt.sh \"netLogoWeb/testOnly *TestModels -- -z 5\""
+        sh "./sbt.sh \"netLogoWeb/testOnly *TestModels -- -z 6\""
+        sh "./sbt.sh \"netLogoWeb/testOnly *TestModels -- -z 7\""
+        sh "./sbt.sh \"netLogoWeb/testOnly *TestModels -- -z 8\""
+        sh "./sbt.sh \"netLogoWeb/testOnly *TestModels -- -z 9 \""
         junit 'netlogo-web/target/test-reports/*.xml'
       }
     }
