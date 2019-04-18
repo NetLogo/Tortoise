@@ -302,7 +302,10 @@ trait CommandPrims extends PrimUtils {
     def arg(i: Int) = handlers.reporter(s.args(i))
     def commaArgs = argsSep(", ")
     def args =
-      s.args.collect{ case x: ReporterApp => handlers.reporter(x) }
+      s.args.collect {
+        case x: ReporterApp  => handlers.reporter(x)
+        case z: CommandBlock => s"() => { ${handlers.commands(z)} }"
+      }
     def argsSep(sep: String) =
       args.mkString(sep)
 
