@@ -5,6 +5,8 @@ StoreBasics
   extensions [ store ]
   globals [ asserts ]
   to assert-equal [v1 v2] if (not (v1 = v2)) [ error (word "Assert #" asserts ": Values are not equal (expected: " v1 ", actual: " v2 ")") ] set asserts (asserts + 1) end
+  O> store:list-stores [ names -> foreach names [ name -> store:delete-store name ] ]
+  O> store:clear
   O> store:put "first-thing" "1234"
   O> store:get "first-thing" [ v -> assert-equal "1234" v ]
   O> store:put "first-thing" "123456789" [ store:get "first-thing" [ v -> assert-equal "123456789" v ] ]
@@ -30,3 +32,41 @@ StoreBasics
   O> store:get-keys [ keys -> assert-equal [] keys ]
 
   O> store:get "nope" [ v -> show v ] => ERROR Extension exception: Could not find a value for key: 'nope'.
+
+StoreSwitching
+  extensions [ store ]
+  globals [ asserts ]
+  to error-out [message] error (word "Assert #" asserts ": " message) end
+  to assert [pred message] if (not pred) [ error-out (word "Assertion failed (" message ")") ] set asserts (asserts + 1) end
+  to assert-equal [v1 v2] assert (v1 = v2) (word "Values are not equal.  Expected: " v1 ", actual: " v2) end
+  O> store:list-stores [ names -> foreach names [ name -> store:delete-store name ] ]
+  O> store:clear
+  O> store:list-stores [ names -> assert-equal [] names ]
+  O> store:switch-store "The Apple Storage Facility"
+  O> store:list-stores [ names -> assert (member? "The Apple Storage Facility" names) (word "Apple name should be in list: " names) ]
+  O> store:put "bin1" "tons of apples"
+  O> store:put "bin2" "not so many apples"
+  O> store:get-keys [ keys -> assert-equal ["bin1" "bin2"] keys ]
+
+  O> store:switch-store "The Orange Storage Facility"
+  O> store:list-stores [ names -> assert (member? "The Orange Storage Facility" names) (word "Orange name should be in list: " names) ]
+  O> store:get-keys [ keys -> assert-equal [] keys ]
+  O> store:put "bucket1" "a few oranges"
+  O> store:switch-store "The Apple Storage Facility"
+  O> store:get-keys [ keys -> assert-equal ["bin1" "bin2"] keys ]
+  O> store:switch-store "The Orange Storage Facility"
+  O> store:get-keys [ keys -> assert-equal ["bucket1"] keys ]
+  O> store:clear
+  O> store:get-keys [ keys -> assert-equal [] keys ]
+
+  O> store:switch-store "The Apple Storage Facility"
+  O> store:clear
+  O> store:get-keys [ keys -> assert-equal [] keys ]
+
+  O> store:delete-store "" => ERROR Extension exception: Cannot delete the default store, but you can clear it if you want.
+  O> store:delete-store "The Apple Storage Facility" => ERROR Extension exception: Cannot delete the current store, switch to another store first.
+  O> store:switch-store "The Orange Storage Facility"
+  O> store:delete-store "The Apple Storage Facility"
+  O> store:switch-store ""
+  O> store:delete-store "The Orange Storage Facility"
+  O> store:list-stores [ names -> assert-equal [] names ]
