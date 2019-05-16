@@ -1,9 +1,5 @@
 # (C) Uri Wilensky. https://github.com/NetLogo/Tortoise
 
-{ map }        = require('brazier/array')
-{ pipeline }   = require('brazier/function')
-{ rangeUntil } = require('brazier/number')
-
 module.exports.Config =
   class ImportExportConfig
     constructor: ( @exportFile    = (-> ->) # (String) => (String) => Unit
