@@ -55,16 +55,15 @@ class TestModels extends DockingSuite {
 
     }
 
-    def testReimport( platformName: String, fixture: DockingFixture
-                    , desktopOriginalCSV: String, webOriginalCSV: String): Unit = {
+    def testReimport(platformName: String, fixture: DockingFixture, originalCSV: String): Unit = {
 
       val start = Instant.now()
 
       fixture.runDocked {
-        _.importWorld(new InputStreamReader(new ByteArrayInputStream(desktopOriginalCSV.getBytes)))
+        _.importWorld(new InputStreamReader(new ByteArrayInputStream(originalCSV.getBytes)))
       } {
         (engine) =>
-          engine.put("__nonsenseWorldCSV", webOriginalCSV)
+          engine.put("__nonsenseWorldCSV", originalCSV)
           engine.run("ImportExportPrims.importWorldRaw(__nonsenseWorldCSV)")
       }
 
@@ -116,10 +115,10 @@ class TestModels extends DockingSuite {
       compareExports(desktopOriginalCSV, webOriginalCSV, "First pass")
 
       println("  running desktop imports")
-      testReimport("from-desktop", fixture, desktopOriginalCSV, webOriginalCSV)
+      testReimport("from-desktop", fixture, desktopOriginalCSV)
 
       println("  running web imports")
-      testReimport("from-web", fixture, desktopOriginalCSV, webOriginalCSV)
+      testReimport("from-web", fixture, webOriginalCSV)
 
     }
 
