@@ -243,7 +243,7 @@ object Model {
       repetitions = 10
     ),
     Model(
-      path = "models/Sample Models/Social Science/Wealth Distribution.nlogo",
+      path = "models/Sample Models/Social Science/Economics/Wealth Distribution.nlogo",
       repetitions = 30
     ),
     Model(

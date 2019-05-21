@@ -416,7 +416,7 @@ trait PlottingHelpers {
   self: FunSuite =>
 
   private val model = {
-    val input = Source.fromFile("models/Sample Models/Social Science/Wealth Distribution.nlogo")
+    val input = Source.fromFile("models/Sample Models/Social Science/Economics/Wealth Distribution.nlogo")
     val nlogo = input.mkString
     input.close()
     CompiledModel.fromNlogoContents(nlogo) valueOr ((nel) => throw new Exception(s"This test is seriously borked: ${nel.list.toList.mkString}"))
