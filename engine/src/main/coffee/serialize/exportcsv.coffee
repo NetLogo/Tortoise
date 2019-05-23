@@ -404,7 +404,7 @@ formatDrawingData = ([patchSize, drawing]) ->
 
   """
 #{formatPlain('DRAWING')}
-#{formatPlain(patchSizeStr)}#{onNextLineIfNotEmpty(if drawing is "" then "" else formatString(drawing))}"""
+#{formatPlain(patchSizeStr)}#{onNextLineIfNotEmpty(if drawing is "" then "" else formatPlain(drawing))}"""
 
 # (Array[String], Array[String], Array[String], Array[String], Array[String]) => (ExportWorldData) => String
 worldDataToCSV = (allTurtlesOwnsNames, allLinksOwnsNames, patchBuiltins, turtleBuiltins, linkBuiltins) -> (worldData) ->

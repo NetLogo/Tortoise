@@ -321,7 +321,7 @@ drawingParse = (csvBucket, schema) ->
     ""
   else if csvBucket.length is 2
     [[patchSizeStr], [base64Str]] = csvBucket
-    [parseFloat(patchSizeStr), parseString(base64Str)]
+    [parseFloat(patchSizeStr), base64Str]
   else
     throw new Error("NetLogo Web cannot parse `export-world` drawings from before NetLogo 6.1.")
 
