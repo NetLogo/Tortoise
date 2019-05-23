@@ -160,7 +160,7 @@ if (typeof Polyglot !== "undefined") {
     { exportFile:    exportFile
     , getNlogo:      function() { return ""; }
     , getOutput:     function() { return outputBuffer; }
-    , getViewBase64: function() { return "data:image/jpeg;base64,/9j/fake64"; }
+    , getViewBase64: function() { return "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVQYV2NgYAAAAAMAAWgmWQ0AAAAASUVORK5CYII="; }
     , importFile:    slurpFilepathAsync
     };
 
