@@ -59,6 +59,8 @@ module.exports =
     printConfig        = modelConfig?.print             ? new PrintConfig
     worldConfig        = modelConfig?.world             ? new WorldConfig
 
+    reportErrors = modelConfig?.reportErrors ? (messages) -> console.log(messages)
+
     Meta.version = modelConfig?.version ? Meta.version
 
     dump        = Dump(extensionDumpers)
@@ -119,6 +121,7 @@ module.exports =
       selfManager
       breedManager
       dump
+      reportErrors
       importExportPrims
       inspectionPrims
       asyncDialogConfig
