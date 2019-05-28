@@ -73,8 +73,10 @@ class ObjectStorage
     return
 
 class ForageStorage
-  constructor: (localforage) ->
-    @localforage = localforage
+  constructor: (@localforage, reportErrors) ->
+
+    @reportError = (error) ->
+      reportErrors(["Extension exception: Unable to process your store request.", "", error.message])
 
     @_setCurrentStorage("Default Store", "default")
 
@@ -158,14 +160,18 @@ class ForageStorage
   getItem: (key, callback) =>
     @hasKey(key, (isValidKey) =>
       if (not isValidKey)
-        throw new Error("Extension exception: Could not find a value for key: '#{key}'.")
-      @currentStorage.getItem(key, (e, value) -> callback(value))
+        throw new Error("Could not find a value for key: '#{key}'.")
+      @currentStorage.getItem(key)
+        .then(callback)
+        .catch(@reportError)
     )
     return
 
   # ((String[]) => Unit) => Unit
   getKeys: (callback) =>
-    @currentStorage.keys( (e, keys) => callback(keys))
+    @currentStorage.keys()
+      .then(callback)
+      .catch(@reportError)
     return
 
   # (String, (Boolean) => Unit) => Unit
@@ -177,23 +183,29 @@ class ForageStorage
 
   # (String, String, () => Unit) => Unit
   setItem: (key, value, callback = (->)) =>
-    @currentStorage.setItem(key, value, callback)
+    @currentStorage.setItem(key, value)
+      .then(callback)
+      .catch(@reportError)
     return
 
   # (String, () => Unit) => Unit
   removeItem: (key, callback = (->)) =>
-    @currentStorage.removeItem(key, callback)
+    @currentStorage.removeItem(key)
+      .then(callback)
+      .catch(@reportError)
     return
 
   # (() => Unit) => Unit
   clear: (callback = (->)) =>
-    @currentStorage.clear(callback)
+    @currentStorage.clear()
+      .then(callback)
+      .catch(@reportError)
     return
 
 module.exports = {
 
   init: (workspace) ->
-    storage = if (window?.localforage?) then new ForageStorage(window.localforage) else new ObjectStorage()
+    storage = if (window?.localforage?) then new ForageStorage(window.localforage, workspace.reportErrors) else new ObjectStorage()
 
     {
       name: "store"

@@ -20,7 +20,7 @@ module.exports = {
 
     # (String, (String) => Unit) => Unit
     fromURL = (url, callback) ->
-      workspace.ioConfig.slurpURLAsync(url)(callback)
+      workspace.ioConfig.slurpURLAsync(url)(callback, workspace.reportErrors)
       return
 
     # (String) => String
