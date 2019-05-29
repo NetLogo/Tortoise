@@ -5,11 +5,14 @@ package org.nlogo.tortoise.compiler
 import
   java.util.Collections
 
-import org.scalacheck.Gen
+import
+  org.scalacheck.Gen
 
 import
-  org.scalatest.{ FunSuite, prop },
-    prop.GeneratorDrivenPropertyChecks
+  org.scalatest.FunSuite
+
+import
+  org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
 import
   scala.collection.JavaConverters._
@@ -71,7 +74,7 @@ class TortoiseLoaderTest extends FunSuite {
   }
 }
 
-class TortoiseLoaderPropertyTests extends FunSuite with GeneratorDrivenPropertyChecks {
+class TortoiseLoaderPropertyTests extends FunSuite with ScalaCheckDrivenPropertyChecks {
   test("Sorts simple disjointed dependency sets") {
     forAll(declarationAndRequireSets) { (s) =>
       assertSorted(dependencySorted(s), s)

@@ -8,11 +8,14 @@ import
 import
   org.nlogo.core.Shape.{ LinkLine => CoreLinkLine, RgbColor, VectorShape }
 
-import org.scalacheck.Gen
+import
+  org.scalacheck.Gen
 
 import
-  org.scalatest.{ FunSuite, prop },
-    prop.GeneratorDrivenPropertyChecks
+  org.scalatest.FunSuite
+
+import
+  org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
 import
   scala.collection.immutable.ListMap
@@ -26,7 +29,7 @@ import
 import
   TortoiseJson.{ fields, JsArray, JsBool, JsInt, JsObject, JsString }
 
-class JsonShapeConversionTest extends FunSuite with GeneratorDrivenPropertyChecks {
+class JsonShapeConversionTest extends FunSuite with ScalaCheckDrivenPropertyChecks {
   val genBoolean = Gen.oneOf(true, false)
 
   val genPoint = for {

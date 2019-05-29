@@ -25,12 +25,12 @@ val commonSettings =
     libraryDependencies ++= Seq(
       "org.nlogo"         %  "netlogoheadless" % nlDependencyVersion,
       "org.scalaz"        %% "scalaz-core"     % scalazVersion,
-      "com.lihaoyi"       %% "scalatags"       % "0.6.7"  % "test",
-      "org.scalatest"     %% "scalatest"       % "3.0.5"  % "test",
+      "com.lihaoyi"       %% "scalatags"       % "0.6.8"  % "test",
+      "org.scalatest"     %% "scalatest"       % "3.0.7"  % "test",
       "org.skyscreamer"   %  "jsonassert"      % "1.5.0"  % "test",
       "org.reflections"   %  "reflections"     % "0.9.11" % "test",
       "org.scalacheck"    %% "scalacheck"      % "1.14.0" % "test",
-      "com.typesafe.play" %% "play-json"       % "2.7.0",
+      "com.typesafe.play" %% "play-json"       % "2.7.3",
       // Bring in headless test code/framework for our tests
       "org.nlogo"         %  "netlogoheadless" % nlDependencyVersion % "test" classifier "tests"),
     // Path Management

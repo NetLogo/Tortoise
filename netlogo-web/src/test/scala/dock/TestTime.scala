@@ -7,9 +7,9 @@ import
   org.scalacheck.Gen
 
 import
-  org.scalatest.prop.GeneratorDrivenPropertyChecks
+  org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
-class TestTime extends SimpleSuite with GeneratorDrivenPropertyChecks {
+class TestTime extends SimpleSuite with ScalaCheckDrivenPropertyChecks {
 
   test("date-and-time format") {
     fixture =>

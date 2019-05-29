@@ -7,12 +7,12 @@ import
   org.scalacheck.Gen
 
 import
-  org.scalatest.prop.GeneratorDrivenPropertyChecks
+  org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
 import
   org.nlogo.headless.test.Command
 
-class TestRandom extends DockingSuite with GeneratorDrivenPropertyChecks {
+class TestRandom extends DockingSuite with ScalaCheckDrivenPropertyChecks {
 
   testRandomnessPrim("random",             "10000")
   testRandomnessPrim("random-exponential", "10000")
