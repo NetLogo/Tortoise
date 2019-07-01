@@ -20,7 +20,7 @@ Hasher =
       f = (acc, x) -> "31 *" + acc + (if x? then Hasher(x) else "0")
       (foldl(f)(1)(x)).toString()
     else if type.isAgentSet()
-      "#{x.toString()} | #{Hasher(x.toArray())}"
+      "#{x.toString()} | #{Hasher(x.sort())}"
     else
       x.toString()
 
