@@ -41,6 +41,10 @@ class Breed
   # (Agent) => Unit
   remove: (agent) ->
     @members.splice(@_getAgentIndex(agent), howManyToThrowOut = 1)
+    if (@isLinky() and @name isnt "LINKS")
+      @_manager.links().remove(agent)
+    if (not @isLinky() and @name isnt "TURTLES")
+      @_manager.turtles().remove(agent)
     return
 
   # () => Boolean
