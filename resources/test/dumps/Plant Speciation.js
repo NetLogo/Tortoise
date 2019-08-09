@@ -399,7 +399,7 @@ var procedures = (function() {
           nearbyTurtles = SelfManager.self().inRadius(world.turtles(), world.observer.getGlobal("pollen-radius")); letVars['nearbyTurtles'] = nearbyTurtles;
         }
         let numCandidates = 10; letVars['numCandidates'] = numCandidates;
-        if (Prims.lt(nearbyTurtles.size(), 10)) {
+        if (nearbyTurtles._optimalCheckCount(10, (a, b) => a < b)) {
           potentialMates = ListPrims.sort(nearbyTurtles); letVars['potentialMates'] = potentialMates;
         }
         else {

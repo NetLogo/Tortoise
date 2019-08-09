@@ -623,7 +623,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       let theseGenes = world.turtleManager.turtlesOfBreed("GENES").agentFilter(function() { return Prims.equality(SelfManager.self().getVariable("strand"), strandType); }); letVars['theseGenes'] = theseGenes;
-      if (Prims.equality(theseGenes.size(), 0)) {
+      if (theseGenes._optimalCheckCount(0, (a, b) => a === b)) {
         procedures["DISPLAY-USER-MESSAGE-NO-GENES"]();
       }
       if (Prims.equality(strandType, "original")) {

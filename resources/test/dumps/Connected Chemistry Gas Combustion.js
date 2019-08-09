@@ -290,7 +290,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (Prims.equality(world.turtleManager.turtlesOfBreed("GAS-MOLECULES").size(), 0)) {
+      if (world.turtleManager.turtlesOfBreed("GAS-MOLECULES")._optimalCheckCount(0, (a, b) => a === b)) {
         throw new Exception.StopInterrupt;
       }
       if (world.observer.getGlobal("box-intact?")) {

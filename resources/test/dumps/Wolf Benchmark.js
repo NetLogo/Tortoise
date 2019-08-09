@@ -147,7 +147,7 @@ var procedures = (function() {
         procedures["GRAPH"]();
       }
       world.ticker.tick();
-      if (Prims.equality(world.turtles().size(), 0)) {
+      if (world.turtles()._optimalCheckCount(0, (a, b) => a === b)) {
         throw new Exception.StopInterrupt;
       }
     } catch (e) {

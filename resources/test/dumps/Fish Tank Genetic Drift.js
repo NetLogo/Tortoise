@@ -889,18 +889,18 @@ var procedures = (function() {
         if (arguments.length < 1) {
           throw new Error("anonymous procedure expected 1 input, but only got " + arguments.length);
         }
-        if (Prims.gt(allAlleles.agentFilter(function() {
+        if (allAlleles.agentFilter(function() {
           return (Prims.equality(SelfManager.self().getVariable("gene"), thisGene) && Prims.equality(SelfManager.self().getVariable("side"), "left"));
-        }).size(), 1)) {
+        })._optimalCheckCount(1, (a, b) => a > b)) {
           allAlleles._optimalOneOfWith(function() { return Prims.equality(SelfManager.self().getVariable("gene"), thisGene); }).ask(function() {
             SelfManager.self().setVariable("heading", 90);
             SelfManager.self().fd(world.observer.getGlobal("intra-chromosome-pair-spacing"));
             SelfManager.self().setVariable("side", "right");
           }, true);
         }
-        if (Prims.gt(allAlleles.agentFilter(function() {
+        if (allAlleles.agentFilter(function() {
           return (Prims.equality(SelfManager.self().getVariable("gene"), thisGene) && Prims.equality(SelfManager.self().getVariable("side"), "right"));
-        }).size(), 1)) {
+        })._optimalCheckCount(1, (a, b) => a > b)) {
           allAlleles._optimalOneOfWith(function() { return Prims.equality(SelfManager.self().getVariable("gene"), thisGene); }).ask(function() {
             SelfManager.self().setVariable("heading", 90);
             SelfManager.self().fd(-(world.observer.getGlobal("intra-chromosome-pair-spacing")));
