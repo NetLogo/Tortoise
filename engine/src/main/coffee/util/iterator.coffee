@@ -71,3 +71,6 @@ module.exports =
     # () => Array[T]
     toArray: ->
       @_items
+
+    checkCount: (n, check) ->
+      check(@_items.length, n)

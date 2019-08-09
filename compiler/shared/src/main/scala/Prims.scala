@@ -187,6 +187,10 @@ trait ReporterPrims extends PrimUtils {
         val agents = arg(0)
         s"$agents._optimalAnyWith(${handlers.fun(r.args(1), true)})"
 
+      case o: Optimizer._optimizecount =>
+        val agents = arg(0)
+        s"$agents._optimalCheckCount(${o.checkValue}, ${o.operator})"
+
       case _: Optimizer._patchhereinternal => "SelfManager.self()._optimalPatchHereInternal()"
       case _: Optimizer._patchnorth        => "SelfManager.self()._optimalPatchNorth()"
       case _: Optimizer._patcheast         => "SelfManager.self()._optimalPatchEast()"
