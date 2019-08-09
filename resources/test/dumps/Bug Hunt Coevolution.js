@@ -511,7 +511,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       let birdEnergySplit = 0; letVars['birdEnergySplit'] = birdEnergySplit;
-      if (Prims.gt(world.turtleManager.turtlesOfBreed("BIRDS").size(), 0)) {
+      if (world.turtleManager.turtlesOfBreed("BIRDS")._optimalCheckCount(0, (a, b) => a > b)) {
         ListPrims.oneOf(world.turtleManager.turtlesOfBreed("BIRDS")).ask(function() {
           birdEnergySplit = Prims.div(SelfManager.self().getVariable("eaten"), 2); letVars['birdEnergySplit'] = birdEnergySplit;
           SelfManager.self().setVariable("eaten", birdEnergySplit);

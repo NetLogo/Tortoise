@@ -57,7 +57,9 @@ var procedures = (function() {
         SelfManager.self().setPatchVariable("inner-neighbors", procedures["ELLIPSE-IN"](world.observer.getGlobal("inner-radius-x"),world.observer.getGlobal("inner-radius-y")));
         SelfManager.self().setPatchVariable("outer-neighbors", procedures["ELLIPSE-RING"](world.observer.getGlobal("outer-radius-x"),world.observer.getGlobal("outer-radius-y"),world.observer.getGlobal("inner-radius-x"),world.observer.getGlobal("inner-radius-y")));
       }, true);
-      if (world.patches()._optimalAnyWith(function() { return Prims.equality(SelfManager.self().getPatchVariable("outer-neighbors").size(), 0); })) {
+      if (world.patches()._optimalAnyWith(function() {
+        return SelfManager.self().getPatchVariable("outer-neighbors")._optimalCheckCount(0, (a, b) => a === b);
+      })) {
         UserDialogPrims.confirm((workspace.dump('') + workspace.dump("It doesn't make sense that 'outer' is equal to or smaller than 'inner.' ") + workspace.dump(" Please reset the sliders and press Setup again.")));
         throw new Exception.StopInterrupt;
       }

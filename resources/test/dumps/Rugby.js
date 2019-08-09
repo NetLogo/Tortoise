@@ -79,7 +79,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.patches().ask(function() {
-        if (!Prims.equality(SelfManager.self().getNeighbors().size(), 8)) {
+        if (SelfManager.self().getNeighbors()._optimalCheckCount(8, (a, b) => a !== b)) {
           SelfManager.self().setPatchVariable("pcolor", 15);
         }
         if (((Prims.equality(SelfManager.self().getPatchVariable("pycor"), world.topology.minPycor) && Prims.gte(SelfManager.self().getPatchVariable("pxcor"), world.observer.getGlobal("goal-pos"))) && Prims.lt(SelfManager.self().getPatchVariable("pxcor"), (world.observer.getGlobal("goal-pos") + world.observer.getGlobal("goal-size"))))) {

@@ -740,10 +740,10 @@ var procedures = (function() {
         nucleosidesReadyToGearToPolymerase = world.turtleManager.turtlesOfBreed("NUCLEOSIDES").agentFilter(function() {
           return Prims.lt(SelfManager.self().distance(SelfManager.myself()), world.observer.getGlobal("lock-radius"));
         }); letVars['nucleosidesReadyToGearToPolymerase'] = nucleosidesReadyToGearToPolymerase;
-        if (Prims.gt(nucleosidesReadyToGearToPolymerase.size(), 1)) {
+        if (nucleosidesReadyToGearToPolymerase._optimalCheckCount(1, (a, b) => a > b)) {
           potentialNucleosideReadyToGearToPolymerase = nucleosidesReadyToGearToPolymerase.minOneOf(function() { return SelfManager.self().distance(SelfManager.myself()); }); letVars['potentialNucleosideReadyToGearToPolymerase'] = potentialNucleosideReadyToGearToPolymerase;
         }
-        if (Prims.equality(nucleosidesReadyToGearToPolymerase.size(), 1)) {
+        if (nucleosidesReadyToGearToPolymerase._optimalCheckCount(1, (a, b) => a === b)) {
           potentialNucleosideReadyToGearToPolymerase = nucleosidesReadyToGearToPolymerase; letVars['potentialNucleosideReadyToGearToPolymerase'] = potentialNucleosideReadyToGearToPolymerase;
         }
         let nucleotidesReadyToGearToPolymerase = world.turtleManager.turtlesOfBreed("NUCLEOTIDES").agentFilter(function() {

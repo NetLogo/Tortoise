@@ -74,7 +74,7 @@ var procedures = (function() {
           world.topology.diffuse("elevation", 0.5, false)
         }
       }
-      world.patches().agentFilter(function() { return !Prims.equality(SelfManager.self().getNeighbors().size(), 8); }).ask(function() {
+      world.patches().agentFilter(function() { return SelfManager.self().getNeighbors()._optimalCheckCount(8, (a, b) => a !== b); }).ask(function() {
         SelfManager.self().setPatchVariable("drain?", true);
         SelfManager.self().setPatchVariable("elevation", -10000000);
       }, true);

@@ -267,7 +267,7 @@ var procedures = (function() {
     try {
       var reporterContext = false;
       var letVars = { };
-      if (Prims.gt(world.turtles().size(), 0)) {
+      if (world.turtles()._optimalCheckCount(0, (a, b) => a > b)) {
         world.observer.setGlobal("%infected", (Prims.div(world.turtles().agentFilter(function() { return SelfManager.self().getVariable("sick?"); }).size(), world.turtles().size()) * 100));
         world.observer.setGlobal("%immune", (Prims.div(world.turtles().agentFilter(function() { return procedures["IMMUNE?"](); }).size(), world.turtles().size()) * 100));
       }

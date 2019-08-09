@@ -245,7 +245,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.observer.setGlobal("watch-dance-task", Tasks.commandTask(function() {
-        if (Prims.gt(SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("SCOUTS").agentFilter(function() { return SelfManager.self().getVariable("piping?"); }), 3).size(), 0)) {
+        if (SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("SCOUTS").agentFilter(function() { return SelfManager.self().getVariable("piping?"); }), 3)._optimalCheckCount(0, (a, b) => a > b)) {
           SelfManager.self().setVariable("target", world.turtleManager.turtlesOfBreed("SCOUTS")._optimalOneOfWith(function() { return SelfManager.self().getVariable("piping?"); }).projectionBy(function() { return SelfManager.self().getVariable("target"); }));
           SelfManager.self().setVariable("color", SelfManager.self().getVariable("target").projectionBy(function() { return SelfManager.self().getVariable("color"); }));
           SelfManager.self().setVariable("next-task", world.observer.getGlobal("pipe-task"));
@@ -298,7 +298,7 @@ var procedures = (function() {
           SelfManager.self().setVariable("no-discovery?", true);
         }
         else {
-          if (Prims.gt(SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("SITES"), 3).size(), 0)) {
+          if (SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("SITES"), 3)._optimalCheckCount(0, (a, b) => a > b)) {
             let tempTarget = ListPrims.oneOf(SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("SITES"), 3)); letVars['tempTarget'] = tempTarget;
             if (!tempTarget.projectionBy(function() { return SelfManager.self().getVariable("discovered?"); })) {
               SelfManager.self().setVariable("target", tempTarget);
@@ -426,7 +426,7 @@ var procedures = (function() {
       var reporterContext = false;
       var letVars = { };
       world.observer.setGlobal("dance-task", Tasks.commandTask(function() {
-        if (Prims.gt(SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("SCOUTS").agentFilter(function() { return SelfManager.self().getVariable("piping?"); }), 3).size(), 0)) {
+        if (SelfManager.self().inRadius(world.turtleManager.turtlesOfBreed("SCOUTS").agentFilter(function() { return SelfManager.self().getVariable("piping?"); }), 3)._optimalCheckCount(0, (a, b) => a > b)) {
           SelfManager.self().penManager.raisePen();
           SelfManager.self().setVariable("next-task", world.observer.getGlobal("pipe-task"));
           SelfManager.self().setVariable("task-string", "piping");
