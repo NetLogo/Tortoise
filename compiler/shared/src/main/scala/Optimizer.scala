@@ -367,8 +367,6 @@ object Optimizer {
     override def syntax: Syntax =
       Syntax.reporterSyntax(ret = PatchsetType, right = List(NumberType))
   }
-  // scalastyle:on number.of.types
-  // scalastyle:on class.name
 
   object WithTransformer extends AstTransformer {
     val pxcor: Int = NetLogoCore.agentVariables.implicitPatchVariableTypeMap.keys.toList.indexOf("PXCOR")
@@ -405,6 +403,41 @@ object Optimizer {
     }
   }
 
+  class _optimizecount(val operator: String, val checkValue: Double) extends Reporter {
+    override def syntax: Syntax =
+      Syntax.reporterSyntax(right = List(Syntax.AgentsetType), ret = Syntax.BooleanType)
+  }
+  // scalastyle:on number.of.types
+  // scalastyle:on class.name
+
+  object OptimizeCountTransformer extends AstTransformer {
+    override def visitReporterApp(ra: ReporterApp): ReporterApp = {
+      ra match {
+        case ReporterApp(_: _notequal, Seq(
+             ReporterApp(_: _count, countArgs, _),
+             ReporterApp(reporter: _const, _, _)
+          ), _) =>
+          ra.copy(reporter = new _optimizecount("(a, b) => a !== b": String, reporter.value.asInstanceOf[Double]: Double), args = countArgs)
+        case ReporterApp(_: _greaterthan, Seq(
+             ReporterApp(_: _count, countArgs, _),
+             ReporterApp(reporter: _const, _, _)
+          ), _) =>
+          ra.copy(reporter = new _optimizecount("(a, b) => a > b": String, reporter.value.asInstanceOf[Double]: Double), args = countArgs)
+        case ReporterApp(_: _lessthan, Seq(
+             ReporterApp(_: _count, countArgs, _),
+             ReporterApp(reporter: _const, _, _)
+          ), _) =>
+          ra.copy(reporter = new _optimizecount("(a, b) => a < b": String, reporter.value.asInstanceOf[Double]: Double), args = countArgs)
+        case ReporterApp(_: _equal, Seq(
+             ReporterApp(_: _count, countArgs, _),
+             ReporterApp(reporter: _const, _, _)
+          ), _) =>
+          ra.copy(reporter = new _optimizecount("(a, b) => a === b": String, reporter.value.asInstanceOf[Double]: Double), args = countArgs)
+        case _ => super.visitReporterApp(ra)
+      }
+    }
+  }
+
   def apply(pd: ProcedureDefinition): ProcedureDefinition =
     (Fd1Transformer            .visitProcedureDefinition _ andThen
      FdLessThan1Transformer    .visitProcedureDefinition   andThen
@@ -427,7 +460,8 @@ object Optimizer {
      AnyWith2Transformer       .visitProcedureDefinition   andThen
      AnyWith3Transformer       .visitProcedureDefinition   andThen
      AnyWith4Transformer       .visitProcedureDefinition   andThen
-     AnyWith5Transformer       .visitProcedureDefinition
+     AnyWith5Transformer       .visitProcedureDefinition   andThen
+     OptimizeCountTransformer  .visitProcedureDefinition
     )(pd)
 
 }

@@ -286,3 +286,6 @@ module.exports =
       self = @_world.selfManager.self()
       filterer = (x) -> x isnt self and Iterator.boolOrError(x, x.projectionBy(f))
       @_unsafeIterator().filter(filterer).length
+
+    _optimalCheckCount: (n, operator) ->
+      @_unsafeIterator().checkCount(n, operator)

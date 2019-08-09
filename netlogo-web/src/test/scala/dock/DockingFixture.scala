@@ -65,7 +65,8 @@ class DockingFixture(name: String, engine: GraalJS) extends Fixture(name) {
       Seq(
         "AnyOther", "AnyOtherWith", "AnyWith1", "AnyWith2", "AnyWith3", "AnyWith4", "AnyWith5",
         "CountOther", "CountOtherWith", "Nsum", "Nsum4", "OneOfWith", "OtherWith",
-        "PatchAt", "PatchVariableDouble", "TurtleVariableDouble", "With", "WithOther"
+        "PatchAt", "PatchVariableDouble", "TurtleVariableDouble", "With", "WithOther",
+        "HasNotEqual", "HasGreaterThan", "HasLessThan", "HasEqual"
       )
     )
     Seq(commands, reporters).flatMap {
