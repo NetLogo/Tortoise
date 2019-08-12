@@ -15,9 +15,6 @@ pipeline {
     stage('Clean') {
       steps {
         sh "./sbt.sh netLogoWeb/clean compilerCore/clean compilerJVM/clean compilerJS/clean macrosCore/clean engine/clean"
-        // Until we can pick extensions by version, make sure cached version don't mess Jenkins up
-        // -Jeremy B March 2019
-        sh "rm -rfdv ~/.netlogo/"
       }
     }
 
@@ -49,6 +46,7 @@ pipeline {
     stage('NetLogoWeb Tests') {
       steps {
         sh "./sbt.sh netLogoWeb/test:compile"
+        sh "./sbt.sh \"netLogoWeb/test:runMain org.nlogo.tortoise.nlw.ExtensionsUpdater\""
         sh "./sbt.sh netLogoWeb/test:fast"
         sh "./sbt.sh netLogoWeb/test:language"
         junit 'netlogo-web/target/test-reports/*.xml'
