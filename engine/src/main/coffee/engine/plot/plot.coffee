@@ -39,7 +39,7 @@ module.exports = class Plot
     pipeline(filter((x) ->  x.isTemp), forEach(deletePen))(pens)
     pipeline(filter((x) -> not x.isTemp), forEach( resetPen))(pens)
 
-    if fold(-> false)((cp) -> cp.isTemp)(@_currentPenMaybe)
+    if not @_currentPenMaybe? or fold(-> false)((cp) -> cp.isTemp)(@_currentPenMaybe)
       @_currentPenMaybe =
         maybe(
           if isEmpty(pens)
@@ -210,7 +210,10 @@ module.exports = class Plot
 
   # (String) => Pen
   _getPenMaybeByName: (name) ->
-    lookup(name.toUpperCase())(@_penMap)
+    if not name?
+      maybe.None
+    else
+      lookup(name.toUpperCase())(@_penMap)
 
   # (Number, Number, Number, Number) => Unit
   _resize: ->
