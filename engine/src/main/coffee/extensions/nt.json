@@ -1,0 +1,16 @@
+{
+  "name": "nt",
+  "prims": [
+    {
+      "name":            "get",
+      "actionName":      "get",
+      "argTypes":        ["string"],
+      "returnType":      "wildcard"
+    }, {
+      "name":            "set",
+      "actionName":      "sets",
+      "argTypes":        ["string", "wildcard"],
+      "returnType":      "unit"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+NTBasics
+  extensions [ nt ]
+  O> nt:set "apples" 22
+  nt:get "apples" => 22
+  O> nt:set "oranges" "sixty"
+  nt:get "oranges" => "sixty"
+  nt:get "none" => ""
+  O> clear-all
+  nt:get "oranges" => "sixty"
+  nt:get "apples" => 22
