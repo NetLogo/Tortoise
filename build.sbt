@@ -4,11 +4,11 @@ import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport.{ fullOptJS, packageJSDepe
 import org.scalajs.sbtplugin.ScalaJSCrossVersion
 import org.scalastyle.sbt.ScalastylePlugin.projectSettings
 
-val nlDependencyVersion       = "6.1.1-RC1"
+val nlDependencyVersion       = "6.1.1-3ea64fc"
 
-val parserJsDependencyVersion = "0.3.0-RC2"
+val parserJsDependencyVersion = "0.3.0"
 
-val scalazVersion             = "7.2.27"
+val scalazVersion             = "7.2.29"
 
 val commonSettings =
   Seq(
@@ -17,7 +17,7 @@ val commonSettings =
     version       := "1.0",
     // Compilation settings
     crossPaths    := false, // we're not cross-building for different Scala versions
-    scalaVersion  := "2.12.8",
+    scalaVersion  := "2.12.10",
     scalacOptions ++=
       "-deprecation -unchecked -feature -Xcheckinit -encoding us-ascii -Xlint -Xfatal-warnings -Ywarn-value-discard -language:_ -Xmax-classfile-name 240".split(" ").toSeq,
     // Dependencies
@@ -25,12 +25,15 @@ val commonSettings =
     libraryDependencies ++= Seq(
       "org.nlogo"         %  "netlogoheadless" % nlDependencyVersion,
       "org.scalaz"        %% "scalaz-core"     % scalazVersion,
-      "com.lihaoyi"       %% "scalatags"       % "0.6.8"  % "test",
-      "org.scalatest"     %% "scalatest"       % "3.0.7"  % "test",
+      "com.lihaoyi"       %% "scalatags"       % "0.7.0"  % "test",
+      "org.scalatest"     %% "scalatest"       % "3.0.8"  % "test",
       "org.skyscreamer"   %  "jsonassert"      % "1.5.0"  % "test",
       "org.reflections"   %  "reflections"     % "0.9.11" % "test",
+      // Do not update scalacheck to 1.14.1+ until the fix for the below issue is released.
+      // It breaks JsonShapeConversiontTest.scala -Jeremy B November 2019
+      // https://github.com/typelevel/scalacheck/issues/577
       "org.scalacheck"    %% "scalacheck"      % "1.14.0" % "test",
-      "com.typesafe.play" %% "play-json"       % "2.7.3",
+      "com.typesafe.play" %% "play-json"       % "2.7.4",
       // Bring in headless test code/framework for our tests
       "org.nlogo"         %  "netlogoheadless" % nlDependencyVersion % "test" classifier "tests"),
     // Path Management

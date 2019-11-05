@@ -47,12 +47,12 @@ object WidgetToJsonTest extends TestSuite {
   }
 
   "errors when reading bad output"-{
-    assert(
-      "could not convert JsNull to int".failureNel ==
-        WidgetToJson.read(locatableJsObject(
-          "type"     -> JsString("output"),
-          "fontSize" -> JsNull
-        )))
+    val expected = "could not convert JsNull$ to int".failureNel
+    val result   = WidgetToJson.read(locatableJsObject(
+      "type"     -> JsString("output"),
+      "fontSize" -> JsNull
+    ))
+    assert(expected == result)
   }
   }
 }
