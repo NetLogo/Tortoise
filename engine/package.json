@@ -6,14 +6,16 @@
   "private": true,
   "dependencies": {
     "brazierjs": "2.2.0",
-    "coffeelint": "2.1.0",
     "csv-parse": "4.6.5",
+    "iframe-phone": "1.2.0",
+    "mori": "0.3.2"
+  },
+  "devDependencies": {
+    "coffeelint": "2.1.0",
     "grunt": "1.0.4",
     "grunt-browserify": "5.3.0",
     "grunt-coffeelint": "0.0.16",
     "grunt-contrib-coffee": "2.1.0",
-    "grunt-contrib-copy": "1.0.0",
-    "iframe-phone": "1.2.0",
-    "mori": "0.3.2"
+    "grunt-contrib-copy": "1.0.0"
   }
 }
