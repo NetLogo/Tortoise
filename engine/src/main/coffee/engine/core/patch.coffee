@@ -152,7 +152,7 @@ module.exports =
 
     # () => Unit
     reset: ->
-      @_varManager = @_genVarManager(@world.patchesOwnNames)
+      @_varManager.reset(@world.patchesOwnNames)
       Setters.setPcolor.call(this, 0)
       Setters.setPlabel.call(this, '')
       Setters.setPlabelColor.call(this, 9.9)

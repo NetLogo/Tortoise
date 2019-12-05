@@ -35,6 +35,11 @@ module.exports =
       return
 
     # (Array[VariableSpec]) => Unit
+    reset: (varNames) ->
+      varNames.forEach( (name) => this[name] = 0 )
+      return
+
+    # (Array[VariableSpec]) => Unit
     _addVarsBySpec: (varSpecs) ->
       for spec in varSpecs
         obj =
