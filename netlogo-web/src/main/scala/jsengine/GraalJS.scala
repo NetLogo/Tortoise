@@ -12,14 +12,14 @@ import org.nlogo.core.{ LogoList, Nobody, Resource }
 
 class GraalJS {
   var baos = new ByteArrayOutputStream
-  var jsRuntime = Context.newBuilder("js").out(baos).allowHostAccess(true).build
+  var jsRuntime = Context.newBuilder("js").out(baos).allowAllAccess(true).build
 
   val versionNumber: String = jsRuntime.getEngine.getVersion
 
   def reset(): Unit = {
     baos = new ByteArrayOutputStream
     jsRuntime.close()
-    jsRuntime = Context.newBuilder("js").out(baos).allowHostAccess(true).build
+    jsRuntime = Context.newBuilder("js").out(baos).allowAllAccess(true).build
     setupTortoise()
     ()
   }
