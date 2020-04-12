@@ -48,16 +48,15 @@ module.exports = {
       if fn.isReporter
         map(fn)(head)
       else
-        newArr = for x in head
+        for x in head
           res = fn(x)
-          if (res?)
-            break
-        if res?
-          return res
+          if res?
+            return res
         return
     else if all((l) -> l.length is head.length)(lists)
       for i in [0...head.length]
         fn(map((list) -> list[i])(lists)...)
     else
       throw new Error("All the list arguments to #{primName.toUpperCase()} must be the same length.")
+
 }
