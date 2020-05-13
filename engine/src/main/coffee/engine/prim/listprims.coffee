@@ -448,6 +448,7 @@ module.exports =
             [index2, index1]
           [items[newIndex1], items[newIndex2]]
         else
+          n = NLMath.floor(n)
           i = 0
           j = 0
           result = []
