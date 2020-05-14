@@ -2,7 +2,7 @@ scalacOptions += "-deprecation"
 
 libraryDependencies +=
   "classycle" % "classycle" % "1.4.2" from
-    "http://ccl-artifacts.s3-website-us-east-1.amazonaws.com/classycle-1.4.2.jar"
+    "https://s3.amazonaws.com/ccl-artifacts/classycle-1.4.2.jar"
 
 addSbtPlugin("org.foundweekends" % "sbt-bintray" % "0.5.4")
 
