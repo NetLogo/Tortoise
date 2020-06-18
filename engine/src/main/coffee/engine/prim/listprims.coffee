@@ -413,9 +413,10 @@ module.exports =
     substring: (xs, n1, n2) ->
       xs.substr(n1, n2 - n1)
 
-    # (Array[Number]) => Number
+    # (Array[Any]) => Number
     sum: (xs) ->
-      xs.reduce(((a, b) -> a + b), 0)
+      nums = xs.filter((n) -> NLType(n).isNumber())
+      nums.reduce(((a, b) -> a + b), 0)
 
     # [T] @ (Array[T]) => Number
     variance: (xs) ->
