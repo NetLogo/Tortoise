@@ -87,15 +87,23 @@ module.exports =
       result.push(x)
       result
 
-    # (Array[Number]) => Number
+    # (Array[Any]) => Number
     max: (xs) ->
-      Math.max(xs...)
+      nums = xs.filter((n) -> NLType(n).isNumber())
+
+      if nums.length < 1
+        throw new Error("Can't find the maximum of a list with no numbers: #{@_dump(xs)}")
+
+      Math.max(nums...)
 
     # (Array[Number]) => Number
     mean: (xs) ->
+      if xs.length is 0
+        throw new Error("Can't find the mean of a list with no numbers: #{@_dump(xs)}.")
+
       @sum(xs) / xs.length
 
-    # (Array[Number]) => Number
+    # (Array[Any]) => Number
     median: (xs) ->
       nums   = pipeline(filter((x) -> NLType(x).isNumber()), sortBy(id))(xs)
       length = nums.length
@@ -121,9 +129,14 @@ module.exports =
       else # agentset
         xs.exists((a) -> x is a)
 
-    # (Array[Number]) => Number
+    # (Array[Any]) => Number
     min: (xs) ->
-      Math.min(xs...)
+      nums = xs.filter((n) -> NLType(n).isNumber())
+
+      if nums.length < 1
+        throw new Error("Can't find the minimum of a list with no numbers: #{@_dump(xs)}")
+
+      Math.min(nums...)
 
     # [T] @ (Array[T]) => Array[T]
     modes: (items) ->
@@ -398,8 +411,8 @@ module.exports =
     standardDeviation: (xs) ->
       nums = xs.filter((x) -> NLType(x).isNumber())
       if nums.length > 1
-        mean       = @sum(xs) / xs.length
-        squareDiff = foldl((acc, x) -> acc + StrictMath.pow(x - mean, 2))(0)(xs)
+        mean       = @sum(nums) / nums.length
+        squareDiff = foldl((acc, x) -> acc + StrictMath.pow(x - mean, 2))(0)(nums)
         stdDev     = StrictMath.sqrt(squareDiff / (nums.length - 1))
         NLMath.validateNumber(stdDev)
       else
@@ -424,7 +437,7 @@ module.exports =
       count   = numbers.length
 
       if count < 2
-        throw new Error("Can't find the variance of a list without at least two numbers")
+        throw new Error("Can't find the variance of a list without at least two numbers: #{@_dump(xs)}.")
 
       sum  = numbers.reduce(((acc, x) -> acc + x), 0)
       mean = sum / count
