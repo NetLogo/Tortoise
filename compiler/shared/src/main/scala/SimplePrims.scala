@@ -251,9 +251,9 @@ object SimplePrims {
         case _: prim.etc._hideturtle               => "SelfManager.self().hideTurtle(true);"
         case _: prim.etc._showturtle               => "SelfManager.self().hideTurtle(false);"
 
-        case _: prim.etc._importpatchcolors => """throw new Error("Unfortunately, no perfect equivalent to `import-pcolors` can be implemented in NetLogo Web.  However, the \'import-a\' and \'fetch\' extensions offer primitives that can accomplish this in both NetLogo and NetLogo Web.")"""
-        case _: prim.etc._importpcolorsrgb  => """throw new Error("Unfortunately, no perfect equivalent to `import-pcolors-rgb` can be implemented in NetLogo Web.  However, the \'import-a\' and \'fetch\' extensions offer primitives that can accomplish this in both NetLogo and NetLogo Web.")"""
-        case _: prim.etc._importworld       => """throw new Error("Unfortunately, no perfect equivalent to `import-world` can be implemented in NetLogo Web.  However, the \'import-a\' and \'fetch\' extensions offer primitives that can accomplish this in both NetLogo and NetLogo Web.")"""
+        case _: prim.etc._importpatchcolors => "Errors.imperfectImport('import-pcolors')"
+        case _: prim.etc._importpcolorsrgb  => "Errors.imperfectImport('import-pcolors-rgb')"
+        case _: prim.etc._importworld       => "Errors.imperfectImport('import-world')"
 
       }
   }

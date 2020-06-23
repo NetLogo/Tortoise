@@ -353,9 +353,9 @@ trait CommandPrims extends PrimUtils {
       case _: prim.etc._showlink         => "SelfManager.self().setVariable('hidden?', false)"
       case call: prim._call              => generateCall(call, args)
       case _: prim._report               =>
-        s"""|if(!reporterContext) { throw new Error("REPORT can only be used inside TO-REPORT.") } else {
-            |  return ${arg(0)}
-            |}""".stripMargin
+        s"""|Errors.reportInContextCheck(reporterContext);
+            |return ${arg(0)};
+            |""".stripMargin
       case _: prim.etc._ignore           => s"${arg(0)};"
       case l: prim._let                  =>
         l.let.map(inner => {
@@ -592,7 +592,7 @@ trait CommandPrims extends PrimUtils {
 
   def genAsk(agents: String, shouldShuffle: Boolean, body: String, errorOnNobody: Boolean = false): String = {
     if (errorOnNobody)
-      s"""(function() { var agents = $agents; if (agents === Nobody) { throw new Error("ASK expected input to be an agent or agentset but got NOBODY instead.") } else { return agents; } })().ask($body, $shouldShuffle);"""
+      s"""Errors.askNobodyCheck($agents).ask($body, $shouldShuffle);"""
     else
       s"""$agents.ask($body, $shouldShuffle);"""
   }

@@ -22,12 +22,9 @@ trait Handlers extends EveryIDProvider {
   def task(node: AstNode, isReporter: Boolean = false, args: Seq[String] = Seq())
           (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
     val body = if (isReporter) s"return ${reporter(node)};" else commands(node)
-    val pluralStr = if (args.length != 1) "s" else ""
     val fullBody =
       if (args.length > 0)
-        s"""if (arguments.length < ${args.length}) {
-          |  throw new Error("anonymous procedure expected ${args.length} input$pluralStr, but only got " + arguments.length);
-          |}
+        s"""Errors.procedureArgumentsCheck(${args.length}, arguments.length);
           |$body""".stripMargin
       else
         s"""$body""".stripMargin
@@ -89,13 +86,9 @@ trait Handlers extends EveryIDProvider {
         |  var reporterContext = true;
         |  var letVars = { };
         |${indented(reporterJS)}
-        |  throw new Error("Reached end of reporter procedure without REPORT being called.");
+        |  Errors.missingReport();
         |} catch (e) {
-        | if (e instanceof Exception.StopInterrupt) {
-        |    throw new Error("STOP is not allowed inside TO-REPORT.");
-        |  } else {
-        |    throw e;
-        |  }
+        |  Errors.stopInReportCheck(e)
         |}""".stripMargin
 
   def commandBlockContext(commandJS: String): String =
@@ -104,11 +97,7 @@ trait Handlers extends EveryIDProvider {
         |  var letVars = { };
         |${indented(commandJS)}
         |} catch (e) {
-        |  if (e instanceof Exception.StopInterrupt) {
-        |    return e;
-        |  } else {
-        |    throw e;
-        |  }
+        |  return Errors.stopInCommandCheck(e)
         |}""".stripMargin
 
 }

@@ -53,6 +53,7 @@ class RuntimeInit(program: Program, widgets: Seq[CompiledWidget], model: Model, 
     workspaceDeclare("world"),
 
     JsRequire("Exception",      "util/exception"),
+    JsRequire("Errors",         "util/errors"),
     JsRequire("NLMath",         "util/nlmath"),
     JsRequire("notImplemented", "util/notimplemented"),
     JsRequire("ColorModel",     "engine/core/colormodel"),
