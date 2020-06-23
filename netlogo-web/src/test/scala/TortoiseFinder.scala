@@ -130,7 +130,6 @@ private[tortoise] object Freebies {
     "Strings::StrRemoveItem6"
   )
   private val incErrorDetectCommandNames = Seq(
-    "Agentsets::Agentsets2",
     "Agentsets::Agentsets3",
     "Agentsets::Agentsets4_2D",
     // The Iterator.withBoolCheck() adds a very rudimentary type check which
@@ -169,7 +168,6 @@ private[tortoise] object Freebies {
     "RGB::PatchesRGBColor_2D",
     "RGB::TurtlesRGBColor",
     "RGB::LinksRGBColor",
-    "Random::RandomOneOfWithLists",
     "Random::RandomNOfWithLists",
     "Random::OneOfWithAgentSets",
     "Random::RejectBadSeeds",

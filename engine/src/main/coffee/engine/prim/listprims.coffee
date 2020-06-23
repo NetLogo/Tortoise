@@ -208,7 +208,7 @@ module.exports =
         agentsOrList.randomAgent()
       else
         if agentsOrList.length is 0
-          Nobody
+          throw new Error("ONE-OF got an empty list as input.")
         else
           agentsOrList[@_nextInt(agentsOrList.length)]
 

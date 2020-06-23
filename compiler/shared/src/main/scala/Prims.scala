@@ -491,7 +491,7 @@ trait CommandPrims extends PrimUtils {
     (implicit compilerFlags: CompilerFlags, compilerContext: CompilerContext, procContext: ProcedureContext): String = {
     val agents = handlers.reporter(s.args(0))
     val body = handlers.fun(s.args(1))
-    genAsk(agents, shuffle, body)
+    genAsk(agents, shuffle, body, errorOnNobody = true)
   }
 
   def generateCarefully(s: Statement, c: prim._carefully)
@@ -590,8 +590,12 @@ trait CommandPrims extends PrimUtils {
         |}""".stripMargin
   }
 
-  def genAsk(agents: String, shouldShuffle: Boolean, body: String): String =
-    s"""$agents.ask($body, $shouldShuffle);"""
+  def genAsk(agents: String, shouldShuffle: Boolean, body: String, errorOnNobody: Boolean = false): String = {
+    if (errorOnNobody)
+      s"""(function() { var agents = $agents; if (agents === Nobody) { throw new Error("ASK expected input to be an agent or agentset but got NOBODY instead.") } else { return agents; } })().ask($body, $shouldShuffle);"""
+    else
+      s"""$agents.ask($body, $shouldShuffle);"""
+  }
 }
 
 trait Prims extends PrimUtils with CommandPrims with ReporterPrims
